@@ -8,7 +8,7 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.frameworks.datamodel.provisional;
+package org.eclipse.wst.common.frameworks.datamodel;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ import org.eclipse.core.runtime.IStatus;
 /**
  * A default implementation of <code>IDataModelProvider</code>.
  * 
- * @see org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelProvider
+ * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider
  */
 public abstract class AbstractDataModelProvider implements IDataModelProvider {
 

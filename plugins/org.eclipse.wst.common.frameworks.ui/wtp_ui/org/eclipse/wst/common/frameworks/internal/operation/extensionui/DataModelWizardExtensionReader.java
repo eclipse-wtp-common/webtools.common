@@ -18,8 +18,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jem.util.RegistryReader;
 import org.eclipse.jem.util.logger.proxy.Logger;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel;
-import org.eclipse.wst.common.frameworks.datamodel.ui.provisional.DataModelWizard;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.eclipse.wst.common.frameworks.datamodel.ui.DataModelWizard;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 
 public class DataModelWizardExtensionReader extends RegistryReader {

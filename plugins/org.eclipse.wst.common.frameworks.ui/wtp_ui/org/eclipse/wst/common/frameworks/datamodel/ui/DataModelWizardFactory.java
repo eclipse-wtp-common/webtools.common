@@ -8,9 +8,9 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.frameworks.datamodel.ui.provisional;
+package org.eclipse.wst.common.frameworks.datamodel.ui;
 
-import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.operation.extensionui.DataModelWizardFactoryImpl;
 
 public interface DataModelWizardFactory {

@@ -8,7 +8,7 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.frameworks.datamodel.provisional;
+package org.eclipse.wst.common.frameworks.datamodel;
 
 import java.util.Collection;
 import java.util.List;
@@ -58,8 +58,8 @@ import org.eclipse.core.runtime.IStatus;
  * This interface is not intended to be implemented by clients.
  * </p>
  * 
- * @see org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelProvider
- * @see org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelFactory
+ * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider
+ * @see org.eclipse.wst.common.frameworks.datamodel.DataModelFactory
  */
 public interface IDataModel {
 

@@ -20,9 +20,9 @@ package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jem.util.logger.proxy.Logger;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel;
-import org.eclipse.wst.common.frameworks.datamodel.ui.provisional.IDMExtendedPageHandler;
-import org.eclipse.wst.common.frameworks.datamodel.ui.provisional.IDMExtendedWizardPage;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.eclipse.wst.common.frameworks.datamodel.ui.IDMExtendedPageHandler;
+import org.eclipse.wst.common.frameworks.datamodel.ui.IDMExtendedWizardPage;
 import org.eclipse.wst.common.frameworks.internal.ConfigurationElementWrapper;
 
 /**

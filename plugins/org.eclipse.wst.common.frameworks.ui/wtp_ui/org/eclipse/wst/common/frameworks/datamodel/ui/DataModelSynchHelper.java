@@ -8,7 +8,7 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.frameworks.datamodel.ui.provisional;
+package org.eclipse.wst.common.frameworks.datamodel.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,10 +39,10 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelEvent;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelPropertyDescriptor;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelListener;
+import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
+import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelListener;
 import org.eclipse.wst.common.frameworks.internal.ui.TimedModifyListener;
 
 /**

@@ -8,7 +8,7 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.frameworks.datamodel.provisional;
+package org.eclipse.wst.common.frameworks.datamodel;
 
 /**
  * This event is used to communicate property changes from IDataModels to their IDataModelListeners.
@@ -17,8 +17,8 @@ package org.eclipse.wst.common.frameworks.datamodel.provisional;
  * 
  * This class is EXPERIMENTAL and is subject to substantial changes.
  * 
- * @see org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel#addListener(IDataModelListener)
- * @see org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelListener
+ * @see org.eclipse.wst.common.frameworks.datamodel.IDataModel#addListener(IDataModelListener)
+ * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelListener
  */
 public final class DataModelEvent {
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2005 IBM Corporation and others.
+ * Copyright (c) 2003, 2004 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,18 +8,22 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.frameworks.datamodel.provisional;
+package org.eclipse.wst.common.frameworks.datamodel.ui;
 
-import org.eclipse.core.commands.operations.IUndoableOperation;
+import org.eclipse.jface.wizard.IWizardPage;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 
-public interface IDataModelOperation extends IUndoableOperation {
+/**
+ * This interface is EXPERIMENTAL and is subject to substantial changes.
+ */
+public interface IDMExtendedWizardPage extends IWizardPage {
 
-	public void setID(String id);
+	IDataModelOperation createOperation();
 
-	public String getID();
+	boolean canPageFinish();
 
-	public void setDataModel(IDataModel model);
+	String getGroupID();
 
-	public IDataModel getDataModel();
+	void setGroupID(String id);
 
 }

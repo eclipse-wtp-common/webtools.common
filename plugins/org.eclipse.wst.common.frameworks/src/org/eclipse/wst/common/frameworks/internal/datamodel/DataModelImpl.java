@@ -21,11 +21,11 @@ import java.util.Set;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelEvent;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelPropertyDescriptor;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelListener;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelProvider;
+import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
+import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelListener;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 
 public final class DataModelImpl implements IDataModel, IDataModelListener {

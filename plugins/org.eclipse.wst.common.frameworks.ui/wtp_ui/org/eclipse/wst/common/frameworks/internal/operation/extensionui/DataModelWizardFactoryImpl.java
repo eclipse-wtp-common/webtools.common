@@ -10,10 +10,10 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
 
-import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelFactory;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel;
-import org.eclipse.wst.common.frameworks.datamodel.ui.provisional.DataModelWizard;
-import org.eclipse.wst.common.frameworks.datamodel.ui.provisional.DataModelWizardFactory;
+import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.eclipse.wst.common.frameworks.datamodel.ui.DataModelWizard;
+import org.eclipse.wst.common.frameworks.datamodel.ui.DataModelWizardFactory;
 
 public class DataModelWizardFactoryImpl implements DataModelWizardFactory {
 

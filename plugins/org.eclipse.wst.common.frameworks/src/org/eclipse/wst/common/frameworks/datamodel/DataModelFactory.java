@@ -8,7 +8,7 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.frameworks.datamodel.provisional;
+package org.eclipse.wst.common.frameworks.datamodel;
 
 import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelFactoryImpl;
 
