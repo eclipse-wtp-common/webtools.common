@@ -10,12 +10,16 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.1 $$  $$Date: 2005/01/07 20:19:23 $$ 
+ *  $$Revision: 1.2 $$  $$Date: 2005/01/26 14:46:54 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.URI;
@@ -24,8 +28,11 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.Resource.Factory.Registry;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.resource.impl.URIConverterImpl;
-
-import org.eclipse.jem.util.emf.workbench.*;
+import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.eclipse.jem.util.emf.workbench.ProjectResourceSet;
+import org.eclipse.jem.util.emf.workbench.ResourceHandler;
+import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
+import org.eclipse.jem.util.emf.workbench.nature.EMFNature;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jem.util.plugin.JEMUtilPlugin;
 
@@ -35,7 +42,9 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements ProjectRe
 	protected List resourceHandlers = new ArrayList();
 	protected ResourceSetWorkbenchSynchronizer synchronizer;
 	protected ProjectResourceSetImpl() {
-		setURIResourceMap(new HashMap(10));	// Tell it to cache uri->resource access.
+		HashMap resourceMap = new HashMap(10);
+		resourceMap.put(XMLResource.OPTION_USE_PARSER_POOL, EMFNature.SHARED_RESOURCE);
+		setURIResourceMap(resourceMap);	// Tell it to cache uri->resource access.
 	}
 	public ProjectResourceSetImpl(IProject aProject) {
 		this();

@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: EMFNature.java,v $$
- *  $$Revision: 1.1 $$  $$Date: 2005/01/07 20:19:23 $$ 
+ *  $$Revision: 1.2 $$  $$Date: 2005/01/26 14:46:54 $$ 
  */
 package org.eclipse.jem.util.emf.workbench.nature;
 
@@ -21,6 +21,8 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.emf.common.util.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl;
 
 import org.eclipse.jem.internal.util.emf.workbench.nature.EMFNatureRegistry;
 import org.eclipse.jem.util.emf.workbench.*;
@@ -42,6 +44,8 @@ public abstract class EMFNature implements IProjectNature, IEMFContextContributo
 	protected EMFWorkbenchContextBase emfContext;
 
 	protected boolean hasConfigured = false;
+	
+	public static XMLResource SHARED_RESOURCE = new XMLResourceImpl();	
 
 	public EMFNature() {
 		super();
