@@ -80,7 +80,7 @@ public abstract class VirtualResource implements IVirtualResource {
 
 	public void delete(int updateFlags, IProgressMonitor monitor) throws CoreException {
 		
-		if( (updateFlags & IVirtualResource.DELETE_METAMODEL_ONLY) == 0) {
+		if( (updateFlags & IVirtualResource.IGNORE_UNDERLYING_RESOURCE) == 0) {
 			doDeleteRealResources(updateFlags, monitor);
 		} 
 
@@ -219,6 +219,10 @@ public abstract class VirtualResource implements IVirtualResource {
 	public boolean equals(Object anOther) {
 		return hashCode() == ((anOther != null && anOther instanceof VirtualResource) ? anOther.hashCode() : 0 );
 	} 
+	
+	public IResource getUnderlyingResource() {
+		return null;
+	}
 
 	protected ComponentHandle getComponentHandle() {
 		return componentHandle;

@@ -18,34 +18,7 @@ public interface IVirtualContainer extends IVirtualResource {
 	/*====================================================================
 	 * Constants defining which members are wanted:
 	 *====================================================================*/
-
-	/**
-	 * Member constant (bit mask value 1) indicating that phantom member resources are
-	 * to be included.
-	 * 
-	 * @see IVirtualResource#isPhantom()
-	 * @since 2.0
-	 */
-	public static final int INCLUDE_PHANTOMS = 1;
-
-	/**
-	 * Member constant (bit mask value 2) indicating that team private members are
-	 * to be included.
-	 * 
-	 * @see IVirtualResource#isTeamPrivateMember()
-	 * @since 2.0
-	 */
-	public static final int INCLUDE_TEAM_PRIVATE_MEMBERS = 2;
-
-	/**
-	 * Member constant (bit mask value 4) indicating that derived resources
-	 * are to be excluded
-	 * 
-	 * @see IVirtualResource#isDerived()
-	 * @since 3.1
-	 */
-	public static final int EXCLUDE_DERIVED = 4;
-
+ 
 	/**
 	 * Returns whether a resource of some type with the given path 
 	 * exists relative to this resource.
@@ -205,6 +178,39 @@ public interface IVirtualContainer extends IVirtualResource {
 	 * @see #getFile(IPath)
 	 */
 	public IVirtualFolder getFolder(IPath path);
+	
+
+	/**
+	 * Returns a handle to the file with the given name in this folder.
+	 * <p> 
+	 * This is a resource handle operation; neither the resource nor
+	 * the result need exist in the workspace.
+	 * The validation check on the resource name/path is not done
+	 * when the resource handle is constructed; rather, it is done
+	 * automatically as the resource is created.
+	 * </p>
+	 *
+	 * @param name the string name of the member file
+	 * @return the (handle of the) member file
+	 * @see #getFolder(String)
+	 */
+	public IVirtualFile getFile(String name);
+
+	/**
+	 * Returns a handle to the folder with the given name in this folder.
+	 * <p> 
+	 * This is a resource handle operation; neither the container
+	 * nor the result need exist in the workspace.
+	 * The validation check on the resource name/path is not done
+	 * when the resource handle is constructed; rather, it is done
+	 * automatically as the resource is created.
+	 * </p>
+	 *
+	 * @param name the string name of the member folder
+	 * @return the (handle of the) member folder
+	 * @see #getFile(String)
+	 */
+	public IVirtualFolder getFolder(String name);
 
 	/**
 	 * Returns a list of existing member resources (projects, folders and files)

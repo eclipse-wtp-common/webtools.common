@@ -126,7 +126,7 @@ public class VirtualContainer extends VirtualResource implements IVirtualContain
 	 * @see IContainer#members(boolean)
 	 */
 	public IVirtualResource[] members(boolean includePhantoms) throws CoreException {
-		return members(includePhantoms ? INCLUDE_PHANTOMS : IResource.NONE);
+		return members(includePhantoms ? IGNORE_EXCLUSIONS : IResource.NONE);
 	}
 
 	/**

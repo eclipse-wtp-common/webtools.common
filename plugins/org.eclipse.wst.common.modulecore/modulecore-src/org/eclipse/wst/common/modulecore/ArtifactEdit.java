@@ -9,7 +9,9 @@
 package org.eclipse.wst.common.modulecore;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jem.internal.util.emf.workbench.nls.EMFWorkbenchResourceHandler;
 import org.eclipse.wst.common.frameworks.internal.operations.IOperationHandler;
@@ -17,6 +19,8 @@ import org.eclipse.wst.common.internal.emfworkbench.edit.EditModelRegistry;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelListener;
 import org.eclipse.wst.common.internal.emfworkbench.integration.IEditModelFactory;
+import org.eclipse.wst.common.modulecore.internal.impl.PlatformURLModuleConnection;
+import org.eclipse.wst.common.modulecore.internal.resources.ComponentHandle;
 
 /**
  * Provides a Facade pattern for accessing Module Content Metamodels for Web Tools Platform flexible
@@ -118,6 +122,67 @@ public class ArtifactEdit implements IEditModelHandler {
 		}
 		return null;
 	}
+	
+	/**
+	 * <p>
+	 * Returns an instance facade to manage the underlying edit model for the given
+	 * {@see WorkbenchComponent}. Instances of ArtifactEdit that are returned through this method must
+	 * be {@see #dispose()}ed of when no longer in use.
+	 * </p>
+	 * <p>
+	 * Use to acquire an ArtifactEdit facade for a specific {@see WorkbenchComponent}&nbsp;that will
+	 * not be used for editing. Invocations of any save*() API on an instance returned from this
+	 * method will throw exceptions.
+	 * </p>
+	 * <p>
+	 * <b>The following method may return null. </b>
+	 * </p>
+	 * 
+	 * @param aModule
+	 *            A valid {@see WorkbenchComponent}&nbsp;with a handle that resolves to an accessible
+	 *            project in the workspace
+	 * @return An instance of ArtifactEdit that may only be used to read the underlying content
+	 *         model
+	 */
+	public static ArtifactEdit getArtifactEditForRead(ComponentHandle aHandle) {
+		ArtifactEdit artifactEdit = null;
+		try {
+			artifactEdit = new ArtifactEdit(aHandle, true); 
+		} catch(IllegalArgumentException iae) {
+			artifactEdit = null;
+		}
+		return artifactEdit;
+	}
+
+	/**
+	 * <p>
+	 * Returns an instance facade to manage the underlying edit model for the given
+	 * {@see WorkbenchComponent}. Instances of ArtifactEdit that are returned through this method must
+	 * be {@see #dispose()}ed of when no longer in use.
+	 * </p>
+	 * <p>
+	 * Use to acquire an ArtifactEdit facade for a specific {@see WorkbenchComponent}&nbsp;that will
+	 * be used for editing.
+	 * </p>
+	 * <p>
+	 * <b>The following method may return null. </b>
+	 * </p>
+	 * 
+	 * @param aModule
+	 *            A valid {@see WorkbenchComponent}&nbsp;with a handle that resolves to an accessible
+	 *            project in the workspace
+	 * @return An instance of ArtifactEdit that may be used to modify and persist changes to the
+	 *         underlying content model
+	 */
+	public static ArtifactEdit getArtifactEditForWrite(ComponentHandle aHandle) {
+		ArtifactEdit artifactEdit = null;
+		try {
+			artifactEdit = new ArtifactEdit(aHandle, false); 
+		} catch(IllegalArgumentException iae) {
+			artifactEdit = null;
+		}
+		return artifactEdit;
+	}
 
 	/**
 	 * @param module
@@ -125,7 +190,7 @@ public class ArtifactEdit implements IEditModelHandler {
 	 * @return True if the supplied module has a moduleTypeId which has a defined
 	 *         {@see IEditModelFactory}&nbsp;and is contained by an accessible project
 	 */
-	public static boolean isValidEditableModule(WorkbenchComponent aModule) throws UnresolveableURIException {
+	public static boolean isValidEditableModule(WorkbenchComponent aModule) {
 		/* The ComponentType must be non-null, and the moduleTypeId must be non-null */
 		ComponentType moduleType = aModule.getComponentType();
 		if (moduleType == null || moduleType.getModuleTypeId() == null)
@@ -133,7 +198,12 @@ public class ArtifactEdit implements IEditModelHandler {
 		if(aModule.getHandle() == null)
 			return false;
 		/* and the containing project must be resolveable and accessible */
-		IProject project = ModuleCore.getContainingProject(aModule.getHandle());
+		IProject project;
+		try {
+			project = ModuleCore.getContainingProject(aModule.getHandle());
+		} catch (UnresolveableURIException e) {
+			return false;
+		}
 		if (project == null || !project.isAccessible())
 			return false;
 		/* and an edit model factory must be defined for the module type */
@@ -177,6 +247,54 @@ public class ArtifactEdit implements IEditModelHandler {
 		isArtifactEditModelSelfManaged = true;
 	}
 
+	/**
+	 * <p>
+	 * Creates an instance facade for the given {@see WorkbenchComponent}.
+	 * </p>
+	 * 
+	 * @param aNature
+	 *            A non-null {@see ModuleCoreNature}&nbsp;for an accessible project
+	 * @param aModule
+	 *            A non-null {@see WorkbenchComponent}&nbsp;pointing to a module from the given
+	 *            {@see ModuleCoreNature}
+	 */
+	public ArtifactEdit(ComponentHandle aHandle, boolean toAccessAsReadOnly) throws IllegalArgumentException 
+	{
+		
+		if(aHandle.getProject() == null || !aHandle.getProject().isAccessible())
+			throw new IllegalArgumentException("Invalid project specified by handle: " + aHandle.getProject());
+		
+		ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(aHandle.getProject());
+		
+		if(nature == null)
+			throw new IllegalArgumentException("Project does not have ModuleCoreNature." + aHandle.getProject());
+		
+		ModuleCore moduleCore = null;
+		URI componentURI = null;
+		try {
+			moduleCore = ModuleCore.getModuleCoreForRead(aHandle.getProject());
+			if(moduleCore == null)
+				throw new IllegalArgumentException("Invalid component handle: " + aHandle);
+			WorkbenchComponent component = moduleCore.findWorkbenchModuleByDeployName(aHandle.getName());
+			if(component == null)
+				throw new IllegalArgumentException("Invalid component handle: " + aHandle);
+			if(!isValidEditableModule(component)) 
+				throw new IllegalArgumentException("Invalid component handle: " + aHandle);
+			componentURI = component.getHandle();
+		} finally {
+			if(moduleCore != null)
+				moduleCore.dispose();
+		}
+		 
+		
+		if (toAccessAsReadOnly)
+			artifactEditModel = nature.getArtifactEditModelForRead(componentURI, this);
+		else
+			artifactEditModel = nature.getArtifactEditModelForWrite(componentURI, this);
+		isReadOnly = toAccessAsReadOnly;
+		isArtifactEditModelSelfManaged = true;
+	}
+	
 
 	/**
 	 * <p>

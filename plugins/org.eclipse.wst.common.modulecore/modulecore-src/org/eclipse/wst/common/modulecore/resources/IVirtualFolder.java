@@ -140,39 +140,7 @@ public interface IVirtualFolder extends IVirtualContainer {
 	 * @see IVirtualResource#ALLOW_MISSING_LOCAL
 	 * @since 2.1
 	 */
-	public void createLink(IPath localLocation, int updateFlags, IProgressMonitor monitor) throws CoreException; 
-
-	/**
-	 * Returns a handle to the file with the given name in this folder.
-	 * <p> 
-	 * This is a resource handle operation; neither the resource nor
-	 * the result need exist in the workspace.
-	 * The validation check on the resource name/path is not done
-	 * when the resource handle is constructed; rather, it is done
-	 * automatically as the resource is created.
-	 * </p>
-	 *
-	 * @param name the string name of the member file
-	 * @return the (handle of the) member file
-	 * @see #getFolder(String)
-	 */
-	public IVirtualFile getFile(String name);
-
-	/**
-	 * Returns a handle to the folder with the given name in this folder.
-	 * <p> 
-	 * This is a resource handle operation; neither the container
-	 * nor the result need exist in the workspace.
-	 * The validation check on the resource name/path is not done
-	 * when the resource handle is constructed; rather, it is done
-	 * automatically as the resource is created.
-	 * </p>
-	 *
-	 * @param name the string name of the member folder
-	 * @return the (handle of the) member folder
-	 * @see #getFile(String)
-	 */
-	public IVirtualFolder getFolder(String name);
+	public void createLink(IPath localLocation, int updateFlags, IProgressMonitor monitor) throws CoreException;  
 
 	public IFolder getRealFolder();
 	
