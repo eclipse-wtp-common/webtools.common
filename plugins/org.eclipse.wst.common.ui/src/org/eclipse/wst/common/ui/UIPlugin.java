@@ -1,0 +1,157 @@
+/*
+* Copyright (c) 2002 IBM Corporation and others.
+* All rights reserved.   This program and the accompanying materials
+* are made available under the terms of the Common Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/cpl-v10.html
+* 
+* Contributors:
+*   IBM - Initial API and implementation
+*   Jens Lukowski/Innoopract - initial renaming/restructuring
+* 
+*/
+package org.eclipse.wst.common.ui;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.MessageFormat;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPluginDescriptor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
+
+
+
+/**
+ * The main plugin class to be used in the desktop.
+ */
+public class UIPlugin extends AbstractUIPlugin {
+	//The shared instance.
+	private static UIPlugin plugin;
+	//Resource bundle.
+  	// dmw 11/15 private field never read locally
+	//private ResourceBundle resourceBundle;
+	
+	/**
+	 * The constructor.
+	 */
+	public UIPlugin(IPluginDescriptor descriptor) {
+		super(descriptor);
+		plugin = this;
+		try {
+		  	// dmw 11/15 private field never read locally
+			ResourceBundle resourceBundle = descriptor.getResourceBundle();
+		} catch (java.util.MissingResourceException exception) {
+			//TODO... log an error message		
+			//resourceBundle = null;
+		}
+	}
+
+	/**
+	 * Returns the shared instance.
+	 */
+	public static UIPlugin getDefault() {
+		return plugin;
+	}
+
+	/**
+	 * Returns the workspace instance.
+	 */
+	public static IWorkspace getWorkspace() {
+		return ResourcesPlugin.getWorkspace();
+	}
+
+	/**
+	 * Returns the string from the plugin's resource bundle,
+	 * or 'key' if not found.
+	 */
+	public static String getResourceString(String key) {
+		ResourceBundle bundle= UIPlugin.getDefault().getResourceBundle();
+		try {
+			return bundle.getString(key);
+		} catch (MissingResourceException e) {
+			return key;
+		}
+	}
+
+	/**
+	 * This gets the string resource and does one substitution.
+	 */
+	public String getString(String key, Object s1)
+	{
+	  return MessageFormat.format(getResourceString(key), new Object [] { s1 });
+	}
+
+	/**
+	 * This gets the string resource and does two substitutions.
+	 */
+	public String getString(String key, Object s1, Object s2)
+	{
+	  return MessageFormat.format(getResourceString(key), new Object [] { s1, s2 });
+	}     
+	
+	/**
+	 * Returns the plugin's resource bundle,
+	 */
+	public ResourceBundle getResourceBundle() {
+		try {
+			return Platform.getResourceBundle(plugin.getBundle());
+		} catch (MissingResourceException x) {
+			x.printStackTrace();
+		}
+		return null;
+	}
+
+	public ImageDescriptor getImageDescriptor(String name) {
+		try {
+			URL url= new URL(getBundle().getEntry("/"), name);
+			return ImageDescriptor.createFromURL(url);
+		} catch (MalformedURLException e) {
+			return ImageDescriptor.getMissingImageDescriptor();
+		}
+	}
+	
+    public Image getImage(String iconName)
+    {
+      ImageRegistry imageRegistry = getImageRegistry();
+      
+      if (imageRegistry.get(iconName) != null)
+      {
+        return imageRegistry.get(iconName);
+      }
+      else
+      {
+        imageRegistry.put(iconName, ImageDescriptor.createFromFile(getClass(), iconName));
+        return imageRegistry.get(iconName);
+      }
+    }
+    
+    public static String getPluginId() {
+		return getDefault().getBundle().getSymbolicName();
+	}	
+
+	public static void log(IStatus status) {
+		getDefault().getLog().log(status);
+	}
+
+	public static void log(String message, Throwable e) {
+		log(new Status(IStatus.ERROR, getPluginId(), IStatus.ERROR, message, e));
+	}
+	
+	public static void log(String message) {
+		log(new Status(IStatus.ERROR, getPluginId(), IStatus.ERROR, message, null));
+	}
+
+	public static void log(Throwable e) {
+		log(new Status(IStatus.ERROR, getPluginId(), IStatus.ERROR, e.getLocalizedMessage(), e));
+	}
+}
