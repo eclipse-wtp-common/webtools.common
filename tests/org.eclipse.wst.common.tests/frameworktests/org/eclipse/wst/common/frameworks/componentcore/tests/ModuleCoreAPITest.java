@@ -6,7 +6,7 @@
  * 
  * Contributors: IBM Corporation - initial API and implementation
  **************************************************************************************************/
-package org.eclipse.wst.common.frameworks.modulecore.tests;
+package org.eclipse.wst.common.frameworks.componentcore.tests;
 
 import java.util.HashMap;
 import java.util.Iterator;
