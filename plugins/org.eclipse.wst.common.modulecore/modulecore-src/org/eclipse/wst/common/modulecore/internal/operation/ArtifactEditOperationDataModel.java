@@ -16,7 +16,10 @@ import org.eclipse.wst.common.frameworks.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
 import org.eclipse.wst.common.modulecore.ArtifactEdit;
 import org.eclipse.wst.common.modulecore.ModuleCore;
+import org.eclipse.wst.common.modulecore.UnresolveableURIException;
 import org.eclipse.wst.common.modulecore.WorkbenchComponent;
+
+import com.ibm.wtp.common.logger.proxy.Logger;
 /**
  * This dataModel is a common super class used for create in a module context.
  * 
@@ -35,12 +38,6 @@ public abstract class ArtifactEditOperationDataModel extends WTPOperationDataMod
 	 */
 	public static final String MODULE_NAME = "ArtifactEditOperationDataModel.MODULE_NAME"; //$NON-NLS-1$
 	/**
-	 * Required
-	 */	
-	
-	public static final String MODULE_DEPLOY_NAME = "ArtifactEditOperationDataModel.MODULE_DEPLOY_NAME"; //$NON-NLS-1$
-	
-	/**
 	 * Optional, should save with prompt...defaults to false
 	 */
 	public static final String PROMPT_ON_SAVE = "ArtifactEditOperationDataModel.PROMPT_ON_SAVE"; //$NON-NLS-1$
@@ -49,7 +46,6 @@ public abstract class ArtifactEditOperationDataModel extends WTPOperationDataMod
 		super.initValidBaseProperties();
 		addValidBaseProperty(PROJECT_NAME);
 		addValidBaseProperty(MODULE_NAME);
-		addValidBaseProperty(MODULE_DEPLOY_NAME);
 		addValidBaseProperty(PROMPT_ON_SAVE);
 	}
 
@@ -74,7 +70,19 @@ public abstract class ArtifactEditOperationDataModel extends WTPOperationDataMod
 		WorkbenchComponent module = getWorkbenchModule(); 
 		return ArtifactEdit.getArtifactEditForRead(module);
 	}
-
+	/* (non-Javadoc)
+	 * @see org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel#doSetProperty(java.lang.String, java.lang.Object)
+	 */
+	protected boolean doSetProperty(String propertyName, Object propertyValue) {
+	    boolean status = super.doSetProperty(propertyName, propertyValue);
+	    if(MODULE_NAME.equals(propertyName)){
+	        WorkbenchComponent module = getWorkbenchModule();
+	        IProject proj = getProjectForGivenComponent(module);
+	        if(proj != null)
+	            setProperty(PROJECT_NAME, proj.getName());
+	    }
+	    return status;
+	}
     /**
      * @return
      */
@@ -83,7 +91,7 @@ public abstract class ArtifactEditOperationDataModel extends WTPOperationDataMod
         WorkbenchComponent module = null;
         try {
             moduleCore = ModuleCore.getModuleCoreForRead(getTargetProject());
-            module = moduleCore.findWorkbenchModuleByDeployName(getStringProperty(MODULE_DEPLOY_NAME));
+            module = moduleCore.findWorkbenchModuleByDeployName(getStringProperty(MODULE_NAME));
         } finally {
             if (null != moduleCore) {
                 moduleCore.dispose();
@@ -91,4 +99,13 @@ public abstract class ArtifactEditOperationDataModel extends WTPOperationDataMod
         }
         return module;
     }
+	private IProject getProjectForGivenComponent(WorkbenchComponent wbComp) {
+	    IProject modProject = null;
+	    try {
+		    modProject = ModuleCore.getContainingProject(wbComp.getHandle());
+	    } catch (UnresolveableURIException ex) {
+			Logger.getLogger().logError(ex);
+	    }
+	    return modProject;
+	}
 }

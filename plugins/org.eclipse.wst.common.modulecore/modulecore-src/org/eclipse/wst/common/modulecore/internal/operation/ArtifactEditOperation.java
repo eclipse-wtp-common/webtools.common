@@ -64,7 +64,7 @@ public class ArtifactEditOperation extends WTPOperation {
         WorkbenchComponent module = null;
         try {
             moduleCore = ModuleCore.getModuleCoreForRead(dataModel.getTargetProject());
-            module = moduleCore.findWorkbenchModuleByDeployName(dataModel.getStringProperty(ArtifactEditOperationDataModel.MODULE_DEPLOY_NAME));
+            module = moduleCore.findWorkbenchModuleByDeployName(dataModel.getStringProperty(ArtifactEditOperationDataModel.MODULE_NAME));
         } finally {
             if (null != moduleCore) {
                 moduleCore.dispose();
