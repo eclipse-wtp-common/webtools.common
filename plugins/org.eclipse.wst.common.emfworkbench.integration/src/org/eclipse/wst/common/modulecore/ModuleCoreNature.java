@@ -3,7 +3,6 @@ package org.eclipse.wst.common.modulecore;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.core.internal.jobs.JobManager;
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -12,6 +11,11 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.wst.common.internal.emfworkbench.CompatibilityWorkbenchURIConverterImpl;
@@ -28,40 +32,58 @@ import com.ibm.wtp.emf.workbench.WorkbenchURIConverter;
 
 public class ModuleCoreNature extends EditModelNature implements IProjectNature, IModuleConstants, IResourceChangeListener {
 
-   
+
 	public void resourceChanged(IResourceChangeEvent anEvent) {
 		// event.getDelta()
 		// IResource changedResource = (IResource)event.getResource();
 		// update()
 	}
-	
+
 	public static ModuleCoreNature getModuleCoreNature(IProject aProject) {
 		try {
 			return (ModuleCoreNature) aProject.getNature(IModuleConstants.MODULE_NATURE_ID);
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}
-		return null; 
+		return null;
 	}
-	
-	public static ModuleCoreNature addModuleCoreNatureIfNecessary(IProject aProject, IProgressMonitor aMonitor) {
+
+	public static ModuleCoreNature addModuleCoreNatureIfNecessary(final IProject aProject, IProgressMonitor aMonitor) {
 		try {
-			if(aProject.hasNature(IModuleConstants.MODULE_NATURE_ID))
+			if (aProject.hasNature(IModuleConstants.MODULE_NATURE_ID))
 				return getModuleCoreNature(aProject);
-			try {
-				JobManager.getInstance().beginRule(aProject, aMonitor);
-				IProjectDescription description = aProject.getDescription();
-				
-				String[] currentNatureIds = description.getNatureIds();
-				String[] newNatureIds = new String[currentNatureIds.length];
-				System.arraycopy(currentNatureIds, 0, newNatureIds, 0, currentNatureIds.length);
-				newNatureIds[currentNatureIds.length] = IModuleConstants.MODULE_NATURE_ID;
-				description.setNatureIds(newNatureIds);
-				aProject.setDescription(description, aMonitor);
-				
-			} finally {
-				JobManager.getInstance().endRule(aProject);
+			Job addNatureJob = new Job("Add Nature") {
+				protected IStatus run(IProgressMonitor monitor) {
+					try {
+						IProjectDescription description = aProject.getDescription();
+
+						String[] currentNatureIds = description.getNatureIds();
+						String[] newNatureIds = new String[currentNatureIds.length + 1];
+						System.arraycopy(currentNatureIds, 0, newNatureIds, 0, currentNatureIds.length);
+						newNatureIds[currentNatureIds.length] = IModuleConstants.MODULE_NATURE_ID;
+						description.setNatureIds(newNatureIds);
+						aProject.setDescription(description, monitor);
+					} catch (CoreException e) {
+						e.printStackTrace();
+					}
+					return Status.OK_STATUS;
+				}
+			};
+			final boolean[] mutex = new boolean[] {true};
+			addNatureJob.addJobChangeListener(new JobChangeAdapter() {
+				public void done(IJobChangeEvent event) {
+					mutex[0] = false;
+				}
+			});
+			addNatureJob.schedule();
+			while(mutex[0]) {
+				try {
+					Thread.sleep(200);
+				} catch(InterruptedException ie) {
+					
+				}
 			}
+
 		} catch (CoreException e) { 
 			e.printStackTrace();
 		}
@@ -78,7 +100,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 
 	public ArtifactEditModel getModuleEditModelForRead(URI aModuleURI, Object anAccessorKey) {
 		Map params = new HashMap();
-		params.put(ModuleEditModelFactory.PARAM_MODULE_URI, aModuleURI);  
+		params.put(ModuleEditModelFactory.PARAM_MODULE_URI, aModuleURI);
 		return (ArtifactEditModel) getEditModelForRead(getArtifactEditModelId(aModuleURI), anAccessorKey, params);
 	}
 
@@ -103,10 +125,10 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		set.setResourceFactoryRegistry(WTPResourceFactoryRegistry.INSTANCE);
 		WorkbenchURIConverter conv = initializeWorbenchURIConverter(set);
 		set.setURIConverter(conv);
-//		initializeCacheEditModel();
-//		addAdapterFactories(set);
-//		set.getSynchronizer().addExtender(this); // added so we can be informed of closes to the
-//		new J2EEResourceDependencyRegister(set); // This must be done after the URIConverter is
+		// initializeCacheEditModel();
+		// addAdapterFactories(set);
+		// set.getSynchronizer().addExtender(this); // added so we can be informed of closes to the
+		// new J2EEResourceDependencyRegister(set); // This must be done after the URIConverter is
 
 	}
 
@@ -132,59 +154,64 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		return MODULE_PLUG_IN_ID;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.ibm.wtp.emf.workbench.IEMFContextContributor#secondaryContributeToContext(com.ibm.wtp.emf.workbench.EMFWorkbenchContextBase)
 	 */
 	public void secondaryContributeToContext(EMFWorkbenchContextBase aNature) {
 		// TODO Auto-generated method stub
-		
-	}
-	/* (non-Javadoc)
-     * @see com.ibm.wtp.emf.workbench.nature.EMFNature#configure()
-     */
-    public void configure() throws CoreException {
-        super.configure();
-        addDeployableProjectBuilder();
-        addLocalDependencyResolver();
-    }
 
-    private void addDeployableProjectBuilder() throws CoreException {
-        IProjectDescription description = project.getDescription();
-        ICommand[] builderCommands = description.getBuildSpec();
-        boolean previouslyAdded = false;
-        
-        for(int i = 0; i<builderCommands.length; i++){
-            if(builderCommands[i].getBuilderName().equals(DEPLOYABLE_MODULE_BUILDER_ID))
-                //builder already added no need to add again
-                previouslyAdded = true;
-            	break;
-        }
-        if(!previouslyAdded){
-            //builder not found, must be added
-            ICommand command = description.newCommand();
-            command.setBuilderName(DEPLOYABLE_MODULE_BUILDER_ID);
-            ICommand[] updatedBuilderCommands = new ICommand[builderCommands.length + 1];
-            System.arraycopy(builderCommands, 0, updatedBuilderCommands, 1, builderCommands.length);
-            updatedBuilderCommands[0] = command;
-            description.setBuildSpec(updatedBuilderCommands);
-            project.setDescription(description, null);
-        }
-    }
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.ibm.wtp.emf.workbench.nature.EMFNature#configure()
+	 */
+	public void configure() throws CoreException {
+		super.configure();
+		addDeployableProjectBuilder();
+        addLocalDependencyResolver();
+	}
+
+	private void addDeployableProjectBuilder() throws CoreException {
+		IProjectDescription description = project.getDescription();
+		ICommand[] builderCommands = description.getBuildSpec();
+		boolean previouslyAdded = false;
+
+		for (int i = 0; i < builderCommands.length; i++) {
+			if (builderCommands[i].getBuilderName().equals(DEPLOYABLE_MODULE_BUILDER_ID))
+				// builder already added no need to add again
+				previouslyAdded = true;
+			break;
+		}
+		if (!previouslyAdded) {
+			// builder not found, must be added
+			ICommand command = description.newCommand();
+			command.setBuilderName(DEPLOYABLE_MODULE_BUILDER_ID);
+			ICommand[] updatedBuilderCommands = new ICommand[builderCommands.length + 1];
+			System.arraycopy(builderCommands, 0, updatedBuilderCommands, 1, builderCommands.length);
+			updatedBuilderCommands[0] = command;
+			description.setBuildSpec(updatedBuilderCommands);
+			project.setDescription(description, null);
+		}
+	}
     private void addLocalDependencyResolver() throws CoreException {
         ProjectUtilities.addToBuildSpec(LOCAL_DEPENDENCY_RESOLVER_ID, getProject());
     }
-    
+
 	private String getArtifactEditModelId(URI aModuleURI) {
-		ModuleStructuralModel structuralModel = null;		
+		ModuleStructuralModel structuralModel = null;
 		try {
-			structuralModel = getModuleStructuralModelForRead(Thread.currentThread());		
+			structuralModel = getModuleStructuralModelForRead(Thread.currentThread());
 			ModuleCore editUtility = (ModuleCore) structuralModel.getAdapter(ModuleCore.ADAPTER_TYPE);
 			WorkbenchModule module = editUtility.findWorkbenchModuleByDeployName(ModuleURIUtil.getDeployedName(aModuleURI));
 			return module.getModuleType().getModuleTypeId();
-		} catch(UnresolveableURIException uurie) {
-			//Ignore
+		} catch (UnresolveableURIException uurie) {
+			// Ignore
 		} finally {
-			if(structuralModel != null)
+			if (structuralModel != null)
 				structuralModel.releaseAccess(Thread.currentThread());
 		}
 		return null;

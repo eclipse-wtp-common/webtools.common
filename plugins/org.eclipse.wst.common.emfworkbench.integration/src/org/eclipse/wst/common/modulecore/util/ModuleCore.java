@@ -25,6 +25,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.wst.common.modulecore.DependentModule;
 import org.eclipse.wst.common.modulecore.ModuleCoreNature;
 import org.eclipse.wst.common.modulecore.ModuleStructuralModel;
 import org.eclipse.wst.common.modulecore.ModuleURIUtil;
@@ -219,11 +220,15 @@ public class ModuleCore implements IEditModelHandler {
 		String moduleName = aModuleURI.segment(Constants.ModuleURISegments.MODULE_NAME);
 		/* Accessing a local module */
 		if (structuralModel.getProject().getName().equals(projectName)) {
-
 			return findWorkbenchModuleByDeployName(moduleName);
 		}
 		return getDependentModuleCore(aModuleURI).findWorkbenchModuleByDeployName(moduleName);
-
+	}
+	
+	public boolean isLocalDependency(DependentModule aDependentModule) {
+		String localProjectName = structuralModel.getProject().getName();
+		String dependentProjectName = aDependentModule.getHandle().segment(Constants.ModuleURISegments.PROJECT_NAME);
+		return localProjectName.equals(dependentProjectName);
 	}
 
 	/**
@@ -237,7 +242,7 @@ public class ModuleCore implements IEditModelHandler {
 			return dependentCore;
 		synchronized (dependentCores) {
 			dependentCore = (ModuleCore) dependentCores.get(aModuleURI);
-			if (dependentCore != null)
+			if (dependentCore == null)
 				dependentCore = getModuleCoreForRead(getContainingProject(aModuleURI));
 		} 
 		return dependentCore;
