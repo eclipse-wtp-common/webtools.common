@@ -39,7 +39,7 @@ public class ModuleStructureModel extends EditModel implements IResourceChangeLi
     }
 
     private void notifyListeners() {
-        ModuleStructureEvent event = createEvent();
+        ModuleStructureEvent event = createModuleStructuredEvent();
         for (Iterator iter = moduleStructureListeners.iterator(); iter.hasNext();) {
             IModuleStructureListener listener = (IModuleStructureListener) iter.next();
             listener.structureChanged(event);
@@ -50,7 +50,7 @@ public class ModuleStructureModel extends EditModel implements IResourceChangeLi
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
     }
 
-    private ModuleStructureEvent createEvent() {
+    private ModuleStructureEvent createModuleStructuredEvent() {
         ModuleStructureEvent event = new ModuleStructureEvent(getSource(), getModuleResources());
         return null;
     }
