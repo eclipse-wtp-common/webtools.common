@@ -21,7 +21,7 @@ public class LocalDependencyDelayedOperationCache {
 	private static LocalDependencyDelayedOperationCache instance;
 	private List delayedOperationCacheList = new ArrayList();
 
-	public LocalDependencyDelayedOperationCache() {
+	private LocalDependencyDelayedOperationCache() {
 		super();
 	}
 	
