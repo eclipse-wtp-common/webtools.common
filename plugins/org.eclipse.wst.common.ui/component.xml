@@ -48,9 +48,12 @@
 	<package name="org.eclipse.wst.common.ui.actionhandler">
 		<type name="ActionHandlerListener" />
 	</package>
+<!-- provisional APIs -->
+<!--
 	<package name="org.eclipse.wst.common.uriresolver">
 		<type name="URIResolverPlugin" />
 		<type name="URIResolver" />
 		<type name="URIResolverExtension" />
 	</package>
+-->
 </component>
