@@ -3,6 +3,7 @@ package org.eclipse.wst.common.modulecore;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.internal.jobs.JobManager;
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -10,6 +11,7 @@ import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.wst.common.internal.emfworkbench.CompatibilityWorkbenchURIConverterImpl;
@@ -39,6 +41,30 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 			e.printStackTrace();
 		}
 		return null; 
+	}
+	
+	public static ModuleCoreNature addModuleCoreNatureIfNecessary(IProject aProject, IProgressMonitor aMonitor) {
+		try {
+			if(aProject.hasNature(IModuleConstants.MODULE_NATURE_ID))
+				return getModuleCoreNature(aProject);
+			try {
+				JobManager.getInstance().beginRule(aProject, aMonitor);
+				IProjectDescription description = aProject.getDescription();
+				
+				String[] currentNatureIds = description.getNatureIds();
+				String[] newNatureIds = new String[currentNatureIds.length];
+				System.arraycopy(currentNatureIds, 0, newNatureIds, 0, currentNatureIds.length);
+				newNatureIds[currentNatureIds.length] = IModuleConstants.MODULE_NATURE_ID;
+				description.setNatureIds(newNatureIds);
+				aProject.setDescription(description, aMonitor);
+				
+			} finally {
+				JobManager.getInstance().endRule(aProject);
+			}
+		} catch (CoreException e) { 
+			e.printStackTrace();
+		}
+		return getModuleCoreNature(aProject);
 	}
 
 	public ModuleStructuralModel getModuleStructuralModelForRead(Object anAccessorKey) {
@@ -147,7 +173,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		ModuleStructuralModel structuralModel = null;		
 		try {
 			structuralModel = getModuleStructuralModelForRead(Thread.currentThread());		
-			ModuleCore editUtility = (ModuleCore) structuralModel.getAdapter(ModuleCore.ADAPTER_CLASS);
+			ModuleCore editUtility = (ModuleCore) structuralModel.getAdapter(ModuleCore.ADAPTER_TYPE);
 			WorkbenchModule module = editUtility.findWorkbenchModuleByDeployName(ModuleURIUtil.getDeployedName(aModuleURI));
 			return module.getModuleType().getModuleTypeId();
 		} catch(UnresolveableURIException uurie) {

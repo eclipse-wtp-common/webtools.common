@@ -36,7 +36,7 @@ import org.eclipse.wst.common.modulecore.impl.UnresolveableURIException;
  */
 public class ModuleCore {
 	
-	public static final Class ADAPTER_CLASS = ModuleCore.class;
+	public static final Class ADAPTER_TYPE = ModuleCore.class;
 	
 	private final ModuleStructuralModel structuralModel;
 
@@ -63,7 +63,7 @@ public class ModuleCore {
 		return aNature.getModuleStructuralModelForRead(anAccessorKey);
 	}
 
-	public static  ModuleStructuralModel getModuleStructuralModelForWrite(IProject aProject, Object anAccessorKey) {
+	public static ModuleStructuralModel getModuleStructuralModelForWrite(IProject aProject, Object anAccessorKey) {
 		ModuleCoreNature aNature = ModuleCoreNature.getModuleCoreNature(aProject);
 		return aNature.getModuleStructuralModelForWrite(anAccessorKey);
 	} 
@@ -110,7 +110,7 @@ public class ModuleCore {
 		resourceTreeAdapter = new ResourceTreeRootAdapter(ResourceTreeRootAdapter.DEPLOY_TREE);
 		aModule.eAdapters().add(resourceTreeAdapter);
 		return resourceTreeAdapter.getResourceTreeRoot();
-	}
+	} 
 	
 	public static IResource getResource(WorkbenchModuleResource aResource) {
 		EclipseResourceAdapter eclipseResourceAdapter = (EclipseResourceAdapter) EcoreUtil.getAdapter(aResource.eAdapters(), EclipseResourceAdapter.ADAPTER_TYPE);
@@ -142,7 +142,6 @@ public class ModuleCore {
 		WorkbenchModule module = findWorkbenchModuleByDeployName(getDeployedNameForModule(moduleURI));
 		return module.findWorkbenchModuleResourceByDeployPath(deployedPath);
 	}	
-
 
 	public WorkbenchModuleResource[] findWorkbenchModuleResourcesBySourcePath(URI aWorkspaceRelativePath) throws UnresolveableURIException {
 		ProjectModules projectModules = getProjectModules();

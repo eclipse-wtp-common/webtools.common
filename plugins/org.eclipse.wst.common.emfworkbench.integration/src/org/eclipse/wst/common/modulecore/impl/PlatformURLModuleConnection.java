@@ -53,7 +53,7 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
 			IResource eclipseResource = null;
 			IContainer eclipseContainer = null;
 			structuralModel = ModuleCore.getModuleStructuralModelForRead(ModuleCore.getContainingProject(aModuleResourceDeployPath), key);
-			ModuleCore editUtility = (ModuleCore) structuralModel.getAdapter(ModuleCore.ADAPTER_CLASS);
+			ModuleCore editUtility = (ModuleCore) structuralModel.getAdapter(ModuleCore.ADAPTER_TYPE);
 			WorkbenchModuleResource[] resources = editUtility.findWorkbenchModuleResourceByDeployPath(aModuleResourceDeployPath);
 			URI deployPathSegment = ModuleURIUtil.trimToDeployPathSegment(aModuleResourceDeployPath);
 // THIS ALGORITHM WILL NOT HANDLE URI OVERLAPS, 

@@ -62,7 +62,7 @@ public class ArtifactEditModel extends EditModel implements IAdaptable{
 		ModuleStructuralModel structuralModel = null;
 		try {
 			structuralModel = ModuleCore.getModuleStructuralModelForRead(ModuleCore.getContainingProject(moduleURI), this);
-			ModuleCore editUtility = (ModuleCore) structuralModel.getAdapter(ModuleCore.ADAPTER_CLASS);
+			ModuleCore editUtility = (ModuleCore) structuralModel.getAdapter(ModuleCore.ADAPTER_TYPE);
 			wbModule = editUtility.findWorkbenchModuleByDeployName(moduleURI.segment(ModuleCore.Constants.ModuleURISegments.MODULE_NAME));
 			type = wbModule.getModuleType().getModuleTypeId();
 		} catch (UnresolveableURIException e) {
@@ -118,7 +118,7 @@ public class ArtifactEditModel extends EditModel implements IAdaptable{
 		ModuleStructuralModel structuralModel = null;
 		try {
 			structuralModel = ModuleCore.getModuleStructuralModelForRead(ModuleCore.getContainingProject(moduleURI), this);
-			ModuleCore editUtility = (ModuleCore) structuralModel.getAdapter(ModuleCore.ADAPTER_CLASS);
+			ModuleCore editUtility = (ModuleCore) structuralModel.getAdapter(ModuleCore.ADAPTER_TYPE);
 			
 			WorkbenchModuleResource[] relevantModuleResources = null;
 			URI aResourceURI = null;
