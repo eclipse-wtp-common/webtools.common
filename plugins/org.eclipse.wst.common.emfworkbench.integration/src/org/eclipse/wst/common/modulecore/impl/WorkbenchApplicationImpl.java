@@ -2,9 +2,9 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchApplicationImpl.java,v 1.1 2005/01/14 21:02:41 cbridgha Exp $
+ * $Id: WorkbenchApplicationImpl.java,v 1.1 2005/01/17 21:08:18 cbridgha Exp $
  */
-package org.eclipse.wst.common.projectmodule.impl;
+package org.eclipse.wst.common.modulecore.impl;
 
 import java.util.Collection;
 
@@ -17,9 +17,9 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 
-import org.eclipse.wst.common.projectmodule.ProjectModulePackage;
-import org.eclipse.wst.common.projectmodule.WorkbenchApplication;
-import org.eclipse.wst.common.projectmodule.WorkbenchModule;
+import org.eclipse.wst.common.modulecore.IModuleHandle;
+import org.eclipse.wst.common.modulecore.ModuleCorePackage;
+import org.eclipse.wst.common.modulecore.WorkbenchApplication;
 
 /**
  * <!-- begin-user-doc -->
@@ -28,7 +28,7 @@ import org.eclipse.wst.common.projectmodule.WorkbenchModule;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.eclipse.wst.common.projectmodule.impl.WorkbenchApplicationImpl#getModules <em>Modules</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchApplicationImpl#getModules <em>Modules</em>}</li>
  * </ul>
  * </p>
  *
@@ -60,7 +60,7 @@ public class WorkbenchApplicationImpl extends EObjectImpl implements WorkbenchAp
 	 * @generated
 	 */
 	protected EClass eStaticClass() {
-		return ProjectModulePackage.eINSTANCE.getWorkbenchApplication();
+		return ModuleCorePackage.eINSTANCE.getWorkbenchApplication();
 	}
 
 	/**
@@ -70,7 +70,7 @@ public class WorkbenchApplicationImpl extends EObjectImpl implements WorkbenchAp
 	 */
 	public EList getModules() {
 		if (modules == null) {
-			modules = new EObjectResolvingEList(WorkbenchModule.class, this, ProjectModulePackage.WORKBENCH_APPLICATION__MODULES);
+			modules = new EObjectResolvingEList(IModuleHandle.class, this, ModuleCorePackage.WORKBENCH_APPLICATION__MODULES);
 		}
 		return modules;
 	}
@@ -82,7 +82,7 @@ public class WorkbenchApplicationImpl extends EObjectImpl implements WorkbenchAp
 	 */
 	public Object eGet(EStructuralFeature eFeature, boolean resolve) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ProjectModulePackage.WORKBENCH_APPLICATION__MODULES:
+			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULES:
 				return getModules();
 		}
 		return eDynamicGet(eFeature, resolve);
@@ -95,7 +95,7 @@ public class WorkbenchApplicationImpl extends EObjectImpl implements WorkbenchAp
 	 */
 	public void eSet(EStructuralFeature eFeature, Object newValue) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ProjectModulePackage.WORKBENCH_APPLICATION__MODULES:
+			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULES:
 				getModules().clear();
 				getModules().addAll((Collection)newValue);
 				return;
@@ -110,7 +110,7 @@ public class WorkbenchApplicationImpl extends EObjectImpl implements WorkbenchAp
 	 */
 	public void eUnset(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ProjectModulePackage.WORKBENCH_APPLICATION__MODULES:
+			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULES:
 				getModules().clear();
 				return;
 		}
@@ -124,7 +124,7 @@ public class WorkbenchApplicationImpl extends EObjectImpl implements WorkbenchAp
 	 */
 	public boolean eIsSet(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ProjectModulePackage.WORKBENCH_APPLICATION__MODULES:
+			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULES:
 				return modules != null && !modules.isEmpty();
 		}
 		return eDynamicIsSet(eFeature);

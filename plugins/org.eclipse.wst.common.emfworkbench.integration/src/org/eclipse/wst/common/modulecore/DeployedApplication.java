@@ -2,9 +2,11 @@
  * <copyright>
  * </copyright>
  *
- * $Id: DeployedApplication.java,v 1.1 2005/01/14 21:02:42 cbridgha Exp $
+ * $Id: DeployedApplication.java,v 1.1 2005/01/17 21:08:17 cbridgha Exp $
  */
-package org.eclipse.wst.common.projectmodule;
+package org.eclipse.wst.common.modulecore;
+
+import org.eclipse.emf.common.util.URI;
 
 import org.eclipse.emf.ecore.EObject;
 
@@ -16,13 +18,13 @@ import org.eclipse.emf.ecore.EObject;
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.eclipse.wst.common.projectmodule.DeployedApplication#getRoot <em>Root</em>}</li>
- *   <li>{@link org.eclipse.wst.common.projectmodule.DeployedApplication#getDeployScheme <em>Deploy Scheme</em>}</li>
- *   <li>{@link org.eclipse.wst.common.projectmodule.DeployedApplication#getApplication <em>Application</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.DeployedApplication#getRoot <em>Root</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.DeployedApplication#getDeployScheme <em>Deploy Scheme</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.DeployedApplication#getApplication <em>Application</em>}</li>
  * </ul>
  * </p>
  *
- * @see org.eclipse.wst.common.projectmodule.ProjectModulePackage#getDeployedApplication()
+ * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getDeployedApplication()
  * @model 
  * @generated
  */
@@ -36,22 +38,22 @@ public interface DeployedApplication extends EObject {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Root</em>' attribute.
-	 * @see #setRoot(String)
-	 * @see org.eclipse.wst.common.projectmodule.ProjectModulePackage#getDeployedApplication_Root()
-	 * @model 
+	 * @see #setRoot(URI)
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getDeployedApplication_Root()
+	 * @model dataType="org.eclipse.wst.common.modulecore.URI"
 	 * @generated
 	 */
-	String getRoot();
+	URI getRoot();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.wst.common.projectmodule.DeployedApplication#getRoot <em>Root</em>}' attribute.
+	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.DeployedApplication#getRoot <em>Root</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Root</em>' attribute.
 	 * @see #getRoot()
 	 * @generated
 	 */
-	void setRoot(String value);
+	void setRoot(URI value);
 
 	/**
 	 * Returns the value of the '<em><b>Deploy Scheme</b></em>' containment reference.
@@ -63,14 +65,14 @@ public interface DeployedApplication extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Deploy Scheme</em>' containment reference.
 	 * @see #setDeployScheme(DeployScheme)
-	 * @see org.eclipse.wst.common.projectmodule.ProjectModulePackage#getDeployedApplication_DeployScheme()
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getDeployedApplication_DeployScheme()
 	 * @model containment="true"
 	 * @generated
 	 */
 	DeployScheme getDeployScheme();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.wst.common.projectmodule.DeployedApplication#getDeployScheme <em>Deploy Scheme</em>}' containment reference.
+	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.DeployedApplication#getDeployScheme <em>Deploy Scheme</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Deploy Scheme</em>' containment reference.
@@ -89,14 +91,14 @@ public interface DeployedApplication extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Application</em>' reference.
 	 * @see #setApplication(WorkbenchApplication)
-	 * @see org.eclipse.wst.common.projectmodule.ProjectModulePackage#getDeployedApplication_Application()
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getDeployedApplication_Application()
 	 * @model required="true"
 	 * @generated
 	 */
 	WorkbenchApplication getApplication();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.wst.common.projectmodule.DeployedApplication#getApplication <em>Application</em>}' reference.
+	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.DeployedApplication#getApplication <em>Application</em>}' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Application</em>' reference.

@@ -2,11 +2,12 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleResource.java,v 1.1 2005/01/14 21:02:42 cbridgha Exp $
+ * $Id: ModuleResource.java,v 1.1 2005/01/17 21:08:17 cbridgha Exp $
  */
-package org.eclipse.wst.common.projectmodule;
+package org.eclipse.wst.common.modulecore;
 
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.URI;
 
 import org.eclipse.emf.ecore.EObject;
 
@@ -18,13 +19,13 @@ import org.eclipse.emf.ecore.EObject;
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.eclipse.wst.common.projectmodule.ModuleResource#getPath <em>Path</em>}</li>
- *   <li>{@link org.eclipse.wst.common.projectmodule.ModuleResource#getRoot <em>Root</em>}</li>
- *   <li>{@link org.eclipse.wst.common.projectmodule.ModuleResource#getExclusions <em>Exclusions</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.ModuleResource#getPath <em>Path</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.ModuleResource#getRoot <em>Root</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.ModuleResource#getExclusions <em>Exclusions</em>}</li>
  * </ul>
  * </p>
  *
- * @see org.eclipse.wst.common.projectmodule.ProjectModulePackage#getModuleResource()
+ * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getModuleResource()
  * @model 
  * @generated
  */
@@ -38,22 +39,22 @@ public interface ModuleResource extends EObject {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Path</em>' attribute.
-	 * @see #setPath(String)
-	 * @see org.eclipse.wst.common.projectmodule.ProjectModulePackage#getModuleResource_Path()
-	 * @model 
+	 * @see #setPath(URI)
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getModuleResource_Path()
+	 * @model dataType="org.eclipse.wst.common.modulecore.URI"
 	 * @generated
 	 */
-	String getPath();
+	URI getPath();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.wst.common.projectmodule.ModuleResource#getPath <em>Path</em>}' attribute.
+	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.ModuleResource#getPath <em>Path</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Path</em>' attribute.
 	 * @see #getPath()
 	 * @generated
 	 */
-	void setPath(String value);
+	void setPath(URI value);
 
 	/**
 	 * Returns the value of the '<em><b>Root</b></em>' attribute.
@@ -64,22 +65,22 @@ public interface ModuleResource extends EObject {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Root</em>' attribute.
-	 * @see #setRoot(String)
-	 * @see org.eclipse.wst.common.projectmodule.ProjectModulePackage#getModuleResource_Root()
-	 * @model 
+	 * @see #setRoot(URI)
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getModuleResource_Root()
+	 * @model dataType="org.eclipse.wst.common.modulecore.URI"
 	 * @generated
 	 */
-	String getRoot();
+	URI getRoot();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.wst.common.projectmodule.ModuleResource#getRoot <em>Root</em>}' attribute.
+	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.ModuleResource#getRoot <em>Root</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Root</em>' attribute.
 	 * @see #getRoot()
 	 * @generated
 	 */
-	void setRoot(String value);
+	void setRoot(URI value);
 
 	/**
 	 * Returns the value of the '<em><b>Exclusions</b></em>' attribute list.
@@ -91,7 +92,7 @@ public interface ModuleResource extends EObject {
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Exclusions</em>' attribute list.
-	 * @see org.eclipse.wst.common.projectmodule.ProjectModulePackage#getModuleResource_Exclusions()
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getModuleResource_Exclusions()
 	 * @model type="java.lang.String"
 	 * @generated
 	 */

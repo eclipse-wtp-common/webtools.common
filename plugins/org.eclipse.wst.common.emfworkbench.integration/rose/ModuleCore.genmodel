@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.eclipse.wst.common.emfworkbench.integration/src"
+    editDirectory="/org.eclipse.wst.common.emfworkbench.integration.edit/src" editorDirectory="/org.eclipse.wst.common.emfworkbench.integration.editor/src"
+    modelPluginID="org.eclipse.wst.common.emfworkbench.integration" runtimeJar="true"
+    modelName="ProjectModule" editPluginClass="org.eclipse.wst.projectmodule.provider.ModuleCoreEditPlugin"
+    editorPluginClass="org.eclipse.wst.projectmodule.presentation.ModuleCoreEditorPlugin"
+    runtimeCompatibility="false">
+  <foreignModel>moduleCore.mdl</foreignModel>
+  <foreignModel>WORKSPACE_ROOT</foreignModel>
+  <foreignModel>D:\work\WTP</foreignModel>
+  <genPackages prefix="ModuleCore" basePackage="org.eclipse.wst.common" disposableProviderFactory="true"
+      ecorePackage="moduleCore.ecore#/">
+    <genDataTypes ecoreDataType="moduleCore.ecore#//URI"/>
+    <genClasses ecoreClass="moduleCore.ecore#//DeployedApplication">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//DeployedApplication/root"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference moduleCore.ecore#//DeployedApplication/deployScheme"/>
+      <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//DeployedApplication/application"/>
+    </genClasses>
+    <genClasses ecoreClass="moduleCore.ecore#//DeployScheme">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//DeployScheme/type"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//DeployScheme/serverTarget"/>
+    </genClasses>
+    <genClasses ecoreClass="moduleCore.ecore#//WorkbenchModule">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference moduleCore.ecore#//WorkbenchModule/handle"/>
+      <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//WorkbenchModule/dependentModules"/>
+      <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//WorkbenchModule/resources"/>
+      <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//WorkbenchModule/moduleType"/>
+    </genClasses>
+    <genClasses ecoreClass="moduleCore.ecore#//ModuleResource">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ModuleResource/path"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ModuleResource/root"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ModuleResource/exclusions"/>
+    </genClasses>
+    <genClasses ecoreClass="moduleCore.ecore#//WorkbenchApplication">
+      <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//WorkbenchApplication/modules"/>
+    </genClasses>
+    <genClasses ecoreClass="moduleCore.ecore#//IModuleHandle">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//IModuleHandle/handle"/>
+    </genClasses>
+    <genClasses ecoreClass="moduleCore.ecore#//IModuleType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//IModuleType/root"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//IModuleType/metadataResources"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//IModuleType/typeName"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>

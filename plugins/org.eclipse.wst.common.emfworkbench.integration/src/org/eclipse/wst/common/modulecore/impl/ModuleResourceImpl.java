@@ -2,15 +2,16 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleResourceImpl.java,v 1.1 2005/01/14 21:02:41 cbridgha Exp $
+ * $Id: ModuleResourceImpl.java,v 1.1 2005/01/17 21:08:18 cbridgha Exp $
  */
-package org.eclipse.wst.common.projectmodule.impl;
+package org.eclipse.wst.common.modulecore.impl;
 
 import java.util.Collection;
 
 import org.eclipse.emf.common.notify.Notification;
 
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.URI;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -20,8 +21,8 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 
 import org.eclipse.emf.ecore.util.EDataTypeUniqueEList;
 
-import org.eclipse.wst.common.projectmodule.ModuleResource;
-import org.eclipse.wst.common.projectmodule.ProjectModulePackage;
+import org.eclipse.wst.common.modulecore.ModuleCorePackage;
+import org.eclipse.wst.common.modulecore.ModuleResource;
 
 /**
  * <!-- begin-user-doc -->
@@ -30,9 +31,9 @@ import org.eclipse.wst.common.projectmodule.ProjectModulePackage;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.eclipse.wst.common.projectmodule.impl.ModuleResourceImpl#getPath <em>Path</em>}</li>
- *   <li>{@link org.eclipse.wst.common.projectmodule.impl.ModuleResourceImpl#getRoot <em>Root</em>}</li>
- *   <li>{@link org.eclipse.wst.common.projectmodule.impl.ModuleResourceImpl#getExclusions <em>Exclusions</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.ModuleResourceImpl#getPath <em>Path</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.ModuleResourceImpl#getRoot <em>Root</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.ModuleResourceImpl#getExclusions <em>Exclusions</em>}</li>
  * </ul>
  * </p>
  *
@@ -47,7 +48,7 @@ public class ModuleResourceImpl extends EObjectImpl implements ModuleResource {
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String PATH_EDEFAULT = null;
+	protected static final URI PATH_EDEFAULT = null;
 
 	/**
 	 * The cached value of the '{@link #getPath() <em>Path</em>}' attribute.
@@ -57,7 +58,7 @@ public class ModuleResourceImpl extends EObjectImpl implements ModuleResource {
 	 * @generated
 	 * @ordered
 	 */
-	protected String path = PATH_EDEFAULT;
+	protected URI path = PATH_EDEFAULT;
 
 	/**
 	 * The default value of the '{@link #getRoot() <em>Root</em>}' attribute.
@@ -67,7 +68,7 @@ public class ModuleResourceImpl extends EObjectImpl implements ModuleResource {
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String ROOT_EDEFAULT = null;
+	protected static final URI ROOT_EDEFAULT = null;
 
 	/**
 	 * The cached value of the '{@link #getRoot() <em>Root</em>}' attribute.
@@ -77,7 +78,7 @@ public class ModuleResourceImpl extends EObjectImpl implements ModuleResource {
 	 * @generated
 	 * @ordered
 	 */
-	protected String root = ROOT_EDEFAULT;
+	protected URI root = ROOT_EDEFAULT;
 
 	/**
 	 * The cached value of the '{@link #getExclusions() <em>Exclusions</em>}' attribute list.
@@ -104,7 +105,7 @@ public class ModuleResourceImpl extends EObjectImpl implements ModuleResource {
 	 * @generated
 	 */
 	protected EClass eStaticClass() {
-		return ProjectModulePackage.eINSTANCE.getModuleResource();
+		return ModuleCorePackage.eINSTANCE.getModuleResource();
 	}
 
 	/**
@@ -112,7 +113,7 @@ public class ModuleResourceImpl extends EObjectImpl implements ModuleResource {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String getPath() {
+	public URI getPath() {
 		return path;
 	}
 
@@ -121,11 +122,11 @@ public class ModuleResourceImpl extends EObjectImpl implements ModuleResource {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setPath(String newPath) {
-		String oldPath = path;
+	public void setPath(URI newPath) {
+		URI oldPath = path;
 		path = newPath;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ProjectModulePackage.MODULE_RESOURCE__PATH, oldPath, path));
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.MODULE_RESOURCE__PATH, oldPath, path));
 	}
 
 	/**
@@ -133,7 +134,7 @@ public class ModuleResourceImpl extends EObjectImpl implements ModuleResource {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String getRoot() {
+	public URI getRoot() {
 		return root;
 	}
 
@@ -142,11 +143,11 @@ public class ModuleResourceImpl extends EObjectImpl implements ModuleResource {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setRoot(String newRoot) {
-		String oldRoot = root;
+	public void setRoot(URI newRoot) {
+		URI oldRoot = root;
 		root = newRoot;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ProjectModulePackage.MODULE_RESOURCE__ROOT, oldRoot, root));
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.MODULE_RESOURCE__ROOT, oldRoot, root));
 	}
 
 	/**
@@ -156,7 +157,7 @@ public class ModuleResourceImpl extends EObjectImpl implements ModuleResource {
 	 */
 	public EList getExclusions() {
 		if (exclusions == null) {
-			exclusions = new EDataTypeUniqueEList(String.class, this, ProjectModulePackage.MODULE_RESOURCE__EXCLUSIONS);
+			exclusions = new EDataTypeUniqueEList(String.class, this, ModuleCorePackage.MODULE_RESOURCE__EXCLUSIONS);
 		}
 		return exclusions;
 	}
@@ -168,11 +169,11 @@ public class ModuleResourceImpl extends EObjectImpl implements ModuleResource {
 	 */
 	public Object eGet(EStructuralFeature eFeature, boolean resolve) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ProjectModulePackage.MODULE_RESOURCE__PATH:
+			case ModuleCorePackage.MODULE_RESOURCE__PATH:
 				return getPath();
-			case ProjectModulePackage.MODULE_RESOURCE__ROOT:
+			case ModuleCorePackage.MODULE_RESOURCE__ROOT:
 				return getRoot();
-			case ProjectModulePackage.MODULE_RESOURCE__EXCLUSIONS:
+			case ModuleCorePackage.MODULE_RESOURCE__EXCLUSIONS:
 				return getExclusions();
 		}
 		return eDynamicGet(eFeature, resolve);
@@ -185,13 +186,13 @@ public class ModuleResourceImpl extends EObjectImpl implements ModuleResource {
 	 */
 	public void eSet(EStructuralFeature eFeature, Object newValue) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ProjectModulePackage.MODULE_RESOURCE__PATH:
-				setPath((String)newValue);
+			case ModuleCorePackage.MODULE_RESOURCE__PATH:
+				setPath((URI)newValue);
 				return;
-			case ProjectModulePackage.MODULE_RESOURCE__ROOT:
-				setRoot((String)newValue);
+			case ModuleCorePackage.MODULE_RESOURCE__ROOT:
+				setRoot((URI)newValue);
 				return;
-			case ProjectModulePackage.MODULE_RESOURCE__EXCLUSIONS:
+			case ModuleCorePackage.MODULE_RESOURCE__EXCLUSIONS:
 				getExclusions().clear();
 				getExclusions().addAll((Collection)newValue);
 				return;
@@ -206,13 +207,13 @@ public class ModuleResourceImpl extends EObjectImpl implements ModuleResource {
 	 */
 	public void eUnset(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ProjectModulePackage.MODULE_RESOURCE__PATH:
+			case ModuleCorePackage.MODULE_RESOURCE__PATH:
 				setPath(PATH_EDEFAULT);
 				return;
-			case ProjectModulePackage.MODULE_RESOURCE__ROOT:
+			case ModuleCorePackage.MODULE_RESOURCE__ROOT:
 				setRoot(ROOT_EDEFAULT);
 				return;
-			case ProjectModulePackage.MODULE_RESOURCE__EXCLUSIONS:
+			case ModuleCorePackage.MODULE_RESOURCE__EXCLUSIONS:
 				getExclusions().clear();
 				return;
 		}
@@ -226,11 +227,11 @@ public class ModuleResourceImpl extends EObjectImpl implements ModuleResource {
 	 */
 	public boolean eIsSet(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ProjectModulePackage.MODULE_RESOURCE__PATH:
+			case ModuleCorePackage.MODULE_RESOURCE__PATH:
 				return PATH_EDEFAULT == null ? path != null : !PATH_EDEFAULT.equals(path);
-			case ProjectModulePackage.MODULE_RESOURCE__ROOT:
+			case ModuleCorePackage.MODULE_RESOURCE__ROOT:
 				return ROOT_EDEFAULT == null ? root != null : !ROOT_EDEFAULT.equals(root);
-			case ProjectModulePackage.MODULE_RESOURCE__EXCLUSIONS:
+			case ModuleCorePackage.MODULE_RESOURCE__EXCLUSIONS:
 				return exclusions != null && !exclusions.isEmpty();
 		}
 		return eDynamicIsSet(eFeature);

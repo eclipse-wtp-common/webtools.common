@@ -2,9 +2,9 @@
  * <copyright>
  * </copyright>
  *
- * $Id: DeploySchemeImpl.java,v 1.1 2005/01/14 21:02:41 cbridgha Exp $
+ * $Id: DeploySchemeImpl.java,v 1.1 2005/01/17 21:08:17 cbridgha Exp $
  */
-package org.eclipse.wst.common.projectmodule.impl;
+package org.eclipse.wst.common.modulecore.impl;
 
 import org.eclipse.emf.common.notify.Notification;
 
@@ -14,8 +14,8 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 
-import org.eclipse.wst.common.projectmodule.DeployScheme;
-import org.eclipse.wst.common.projectmodule.ProjectModulePackage;
+import org.eclipse.wst.common.modulecore.DeployScheme;
+import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 
 /**
  * <!-- begin-user-doc -->
@@ -24,8 +24,8 @@ import org.eclipse.wst.common.projectmodule.ProjectModulePackage;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.eclipse.wst.common.projectmodule.impl.DeploySchemeImpl#getType <em>Type</em>}</li>
- *   <li>{@link org.eclipse.wst.common.projectmodule.impl.DeploySchemeImpl#getServerTarget <em>Server Target</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.DeploySchemeImpl#getType <em>Type</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.DeploySchemeImpl#getServerTarget <em>Server Target</em>}</li>
  * </ul>
  * </p>
  *
@@ -87,7 +87,7 @@ public class DeploySchemeImpl extends EObjectImpl implements DeployScheme {
 	 * @generated
 	 */
 	protected EClass eStaticClass() {
-		return ProjectModulePackage.eINSTANCE.getDeployScheme();
+		return ModuleCorePackage.eINSTANCE.getDeployScheme();
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class DeploySchemeImpl extends EObjectImpl implements DeployScheme {
 		String oldType = type;
 		type = newType;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ProjectModulePackage.DEPLOY_SCHEME__TYPE, oldType, type));
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.DEPLOY_SCHEME__TYPE, oldType, type));
 	}
 
 	/**
@@ -129,7 +129,7 @@ public class DeploySchemeImpl extends EObjectImpl implements DeployScheme {
 		String oldServerTarget = serverTarget;
 		serverTarget = newServerTarget;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ProjectModulePackage.DEPLOY_SCHEME__SERVER_TARGET, oldServerTarget, serverTarget));
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.DEPLOY_SCHEME__SERVER_TARGET, oldServerTarget, serverTarget));
 	}
 
 	/**
@@ -139,9 +139,9 @@ public class DeploySchemeImpl extends EObjectImpl implements DeployScheme {
 	 */
 	public Object eGet(EStructuralFeature eFeature, boolean resolve) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ProjectModulePackage.DEPLOY_SCHEME__TYPE:
+			case ModuleCorePackage.DEPLOY_SCHEME__TYPE:
 				return getType();
-			case ProjectModulePackage.DEPLOY_SCHEME__SERVER_TARGET:
+			case ModuleCorePackage.DEPLOY_SCHEME__SERVER_TARGET:
 				return getServerTarget();
 		}
 		return eDynamicGet(eFeature, resolve);
@@ -154,10 +154,10 @@ public class DeploySchemeImpl extends EObjectImpl implements DeployScheme {
 	 */
 	public void eSet(EStructuralFeature eFeature, Object newValue) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ProjectModulePackage.DEPLOY_SCHEME__TYPE:
+			case ModuleCorePackage.DEPLOY_SCHEME__TYPE:
 				setType((String)newValue);
 				return;
-			case ProjectModulePackage.DEPLOY_SCHEME__SERVER_TARGET:
+			case ModuleCorePackage.DEPLOY_SCHEME__SERVER_TARGET:
 				setServerTarget((String)newValue);
 				return;
 		}
@@ -171,10 +171,10 @@ public class DeploySchemeImpl extends EObjectImpl implements DeployScheme {
 	 */
 	public void eUnset(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ProjectModulePackage.DEPLOY_SCHEME__TYPE:
+			case ModuleCorePackage.DEPLOY_SCHEME__TYPE:
 				setType(TYPE_EDEFAULT);
 				return;
-			case ProjectModulePackage.DEPLOY_SCHEME__SERVER_TARGET:
+			case ModuleCorePackage.DEPLOY_SCHEME__SERVER_TARGET:
 				setServerTarget(SERVER_TARGET_EDEFAULT);
 				return;
 		}
@@ -188,9 +188,9 @@ public class DeploySchemeImpl extends EObjectImpl implements DeployScheme {
 	 */
 	public boolean eIsSet(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ProjectModulePackage.DEPLOY_SCHEME__TYPE:
+			case ModuleCorePackage.DEPLOY_SCHEME__TYPE:
 				return TYPE_EDEFAULT == null ? type != null : !TYPE_EDEFAULT.equals(type);
-			case ProjectModulePackage.DEPLOY_SCHEME__SERVER_TARGET:
+			case ModuleCorePackage.DEPLOY_SCHEME__SERVER_TARGET:
 				return SERVER_TARGET_EDEFAULT == null ? serverTarget != null : !SERVER_TARGET_EDEFAULT.equals(serverTarget);
 		}
 		return eDynamicIsSet(eFeature);

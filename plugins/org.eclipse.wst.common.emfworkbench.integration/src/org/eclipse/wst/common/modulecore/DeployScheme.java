@@ -2,9 +2,9 @@
  * <copyright>
  * </copyright>
  *
- * $Id: DeployScheme.java,v 1.1 2005/01/14 21:02:42 cbridgha Exp $
+ * $Id: DeployScheme.java,v 1.1 2005/01/17 21:08:17 cbridgha Exp $
  */
-package org.eclipse.wst.common.projectmodule;
+package org.eclipse.wst.common.modulecore;
 
 import org.eclipse.emf.ecore.EObject;
 
@@ -16,12 +16,12 @@ import org.eclipse.emf.ecore.EObject;
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.eclipse.wst.common.projectmodule.DeployScheme#getType <em>Type</em>}</li>
- *   <li>{@link org.eclipse.wst.common.projectmodule.DeployScheme#getServerTarget <em>Server Target</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.DeployScheme#getType <em>Type</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.DeployScheme#getServerTarget <em>Server Target</em>}</li>
  * </ul>
  * </p>
  *
- * @see org.eclipse.wst.common.projectmodule.ProjectModulePackage#getDeployScheme()
+ * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getDeployScheme()
  * @model 
  * @generated
  */
@@ -36,14 +36,14 @@ public interface DeployScheme extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Type</em>' attribute.
 	 * @see #setType(String)
-	 * @see org.eclipse.wst.common.projectmodule.ProjectModulePackage#getDeployScheme_Type()
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getDeployScheme_Type()
 	 * @model 
 	 * @generated
 	 */
 	String getType();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.wst.common.projectmodule.DeployScheme#getType <em>Type</em>}' attribute.
+	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.DeployScheme#getType <em>Type</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Type</em>' attribute.
@@ -62,14 +62,14 @@ public interface DeployScheme extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Server Target</em>' attribute.
 	 * @see #setServerTarget(String)
-	 * @see org.eclipse.wst.common.projectmodule.ProjectModulePackage#getDeployScheme_ServerTarget()
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getDeployScheme_ServerTarget()
 	 * @model 
 	 * @generated
 	 */
 	String getServerTarget();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.wst.common.projectmodule.DeployScheme#getServerTarget <em>Server Target</em>}' attribute.
+	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.DeployScheme#getServerTarget <em>Server Target</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @param value the new value of the '<em>Server Target</em>' attribute.

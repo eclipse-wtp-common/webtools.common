@@ -2,12 +2,14 @@
  * <copyright>
  * </copyright>
  *
- * $Id: DeployedApplicationImpl.java,v 1.1 2005/01/14 21:02:41 cbridgha Exp $
+ * $Id: DeployedApplicationImpl.java,v 1.1 2005/01/17 21:08:17 cbridgha Exp $
  */
-package org.eclipse.wst.common.projectmodule.impl;
+package org.eclipse.wst.common.modulecore.impl;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
+
+import org.eclipse.emf.common.util.URI;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -16,10 +18,10 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 
-import org.eclipse.wst.common.projectmodule.DeployScheme;
-import org.eclipse.wst.common.projectmodule.DeployedApplication;
-import org.eclipse.wst.common.projectmodule.ProjectModulePackage;
-import org.eclipse.wst.common.projectmodule.WorkbenchApplication;
+import org.eclipse.wst.common.modulecore.DeployScheme;
+import org.eclipse.wst.common.modulecore.DeployedApplication;
+import org.eclipse.wst.common.modulecore.ModuleCorePackage;
+import org.eclipse.wst.common.modulecore.WorkbenchApplication;
 
 /**
  * <!-- begin-user-doc -->
@@ -28,9 +30,9 @@ import org.eclipse.wst.common.projectmodule.WorkbenchApplication;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.eclipse.wst.common.projectmodule.impl.DeployedApplicationImpl#getRoot <em>Root</em>}</li>
- *   <li>{@link org.eclipse.wst.common.projectmodule.impl.DeployedApplicationImpl#getDeployScheme <em>Deploy Scheme</em>}</li>
- *   <li>{@link org.eclipse.wst.common.projectmodule.impl.DeployedApplicationImpl#getApplication <em>Application</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.DeployedApplicationImpl#getRoot <em>Root</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.DeployedApplicationImpl#getDeployScheme <em>Deploy Scheme</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.DeployedApplicationImpl#getApplication <em>Application</em>}</li>
  * </ul>
  * </p>
  *
@@ -45,7 +47,7 @@ public class DeployedApplicationImpl extends EObjectImpl implements DeployedAppl
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String ROOT_EDEFAULT = null;
+	protected static final URI ROOT_EDEFAULT = null;
 
 	/**
 	 * The cached value of the '{@link #getRoot() <em>Root</em>}' attribute.
@@ -55,7 +57,7 @@ public class DeployedApplicationImpl extends EObjectImpl implements DeployedAppl
 	 * @generated
 	 * @ordered
 	 */
-	protected String root = ROOT_EDEFAULT;
+	protected URI root = ROOT_EDEFAULT;
 
 	/**
 	 * The cached value of the '{@link #getDeployScheme() <em>Deploy Scheme</em>}' containment reference.
@@ -92,7 +94,7 @@ public class DeployedApplicationImpl extends EObjectImpl implements DeployedAppl
 	 * @generated
 	 */
 	protected EClass eStaticClass() {
-		return ProjectModulePackage.eINSTANCE.getDeployedApplication();
+		return ModuleCorePackage.eINSTANCE.getDeployedApplication();
 	}
 
 	/**
@@ -100,7 +102,7 @@ public class DeployedApplicationImpl extends EObjectImpl implements DeployedAppl
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String getRoot() {
+	public URI getRoot() {
 		return root;
 	}
 
@@ -109,11 +111,11 @@ public class DeployedApplicationImpl extends EObjectImpl implements DeployedAppl
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setRoot(String newRoot) {
-		String oldRoot = root;
+	public void setRoot(URI newRoot) {
+		URI oldRoot = root;
 		root = newRoot;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ProjectModulePackage.DEPLOYED_APPLICATION__ROOT, oldRoot, root));
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.DEPLOYED_APPLICATION__ROOT, oldRoot, root));
 	}
 
 	/**
@@ -134,7 +136,7 @@ public class DeployedApplicationImpl extends EObjectImpl implements DeployedAppl
 		DeployScheme oldDeployScheme = deployScheme;
 		deployScheme = newDeployScheme;
 		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, ProjectModulePackage.DEPLOYED_APPLICATION__DEPLOY_SCHEME, oldDeployScheme, newDeployScheme);
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, ModuleCorePackage.DEPLOYED_APPLICATION__DEPLOY_SCHEME, oldDeployScheme, newDeployScheme);
 			if (msgs == null) msgs = notification; else msgs.add(notification);
 		}
 		return msgs;
@@ -149,14 +151,14 @@ public class DeployedApplicationImpl extends EObjectImpl implements DeployedAppl
 		if (newDeployScheme != deployScheme) {
 			NotificationChain msgs = null;
 			if (deployScheme != null)
-				msgs = ((InternalEObject)deployScheme).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - ProjectModulePackage.DEPLOYED_APPLICATION__DEPLOY_SCHEME, null, msgs);
+				msgs = ((InternalEObject)deployScheme).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - ModuleCorePackage.DEPLOYED_APPLICATION__DEPLOY_SCHEME, null, msgs);
 			if (newDeployScheme != null)
-				msgs = ((InternalEObject)newDeployScheme).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - ProjectModulePackage.DEPLOYED_APPLICATION__DEPLOY_SCHEME, null, msgs);
+				msgs = ((InternalEObject)newDeployScheme).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - ModuleCorePackage.DEPLOYED_APPLICATION__DEPLOY_SCHEME, null, msgs);
 			msgs = basicSetDeployScheme(newDeployScheme, msgs);
 			if (msgs != null) msgs.dispatch();
 		}
 		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ProjectModulePackage.DEPLOYED_APPLICATION__DEPLOY_SCHEME, newDeployScheme, newDeployScheme));
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.DEPLOYED_APPLICATION__DEPLOY_SCHEME, newDeployScheme, newDeployScheme));
 	}
 
 	/**
@@ -170,7 +172,7 @@ public class DeployedApplicationImpl extends EObjectImpl implements DeployedAppl
 			application = (WorkbenchApplication)eResolveProxy((InternalEObject)application);
 			if (application != oldApplication) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, ProjectModulePackage.DEPLOYED_APPLICATION__APPLICATION, oldApplication, application));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, ModuleCorePackage.DEPLOYED_APPLICATION__APPLICATION, oldApplication, application));
 			}
 		}
 		return application;
@@ -194,7 +196,7 @@ public class DeployedApplicationImpl extends EObjectImpl implements DeployedAppl
 		WorkbenchApplication oldApplication = application;
 		application = newApplication;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ProjectModulePackage.DEPLOYED_APPLICATION__APPLICATION, oldApplication, application));
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.DEPLOYED_APPLICATION__APPLICATION, oldApplication, application));
 	}
 
 	/**
@@ -205,7 +207,7 @@ public class DeployedApplicationImpl extends EObjectImpl implements DeployedAppl
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, Class baseClass, NotificationChain msgs) {
 		if (featureID >= 0) {
 			switch (eDerivedStructuralFeatureID(featureID, baseClass)) {
-				case ProjectModulePackage.DEPLOYED_APPLICATION__DEPLOY_SCHEME:
+				case ModuleCorePackage.DEPLOYED_APPLICATION__DEPLOY_SCHEME:
 					return basicSetDeployScheme(null, msgs);
 				default:
 					return eDynamicInverseRemove(otherEnd, featureID, baseClass, msgs);
@@ -221,11 +223,11 @@ public class DeployedApplicationImpl extends EObjectImpl implements DeployedAppl
 	 */
 	public Object eGet(EStructuralFeature eFeature, boolean resolve) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ProjectModulePackage.DEPLOYED_APPLICATION__ROOT:
+			case ModuleCorePackage.DEPLOYED_APPLICATION__ROOT:
 				return getRoot();
-			case ProjectModulePackage.DEPLOYED_APPLICATION__DEPLOY_SCHEME:
+			case ModuleCorePackage.DEPLOYED_APPLICATION__DEPLOY_SCHEME:
 				return getDeployScheme();
-			case ProjectModulePackage.DEPLOYED_APPLICATION__APPLICATION:
+			case ModuleCorePackage.DEPLOYED_APPLICATION__APPLICATION:
 				if (resolve) return getApplication();
 				return basicGetApplication();
 		}
@@ -239,13 +241,13 @@ public class DeployedApplicationImpl extends EObjectImpl implements DeployedAppl
 	 */
 	public void eSet(EStructuralFeature eFeature, Object newValue) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ProjectModulePackage.DEPLOYED_APPLICATION__ROOT:
-				setRoot((String)newValue);
+			case ModuleCorePackage.DEPLOYED_APPLICATION__ROOT:
+				setRoot((URI)newValue);
 				return;
-			case ProjectModulePackage.DEPLOYED_APPLICATION__DEPLOY_SCHEME:
+			case ModuleCorePackage.DEPLOYED_APPLICATION__DEPLOY_SCHEME:
 				setDeployScheme((DeployScheme)newValue);
 				return;
-			case ProjectModulePackage.DEPLOYED_APPLICATION__APPLICATION:
+			case ModuleCorePackage.DEPLOYED_APPLICATION__APPLICATION:
 				setApplication((WorkbenchApplication)newValue);
 				return;
 		}
@@ -259,13 +261,13 @@ public class DeployedApplicationImpl extends EObjectImpl implements DeployedAppl
 	 */
 	public void eUnset(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ProjectModulePackage.DEPLOYED_APPLICATION__ROOT:
+			case ModuleCorePackage.DEPLOYED_APPLICATION__ROOT:
 				setRoot(ROOT_EDEFAULT);
 				return;
-			case ProjectModulePackage.DEPLOYED_APPLICATION__DEPLOY_SCHEME:
+			case ModuleCorePackage.DEPLOYED_APPLICATION__DEPLOY_SCHEME:
 				setDeployScheme((DeployScheme)null);
 				return;
-			case ProjectModulePackage.DEPLOYED_APPLICATION__APPLICATION:
+			case ModuleCorePackage.DEPLOYED_APPLICATION__APPLICATION:
 				setApplication((WorkbenchApplication)null);
 				return;
 		}
@@ -279,11 +281,11 @@ public class DeployedApplicationImpl extends EObjectImpl implements DeployedAppl
 	 */
 	public boolean eIsSet(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ProjectModulePackage.DEPLOYED_APPLICATION__ROOT:
+			case ModuleCorePackage.DEPLOYED_APPLICATION__ROOT:
 				return ROOT_EDEFAULT == null ? root != null : !ROOT_EDEFAULT.equals(root);
-			case ProjectModulePackage.DEPLOYED_APPLICATION__DEPLOY_SCHEME:
+			case ModuleCorePackage.DEPLOYED_APPLICATION__DEPLOY_SCHEME:
 				return deployScheme != null;
-			case ProjectModulePackage.DEPLOYED_APPLICATION__APPLICATION:
+			case ModuleCorePackage.DEPLOYED_APPLICATION__APPLICATION:
 				return application != null;
 		}
 		return eDynamicIsSet(eFeature);
