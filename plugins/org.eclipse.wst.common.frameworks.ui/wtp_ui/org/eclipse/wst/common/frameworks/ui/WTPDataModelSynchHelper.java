@@ -168,7 +168,7 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 	public void propertyChanged(WTPOperationDataModelEvent event) {
 		String propertyName = event.getPropertyName();
 		int flag = event.getFlag();
-		if (flag == WTPOperationDataModelListener.ENABLE_CHG)
+		if (flag == WTPOperationDataModelEvent.ENABLE_CHG)
 			setEnablement(propertyName, ((Boolean) event.getNewValue()).booleanValue());
 		else
 			synchUIWithModel(propertyName, flag);
@@ -290,7 +290,7 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 	}
 
 	protected void setWidgetValue(String propertyName, int flag, Combo combo) {
-		if (flag == WTPOperationDataModelListener.VALID_VALUES_CHG || combo.getItemCount() == 0) {
+		if (flag == WTPOperationDataModelEvent.VALID_VALUES_CHG || combo.getItemCount() == 0) {
 			// Display properties should only fire if the contents change.
 			WTPPropertyDescriptor[] descriptors = dataModel.getValidPropertyDescriptors(propertyName);
 			String[] items = new String[descriptors.length];
@@ -411,7 +411,7 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 				String propertyName = null;
 				while (propertyNames.hasNext()) {
 					propertyName = (String) propertyNames.next();
-					synchUIWithModel(propertyName, WTPOperationDataModelListener.PROPERTY_CHG);
+					synchUIWithModel(propertyName, WTPOperationDataModelEvent.PROPERTY_CHG);
 				}
 			}
 		}
@@ -429,7 +429,7 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 				widgetToDepControls = new HashMap();
 			widgetToDepControls.put(widget, depControls);
 		}
-		synchUIWithModel(propertyName, WTPOperationDataModelListener.PROPERTY_CHG);
+		synchUIWithModel(propertyName, WTPOperationDataModelEvent.PROPERTY_CHG);
 	}
 
 	public void synchText(Text text, String propertyName, Control[] dependentControls) {

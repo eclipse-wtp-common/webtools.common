@@ -8,27 +8,34 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.frameworks.operations;
 
+/**
+ * Clients wishing to register with a WTPOperationData to receive WTPOperationDataModelEvents need
+ * to implement this interface.
+ * 
+ * @see org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel#addListener(WTPOperationDataModelListener)
+ */
 public interface WTPOperationDataModelListener {
 	/**
-	 * Flags associated with the propertyChanged event. <code>PROPERTY_CHG</code>= A simple
-	 * property change. <code>VALID_VALUES_CHG</code>= The valid values for the given property
-	 * have changed. <code>ENABLE_CHG</code>= The enablement for the given property has changed.
+	 * Use WTPOperationDataModelEvent.PROPERTY_CHG instead.
+	 * @deprecated
 	 */
 	final int PROPERTY_CHG = WTPOperationDataModelEvent.PROPERTY_CHG;
-	final int VALID_VALUES_CHG = WTPOperationDataModelEvent.VALID_VALUES_CHG;
-	final int ENABLE_CHG = WTPOperationDataModelEvent.ENABLE_CHG;
-
+	
 	/**
-	 * A property has changed on the model with the given propertyName. Use the flag to detect the
-	 * type of change.
+	 * Use WTPOperationDataModelEvent.VALID_VALUES_CHG instead.
+	 * @deprecated
+	 */
+	final int VALID_VALUES_CHG = WTPOperationDataModelEvent.VALID_VALUES_CHG;
+	
+	/**
+	 * Use WTPOperationDataModelEvent.ENABLE_CHG instead.
+	 * @deprecated
+	 */
+	final int ENABLE_CHG = WTPOperationDataModelEvent.ENABLE_CHG;
+	/**
+	 * This method is invoked on listening clients when a property changes.
 	 * 
-	 * @param propertyName
-	 * @param flag
-	 * @param oldValue
-	 * @param newValue
-	 * 
-	 * @see WTPOperationDataModelListener#PROPERTY_CHG
-	 * @see WTPOperationDataModelListener#VALID_VALUES_CHG
+	 * @param event
 	 */
 	void propertyChanged(WTPOperationDataModelEvent event);
 

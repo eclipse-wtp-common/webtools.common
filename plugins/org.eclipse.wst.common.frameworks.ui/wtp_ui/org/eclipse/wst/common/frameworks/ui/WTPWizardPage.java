@@ -384,7 +384,7 @@ public abstract class WTPWizardPage extends WizardPage implements Listener, WTPO
 	 */
 	public void propertyChanged(WTPOperationDataModelEvent event) {
 		String propertyName = event.getPropertyName();
-		if (validationPropertyNames != null && (event.getFlag() == PROPERTY_CHG || (!isPageComplete() && event.getFlag() == VALID_VALUES_CHG))) {
+		if (validationPropertyNames != null && (event.getFlag() == WTPOperationDataModelEvent.PROPERTY_CHG || (!isPageComplete() && event.getFlag() == WTPOperationDataModelEvent.VALID_VALUES_CHG))) {
 			for (int i = 0; i < validationPropertyNames.length; i++) {
 				if (validationPropertyNames[i].equals(propertyName)) {
 					validatePage();

@@ -47,8 +47,8 @@ import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
  * <LI>Compose and decompose entire DataModels through nesting.</LI>
  * </UL>
  * 
- * <B>PropertyNames</B> Clients interact with DataModels by getting and setting properties (Objects)
- * with PropertyNames. A PropertyName is a String Object uniquely identifing a particular
+ * <B>PropertyNames </B> Clients interact with DataModels by getting and setting properties
+ * (Objects) with PropertyNames. A PropertyName is a String Object uniquely identifing a particular
  * property. The recommended practice for defining PropertyNames is to define them as static final
  * Class level Strings and to use the DataModel instance class name appended with the property name
  * as the value (this should ensure uniqueness and gives a readible value when debugging).
@@ -270,6 +270,33 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		throw new RuntimeException(PROPERTY_NOT_LOCATED_ + propertyName);
 	}
 
+	/**
+	 * <p>
+	 * Returns a WTPPropertyDescriptor array consisting of all valid WTPPropertyDescriptors for the
+	 * specified property. Each WTPPropertyDescriptor {@see WTPPropertyDescriptor for details}
+	 * contains a value and a human readible description for the value. The set of all values in the
+	 * returned array are those values which are valid for the DataModel. This value set only makes
+	 * sense when valid property values conform to a well defined finite set. If no such value set
+	 * exists for the property, the a 0 length array is returned. <code>null</code> is never
+	 * returned.
+	 * </p>
+	 * <p>
+	 * As an example, suppose there is a property called <code>SHIRT_SIZE</code> which is an
+	 * <code>Integer</code> type. Also suppse that valid shirt sizes are only small, medium, or
+	 * large. However, the actual values representing small, medium, and large are 1, 2, and 3
+	 * respectively. A call to <code>getValidPropertyDescriptors(SHIRT_SIZE)</code> would return a
+	 * WTPPropertyDescriptor array where the value, description pairs would be {(1, small), (2,
+	 * medium), (3, large)}.
+	 * </p>
+	 * <p>
+	 * Subclasses should override {@see #doGetValidPropertyDescriptors(String)}as necessary.
+	 * </p>
+	 * 
+	 * @param propertyName
+	 * @return
+	 * @see #getPropertyDescriptor(String)
+	 * @see #doGetPropertyDescriptor(String)
+	 */
 	public final WTPPropertyDescriptor[] getValidPropertyDescriptors(String propertyName) {
 		checkValidPropertyName(propertyName);
 		if (isBaseProperty(propertyName)) {
@@ -288,15 +315,45 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	}
 
 	/**
-	 * Subclasses may override to provide specific valid property values for the given propertyName.
+	 * Subclasses should override this method to return their set of valid WTPPropertyDescriptors.
+	 * This default implementation returns: <code>new WTPPropertyDescriptor[0];</code>
 	 * 
 	 * @param propertyName
 	 * @return
+	 * 
+	 * @see #getValidPropertyDescriptors(String)
 	 */
 	protected WTPPropertyDescriptor[] doGetValidPropertyDescriptors(String propertyName) {
 		return new WTPPropertyDescriptor[0];
 	}
 
+	/**
+	 * <p>
+	 * Returns a WTPPropertyDescriptor for the specified property. The
+	 * <code>getPropertyValue()</code> method on the returned WTPPropertyDescriptor will be the
+	 * same value as returned by <code>getPropertyValue(propertyName)</code>.
+	 * </p>
+	 * <p>
+	 * Following the example introduced in {@see #getValidPropertyDescriptors(String)}, suppose the
+	 * <code>SHIRT_SIZE</code> property is currently set to 1. A call to this method would return
+	 * a WTPPropertyDescriptor whose <code>getPropertyValue()</code> returns <code>1</code> and
+	 * whose <code>getPropertyDescription()</code> returns <code>small</code>.
+	 * </p>
+	 * <p>
+	 * Also, note that even if a particular property is not confined to a finite set of values as
+	 * defined by {@see #getValidPropertyDescriptors(String)}this method will always return a valid
+	 * WTPPropertyDescriptor.
+	 * </p>
+	 * <p>
+	 * Subclasses should should override {@see #doGetPropertyDescriptor(String)}as necessary.
+	 * </p>
+	 * 
+	 * @param propertyName
+	 * @return
+	 * 
+	 * @see #getValidPropertyDescriptors(String)
+	 * @see #doGetPropertyDescriptor(String)
+	 */
 	public final WTPPropertyDescriptor getPropertyDescriptor(String propertyName) {
 		checkValidPropertyName(propertyName);
 		if (isBaseProperty(propertyName)) {
@@ -314,6 +371,13 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		throw new RuntimeException(PROPERTY_NOT_LOCATED_ + propertyName);
 	}
 
+	/**
+	 * Subclasses should override this method as necessary. This default implementation returns
+	 * <code>new WTPPropertyDescriptor(getProperty(propertyName));</code>.
+	 * 
+	 * @param propertyName
+	 * @return
+	 */
 	protected WTPPropertyDescriptor doGetPropertyDescriptor(String propertyName) {
 		return new WTPPropertyDescriptor(getProperty(propertyName));
 	}
@@ -463,14 +527,17 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	/**
 	 * <p>
 	 * Returns the property value for the specified propertyName.
+	 * </p>
 	 * <p>
-	 * If the specified propertyName is not a property (see#isProperty(String)) then a
+	 * If the specified propertyName is not a property {@see #isProperty(String)}then a
 	 * RuntimeException will be thrown.
+	 * </p>
 	 * <p>
-	 * If the specified propertyName is a base property (see#isBaseProperty(String)) then it will
+	 * If the specified propertyName is a base property {@see #isBaseProperty(String)}then it will
 	 * immediatly be set and nested models will not be affected. If it is not a base property (i.e.
 	 * it is a property for a nested DataModel) then a recursive search through nested DataModels
 	 * will be conducted. The first nested DataModel having the property will return its value.
+	 * </p>
 	 * 
 	 * @param propertyName
 	 * @return
@@ -478,10 +545,12 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 * <p>
 	 * There are also convenience methods for getting properties representing property types of
 	 * boolean, int, and String
-	 * <p>
-	 * @see #getBooleanProperty(String)
-	 * @see #getIntProperty(String)
-	 * @see #getStringProperty(String)
+	 * </p>
+	 * <ul>
+	 * <li>{@see #getBooleanProperty(String)}</li>
+	 * <li>{@see #getIntProperty(String)}</li>
+	 * <li>{@see #getStringProperty(String)}</li>
+	 * </ul>
 	 */
 	public final Object getProperty(String propertyName) {
 		checkValidPropertyName(propertyName);
@@ -612,7 +681,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 * @param propertyValue
 	 */
 	public void notifyListeners(String propertyName, Object oldValue, Object propertyValue) {
-		notifyListeners(propertyName, PROPERTY_CHG, oldValue, propertyValue);
+		notifyListeners(propertyName, WTPOperationDataModelEvent.PROPERTY_CHG, oldValue, propertyValue);
 	}
 
 	/**
@@ -828,13 +897,13 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 * @param propertyName
 	 */
 	public void notifyValidValuesChange(String propertyName) {
-		notifyListeners(propertyName, WTPOperationDataModelListener.VALID_VALUES_CHG, null, null);
+		notifyListeners(propertyName, WTPOperationDataModelEvent.VALID_VALUES_CHG, null, null);
 	}
 
 	protected void notifyEnablementChange(String propertyName) {
 		Boolean enable = isEnabled(propertyName);
 		if (enable != null)
-			notifyListeners(propertyName, ENABLE_CHG, null, enable);
+			notifyListeners(propertyName, WTPOperationDataModelEvent.ENABLE_CHG, null, enable);
 	}
 
 	public void dispose() {
@@ -851,7 +920,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	/**
 	 * @return Returns the locked.
 	 */
-	protected boolean isLocked() {
+	protected final boolean isLocked() {
 		return locked;
 	}
 
@@ -859,7 +928,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 * @param locked
 	 *            The locked to set.
 	 */
-	protected void setLocked(boolean locked) {
+	protected final void setLocked(boolean locked) {
 		this.locked = locked;
 		if (locked)
 			hasBeenExecutedAgainst = true;
@@ -923,7 +992,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	public boolean hasBeenExecutedAgainst() {
 		return hasBeenExecutedAgainst;
 	}
-	
+
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	//TODO figure out the best way support ExtendedOperations
 	///////////////////////////////////////////////////////////////////////////////////////////////
