@@ -9,15 +9,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.help.WorkbenchHelp;
 import org.eclipse.wst.common.frameworks.internal.ui.ValidationStatus;
@@ -78,11 +75,6 @@ public abstract class WTPWizardPage extends WizardPage implements Listener, WTPO
 		synchHelper = initializeSynchHelper(model);
 	}
 
-	protected IPath convertPackageNameToPath(String qualifiedName) {
-		String name = qualifiedName.replace('.', '/');
-		return new Path(name);
-	}
-
 	/**
 	 * Creates the top level control for this dialog page under the given parent composite. This
 	 * method has been abstract and it uses the template pattern to get the correct items setup in
@@ -122,27 +114,6 @@ public abstract class WTPWizardPage extends WizardPage implements Listener, WTPO
 	 * @return
 	 */
 	protected abstract String[] getValidationPropertyNames();
-
-	/**
-	 * Return true of the property validation status is OK.
-	 * 
-	 * @param propertyKey
-	 * @return
-	 */
-	protected boolean getPropertyOKStatus(String propertyKey) {
-		Integer validationKey = getValidationKey(propertyKey);
-		if (validationKey != null)
-			return getStatus(validationKey);
-		return true;
-	}
-
-	/**
-	 * @param propertyKey
-	 * @return
-	 */
-	private Integer getValidationKey(String propertyKey) {
-		return (Integer) validationMap.get(propertyKey);
-	}
 
 	/**
 	 * Return the top level Composite for this page.
@@ -230,7 +201,6 @@ public abstract class WTPWizardPage extends WizardPage implements Listener, WTPO
 	 *            the event which occurred
 	 */
 	public void handleEvent(org.eclipse.swt.widgets.Event event) {
-		//validatePage();
 	}
 
 	/**
@@ -364,12 +334,12 @@ public abstract class WTPWizardPage extends WizardPage implements Listener, WTPO
 		return isFirstTimeToPage;
 	}
 
-	protected void setJavaStatusMessage(IStatus javaStatus, Integer statusKey, String message) {
-		if (javaStatus.getSeverity() == IStatus.WARNING)
-			setWarningStatus(statusKey, message);
-		else
-			setErrorStatus(statusKey, message);
-	}
+	//	protected void setJavaStatusMessage(IStatus javaStatus, Integer statusKey, String message) {
+	//		if (javaStatus.getSeverity() == IStatus.WARNING)
+	//			setWarningStatus(statusKey, message);
+	//		else
+	//			setErrorStatus(statusKey, message);
+	//	}
 
 	/**
 	 * @param b
@@ -396,23 +366,11 @@ public abstract class WTPWizardPage extends WizardPage implements Listener, WTPO
 		}
 	}
 
-	protected void addSpacers(Composite comp, int spacers) {
-		for (int i = 0; i < spacers; i++)
-			new Label(comp, SWT.NONE);
-	}
-
 	/**
 	 * @return Returns the model.
 	 */
 	protected WTPOperationDataModel getModel() {
 		return model;
-	}
-
-	/**
-	 * @return Returns the synchHelper.
-	 */
-	protected WTPDataModelSynchHelper getSynchHelper() {
-		return synchHelper;
 	}
 
 	public void dispose() {
