@@ -28,4 +28,7 @@ public class TestWorkspace {
 	public static IProject getTargetProject() {
 		return ResourcesPlugin.getWorkspace().getRoot().getProject(PROJECT_NAME);
 	}
+
+	public static void init() { 		
+	}
 }
