@@ -92,9 +92,7 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
 	            moduleDMList = populateFullModuleBuilderDataModelList();
 	            break;
         }
-        
-        
-        return null;
+        return moduleDMList;
     }
 
     private List populateFullModuleBuilderDataModelList() {
@@ -107,13 +105,16 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
         DeployableModuleBuilderDataModel dataModel = null;
         
         for(int i = 0; i<wbModules.length; i++){
+            String id = wbModules[i].getModuleType().getModuleTypeId();
+            if(id == null)
+                break;
             factory = DeployableModuleBuilderFactoryRegistry.INSTANCE.createDeployableFactory(wbModules[i].getModuleType().getModuleTypeId());
             if(factory != null) {
                 dataModel = factory.createDeploymentModuleDataModel();
                 dataModel.setProperty(DeployableModuleBuilderDataModel.PROJECT, getProperty(PROJECT));
 				dataModel.setProperty(DeployableModuleBuilderDataModel.MODULE_STRUCTURAL_MODEL, getProperty(MODULE_STRUCTURAL_MODEL));
 				dataModel.setProperty(DeployableModuleBuilderDataModel.WORKBENCH_MODULE, wbModules[i]);
-                moduleBuilderDataModelList.add(factory.createDeploymentModuleDataModel());
+                moduleBuilderDataModelList.add(dataModel);
             }
         }
         return moduleBuilderDataModelList;        

@@ -30,11 +30,11 @@ public class DeployableModuleBuilder extends IncrementalProjectBuilder implement
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
 	    ModuleStructuralModel structuralModel = null;
         try{
-            //structuralModel = ModuleCore.INSTANCE.getModuleStructuralModelForRead(getProject(), this);
+            structuralModel = ModuleCore.INSTANCE.getModuleStructuralModelForRead(getProject(), this);
 		    DeployableModuleProjectBuilderDataModel dataModel = new DeployableModuleProjectBuilderDataModel();
 		    dataModel.setProperty(DeployableModuleProjectBuilderDataModel.PROJECT, getProject());
 		    dataModel.setProperty(DeployableModuleProjectBuilderDataModel.PROJECT_DETLA, getDelta(getProject()));
-		  //  dataModel.setProperty(DeployableModuleProjectBuilderDataModel.MODULE_STRUCTURAL_MODEL, structuralModel);
+		    dataModel.setProperty(DeployableModuleProjectBuilderDataModel.MODULE_STRUCTURAL_MODEL, structuralModel);
 		    //TODO: current implementation is for full build only...implement in M4
 		    //dataModel.setProperty(DeployableModuleProjectBuilderDataModel.BUILD_KIND, new Integer(kind));
 		    WTPOperation op = dataModel.getDefaultOperation();
