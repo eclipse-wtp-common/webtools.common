@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreSwitch.java,v 1.4 2005/01/24 21:05:22 cbridgha Exp $
+ * $Id: ModuleCoreSwitch.java,v 1.5 2005/01/24 21:34:03 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.util;
 
@@ -129,6 +129,12 @@ public class ModuleCoreSwitch {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case ModuleCorePackage.PROJECT_MODULES: {
+				ProjectModules projectModules = (ProjectModules)theEObject;
+				Object result = caseProjectModules(projectModules);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
 	}
@@ -235,6 +241,21 @@ public class ModuleCoreSwitch {
 	 * @generated
 	 */
 	public Object caseIModuleType(IModuleType object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpretting the object as an instance of '<em>Project Modules</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpretting the object as an instance of '<em>Project Modules</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public Object caseProjectModules(ProjectModules object) {
 		return null;
 	}
 

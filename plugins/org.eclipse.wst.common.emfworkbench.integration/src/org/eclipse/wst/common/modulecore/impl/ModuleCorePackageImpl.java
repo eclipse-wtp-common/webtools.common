@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCorePackageImpl.java,v 1.5 2005/01/24 21:05:22 cbridgha Exp $
+ * $Id: ModuleCorePackageImpl.java,v 1.6 2005/01/24 21:34:03 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
@@ -20,6 +20,7 @@ import org.eclipse.wst.common.modulecore.IModuleHandle;
 import org.eclipse.wst.common.modulecore.IModuleType;
 import org.eclipse.wst.common.modulecore.ModuleCoreFactory;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
+import org.eclipse.wst.common.modulecore.ProjectModules;
 import org.eclipse.wst.common.modulecore.ModuleResource;
 import org.eclipse.wst.common.modulecore.WorkbenchApplication;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
@@ -81,6 +82,13 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * @generated
 	 */
 	private EClass iModuleTypeEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass projectModulesEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -378,6 +386,51 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getProjectModules() {
+		return projectModulesEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getProjectModules_ProjectName() {
+		return (EAttribute)projectModulesEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getProjectModules_DeployedApplications() {
+		return (EReference)projectModulesEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getProjectModules_WorkbenchApplications() {
+		return (EReference)projectModulesEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getProjectModules_WorkbenchModules() {
+		return (EReference)projectModulesEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EDataType getURI() {
 		return uriEDataType;
 	}
@@ -441,6 +494,12 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 		createEAttribute(iModuleTypeEClass, IMODULE_TYPE__METADATA_RESOURCES);
 		createEAttribute(iModuleTypeEClass, IMODULE_TYPE__TYPE_NAME);
 
+		projectModulesEClass = createEClass(PROJECT_MODULES);
+		createEAttribute(projectModulesEClass, PROJECT_MODULES__PROJECT_NAME);
+		createEReference(projectModulesEClass, PROJECT_MODULES__DEPLOYED_APPLICATIONS);
+		createEReference(projectModulesEClass, PROJECT_MODULES__WORKBENCH_APPLICATIONS);
+		createEReference(projectModulesEClass, PROJECT_MODULES__WORKBENCH_MODULES);
+
 		// Create data types
 		uriEDataType = createEDataType(URI);
 	}
@@ -501,6 +560,12 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 		initEAttribute(getIModuleType_Root(), this.getURI(), "root", null, 0, 1, IModuleType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getIModuleType_MetadataResources(), this.getURI(), "metadataResources", null, 0, -1, IModuleType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getIModuleType_TypeName(), ecorePackage.getEString(), "typeName", null, 0, 1, IModuleType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(projectModulesEClass, ProjectModules.class, "ProjectModules", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getProjectModules_ProjectName(), ecorePackage.getEString(), "projectName", null, 0, 1, ProjectModules.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getProjectModules_DeployedApplications(), this.getDeployedApplication(), null, "deployedApplications", null, 0, -1, ProjectModules.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getProjectModules_WorkbenchApplications(), this.getWorkbenchApplication(), null, "workbenchApplications", null, 0, -1, ProjectModules.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getProjectModules_WorkbenchModules(), this.getWorkbenchModule(), null, "workbenchModules", null, 0, -1, ProjectModules.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Initialize data types
 		initEDataType(uriEDataType, org.eclipse.emf.common.util.URI.class, "URI", IS_SERIALIZABLE, !IS_GENERATED_INSTANCE_CLASS);

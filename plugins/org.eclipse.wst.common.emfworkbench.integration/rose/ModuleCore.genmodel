@@ -44,5 +44,11 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//IModuleType/metadataResources"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//IModuleType/typeName"/>
     </genClasses>
+    <genClasses ecoreClass="moduleCore.ecore#//ProjectModules">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ProjectModules/projectName"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference moduleCore.ecore#//ProjectModules/deployedApplications"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference moduleCore.ecore#//ProjectModules/workbenchApplications"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference moduleCore.ecore#//ProjectModules/workbenchModules"/>
+    </genClasses>
   </genPackages>
 </genmodel:GenModel>

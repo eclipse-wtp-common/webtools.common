@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreAdapterFactory.java,v 1.4 2005/01/24 21:05:22 cbridgha Exp $
+ * $Id: ModuleCoreAdapterFactory.java,v 1.5 2005/01/24 21:34:03 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.util;
 
@@ -90,6 +90,9 @@ public class ModuleCoreAdapterFactory extends AdapterFactoryImpl {
 			}
 			public Object caseIModuleType(IModuleType object) {
 				return createIModuleTypeAdapter();
+			}
+			public Object caseProjectModules(ProjectModules object) {
+				return createProjectModulesAdapter();
 			}
 			public Object defaultCase(EObject object) {
 				return createEObjectAdapter();
@@ -204,6 +207,20 @@ public class ModuleCoreAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createIModuleTypeAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.eclipse.wst.common.modulecore.ProjectModules <em>Project Modules</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.eclipse.wst.common.modulecore.ProjectModules
+	 * @generated
+	 */
+	public Adapter createProjectModulesAdapter() {
 		return null;
 	}
 

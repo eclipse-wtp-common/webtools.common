@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCorePackage.java,v 1.4 2005/01/24 21:05:22 cbridgha Exp $
+ * $Id: ModuleCorePackage.java,v 1.5 2005/01/24 21:34:03 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -346,6 +346,61 @@ public interface ModuleCorePackage extends EPackage{
 	int IMODULE_TYPE_FEATURE_COUNT = 3;
 
 	/**
+	 * The meta object id for the '{@link org.eclipse.wst.common.modulecore.impl.ProjectModulesImpl <em>Project Modules</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.wst.common.modulecore.impl.ProjectModulesImpl
+	 * @see org.eclipse.wst.common.modulecore.impl.ModuleCorePackageImpl#getProjectModules()
+	 * @generated
+	 */
+	int PROJECT_MODULES = 7;
+
+	/**
+	 * The feature id for the '<em><b>Project Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROJECT_MODULES__PROJECT_NAME = 0;
+
+	/**
+	 * The feature id for the '<em><b>Deployed Applications</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROJECT_MODULES__DEPLOYED_APPLICATIONS = 1;
+
+	/**
+	 * The feature id for the '<em><b>Workbench Applications</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROJECT_MODULES__WORKBENCH_APPLICATIONS = 2;
+
+	/**
+	 * The feature id for the '<em><b>Workbench Modules</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROJECT_MODULES__WORKBENCH_MODULES = 3;
+
+	/**
+	 * The number of structural features of the the '<em>Project Modules</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROJECT_MODULES_FEATURE_COUNT = 4;
+
+	/**
 	 * The meta object id for the '<em>URI</em>' data type.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -353,7 +408,7 @@ public interface ModuleCorePackage extends EPackage{
 	 * @see org.eclipse.wst.common.modulecore.impl.ModuleCorePackageImpl#getURI()
 	 * @generated
 	 */
-	int URI = 7;
+	int URI = 8;
 
 
 	/**
@@ -612,6 +667,60 @@ public interface ModuleCorePackage extends EPackage{
 	 * @generated
 	 */
 	EAttribute getIModuleType_TypeName();
+
+	/**
+	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.ProjectModules <em>Project Modules</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Project Modules</em>'.
+	 * @see org.eclipse.wst.common.modulecore.ProjectModules
+	 * @generated
+	 */
+	EClass getProjectModules();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.ProjectModules#getProjectName <em>Project Name</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Project Name</em>'.
+	 * @see org.eclipse.wst.common.modulecore.ProjectModules#getProjectName()
+	 * @see #getProjectModules()
+	 * @generated
+	 */
+	EAttribute getProjectModules_ProjectName();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.eclipse.wst.common.modulecore.ProjectModules#getDeployedApplications <em>Deployed Applications</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Deployed Applications</em>'.
+	 * @see org.eclipse.wst.common.modulecore.ProjectModules#getDeployedApplications()
+	 * @see #getProjectModules()
+	 * @generated
+	 */
+	EReference getProjectModules_DeployedApplications();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.eclipse.wst.common.modulecore.ProjectModules#getWorkbenchApplications <em>Workbench Applications</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Workbench Applications</em>'.
+	 * @see org.eclipse.wst.common.modulecore.ProjectModules#getWorkbenchApplications()
+	 * @see #getProjectModules()
+	 * @generated
+	 */
+	EReference getProjectModules_WorkbenchApplications();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.eclipse.wst.common.modulecore.ProjectModules#getWorkbenchModules <em>Workbench Modules</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Workbench Modules</em>'.
+	 * @see org.eclipse.wst.common.modulecore.ProjectModules#getWorkbenchModules()
+	 * @see #getProjectModules()
+	 * @generated
+	 */
+	EReference getProjectModules_WorkbenchModules();
 
 	/**
 	 * Returns the meta object for data type '{@link org.eclipse.emf.common.util.URI <em>URI</em>}'.
