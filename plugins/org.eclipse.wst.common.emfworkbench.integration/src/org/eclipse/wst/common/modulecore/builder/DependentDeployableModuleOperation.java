@@ -17,7 +17,6 @@ import java.util.List;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -30,228 +29,220 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEditPlugin;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
-import org.eclipse.wst.common.modulecore.impl.UnresolveableURIException;
 import org.eclipse.wst.common.modulecore.util.ModuleCore;
 import org.eclipse.wst.common.modulecore.util.ZipFileExporter;
 
 public class DependentDeployableModuleOperation extends WTPOperation {
-    private static String ERROR_EXPORTING_MSG = "Zip Error Message"; //$NON-NLS-1$
+	private static String ERROR_EXPORTING_MSG = "Zip Error Message"; //$NON-NLS-1$
 
-    private DependentDeployableModuleDataModel depDataModel = null;
+	private DependentDeployableModuleDataModel depDataModel = null;
 
-    private ZipFileExporter exporter = null;
+	private ZipFileExporter exporter = null;
 
-    private List errorTable = new ArrayList(1); //IStatus
+	private List errorTable = new ArrayList(1); // IStatus
 
-    private boolean useCompression = true;
+	private boolean useCompression = true;
 
-    //private boolean createLeadupStructure = false;
-    private boolean generateManifestFile = false;
+	// private boolean createLeadupStructure = false;
+	private boolean generateManifestFile = false;
 
-    private IProgressMonitor monitor;
+	private IProgressMonitor monitor;
 
-    private int inputContainerSegmentCount;
+	private int inputContainerSegmentCount;
 
-    /**
-     * @param operationDataModel
-     */
-    public DependentDeployableModuleOperation(DependentDeployableModuleDataModel operationDataModel) {
-        super(operationDataModel);
-        depDataModel = (DependentDeployableModuleDataModel) operationDataModel;
-    }
+	/**
+	 * @param operationDataModel
+	 */
+	public DependentDeployableModuleOperation(DependentDeployableModuleDataModel operationDataModel) {
+		super(operationDataModel);
+		depDataModel = (DependentDeployableModuleDataModel) operationDataModel;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperation#execute(org.eclipse.core.runtime.IProgressMonitor)
-     */
-    protected void execute(IProgressMonitor monitor) throws CoreException, InvocationTargetException, InterruptedException {
-        this.monitor = monitor;
-        IPath absoluteOutputContainer = getAbsoluteOutputContainer();
-        // create output container folder if it does not exist
-        IFolder outputContainerFolder = createFolder(absoluteOutputContainer);
-        IPath absoluteInputContainer = getAbsoluteInputContainer();
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperation#execute(org.eclipse.core.runtime.IProgressMonitor)
+	 */
+	protected void execute(IProgressMonitor monitor) throws CoreException, InvocationTargetException, InterruptedException {
+		this.monitor = monitor;
+		IPath absoluteOutputContainer = getAbsoluteOutputContainer();
+		// create output container folder if it does not exist
+		IFolder outputContainerFolder = createFolder(absoluteOutputContainer);
+		IPath absoluteInputContainer = getAbsoluteInputContainer();
 
-        if (absoluteOutputContainer == null || absoluteInputContainer == null)
-            return;
+		if (absoluteOutputContainer == null || absoluteInputContainer == null)
+			return;
 
-        if (depDataModel.getBooleanProperty(DependentDeployableModuleDataModel.DOES_CONSUME)) {
-            //if consumes simply copy resources to output directory
-            IResource sourceResource = getResource(absoluteInputContainer);
-            if (sourceResource == null)
-                return;
-            DeployableModuleBuilder.smartCopy(sourceResource, absoluteOutputContainer, new NullProgressMonitor());
-        } else {
-            String zipName = getZipFileName();
-            zipAndCopyResource(getResource(absoluteInputContainer), absoluteOutputContainer.append(zipName).toString());
-            getResource(absoluteOutputContainer).refreshLocal(IResource.DEPTH_INFINITE, monitor);
-        }
-    }
+		if (depDataModel.getBooleanProperty(DependentDeployableModuleDataModel.DOES_CONSUME)) {
+			// if consumes simply copy resources to output directory
+			IResource sourceResource = getResource(absoluteInputContainer);
+			if (sourceResource == null)
+				return;
+			DeployableModuleBuilder.smartCopy(sourceResource, absoluteOutputContainer, new NullProgressMonitor());
+		} else {
+			String zipName = getZipFileName();
+			zipAndCopyResource(getResource(absoluteInputContainer), absoluteOutputContainer.append(zipName).toString());
+			getResource(absoluteOutputContainer).refreshLocal(IResource.DEPTH_INFINITE, monitor);
+		}
+	}
 
-    /**
-     * @param resource
-     * @param zipName
-     * @return
-     */
-    private void zipAndCopyResource(IResource resource, String zipNameDestination) throws InterruptedException {
-        try {
-            String osPath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString() + zipNameDestination;
-            exporter = new ZipFileExporter(osPath, true, true);
-            inputContainerSegmentCount = resource.getFullPath().segmentCount();
-            exportResource(resource);
-            exporter.finished();
-        } catch (IOException ioEx) {
-        }
-    }
+	/**
+	 * @param resource
+	 * @param zipName
+	 * @return
+	 */
+	private void zipAndCopyResource(IResource resource, String zipNameDestination) throws InterruptedException {
+		try {
+			String osPath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString() + zipNameDestination;
+			exporter = new ZipFileExporter(osPath, true, true);
+			inputContainerSegmentCount = resource.getFullPath().segmentCount();
+			exportResource(resource);
+			exporter.finished();
+		} catch (IOException ioEx) {
+		}
+	}
 
-    /**
-     * @return
-     */
-    private IPath getAbsoluteOutputContainer() {
-        try {
-            WorkbenchModule workbenchModule = (WorkbenchModule) depDataModel.getProperty(DependentDeployableModuleDataModel.CONTAINING_WBMODULE);
-            IProject currentModuleProject = ModuleCore.getContainingProject(workbenchModule.getHandle());
-            IPath currentModuleProjectPath = currentModuleProject.getFullPath();
-            URI outputContainerURI = ModuleCore.getOutputContainerRoot(workbenchModule);
-            URI deployPath = (URI) depDataModel.getProperty(DependentDeployableModuleDataModel.OUTPUT_CONTAINER);
-            return currentModuleProjectPath.append(outputContainerURI.toString()).append(deployPath.toString());
-        } catch (UnresolveableURIException e) {
-        }
-        return null;
-    }
+	/**
+	 * @return
+	 */
+	private IPath getAbsoluteOutputContainer() {
+		WorkbenchModule workbenchModule = (WorkbenchModule) depDataModel.getProperty(DependentDeployableModuleDataModel.CONTAINING_WBMODULE);
+		IFolder localWorkbenchModuleOuptutContainer = null;
+		if (workbenchModule != null)
+			localWorkbenchModuleOuptutContainer = ModuleCore.getOutputContainerRoot(workbenchModule);
 
-    /**
-     * @return
-     */
-    private IPath getAbsoluteInputContainer() {
-        try {
-            WorkbenchModule depWBModule = (WorkbenchModule) depDataModel.getProperty(DependentDeployableModuleDataModel.DEPENDENT_WBMODULE);
-            IProject depModuleProject = ModuleCore.getContainingProject(depWBModule.getHandle());
-            IPath depModuleProjectPath = depModuleProject.getFullPath();
-            URI dependentModuleContainerURI = ModuleCore.getOutputContainerRoot(depWBModule);
-            return depModuleProjectPath.append(dependentModuleContainerURI.toString());
-        } catch (UnresolveableURIException e) {
-        }
-        return null;
-    }
+		IPath localWorkbenchModuleOuptutContainerPath = localWorkbenchModuleOuptutContainer.getFullPath();
+		URI deployPath = (URI) depDataModel.getProperty(DependentDeployableModuleDataModel.OUTPUT_CONTAINER);
+		return localWorkbenchModuleOuptutContainerPath.append(deployPath.toString()); 
+	}
 
-    private String getZipFileName() {
-        WorkbenchModule depWBModule = (WorkbenchModule) depDataModel.getProperty(DependentDeployableModuleDataModel.DEPENDENT_WBMODULE);
-        return depWBModule.getDeployedName();
-    }
+	/**
+	 * @return
+	 */
+	private IPath getAbsoluteInputContainer() {
+		WorkbenchModule depWBModule = (WorkbenchModule) depDataModel.getProperty(DependentDeployableModuleDataModel.DEPENDENT_WBMODULE);
+		if (depWBModule != null)
+			return ModuleCore.getOutputContainerRoot(depWBModule).getFullPath();
+		return null;
+	}
 
-    /**
-     * Get resource for given absolute path
-     * 
-     * @exception com.ibm.itp.core.api.resources.CoreException
-     */
-    private IResource getResource(IPath absolutePath) throws CoreException {
-        IResource resource = null;
-        if (absolutePath != null && !absolutePath.isEmpty()) {
-            resource = getWorkspace().getRoot().getFolder(absolutePath);
-            if (resource == null || !(resource instanceof IFolder)) {
-                resource = getWorkspace().getRoot().getFile(absolutePath);
-            }
-        }
-        return resource;
-    }
+	private String getZipFileName() {
+		WorkbenchModule depWBModule = (WorkbenchModule) depDataModel.getProperty(DependentDeployableModuleDataModel.DEPENDENT_WBMODULE);
+		return depWBModule.getDeployedName();
+	}
 
-    /**
-     * Create a folder for given absolute path
-     * 
-     * @exception com.ibm.itp.core.api.resources.CoreException
-     */
-    public IFolder createFolder(IPath absolutePath) throws CoreException {
-        if (absolutePath == null || absolutePath.isEmpty())
-            return null;
-        IFolder folder = getWorkspace().getRoot().getFolder(absolutePath);
-        // check if the parent is there
-        IContainer parent = folder.getParent();
-        if (parent != null && !parent.exists() && (parent instanceof IFolder))
-            createFolder(parent.getFullPath());
-        if (!folder.exists())
-            folder.create(true, true, new NullProgressMonitor());
-        return folder;
-    }
+	/**
+	 * Get resource for given absolute path
+	 * 
+	 * @exception com.ibm.itp.core.api.resources.CoreException
+	 */
+	private IResource getResource(IPath absolutePath) throws CoreException {
+		IResource resource = null;
+		if (absolutePath != null && !absolutePath.isEmpty()) {
+			resource = getWorkspace().getRoot().getFolder(absolutePath);
+			if (resource == null || !(resource instanceof IFolder)) {
+				resource = getWorkspace().getRoot().getFile(absolutePath);
+			}
+		}
+		return resource;
+	}
 
-    /**
-     * Export the passed resource to the destination .zip
-     * 
-     * @param resource
-     *            org.eclipse.core.resources.IResource
-     * @param depth -
-     *            the number of resource levels to be included in the path
-     *            including the resourse itself.
-     */
-    protected boolean exportResource(IResource resource) throws InterruptedException {
-        if (!resource.isAccessible())
-            return false;
+	/**
+	 * Create a folder for given absolute path
+	 * 
+	 * @exception com.ibm.itp.core.api.resources.CoreException
+	 */
+	public IFolder createFolder(IPath absolutePath) throws CoreException {
+		if (absolutePath == null || absolutePath.isEmpty())
+			return null;
+		IFolder folder = getWorkspace().getRoot().getFolder(absolutePath);
+		// check if the parent is there
+		IContainer parent = folder.getParent();
+		if (parent != null && !parent.exists() && (parent instanceof IFolder))
+			createFolder(parent.getFullPath());
+		if (!folder.exists())
+			folder.create(true, true, new NullProgressMonitor());
+		return folder;
+	}
 
-        if (resource.getType() == IResource.FILE) {
-            return writeResource(resource);
-        } else {
-            IResource[] children = null;
+	/**
+	 * Export the passed resource to the destination .zip
+	 * 
+	 * @param resource
+	 *            org.eclipse.core.resources.IResource
+	 * @param depth -
+	 *            the number of resource levels to be included in the path including the resourse
+	 *            itself.
+	 */
+	protected boolean exportResource(IResource resource) throws InterruptedException {
+		if (!resource.isAccessible())
+			return false;
 
-            try {
-                children = ((IContainer) resource).members();
-            } catch (CoreException e) {
-                // this should never happen because an #isAccessible check is
-                // done before #members is invoked
-                addError(format(ERROR_EXPORTING_MSG, new Object[] { resource.getFullPath() }), e); //$NON-NLS-1$
-            }
+		if (resource.getType() == IResource.FILE) {
+			return writeResource(resource);
+		} else {
+			IResource[] children = null;
 
-            boolean writeFolder = true;
-            for (int i = 0; i < children.length; i++) {
-                writeFolder = !exportResource(children[i]) && writeFolder;
-            }
-            if (writeFolder) {
-                writeResource(resource);
-            }
-            return true;
+			try {
+				children = ((IContainer) resource).members();
+			} catch (CoreException e) {
+				// this should never happen because an #isAccessible check is
+				// done before #members is invoked
+				addError(format(ERROR_EXPORTING_MSG, new Object[]{resource.getFullPath()}), e); //$NON-NLS-1$
+			}
 
-        }
-    }
+			boolean writeFolder = true;
+			for (int i = 0; i < children.length; i++) {
+				writeFolder = !exportResource(children[i]) && writeFolder;
+			}
+			if (writeFolder) {
+				writeResource(resource);
+			}
+			return true;
 
-    private boolean writeResource(IResource resource) throws InterruptedException {
-        //		if (resource.isDerived())
-        //			return false;
-        String destinationName;
-        IPath fullPath = resource.getFullPath();
-        destinationName = fullPath.removeFirstSegments(inputContainerSegmentCount).toString();
-        monitor.subTask(destinationName);
+		}
+	}
 
-        try {
-            if (resource.getType() == IResource.FILE)
-                exporter.write((IFile) resource, destinationName);
-            else
-                exporter.writeFolder(destinationName);
-        } catch (IOException e) {
-            addError(format(ERROR_EXPORTING_MSG, //$NON-NLS-1$
-                    new Object[] { resource.getFullPath().makeRelative(), e.getMessage() }), e);
-            return false;
-        } catch (CoreException e) {
-            addError(format(ERROR_EXPORTING_MSG, //$NON-NLS-1$
-                    new Object[] { resource.getFullPath().makeRelative(), e.getMessage() }), e);
-            return false;
-        }
+	private boolean writeResource(IResource resource) throws InterruptedException {
+		// if (resource.isDerived())
+		// return false;
+		String destinationName;
+		IPath fullPath = resource.getFullPath();
+		destinationName = fullPath.removeFirstSegments(inputContainerSegmentCount).toString();
+		monitor.subTask(destinationName);
 
-        monitor.worked(1);
-        return true;
-    }
+		try {
+			if (resource.getType() == IResource.FILE)
+				exporter.write((IFile) resource, destinationName);
+			else
+				exporter.writeFolder(destinationName);
+		} catch (IOException e) {
+			addError(format(ERROR_EXPORTING_MSG, //$NON-NLS-1$
+						new Object[]{resource.getFullPath().makeRelative(), e.getMessage()}), e);
+			return false;
+		} catch (CoreException e) {
+			addError(format(ERROR_EXPORTING_MSG, //$NON-NLS-1$
+						new Object[]{resource.getFullPath().makeRelative(), e.getMessage()}), e);
+			return false;
+		}
 
-    /**
-     * @param ERROR_EXPORTING_MSG
-     * @param objects
-     * @return
-     */
-    private String format(String pattern, Object[] arguments) {
-        return MessageFormat.format(pattern, arguments);
-    }
+		monitor.worked(1);
+		return true;
+	}
 
-    /**
-     * Add a new entry to the error table with the passed information
-     */
-    protected void addError(String message, Throwable e) {
-        errorTable.add(new Status(IStatus.ERROR, EMFWorkbenchEditPlugin.ID, 0, message, e));
-    }
+	/**
+	 * @param ERROR_EXPORTING_MSG
+	 * @param objects
+	 * @return
+	 */
+	private String format(String pattern, Object[] arguments) {
+		return MessageFormat.format(pattern, arguments);
+	}
+
+	/**
+	 * Add a new entry to the error table with the passed information
+	 */
+	protected void addError(String message, Throwable e) {
+		errorTable.add(new Status(IStatus.ERROR, EMFWorkbenchEditPlugin.ID, 0, message, e));
+	}
 }

@@ -35,6 +35,8 @@ import org.eclipse.wst.common.modulecore.WorkbenchModule;
 import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
 import org.eclipse.wst.common.modulecore.impl.UnresolveableURIException;
 
+import com.ibm.wtp.emf.workbench.ProjectUtilities;
+
 /**
  * <p>
  * Provides a Facade pattern for accessing the Web Tools 
@@ -149,9 +151,20 @@ public class ModuleCore implements IEditModelHandler {
 		return null;
 	}
 
-
+	/**
+	 * <p>
+	 * A fully-qualified module URI will contain enough information to determine 
+	 * the deployed name of the module. 
+	 * </p>
+	 * @param aModuleURI A valid, fully-qualified module URI
+	 * @return The deployed name of the {@see WorkbenchModule} referenced by the module URI
+	 * @throws UnresolveableURIException If the supplied module URI is invalid or unresolveable.
+	 */
+	public static String getDeployedNameForModule(URI aModuleURI) throws UnresolveableURIException {
+		ModuleURIUtil.ensureValidFullyQualifiedModuleURI(aModuleURI);
+		return aModuleURI.segment(ModuleCore.ModuleURI.MODULE_NAME_INDX);
+	}
 	
-
 	/**
 	 * <p>
 	 * For {@see WorkbenchModule}s that are contained within a project, the 
@@ -182,22 +195,7 @@ public class ModuleCore implements IEditModelHandler {
 			return project;
 		return null;
 	}
-
-	/**
-	 * <p>
-	 * A fully-qualified module URI will contain enough information to determine 
-	 * the deployed name of the module. 
-	 * </p>
-	 * @param aModuleURI A valid, fully-qualified module URI
-	 * @return The deployed name of the {@see WorkbenchModule} referenced by the module URI
-	 * @throws UnresolveableURIException If the supplied module URI is invalid or unresolveable.
-	 */
-	public static String getDeployedNameForModule(URI aModuleURI) throws UnresolveableURIException {
-		ModuleURIUtil.ensureValidFullyQualifiedModuleURI(aModuleURI);
-		return aModuleURI.segment(ModuleCore.ModuleURI.MODULE_NAME_INDX);
-	}
 	
-	// TODO Rename the following method to be more clear e.g. getCorrespondingIResource() or getEclipseResource()
 	/**
 	 * <p>
 	 * Returns the corresponding Eclipse IResource, if it can be determined,
@@ -215,7 +213,7 @@ public class ModuleCore implements IEditModelHandler {
 	 * @param aModuleResource A WorkbenchModuleResource with a valid sourcePath 
 	 * @return The corresponding Eclipse IResource, if available. 
 	 */
-	public static IResource getResource(WorkbenchModuleResource aModuleResource) {
+	public static IResource getEclipseResource(WorkbenchModuleResource aModuleResource) {
 		EclipseResourceAdapter eclipseResourceAdapter = (EclipseResourceAdapter) EcoreUtil.getAdapter(aModuleResource.eAdapters(), EclipseResourceAdapter.ADAPTER_TYPE);
 		if (eclipseResourceAdapter != null)
 			return eclipseResourceAdapter.getEclipseResource();
@@ -224,22 +222,30 @@ public class ModuleCore implements IEditModelHandler {
 		return eclipseResourceAdapter.getEclipseResource();
 	}
 
-	
-	// TODO Change this to return an IContainer (or IFolder)
 	/**
 	 * <p>
 	 * Returns a URI for the supplied {@see WorkbenchModule}. The URI will be
 	 * relative to project root of the flexible project that contains the 
 	 * {@see WorkbenchModule}.
 	 * </p>
+	 * <p>
+	 * <b>The following method may return null.</b>
+	 * </p>
 	 * @param aWorkbenchModule A valid WorkbenchModule
 	 * @return A project-relative URI of the output folder for aWorkbenchModoule.
 	 */
-	public static URI getOutputContainerRoot(WorkbenchModule aWorkbenchModule) {
-		return URI.createURI(DEPLOYABLES_ROOT + aWorkbenchModule.getDeployedName()); 
+	public static IFolder getOutputContainerRoot(WorkbenchModule aWorkbenchModule) {
+		IProject project = null;
+		try {
+			project = getContainingProject(aWorkbenchModule.getHandle());				
+		} catch (UnresolveableURIException e) {
+			project = ProjectUtilities.getProject(aWorkbenchModule);
+		}  
+		if(project != null)
+			return  project.getFolder(new Path(DEPLOYABLES_ROOT + aWorkbenchModule.getDeployedName()));
+		return null;
 	}
 
-	// TODO Change this to return an array IContainer (or IFolder)
 	/**
 	 * <p>
 	 * Returns a collection of the output containers for the supplied
@@ -255,7 +261,7 @@ public class ModuleCore implements IEditModelHandler {
 	 * @param aProject A project with a {@see ModuleCoreNature}
 	 * @return An array of output containers or an empty array.
 	 */
-	public static IResource[] getOutputContainersForProject(IProject aProject) {
+	public static IFolder[] getOutputContainersForProject(IProject aProject) {
 		ModuleCoreNature moduleCoreNature = ModuleCoreNature.getModuleCoreNature(aProject);
 		if(moduleCoreNature == null)
 			return NO_FOLDERS;
@@ -347,7 +353,6 @@ public class ModuleCore implements IEditModelHandler {
 		structuralModel.prepareProjectModulesIfNecessary();		
 	}
 
-	// TODO Rename the following method to be getModelRootObject()
 	/** 
 	 * <p>
 	 * When loaded for write, the current ModuleCore can return 
@@ -357,7 +362,7 @@ public class ModuleCore implements IEditModelHandler {
 	 * </p>
 	 * @return The root object of the underlying model
 	 */
-	public ProjectModules getProjectModules() {
+	public ProjectModules getModuleModelRoot() {
 		return (ProjectModules) structuralModel.getPrimaryRootObject();
 	}
 	
@@ -371,7 +376,7 @@ public class ModuleCore implements IEditModelHandler {
 	 * @return The WorkbenchModules of the underlying model, if any.
 	 */
 	public WorkbenchModule[] getWorkbenchModules() {
-		List wbModules = getProjectModules().getWorkbenchModules();
+		List wbModules = getModuleModelRoot().getWorkbenchModules();
 		return (WorkbenchModule[]) wbModules.toArray(new WorkbenchModule[wbModules.size()]);
 	}
 
@@ -431,7 +436,7 @@ public class ModuleCore implements IEditModelHandler {
 	 * @throws UnresolveableURIException If the supplied module URI is invalid or unresolveable.
 	 */
 	public WorkbenchModuleResource[] findWorkbenchModuleResourcesBySourcePath(URI aWorkspaceRelativePath) throws UnresolveableURIException {
-		ProjectModules projectModules = getProjectModules();
+		ProjectModules projectModules = getModuleModelRoot();
 		EList modules = projectModules.getWorkbenchModules();
 
 		WorkbenchModule module = null;
@@ -452,6 +457,7 @@ public class ModuleCore implements IEditModelHandler {
 	 * <p>
 	 * Returns the {@see WorkbenchModule} contained by the current 
 	 * ModuleCore with the deploy name aModuleName. 
+	 * </p>
 	 * <p>
 	 * <b>The following method may return null.</b>
 	 * </p>
@@ -460,7 +466,7 @@ public class ModuleCore implements IEditModelHandler {
 	 * @see WorkbenchModule#getDeployedName()
 	 */
 	public WorkbenchModule findWorkbenchModuleByDeployName(String aModuleName) {
-		return getProjectModules().findWorkbenchModule(aModuleName);
+		return getModuleModelRoot().findWorkbenchModule(aModuleName);
 	}
 
 	/**

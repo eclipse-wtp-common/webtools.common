@@ -131,7 +131,7 @@ public class ResourceTreeNode {
 			IContainer eclipseContainer = null;
 			for(Iterator resourceIter = moduleResources.iterator(); resourceIter.hasNext(); ) {
 				moduleResource = (WorkbenchModuleResource) resourceIter.next();
-				eclipseResource = ModuleCore.getResource(moduleResource);
+				eclipseResource = ModuleCore.getEclipseResource(moduleResource);
 				if(eclipseResource.getType() == IResource.FOLDER) {
 					eclipseContainer = (IContainer)eclipseResource;
 					if(eclipseContainer.getFile(aPath).exists() || eclipseContainer.getFolder(aPath).exists())

@@ -3,6 +3,7 @@ package org.eclipse.wst.common.modulecore.builder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
@@ -88,10 +89,10 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
      */
     private Object populateOutputContainer() {
         WorkbenchModule wbModule = (WorkbenchModule)getProperty(WORKBENCH_MODULE);
-        URI uri = null;
+        IFolder outputContainer = null;
         if(wbModule != null)
-            uri = ModuleCore.getOutputContainerRoot(wbModule);
-        return uri;
+        	outputContainer = ModuleCore.getOutputContainerRoot(wbModule);
+        return outputContainer;
     }
 
     /* (non-Javadoc)

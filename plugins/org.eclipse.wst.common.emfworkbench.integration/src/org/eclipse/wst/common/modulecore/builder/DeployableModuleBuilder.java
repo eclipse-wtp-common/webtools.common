@@ -76,7 +76,7 @@ public class DeployableModuleBuilder extends IncrementalProjectBuilder implement
     }
 
     protected void clean(IProgressMonitor monitor) throws CoreException {
-        IResource[] oldOutput = ModuleCore.getOutputContainersForProject(getProject());
+        IFolder[] oldOutput = ModuleCore.getOutputContainersForProject(getProject());
         if(oldOutput != null) {
             for(int i = 0; i < oldOutput.length; i++) {
                 oldOutput[i].delete(true, monitor);
