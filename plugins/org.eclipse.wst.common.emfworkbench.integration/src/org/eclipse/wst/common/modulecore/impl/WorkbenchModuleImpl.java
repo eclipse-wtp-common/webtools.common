@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchModuleImpl.java,v 1.14 2005/02/08 19:57:09 cbridgha Exp $
+ * $Id: WorkbenchModuleImpl.java,v 1.15 2005/02/09 02:48:39 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
@@ -11,10 +11,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.notify.Notification;
@@ -37,7 +33,6 @@ import org.eclipse.wst.common.modulecore.WorkbenchModule;
 import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
 import org.eclipse.wst.common.modulecore.util.ModuleCore;
 import org.eclipse.wst.common.modulecore.util.ResourceTreeRoot;
-import org.omg.CORBA.NO_MEMORY;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Workbench Module</b></em>'.
@@ -45,23 +40,14 @@ import org.omg.CORBA.NO_MEMORY;
  * <p>
  * The following features are implemented:
  * <ul>
- * <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl#getHandle <em>Handle</em>}
- * </li>
- * <li>
- * {@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl#getDeployedName <em>Deployed Name</em>}
- * </li>
- * <li>
- * {@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl#getResources <em>Resources</em>}
- * </li>
- * <li>
- * {@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl#getModuleType <em>Module Type</em>}
- * </li>
- * <li>
- * {@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl#getModules <em>Modules</em>}
- * </li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl#getHandle <em>Handle</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl#getDeployedName <em>Deployed Name</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl#getResources <em>Resources</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl#getModuleType <em>Module Type</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl#getModules <em>Modules</em>}</li>
  * </ul>
  * </p>
- * 
+ *
  * @generated
  */
 public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule {
@@ -88,7 +74,6 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	/**
 	 * The default value of the '{@link #getDeployedName() <em>Deployed Name</em>}' attribute.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @see #getDeployedName()
 	 * @generated
 	 * @ordered
@@ -106,9 +91,8 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	protected String deployedName = DEPLOYED_NAME_EDEFAULT;
 
 	/**
-	 * The cached value of the '{@link #getResources() <em>Resources</em>}' containment reference
-	 * list. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The cached value of the '{@link #getResources() <em>Resources</em>}' containment reference list.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #getResources()
 	 * @generated
 	 * @ordered
@@ -146,7 +130,6 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected WorkbenchModuleImpl() {
@@ -155,7 +138,6 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	protected EClass eStaticClass() {
@@ -164,7 +146,6 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public URI getHandle() {
@@ -173,7 +154,6 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public void setHandle(URI newHandle) {
@@ -185,7 +165,6 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public String getDeployedName() {
@@ -205,10 +184,9 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
-	private void setDeployedNameGen(String newDeployedName) {
+	public void setDeployedNameGen(String newDeployedName) {
 		String oldDeployedName = deployedName;
 		deployedName = newDeployedName;
 		if (eNotificationRequired())
@@ -217,7 +195,6 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public EList getModules() {
@@ -229,7 +206,6 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public EList getResources() {
@@ -241,13 +217,12 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public ModuleType getModuleType() {
 		if (moduleType != null && moduleType.eIsProxy()) {
 			ModuleType oldModuleType = moduleType;
-			moduleType = (ModuleType) eResolveProxy((InternalEObject) moduleType);
+			moduleType = (ModuleType)eResolveProxy((InternalEObject)moduleType);
 			if (moduleType != oldModuleType) {
 				if (eNotificationRequired())
 					eNotify(new ENotificationImpl(this, Notification.RESOLVE, ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE, oldModuleType, moduleType));
@@ -258,7 +233,6 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public ModuleType basicGetModuleType() {
@@ -267,7 +241,6 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public void setModuleType(ModuleType newModuleType) {
@@ -279,15 +252,14 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, Class baseClass, NotificationChain msgs) {
 		if (featureID >= 0) {
 			switch (eDerivedStructuralFeatureID(featureID, baseClass)) {
-				case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES :
-					return ((InternalEList) getResources()).basicAdd(otherEnd, msgs);
-				default :
+				case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES:
+					return ((InternalEList)getResources()).basicAdd(otherEnd, msgs);
+				default:
 					return eDynamicInverseAdd(otherEnd, featureID, baseClass, msgs);
 			}
 		}
@@ -298,15 +270,14 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, Class baseClass, NotificationChain msgs) {
 		if (featureID >= 0) {
 			switch (eDerivedStructuralFeatureID(featureID, baseClass)) {
-				case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES :
-					return ((InternalEList) getResources()).basicRemove(otherEnd, msgs);
-				default :
+				case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES:
+					return ((InternalEList)getResources()).basicRemove(otherEnd, msgs);
+				default:
 					return eDynamicInverseRemove(otherEnd, featureID, baseClass, msgs);
 			}
 		}
@@ -315,22 +286,20 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public Object eGet(EStructuralFeature eFeature, boolean resolve) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.WORKBENCH_MODULE__HANDLE :
+			case ModuleCorePackage.WORKBENCH_MODULE__HANDLE:
 				return getHandle();
-			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_NAME :
+			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_NAME:
 				return getDeployedName();
-			case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES :
+			case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES:
 				return getResources();
-			case ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE :
-				if (resolve)
-					return getModuleType();
+			case ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE:
+				if (resolve) return getModuleType();
 				return basicGetModuleType();
-			case ModuleCorePackage.WORKBENCH_MODULE__MODULES :
+			case ModuleCorePackage.WORKBENCH_MODULE__MODULES:
 				return getModules();
 		}
 		return eDynamicGet(eFeature, resolve);
@@ -338,27 +307,26 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public void eSet(EStructuralFeature eFeature, Object newValue) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.WORKBENCH_MODULE__HANDLE :
-				setHandle((URI) newValue);
+			case ModuleCorePackage.WORKBENCH_MODULE__HANDLE:
+				setHandle((URI)newValue);
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_NAME :
-				setDeployedName((String) newValue);
+			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_NAME:
+				setDeployedName((String)newValue);
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES :
+			case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES:
 				getResources().clear();
-				getResources().addAll((Collection) newValue);
+				getResources().addAll((Collection)newValue);
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE :
-				setModuleType((ModuleType) newValue);
+			case ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE:
+				setModuleType((ModuleType)newValue);
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE__MODULES :
+			case ModuleCorePackage.WORKBENCH_MODULE__MODULES:
 				getModules().clear();
-				getModules().addAll((Collection) newValue);
+				getModules().addAll((Collection)newValue);
 				return;
 		}
 		eDynamicSet(eFeature, newValue);
@@ -366,24 +334,23 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public void eUnset(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.WORKBENCH_MODULE__HANDLE :
+			case ModuleCorePackage.WORKBENCH_MODULE__HANDLE:
 				setHandle(HANDLE_EDEFAULT);
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_NAME :
+			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_NAME:
 				setDeployedName(DEPLOYED_NAME_EDEFAULT);
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES :
+			case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES:
 				getResources().clear();
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE :
-				setModuleType((ModuleType) null);
+			case ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE:
+				setModuleType((ModuleType)null);
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE__MODULES :
+			case ModuleCorePackage.WORKBENCH_MODULE__MODULES:
 				getModules().clear();
 				return;
 		}
@@ -392,20 +359,19 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public boolean eIsSet(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.WORKBENCH_MODULE__HANDLE :
+			case ModuleCorePackage.WORKBENCH_MODULE__HANDLE:
 				return HANDLE_EDEFAULT == null ? handle != null : !HANDLE_EDEFAULT.equals(handle);
-			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_NAME :
+			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_NAME:
 				return DEPLOYED_NAME_EDEFAULT == null ? deployedName != null : !DEPLOYED_NAME_EDEFAULT.equals(deployedName);
-			case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES :
+			case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES:
 				return resources != null && !resources.isEmpty();
-			case ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE :
+			case ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE:
 				return moduleType != null;
-			case ModuleCorePackage.WORKBENCH_MODULE__MODULES :
+			case ModuleCorePackage.WORKBENCH_MODULE__MODULES:
 				return modules != null && !modules.isEmpty();
 		}
 		return eDynamicIsSet(eFeature);
@@ -413,12 +379,10 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public String toString() {
-		if (eIsProxy())
-			return super.toString();
+		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (handle: ");

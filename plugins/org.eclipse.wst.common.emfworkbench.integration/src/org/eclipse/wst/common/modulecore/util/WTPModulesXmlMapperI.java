@@ -11,6 +11,7 @@ public interface WTPModulesXmlMapperI {
 	String ROOT = "root";//$NON-NLS-1$
 	String META_RESOURCES = "meta-resources";//$NON-NLS-1$
 	String URI = "uri";//$NON-NLS-1$
+	String DEPENDENCY_TYPE = "dependency-type";//$NON-NLS-1$
 	String WBRESOURCE = "wb-resource"; //$NON-NLS-1$
 	String SOURCE_PATH = "source-path"; //$NON-NLS-1$
 	String DEPLOY_PATH = "deploy-path"; //$NON-NLS-1$

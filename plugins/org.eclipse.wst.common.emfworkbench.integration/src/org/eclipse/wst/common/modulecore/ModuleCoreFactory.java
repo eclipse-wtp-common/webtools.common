@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreFactory.java,v 1.8 2005/02/02 21:40:42 cbridgha Exp $
+ * $Id: ModuleCoreFactory.java,v 1.9 2005/02/09 02:48:39 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -26,15 +26,6 @@ public interface ModuleCoreFactory extends EFactory{
 	ModuleCoreFactory eINSTANCE = new org.eclipse.wst.common.modulecore.impl.ModuleCoreFactoryImpl();
 
 	/**
-	 * Returns a new object of class '<em>Deploy Scheme</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Deploy Scheme</em>'.
-	 * @generated
-	 */
-	DeployScheme createDeployScheme();
-
-	/**
 	 * Returns a new object of class '<em>Workbench Module</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -51,15 +42,6 @@ public interface ModuleCoreFactory extends EFactory{
 	 * @generated
 	 */
 	WorkbenchModuleResource createWorkbenchModuleResource();
-
-	/**
-	 * Returns a new object of class '<em>Workbench Application</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Workbench Application</em>'.
-	 * @generated
-	 */
-	WorkbenchApplication createWorkbenchApplication();
 
 	/**
 	 * Returns a new object of class '<em>Module Type</em>'.

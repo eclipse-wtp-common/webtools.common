@@ -2,13 +2,14 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCorePackage.java,v 1.11 2005/02/03 14:42:15 cbridgha Exp $
+ * $Id: ModuleCorePackage.java,v 1.12 2005/02/09 02:48:39 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
@@ -60,43 +61,6 @@ public interface ModuleCorePackage extends EPackage{
 	ModuleCorePackage eINSTANCE = org.eclipse.wst.common.modulecore.impl.ModuleCorePackageImpl.init();
 
 	/**
-	 * The meta object id for the '{@link org.eclipse.wst.common.modulecore.impl.DeploySchemeImpl <em>Deploy Scheme</em>}' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see org.eclipse.wst.common.modulecore.impl.DeploySchemeImpl
-	 * @see org.eclipse.wst.common.modulecore.impl.ModuleCorePackageImpl#getDeployScheme()
-	 * @generated
-	 */
-	int DEPLOY_SCHEME = 0;
-
-	/**
-	 * The feature id for the '<em><b>Type</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DEPLOY_SCHEME__TYPE = 0;
-
-	/**
-	 * The feature id for the '<em><b>Server Target</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DEPLOY_SCHEME__SERVER_TARGET = 1;
-
-	/**
-	 * The number of structural features of the the '<em>Deploy Scheme</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int DEPLOY_SCHEME_FEATURE_COUNT = 2;
-
-	/**
 	 * The meta object id for the '{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl <em>Workbench Module</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -104,7 +68,7 @@ public interface ModuleCorePackage extends EPackage{
 	 * @see org.eclipse.wst.common.modulecore.impl.ModuleCorePackageImpl#getWorkbenchModule()
 	 * @generated
 	 */
-	int WORKBENCH_MODULE = 1;
+	int WORKBENCH_MODULE = 0;
 
 	/**
 	 * The feature id for the '<em><b>Handle</b></em>' attribute.
@@ -168,7 +132,7 @@ public interface ModuleCorePackage extends EPackage{
 	 * @see org.eclipse.wst.common.modulecore.impl.ModuleCorePackageImpl#getWorkbenchModuleResource()
 	 * @generated
 	 */
-	int WORKBENCH_MODULE_RESOURCE = 2;
+	int WORKBENCH_MODULE_RESOURCE = 1;
 
 	/**
 	 * The feature id for the '<em><b>Source Path</b></em>' attribute.
@@ -216,79 +180,6 @@ public interface ModuleCorePackage extends EPackage{
 	int WORKBENCH_MODULE_RESOURCE_FEATURE_COUNT = 4;
 
 	/**
-	 * The meta object id for the '{@link org.eclipse.wst.common.modulecore.impl.WorkbenchApplicationImpl <em>Workbench Application</em>}' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see org.eclipse.wst.common.modulecore.impl.WorkbenchApplicationImpl
-	 * @see org.eclipse.wst.common.modulecore.impl.ModuleCorePackageImpl#getWorkbenchApplication()
-	 * @generated
-	 */
-	int WORKBENCH_APPLICATION = 3;
-
-	/**
-	 * The feature id for the '<em><b>Handle</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int WORKBENCH_APPLICATION__HANDLE = WORKBENCH_MODULE__HANDLE;
-
-	/**
-	 * The feature id for the '<em><b>Deployed Name</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int WORKBENCH_APPLICATION__DEPLOYED_NAME = WORKBENCH_MODULE__DEPLOYED_NAME;
-
-	/**
-	 * The feature id for the '<em><b>Resources</b></em>' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int WORKBENCH_APPLICATION__RESOURCES = WORKBENCH_MODULE__RESOURCES;
-
-	/**
-	 * The feature id for the '<em><b>Module Type</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int WORKBENCH_APPLICATION__MODULE_TYPE = WORKBENCH_MODULE__MODULE_TYPE;
-
-	/**
-	 * The feature id for the '<em><b>Modules</b></em>' reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int WORKBENCH_APPLICATION__MODULES = WORKBENCH_MODULE__MODULES;
-
-	/**
-	 * The feature id for the '<em><b>Deploy Scheme</b></em>' reference.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int WORKBENCH_APPLICATION__DEPLOY_SCHEME = WORKBENCH_MODULE_FEATURE_COUNT + 0;
-
-	/**
-	 * The number of structural features of the the '<em>Workbench Application</em>' class.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int WORKBENCH_APPLICATION_FEATURE_COUNT = WORKBENCH_MODULE_FEATURE_COUNT + 1;
-
-	/**
 	 * The meta object id for the '{@link org.eclipse.wst.common.modulecore.impl.ModuleTypeImpl <em>Module Type</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -296,7 +187,7 @@ public interface ModuleCorePackage extends EPackage{
 	 * @see org.eclipse.wst.common.modulecore.impl.ModuleCorePackageImpl#getModuleType()
 	 * @generated
 	 */
-	int MODULE_TYPE = 4;
+	int MODULE_TYPE = 2;
 
 	/**
 	 * The feature id for the '<em><b>Metadata Resources</b></em>' attribute list.
@@ -333,7 +224,7 @@ public interface ModuleCorePackage extends EPackage{
 	 * @see org.eclipse.wst.common.modulecore.impl.ModuleCorePackageImpl#getProjectModules()
 	 * @generated
 	 */
-	int PROJECT_MODULES = 5;
+	int PROJECT_MODULES = 3;
 
 	/**
 	 * The feature id for the '<em><b>Project Name</b></em>' attribute.
@@ -345,31 +236,13 @@ public interface ModuleCorePackage extends EPackage{
 	int PROJECT_MODULES__PROJECT_NAME = 0;
 
 	/**
-	 * The feature id for the '<em><b>Workbench Applications</b></em>' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int PROJECT_MODULES__WORKBENCH_APPLICATIONS = 1;
-
-	/**
 	 * The feature id for the '<em><b>Workbench Modules</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int PROJECT_MODULES__WORKBENCH_MODULES = 2;
-
-	/**
-	 * The feature id for the '<em><b>Deployment Schemes</b></em>' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int PROJECT_MODULES__DEPLOYMENT_SCHEMES = 3;
+	int PROJECT_MODULES__WORKBENCH_MODULES = 1;
 
 	/**
 	 * The number of structural features of the the '<em>Project Modules</em>' class.
@@ -378,7 +251,7 @@ public interface ModuleCorePackage extends EPackage{
 	 * @generated
 	 * @ordered
 	 */
-	int PROJECT_MODULES_FEATURE_COUNT = 4;
+	int PROJECT_MODULES_FEATURE_COUNT = 2;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.wst.common.modulecore.impl.DependentModuleImpl <em>Dependent Module</em>}' class.
@@ -388,7 +261,7 @@ public interface ModuleCorePackage extends EPackage{
 	 * @see org.eclipse.wst.common.modulecore.impl.ModuleCorePackageImpl#getDependentModule()
 	 * @generated
 	 */
-	int DEPENDENT_MODULE = 6;
+	int DEPENDENT_MODULE = 4;
 
 	/**
 	 * The feature id for the '<em><b>Handle</b></em>' attribute.
@@ -409,13 +282,32 @@ public interface ModuleCorePackage extends EPackage{
 	int DEPENDENT_MODULE__DEPLOYED_PATH = 1;
 
 	/**
+	 * The feature id for the '<em><b>Dependency Type</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DEPENDENT_MODULE__DEPENDENCY_TYPE = 2;
+
+	/**
 	 * The number of structural features of the the '<em>Dependent Module</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int DEPENDENT_MODULE_FEATURE_COUNT = 2;
+	int DEPENDENT_MODULE_FEATURE_COUNT = 3;
+
+	/**
+	 * The meta object id for the '{@link org.eclipse.wst.common.modulecore.DependencyType <em>Dependency Type</em>}' enum.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see org.eclipse.wst.common.modulecore.DependencyType
+	 * @see org.eclipse.wst.common.modulecore.impl.ModuleCorePackageImpl#getDependencyType()
+	 * @generated
+	 */
+	int DEPENDENCY_TYPE = 5;
 
 	/**
 	 * The meta object id for the '<em>URI</em>' data type.
@@ -425,40 +317,8 @@ public interface ModuleCorePackage extends EPackage{
 	 * @see org.eclipse.wst.common.modulecore.impl.ModuleCorePackageImpl#getURI()
 	 * @generated
 	 */
-	int URI = 7;
+	int URI = 6;
 
-
-	/**
-	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.DeployScheme <em>Deploy Scheme</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>Deploy Scheme</em>'.
-	 * @see org.eclipse.wst.common.modulecore.DeployScheme
-	 * @generated
-	 */
-	EClass getDeployScheme();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.DeployScheme#getType <em>Type</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Type</em>'.
-	 * @see org.eclipse.wst.common.modulecore.DeployScheme#getType()
-	 * @see #getDeployScheme()
-	 * @generated
-	 */
-	EAttribute getDeployScheme_Type();
-
-	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.DeployScheme#getServerTarget <em>Server Target</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Server Target</em>'.
-	 * @see org.eclipse.wst.common.modulecore.DeployScheme#getServerTarget()
-	 * @see #getDeployScheme()
-	 * @generated
-	 */
-	EAttribute getDeployScheme_ServerTarget();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.WorkbenchModule <em>Workbench Module</em>}'.
@@ -580,27 +440,6 @@ public interface ModuleCorePackage extends EPackage{
 	EReference getWorkbenchModuleResource_Module();
 
 	/**
-	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.WorkbenchApplication <em>Workbench Application</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>Workbench Application</em>'.
-	 * @see org.eclipse.wst.common.modulecore.WorkbenchApplication
-	 * @generated
-	 */
-	EClass getWorkbenchApplication();
-
-	/**
-	 * Returns the meta object for the reference '{@link org.eclipse.wst.common.modulecore.WorkbenchApplication#getDeployScheme <em>Deploy Scheme</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference '<em>Deploy Scheme</em>'.
-	 * @see org.eclipse.wst.common.modulecore.WorkbenchApplication#getDeployScheme()
-	 * @see #getWorkbenchApplication()
-	 * @generated
-	 */
-	EReference getWorkbenchApplication_DeployScheme();
-
-	/**
 	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.ModuleType <em>Module Type</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -654,17 +493,6 @@ public interface ModuleCorePackage extends EPackage{
 	EAttribute getProjectModules_ProjectName();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.eclipse.wst.common.modulecore.ProjectModules#getWorkbenchApplications <em>Workbench Applications</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Workbench Applications</em>'.
-	 * @see org.eclipse.wst.common.modulecore.ProjectModules#getWorkbenchApplications()
-	 * @see #getProjectModules()
-	 * @generated
-	 */
-	EReference getProjectModules_WorkbenchApplications();
-
-	/**
 	 * Returns the meta object for the containment reference list '{@link org.eclipse.wst.common.modulecore.ProjectModules#getWorkbenchModules <em>Workbench Modules</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -674,17 +502,6 @@ public interface ModuleCorePackage extends EPackage{
 	 * @generated
 	 */
 	EReference getProjectModules_WorkbenchModules();
-
-	/**
-	 * Returns the meta object for the containment reference list '{@link org.eclipse.wst.common.modulecore.ProjectModules#getDeploymentSchemes <em>Deployment Schemes</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the containment reference list '<em>Deployment Schemes</em>'.
-	 * @see org.eclipse.wst.common.modulecore.ProjectModules#getDeploymentSchemes()
-	 * @see #getProjectModules()
-	 * @generated
-	 */
-	EReference getProjectModules_DeploymentSchemes();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.DependentModule <em>Dependent Module</em>}'.
@@ -717,6 +534,27 @@ public interface ModuleCorePackage extends EPackage{
 	 * @generated
 	 */
 	EAttribute getDependentModule_DeployedPath();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.DependentModule#getDependencyType <em>Dependency Type</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Dependency Type</em>'.
+	 * @see org.eclipse.wst.common.modulecore.DependentModule#getDependencyType()
+	 * @see #getDependentModule()
+	 * @generated
+	 */
+	EAttribute getDependentModule_DependencyType();
+
+	/**
+	 * Returns the meta object for enum '{@link org.eclipse.wst.common.modulecore.DependencyType <em>Dependency Type</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for enum '<em>Dependency Type</em>'.
+	 * @see org.eclipse.wst.common.modulecore.DependencyType
+	 * @generated
+	 */
+	EEnum getDependencyType();
 
 	/**
 	 * Returns the meta object for data type '{@link org.eclipse.emf.common.util.URI <em>URI</em>}'.

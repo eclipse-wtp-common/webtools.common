@@ -2,23 +2,23 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCorePackageImpl.java,v 1.12 2005/02/02 22:14:45 cbridgha Exp $
+ * $Id: ModuleCorePackageImpl.java,v 1.13 2005/02/09 02:48:39 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
+import org.eclipse.wst.common.modulecore.DependencyType;
 import org.eclipse.wst.common.modulecore.DependentModule;
-import org.eclipse.wst.common.modulecore.DeployScheme;
 import org.eclipse.wst.common.modulecore.ModuleCoreFactory;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 import org.eclipse.wst.common.modulecore.ModuleType;
 import org.eclipse.wst.common.modulecore.ProjectModules;
-import org.eclipse.wst.common.modulecore.WorkbenchApplication;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
 import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
 
@@ -34,13 +34,6 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass deploySchemeEClass = null;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	private EClass workbenchModuleEClass = null;
 
 	/**
@@ -49,13 +42,6 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * @generated
 	 */
 	private EClass workbenchModuleResourceEClass = null;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	private EClass workbenchApplicationEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -77,6 +63,13 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * @generated
 	 */
 	private EClass dependentModuleEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EEnum dependencyTypeEEnum = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -151,33 +144,6 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 		theModuleCorePackage.freeze();
 
 		return theModuleCorePackage;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EClass getDeployScheme() {
-		return deploySchemeEClass;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getDeployScheme_Type() {
-		return (EAttribute)deploySchemeEClass.getEStructuralFeatures().get(0);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getDeployScheme_ServerTarget() {
-		return (EAttribute)deploySchemeEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -284,24 +250,6 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getWorkbenchApplication() {
-		return workbenchApplicationEClass;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EReference getWorkbenchApplication_DeployScheme() {
-		return (EReference)workbenchApplicationEClass.getEStructuralFeatures().get(0);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EClass getModuleType() {
 		return moduleTypeEClass;
 	}
@@ -347,26 +295,8 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getProjectModules_WorkbenchApplications() {
-		return (EReference)projectModulesEClass.getEStructuralFeatures().get(1);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EReference getProjectModules_WorkbenchModules() {
-		return (EReference)projectModulesEClass.getEStructuralFeatures().get(2);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EReference getProjectModules_DeploymentSchemes() {
-		return (EReference)projectModulesEClass.getEStructuralFeatures().get(3);
+		return (EReference)projectModulesEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -394,6 +324,24 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 */
 	public EAttribute getDependentModule_DeployedPath() {
 		return (EAttribute)dependentModuleEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getDependentModule_DependencyType() {
+		return (EAttribute)dependentModuleEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EEnum getDependencyType() {
+		return dependencyTypeEEnum;
 	}
 
 	/**
@@ -433,10 +381,6 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 		isCreated = true;
 
 		// Create classes and their features
-		deploySchemeEClass = createEClass(DEPLOY_SCHEME);
-		createEAttribute(deploySchemeEClass, DEPLOY_SCHEME__TYPE);
-		createEAttribute(deploySchemeEClass, DEPLOY_SCHEME__SERVER_TARGET);
-
 		workbenchModuleEClass = createEClass(WORKBENCH_MODULE);
 		createEAttribute(workbenchModuleEClass, WORKBENCH_MODULE__HANDLE);
 		createEAttribute(workbenchModuleEClass, WORKBENCH_MODULE__DEPLOYED_NAME);
@@ -450,22 +394,21 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 		createEAttribute(workbenchModuleResourceEClass, WORKBENCH_MODULE_RESOURCE__EXCLUSIONS);
 		createEReference(workbenchModuleResourceEClass, WORKBENCH_MODULE_RESOURCE__MODULE);
 
-		workbenchApplicationEClass = createEClass(WORKBENCH_APPLICATION);
-		createEReference(workbenchApplicationEClass, WORKBENCH_APPLICATION__DEPLOY_SCHEME);
-
 		moduleTypeEClass = createEClass(MODULE_TYPE);
 		createEAttribute(moduleTypeEClass, MODULE_TYPE__METADATA_RESOURCES);
 		createEAttribute(moduleTypeEClass, MODULE_TYPE__MODULE_TYPE_ID);
 
 		projectModulesEClass = createEClass(PROJECT_MODULES);
 		createEAttribute(projectModulesEClass, PROJECT_MODULES__PROJECT_NAME);
-		createEReference(projectModulesEClass, PROJECT_MODULES__WORKBENCH_APPLICATIONS);
 		createEReference(projectModulesEClass, PROJECT_MODULES__WORKBENCH_MODULES);
-		createEReference(projectModulesEClass, PROJECT_MODULES__DEPLOYMENT_SCHEMES);
 
 		dependentModuleEClass = createEClass(DEPENDENT_MODULE);
 		createEAttribute(dependentModuleEClass, DEPENDENT_MODULE__HANDLE);
 		createEAttribute(dependentModuleEClass, DEPENDENT_MODULE__DEPLOYED_PATH);
+		createEAttribute(dependentModuleEClass, DEPENDENT_MODULE__DEPENDENCY_TYPE);
+
+		// Create enums
+		dependencyTypeEEnum = createEEnum(DEPENDENCY_TYPE);
 
 		// Create data types
 		uriEDataType = createEDataType(URI);
@@ -495,13 +438,8 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 		setNsURI(eNS_URI);
 
 		// Add supertypes to classes
-		workbenchApplicationEClass.getESuperTypes().add(this.getWorkbenchModule());
 
 		// Initialize classes and features; add operations and parameters
-		initEClass(deploySchemeEClass, DeployScheme.class, "DeployScheme", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getDeployScheme_Type(), ecorePackage.getEString(), "type", null, 0, 1, DeployScheme.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getDeployScheme_ServerTarget(), ecorePackage.getEString(), "serverTarget", null, 0, 1, DeployScheme.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
 		initEClass(workbenchModuleEClass, WorkbenchModule.class, "WorkbenchModule", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getWorkbenchModule_Handle(), this.getURI(), "handle", null, 0, 1, WorkbenchModule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getWorkbenchModule_DeployedName(), ecorePackage.getEString(), "deployedName", null, 0, 1, WorkbenchModule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -515,22 +453,23 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 		initEAttribute(getWorkbenchModuleResource_Exclusions(), this.getURI(), "exclusions", null, 0, -1, WorkbenchModuleResource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getWorkbenchModuleResource_Module(), this.getWorkbenchModule(), this.getWorkbenchModule_Resources(), "module", null, 1, 1, WorkbenchModuleResource.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(workbenchApplicationEClass, WorkbenchApplication.class, "WorkbenchApplication", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getWorkbenchApplication_DeployScheme(), this.getDeployScheme(), null, "deployScheme", null, 1, 1, WorkbenchApplication.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
 		initEClass(moduleTypeEClass, ModuleType.class, "ModuleType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getModuleType_MetadataResources(), this.getURI(), "metadataResources", null, 0, -1, ModuleType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getModuleType_ModuleTypeId(), ecorePackage.getEString(), "moduleTypeId", null, 0, 1, ModuleType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(projectModulesEClass, ProjectModules.class, "ProjectModules", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getProjectModules_ProjectName(), ecorePackage.getEString(), "projectName", null, 0, 1, ProjectModules.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getProjectModules_WorkbenchApplications(), this.getWorkbenchApplication(), null, "workbenchApplications", null, 0, -1, ProjectModules.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getProjectModules_WorkbenchModules(), this.getWorkbenchModule(), null, "workbenchModules", null, 0, -1, ProjectModules.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getProjectModules_DeploymentSchemes(), this.getDeployScheme(), null, "deploymentSchemes", null, 0, -1, ProjectModules.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(dependentModuleEClass, DependentModule.class, "DependentModule", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getDependentModule_Handle(), this.getURI(), "handle", null, 0, 1, DependentModule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getDependentModule_DeployedPath(), this.getURI(), "deployedPath", null, 0, 1, DependentModule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getDependentModule_DependencyType(), this.getDependencyType(), "dependencyType", null, 0, 1, DependentModule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		// Initialize enums and add enum literals
+		initEEnum(dependencyTypeEEnum, DependencyType.class, "DependencyType");
+		addEEnumLiteral(dependencyTypeEEnum, DependencyType.USES_LITERAL);
+		addEEnumLiteral(dependencyTypeEEnum, DependencyType.CONSUMES_LITERAL);
 
 		// Initialize data types
 		initEDataType(uriEDataType, org.eclipse.emf.common.util.URI.class, "URI", IS_SERIALIZABLE, !IS_GENERATED_INSTANCE_CLASS);

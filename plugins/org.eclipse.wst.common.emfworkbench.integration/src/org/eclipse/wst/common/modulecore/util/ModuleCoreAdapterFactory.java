@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreAdapterFactory.java,v 1.10 2005/02/02 22:14:45 cbridgha Exp $
+ * $Id: ModuleCoreAdapterFactory.java,v 1.11 2005/02/09 02:48:39 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.util;
 
@@ -11,11 +11,9 @@ import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.wst.common.modulecore.DependentModule;
-import org.eclipse.wst.common.modulecore.DeployScheme;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 import org.eclipse.wst.common.modulecore.ModuleType;
 import org.eclipse.wst.common.modulecore.ProjectModules;
-import org.eclipse.wst.common.modulecore.WorkbenchApplication;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
 import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
 
@@ -74,17 +72,11 @@ public class ModuleCoreAdapterFactory extends AdapterFactoryImpl {
 	 */
 	protected ModuleCoreSwitch modelSwitch =
 		new ModuleCoreSwitch() {
-			public Object caseDeployScheme(DeployScheme object) {
-				return createDeploySchemeAdapter();
-			}
 			public Object caseWorkbenchModule(WorkbenchModule object) {
 				return createWorkbenchModuleAdapter();
 			}
 			public Object caseWorkbenchModuleResource(WorkbenchModuleResource object) {
 				return createWorkbenchModuleResourceAdapter();
-			}
-			public Object caseWorkbenchApplication(WorkbenchApplication object) {
-				return createWorkbenchApplicationAdapter();
 			}
 			public Object caseModuleType(ModuleType object) {
 				return createModuleTypeAdapter();
@@ -114,20 +106,6 @@ public class ModuleCoreAdapterFactory extends AdapterFactoryImpl {
 
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.eclipse.wst.common.modulecore.DeployScheme <em>Deploy Scheme</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.eclipse.wst.common.modulecore.DeployScheme
-	 * @generated
-	 */
-	public Adapter createDeploySchemeAdapter() {
-		return null;
-	}
-
-	/**
 	 * Creates a new adapter for an object of class '{@link org.eclipse.wst.common.modulecore.WorkbenchModule <em>Workbench Module</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
@@ -152,20 +130,6 @@ public class ModuleCoreAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createWorkbenchModuleResourceAdapter() {
-		return null;
-	}
-
-	/**
-	 * Creates a new adapter for an object of class '{@link org.eclipse.wst.common.modulecore.WorkbenchApplication <em>Workbench Application</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.eclipse.wst.common.modulecore.WorkbenchApplication
-	 * @generated
-	 */
-	public Adapter createWorkbenchApplicationAdapter() {
 		return null;
 	}
 

@@ -31,27 +31,10 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 	private static Translator[] createWTPModulesTranslator() {
 		return new Translator[] {
 				IDTranslator.INSTANCE,
-				createWBAppTranslator(MODULE_CORE_PKG.getProjectModules_WorkbenchApplications()),
-				createWBModuleTranslator(MODULE_CORE_PKG.getProjectModules_WorkbenchModules()),
-				createDeploySchemeTranslator(MODULE_CORE_PKG.getProjectModules_DeploymentSchemes())
+				createWBModuleTranslator(MODULE_CORE_PKG.getProjectModules_WorkbenchModules())
 		};
 	}
 
-	/**
-	 * @return
-	 */
-	private static Translator createWBAppTranslator(EStructuralFeature afeature) {
-		GenericTranslator result = new GenericTranslator(WBAPP, afeature);
-		result.setChildren(new Translator[] {
-			IDTranslator.INSTANCE,
-			new Translator(DEPLOY_NAME, MODULE_CORE_PKG.getWorkbenchModule_DeployedName(), DOM_ATTRIBUTE),
-			new Translator(DEPLOY_SCHEME, MODULE_CORE_PKG.getWorkbenchApplication_DeployScheme()),
-			createModuleTypeTranslator(MODULE_CORE_PKG.getWorkbenchModule_ModuleType()),
-			createWBResourceTranslator(MODULE_CORE_PKG.getWorkbenchModule_Resources()),
-			createDependentModuleTranslator(MODULE_CORE_PKG.getWorkbenchModule_Modules())
-		});
-		return result;
-	}
 	/**
 	 * @return
 	 */
@@ -67,19 +50,6 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 		});
 		return result;
 	}
-	/**
-	 * @return
-	 */
-	private static Translator createDeploySchemeTranslator(EStructuralFeature afeature) {
-		GenericTranslator result = new GenericTranslator(DEPLOY_SCHEME, afeature);
-		result.setChildren(new Translator[] {
-			IDTranslator.INSTANCE,
-			new Translator(TYPE, MODULE_CORE_PKG.getDeployScheme_Type()),
-			new Translator(SERVER_TARGET, MODULE_CORE_PKG.getDeployScheme_ServerTarget())
-		});
-		return result;
-	}
-	
 	private static Translator createModuleTypeTranslator(EStructuralFeature afeature) {
 		GenericTranslator result = new GenericTranslator(WBMODULE, afeature);
 		result.setChildren(new Translator[] {			
@@ -93,7 +63,8 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 		GenericTranslator result = new GenericTranslator(DEPENDENT_MODULE, afeature);
 		result.setChildren(new Translator[] { 
 			new URITranslator(DEPLOY_PATH, MODULE_CORE_PKG.getDependentModule_DeployedPath(), DOM_ATTRIBUTE),
-			new URITranslator(HANDLE, MODULE_CORE_PKG.getDependentModule_Handle(), DOM_ATTRIBUTE)
+			new URITranslator(HANDLE, MODULE_CORE_PKG.getDependentModule_Handle(), DOM_ATTRIBUTE),
+			new DependencyTypeTranslator()
 		});
 		return result;
 	}

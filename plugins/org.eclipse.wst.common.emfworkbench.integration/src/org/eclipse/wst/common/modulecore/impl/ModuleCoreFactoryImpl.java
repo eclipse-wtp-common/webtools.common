@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreFactoryImpl.java,v 1.10 2005/02/02 22:14:45 cbridgha Exp $
+ * $Id: ModuleCoreFactoryImpl.java,v 1.11 2005/02/09 02:48:39 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
@@ -11,13 +11,12 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
+import org.eclipse.wst.common.modulecore.DependencyType;
 import org.eclipse.wst.common.modulecore.DependentModule;
-import org.eclipse.wst.common.modulecore.DeployScheme;
 import org.eclipse.wst.common.modulecore.ModuleCoreFactory;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 import org.eclipse.wst.common.modulecore.ModuleType;
 import org.eclipse.wst.common.modulecore.ProjectModules;
-import org.eclipse.wst.common.modulecore.WorkbenchApplication;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
 import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
 
@@ -45,10 +44,8 @@ public class ModuleCoreFactoryImpl extends EFactoryImpl implements ModuleCoreFac
 	 */
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
-			case ModuleCorePackage.DEPLOY_SCHEME: return createDeployScheme();
 			case ModuleCorePackage.WORKBENCH_MODULE: return createWorkbenchModule();
 			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE: return createWorkbenchModuleResource();
-			case ModuleCorePackage.WORKBENCH_APPLICATION: return createWorkbenchApplication();
 			case ModuleCorePackage.MODULE_TYPE: return createModuleType();
 			case ModuleCorePackage.PROJECT_MODULES: return createProjectModules();
 			case ModuleCorePackage.DEPENDENT_MODULE: return createDependentModule();
@@ -64,6 +61,11 @@ public class ModuleCoreFactoryImpl extends EFactoryImpl implements ModuleCoreFac
 	 */
 	public Object createFromString(EDataType eDataType, String initialValue) {
 		switch (eDataType.getClassifierID()) {
+			case ModuleCorePackage.DEPENDENCY_TYPE: {
+				DependencyType result = DependencyType.get(initialValue);
+				if (result == null) throw new IllegalArgumentException("The value '" + initialValue + "' is not a valid enumerator of '" + eDataType.getName() + "'");
+				return result;
+			}
 			case ModuleCorePackage.URI:
 				return createURIFromString(eDataType, initialValue);
 			default:
@@ -78,21 +80,13 @@ public class ModuleCoreFactoryImpl extends EFactoryImpl implements ModuleCoreFac
 	 */
 	public String convertToString(EDataType eDataType, Object instanceValue) {
 		switch (eDataType.getClassifierID()) {
+			case ModuleCorePackage.DEPENDENCY_TYPE:
+				return instanceValue == null ? null : instanceValue.toString();
 			case ModuleCorePackage.URI:
 				return convertURIToString(eDataType, instanceValue);
 			default:
 				throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
 		}
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public DeployScheme createDeployScheme() {
-		DeploySchemeImpl deployScheme = new DeploySchemeImpl();
-		return deployScheme;
 	}
 
 	/**
@@ -113,16 +107,6 @@ public class ModuleCoreFactoryImpl extends EFactoryImpl implements ModuleCoreFac
 	public WorkbenchModuleResource createWorkbenchModuleResource() {
 		WorkbenchModuleResourceImpl workbenchModuleResource = new WorkbenchModuleResourceImpl();
 		return workbenchModuleResource;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public WorkbenchApplication createWorkbenchApplication() {
-		WorkbenchApplicationImpl workbenchApplication = new WorkbenchApplicationImpl();
-		return workbenchApplication;
 	}
 
 	/**

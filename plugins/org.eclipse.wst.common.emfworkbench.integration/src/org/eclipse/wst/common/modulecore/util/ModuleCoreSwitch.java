@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreSwitch.java,v 1.11 2005/02/07 16:02:19 cbridgha Exp $
+ * $Id: ModuleCoreSwitch.java,v 1.12 2005/02/09 02:48:39 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.util;
 
@@ -11,11 +11,9 @@ import java.util.List;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.wst.common.modulecore.DependentModule;
-import org.eclipse.wst.common.modulecore.DeployScheme;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 import org.eclipse.wst.common.modulecore.ModuleType;
 import org.eclipse.wst.common.modulecore.ProjectModules;
-import org.eclipse.wst.common.modulecore.WorkbenchApplication;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
 import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
 
@@ -75,9 +73,13 @@ public class ModuleCoreSwitch {
 		if (theEClass.eContainer() == modelPackage) {
 			return doSwitch(theEClass.getClassifierID(), theEObject);
 		}
-		
-		List eSuperTypes = theEClass.getESuperTypes();
-		return eSuperTypes.isEmpty() ? defaultCase(theEObject) : doSwitch((EClass)eSuperTypes.get(0), theEObject);
+		else {
+			List eSuperTypes = theEClass.getESuperTypes();
+			return
+				eSuperTypes.isEmpty() ?
+					defaultCase(theEObject) :
+					doSwitch((EClass)eSuperTypes.get(0), theEObject);
+		}
 	}
 
 	/**
@@ -89,12 +91,6 @@ public class ModuleCoreSwitch {
 	 */
 	protected Object doSwitch(int classifierID, EObject theEObject) {
 		switch (classifierID) {
-			case ModuleCorePackage.DEPLOY_SCHEME: {
-				DeployScheme deployScheme = (DeployScheme)theEObject;
-				Object result = caseDeployScheme(deployScheme);
-				if (result == null) result = defaultCase(theEObject);
-				return result;
-			}
 			case ModuleCorePackage.WORKBENCH_MODULE: {
 				WorkbenchModule workbenchModule = (WorkbenchModule)theEObject;
 				Object result = caseWorkbenchModule(workbenchModule);
@@ -104,13 +100,6 @@ public class ModuleCoreSwitch {
 			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE: {
 				WorkbenchModuleResource workbenchModuleResource = (WorkbenchModuleResource)theEObject;
 				Object result = caseWorkbenchModuleResource(workbenchModuleResource);
-				if (result == null) result = defaultCase(theEObject);
-				return result;
-			}
-			case ModuleCorePackage.WORKBENCH_APPLICATION: {
-				WorkbenchApplication workbenchApplication = (WorkbenchApplication)theEObject;
-				Object result = caseWorkbenchApplication(workbenchApplication);
-				if (result == null) result = caseWorkbenchModule(workbenchApplication);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -134,21 +123,6 @@ public class ModuleCoreSwitch {
 			}
 			default: return defaultCase(theEObject);
 		}
-	}
-
-	/**
-	 * Returns the result of interpretting the object as an instance of '<em>Deploy Scheme</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpretting the object as an instance of '<em>Deploy Scheme</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public Object caseDeployScheme(DeployScheme object) {
-		return null;
 	}
 
 	/**
@@ -178,21 +152,6 @@ public class ModuleCoreSwitch {
 	 * @generated
 	 */
 	public Object caseWorkbenchModuleResource(WorkbenchModuleResource object) {
-		return null;
-	}
-
-	/**
-	 * Returns the result of interpretting the object as an instance of '<em>Workbench Application</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpretting the object as an instance of '<em>Workbench Application</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public Object caseWorkbenchApplication(WorkbenchApplication object) {
 		return null;
 	}
 

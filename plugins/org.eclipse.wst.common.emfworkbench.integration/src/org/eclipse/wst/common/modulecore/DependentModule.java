@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: DependentModule.java,v 1.2 2005/02/07 21:07:01 cbridgha Exp $
+ * $Id: DependentModule.java,v 1.3 2005/02/09 02:48:39 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.EObject;
  * <ul>
  *   <li>{@link org.eclipse.wst.common.modulecore.DependentModule#getHandle <em>Handle</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.DependentModule#getDeployedPath <em>Deployed Path</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.DependentModule#getDependencyType <em>Dependency Type</em>}</li>
  * </ul>
  * </p>
  *
@@ -26,7 +27,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model 
  * @generated
  */
-public interface DependentModule extends EObject {
+public interface DependentModule extends EObject{
 	/**
 	 * Returns the value of the '<em><b>Handle</b></em>' attribute.
 	 * <!-- begin-user-doc -->
@@ -78,5 +79,34 @@ public interface DependentModule extends EObject {
 	 * @generated
 	 */
 	void setDeployedPath(URI value);
+
+	/**
+	 * Returns the value of the '<em><b>Dependency Type</b></em>' attribute.
+	 * The literals are from the enumeration {@link org.eclipse.wst.common.modulecore.DependencyType}.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Dependency Type</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Dependency Type</em>' attribute.
+	 * @see org.eclipse.wst.common.modulecore.DependencyType
+	 * @see #setDependencyType(DependencyType)
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getDependentModule_DependencyType()
+	 * @model 
+	 * @generated
+	 */
+	DependencyType getDependencyType();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.DependentModule#getDependencyType <em>Dependency Type</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Dependency Type</em>' attribute.
+	 * @see org.eclipse.wst.common.modulecore.DependencyType
+	 * @see #getDependencyType()
+	 * @generated
+	 */
+	void setDependencyType(DependencyType value);
 
 } // DependentModule

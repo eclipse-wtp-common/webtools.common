@@ -63,31 +63,6 @@ public class ModuleStructuralModel extends EditModel implements IResourceChangeL
         return module;
     }
 
-    public WorkbenchApplication createWorkbenchApplication(URI handleURI, String deployedName) {
-        if (handleURI == null || deployedName == null)
-            return null;
-        WorkbenchApplication workBenchApplication = null;
-        workBenchApplication = createWorkbenchApplication(handleURI);
-        workBenchApplication.setDeployedName(deployedName);
-        return workBenchApplication;
-    }
-
-    public WorkbenchApplication createWorkbenchApplication(URI handleURI) {
-        if (handleURI == null)
-            return null;
-        WorkbenchApplication workBenchApplication = null;
-        try {
-            workBenchApplication = MODULE_FACTORY.createWorkbenchApplication();
-        } catch (RuntimeException e) {
-            Logger.getLogger().write(e);
-        } finally {
-            if (workBenchApplication != null) {
-                getWorkbenchModulesMap().put(handleURI, workBenchApplication);
-            }
-        }
-        return workBenchApplication;
-    }
-
     private HashMap getWorkbenchModulesMap() {
         if (workbenchModulesMap == null)
             workbenchModulesMap = new HashMap();
