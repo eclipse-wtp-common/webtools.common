@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.core;
 
+import org.eclipse.wst.validation.internal.ValidationRegistryReader;
+import org.eclipse.wst.validation.internal.ValidatorMetaData;
+
 
 
 /**
@@ -24,6 +27,16 @@ package org.eclipse.wst.validation.core;
  * <br>
  * A validator's verification starts when the ValidatorLauncher singleton calls
  * <code>validate</code>.
+ * 
+ * [issue : CS - I'd like request a public API on some singleton (perhaps the plugin) to access
+ * a validator registery to retrieve a particular validator registered by for a particular 'id' or 'content type'
+ * Currently we're using some internals to achieve this sort of thing (as shown below).  We do this to invoke
+ * validators to achieve 'as-you-type' validation in our source editors.   
+ * 
+ *     //Get the validator:
+ *     ValidatorMetaData validatorData = ValidationRegistryReader.getReader().getValidatorMetaData(VALIDATOR_CLASS);
+ *     return validatorData.getValidator();
+ * ]   
  */
 public interface IValidator {
 	/**
