@@ -14,10 +14,6 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
 	 */
 	public static final String DEPENDENT_MODULE = "DependentDeployableModuleDataModel.DEPENDENT_MODULE"; //$NON-NLS-1$
 	/**
-	 * Required, type ModuleStructuralModel
-	 */
-	public static final String MODULE_STRUCTURAL_MODEL = "DependentDeployableModuleDataModel.MODULE_STRUCTURAL_MODEL"; //$NON-NLS-1$
-	/**
 	 * Calc, type project relative URI
 	 */
 	public static final String HANDLE = "DependentDeployableModuleDataModel.HANDLE"; //$NON-NLS-1$
@@ -43,7 +39,6 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
      */
 	protected void initValidBaseProperties() {
 		addValidBaseProperty(DEPENDENT_MODULE);
-		addValidBaseProperty(MODULE_STRUCTURAL_MODEL);
 		addValidBaseProperty(HANDLE);
 		addValidBaseProperty(OUTPUT_CONTAINER);
 		addValidBaseProperty(WORKBENCH_MODULE);

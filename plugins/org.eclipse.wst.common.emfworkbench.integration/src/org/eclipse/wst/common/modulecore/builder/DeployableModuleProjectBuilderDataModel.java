@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.internal.events.ResourceDelta;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.modulecore.ModuleCoreNature;
 import org.eclipse.wst.common.modulecore.ModuleStructuralModel;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
 import org.eclipse.wst.common.modulecore.util.ModuleCore;
@@ -31,13 +33,6 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
 	 * default to FULL
 	 */
 	public static final String MODULE_BUILDER_DM_LIST = "DeployableModuleProjectBuilderDataModel.MODULE_BUILDER_DM_LIST"; //$NON-NLS-1$
-	/**
-	 * Required, type ModuleBuilderDataModel
-	 * default to FULL
-	 */
-	public static final String MODULE_STRUCTURAL_MODEL = "DeployableModuleProjectBuilderDataModel.MODULE_STRUCTURAL_MODEL"; //$NON-NLS-1$
-	
-	
 	
 	protected void init() {
 		super.init();
@@ -48,7 +43,6 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
 		addValidBaseProperty(BUILD_KIND);
 		addValidBaseProperty(PROJECT_DETLA);
 		addValidBaseProperty(MODULE_BUILDER_DM_LIST);
-		addValidBaseProperty(MODULE_STRUCTURAL_MODEL);
 		super.initValidBaseProperties();
 	}
 
@@ -69,7 +63,7 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
      */
     protected boolean doSetProperty(String propertyName, Object propertyValue) {
         boolean status = super.doSetProperty(propertyName, propertyValue);
-        if(MODULE_STRUCTURAL_MODEL.equals(propertyName)) {
+        if(PROJECT.equals(propertyName)) {
             setProperty(MODULE_BUILDER_DM_LIST, populateModuleBuilderDataModelList());
         }
         return status;
@@ -96,30 +90,36 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
     }
 
     private List populateFullModuleBuilderDataModelList() {
-    	ModuleStructuralModel model = (ModuleStructuralModel)getProperty(MODULE_STRUCTURAL_MODEL);
-    	ModuleCore editUtility = (ModuleCore) model.getAdapter(ModuleCore.ADAPTER_TYPE);
-        WorkbenchModule[] wbModules = editUtility.getWorkbenchModules();
+        ModuleStructuralModel structuralModel = null;
         List moduleBuilderDataModelList = new ArrayList();
-        
-        if(wbModules == null) return null;
-        
-        DeployableModuleBuilderFactory factory = null;
-        DeployableModuleBuilderDataModel dataModel = null;
-        
-        for(int i = 0; i<wbModules.length; i++){
-            String id = wbModules[i].getModuleType().getModuleTypeId();
-            if(id == null)
-                break;
-            factory = DeployableModuleBuilderFactoryRegistry.INSTANCE.createDeployableFactory(wbModules[i].getModuleType().getModuleTypeId());
-            if(factory != null) {
-                dataModel = factory.createDeploymentModuleDataModel();
-                dataModel.setProperty(DeployableModuleBuilderDataModel.PROJECT, getProperty(PROJECT));
-				dataModel.setProperty(DeployableModuleBuilderDataModel.MODULE_STRUCTURAL_MODEL, getProperty(MODULE_STRUCTURAL_MODEL));
-				dataModel.setProperty(DeployableModuleBuilderDataModel.WORKBENCH_MODULE, wbModules[i]);
-                moduleBuilderDataModelList.add(dataModel);
-            }
+        try {
+	    	ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature((IProject)getProperty(PROJECT));
+		    structuralModel = nature.getModuleStructuralModelForRead(this);
+	    	ModuleCore editUtility = (ModuleCore) structuralModel.getAdapter(ModuleCore.ADAPTER_TYPE);
+	        WorkbenchModule[] wbModules = editUtility.getWorkbenchModules();
+	        
+	        if(wbModules == null) return null;
+	        
+	        DeployableModuleBuilderFactory factory = null;
+	        DeployableModuleBuilderDataModel dataModel = null;
+	        
+	        for(int i = 0; i<wbModules.length; i++){
+	            String id = wbModules[i].getModuleType().getModuleTypeId();
+	            if(id == null)
+	                break;
+	            factory = DeployableModuleBuilderFactoryRegistry.INSTANCE.createDeployableFactory(wbModules[i].getModuleType().getModuleTypeId());
+	            if(factory != null) {
+	                dataModel = factory.createDeploymentModuleDataModel();
+	                dataModel.setProperty(DeployableModuleBuilderDataModel.PROJECT, getProperty(PROJECT));
+					dataModel.setProperty(DeployableModuleBuilderDataModel.WORKBENCH_MODULE, wbModules[i]);
+	                moduleBuilderDataModelList.add(dataModel);
+	            }
+	        }
+        } finally {
+			if (structuralModel != null)
+				structuralModel.releaseAccess(this);
         }
-        return moduleBuilderDataModelList;        
+        return moduleBuilderDataModelList;  
     }
     
     private List populateDeltaModuleBuilderDataModelList(ResourceDelta delta) {

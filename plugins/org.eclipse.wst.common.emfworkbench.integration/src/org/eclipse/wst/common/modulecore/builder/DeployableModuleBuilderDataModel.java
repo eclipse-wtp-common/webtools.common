@@ -16,10 +16,6 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
 	 */
 	public static final String PROJECT = "DeployableModuleDataModel.PROJECT"; //$NON-NLS-1$
 	/**
-	 * Required, type ModuleStructuralModel
-	 */
-	public static final String MODULE_STRUCTURAL_MODEL = "DeployableModuleDataModel.MODULE_STRUCTURAL_MODEL"; //$NON-NLS-1$
-	/**
 	 * Required, type project relative URI
 	 */
 	public static final String OUTPUT_CONTAINER = "DeployableModuleDataModel.OUTPUT_CONTAINER"; //$NON-NLS-1$
@@ -38,7 +34,6 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
      */
 	protected void initValidBaseProperties() {
 		addValidBaseProperty(PROJECT);
-		addValidBaseProperty(MODULE_STRUCTURAL_MODEL);
 		addValidBaseProperty(OUTPUT_CONTAINER);
 		addValidBaseProperty(WORKBENCH_MODULE);
 		addValidBaseProperty(DEPENDENT_MODULES_DM_LIST);
@@ -85,7 +80,6 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
         for(int i = 0; i<depModules.size(); i++){
             dependentDataModel = new DependentDeployableModuleDataModel();
             dependentDataModel.setProperty(DependentDeployableModuleDataModel.DEPENDENT_MODULE, (DependentModule)depModules.get(i));
-            dependentDataModel.setProperty(DependentDeployableModuleDataModel.MODULE_STRUCTURAL_MODEL, getProperty(MODULE_STRUCTURAL_MODEL));
             depModulesDataModels.add(dependentDataModel);
         }
         return depModulesDataModels;
