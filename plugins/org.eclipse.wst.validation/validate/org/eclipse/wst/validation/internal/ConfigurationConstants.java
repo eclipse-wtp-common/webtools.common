@@ -32,7 +32,7 @@ public interface ConfigurationConstants {
 	/* package */static final boolean DEFAULT_AUTO_SETTING = true;
 	/* package */static final boolean DEFAULT_BUILD_SETTING = true;
 	/* package */static ValidatorMetaData[] DEFAULT_ENABLED_VALIDATORS = ValidationRegistryReader.getReader().getValidatorMetaDataArrayEnabledByDefault(); //$NON-NLS-1$ // store a copy here so that we don't modify the original and don't create a copy every time we need this value
-	/* package */static final int DEFAULT_MAXNUMMESSAGES = 25;
+	/* package */static final int DEFAULT_MAXNUMMESSAGES = 50;
 	public static final int DEPTH_INFINITE = IResource.DEPTH_INFINITE;
 	public static final int DEPTH_ZERO = IResource.DEPTH_ZERO;
 	/* package */static final String ELEMENT_SEPARATOR = ";"; //$NON-NLS-1$ // separates the name of one IValidator from the next in the list of enabled validators for a project or preference
