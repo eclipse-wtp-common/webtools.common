@@ -106,4 +106,5 @@ public class ModuleURIUtil {
 	public static URI concat(URI uri1, URI uri2){
 	    URI concatURI = uri1.appendSegments(uri2.segments());
 	    return concatURI;
+	}
 }
