@@ -22,9 +22,15 @@ import org.eclipse.wst.common.modulecore.UnresolveableURIException;
 import org.eclipse.wst.common.modulecore.WorkbenchComponent;
 
 public class DeployableModuleProjectBuilderDataModel extends ComponentStructuralBuilderDataModel {
-
+    
+	public static final String MODULE_BUILDER_DM_LIST = "DeployableModuleProjectBuilderDataModel.MODULE_BUILDER_DM_LIST"; //$NON-NLS-1$
+	
 	public DeployableModuleProjectBuilderDataModel() {
 		super();
+	}
+	
+	protected void initValidBaseProperties() {
+		addValidBaseProperty(MODULE_BUILDER_DM_LIST);
 	}
 	/*
 	 * (non-Javadoc)
