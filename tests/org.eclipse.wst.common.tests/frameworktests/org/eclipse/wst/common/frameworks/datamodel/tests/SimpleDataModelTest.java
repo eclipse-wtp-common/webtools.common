@@ -58,7 +58,7 @@ public class SimpleDataModelTest extends TestCase {
 			return true;
 		}
 
-		public boolean setProperty(String propertyName, Object propertyValue) {
+		public boolean propertySet(String propertyName, Object propertyValue) {
 			if (propertyName.equals(INT_PROP)) {
 				model.notifyPropertyChange(INT_PROP2, IDataModel.VALUE_CHG);
 				model.notifyPropertyChange(INT_PROP2, IDataModel.VALID_VALUES_CHG);
