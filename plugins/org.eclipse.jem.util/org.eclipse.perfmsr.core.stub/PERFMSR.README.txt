@@ -1,0 +1,6 @@
+This is a stub plugin for perfmsr. It is here just so that org.eclipse.jem.util can compile.
+
+It should not be an open project during normal usage. Whenever any of the files in this project
+are changed, "perfmsr.jardesc" should be used to create the new changed appropriate jar, and then that
+jar should be imported into the org.eclipse.jem.util project. After that is done this project
+should be closed or deleted (after the changes have been committed to CVS).
