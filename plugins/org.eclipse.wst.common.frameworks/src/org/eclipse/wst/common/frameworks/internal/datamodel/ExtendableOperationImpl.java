@@ -30,7 +30,7 @@ import org.eclipse.wst.common.frameworks.internal.operations.DMOperationExtensio
 import org.eclipse.wst.common.frameworks.internal.operations.OperationStatus;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
-public class ExtendableOperationImpl implements IUndoableOperation {
+public final class ExtendableOperationImpl implements IUndoableOperation {
 
 	private IDataModelOperation rootOperation;
 	private List appendedOperations;
