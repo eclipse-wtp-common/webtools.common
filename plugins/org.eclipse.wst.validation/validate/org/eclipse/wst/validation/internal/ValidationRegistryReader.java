@@ -31,6 +31,7 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IPluginRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.validation.core.IValidator;
+import org.eclipse.wst.validation.internal.ValidatorMetaData.MigrationMetaData;
 import org.eclipse.wst.validation.internal.operations.IRuleGroup;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchHelper;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
