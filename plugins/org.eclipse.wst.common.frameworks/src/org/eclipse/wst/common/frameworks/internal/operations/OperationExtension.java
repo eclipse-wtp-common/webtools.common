@@ -10,6 +10,7 @@ package org.eclipse.wst.common.frameworks.internal.operations;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.operations.WTPOperation;
 
 public class OperationExtension {
@@ -71,7 +72,24 @@ public class OperationExtension {
 		if (op != null)
 			op.setID(getExtensionId());
 		return op;
+	}
 
+	public IDataModelOperation getDMPostOperation() throws CoreException {
+		if (postOperationClass == null)
+			return null;
+		IDataModelOperation op = (IDataModelOperation) baseElement.createExecutableExtension(OperationExtensionReader.ATT_POST_OP);
+		if (op != null)
+			op.setID(getExtensionId());
+		return op;
+	}
+
+	public IDataModelOperation getDMPreOperation() throws CoreException {
+		if (preOperationClass == null)
+			return null;
+		IDataModelOperation op = (IDataModelOperation) baseElement.createExecutableExtension(OperationExtensionReader.ATT_PRE_OP);
+		if (op != null)
+			op.setID(getExtensionId());
+		return op;
 	}
 
 	/**
