@@ -30,37 +30,29 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
 
     private final static ModuleCoreFactory MODULE_FACTORY = ModuleCoreFactory.eINSTANCE;
 
-    public IModuleHandle createModuleHandle(URI uri) {
+    public WorkbenchModule createModuleHandle(URI uri) {
         if (uri == null) return null;
-        IModuleHandle handle = null;
         WorkbenchModule module = null;
-        try {
-            handle = createHandle(uri);
-            module = createModuleHandle(handle);
+        try {           
+            module = createModuleHandle(uri);
         } catch (RuntimeException e) {
             Logger.getLogger().write(e);
         } finally {
-            if (handle != null && module != null) {
-                getModuleHandlesMap().put(uri, handle);
-                getWorkbenchModulesMap().put(handle, module);
+            if (module != null) {
+                getWorkbenchModulesMap().put(uri, module);
             }
         }
-        return handle;
-    }
-
-    private IModuleHandle createHandle(URI uri) throws RuntimeException {
-        IModuleHandle handle = null;
-        handle = MODULE_FACTORY.createIModuleHandle();
-        handle.setHandle(uri);
-        return handle;
-    }
-
-    private WorkbenchModule createModuleHandle(IModuleHandle handle) throws RuntimeException {
-        WorkbenchModule module;
-        module = MODULE_FACTORY.createWorkbenchModule();
-        module.setHandle(handle);
         return module;
     }
+
+
+
+  /*  private WorkbenchModule createModuleHandle(URI uri) throws RuntimeException {
+        WorkbenchModule module;
+        module = MODULE_FACTORY.createWorkbenchModule();
+       // module.setHandle(handle);
+        return module;
+    }*/
 
     public void resourceChanged(IResourceChangeEvent event) {
         //event.getDelta()
@@ -88,7 +80,7 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
         IPath path = getProject().getFullPath();
         if (path == null)
             return null;
-        path.append(IModuleConstants.WTPMODULE_URI);
+        path.append(IModuleConstants.WTPMODULE_FILE_NAME);
         return path;
 
     }
@@ -143,10 +135,10 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
                 List workBenchModules = getProjectModules().getWorkbenchModules();
                 for (int i = 0; i < workBenchModules.size(); i++) {
                     WorkbenchModule wbm = (WorkbenchModule) workBenchModules.get(i);
-                    IModuleHandle handle = wbm.getHandle();
-                    if (handle == null || handle.getHandle() == null) continue;
+                   // IModuleHandle handle = wbm.getHandle();
+                  /*  if (handle == null || handle.getHandle() == null) continue;
                     moduleHandlesMap.put(handle.getHandle(), handle);
-                    workbenchModulesMap.put(handle, wbm);
+                    workbenchModulesMap.put(handle, wbm);*/
                 }
             }
         } catch (RuntimeException e) {
