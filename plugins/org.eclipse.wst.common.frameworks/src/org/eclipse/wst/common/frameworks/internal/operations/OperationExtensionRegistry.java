@@ -19,9 +19,9 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclispe.wst.common.frameworks.internal.enablement.EnablementManager;
 
 import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.common.frameworks.internal.enablement.EnablementManager;
 
 public class OperationExtensionRegistry {
 

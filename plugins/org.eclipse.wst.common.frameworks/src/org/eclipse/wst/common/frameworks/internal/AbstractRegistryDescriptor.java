@@ -16,10 +16,10 @@ package org.eclipse.wst.common.frameworks.internal;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclispe.wst.common.frameworks.internal.enablement.FunctionGroupRegistry;
-import org.eclispe.wst.common.frameworks.internal.enablement.IEnablementIdentifier;
-import org.eclispe.wst.common.frameworks.internal.enablement.IEnablementManager;
-import org.eclispe.wst.common.frameworks.internal.enablement.Identifiable;
+import org.eclipse.wst.common.frameworks.internal.enablement.FunctionGroupRegistry;
+import org.eclipse.wst.common.frameworks.internal.enablement.IEnablementIdentifier;
+import org.eclipse.wst.common.frameworks.internal.enablement.IEnablementManager;
+import org.eclipse.wst.common.frameworks.internal.enablement.Identifiable;
 
 
 /**

@@ -42,6 +42,9 @@ import org.eclipse.wst.common.frameworks.internal.ISaveHandler;
 import org.eclipse.wst.common.frameworks.internal.SaveFailedException;
 import org.eclipse.wst.common.frameworks.internal.SaveHandlerHeadless;
 import org.eclipse.wst.common.frameworks.internal.SaveHandlerRegister;
+import org.eclipse.wst.common.frameworks.internal.enablement.EnablementIdentifierEvent;
+import org.eclipse.wst.common.frameworks.internal.enablement.IEnablementIdentifier;
+import org.eclipse.wst.common.frameworks.internal.enablement.IEnablementIdentifierListener;
 import org.eclipse.wst.common.frameworks.internal.enablement.nonui.IWFTWrappedException;
 import org.eclipse.wst.common.frameworks.internal.operations.IOperationHandler;
 import org.eclipse.wst.common.internal.emf.resource.CompatibilityXMIResource;
@@ -58,9 +61,6 @@ import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateIn
 import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidator;
 import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidatorImpl;
 import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidatorPresenter;
-import org.eclispe.wst.common.frameworks.internal.enablement.EnablementIdentifierEvent;
-import org.eclispe.wst.common.frameworks.internal.enablement.IEnablementIdentifier;
-import org.eclispe.wst.common.frameworks.internal.enablement.IEnablementIdentifierListener;
 
 import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
 import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;

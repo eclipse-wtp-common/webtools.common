@@ -26,12 +26,12 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.wst.common.frameworks.internal.AdaptabilityUtility;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
+import org.eclipse.wst.common.frameworks.internal.enablement.IEnablementManager;
 import org.eclipse.wst.common.frameworks.internal.enablement.nonui.WFTWrappedException;
 import org.eclipse.wst.common.frameworks.internal.operations.DMComposedExtendedOperationHolder;
 import org.eclipse.wst.common.frameworks.internal.operations.DMOperationExtensionRegistry;
 import org.eclipse.wst.common.frameworks.internal.operations.OperationStatus;
-import org.eclispe.wst.common.frameworks.internal.enablement.IEnablementManager;
-import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
+import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
 // TODO perhaps this class should be subclassed from a new super class which more closely resembles
 // org.eclipse.ui.actions.WorkspaceModifyOperation

@@ -17,12 +17,12 @@ import org.eclipse.jface.util.Assert;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.wst.common.frameworks.internal.enablement.EnablementManager;
 import org.eclipse.wst.common.frameworks.internal.operation.extensionui.WizardPageElement;
 import org.eclipse.wst.common.frameworks.internal.operation.extensionui.WizardPageExtensionManager;
 import org.eclipse.wst.common.frameworks.internal.operations.FailSafeComposedOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
-import org.eclispe.wst.common.frameworks.internal.enablement.EnablementManager;
 
 import org.eclipse.jem.util.logger.proxy.Logger;
 

@@ -20,8 +20,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.activities.IActivityManager;
 import org.eclipse.ui.activities.IWorkbenchActivitySupport;
-import org.eclispe.wst.common.frameworks.internal.enablement.EnablementIdentifier;
-import org.eclispe.wst.common.frameworks.internal.enablement.EnablementManager;
+import org.eclipse.wst.common.frameworks.internal.enablement.EnablementIdentifier;
+import org.eclipse.wst.common.frameworks.internal.enablement.EnablementManager;
 
 /**
  * @author mdelder

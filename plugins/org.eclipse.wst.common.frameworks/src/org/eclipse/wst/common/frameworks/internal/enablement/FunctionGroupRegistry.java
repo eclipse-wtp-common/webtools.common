@@ -1,4 +1,4 @@
-package org.eclispe.wst.common.frameworks.internal.enablement;
+package org.eclipse.wst.common.frameworks.internal.enablement;
 
 /*
  * Licensed Material - Property of IBM (C) Copyright IBM Corp. 2001, 2002 - All
@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
-import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
+import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
 import org.eclipse.jem.util.RegistryReader;
 import org.eclipse.jem.util.logger.proxy.Logger;

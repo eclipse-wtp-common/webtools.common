@@ -23,6 +23,7 @@ import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.internal.AdaptabilityUtility;
+import org.eclipse.wst.common.frameworks.internal.enablement.IEnablementManager;
 import org.eclipse.wst.common.frameworks.internal.operation.extensionui.DMWizardPageElement;
 import org.eclipse.wst.common.frameworks.internal.operation.extensionui.DMWizardPageExtensionManager;
 import org.eclipse.wst.common.frameworks.internal.operations.DMFailSafeComposedOperation;
@@ -30,7 +31,6 @@ import org.eclipse.wst.common.frameworks.internal.ui.ErrorDialog;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPCommonUIResourceHandler;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPWizardSkipPageDataModel;
-import org.eclispe.wst.common.frameworks.internal.enablement.IEnablementManager;
 
 
 /**

@@ -19,9 +19,9 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
 import org.eclipse.jem.util.RegistryReader;
+import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
 public class OperationExtensionReader extends RegistryReader {
 	protected static HashMap opExtensions = null;

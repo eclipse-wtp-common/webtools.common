@@ -14,7 +14,7 @@
  * To change the template for this generated file go to Window - Preferences -
  * Java - Code Generation - Code and Comments
  */
-package org.eclispe.wst.common.frameworks.internal.enablement;
+package org.eclipse.wst.common.frameworks.internal.enablement;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -28,10 +28,10 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
-import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonMessages;
-import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
 import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
+import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
 /**
  * @author mdelder

@@ -6,7 +6,7 @@
  * 
  * Contributors: IBM Corporation - initial API and implementation
  **************************************************************************************************/
-package org.eclispe.wst.common.frameworks.internal.enablement;
+package org.eclipse.wst.common.frameworks.internal.enablement;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,4 +1,4 @@
-package org.eclispe.wst.common.frameworks.internal.enablement;
+package org.eclipse.wst.common.frameworks.internal.enablement;
 
 import java.util.Iterator;
 import java.util.Set;

@@ -21,9 +21,9 @@ import org.eclipse.ui.activities.IActivityManager;
 import org.eclipse.ui.activities.IIdentifier;
 import org.eclipse.ui.activities.IIdentifierListener;
 import org.eclipse.ui.activities.IdentifierEvent;
-import org.eclispe.wst.common.frameworks.internal.enablement.EnablementIdentifier;
-import org.eclispe.wst.common.frameworks.internal.enablement.EnablementIdentifierEvent;
-import org.eclispe.wst.common.frameworks.internal.enablement.IEnablementManager;
+import org.eclipse.wst.common.frameworks.internal.enablement.EnablementIdentifier;
+import org.eclipse.wst.common.frameworks.internal.enablement.EnablementIdentifierEvent;
+import org.eclipse.wst.common.frameworks.internal.enablement.IEnablementManager;
 
 
 /**

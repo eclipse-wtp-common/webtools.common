@@ -15,14 +15,14 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.common.frameworks.internal.operations.ProjectCreationDataModel;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
+import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 import org.eclipse.wst.common.modulecore.ArtifactEdit;
 import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.UnresolveableURIException;
 import org.eclipse.wst.common.modulecore.WorkbenchComponent;
 
 import org.eclipse.jem.util.logger.proxy.Logger;
-import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonMessages;
-import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 /**
  * This dataModel is a common super class used for create in a module context.
  * 

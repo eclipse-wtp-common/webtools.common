@@ -12,7 +12,7 @@ package org.eclipse.wst.common.frameworks.internal.operations;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
-import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
+import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
 public class OperationStatus extends MultiStatus {
 
