@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.modulecore.ComponentResource;
 import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.WorkbenchComponent;
@@ -29,6 +30,7 @@ import org.eclipse.wst.common.modulecore.resources.IVirtualFolder;
 import org.eclipse.wst.common.modulecore.resources.IVirtualResource;
 
 public class VirtualContainer extends VirtualResource implements IVirtualContainer {
+
 
 	public VirtualContainer(IProject aProject, String aName, IPath aRuntimePath) {
 		super(aProject, aName, aRuntimePath);
@@ -105,14 +107,14 @@ public class VirtualContainer extends VirtualResource implements IVirtualContain
 	 * @see IFolder#getFile(java.lang.String)
 	 */
 	public IVirtualFile getFile(String name) {
-		return getFile(new Path(name));
+		return new VirtualFile(getComponentHandle(), getRuntimePath().append(name));
 	}
 
 	/**
 	 * @see IFolder#getFolder(java.lang.String)
 	 */
 	public IVirtualFolder getFolder(String name) {
-		return getFolder(new Path(name));
+		return new VirtualFolder(getComponentHandle(), getRuntimePath().append(name));
 	}
 
 	/**
@@ -191,7 +193,7 @@ public class VirtualContainer extends VirtualResource implements IVirtualContain
 		// return null;
 	} 
 
-	public void commit() throws CoreException{
+	public void create(int updateFlags, IProgressMonitor aMonitor) throws CoreException {
 		
 		ModuleCore moduleCore = null;
 		try {
@@ -205,10 +207,62 @@ public class VirtualContainer extends VirtualResource implements IVirtualContain
 				moduleCore.dispose();
 			}
 		} 
+	} 
+
+	/**
+	 * @see IFolder#createLink(org.eclipse.core.runtime.IPath, int,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
+	 */
+	public void createLink(IPath aProjectRelativeLocation, int updateFlags, IProgressMonitor monitor) throws CoreException {
+
+		ModuleCore moduleCore = null;
+		try {
+			IFolder resource = getProject().getFolder(aProjectRelativeLocation);
+
+			moduleCore = ModuleCore.getModuleCoreForWrite(getProject());
+			WorkbenchComponent component = moduleCore.findWorkbenchModuleByDeployName(getComponentName());
+			
+			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
+			ComponentResource[] resources = root.findModuleResources(getRuntimePath(), false);
+
+			if(resources.length == 0) {
+				ComponentResource componentResource = moduleCore.createWorkbenchModuleResource(resource);
+				componentResource.setRuntimePath(URI.createURI(getRuntimePath().toString()));
+				component.getResources().add(componentResource);
+			} else {
+				URI projectRelativeURI = URI.createURI(aProjectRelativeLocation.toString());
+				boolean foundMapping = false;
+				for (int resourceIndx = 0; resourceIndx < resources.length && !foundMapping; resourceIndx++) {
+					if(projectRelativeURI.equals(resources[resourceIndx].getSourcePath()))
+						foundMapping = true;
+				}
+				if(!foundMapping) {
+					ComponentResource componentResource = moduleCore.createWorkbenchModuleResource(resource);
+					componentResource.setRuntimePath(URI.createURI(getRuntimePath().toString()));
+					component.getResources().add(componentResource);					
+				}
+			}
+
+			createResource(resource, updateFlags, monitor);
+
+		} finally {
+			if (moduleCore != null) {
+				moduleCore.saveIfNecessary(monitor);
+				moduleCore.dispose();
+			}
+		}
 	}
 	
 	public int getType() {
-		return IResource.ROOT;
+		return IVirtualResource.COMPONENT;
+	}
+	
+	public IResource getUnderlyingResource() {
+		return null;
+	}
+	
+	public IResource[] getUnderlyingResources() { 
+		return NO_RESOURCES;
 	}
 
 	protected void doDeleteMetaModel(int updateFlags, IProgressMonitor monitor) {

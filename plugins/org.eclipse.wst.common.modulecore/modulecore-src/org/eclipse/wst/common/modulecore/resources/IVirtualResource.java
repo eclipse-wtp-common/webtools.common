@@ -14,7 +14,6 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 
 
@@ -45,7 +44,7 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
  * structures on disk, use {@link #IGNORE_UNDERLYING_RESOURCE}.
  * </p>
  * <p>
- * The following class is experimental until fully documented.
+ * This interface is not intended to be implemented by clients.
  * </p>
  */
 public interface IVirtualResource extends ISchedulingRule {
@@ -122,7 +121,19 @@ public interface IVirtualResource extends ISchedulingRule {
 	 * <a href="IVirtualResource.html#references">documentation on references</a> 
 	 * for more information on why this flag is relevant.
 	 */
-	public static final int IGNORE_UNDERLYING_RESOURCE = 0x400;   
+	public static final int IGNORE_UNDERLYING_RESOURCE = 0x400;  
+	
+	/**
+	 * Create a mapping from the supplied location to the runtime path of this 
+	 * virtual resource. Model changes will occur as a result of this method, 
+	 * and potentially resource-level creations as well.
+	 * 
+	 * @param aProjectRelativeLocation
+	 * @param updateFlags
+	 * @param monitor
+	 * @throws CoreException
+	 */
+	public void createLink(IPath aProjectRelativeLocation, int updateFlags, IProgressMonitor monitor) throws CoreException;
 
 	/**   
 	 * Remove the resource from the flexible structure. Removing the resource could require
@@ -199,16 +210,10 @@ public interface IVirtualResource extends ISchedulingRule {
 
 
 	/**
-	 * Returns a relative path of the underlying resource with respect to its project. Returns the empty path
-	 * for projects and the workspace root.
+	 * Returns a relative path of the underlying resource with respect to its project.  
 	 * <p>
 	 * This is a resource handle operation; the resource need not exist. If this resource does
 	 * exist, its path can be safely assumed to be valid.
-	 * </p>
-	 * <p>
-	 * A resource's project-relative path indicates the route from the project to the resource.
-	 * Within a workspace, there is exactly one such path for any given resource. The returned path
-	 * never has a trailing slash.
 	 * </p>
 	 * <p>
 	 * Project-relative paths are recommended over absolute paths, since the former are not affected
@@ -218,16 +223,22 @@ public interface IVirtualResource extends ISchedulingRule {
 	 * @return the relative path of this resource with respect to its project
 	 * @see #getWorkspaceRelativePath()
 	 * @see #getProject()
-	 * @see Path#EMPTY
+	 * @see IResource#getProjectRelativePath()
 	 */
 	public IPath getProjectRelativePath();
 
+	/**
+	 * Returns the runtime path of this virtual resource. The runtime path
+	 * is determined through the metamodel and represents the path that the
+	 * underlying resource will be accessed at runtime. 
+	 * 
+	 * @return the runtime path of this virtual resource
+	 */
 	public IPath getRuntimePath();
 
 	/**
-	 * Returns the name of this resource. The name of a resource is synonymous with the last segment
-	 * of its full (or project-relative) path for all resources other than the workspace root. The
-	 * workspace root's name is the empty string.
+	 * Returns the name of this virtual resource. The name of a virtual resource 
+	 * is synonymous with the last segment of its runtime path.
 	 * <p>
 	 * This is a resource handle operation; the resource need not exist.
 	 * </p>
@@ -235,17 +246,28 @@ public interface IVirtualResource extends ISchedulingRule {
 	 * If this resource exists, its name can be safely assumed to be valid.
 	 * </p>
 	 * 
-	 * @return the name of the resource
-	 * @see #getWorkspaceRelativePath()
-	 * @see #getProjectRelativePath()
+	 * @return the name of the virtual resource
+	 * @see #getRuntimePath()
 	 */
 	public String getName();
 
+	/**
+	 * Returns the name of the component that contains this virtual resource.
+	 * <p>
+	 * Each virtual resource is contained by at least one component. A component
+	 * represents a logical collection of files. If the underlying resource is 
+	 * contained by multiple components, then the component name returned by
+	 * this method will be determined by how the virtual resource was created. 
+	 * For each virtual resource, the component name will be the same as the 
+	 * component name of the parent.
+	 *  
+	 * @return the name of the component that contains the virtual resource
+	 */
 	public String getComponentName();
 
 	/**
-	 * Returns the resource which is the parent of this resource, or <code>null</code> if it has
-	 * no parent (that is, this resource is the workspace root).
+	 * Returns the virtual resource which contains this virtual resource, or <code>null</code> if it has
+	 * no parent (that is, the virtual resource represents the root of the component).
 	 * <p>
 	 * The full path of the parent resource is the same as this resource's full path with the last
 	 * segment removed.
@@ -255,15 +277,15 @@ public interface IVirtualResource extends ISchedulingRule {
 	 * exist.
 	 * </p>
 	 * 
-	 * @return the parent resource of this resource, or <code>null</code> if it has no parent
+	 * @return the container of the virtual resource, or <code>null</code> if this virtual resource represents the root of the component
 	 */
 	public IVirtualContainer getParent();
 
 	/**
-	 * Returns the project which contains this resource. Returns itself for projects and
-	 * <code>null</code> for the workspace root.
+	 * Returns the project which contains the component which contains this virtual resource. 
 	 * <p>
-	 * A resource's project is the one named by the first segment of its full path.
+	 * The name of the project may not (and most likely will not) be referenced in the 
+	 * runtime path of this virtual path, but will be referenced by the workspace-relative path. 
 	 * </p>
 	 * <p>
 	 * This is a resource handle operation; neither the resource nor the resulting project need
@@ -276,13 +298,12 @@ public interface IVirtualResource extends ISchedulingRule {
 
 	/**
 	 * Returns the type of this resource. The returned value will be one of <code>FILE</code>,
-	 * <code>FOLDER</code>, <code>PROJECT</code>, <code>ROOT</code>.
+	 * <code>FOLDER</code>, <code>COMPONENT</code>
 	 * <p>
 	 * <ul>
 	 * <li> All resources of type <code>FILE</code> implement <code>IVirtualFile</code>.</li>
 	 * <li> All resources of type <code>FOLDER</code> implement <code>IVirtualFolder</code>.</li>
-	 * <li> All resources of type <code>PROJECT</code> implement <code>IProject</code>.</li>
-	 * <li> All resources of type <code>ROOT</code> implement <code>IWorkspaceRoot</code>.</li>
+	 * <li> All resources of type <code>COMPONENT</code> implement <code>IVirtualContainer</code>.</li>
 	 * </ul>
 	 * </p>
 	 * <p>
@@ -292,13 +313,37 @@ public interface IVirtualResource extends ISchedulingRule {
 	 * @return the type of this resource
 	 * @see #FILE
 	 * @see #FOLDER
-	 * @see #PROJECT
-	 * @see #ROOT
+	 * @see #COMPONENT
 	 */
 	public int getType();
 	
+	/**
+	 * A virtual resource is a representation of one or more Eclipse Platform resources. 
+	 * <p>
+	 * Returns the "primary" underlying resource. The resource may or may not exist. The resource
+	 * will be contained by the project returned by {@link #getProject()}.  
+	 * </p>
+	 * <p>
+	 * Since a virtual resource could represent multiple resources, this method will return 
+	 * the "primary" resource. For clients that wish to take advantage of the multiple resources
+	 * at a single path, use {@link #getUnderlyingResources()}. 
+	 * @return The primary resource that backs this virtual resource.
+	 */
 	public IResource getUnderlyingResource();
-
+	
+	/**
+	 * A virtual resource is a representation of one or more Eclipse Platform resources. 
+	 * <p>
+	 * Returns all underlying resources. The resources may or may not exist. The resources
+	 * will be contained by the project returned by {@link #getProject()}.  
+	 * </p>
+	 * <p>
+	 * Since a virtual resource could represent multiple resources, this method will return 
+	 * all underlying resources. For clients that prefer to acknowledge only one resource, 
+	 * at a single path, use {@link #getUnderlyingResource()}. 
+	 * @return All resources that back this virtual resource.
+	 */
+	public IResource[] getUnderlyingResources(); 
 
 	/**
 	 * Returns whether this resource is accessible. For files and folders, this is equivalent to

@@ -45,7 +45,7 @@ public abstract class ComponentCreationOperation extends WTPOperation {
     protected void setupComponentType(String typeID) {
     	ComponentCreationDataModel dataModel = (ComponentCreationDataModel)operationDataModel;
 
-        IVirtualContainer component = ModuleCore.create(dataModel.getProject(), dataModel.getComponentDeployName());    	
+        IVirtualContainer component = ModuleCore.createContainer(dataModel.getProject(), dataModel.getComponentDeployName());    	
         ComponentType componentType = ModuleCoreFactory.eINSTANCE.createComponentType();
         componentType.setModuleTypeId(typeID);
         componentType.setVersion(dataModel.getVersion());

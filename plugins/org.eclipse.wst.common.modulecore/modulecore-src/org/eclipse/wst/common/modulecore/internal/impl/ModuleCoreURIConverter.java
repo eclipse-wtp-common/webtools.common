@@ -85,7 +85,7 @@ public class ModuleCoreURIConverter extends CompatibilityWorkbenchURIConverterIm
 		
 		try {
 			String componentName = ModuleCore.getDeployedName(aNewURI);
-			IVirtualContainer component = ModuleCore.create(containingProject, componentName);
+			IVirtualContainer component = ModuleCore.createContainer(containingProject, componentName);
 
 			URI deployPathSegment = ModuleURIUtil.trimToDeployPathSegment(aNewURI);
 			IVirtualFile newFile = component.getFile(new Path(deployPathSegment.path()));

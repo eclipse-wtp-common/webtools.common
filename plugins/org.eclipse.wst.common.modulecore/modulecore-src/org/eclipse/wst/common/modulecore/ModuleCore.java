@@ -28,10 +28,13 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.wst.common.modulecore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.modulecore.internal.impl.PlatformURLModuleConnection;
 import org.eclipse.wst.common.modulecore.internal.resources.VirtualContainer;
+import org.eclipse.wst.common.modulecore.internal.resources.VirtualFile;
 import org.eclipse.wst.common.modulecore.internal.resources.VirtualFolder;
 import org.eclipse.wst.common.modulecore.internal.util.EclipseResourceAdapter;
 import org.eclipse.wst.common.modulecore.resources.IVirtualContainer;
+import org.eclipse.wst.common.modulecore.resources.IVirtualFile;
 import org.eclipse.wst.common.modulecore.resources.IVirtualFolder;
+import org.eclipse.wst.common.modulecore.resources.IVirtualReference;
 
 /**
  * <p>
@@ -273,14 +276,22 @@ public class ModuleCore implements IEditModelHandler {
 		return ModuleURIUtil.getDeployedName(aFullyQualifiedModuleURI);
 	}
 
-	public static IVirtualContainer create(IProject aProject, String aName) {
-		return new VirtualContainer(aProject, aName, new Path("/")); //$NON-NLS-1$
+	public static IVirtualContainer createContainer(IProject aProject, String aComponentName) {
+		return new VirtualContainer(aProject, aComponentName, new Path("/")); //$NON-NLS-1$
 	}
 
-	public static IVirtualFolder create(IFolder aFolder, String aComponentName, IPath aRuntimePath) {
-		return new VirtualFolder(aFolder, aComponentName, aRuntimePath);
+	public static IVirtualFolder createFolder(IProject aProject, String aComponentName, IPath aRuntimePath) {
+		return new VirtualFolder(aProject, aComponentName, aRuntimePath);	
 	}
 
+	public static IVirtualFile createFile(IProject aProject, String aComponentName, IPath aRuntimePath) {
+		return new VirtualFile(aProject, aComponentName, aRuntimePath);	
+	}
+	
+	public static IVirtualReference createReference(IVirtualContainer aContainer, IVirtualContainer aReferencedContainer) {
+		return null;
+	}
+		
 	public static ComponentType getComponentType(IVirtualContainer aComponent) {
 		ModuleCore moduleCore = null;
 		ComponentType componentType = null;
@@ -294,7 +305,6 @@ public class ModuleCore implements IEditModelHandler {
 		}
 		return componentType;
 	}
-
 
 	public static void setComponentType(IVirtualContainer component, ComponentType aComponentType) {
 		ModuleCore moduleCore = null;

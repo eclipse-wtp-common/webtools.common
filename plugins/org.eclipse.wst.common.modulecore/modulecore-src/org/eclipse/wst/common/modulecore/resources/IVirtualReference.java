@@ -10,17 +10,21 @@
  *******************************************************************************/ 
 package org.eclipse.wst.common.modulecore.resources;
 
-import org.eclipse.core.resources.IFile;
-/**
- * Represents a file that can be navigated through 
- * an abstract ("virtual") path. 
- * <p>
- * This interface is not intended to be implemented by clients.
- * </p>
- */
-public interface IVirtualFile extends IVirtualResource {  
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+
+public interface IVirtualReference {
 	
-	public IFile getUnderlyingFile();
+	public void create(int updateFlags, IProgressMonitor aMonitor);
 	
-	public IFile[] getUnderlyingFiles();
+	public void setRuntimePath(IPath aRuntimePath);
+	
+	public IPath getRuntimePath();
+	
+	public void setDependencyType(int aDependencyType);
+	
+	public int getDependencyType();
+	
+	
+
 }

@@ -8,35 +8,21 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.modulecore.internal.resources;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.modulecore.ComponentResource;
 import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.WorkbenchComponent;
-import org.eclipse.wst.common.modulecore.internal.impl.ResourceTreeRoot;
 import org.eclipse.wst.common.modulecore.resources.IVirtualContainer;
 import org.eclipse.wst.common.modulecore.resources.IVirtualFolder;
 import org.eclipse.wst.common.modulecore.resources.IVirtualResource;
 
-public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
-
-	private final Set realFolders = new HashSet();
-
-	public VirtualFolder(IFolder aRealFolder, String aComponentName, IPath aRuntimePath) {
-
-		super(aRealFolder.getProject(), aComponentName, aRuntimePath);
-		realFolders.add(aRealFolder);
-	}
+public class VirtualFolder extends VirtualContainer implements IVirtualFolder { 
 
 	/**
 	 * <p>
@@ -67,66 +53,11 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 	// TODO WTP:Implement this method
 	public void create(int updateFlags, IProgressMonitor monitor) throws CoreException {
 
-		IVirtualContainer container = ModuleCore.create(getProject(), getComponentHandle().getName());
-		IVirtualFolder root = container.getFolder(new Path("/"));  //$NON-NLS-1$		
-		IFolder realFolder = getProject().getFolder(root.getProjectRelativePath()); 
+		IVirtualContainer container = ModuleCore.createContainer(getProject(), getComponentHandle().getName()); 
+		IFolder realFolder = getProject().getFolder(container.getProjectRelativePath()); 
 		IFolder newFolder = realFolder.getFolder(getRuntimePath()); 
-		createResource(newFolder, updateFlags, monitor); 
-
-	}
-
-	/**
-	 * @see IFolder#createLink(org.eclipse.core.runtime.IPath, int,
-	 *      org.eclipse.core.runtime.IProgressMonitor)
-	 */
-	public void createLink(IPath aProjectRelativeLocation, int updateFlags, IProgressMonitor monitor) throws CoreException {
-
-		ModuleCore moduleCore = null;
-		try {
-			IFolder resource = getProject().getFolder(aProjectRelativeLocation);
-
-			moduleCore = ModuleCore.getModuleCoreForWrite(getProject());
-			WorkbenchComponent component = moduleCore.findWorkbenchModuleByDeployName(getComponentHandle().getName());
-			
-			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
-			ComponentResource[] resources = root.findModuleResources(getRuntimePath(), false);
-
-			if(resources.length == 0) {
-				ComponentResource componentResource = moduleCore.createWorkbenchModuleResource(resource);
-				componentResource.setRuntimePath(URI.createURI(getRuntimePath().toString()));
-				component.getResources().add(componentResource);
-			} else {
-				URI projectRelativeURI = URI.createURI(aProjectRelativeLocation.toString());
-				boolean foundMapping = false;
-				for (int resourceIndx = 0; resourceIndx < resources.length && !foundMapping; resourceIndx++) {
-					if(projectRelativeURI.equals(resources[resourceIndx].getSourcePath()))
-						foundMapping = true;
-				}
-				if(!foundMapping) {
-					ComponentResource componentResource = moduleCore.createWorkbenchModuleResource(resource);
-					componentResource.setRuntimePath(URI.createURI(getRuntimePath().toString()));
-					component.getResources().add(componentResource);					
-				}
-			}
-
-			createResource(resource, updateFlags, monitor);
-
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.saveIfNecessary(monitor);
-				moduleCore.dispose();
-			}
-		}
-	}
-
-	private void createResource(IContainer resource, int updateFlags, IProgressMonitor monitor) throws CoreException {
-
-		if (!resource.getParent().exists())
-			createResource(resource.getParent(), updateFlags, monitor);
-		if (!resource.exists())
-			((IFolder) resource).create(updateFlags, true, monitor);
-
-	}
+		createResource(newFolder, updateFlags, monitor);  
+	} 
 
 	// TODO WTP:Implement this method
 	public boolean exists(IPath path) {
@@ -159,19 +90,23 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 	}
  
 	public int getType() {
-		return IResource.FOLDER;
+		return IVirtualResource.FOLDER;
+	} 
+	
+	public IResource getUnderlyingResource() {
+		return getUnderlyingFolder();
+	}
+	
+	public IResource[] getUnderlyingResources() {
+		return getUnderlyingFolders();
 	}
 
-	public void commit() throws CoreException {
- 
-	}
-
-	public IFolder getRealFolder() { 
+	public IFolder getUnderlyingFolder() { 
 		return getProject().getFolder(getProjectRelativePath());
 	}
 	
-	public IFolder[] getRealFolders() {
-		return new IFolder[] {getRealFolder()};
+	public IFolder[] getUnderlyingFolders() {
+		return new IFolder[] {getUnderlyingFolder()};
 	}
 
 	protected void doDeleteMetaModel(int updateFlags, IProgressMonitor monitor) {

@@ -12,6 +12,8 @@ package org.eclipse.wst.common.modulecore.internal.resources;
 
 import java.util.Arrays;
 
+import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceProxyVisitor;
@@ -31,11 +33,13 @@ import org.eclipse.wst.common.modulecore.resources.IVirtualResource;
 
 public abstract class VirtualResource implements IVirtualResource {
 	
+	protected static final IResource[] NO_RESOURCES = null;
 	private ComponentHandle componentHandle;
 	private IPath runtimePath;
 	private int hashCode;
 	private String toString;
 	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
+	
 	
 	protected VirtualResource(ComponentHandle aComponentHandle, IPath aRuntimePath) {
 		componentHandle = aComponentHandle;		
@@ -177,7 +181,7 @@ public abstract class VirtualResource implements IVirtualResource {
 	public IVirtualContainer getParent() {
 		if(getRuntimePath().segmentCount() > 0)
 			return new VirtualFolder(getComponentHandle(), getRuntimePath().removeLastSegments(1));
-		return ModuleCore.create(getProject(), getComponentName());
+		return ModuleCore.createContainer(getProject(), getComponentName());
 	} 
 
 	public IProject getProject() {
@@ -227,8 +231,17 @@ public abstract class VirtualResource implements IVirtualResource {
 	protected ComponentHandle getComponentHandle() {
 		return componentHandle;
 	} 
+	
+	protected void createResource(IContainer resource, int updateFlags, IProgressMonitor monitor) throws CoreException {
 
-	private boolean isPotentalMatch(IPath aRuntimePath) {
+		if (!resource.getParent().exists())
+			createResource(resource.getParent(), updateFlags, monitor);
+		if (!resource.exists() && resource.getType() == IResource.FOLDER) { 
+			((IFolder) resource).create(updateFlags, true, monitor);
+		} 
+	}
+
+	protected boolean isPotentalMatch(IPath aRuntimePath) {
 		return aRuntimePath.isPrefixOf(getRuntimePath());
 	}
  
