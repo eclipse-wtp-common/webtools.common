@@ -16,10 +16,33 @@ public interface DataModelFactory {
 
 	public static final DataModelFactory INSTANCE = new DataModelFactoryImpl();
 
+	/**
+	 * Looks up the appropriate IDataModelProvider by the specified id and constructs a new
+	 * IDataModel. If the IDataModelProvider is not found then a RuntimeException is thrown.
+	 * 
+	 * @param dataModelProviderID
+	 *            the id of the IDataModelProvider
+	 * @return a new IDataModel
+	 */
 	public IDataModel createDataModel(String dataModelProviderID);
 
-	public IDataModel createDataModel(Class dataModelProviderClass);
+	/**
+	 * Looks up the appropriate IDataModelProvider using the name of the specified class. This
+	 * method is equavalent to
+	 * <code>createDataModel(dataModelProviderClassID.getClass().getName())</code>.
+	 * 
+	 * @param dataModelProviderClass
+	 *            the class whose name is the id of the IDataModelProvider
+	 * @return a new IDataModel
+	 */
+	public IDataModel createDataModel(Class dataModelProviderClassID);
 
-	public IDataModel createDataModel(IDataModelProvider dataModelProviderClass);
+	/**
+	 * Creates a new IDataModel using the the specified instance of an IDataModelProvider
+	 * 
+	 * @param dataModelProviderInstance
+	 * @return a new IDataModel
+	 */
+	public IDataModel createDataModel(IDataModelProvider dataModelProviderInstance);
 
 }
