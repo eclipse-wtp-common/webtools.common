@@ -34,11 +34,10 @@ import org.eclipse.wst.common.modulecore.resources.IVirtualResource;
 /**
  * 
  * <p>
- * To run this test, extract the /testData/virtual-api-test_workspace.zip 
- * found under the same plugin, and use "Run As -> JUnit Plugin Test". Be
- * sure to point the configuration at the extracted workspace, and make sure
- * that "Clear workspace contents" is NOT checked. The test may be run using 
- * a Headless Eclipse.
+ * To run this test, extract the /testData/virtual-api-test_workspace.zip found under the same
+ * plugin, and use "Run As -> JUnit Plugin Test". Be sure to point the configuration at the
+ * extracted workspace, and make sure that "Clear workspace contents" is NOT checked. The test may
+ * be run using a Headless Eclipse.
  * </p>
  */
 public class ModuleCoreAPITest extends TestCase {
@@ -62,8 +61,8 @@ public class ModuleCoreAPITest extends TestCase {
 	}
 
 	protected void setUp() throws Exception {
-		super.setUp(); 
-		
+		super.setUp();
+
 		setupNavigateComponentTest();
 		setupCreateLinkTest();
 		setupCreateNewModuleTest();
@@ -72,19 +71,18 @@ public class ModuleCoreAPITest extends TestCase {
 	public void setupCreateNewModuleTest() throws Exception {
 
 		IFolder rootFolder = TestWorkspace.getTargetProject().getFolder(TestWorkspace.NEW_WEB_MODULE_NAME);
-		if(rootFolder.exists())
+		if (rootFolder.exists())
 			rootFolder.delete(IResource.FORCE | IResource.ALWAYS_DELETE_PROJECT_CONTENT, null);
-		
+
 		ModuleCore moduleCore = null;
 
 		try {
 			moduleCore = ModuleCore.getModuleCoreForWrite(TestWorkspace.getTargetProject());
 			WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(TestWorkspace.NEW_WEB_MODULE_NAME);
 
-			if(wbComponent != null) {
-				ComponentResource[] componentResources = 
-					wbComponent.findWorkbenchModuleResourceByDeployPath(URI.createURI("/")); //$NON-NLS-1$				
-				
+			if (wbComponent != null) {
+				ComponentResource[] componentResources = wbComponent.findWorkbenchModuleResourceByDeployPath(URI.createURI("/")); //$NON-NLS-1$				
+
 				for (int i = 0; i < componentResources.length; i++) {
 					wbComponent.getResources().remove(componentResources[i]);
 				}
@@ -95,11 +93,11 @@ public class ModuleCoreAPITest extends TestCase {
 				moduleCore.save(null);
 				moduleCore.dispose();
 			}
-		}  
+		}
 	}
 
 	/**
-	 * Create a Map structure that mimics the expected structure on disk. 
+	 * Create a Map structure that mimics the expected structure on disk.
 	 */
 	public void setupNavigateComponentTest() throws Exception {
 		IPath images;
@@ -125,7 +123,8 @@ public class ModuleCoreAPITest extends TestCase {
 	}
 
 	/**
-	 * Checks for and removes the mapping and folder that will be created by {@link ModuleCoreAPITest#testCreateLink()}. 
+	 * Checks for and removes the mapping and folder that will be created by
+	 * {@link ModuleCoreAPITest#testCreateLink()}.
 	 */
 	public void setupCreateLinkTest() throws Exception {
 		IFolder module2Images = TestWorkspace.getTargetProject().getFolder(new Path("/WebModule2/images")); //$NON-NLS-1$
@@ -138,8 +137,7 @@ public class ModuleCoreAPITest extends TestCase {
 			moduleCore = ModuleCore.getModuleCoreForWrite(TestWorkspace.getTargetProject());
 			WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(TestWorkspace.WEB_MODULE_2_NAME);
 
-			ComponentResource[] componentResources = 
-				wbComponent.findWorkbenchModuleResourceByDeployPath(URI.createURI("/images")); //$NON-NLS-1$
+			ComponentResource[] componentResources = wbComponent.findWorkbenchModuleResourceByDeployPath(URI.createURI("/images")); //$NON-NLS-1$
 
 			for (int i = 0; i < componentResources.length; i++) {
 				wbComponent.getResources().remove(componentResources[i]);
@@ -150,8 +148,8 @@ public class ModuleCoreAPITest extends TestCase {
 				moduleCore.save(null);
 				moduleCore.dispose();
 			}
-		}  
-	} 
+		}
+	}
 
 
 	public void assertTree(Map resourceTree, IVirtualFolder virtualFolder) throws Exception {
@@ -172,8 +170,8 @@ public class ModuleCoreAPITest extends TestCase {
 	 */
 	public void assertTree(Map resourceTree, IVirtualFolder virtualFolder, String indent) throws Exception {
 		// API_TEST VirtualContainer.members()
-		IVirtualResource[] members = virtualFolder.members(); 
-		
+		IVirtualResource[] members = virtualFolder.members();
+
 		assertEquals("The number of resources contained by \"" + virtualFolder.getProjectRelativePath() + "\"", //$NON-NLS-1$ //$NON-NLS-2$
 					resourceTree.size(), members.length);
 		IPath relativePath;
@@ -189,8 +187,8 @@ public class ModuleCoreAPITest extends TestCase {
 					assertTree(subTree, (IVirtualFolder) members[i], indent + "\t"); //$NON-NLS-1$
 			} else {
 				assertType(members[i], IFILE_CLASS);
-			} 
-		} 
+			}
+		}
 	}
 
 	/**
@@ -209,9 +207,9 @@ public class ModuleCoreAPITest extends TestCase {
 	 * @see IContainer#getFolder(org.eclipse.core.runtime.IPath)
 	 * @see IContainer#members()
 	 */
-	public void testNavigateComponent() throws Exception { 
- 
-		IVirtualContainer component = ModuleCore.create(TestWorkspace.getTargetProject(), TestWorkspace.WEB_MODULE_1_NAME); 
+	public void testNavigateComponent() throws Exception {
+
+		IVirtualContainer component = ModuleCore.create(TestWorkspace.getTargetProject(), TestWorkspace.WEB_MODULE_1_NAME);
 		IVirtualFolder root = component.getFolder(new Path("/")); //$NON-NLS-1$ 
 		assertTree(virtualResourceTree, root);
 
@@ -225,44 +223,51 @@ public class ModuleCoreAPITest extends TestCase {
 	 * 
 	 * @see ModuleCore#create(IProject, String)
 	 * @see IContainer#getFolder(org.eclipse.core.runtime.IPath)
-	 * @see IFolder#createLink(org.eclipse.core.runtime.IPath, int, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see IFolder#createLink(org.eclipse.core.runtime.IPath, int,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 * 
 	 */
 	public void testCreateLink() throws Exception {
-		
-		IVirtualContainer component = ModuleCore.create(TestWorkspace.getTargetProject(), TestWorkspace.WEB_MODULE_2_NAME); 
+
+		IVirtualContainer component = ModuleCore.create(TestWorkspace.getTargetProject(), TestWorkspace.WEB_MODULE_2_NAME);
 		IVirtualFolder images = component.getFolder(new Path("/images")); //$NON-NLS-1$		
 		images.createLink(new Path("/WebModule2/images"), 0, null); //$NON-NLS-1$
 
 		IFolder realImages = TestWorkspace.getTargetProject().getFolder(new Path("/WebModule2/images")); //$NON-NLS-1$
 		assertTrue("The /WebContent2/images directory must exist.", realImages.exists()); //$NON-NLS-1$
 
-		ModuleCore moduleCore = ModuleCore.getModuleCoreForRead(TestWorkspace.getTargetProject());
-		WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(TestWorkspace.WEB_MODULE_2_NAME);
+		ModuleCore moduleCore = null;
+		try {
+			moduleCore = ModuleCore.getModuleCoreForRead(TestWorkspace.getTargetProject());
+			WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(TestWorkspace.WEB_MODULE_2_NAME);
 
-		ComponentResource[] componentResources = wbComponent.findWorkbenchModuleResourceByDeployPath(URI.createURI("/images")); //$NON-NLS-1$
+			ComponentResource[] componentResources = wbComponent.findWorkbenchModuleResourceByDeployPath(URI.createURI("/images")); //$NON-NLS-1$
 
-		assertTrue("There should be at least one mapping for virtual path \"/images\".", componentResources.length > 0); //$NON-NLS-1$
+			assertTrue("There should be at least one mapping for virtual path \"/images\".", componentResources.length > 0); //$NON-NLS-1$
 
-		ResourceTreeRoot resourceTreeRoot = ResourceTreeRoot.getSourceResourceTreeRoot(wbComponent);
-		componentResources = resourceTreeRoot.findModuleResources(realImages.getFullPath(), false);
-		
-		assertTrue("There should be exactly one Component resource with the source path \"" + realImages.getProjectRelativePath() + "\".", componentResources.length == 1); //$NON-NLS-1$ //$NON-NLS-2$
-		
-		assertTrue("The runtime path should match \"/images\".", componentResources[0].getRuntimePath().path().equals("/images")); //$NON-NLS-1$ //$NON-NLS-2$
+			ResourceTreeRoot resourceTreeRoot = ResourceTreeRoot.getSourceResourceTreeRoot(wbComponent);
+			componentResources = resourceTreeRoot.findModuleResources(realImages.getFullPath(), false);
 
-		// make sure that only one component resource is created 
-		
-		images.createLink(new Path("/WebModule2/images"), 0, null); //$NON-NLS-1$
+			assertTrue("There should be exactly one Component resource with the source path \"" + realImages.getProjectRelativePath() + "\".", componentResources.length == 1); //$NON-NLS-1$ //$NON-NLS-2$
 
-		componentResources = resourceTreeRoot.findModuleResources(realImages.getFullPath(), false);
-		
-		assertTrue("There should be exactly one Component resource with the source path \"" + realImages.getProjectRelativePath() + "\".", componentResources.length == 1); //$NON-NLS-1$ //$NON-NLS-2$
-		
-		assertTrue("The runtime path should match \"/images\".", componentResources[0].getRuntimePath().path().equals("/images")); //$NON-NLS-1$ //$NON-NLS-2$
+			assertTrue("The runtime path should match \"/images\".", componentResources[0].getRuntimePath().path().equals("/images")); //$NON-NLS-1$ //$NON-NLS-2$
 
-	} 
-	
+			// make sure that only one component resource is created
+
+			images.createLink(new Path("/WebModule2/images"), 0, null); //$NON-NLS-1$
+
+			componentResources = resourceTreeRoot.findModuleResources(realImages.getFullPath(), false);
+
+			assertTrue("There should be exactly one Component resource with the source path \"" + realImages.getProjectRelativePath() + "\".", componentResources.length == 1); //$NON-NLS-1$ //$NON-NLS-2$
+
+			assertTrue("The runtime path should match \"/images\".", componentResources[0].getRuntimePath().path().equals("/images")); //$NON-NLS-1$ //$NON-NLS-2$
+		} finally {
+			if (moduleCore != null)
+				moduleCore.dispose();
+		}
+
+	}
+
 	/**
 	 * <p>
 	 * All methods lised in the "see" clauses are tested by this method.
@@ -270,48 +275,54 @@ public class ModuleCoreAPITest extends TestCase {
 	 * 
 	 * @see ModuleCore#create(IProject, String)
 	 * @see IContainer#getFolder(org.eclipse.core.runtime.IPath)
-	 * @see IFolder#createLink(org.eclipse.core.runtime.IPath, int, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see IFolder#createLink(org.eclipse.core.runtime.IPath, int,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 * 
 	 */
 	public void testCreateWebModule() throws Exception {
-		
+
 		IVirtualContainer component = ModuleCore.create(TestWorkspace.getTargetProject(), TestWorkspace.NEW_WEB_MODULE_NAME);
-//		if(!component.exists())
-			component.commit();
+		// if(!component.exists())
+		component.commit();
 		IVirtualFolder root = component.getFolder(new Path("/")); //$NON-NLS-1$
-		IPath realWebContentPath = new Path(TestWorkspace.NEW_WEB_MODULE_NAME+IPath.SEPARATOR+"WebContent"); //$NON-NLS-1$
+		IPath realWebContentPath = new Path(TestWorkspace.NEW_WEB_MODULE_NAME + IPath.SEPARATOR + "WebContent"); //$NON-NLS-1$
 		root.createLink(realWebContentPath, 0, null); //$NON-NLS-1$
-		
-		IVirtualFolder metaInfFolder = root.getFolder(TestWorkspace.META_INF); 
+
+		IVirtualFolder metaInfFolder = root.getFolder(TestWorkspace.META_INF);
 		metaInfFolder.create(true, true, null);
-		
+
 		IVirtualFolder webInfFolder = root.getFolder(TestWorkspace.WEB_INF);
 		webInfFolder.create(true, true, null);
 
-		IFolder realWebContent = TestWorkspace.getTargetProject().getFolder(realWebContentPath); 
-		assertTrue("The "+realWebContent+" directory must exist.", realWebContent.exists()); //$NON-NLS-1$ //$NON-NLS-2$
-		
-		IFolder realMetaInfFolder = realWebContent.getFolder(TestWorkspace.META_INF); 
-		assertTrue("The "+realMetaInfFolder+" directory must exist.", realMetaInfFolder.exists()); //$NON-NLS-1$ //$NON-NLS-2$
+		IFolder realWebContent = TestWorkspace.getTargetProject().getFolder(realWebContentPath);
+		assertTrue("The " + realWebContent + " directory must exist.", realWebContent.exists()); //$NON-NLS-1$ //$NON-NLS-2$
 
-		IFolder realWebInfFolder = realWebContent.getFolder(TestWorkspace.WEB_INF); 
-		assertTrue("The "+realWebInfFolder+" directory must exist.", realWebInfFolder.exists()); //$NON-NLS-1$ //$NON-NLS-2$
+		IFolder realMetaInfFolder = realWebContent.getFolder(TestWorkspace.META_INF);
+		assertTrue("The " + realMetaInfFolder + " directory must exist.", realMetaInfFolder.exists()); //$NON-NLS-1$ //$NON-NLS-2$
 
+		IFolder realWebInfFolder = realWebContent.getFolder(TestWorkspace.WEB_INF);
+		assertTrue("The " + realWebInfFolder + " directory must exist.", realWebInfFolder.exists()); //$NON-NLS-1$ //$NON-NLS-2$
 
-		ModuleCore moduleCore = ModuleCore.getModuleCoreForRead(TestWorkspace.getTargetProject());
-		WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(TestWorkspace.NEW_WEB_MODULE_NAME);
+		ModuleCore moduleCore = null;
+		try {
+			moduleCore = ModuleCore.getModuleCoreForRead(TestWorkspace.getTargetProject());
+			WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(TestWorkspace.NEW_WEB_MODULE_NAME);
 
-		ComponentResource[] componentResources = wbComponent.findWorkbenchModuleResourceByDeployPath(URI.createURI("/"+TestWorkspace.META_INF)); //$NON-NLS-1$
-//
-//		assertTrue("There should be at least one mapping for virtual path \"/images\".", componentResources.length > 0); //$NON-NLS-1$
-//
-//		ResourceTreeRoot resourceTreeRoot = ResourceTreeRoot.getSourceResourceTreeRoot(wbComponent);
-//		componentResources = resourceTreeRoot.findModuleResources(realImages.getFullPath(), false);
-//		
-//		assertTrue("There should be exactly one Component resource with the source path \"" + realImages.getProjectRelativePath() + "\".", componentResources.length == 1); //$NON-NLS-1$ //$NON-NLS-2$
-//		
-//		assertTrue("The runtime path should match \"/images\".", componentResources[0].getRuntimePath().path().equals("/images")); //$NON-NLS-1$ //$NON-NLS-2$
+			ComponentResource[] componentResources = wbComponent.findWorkbenchModuleResourceByDeployPath(URI.createURI("/" + TestWorkspace.META_INF)); //$NON-NLS-1$
 
-	} 
+			assertTrue("There should be at least one mapping for virtual path \"/" + TestWorkspace.META_INF + "\".", componentResources.length > 0); //$NON-NLS-1$ //$NON-NLS-2$
+
+			ResourceTreeRoot resourceTreeRoot = ResourceTreeRoot.getSourceResourceTreeRoot(wbComponent);
+			componentResources = resourceTreeRoot.findModuleResources(metaInfFolder.getWorkspaceRelativePath(), false);
+
+			assertTrue("There should be exactly one Component resource with the source path \"" + metaInfFolder.getProjectRelativePath() + "\".", componentResources.length == 1); //$NON-NLS-1$ //$NON-NLS-2$
+
+			assertTrue("The runtime path should match \"/" + TestWorkspace.META_INF + "\".", componentResources[0].getRuntimePath().path().equals("/" + TestWorkspace.META_INF)); //$NON-NLS-1$ //$NON-NLS-2$
+		} finally {
+			if (moduleCore != null)
+				moduleCore.dispose();
+		}
+
+	}
 
 }

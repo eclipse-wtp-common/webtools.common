@@ -12,9 +12,21 @@ package org.eclipse.wst.common.frameworks.modulecore.tests;
 
 import junit.framework.TestCase;
 
-public class IVirtualResourceAPITest extends TestCase {
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.wst.common.modulecore.ModuleCore;
+import org.eclipse.wst.common.modulecore.resources.IVirtualContainer;
+import org.eclipse.wst.common.modulecore.resources.IVirtualFolder;
 
-	public IVirtualResourceAPITest(String name) {
+public class IVirtualFolderAPITest extends TestCase {
+	
+	private IVirtualFolder webInfFolder;
+	private IFolder realWebInfFolder;
+
+	public IVirtualFolderAPITest(String name) {
 		super(name);
 	}
 	 
@@ -22,6 +34,12 @@ public class IVirtualResourceAPITest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		TestWorkspace.init();
+		IProject targetProject = ResourcesPlugin.getWorkspace().getRoot().getProject(TestWorkspace.PROJECT_NAME);
+		
+		realWebInfFolder = targetProject.getFolder(new Path("/"+TestWorkspace.WEB_MODULE_1_NAME+"/webContent/WEB-INF"));
+		
+		IVirtualContainer component = ModuleCore.create(targetProject, TestWorkspace.WEB_MODULE_1_NAME);
+		webInfFolder = component.getFolder(new Path("/WEB-INF")); 		
 	}
 
 
@@ -56,14 +74,22 @@ public class IVirtualResourceAPITest extends TestCase {
 	}
 
 	public void testGetFileExtension() {
+		assertTrue("The /WEB-INF folder should have no file extension.", webInfFolder.getFileExtension() == null); //$NON-NLS-1$
 	}
 
-	public void testGetFullPath() {
+	public void testGetWorkspaceRelativePath() {
+		
 	}
 
-	public void testGetLocation() {
+	public void testGetProjectRelativePath() {
+		IPath realPath = realWebInfFolder.getProjectRelativePath();
+		IPath virtualPath = webInfFolder.getProjectRelativePath();
+		assertEquals("The project relative path of the virtual resource must match the real resource", realPath, virtualPath);
 	}
 
+	public void testGetRuntimePath() {
+	}
+	
 	public void testGetName() {
 	}
 
@@ -71,13 +97,7 @@ public class IVirtualResourceAPITest extends TestCase {
 	}
 
 	public void testGetProject() {
-	}
-
-	public void testGetProjectRelativePath() {
-	}
-
-	public void testGetRawLocation() {
-	}
+	}  
 
 	public void testGetType() {
 	}
