@@ -98,13 +98,6 @@
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="functionGroupID" type="string" use="required">
-            <annotation>
-               <documentation>
-                  
-               </documentation>
-            </annotation>
-         </attribute>
       </complexType>
    </element>
 

@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel;
 
+import java.util.List;
+
 import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelExtensionReader;
 import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelImpl;
 
@@ -20,17 +22,20 @@ public class DataModelFactory {
 	/**
 	 * Looks up the appropriate IDataModelProvider by the specified id and
 	 * constructs a new IDataModel. If the IDataModelProvider is not found then
-	 * a RuntimeException is thrown.
+	 * a RuntimeException is logged and null is returned.
 	 * 
 	 * @param dataModelProviderID
 	 *            the id of the IDataModelProvider
 	 * @return a new IDataModel
 	 */
 	public static IDataModel createDataModel(String dataModelProviderID) {
-		return createDataModel(loadProvider(dataModelProviderID));
+        IDataModelProvider provider = loadProvider(dataModelProviderID);
+        if(provider == null) 
+            return null;
+		return createDataModel(provider);
 	}
 
-	private static IDataModelProvider loadProvider(String id) {
+	protected static IDataModelProvider loadProvider(String id) {
 		if (null == reader) {
 			reader = new DataModelExtensionReader();
 		}
@@ -38,8 +43,8 @@ public class DataModelFactory {
 	}
     /**
      * Looks up the appropriate IDataModelProvider by the specified provider Type String and functionGroupID String and
-     * constructs a new IDataModel. If the IDataModelProvider is not found then
-     * a RuntimeException is thrown.
+     * constructs an arry of new IDataModels. If the IDataModelProvider is not found then
+     * a RuntimeException is logged and null is returned.
      * 
      * @param providerKind
      *            the String id of the provider
@@ -48,15 +53,19 @@ public class DataModelFactory {
      *            
      * @return a new IDataModel
      */
-    public static IDataModel createDataModel(String providerKind, String functionGroupId) {
-        return createDataModel(loadProvider(providerKind, functionGroupId));
+    public static DataModelProviderDescriptor[] getProviderDescriptorsForProviderKind(String providerKind) {
+        List providers = loadProviderForProviderKind(providerKind);
+        if(providers == null || providers.isEmpty()) 
+            return null;
+        return (DataModelProviderDescriptor[])providers.toArray(new DataModelProviderDescriptor[providers.size()]);
     }
 
-    private static IDataModelProvider loadProvider(String providerKind, String functionGroupId) {
+    private static List loadProviderForProviderKind(String providerKind) {
+        reader = null;
         if (null == reader) {
             reader = new DataModelExtensionReader();
         }
-        return reader.getProvider(providerKind, functionGroupId);
+        return reader.getProviderDescriptorsForProviderKind(providerKind);
     }
 	/**
 	 * Looks up the appropriate IDataModelProvider using the name of the

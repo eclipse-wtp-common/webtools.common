@@ -10,37 +10,21 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.datamodel;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jem.util.RegistryReader;
 import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.common.frameworks.datamodel.DataModelProviderDescriptor;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
 public class DataModelExtensionReader extends RegistryReader {
 
-    public class DataModelImplementExtensionCache {
-       private HashMap items;
-       
-       public void addImplementExtensionCache(String functionGroupID, String id){
-           if(items == null)
-               items = new HashMap();
-           if (definesExtensions.containsKey(functionGroupID))
-               Logger.getLogger().logError(new RuntimeException("Duplicate " + IMPLEMENTS_TYPE_ELEMENT + " " + ATTRIBUTE_FG + " " + functionGroupID));
-           else
-               items.put(functionGroupID, id);
-       }
-       
-       public String getIDForFunctionGroup(String functionGroupID){
-           if(items == null || !items.containsKey(functionGroupID))
-               return null;
-           return (String)items.get(functionGroupID);
-       }
-    }
-
-	private static final String EXTENSION = "DataModelProviderExtension";
+  private static final String EXTENSION = "DataModelProviderExtension";
 	
     private static final String PROVIDER_ELEMENT = "DataModelProvider";
     private static final String DEFINES_TYPE_ELEMENT = "ProviderDefinesType";
@@ -93,11 +77,7 @@ public class DataModelExtensionReader extends RegistryReader {
             if (null == id || id.trim().length() == 0) {
                 Logger.getLogger().logError(new RuntimeException("Extension:" + EXTENSION + " Element:" + DEFINES_TYPE_ELEMENT + " is missing " + ATTRIBUTE_PROVIDER_ID));
             }
-            String functionGroupID = element.getAttribute(ATTRIBUTE_FG);
-            if (null == functionGroupID || functionGroupID.trim().length() == 0) {
-                Logger.getLogger().logError(new RuntimeException("Extension:" + EXTENSION + " Element:" + DEFINES_TYPE_ELEMENT + " is missing " + ATTRIBUTE_FG));
-            }
-            addImplementsExtension(type, id, functionGroupID);
+            addImplementsExtension(type, id);
         }
 		return true;
 	}
@@ -116,13 +96,13 @@ public class DataModelExtensionReader extends RegistryReader {
         definesExtensions.put(type, id);
     }
     
-    private void addImplementsExtension(String type, String id, String functionGroupID) {
-        DataModelImplementExtensionCache cache;
+    private void addImplementsExtension(String type, String id) {
+        List cache;
         if (providerExtensions.containsKey(type))
-            cache = (DataModelImplementExtensionCache)providerExtensions.get(type);
+            cache = (List)providerExtensions.get(type);
         else
-            cache = new DataModelImplementExtensionCache();
-        cache.addImplementExtensionCache(functionGroupID, id);
+            cache = new ArrayList();
+        cache.add(id);
         implementsExtensions.put(type, cache);
     }
     
@@ -130,7 +110,7 @@ public class DataModelExtensionReader extends RegistryReader {
         readRegistryIfNecessary();
 		IConfigurationElement element = (IConfigurationElement) providerExtensions.get(id);
 		if (null == element) {
-			throw new RuntimeException("Extension:" + EXTENSION + " Element:" + PROVIDER_ELEMENT + " not found for " + ATTRIBUTE_ID + ": " + id);
+			Logger.getLogger().log(new RuntimeException("Extension:" + EXTENSION + " Element:" + PROVIDER_ELEMENT + " not found for " + ATTRIBUTE_ID + ": " + id));
 		}
 		return element;
 	}
@@ -139,21 +119,26 @@ public class DataModelExtensionReader extends RegistryReader {
         readRegistryIfNecessary();
         String element = (String) definesExtensions.get(providerType);
         if (null == element) {
-            throw new RuntimeException("Extension:" + EXTENSION + " Element:" + DEFINES_TYPE_ELEMENT + " not found for " + ATTRIBUTE_PROVIDER_TYPE + ": " + providerType);
+            Logger.getLogger().log(new RuntimeException("Extension:" + EXTENSION + " Element:" + DEFINES_TYPE_ELEMENT + " not found for " + ATTRIBUTE_PROVIDER_TYPE + ": " + providerType));
         }
         return element;
     }
     
-    protected String getImplementsExtension(String providerType, String functionGroupID) {
+    protected List getImplementsExtensions(String providerType) {
         readRegistryIfNecessary();
-        if (!implementsExtensions.containsKey(providerType) || functionGroupID == null || functionGroupID.equals("")) {
-            return getDefinesExtension(providerType);
+        List extensions;
+        if (!implementsExtensions.containsKey(providerType)) {
+            extensions = new ArrayList();
+            extensions.add(getDefinesExtension(providerType));
+            return extensions;
+        }        
+        List providerIds = (List)implementsExtensions.get(providerType);
+        if(providerIds == null || providerIds.isEmpty()) {
+            extensions = new ArrayList();
+            extensions.add(getDefinesExtension(providerType));
+            return extensions;
         }
-        DataModelImplementExtensionCache cache = (DataModelImplementExtensionCache) implementsExtensions.get(providerType);
-        String providerID = cache.getIDForFunctionGroup(functionGroupID);
-        if(providerID == null)
-            return getDefinesExtension(providerType);
-        return providerID;
+        return providerIds;
     }
     
     private void readRegistryIfNecessary() {
@@ -165,12 +150,12 @@ public class DataModelExtensionReader extends RegistryReader {
             hasInitialized = true;
         }
     }
-
-
     
 	public IDataModelProvider getProvider(String id) {
 		IDataModelProvider provider = null;
 		IConfigurationElement element = getProviderExtension(id);
+        if(element == null)
+            return null;
 		try {
 			provider = (IDataModelProvider) element.createExecutableExtension(ATTRIBUTE_CLASS);
 		} catch (CoreException e) {
@@ -179,8 +164,16 @@ public class DataModelExtensionReader extends RegistryReader {
 		return provider;
 	}
     
-    public IDataModelProvider getProvider(String providerType, String functionGroupID) {
-        String providerID = getImplementsExtension(providerType, functionGroupID);
-        return getProvider(providerID);
+    public List getProviderDescriptorsForProviderKind(String providerType) {
+        List providerIds = (List)getImplementsExtensions(providerType);
+        List providers = new ArrayList();
+        for(int i = 0; i<providerIds.size(); i++){
+            providers.add(getProviderDescriptor((String)providerIds.get(i)));
+        }
+        return providers;
+    }
+    
+    private DataModelProviderDescriptor getProviderDescriptor(String id){
+        return new DataModelProviderDescriptor(id);
     }
 }

@@ -83,4 +83,17 @@
          </run>
       </builder>
    </extension>
+   <!--============================-->
+   <!-- Builder Provider registrations-->
+   <!--============================-->
+   <extension
+         point="org.eclipse.wst.common.frameworks.DataModelProviderExtension">
+      <DataModelProvider
+            class="org.eclipse.wst.common.componentcore.internal.builder.ReferencedComponentBuilderDataModelProvider"
+            id="org.eclipse.wst.common.componentcore.internal.builder.ReferencedComponentBuilderDataModelProvider"/>
+      <ProviderDefinesType
+      		providerType="referencedComponentBuilder"
+      		providerID="org.eclipse.wst.common.componentcore.internal.builder.ReferencedComponentBuilderDataModelProvider"/>
+	</extension>
+   
 </plugin>

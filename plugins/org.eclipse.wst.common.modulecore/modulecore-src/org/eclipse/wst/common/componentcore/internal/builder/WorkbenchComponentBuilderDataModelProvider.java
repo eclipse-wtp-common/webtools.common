@@ -14,15 +14,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.wst.common.componentcore.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
-import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
+import org.eclipse.wst.common.frameworks.internal.enablement.DataModelEnablementFactory;
 
 public abstract class WorkbenchComponentBuilderDataModelProvider extends AbstractDataModelProvider implements IWorkbenchComponentBuilderDataModelProperties{
-
+    
+    public static final String REFERENCED_COMPONENT_BUILDER_ID = "referencedComponentBuilder";
     /* (non-Javadoc)
      * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider#getPropertyNames()
      */
@@ -44,14 +46,17 @@ public abstract class WorkbenchComponentBuilderDataModelProvider extends Abstrac
         WorkbenchComponent wbModule = (WorkbenchComponent)model.getProperty(WORKBENCH_MODULE);
         List depModules = wbModule.getReferencedComponents();
         List depModulesDataModels = new ArrayList();
-        IDataModel dependentDataModel;
+        IDataModel dependentDataModel = null;
         StructureEdit moduleCore = (StructureEdit)model.getProperty(MODULE_CORE);
+        IProject project = (IProject)model.getProperty(PROJECT);
         for(int i = 0; i<depModules.size(); i++){
-            dependentDataModel = DataModelFactory.createDataModel(new ReferencedComponentBuilderDataModelProvider());;
-            dependentDataModel.setProperty(IReferencedComponentBuilderDataModelProperties.MODULE_CORE, moduleCore);
-            dependentDataModel.setProperty(IReferencedComponentBuilderDataModelProperties.CONTAINING_WBMODULE, getProperty(WORKBENCH_MODULE));
-            dependentDataModel.setProperty(IReferencedComponentBuilderDataModelProperties.DEPENDENT_MODULE, depModules.get(i));
-            depModulesDataModels.add(dependentDataModel);
+            dependentDataModel = DataModelEnablementFactory.createDataModel(REFERENCED_COMPONENT_BUILDER_ID, project);
+            if(dependentDataModel != null) {
+                dependentDataModel.setProperty(IReferencedComponentBuilderDataModelProperties.MODULE_CORE, moduleCore);
+                dependentDataModel.setProperty(IReferencedComponentBuilderDataModelProperties.CONTAINING_WBMODULE, getProperty(WORKBENCH_MODULE));
+                dependentDataModel.setProperty(IReferencedComponentBuilderDataModelProperties.DEPENDENT_MODULE, depModules.get(i));
+                depModulesDataModels.add(dependentDataModel);
+            }
         }
         return depModulesDataModels;
     }
