@@ -6,14 +6,11 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 
-import com.ibm.wtp.common.logger.proxy.Logger;
 import com.ibm.wtp.emf.workbench.EMFWorkbenchContextBase;
-import com.ibm.wtp.emf.workbench.WorkbenchResourceHelperBase;
 import com.ibm.wtp.emf.workbench.nature.EMFNature;
 import com.ibm.wtp.internal.emf.workbench.EMFWorkbenchContextFactory;
 

@@ -78,7 +78,7 @@
    <!-- Module Core Project Nature Contributions-->
    <!--============================-->
    <extension
-         id="org.eclipse.wst.common.emfworkbench.integration.ModuleCoreNature"
+         id="ModuleCoreNature"
          name="Web Properties"
          point="org.eclipse.core.resources.natures">
       <runtime>
