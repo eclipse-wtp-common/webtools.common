@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $RCSfile: TimerTests.java,v $
- *  $Revision: 1.1 $  $Date: 2005/01/10 19:26:50 $ 
+ *  $Revision: 1.2 $  $Date: 2005/02/07 18:18:47 $ 
  */
 package org.eclipse.jem.util;
 
@@ -140,8 +140,10 @@ public class TimerTests {
 		public TimerStep currentCumulativeStep;
 		public long cumTime;
 		public int cumCount;
+		public int cumCountNonZero;
 		public long maxTime;
 		public long minTime = Integer.MAX_VALUE;
+		public long minTimeNonZero = Integer.MAX_VALUE;
 	}
 	public synchronized void printIt() {
 		if (!testOn)
@@ -285,6 +287,11 @@ public class TimerTests {
 									cumInfo.maxTime = delta;
 								if (delta < cumInfo.minTime)
 									cumInfo.minTime = delta;
+								if (delta != 0) {
+									cumInfo.cumCountNonZero++;
+									if (delta < cumInfo.minTimeNonZero)
+										cumInfo.minTimeNonZero = delta;
+								}
 							}
 						}
 					}
@@ -322,9 +329,15 @@ public class TimerTests {
 								strb.append("   min time=");
 								strb.append(cumInfo.minTime);
 								strb.append("   avg time=");
-								Double cumT = new Double(cumInfo.cumTime);
-								Double cumC = new Double(cumInfo.cumCount);
-								strb.append(cumT.doubleValue()/cumC.doubleValue());
+								strb.append(((double) cumInfo.cumTime)/cumInfo.cumCount);
+								strb.append("   NonZero times: cumulative ~0 count=");
+								strb.append(cumInfo.cumCountNonZero);
+								if (cumInfo.cumCountNonZero != 0) {
+									strb.append("   min ~0 time=");
+									strb.append(cumInfo.minTimeNonZero);
+									strb.append("   avg ~0 time=");
+									strb.append(((double) cumInfo.cumTime) / cumInfo.cumCountNonZero);
+								}
 							}
 						}
 					}
