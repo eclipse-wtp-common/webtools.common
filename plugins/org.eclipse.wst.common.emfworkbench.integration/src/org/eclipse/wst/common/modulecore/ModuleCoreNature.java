@@ -25,7 +25,7 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
 	private final static ModuleCoreFactory MODULE_FACTORY = ModuleCoreFactory.eINSTANCE;
 	private HashMap workbenchModules;
 
-	protected IModuleHandle createModuleHandle(URI uri) {
+	public IModuleHandle createModuleHandle(URI uri) {
 		if (uri == null)
 			return null;
 		IModuleHandle handle = null;
@@ -88,6 +88,5 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
 
 	public void setProject(IProject project) {
 		moduleProject = project;
-
 	}
 }
