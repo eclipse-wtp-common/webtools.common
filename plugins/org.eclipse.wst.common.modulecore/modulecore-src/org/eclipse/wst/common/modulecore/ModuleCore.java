@@ -528,7 +528,7 @@ public class ModuleCore implements IEditModelHandler {
 		for (int i = 0; i < modules.size(); i++) {
 			module = (WorkbenchModule) modules.get(i);
 			resources = module.findWorkbenchModuleResourceBySourcePath(aWorkspaceRelativePath);
-			if (resources.length != 0)
+			if (resources != null && resources.length != 0)
 				foundResources.addAll(Arrays.asList(resources));
 		}
 		if (foundResources.size() > 0)

@@ -403,7 +403,8 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		// Overriding superclass to use our own URI converter, which knows about binary projects
 		ProjectResourceSet projectResourceSet = aNature.getResourceSet();
 		projectResourceSet.setResourceFactoryRegistry(WTPResourceFactoryRegistry.INSTANCE);
-		createURIConverter(getProject(), projectResourceSet);
+		projectResourceSet.setURIConverter(createURIConverter(getProject(), projectResourceSet));
+		
 		// initializeCacheEditModel();
 		// addAdapterFactories(set);
 		// set.getSynchronizer().addExtender(this); // added so we can be informed of closes to the

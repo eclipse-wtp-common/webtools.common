@@ -13,6 +13,10 @@ package org.eclipse.wst.common.modulecore;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.wst.common.internal.emfworkbench.edit.EditModelRegistry;
+import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
+import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelListener;
+import org.eclipse.wst.common.internal.emfworkbench.integration.IEditModelFactory;
 
 /** 
  * Provides a Facade pattern for accessing Module Content Metamodels for Web Tools Platform flexible modules. 
@@ -70,9 +74,17 @@ public class ArtifactEdit implements IEditModelHandler {
 	public static ArtifactEdit getArtifactEditForRead(WorkbenchModule aModule) {
 		try {
 			IProject project = ModuleCore.getContainingProject(aModule.getHandle());
-			if (project.isAccessible()) {
+			if (project != null && project.isAccessible()) {
 				ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(project);
-				return new ArtifactEdit(nature, aModule, true);
+				if (nature != null){
+					ModuleType moduleType = aModule.getModuleType();
+					if (moduleType != null && moduleType.getModuleTypeId() != null){
+					    IEditModelFactory factory = EditModelRegistry.getInstance().findEditModelFactoryByKey( moduleType.getModuleTypeId());
+						if (factory != null) {
+							return new ArtifactEdit(nature, aModule, true);
+						}
+					}
+				}
 			}
 		} catch (UnresolveableURIException uue) {
 		}
@@ -101,9 +113,17 @@ public class ArtifactEdit implements IEditModelHandler {
 	public static ArtifactEdit getArtifactEditForWrite(WorkbenchModule aModule) {
 		try {
 			IProject project = ModuleCore.getContainingProject(aModule.getHandle());
-			if (project.isAccessible()) {
+			if (project != null && project.isAccessible()) {
 				ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(project);
-				return new ArtifactEdit(nature, aModule, false);
+				if (nature != null){
+					ModuleType moduleType = aModule.getModuleType();
+					if (moduleType != null && moduleType.getModuleTypeId() != null){
+					    IEditModelFactory factory = EditModelRegistry.getInstance().findEditModelFactoryByKey( moduleType.getModuleTypeId());
+						if (factory != null) {
+							return new ArtifactEdit(nature, aModule, false);
+						}
+					}
+				}
 			}
 		} catch (UnresolveableURIException uue) {
 		}
@@ -202,14 +222,26 @@ public class ArtifactEdit implements IEditModelHandler {
 	}
 
 	/**
-	 * 
 	 * @return The underlying managed edit model 
 	 */
 	protected ArtifactEditModel getArtifactEditModel() {
 		return artifactEditModel;
 	}
 	
+	public boolean hasEditModel(EditModel editModel) {
+		return artifactEditModel==editModel ;
+		
+	}
+	
 	private void throwAttemptedReadOnlyModification() {
 		throw new IllegalStateException("Attempt to modify an ArtifactEdit instance facade that was loaded as read-only.");
+	}
+	
+	public void addListener(EditModelListener listener) {
+		artifactEditModel.addListener(listener);
+	}
+	
+	public void removeListener(EditModelListener listener) {
+		artifactEditModel.removeListener(listener);
 	}
 }

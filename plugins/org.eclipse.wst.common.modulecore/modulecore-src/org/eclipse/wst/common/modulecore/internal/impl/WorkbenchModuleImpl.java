@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchModuleImpl.java,v 1.3 2005/02/18 17:50:05 cbridgha Exp $
+ * $Id: WorkbenchModuleImpl.java,v 1.4 2005/02/18 20:13:05 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.internal.impl;
 
@@ -413,7 +413,7 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 		} catch (UnresolveableURIException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return NO_MODULE_RESOURCES;
 	}
   
 

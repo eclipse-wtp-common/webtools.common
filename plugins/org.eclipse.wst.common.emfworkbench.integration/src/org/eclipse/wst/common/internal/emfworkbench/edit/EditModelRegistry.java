@@ -121,6 +121,14 @@ public class EditModelRegistry extends RegistryReader {
 
 		return resources;
 	}
+	
+	public IEditModelFactory findEditModelFactoryByKey(Object editModelID) {
+		IEditModelFactory factory = null;
+		EditModelInfo editMdlInfo = (EditModelInfo) factoryConfigurations.get(editModelID);
+		if (editMdlInfo != null)
+			factory = editMdlInfo.getEditModelFactory();
+		return factory; 
+	}
 
 	protected Collection getAllEditModelResources(String editModelID) {
 		Collection resources = new ArrayList();
@@ -155,6 +163,8 @@ public class EditModelRegistry extends RegistryReader {
 
 		return factory;
 	}
+	
+	
 
 	public class EditModelInfo {
 
