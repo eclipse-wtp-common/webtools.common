@@ -111,12 +111,18 @@
       </complexType>
    </element>
 
-   <element name="selectionEnablement" type="string">
+   <element name="selectionEnablement">
       <annotation>
          <documentation>
             The selectionEnablement element allows you to filter which kinds of selection your object is applicable to using Standard Eclipse Action Expresions.
          </documentation>
       </annotation>
+      <complexType>
+         <choice>
+            <element ref="objectClass"/>
+            <element ref="or"/>
+         </choice>
+      </complexType>
    </element>
 
    <element name="slaveOperation">
@@ -144,6 +150,63 @@
             <annotation>
                <documentation>
                   A description to display in the dialog for your action (if the operation is optional). You can use the standard &quot;%key&quot; for translatable text stored in plugin.properties.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="or">
+      <complexType>
+         <choice>
+            <element ref="objectClass"/>
+            <element ref="and"/>
+            <element ref="objectState"/>
+         </choice>
+      </complexType>
+   </element>
+
+   <element name="objectClass">
+      <complexType>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="adaptable" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="and">
+      <complexType>
+         <choice>
+            <element ref="objectClass"/>
+            <element ref="or"/>
+         </choice>
+      </complexType>
+   </element>
+
+   <element name="objectState">
+      <complexType>
+         <attribute name="value" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
                </documentation>
             </annotation>
          </attribute>

@@ -70,6 +70,13 @@
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="functionGroupID" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 

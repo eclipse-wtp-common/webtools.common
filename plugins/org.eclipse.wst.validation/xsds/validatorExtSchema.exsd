@@ -47,7 +47,22 @@
             <element ref="helper"/>
             <element ref="dependentValidator" minOccurs="0" maxOccurs="1"/>
             <element ref="run"/>
+            <element ref="migrate"/>
          </sequence>
+         <attribute name="to" type="string">
+            <annotation>
+               <documentation>
+                  Optional migration tag
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="from" type="string">
+            <annotation>
+               <documentation>
+                  Optional migration tag
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
@@ -160,6 +175,20 @@
             </annotation>
          </attribute>
       </complexType>
+   </element>
+
+   <element name="migrate">
+      <complexType>
+         <sequence>
+            <element ref="validator"/>
+         </sequence>
+      </complexType>
+   </element>
+
+   <element name="from" type="string">
+   </element>
+
+   <element name="to" type="string">
    </element>
 
    <annotation>
