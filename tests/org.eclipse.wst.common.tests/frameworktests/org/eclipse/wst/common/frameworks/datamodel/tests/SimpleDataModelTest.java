@@ -99,6 +99,10 @@ public class SimpleDataModelTest extends TestCase {
 			}
 			return null;
 		}
+
+		public String getID() {
+			return null;
+		}
 	};
 
 	private IDataModel dm;
@@ -155,7 +159,7 @@ public class SimpleDataModelTest extends TestCase {
 		}
 		Assert.assertNotNull(ex);
 		Assert.assertTrue(ex.getMessage().startsWith(PROPERTY_NOT_LOCATED_));
-		
+
 	}
 
 	public void testPropertyDescriptors() {

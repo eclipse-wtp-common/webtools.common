@@ -8,62 +8,40 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.frameworks.datamodel.tests;
+package org.eclipse.wst.common.tests.ui;
 
 import junit.framework.TestCase;
 
 import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel;
+import org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel;
+import org.eclipse.wst.common.frameworks.datamodel.tests.TestDataModelProvider;
+import org.eclipse.wst.common.frameworks.datamodel.ui.provisional.DataModelWizard;
+import org.eclipse.wst.common.frameworks.datamodel.ui.provisional.DataModelWizardFactory;
 
-public class DataModelFactoryTest extends TestCase {
-
-
-	public void testBogusExtension() {
-		Exception exception = null;
-		try {
-			IDataModel dataModel = DataModelFactory.INSTANCE.createDataModel("bogus");
-		} catch (Exception e) {
-			exception = e;
-		}
-		assertNotNull(exception);
-	}
-
-	public void testInvalidExtensionID() {
-		Exception exception = null;
-		try {
-			IDataModel dataModel = DataModelFactory.INSTANCE.createDataModel("badID");
-		} catch (Exception e) {
-			exception = e;
-		}
-		assertNotNull(exception);
-	}
-
-	public void testInvalidExtensionClass() {
-		Exception exception = null;
-		try {
-			IDataModel dataModel = DataModelFactory.INSTANCE.createDataModel(Object.class);
-		} catch (Exception e) {
-			exception = e;
-		}
-		assertNotNull(exception);
-	}
+public class DataModelUIFactoryTest extends TestCase {
 
 	public void testValidExtensionID() {
 		IDataModel dataModel = DataModelFactory.INSTANCE.createDataModel("org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel");
 		assertTrue(dataModel.isProperty(ITestDataModel.FOO));
+		DataModelWizard wizard = DataModelWizardFactory.INSTANCE.createWizard("org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel");
+		assertNotNull(wizard);
 	}
 
 
 	public void testValidExtensionClass() {
 		IDataModel dataModel = DataModelFactory.INSTANCE.createDataModel(ITestDataModel.class);
 		assertTrue(dataModel.isProperty(ITestDataModel.FOO));
+		DataModelWizard wizard = DataModelWizardFactory.INSTANCE.createWizard(ITestDataModel.class);
+		assertNotNull(wizard);
 	}
 
 	public void testValidExtensionInstance() {
 		IDataModel dataModel = DataModelFactory.INSTANCE.createDataModel(new TestDataModelProvider());
 		assertTrue(dataModel.isProperty(ITestDataModel.FOO));
+		DataModelWizard wizard = DataModelWizardFactory.INSTANCE.createWizard(dataModel);
+		assertNotNull(wizard);
+		assertTrue(dataModel == ((TestDataModelWizard) wizard).getDataModel());
 	}
-
-
 
 }

@@ -18,4 +18,8 @@ public class TestDataModelProvider extends AbstractDataModelProvider implements 
 		return new String[]{ITestDataModel.FOO};
 	}
 
+	public String getID() {
+		return ITestDataModel.class.getName();
+	}
+
 }

@@ -18,26 +18,27 @@
       <import plugin="org.eclipse.core.resources" export="true"/>
       <import plugin="org.eclipse.core.boot" export="true"/>
       <import plugin="org.eclipse.core.runtime.compatibility"/>
-      <import plugin="org.eclipse.wst.common.frameworks"/>
+      <import plugin="org.eclipse.wst.common.frameworks" export="true"/>
       <import plugin="org.eclipse.wst.common.emfworkbench.integration"/>
       <import plugin="org.eclipse.emf.common"/>
       <import plugin="org.eclipse.emf.ecore"/>
       <import plugin="org.eclipse.wst.common.modulecore"/>
+      <import plugin="org.eclipse.wst.common.tests.collector" export="true"/>
    </requires>
    <extension-point id="DataModelVerifier" name="Data Model Verifier Factory Extension" schema="schema/dataModelVerifier.exsd"/>
 
    <extension
          point="org.eclipse.wst.common.tests.collector.suites">
          <suite
-            suiteClass="org.eclipse.wst.common.frameworks.operations.tests.WTPOperationAPITests"
-            suiteName="WTP Operation API Tests">
+            class="org.eclipse.wst.common.frameworks.operations.tests.WTPOperationAPITests"
+            name="WTP Operation API Tests">
          </suite>
    </extension>
    <extension
          point="org.eclipse.wst.common.tests.collector.suites">
          <suite
-            suiteClass="org.eclipse.wst.common.frameworks.datamodel.tests.DataModelAPITests"
-            suiteName="IDataModel API Tests">
+            class="org.eclipse.wst.common.frameworks.datamodel.tests.DataModelAPITests"
+            name="IDataModel API Tests">
          </suite>
    </extension>
    <extension

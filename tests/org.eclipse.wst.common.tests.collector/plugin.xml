@@ -19,9 +19,9 @@
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.runtime.compatibility"/>
    </requires>
+   <extension-point id="suites" name="suites" schema="schema/suites.exsd"/>
 
 
-   <extension-point id="suites" name="suites"/>
 
    <extension
          point="org.eclipse.ui.actionSets">

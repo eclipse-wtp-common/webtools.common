@@ -8,19 +8,27 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.frameworks.datamodel.tests;
+package org.eclipse.wst.common.tests.ui;
 
-import org.eclipse.wst.common.frameworks.datamodel.provisional.AbstractDataModelProvider;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
-public class B extends AbstractDataModelProvider {
-	public static final String P = "B.P";
+import org.eclipse.wst.common.tests.SimpleTestSuite;
 
-	public String[] getPropertyNames() {
-		return new String[]{P};
+/**
+ * @author jsholl
+ * 
+ * TODO To change the template for this generated type comment go to Window - Preferences - Java -
+ * Code Style - Code Templates
+ */
+public class DataModelUIAPITests extends TestSuite {
+
+	public static Test suite() {
+		return new DataModelUIAPITests();
 	}
 
-	public String getID() {
-		// TODO Auto-generated method stub
-		return null;
+	public DataModelUIAPITests() {
+		super();
+		addTest(new SimpleTestSuite(DataModelUIFactoryTest.class));
 	}
 }
