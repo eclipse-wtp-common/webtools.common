@@ -19,7 +19,7 @@ import org.eclipse.core.runtime.IStatus;
  * 
  * @see org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelProvider
  */
-public abstract class BasicDataModelProvider implements IDataModelProvider {
+public abstract class AbstractDataModelProvider implements IDataModelProvider {
 
 	protected IDataModel model = null;
 
@@ -84,7 +84,7 @@ public abstract class BasicDataModelProvider implements IDataModelProvider {
 		return null;
 	}
 
-	public DataModelOperation getDefaultOperation() {
+	public IDataModelOperation getDefaultOperation() {
 		return null;
 	}
 }

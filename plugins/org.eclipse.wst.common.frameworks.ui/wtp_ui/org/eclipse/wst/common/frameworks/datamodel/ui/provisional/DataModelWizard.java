@@ -12,9 +12,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jem.util.logger.proxy.Logger;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.util.Assert;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
@@ -23,11 +24,12 @@ import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.internal.AdaptabilityUtility;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ExtendableOperationImpl;
 import org.eclipse.wst.common.frameworks.internal.enablement.IEnablementManager;
 import org.eclipse.wst.common.frameworks.internal.operation.extensionui.DMWizardPageElement;
 import org.eclipse.wst.common.frameworks.internal.operation.extensionui.DMWizardPageExtensionManager;
-import org.eclipse.wst.common.frameworks.internal.operations.DMFailSafeComposedOperation;
 import org.eclipse.wst.common.frameworks.internal.ui.ErrorDialog;
+import org.eclipse.wst.common.frameworks.internal.ui.RunnableOperationWrapper;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPCommonUIResourceHandler;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPWizardSkipPageDataModel;
@@ -151,7 +153,6 @@ public abstract class DataModelWizard extends Wizard {
 		for (int i = 0; i < extendedPageHandlers.length; i++) {
 			extendedPageHandlers[i] = (IDMExtendedPageHandler) extendedPageHandlerList.get(i);
 		}
-
 	}
 
 	public IWizardPage getNextPage(IWizardPage page) {
@@ -233,22 +234,14 @@ public abstract class DataModelWizard extends Wizard {
 	 * @see org.eclipse.jface.wizard.IWizard#performFinish()
 	 */
 	public final boolean performFinish() {
-		IDataModelOperation op = null;
+		IUndoableOperation op = null;
 		boolean wasSuccessful = false;
 		try {
-			// TODO
-			// model.setProperty(WTPOperationDataModel.UI_OPERATION_HANLDER, new
-			// UIOperationHandler(getShell()));
 			if (prePerformFinish()) {
 				storeDefaultSettings();
 				op = createOperation();
-				// if (!model.getBooleanProperty(WTPOperationDataModel.RUN_OPERATION)) {
-				// model.setProperty(WTPOperationDataModel.CACHED_DELAYED_OPERATION, op);
-				// wasSuccessful = isSuccessfulFinish(op);
-				// return wasSuccessful;
-				// }
 				if (op != null) {
-					IRunnableWithProgress runnable = WTPUIPlugin.getRunnableWithProgress(op);
+					RunnableOperationWrapper runnable = WTPUIPlugin.getRunnableWithProgress(op);
 					try {
 						getContainer().run(runForked(), isCancelable(), runnable);
 						postPerformFinish();
@@ -262,9 +255,9 @@ public abstract class DataModelWizard extends Wizard {
 						wasSuccessful = false;
 						return wasSuccessful;
 					}
+					wasSuccessful = isSuccessfulFinish(runnable.getStatus());
 				}
 			}
-			wasSuccessful = isSuccessfulFinish(op);
 			return wasSuccessful;
 		} finally {
 			if (!wasSuccessful) {
@@ -273,12 +266,8 @@ public abstract class DataModelWizard extends Wizard {
 		}
 	}
 
-	/**
-	 * @param op
-	 * @return
-	 */
-	protected boolean isSuccessfulFinish(IDataModelOperation op) {
-		return op != null;
+	protected boolean isSuccessfulFinish(IStatus status) {
+		return status.isOK();
 	}
 
 	/**
@@ -334,37 +323,15 @@ public abstract class DataModelWizard extends Wizard {
 		return false;
 	}
 
-
-	/**
-	 * This is the base operation the wizard will run when finished. If the wizard is extended, then
-	 * this operation will run first followed by any extensions.
-	 * 
-	 * @return
-	 */
-	protected IDataModelOperation createBaseOperation() {
-		return model.getDefaultOperation();
-	}
-
-	/**
-	 * Returs the operation this wizard is going to run. This is final to handle extended pages;
-	 * subclasses should override createBaseOperation.
-	 * 
-	 * @return
-	 */
-	protected final IDataModelOperation createOperation() {
-		IDataModelOperation baseOperation = createBaseOperation();
-		DMFailSafeComposedOperation composedOperation = null;
+	private IUndoableOperation createOperation() {
+		ExtendableOperationImpl baseOperation = (ExtendableOperationImpl) getModel().getDefaultOperation();
 		for (int i = 0; null != extendedPages && i < extendedPages.length; i++) {
 			IDataModelOperation op = extendedPages[i].createOperation();
 			if (op != null) {
-				if (composedOperation == null) {
-					composedOperation = new DMFailSafeComposedOperation();
-					composedOperation.append(baseOperation);
-				}
-				composedOperation.append(op);
+				baseOperation.appendOperation(op);
 			}
 		}
-		return composedOperation != null ? composedOperation : baseOperation;
+		return baseOperation;
 	}
 
 	/**
@@ -380,14 +347,6 @@ public abstract class DataModelWizard extends Wizard {
 			model.dispose();
 		}
 	}
-
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.wizard.Wizard#getNextPage(org.eclipse.jface.wizard.IWizardPage)
-	 */
-
 
 	public void addPage(IWizardPage page) {
 		if (model.isProperty(WTPWizardSkipPageDataModel.SKIP_PAGES) && null != page.getName()) {

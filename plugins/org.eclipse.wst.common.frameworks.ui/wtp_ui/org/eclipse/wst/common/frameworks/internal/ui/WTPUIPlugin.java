@@ -13,16 +13,16 @@ package org.eclipse.wst.common.frameworks.internal.ui;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.wst.common.frameworks.internal.operations.IHeadlessRunnableWithProgress;
-
-import org.eclipse.jem.util.logger.proxy.Logger;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -31,9 +31,9 @@ public class WTPUIPlugin extends AbstractUIPlugin {
 
 	public static final String PLUGIN_ID = "org.eclipse.wst.common.frameworks.internal.ui"; //$NON-NLS-1$
 	public static final String EXTENDED_VIEWER_REGISTRY_EXTENSION_POINT = "extendedViewer"; //$NON-NLS-1$
-	//The shared instance.
+	// The shared instance.
 	private static WTPUIPlugin plugin;
-	//Resource bundle.
+	// Resource bundle.
 	private ResourceBundle resourceBundle;
 
 	/**
@@ -92,6 +92,10 @@ public class WTPUIPlugin extends AbstractUIPlugin {
 	public static IWorkbench getPluginWorkbench() {
 		return getDefault().getWorkbench();
 
+	}
+
+	public static RunnableOperationWrapper getRunnableWithProgress(final IUndoableOperation operation) {
+		return new RunnableOperationWrapper(operation);
 	}
 
 	public static IRunnableWithProgress getRunnableWithProgress(IHeadlessRunnableWithProgress aHeadlessRunnableWithProgress) {

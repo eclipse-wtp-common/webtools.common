@@ -18,13 +18,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelEvent;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelPropertyDescriptor;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelListener;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelProvider;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 
@@ -420,7 +420,11 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 	public void dispose() {
 	}
 
-	public IDataModelOperation getDefaultOperation() {
-		return provider.getDefaultOperation();
+	public IUndoableOperation getDefaultOperation() {
+		return new ExtendableOperationImpl(provider.getDefaultOperation());
+	}
+
+	public String toString() {
+		return "IDataModel, provider=" + provider.toString();
 	}
 }

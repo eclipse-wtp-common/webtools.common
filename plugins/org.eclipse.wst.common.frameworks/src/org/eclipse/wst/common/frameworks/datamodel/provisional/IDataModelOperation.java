@@ -10,14 +10,16 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel.provisional;
 
-import org.eclipse.wst.common.frameworks.internal.operations.IHeadlessRunnableWithProgress;
+import org.eclipse.core.commands.operations.IUndoableOperation;
 
-public interface IDataModelOperation extends IHeadlessRunnableWithProgress{
+public interface IDataModelOperation extends IUndoableOperation {
 
-	public void setID(String extensionId);
+	public void setID(String id);
 
 	public String getID();
 
-	public void setOperationDataModel(IDataModel model);
+	public void setDataModel(IDataModel model);
+
+	public IDataModel getDataModel();
 
 }

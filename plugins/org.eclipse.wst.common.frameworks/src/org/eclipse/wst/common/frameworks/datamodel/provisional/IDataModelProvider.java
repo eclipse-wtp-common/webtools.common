@@ -51,6 +51,6 @@ public interface IDataModelProvider {
 
 	public List getExtendedContext();
 
-	public DataModelOperation getDefaultOperation();
+	public IDataModelOperation getDefaultOperation();
 
 }

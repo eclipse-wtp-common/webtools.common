@@ -13,6 +13,7 @@ package org.eclipse.wst.common.frameworks.datamodel.provisional;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IStatus;
 
 /**
@@ -22,7 +23,7 @@ import org.eclipse.core.runtime.IStatus;
  */
 public interface IDataModel {
 
-	public IDataModelOperation getDefaultOperation();
+	public IUndoableOperation getDefaultOperation();
 
 	public List getExtendedContext();
 
