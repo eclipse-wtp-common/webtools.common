@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -23,9 +24,12 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
 import org.eclipse.wst.common.modulecore.ModuleCoreFactory;
+import org.eclipse.wst.common.modulecore.ModuleCoreNature;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 import org.eclipse.wst.common.modulecore.ModuleStructuralModel;
+import org.eclipse.wst.common.modulecore.ProjectModules;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
+import org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl;
 
 /**
  * <p>
@@ -55,6 +59,21 @@ public class ModuleCore {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	public ModuleStructuralModel getModuleStructuralModelForRead(IProject aProject, Object anAccessorKey) {
+		ModuleCoreNature aNature = ModuleCoreNature.getRegisteredRuntime(aProject);
+		return aNature.getModuleStructuralModelForRead(anAccessorKey);
+	}
+	public ModuleStructuralModel getModuleStructuralModelForWrite(IProject aProject, Object anAccessorKey) {
+		ModuleCoreNature aNature = ModuleCoreNature.getRegisteredRuntime(aProject);
+		return aNature.getModuleStructuralModelForWrite(anAccessorKey);
+	}
+	public ProjectModules getProjectModules(ModuleStructuralModel aModuleStucturalModule) {
+		return (ProjectModules)aModuleStucturalModule.getPrimaryRootObject();
+	}
+	public WorkbenchModule[] getWorkbenchModules(ModuleStructuralModel aModuleStucturalModule) {
+		List wbModules = getProjectModules(aModuleStucturalModule).getWorkbenchModules();
+		return (WorkbenchModule[])wbModules.toArray(new WorkbenchModule[wbModules.size()]);
 	}
 
 	public void loadModuleMetaData(IProject project) {
