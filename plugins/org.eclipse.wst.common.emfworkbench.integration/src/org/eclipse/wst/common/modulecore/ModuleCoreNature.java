@@ -20,7 +20,6 @@ public class ModuleCoreNature implements IProjectNature {
 	private IProject moduleProject;
 	private final static ModuleCoreFactory MODULE_FACTORY = ModuleCoreFactory.eINSTANCE;
 
-	
 
 	public IModuleHandle createModuleHandle(URI uri) {
 		if (uri == null)
