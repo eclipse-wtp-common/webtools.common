@@ -34,7 +34,7 @@
    <extension-point id="ModifierHelperFactory" name="ModifierHelperFactory" schema="schema/modifierHelperFactory.exsd"/>
 
    <extension
-         point="org.eclipse.jem.workbench.internalWorkbenchContextFactory">
+         point="org.eclipse.jem.util.internalWorkbenchContextFactory">
       <factoryClass
             name="org.eclipse.wst.common.internal.emfworkbench.edit.EMFWorkbenchEditContextFactory">
       </factoryClass>
