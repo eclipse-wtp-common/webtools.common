@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="frameworktests"/>
+	<classpathentry kind="src" path="apitools"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,4 +1,5 @@
-package org.eclipse.wst.common.frameworks.artifactedit.tests;
+package org.eclipse.etools.common.test.api;
+
 
 import java.io.File;
 import java.io.FileOutputStream;

@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.etools.common.test.api.ProjectUnzipUtil;
 import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.ArtifactEditModel;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
@@ -26,6 +27,8 @@ import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelEvent;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelListener;
 import org.eclipse.wst.common.tests.CommonTestsPlugin;
+
+
 
 
 
@@ -84,7 +87,14 @@ public class ArtifactEditTest extends TestCase {
 		}
 	};
 
+	public ArtifactEditTest() {
+		super();
 
+		if (!getTargetProject().exists())
+			if (!createProject())
+				fail();
+		project = getTargetProject();
+	}
 
 	public IProject getTargetProject() {
 		return ResourcesPlugin.getWorkspace().getRoot().getProject(PROJECT_NAME);
@@ -92,7 +102,7 @@ public class ArtifactEditTest extends TestCase {
 
 	public boolean createProject() {
 		IPath localZipPath = getLocalPath();
-		ProjectUnzipUtil util = new ProjectUnzipUtil(localZipPath, PROJECT_NAME);
+		ProjectUnzipUtil util = new ProjectUnzipUtil(localZipPath, new String[]{PROJECT_NAME});
 		return util.createProject();
 	}
 
@@ -106,16 +116,6 @@ public class ArtifactEditTest extends TestCase {
 		return new Path(url.getPath());
 	}
 
-
-
-	public ArtifactEditTest() {
-		super();
-
-		if (!getTargetProject().exists())
-			if (!createProject())
-				fail();
-		project = getTargetProject();
-	}
 
 
 	public void testGetArtifactEditForReadWorkbenchComponent() {
