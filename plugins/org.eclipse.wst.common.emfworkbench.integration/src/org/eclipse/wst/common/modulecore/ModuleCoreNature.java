@@ -1,9 +1,3 @@
-/*
- * Created on Jan 24, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package org.eclipse.wst.common.modulecore;
 
 import java.util.HashMap;
@@ -14,16 +8,19 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
 
 import com.ibm.wtp.common.logger.proxy.Logger;
 
 //In Progress......
 
-public class ModuleCoreNature implements IProjectNature, IResourceChangeListener {
-	private HashMap moduleHandles;
+public class ModuleCoreNature implements IProjectNature {
+	private HashMap moduleHandlesMap;
+	private HashMap workbenchModulesMap;
 	private IProject moduleProject;
 	private final static ModuleCoreFactory MODULE_FACTORY = ModuleCoreFactory.eINSTANCE;
-	private HashMap workbenchModules;
+
+	
 
 	public IModuleHandle createModuleHandle(URI uri) {
 		if (uri == null)
@@ -37,21 +34,21 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
 			Logger.getLogger().write(e);
 		} finally {
 			if (handle != null && module != null) {
-				getModuleHandles().put(uri, handle);
-				getWorkbenchModules().put(handle, module);
+				getModuleHandlesMap().put(uri, handle);
+				getWorkbenchModulesMap().put(handle, module);
 			}
 		}
 		return handle;
 	}
 
-	private IModuleHandle createHandle(URI uri) {
+	private IModuleHandle createHandle(URI uri) throws RuntimeException {
 		IModuleHandle handle = null;
 		handle = MODULE_FACTORY.createIModuleHandle();
 		handle.setHandle(uri);
 		return handle;
 	}
 
-	private WorkbenchModule createModuleHandle(IModuleHandle handle) {
+	private WorkbenchModule createModuleHandle(IModuleHandle handle) throws RuntimeException {
 		WorkbenchModule module;
 		module = MODULE_FACTORY.createWorkbenchModule();
 		module.setHandle(handle);
@@ -62,16 +59,29 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
 
 	}
 
-	private HashMap getModuleHandles() {
-		if (moduleHandles == null)
-			moduleHandles = new HashMap();
-		return moduleHandles;
+	private Resource getWTPModuleResource() {
+		return null;
 	}
 
-	private HashMap getWorkbenchModules() {
-		if (workbenchModules == null)
-			workbenchModules = new HashMap();
+	public WorkbenchModule[] getWorkbenchModules() {
+		Object[] values = getWorkbenchModulesMap().values().toArray();
+		WorkbenchModule[] workbenchModules = new WorkbenchModule[values.length];
+		for (int i = 0; i < values.length; i++) {
+			workbenchModules[i] = (WorkbenchModule) values[i];
+		}
 		return workbenchModules;
+	}
+
+	private HashMap getModuleHandlesMap() {
+		if (moduleHandlesMap == null)
+			moduleHandlesMap = new HashMap();
+		return moduleHandlesMap;
+	}
+
+	private HashMap getWorkbenchModulesMap() {
+		if (workbenchModulesMap == null)
+			workbenchModulesMap = new HashMap();
+		return workbenchModulesMap;
 	}
 
 	public void configure() throws CoreException {
