@@ -1,13 +1,11 @@
-/*******************************************************************************
- * Copyright (c) 2003, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+/***************************************************************************************************
+ * Copyright (c) 2003, 2004 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors:
- * IBM Corporation - initial API and implementation
- *******************************************************************************/
+ * Contributors: IBM Corporation - initial API and implementation
+ **************************************************************************************************/
 package org.eclipse.wst.common.modulecore;
 
 import java.util.List;
@@ -26,33 +24,27 @@ import org.eclipse.wst.common.modulecore.internal.impl.PlatformURLModuleConnecti
 
 /**
  * 
- * <p>
- * Provides resource life cycle management between an editmodel pattern and a WTP flexible module
- * pattern.
- * </p>
+ * Provides resource life cycle management between an EditModel and a WTP flexible module pattern.
  * <p>
  * ArtifactEditModel provides a framework for managing a set of EMF resources within a unit of work.
- * This provides basic services such as loads, saves, and synchronization for the managed resources.
- * ArtifactEditModels are reference counted, therefore a single instance can be shared by more than
- * one operation or editor.
+ * Management of these resources includes basic services such as loads, saves, and synchronization
+ * for the managed resources. ArtifactEditModels are reference counted so that a single instance can
+ * be shared by more than one operation or editor.
  * </p>
  * <p>
- * AritfactEditModel utilizes EMFWorkbenchContext (@see EMFWorkbenchContext) to maintain the life
- * cycle of a resource (@see Resource) in a given resource set (@see ResourceSet) per workbench
- * module/project. When an interested resource, resources within a flexible module structure, is
- * modified it notifies ModuleCore(@see ModuleCore) to update the corresponding
- * WorkbenchModules/WorkbenchModuleResource ((@see WorkbenchModule)(@see WorkbenchModuleResource)).
- * Retrieval and creation of resources are delegated to the WorkbenchResourceHelper(@see
- * WorkbenchResourceHelper).
+ * AritfactEditModel utilizes
+ * {@see org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext}&nbsp; to manage the life
+ * cycle of an EMF {@see org.eclipse.emf.ecore.resource.Resource}&nbsp; in a given EMF
+ * {@see org.eclipse.emf.ecore.resource.ResourceSet}. There is one ArtifactEditModel per
+ * {@see org.eclipse.wst.common.modulecore.WorkbenchModule}&nbsp;in each project.
  * </p>
  * 
- * @see EMFWorkbenchContext
- * @see Resource
- * @see ResourceSet
- * @see ModuleCore
- * @see WorkbenchResourceHelper
- * @see WorkbenchModule
- * @see WorkbenchModuleResource
+ * @see org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext
+ * @see org.eclipse.emf.ecore.resource.Resource
+ * @see org.eclipse.emf.ecore.resource.ResourceSet
+ * @see org.eclipse.wst.common.modulecore.ModuleCore
+ * @see org.eclipse.wst.common.modulecore.WorkbenchModule
+ * @see org.eclipse.wst.common.modulecore.WorkbenchModuleResource
  */
 
 public class ArtifactEditModel extends EditModel implements IAdaptable {
@@ -62,18 +54,31 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 
 	/**
 	 * <p>
-	 * Creates a read only ArtifactEditModel instance. Containted resources will have read only
-	 * access.
+	 * Creates a ArtifactEditModel instance that uses information from the
+	 * <b>org.eclipse.wst.common.emfworkbench.integration.editModelFactory </b> extension point
+	 * associated with anEditModelId attached to the project managed by aContext for a specific
+	 * module referenced by aModuleURI. Resoures that are not recognized as defined Resources via
+	 * the appropriate EditModel extension points will be accessed as read-only.
+	 * </p>
+	 * <p>
+	 * This method is functionally equivalent to:
+	 * </p>
+	 * <p>
+	 * <code>ArtifactEditModel(anEditModelId, aContext, toMakeReadOnly, true, aModuleURI)</code>
 	 * </p>
 	 * 
 	 * @param anEditModelId
-	 *            a unique identifier for the edit model
+	 *            A unique identifier for the EditModel defined by the appropriate
+	 *            <b>org.eclipse.wst.common.emfworkbench.integration.editModelFactory </b> extension
+	 *            point.
 	 * @param aContext
-	 *            resource/resoruce set life cycle manager
+	 *            A valid EMFWorkbenchContext which helps manage the lifecycle of EMF resources for
+	 *            a given project.
 	 * @param toMakeReadOnly
-	 *            type of file access
+	 *            True indicates that Resources loaded by the EditModel will not allow
+	 *            modifications.
 	 * @param aModuleURI
-	 *            a URI that contains resource location and module information
+	 *            A fully-qualified URI that conforms to the "module:" format.
 	 */
 
 	public ArtifactEditModel(String anEditModelId, EMFWorkbenchContext aContext, boolean toMakeReadOnly, URI aModuleURI) {
@@ -81,21 +86,30 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 	}
 
 	/**
+	 * 
 	 * <p>
-	 * Creates a read/write ArtifactEditModel instance.
-	 * </p>
+	 * Creates a ArtifactEditModel instance that uses information from the
+	 * <b>org.eclipse.wst.common.emfworkbench.integration.editModelFactory </b> extension point
+	 * associated with anEditModelId attached to the project managed by aContext for a specific
+	 * module referenced by aModuleURI. Resoures that are not recognized as defined
+	 * </p>*
 	 * 
 	 * @param anEditModelId
-	 *            a unique identifier for the edit model
+	 *            A unique identifier for the EditModel defined by the appropriate
+	 *            <b>org.eclipse.wst.common.emfworkbench.integration.editModelFactory </b> extension
+	 *            point.
 	 * @param aContext
-	 *            resource/resoruce set life cycle manager
+	 *            A valid EMFWorkbenchContext which helps manage the lifecycle of EMF resources for
+	 *            a given project.
 	 * @param toMakeReadOnly
-	 *            type of file access
+	 *            True indicates that Resources loaded by the EditModel will not allow
+	 *            modifications.
 	 * @param toAccessUnknownResourcesAsReadOnly
-	 *            if resource is requested and not loaded, file access will be set to read only
-	 * 
+	 *            True indicates that Resources not recognized by the EditModel be loaded as
+	 *            read-only - such those loaded via {@see #getResource(URI)}.
 	 * @param aModuleURI
-	 *            a URI that contains resource location and module information
+	 *            A fully-qualified URI that conforms to the "module:" format.
+	 *  
 	 */
 
 	public ArtifactEditModel(String anEditModelId, EMFWorkbenchContext aContext, boolean toMakeReadOnly, boolean toAccessUnknownResourcesAsReadOnly, URI aModuleURI) {
@@ -146,7 +160,8 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 		} catch (UnresolveableURIException e) {
 			e.printStackTrace();
 		} finally {
-			moduleCore.dispose();
+			if (moduleCore != null)
+				moduleCore.dispose();
 		}
 		return type;
 	}

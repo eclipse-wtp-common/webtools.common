@@ -55,8 +55,8 @@ import com.ibm.wtp.emf.workbench.ProjectUtilities;
  * the ModuleCoreNature instance from a given project ({@see #getModuleCoreNature(IProject)}
  * &nbsp;or to make a flexible project flexible by adding a ModuleCoreNature (
  * {@see #addModuleCoreNatureIfNecessary(IProject, IProgressMonitor)}).
- * </p>
- * 
+ * </p> 
+ * <a name="model-discussion"/>
 * <a name="module-structural-model"/>
 * <p>
 * Each ModuleCoreNature from a given project can provide access to the
@@ -87,7 +87,7 @@ import com.ibm.wtp.emf.workbench.ProjectUtilities;
 * The following diagram highlights the relationships of these subclasses of EditModel, and the
 * relationship of the EditModel to the EMF resources. In the diagram, "MetamodelResource" and
 * "MetamodelObject" are used as placeholders for the specific subclasses of
-* {@see org.eclipse.emf.ecore.resource.Resource}and {@see org.eclipse.emf.ecore.EObject}
+* {@see org.eclipse.emf.ecore.resource.Resource}&nbsp;and {@see org.eclipse.emf.ecore.EObject}&nbsp;
 * respectively.
 * </p>
 * <table cellspacing="10" cellpadding="10">

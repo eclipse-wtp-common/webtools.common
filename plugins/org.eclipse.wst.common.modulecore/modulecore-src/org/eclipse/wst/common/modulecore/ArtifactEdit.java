@@ -14,10 +14,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.ecore.EObject;
 
-/**
- * <p>
- * Provides a Facade pattern for accessing content models for Web Tools Platform flexible modules.
- * </p>
+/** 
+ * Provides a Facade pattern for accessing Module Content Metamodels for Web Tools Platform flexible modules. 
  * <p>
  * ArtifactEdit hides the management of accessing edit models ({@see ArtifactEditModel})
  * correctly. Each project may have multiple ({@see ArtifactEditModel})s depending on the number
@@ -26,18 +24,17 @@ import org.eclipse.emf.ecore.EObject;
  * </p>
  * 
  * <p>
- * Each ArtifactEdit instance facade is designed to manage the Edit Model lifecycle for clients.
+ * Each ArtifactEdit facade is designed to manage the EditModel lifecycle for clients.
  * However, while each ArtifactEdit is designed to be passed around as needed, clients must enforce
  * the ArtifactEdit lifecycle. The most common method of acquiring a ArtifactEdit instance facade is to
- * use {@see #getArtifactEditForRead(WorkbenchModule)}or {@see #getModuleEditModelForWrite(WorkbenchModule, Object)}.
+ * use {@see #getArtifactEditForRead(WorkbenchModule)}&nbsp;or {@see #getArtifactEditForWrite(WorkbenchModule)}.
  * </p>
  * <p>
  * When clients have concluded their use of the instance, <b>clients must call {@see #dispose()}
  * </b>.
- * </p>
- * 
+ * </p> 
  * <p>
- * The following class is experimental until fully documented.
+ * This class is experimental until fully documented.
  * </p>
  * 
  * @see ModuleCoreNature

@@ -31,32 +31,11 @@ import org.eclipse.wst.common.modulecore.internal.impl.WTPModulesResourceFactory
 * </p>
 * <p>
 * Clients are encouraged to use the Edit Facade pattern (via
-* {@see org.eclipse.wst.common.modulecore.ArtifactEdit}&nbsp; or one if its relevant subclasses)
+* {@see org.eclipse.wst.common.modulecore.ModuleCore}&nbsp; or one if its relevant subclasses)
 * to work directly with the Module Structural Metamodel.
 * </p> 
 * <p>
-* The following diagram highlights the relationships of these subclasses of EditModel, and the
-* relationship of the EditModel to the EMF resources. In the diagram, "MetamodelResource" and
-* "MetamodelObject" are used as placeholders for the specific subclasses of
-* {@see org.eclipse.emf.ecore.resource.Resource}and {@see org.eclipse.emf.ecore.EObject}
-* respectively.
-* </p>
-* <table cellspacing="10" cellpadding="10">
-* <tr>
-* <td>
-* <p>
-* <img src="../../../../../overview/metamodel_components.jpg" />
-* </p>
-* </td>
-* </tr>
-* <tr>
-* <td>
-* <p>
-* <i>Figure 1: A component diagram of the Module Edit Models. </i>
-* </p>
-* </td>
-* </tr>
-* </table> 
+* <a href="ModuleCoreNature.html#model-discussion">See the discussion</a> of how ModuleStructuralModel relates to the ArtifactEditModel and ModuleCoreNature.
 * <a name="accessor-key"/>
 * <p>
 * All EditModels have a lifecycle that must be enforced to keep the resources loaded that are in
