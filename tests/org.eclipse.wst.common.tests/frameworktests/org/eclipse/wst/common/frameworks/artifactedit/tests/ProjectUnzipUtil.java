@@ -59,7 +59,6 @@ public class ProjectUnzipUtil {
 			zipFile = new ZipFile(zipLocation.toFile());
 		} catch (IOException e1) {
 			throw e1;
-			// e1.printStackTrace();
 		}
 		Enumeration entries = zipFile.entries();
 		while (entries.hasMoreElements()) {
