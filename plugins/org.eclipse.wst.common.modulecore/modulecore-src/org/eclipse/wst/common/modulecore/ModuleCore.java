@@ -366,7 +366,20 @@ public class ModuleCore implements IEditModelHandler {
 	public ProjectComponents getModuleModelRoot() {
 		return (ProjectComponents) structuralModel.getPrimaryRootObject();
 	}
-
+	
+	/**
+	 * <p>
+	 * 	Return the an array of ComponentResource which basically represent the
+	 * source containers of a WorkbenchResource.
+	 * <p>
+	 * @param component
+	 * @return
+	 */
+	public ComponentResource[] getSourceContainers(WorkbenchComponent component) {
+		//TODO Api in progress: Need to return the Java Source containers of the project
+		return null;
+	}
+ 
 	/**
 	 * <p>
 	 * Clients that wish to modify the individual {@see WorkbenchComponent}&nbsp;instances may use
