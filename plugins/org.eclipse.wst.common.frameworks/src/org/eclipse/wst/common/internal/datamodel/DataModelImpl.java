@@ -34,7 +34,8 @@ public class DataModelImpl implements IDataModel, IDataModelListener {
 	private static final String NESTED_MODEL_NOT_LOCATED = WTPResourceHandler.getString("21"); //$NON-NLS-1$
 	private static final String NESTED_MODEL_DUPLICATE = WTPResourceHandler.getString("33"); //$NON-NLS-1$
 
-	private Set allPropertyNames = new HashSet();
+	private Set allPropertyNames = null; // lazily initialzed when nested models added
+	private Set nestedPropertyNames = null; // lazily initialzed when nested models added
 	private Set basePropertyNames = new HashSet();
 	private Map propertyValues = new Hashtable();
 	private Map nestedModels;
@@ -63,17 +64,30 @@ public class DataModelImpl implements IDataModel, IDataModelListener {
 
 	private void addBaseProperty(String propertyName) {
 		basePropertyNames.add(propertyName);
-		allPropertyNames.add(propertyName);
 	}
 
 	public boolean isBaseProperty(String propertyName) {
-		if (basePropertyNames != null)
-			return basePropertyNames.contains(propertyName);
-		return true;
+		return basePropertyNames.contains(propertyName);
+	}
+
+	public String[] getBaseProperties() {
+		return (String[]) basePropertyNames.toArray();
 	}
 
 	public boolean isProperty(String propertyName) {
-		return allPropertyNames.contains(propertyName);
+		return null == allPropertyNames ? basePropertyNames.contains(propertyName) : allPropertyNames.contains(propertyName);
+	}
+
+	public String[] getAllProperties() {
+		return (String[]) (null == allPropertyNames ? basePropertyNames.toArray() : allPropertyNames.toArray());
+	}
+
+	public boolean isNestedProperty(String propertyName) {
+		return null == nestedPropertyNames ? false : nestedPropertyNames.contains(propertyName);
+	}
+
+	public String[] getNestedProperties() {
+		return (String[]) (null == allPropertyNames ? new String[0] : nestedPropertyNames.toArray());
 	}
 
 	private void checkValidPropertyName(String propertyName) {
@@ -190,6 +204,8 @@ public class DataModelImpl implements IDataModel, IDataModelListener {
 		DataModelImpl nestedDataModel = (DataModelImpl) dataModel;
 		if (null == nestedDataModel.nestingModels) {
 			nestedDataModel.nestingModels = new HashSet();
+			allPropertyNames = new HashSet();
+			nestedPropertyNames = new HashSet();
 		}
 		if (nestedDataModel.nestingModels.contains(this)) {
 			throw new RuntimeException(NESTED_MODEL_DUPLICATE);
@@ -198,12 +214,12 @@ public class DataModelImpl implements IDataModel, IDataModelListener {
 
 		nestedModels.put(modelName, nestedDataModel);
 
-		addNestedProperties(nestedDataModel.allPropertyNames);
+		addNestedProperties(null == nestedDataModel.allPropertyNames ? nestedDataModel.nestedPropertyNames : nestedDataModel.allPropertyNames);
 		nestedDataModel.addListener(this);
 	}
 
 	private void addNestedProperties(Set nestedProperties) {
-		boolean propertiesAdded = allPropertyNames.addAll(nestedProperties);
+		boolean propertiesAdded = allPropertyNames.addAll(nestedProperties) || nestedPropertyNames.addAll(nestedProperties);
 		// Pass the new properties up the nesting chain
 		if (propertiesAdded && nestingModels != null) {
 			Iterator iterator = nestingModels.iterator();
@@ -264,6 +280,7 @@ public class DataModelImpl implements IDataModel, IDataModelListener {
 
 		if (null != nestedPropertiesToRemove) {
 			allPropertyNames.removeAll(nestedPropertiesToRemove);
+			nestedPropertyNames.removeAll(nestedPropertiesToRemove);
 			if (nestingModels != null) {
 				Iterator nestingModelsIterator = nestingModels.iterator();
 				while (nestingModelsIterator.hasNext()) {
@@ -284,7 +301,8 @@ public class DataModelImpl implements IDataModel, IDataModelListener {
 
 	public IDataModelPropertyDescriptor[] getValidPropertyDescriptors(String propertyName) {
 		DataModelImpl dataModel = getOwningDataModel(propertyName);
-		return dataModel.provider.getValidPropertyDescriptors(propertyName);
+		IDataModelPropertyDescriptor[] descriptors = dataModel.provider.getValidPropertyDescriptors(propertyName);
+		return descriptors == null ? new IDataModelPropertyDescriptor[0] : descriptors;
 	}
 
 	public IDataModelPropertyDescriptor getPropertyDescriptor(String propertyName) {
@@ -416,7 +434,8 @@ public class DataModelImpl implements IDataModel, IDataModelListener {
 
 	public IStatus validateProperty(String propertyName) {
 		DataModelImpl dataModel = getOwningDataModel(propertyName);
-		return dataModel.provider.validateProperty(propertyName);
+		IStatus status = dataModel.provider.validateProperty(propertyName);
+		return status == null ? IDataModelProvider.OK_STATUS : status;
 	}
 
 	/**
@@ -475,23 +494,4 @@ public class DataModelImpl implements IDataModel, IDataModelListener {
 		return provider.getDefaultOperation();
 	}
 
-	public String[] getBaseProperties() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String[] getNestedProperties() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String[] getAllProperties() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public boolean isNestedProperty(String propertyName) {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }
