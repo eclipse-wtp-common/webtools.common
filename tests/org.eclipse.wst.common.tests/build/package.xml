@@ -1,0 +1,17 @@
+<project name="com.ibm.etools.commontests" default="packagingPlugin" basedir="./..">
+    <target name="init">
+        <property name="packageDir" value=""/>
+        <property name="plugin.directory"  value="${basedir}"/>
+        <property name="plugin.id" value="com.ibm.etools.commontests"/>
+        <property name="plugin.version"  value=""/>
+    </target>
+    <target name="packagingPlugin" depends="init">
+        <echo message="${plugin.id}"/>
+        <copy todir="${packageDir}/plugins/${plugin.id}_${plugin.version}">
+            <fileset dir="${plugin.directory}">
+                <include name="plugin.xml"/>
+                <include name="runtime/commontests.jar"/>
+            </fileset>
+        </copy>
+    </target>
+</project>

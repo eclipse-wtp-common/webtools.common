@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE application PUBLIC "-//Sun Microsystems, Inc.//DTD J2EE Application 1.3//EN" "http://java.sun.com/dtd/application_1_3.dtd">
+<application id="Application_ID">
+	<display-name>test</display-name>
+	<module id="JavaClientModule_1049139849772">
+		<java>testClient.jar</java>
+	</module>
+	<module id="EjbModule_1049139849782">
+		<ejb>testEJB.jar</ejb>
+	</module>
+	<module id="WebModule_1049139849812">
+		<web>
+			<web-uri>testWeb.war</web-uri>
+			<context-root>testWeb</context-root>
+		</web>
+	</module>
+</application>
+
