@@ -8,15 +8,18 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 
 import com.ibm.wtp.common.logger.proxy.Logger;
+import com.ibm.wtp.emf.workbench.EMFWorkbenchContextBase;
 import com.ibm.wtp.emf.workbench.WorkbenchResourceHelperBase;
+import com.ibm.wtp.emf.workbench.nature.EMFNature;
 import com.ibm.wtp.internal.emf.workbench.EMFWorkbenchContextFactory;
 
 //In Progress......
 
-public class ModuleCoreNature implements IProjectNature, IResourceChangeListener {
+public class ModuleCoreNature extends EMFNature implements IProjectNature, IModuleConstants, IResourceChangeListener {
 
     private HashMap editModelsForRead;
 
@@ -45,22 +48,6 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
         return structureModule;
     }
 
-    private EMFWorkbenchContext getEMFWorkBenchContext() {
-        EMFWorkbenchContext emfContext = (EMFWorkbenchContext) EMFWorkbenchContextFactory.INSTANCE.getEMFContext(getProject());
-        if (emfContext == null)
-            try {
-                emfContext = createEmfContext();
-            } catch (CoreException e) {
-                Logger.getLogger().logError(e);
-            }
-        return null;
-    }
-
-    protected EMFWorkbenchContext createEmfContext() throws CoreException {
-        EMFWorkbenchContext emfContext = (EMFWorkbenchContext) WorkbenchResourceHelperBase.createEMFContext(getProject(), null);
-        return emfContext;
-    }
-
     private HashMap getEditModelsForRead() {
         if (editModelsForRead == null)
             editModelsForRead = new HashMap();
@@ -73,20 +60,34 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
         return editModelsForWrite;
     }
 
-    public void configure() throws CoreException {
-
-    }
-
-    public void deconfigure() throws CoreException {
-
-    }
-
     public IProject getProject() {
         return project;
     }
 
     public void setProject(IProject moduleProject) {
         project = moduleProject;
+    }
+
+    public ResourceSet getResourceSet() {
+        return getEmfContextBase().getResourceSet();
+    }
+
+    public String getNatureID() {
+        return MODULE_NATURE_ID;
+    }
+
+    protected String getPluginID() {
+        return MODULE_PLUG_IN_ID;
+    }
+
+    public void primaryContributeToContext(EMFWorkbenchContextBase aNature) {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void secondaryContributeToContext(EMFWorkbenchContextBase aNature) {
+        // TODO Auto-generated method stub
+
     }
 
     /*
