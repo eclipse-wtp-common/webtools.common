@@ -78,7 +78,9 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
         }
         else if (COMPONENT_NAME.equals(propertyName))
 			setProperty(COMPONENT_DEPLOY_NAME, propertyValue);
-        return true;
+        else if (COMPONENT_DEPLOY_NAME.equals(propertyName))
+			getDataModel().setProperty(COMPONENT_DEPLOY_NAME, propertyValue);        
+         return true;
     }
     
 	public DataModelPropertyDescriptor[] getValidPropertyDescriptors(String propertyName) {
@@ -99,18 +101,30 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
                 } else if (moduleName==null || moduleName.equals("")) { //$NON-NLS-1$
 					String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.ERR_EMPTY_MODULE_NAME);
 					return WTPCommonPlugin.createErrorStatus(errorMessage); 
-                }
+                }else
+                	return OK_STATUS;
             } else
                 return status;
 
         } else if (COMPONENT_VERSION.equals(propertyName)) {
 			return validateComponentVersionProperty();
 		} else if (propertyName.equals(PROJECT_NAME)) {
+			IStatus status = OK_STATUS;
 			String projectName = getDataModel().getStringProperty(PROJECT_NAME);
 			if (projectName == null || projectName.length()==0) {
 				String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_NAME_EMPTY);
-				return WTPCommonPlugin.createErrorStatus(errorMessage); 
+				status =  WTPCommonPlugin.createErrorStatus(errorMessage); 
 			}
+			return status;
+		}else if(propertyName.equals(COMPONENT_DEPLOY_NAME)){
+			return OK_STATUS;
+			
+		}else if(propertyName.equals(CREATE_DEFAULT_FILES)){
+			return OK_STATUS;
+		}else if(propertyName.equals(FINAL_PERSPECTIVE)){
+			return OK_STATUS;
+		}else if(propertyName.equals(VALID_MODULE_VERSIONS_FOR_PROJECT_RUNTIME)){
+			return OK_STATUS;
 		}
         return super.validate(propertyName);
     }
@@ -139,6 +153,8 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 	protected abstract String getComponentExtension();
 	
 	protected abstract Integer getDefaultComponentVersion();
+
+	
 	
 	protected abstract String getComponentID();
 	
