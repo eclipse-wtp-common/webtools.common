@@ -23,6 +23,6 @@ package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
  * Generation - Code and Comments
  */
 public interface CommonUIPluginConstants {
-	public static final String PLUGIN_ID = "org.eclipse.wst.common.frameworks.internal.ui"; //$NON-NLS-1$
+	public static final String PLUGIN_ID = "org.eclipse.wst.common.frameworks.ui"; //$NON-NLS-1$
 
 }
