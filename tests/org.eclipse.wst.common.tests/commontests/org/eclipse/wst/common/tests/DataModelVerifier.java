@@ -6,7 +6,7 @@
  */
 package org.eclipse.wst.common.tests;
 
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
 
 /**
  * @author Administrator
