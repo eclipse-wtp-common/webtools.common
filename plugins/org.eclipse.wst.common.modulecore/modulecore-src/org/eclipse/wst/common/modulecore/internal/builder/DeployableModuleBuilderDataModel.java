@@ -23,7 +23,7 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
 	 */
 	public static final String WORKBENCH_MODULE = "DeployableModuleDataModel.WORKBENCH_MODULE_RESOURCES"; //$NON-NLS-1$
 	/**
-	 * Required, type List of DependentdeployableModuleDataModel
+	 * Required, type List of DependentDeployableModuleDataModel
 	 */
 	public static final String DEPENDENT_MODULES_DM_LIST = "DeployableModuleDataModel.DEPENDENT_MODULES_DM_LIST"; //$NON-NLS-1$
 
