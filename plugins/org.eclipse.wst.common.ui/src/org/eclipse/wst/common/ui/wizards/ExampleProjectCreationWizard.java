@@ -75,7 +75,7 @@ public class ExampleProjectCreationWizard extends BasicNewResourceWizard impleme
 
 	private ExampleProjectCreationWizardPage[] pages;
 
-	private final String WEB_BROWSER_ID = "org.eclipse.wst.webbrowser";   //$NON-NLS-1$
+	private final String WEB_BROWSER_ID = "org.eclipse.wst.internet.webbrowser";   //$NON-NLS-1$
 
 	public ExampleProjectCreationWizard() {
 		super();
