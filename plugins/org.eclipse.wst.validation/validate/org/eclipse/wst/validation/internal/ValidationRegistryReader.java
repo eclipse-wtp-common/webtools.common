@@ -28,12 +28,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IPluginRegistry;
+import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.validation.core.IValidator;
 import org.eclipse.wst.validation.internal.operations.IRuleGroup;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchHelper;
-import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.plugin.ValidationPlugin;
 
 import com.ibm.wtp.common.logger.LogEntry;
 import com.ibm.wtp.common.logger.proxy.Logger;
@@ -740,7 +740,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	 * Returns the Validator extension point
 	 */
 	private IExtensionPoint getValidatorExtensionPoint() {
-		IPluginRegistry registry = Platform.getPluginRegistry();
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IExtensionPoint extensionPoint = registry.getExtensionPoint(PLUGIN_ID, VALIDATOR_EXT_PT_ID);
 		if (extensionPoint == null) {
 			// If this happens it means that someone removed the "validator" extension point
@@ -1329,7 +1329,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				// If getLabel() returns an empty string, this is an illegal validator.
 				// The PropertyPage, and other status messages, need to have a displayable name for
 				// the validator.
-				String pluginId = extension.getDeclaringPluginDescriptor().getUniqueIdentifier();
+				String pluginId = extension.getNamespace();
 				ValidatorMetaData vmd = initializeValidator(element, label, pluginId);
 
 				if (vmd != null) {

@@ -25,7 +25,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.plugin.ValidationPlugin;
 
 import com.ibm.wtp.common.logger.LogEntry;
 import com.ibm.wtp.common.logger.proxy.Logger;

@@ -18,11 +18,6 @@ package org.eclipse.wst.validation.core;
  */
 public interface SeverityEnum {
 	/**
-	 * Typically used to specify error messages.
-	 */
-	public static final int HIGH_SEVERITY = 0x0001;
-
-	/**
 	 * Typically used to specify warning messages.
 	 */
 	public static final int NORMAL_SEVERITY = 0x0002;
@@ -36,7 +31,7 @@ public interface SeverityEnum {
 	 * Specify high (error) and normal (warning) messages. Typically used with a MessageFilter, to
 	 * filter out information messages.
 	 */
-	public static final int ERROR_AND_WARNING = HIGH_SEVERITY | NORMAL_SEVERITY;
+	public static final int ERROR_AND_WARNING = IMessage.HIGH_SEVERITY | NORMAL_SEVERITY;
 
 	/**
 	 * Specify all types of messages. Typically used with a MessageFilter.

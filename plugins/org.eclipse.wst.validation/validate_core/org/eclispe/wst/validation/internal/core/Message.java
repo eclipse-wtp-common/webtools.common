@@ -8,12 +8,16 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.validation.core;
+package org.eclispe.wst.validation.internal.core;
 
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.MissingResourceException;
 import java.util.Locale;
 import java.util.ResourceBundle;
+
+import org.eclipse.wst.validation.core.IMessage;
 
 /**
  * <p>
@@ -65,6 +69,7 @@ public class Message implements IMessage {
 	private int lineNumber = IMessage.LINENO_UNSET;
 	private int length = IMessage.OFFSET_UNSET;
 	private int offset = IMessage.OFFSET_UNSET;
+	private HashMap messageAttributes;
 
 	/**
 	 * <p>
@@ -184,9 +189,9 @@ public class Message implements IMessage {
 	}
 
 	/**
-	 * @see IMessage#getLineNo()
+	 * @see IMessage#getLineNumber()
 	 */
-	public int getLineNo() {
+	public int getLineNumber() {
 		return lineNumber;
 	}
 
@@ -342,5 +347,19 @@ public class Message implements IMessage {
 	 */
 	public void setTargetObject(Object obj) {
 		targetObject = obj;
+	}
+
+	public Object getAttribute(String attributeName) {
+		if(messageAttributes != null) {
+			return messageAttributes.get(attributeName);
+		}
+		return null;
+	}
+
+	public void setAttribute(String attributeName, Object value) {
+		if(messageAttributes == null) {
+			messageAttributes = new HashMap();
+		}
+		messageAttributes.put(attributeName,value);
 	}
 }

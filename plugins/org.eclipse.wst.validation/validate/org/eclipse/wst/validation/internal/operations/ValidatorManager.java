@@ -28,7 +28,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.validation.core.IMessage;
 import org.eclipse.wst.validation.core.IValidator;
-import org.eclipse.wst.validation.core.Message;
 import org.eclipse.wst.validation.core.SeverityEnum;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.InternalValidatorManager;
@@ -38,7 +37,8 @@ import org.eclipse.wst.validation.internal.TaskListUtility;
 import org.eclipse.wst.validation.internal.ValidationConfiguration;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
-import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.plugin.ValidationPlugin;
+import org.eclispe.wst.validation.internal.core.Message;
 
 import com.ibm.wtp.common.logger.LogEntry;
 import com.ibm.wtp.common.logger.proxy.Logger;

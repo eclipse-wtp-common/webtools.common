@@ -21,12 +21,12 @@ import org.eclipse.wst.validation.core.IMessage;
 import org.eclipse.wst.validation.core.IMessageAccess;
 import org.eclipse.wst.validation.core.IReporter;
 import org.eclipse.wst.validation.core.IValidator;
-import org.eclipse.wst.validation.core.MessageLimitException;
 import org.eclipse.wst.validation.internal.ResourceConstants;
 import org.eclipse.wst.validation.internal.TaskListUtility;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
-import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.plugin.ValidationPlugin;
+import org.eclispe.wst.validation.internal.core.MessageLimitException;
 
 import com.ibm.wtp.common.logger.LogEntry;
 import com.ibm.wtp.common.logger.proxy.Logger;
@@ -44,11 +44,8 @@ import com.ibm.wtp.common.logger.proxy.Logger;
  * 
  * Only the validation framework may instantiate or alter instances of this class.
  */
-// TODO Clean this up.
-// This class should be final, but to provide some function for the SABER validator,
-// temporarily make this class extendable, and for v6, enable validators to set the
-// priority of a message.
-public/* final */class WorkbenchReporter implements IReporter {
+
+public final class WorkbenchReporter implements IReporter {
 	public static final String DEFAULT_LOCATION = ""; //$NON-NLS-1$
 	public static final int NO_MESSAGE_LIMIT = -1;
 
@@ -276,7 +273,7 @@ public/* final */class WorkbenchReporter implements IReporter {
 		if (message == null) {
 			return getLocationText(helper, null);
 		}
-		int lineNo = message.getLineNo();
+		int lineNo = message.getLineNumber();
 		if (lineNo == IMessage.LINENO_UNSET) {
 			return getLocationText(helper, message.getTargetObject());
 		}

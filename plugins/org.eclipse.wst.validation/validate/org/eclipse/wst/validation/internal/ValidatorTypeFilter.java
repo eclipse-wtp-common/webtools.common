@@ -13,7 +13,7 @@ package org.eclipse.wst.validation.internal;
 import java.util.logging.Level;
 
 import org.eclipse.core.resources.IResource;
-import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.plugin.ValidationPlugin;
 
 import com.ibm.wtp.common.logger.LogEntry;
 import com.ibm.wtp.common.logger.proxy.Logger;

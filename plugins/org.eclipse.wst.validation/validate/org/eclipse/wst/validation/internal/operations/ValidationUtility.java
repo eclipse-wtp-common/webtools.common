@@ -23,7 +23,7 @@ import org.eclipse.wst.validation.internal.ConfigurationConstants;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
 import org.eclipse.wst.validation.internal.TaskListUtility;
-import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.plugin.ValidationPlugin;
 
 import com.ibm.wtp.common.logger.LogEntry;
 import com.ibm.wtp.common.logger.proxy.Logger;

@@ -8,7 +8,11 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.validation.core;
+package org.eclispe.wst.validation.internal.core;
+
+import org.eclipse.wst.validation.core.IMessage;
+import org.eclipse.wst.validation.core.IReporter;
+import org.eclipse.wst.validation.core.IValidator;
 
 /**
  * This exception is thrown by

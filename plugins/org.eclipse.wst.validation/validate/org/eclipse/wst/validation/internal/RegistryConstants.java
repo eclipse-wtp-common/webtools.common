@@ -12,7 +12,7 @@ package org.eclipse.wst.validation.internal;
 
 
 import org.eclipse.wst.validation.internal.operations.IRuleGroup;
-import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.plugin.ValidationPlugin;
 
 
 /**

@@ -14,6 +14,8 @@ package org.eclipse.wst.validation.core;
 import java.util.Locale;
 import java.util.List;
 
+import org.eclispe.wst.validation.internal.core.MessageFilter;
+
 /**
  * <p>
  * Interface which can be used to access messages which are stored within a reporter which retains

@@ -21,7 +21,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.validation.core.IMessage;
 import org.eclipse.wst.validation.core.SeverityEnum;
-import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.plugin.ValidationPlugin;
 
 import com.ibm.wtp.common.logger.LogEntry;
 import com.ibm.wtp.common.logger.proxy.Logger;
@@ -229,7 +229,7 @@ public class TaskListUtility implements ConfigurationConstants {
 	 */
 	private static int getSeverity(int severityEnumValue) {
 		switch (severityEnumValue) {
-			case (SeverityEnum.HIGH_SEVERITY) : {
+			case (IMessage.HIGH_SEVERITY) : {
 				return IMarker.SEVERITY_ERROR;
 			}
 

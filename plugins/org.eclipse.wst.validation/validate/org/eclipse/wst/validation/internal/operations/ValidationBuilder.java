@@ -28,9 +28,9 @@ import org.eclipse.wst.validation.internal.InternalValidatorManager;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
 import org.eclipse.wst.validation.internal.ResourceConstants;
 import org.eclipse.wst.validation.internal.ResourceHandler;
+import org.eclipse.wst.validation.internal.TimeEntry;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
-import org.eclipse.wst.validation.internal.plugin.TimeEntry;
-import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.plugin.ValidationPlugin;
 
 import com.ibm.wtp.common.logger.LogEntry;
 import com.ibm.wtp.common.logger.proxy.Logger;

@@ -19,11 +19,11 @@ import java.util.Set;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.validation.core.IValidator;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchHelper;
-import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.plugin.ValidationPlugin;
+import org.osgi.framework.Bundle;
 
 import com.ibm.wtp.common.logger.proxy.Logger;
 
@@ -142,9 +142,9 @@ public class ValidatorMetaData {
 			return false;
 		}
 
-		IPluginDescriptor desc = Platform.getPluginRegistry().getPluginDescriptor(_pluginId);
-		if (desc != null)
-			return desc.isPluginActivated();
+		Bundle bundle = Platform.getBundle(_pluginId);
+		if (bundle != null)
+			return bundle.getState() == Bundle.ACTIVE;
 
 		return false;
 	}

@@ -18,9 +18,9 @@ package org.eclipse.wst.validation.core;
  * </p>
  * <p>
  * The model is loaded differently depending on whether the validator is running in 
- * WSAD or AAT. If the <code>loadModel</code> method was a method on the IValidator, 
- * then there would need to be two versions of validators, one for AAT and one for 
- * WSAD. Because <code>loadModel</code> is separate from the IValidator, we provide 
+ * UI or headless context. If the <code>loadModel</code> method was a method on the IValidator, 
+ * then there would need to be two versions of validators, one for headless and one for 
+ * UI. Because <code>loadModel</code> is separate from the IValidator, we provide 
  * two different IHelpers instead, and ship the one specific to the environment.
  * </p>
  * <p>
@@ -32,7 +32,6 @@ package org.eclipse.wst.validation.core;
  * the helper needs to support every model that each validator needs.
  * </p>
  * 
- * [issue : CS - We should remove product specify information in the documentation (above)]
  * [issue : CS - This is a rather strange interface. Perhaps a better name would be 'IValidatorContext' 
  * The word 'helper' seems very vague.  The loadModel(String) method seems reasonable to me since 
  * a validator may need to load a model differently depending on the context its invoked from.
@@ -47,7 +46,7 @@ public interface IHelper {
 	 * <p>
 	 * Load the model identified by <code>symbolicName</code>.<code>symbolicName</code> 
 	 * must not be null or the empty string if the validator needs to be run in both 
-	 * AAT and WSAD.
+	 * Headless and UI.
 	 * </p>
 	 */
 	public Object loadModel(String symbolicName);
@@ -56,7 +55,7 @@ public interface IHelper {
 	 * <p>
 	 * Load the model identified by <code>symbolicName</code> and <code>parms</code>.
 	 * <code>symbolicName</code> must not be null or the empty string if the validator 
-	 * needs to be run in both AAT and WSAD. If <code>parms</code> is null then this
+	 * needs to be run in both Headless and UI. If <code>parms</code> is null then this
 	 * method behaves the same as
 	 * 
 	 * @link #loadModel(String).

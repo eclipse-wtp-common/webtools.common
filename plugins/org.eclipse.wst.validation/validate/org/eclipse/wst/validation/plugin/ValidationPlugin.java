@@ -6,7 +6,7 @@
  * 
  * Contributors: IBM Corporation - initial API and implementation
  **************************************************************************************************/
-package org.eclipse.wst.validation.internal.plugin;
+package org.eclipse.wst.validation.plugin;
 
 import java.util.Locale;
 
@@ -15,9 +15,13 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.wst.common.frameworks.internal.WTPPlugin;
-import org.eclipse.wst.validation.core.Message;
+import org.eclipse.wst.validation.core.IValidator;
 import org.eclipse.wst.validation.core.SeverityEnum;
 import org.eclipse.wst.validation.internal.EventManager;
+import org.eclipse.wst.validation.internal.TimeEntry;
+import org.eclipse.wst.validation.internal.ValidationRegistryReader;
+import org.eclipse.wst.validation.internal.ValidatorMetaData;
+import org.eclispe.wst.validation.internal.core.Message;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
@@ -154,5 +158,17 @@ public class ValidationPlugin extends WTPPlugin {
 	 */
 	public String getPluginID() {
 		return PLUGIN_ID;
+	}
+	
+	/**
+	 * <p>
+	 * Given the validator class name it returns the validator associated with it.
+	 * </p>
+	 * @return a IValidator
+	 */
+	
+	public IValidator getValidator(String validatorClassName) throws InstantiationException {
+		 ValidatorMetaData validatorData = ValidationRegistryReader.getReader().getValidatorMetaData(validatorClassName);
+		 return validatorData.getValidator();
 	}
 }
