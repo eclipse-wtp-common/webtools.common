@@ -334,5 +334,7 @@ public interface IVirtualContainer extends IVirtualResource {
 	 * @since 2.0
 	 */
 	public IVirtualFile[] findDeletedMembersWithHistory(int depth, IProgressMonitor monitor) throws CoreException; 
+	
+	public void commit() throws CoreException;
 }
  

@@ -166,6 +166,22 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 	public void setDefaultCharset(String charset, IProgressMonitor monitor) throws CoreException {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 
+	} 
+
+	public void commit() throws CoreException{
+		
+//		ModuleCore moduleCore = null;
+//		try {
+//			moduleCore = ModuleCore.getModuleCoreForWrite(getProject());
+//			WorkbenchComponent component = moduleCore.findWorkbenchModuleByDeployName(getComponentHandle().getName());
+//			if(component == null)
+//				moduleCore.createWorkbenchModule(getComponentHandle().getName());
+//		} finally {
+//			if (moduleCore != null) {
+//				moduleCore.saveIfNecessary(null);
+//				moduleCore.dispose();
+//			}
+//		} 
 	}
 
 	protected void doDeleteRealResources(int updateFlags, IProgressMonitor monitor) throws CoreException {
