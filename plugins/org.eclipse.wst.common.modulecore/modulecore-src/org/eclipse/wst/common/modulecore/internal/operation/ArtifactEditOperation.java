@@ -15,25 +15,16 @@ import java.lang.reflect.InvocationTargetException;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.command.CommandStack;
-import org.eclipse.wst.common.frameworks.internal.operations.IOperationHandler;
 import org.eclipse.wst.common.frameworks.operations.WTPOperation;
-import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
-import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
-import org.eclipse.wst.common.internal.emfworkbench.operation.EditModelOperationDataModel;
-import org.eclipse.wst.common.internal.emfworkbench.validateedit.IValidateEditContext;
 import org.eclipse.wst.common.modulecore.ArtifactEdit;
 import org.eclipse.wst.common.modulecore.ModuleCore;
-import org.eclipse.wst.common.modulecore.ModuleType;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
-import org.eclipse.wst.common.modulecore.internal.builder.DeployableModuleProjectBuilderDataModel;
-import org.eclipse.wst.common.modulecore.internal.util.IModuleConstants;
 
-import com.ibm.wtp.common.UIContextDetermination;
 import com.ibm.wtp.emf.workbench.WorkbenchResourceHelperBase;
 
 public class ArtifactEditOperation extends WTPOperation {
-	protected ArtifactEdit artifactEdit;
+	private ArtifactEdit artifactEdit;
 	protected EMFWorkbenchContext emfWorkbenchContext;
 	private CommandStack commandStack;
 
@@ -82,6 +73,10 @@ public class ArtifactEditOperation extends WTPOperation {
         return module;
     }
 
+    protected ArtifactEdit getArtifactEdit() {
+        return artifactEdit;
+    }
+    
     protected void doInitialize(IProgressMonitor monitor) {
 		//init
 	}
