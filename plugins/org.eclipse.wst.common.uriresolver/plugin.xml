@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="org.eclipse.wst.common.uriresolver"
+   name="org.eclipse.wst.common.uriresolver"
+   version="1.0.0"
+   provider-name="Eclipse.org"
+   class="org.eclipse.wst.common.uriresolver.URIResolverPlugin">
+
+   <runtime>
+      <library name="uriresolver.jar">
+			<export name="*" />
+		</library>      
+   </runtime>
+   <requires>
+      <import plugin="org.eclipse.core.runtime.compatibility"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.core.resources"/>
+   </requires>
+
+
+   <extension-point id="resolverExtensions" name="URI Resolver Extension"/>
+
+</plugin>
