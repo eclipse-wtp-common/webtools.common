@@ -222,51 +222,6 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		throw new RuntimeException(PROPERTY_NOT_LOCATED_ + propertyName);
 	}
 
-	/**
-	 * @deprecated use getValidPropertyDescriptors(String)
-	 * @param propertyName
-	 * @return
-	 */
-	public final Object[] getValidPropertyValues(String propertyName) {
-		checkValidPropertyName(propertyName);
-		if (isBaseProperty(propertyName)) {
-			return doGetValidPropertyValues(propertyName);
-		} else if (nestedModels != null) {
-			WTPOperationDataModel dataModel = null;
-			Object[] keys = nestedModels.keySet().toArray();
-			for (int i = 0; i < keys.length; i++) {
-				dataModel = (WTPOperationDataModel) nestedModels.get(keys[i]);
-				if (dataModel.isProperty(propertyName)) {
-					return dataModel.getValidPropertyValues(propertyName);
-				}
-			}
-		}
-		throw new RuntimeException(PROPERTY_NOT_LOCATED_ + propertyName);
-	}
-
-	/**
-	 * @deprecated use getValidPropertyDescriptors(String)
-	 * @param propertyName
-	 * @return
-	 */
-	public final String[] getValidStringPropertyValues(String propertyName) {
-		Object[] values = getValidPropertyValues(propertyName);
-		if (values != null)
-			return (String[]) values;
-		return new String[0];
-	}
-
-	/**
-	 * Subclasses may override to provide specific valid property values for the given propertyName.
-	 * 
-	 * @deprecated use doGetValidPropertyDescriptors(String)
-	 * @param propertyName
-	 * @return
-	 */
-	protected Object[] doGetValidPropertyValues(String propertyName) {
-		return null;
-	}
-
 	public final WTPPropertyDescriptor[] getValidPropertyDescriptors(String propertyName) {
 		checkValidPropertyName(propertyName);
 		if (isBaseProperty(propertyName)) {

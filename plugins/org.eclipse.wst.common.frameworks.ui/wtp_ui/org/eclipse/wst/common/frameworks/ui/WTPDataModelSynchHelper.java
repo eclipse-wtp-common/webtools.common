@@ -21,8 +21,6 @@ import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -53,7 +51,6 @@ import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModelEvent;
 import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModelListener;
 import org.eclipse.wst.common.frameworks.operations.WTPPropertyDescriptor;
 
-
 /**
  * @author jsholl
  * 
@@ -65,15 +62,7 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 	protected Map widgetToPropertyHash;
 	protected Map propertyToWidgetHash;
 	protected Map widgetToDepControls;
-	/**
-	 * @deprecated
-	 */
-	private Map deprecatedConvertPropertyNames; //TODO delete this
-	/**
-	 * @deprecated
-	 */
-	private HashSet deprecatedCombos; //TODO delete this
-
+	
 	protected String currentProperty;
 	protected Widget currentWidget;
 	protected boolean ignoreModifyEvent = false;
@@ -92,39 +81,6 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 
 	private ModifyTextListener modifyTextListener;
 	private TimedModifyListener timedModifyListener;
-
-	/**
-	 * @deprecated
-	 * @author jsholl
-	 */
-	private class ComboListenerDeprecated implements SelectionListener, ModifyListener { //TODO delete this
-		public void modifyText(ModifyEvent e) {
-			if (ignoreModifyEvent)
-				return;
-			Combo combo = (Combo) e.getSource();
-			if (currentWidget == combo)
-				return;
-			String propertyName = (String) widgetToPropertyHash.get(combo);
-			setProperty(propertyName, combo.getText());
-		}
-
-		public void widgetSelected(SelectionEvent e) {
-			Combo combo = (Combo) e.getSource();
-			if (currentWidget == combo)
-				return;
-			String propertyName = (String) widgetToPropertyHash.get(combo);
-			if (combo.getSelectionIndex() >= 0)
-				setProperty(propertyName, combo.getItem(combo.getSelectionIndex()));
-		}
-
-		public void widgetDefaultSelected(SelectionEvent e) {
-		}
-	}
-
-	/**
-	 * @deprecated
-	 */
-	private ComboListenerDeprecated comboListenerDeprecated; //TODO delete this
 
 	private class ComboListener implements SelectionListener, ModifyListener {
 		public void modifyText(ModifyEvent e) {
@@ -190,7 +146,6 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 		dataModel.addListener(this);
 	}
 
-
 	private CheckBoxViewerListener checkBoxViewerStateListener;
 
 	private class CheckBoxViewerListener implements ICheckStateListener {
@@ -214,13 +169,6 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 	public void propertyChanged(WTPOperationDataModelEvent event) {
 		String propertyName = event.getPropertyName();
 		int flag = event.getFlag();
-		if (currentProperty != null) {
-			String convertedProp = propertyName;
-			if (flag == WTPOperationDataModelListener.PROPERTY_CHG)
-				convertedProp = getConvertedProperty(propertyName);
-			if (currentProperty.equals(convertedProp))
-				return;
-		}
 		if (flag == WTPOperationDataModelListener.ENABLE_CHG)
 			setEnablement(propertyName, ((Boolean) event.getNewValue()).booleanValue());
 		else
@@ -262,11 +210,7 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 						if (currentWidget instanceof Text)
 							setWidgetValue(propertyName, flag, (Text) currentWidget);
 						else if (currentWidget instanceof Combo){
-							if(null != deprecatedCombos && deprecatedCombos.contains(currentWidget)){
-								setWidgetValueDeprecated(propertyName, flag, (Combo) currentWidget);
-							} else {
-								setWidgetValue(propertyName, flag, (Combo) currentWidget);
-							}
+							setWidgetValue(propertyName, flag, (Combo) currentWidget);
 						}else if (currentWidget instanceof Button)
 							setWidgetValue(propertyName, flag, (Button) currentWidget);
 						else if (currentWidget instanceof Label)
@@ -346,33 +290,6 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 		}
 	}
 
-	/**
-	 * @deprecated
-	 * @param propertyName
-	 * @param flag
-	 * @param combo
-	 */
-	private void setWidgetValueDeprecated(String propertyName, int flag, Combo combo) {
-		String prop = getConvertedProperty(propertyName);
-		if (flag == WTPOperationDataModelListener.VALID_VALUES_CHG || combo.getItemCount() == 0) {
-			// Display properties should only fire if the contents change.
-			String[] items = dataModel.getValidStringPropertyValues(prop);
-			combo.setItems(items);
-		}
-		String newText = dataModel.getStringProperty(prop);
-		int selIndex = combo.getSelectionIndex();
-		if (selIndex < 0 || !newText.equals(combo.getItem(selIndex))) {
-			String[] items = combo.getItems();
-			for (int i = 0; i < items.length; i++) {
-				if (items[i].equals(newText)) {
-					combo.select(i);
-					return;
-				}
-			}
-		}
-		combo.setText(newText);
-	}
-
 	protected void setWidgetValue(String propertyName, int flag, Combo combo) {
 		if (flag == WTPOperationDataModelListener.VALID_VALUES_CHG || combo.getItemCount() == 0) {
 			// Display properties should only fire if the contents change.
@@ -395,20 +312,6 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 			}
 		}
 		combo.setText(newText);
-	}
-
-	/**
-	 * @param propertyName
-	 * @return
-	 * @deprecated
-	 */
-	private String getConvertedProperty(String propertyName) {
-		if (deprecatedConvertPropertyNames != null) {
-			String prop = (String) deprecatedConvertPropertyNames.get(propertyName);
-			if (prop != null)
-				return prop;
-		}
-		return propertyName;
 	}
 
 	protected void setWidgetValue(String propertyName, int flag, Text text) {
@@ -554,32 +457,6 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 		synchComposite(list, propertyName, dependentControls);
 	}
 
-	/**
-	 * @deprecated use syncCombo(Combo, String, Control[])
-	 * @param combo
-	 * @param propertyName
-	 * @param actualProperty
-	 * @param dependentControls
-	 */
-	public void synchCombo(Combo combo, String propertyName, String actualProperty, Control[] dependentControls) {
-		if (actualProperty != null) {
-			if (propertyToWidgetHash == null)
-				propertyToWidgetHash = new Hashtable();
-			propertyToWidgetHash.put(actualProperty, combo);
-			setConvertProperty(actualProperty, propertyName);
-			if (null == deprecatedCombos) {
-				deprecatedCombos = new HashSet();
-			}
-			deprecatedCombos.add(combo);
-		}
-		synchComposite(combo, propertyName, dependentControls);
-		if (null == comboListenerDeprecated) {
-			comboListenerDeprecated = new ComboListenerDeprecated();
-		}
-		combo.addSelectionListener(comboListenerDeprecated);
-		combo.addModifyListener(comboListenerDeprecated);
-	}
-
 	public void synchCombo(Combo combo, String propertyName, Control[] dependentControls) {
 		synchComposite(combo, propertyName, dependentControls);
 		if (null == comboListener) {
@@ -620,17 +497,6 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 		synchCheckbox(radio, propertyName, dependentControls);
 	}
 
-	/**
-	 * This is necessary when a property is not actually persisted in the model but converted to
-	 * another property. @param actualProperty @param convertProperty
-	 * @deprecated
-	 */
-	private void setConvertProperty(String actualProperty, String convertProperty) {
-		if (deprecatedConvertPropertyNames == null)
-			deprecatedConvertPropertyNames = new HashMap();
-		deprecatedConvertPropertyNames.put(actualProperty, convertProperty);
-	}
-
 	private TimedModifyListener getTimedListener() {
 		if (timedModifyListener == null)
 			timedModifyListener = new TimedModifyListener(new ActionListener() {
@@ -668,8 +534,6 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 	public void dispose() {
 		dataModel.removeListener(this);
 		checkboxSelectionListener = null;
-		deprecatedConvertPropertyNames = null;
-		deprecatedCombos = null;
 		currentWidget = null;
 		modifyTextListener = null;
 		propertyToWidgetHash = null;
