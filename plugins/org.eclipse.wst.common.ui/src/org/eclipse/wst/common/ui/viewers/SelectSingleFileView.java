@@ -395,5 +395,9 @@ public void setListener(Listener listener)
 	  return null;
 	}
   }  
+  
+  public void addSelectionChangedTreeListener(ISelectionChangedListener treeListener) {
+  	sourceFileViewer.addSelectionChangedListener(treeListener);
+  }
 }              
 
