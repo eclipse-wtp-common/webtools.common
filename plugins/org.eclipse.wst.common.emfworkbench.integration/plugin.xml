@@ -11,7 +11,7 @@
    <runtime>
       <library name="emfworkbenchedit.jar">
          <export name="*"/>
-      </library>
+      </library> 
    </runtime>
    <requires>
       <import plugin="org.eclipse.wst.common.frameworks"/>
