@@ -19,14 +19,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 
-public class UnzipUtil {
+public class ProjectUnzipUtil {
 
 	private IPath zipLocation;
 	private String projectName;
 	private IPath rootLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation();
 	private static final String META_PROJECT_NAME = ".project";
 
-	public UnzipUtil(IPath aZipLocation, String aProjectName) {
+	public ProjectUnzipUtil(IPath aZipLocation, String aProjectName) {
 		zipLocation = aZipLocation;
 		projectName = aProjectName;
 

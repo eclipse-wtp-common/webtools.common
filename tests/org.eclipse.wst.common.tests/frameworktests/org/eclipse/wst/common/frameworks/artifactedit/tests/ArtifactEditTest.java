@@ -98,7 +98,7 @@ public class ArtifactEditTest extends TestCase {
 			e.printStackTrace();
 		}
 		IPath path = new Path(url.getPath());
-		UnzipUtil util = new UnzipUtil(path, PROJECT_NAME);
+		ProjectUnzipUtil util = new ProjectUnzipUtil(path, PROJECT_NAME);
 		return util.createProject();
 	}
 
