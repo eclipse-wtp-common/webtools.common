@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreSwitch.java,v 1.6 2005/01/26 16:48:35 cbridgha Exp $
+ * $Id: ModuleCoreSwitch.java,v 1.7 2005/01/26 19:32:14 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.util;
 
@@ -10,6 +10,8 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.wst.common.modulecore.*;
+
 import org.eclipse.wst.common.modulecore.DeployScheme;
 import org.eclipse.wst.common.modulecore.DeployedModule;
 import org.eclipse.wst.common.modulecore.IModuleType;

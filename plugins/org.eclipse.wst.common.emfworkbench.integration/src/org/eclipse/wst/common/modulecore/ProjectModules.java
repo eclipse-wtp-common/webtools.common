@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ProjectModules.java,v 1.2 2005/01/26 16:48:35 cbridgha Exp $
+ * $Id: ProjectModules.java,v 1.3 2005/01/26 19:32:14 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -20,6 +20,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.wst.common.modulecore.ProjectModules#getProjectName <em>Project Name</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.ProjectModules#getWorkbenchApplications <em>Workbench Applications</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.ProjectModules#getWorkbenchModules <em>Workbench Modules</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.ProjectModules#getDeploymentSchemes <em>Deployment Schemes</em>}</li>
  * </ul>
  * </p>
  *
@@ -85,5 +86,21 @@ public interface ProjectModules extends EObject{
 	 * @generated
 	 */
 	EList getWorkbenchModules();
+
+	/**
+	 * Returns the value of the '<em><b>Deployment Schemes</b></em>' containment reference list.
+	 * The list contents are of type {@link org.eclipse.wst.common.modulecore.DeployScheme}.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Deployment Schemes</em>' containment reference list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Deployment Schemes</em>' containment reference list.
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getProjectModules_DeploymentSchemes()
+	 * @model type="org.eclipse.wst.common.modulecore.DeployScheme" containment="true"
+	 * @generated
+	 */
+	EList getDeploymentSchemes();
 
 } // ProjectModules

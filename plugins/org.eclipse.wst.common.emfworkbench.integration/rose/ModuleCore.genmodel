@@ -41,6 +41,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ProjectModules/projectName"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference moduleCore.ecore#//ProjectModules/workbenchApplications"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference moduleCore.ecore#//ProjectModules/workbenchModules"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference moduleCore.ecore#//ProjectModules/deploymentSchemes"/>
     </genClasses>
     <genClasses ecoreClass="moduleCore.ecore#//DeployedModule"/>
   </genPackages>

@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCorePackageImpl.java,v 1.7 2005/01/26 16:48:35 cbridgha Exp $
+ * $Id: ModuleCorePackageImpl.java,v 1.8 2005/01/26 19:32:14 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
@@ -365,6 +365,15 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EReference getProjectModules_DeploymentSchemes() {
+		return (EReference)projectModulesEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getDeployedModule() {
 		return deployedModuleEClass;
 	}
@@ -434,6 +443,7 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 		createEAttribute(projectModulesEClass, PROJECT_MODULES__PROJECT_NAME);
 		createEReference(projectModulesEClass, PROJECT_MODULES__WORKBENCH_APPLICATIONS);
 		createEReference(projectModulesEClass, PROJECT_MODULES__WORKBENCH_MODULES);
+		createEReference(projectModulesEClass, PROJECT_MODULES__DEPLOYMENT_SCHEMES);
 
 		deployedModuleEClass = createEClass(DEPLOYED_MODULE);
 
@@ -496,6 +506,7 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 		initEAttribute(getProjectModules_ProjectName(), ecorePackage.getEString(), "projectName", null, 0, 1, ProjectModules.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getProjectModules_WorkbenchApplications(), this.getWorkbenchApplication(), null, "workbenchApplications", null, 0, -1, ProjectModules.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getProjectModules_WorkbenchModules(), this.getWorkbenchModule(), null, "workbenchModules", null, 0, -1, ProjectModules.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getProjectModules_DeploymentSchemes(), this.getDeployScheme(), null, "deploymentSchemes", null, 0, -1, ProjectModules.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(deployedModuleEClass, DeployedModule.class, "DeployedModule", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 

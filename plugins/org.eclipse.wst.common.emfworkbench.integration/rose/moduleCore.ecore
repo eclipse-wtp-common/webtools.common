@@ -40,6 +40,8 @@
         upperBound="-1" eType="#//WorkbenchApplication" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="workbenchModules" upperBound="-1"
         eType="#//WorkbenchModule" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="deploymentSchemes" upperBound="-1"
+        eType="#//DeployScheme" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DeployedModule"/>
 </ecore:EPackage>

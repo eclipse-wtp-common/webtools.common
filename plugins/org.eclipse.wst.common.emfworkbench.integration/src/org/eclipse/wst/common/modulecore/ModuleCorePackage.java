@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCorePackage.java,v 1.6 2005/01/26 16:48:35 cbridgha Exp $
+ * $Id: ModuleCorePackage.java,v 1.7 2005/01/26 19:32:14 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -363,13 +363,22 @@ public interface ModuleCorePackage extends EPackage{
 	int PROJECT_MODULES__WORKBENCH_MODULES = 2;
 
 	/**
+	 * The feature id for the '<em><b>Deployment Schemes</b></em>' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROJECT_MODULES__DEPLOYMENT_SCHEMES = 3;
+
+	/**
 	 * The number of structural features of the the '<em>Project Modules</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int PROJECT_MODULES_FEATURE_COUNT = 3;
+	int PROJECT_MODULES_FEATURE_COUNT = 4;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.wst.common.modulecore.impl.DeployedModuleImpl <em>Deployed Module</em>}' class.
@@ -647,6 +656,17 @@ public interface ModuleCorePackage extends EPackage{
 	 * @generated
 	 */
 	EReference getProjectModules_WorkbenchModules();
+
+	/**
+	 * Returns the meta object for the containment reference list '{@link org.eclipse.wst.common.modulecore.ProjectModules#getDeploymentSchemes <em>Deployment Schemes</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the containment reference list '<em>Deployment Schemes</em>'.
+	 * @see org.eclipse.wst.common.modulecore.ProjectModules#getDeploymentSchemes()
+	 * @see #getProjectModules()
+	 * @generated
+	 */
+	EReference getProjectModules_DeploymentSchemes();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.DeployedModule <em>Deployed Module</em>}'.
