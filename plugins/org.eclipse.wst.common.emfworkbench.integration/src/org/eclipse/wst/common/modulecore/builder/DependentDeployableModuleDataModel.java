@@ -15,10 +15,6 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
 	/**
 	 * Required, type IProject
 	 */
-	public static final String PROJECT = "DependentDeployableModuleDataModel.PROJECT"; //$NON-NLS-1$ 
-	/**
-	 * Required, type IProject
-	 */
 	public static final String DEPENDENT_MODULE = "DependentDeployableModuleDataModel.DEPENDENT_MODULE"; //$NON-NLS-1$
 	/**
 	 * Calc, type project relative URI
@@ -42,15 +38,18 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
 	 */
 	public static final String NEEDS_PREPROCESSING = "DependentDeployableModuleDataModel.NEEDS_PREPROCESSING"; //$NON-NLS-1$
 
+    ModuleCore moduleCore = null;
+	
     public DependentDeployableModuleDataModel() {
         super();
     }
+    
+
     
 	/* (non-Javadoc)
      * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#addValidBaseProperty(java.lang.String)
      */
 	protected void initValidBaseProperties() {
-	    addValidBaseProperty(PROJECT);
 		addValidBaseProperty(DEPENDENT_MODULE);
 		addValidBaseProperty(HANDLE);
 		addValidBaseProperty(OUTPUT_CONTAINER);
@@ -86,48 +85,38 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
             notifyDefaultChange(WORKBENCH_MODULE);
             notifyDefaultChange(NEEDS_PREPROCESSING);
             notifyDefaultChange(DOES_CONSUME);
-        } else if(propertyName.equals(PROJECT)){
-            notifyDefaultChange(WORKBENCH_MODULE);
-            notifyDefaultChange(NEEDS_PREPROCESSING);
-        }
+        } 
         return status;
     }
-    
     private Object getNeedsPreprocessingValue() {
-        if(!isSet(DEPENDENT_MODULE) || !isSet(PROJECT)) return null;
-        DependentModule depModule = (DependentModule)getProperty(DEPENDENT_MODULE);
-        WorkbenchModule wbModule = getWorkBenchModuleValue();\
-        wbModule.isl
-        //TODO wbModule are you in current project?
+        if(!isSet(DEPENDENT_MODULE)) return null; 
+        ModuleCore localCore = getModuleCore();
+        if(localCore != null)
+        	return Boolean.valueOf(localCore.isLocalDependency(getDependentModule())); 
         return null;
     }
 
     private WorkbenchModule getWorkBenchModuleValue() {
-        if(!isSet(DEPENDENT_MODULE) || !isSet(PROJECT)) return null;
-        WorkbenchModule wbModule = null;
-        ModuleCore moduleCore = null;
-		try {
-			moduleCore = ModuleCore.getModuleCoreForRead((IProject)getProperty(PROJECT)); 
-			wbModule = moduleCore.findWorkbenchModuleByModuleURI(getHandleValue());
-		} catch (UnresolveableURIException e) { 
-			e.printStackTrace();
-		} finally {
-			moduleCore.dispose();
+        if(!isSet(DEPENDENT_MODULE)) return null;
+        ModuleCore localCore = getModuleCore();
+        try {
+			if(localCore != null)
+				return localCore.findWorkbenchModuleByModuleURI(getDependentModule().getHandle());
+		} catch (UnresolveableURIException e) {
 		}
-        return wbModule;
+        return null;
     }
 
     private Object getOutputContainerValue() {
         if(!isSet(DEPENDENT_MODULE)) return null;
-        DependentModule depModule = (DependentModule)getProperty(DEPENDENT_MODULE);
+        DependentModule depModule = getDependentModule();
         URI moduleRoot = ModuleCore.getOutputContainerRoot(getWorkBenchModuleValue());
-        return ModuleURIUtil.concat(moduleRoot , depModule.getDeployedPath()); //$NON-NLS-1$
+        return ModuleURIUtil.concat(moduleRoot, depModule.getDeployedPath()); 
     }
 
     private URI getHandleValue() {
         if(!isSet(DEPENDENT_MODULE)) return null;
-        DependentModule depModule = (DependentModule)getProperty(DEPENDENT_MODULE);
-        return depModule.getHandle();
+        return getDependentModule().getHandle();
     }
     /**
      * @return
@@ -135,11 +124,38 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
     private Boolean getDoesConsumeValue() {
         if(!isSet(DEPENDENT_MODULE)) return null;
         DependentModule depModule = (DependentModule)getProperty(DEPENDENT_MODULE);
-        DependencyType type = depModule.getDependencyType();
-        if(type.getValue() == DependencyType.CONSUMES)
+        DependencyType depType = depModule.getDependencyType();
+        if(depType.getValue() == DependencyType.CONSUMES)
             return Boolean.TRUE;
         return Boolean.FALSE;
     }
+    
+    /* (non-Javadoc)
+	 * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#dispose()
+	 */
+	public void dispose() { 
+		super.dispose();
+		if(moduleCore != null)
+			moduleCore.dispose();
+	}
+	
+	private ModuleCore getModuleCore() {
+		if(!isSet(DEPENDENT_MODULE)) return null;
+		if(moduleCore == null) {
+			try {
+				DependentModule dependentModule = getDependentModule();
+				// TODO THIS SHOULD BE THE CONTAINING PROJECT OF THE WORKBENCHMODULE, NOT THE DEPENDENT MODULE
+				IProject container = ModuleCore.getContainingProject(dependentModule.getHandle());
+				moduleCore = ModuleCore.getModuleCoreForRead(container);
+			} catch (UnresolveableURIException e) {
+			}
+		}
+		return moduleCore;
+	}
+	
+	private DependentModule getDependentModule() {
+		return (DependentModule)getProperty(DEPENDENT_MODULE);
+	}
     /* (non-Javadoc)
      * @see org.eclipse.wst.common.modulecore.builder.DeployableModuleDataModel#getDefaultOperation()
      */

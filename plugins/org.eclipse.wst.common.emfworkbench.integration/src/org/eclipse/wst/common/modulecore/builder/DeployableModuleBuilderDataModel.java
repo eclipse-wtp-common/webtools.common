@@ -6,7 +6,6 @@ import java.util.List;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
-import org.eclipse.wst.common.modulecore.DependentModule;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
 import org.eclipse.wst.common.modulecore.util.ModuleCore;
 
@@ -79,8 +78,6 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
         DependentDeployableModuleDataModel dependentDataModel;
         for(int i = 0; i<depModules.size(); i++){
             dependentDataModel = new DependentDeployableModuleDataModel();
-            dependentDataModel.setProperty(DependentDeployableModuleDataModel.DEPENDENT_MODULE, (DependentModule)depModules.get(i));
-            dependentDataModel.setProperty(DependentDeployableModuleDataModel.PROJECT, getProperty(PROJECT));
             dependentDataModel.setProperty(DependentDeployableModuleDataModel.DEPENDENT_MODULE, depModules.get(i));
             depModulesDataModels.add(dependentDataModel);
         }
