@@ -21,6 +21,8 @@ import java.util.Locale;
  * Given these three values as input, this interface can be queried for the final message string.
  * (i.e., the message with the parameters already substituted in.) Either the default Locale can be
  * used, or the caller can specify a Locale.
+ * 
+ * @since 1.0
  * </p>
  * 
  * [issue: CS - The 'IMessage' interface would be simpler without the bundle related details.  I'd like to understand

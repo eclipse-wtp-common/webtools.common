@@ -15,6 +15,8 @@ package org.eclipse.wst.validation.core;
  * This interface is used, for incremental validation, to encapsulate the change 
  * status of a resource. IFileDelta contains the name of the file which has 
  * changed, and a flag which indicates the type of change which has occurred.
+ * 
+ * @since 1.0
  * </p>
  */
 public interface IFileDelta {
