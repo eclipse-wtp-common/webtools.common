@@ -118,7 +118,6 @@ public class UnzipUtil {
 		ProjectDescription description;
 		try {
 			description = pd.read(path);
-			//description.setName("WebProject");
 			project.create(description, (getProgessMonitor()));
 			project.open(getProgessMonitor());
 
