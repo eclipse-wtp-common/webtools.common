@@ -197,16 +197,18 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 				}
 			});
 			addNatureJob.schedule();
-			aMonitor.beginTask("Add ModuleCore Nature", 5);
+			if (aMonitor != null)
+				aMonitor.beginTask("Add ModuleCore Nature", 5);
 			while (mutex[0]) {
 				try {
 					Thread.sleep(200);
-					aMonitor.worked(1);
+					if (aMonitor != null)
+						aMonitor.worked(1);
 				} catch (InterruptedException ie) {
 				}
 			}
-			aMonitor.done();
-
+			if (aMonitor != null)
+				aMonitor.done();
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}
