@@ -1,18 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2003, 2004 IBM Corporation and others. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors:
- * IBM Corporation - initial API and implementation
- *******************************************************************************/
+ * Contributors: IBM Corporation - initial API and implementation
+ ******************************************************************************/
 package org.eclipse.wst.common.modulecore.builder;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.internal.resources.Resource;
@@ -28,7 +24,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.modulecore.IModuleConstants;
-import org.eclipse.wst.common.modulecore.WorkbenchModule;
 import org.eclipse.wst.common.modulecore.util.ModuleCore;
 
 public class DeployableModuleBuilder extends IncrementalProjectBuilder implements IModuleConstants {
@@ -38,7 +33,7 @@ public class DeployableModuleBuilder extends IncrementalProjectBuilder implement
     public static final String BUILDER_ID = DEPLOYABLE_MODULE_BUILDER_ID;
 
     /**
-     * 
+     *  
      */
     public DeployableModuleBuilder() {
         super();
@@ -51,22 +46,33 @@ public class DeployableModuleBuilder extends IncrementalProjectBuilder implement
      *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
      */
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
-        DeployableModuleProjectBuilderDataModel dataModel = new DeployableModuleProjectBuilderDataModel();
-        dataModel.setProperty(DeployableModuleProjectBuilderDataModel.PROJECT, getProject());
-        dataModel.setProperty(DeployableModuleProjectBuilderDataModel.PROJECT_DETLA, getDelta(getProject()));
-        // TODO: current implementation is for full build only...implement in M4
-        // dataModel.setProperty(DeployableModuleProjectBuilderDataModel.BUILD_KIND,
-        // new Integer(kind));
-        WTPOperation op = dataModel.getDefaultOperation();
-        if (op != null)
-            try {
-                op.run(monitor);
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        DeployableModuleProjectBuilderDataModel dataModel = null;
+        ModuleCore moduleCore = null;
+        try {
+            moduleCore = ModuleCore.getModuleCoreForRead(getProject());
+            dataModel = new DeployableModuleProjectBuilderDataModel();
+            dataModel.setProperty(DeployableModuleProjectBuilderDataModel.MODULE_CORE, moduleCore);
+            dataModel.setProperty(DeployableModuleProjectBuilderDataModel.PROJECT, getProject());
+            dataModel.setProperty(DeployableModuleProjectBuilderDataModel.PROJECT_DETLA, getDelta(getProject()));
+            // TODO: current implementation is for full build only...implement
+            // in M4
+            // dataModel.setProperty(DeployableModuleProjectBuilderDataModel.BUILD_KIND,
+            // new Integer(kind));
+            WTPOperation op = dataModel.getDefaultOperation();
+            if (op != null)
+                try {
+                    op.run(monitor);
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            return null;
+        } finally {
+            if (null != moduleCore) {
+                moduleCore.dispose();
             }
-        return null;
+        }
     }
 
     protected void clean(IProgressMonitor monitor) throws CoreException {
@@ -78,26 +84,26 @@ public class DeployableModuleBuilder extends IncrementalProjectBuilder implement
         }
         super.clean(monitor);
     }
-    
-	/**
-	 * @param sourceResource
-	 * @param absoluteInputContainer
-	 * @param monitor
-	 * @throws CoreException
-	 */
+
+    /**
+     * @param sourceResource
+     * @param absoluteInputContainer
+     * @param monitor
+     * @throws CoreException
+     */
     //TODO this is a bit sloppy; there must be existing API somewhere.
-	public static void smartCopy(IResource sourceResource, IPath absoluteOutputContainer, NullProgressMonitor monitor) throws CoreException {
-		Resource targetResource =((Workspace)ResourcesPlugin.getWorkspace()).newResource(absoluteOutputContainer, sourceResource.getType()); 
-		if(!targetResource.exists()){
-			sourceResource.copy(absoluteOutputContainer, true, monitor);
-		} else if(sourceResource.getType() == Resource.FOLDER){
-			IFolder folder = (IFolder)sourceResource;
-			IResource [] members = folder.members();
-			for(int i=0;i<members.length;i++){
-				smartCopy(members[i],  absoluteOutputContainer.append(IPath.SEPARATOR+members[i].getName()), monitor);
-			}
-		} else {
-			//TODO present a warning to the user about duplicate resources
-		}
-	}
+    public static void smartCopy(IResource sourceResource, IPath absoluteOutputContainer, NullProgressMonitor monitor) throws CoreException {
+        Resource targetResource = ((Workspace) ResourcesPlugin.getWorkspace()).newResource(absoluteOutputContainer, sourceResource.getType());
+        if (!targetResource.exists()) {
+            sourceResource.copy(absoluteOutputContainer, true, monitor);
+        } else if (sourceResource.getType() == Resource.FOLDER) {
+            IFolder folder = (IFolder) sourceResource;
+            IResource[] members = folder.members();
+            for (int i = 0; i < members.length; i++) {
+                smartCopy(members[i], absoluteOutputContainer.append(IPath.SEPARATOR + members[i].getName()), monitor);
+            }
+        } else {
+            //TODO present a warning to the user about duplicate resources
+        }
+    }
 }

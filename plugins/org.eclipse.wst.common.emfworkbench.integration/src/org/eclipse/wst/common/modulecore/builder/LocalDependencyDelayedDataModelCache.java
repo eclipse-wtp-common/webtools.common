@@ -13,31 +13,31 @@ package org.eclipse.wst.common.modulecore.builder;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
 
-public class LocalDependencyDelayedOperationCache {
-	private static LocalDependencyDelayedOperationCache instance;
-	private List delayedOperationCacheList = new ArrayList();
+public class LocalDependencyDelayedDataModelCache {
+	private static LocalDependencyDelayedDataModelCache instance;
+	private List list = new ArrayList();
 
-	private LocalDependencyDelayedOperationCache() {
+	private LocalDependencyDelayedDataModelCache() {
 		super();
 	}
 	
-	public List getOperationCacheList() {
-		return delayedOperationCacheList;
+	public List getCacheList() {
+		return list;
 	}
 	
-	public void addOperationToCacheList(WTPOperation operation) {
-		delayedOperationCacheList.add(operation);
+	public void addToCache(WTPOperationDataModel dataModel) {
+		list.add(dataModel);
 	}
 	
-	public void clearOperationCacheList() {
-	    delayedOperationCacheList.clear();
+	public void clearCache() {
+	    list.clear();
 	}
 	                                       
-	public static LocalDependencyDelayedOperationCache getInstance() {
+	public static LocalDependencyDelayedDataModelCache getInstance() {
 		if (instance == null)
-			instance = new LocalDependencyDelayedOperationCache();
+			instance = new LocalDependencyDelayedDataModelCache();
 		return instance;
 	}
 }

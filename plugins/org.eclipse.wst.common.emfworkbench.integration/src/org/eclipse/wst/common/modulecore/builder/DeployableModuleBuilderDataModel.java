@@ -27,6 +27,8 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
 	 */
 	public static final String DEPENDENT_MODULES_DM_LIST = "DeployableModuleDataModel.DEPENDENT_MODULES_DM_LIST"; //$NON-NLS-1$
 
+	public static final String MODULE_CORE = "DeployableModuleBuilderDataModel.MODULE_CORE";
+	
 	
 	/* (non-Javadoc)
      * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#addValidBaseProperty(java.lang.String)
@@ -36,6 +38,7 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
 		addValidBaseProperty(OUTPUT_CONTAINER);
 		addValidBaseProperty(WORKBENCH_MODULE);
 		addValidBaseProperty(DEPENDENT_MODULES_DM_LIST);
+		addValidBaseProperty(MODULE_CORE);
 	}
 	
 	/* (non-Javadoc)
@@ -69,8 +72,10 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
         List depModules = wbModule.getModules();
         List depModulesDataModels = new ArrayList();
         DependentDeployableModuleDataModel dependentDataModel;
+        ModuleCore moduleCore = (ModuleCore)getProperty(MODULE_CORE);
         for(int i = 0; i<depModules.size(); i++){
             dependentDataModel = new DependentDeployableModuleDataModel();
+            dependentDataModel.setProperty(DependentDeployableModuleDataModel.MODULE_CORE, moduleCore);
             dependentDataModel.setProperty(DependentDeployableModuleDataModel.CONTAINING_WBMODULE, getProperty(WORKBENCH_MODULE));
             dependentDataModel.setProperty(DependentDeployableModuleDataModel.DEPENDENT_MODULE, depModules.get(i));
             depModulesDataModels.add(dependentDataModel);

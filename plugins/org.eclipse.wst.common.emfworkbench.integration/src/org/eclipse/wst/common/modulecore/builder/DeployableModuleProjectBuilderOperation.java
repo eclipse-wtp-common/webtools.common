@@ -48,8 +48,7 @@ public class DeployableModuleProjectBuilderOperation extends WTPOperation {
             WTPOperation opDep = null;
             for(int j = 0; j < depModuleList.size(); j++){
             	DependentDeployableModuleDataModel depModuleDM = (DependentDeployableModuleDataModel)depModuleList.get(j);
-            	opDep = depModuleDM.getDefaultOperation();
-               	LocalDependencyDelayedOperationCache.getInstance().addOperationToCacheList(opDep);
+            	LocalDependencyDelayedDataModelCache.getInstance().addToCache(depModuleDM);
             }
             op = moduleDM.getDefaultOperation();
             op.doRun(monitor);

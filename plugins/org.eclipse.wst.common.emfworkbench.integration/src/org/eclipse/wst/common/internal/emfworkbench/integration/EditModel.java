@@ -682,7 +682,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	 * Return a Resource for
 	 * 
 	 * @aUri.
-	 */
+	 */ // TODO The following method will only use the last segment when looking for a resource. 
 	protected Resource getResource(List tResources, URI aUri) {
 		Resource resource;
 		for (int i = 0; i < tResources.size(); i++) {

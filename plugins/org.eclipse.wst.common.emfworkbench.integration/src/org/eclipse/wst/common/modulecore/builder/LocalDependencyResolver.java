@@ -1,13 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2003, 2004 IBM Corporation and others. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors:
- * IBM Corporation - initial API and implementation
- *******************************************************************************/
+ * Contributors: IBM Corporation - initial API and implementation
+ ******************************************************************************/
 package org.eclipse.wst.common.modulecore.builder;
 
 import java.lang.reflect.InvocationTargetException;
@@ -20,6 +18,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.modulecore.IModuleConstants;
+import org.eclipse.wst.common.modulecore.util.ModuleCore;
 
 public class LocalDependencyResolver extends IncrementalProjectBuilder implements IModuleConstants {
     /**
@@ -28,7 +27,7 @@ public class LocalDependencyResolver extends IncrementalProjectBuilder implement
     public static final String BUILDER_ID = LOCAL_DEPENDENCY_RESOLVER_ID;
 
     /**
-     * 
+     *  
      */
     public LocalDependencyResolver() {
         super();
@@ -42,22 +41,32 @@ public class LocalDependencyResolver extends IncrementalProjectBuilder implement
      *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
      */
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
-	    try {
-	        List delayedOperations = LocalDependencyDelayedOperationCache.getInstance().getOperationCacheList();
-	        WTPOperation op = null;
-	        for (int i = 0; i < delayedOperations.size(); i++) {
-	            op = (WTPOperation) delayedOperations.get(i);
-	            if (op != null) {
-	                try {
-	                    op.run(monitor);
-	                } catch (InvocationTargetException ex) {
-	                } catch (InterruptedException ex2) {
-	                }
-	            }
-	        }
-	    }finally {
-	        LocalDependencyDelayedOperationCache.getInstance().clearOperationCacheList();
-	    }
-	    return null;
+        ModuleCore moduleCore = null;
+        try {
+            List delayedOperationDMs = LocalDependencyDelayedDataModelCache.getInstance().getCacheList();
+            if (delayedOperationDMs.size() > 0) {
+                moduleCore = ModuleCore.getModuleCoreForRead(getProject());
+            }
+            DependentDeployableModuleDataModel dataModel = null;
+            WTPOperation op = null;
+            for (int i = 0; i < delayedOperationDMs.size(); i++) {
+                dataModel = (DependentDeployableModuleDataModel) delayedOperationDMs.get(i);
+                dataModel.setProperty(DependentDeployableModuleDataModel.MODULE_CORE, moduleCore);
+                op = dataModel.getDefaultOperation();
+                if (op != null) {
+                    try {
+                        op.run(monitor);
+                    } catch (InvocationTargetException ex) {
+                    } catch (InterruptedException ex2) {
+                    }
+                }
+            }
+        } finally {
+            if (moduleCore != null) {
+                moduleCore.dispose();
+            }
+            LocalDependencyDelayedDataModelCache.getInstance().clearCache();
+        }
+        return null;
     }
 }
