@@ -1,4 +1,4 @@
-package org.eclipse.etools.common.test.api;
+package org.eclipse.etools.common.test.apitools;
 
 
 import java.io.File;
