@@ -39,6 +39,17 @@ import java.util.Locale;
  *   - setBundleName(String)
  *   - setParams(String[])
  * ]
+ * [issue: CS - I'd propose the addition of get/set attributes methods.  These methods would be
+ * very useful to us in order to 'stash away' private specialized stated into a message.  For example,
+ * in some contexts we'd like to associate specialized Marker or UI related information to make it easy to
+ * compute accurate 'red squiggle' location or 'quick fix' information.  I would be convenient to be able to support
+ * this without having to downcast to some specialized interface (and avoid tight coupling between validator impl and UI)
+ * These methods would improve fidelity of IMessage to Marker conversions where some attributes could be passed thru to the
+ * marker (perhaps these attribute names could be listed in the IValidator's extension point in the plugin.xml).
+ * 
+ *   - void setAttribute(String attributeName, Object value)
+ *   - Object getAttribute(String attributeName);
+ * ]
  */
 public interface IMessage {
 	public static final int OFFSET_UNSET = -1; // see getLength(), getOffset()
@@ -86,6 +97,8 @@ public interface IMessage {
 	 * returned.
 	 * </p>
 	 * @return line number of the location of the problem.
+	 * 
+	 * [issue: CS - I'd propose naming this method 'getLineNumber' (see IMarker)]
 	 */
 	public int getLineNo();
 
