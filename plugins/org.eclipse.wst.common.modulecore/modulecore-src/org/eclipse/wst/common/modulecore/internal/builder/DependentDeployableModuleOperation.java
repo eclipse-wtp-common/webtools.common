@@ -29,6 +29,7 @@ import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEditPlugin;
 import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.WorkbenchComponent;
+import org.eclipse.wst.common.modulecore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.modulecore.internal.util.ZipFileExporter;
 
 public class DependentDeployableModuleOperation extends WTPOperation {
@@ -132,7 +133,19 @@ public class DependentDeployableModuleOperation extends WTPOperation {
 
 	private String getZipFileName() {
 		WorkbenchComponent depWBModule = (WorkbenchComponent) depDataModel.getProperty(DependentDeployableModuleDataModel.DEPENDENT_WBMODULE);
-		return depWBModule.getName();
+		String typeID = depWBModule.getComponentType().getModuleTypeId();
+		String zipFileName = depWBModule.getName();
+		zipFileName = zipFileName.replace('.', '_');
+		if(typeID == null) return zipFileName;
+		if(typeID.equals(IModuleConstants.JST_APPCLIENT_MODULE) || typeID.equals(IModuleConstants.JST_EJB_MODULE) || typeID.equals(IModuleConstants.JST_UTILITY_MODULE))
+		    return zipFileName + ".jar";
+		else if(typeID.equals(IModuleConstants.JST_WEB_MODULE))
+		    return zipFileName + ".war";
+		else if(typeID.equals(IModuleConstants.JST_CONNECTOR_MODULE))
+		    return zipFileName + ".rar";
+		else if(typeID.equals(IModuleConstants.JST_EAR_MODULE))
+		    return zipFileName + ".ear";
+		return zipFileName;
 	}
 
 	/**

@@ -21,8 +21,6 @@ import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModelEvent;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPPropertyDescriptor;
-import org.eclipse.wst.common.modulecore.ModuleCoreFactory;
-import org.eclipse.wst.common.modulecore.Property;
 import org.eclipse.wst.server.core.IModuleType;
 import org.eclipse.wst.server.core.IProjectProperties;
 import org.eclipse.wst.server.core.IRuntimeType;
@@ -132,7 +130,7 @@ public abstract class ComponentCreationDataModel extends WTPOperationDataModel {
         } else if (IS_ENABLED.equals(propertyName)) {
             notifyEnablementChange(PROJECT_NAME);
         }  else if (COMPONENT_NAME.equals(propertyName))
-			setProperty(COMPONENT_DEPLOY_NAME, propertyValue + getComponentExtension());
+			setProperty(COMPONENT_DEPLOY_NAME, propertyValue);
         return true;
     }
     
