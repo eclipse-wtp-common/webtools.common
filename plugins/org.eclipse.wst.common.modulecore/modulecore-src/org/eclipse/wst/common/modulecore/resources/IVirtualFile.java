@@ -14,6 +14,7 @@ import java.io.InputStream;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IEncodedStorage;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFileState;
 import org.eclipse.core.resources.IStorage;
 import org.eclipse.core.runtime.CoreException;
@@ -870,4 +871,8 @@ public interface IVirtualFile extends IVirtualResource {
 	 * @since 2.0
 	 */
 	public void setContents(IFileState source, int updateFlags, IProgressMonitor monitor) throws CoreException;
+	
+	public IFile getRealFile();
+	
+	public IFile[] getRealFiles();
 }

@@ -132,6 +132,14 @@ public class VirtualFile extends VirtualResource implements IVirtualFile {
 		realFile.setContents(source, updateFlags, monitor);
 	}
 	
+	public IFile getRealFile() {
+		return realFile;
+	}
+	
+	public IFile[] getRealFiles() {
+		return new IFile[] {realFile};
+	}
+	
 	protected void doDeleteRealResources(int updateFlags, IProgressMonitor monitor) throws CoreException {
 		realFile.delete(updateFlags, monitor);
 	}

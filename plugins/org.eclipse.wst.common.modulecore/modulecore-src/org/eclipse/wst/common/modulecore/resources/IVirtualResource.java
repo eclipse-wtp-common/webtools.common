@@ -8,7 +8,6 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.modulecore.resources;
 
-import org.eclipse.core.resources.IPathVariableManager;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResourceProxyVisitor;
@@ -19,9 +18,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.wst.common.modulecore.internal.resources.ComponentHandle;
 
 public interface IVirtualResource extends ISchedulingRule {
 
@@ -774,48 +771,34 @@ public interface IVirtualResource extends ISchedulingRule {
 	 * @see #getProjectRelativePath()
 	 * @see Path#ROOT
 	 */
-	public IPath getWorkspaceRelativePath();
- 
+	public IPath getWorkspaceRelativePath(); 
+	
+
 	/**
-	 * Returns the absolute path in the local file system to this resource, or <code>null</code>
-	 * if no path can be determined.
+	 * Returns a relative path of this resource with respect to its project. Returns the empty path
+	 * for projects and the workspace root.
 	 * <p>
-	 * If this resource is the workspace root, this method returns the absolute local file system
-	 * path of the platform working area.
+	 * This is a resource handle operation; the resource need not exist. If this resource does
+	 * exist, its path can be safely assumed to be valid.
 	 * </p>
 	 * <p>
-	 * If this resource is a project that exists in the workspace, this method returns the path to
-	 * the project's local content area. This is true regardless of whether the project is open or
-	 * closed. This value will be null in the case where the location is relative to an undefined
-	 * workspace path variable.
+	 * A resource's project-relative path indicates the route from the project to the resource.
+	 * Within a workspace, there is exactly one such path for any given resource. The returned path
+	 * never has a trailing slash.
 	 * </p>
 	 * <p>
-	 * If this resource is a linked resource under a project that is open, this method returns the
-	 * resolved path to the linked resource's local contents. This value will be null in the case
-	 * where the location is relative to an undefined workspace path variable.
-	 * </p>
-	 * <p>
-	 * If this resource is a file or folder under a project that exists, or a linked resource under
-	 * a closed project, this method returns a (non- <code>null</code>) path computed from the
-	 * location of the project's local content area and the project- relative path of the file or
-	 * folder. This is true regardless of whether the file or folders exists, or whether the project
-	 * is open or closed. In the case of linked resources, the location of a linked resource within
-	 * a closed project is too computed from the location of the project's local content area and
-	 * the project-relative path of the resource. If the linked resource resides in an open project
-	 * then its location is computed according to the link.
-	 * </p>
-	 * <p>
-	 * If this resource is a project that does not exist in the workspace, or a file or folder below
-	 * such a project, this method returns <code>null</code>.
+	 * Project-relative paths are recommended over absolute paths, since the former are not affected
+	 * if the project is renamed.
 	 * </p>
 	 * 
-	 * @return the absolute path of this resource in the local file system, or <code>null</code>
-	 *         if no path can be determined
-	 * @see #getRawLocation()
-	 * @see IProjectDescription#setLocation(IPath)
-	 * @see Platform#getLocation()
+	 * @return the relative path of this resource with respect to its project
+	 * @see #getWorkspaceRelativePath()
+	 * @see #getProject()
+	 * @see Path#EMPTY
 	 */
-	public IPath getLocation(); 
+	public IPath getProjectRelativePath();
+	
+	public IPath getRuntimePath();		
 
 	/**
 	 * Returns the name of this resource. The name of a resource is synonymous with the last segment
@@ -833,6 +816,8 @@ public interface IVirtualResource extends ISchedulingRule {
 	 * @see #getProjectRelativePath()
 	 */
 	public String getName();
+	
+	public String getComponentName();
 
 	/**
 	 * Returns the resource which is the parent of this resource, or <code>null</code> if it has
@@ -865,51 +850,7 @@ public interface IVirtualResource extends ISchedulingRule {
 	 */
 	public IProject getProject();
 
-	/**
-	 * Returns a relative path of this resource with respect to its project. Returns the empty path
-	 * for projects and the workspace root.
-	 * <p>
-	 * This is a resource handle operation; the resource need not exist. If this resource does
-	 * exist, its path can be safely assumed to be valid.
-	 * </p>
-	 * <p>
-	 * A resource's project-relative path indicates the route from the project to the resource.
-	 * Within a workspace, there is exactly one such path for any given resource. The returned path
-	 * never has a trailing slash.
-	 * </p>
-	 * <p>
-	 * Project-relative paths are recommended over absolute paths, since the former are not affected
-	 * if the project is renamed.
-	 * </p>
-	 * 
-	 * @return the relative path of this resource with respect to its project
-	 * @see #getWorkspaceRelativePath()
-	 * @see #getProject()
-	 * @see Path#EMPTY
-	 */
-	public IPath getProjectRelativePath();
-
-	/**
-	 * Returns the file system location of this resource, or <code>null</code> if no path can be
-	 * determined. The returned path will either be an absolute file system path, or a relative path
-	 * whose first segment is the name of a workspace path variable.
-	 * <p>
-	 * If this resource is an existing project, the returned path will be equal to the location path
-	 * in the project description. If this resource is a linked resource in an open project, the
-	 * returned path will be equal to the location path supplied when the linked resource was
-	 * created. In all other cases, this method returns the same value as <code>getLocation</code>.
-	 * </p>
-	 * 
-	 * @return the raw path of this resource in the local file system, or <code>null</code> if no
-	 *         path can be determined
-	 * @see #getLocation()
-	 * @see IVirtualFile#createLink(IPath, int, IProgressMonitor)
-	 * @see IVirtualFolder#createLink(IPath, int, IProgressMonitor)
-	 * @see IPathVariableManager
-	 * @see IProjectDescription#getLocation()
-	 * @since 2.1
-	 */
-	public IPath getRawLocation();  
+ 
 
 	/**
 	 * Returns the type of this resource. The returned value will be one of <code>FILE</code>,
@@ -1145,6 +1086,5 @@ public interface IVirtualResource extends ISchedulingRule {
 	 * @deprecated use <tt>IVirtualResource#setResourceAttributes(ResourceAttributes)</tt>
 	 */
 	public void setReadOnly(boolean readOnly);
-
-	public ComponentHandle getComponentHandle();
+ 
 }
