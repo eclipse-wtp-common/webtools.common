@@ -10,39 +10,59 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel;
 
-import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelFactoryImpl;
+import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelExtensionReader;
+import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelImpl;
 
-public interface DataModelFactory {
+public class DataModelFactory {
 
-	public static final DataModelFactory INSTANCE = new DataModelFactoryImpl();
+	private static DataModelExtensionReader reader;
 
 	/**
-	 * Looks up the appropriate IDataModelProvider by the specified id and constructs a new
-	 * IDataModel. If the IDataModelProvider is not found then a RuntimeException is thrown.
+	 * Looks up the appropriate IDataModelProvider by the specified id and
+	 * constructs a new IDataModel. If the IDataModelProvider is not found then
+	 * a RuntimeException is thrown.
 	 * 
 	 * @param dataModelProviderID
 	 *            the id of the IDataModelProvider
 	 * @return a new IDataModel
 	 */
-	public IDataModel createDataModel(String dataModelProviderID);
+	public static IDataModel createDataModel(String dataModelProviderID) {
+		return createDataModel(loadProvider(dataModelProviderID));
+	}
+
+	private static IDataModelProvider loadProvider(String id) {
+		if (null == reader) {
+			reader = new DataModelExtensionReader();
+		}
+		return reader.getProvider(id);
+	}
 
 	/**
-	 * Looks up the appropriate IDataModelProvider using the name of the specified class. This
-	 * method is equavalent to
+	 * Looks up the appropriate IDataModelProvider using the name of the
+	 * specified class. This method is equavalent to
 	 * <code>createDataModel(dataModelProviderClassID.getName())</code>.
 	 * 
 	 * @param dataModelProviderClass
 	 *            the class whose name is the id of the IDataModelProvider
 	 * @return a new IDataModel
 	 */
-	public IDataModel createDataModel(Class dataModelProviderClassID);
+	public static IDataModel createDataModel(Class dataModelProviderID) {
+		return createDataModel(dataModelProviderID.getName());
+	}
 
 	/**
-	 * Creates a new IDataModel using the the specified instance of an IDataModelProvider
+	 * Creates a new IDataModel using the the specified instance of an
+	 * IDataModelProvider
 	 * 
 	 * @param dataModelProviderInstance
 	 * @return a new IDataModel
 	 */
-	public IDataModel createDataModel(IDataModelProvider dataModelProviderInstance);
+	public static IDataModel createDataModel(IDataModelProvider provider) {
+		if (null == provider) {
+			throw new NullPointerException();
+		}
+		DataModelImpl dataModel = new DataModelImpl(provider);
+		return dataModel;
+	}
 
 }

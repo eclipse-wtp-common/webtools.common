@@ -66,7 +66,7 @@ public class DataModelExtensionReader extends RegistryReader {
 		return element;
 	}
 
-	protected IDataModelProvider getProvider(String id) {
+	public IDataModelProvider getProvider(String id) {
 		IDataModelProvider provider = null;
 		IConfigurationElement element = getExtension(id);
 		try {
