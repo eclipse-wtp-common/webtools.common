@@ -15,10 +15,6 @@ import java.util.Map;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 
 
-
-/**
- * @author mdelder
- */
 public interface IEditModelFactory {
 
 	public abstract EditModel createEditModelForRead(String editModelID, EMFWorkbenchContext context);

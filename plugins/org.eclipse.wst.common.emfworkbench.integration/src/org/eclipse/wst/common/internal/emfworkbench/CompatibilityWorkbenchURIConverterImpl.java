@@ -21,6 +21,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.internal.emf.resource.CompatibilityURIConverter;
+import org.eclipse.wst.common.modulecore.impl.PlatformURLModuleConnection;
 
 import com.ibm.wtp.emf.workbench.ResourceSetWorkbenchSynchronizer;
 import com.ibm.wtp.emf.workbench.WorkbenchResourceHelperBase;
@@ -70,6 +71,16 @@ public class CompatibilityWorkbenchURIConverterImpl extends WorkbenchURIConverte
 	 */
 	public CompatibilityWorkbenchURIConverterImpl(IContainer anInputContainer, IContainer anOutputContainer, ResourceSetWorkbenchSynchronizer aSynchronizer) {
 		super(anInputContainer, anOutputContainer, aSynchronizer);
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.ibm.wtp.emf.workbench.WorkbenchURIConverterImpl#normalize(org.eclipse.emf.common.util.URI)
+	 */
+	public URI normalize(URI aURI) {
+		if(PlatformURLModuleConnection.MODULE.equals(aURI.scheme())) {
+			return PlatformURLModuleConnection.resolve(aURI);
+		}
+		return super.normalize(aURI);
 	}
 
 	/**

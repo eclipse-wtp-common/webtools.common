@@ -87,5 +87,14 @@
          </run>
       </runtime>
    </extension>
+   <extension
+         point="org.eclipse.wst.common.emfworkbench.integration.editModel">
+      <editModel
+            editModelID="org.eclipse.wst.modulecore.structuralModel"
+            factoryClass="org.eclipse.wst.common.modulecore.ModuleStructuralModelFactory" />
+      <editModel
+            editModelID="org.eclipse.wst.modulecore.editModel"
+            factoryClass="org.eclipse.wst.common.modulecore.ModuleEditModelFactory" />
+   </extension>
 
 </plugin>

@@ -11,8 +11,6 @@
 package org.eclipse.wst.common.internal.emfworkbench.integration;
 
 import java.io.FileNotFoundException;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -27,6 +25,7 @@ import org.eclipse.wst.common.emf.utilities.ExtendedEcoreUtil;
 import org.eclipse.wst.common.internal.emfworkbench.EMFAdapterFactory;
 import org.eclipse.wst.common.internal.emfworkbench.PassthruResourceSet;
 import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
+import org.eclipse.wst.common.modulecore.impl.PlatformURLModuleConnection;
 
 import com.ibm.wtp.emf.workbench.WorkbenchResourceHelperBase;
 
@@ -75,6 +74,8 @@ public class EMFWorkbenchEditPlugin extends Plugin {
 
 		IAdapterManager manager = Platform.getAdapterManager();
 		manager.registerAdapters(new EMFAdapterFactory(), EObject.class);
+		
+		PlatformURLModuleConnection.startup();
 	}
 
 	public static ResourceSet createIsolatedResourceSet(IProject project) {

@@ -15,10 +15,7 @@ import java.util.Map;
 
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 
-
-/**
- * @author mdelder
- */
+ 
 public class EditModelFactory implements IEditModelFactory {
 	protected boolean loadKnownResourcesAsReadOnly = true;
 
