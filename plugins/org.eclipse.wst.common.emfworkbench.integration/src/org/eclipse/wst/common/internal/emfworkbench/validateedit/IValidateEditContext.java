@@ -14,7 +14,7 @@
 package org.eclipse.wst.common.internal.emfworkbench.validateedit;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.wst.common.emfworkbench.integration.EditModel;
+import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 
 
 /**

@@ -13,8 +13,8 @@ package org.eclipse.wst.common.internal.emf.resource;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.wst.common.annotations.core.TagParseEventHandler;
-import org.eclipse.wst.common.annotations.core.Token;
+import org.eclipse.wst.common.internal.annotations.core.Token;
+import org.eclipse.wst.common.internal.annotations.core.TagParseEventHandler;
 
 
 /**
@@ -37,7 +37,7 @@ public class AnnotatedCommentHandler implements TagParseEventHandler {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.wst.common.annotations.core.TagParseEventHandler#annotationTag(org.eclipse.wst.common.annotations.core.Token)
+	 * @see org.eclipse.wst.common.internal.annotations.core.TagParseEventHandler#annotationTag(org.eclipse.wst.common.internal.annotations.core.Token)
 	 */
 	public void annotationTag(Token tag) {
 		this.annotationToken = tag;
@@ -46,7 +46,7 @@ public class AnnotatedCommentHandler implements TagParseEventHandler {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.wst.common.annotations.core.TagParseEventHandler#endOfTag(int)
+	 * @see org.eclipse.wst.common.internal.annotations.core.TagParseEventHandler#endOfTag(int)
 	 */
 	public void endOfTag(int pos) {
 
@@ -55,8 +55,8 @@ public class AnnotatedCommentHandler implements TagParseEventHandler {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.wst.common.annotations.core.TagParseEventHandler#attribute(org.eclipse.wst.common.annotations.core.Token,
-	 *      int, org.eclipse.wst.common.annotations.core.Token)
+	 * @see org.eclipse.wst.common.internal.annotations.core.TagParseEventHandler#attribute(org.eclipse.wst.common.internal.annotations.core.Token,
+	 *      int, org.eclipse.wst.common.internal.annotations.core.Token)
 	 */
 	public void attribute(Token name, int equalsPosition, Token value) {
 		if (value.getText() == null || value.getText().length() == 0)

@@ -18,11 +18,11 @@ package org.eclipse.wst.common.internal.emfworkbench.operation;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.command.CommandStack;
-import org.eclipse.wst.common.emfworkbench.EMFWorkbenchContext;
-import org.eclipse.wst.common.emfworkbench.integration.EditModel;
-import org.eclipse.wst.common.framework.operation.IOperationHandler;
-import org.eclipse.wst.common.framework.operation.WTPOperation;
-import org.eclipse.wst.common.framework.operation.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.internal.operations.IOperationHandler;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
+import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import org.eclipse.wst.common.internal.emfworkbench.validateedit.IValidateEditContext;
 
 import com.ibm.wtp.common.UIContextDetermination;
@@ -104,7 +104,7 @@ public abstract class EditModelOperation extends WTPOperation {
 	}
 
 	/**
-	 * @see org.eclipse.wst.common.framework.operation.WTPOperation#validateEdit()
+	 * @see org.eclipse.wst.common.frameworks.internal.operation.WTPOperation#validateEdit()
 	 */
 	protected boolean validateEdit() {
 		IValidateEditContext validator = (IValidateEditContext) UIContextDetermination.createInstance(IValidateEditContext.CLASS_KEY);

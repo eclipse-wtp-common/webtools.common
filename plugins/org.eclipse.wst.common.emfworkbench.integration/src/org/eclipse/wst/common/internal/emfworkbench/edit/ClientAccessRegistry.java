@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import org.eclipse.wst.common.emfworkbench.EMFWorkbenchEditResourceHandler;
+import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchEditResourceHandler;
 
 import com.ibm.wtp.internal.emf.workbench.nls.EMFWorkbenchResourceHandler;
 

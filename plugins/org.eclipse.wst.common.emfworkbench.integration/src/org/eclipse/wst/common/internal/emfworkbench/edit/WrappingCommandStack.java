@@ -14,7 +14,7 @@ package org.eclipse.wst.common.internal.emfworkbench.edit;
 
 import org.eclipse.emf.common.command.BasicCommandStack;
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.wst.common.emfworkbench.integration.ComposedEditModel;
+import org.eclipse.wst.common.internal.emfworkbench.integration.ComposedEditModel;
 
 /**
  * Insert the type's description here. Creation date: (05/21/01 9:31:02 PM)

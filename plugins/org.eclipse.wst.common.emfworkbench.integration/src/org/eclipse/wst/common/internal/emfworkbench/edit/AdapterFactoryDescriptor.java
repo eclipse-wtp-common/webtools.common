@@ -22,8 +22,8 @@ import org.eclipse.core.internal.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.emf.common.notify.AdapterFactory;
-import org.eclipse.wst.common.emfworkbench.EMFWorkbenchEditResourceHandler;
-import org.eclipse.wst.common.framework.AbstractRegistryDescriptor;
+import org.eclipse.wst.common.frameworks.internal.AbstractRegistryDescriptor;
+import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchEditResourceHandler;
 
 import com.ibm.wtp.emf.workbench.plugin.EMFWorkbenchPlugin;
 
@@ -145,7 +145,7 @@ public class AdapterFactoryDescriptor extends AbstractRegistryDescriptor impleme
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.wst.common.framework.AbstractRegistryDescriptor#getID()
+	 * @see org.eclipse.wst.common.frameworks.internal.AbstractRegistryDescriptor#getID()
 	 */
 	public String getID() {
 		return id;

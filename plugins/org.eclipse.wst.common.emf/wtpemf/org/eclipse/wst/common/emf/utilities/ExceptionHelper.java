@@ -14,7 +14,7 @@ package org.eclipse.wst.common.emf.utilities;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.wst.common.framework.enablement.nonui.IWFTWrappedException;
+import org.eclipse.wst.common.frameworks.internal.enablement.nonui.IWFTWrappedException;
 
 
 

@@ -17,7 +17,7 @@ package org.eclipse.wst.common.internal.emfworkbench.edit;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import org.eclipse.wst.common.emfworkbench.EMFWorkbenchEditResourceHandler;
+import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchEditResourceHandler;
 
 
 /**

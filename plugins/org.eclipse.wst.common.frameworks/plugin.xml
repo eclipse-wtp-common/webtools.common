@@ -5,7 +5,7 @@
    name="org.eclipse.wst.common.frameworks"
    version="1.0.0"
    provider-name="Eclipse.org"
-   class="org.eclispe.wst.common.framework.plugin.WTPCommonPlugin">
+   class="org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin">
 
    <runtime>
       <library name="common.jar">
@@ -35,16 +35,16 @@
       <uiContextSensitiveClass
             key="saveHandler"
             context="Headless"
-            className="org.eclipse.wst.common.framework.SaveHandlerHeadless">
+            className="org.eclipse.wst.common.frameworks.internal.SaveHandlerHeadless">
       </uiContextSensitiveClass>
    </extension>
    <extension
-         id="org.eclipse.wst.common.framework.enablement"
+         id="org.eclipse.wst.common.frameworks.internal.enablement"
          point="com.ibm.wtp.common.util.uiContextSensitiveClass">
       <uiContextSensitiveClass
-            key="org.eclipse.wst.common.framework.EnablementDetermination"
+            key="org.eclipse.wst.common.frameworks.internal.EnablementDetermination"
             context="Headless"
-            className="org.eclispe.wst.common.internal.framework.enablement.EnablementManager">
+            className="org.eclispe.wst.common.frameworks.internal.enablement.EnablementManager">
       </uiContextSensitiveClass>
    </extension>
 

@@ -14,8 +14,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.wst.common.annotations.core.AnnotationTagParser;
 import org.eclipse.wst.common.emf.utilities.AnnotationsAdapter;
+import org.eclipse.wst.common.internal.annotations.core.AnnotationTagParser;
 
 
 /**

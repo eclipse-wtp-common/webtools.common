@@ -13,8 +13,8 @@ package org.eclipse.wst.common.internal.emfworkbench.edit;
 
 
 import org.eclipse.emf.common.command.Command;
-import org.eclipse.wst.common.emfworkbench.integration.AbstractEditModelCommand;
-import org.eclipse.wst.common.emfworkbench.integration.EditModelCommand;
+import org.eclipse.wst.common.internal.emfworkbench.integration.AbstractEditModelCommand;
+import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelCommand;
 
 /**
  * Insert the type's description here. Creation date: (05/22/01 8:58:24 AM)

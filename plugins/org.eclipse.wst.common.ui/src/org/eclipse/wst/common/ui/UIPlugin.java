@@ -28,7 +28,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.osgi.framework.BundleContext;
 
 
 
@@ -38,20 +37,25 @@ import org.osgi.framework.BundleContext;
 public class UIPlugin extends AbstractUIPlugin {
 	//The shared instance.
 	private static UIPlugin plugin;
+	//Resource bundle.
+  	// dmw 11/15 private field never read locally
+	//private ResourceBundle resourceBundle;
 	
 	/**
 	 * The constructor.
 	 */
-	public UIPlugin() {
-		super();
-		plugin = this;
-	}
-	
 	public UIPlugin(IPluginDescriptor descriptor) {
 		super(descriptor);
 		plugin = this;
+		try {
+		  	// dmw 11/15 private field never read locally
+			ResourceBundle resourceBundle = descriptor.getResourceBundle();
+		} catch (java.util.MissingResourceException exception) {
+			//TODO... log an error message		
+			//resourceBundle = null;
+		}
 	}
-	
+
 	/**
 	 * Returns the shared instance.
 	 */
@@ -71,18 +75,18 @@ public class UIPlugin extends AbstractUIPlugin {
 	 * or 'key' if not found.
 	 */
 	public static String getResourceString(String key) {
-		ResourceBundle aResourceBundle = getDefault().getResourceBundle();
+		ResourceBundle bundle= UIPlugin.getDefault().getResourceBundle();
 		try {
-			return (aResourceBundle != null) ? aResourceBundle.getString(key) : key;
+			return bundle.getString(key);
 		} catch (MissingResourceException e) {
 			return key;
 		}
 	}
-	
+
 	/**
 	 * This gets the string resource and does one substitution.
 	 */
-	public static String getString(String key, Object s1)
+	public String getString(String key, Object s1)
 	{
 	  return MessageFormat.format(getResourceString(key), new Object [] { s1 });
 	}
@@ -90,7 +94,7 @@ public class UIPlugin extends AbstractUIPlugin {
 	/**
 	 * This gets the string resource and does two substitutions.
 	 */
-	public static String getString(String key, Object s1, Object s2)
+	public String getString(String key, Object s1, Object s2)
 	{
 	  return MessageFormat.format(getResourceString(key), new Object [] { s1, s2 });
 	}     
@@ -102,7 +106,7 @@ public class UIPlugin extends AbstractUIPlugin {
 		try {
 			return Platform.getResourceBundle(plugin.getBundle());
 		} catch (MissingResourceException x) {
-			log(x);
+			x.printStackTrace();
 		}
 		return null;
 	}
@@ -149,19 +153,5 @@ public class UIPlugin extends AbstractUIPlugin {
 
 	public static void log(Throwable e) {
 		log(new Status(IStatus.ERROR, getPluginId(), IStatus.ERROR, e.getLocalizedMessage(), e));
-	}
-	/* (non-Javadoc)
-	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
-	 */
-	public void start(BundleContext context) throws Exception {
-		// TODO Auto-generated method stub
-		super.start(context);
-	}
-	/* (non-Javadoc)
-	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
-	 */
-	public void stop(BundleContext context) throws Exception {
-		// TODO Auto-generated method stub
-		super.stop(context);
 	}
 }

@@ -21,7 +21,7 @@ import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.wst.common.emfworkbench.integration.EMFWorkbenchEditPlugin;
+import org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEditPlugin;
 
 import com.ibm.wtp.common.RegistryReader;
 import com.ibm.wtp.common.logger.proxy.Logger;
@@ -78,7 +78,7 @@ public class AdapterFactoryRegistry extends RegistryReader {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.wst.common.framework.RegistryReader#readElement(org.eclipse.core.runtime.IConfigurationElement)
+	 * @see org.eclipse.wst.common.frameworks.internal.RegistryReader#readElement(org.eclipse.core.runtime.IConfigurationElement)
 	 */
 	public boolean readElement(IConfigurationElement element) {
 		try {

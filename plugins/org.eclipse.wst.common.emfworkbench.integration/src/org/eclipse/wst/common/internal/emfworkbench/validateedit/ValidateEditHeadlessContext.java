@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.wst.common.emfworkbench.integration.EditModel;
+import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 
 
 /**
@@ -79,7 +79,7 @@ public class ValidateEditHeadlessContext implements IValidateEditContext {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.wst.common.internal.emfworkbench.validateedit.IValidateEditContext#setEditModel(org.eclipse.wst.common.emfworkbench.integration.EditModel)
+	 * @see org.eclipse.wst.common.internal.emfworkbench.validateedit.IValidateEditContext#setEditModel(org.eclipse.wst.common.internal.emfworkbench.integration.EditModel)
 	 */
 	public void setEditModel(EditModel fValidator) {
 		this.fValidator = fValidator;
@@ -88,7 +88,7 @@ public class ValidateEditHeadlessContext implements IValidateEditContext {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.wst.common.internal.emfworkbench.validateedit.IValidateEditContext#validateState(org.eclipse.wst.common.emfworkbench.integration.EditModel)
+	 * @see org.eclipse.wst.common.internal.emfworkbench.validateedit.IValidateEditContext#validateState(org.eclipse.wst.common.internal.emfworkbench.integration.EditModel)
 	 */
 	public IStatus validateState(EditModel editModel) {
 		setEditModel(editModel);

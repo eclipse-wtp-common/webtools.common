@@ -17,7 +17,7 @@ package org.eclipse.wst.common.internal.emfworkbench.edit;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.wst.common.framework.AbstractRegistryDescriptor;
+import org.eclipse.wst.common.frameworks.internal.AbstractRegistryDescriptor;
 
 
 
@@ -66,7 +66,7 @@ public class EditModelResource extends AbstractRegistryDescriptor implements Com
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.wst.common.framework.AbstractRegistryDescriptor#getID()
+	 * @see org.eclipse.wst.common.frameworks.internal.AbstractRegistryDescriptor#getID()
 	 */
 	public String getID() {
 		return extensionID;
@@ -75,7 +75,7 @@ public class EditModelResource extends AbstractRegistryDescriptor implements Com
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.wst.common.framework.AbstractRegistryDescriptor#getPriority()
+	 * @see org.eclipse.wst.common.frameworks.internal.AbstractRegistryDescriptor#getPriority()
 	 */
 	public int getPriority() {
 		if (isCore)

@@ -10,8 +10,8 @@ package org.eclipse.wst.common.internal.emfworkbench.edit;
 
 import java.util.Map;
 
-import org.eclipse.wst.common.emfworkbench.EMFWorkbenchContext;
-import org.eclipse.wst.common.emfworkbench.integration.EditModel;
+import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
+import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 
 
 

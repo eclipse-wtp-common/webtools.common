@@ -25,7 +25,7 @@ import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
-import org.eclipse.wst.common.emfworkbench.integration.ModelModifier;
+import org.eclipse.wst.common.internal.emfworkbench.integration.ModelModifier;
 
 
 /**
@@ -99,7 +99,7 @@ public abstract class ModelModifierOperation extends EditModelOperation {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.wst.common.framework.operation.WTPOperation#execute(org.eclipse.core.runtime.IProgressMonitor)
+	 * @see org.eclipse.wst.common.frameworks.internal.operation.WTPOperation#execute(org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	protected final void execute(IProgressMonitor monitor) throws CoreException, InvocationTargetException, InterruptedException {
 		addHelpers();
@@ -117,7 +117,7 @@ public abstract class ModelModifierOperation extends EditModelOperation {
 	/**
 	 * Add all necessary helpers to the modifier.
 	 * 
-	 * @see org.eclipse.wst.common.emfworkbench.integration.ModifierHelper
+	 * @see org.eclipse.wst.common.internal.emfworkbench.integration.ModifierHelper
 	 */
 	protected abstract void addHelpers() throws CoreException;
 }

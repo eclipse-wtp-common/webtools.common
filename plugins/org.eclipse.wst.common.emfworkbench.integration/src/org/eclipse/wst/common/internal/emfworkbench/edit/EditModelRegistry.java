@@ -21,11 +21,11 @@ import java.util.TreeSet;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.wst.common.emfworkbench.EMFWorkbenchContext;
-import org.eclipse.wst.common.emfworkbench.EMFWorkbenchEditResourceHandler;
-import org.eclipse.wst.common.emfworkbench.integration.EMFWorkbenchEditPlugin;
-import org.eclipse.wst.common.emfworkbench.integration.EditModel;
-import org.eclipse.wst.common.emfworkbench.integration.IEditModelFactory;
+import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
+import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchEditResourceHandler;
+import org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEditPlugin;
+import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
+import org.eclipse.wst.common.internal.emfworkbench.integration.IEditModelFactory;
 
 import com.ibm.wtp.common.RegistryReader;
 import com.ibm.wtp.common.logger.proxy.Logger;
@@ -35,9 +35,11 @@ import com.ibm.wtp.common.logger.proxy.Logger;
  */
 public class EditModelRegistry extends RegistryReader {
 
-	public static EditModelRegistry INSTANCE = null;
+	private final static EditModelRegistry INSTANCE =  new EditModelRegistry();
 
-	private Map factoryConfigurations = new HashMap();
+	private final Map factoryConfigurations = new HashMap();
+	private static boolean initialized = false;
+	
 
 	public static final String EDIT_MODEL_ELEMENT = "editModel"; //$NON-NLS-1$
 	public static final String EDIT_MODEL_ID_ATTR = "editModelID"; //$NON-NLS-1$
@@ -53,17 +55,21 @@ public class EditModelRegistry extends RegistryReader {
 	}
 
 	public static EditModelRegistry getInstance() {
-		if (INSTANCE == null) {
-			INSTANCE = new EditModelRegistry();
-			INSTANCE.readRegistry();
-		}
+		if(isInitialized()) 
+			return INSTANCE;
+		synchronized(INSTANCE) {
+			if(!isInitialized()) {
+				INSTANCE.readRegistry();
+				initialized = true;
+			}
+		} 
 		return INSTANCE;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.wst.common.framework.RegistryReader#readElement(org.eclipse.core.runtime.IConfigurationElement)
+	 * @see org.eclipse.wst.common.frameworks.internal.RegistryReader#readElement(org.eclipse.core.runtime.IConfigurationElement)
 	 */
 	public boolean readElement(IConfigurationElement element) {
 		/*
@@ -230,5 +236,11 @@ public class EditModelRegistry extends RegistryReader {
 			return parentModelID;
 		}
 
+	}
+	/**
+	 * @return Returns the initialized.
+	 */
+	protected static boolean isInitialized() {
+		return initialized;
 	}
 }

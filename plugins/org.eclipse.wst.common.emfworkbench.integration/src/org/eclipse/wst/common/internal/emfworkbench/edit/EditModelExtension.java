@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.wst.common.framework.ConfigurationElementWrapper;
+import org.eclipse.wst.common.frameworks.internal.ConfigurationElementWrapper;
 
 import com.ibm.wtp.common.logger.proxy.Logger;
 

@@ -21,10 +21,10 @@ import java.util.Set;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.wst.common.emfworkbench.integration.AbstractEditModelCommand;
-import org.eclipse.wst.common.emfworkbench.integration.ComposedEditModel;
-import org.eclipse.wst.common.emfworkbench.integration.EditModel;
-import org.eclipse.wst.common.emfworkbench.integration.EditModelCommand;
+import org.eclipse.wst.common.internal.emfworkbench.integration.AbstractEditModelCommand;
+import org.eclipse.wst.common.internal.emfworkbench.integration.ComposedEditModel;
+import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
+import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelCommand;
 
 /**
  * Insert the type's description here. Creation date: (05/22/01 8:57:38 AM)
