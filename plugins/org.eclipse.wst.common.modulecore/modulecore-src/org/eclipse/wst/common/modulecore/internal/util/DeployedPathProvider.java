@@ -28,7 +28,7 @@ public class DeployedPathProvider implements IPathProvider {
 	 * @see org.eclipse.wst.common.modulecore.util.IPathProvider#getPath(org.eclipse.wst.common.modulecore.WorkbenchComponent)
 	 */
 	public URI getPath(ComponentResource aModuleResource) { 
-		return aModuleResource.getDeployedPath();
+		return aModuleResource.getRuntimePath();
 	}
 
 }

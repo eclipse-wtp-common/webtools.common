@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchComponentImpl.java,v 1.2 2005/03/15 02:12:30 cbridgha Exp $
+ * $Id: WorkbenchComponentImpl.java,v 1.3 2005/03/15 02:36:13 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.internal.impl;
 
@@ -40,7 +40,7 @@ import org.eclipse.wst.common.modulecore.ComponentResource;
  * The following features are implemented:
  * <ul>
  *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchComponentImpl#getHandle <em>Handle</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchComponentImpl#getDeployedName <em>Deployed Name</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchComponentImpl#getName <em>Name</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchComponentImpl#getResources <em>Resources</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchComponentImpl#getComponentType <em>Component Type</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchComponentImpl#getReferencedComponents <em>Referenced Components</em>}</li>
@@ -71,23 +71,24 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	protected URI handle = HANDLE_EDEFAULT;
 
 	/**
-	 * The default value of the '{@link #getDeployedName() <em>Deployed Name</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @see #getDeployedName()
+	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getName()
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String DEPLOYED_NAME_EDEFAULT = "";
+	protected static final String NAME_EDEFAULT = "";
 
 	/**
-	 * The cached value of the '{@link #getDeployedName() <em>Deployed Name</em>}' attribute. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getDeployedName()
+	 * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getName()
 	 * @generated
 	 * @ordered
 	 */
-	protected String deployedName = DEPLOYED_NAME_EDEFAULT;
+	protected String name = NAME_EDEFAULT;
 
 	/**
 	 * The cached value of the '{@link #getResources() <em>Resources</em>}' containment reference list.
@@ -163,33 +164,35 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public String getDeployedName() {
-		return deployedName;
-	}
-
-	public void setDeployedName(String newDeployedName) {
-		setDeployedNameGen(newDeployedName);
-		// TODO A more advanced adapter should be applied to keep the handle up to date.
-		if (eResource() != null) {
-			URI resourceURI = eResource().getURI();
-			String safeDeployedName = getDeployedName() != null ? getDeployedName() : ""; //$NON-NLS-1$
-			if (resourceURI != null && resourceURI.segmentCount() >= 2)
-				setHandle(URI.createURI(PlatformURLModuleConnection.MODULE_PROTOCOL + IPath.SEPARATOR + "resource" + IPath.SEPARATOR + resourceURI.segment(1) + IPath.SEPARATOR + safeDeployedName));
-		}
+	public String getName() {
+		return name;
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setDeployedNameGen(String newDeployedName) {
-		String oldDeployedName = deployedName;
-		deployedName = newDeployedName;
+	public void setNameGen(String newName) {
+		String oldName = name;
+		name = newName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.WORKBENCH_COMPONENT__DEPLOYED_NAME, oldDeployedName, deployedName));
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.WORKBENCH_COMPONENT__NAME, oldName, name));
+	}
+
+	public void setName(String newDeployedName) {
+		setNameGen(newDeployedName);
+		// TODO A more advanced adapter should be applied to keep the handle up to date.
+		if (eResource() != null) {
+			URI resourceURI = eResource().getURI();
+			String safeDeployedName = getName() != null ? getName() : ""; //$NON-NLS-1$
+			if (resourceURI != null && resourceURI.segmentCount() >= 2)
+				setHandle(URI.createURI(PlatformURLModuleConnection.MODULE_PROTOCOL + IPath.SEPARATOR + "resource" + IPath.SEPARATOR + resourceURI.segment(1) + IPath.SEPARATOR + safeDeployedName));
+		}
 	}
 
 	/**
@@ -295,8 +298,8 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 		switch (eDerivedStructuralFeatureID(eFeature)) {
 			case ModuleCorePackage.WORKBENCH_COMPONENT__HANDLE:
 				return getHandle();
-			case ModuleCorePackage.WORKBENCH_COMPONENT__DEPLOYED_NAME:
-				return getDeployedName();
+			case ModuleCorePackage.WORKBENCH_COMPONENT__NAME:
+				return getName();
 			case ModuleCorePackage.WORKBENCH_COMPONENT__RESOURCES:
 				return getResources();
 			case ModuleCorePackage.WORKBENCH_COMPONENT__COMPONENT_TYPE:
@@ -317,8 +320,8 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 			case ModuleCorePackage.WORKBENCH_COMPONENT__HANDLE:
 				setHandle((URI)newValue);
 				return;
-			case ModuleCorePackage.WORKBENCH_COMPONENT__DEPLOYED_NAME:
-				setDeployedName((String)newValue);
+			case ModuleCorePackage.WORKBENCH_COMPONENT__NAME:
+				setName((String)newValue);
 				return;
 			case ModuleCorePackage.WORKBENCH_COMPONENT__RESOURCES:
 				getResources().clear();
@@ -344,8 +347,8 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 			case ModuleCorePackage.WORKBENCH_COMPONENT__HANDLE:
 				setHandle(HANDLE_EDEFAULT);
 				return;
-			case ModuleCorePackage.WORKBENCH_COMPONENT__DEPLOYED_NAME:
-				setDeployedName(DEPLOYED_NAME_EDEFAULT);
+			case ModuleCorePackage.WORKBENCH_COMPONENT__NAME:
+				setName(NAME_EDEFAULT);
 				return;
 			case ModuleCorePackage.WORKBENCH_COMPONENT__RESOURCES:
 				getResources().clear();
@@ -368,8 +371,8 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 		switch (eDerivedStructuralFeatureID(eFeature)) {
 			case ModuleCorePackage.WORKBENCH_COMPONENT__HANDLE:
 				return HANDLE_EDEFAULT == null ? handle != null : !HANDLE_EDEFAULT.equals(handle);
-			case ModuleCorePackage.WORKBENCH_COMPONENT__DEPLOYED_NAME:
-				return DEPLOYED_NAME_EDEFAULT == null ? deployedName != null : !DEPLOYED_NAME_EDEFAULT.equals(deployedName);
+			case ModuleCorePackage.WORKBENCH_COMPONENT__NAME:
+				return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
 			case ModuleCorePackage.WORKBENCH_COMPONENT__RESOURCES:
 				return resources != null && !resources.isEmpty();
 			case ModuleCorePackage.WORKBENCH_COMPONENT__COMPONENT_TYPE:
@@ -390,8 +393,8 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (handle: ");
 		result.append(handle);
-		result.append(", deployedName: ");
-		result.append(deployedName);
+		result.append(", name: ");
+		result.append(name);
 		result.append(')');
 		return result.toString();
 	}

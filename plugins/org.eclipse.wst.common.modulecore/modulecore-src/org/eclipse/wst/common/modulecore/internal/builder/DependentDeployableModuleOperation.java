@@ -132,7 +132,7 @@ public class DependentDeployableModuleOperation extends WTPOperation {
 
 	private String getZipFileName() {
 		WorkbenchComponent depWBModule = (WorkbenchComponent) depDataModel.getProperty(DependentDeployableModuleDataModel.DEPENDENT_WBMODULE);
-		return depWBModule.getDeployedName();
+		return depWBModule.getName();
 	}
 
 	/**

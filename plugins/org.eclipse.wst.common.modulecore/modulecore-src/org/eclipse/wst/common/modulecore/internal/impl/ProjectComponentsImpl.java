@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ProjectComponentsImpl.java,v 1.2 2005/03/15 02:12:30 cbridgha Exp $
+ * $Id: ProjectComponentsImpl.java,v 1.3 2005/03/15 02:36:13 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.internal.impl;
 
@@ -241,7 +241,7 @@ public class ProjectComponentsImpl extends EObjectImpl implements ProjectCompone
 			WorkbenchComponent module = null;
 			for(Iterator iter = getComponents().iterator(); iter.hasNext(); ) {
 				module = (WorkbenchComponent) iter.next();
-				modulesIndex.put(module.getDeployedName(), module);
+				modulesIndex.put(module.getName(), module);
 			}
 		}
 		isIndexed = true;

@@ -58,7 +58,7 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
 // 			
 //			for (int resourceIndex = 0; resourceIndex < resources.length; resourceIndex++) {
 			if(resources.length == 1) {
-				if (resources[0].getDeployedPath().equals(aModuleResourceDeployPath))
+				if (resources[0].getRuntimePath().equals(aModuleResourceDeployPath))
 					return URI.createPlatformResourceURI(resources[0].getSourcePath().toString());
 				return URI.createPlatformResourceURI(resources[0].getSourcePath().appendSegments(deployPathSegment.segments()).toString());
 			}

@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentResourceImpl.java,v 1.2 2005/03/15 02:12:30 cbridgha Exp $
+ * $Id: ComponentResourceImpl.java,v 1.3 2005/03/15 02:36:13 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.internal.impl;
 
@@ -31,7 +31,7 @@ import org.eclipse.wst.common.modulecore.ComponentResource;
  * The following features are implemented:
  * <ul>
  *   <li>{@link org.eclipse.wst.common.modulecore.impl.ComponentResourceImpl#getSourcePath <em>Source Path</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.impl.ComponentResourceImpl#getDeployedPath <em>Deployed Path</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.ComponentResourceImpl#getRuntimePath <em>Runtime Path</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.impl.ComponentResourceImpl#getExclusions <em>Exclusions</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.impl.ComponentResourceImpl#getComponent <em>Component</em>}</li>
  * </ul>
@@ -61,24 +61,24 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 	protected URI sourcePath = SOURCE_PATH_EDEFAULT;
 
 	/**
-	 * The default value of the '{@link #getDeployedPath() <em>Deployed Path</em>}' attribute.
+	 * The default value of the '{@link #getRuntimePath() <em>Runtime Path</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getDeployedPath()
+	 * @see #getRuntimePath()
 	 * @generated
 	 * @ordered
 	 */
-	protected static final URI DEPLOYED_PATH_EDEFAULT = null;
+	protected static final URI RUNTIME_PATH_EDEFAULT = null;
 
 	/**
-	 * The cached value of the '{@link #getDeployedPath() <em>Deployed Path</em>}' attribute.
+	 * The cached value of the '{@link #getRuntimePath() <em>Runtime Path</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getDeployedPath()
+	 * @see #getRuntimePath()
 	 * @generated
 	 * @ordered
 	 */
-	protected URI deployedPath = DEPLOYED_PATH_EDEFAULT;
+	protected URI runtimePath = RUNTIME_PATH_EDEFAULT;
 
 	/**
 	 * The cached value of the '{@link #getExclusions() <em>Exclusions</em>}' attribute list.
@@ -139,8 +139,8 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public URI getDeployedPath() {
-		return deployedPath;
+	public URI getRuntimePath() {
+		return runtimePath;
 	}
 
 	/**
@@ -148,11 +148,11 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setDeployedPath(URI newDeployedPath) {
-		URI oldDeployedPath = deployedPath;
-		deployedPath = newDeployedPath;
+	public void setRuntimePath(URI newRuntimePath) {
+		URI oldRuntimePath = runtimePath;
+		runtimePath = newRuntimePath;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.COMPONENT_RESOURCE__DEPLOYED_PATH, oldDeployedPath, deployedPath));
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.COMPONENT_RESOURCE__RUNTIME_PATH, oldRuntimePath, runtimePath));
 	}
 
 	/**
@@ -262,8 +262,8 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 		switch (eDerivedStructuralFeatureID(eFeature)) {
 			case ModuleCorePackage.COMPONENT_RESOURCE__SOURCE_PATH:
 				return getSourcePath();
-			case ModuleCorePackage.COMPONENT_RESOURCE__DEPLOYED_PATH:
-				return getDeployedPath();
+			case ModuleCorePackage.COMPONENT_RESOURCE__RUNTIME_PATH:
+				return getRuntimePath();
 			case ModuleCorePackage.COMPONENT_RESOURCE__EXCLUSIONS:
 				return getExclusions();
 			case ModuleCorePackage.COMPONENT_RESOURCE__COMPONENT:
@@ -282,8 +282,8 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 			case ModuleCorePackage.COMPONENT_RESOURCE__SOURCE_PATH:
 				setSourcePath((URI)newValue);
 				return;
-			case ModuleCorePackage.COMPONENT_RESOURCE__DEPLOYED_PATH:
-				setDeployedPath((URI)newValue);
+			case ModuleCorePackage.COMPONENT_RESOURCE__RUNTIME_PATH:
+				setRuntimePath((URI)newValue);
 				return;
 			case ModuleCorePackage.COMPONENT_RESOURCE__EXCLUSIONS:
 				getExclusions().clear();
@@ -306,8 +306,8 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 			case ModuleCorePackage.COMPONENT_RESOURCE__SOURCE_PATH:
 				setSourcePath(SOURCE_PATH_EDEFAULT);
 				return;
-			case ModuleCorePackage.COMPONENT_RESOURCE__DEPLOYED_PATH:
-				setDeployedPath(DEPLOYED_PATH_EDEFAULT);
+			case ModuleCorePackage.COMPONENT_RESOURCE__RUNTIME_PATH:
+				setRuntimePath(RUNTIME_PATH_EDEFAULT);
 				return;
 			case ModuleCorePackage.COMPONENT_RESOURCE__EXCLUSIONS:
 				getExclusions().clear();
@@ -328,8 +328,8 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 		switch (eDerivedStructuralFeatureID(eFeature)) {
 			case ModuleCorePackage.COMPONENT_RESOURCE__SOURCE_PATH:
 				return SOURCE_PATH_EDEFAULT == null ? sourcePath != null : !SOURCE_PATH_EDEFAULT.equals(sourcePath);
-			case ModuleCorePackage.COMPONENT_RESOURCE__DEPLOYED_PATH:
-				return DEPLOYED_PATH_EDEFAULT == null ? deployedPath != null : !DEPLOYED_PATH_EDEFAULT.equals(deployedPath);
+			case ModuleCorePackage.COMPONENT_RESOURCE__RUNTIME_PATH:
+				return RUNTIME_PATH_EDEFAULT == null ? runtimePath != null : !RUNTIME_PATH_EDEFAULT.equals(runtimePath);
 			case ModuleCorePackage.COMPONENT_RESOURCE__EXCLUSIONS:
 				return exclusions != null && !exclusions.isEmpty();
 			case ModuleCorePackage.COMPONENT_RESOURCE__COMPONENT:
@@ -349,8 +349,8 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (sourcePath: ");
 		result.append(sourcePath);
-		result.append(", deployedPath: ");
-		result.append(deployedPath);
+		result.append(", runtimePath: ");
+		result.append(runtimePath);
 		result.append(", exclusions: ");
 		result.append(exclusions);
 		result.append(')');

@@ -6,8 +6,8 @@
   <eClassifiers xsi:type="ecore:EClass" name="WorkbenchComponent">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="handle" lowerBound="1"
         eType="#//URI"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="deployedName" lowerBound="1"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral=""/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+        defaultValueLiteral=""/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="resources" unique="false"
         upperBound="-1" eType="#//ComponentResource" containment="true" eOpposite="#//ComponentResource/component"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="componentType" unique="false"
@@ -23,7 +23,7 @@
   <eClassifiers xsi:type="ecore:EClass" name="ComponentResource">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="sourcePath" lowerBound="1"
         eType="#//URI"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="deployedPath" lowerBound="1"
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="runtimePath" lowerBound="1"
         eType="#//URI"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="exclusions" upperBound="-1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral=""/>
@@ -49,7 +49,7 @@
   <eClassifiers xsi:type="ecore:EClass" name="ReferencedComponent">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="handle" lowerBound="1"
         eType="#//URI"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="deployedPath" lowerBound="1"
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="runtimePath" lowerBound="1"
         eType="#//URI"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="dependencyType" lowerBound="1"
         eType="#//DependencyType"/>

@@ -12,7 +12,7 @@
       <children xmi:id="_kP328JTYEdmy2onHYKlABg" type="Note" sourceEdges="_kQilYpTYEdmy2onHYKlABg">
         <children xmi:id="_kP99kJTYEdmy2onHYKlABg" type="DiagramName"/>
         <children xmi:id="_kP99kZTYEdmy2onHYKlABg" type="Description"/>
-        <styles xmi:type="notation:ShapeStyle" xmi:id="_kP328ZTYEdmy2onHYKlABg" description="The ReferencedComponent handle must be resolvable to a WorkbenchComponent.&#xD;&#xA;&#xD;&#xA;The deployedPath specifies the location of the ReferencedComponent in the runtime structure of the containing WorkbenchComponent.&#xD;&#xA;&#xD;&#xA;The dependencyType specifies how the ReferencedComponent is assembled within the containing WorkbenchComponent." fillColor="13369343" lineColor="6737151"/>
+        <styles xmi:type="notation:ShapeStyle" xmi:id="_kP328ZTYEdmy2onHYKlABg" description="The ReferencedComponent handle must be resolvable to a WorkbenchComponent.&#xD;&#xA;&#xD;&#xA;The runtimePath specifies the location of the ReferencedComponent in the runtime structure of the containing WorkbenchComponent.&#xD;&#xA;&#xD;&#xA;The dependencyType specifies how the ReferencedComponent is assembled within the containing WorkbenchComponent." fillColor="13369343" lineColor="6737151"/>
         <layoutConstraint xmi:type="notation:Bounds" xmi:id="_kP328pTYEdmy2onHYKlABg" x="19398" y="636" width="6934" height="4343"/>
       </children>
       <children xmi:id="_kQEEMJTYEdmy2onHYKlABg" type="Note" sourceEdges="_kQWYOZTYEdmy2onHYKlABg">
@@ -480,7 +480,7 @@
   </packageImport>
   <ownedMember xmi:type="uml:Class" xmi:id="_3A0B2474025F41E3DF5801FA" name="WorkbenchComponent">
     <ownedAttribute xmi:id="_3A0B2474025F41EC1D71015D" name="handle" type="_3A0B2474025F41EC26DA027A"/>
-    <ownedAttribute xmi:id="_3A0B2474025F4201471D0208" name="deployedName">
+    <ownedAttribute xmi:id="_3A0B2474025F4201471D0208" name="name">
       <type xmi:type="uml:PrimitiveType" href="pathmap://UML2_LIBRARIES/UML2PrimitiveTypes.library.uml2#_IXlH8a86EdieaYgxtVWN8Q"/>
     </ownedAttribute>
     <ownedAttribute xmi:id="_3A0B2474025F41E3E14D031D" name="resources" type="_3A0B2474025F41E3DF670039" isUnique="false" association="_3A0B2474025F41E3E14B01E3" aggregation="composite">
@@ -498,7 +498,7 @@
   </ownedMember>
   <ownedMember xmi:type="uml:Class" xmi:id="_3A0B2474025F41E3DF670039" name="ComponentResource">
     <ownedAttribute xmi:id="_3A0B2474025F41E3DF970128" name="sourcePath" type="_3A0B2474025F41EC26DA027A"/>
-    <ownedAttribute xmi:id="_3A0B2474025F41EEC640025B" name="deployedPath" type="_3A0B2474025F41EC26DA027A"/>
+    <ownedAttribute xmi:id="_3A0B2474025F41EEC640025B" name="runtimePath" type="_3A0B2474025F41EC26DA027A"/>
     <ownedAttribute xmi:id="_3A0B2474025F41E3DF9E011E" name="exclusions">
       <type xmi:type="uml:PrimitiveType" href="pathmap://UML2_LIBRARIES/UML2PrimitiveTypes.library.uml2#_IXlH8a86EdieaYgxtVWN8Q"/>
       <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_kN3ExpTYEdmy2onHYKlABg" value="-1"/>
@@ -544,7 +544,7 @@
   </ownedMember>
   <ownedMember xmi:type="uml:Class" xmi:id="_3A0B2474025F41F6C24B023D" name="ReferencedComponent">
     <ownedAttribute xmi:id="_3A0B2474025F420145F001C9" name="handle" type="_3A0B2474025F41EC26DA027A"/>
-    <ownedAttribute xmi:id="_3A0B2474025F420145FA0015" name="deployedPath" type="_3A0B2474025F41EC26DA027A"/>
+    <ownedAttribute xmi:id="_3A0B2474025F420145FA0015" name="runtimePath" type="_3A0B2474025F41EC26DA027A"/>
     <ownedAttribute xmi:id="_3A0B2474025F42039243016E" name="dependencyType" type="_3A0B2474025F420394F50185"/>
   </ownedMember>
   <ownedMember xmi:type="uml:Enumeration" xmi:id="_3A0B2474025F420394F50185" name="DependencyType">

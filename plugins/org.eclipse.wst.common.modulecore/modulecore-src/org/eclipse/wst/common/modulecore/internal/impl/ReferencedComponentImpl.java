@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ReferencedComponentImpl.java,v 1.2 2005/03/15 02:12:30 cbridgha Exp $
+ * $Id: ReferencedComponentImpl.java,v 1.3 2005/03/15 02:36:13 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.internal.impl;
 
@@ -24,7 +24,7 @@ import org.eclipse.wst.common.modulecore.ModuleCorePackage;
  * The following features are implemented:
  * <ul>
  *   <li>{@link org.eclipse.wst.common.modulecore.impl.ReferencedComponentImpl#getHandle <em>Handle</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.impl.ReferencedComponentImpl#getDeployedPath <em>Deployed Path</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.ReferencedComponentImpl#getRuntimePath <em>Runtime Path</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.impl.ReferencedComponentImpl#getDependencyType <em>Dependency Type</em>}</li>
  * </ul>
  * </p>
@@ -53,24 +53,24 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 	protected URI handle = HANDLE_EDEFAULT;
 
 	/**
-	 * The default value of the '{@link #getDeployedPath() <em>Deployed Path</em>}' attribute.
+	 * The default value of the '{@link #getRuntimePath() <em>Runtime Path</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getDeployedPath()
+	 * @see #getRuntimePath()
 	 * @generated
 	 * @ordered
 	 */
-	protected static final URI DEPLOYED_PATH_EDEFAULT = null;
+	protected static final URI RUNTIME_PATH_EDEFAULT = null;
 
 	/**
-	 * The cached value of the '{@link #getDeployedPath() <em>Deployed Path</em>}' attribute.
+	 * The cached value of the '{@link #getRuntimePath() <em>Runtime Path</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getDeployedPath()
+	 * @see #getRuntimePath()
 	 * @generated
 	 * @ordered
 	 */
-	protected URI deployedPath = DEPLOYED_PATH_EDEFAULT;
+	protected URI runtimePath = RUNTIME_PATH_EDEFAULT;
 
 	/**
 	 * The default value of the '{@link #getDependencyType() <em>Dependency Type</em>}' attribute.
@@ -136,8 +136,8 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public URI getDeployedPath() {
-		return deployedPath;
+	public URI getRuntimePath() {
+		return runtimePath;
 	}
 
 	/**
@@ -145,11 +145,11 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setDeployedPath(URI newDeployedPath) {
-		URI oldDeployedPath = deployedPath;
-		deployedPath = newDeployedPath;
+	public void setRuntimePath(URI newRuntimePath) {
+		URI oldRuntimePath = runtimePath;
+		runtimePath = newRuntimePath;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.REFERENCED_COMPONENT__DEPLOYED_PATH, oldDeployedPath, deployedPath));
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.REFERENCED_COMPONENT__RUNTIME_PATH, oldRuntimePath, runtimePath));
 	}
 
 	/**
@@ -182,8 +182,8 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 		switch (eDerivedStructuralFeatureID(eFeature)) {
 			case ModuleCorePackage.REFERENCED_COMPONENT__HANDLE:
 				return getHandle();
-			case ModuleCorePackage.REFERENCED_COMPONENT__DEPLOYED_PATH:
-				return getDeployedPath();
+			case ModuleCorePackage.REFERENCED_COMPONENT__RUNTIME_PATH:
+				return getRuntimePath();
 			case ModuleCorePackage.REFERENCED_COMPONENT__DEPENDENCY_TYPE:
 				return getDependencyType();
 		}
@@ -200,8 +200,8 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 			case ModuleCorePackage.REFERENCED_COMPONENT__HANDLE:
 				setHandle((URI)newValue);
 				return;
-			case ModuleCorePackage.REFERENCED_COMPONENT__DEPLOYED_PATH:
-				setDeployedPath((URI)newValue);
+			case ModuleCorePackage.REFERENCED_COMPONENT__RUNTIME_PATH:
+				setRuntimePath((URI)newValue);
 				return;
 			case ModuleCorePackage.REFERENCED_COMPONENT__DEPENDENCY_TYPE:
 				setDependencyType((DependencyType)newValue);
@@ -220,8 +220,8 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 			case ModuleCorePackage.REFERENCED_COMPONENT__HANDLE:
 				setHandle(HANDLE_EDEFAULT);
 				return;
-			case ModuleCorePackage.REFERENCED_COMPONENT__DEPLOYED_PATH:
-				setDeployedPath(DEPLOYED_PATH_EDEFAULT);
+			case ModuleCorePackage.REFERENCED_COMPONENT__RUNTIME_PATH:
+				setRuntimePath(RUNTIME_PATH_EDEFAULT);
 				return;
 			case ModuleCorePackage.REFERENCED_COMPONENT__DEPENDENCY_TYPE:
 				setDependencyType(DEPENDENCY_TYPE_EDEFAULT);
@@ -239,8 +239,8 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 		switch (eDerivedStructuralFeatureID(eFeature)) {
 			case ModuleCorePackage.REFERENCED_COMPONENT__HANDLE:
 				return HANDLE_EDEFAULT == null ? handle != null : !HANDLE_EDEFAULT.equals(handle);
-			case ModuleCorePackage.REFERENCED_COMPONENT__DEPLOYED_PATH:
-				return DEPLOYED_PATH_EDEFAULT == null ? deployedPath != null : !DEPLOYED_PATH_EDEFAULT.equals(deployedPath);
+			case ModuleCorePackage.REFERENCED_COMPONENT__RUNTIME_PATH:
+				return RUNTIME_PATH_EDEFAULT == null ? runtimePath != null : !RUNTIME_PATH_EDEFAULT.equals(runtimePath);
 			case ModuleCorePackage.REFERENCED_COMPONENT__DEPENDENCY_TYPE:
 				return dependencyType != DEPENDENCY_TYPE_EDEFAULT;
 		}
@@ -258,8 +258,8 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (handle: ");
 		result.append(handle);
-		result.append(", deployedPath: ");
-		result.append(deployedPath);
+		result.append(", runtimePath: ");
+		result.append(runtimePath);
 		result.append(", dependencyType: ");
 		result.append(dependencyType);
 		result.append(')');

@@ -24,7 +24,7 @@ import org.eclipse.emf.ecore.EObject;
  * The following features are supported:
  * <ul>
  *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getHandle <em>Handle</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getDeployedName <em>Deployed Name</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getName <em>Name</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getResources <em>Resources</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getComponentType <em>Component Type</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getReferencedComponents <em>Referenced Components</em>}</li>
@@ -63,31 +63,31 @@ public interface WorkbenchComponent extends EObject{
 	void setHandle(URI value);
 
 	/**
-	 * Returns the value of the '<em><b>Deployed Name</b></em>' attribute.
+	 * Returns the value of the '<em><b>Name</b></em>' attribute.
 	 * The default value is <code>""</code>.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Deployed Name</em>' attribute isn't clear,
+	 * If the meaning of the '<em>Name</em>' attribute isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Deployed Name</em>' attribute.
-	 * @see #setDeployedName(String)
-	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchComponent_DeployedName()
+	 * @return the value of the '<em>Name</em>' attribute.
+	 * @see #setName(String)
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchComponent_Name()
 	 * @model default="" required="true"
 	 * @generated
 	 */
-	String getDeployedName();
+	String getName();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getDeployedName <em>Deployed Name</em>}' attribute.
+	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getName <em>Name</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Deployed Name</em>' attribute.
-	 * @see #getDeployedName()
+	 * @param value the new value of the '<em>Name</em>' attribute.
+	 * @see #getName()
 	 * @generated
 	 */
-	void setDeployedName(String value);
+	void setName(String value);
 
 	/**
 	 * Returns the value of the '<em><b>Resources</b></em>' containment reference list.

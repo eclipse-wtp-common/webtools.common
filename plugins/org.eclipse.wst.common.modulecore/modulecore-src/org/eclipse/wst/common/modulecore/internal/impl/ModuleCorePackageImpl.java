@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCorePackageImpl.java,v 1.3 2005/03/15 02:12:30 cbridgha Exp $
+ * $Id: ModuleCorePackageImpl.java,v 1.4 2005/03/15 02:36:13 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.internal.impl;
 
@@ -177,7 +177,7 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getWorkbenchComponent_DeployedName() {
+	public EAttribute getWorkbenchComponent_Name() {
 		return (EAttribute)workbenchComponentEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -231,7 +231,7 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getComponentResource_DeployedPath() {
+	public EAttribute getComponentResource_RuntimePath() {
 		return (EAttribute)componentResourceEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -348,7 +348,7 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getReferencedComponent_DeployedPath() {
+	public EAttribute getReferencedComponent_RuntimePath() {
 		return (EAttribute)referencedComponentEClass.getEStructuralFeatures().get(1);
 	}
 
@@ -436,14 +436,14 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 		// Create classes and their features
 		workbenchComponentEClass = createEClass(WORKBENCH_COMPONENT);
 		createEAttribute(workbenchComponentEClass, WORKBENCH_COMPONENT__HANDLE);
-		createEAttribute(workbenchComponentEClass, WORKBENCH_COMPONENT__DEPLOYED_NAME);
+		createEAttribute(workbenchComponentEClass, WORKBENCH_COMPONENT__NAME);
 		createEReference(workbenchComponentEClass, WORKBENCH_COMPONENT__RESOURCES);
 		createEReference(workbenchComponentEClass, WORKBENCH_COMPONENT__COMPONENT_TYPE);
 		createEReference(workbenchComponentEClass, WORKBENCH_COMPONENT__REFERENCED_COMPONENTS);
 
 		componentResourceEClass = createEClass(COMPONENT_RESOURCE);
 		createEAttribute(componentResourceEClass, COMPONENT_RESOURCE__SOURCE_PATH);
-		createEAttribute(componentResourceEClass, COMPONENT_RESOURCE__DEPLOYED_PATH);
+		createEAttribute(componentResourceEClass, COMPONENT_RESOURCE__RUNTIME_PATH);
 		createEAttribute(componentResourceEClass, COMPONENT_RESOURCE__EXCLUSIONS);
 		createEReference(componentResourceEClass, COMPONENT_RESOURCE__COMPONENT);
 
@@ -459,7 +459,7 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 
 		referencedComponentEClass = createEClass(REFERENCED_COMPONENT);
 		createEAttribute(referencedComponentEClass, REFERENCED_COMPONENT__HANDLE);
-		createEAttribute(referencedComponentEClass, REFERENCED_COMPONENT__DEPLOYED_PATH);
+		createEAttribute(referencedComponentEClass, REFERENCED_COMPONENT__RUNTIME_PATH);
 		createEAttribute(referencedComponentEClass, REFERENCED_COMPONENT__DEPENDENCY_TYPE);
 
 		projectComponentsEClass = createEClass(PROJECT_COMPONENTS);
@@ -501,14 +501,14 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 		// Initialize classes and features; add operations and parameters
 		initEClass(workbenchComponentEClass, WorkbenchComponent.class, "WorkbenchComponent", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getWorkbenchComponent_Handle(), this.getURI(), "handle", null, 1, 1, WorkbenchComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getWorkbenchComponent_DeployedName(), ecorePackage.getEString(), "deployedName", "", 1, 1, WorkbenchComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getWorkbenchComponent_Name(), ecorePackage.getEString(), "name", "", 1, 1, WorkbenchComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getWorkbenchComponent_Resources(), this.getComponentResource(), this.getComponentResource_Component(), "resources", null, 0, -1, WorkbenchComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getWorkbenchComponent_ComponentType(), this.getComponentType(), null, "componentType", null, 1, 1, WorkbenchComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getWorkbenchComponent_ReferencedComponents(), this.getReferencedComponent(), null, "referencedComponents", null, 0, -1, WorkbenchComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(componentResourceEClass, ComponentResource.class, "ComponentResource", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getComponentResource_SourcePath(), this.getURI(), "sourcePath", null, 1, 1, ComponentResource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getComponentResource_DeployedPath(), this.getURI(), "deployedPath", null, 1, 1, ComponentResource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getComponentResource_RuntimePath(), this.getURI(), "runtimePath", null, 1, 1, ComponentResource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getComponentResource_Exclusions(), ecorePackage.getEString(), "exclusions", "", 0, -1, ComponentResource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getComponentResource_Component(), this.getWorkbenchComponent(), this.getWorkbenchComponent_Resources(), "component", null, 1, 1, ComponentResource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
@@ -524,7 +524,7 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 
 		initEClass(referencedComponentEClass, ReferencedComponent.class, "ReferencedComponent", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getReferencedComponent_Handle(), this.getURI(), "handle", null, 1, 1, ReferencedComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getReferencedComponent_DeployedPath(), this.getURI(), "deployedPath", null, 1, 1, ReferencedComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getReferencedComponent_RuntimePath(), this.getURI(), "runtimePath", null, 1, 1, ReferencedComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getReferencedComponent_DependencyType(), this.getDependencyType(), "dependencyType", null, 1, 1, ReferencedComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(projectComponentsEClass, ProjectComponents.class, "ProjectComponents", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);

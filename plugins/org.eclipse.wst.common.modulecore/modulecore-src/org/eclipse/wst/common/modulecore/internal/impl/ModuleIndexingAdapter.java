@@ -39,7 +39,7 @@ public class ModuleIndexingAdapter extends AdapterImpl {
 					switch (aNotification.getEventType()) {
 						case Notification.ADD :
 							WorkbenchComponent module = (WorkbenchComponent) aNotification.getNewValue();
-							projectModules.getModulesIndex().put(module.getDeployedName(), module);
+							projectModules.getModulesIndex().put(module.getName(), module);
 					}
 				} 
 			}

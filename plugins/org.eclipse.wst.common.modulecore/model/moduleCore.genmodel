@@ -16,14 +16,14 @@
     <genDataTypes ecoreDataType="moduleCore.ecore#//URI"/>
     <genClasses ecoreClass="moduleCore.ecore#//WorkbenchComponent">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//WorkbenchComponent/handle"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//WorkbenchComponent/deployedName"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//WorkbenchComponent/name"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference moduleCore.ecore#//WorkbenchComponent/resources"/>
       <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//WorkbenchComponent/componentType"/>
       <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//WorkbenchComponent/referencedComponents"/>
     </genClasses>
     <genClasses ecoreClass="moduleCore.ecore#//ComponentResource">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ComponentResource/sourcePath"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ComponentResource/deployedPath"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ComponentResource/runtimePath"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ComponentResource/exclusions"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//ComponentResource/component"/>
     </genClasses>
@@ -39,7 +39,7 @@
     </genClasses>
     <genClasses ecoreClass="moduleCore.ecore#//ReferencedComponent">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ReferencedComponent/handle"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ReferencedComponent/deployedPath"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ReferencedComponent/runtimePath"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ReferencedComponent/dependencyType"/>
     </genClasses>
     <genClasses ecoreClass="moduleCore.ecore#//ProjectComponents">

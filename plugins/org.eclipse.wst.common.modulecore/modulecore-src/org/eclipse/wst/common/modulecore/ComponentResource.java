@@ -1,7 +1,7 @@
 /**
  * <copyright></copyright>
  * 
- * $Id: ComponentResource.java,v 1.2 2005/03/15 02:12:30 cbridgha Exp $
+ * $Id: ComponentResource.java,v 1.3 2005/03/15 02:36:13 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -28,7 +28,7 @@ import org.eclipse.emf.ecore.EObject;
  * The following features are supported:
  * <ul>
  *   <li>{@link org.eclipse.wst.common.modulecore.ComponentResource#getSourcePath <em>Source Path</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.ComponentResource#getDeployedPath <em>Deployed Path</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.ComponentResource#getRuntimePath <em>Runtime Path</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.ComponentResource#getExclusions <em>Exclusions</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.ComponentResource#getComponent <em>Component</em>}</li>
  * </ul>
@@ -66,30 +66,30 @@ public interface ComponentResource extends EObject{
 	void setSourcePath(URI value);
 
 	/**
-	 * Returns the value of the '<em><b>Deployed Path</b></em>' attribute.
-	 * <!-- begin-user-doc
-	 * -->
+	 * Returns the value of the '<em><b>Runtime Path</b></em>' attribute.
+	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Deployed Path</em>' attribute isn't clear, there really should
-	 * be more of a description here...
+	 * If the meaning of the '<em>Runtime Path</em>' attribute isn't clear,
+	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Deployed Path</em>' attribute.
-	 * @see #setDeployedPath(URI)
-	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getComponentResource_DeployedPath()
+	 * @return the value of the '<em>Runtime Path</em>' attribute.
+	 * @see #setRuntimePath(URI)
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getComponentResource_RuntimePath()
 	 * @model dataType="org.eclipse.wst.common.modulecore.URI" required="true"
 	 * @generated
 	 */
-	URI getDeployedPath();
+	URI getRuntimePath();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.ComponentResource#getDeployedPath <em>Deployed Path</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Deployed Path</em>' attribute.
-	 * @see #getDeployedPath()
+	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.ComponentResource#getRuntimePath <em>Runtime Path</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Runtime Path</em>' attribute.
+	 * @see #getRuntimePath()
 	 * @generated
 	 */
-	void setDeployedPath(URI value);
+	void setRuntimePath(URI value);
 
 	/**
 	 * Returns the value of the '<em><b>Exclusions</b></em>' attribute list.

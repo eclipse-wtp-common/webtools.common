@@ -43,7 +43,7 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 		result.setChildren(new Translator[] {
 			IDTranslator.INSTANCE,
 			//new Translator(HANDLE, MODULE_CORE_PKG.getWorkbenchComponent_Handle(), DOM_ATTRIBUTE), REMOVED SINCE HANDLE SHOULD NOW BE DERIVED -MDE
-			new Translator(DEPLOY_NAME, MODULE_CORE_PKG.getWorkbenchComponent_DeployedName(), DOM_ATTRIBUTE), 
+			new Translator(DEPLOY_NAME, MODULE_CORE_PKG.getWorkbenchComponent_Name(), DOM_ATTRIBUTE), 
 			createModuleTypeTranslator(MODULE_CORE_PKG.getWorkbenchComponent_ComponentType()),
 			createWBResourceTranslator(MODULE_CORE_PKG.getWorkbenchComponent_Resources()),
 			createDependentModuleTranslator(MODULE_CORE_PKG.getWorkbenchComponent_ReferencedComponents())
@@ -62,7 +62,7 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 	private static Translator createDependentModuleTranslator(EStructuralFeature afeature) {
 		GenericTranslator result = new GenericTranslator(DEPENDENT_MODULE, afeature);
 		result.setChildren(new Translator[] { 
-			new URITranslator(DEPLOY_PATH, MODULE_CORE_PKG.getReferencedComponent_DeployedPath(), DOM_ATTRIBUTE),
+			new URITranslator(DEPLOY_PATH, MODULE_CORE_PKG.getReferencedComponent_RuntimePath(), DOM_ATTRIBUTE),
 			new URITranslator(HANDLE, MODULE_CORE_PKG.getReferencedComponent_Handle(), DOM_ATTRIBUTE),
 			new DependencyTypeTranslator()
 		});
@@ -74,7 +74,7 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 		result.setChildren(new Translator[] {
 			IDTranslator.INSTANCE,
 			new URITranslator(SOURCE_PATH, MODULE_CORE_PKG.getComponentResource_SourcePath(), DOM_ATTRIBUTE),
-			new URITranslator(DEPLOY_PATH, MODULE_CORE_PKG.getComponentResource_DeployedPath(), DOM_ATTRIBUTE),
+			new URITranslator(DEPLOY_PATH, MODULE_CORE_PKG.getComponentResource_RuntimePath(), DOM_ATTRIBUTE),
 			new Translator(EXCLUSIONS, MODULE_CORE_PKG.getComponentResource_Exclusions())
 		});
 		return result;

@@ -222,7 +222,7 @@ public class ModuleCore implements IEditModelHandler {
 		} catch (UnresolveableURIException e) {
 		}
 		if (project != null)
-			return project.getFolder(new Path(DEPLOYABLES_ROOT + aWorkbenchModule.getDeployedName()));
+			return project.getFolder(new Path(DEPLOYABLES_ROOT + aWorkbenchModule.getName()));
 		return null;
 	}
 
@@ -400,7 +400,7 @@ public class ModuleCore implements IEditModelHandler {
 		if (isReadOnly)
 			throwAttemptedReadOnlyModification();
 		WorkbenchComponent module = MODULE_FACTORY.createWorkbenchComponent();
-		module.setDeployedName(aDeployName);
+		module.setName(aDeployName);
 		getModuleModelRoot().getComponents().add(module);
 		return module;
 	}

@@ -82,13 +82,13 @@ public interface ModuleCorePackage extends EPackage{
 	int WORKBENCH_COMPONENT__HANDLE = 0;
 
 	/**
-	 * The feature id for the '<em><b>Deployed Name</b></em>' attribute.
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int WORKBENCH_COMPONENT__DEPLOYED_NAME = 1;
+	int WORKBENCH_COMPONENT__NAME = 1;
 
 	/**
 	 * The feature id for the '<em><b>Resources</b></em>' containment reference list.
@@ -146,13 +146,13 @@ public interface ModuleCorePackage extends EPackage{
 	int COMPONENT_RESOURCE__SOURCE_PATH = 0;
 
 	/**
-	 * The feature id for the '<em><b>Deployed Path</b></em>' attribute.
+	 * The feature id for the '<em><b>Runtime Path</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int COMPONENT_RESOURCE__DEPLOYED_PATH = 1;
+	int COMPONENT_RESOURCE__RUNTIME_PATH = 1;
 
 	/**
 	 * The feature id for the '<em><b>Exclusions</b></em>' attribute list.
@@ -293,13 +293,13 @@ public interface ModuleCorePackage extends EPackage{
 	int REFERENCED_COMPONENT__HANDLE = 0;
 
 	/**
-	 * The feature id for the '<em><b>Deployed Path</b></em>' attribute.
+	 * The feature id for the '<em><b>Runtime Path</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int REFERENCED_COMPONENT__DEPLOYED_PATH = 1;
+	int REFERENCED_COMPONENT__RUNTIME_PATH = 1;
 
 	/**
 	 * The feature id for the '<em><b>Dependency Type</b></em>' attribute.
@@ -399,15 +399,15 @@ public interface ModuleCorePackage extends EPackage{
 	EAttribute getWorkbenchComponent_Handle();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getDeployedName <em>Deployed Name</em>}'.
+	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getName <em>Name</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Deployed Name</em>'.
-	 * @see org.eclipse.wst.common.modulecore.WorkbenchComponent#getDeployedName()
+	 * @return the meta object for the attribute '<em>Name</em>'.
+	 * @see org.eclipse.wst.common.modulecore.WorkbenchComponent#getName()
 	 * @see #getWorkbenchComponent()
 	 * @generated
 	 */
-	EAttribute getWorkbenchComponent_DeployedName();
+	EAttribute getWorkbenchComponent_Name();
 
 	/**
 	 * Returns the meta object for the containment reference list '{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getResources <em>Resources</em>}'.
@@ -464,15 +464,15 @@ public interface ModuleCorePackage extends EPackage{
 	EAttribute getComponentResource_SourcePath();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.ComponentResource#getDeployedPath <em>Deployed Path</em>}'.
+	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.ComponentResource#getRuntimePath <em>Runtime Path</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Deployed Path</em>'.
-	 * @see org.eclipse.wst.common.modulecore.ComponentResource#getDeployedPath()
+	 * @return the meta object for the attribute '<em>Runtime Path</em>'.
+	 * @see org.eclipse.wst.common.modulecore.ComponentResource#getRuntimePath()
 	 * @see #getComponentResource()
 	 * @generated
 	 */
-	EAttribute getComponentResource_DeployedPath();
+	EAttribute getComponentResource_RuntimePath();
 
 	/**
 	 * Returns the meta object for the attribute list '{@link org.eclipse.wst.common.modulecore.ComponentResource#getExclusions <em>Exclusions</em>}'.
@@ -604,15 +604,15 @@ public interface ModuleCorePackage extends EPackage{
 	EAttribute getReferencedComponent_Handle();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.ReferencedComponent#getDeployedPath <em>Deployed Path</em>}'.
+	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.ReferencedComponent#getRuntimePath <em>Runtime Path</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Deployed Path</em>'.
-	 * @see org.eclipse.wst.common.modulecore.ReferencedComponent#getDeployedPath()
+	 * @return the meta object for the attribute '<em>Runtime Path</em>'.
+	 * @see org.eclipse.wst.common.modulecore.ReferencedComponent#getRuntimePath()
 	 * @see #getReferencedComponent()
 	 * @generated
 	 */
-	EAttribute getReferencedComponent_DeployedPath();
+	EAttribute getReferencedComponent_RuntimePath();
 
 	/**
 	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.ReferencedComponent#getDependencyType <em>Dependency Type</em>}'.

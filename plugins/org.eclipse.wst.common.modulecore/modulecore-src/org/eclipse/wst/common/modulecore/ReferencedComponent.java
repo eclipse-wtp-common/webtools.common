@@ -33,7 +33,7 @@ import org.eclipse.emf.ecore.EObject;
  * The following features are supported:
  * <ul>
  *   <li>{@link org.eclipse.wst.common.modulecore.ReferencedComponent#getHandle <em>Handle</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.ReferencedComponent#getDeployedPath <em>Deployed Path</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.ReferencedComponent#getRuntimePath <em>Runtime Path</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.ReferencedComponent#getDependencyType <em>Dependency Type</em>}</li>
  * </ul>
  * </p>
@@ -69,30 +69,30 @@ public interface ReferencedComponent extends EObject{
 	void setHandle(URI value);
 
 	/**
-	 * Returns the value of the '<em><b>Deployed Path</b></em>' attribute.
-	 * <!-- begin-user-doc
-	 * -->
+	 * Returns the value of the '<em><b>Runtime Path</b></em>' attribute.
+	 * <!-- begin-user-doc -->
 	 * <p>
-	 * The deployedPath specifies the location of the ReferencedComponent's contents relative to the
-	 * containing {@see WorkbenchComponent}.
+	 * If the meaning of the '<em>Runtime Path</em>' attribute isn't clear,
+	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Deployed Path</em>' attribute.
-	 * @see #setDeployedPath(URI)
-	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getReferencedComponent_DeployedPath()
+	 * @return the value of the '<em>Runtime Path</em>' attribute.
+	 * @see #setRuntimePath(URI)
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getReferencedComponent_RuntimePath()
 	 * @model dataType="org.eclipse.wst.common.modulecore.URI" required="true"
 	 * @generated
 	 */
-	URI getDeployedPath();
+	URI getRuntimePath();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.ReferencedComponent#getDeployedPath <em>Deployed Path</em>}' attribute.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Deployed Path</em>' attribute.
-	 * @see #getDeployedPath()
+	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.ReferencedComponent#getRuntimePath <em>Runtime Path</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Runtime Path</em>' attribute.
+	 * @see #getRuntimePath()
 	 * @generated
 	 */
-	void setDeployedPath(URI value);
+	void setRuntimePath(URI value);
 
 	/**
 	 * Returns the value of the '<em><b>Dependency Type</b></em>' attribute. The literals are

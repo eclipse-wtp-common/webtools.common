@@ -114,7 +114,7 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
         if (!isSet(DEPENDENT_MODULE))
             return null;
         ReferencedComponent depModule = getDependentModule();
-        return depModule.getDeployedPath();
+        return depModule.getRuntimePath();
     }
 
     private URI getHandleValue() {
