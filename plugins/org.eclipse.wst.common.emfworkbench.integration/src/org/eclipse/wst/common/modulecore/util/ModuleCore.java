@@ -61,11 +61,11 @@ public class ModuleCore {
 		}
 	}
 	public ModuleStructuralModel getModuleStructuralModelForRead(IProject aProject, Object anAccessorKey) {
-		ModuleCoreNature aNature = ModuleCoreNature.getRegisteredRuntime(aProject);
+		ModuleCoreNature aNature = ModuleCoreNature.getModuleCoreNature(aProject);
 		return aNature.getModuleStructuralModelForRead(anAccessorKey);
 	}
 	public ModuleStructuralModel getModuleStructuralModelForWrite(IProject aProject, Object anAccessorKey) {
-		ModuleCoreNature aNature = ModuleCoreNature.getRegisteredRuntime(aProject);
+		ModuleCoreNature aNature = ModuleCoreNature.getModuleCoreNature(aProject);
 		return aNature.getModuleStructuralModelForWrite(anAccessorKey);
 	}
 	public ProjectModules getProjectModules(ModuleStructuralModel aModuleStucturalModule) {
