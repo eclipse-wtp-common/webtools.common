@@ -33,9 +33,9 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 	private static final String PROPERTY_NOT_LOCATED_ = WTPResourceHandler.getString("20"); //$NON-NLS-1$
 	private static final String NESTED_MODEL_NOT_LOCATED = WTPResourceHandler.getString("21"); //$NON-NLS-1$
 
-	private Set basePropertyNames = new HashSet();
-	private Set allPropertyNames = new HashSet();
-	private Set nestedPropertyNames; // lazily initialzed when nested models added
+	private Collection basePropertyNames;
+	private Collection allPropertyNames;
+	private Collection nestedPropertyNames; // lazily initialzed when nested models added
 	private Map propertyValues = new Hashtable();
 	private Map nestedModels;
 	private Set nestingModels;
@@ -51,15 +51,14 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		this.provider = dataModelProvider;
 		dataModelProvider.setDataModel(this);
 		String[] propertyNames = dataModelProvider.getPropertyNames();
+		HashSet properties = new HashSet();
 		for (int i = 0; null != propertyNames && i < propertyNames.length; i++) {
-			addBaseProperty(propertyNames[i]);
+			properties.add(propertyNames[i]);
 		}
+		basePropertyNames = Collections.unmodifiableCollection(properties);
+		allPropertyNames = new HashSet();
+		allPropertyNames.addAll(basePropertyNames);
 		dataModelProvider.init();
-	}
-
-	private void addBaseProperty(String propertyName) {
-		basePropertyNames.add(propertyName);
-		allPropertyNames.add(propertyName);
 	}
 
 	public boolean isBaseProperty(String propertyName) {
@@ -192,17 +191,20 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		setProperty(propertyName, value);
 	}
 
-	public void addNestedModel(String modelName, IDataModel dataModel) {
+	public boolean addNestedModel(String modelName, IDataModel dataModel) {
+		if (this == dataModel) {
+			return false;
+		}
 		if (null == nestedModels) {
 			nestedModels = new Hashtable();
+			nestedPropertyNames = new HashSet();
 		}
 		DataModelImpl nestedDataModel = (DataModelImpl) dataModel;
 		if (null == nestedDataModel.nestingModels) {
 			nestedDataModel.nestingModels = new HashSet();
-			nestedPropertyNames = new HashSet();
 		}
 		if (nestedDataModel.nestingModels.contains(this)) {
-			return;
+			return false;
 		}
 		nestedDataModel.nestingModels.add(this);
 
@@ -210,10 +212,12 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 
 		addNestedProperties(nestedDataModel.allPropertyNames);
 		nestedDataModel.addListener(this);
+		return true;
 	}
 
-	private void addNestedProperties(Set nestedProperties) {
-		boolean propertiesAdded = allPropertyNames.addAll(nestedProperties) || nestedPropertyNames.addAll(nestedProperties);
+	private void addNestedProperties(Collection nestedProperties) {
+		boolean propertiesAdded = allPropertyNames.addAll(nestedProperties);
+		propertiesAdded = nestedPropertyNames.addAll(nestedProperties) || propertiesAdded;
 		// Pass the new properties up the nesting chain
 		if (propertiesAdded && nestingModels != null) {
 			Iterator iterator = nestingModels.iterator();
@@ -224,16 +228,17 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 	}
 
 	public Collection getNestedModels() {
-		return Collections.unmodifiableCollection(nestedModels.values());
+		return nestedModels != null ? Collections.unmodifiableCollection(nestedModels.values()) : Collections.EMPTY_SET;
 	}
 
 	public Collection getNestingModels() {
-		return Collections.unmodifiableCollection(nestingModels);
+		return nestingModels != null ? Collections.unmodifiableCollection(nestingModels) : Collections.EMPTY_SET;
 	}
 
 	public IDataModel removeNestedModel(String modelName) {
-		if (modelName == null || nestedModels == null)
+		if (!isNestedModel(modelName)) {
 			return null;
+		}
 		DataModelImpl model = (DataModelImpl) nestedModels.remove(modelName);
 		model.nestingModels.remove(this);
 		removeNestedProperties(model.allPropertyNames);
@@ -244,7 +249,7 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		return model;
 	}
 
-	private void removeNestedProperties(Set nestedProperties) {
+	private void removeNestedProperties(Collection nestedProperties) {
 		Iterator iterator = nestedProperties.iterator();
 		String property = null;
 		boolean keepProperty = false;
@@ -284,8 +289,12 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		}
 	}
 
+	public boolean isNestedModel(String modelName) {
+		return modelName != null && null != nestedModels && nestedModels.containsKey(modelName);
+	}
+
 	public IDataModel getNestedModel(String modelName) {
-		IDataModel dataModel = (IDataModel) nestedModels.get(modelName);
+		IDataModel dataModel = (null != nestedModels && null != modelName) ? (IDataModel) nestedModels.get(modelName) : null;
 		if (null == dataModel) {
 			throw new RuntimeException(NESTED_MODEL_NOT_LOCATED + modelName);
 		}

@@ -196,8 +196,8 @@ public interface IDataModel {
 	 * <code>modelName</code> argument should be a unique String to identify this particular
 	 * nested IDataModel. The same String is required when accessing the nested IDataModel using
 	 * either <code>getNestedModel(String)</code> or <code>removeNestedModel(String)</code>. If
-	 * the specified nested IDataModel has already been nested under this IDataModel, then calling
-	 * this method will have no effect.F
+	 * the specified nested IDataModel has already been nested under this IDataModel or it is the
+	 * same instance as this IDataModel, then calling this method will have no effect.
 	 * </p>
 	 * <p>
 	 * Refer to <A HREF="#nestedDataModels"> <CODE>NestedDataModels</CODE> </A>.
@@ -210,10 +210,22 @@ public interface IDataModel {
 	 * 
 	 * @see #getNestedModel(String)
 	 * @see #removeNestedModel(String)
+	 * @return <code>true</code> if the nesting was successful, <code>false</code> otherwise.
 	 */
-	public void addNestedModel(String nestedModelName, IDataModel dataModel);
+	public boolean addNestedModel(String nestedModelName, IDataModel dataModel);
 
+	/**
+	 * <p>
+	 * Remove the specified nestedModel.
+	 * </p>
+	 * 
+	 * @param nestedModelName
+	 * @return the IDataModel removed, or <code>null</code> if the nested model does not exist or
+	 *         if the specified name is null.
+	 */
 	public IDataModel removeNestedModel(String nestedModelName);
+
+	public boolean isNestedModel(String nestedModelName);
 
 	public IDataModel getNestedModel(String nestedModelName);
 
