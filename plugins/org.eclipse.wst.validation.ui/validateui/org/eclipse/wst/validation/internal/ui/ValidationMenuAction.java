@@ -57,8 +57,6 @@ import com.ibm.wtp.emf.workbench.ProjectUtilities;
 /**
  * This class implements the pop-up menu item "Run Validation" When the item is selected, this
  * action triggers a validation of the project, using all configured, enabled validators.
- * 
- * 
  */
 public class ValidationMenuAction implements IActionDelegate, INavigatorActionDelegate {
 	private ISelection _currentSelection = null;
