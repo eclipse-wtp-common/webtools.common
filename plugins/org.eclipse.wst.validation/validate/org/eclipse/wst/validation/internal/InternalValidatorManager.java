@@ -23,8 +23,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.wst.validation.core.IReporter;
 import org.eclipse.wst.validation.core.Message;
+import org.eclipse.wst.validation.core.SeverityEnum;
 import org.eclipse.wst.validation.internal.operations.WorkbenchReporter;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
@@ -89,7 +89,7 @@ public final class InternalValidatorManager {
 	 */
 	public void addOperationTask(IProject project, ValidatorMetaData vmd, String messageId, String[] parms) {
 		Message message = ValidationPlugin.getMessage();
-		message.setSeverity(IReporter.LOW_SEVERITY);
+		message.setSeverity(SeverityEnum.LOW_SEVERITY);
 		message.setId(messageId);
 		message.setParams(parms);
 		message.setGroupName(OP_GROUP);
@@ -157,7 +157,7 @@ public final class InternalValidatorManager {
 
 			// Construct a fake IFile type to represent a file with this extension.
 			StringBuffer buffer = new StringBuffer(project.getName());
-			buffer.append(Path.SEPARATOR);
+			buffer.append(IPath.SEPARATOR);
 			buffer.append(fileExtension);
 			IPath path = new Path(buffer.toString());
 			IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
