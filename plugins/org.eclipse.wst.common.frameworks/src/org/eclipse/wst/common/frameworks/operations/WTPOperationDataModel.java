@@ -53,6 +53,10 @@ import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
  * Class level Strings and to use the DataModel instance class name appended with the property name
  * as the value (this should ensure uniqueness and gives a readible value when debugging).
  * 
+ * <A NAME="nestedDataModels"> <!-- --> </A>
+ * <p>
+ * <B>Nested DataModels </B>
+ * <p>
  * 
  * 
  * The WTP Wizard framework uses DataModels to hold all the properties displayed to the user through
@@ -112,18 +116,29 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 
 	private WTPOperationDataModel extendedRoot;
 
+	/**
+	 * <p>
+	 * The WTPOperationDataModel constructor. This constructor will first add the base
+	 * WTPOPerationDataModel properties (RUN_OPERATION, CACHED_DELAYED_OPERATION, and
+	 * UI_OPERATION_HANLDER). It then invokes the following:
+	 * </p>
+	 * <ol>
+	 * <li><b><code>initValidBaseProperties()</code> </b> subclasses should override this method
+	 * to add their properties using <code>addValidBaseProperty(String)</code>.</li>
+	 * <li><b><code>initNestedModels()</code> </b> subclasses should override this method to add
+	 * their nested models using <code>addNestedModel(String, WTPOperationDataModel)</code>.
+	 * </li>
+	 * <li><b><code>init()</code> </b> subclasses should override this method to perform any
+	 * final initialization.</li>
+	 * </ol>
+	 * 
+	 * @see #initValidBaseProperties()
+	 * @see #initNestedModels()
+	 * @see #init()
+	 */
 	public WTPOperationDataModel() {
 		init_internal();
 	}
-
-	/**
-	 * Subclasses should override to return a WTPOperation to execute using this DataModel instance.
-	 * The goal is for clients of to be able to simple create an instance of a particular DataModel,
-	 * set a few properties on it, and then execute the operation returned by getDefaultOperation()
-	 * 
-	 * @return an initialized and executable WTPOperation
-	 */
-	public abstract WTPOperation getDefaultOperation();
 
 	private final void init_internal() {
 		addValidBaseProperty(RUN_OPERATION);
@@ -135,32 +150,12 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	}
 
 	/**
-	 * This is for subclasses to perform any required initialization other than
-	 * initValidBaseProperties() and initNestedModels() both which will be called first.
-	 * 
-	 * @see #initValidBaseProperties()
-	 * @see #initNestedModels()
-	 */
-	protected void init() {
-	}
-
-	/**
-	 * This is for subclasses to override to initialize any nested DataModels. This will be called
-	 * before init() and after initValidBaseProperties()
-	 * 
-	 * @see #init()
-	 * @see #initValidBaseProperties()
-	 */
-	protected void initNestedModels() {
-	}
-
-	/**
-	 * This is for subclasses to invoke to initialize properties. Subclasses should call this method
-	 * from initValidBaseProperties().
+	 * Subclasses should use this method within <code>initValidBaseProperties()</code> to add
+	 * properties.
 	 * 
 	 * @param propertyName
 	 *            The property name to be added.
-	 * @see initValidBaseProperties();
+	 * @see #initValidBaseProperties()
 	 */
 	protected final void addValidBaseProperty(String propertyName) {
 		validBaseProperties.add(propertyName);
@@ -168,21 +163,58 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	}
 
 	/**
-	 * This is for subclasses to override to initialize their properties. The default implementation
-	 * of this method does nothing.
+	 * Subclasses should override this method to add properties using
+	 * <code>addValidBaseProperty(String)</code>.
 	 * 
-	 * @see init()
+	 * @see #addValidBaseProperty(String)
+	 * @see #WTPOperationDataModel()
 	 */
 	protected void initValidBaseProperties() {
 	}
 
 	/**
+	 * Subclasses should override this method to add nested DataModels using
+	 * <code>addNestedModel(String, WTPOperationDataModel)</code>.
+	 * 
+	 * @see #addNestedModel(String, WTPOperationDataModel)
+	 * @see #WTPOperationDataModel()
+	 */
+	protected void initNestedModels() {
+	}
+
+	/**
+	 * Subclasses should override this method to perform any final initialization not covered by
+	 * either <code>initValidBaseProperties()</code> or <code>initNestedModels()</code>.
+	 * 
+	 * @see #initValidBaseProperties()
+	 * @see #initNestedModels()
+	 * @see #WTPOperationDataModel()
+	 */
+	protected void init() {
+	}
+
+	/**
 	 * <p>
+	 * This method is used to nest the specified WTPOperationDataModel within this
+	 * WTPOperationDataModel. The <code>modelName</code> argument should be a unique String to
+	 * identify this particular nested DataModel. The same String is required when accessing the
+	 * nested DataModel using either <code>getNestedModel(String)</code> or
+	 * <code>removeNestedModel(String)</code>. If this is the first nested DataModel being added,
+	 * then the <code>NESTED_MODEL_VALIDATION_HOOK</code> will be added to this DataModel .
+	 * </p>
+	 * <p>
+	 * Refer to <A HREF="#nestedDataModels"> <CODE>NestedDataModels</CODE> </A>.
+	 * </p>
 	 * 
 	 * @param modelName
+	 *            the name of the WTPOperationDataModel to be nested
 	 * @param dataModel
+	 *            the WTPOperationDataModel to be nested
+	 * 
+	 * @see #getNestedModel(String)
+	 * @see #removeNestedModel(String)
 	 */
-	public void addNestedModel(String modelName, WTPOperationDataModel dataModel) {
+	public final void addNestedModel(String modelName, WTPOperationDataModel dataModel) {
 		if (dataModel == null)
 			return;
 		if (null == nestedModels) {
@@ -210,6 +242,15 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	protected WTPOperationDataModelListener getExtendedSynchronizer() {
 		return null;
 	}
+
+	/**
+	 * Subclasses should override to return a WTPOperation to execute using this DataModel instance.
+	 * The goal is for clients of to be able to simple create an instance of a particular DataModel,
+	 * set a few properties on it, and then execute the operation returned by getDefaultOperation()
+	 * 
+	 * @return an initialized and executable WTPOperation
+	 */
+	public abstract WTPOperation getDefaultOperation();
 
 	public WTPOperationDataModel removeNestedModel(String modelName) {
 		if (modelName == null || nestedModels == null)
@@ -293,9 +334,9 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 * </p>
 	 * 
 	 * @param propertyName
-	 * @return
+	 * @return the array of valid WTPPropertyDescriptors
 	 * @see #getPropertyDescriptor(String)
-	 * @see #doGetPropertyDescriptor(String)
+	 * @see #doGetValidPropertyDescriptors(String)
 	 */
 	public final WTPPropertyDescriptor[] getValidPropertyDescriptors(String propertyName) {
 		checkValidPropertyName(propertyName);
@@ -349,9 +390,9 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 * </p>
 	 * 
 	 * @param propertyName
-	 * @return
+	 * @return the WTPPropertyDescriptor for the specified property
 	 * 
-	 * @see #getValidPropertyDescriptors(String)
+	 * @see #doGetValidPropertyDescriptors(String)
 	 * @see #doGetPropertyDescriptor(String)
 	 */
 	public final WTPPropertyDescriptor getPropertyDescriptor(String propertyName) {
@@ -469,8 +510,8 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 * 
 	 * @param propertyName
 	 * @param value
-	 * @see #setProperty(String, Object
-	 * @see #getIntProperty(String))
+	 * @see #setProperty(String, Object)
+	 * @see #getIntProperty(String)
 	 */
 	public void setIntProperty(String propertyName, int value) {
 		setProperty(propertyName, new Integer(value));
@@ -542,15 +583,9 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 * @param propertyName
 	 * @return
 	 * 
-	 * <p>
-	 * There are also convenience methods for getting properties representing property types of
-	 * boolean, int, and String
-	 * </p>
-	 * <ul>
-	 * <li>{@see #getBooleanProperty(String)}</li>
-	 * <li>{@see #getIntProperty(String)}</li>
-	 * <li>{@see #getStringProperty(String)}</li>
-	 * </ul>
+	 * @see #getBooleanProperty(String)
+	 * @see #getIntProperty(String)
+	 * @see #getStringProperty(String)
 	 */
 	public final Object getProperty(String propertyName) {
 		checkValidPropertyName(propertyName);
