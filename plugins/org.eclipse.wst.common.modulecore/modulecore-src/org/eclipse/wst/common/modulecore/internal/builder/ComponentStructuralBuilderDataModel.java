@@ -1,113 +1,102 @@
-/*******************************************************************************
- * Copyright (c) 2003, 2004, 2005 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors:
- * IBM Corporation - initial API and implementation
- *******************************************************************************/
 package org.eclipse.wst.common.modulecore.internal.builder;
 
-import org.eclipse.core.resources.IncrementalProjectBuilder;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
-/**
- * Provides common set of preregisterd data model properties related to build status information 
- * present in IncrementalProjectBuilder (@see org.eclipse.core.resources.IncrementalProjectBuilder) as well as a ModuleCore instance for the current project which is being
- * built.
- * <p>
- * The data model should be subclassed by any vendor which aims to override the default ComponentStructuralBuilder.
- * Subclasses should implement all required methods from the super class including but not limited to getDefaultOperation.
- * which should return a WTPOperation associated with the data model.  The ComponentStructuralBuilder extension point should 
- * be used to register the overriding builder.
- * </p>
- * 
- * This class is experimental until fully documented.
- * </p>
- * 
- */
-public abstract class ComponentStructuralBuilderDataModel extends WTPOperationDataModel{
-	/**
-	 * Required, type String. The initializing builder will set this field to the name value of the 
-	 * project which is currently being built.
-	 */
-	public static final String PROJECT = "DeployableModuleProjectBuilderDataModel.PROJECT"; //$NON-NLS-1$
+import org.eclipse.wst.common.modulecore.ModuleCore;
+import org.eclipse.wst.common.modulecore.WorkbenchComponent;
 
+public abstract class ComponentStructuralBuilderDataModel extends WTPOperationDataModel {
 	/**
-	 * Required, type Integer. The initializing builder will set this field to the int value based on the build
-	 * kind passed to the IncrementalProjectBuilder
-	 * 
-	 * @see IncrementalProjectBuilder.FULL_BUILD
-	 * <li><code>FULL_BUILD</code>- indicates a full build.</li>
-	 * 
-	 * @see IncrementalProjectBuilder.INCREMENTAL_BUILD
-	 * <li><code>INCREMENTAL_BUILD</code>- indicates an incremental build.</li>
-	 * 
-	 * @see IncrementalProjectBuilder.AUTO_BUILD
-	 * <li><code>AUTO_BUILD</code>- indicates an automatically triggered
+	 * Required, type IProject
 	 */
-	public static final String BUILD_KIND = "DeployableModuleProjectBuilderDataModel.BUILD_KIND"; //$NON-NLS-1$
+	public static final String PROJECT = "DeployableModuleDataModel.PROJECT"; //$NON-NLS-1$
 	/**
-	 * Required, type Integer. The initializing builder will set this field to the IResourceDelta value based on the delta
-	 * passed to the IncrementalProjectBuilder during a build call.  This field can be used along with the BUILD_KIND to 
-	 * create a more efficient builder
-	 * 
-	 * @see org.eclipse.core.resources.IResourceDelta
+	 * Required, type project relative URI
 	 */
-	public static final String PROJECT_DETLA = "DeployableModuleProjectBuilderDataModel.PROJECT_DETLA"; //$NON-NLS-1$
+	public static final String OUTPUT_CONTAINER = "DeployableModuleDataModel.OUTPUT_CONTAINER"; //$NON-NLS-1$
+	/**
+	 * Required, type WorkbenchComponent
+	 */
+	public static final String WORKBENCH_MODULE = "DeployableModuleDataModel.WORKBENCH_MODULE_RESOURCES"; //$NON-NLS-1$
+	/**
+	 * Required, type List of DependentDeployableModuleDataModel
+	 */
+	public static final String DEPENDENT_MODULES_DM_LIST = "DeployableModuleDataModel.DEPENDENT_MODULES_DM_LIST"; //$NON-NLS-1$
 
-	/**
-	 * Required, type org.eclipse.wst.common.modulecore.ModuleCore. The initializing builder will set this field to the ModuleCore associated
-	 * with the project which is currently being built.  This field can be used to retrieve information about components and their associated 
-	 * dependent components present in the current project.
-	 * 
-	 * @see org.eclipse.wst.common.modulecore.ModuleCore
-	 */
-	public static final String MODULE_CORE = "DeployableModuleProjectBuilderDataModel.MODULE_CORE";
-
-	/**
-	 * <p>
-	 * The ComponentStructuralBuilderDataModel constructor. This constructor will first add the base
-	 * ComponentStructuralBuilderDataModel properties (PROJECT, BUILD_KIND, PROJECT_DETLA and
-	 * MODULE_CORE). 
-	 * 
-	 * @see #initValidBaseProperties()
-	 * 
-	 * It then invokes the base WTPOperationDataModel.
-	 * 
-	 * @see WTPOperationDataModel
-	 * 
-	 * 
-	 */
-    public ComponentStructuralBuilderDataModel() {
-        super();
-    }
-	/**
-	 * Subclasses should use this method within <code>initValidBaseProperties()</code> to add
-	 * properties.
-	 * 
-	 * @param propertyName
-	 *            The property name to be added.
-	 * @see #initValidBaseProperties()
-	 */
+	public static final String MODULE_CORE = "DeployableModuleBuilderDataModel.MODULE_CORE";
+	
+	
+	/* (non-Javadoc)
+     * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#addValidBaseProperty(java.lang.String)
+     */
 	protected void initValidBaseProperties() {
 		addValidBaseProperty(PROJECT);
-		addValidBaseProperty(BUILD_KIND);
-		addValidBaseProperty(PROJECT_DETLA);
+		addValidBaseProperty(OUTPUT_CONTAINER);
+		addValidBaseProperty(WORKBENCH_MODULE);
+		addValidBaseProperty(DEPENDENT_MODULES_DM_LIST);
 		addValidBaseProperty(MODULE_CORE);
-		super.initValidBaseProperties();
-	}
-	/**
-	 * Override this method to compute default property values.
-	 * 
-	 * @param propertyName
-	 * @return
-	 */
-	protected Object getDefaultProperty(String propertyName) {
-		if (propertyName.equals(BUILD_KIND))
-			return new Integer(IncrementalProjectBuilder.FULL_BUILD);
-		return super.getDefaultProperty(propertyName);
 	}
 	
+	/* (non-Javadoc)
+     * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#getDefaultProperty(java.lang.String)
+     */
+    protected Object getDefaultProperty(String propertyName) {
+        return super.getDefaultProperty(propertyName);
+    }
+    /* (non-Javadoc)
+     * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#doSetProperty(java.lang.String, java.lang.Object)
+     */
+    protected boolean doSetProperty(String propertyName, Object propertyValue) {
+        boolean status = super.doSetProperty(propertyName, propertyValue);
+        if(propertyName.equals(WORKBENCH_MODULE)) {
+        	setProperty(OUTPUT_CONTAINER, populateOutputContainer());
+        	setProperty(DEPENDENT_MODULES_DM_LIST, populateDependentModulesDM());
+        }
+        return status;
+    }
+    /**
+     * 
+     */
+    public ComponentStructuralBuilderDataModel() {
+        super();
+    }    
+    /**
+     * @return
+     */
+    private Object populateDependentModulesDM() {
+        WorkbenchComponent wbModule = (WorkbenchComponent)getProperty(WORKBENCH_MODULE);
+        List depModules = wbModule.getReferencedComponents();
+        List depModulesDataModels = new ArrayList();
+        ComponentStructuralDependentBuilderDataModel dependentDataModel;
+        ModuleCore moduleCore = (ModuleCore)getProperty(MODULE_CORE);
+        for(int i = 0; i<depModules.size(); i++){
+            dependentDataModel = new ComponentStructuralDependentBuilderDataModel();
+            dependentDataModel.setProperty(ComponentStructuralDependentBuilderDataModel.MODULE_CORE, moduleCore);
+            dependentDataModel.setProperty(ComponentStructuralDependentBuilderDataModel.CONTAINING_WBMODULE, getProperty(WORKBENCH_MODULE));
+            dependentDataModel.setProperty(ComponentStructuralDependentBuilderDataModel.DEPENDENT_MODULE, depModules.get(i));
+            depModulesDataModels.add(dependentDataModel);
+        }
+        return depModulesDataModels;
+    }
+
+    /**
+     * @return
+     */
+    private Object populateOutputContainer() {
+        WorkbenchComponent wbModule = (WorkbenchComponent)getProperty(WORKBENCH_MODULE);
+        IFolder outputContainer = null;
+        if(wbModule != null)
+        	outputContainer = ModuleCore.getOutputContainerRoot(wbModule);
+        return outputContainer;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#getDefaultOperation()
+     */
+    public abstract WTPOperation getDefaultOperation();
+
 }

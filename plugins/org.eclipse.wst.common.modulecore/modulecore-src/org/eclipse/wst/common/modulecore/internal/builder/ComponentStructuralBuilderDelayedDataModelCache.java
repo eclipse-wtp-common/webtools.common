@@ -15,11 +15,11 @@ import java.util.List;
 
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
 
-public class LocalDependencyDelayedDataModelCache {
-	private static LocalDependencyDelayedDataModelCache instance;
+public class ComponentStructuralBuilderDelayedDataModelCache {
+	private static ComponentStructuralBuilderDelayedDataModelCache instance;
 	private List list = new ArrayList();
 
-	private LocalDependencyDelayedDataModelCache() {
+	private ComponentStructuralBuilderDelayedDataModelCache() {
 		super();
 	}
 	
@@ -35,9 +35,9 @@ public class LocalDependencyDelayedDataModelCache {
 	    list.clear();
 	}
 	                                       
-	public static LocalDependencyDelayedDataModelCache getInstance() {
+	public static ComponentStructuralBuilderDelayedDataModelCache getInstance() {
 		if (instance == null)
-			instance = new LocalDependencyDelayedDataModelCache();
+			instance = new ComponentStructuralBuilderDelayedDataModelCache();
 		return instance;
 	}
 }

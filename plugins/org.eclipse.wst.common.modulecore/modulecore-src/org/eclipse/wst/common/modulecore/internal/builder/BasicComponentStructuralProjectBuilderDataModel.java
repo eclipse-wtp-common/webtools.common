@@ -21,11 +21,11 @@ import org.eclipse.wst.common.modulecore.ReferencedComponent;
 import org.eclipse.wst.common.modulecore.UnresolveableURIException;
 import org.eclipse.wst.common.modulecore.WorkbenchComponent;
 
-public class DeployableModuleProjectBuilderDataModel extends ComponentStructuralBuilderDataModel {
+public class BasicComponentStructuralProjectBuilderDataModel extends ComponentStructuralProjectBuilderDataModel {
     
 	public static final String MODULE_BUILDER_DM_LIST = "DeployableModuleProjectBuilderDataModel.MODULE_BUILDER_DM_LIST"; //$NON-NLS-1$
 	
-	public DeployableModuleProjectBuilderDataModel() {
+	public BasicComponentStructuralProjectBuilderDataModel() {
 		super();
 	}
 	
@@ -149,20 +149,20 @@ public class DeployableModuleProjectBuilderDataModel extends ComponentStructural
 
 		List sortedList = computeModuleBuildOrder(wbModules);
 
-		DeployableModuleBuilderFactory factory = null;
-		DeployableModuleBuilderDataModel dataModel = null;
+		ComponentStructuralBuilderFactory factory = null;
+		ComponentStructuralBuilderDataModel dataModel = null;
 
 		for (int i = 0; i < sortedList.size(); i++) {
 			WorkbenchComponent wbModule = (WorkbenchComponent) sortedList.get(i);
 			String id = wbModule.getComponentType().getModuleTypeId();
 			if (id == null)
 				break;
-			factory = DeployableModuleBuilderFactoryRegistry.INSTANCE.createDeployableFactory(wbModule.getComponentType().getModuleTypeId());
+			factory = ComponentStructuralBuilderFactoryRegistry.INSTANCE.createDeployableFactory(wbModule.getComponentType().getModuleTypeId());
 			if (factory != null) {
 				dataModel = factory.createDeploymentModuleDataModel();
-				dataModel.setProperty(DeployableModuleBuilderDataModel.MODULE_CORE, moduleCore);
-				dataModel.setProperty(DeployableModuleBuilderDataModel.PROJECT, getProperty(PROJECT));
-				dataModel.setProperty(DeployableModuleBuilderDataModel.WORKBENCH_MODULE, wbModule);
+				dataModel.setProperty(ComponentStructuralBuilderDataModel.MODULE_CORE, moduleCore);
+				dataModel.setProperty(ComponentStructuralBuilderDataModel.PROJECT, getProperty(PROJECT));
+				dataModel.setProperty(ComponentStructuralBuilderDataModel.WORKBENCH_MODULE, wbModule);
 				moduleBuilderDataModelList.add(dataModel);
 			}
 		}
@@ -180,7 +180,7 @@ public class DeployableModuleProjectBuilderDataModel extends ComponentStructural
 	 * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#getDefaultOperation()
 	 */
 	public WTPOperation getDefaultOperation() {
-		return new DeployableModuleProjectBuilderOperation(this);
+		return new BasicComponentStructuralProjectBuilderOperation(this);
 	}
 
 }

@@ -72,12 +72,12 @@
       </builder>
    </extension>
       <extension
-         id="LocalDependencyResolver"
+         id="ComponentStructuralBuilderDependencyResolver"
          name="Local Dependency Resolver"
          point="org.eclipse.core.resources.builders">
       <builder>
          <run
-               class="org.eclipse.wst.common.modulecore.internal.builder.LocalDependencyResolver">
+               class="org.eclipse.wst.common.modulecore.internal.builder.ComponentStructuralBuilderDependencyResolver">
          </run>
       </builder>
    </extension>

@@ -30,7 +30,7 @@ import org.eclipse.wst.server.core.IProjectProperties;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.ServerCore;
 
-public class DeployableModuleBuilder extends IncrementalProjectBuilder implements IModuleConstants {
+public class ComponentStructuralBuilder extends IncrementalProjectBuilder implements IModuleConstants {
     /**
      * Builder id of this incremental project builder.
      */
@@ -39,7 +39,7 @@ public class DeployableModuleBuilder extends IncrementalProjectBuilder implement
     /**
      *  
      */
-    public DeployableModuleBuilder() {
+    public ComponentStructuralBuilder() {
         super();
     }
 
@@ -52,7 +52,7 @@ public class DeployableModuleBuilder extends IncrementalProjectBuilder implement
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
         IProjectProperties props = ServerCore.getProjectProperties(getProject());
         IRuntime runtime = props.getRuntimeTarget();
-        ComponentStructuralBuilderDataModel builderDataModel = null;
+        ComponentStructuralProjectBuilderDataModel builderDataModel = null;
         ModuleCore moduleCore = null;
         
         // clean markers
@@ -63,12 +63,12 @@ public class DeployableModuleBuilder extends IncrementalProjectBuilder implement
 		//else create and run default builder
         builderDataModel = getStructuralComponentBuilderIfRegistered(runtime);
         if(builderDataModel == null)
-            builderDataModel = new DeployableModuleProjectBuilderDataModel();
+            builderDataModel = new BasicComponentStructuralProjectBuilderDataModel();
         try {
             moduleCore = ModuleCore.getModuleCoreForRead(getProject());
-            builderDataModel.setProperty(DeployableModuleProjectBuilderDataModel.MODULE_CORE, moduleCore);
-            builderDataModel.setProperty(DeployableModuleProjectBuilderDataModel.PROJECT, getProject());
-            builderDataModel.setProperty(DeployableModuleProjectBuilderDataModel.PROJECT_DETLA, getDelta(getProject()));
+            builderDataModel.setProperty(BasicComponentStructuralProjectBuilderDataModel.MODULE_CORE, moduleCore);
+            builderDataModel.setProperty(BasicComponentStructuralProjectBuilderDataModel.PROJECT, getProject());
+            builderDataModel.setProperty(BasicComponentStructuralProjectBuilderDataModel.PROJECT_DETLA, getDelta(getProject()));
             //TODO: implement incremental builds
             // dataModel.setProperty(DeployableModuleProjectBuilderDataModel.BUILD_KIND;
             WTPOperation op = builderDataModel.getDefaultOperation();
@@ -92,9 +92,9 @@ public class DeployableModuleBuilder extends IncrementalProjectBuilder implement
      * @param runtime
      * @return
      */
-    private ComponentStructuralBuilderDataModel getStructuralComponentBuilderIfRegistered(IRuntime runtime) {
+    private ComponentStructuralProjectBuilderDataModel getStructuralComponentBuilderIfRegistered(IRuntime runtime) {
 		if(runtime != null) { 
-            ComponentStructuralBuilderDataModel builderOverride = ComponentStructuralBuilderExtensionRegistry.getComponentStructuralBuilderDMForServerTargetID(runtime.getId());
+            ComponentStructuralProjectBuilderDataModel builderOverride = ComponentStructuralBuilderExtensionRegistry.getComponentStructuralBuilderDMForServerTargetID(runtime.getId());
                 return builderOverride;
         }
         return null;

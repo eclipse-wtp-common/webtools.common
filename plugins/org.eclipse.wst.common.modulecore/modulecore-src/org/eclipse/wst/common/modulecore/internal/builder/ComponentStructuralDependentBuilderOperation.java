@@ -32,10 +32,10 @@ import org.eclipse.wst.common.modulecore.WorkbenchComponent;
 import org.eclipse.wst.common.modulecore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.modulecore.internal.util.ZipFileExporter;
 
-public class DependentDeployableModuleOperation extends WTPOperation {
+public class ComponentStructuralDependentBuilderOperation extends WTPOperation {
 	private static String ERROR_EXPORTING_MSG = "Zip Error Message"; //$NON-NLS-1$
 
-	private DependentDeployableModuleDataModel depDataModel = null;
+	private ComponentStructuralDependentBuilderDataModel depDataModel = null;
 
 	private ZipFileExporter exporter = null;
 
@@ -53,9 +53,9 @@ public class DependentDeployableModuleOperation extends WTPOperation {
 	/**
 	 * @param operationDataModel
 	 */
-	public DependentDeployableModuleOperation(DependentDeployableModuleDataModel operationDataModel) {
+	public ComponentStructuralDependentBuilderOperation(ComponentStructuralDependentBuilderDataModel operationDataModel) {
 		super(operationDataModel);
-		depDataModel = (DependentDeployableModuleDataModel) operationDataModel;
+		depDataModel = (ComponentStructuralDependentBuilderDataModel) operationDataModel;
 	}
 
 	/*
@@ -73,12 +73,12 @@ public class DependentDeployableModuleOperation extends WTPOperation {
 		if (absoluteOutputContainer == null || absoluteInputContainer == null)
 			return;
 
-		if (depDataModel.getBooleanProperty(DependentDeployableModuleDataModel.DOES_CONSUME)) {
+		if (depDataModel.getBooleanProperty(ComponentStructuralDependentBuilderDataModel.DOES_CONSUME)) {
 			// if consumes simply copy resources to output directory
 			IResource sourceResource = getResource(absoluteInputContainer);
 			if (sourceResource == null)
 				return;
-			DeployableModuleBuilder.smartCopy(sourceResource, absoluteOutputContainer, new NullProgressMonitor());
+			ComponentStructuralBuilder.smartCopy(sourceResource, absoluteOutputContainer, new NullProgressMonitor());
 		} else {
 			String zipName = getZipFileName();
 			IPath zipNameDestination = absoluteOutputContainer.append(zipName);
@@ -111,13 +111,13 @@ public class DependentDeployableModuleOperation extends WTPOperation {
 	 * @return
 	 */
 	private IPath getAbsoluteOutputContainer() {
-		WorkbenchComponent workbenchModule = (WorkbenchComponent) depDataModel.getProperty(DependentDeployableModuleDataModel.CONTAINING_WBMODULE);
+		WorkbenchComponent workbenchModule = (WorkbenchComponent) depDataModel.getProperty(ComponentStructuralDependentBuilderDataModel.CONTAINING_WBMODULE);
 		IFolder localWorkbenchModuleOuptutContainer = null;
 		if (workbenchModule != null)
 			localWorkbenchModuleOuptutContainer = ModuleCore.getOutputContainerRoot(workbenchModule);
 
 		IPath localWorkbenchModuleOuptutContainerPath = localWorkbenchModuleOuptutContainer.getFullPath();
-		URI deployPath = (URI) depDataModel.getProperty(DependentDeployableModuleDataModel.OUTPUT_CONTAINER);
+		URI deployPath = (URI) depDataModel.getProperty(ComponentStructuralDependentBuilderDataModel.OUTPUT_CONTAINER);
 		return localWorkbenchModuleOuptutContainerPath.append(deployPath.toString()); 
 	}
 
@@ -125,14 +125,14 @@ public class DependentDeployableModuleOperation extends WTPOperation {
 	 * @return
 	 */
 	private IPath getAbsoluteInputContainer() {
-		WorkbenchComponent depWBModule = (WorkbenchComponent) depDataModel.getProperty(DependentDeployableModuleDataModel.DEPENDENT_WBMODULE);
+		WorkbenchComponent depWBModule = (WorkbenchComponent) depDataModel.getProperty(ComponentStructuralDependentBuilderDataModel.DEPENDENT_WBMODULE);
 		if (depWBModule != null)
 			return ModuleCore.getOutputContainerRoot(depWBModule).getFullPath();
 		return null;
 	}
 
 	private String getZipFileName() {
-		WorkbenchComponent depWBModule = (WorkbenchComponent) depDataModel.getProperty(DependentDeployableModuleDataModel.DEPENDENT_WBMODULE);
+		WorkbenchComponent depWBModule = (WorkbenchComponent) depDataModel.getProperty(ComponentStructuralDependentBuilderDataModel.DEPENDENT_WBMODULE);
 		String typeID = depWBModule.getComponentType().getModuleTypeId();
 		String zipFileName = depWBModule.getName();
 		zipFileName = zipFileName.replace('.', '_');

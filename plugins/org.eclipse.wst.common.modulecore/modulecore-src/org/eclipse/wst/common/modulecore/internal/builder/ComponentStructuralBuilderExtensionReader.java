@@ -40,9 +40,9 @@ public class ComponentStructuralBuilderExtensionReader extends RegistryReader {
 	    if (!element.getName().equals(ELEMENT_DEPLOYABLE_MODULE_BUILDER_EXT))
 			return false;
 		String serverTargetID = element.getAttribute(SERVER_TARGET_ID);
-		ComponentStructuralBuilderDataModel op = null;
+		ComponentStructuralProjectBuilderDataModel op = null;
         try {
-            op = (ComponentStructuralBuilderDataModel) element.createExecutableExtension(DEPLOYABLE_MODULE_BUILDER);
+            op = (ComponentStructuralProjectBuilderDataModel) element.createExecutableExtension(DEPLOYABLE_MODULE_BUILDER);
         } catch (CoreException e) {
             Logger.getLogger().log(e.toString());
         }
@@ -58,7 +58,7 @@ public class ComponentStructuralBuilderExtensionReader extends RegistryReader {
 	 * @param extensions
 	 *            The extensions to set
 	 */
-	private static void addExtensionPoint(String serverTargetID, ComponentStructuralBuilderDataModel builderOp) {
+	private static void addExtensionPoint(String serverTargetID, ComponentStructuralProjectBuilderDataModel builderOp) {
 		builderExtensions.put(serverTargetID, builderOp);
 	}
 

@@ -453,7 +453,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	public void configure() throws CoreException {
 		super.configure();
 		addDeployableProjectBuilder();
-		addLocalDependencyResolver();
+		addDependencyResolver();
 	}
 
 	protected String getPluginID() {
@@ -483,8 +483,8 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		}
 	}
 
-	private void addLocalDependencyResolver() throws CoreException {
-		ProjectUtilities.addToBuildSpec(LOCAL_DEPENDENCY_RESOLVER_ID, getProject());
+	private void addDependencyResolver() throws CoreException {
+		ProjectUtilities.addToBuildSpec(COMPONENT_STRUCTURAL_DEPENDENCY_RESOLVER_ID, getProject());
 	}
 
 	private String getArtifactEditModelId(URI aModuleURI) {

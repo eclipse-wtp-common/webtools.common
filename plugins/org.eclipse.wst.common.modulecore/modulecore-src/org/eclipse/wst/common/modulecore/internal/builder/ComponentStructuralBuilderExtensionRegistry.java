@@ -39,8 +39,8 @@ public class ComponentStructuralBuilderExtensionRegistry {
 		return ComponentStructuralBuilderExtensionReader.getExtensionPoints();
 	}
 	
-	protected static ComponentStructuralBuilderDataModel getComponentStructuralBuilderDMForServerTargetID(String serverTargetID) {
-	    return (ComponentStructuralBuilderDataModel)getExtensionPoints().get(serverTargetID);
+	protected static ComponentStructuralProjectBuilderDataModel getComponentStructuralBuilderDMForServerTargetID(String serverTargetID) {
+	    return (ComponentStructuralProjectBuilderDataModel)getExtensionPoints().get(serverTargetID);
 	}
 	/**
 	 * Gets the instance.

@@ -12,12 +12,12 @@ package org.eclipse.wst.common.modulecore.internal.builder;
 
 
 
-public interface DeployableModuleBuilderFactory {
+public interface ComponentStructuralBuilderFactory {
     /**
      *
      * This method is used to create a fully populated data model for the 
      * DeployableModuleProjectBuilderDataModel to then run on.  
      * 
      */
-   public DeployableModuleBuilderDataModel createDeploymentModuleDataModel();
+   public ComponentStructuralBuilderDataModel createDeploymentModuleDataModel();
 }

@@ -18,7 +18,7 @@ package org.eclipse.wst.common.modulecore.internal.util;
 public interface IModuleConstants {
 	
     public static String DEPLOYABLE_MODULE_BUILDER_ID = "org.eclipse.wst.common.modulecore.DeployableModuleBuilder"; //$NON-NLS-1$
-    public static String LOCAL_DEPENDENCY_RESOLVER_ID = "org.eclipse.wst.common.modulecore.LocalDependencyResolver"; //$NON-NLS-1$
+    public static String COMPONENT_STRUCTURAL_DEPENDENCY_RESOLVER_ID = "org.eclipse.wst.common.modulecore.ComponentStructuralBuilderDependencyResolver"; //$NON-NLS-1$
     
 	public final static String WTPMODULE_FILE_NAME = "wtpModule"; //$NON-NLS-1$
 	public final static String MODULE_PLUG_IN_ID = "org.eclipse.wst.common.modulecore"; //$NON-NLS-1$

@@ -20,16 +20,16 @@ import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.internal.util.IModuleConstants;
 
-public class LocalDependencyResolver extends IncrementalProjectBuilder implements IModuleConstants {
+public class ComponentStructuralBuilderDependencyResolver extends IncrementalProjectBuilder implements IModuleConstants {
     /**
      * Builder id of this incremental project builder.
      */
-    public static final String BUILDER_ID = LOCAL_DEPENDENCY_RESOLVER_ID;
+    public static final String BUILDER_ID = COMPONENT_STRUCTURAL_DEPENDENCY_RESOLVER_ID;
 
     /**
      *  
      */
-    public LocalDependencyResolver() {
+    public ComponentStructuralBuilderDependencyResolver() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -43,15 +43,15 @@ public class LocalDependencyResolver extends IncrementalProjectBuilder implement
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
         ModuleCore moduleCore = null;
         try {
-            List delayedOperationDMs = LocalDependencyDelayedDataModelCache.getInstance().getCacheList();
+            List delayedOperationDMs = ComponentStructuralBuilderDelayedDataModelCache.getInstance().getCacheList();
             if (delayedOperationDMs.size() > 0) {
                 moduleCore = ModuleCore.getModuleCoreForRead(getProject());
             }
-            DependentDeployableModuleDataModel dataModel = null;
+            ComponentStructuralDependentBuilderDataModel dataModel = null;
             WTPOperation op = null;
             for (int i = 0; i < delayedOperationDMs.size(); i++) {
-                dataModel = (DependentDeployableModuleDataModel) delayedOperationDMs.get(i);
-                dataModel.setProperty(DependentDeployableModuleDataModel.MODULE_CORE, moduleCore);
+                dataModel = (ComponentStructuralDependentBuilderDataModel) delayedOperationDMs.get(i);
+                dataModel.setProperty(ComponentStructuralDependentBuilderDataModel.MODULE_CORE, moduleCore);
                 op = dataModel.getDefaultOperation();
                 if (op != null) {
                     try {
@@ -65,7 +65,7 @@ public class LocalDependencyResolver extends IncrementalProjectBuilder implement
             if (moduleCore != null) {
                 moduleCore.dispose();
             }
-            LocalDependencyDelayedDataModelCache.getInstance().clearCache();
+            ComponentStructuralBuilderDelayedDataModelCache.getInstance().clearCache();
         }
         return null;
     }

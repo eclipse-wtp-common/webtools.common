@@ -12,25 +12,25 @@ package org.eclipse.wst.common.modulecore.internal.builder;
 
 import java.util.HashMap;
 
-public class DeployableModuleBuilderFactoryRegistry {
-    public static DeployableModuleBuilderFactoryRegistry INSTANCE = new DeployableModuleBuilderFactoryRegistry();
+public class ComponentStructuralBuilderFactoryRegistry {
+    public static ComponentStructuralBuilderFactoryRegistry INSTANCE = new ComponentStructuralBuilderFactoryRegistry();
 
     private HashMap factories;
     /**
      * 
      */
-    public DeployableModuleBuilderFactoryRegistry() {
+    public ComponentStructuralBuilderFactoryRegistry() {
         super();
     }
 
-    public void registerDeployableFactory(String id, DeployableModuleBuilderFactory factoryClassName){
+    public void registerDeployableFactory(String id, ComponentStructuralBuilderFactory factoryClassName){
         if(factories == null)
             factories = new HashMap();
         factories.put(id, factoryClassName);
     }
     
-    public DeployableModuleBuilderFactory createDeployableFactory(String id) {
+    public ComponentStructuralBuilderFactory createDeployableFactory(String id) {
         if(factories == null) return null;
-        return (DeployableModuleBuilderFactory)factories.get(id);
+        return (ComponentStructuralBuilderFactory)factories.get(id);
     }
 }

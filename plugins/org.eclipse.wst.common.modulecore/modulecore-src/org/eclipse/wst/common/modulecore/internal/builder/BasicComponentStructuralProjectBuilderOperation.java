@@ -17,19 +17,19 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 
-public class DeployableModuleProjectBuilderOperation extends WTPOperation {
+public class BasicComponentStructuralProjectBuilderOperation extends WTPOperation {
 
     /**
      * @param operationDataModel
      */
-    public DeployableModuleProjectBuilderOperation(DeployableModuleProjectBuilderDataModel operationDataModel) {
+    public BasicComponentStructuralProjectBuilderOperation(BasicComponentStructuralProjectBuilderDataModel operationDataModel) {
         super(operationDataModel);
     }
 
     /**
      * 
      */
-    public DeployableModuleProjectBuilderOperation() {
+    public BasicComponentStructuralProjectBuilderOperation() {
         super();
     }
 
@@ -37,19 +37,19 @@ public class DeployableModuleProjectBuilderOperation extends WTPOperation {
      * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperation#execute(org.eclipse.core.runtime.IProgressMonitor)
      */
     protected void execute(IProgressMonitor monitor) throws CoreException, InvocationTargetException, InterruptedException {
-        DeployableModuleProjectBuilderDataModel deployProjectDM = (DeployableModuleProjectBuilderDataModel)operationDataModel;
-        List deployableModuleDM = (List)deployProjectDM.getProperty(DeployableModuleProjectBuilderDataModel.MODULE_BUILDER_DM_LIST);
+        BasicComponentStructuralProjectBuilderDataModel deployProjectDM = (BasicComponentStructuralProjectBuilderDataModel)operationDataModel;
+        List deployableModuleDM = (List)deployProjectDM.getProperty(BasicComponentStructuralProjectBuilderDataModel.MODULE_BUILDER_DM_LIST);
     
         WTPOperation op = null;
         if(deployableModuleDM == null) return;
         for(int i = 0; i < deployableModuleDM.size(); i++){
-            DeployableModuleBuilderDataModel moduleDM = (DeployableModuleBuilderDataModel)deployableModuleDM.get(i);
+            ComponentStructuralBuilderDataModel moduleDM = (ComponentStructuralBuilderDataModel)deployableModuleDM.get(i);
             
-            List depModuleList = (List)moduleDM.getProperty(DeployableModuleBuilderDataModel.DEPENDENT_MODULES_DM_LIST);
+            List depModuleList = (List)moduleDM.getProperty(ComponentStructuralBuilderDataModel.DEPENDENT_MODULES_DM_LIST);
             WTPOperation opDep = null;
             for(int j = 0; j < depModuleList.size(); j++){
-            	DependentDeployableModuleDataModel depModuleDM = (DependentDeployableModuleDataModel)depModuleList.get(j);
-            	LocalDependencyDelayedDataModelCache.getInstance().addToCache(depModuleDM);
+            	ComponentStructuralDependentBuilderDataModel depModuleDM = (ComponentStructuralDependentBuilderDataModel)depModuleList.get(j);
+            	ComponentStructuralBuilderDelayedDataModelCache.getInstance().addToCache(depModuleDM);
             }
             op = moduleDM.getDefaultOperation();
             op.doRun(monitor);

@@ -17,7 +17,7 @@ import org.eclipse.wst.common.modulecore.ReferencedComponent;
 import org.eclipse.wst.common.modulecore.UnresolveableURIException;
 import org.eclipse.wst.common.modulecore.WorkbenchComponent;
 
-public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
+public class ComponentStructuralDependentBuilderDataModel extends WTPOperationDataModel {
     /**
      * Required, type IProject
      */
@@ -50,7 +50,7 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
 
     public static final String MODULE_CORE = "DependentDeployableModuleDataModel.MODULE_CORE"; //$NON-NLS-1$
 
-    public DependentDeployableModuleDataModel() {
+    public ComponentStructuralDependentBuilderDataModel() {
         super();
     }
 
@@ -169,7 +169,7 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
      * @see org.eclipse.wst.common.modulecore.builder.DeployableModuleDataModel#getDefaultOperation()
      */
     public WTPOperation getDefaultOperation() {
-        return new DependentDeployableModuleOperation(this);
+        return new ComponentStructuralDependentBuilderOperation(this);
     }
 
     private ModuleCore getModuleCore() {
