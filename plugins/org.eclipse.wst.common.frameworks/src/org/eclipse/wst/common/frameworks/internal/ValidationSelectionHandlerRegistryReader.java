@@ -61,11 +61,11 @@ public class ValidationSelectionHandlerRegistryReader extends RegistryReader {
 			handler = (IValidationSelectionHandler) element.createExecutableExtension(ATT_HANDLER_CLASS);
 			handler.setValidationTypeString(selectionType);
 			getValidationSelectionHandlers().add(handler);
+			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		return false;
+	   return false;
 	}
 	
 	private List getValidationSelectionHandlers() {
