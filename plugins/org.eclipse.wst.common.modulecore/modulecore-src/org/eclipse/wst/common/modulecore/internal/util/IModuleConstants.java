@@ -31,6 +31,7 @@ public interface IModuleConstants {
 	public final static String WST_WEB_MODULE = "wst.web"; //$NON-NLS-1$
 	public final static String JST_EAR_MODULE = "jst.ear"; //$NON-NLS-1$
 	public final static String JST_APPCLIENT_MODULE = "jst.appclient"; //$NON-NLS-1$
+	public final static String JST_CONNECTOR_MODULE = "jst.connector"; //$NON-NLS-1$
 	
 	public final static String J2EE_VERSION_1_2 = "1.2"; //$NON-NLS-1$
 	public final static String J2EE_VERSION_1_3 = "1.3"; //$NON-NLS-1$
