@@ -31,15 +31,6 @@ package org.eclipse.wst.validation.core;
  * <code>loadModel</code> method. An IValidationContext can support more than one IValidator; 
  * the helper needs to support every model that each validator needs.
  * </p>
- * 
- * [issue : CS - This is a rather strange interface. Perhaps a better name would be 'IValidatorContext' 
- * The word 'helper' seems very vague.  The loadModel(String) method seems reasonable to me since 
- * a validator may need to load a model differently depending on the context its invoked from.
- * In any case I'd assume that the fileName that's provided via IValidator.validate() would be the only
- * obvious parameter that would get passed into loadModel().  We should make sure the param names are 
- * consistent (i.e. symbolicName should by fileName). We also need to give some documentation to demonstrate
- * how a validator would typically invoke the loadModel(String) methods from within the validate() 
- * method body to obtain a 'context specific' model]
  */
 public interface IValidationContext {
 	/**
@@ -47,7 +38,15 @@ public interface IValidationContext {
 	 * Load the model identified by <code>symbolicName</code>.<code>symbolicName</code> 
 	 * must not be null or the empty string if the validator needs to be run in both 
 	 * Headless and UI.
+	 * 
+	 * The symbolicName is a string name that is registered in the implementation of the
+	 * IValidatorContext. For an example our internal implementation of the loadModel use
+	 * method names for symbolicNames to load the model object to be validated. Users can
+	 * use their own model load mechanism.
+	 * @see <code>AWorkbenchHelper</code>
+	 * 
 	 * </p>
+	 * @since 1.0
 	 */
 	public Object loadModel(String symbolicName);
 
