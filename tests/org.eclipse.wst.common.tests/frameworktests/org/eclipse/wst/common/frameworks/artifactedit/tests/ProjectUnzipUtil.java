@@ -22,20 +22,22 @@ import org.eclipse.core.runtime.Path;
 public class ProjectUnzipUtil {
 
 	private IPath zipLocation;
-	private String projectName;
+	private String[] projectNames;
 	private IPath rootLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation();
 	private static final String META_PROJECT_NAME = ".project";
 
-	public ProjectUnzipUtil(IPath aZipLocation, String aProjectName) {
+
+
+	public ProjectUnzipUtil(IPath aZipLocation, String[] aProjectNames) {
 		zipLocation = aZipLocation;
-		projectName = aProjectName;
+		projectNames = aProjectNames;
 
 	}
 
 	public boolean createProject() {
 		try {
 			expandZip();
-			buildProject();
+			buildProjects();
 		} catch (CoreException e) {
 			e.printStackTrace();
 			return false;
@@ -109,21 +111,23 @@ public class ProjectUnzipUtil {
 		this.rootLocation = rootLocation;
 	}
 
-	private void buildProject() throws IOException, CoreException{
-		ProjectDescriptionReader pd = new ProjectDescriptionReader();
-		IPath projectPath = new Path("\\" + projectName + "\\" + META_PROJECT_NAME);
-		IPath path = rootLocation.append(projectPath);
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-		ProjectDescription description;
-		try {
-			description = pd.read(path);
-			project.create(description, (getProgessMonitor()));
-			project.open(getProgessMonitor());
+	private void buildProjects() throws IOException, CoreException {
+		for (int i = 0; i < projectNames.length; i++) {
+			ProjectDescriptionReader pd = new ProjectDescriptionReader();
+			IPath projectPath = new Path("\\" + projectNames[i] + "\\" + META_PROJECT_NAME);
+			IPath path = rootLocation.append(projectPath);
+			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectNames[i]);
+			ProjectDescription description;
+			try {
+				description = pd.read(path);
+				project.create(description, (getProgessMonitor()));
+				project.open(getProgessMonitor());
 
-		} catch (IOException e) {
-			throw e;
-		} catch (CoreException e) {
-			throw e;
+			} catch (IOException e) {
+				throw e;
+			} catch (CoreException e) {
+				throw e;
+			}
 		}
 	}
 
