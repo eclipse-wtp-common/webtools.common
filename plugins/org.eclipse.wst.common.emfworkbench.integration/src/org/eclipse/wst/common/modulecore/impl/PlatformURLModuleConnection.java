@@ -11,10 +11,12 @@ import java.net.URL;
 
 import org.eclipse.core.internal.boot.PlatformURLConnection;
 import org.eclipse.core.internal.boot.PlatformURLHandler;
+import org.eclipse.core.internal.resources.PlatformURLResourceConnection;
 import org.eclipse.core.internal.utils.Policy;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.modulecore.ModuleStructuralModel;
 import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
@@ -45,9 +47,11 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
     	URI resolvedURI = null;
     	Object key = new Object();
     	try {
-    		structuralModel = ModuleCore.INSTANCE.getModuleStructuralModelForRead(aURI, key);
-    		WorkbenchModuleResource resource = ModuleCore.INSTANCE.findWorkbenchModuleResourceByDeployPath(structuralModel, aURI);
-    		resolvedURI = resource.getSourcePath();
+    		
+    		structuralModel = ModuleCore.getModuleStructuralModelForRead(ModuleCore.getContainingProject(aURI), key);
+    		ModuleCore editUtility = (ModuleCore) structuralModel.getAdapter(ModuleCore.ADAPTER_CLASS);
+    		WorkbenchModuleResource resource = editUtility.findWorkbenchModuleResourceByDeployPath(aURI);
+    		resolvedURI = URI.createPlatformResourceURI(resource.getSourcePath().toString());
     	} catch (UnresolveableURIException uurie) {
     		throw new IOException(uurie.toString());
     	} finally {
@@ -62,8 +66,8 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
      */
     protected URL resolve() throws IOException {
         System.out.println("URL: " + getURL());
-        //IPath moduleRelativePath = new Path(getURL().toExternalForm()); 
-        //String moduleName = moduleRelativePath.segment(1);        
+        IPath moduleRelativePath = new Path(getURL().toExternalForm()); 
+        String moduleName = moduleRelativePath.segment(1);        
         
         IPath resolvedPath = null; //handle.getResolvedPath().append(moduleRelativePath.removeFirstSegments(2));           
 

@@ -8,7 +8,9 @@ import java.util.List;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -19,7 +21,7 @@ import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import com.ibm.wtp.common.logger.proxy.Logger;
 import com.ibm.wtp.emf.workbench.WorkbenchResourceHelperBase;
 
-public class ModuleStructuralModel extends EditModel implements IResourceChangeListener {
+public class ModuleStructuralModel extends EditModel implements IResourceChangeListener, IAdaptable {
 	
 	public static final String MODULE_CORE_ID = "moduleCoreId"; //$NON-NLS-1$
     private final static ModuleCoreFactory MODULE_FACTORY = ModuleCoreFactory.eINSTANCE;
@@ -108,6 +110,10 @@ public class ModuleStructuralModel extends EditModel implements IResourceChangeL
 		XMIResource res = makeWTPModulesResource();		
 		addProjectModulesIfNecessary(res);
 		return res;
+	}
+	
+	public Object getAdapter(Class anAdapter) {
+		return Platform.getAdapterManager().getAdapter(this, anAdapter); 
 	}
 	
 	protected void addProjectModulesIfNecessary(XMIResource aResource) { 

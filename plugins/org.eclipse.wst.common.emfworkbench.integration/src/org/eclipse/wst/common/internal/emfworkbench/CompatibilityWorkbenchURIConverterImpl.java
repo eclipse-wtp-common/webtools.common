@@ -79,17 +79,14 @@ public class CompatibilityWorkbenchURIConverterImpl extends WorkbenchURIConverte
 	 * @see com.ibm.wtp.emf.workbench.WorkbenchURIConverterImpl#normalize(org.eclipse.emf.common.util.URI)
 	 */
 	public URI normalize(URI aURI) {
-		if(PlatformURLModuleConnection.MODULE.equals(aURI.scheme())) { 
-			URI resolvedURI = null;
+		URI normalizedURI = null;
+		if(PlatformURLModuleConnection.MODULE.equals(aURI.scheme())) { 		
 			try {
-				 resolvedURI = PlatformURLModuleConnection.resolve(aURI);
-			} catch(IOException ioe) {
-				//Ignore
-			}
-			return resolvedURI;
-				
+				normalizedURI = PlatformURLModuleConnection.resolve(aURI);
+			} catch(IOException ioe) {} 
+		} else {
+			normalizedURI = super.normalize(aURI);
 		}
-		URI normalizedURI = super.normalize(aURI);
 		if(normalizedURI.scheme() == null || normalizedURI.scheme().length() == 0) {
 			normalizedURI = URI.createPlatformResourceURI(getInputContainer().getFullPath().append(normalizedURI.toString()).toString());
 		}

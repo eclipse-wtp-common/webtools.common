@@ -31,7 +31,7 @@ public class DeployableModuleBuilder extends IncrementalProjectBuilder implement
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
 	    ModuleStructuralModel structuralModel = null;
         try{
-            structuralModel = ModuleCore.INSTANCE.getModuleStructuralModelForRead(getProject(), this);
+            structuralModel = ModuleCore.getModuleStructuralModelForRead(getProject(), this);
 		    DeployableModuleProjectBuilderDataModel dataModel = new DeployableModuleProjectBuilderDataModel();
 		    dataModel.setProperty(DeployableModuleProjectBuilderDataModel.PROJECT, getProject());
 		    dataModel.setProperty(DeployableModuleProjectBuilderDataModel.PROJECT_DETLA, getDelta(getProject()));
@@ -55,7 +55,7 @@ public class DeployableModuleBuilder extends IncrementalProjectBuilder implement
 	}
 
 	protected void clean(IProgressMonitor monitor) throws CoreException {
-		URI rootOutputURI = ModuleCore.INSTANCE.getProjectRootOutputContainer(getProject());
+		
 		//remove entire .deployables
 		super.clean(monitor);
     }

@@ -96,7 +96,9 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
     }
 
     private List populateFullModuleBuilderDataModelList() {
-        WorkbenchModule[] wbModules =ModuleCore.INSTANCE.getWorkbenchModules((ModuleStructuralModel)getProperty(MODULE_STRUCTURAL_MODEL));
+    	ModuleStructuralModel model = (ModuleStructuralModel)getProperty(MODULE_STRUCTURAL_MODEL);
+    	ModuleCore editUtility = (ModuleCore) model.getAdapter(ModuleCore.ADAPTER_CLASS);
+        WorkbenchModule[] wbModules = editUtility.getWorkbenchModules();
         List moduleBuilderDataModelList = new ArrayList();
         
         if(wbModules == null) return null;

@@ -1,6 +1,5 @@
 package org.eclipse.wst.common.modulecore.builder;
 
-import org.eclipse.core.internal.resources.Project;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
@@ -87,7 +86,7 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
         WorkbenchModule wbModule = (WorkbenchModule)getProperty(WORKBENCH_MODULE);
         URI uri = null;
         if(wbModule != null){
-            uri = ModuleCore.INSTANCE.getOutputContainerRoot(wbModule, (Project)getProperty(PROJECT));
+            uri = ModuleCore.getOutputContainerRoot(wbModule);
         }
         return uri;
     }

@@ -31,22 +31,20 @@ public class ArtifactEdit {
 	 */
 	public ArtifactEditModel getModuleEditModelForRead(WorkbenchModule aModule, Object anAccessorKey) {
 		try {
-			IProject project = ModuleCore.INSTANCE.getContainingProject(aModule.getHandle());
+			IProject project = ModuleCore.getContainingProject(aModule.getHandle());
 			ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(project);
 			return nature.getModuleEditModelForRead(aModule.getHandle(), anAccessorKey);
 		} catch (UnresolveableURIException uue) {
-			//Ignore
 		}
 		return null;
 	}
 
 	public ArtifactEditModel getModuleEditModelForWrite(WorkbenchModule aModule, Object anAccessorKey) {
 		try {
-			IProject project = ModuleCore.INSTANCE.getContainingProject(aModule.getHandle());
+			IProject project = ModuleCore.getContainingProject(aModule.getHandle());
 			ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(project);
 			return nature.getModuleEditModelForWrite(aModule.getHandle(), anAccessorKey);
 		} catch (UnresolveableURIException uue) {
-			//Ignore
 		}
 		return null;
 

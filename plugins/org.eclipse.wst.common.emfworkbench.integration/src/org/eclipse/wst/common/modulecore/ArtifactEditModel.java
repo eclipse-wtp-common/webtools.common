@@ -18,6 +18,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
+import org.eclipse.wst.common.modulecore.impl.PlatformURLModuleConnection;
 import org.eclipse.wst.common.modulecore.impl.UnresolveableURIException;
 import org.eclipse.wst.common.modulecore.util.ModuleCore;
 
@@ -39,6 +40,7 @@ public class ArtifactEditModel extends EditModel {
 		super(anEditModelId, aContext, toMakeReadOnly, toAccessUnknownResourcesAsReadOnly);
 		moduleURI = aModuleURI;
 		modulePath = new Path(moduleURI.path());
+		processLoadedResources(moduleURI);
 	}
 
 	/*
@@ -48,7 +50,7 @@ public class ArtifactEditModel extends EditModel {
 	 */
 	public Resource getResource(URI aUri) {
 		IPath requestPath = modulePath.append(new Path(aUri.path()));
-		URI resourceURI = URI.createURI(requestPath.toString());
+		URI resourceURI = URI.createURI(PlatformURLModuleConnection.MODULE_PROTOCOL+requestPath.toString());
 		return super.getResource(resourceURI);
 	}
 
@@ -64,26 +66,53 @@ public class ArtifactEditModel extends EditModel {
 		return super.getOrCreateResource(resourceURI);
 	}
 
-	protected boolean processResourcesIfInterrested(List someResources) {
-		int size = someResources.size();
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.wst.common.internal.emfworkbench.integration.EditModel#processLoadedResources()
+	 */
+	protected void processLoadedResources() {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.wst.common.internal.emfworkbench.integration.EditModel#processLoadedResources()
+	 */
+	protected void processLoadedResources(URI aModuleURI) {
+		List loadedResources = getResourceSet().getResources();
+		if (!loadedResources.isEmpty()) {
+			processResourcesIfInterrested(loadedResources);
+		}
+	}
+
+	protected boolean processResourcesIfInterrested(List theResources) {
+		int size = theResources.size();
 		Resource resourceToProcess;
 		boolean processed = false;
 		ModuleStructuralModel structuralModel = null;
 		try {
-			structuralModel = ModuleCore.INSTANCE.getModuleStructuralModelForRead(moduleURI, this);
+			structuralModel = ModuleCore.getModuleStructuralModelForRead(ModuleCore.getContainingProject(moduleURI), this);
+			ModuleCore editUtility = (ModuleCore) structuralModel.getAdapter(ModuleCore.ADAPTER_CLASS);
+			
 			WorkbenchModuleResource[] relevantModuleResources = null;
+			URI aResourceURI = null;
 			for (int i = 0; i < size; i++) {
-				resourceToProcess = (Resource) someResources.get(i);
-				relevantModuleResources = ModuleCore.INSTANCE.findWorkbenchModuleResourcesBySourcePath(structuralModel, resourceToProcess.getURI());
-				for(int resourcesIndex=0; resourcesIndex < relevantModuleResources.length; resourcesIndex++) {
-					if(moduleURI.equals(relevantModuleResources[resourcesIndex].getModule().getHandle())) {
-						processResource(resourceToProcess);
-						processed = true;
+				try {
+					resourceToProcess = (Resource) theResources.get(i);
+					aResourceURI = ModuleURIUtil.trimWorkspacePathToProjectRelativeURI(resourceToProcess.getURI());
+					relevantModuleResources = editUtility.findWorkbenchModuleResourcesBySourcePath(aResourceURI);
+					for (int resourcesIndex = 0; resourcesIndex < relevantModuleResources.length; resourcesIndex++) {
+						if (moduleURI.equals(relevantModuleResources[resourcesIndex].getModule().getHandle())) {
+							processResource(resourceToProcess);
+							processed = true;
+						}
 					}
+
+				} catch (UnresolveableURIException uurie) {
 				}
 			}
-		} catch (UnresolveableURIException uurie) {
-			//Ignore
+		} catch (UnresolveableURIException uurie) { 
 		} finally {
 			if (structuralModel != null)
 				structuralModel.releaseAccess(this);

@@ -25,8 +25,10 @@ import org.eclipse.wst.common.emf.utilities.ExtendedEcoreUtil;
 import org.eclipse.wst.common.internal.emfworkbench.EMFAdapterFactory;
 import org.eclipse.wst.common.internal.emfworkbench.PassthruResourceSet;
 import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
+import org.eclipse.wst.common.modulecore.ModuleStructuralModel;
 import org.eclipse.wst.common.modulecore.WTPModulesInit;
 import org.eclipse.wst.common.modulecore.impl.PlatformURLModuleConnection;
+import org.eclipse.wst.common.modulecore.util.ModuleCoreEclipseAdapterFactory;
 
 import com.ibm.wtp.emf.workbench.WorkbenchResourceHelperBase;
 
@@ -75,6 +77,7 @@ public class EMFWorkbenchEditPlugin extends Plugin {
 
 		IAdapterManager manager = Platform.getAdapterManager();
 		manager.registerAdapters(new EMFAdapterFactory(), EObject.class);
+		manager.registerAdapters(new ModuleCoreEclipseAdapterFactory(), ModuleStructuralModel.class);
 		
 		PlatformURLModuleConnection.startup();
 		WTPModulesInit.init();

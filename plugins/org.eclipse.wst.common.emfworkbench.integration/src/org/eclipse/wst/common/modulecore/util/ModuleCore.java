@@ -32,6 +32,15 @@ import org.eclipse.wst.common.modulecore.impl.UnresolveableURIException;
  * </p>
  */
 public class ModuleCore {
+	
+	public static final Class ADAPTER_CLASS = ModuleCore.class;
+	
+	private final ModuleStructuralModel structuralModel;
+
+	public ModuleCore(ModuleStructuralModel aStructuralModel) { 
+		structuralModel = aStructuralModel;
+	}
+	
 	 
 	public interface Constants {
 
@@ -41,30 +50,35 @@ public class ModuleCore {
 			public static final int MODULE_NAME = 2;
 		}
 	}
+// TODO Use URIs should be minimized 
 
-	public static ModuleCore INSTANCE = new ModuleCore();
 	static String MODULE_META_FILE_NAME = ".wtpmodules";
 	private static final WorkbenchModuleResource[] NO_RESOURCES = new WorkbenchModuleResource[0];
 
-	public ModuleStructuralModel getModuleStructuralModelForRead(IProject aProject, Object anAccessorKey) {
+	public static ModuleStructuralModel getModuleStructuralModelForRead(IProject aProject, Object anAccessorKey) {
 		ModuleCoreNature aNature = ModuleCoreNature.getModuleCoreNature(aProject);
 		return aNature.getModuleStructuralModelForRead(anAccessorKey);
 	}
 
-	public ModuleStructuralModel getModuleStructuralModelForWrite(IProject aProject, Object anAccessorKey) {
+	public static  ModuleStructuralModel getModuleStructuralModelForWrite(IProject aProject, Object anAccessorKey) {
 		ModuleCoreNature aNature = ModuleCoreNature.getModuleCoreNature(aProject);
 		return aNature.getModuleStructuralModelForWrite(anAccessorKey);
+	} 
+	
+	public static ModuleCoreNature getModuleCoreNature(URI aModuleURI) throws UnresolveableURIException {
+		return ModuleCoreNature.getModuleCoreNature(getContainingProject(aModuleURI));
 	}
 
-	public ModuleStructuralModel getModuleStructuralModelForRead(URI aModuleURI, Object anAccessorKey) throws UnresolveableURIException {
-		return getModuleCoreNature(aModuleURI).getModuleStructuralModelForRead(anAccessorKey);
+	public static URI getOutputContainerRoot(WorkbenchModule aWorkbenchModule) {
+	    return URI.createURI(".deployables/"+aWorkbenchModule.getDeployedName()); //$NON-NLS-1$
+	} 
+
+	public static Resource.Factory getResourceFactory(URI aURI) {
+		return Resource.Factory.Registry.INSTANCE.getFactory(aURI);
 	}
 	
-	public ModuleStructuralModel getModuleStructuralModelForWrite(URI aModuleURI, Object anAccessorKey) throws UnresolveableURIException {
-		return getModuleCoreNature(aModuleURI).getModuleStructuralModelForWrite(anAccessorKey);
-	}
-
-	public IProject getContainingProject(URI aModuleURI) throws UnresolveableURIException {
+	/* Need to evaluate whether this should be part of the adaptive nature of this class or the utility nature of this class */
+	public static IProject getContainingProject(URI aModuleURI) throws UnresolveableURIException {
 		ModuleURIUtil.ensureValidFullyQualifiedModuleURI(aModuleURI);
 		String projectName = aModuleURI.segment(ModuleCore.Constants.ModuleURISegments.PROJECT_NAME);
 		if(projectName == null || projectName.length() == 0)
@@ -72,46 +86,44 @@ public class ModuleCore {
 		return ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 	}		
 	
-	private String getDeployedNameForModule(URI aModuleURI) throws UnresolveableURIException { 
+	private static String getDeployedNameForModule(URI aModuleURI) throws UnresolveableURIException { 
 		ModuleURIUtil.ensureValidFullyQualifiedModuleURI(aModuleURI);
 		return aModuleURI.segment(ModuleCore.Constants.ModuleURISegments.MODULE_NAME);
 	}
 	
-	public ModuleCoreNature getModuleCoreNature(URI aModuleURI) throws UnresolveableURIException {
-		return ModuleCoreNature.getModuleCoreNature(getContainingProject(aModuleURI));
-	}
 	
-	public ProjectModules getProjectModules(ModuleStructuralModel aModuleStucturalModule) {
-		return (ProjectModules) aModuleStucturalModule.getPrimaryRootObject();
+	public ProjectModules getProjectModules() {
+		return (ProjectModules) structuralModel.getPrimaryRootObject();
 	}
 
-	public WorkbenchModule[] getWorkbenchModules(ModuleStructuralModel aModuleStucturalModule) {
-		List wbModules = getProjectModules(aModuleStucturalModule).getWorkbenchModules();
+	public WorkbenchModule[] getWorkbenchModules() {
+		List wbModules = getProjectModules().getWorkbenchModules();
 		return (WorkbenchModule[]) wbModules.toArray(new WorkbenchModule[wbModules.size()]);
 	}
 
-	public WorkbenchModuleResource findWorkbenchModuleResourceByDeployPath(ModuleStructuralModel aModuleStucturalModule, URI aModuleURI, URI aDeployedResourcePath)  throws UnresolveableURIException {
-		WorkbenchModule module = ModuleCore.INSTANCE.findWorkbenchModuleByDeployName(aModuleStucturalModule, getDeployedNameForModule(aModuleURI));
+	public WorkbenchModuleResource findWorkbenchModuleResourceByDeployPath(URI aModuleURI, URI aDeployedResourcePath)  throws UnresolveableURIException {
+		WorkbenchModule module = findWorkbenchModuleByDeployName(getDeployedNameForModule(aModuleURI));
 		return module.findWorkbenchModuleResourceByDeployPath(aDeployedResourcePath);
 	}
 	
-	public WorkbenchModuleResource findWorkbenchModuleResourceByDeployPath(ModuleStructuralModel aModuleStucturalModule, URI aModuleResourcePath) throws UnresolveableURIException {
+	public WorkbenchModuleResource findWorkbenchModuleResourceByDeployPath(URI aModuleResourcePath) throws UnresolveableURIException {
 		ModuleURIUtil.ensureValidFullyQualifiedModuleURI(aModuleResourcePath);
 		URI moduleURI = aModuleResourcePath.trimSegments(aModuleResourcePath.segmentCount() - 3);
 		URI deployedPath = aModuleResourcePath.deresolve(aModuleResourcePath.trimSegments(aModuleResourcePath.segmentCount() - 4));
-		WorkbenchModule module = ModuleCore.INSTANCE.findWorkbenchModuleByDeployName(aModuleStucturalModule, getDeployedNameForModule(moduleURI));
+		WorkbenchModule module = findWorkbenchModuleByDeployName(getDeployedNameForModule(moduleURI));
 		return module.findWorkbenchModuleResourceByDeployPath(deployedPath);
 	}	
 	
-	public WorkbenchModuleResource[] findWorkbenchModuleResourcesBySourcePath(ModuleStructuralModel aModuleStucturalModule, URI aResourcePath) {
-		ProjectModules projectModules = getProjectModules(aModuleStucturalModule);
+	public WorkbenchModuleResource[] findWorkbenchModuleResourcesBySourcePath(URI aProjectRelativePath) throws UnresolveableURIException {
+		ProjectModules projectModules = getProjectModules();
 		EList modules = projectModules.getWorkbenchModules();
+		
 		WorkbenchModule module = null;
 		WorkbenchModuleResource resource = null;
-		List foundResources = new ArrayList();
+		List foundResources = new ArrayList(); 		
 		for(int i=0; i<modules.size(); i++) {
 			 module = (WorkbenchModule) modules.get(i);
-			 resource = module.findWorkbenchModuleResourceBySourcePath(aResourcePath);
+			 resource = module.findWorkbenchModuleResourceBySourcePath(aProjectRelativePath);
 			 if(resource != null)
 			 	foundResources.add(resource);
 		}
@@ -120,18 +132,8 @@ public class ModuleCore {
 		return NO_RESOURCES;
 	}	
 
-	public WorkbenchModule findWorkbenchModuleByDeployName(ModuleStructuralModel aStructuralModel, String aModuleName) {
-		return getProjectModules(aStructuralModel).findWorkbenchModule(aModuleName);
+	public WorkbenchModule findWorkbenchModuleByDeployName(String aModuleName) {
+		return getProjectModules().findWorkbenchModule(aModuleName);
 	}	
 
-	public Resource.Factory getResourceFactory(URI uri) {
-		return Resource.Factory.Registry.INSTANCE.getFactory(uri);
-	}
-	
-	public URI getOutputContainerRoot(WorkbenchModule wbModule, IProject proj) {
-	    return URI.createURI(proj.getProjectRelativePath().toString()+".deployables/"+wbModule.getDeployedName()); //$NON-NLS-1$
-	} 
-	public URI getProjectRootOutputContainer(IProject proj) {
-	    return URI.createURI(proj.getProjectRelativePath().toString()+".deployables/");
-	}
 }
