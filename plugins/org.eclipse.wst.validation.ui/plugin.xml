@@ -45,39 +45,7 @@
          </action>
       </objectContribution>
    </extension>
-   <extension
-         point="org.eclipse.ui.popupMenus">
-      <objectContribution  
-      		objectClass="org.eclipse.emf.ecore.EObject"
-            id="ValidationMenuAction">
-         <action
-               label="%VBF_UI_POPUP_RUNVALIDATION"
-               class="org.eclipse.wst.validation.internal.ui.ValidationMenuAction"
-               menubarPath="additions"
-               enablesFor="+"
-               id="ValidationAction">
-         </action>
-         <visibility>
-            <or>
-               <objectClass
-                     name="com.ibm.etools.application.Application">
-               </objectClass>
-               <objectClass
-                     name="com.ibm.etools.client.ApplicationClient">
-               </objectClass>
-               <objectClass
-                     name="com.ibm.etools.jca.Connector">
-               </objectClass>
-               <objectClass
-                     name="com.ibm.etools.ejb.EJBJar">
-               </objectClass>
-               <objectClass
-                     name="com.ibm.etools.webapplication.WebApp">
-               </objectClass>
-            </or>
-         </visibility>
-      </objectContribution>
-   </extension>
+  
 
 <!-- ====================================================== -->
 <!--           Validation preference page                   -->
