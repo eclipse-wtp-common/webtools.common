@@ -9,6 +9,8 @@
 package org.eclipse.wst.common.frameworks.modulecore.tests;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import junit.framework.Test;
@@ -64,12 +66,15 @@ public class ModuleCoreAPITest extends TestCase {
 		super.setUp();
 
 		setupNavigateComponentTest();
-		setupCreateLinkTest();
-		setupCreateNewModuleTest();
+	}
+	
+	protected void tearDown() throws Exception {
+		super.tearDown(); 
+		tearDownCreateNewModuleTest();
+		tearDownCreateLinkTest();
 	}
 
-	public void setupCreateNewModuleTest() throws Exception {
-
+	public void tearDownCreateNewModuleTest() throws Exception {
 		IFolder rootFolder = TestWorkspace.getTargetProject().getFolder(TestWorkspace.NEW_WEB_MODULE_NAME);
 		if (rootFolder.exists())
 			rootFolder.delete(IResource.FORCE | IResource.ALWAYS_DELETE_PROJECT_CONTENT, null);
@@ -94,6 +99,7 @@ public class ModuleCoreAPITest extends TestCase {
 				moduleCore.dispose();
 			}
 		}
+
 	}
 
 	/**
@@ -126,7 +132,7 @@ public class ModuleCoreAPITest extends TestCase {
 	 * Checks for and removes the mapping and folder that will be created by
 	 * {@link ModuleCoreAPITest#testCreateLink()}.
 	 */
-	public void setupCreateLinkTest() throws Exception {
+	public void tearDownCreateLinkTest() throws Exception {
 		IFolder module2Images = TestWorkspace.getTargetProject().getFolder(new Path("/WebModule2/images")); //$NON-NLS-1$
 		if (module2Images.exists())
 			module2Images.delete(IResource.FORCE | IResource.ALWAYS_DELETE_PROJECT_CONTENT, null);
@@ -289,10 +295,10 @@ public class ModuleCoreAPITest extends TestCase {
 		root.createLink(realWebContentPath, 0, null); //$NON-NLS-1$
 
 		IVirtualFolder metaInfFolder = root.getFolder(TestWorkspace.META_INF);
-		metaInfFolder.create(true, true, null);
+		metaInfFolder.create(IVirtualResource.FORCE, null);
 
 		IVirtualFolder webInfFolder = root.getFolder(TestWorkspace.WEB_INF);
-		webInfFolder.create(true, true, null);
+		webInfFolder.create(IVirtualResource.FORCE, null);
 
 		IFolder realWebContent = TestWorkspace.getTargetProject().getFolder(realWebContentPath);
 		assertTrue("The " + realWebContent + " directory must exist.", realWebContent.exists()); //$NON-NLS-1$ //$NON-NLS-2$
@@ -317,12 +323,37 @@ public class ModuleCoreAPITest extends TestCase {
 
 			assertTrue("There should be exactly one Component resource with the source path \"" + metaInfFolder.getProjectRelativePath() + "\".", componentResources.length == 1); //$NON-NLS-1$ //$NON-NLS-2$
 
-			assertTrue("The runtime path should match \"/" + TestWorkspace.META_INF + "\".", componentResources[0].getRuntimePath().path().equals("/" + TestWorkspace.META_INF)); //$NON-NLS-1$ //$NON-NLS-2$
+			assertTrue("The runtime path should match \"/" + TestWorkspace.META_INF + "\".", componentResources[0].getRuntimePath().path().equals("/" + TestWorkspace.META_INF)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			
+			// try to force duplicate mappings
+			metaInfFolder.create(IVirtualResource.FORCE, null);
+			webInfFolder.create(IVirtualResource.FORCE, null);
+			
+			// ensure that multiple mappings aren't added
+			
+			assertTrue("The mapping should not be duplicated.", !isDuplicated(wbComponent, metaInfFolder.getRuntimePath())); //$NON-NLS-1$
+			assertTrue("The mapping should not be duplicated.", !isDuplicated(wbComponent, webInfFolder.getRuntimePath())); //$NON-NLS-1$
 		} finally {
 			if (moduleCore != null)
 				moduleCore.dispose();
 		}
 
+	}
+
+	private boolean isDuplicated(WorkbenchComponent wbComponent, IPath runtimePath) {
+		
+		URI runtimeURI = URI.createURI(runtimePath.toString());
+		boolean found = false;
+		List resourceList = wbComponent.getResources();
+		for (Iterator iter = resourceList.iterator(); iter.hasNext();) {
+			ComponentResource resource = (ComponentResource) iter.next();
+			if(resource.getRuntimePath().equals(runtimeURI))
+				if(found)
+					return true;
+				else
+					found = true;
+		}	
+		return false;
 	}
 
 }
