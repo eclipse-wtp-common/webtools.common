@@ -12,6 +12,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
@@ -23,6 +24,14 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
  * using API similar to the Eclipse Platform IResource model.
  * </p>
  * <p>
+ * IVirtualResource allows resources to be accessed through a
+ * abstract path referred to as a "runtime path". 
+ * A virtual resource may represent multiple underlying resources.
+ * A virtual resource is contained by exactly one component.
+ * A resource may be represented by multiple virtual resources, which
+ * may be contained by one or more components. 
+ * </p>
+ * <p>
  * IVirtualResource allows clients to acquire
  * information about the underlying resource including the name, 
  * and the paths which are relevant to the current resource, such
@@ -32,7 +41,7 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
  * {@link #getProjectRelativePath() project-relative path}
  * of the underlying resource.
  * </p>
- * <a base="references" />
+ * <a name="references" />
  * <p>Each IVirtualResource can represent an <b>implicit</b> reference or
  * an <b>explicit</b> reference. An <b>explicit</b> reference is a formal
  * mapping from some path within the file structure to a runtime path. Changing
@@ -47,7 +56,7 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
  * This interface is not intended to be implemented by clients.
  * </p>
  */
-public interface IVirtualResource extends ISchedulingRule {
+public interface IVirtualResource extends ISchedulingRule, IAdaptable {
 
 	/*
 	 * ==================================================================== 
@@ -58,7 +67,7 @@ public interface IVirtualResource extends ISchedulingRule {
 	 */
 
 	/**
-	 * Type constant (bit mask value 1) which identifies file resources.
+	 * Type constant (bit mask value 16) which identifies file resources.
 	 * 
 	 * @see IVirtualResource#getType()
 	 * @see IVirtualFile
@@ -66,7 +75,7 @@ public interface IVirtualResource extends ISchedulingRule {
 	public static final int FILE = 0x10;
 
 	/**
-	 * Type constant (bit mask value 2) which identifies folder resources.
+	 * Type constant (bit mask value 32) which identifies folder resources.
 	 * 
 	 * @see IVirtualResource#getType()
 	 * @see IVirtualFolder
@@ -74,12 +83,12 @@ public interface IVirtualResource extends ISchedulingRule {
 	public static final int FOLDER = 0x20;
 
 	/**
-	 * Type constant (bit mask value 8) which identifies the root resource.
+	 * Type constant (bit mask value 64) which identifies the root resource.
 	 * 
 	 * @see IVirtualResource#getType()
-	 * @see IWorkspaceRoot
+	 * @see IVirtualContainer
 	 */
-	public static final int COMPONENT = 0x80;
+	public static final int COMPONENT = 0x40;
 	
 	/**
 	 * General purpose zero-valued bit mask constant. Useful whenever you need to supply a bit mask
@@ -103,7 +112,7 @@ public interface IVirtualResource extends ISchedulingRule {
 	 */
 
 	/**
-	 * Update flag constant (bit mask value 1) indicating that the operation should proceed even if
+	 * Update flag constant (bit mask value 256) indicating that the operation should proceed even if
 	 * the resource is out of sync with the local file system.
 	 * 
 	 * @since 2.0
@@ -111,7 +120,7 @@ public interface IVirtualResource extends ISchedulingRule {
 	public static final int FORCE = 0x100; 
 
 	/**
-	 * Indicates that exclusions enumerated in the model should be ignored. 
+	 * Indicates that exclusions enumerated in the model should be ignored. (bit mask value 512)  
 	 */
 	public static final int IGNORE_EXCLUSIONS = 0x200;
 
@@ -119,7 +128,7 @@ public interface IVirtualResource extends ISchedulingRule {
 	 * Indicates that modifications should only modify the metamodel and ignore the underlying
 	 * resources where applicable.  See the 
 	 * <a href="IVirtualResource.html#references">documentation on references</a> 
-	 * for more information on why this flag is relevant.
+	 * for more information on why this flag is relevant. (bit mask value 1024)  
 	 */
 	public static final int IGNORE_UNDERLYING_RESOURCE = 0x400;  
 	
@@ -128,8 +137,8 @@ public interface IVirtualResource extends ISchedulingRule {
 	 * virtual resource. Model changes will occur as a result of this method, 
 	 * and potentially resource-level creations as well.
 	 * 
-	 * @param aProjectRelativeLocation
-	 * @param updateFlags
+	 * @param aProjectRelativeLocation A project relative location that will be represented by the runtime path after this call
+	 * @param updateFlags A bitmask of flags to supply to the method. 
 	 * @param monitor
 	 * @throws CoreException
 	 */

@@ -50,24 +50,24 @@ public class VirtualContainer extends VirtualResource implements IVirtualContain
 	 * @see IContainer#findMember(java.lang.String)
 	 */
 	public IVirtualResource findMember(String aChildName) {
-		return findMember(aChildName, false);
+		return findMember(aChildName, 0);
 	}
 
 	/**
 	 * @see IContainer#findMember(java.lang.String, boolean)
 	 */
-	public IVirtualResource findMember(String aChildName, boolean includePhantoms) {
-		return findMember(getRuntimePath().append(aChildName), includePhantoms);
+	public IVirtualResource findMember(String aChildName,  int searchFlags) {
+		return findMember(getRuntimePath().append(aChildName), searchFlags);
 	}
 
 	/**
 	 * @see IContainer#findMember(org.eclipse.core.runtime.IPath)
 	 */
 	public IVirtualResource findMember(IPath aChildPath) {
-		return findMember(aChildPath, false);
+		return findMember(aChildPath, 0);
 	}
 
-	public IVirtualResource findMember(IPath path, boolean includePhantoms) {
+	public IVirtualResource findMember(IPath path, int searchFlags) {
 
 		// ModuleCore moduleCore = null;
 		// Set virtualResources = null;
