@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.7 $$  $$Date: 2005/02/15 23:04:14 $$ 
+ *  $$Revision: 1.8 $$  $$Date: 2005/03/18 18:52:06 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -23,7 +23,6 @@ import org.eclipse.emf.common.notify.impl.NotificationImpl;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.Resource.Factory.Registry;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.resource.impl.URIConverterImpl;
 import org.eclipse.emf.ecore.xmi.XMLResource;
@@ -232,7 +231,7 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements ProjectRe
 		this.synchronizer = synchronizer;
 	}
 	/**
-	 * @see org.eclipse.emf.ecore.resource.ResourceSet#setResourceFactoryRegistry(Registry)
+	 * @see org.eclipse.emf.ecore.resource.ResourceSet#setResourceFactoryRegistry(Resource.Factory.Registry)
 	 */
 	public void setResourceFactoryRegistry(Resource.Factory.Registry factoryReg) {
 		if (resourceFactoryRegistry != null && factoryReg != null) {
