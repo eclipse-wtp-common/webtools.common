@@ -59,8 +59,8 @@
    <extension
          point="org.eclipse.emf.ecore.generated_package">
       <package
-            uri="projectmodule.xmi"
-            class="org.eclipse.wst.common.projectmodule.ProjectModulePackage">
+            uri="modulecore.xmi"
+            class="org.eclipse.wst.common.modulecore.ModuleCorePackage">
       </package>
    </extension>
    
