@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -106,5 +107,7 @@ public class ModuleCore {
 		// module.setName(project.getName());
 		resource.getContents().add(module);
 	}
-
+	public String getOutputContainerRoot() {
+	    return ".deployables"; //$NON-NLS-1$
+	}
 }

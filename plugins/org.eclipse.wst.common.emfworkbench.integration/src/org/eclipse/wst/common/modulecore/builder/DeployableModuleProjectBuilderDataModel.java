@@ -101,7 +101,9 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
             factory = DeployableModuleBuilderFactoryRegistry.INSTANCE.createDeployableFactory(wbModules[i].getModuleType().getModuleTypeId());
             if(factory != null) {
                 dataModel = factory.createDeploymentModuleDataModel();
-                // TODO: set relevant DM info;
+                dataModel.setProperty(DeployableModuleBuilderDataModel.PROJECT, getProperty(PROJECT));
+				dataModel.setProperty(DeployableModuleBuilderDataModel.MODULE_STRUCTURAL_MODEL, getProperty(MODULE_STRUCTURAL_MODEL));
+				dataModel.setProperty(DeployableModuleBuilderDataModel.WORKBENCH_MODULE, wbModules[i]);
                 moduleBuilderDataModelList.add(factory.createDeploymentModuleDataModel());
             }
         }

@@ -1,7 +1,11 @@
 package org.eclipse.wst.common.modulecore.builder;
 
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.modulecore.WorkbenchModule;
+import org.eclipse.wst.common.modulecore.util.ModuleCore;
 
 public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataModel {
 	/**
@@ -17,9 +21,9 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
 	 */
 	public static final String OUTPUT_CONTAINER = "DeployableModuleDataModel.OUTPUT_CONTAINER"; //$NON-NLS-1$
 	/**
-	 * Required, type WorkbenchModuleResource
+	 * Required, type WorkbenchModule
 	 */
-	public static final String WORKBENCH_MODULE_RESOURCES = "DeployableModuleDataModel.WORKBENCH_MODULE_RESOURCES"; //$NON-NLS-1$
+	public static final String WORKBENCH_MODULE = "DeployableModuleDataModel.WORKBENCH_MODULE_RESOURCES"; //$NON-NLS-1$
 	/**
 	 * Required, type List of DependentdeployableModuleDataModel
 	 */
@@ -33,15 +37,59 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
 		addValidBaseProperty(PROJECT);
 		addValidBaseProperty(MODULE_STRUCTURAL_MODEL);
 		addValidBaseProperty(OUTPUT_CONTAINER);
-		addValidBaseProperty(WORKBENCH_MODULE_RESOURCES);
+		addValidBaseProperty(WORKBENCH_MODULE);
 		addValidBaseProperty(DEPENDENT_MODULES_DM_LIST);
 	}
+	
+	/* (non-Javadoc)
+     * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#getDefaultProperty(java.lang.String)
+     */
+    protected Object getDefaultProperty(String propertyName) {
+        if(propertyName.equals(OUTPUT_CONTAINER)){
+            if(isSet(WORKBENCH_MODULE))
+                return populateOutputContainer();
+        }
+        else if(propertyName.equals(DEPENDENT_MODULES_DM_LIST)){
+            if(isSet(WORKBENCH_MODULE))
+                return populateDependentModulesDM();
+        }
+        return super.getDefaultProperty(propertyName);
+    }
+    /* (non-Javadoc)
+     * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#doSetProperty(java.lang.String, java.lang.Object)
+     */
+    protected boolean doSetProperty(String propertyName, Object propertyValue) {
+        boolean status = super.doSetProperty(propertyName, propertyValue);
+        if(propertyName.equals(WORKBENCH_MODULE)) {
+            notifyDefaultChange(OUTPUT_CONTAINER);
+            notifyDefaultChange(DEPENDENT_MODULES_DM_LIST);
+        }
+        return status;
+    }
     /**
      * 
      */
     public DeployableModuleBuilderDataModel() {
         super();
         // TODO Auto-generated constructor stub
+    }    /**
+     * @return
+     */
+    private Object populateDependentModulesDM() {
+        //TODO:
+        return null;
+    }
+
+    /**
+     * @return
+     */
+    private Object populateOutputContainer() {
+        WorkbenchModule wbModule = (WorkbenchModule)getProperty(WORKBENCH_MODULE);
+        IPath path = null;
+        if(wbModule != null){
+            path = new Path(ModuleCore.INSTANCE.getOutputContainerRoot() + "/" + wbModule.getDeployedName());
+        }
+        return path;
     }
 
     /* (non-Javadoc)
