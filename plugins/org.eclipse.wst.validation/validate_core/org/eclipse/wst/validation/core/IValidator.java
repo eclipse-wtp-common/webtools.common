@@ -10,9 +10,6 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.core;
 
-
-
-
 /**
  * This is the base interface for all Validators. A Validator is a class which verifies that objects
  * follow some rules. For example, in a MOF model which represents an EJB jar, the EJB specification
@@ -26,14 +23,6 @@ package org.eclipse.wst.validation.core;
  * A validator's verification starts when the ValidatorLauncher singleton calls
  * <code>validate</code>.
  * 
- * [issue : CS - I'd like request a public API on some singleton (perhaps the plugin) to access
- * a validator registery to retrieve a particular validator registered by for a particular 'id' or 'content type'
- * Currently we're using some internals to achieve this sort of thing (as shown below).  We do this to invoke
- * validators to achieve 'as-you-type' validation in our source editors.   
- * 
- *     //Get the validator:
- *     ValidatorMetaData validatorData = ValidationRegistryReader.getReader().getValidatorMetaData(VALIDATOR_CLASS);
- *     return validatorData.getValidator();
  * ]   
  */
 public interface IValidator {
