@@ -32,7 +32,7 @@ import org.eclipse.emf.common.util.AbstractEnumerator;
  * utility methods for working with them.
  * </p>
  * <p> 
- * See the package overview for an <a href="package.html">overview of the model components</a>.
+ * See the package overview for an <a href="package-summary.html">overview of the model components</a>.
  * </p>
  * <!-- end-user-doc --> <!-- end-user-doc --> <!-- begin-model-doc --> uses=0 consumes=1 <!--
  * end-model-doc -->

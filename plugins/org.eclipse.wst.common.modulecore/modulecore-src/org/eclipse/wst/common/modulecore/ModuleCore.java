@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.wst.common.modulecore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.modulecore.internal.util.EclipseResourceAdapter;
 
 /**
@@ -63,12 +64,6 @@ import org.eclipse.wst.common.modulecore.internal.util.EclipseResourceAdapter;
  */
 public class ModuleCore implements IEditModelHandler {
 
-	static interface ModuleURI {
-		public static final int SUB_PROTOCOL_INDX = 0;
-		public static final int PROJECT_NAME_INDX = 1;
-		public static final int MODULE_NAME_INDX = 2;
-	}
-
 	public static final Class ADAPTER_TYPE = ModuleCore.class;
 
 	static final String DEPLOYABLES_ROOT = ".deployables/"; //$NON-NLS-1$
@@ -84,8 +79,6 @@ public class ModuleCore implements IEditModelHandler {
 	private final Map dependentCores = new HashMap();
 	private boolean isStructuralModelSelfManaged;
 	private boolean isReadOnly;
-
-
 
 	/**
 	 * 
@@ -173,7 +166,7 @@ public class ModuleCore implements IEditModelHandler {
 	 */
 	public static IProject getContainingProject(URI aModuleURI) throws UnresolveableURIException {
 		ModuleURIUtil.ensureValidFullyQualifiedModuleURI(aModuleURI);
-		String projectName = aModuleURI.segment(ModuleCore.ModuleURI.PROJECT_NAME_INDX);
+		String projectName = aModuleURI.segment(ModuleURIUtil.ModuleURI.PROJECT_NAME_INDX);
 		if (projectName == null || projectName.length() == 0)
 			throw new UnresolveableURIException(aModuleURI);
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
@@ -256,6 +249,22 @@ public class ModuleCore implements IEditModelHandler {
 		IFolder folder = aProject.getFolder(new Path(DEPLOYABLES_ROOT));
 		IFolder[] outputResources = {folder};
 		return outputResources;
+	}
+
+	/**
+	 * <p>
+	 * Parses the supplied URI for the deployed name name of the {@see WorkbenchModule}&nbsp;referenced
+	 * by the URI.
+	 * </p>
+	 * 
+	 * @param aFullyQualifiedModuleURI
+	 *            A valid, fully-qualified module URI
+	 * @return The deployed name of the referenced {@see WorkbenchModule}
+	 * @throws UnresolveableURIException
+	 *             If the supplied URI is invalid or unresolveable
+	 */
+	public static String getDeployedName(URI aFullyQualifiedModuleURI) throws UnresolveableURIException {
+		return ModuleURIUtil.getDeployedName(aFullyQualifiedModuleURI);
 	}
 
 	protected ModuleCore(ModuleCoreNature aNature, boolean toAccessAsReadOnly) {
@@ -561,8 +570,8 @@ public class ModuleCore implements IEditModelHandler {
 	 */
 	public WorkbenchModule findWorkbenchModuleByModuleURI(URI aModuleURI) throws UnresolveableURIException {
 		ModuleURIUtil.ensureValidFullyQualifiedModuleURI(aModuleURI);
-		String projectName = aModuleURI.segment(ModuleCore.ModuleURI.PROJECT_NAME_INDX);
-		String moduleName = aModuleURI.segment(ModuleCore.ModuleURI.MODULE_NAME_INDX);
+		String projectName = aModuleURI.segment(ModuleURIUtil.ModuleURI.PROJECT_NAME_INDX);
+		String moduleName = aModuleURI.segment(ModuleURIUtil.ModuleURI.MODULE_NAME_INDX);
 		/* Accessing a local module */
 		if (structuralModel.getProject().getName().equals(projectName)) {
 			return findWorkbenchModuleByDeployName(moduleName);
@@ -609,7 +618,7 @@ public class ModuleCore implements IEditModelHandler {
 	 */
 	public boolean isLocalDependency(DependentModule aDependentModule) {
 		String localProjectName = structuralModel.getProject().getName();
-		String dependentProjectName = aDependentModule.getHandle().segment(ModuleCore.ModuleURI.PROJECT_NAME_INDX);
+		String dependentProjectName = aDependentModule.getHandle().segment(ModuleURIUtil.ModuleURI.PROJECT_NAME_INDX);
 		return localProjectName.equals(dependentProjectName);
 	}
 

@@ -1,7 +1,7 @@
 /**
  * <copyright></copyright>
  * 
- * $Id: WorkbenchModuleResource.java,v 1.2 2005/02/18 04:41:37 cbridgha Exp $
+ * $Id: WorkbenchModuleResource.java,v 1.3 2005/02/18 17:50:05 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -16,17 +16,11 @@ import org.eclipse.emf.ecore.EObject;
  * The underlying eclipse resource could be a container or a file. However, if the
  * {@see #getSourcePath()}&nbsp; is a container, then the {@see #getDeployedPath()}&nbsp; will be
  * a container as well.
- * </p>
- * <ul>
- * <li>
+ * </p>Clients that require access to the underlying Eclipse Resource for a given
+ * WorkbenchModuleResource should use 
+ * {@see org.eclipse.wst.common.modulecore.ModuleCore#getEclipseResource(WorkbenchModuleResource)}&nbsp;
  * <p>
- * {@see org.eclipse.wst.common.modulecore.ModuleCore#getEclipseResource(WorkbenchModuleResource)}
- * </p>
- * </li>
- * </ul>
- * 
- * <p>
- * See the package overview for an <a href="package.html">overview of the model components </a>.
+ * See the package overview for an <a href="package-summary.html">overview of the model components </a>.
  * </p>
  * <!-- end-user-doc -->
  * 

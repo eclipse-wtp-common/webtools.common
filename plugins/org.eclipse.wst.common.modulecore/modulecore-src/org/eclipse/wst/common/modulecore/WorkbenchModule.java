@@ -16,7 +16,7 @@ import org.eclipse.emf.ecore.EObject;
  * <!-- begin-user-doc --> 
  * An EMF representation of a development-time module contained by an Eclipse project. 
  * <p> 
- * See the package overview for an <a href="package.html">overview of the model components</a>.
+ * See the package overview for an <a href="package-summary.html">overview of the model components</a>.
  * </p>
  * <!-- end-user-doc -->
  *

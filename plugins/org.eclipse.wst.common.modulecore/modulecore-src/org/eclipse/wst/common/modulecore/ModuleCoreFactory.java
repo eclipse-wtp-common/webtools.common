@@ -11,10 +11,8 @@ package org.eclipse.wst.common.modulecore;
 import org.eclipse.emf.ecore.EFactory;
 
 /**
- * <!-- begin-user-doc -->
- * <p>
- * The EMF Factory used to create instances of model objects.
- * </p>
+ * <!-- begin-user-doc --> 
+ * The EMF Factory used to create empty, uncontained instances of model objects. 
  * <p>
  * Clients are encouraged to use {@see org.eclipse.wst.common.modulecore.ModuleCore}&nbsp;when
  * constructing specific Module Structural Metamodels for a particular project. However, the Factory

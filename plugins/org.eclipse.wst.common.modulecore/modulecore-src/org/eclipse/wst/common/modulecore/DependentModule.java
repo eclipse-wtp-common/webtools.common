@@ -25,7 +25,7 @@ import org.eclipse.emf.ecore.EObject;
  * {@see ModuleCore#isLocalDependency(DependentModule)}&nbsp; to make the determination.
  * </p> 
  * <p>
- * See the package overview for an <a href="package.html">overview of the model components </a>.
+ * See the package overview for an <a href="package-summary.html">overview of the model components </a>.
  * </p>
  * <!-- end-user-doc -->
  * 

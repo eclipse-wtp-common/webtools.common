@@ -16,7 +16,7 @@ import org.eclipse.emf.ecore.EObject;
  * Provides a root object to store and manage the
  * {@see org.eclipse.wst.common.modulecore.WorkbenchModule}s. * 
  * <p>
- * See the package overview for an <a href="package.html">overview of the model components </a>.
+ * See the package overview for an <a href="package-summary.html">overview of the model components </a>.
  * </p>
  * <!-- end-user-doc -->
  * 

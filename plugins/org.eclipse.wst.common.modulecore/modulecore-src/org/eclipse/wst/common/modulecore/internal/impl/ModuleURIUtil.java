@@ -8,21 +8,31 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.modulecore;
+package org.eclipse.wst.common.modulecore.internal.impl;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.wst.common.modulecore.UnresolveableURIException;
 
 /**
+ * 
  * <p>
  * The following class is experimental until fully documented.
  * </p>
  */
 public class ModuleURIUtil {
 
+	public static interface ModuleURI {
+		public static final int SUB_PROTOCOL_INDX = 0;
+		public static final int PROJECT_NAME_INDX = 1;
+		public static final int MODULE_NAME_INDX = 2;
+	}
+
+
 	public static final String PLATFORM_SCHEME = "platform"; //$NON-NLS-1$
 	public static final String RESOURCE_PROTOCOL = "resource"; //$NON-NLS-1$
 
+	
 	/**
 	 * <p>
 	 * A fully-qualified module URI will contain enough information to determine the deployed name
@@ -37,7 +47,7 @@ public class ModuleURIUtil {
 	 */ 
 	public static String getDeployedName(URI aModuleURI) throws UnresolveableURIException {
 		ensureValidFullyQualifiedModuleURI(aModuleURI);
-		return aModuleURI.segment(ModuleCore.ModuleURI.MODULE_NAME_INDX);
+		return aModuleURI.segment(ModuleURI.MODULE_NAME_INDX);
 	}
 
 	public static boolean ensureValidFullyQualifiedModuleURI(URI aModuleURI) throws UnresolveableURIException {
