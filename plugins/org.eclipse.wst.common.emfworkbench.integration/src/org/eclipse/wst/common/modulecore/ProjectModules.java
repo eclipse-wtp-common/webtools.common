@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ProjectModules.java,v 1.5 2005/02/02 19:51:06 cbridgha Exp $
+ * $Id: ProjectModules.java,v 1.6 2005/02/03 23:30:38 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -104,6 +104,6 @@ public interface ProjectModules extends EObject{
 	 */
 	EList getDeploymentSchemes();
 
-	public WorkbenchModule findWorkbenchModule(URI aModuleURI);
+	public WorkbenchModule findWorkbenchModule(String aDeployName);
 
 } // ProjectModules

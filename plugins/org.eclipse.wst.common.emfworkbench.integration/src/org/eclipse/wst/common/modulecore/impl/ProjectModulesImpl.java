@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ProjectModulesImpl.java,v 1.5 2005/02/02 19:51:06 cbridgha Exp $
+ * $Id: ProjectModulesImpl.java,v 1.6 2005/02/03 23:30:38 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
@@ -282,11 +282,10 @@ public class ProjectModulesImpl extends EObjectImpl implements ProjectModules {
 		return result.toString();
 	}
 
-	public WorkbenchModule findWorkbenchModule(URI aModuleURI) {
-		if (!isIndexed()) {
-			indexModules();
-		}
-		return (WorkbenchModule) getModulesIndex().get(aModuleURI);
+	public WorkbenchModule findWorkbenchModule(String aDeployName) {
+		if (!isIndexed()) 
+			indexModules(); 
+		return (WorkbenchModule) getModulesIndex().get(aDeployName);
 	}
 
 	/**
@@ -311,7 +310,7 @@ public class ProjectModulesImpl extends EObjectImpl implements ProjectModules {
 			WorkbenchModule module = null;
 			for(Iterator iter = getWorkbenchModules().iterator(); iter.hasNext(); ) {
 				module = (WorkbenchModule) iter.next();
-				modulesIndex.put(module.getHandle(), module);
+				modulesIndex.put(module.getDeployedName(), module);
 			}
 		}
 		isIndexed = true;

@@ -42,7 +42,6 @@ public class ModuleEditModel extends EditModel {
 	 * @see org.eclipse.wst.common.internal.emfworkbench.integration.EditModel#getResource(org.eclipse.emf.common.util.URI)
 	 */
 	public Resource getResource(URI aUri) { 
-
 		IPath requestPath = modulePath.append(new Path(aUri.path()));
 		URI resourceURI = URI.createURI(requestPath.toString());
 		return super.getResource(resourceURI);

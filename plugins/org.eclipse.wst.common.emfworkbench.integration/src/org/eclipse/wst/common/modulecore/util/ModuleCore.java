@@ -125,10 +125,5 @@ public class ModuleCore {
 	
 	public String getOutputContainerRoot() {
 	    return ".deployables"; //$NON-NLS-1$
-	}
-
-}
-	public String getOutputContainerRoot() {
-	    return ".deployables"; //$NON-NLS-1$
-	}
+	} 
 }

@@ -44,10 +44,11 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 		GenericTranslator result = new GenericTranslator(WBAPP, afeature);
 		result.setChildren(new Translator[] {
 			IDTranslator.INSTANCE,
+			new Translator(DEPLOY_NAME, MODULE_CORE_PKG.getWorkbenchModule_DeployedName(), DOM_ATTRIBUTE),
 			new Translator(DEPLOY_SCHEME, MODULE_CORE_PKG.getWorkbenchApplication_DeployScheme()),
 			createModuleTypeTranslator(MODULE_CORE_PKG.getWorkbenchModule_ModuleType()),
 			createWBResourceTranslator(MODULE_CORE_PKG.getWorkbenchModule_Resources()),
-			new Translator(MODULES, MODULE_CORE_PKG.getWorkbenchModule_Modules())
+			createDependentModuleTranslator(MODULE_CORE_PKG.getWorkbenchModule_Modules())
 		});
 		return result;
 	}
@@ -58,7 +59,8 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 		GenericTranslator result = new GenericTranslator(WBMODULE, afeature);
 		result.setChildren(new Translator[] {
 			IDTranslator.INSTANCE,
-			new Translator(HANDLE, MODULE_CORE_PKG.getWorkbenchModule_Handle(), DOM_ATTRIBUTE),
+			//new Translator(HANDLE, MODULE_CORE_PKG.getWorkbenchModule_Handle(), DOM_ATTRIBUTE), REMOVED SINCE HANDLE SHOULD NOW BE DERIVED -MDE
+			new Translator(DEPLOY_NAME, MODULE_CORE_PKG.getWorkbenchModule_DeployedName(), DOM_ATTRIBUTE), 
 			createModuleTypeTranslator(MODULE_CORE_PKG.getWorkbenchModule_ModuleType()),
 			createWBResourceTranslator(MODULE_CORE_PKG.getWorkbenchModule_Resources()),
 			createDependentModuleTranslator(MODULE_CORE_PKG.getWorkbenchModule_Modules())
@@ -89,11 +91,10 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 	}
 	
 	private static Translator createDependentModuleTranslator(EStructuralFeature afeature) {
-		GenericTranslator result = new GenericTranslator(DEPENDENTMODULE, afeature);
-		result.setChildren(new Translator[] {
-			IDTranslator.INSTANCE,			 
-			new Translator(DEPLOY_PATH, MODULE_CORE_PKG.getDependentModule_DeployedPath(), DOM_ATTRIBUTE),
-			new Translator(HANDLE, MODULE_CORE_PKG.getDependentModule_Handle(), DOM_ATTRIBUTE)
+		GenericTranslator result = new GenericTranslator(DEPENDENT_MODULE, afeature);
+		result.setChildren(new Translator[] { 
+			new URITranslator(DEPLOY_PATH, MODULE_CORE_PKG.getDependentModule_DeployedPath(), DOM_ATTRIBUTE),
+			new URITranslator(HANDLE, MODULE_CORE_PKG.getDependentModule_Handle(), DOM_ATTRIBUTE)
 		});
 		return result;
 	}
@@ -102,8 +103,8 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 		GenericTranslator result = new GenericTranslator(WBRESOURCE, afeature);
 		result.setChildren(new Translator[] {
 			IDTranslator.INSTANCE,
-			new Translator(SOURCE_PATH, MODULE_CORE_PKG.getWorkbenchModuleResource_SourcePath(), DOM_ATTRIBUTE),
-			new Translator(DEPLOY_PATH, MODULE_CORE_PKG.getWorkbenchModuleResource_DeployedPath(), DOM_ATTRIBUTE),
+			new URITranslator(SOURCE_PATH, MODULE_CORE_PKG.getWorkbenchModuleResource_SourcePath(), DOM_ATTRIBUTE),
+			new URITranslator(DEPLOY_PATH, MODULE_CORE_PKG.getWorkbenchModuleResource_DeployedPath(), DOM_ATTRIBUTE),
 			new Translator(EXCLUSIONS, MODULE_CORE_PKG.getWorkbenchModuleResource_Exclusions())
 		});
 		return result;

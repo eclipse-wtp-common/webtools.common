@@ -10,6 +10,7 @@ import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
@@ -30,6 +31,15 @@ public class ModuleStructuralModel extends EditModel implements IResourceChangeL
     public ModuleStructuralModel(String editModelID, EMFWorkbenchContext context, boolean readOnly) {
         super(editModelID, context, readOnly);
     }
+    
+    /* (non-Javadoc)
+	 * @see org.eclipse.wst.common.internal.emfworkbench.integration.EditModel#getPrimaryRootObject()
+	 */
+	public EObject getPrimaryRootObject() {
+		if(getPrimaryResource().getContents().size() == 0)
+			prepareProjectModulesIfNecessary();
+		return super.getPrimaryRootObject();
+	}
 
     private void addResourceChangeListener() {
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
@@ -129,7 +139,6 @@ public class ModuleStructuralModel extends EditModel implements IResourceChangeL
             return null;
         path.append(IModuleConstants.WTPMODULE_FILE_NAME);
         return path;
-
     }
 
 }
