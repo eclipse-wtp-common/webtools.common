@@ -19,12 +19,7 @@ import java.util.Locale;
  * exception must be suitable for showing to the user. All ValidationExceptions will have their
  * message extracted when they're caught, and the message will be shown to the user.
  * 
- * [issue: CS - shouldn't the IReporter have some way of handling these exceptions to control
- * how these get shown to the user?  A command line validation tool might want to 
- * log these exceptions directly in the report.]
- * [issue: CS - I'm curious to know if there are any other exceptions that deal with translating
- * messages based on a locale?  Seems suspicious that we need to needing to deal with locale 
- * parameters at various points in the API.]
+ * @since 1.0
  * </p>
  */
 public class ValidationException extends Exception {
