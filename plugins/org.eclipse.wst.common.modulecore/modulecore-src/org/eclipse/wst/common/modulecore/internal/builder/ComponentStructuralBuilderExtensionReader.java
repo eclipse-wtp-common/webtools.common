@@ -19,7 +19,7 @@ import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.modulecore.internal.ModulecorePlugin;
 
 public class ComponentStructuralBuilderExtensionReader extends RegistryReader {
-	protected static HashMap builderExtensions = null;
+	protected static HashMap builderExtensions = new HashMap();
 
 	static final String ELEMENT_DEPLOYABLE_MODULE_BUILDER_EXT = "componentStructuralBuilder"; //$NON-NLS-1$
 	//static final String ATT_OP_TYPE = "operationType"; //$NON-NLS-1$
@@ -59,8 +59,6 @@ public class ComponentStructuralBuilderExtensionReader extends RegistryReader {
 	 *            The extensions to set
 	 */
 	private static void addExtensionPoint(String serverTargetID, ComponentStructuralBuilderDataModel builderOp) {
-		if (builderExtensions == null)
-		    builderExtensions = new HashMap();
 		builderExtensions.put(serverTargetID, builderOp);
 	}
 
