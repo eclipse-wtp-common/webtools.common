@@ -1,12 +1,14 @@
 package org.eclipse.wst.common.modulecore;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
@@ -21,6 +23,8 @@ public class ModuleCoreNature implements IProjectNature {
     private HashMap workbenchModulesMap;
 
     private IProject moduleProject;
+
+    private ProjectModules projectModules;
 
     private final static ModuleCoreFactory MODULE_FACTORY = ModuleCoreFactory.eINSTANCE;
 
@@ -58,7 +62,6 @@ public class ModuleCoreNature implements IProjectNature {
     }
 
     public void resourceChanged(IResourceChangeEvent event) {
-
     }
 
     private Resource getWTPModuleResource() {
@@ -69,17 +72,18 @@ public class ModuleCoreNature implements IProjectNature {
         return wtpModuleResource;
     }
 
-
     private URI createWTPModuleURI() {
         IPath path = getWTPModulePath();
-        if (path == null)return null;
+        if (path == null)
+            return null;
         URI modulePathURI = URI.createPlatformResourceURI(path.toString());
         return modulePathURI;
     }
 
     private IPath getWTPModulePath() {
         IPath path = getProject().getFullPath();
-        if (path == null) return null;
+        if (path == null)
+            return null;
         path.append(IModuleConstants.WTPMODULE_FILE_NAME);
         return path;
 
@@ -120,5 +124,39 @@ public class ModuleCoreNature implements IProjectNature {
 
     public void setProject(IProject project) {
         moduleProject = project;
+    }
+
+    private void update() {
+        moduleHandlesMap.clear();
+        workbenchModulesMap.clear();
+        try {
+            if (getProjectModules() != null) {
+                List workBenchModules = getProjectModules().getWorkbenchModules();
+                for (int i = 0; i < workBenchModules.size(); i++) {
+                    WorkbenchModule wbm = (WorkbenchModule) workBenchModules.get(i);
+                    IModuleHandle handle = wbm.getHandle();
+                    if (handle == null || handle.getHandle() == null)
+                        continue;
+                    moduleHandlesMap.put(handle.getHandle(), handle);
+                    workbenchModulesMap.put(handle, wbm);
+                }
+
+            }
+        } catch (RuntimeException e) {
+            Logger.getLogger().write(e);
+        }
+    }
+
+    private ProjectModules getProjectModules() {
+        if (projectModules == null) {
+            Resource resource = getWTPModuleResource();
+            if (resource != null) {
+                EList wtpModuleResourceContents = resource.getContents();
+                if (wtpModuleResourceContents != null && wtpModuleResourceContents.get(0) != null)
+                    projectModules = (ProjectModules) wtpModuleResourceContents.get(0);
+            }
+        }
+
+        return projectModules;
     }
 }
