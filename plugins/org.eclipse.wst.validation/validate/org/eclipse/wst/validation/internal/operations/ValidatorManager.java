@@ -28,7 +28,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.validation.core.IMessage;
 import org.eclipse.wst.validation.core.IValidator;
-import org.eclipse.wst.validation.core.SeverityEnum;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.InternalValidatorManager;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
@@ -975,7 +974,7 @@ public final class ValidatorManager {
 		}
 
 		try {
-			IMarker[] valTasks = getValidationTasks(project, SeverityEnum.ALL_MESSAGES);
+			IMarker[] valTasks = getValidationTasks(project, IMessage.ALL_MESSAGES);
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			int max = prjp.getMaximumNumberOfMessages();
 			IMarker[] exceededTasks = getLimitMessage(project);
@@ -1210,7 +1209,7 @@ public final class ValidatorManager {
 	 * there are no markers, return null.
 	 */
 	private IMarker[] getValidationTasksWithoutLimitMessage(IProject project) {
-		IMarker[] allTasks = TaskListUtility.getValidationTasks(project, SeverityEnum.ALL_MESSAGES);
+		IMarker[] allTasks = TaskListUtility.getValidationTasks(project, IMessage.ALL_MESSAGES);
 		if ((allTasks == null) || (allTasks.length == 0)) {
 			return null;
 		}
@@ -1328,7 +1327,7 @@ public final class ValidatorManager {
 		// if the message exists already, don't add it again.
 		IMarker[] exceededMessage = getLimitMessage(project);
 		if (exceededMessage == null) {
-			IMessage message = new Message(ValidationPlugin.VALIDATION_PROP_FILE_NAME, SeverityEnum.LOW_SEVERITY, ResourceConstants.VBF_TASK_WARN_MESSAGE_LIMIT_VAL);
+			IMessage message = new Message(ValidationPlugin.VALIDATION_PROP_FILE_NAME, IMessage.LOW_SEVERITY, ResourceConstants.VBF_TASK_WARN_MESSAGE_LIMIT_VAL);
 			WorkbenchReporter.addMessage(project, getMessageLimitOwner(), message);
 		}
 	}

@@ -15,8 +15,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.wst.common.frameworks.internal.WTPPlugin;
+import org.eclipse.wst.validation.core.IMessage;
 import org.eclipse.wst.validation.core.IValidator;
-import org.eclipse.wst.validation.core.SeverityEnum;
 import org.eclipse.wst.validation.internal.EventManager;
 import org.eclipse.wst.validation.internal.TimeEntry;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
@@ -89,7 +89,7 @@ public class ValidationPlugin extends WTPPlugin {
 		_message.setParams(null);
 		_message.setTargetObject(null);
 		_message.setGroupName(null);
-		_message.setSeverity(SeverityEnum.LOW_SEVERITY);
+		_message.setSeverity(IMessage.LOW_SEVERITY);
 		return _message;
 	}
 

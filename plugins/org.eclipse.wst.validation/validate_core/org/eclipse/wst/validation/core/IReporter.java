@@ -35,7 +35,7 @@ import org.eclispe.wst.validation.internal.core.MessageLimitException;
  * IReporter provide access to all messages ... or just the ones created by the associated validator? 
  * ] 
  */
-public interface IReporter extends SeverityEnum {
+public interface IReporter  {
 	/**
 	 * <p>
 	 * Add a locale-independent validation message. It will be displayed later, with all of the

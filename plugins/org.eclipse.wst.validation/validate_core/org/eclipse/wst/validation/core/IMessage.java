@@ -51,6 +51,23 @@ public interface IMessage {
 	 * Typically used to specify error messages.
 	 */
 	public static final int HIGH_SEVERITY = 0x0001;
+	/**
+	 * Typically used to specify warning messages.
+	 */
+	public static final int NORMAL_SEVERITY = 0x0002;
+	/**
+	 * Typically used to specify information messages.
+	 */
+	public static final int LOW_SEVERITY = 0x0004;
+	/**
+	 * Specify high (error) and normal (warning) messages. Typically used with a MessageFilter, to
+	 * filter out information messages.
+	 */
+	public static final int ERROR_AND_WARNING = HIGH_SEVERITY | NORMAL_SEVERITY;
+	/**
+	 * Specify all types of messages. Typically used with a MessageFilter.
+	 */
+	public static final int ALL_MESSAGES = ERROR_AND_WARNING | LOW_SEVERITY;
 
 	/**
 	 * @return the name of the bundle which this message is contained in.
@@ -125,8 +142,8 @@ public interface IMessage {
 	 * Returns the severity level of the message. One of SeverityEnum constants.
 	 * 
 	 * @see IMessage#HIGH_SEVERITY
-	 * @see SeverityEnum#NORMAL_SEVERITY
-	 * @see SeverityEnum#LOW_SEVERITY
+	 * @see IMessage#NORMAL_SEVERITY
+	 * @see IMessage#LOW_SEVERITY
 	 * </p>
 	 * 
 	 * @return the severity level of the message
@@ -288,8 +305,8 @@ public interface IMessage {
 	 * Sets the severity level of the message. One of SeverityEnum constants.
 	 * 
 	 * @see IMessage#HIGH_SEVERITY
-	 * @see SeverityEnum#NORMAL_SEVERITY
-	 * @see SeverityEnum#LOW_SEVERITY
+	 * @see IMessage#NORMAL_SEVERITY
+	 * @see IMessage#LOW_SEVERITY
 	 * 
 	 * @param newSeverity
 	 *            severity level of the message
