@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: WorkbenchURIConverterImpl.java,v $$
- *  $$Revision: 1.1 $$  $$Date: 2005/01/07 20:19:23 $$ 
+ *  $$Revision: 1.2 $$  $$Date: 2005/01/26 16:40:52 $$ 
  */
 package org.eclipse.jem.util.emf.workbench;
 
@@ -34,7 +34,8 @@ import org.eclipse.jem.util.plugin.JEMUtilPlugin;
  */
 public class WorkbenchURIConverterImpl extends URIConverterImpl implements WorkbenchURIConverter {
 
-	private final static IWorkspaceRoot WORKSPACE_ROOT = ResourcesPlugin.getWorkspace().getRoot();
+	private final static IWorkspaceRoot WORKSPACE_ROOT = URIConverterImpl.workspaceRoot;
+	private final static String WORKSPACE_ROOT_LOCATION = WORKSPACE_ROOT.getLocation().toString();
 
 	private static final String FILE_PROTOCOL = "file"; //$NON-NLS-1$
 
@@ -51,6 +52,20 @@ public class WorkbenchURIConverterImpl extends URIConverterImpl implements Workb
 	protected IContainer outputContainer;
 
 	protected ResourceSetWorkbenchSynchronizer resourceSetSynchronizer;
+	
+	/*
+	 * KLUDGE: We need to know the meta data area. This is so that any uri that starts with the metadata directory
+	 * is considered a file uri and NOT a workspace uri. The metadata is where plugin's store their working data.
+	 * It is not part of the workspace root.
+	 *  
+	 * There is no request for simply the metadata area. The log file is in the metadata directory. So we will
+	 * get the log file location and just remove the log file name. That should leave us with the metadata directory
+	 * only. If Eclipse ever decides to move it from here, this will no longer work. But it hasn't moved in three 
+	 * versions.
+	 * 
+	 * @since 1.1.0
+	 */
+	static protected final String METADATA_LOCATION = Platform.getLogFileLocation().removeLastSegments(1).toString();
 
 	/**
 	 * Default converter constructor, no containers.
@@ -423,12 +438,11 @@ public class WorkbenchURIConverterImpl extends URIConverterImpl implements Workb
 		URI result = null;
 		//Make the relative path absolute and return a platform URI.
 		String devicePath = aFileUri.devicePath();
-		String rootLocation = workspaceRoot.getLocation().toString();
 		//Test for workspace location.
-		if (devicePath.startsWith(rootLocation) && devicePath.length() > rootLocation.length()) {
+		if (!devicePath.startsWith(METADATA_LOCATION) &&
+			devicePath.startsWith(WORKSPACE_ROOT_LOCATION) && devicePath.length() > WORKSPACE_ROOT_LOCATION.length()) {
 			//test for workspace location
-			IPath path = new Path(devicePath.substring(rootLocation.length()));
-			result = normalizeToWorkspaceURI(path, fragment);
+			result = normalizeToWorkspaceURI(new Path(devicePath.substring(WORKSPACE_ROOT_LOCATION.length())), fragment);
 		} else if (aFileUri.isRelative()) {
 			result = normalizeToWorkspaceURI(new Path(aFileUri.toString()), fragment);
 		} else {
@@ -478,7 +492,7 @@ public class WorkbenchURIConverterImpl extends URIConverterImpl implements Workb
 	 * @see org.eclipse.emf.ecore.resource.impl.URIConverterImpl#createPlatformResourceInputStream(java.lang.String)
 	 */
 	public InputStream createPlatformResourceInputStream(String platformResourcePath) throws IOException {
-		IFile file = workspaceRoot.getFile(new Path(platformResourcePath));
+		IFile file = WORKSPACE_ROOT.getFile(new Path(platformResourcePath));
 		try {
 			if (!file.isLocal(IResource.DEPTH_ONE) || !file.isSynchronized(IResource.DEPTH_ONE)) {
 				try {
