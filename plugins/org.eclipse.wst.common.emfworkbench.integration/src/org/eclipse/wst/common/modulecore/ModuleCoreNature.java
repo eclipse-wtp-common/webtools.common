@@ -3,9 +3,11 @@ package org.eclipse.wst.common.modulecore;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.wst.common.internal.emfworkbench.CompatibilityWorkbenchURIConverterImpl;
@@ -23,6 +25,15 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		// event.getDelta()
 		// IResource changedResource = (IResource)event.getResource();
 		// update()
+	}
+	
+	public static ModuleCoreNature getModuleCoreNature(IProject aProject) {
+		try {
+			return (ModuleCoreNature) aProject.getNature(ModuleCoreNature.MODULE_NATURE_ID);
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+		return null; 
 	}
 
 	public ModuleStructuralModel getModuleStructuralModelForRead(Object anAccessorKey) {
