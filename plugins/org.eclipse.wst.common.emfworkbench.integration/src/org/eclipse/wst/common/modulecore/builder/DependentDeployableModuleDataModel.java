@@ -160,7 +160,7 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
      * @see org.eclipse.wst.common.modulecore.builder.DeployableModuleDataModel#getDefaultOperation()
      */
     public WTPOperation getDefaultOperation() {
-        return null;
+        return new DependentDeployableModuleOperation(this);
     }
 
 }

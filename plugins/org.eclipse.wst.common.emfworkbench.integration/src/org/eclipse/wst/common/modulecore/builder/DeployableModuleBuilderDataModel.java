@@ -68,7 +68,8 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
      */
     public DeployableModuleBuilderDataModel() {
         super();
-    }    /**
+    }    
+    /**
      * @return
      */
     private Object populateDependentModulesDM() {
@@ -90,9 +91,8 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
     private Object populateOutputContainer() {
         WorkbenchModule wbModule = (WorkbenchModule)getProperty(WORKBENCH_MODULE);
         URI uri = null;
-        if(wbModule != null){
+        if(wbModule != null)
             uri = ModuleCore.getOutputContainerRoot(wbModule);
-        }
         return uri;
     }
 

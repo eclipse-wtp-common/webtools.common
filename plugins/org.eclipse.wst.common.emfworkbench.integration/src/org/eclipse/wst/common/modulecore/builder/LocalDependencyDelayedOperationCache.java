@@ -6,7 +6,10 @@
  */
 package org.eclipse.wst.common.modulecore.builder;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 
 /**
  * @author jialin
@@ -16,7 +19,7 @@ import java.util.List;
  */
 public class LocalDependencyDelayedOperationCache {
 	private static LocalDependencyDelayedOperationCache instance;
-	private List delayedOperationCacheList;
+	private List delayedOperationCacheList = new ArrayList();
 
 	public LocalDependencyDelayedOperationCache() {
 		super();
@@ -25,10 +28,16 @@ public class LocalDependencyDelayedOperationCache {
 	public List getOperationCacheList() {
 		return delayedOperationCacheList;
 	}
-	public void setOperationCacheList(List delayedOperationCacheList) {
-		this.delayedOperationCacheList = delayedOperationCacheList;
+	
+	public void addOperationToCacheList(WTPOperation operation) {
+		delayedOperationCacheList.add(operation);
 	}
-	public LocalDependencyDelayedOperationCache getInstance() {
+	
+	public void clearOperationCacheList() {
+	    delayedOperationCacheList.clear();
+	}
+	                                       
+	public static LocalDependencyDelayedOperationCache getInstance() {
 		if (instance == null)
 			instance = new LocalDependencyDelayedOperationCache();
 		return instance;
