@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="org.eclipse.wst.common.modulecore"
+   name="Modulecore Plug-in"
+   version="1.0.0"
+   provider-name=""
+   class="org.eclipse.wst.common.modulecore.internal.ModulecorePlugin">
+
+   <runtime>
+      <library name="modulecore.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+
+   <requires>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.wst.common.frameworks"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.emf.ecore"/>
+      <import plugin="org.eclipse.wst.common.emfworkbench.integration"/>
+      <import plugin="com.ibm.wtp.emf.workbench"/>
+      <import plugin="org.eclipse.wst.common.emf"/>
+      <import plugin="org.eclipse.emf.ecore.xmi"/>
+   </requires>
+
+   <extension
+         point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="modulecore.xmi"
+            class="org.eclipse.wst.common.modulecore.ModuleCorePackage">
+      </package>
+   </extension>   
+   
+   <!--============================-->
+   <!-- Module Core Project Nature Contributions-->
+   <!--============================-->
+   <extension
+         id="ModuleCoreNature"
+         name="Web Properties"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="org.eclipse.wst.common.modulecore.ModuleCoreNature">
+         </run>
+      </runtime>
+   </extension>
+   <extension
+         point="org.eclipse.wst.common.emfworkbench.integration.editModel">
+      <editModel
+            editModelID="org.eclipse.wst.modulecore.structuralModel"
+            factoryClass="org.eclipse.wst.common.modulecore.ModuleStructuralModelFactory">
+         <editModelResource
+               autoload="false"
+               URI=".wtpmodules"/>
+      </editModel> 
+   </extension>
+   <!--============================-->
+   <!-- Deployable Module Builder Contribution-->
+   <!--============================-->
+   <extension
+         id="DeployableModuleBuilder"
+         name="Deployable Module Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder>
+         <run
+               class="org.eclipse.wst.common.modulecore.internal.builder.DeployableModuleBuilder">
+         </run>
+      </builder>
+   </extension>
+      <extension
+         id="LocalDependencyResolver"
+         name="Local Dependency Resolver"
+         point="org.eclipse.core.resources.builders">
+      <builder>
+         <run
+               class="org.eclipse.wst.common.modulecore.internal.builder.LocalDependencyResolver">
+         </run>
+      </builder>
+   </extension>
+</plugin>
