@@ -41,6 +41,7 @@ public class DeployableModuleProjectBuilderOperation extends WTPOperation {
         List deployableModuleDM = (List)deployProjectDM.getProperty(DeployableModuleProjectBuilderDataModel.MODULE_BUILDER_DM_LIST);
     
         WTPOperation op = null;
+        if(deployableModuleDM == null) return;
         for(int i = 0; i < deployableModuleDM.size(); i++){
             DeployableModuleBuilderDataModel moduleDM = (DeployableModuleBuilderDataModel)deployableModuleDM.get(i);
             
