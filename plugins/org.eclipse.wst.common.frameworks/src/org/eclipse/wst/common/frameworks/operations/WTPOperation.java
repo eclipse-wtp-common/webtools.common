@@ -46,23 +46,41 @@ import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
  */
 public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 
+	/**
+	 * The dataModel used to execute this operation
+	 */
 	protected WTPOperationDataModel operationDataModel;
 
 	private OperationStatus opStatus;
 
 	private String id;
 
+	/**
+	 * Constructor for the operation. Clients should use this constructor instead of the no argument
+	 * constructor.
+	 * 
+	 * @param operationDataModel
+	 */
 	public WTPOperation(WTPOperationDataModel operationDataModel) {
 		setOperationDataModel(operationDataModel);
 	}
 
+	/**
+	 * This no argument constructor should not be used by clients. This is for extended operations.
+	 * 
+	 * ExtendedOperations
+	 */
 	public WTPOperation() {
 	}
 
+	//TODO see if this can be made package visible only.
 	/**
-	 * If the operationId is already set, setOperationId() will do nothing
+	 * Note: This method is for internal use only. Clients should not call this method.
+	 * 
+	 * ExtendedOperations
 	 * 
 	 * @param value
+	 *            the operation's id
 	 */
 	public final void setID(String value) {
 		Assert.isTrue(this.id == null, WTPResourceHandler.getString("22")); //$NON-NLS-1$
@@ -70,10 +88,19 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 		this.id = value;
 	}
 
+	//TODO see if this can be removed
+	/**
+	 * Note: This method is for internal use only. Clients should not call this method.
+	 * 
+	 * ExtendedOperations
+	 * 
+	 * @return the operation's id
+	 */
 	public final String getID() {
 		return this.id;
 	}
 
+	//TODO see if this can be make package visible only.
 	/**
 	 * Note: This method is for internal use only. Clients should not call this method.
 	 * 
@@ -123,6 +150,13 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 	 */
 	protected abstract void execute(IProgressMonitor monitor) throws CoreException, InvocationTargetException, InterruptedException;
 
+	/**
+	 * Subclasses should override as necessary to perform any additional initialization before
+	 * executing.
+	 * 
+	 * @param monitor
+	 *            the progress monitor
+	 */
 	protected void initilize(IProgressMonitor monitor) {
 		//Making sure the status objects are initialized
 		//		status = null;
@@ -133,13 +167,42 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 		return OperationExtensionRegistry.getExtensions(this);
 	}
 
-	protected void dispose(IProgressMonitor pm) {
+	/**
+	 * <p>
+	 * Subclasses should override as necessary to perform any post executiong cleanup. Subclasses,
+	 * should not initialize any resources anywhere other than within either the
+	 * initialize(IProjgressMonitor) or the execute(IProgressMonitor) methods. This method will
+	 * always be called when an operation is run irregardless of whether the execution is
+	 * successful.
+	 * </p>
+	 * <p>
+	 * Clients should never need to call this method
+	 * </p>
+	 * 
+	 * @param monitor
+	 *            the progress monitor
+	 */
+	protected void dispose(IProgressMonitor monitor) {
 	}
 
+	//TODO see if this can be removed
+	/**
+	 * Note: This method is for internal use only. Clients should not call this method.
+	 * 
+	 * @return the workspace
+	 */
 	protected IWorkspace getWorkspace() {
 		return ResourcesPlugin.getWorkspace();
 	}
 
+	//TODO see if this can be removed
+	/**
+	 * Note: This method is for internal use only. Clients should not call this method.
+	 * 
+	 * @param op
+	 *            the to append
+	 * @return A new operation
+	 */
 	public WTPOperation append(WTPOperation op) {
 		ComposedOperation composedOp = new ComposedOperation();
 		composedOp.addRunnable(this);
@@ -149,6 +212,7 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 
 	/**
 	 * Initiates a batch of changes, by invoking the execute() method as a workspace runnable.
+	 * Client should always call this method and never call the execute() method.
 	 * 
 	 * @param monitor
 	 *            the progress monitor to use to display progress
@@ -206,7 +270,18 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 		return null;
 	}
 
-	public final void doRun(IProgressMonitor pm) throws CoreException, InvocationTargetException, InterruptedException {
+	/**
+	 * Typically clients should call the run(IProgressMonitor) method instead of this method. This
+	 * may be used by subclassed operations during execution to invoke other operations. This method
+	 * runs within the same the same WorkspaceRunnable as the calling operation.
+	 * 
+	 * @param monitor
+	 *            the progress monitor to use to display progress
+	 * @throws CoreException
+	 * @throws InvocationTargetException
+	 * @throws InterruptedException
+	 */
+	public final void doRun(IProgressMonitor monitor) throws CoreException, InvocationTargetException, InterruptedException {
 		boolean alreadyLocked = operationDataModel == null ? true : operationDataModel.isLocked();
 		boolean operationValidationEnabled = operationDataModel == null ? false : operationDataModel.isOperationValidationEnabled();
 		try {
@@ -223,22 +298,22 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 					return;
 				}
 			}
-			initilize(pm);
+			initilize(monitor);
 
 			if (!validateEdit())
 				return;
 			//if (getStatus().isOK()) {
 			ComposedExtendedOperationHolder extOpHolder = initializeExtensionOperations();
-			IStatus preOpStatus = runPreOps(pm, extOpHolder);
-			execute(pm);
-			IStatus postOpStatus = runPostOps(pm, extOpHolder);
+			IStatus preOpStatus = runPreOps(monitor, extOpHolder);
+			execute(monitor);
+			IStatus postOpStatus = runPostOps(monitor, extOpHolder);
 			if (null != preOpStatus)
 				addExtendedStatus(preOpStatus);
 			if (null != postOpStatus)
 				addExtendedStatus(postOpStatus);
 			//}
 		} finally {
-			dispose(pm);
+			dispose(monitor);
 
 			if (!alreadyLocked) {
 				operationDataModel.setLocked(false);
@@ -251,7 +326,14 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 		// CoreException and OperationCanceledException are propagated
 	}
 
-	// Subclasses should override as they need to
+	/**
+	 * This method is called when an operation is run after initialize() is called, but before
+	 * execute(). If this method returns <code>true</code> then operation's execution continues,
+	 * otherwise, execution is aborted. Subclasses should override this method to provide any final
+	 * initialization and validation required before execution.
+	 * 
+	 * @return
+	 */
 	protected boolean validateEdit() {
 		return true;
 	}
@@ -349,6 +431,10 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 	//		return this.getRootExtendedOperation();
 	//	}
 
+	//TODO this should be deleted.
+	/**
+	 * Note: This method is for internal use only. Clients should not call this method.
+	 */
 	protected static final void runNestedDefaultOperation(WTPOperationDataModel model, IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 		WTPOperation op = model.getDefaultOperation();
 		if (op != null)
