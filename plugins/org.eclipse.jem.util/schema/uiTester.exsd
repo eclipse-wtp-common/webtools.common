@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.jem.util">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="org.eclipse.jem.util" id="uiTester" name="UI Tester"/>
+      </appInfo>
+      <documentation>
+         Edit models provide a framework for managing a set of EMF resources within a unit of work.  For example, a workspace operation may affect a change to multiple EMF resources. Edit models provide basic services such as loads, saves (when necessary), and validate edit for the managed resources.  Edit models are reference counted, therefore a single instance of an edit model can be shared by more than one operation or editor.  By declaring an edit model, a plugin provider enables other components to contribute resources to be managed by that edit model.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <complexType>
+         <sequence>
+            <element ref="uiTester"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="uiTester">
+      <annotation>
+         <documentation>
+            The declaration for an edit model to be used in the workspace.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="className" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A unique identifier for the edit model.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         6.0
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         [Enter extension point usage example here.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiInfo"/>
+      </appInfo>
+      <documentation>
+         [Enter API information here.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="implementation"/>
+      </appInfo>
+      <documentation>
+         [Enter information about supplied implementation of this extension point.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="copyright"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+</schema>

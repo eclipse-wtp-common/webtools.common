@@ -1,0 +1,136 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.jem.util">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="org.eclipse.jem.util" id="uiContextSensitiveClass" name="UI Context Sensitive Class"/>
+      </appInfo>
+      <documentation>
+         Edit models provide a framework for managing a set of EMF resources within a unit of work.  For example, a workspace operation may affect a change to multiple EMF resources. Edit models provide basic services such as loads, saves (when necessary), and validate edit for the managed resources.  Edit models are reference counted, therefore a single instance of an edit model can be shared by more than one operation or editor.  By declaring an edit model, a plugin provider enables other components to contribute resources to be managed by that edit model.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <complexType>
+         <sequence>
+            <element ref="uiContextSensitiveClass" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="uiContextSensitiveClass">
+      <annotation>
+         <documentation>
+            An extension point that defines an instance of a class and its appropriate context (UI or Headless)
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="key" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The key that should be used to create an instance of the Context Sensitive super class/interface.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="className" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A concrete implementation for either a UI or Headless context.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="context" use="required">
+            <annotation>
+               <documentation>
+                  One of &quot;UI&quot; or &quot;Headless&quot;
+               </documentation>
+            </annotation>
+            <simpleType>
+               <restriction base="string">
+                  <enumeration value="UI">
+                  </enumeration>
+                  <enumeration value="Headless">
+                  </enumeration>
+               </restriction>
+            </simpleType>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         6.0
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         &lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;extension&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;id=&quot;context.Sensitive.Class.workingCopyManager&quot;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;name=&quot;Working&amp;nbsp;Copy&amp;nbsp;Manager&amp;nbsp;-&amp;nbsp;UI&amp;nbsp;Context&amp;nbsp;Class&quot;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;point=&quot;com.ibm.wtp.common.uiContextSensitiveClass&quot;&amp;gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;uiContextSensitiveClass&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;context=&quot;UI&quot;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;key=&quot;workingCopyManager&quot;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;className=&quot;com.ibm.wtp.common.ui.WTPUIWorkingCopyManager&quot;&amp;gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;/uiContextSensitiveClass&amp;gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;/extension&amp;gt;&lt;br&gt;
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiInfo"/>
+      </appInfo>
+      <documentation>
+         See &lt;code&gt;org.eclipse.jem.util.UIContextDetermination&lt;/code&gt;
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="implementation"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="copyright"/>
+      </appInfo>
+      <documentation>
+         Copyright (c) IBM 2003.
+      </documentation>
+   </annotation>
+
+</schema>
