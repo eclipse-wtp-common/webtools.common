@@ -18,6 +18,7 @@ package org.eclipse.wst.common.modulecore.util;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.wst.common.internal.emf.resource.Translator;
+import org.eclipse.wst.common.modulecore.DependencyType;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 
 /**
@@ -38,9 +39,9 @@ public class DependencyTypeTranslator extends Translator implements WTPModulesXm
 	public Object convertStringToValue(String strValue, EObject owner) {
 		String correct = strValue;
 		if (strValue.toUpperCase().equals("CONSUMES")) //$NON-NLS-1$
-			correct = "Consumes"; //$NON-NLS-1$
+			correct = DependencyType.CONSUMES_LITERAL.getName(); 
 		else if (strValue.toUpperCase().equals("USES")) //$NON-NLS-1$
-			correct = "Uses"; //$NON-NLS-1$
+			correct = DependencyType.USES_LITERAL.getName(); 
 			
 		return super.convertStringToValue(correct, owner);
 	}

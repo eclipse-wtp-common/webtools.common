@@ -244,8 +244,10 @@ public class ModuleCore implements IEditModelHandler {
 			return dependentCore;
 		synchronized (dependentCores) {
 			dependentCore = (ModuleCore) dependentCores.get(aModuleURI);
-			if (dependentCore == null)
+			if (dependentCore == null){
 				dependentCore = getModuleCoreForRead(getContainingProject(aModuleURI));
+				dependentCores.put(aModuleURI, dependentCore);
+			}
 		} 
 		return dependentCore;
 	}
