@@ -26,5 +26,12 @@
    </requires>
    <extension-point id="DataModelVerifier" name="Data Model Verifier Factory Extension" schema="schema/dataModelVerifier.exsd"/>
 
+   <extension
+         point="org.eclipse.wst.common.tests.collector.suites">
+         <suite
+            suiteClass="org.eclipse.wst.common.frameworks.operations.tests.WTPOperationAPITests"
+            suiteName="WTP Operation API Tests">
+         </suite>
+   </extension>
 
 </plugin>
