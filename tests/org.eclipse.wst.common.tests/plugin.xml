@@ -22,6 +22,7 @@
       <import plugin="org.eclipse.wst.common.emfworkbench.integration"/>
       <import plugin="org.eclipse.emf.common"/>
       <import plugin="org.eclipse.emf.ecore"/>
+      <import plugin="org.eclipse.wst.common.modulecore"/>
    </requires>
    <extension-point id="DataModelVerifier" name="Data Model Verifier Factory Extension" schema="schema/dataModelVerifier.exsd"/>
 
