@@ -661,6 +661,26 @@ public class ModuleCore implements IEditModelHandler {
 			return getWorkbenchModules()[0];
 		return null;
 	}
-
-
+	
+	/**
+	 * temporary method to return artifact edit for first module in project
+	 * USERS MUST DISPOSE THE ARTIFACT EDIT
+	 * @param project
+	 * @return the artifact edit for the first module
+	 * @deprecated
+	 */
+	public static ArtifactEdit getFirstArtifactEditForRead(IProject project) {
+		ModuleCore moduleCore = null;
+		ArtifactEdit artEdit = null;
+		WorkbenchModule module = null;
+		try {
+			moduleCore = ModuleCore.getModuleCoreForRead(project);
+			module = moduleCore.getFirstModule();
+			artEdit = ArtifactEdit.getArtifactEditForRead(module);
+		} finally {
+			if (moduleCore !=null)
+				moduleCore.dispose();
+		}
+		return artEdit;
+	}
 }
