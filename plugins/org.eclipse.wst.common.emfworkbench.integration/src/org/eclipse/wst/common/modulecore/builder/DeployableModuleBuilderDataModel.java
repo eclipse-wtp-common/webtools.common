@@ -79,6 +79,7 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
         DependentDeployableModuleDataModel dependentDataModel;
         for(int i = 0; i<depModules.size(); i++){
             dependentDataModel = new DependentDeployableModuleDataModel();
+            dependentDataModel.setProperty(DependentDeployableModuleDataModel.CONTAINING_WBMODULE, getProperty(WORKBENCH_MODULE));
             dependentDataModel.setProperty(DependentDeployableModuleDataModel.DEPENDENT_MODULE, depModules.get(i));
             depModulesDataModels.add(dependentDataModel);
         }

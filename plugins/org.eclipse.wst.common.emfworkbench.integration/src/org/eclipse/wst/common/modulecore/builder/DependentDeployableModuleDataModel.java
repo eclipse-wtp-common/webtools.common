@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2003, 2004 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ * IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.wst.common.modulecore.builder;
 
 import org.eclipse.core.resources.IProject;
@@ -12,8 +22,13 @@ import org.eclipse.wst.common.modulecore.impl.UnresolveableURIException;
 import org.eclipse.wst.common.modulecore.util.ModuleCore;
 
 public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
-	/**
+    /**
 	 * Required, type IProject
+	 */
+	public static final String CONTAINING_WBMODULE = "DependentDeployableModuleDataModel.CONTAINING_WBMODULE"; //$NON-NLS-1$
+	
+    /**
+	 * Required, type DependentModule
 	 */
 	public static final String DEPENDENT_MODULE = "DependentDeployableModuleDataModel.DEPENDENT_MODULE"; //$NON-NLS-1$
 	/**
@@ -27,7 +42,7 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
 	/**
 	 * Calc, type WorkbenchModule
 	 */
-	public static final String WORKBENCH_MODULE = "DependentDeployableModuleDataModel.WORKBENCH_MODULE_RESOURCES"; //$NON-NLS-1$
+	public static final String DEPENDENT_WBMODULE = "DependentDeployableModuleDataModel.WORKBENCH_MODULE_RESOURCES"; //$NON-NLS-1$
 	/**
 	 * Calc, type boolean
 	 */
@@ -54,8 +69,9 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
 		addValidBaseProperty(HANDLE);
 		addValidBaseProperty(OUTPUT_CONTAINER);
 		addValidBaseProperty(DOES_CONSUME);
-		addValidBaseProperty(WORKBENCH_MODULE);
+		addValidBaseProperty(DEPENDENT_WBMODULE);
 		addValidBaseProperty(NEEDS_PREPROCESSING);
+		addValidBaseProperty(CONTAINING_WBMODULE);
 	}
 	/* (non-Javadoc)
      * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#getDefaultProperty(java.lang.String)
@@ -65,7 +81,7 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
             return getHandleValue();
         if(propertyName.equals(OUTPUT_CONTAINER))
             return getOutputContainerValue();
-        if(propertyName.equals(WORKBENCH_MODULE))
+        if(propertyName.equals(DEPENDENT_WBMODULE))
             return getWorkBenchModuleValue();
         if(propertyName.equals(NEEDS_PREPROCESSING))
             return getNeedsPreprocessingValue();
@@ -82,7 +98,7 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
         if(propertyName.equals(DEPENDENT_MODULE)){
             notifyDefaultChange(HANDLE);
             notifyDefaultChange(OUTPUT_CONTAINER);
-            notifyDefaultChange(WORKBENCH_MODULE);
+            notifyDefaultChange(DEPENDENT_WBMODULE);
             notifyDefaultChange(NEEDS_PREPROCESSING);
             notifyDefaultChange(DOES_CONSUME);
         } 
@@ -143,9 +159,9 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
 		if(!isSet(DEPENDENT_MODULE)) return null;
 		if(moduleCore == null) {
 			try {
-				DependentModule dependentModule = getDependentModule();
+			    WorkbenchModule containingWBModule = getContainingWorkbenchModule();
 				// TODO THIS SHOULD BE THE CONTAINING PROJECT OF THE WORKBENCHMODULE, NOT THE DEPENDENT MODULE
-				IProject container = ModuleCore.getContainingProject(dependentModule.getHandle());
+				IProject container = ModuleCore.getContainingProject(containingWBModule.getHandle());
 				moduleCore = ModuleCore.getModuleCoreForRead(container);
 			} catch (UnresolveableURIException e) {
 			}
@@ -155,6 +171,9 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
 	
 	private DependentModule getDependentModule() {
 		return (DependentModule)getProperty(DEPENDENT_MODULE);
+	}
+	private WorkbenchModule getContainingWorkbenchModule() {
+		return (WorkbenchModule)getProperty(CONTAINING_WBMODULE);
 	}
     /* (non-Javadoc)
      * @see org.eclipse.wst.common.modulecore.builder.DeployableModuleDataModel#getDefaultOperation()
