@@ -12,7 +12,7 @@ package org.eclipse.wst.validation.internal;
 
 
 import org.eclipse.wst.validation.internal.operations.IRuleGroup;
-import org.eclipse.wst.validation.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 
 /**
@@ -24,7 +24,7 @@ public interface RegistryConstants {
 
 	/* package */static final String TAG_RUN_CLASS = "run"; //$NON-NLS-1$ // identifies the Validator class
 	/* package */static final String TAG_FILTER = "filter"; //$NON-NLS-1$ // identifies a filter -- type and/or name -- used to filter out resources which are not to be validated. (i.e., if the resource doesn't pass this filter test, don't validate it.)
-	/* package */static final String TAG_HELPER_CLASS = "helper"; //$NON-NLS-1$ // IHelper which loads the MOF model for the IValidator
+	/* package */static final String TAG_HELPER_CLASS = "helper"; //$NON-NLS-1$ // IValidationContext which loads the MOF model for the IValidator
 	/* package */static final String TAG_PROJECT_NATURE = "projectNature"; //$NON-NLS-1$ // identifies the projects which the validator should run on
 	/* package */static final String TAG_AGGREGATE_VALIDATORS = "aggregateValidator"; //$NON-NLS-1$ // identifies a validator(s) which this validator aggregates. This value is used to remove all messages owned by a particular validator. Aggregate validators cannot be shared. Only one validator may use an aggregate of that type.
 

@@ -47,8 +47,8 @@ import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.operations.EnabledIncrementalValidatorsOperation;
 import org.eclipse.wst.validation.internal.operations.EnabledValidatorsOperation;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
+import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;
-import org.eclipse.wst.validation.plugin.ValidationPlugin;
 
 /**
  * This class implements the pop-up menu item "Run Validation" When the item is selected, this

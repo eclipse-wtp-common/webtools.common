@@ -13,17 +13,17 @@ package org.eclipse.wst.validation.internal.operations;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.wst.validation.core.IHelper;
+import org.eclipse.wst.validation.core.IValidationContext;
 
 
 
 
 /**
- * In the eclipse environment, not only does the IHelper need to be able to load the MOF model, it
+ * In the eclipse environment, not only does the IValidationContext need to be able to load the MOF model, it
  * also needs to load items from the eclipse workbench. This interface should be extended by
  * workbench IHelpers, so that items can be added to, and from, the task list.
  */
-public interface IWorkbenchHelper extends IHelper {
+public interface IWorkbenchHelper extends IValidationContext {
 	/**
 	 * When the validation is complete, this method will be called so that the IWorkbenchHelper can
 	 * clean up any resources it allocated during the validation.
@@ -153,7 +153,7 @@ public interface IWorkbenchHelper extends IHelper {
 	/**
 	 * Whether full or incremental validation is running, this method will be called, by the
 	 * Validation Framework, for every IResource which is filtered in by the IValidator, so that the
-	 * IHelper can receive notification that one of the resources, which validation will run on, is
+	 * IValidationContext can receive notification that one of the resources, which validation will run on, is
 	 * being filtered in.
 	 */
 	public void registerResource(IResource resource);

@@ -23,7 +23,7 @@ package org.eclipse.wst.validation.internal.operations;
 public interface IRuleGroup {
 	// The following filters are used to identify a group of validation checks.
 
-	// retrieves the type of pass, from the IHelper, which the validator should execute
+	// retrieves the type of pass, from the IValidationContext, which the validator should execute
 	public static final String PASS_LEVEL = "PASS_LEVEL"; //$NON-NLS-1$
 
 	// On the FAST_PASS, the validator should check the rules which do not

@@ -27,7 +27,7 @@ import org.eclipse.jem.util.UIContextDetermination;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchHelper;
-import org.eclipse.wst.validation.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 /**
  * This class manages resource change events for the validation framework.

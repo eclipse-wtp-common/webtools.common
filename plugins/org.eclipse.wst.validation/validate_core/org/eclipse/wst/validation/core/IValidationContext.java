@@ -24,11 +24,11 @@ package org.eclipse.wst.validation.core;
  * two different IHelpers instead, and ship the one specific to the environment.
  * </p>
  * <p>
- * Each IHelper implementation loads a specific model as identified by a String
+ * Each IValidationContext implementation loads a specific model as identified by a String
  * <code>symbolicName</code>. The symbolicName can be any value except null or the 
  * empty string. Each validator identifies the symbolic names which it needs, and the
  * type of model which needs to be returned when that symbolic name is loaded via a 
- * <code>loadModel</code> method. An IHelper can support more than one IValidator; 
+ * <code>loadModel</code> method. An IValidationContext can support more than one IValidator; 
  * the helper needs to support every model that each validator needs.
  * </p>
  * 
@@ -41,7 +41,7 @@ package org.eclipse.wst.validation.core;
  * how a validator would typically invoke the loadModel(String) methods from within the validate() 
  * method body to obtain a 'context specific' model]
  */
-public interface IHelper {
+public interface IValidationContext {
 	/**
 	 * <p>
 	 * Load the model identified by <code>symbolicName</code>.<code>symbolicName</code> 
@@ -62,7 +62,7 @@ public interface IHelper {
 	 * 
 	 * This method differs from
 	 * @link #loadModel(String) because it takes parameters, from the IValidator, which 
-	 * 		 are available only at runtime. If you need to pass a live object to the IHelper, 
+	 * 		 are available only at runtime. If you need to pass a live object to the IValidationContext, 
 	 * 		 this is the loadModel method to use.
 	 * </p>
 	 * @param symbolicName String identifier for model

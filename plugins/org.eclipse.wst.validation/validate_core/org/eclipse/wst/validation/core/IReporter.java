@@ -10,6 +10,10 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.core;
 
+import java.util.List;
+
+import org.eclipse.wst.validation.internal.operations.IMessageAccess;
+
 
 
 
@@ -82,10 +86,9 @@ public interface IReporter  {
 	/**
 	 * @return the message access interface to this reporter, or null if message access is not
 	 * supported.
-	 * 
-	 * [issue : CS - Seems like overkill to have an IMessageAccess class. Why not just getMessages() to get a list.]    
+	 *     
 	 */
-	public IMessageAccess getMessageAccess();
+	public List getMessages();
 
 	/**
 	 * <p>

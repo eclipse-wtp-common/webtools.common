@@ -26,7 +26,7 @@ import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.core.IMessage;
 import org.eclipse.wst.validation.internal.RegistryConstants;
-import org.eclipse.wst.validation.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 /**
  * Abstract base class for registration of symbolic model names, and also provides the mechanism for
@@ -636,7 +636,7 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 
 	/**
 	 * Whether full or incremental validation is running, this method will be called, for every
-	 * IResource which is filtered in by the IValidator, so that the IHelper can receive
+	 * IResource which is filtered in by the IValidator, so that the IValidationContext can receive
 	 * notification that one of the resources, which validation will run on, is being filtered in.
 	 */
 	public void registerResource(IResource resource) {

@@ -33,6 +33,7 @@ public interface IValidator {
 	 * IReporter parameter will not be null.
 	 * </p>
 	 * @param reporter used for the interaction with the user
+	 * @since WTP 1.0
 	 * 
 	 * [issue : CS - Perhaps the IValidator should be required to provide a 'name' that can be used describe 
 	 * the running validation 'Job'.  Then the framework could automatically say something like 'XYZ validator : cleanup'.
@@ -61,5 +62,5 @@ public interface IValidator {
 	 * domain of another API to manage manage incremental file changes and triggering validations accordingly. 
 	 * Do we have a current use case in WTP where the validator does anything more validate a file from the changedFiles list?]
 	 */
-	public void validate(IHelper helper, IReporter reporter, IFileDelta[] changedFiles) throws ValidationException;
+	public void validate(IValidationContext helper, IReporter reporter, IFileDelta[] changedFiles) throws ValidationException;
 }

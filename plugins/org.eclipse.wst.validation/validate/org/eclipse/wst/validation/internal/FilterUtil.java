@@ -34,7 +34,7 @@ import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.core.IFileDelta;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchHelper;
 import org.eclipse.wst.validation.internal.operations.WorkbenchFileDelta;
-import org.eclipse.wst.validation.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 /**
  * Utility class for the ValidationOperation hierarchy.

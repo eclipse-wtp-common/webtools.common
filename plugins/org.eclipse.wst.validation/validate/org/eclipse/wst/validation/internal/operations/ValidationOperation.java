@@ -49,7 +49,7 @@ import org.eclipse.wst.validation.internal.TimeEntry;
 import org.eclipse.wst.validation.internal.VThreadManager;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
-import org.eclipse.wst.validation.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclispe.wst.validation.internal.core.FileDelta;
 import org.eclispe.wst.validation.internal.core.Message;
 import org.eclispe.wst.validation.internal.core.ValidatorLauncher;

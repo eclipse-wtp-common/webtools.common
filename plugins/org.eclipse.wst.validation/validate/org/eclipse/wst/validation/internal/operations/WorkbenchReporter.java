@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal.operations;
 
+import java.util.List;
 import java.util.logging.Level;
 
 import org.eclipse.core.resources.IProject;
@@ -20,7 +21,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.core.IMessage;
-import org.eclipse.wst.validation.core.IMessageAccess;
 import org.eclipse.wst.validation.core.IReporter;
 import org.eclipse.wst.validation.core.IValidator;
 import org.eclipse.wst.validation.core.MessageLimitException;
@@ -28,7 +28,7 @@ import org.eclipse.wst.validation.internal.ResourceConstants;
 import org.eclipse.wst.validation.internal.TaskListUtility;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
-import org.eclipse.wst.validation.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 /**
  * IValidator instances will interact with an instance of this class, but should never cast that
@@ -347,7 +347,7 @@ public final class WorkbenchReporter implements IReporter {
 	}
 
 	/**
-	 * @deprecated. The IHelper will be ignored.
+	 * @deprecated. The IValidationContext will be ignored.
 	 */
 	public WorkbenchReporter(IWorkbenchHelper helper, IProgressMonitor monitor, IProject project) {
 		this(project, monitor);
@@ -499,9 +499,9 @@ public final class WorkbenchReporter implements IReporter {
 	}
 
 	/**
-	 * @see org.eclipse.wst.validation.core.core.IReporter#getMessageAccess()
+	 * @see org.eclipse.wst.validation.core.core.IReporter#getMessages()
 	 */
-	public IMessageAccess getMessageAccess() {
+	public List getMessages() {
 		return null;
 	}
 

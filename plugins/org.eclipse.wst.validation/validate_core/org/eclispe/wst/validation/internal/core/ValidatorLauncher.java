@@ -11,7 +11,7 @@
 package org.eclispe.wst.validation.internal.core;
 
 import org.eclipse.wst.validation.core.IFileDelta;
-import org.eclipse.wst.validation.core.IHelper;
+import org.eclipse.wst.validation.core.IValidationContext;
 import org.eclipse.wst.validation.core.IReporter;
 import org.eclipse.wst.validation.core.IValidator;
 import org.eclipse.wst.validation.core.ValidationException;
@@ -48,7 +48,7 @@ public class ValidatorLauncher {
 	/**
 	 * <p>
 	 * This method is the launch point of the validation. It runs validation on the validator
-	 * accessed by the IHelper. When the validation is complete, each validator may perform resource
+	 * accessed by the IValidationContext. When the validation is complete, each validator may perform resource
 	 * cleanup, if necessary.
 	 * 
 	 * <br>
@@ -71,7 +71,7 @@ public class ValidatorLauncher {
 	 * array, then a full validation should be performed. Otherwise, validation on just the files
 	 * listed in the array should performed if the validator supports incremental validation.
 	 */
-	public void start(IHelper helper, IValidator validator, IReporter reporter, IFileDelta[] changedFiles) throws ValidationException {
+	public void start(IValidationContext helper, IValidator validator, IReporter reporter, IFileDelta[] changedFiles) throws ValidationException {
 		if ((helper == null) || (validator == null) || (reporter == null)) {
 			return;
 		}

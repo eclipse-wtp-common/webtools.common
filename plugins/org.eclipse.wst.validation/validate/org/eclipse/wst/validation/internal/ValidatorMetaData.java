@@ -23,7 +23,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.core.IValidator;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchHelper;
-import org.eclipse.wst.validation.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.osgi.framework.Bundle;
 
 /**
@@ -164,7 +164,7 @@ public class ValidatorMetaData {
 	 * current validation will suddenly start validating another project.
 	 */
 	//TODO just want to remember to figure out the many-temporary-objects problem if this method
-	// continues to new an IHelper every time - Ruth
+	// continues to new an IValidationContext every time - Ruth
 	public IWorkbenchHelper getHelper(IProject project) throws InstantiationException {
 		if (isAsync()) {
 			IWorkbenchHelper helper = ValidationRegistryReader.createHelper(_helperClassElement, _helperClassName);

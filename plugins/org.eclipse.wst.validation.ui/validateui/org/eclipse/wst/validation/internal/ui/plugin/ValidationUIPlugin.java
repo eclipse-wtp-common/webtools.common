@@ -16,7 +16,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.wst.common.frameworks.internal.operations.IHeadlessRunnableWithProgress;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 import org.eclipse.wst.validation.internal.operations.ValidationOperation;
-import org.eclipse.wst.validation.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.osgi.framework.BundleContext;
 
 import org.eclipse.jem.util.logger.LogEntry;

@@ -17,7 +17,7 @@ import org.eclispe.wst.validation.internal.core.Message;
 
 
 /**
- * This class is provided for validators which run only in WSAD and whose messages, because they
+ * This class is provided for validators which run only in UI and whose messages, because they
  * come from another tool, are already localized. LocalizedMessage cannot be used by any validator
  * which needs to run in both WebSphere and WSAD.
  */
