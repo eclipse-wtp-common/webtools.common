@@ -12,19 +12,14 @@ package org.eclipse.wst.common.modulecore.internal.resources;
 
 import java.util.Arrays;
 
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourceAttributes;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.modulecore.ComponentResource;
@@ -69,12 +64,7 @@ public abstract class VirtualResource implements IVirtualResource {
 	public void accept(IResourceVisitor visitor, int depth, int memberFlags) throws CoreException {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 
-	}
-
-	public void clearHistory(IProgressMonitor monitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
-	}
+	} 
 
 	public void copy(IPath destination, boolean force, IProgressMonitor monitor) throws CoreException {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
@@ -84,22 +74,7 @@ public abstract class VirtualResource implements IVirtualResource {
 	public void copy(IPath destination, int updateFlags, IProgressMonitor monitor) throws CoreException {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 
-	}
-
-	public void copy(IProjectDescription description, boolean force, IProgressMonitor monitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
-	}
-
-	public void copy(IProjectDescription description, int updateFlags, IProgressMonitor monitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
-	}
-
-	public IMarker createMarker(String type) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return null;
-	}
+	}  
 
 	public void delete(boolean force, IProgressMonitor monitor) throws CoreException {
 		delete(force ? IResource.FORCE : IResource.NONE, monitor);
@@ -140,26 +115,10 @@ public abstract class VirtualResource implements IVirtualResource {
 
 	protected abstract void doDeleteRealResources(int updateFlags, IProgressMonitor monitor) throws CoreException;
 
-
-	public void deleteMarkers(String type, boolean includeSubtypes, int depth) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
-	}
-	
 	// TODO WTP:Implement this method 
 	public boolean exists() {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 		//return false;
-	}
-
-	public IMarker findMarker(long id) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return null;
-	}
-
-	public IMarker[] findMarkers(String type, boolean includeSubtypes, int depth) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return null;
 	}
 
 	public String getFileExtension() {
@@ -176,26 +135,27 @@ public abstract class VirtualResource implements IVirtualResource {
 			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
 			
 			ComponentResource[] componentResources = new ComponentResource[0];
-			IPath currentPath = getRuntimePath();
-			while(componentResources.length == 0) {
+			IPath currentPath = null;
+			IPath potentialMatchRuntimePath = null; 
+			
+			do { 
+				currentPath = (currentPath == null) ? getRuntimePath() : currentPath.removeLastSegments(1);
 				componentResources = root.findModuleResources(currentPath, false);
-				if(componentResources.length > 0) {					
-					IPath finalPath = getRuntimePath().removeFirstSegments(currentPath.segmentCount());
-					URI sourcePath = componentResources[0].getSourcePath().appendSegments(finalPath.segments());
-					if(sourcePath.segmentCount() > 0 ) {
- 						finalPath = new Path(sourcePath.path());
-						
+				for (int i = 0; i < componentResources.length; i++) {
+					potentialMatchRuntimePath = new Path(componentResources[i].getRuntimePath().path());					
+					if(isPotentalMatch(potentialMatchRuntimePath)) {
+						IPath sourcePath = new Path(componentResources[i].getSourcePath().path());
+						IPath subpath = getRuntimePath().removeFirstSegments(potentialMatchRuntimePath.segmentCount());
+						IPath finalPath = sourcePath.append(subpath);
 						// already workspace relative
-						if(sourcePath.segment(0).equals(getComponentHandle().getProject().getName())) {
+						if(finalPath.segment(0).equals(getComponentHandle().getProject().getName())) {
 							return finalPath;
 						} 
 						// make workspace relative
 						return new Path(IPath.SEPARATOR+getProject().getName()).append(finalPath);
-					
 					}
-				} else
-					currentPath = currentPath.removeLastSegments(1);
-			}
+				}   
+			} while(currentPath.segmentCount() > 0 && componentResources.length == 0);
 		} finally {
 			if(moduleCore != null) {
 				moduleCore.dispose();
@@ -204,26 +164,15 @@ public abstract class VirtualResource implements IVirtualResource {
 		return getRuntimePath();
 	}
 
-	public long getLocalTimeStamp() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return 0;
+	private boolean isPotentalMatch(IPath aRuntimePath) {
+		return aRuntimePath.isPrefixOf(getRuntimePath());
 	}
 
 	// TODO WTP:Implement this method 
 	public IPath getLocation() {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 		//return null;
-	}
-
-	public IMarker getMarker(long id) {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return null;
-	}
-
-	public long getModificationStamp() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return 0;
-	}
+	} 
 	
 	// TODO WTP:Implement this method 
 	public String getName() {
@@ -233,12 +182,7 @@ public abstract class VirtualResource implements IVirtualResource {
 	// TODO WTP:Implement this method 
 	public IVirtualContainer getParent() {
 		return new VirtualFolder(getComponentHandle(), getRuntimePath().removeLastSegments(1));
-	}
-
-	public String getPersistentProperty(QualifiedName key) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return null;
-	}
+	} 
 
 	public IProject getProject() {
 		return getComponentHandle().getProject();
@@ -252,67 +196,23 @@ public abstract class VirtualResource implements IVirtualResource {
 	public IPath getRawLocation() {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 		//return null;
-	}
-
-	public ResourceAttributes getResourceAttributes() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return null;
-	}
-
-	public Object getSessionProperty(QualifiedName key) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return null;
-	}
+	} 
 
 	public int getType() {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 		//return 0;
 	}
-
-	public IWorkspace getWorkspace() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return null;
-	}
+ 
 
 	public boolean isAccessible() {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 		//return false;
-	}
-
-	public boolean isDerived() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return false;
-	}
-
-	public boolean isLocal(int depth) {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return false;
-	}
-
-	public boolean isLinked() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return false;
-	}
-
-	public boolean isPhantom() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return false;
-	}
-
+	} 
+	
 	public boolean isReadOnly() {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 		//return false;
-	}
-
-	public boolean isSynchronized(int depth) {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return false;
-	}
-
-	public boolean isTeamPrivateMember() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return false;
-	}
+	} 
 
 	public void move(IPath destination, boolean force, IProgressMonitor monitor) throws CoreException {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
@@ -322,73 +222,17 @@ public abstract class VirtualResource implements IVirtualResource {
 	public void move(IPath destination, int updateFlags, IProgressMonitor monitor) throws CoreException {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 
-	}
-
-	public void move(IProjectDescription description, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
-	}
-
-	public void move(IProjectDescription description, int updateFlags, IProgressMonitor monitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
-	}
+	} 
 
 	public void refreshLocal(int depth, IProgressMonitor monitor) throws CoreException {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 
-	}
-
-	public void revertModificationStamp(long value) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
-	}
-
-	public void setDerived(boolean isDerived) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
-	}
-
-	public void setLocal(boolean flag, int depth, IProgressMonitor monitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
-	}
-
-	public long setLocalTimeStamp(long value) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return 0;
-	}
-
-	public void setPersistentProperty(QualifiedName key, String value) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
-	}
+	} 
 
 	public void setReadOnly(boolean readOnly) {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 
-	}
-
-	public void setResourceAttributes(ResourceAttributes attributes) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
-	}
-
-	public void setSessionProperty(QualifiedName key, Object value) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
-	}
-
-	public void setTeamPrivateMember(boolean isTeamPrivate) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
-	}
-
-	public void touch(IProgressMonitor monitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
-	}
-
+	} 
 	public Object getAdapter(Class adapter) {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 		//return null;

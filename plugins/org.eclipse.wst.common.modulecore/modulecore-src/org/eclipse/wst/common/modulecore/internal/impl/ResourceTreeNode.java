@@ -140,7 +140,7 @@ public class ResourceTreeNode {
 			for (Iterator resourceIter = moduleResources.iterator(); resourceIter.hasNext();) {
 				moduleResource = (ComponentResource) resourceIter.next();
 				eclipseResource = ModuleCore.getEclipseResource(moduleResource);
-				if (eclipseResource.getType() == IResource.FOLDER) {
+				if (eclipseResource != null && eclipseResource.getType() == IResource.FOLDER) {
 					eclipseContainer = (IContainer) eclipseResource;
 
 					ComponentResource newResource = ModuleCorePackage.eINSTANCE.getModuleCoreFactory().createComponentResource();

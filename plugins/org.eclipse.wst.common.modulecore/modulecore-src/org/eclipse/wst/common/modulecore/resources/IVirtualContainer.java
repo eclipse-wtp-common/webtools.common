@@ -297,43 +297,6 @@ public interface IVirtualContainer extends IVirtualResource {
 	 * @since 2.0
 	 */
 	public IVirtualResource[] members(int memberFlags) throws CoreException;
-
-	/**
-	 * Returns a list of recently deleted files inside this container that
-	 * have one or more saved states in the local history. The depth parameter
-	 * determines how deep inside the container to look. This resource may or
-	 * may not exist in the workspace.
-	 * <p>
-	 * When applied to an existing project resource, this method returns recently 
-	 * deleted files with saved states in that project. Note that local history is
-	 * maintained with each individual project, and gets discarded when a project
-	 * is deleted from the workspace. If applied to a deleted project, this method
-	 * returns the empty list.
-	 * </p><p>
-	 * When applied to the workspace root resource (depth infinity), this method
-	 * returns all recently deleted files with saved states in all existing projects.
-	 * </p><p>
-	 * When applied to a folder (or project) resource (depth one),
-	 * this method returns all recently deleted member files with saved states.
-	 * </p><p>
-	 * When applied to a folder resource (depth zero),
-	 * this method returns an empty list unless there was a recently deleted file
-	 * with saved states at the same path as the folder.
-	 * </p><p>
-	 * This method is long-running; progress and cancellation are provided
-	 * by the given progress monitor. 
-	 * </p>
-	 * 
-	 * @param depth depth limit: one of <code>DEPTH_ZERO</code>, <code>DEPTH_ONE</code>
-	 *    or <code>DEPTH_INFINITE</code>
-	 * @param monitor a progress monitor, or <code>null</code> if progress
-	 *    reporting and cancellation are not desired
-	 * @return an array of recently deleted files
-	 * @exception CoreException if this method fails
-	 * @see IVirtualFile#getHistory(IProgressMonitor)
-	 * @since 2.0
-	 */
-	public IVirtualFile[] findDeletedMembersWithHistory(int depth, IProgressMonitor monitor) throws CoreException; 
 	
 	public void commit() throws CoreException;
 }

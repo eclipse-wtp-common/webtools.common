@@ -25,6 +25,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.modulecore.ComponentResource;
 import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.WorkbenchComponent;
+import org.eclipse.wst.common.modulecore.internal.impl.ResourceTreeRoot;
 import org.eclipse.wst.common.modulecore.resources.IVirtualContainer;
 import org.eclipse.wst.common.modulecore.resources.IVirtualFile;
 import org.eclipse.wst.common.modulecore.resources.IVirtualFolder;
@@ -94,10 +95,27 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 
 			moduleCore = ModuleCore.getModuleCoreForWrite(getProject());
 			WorkbenchComponent component = moduleCore.findWorkbenchModuleByDeployName(getComponentHandle().getName());
+			
+			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
+			ComponentResource[] resources = root.findModuleResources(getRuntimePath(), false);
 
-			ComponentResource componentResource = moduleCore.createWorkbenchModuleResource(resource);
-			componentResource.setRuntimePath(URI.createURI(getRuntimePath().toString()));
-			component.getResources().add(componentResource);
+			if(resources.length == 0) {
+				ComponentResource componentResource = moduleCore.createWorkbenchModuleResource(resource);
+				componentResource.setRuntimePath(URI.createURI(getRuntimePath().toString()));
+				component.getResources().add(componentResource);
+			} else {
+				URI projectRelativeURI = URI.createURI(aProjectRelativeLocation.toString());
+				boolean foundMapping = false;
+				for (int resourceIndx = 0; resourceIndx < resources.length && !foundMapping; resourceIndx++) {
+					if(projectRelativeURI.equals(resources[resourceIndx].getSourcePath()))
+						foundMapping = true;
+				}
+				if(!foundMapping) {
+					ComponentResource componentResource = moduleCore.createWorkbenchModuleResource(resource);
+					componentResource.setRuntimePath(URI.createURI(getRuntimePath().toString()));
+					component.getResources().add(componentResource);					
+				}
+			}
 
 			createResource(resource, updateFlags, monitor);
 

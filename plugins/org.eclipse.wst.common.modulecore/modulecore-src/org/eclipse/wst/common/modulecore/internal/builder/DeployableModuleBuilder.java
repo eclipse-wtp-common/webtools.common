@@ -14,6 +14,7 @@ import java.util.Map;
 import org.eclipse.core.internal.resources.Resource;
 import org.eclipse.core.internal.resources.Workspace;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -46,6 +47,11 @@ public class DeployableModuleBuilder extends IncrementalProjectBuilder implement
      *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
      */
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
+
+		// clean markers
+		IResource wtpmoduleFile = getProject().findMember(".wtpmodules"); //$NON-NLS-1$
+		wtpmoduleFile.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE); 
+		
         DeployableModuleProjectBuilderDataModel dataModel = null;
         ModuleCore moduleCore = null;
         try {
