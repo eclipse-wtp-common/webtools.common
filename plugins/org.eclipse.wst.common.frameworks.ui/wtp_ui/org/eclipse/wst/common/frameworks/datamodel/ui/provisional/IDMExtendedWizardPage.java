@@ -8,10 +8,10 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.frameworks.datamodel.ui;
+package org.eclipse.wst.common.frameworks.datamodel.ui.provisional;
 
 import org.eclipse.jface.wizard.IWizardPage;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
+import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelOperation;
 
 /**
  * This interface is EXPERIMENTAL and is subject to substantial changes.

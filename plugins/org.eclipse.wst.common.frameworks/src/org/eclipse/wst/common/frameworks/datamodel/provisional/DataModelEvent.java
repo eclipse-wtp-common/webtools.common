@@ -8,7 +8,7 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.frameworks.datamodel;
+package org.eclipse.wst.common.frameworks.datamodel.provisional;
 
 /**
  * This event is used to communicate property changes from WTPOperationDataModels to their

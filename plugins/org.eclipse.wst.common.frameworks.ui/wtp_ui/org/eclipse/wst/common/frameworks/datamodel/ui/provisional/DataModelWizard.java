@@ -6,7 +6,7 @@
  * 
  * Contributors: IBM Corporation - initial API and implementation
  **************************************************************************************************/
-package org.eclipse.wst.common.frameworks.datamodel.ui;
+package org.eclipse.wst.common.frameworks.datamodel.ui.provisional;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -19,9 +19,9 @@ import org.eclipse.jface.util.Assert;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
+import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelFactory;
+import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel;
+import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.internal.AdaptabilityUtility;
 import org.eclipse.wst.common.frameworks.internal.operation.extensionui.DMWizardPageElement;
 import org.eclipse.wst.common.frameworks.internal.operation.extensionui.DMWizardPageExtensionManager;

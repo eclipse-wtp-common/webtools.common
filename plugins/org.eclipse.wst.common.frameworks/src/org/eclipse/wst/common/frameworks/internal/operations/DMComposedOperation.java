@@ -15,8 +15,8 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.wst.common.frameworks.datamodel.DataModelOperation;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
+import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelOperation;
+import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.operations.WTPOperation;
 
 public class DMComposedOperation extends DataModelOperation {

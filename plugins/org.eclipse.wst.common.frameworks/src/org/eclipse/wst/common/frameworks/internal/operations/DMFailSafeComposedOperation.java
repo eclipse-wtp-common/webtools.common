@@ -22,7 +22,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jem.util.logger.proxy.Logger;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
+import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelOperation;
 
 /**
  * @author jsholl

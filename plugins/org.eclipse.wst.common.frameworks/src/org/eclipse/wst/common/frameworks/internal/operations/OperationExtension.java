@@ -10,7 +10,7 @@ package org.eclipse.wst.common.frameworks.internal.operations;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
+import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.operations.WTPOperation;
 
 public class OperationExtension {

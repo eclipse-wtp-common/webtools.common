@@ -8,7 +8,7 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.frameworks.datamodel;
+package org.eclipse.wst.common.frameworks.datamodel.provisional;
 
 import org.eclipse.wst.common.frameworks.operations.IHeadlessRunnableWithProgress;
 

@@ -8,18 +8,11 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.frameworks.datamodel;
+package org.eclipse.wst.common.frameworks.datamodel.provisional;
 
-import org.eclipse.wst.common.internal.datamodel.DataModelFactoryImpl;
+public interface IDataModelPropertyDescriptor {
 
-public interface DataModelFactory {
-
-	public static final DataModelFactory INSTANCE = new DataModelFactoryImpl();
-
-	public IDataModel createDataModel(String dataModelProviderID);
-
-	public IDataModel createDataModel(Class dataModelProviderClass);
-
-	public IDataModel createDataModel(IDataModelProvider dataModelProviderClass);
-
+	public Object getPropertyValue();
+	
+	public String getPropertyDescription();
 }

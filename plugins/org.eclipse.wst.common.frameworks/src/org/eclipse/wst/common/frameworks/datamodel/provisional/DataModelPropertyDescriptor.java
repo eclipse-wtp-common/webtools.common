@@ -1,4 +1,4 @@
-package org.eclipse.wst.common.frameworks.datamodel;
+package org.eclipse.wst.common.frameworks.datamodel.provisional;
 
 //TODO link to an example in the tutorial
 /**
