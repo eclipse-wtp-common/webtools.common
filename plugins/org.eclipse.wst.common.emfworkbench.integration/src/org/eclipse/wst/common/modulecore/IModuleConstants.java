@@ -1,12 +1,20 @@
-/*
- * Created on Jan 25, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
+/*******************************************************************************
+ * Copyright (c) 2003, 2004 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ * IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.wst.common.modulecore;
 
-
+/**
+ * <p>
+ * The following class is experimental until fully documented.
+ * </p>
+ */
 public interface IModuleConstants {
 	
     public static String DEPLOYABLE_MODULE_BUILDER_ID = "org.eclipse.wst.common.emfworkbench.integration.DeployableModuleBuilder"; //$NON-NLS-1$
@@ -18,8 +26,7 @@ public interface IModuleConstants {
 
 	//moduleTypes
 	public final static String JST_WEB_MODULE = "jst.web"; //$NON-NLS-1$
-	public final static String JAVA_UTIL_MODULE = "jst.util"; //$NON-NLS-1$
+	public final static String JST_UTILITY_MODULE = "jst.utility"; //$NON-NLS-1$
 	public final static String WST_WEB_MODULE = "wst.web"; //$NON-NLS-1$
-	
-	public final static String UTILITY_MODULE = "jst.utility"; //$NON-NLS-1$
+	 
 }

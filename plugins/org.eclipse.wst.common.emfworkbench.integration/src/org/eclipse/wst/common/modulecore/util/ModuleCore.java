@@ -41,6 +41,8 @@ import org.eclipse.wst.common.modulecore.impl.UnresolveableURIException;
  */
 public class ModuleCore implements IEditModelHandler {
 
+	protected static final String DEPLOYABLES_ROOT = ".deployables/"; //$NON-NLS-1$
+	
 	public interface Constants {
 
 		public interface ModuleURISegments {
@@ -54,7 +56,7 @@ public class ModuleCore implements IEditModelHandler {
 	public static final Class ADAPTER_TYPE = ModuleCore.class;
 	private static final WorkbenchModuleResource[] NO_RESOURCES = new WorkbenchModuleResource[0];
 
-	static String MODULE_META_FILE_NAME = ".wtpmodules";
+	static String MODULE_META_FILE_NAME = ".wtpmodules"; //$NON-NLS-1$
 
 	private final ModuleStructuralModel structuralModel;
 	private final Map dependentCores = new HashMap();
@@ -73,7 +75,7 @@ public class ModuleCore implements IEditModelHandler {
 	}
 
 	public static URI getOutputContainerRoot(WorkbenchModule aWorkbenchModule) {
-		return URI.createURI(".deployables/" + aWorkbenchModule.getDeployedName()); //$NON-NLS-1$
+		return URI.createURI(DEPLOYABLES_ROOT + aWorkbenchModule.getDeployedName()); 
 	}
 
 	public static Resource.Factory getResourceFactory(URI aURI) {
@@ -246,5 +248,12 @@ public class ModuleCore implements IEditModelHandler {
 				dependentCore = getModuleCoreForRead(getContainingProject(aModuleURI));
 		} 
 		return dependentCore;
+	}
+
+	/**
+	 * 
+	 */
+	public void prepareProjectModulesIfNecessary() {
+		structuralModel.prepareProjectModulesIfNecessary();		
 	}
 }

@@ -1,11 +1,13 @@
 package org.eclipse.wst.common.modulecore.builder;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
 import org.eclipse.wst.common.modulecore.DependentModule;
 import org.eclipse.wst.common.modulecore.ModuleURIUtil;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
+import org.eclipse.wst.common.modulecore.impl.UnresolveableURIException;
 import org.eclipse.wst.common.modulecore.util.ModuleCore;
 
 public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
@@ -29,6 +31,8 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
 	 * Calc, type boolean
 	 */
 	public static final String NEEDS_PREPROCESSING = "DependentDeployableModuleDataModel.NEEDS_PREPROCESSING"; //$NON-NLS-1$
+	
+	private ModuleCore moduleCore;
 
     public DependentDeployableModuleDataModel() {
         super();
@@ -74,30 +78,62 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
     }
     
     private Object getNeedsPreprocessingValue() {
-        if(!isSet(DEPENDENT_MODULE)) return null;
-        DependentModule depModule = (DependentModule)getProperty(DEPENDENT_MODULE);
-        //TODO:
+        if(!isSet(DEPENDENT_MODULE)) return null; 
+        ModuleCore localCore = getModuleCore();
+        if(localCore != null)
+        	return Boolean.valueOf(localCore.isLocalDependency(getDependentModule())); 
         return null;
     }
 
     private WorkbenchModule getWorkBenchModuleValue() {
         if(!isSet(DEPENDENT_MODULE)) return null;
-        //TODO:
+        ModuleCore localCore = getModuleCore();
+        try {
+			if(localCore != null)
+				return localCore.findWorkbenchModuleByModuleURI(getDependentModule().getHandle());
+		} catch (UnresolveableURIException e) {
+		}
         return null;
     }
 
     private Object getOutputContainerValue() {
         if(!isSet(DEPENDENT_MODULE)) return null;
-        DependentModule depModule = (DependentModule)getProperty(DEPENDENT_MODULE);
+        DependentModule depModule = getDependentModule();
         URI moduleRoot = ModuleCore.getOutputContainerRoot(getWorkBenchModuleValue());
-        return ModuleURIUtil.concat(moduleRoot , depModule.getDeployedPath()); //$NON-NLS-1$
+        return ModuleURIUtil.concat(moduleRoot, depModule.getDeployedPath()); 
     }
 
     private URI getHandleValue() {
         if(!isSet(DEPENDENT_MODULE)) return null;
-        DependentModule depModule = (DependentModule)getProperty(DEPENDENT_MODULE);
-        return depModule.getHandle();
+        return getDependentModule().getHandle();
     }
+    
+    /* (non-Javadoc)
+	 * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#dispose()
+	 */
+	public void dispose() { 
+		super.dispose();
+		if(moduleCore != null)
+			moduleCore.dispose();
+	}
+	
+	private ModuleCore getModuleCore() {
+		if(!isSet(DEPENDENT_MODULE)) return null;
+		if(moduleCore == null) {
+			try {
+				DependentModule dependentModule = getDependentModule();
+				// TODO THIS SHOULD BE THE CONTAINING PROJECT OF THE WORKBENCHMODULE, NOT THE DEPENDENT MODULE
+				IProject container = ModuleCore.getContainingProject(dependentModule.getHandle());
+				moduleCore = ModuleCore.getModuleCoreForRead(container);
+			} catch (UnresolveableURIException e) {
+			}
+		}
+		return moduleCore;
+	}
+	
+	private DependentModule getDependentModule() {
+		return (DependentModule)getProperty(DEPENDENT_MODULE);
+	}
 
     /* (non-Javadoc)
      * @see org.eclipse.wst.common.modulecore.builder.DeployableModuleDataModel#getDefaultOperation()

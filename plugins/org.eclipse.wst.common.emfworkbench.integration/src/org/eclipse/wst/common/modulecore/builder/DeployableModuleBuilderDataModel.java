@@ -69,7 +69,8 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
      */
     public DeployableModuleBuilderDataModel() {
         super();
-    }    /**
+    }    
+    /**
      * @return
      */
     private Object populateDependentModulesDM() {
@@ -79,7 +80,7 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
         DependentDeployableModuleDataModel dependentDataModel;
         for(int i = 0; i<depModules.size(); i++){
             dependentDataModel = new DependentDeployableModuleDataModel();
-            dependentDataModel.setProperty(DependentDeployableModuleDataModel.DEPENDENT_MODULE, (DependentModule)depModules.get(i));
+            dependentDataModel.setProperty(DependentDeployableModuleDataModel.DEPENDENT_MODULE, depModules.get(i));
             depModulesDataModels.add(dependentDataModel);
         }
         return depModulesDataModels;
@@ -91,9 +92,8 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
     private Object populateOutputContainer() {
         WorkbenchModule wbModule = (WorkbenchModule)getProperty(WORKBENCH_MODULE);
         URI uri = null;
-        if(wbModule != null){
-            uri = ModuleCore.getOutputContainerRoot(wbModule);
-        }
+        if(wbModule != null)
+            uri = ModuleCore.getOutputContainerRoot(wbModule); 
         return uri;
     }
 

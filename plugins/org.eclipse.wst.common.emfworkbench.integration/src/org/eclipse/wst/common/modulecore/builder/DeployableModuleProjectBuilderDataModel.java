@@ -8,8 +8,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
-import org.eclipse.wst.common.modulecore.ModuleCoreNature;
-import org.eclipse.wst.common.modulecore.ModuleStructuralModel;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
 import org.eclipse.wst.common.modulecore.util.ModuleCore;
 
@@ -24,13 +22,11 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
 	 */
 	public static final String BUILD_KIND = "DeployableModuleProjectBuilderDataModel.BUILD_KIND"; //$NON-NLS-1$
 	/**
-	 * Required, type IResourceDelta
-	 * default to FULL
+	 * Required, type IResourceDelta 
 	 */
 	public static final String PROJECT_DETLA = "DeployableModuleProjectBuilderDataModel.PROJECT_DETLA"; //$NON-NLS-1$
 	/**
-	 * Required, type ModuleBuilderDataModel
-	 * default to FULL
+	 * Required, type ModuleBuilderDataModel 
 	 */
 	public static final String MODULE_BUILDER_DM_LIST = "DeployableModuleProjectBuilderDataModel.MODULE_BUILDER_DM_LIST"; //$NON-NLS-1$
 	
@@ -74,7 +70,7 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
      */
     private Object populateModuleBuilderDataModelList() {
         //TODO: delta information should be taken into consideration
-        List moduleDMList = new ArrayList();
+        List moduleDMList = null; 
         switch (((Integer)getProperty(BUILD_KIND)).intValue()) {
 	        case IncrementalProjectBuilder.FULL_BUILD:
 	            moduleDMList = populateFullModuleBuilderDataModelList();
@@ -90,13 +86,11 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
     }
 
     private List populateFullModuleBuilderDataModelList() {
-        ModuleStructuralModel structuralModel = null;
+        ModuleCore moduleCore = null;
         List moduleBuilderDataModelList = new ArrayList();
-        try {
-	    	ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature((IProject)getProperty(PROJECT));
-		    structuralModel = nature.getModuleStructuralModelForRead(this);
-	    	ModuleCore editUtility = (ModuleCore) structuralModel.getAdapter(ModuleCore.ADAPTER_TYPE);
-	        WorkbenchModule[] wbModules = editUtility.getWorkbenchModules();
+        try { 
+	    	moduleCore = ModuleCore.getModuleCoreForRead((IProject)getProperty(PROJECT));
+	        WorkbenchModule[] wbModules = moduleCore.getWorkbenchModules();
 	        
 	        if(wbModules == null) return null;
 	        
@@ -116,8 +110,8 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
 	            }
 	        }
         } finally {
-			if (structuralModel != null)
-				structuralModel.releaseAccess(this);
+			if (moduleCore != null)
+				moduleCore.dispose();
         }
         return moduleBuilderDataModelList;  
     }
