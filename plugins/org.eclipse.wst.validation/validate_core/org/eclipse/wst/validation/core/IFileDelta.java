@@ -18,6 +18,12 @@ package org.eclipse.wst.validation.core;
  * 
  * @since 1.0
  * </p>
+ * [issue: LM - From speaking with Vijay the name IFileDelta doesn't really capture
+ *  what this interface is for. Validation may occur of files, it may occur on resources,
+ *  or it may occur on something more abstract simply known as an artifact. The delta part
+ *  of the name also seems misleading as this interface doesn't provide the delta but
+ *  rather provides the type of change. I suggest renaming this interface to IModifiedArtifact
+ *  or something along those lines to better capture its use. ]
  */
 public interface IFileDelta {
 	public static final int ADDED = 1;   // the file has been added
@@ -31,6 +37,10 @@ public interface IFileDelta {
 	 * </p>
 	 * @return returns the delta type.
 	 * @since WTP 1.0
+	 * 
+	 * [issue: LM - From my experience a validator simply needs to know what artifact needs
+	 *  to be validated. Can you provide a use case where the type of change is needed for
+	 *  validation? ]
 	 */
 	public int getDeltaType();
 
@@ -41,6 +51,9 @@ public interface IFileDelta {
 	 * </p>
 	 * @return returns the file name.
 	 * @since WTP 1.0
+	 * 
+	 * [issue: LM - Following my comments above this method should be renamed to getArtifactName or
+	 *  something that follows along with the interface rename. ]
 	 */
 	public String getFileName();
 }

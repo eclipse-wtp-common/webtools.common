@@ -23,7 +23,8 @@ package org.eclipse.wst.validation.core;
  * A validator's verification starts when the ValidatorLauncher singleton calls
  * <code>validate</code>.
  * 
- * ]   
+ * [issue: LM - This interface will be implemented by clients. This should be considered a candidate for
+ *  an abstract class. ]   
  */
 public interface IValidator {
 	/**
@@ -38,6 +39,8 @@ public interface IValidator {
 	 * [issue : CS - Perhaps the IValidator should be required to provide a 'name' that can be used describe 
 	 * the running validation 'Job'.  Then the framework could automatically say something like 'XYZ validator : cleanup'.
 	 * Relying on the IValidator to provide subtask information seems error prone.]
+	 * [issue: LM - Is the cleanup method necessary? Can the framework put a requirement that client validators 'clean up'
+	 *  before returning from the validate method? ] 
 	 */
 	public void cleanup(IReporter reporter);
 

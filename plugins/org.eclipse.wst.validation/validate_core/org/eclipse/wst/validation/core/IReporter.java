@@ -59,6 +59,9 @@ public interface IReporter  {
 	 * @exception MessageLimitException
 	 *                is thrown when the total number of messages reported exceeds the maximum
 	 *                allowed.
+	 * [issue: LM - This exception seems questionable to me. Why do validators need to know how
+	 *  to handle a MessageLimitException? Seems to me that this is a validation framework
+	 *  specific issue and that client validators shouldn't know about this at all. ]
 	 */
 	public abstract void addMessage(IValidator origin, IMessage message) throws MessageLimitException;
 
