@@ -1,14 +1,8 @@
-/*
- * Created on Jan 26, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
+
 package org.eclipse.wst.common.modulecore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -34,34 +28,10 @@ public class ModuleStructureModel extends EditModel implements IResourceChangeLi
         super(editModelID, context, readOnly);
     }
 
-    public void addIModuleStructureListener(IModuleStructureListener listener) {
-        moduleStructureListeners.add(listener);
-    }
-
-    private void notifyListeners() {
-        ModuleStructureEvent event = createModuleStructuredEvent();
-        for (Iterator iter = moduleStructureListeners.iterator(); iter.hasNext();) {
-            IModuleStructureListener listener = (IModuleStructureListener) iter.next();
-            listener.structureChanged(event);
-        }
-    }
-
     private void addResourceChangeListener() {
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
     }
 
-    private ModuleStructureEvent createModuleStructuredEvent() {
-        ModuleStructureEvent event = new ModuleStructureEvent(getSource(), getModuleResources());
-        return null;
-    }
-
-    private Object getSource() {
-        return null;
-    }
-
-    private ModuleResource[] getModuleResources() {
-        return null;
-    }
 
     public WorkbenchModule createWorkbenchModule(URI uri) {
         if (uri == null)
@@ -79,21 +49,44 @@ public class ModuleStructureModel extends EditModel implements IResourceChangeLi
         return module;
     }
 
+    public WorkbenchApplication createWorkbenchApplication(URI handleURI, URI deployedPathURI) {
+        if (handleURI == null || deployedPathURI == null)
+            return null;
+        WorkbenchApplication workBenchApplication = null;
+        workBenchApplication = createWorkbenchApplication(handleURI);
+        workBenchApplication.setDeployedPath(deployedPathURI);
+        return workBenchApplication;
+    }
+
+    public WorkbenchApplication createWorkbenchApplication(URI handleURI) {
+        if (handleURI == null)
+            return null;
+        WorkbenchApplication workBenchApplication = null;
+        try {
+            workBenchApplication = MODULE_FACTORY.createWorkbenchApplication();
+        } catch (RuntimeException e) {
+            Logger.getLogger().write(e);
+        } finally {
+            if (workBenchApplication != null) {
+                getWorkbenchModulesMap().put(handleURI, workBenchApplication);
+            }
+        }
+        return workBenchApplication;
+    }
+
     private HashMap getWorkbenchModulesMap() {
         if (workbenchModulesMap == null)
             workbenchModulesMap = new HashMap();
         return workbenchModulesMap;
     }
 
-
-    public void resourceChanged(IResourceChangeEvent event) {  
+    public void resourceChanged(IResourceChangeEvent event) {
     }
-
 
     public void cacheNonResourceValidateState(List roNonResourceFiles) {
- 
+
     }
-    
+
     private Resource getWTPModuleResource() {
         URI wtpModuleURI = createWTPModuleURI();
         if (wtpModuleURI == null)
