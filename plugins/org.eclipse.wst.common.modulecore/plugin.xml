@@ -25,6 +25,8 @@
       <import plugin="org.eclipse.wst.server.core"/>
    </requires>
 
+   <extension-point id="ComponentStructuralBuilder" name="ComponentStructuralBuilder" schema="schema/ComponentStructuralBuilder.exsd"/>
+   
    <extension
          point="org.eclipse.emf.ecore.generated_package">
       <package

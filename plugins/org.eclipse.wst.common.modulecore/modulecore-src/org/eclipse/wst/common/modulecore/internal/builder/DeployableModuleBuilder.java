@@ -26,6 +26,9 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.internal.util.IModuleConstants;
+import org.eclipse.wst.server.core.IProjectProperties;
+import org.eclipse.wst.server.core.IRuntime;
+import org.eclipse.wst.server.core.ServerCore;
 
 public class DeployableModuleBuilder extends IncrementalProjectBuilder implements IModuleConstants {
     /**
@@ -47,24 +50,28 @@ public class DeployableModuleBuilder extends IncrementalProjectBuilder implement
      *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
      */
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
-
-		// clean markers
+        IProjectProperties props = ServerCore.getProjectProperties(getProject());
+        IRuntime runtime = props.getRuntimeTarget();
+        ComponentStructuralBuilderDataModel builderDataModel = null;
+        ModuleCore moduleCore = null;
+        
+        // clean markers
 		IResource wtpmoduleFile = getProject().findMember(".wtpmodules"); //$NON-NLS-1$
 		wtpmoduleFile.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE); 
 		
-        DeployableModuleProjectBuilderDataModel dataModel = null;
-        ModuleCore moduleCore = null;
+        //Check for possible registered overrides of base project builder and run in place of basic builder
+		//else create and run default builder
+        builderDataModel = getStructuralComponentBuilderIfRegistered(runtime);
+        if(builderDataModel == null)
+            builderDataModel = new DeployableModuleProjectBuilderDataModel();
         try {
             moduleCore = ModuleCore.getModuleCoreForRead(getProject());
-            dataModel = new DeployableModuleProjectBuilderDataModel();
-            dataModel.setProperty(DeployableModuleProjectBuilderDataModel.MODULE_CORE, moduleCore);
-            dataModel.setProperty(DeployableModuleProjectBuilderDataModel.PROJECT, getProject());
-            dataModel.setProperty(DeployableModuleProjectBuilderDataModel.PROJECT_DETLA, getDelta(getProject()));
-            // TODO: current implementation is for full build only...implement
-            // in M4
-            // dataModel.setProperty(DeployableModuleProjectBuilderDataModel.BUILD_KIND,
-            // new Integer(kind));
-            WTPOperation op = dataModel.getDefaultOperation();
+            builderDataModel.setProperty(DeployableModuleProjectBuilderDataModel.MODULE_CORE, moduleCore);
+            builderDataModel.setProperty(DeployableModuleProjectBuilderDataModel.PROJECT, getProject());
+            builderDataModel.setProperty(DeployableModuleProjectBuilderDataModel.PROJECT_DETLA, getDelta(getProject()));
+            //TODO: implement incremental builds
+            // dataModel.setProperty(DeployableModuleProjectBuilderDataModel.BUILD_KIND;
+            WTPOperation op = builderDataModel.getDefaultOperation();
             if (op != null)
                 try {
                     op.run(monitor);
@@ -79,6 +86,18 @@ public class DeployableModuleBuilder extends IncrementalProjectBuilder implement
                 moduleCore.dispose();
             }
         }
+    }
+
+    /**
+     * @param runtime
+     * @return
+     */
+    private ComponentStructuralBuilderDataModel getStructuralComponentBuilderIfRegistered(IRuntime runtime) {
+		if(runtime != null) { 
+            ComponentStructuralBuilderDataModel builderOverride = ComponentStructuralBuilderExtensionRegistry.getComponentStructuralBuilderDMForServerTargetID(runtime.getId());
+                return builderOverride;
+        }
+        return null;
     }
 
     protected void clean(IProgressMonitor monitor) throws CoreException {

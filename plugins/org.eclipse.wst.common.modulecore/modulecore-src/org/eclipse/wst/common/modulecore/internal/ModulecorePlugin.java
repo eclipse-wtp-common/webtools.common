@@ -22,6 +22,8 @@ public class ModulecorePlugin extends Plugin {
 	private static ModulecorePlugin plugin;
 	//Resource bundle.
 	private ResourceBundle resourceBundle;
+	//plugin id
+	public static final String PLUGIN_ID = "org.eclipse.wst.common.modulecore"; //$NON-NLS-1$
 	
 	/**
 	 * The constructor.

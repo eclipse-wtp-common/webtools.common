@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.wst.common.modulecore">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="org.eclipse.wst.common.modulecore" id="ComponentStructuralBuilder" name="ComponentStructuralBuilder"/>
+      </appInfo>
+      <documentation>
+         The ComponentStructuralBuilder extension point is to be used to override the default ComponentStructuralBuilder, which uses Meta information provided in via Module Core to handle any copying or re-structuring needed to create a deployable artifact from a flexible project.  The builder registered by the user must be of type ComponentStructuralBuilderDataModel.java and is required to contribute an associated WTPOperation.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <complexType>
+         <sequence>
+            <element ref="componentStructuralBuilder"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="componentStructuralBuilder">
+      <complexType>
+         <attribute name="serverTargetID" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="componentStructuralBuilderDataModel" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         [Enter the first release in which this extension point appears.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         &lt;extension point=&quot;org.eclipse.wst.common.modulecore.ComponentStructuralBuilder&quot;&gt;
+   &lt;componentStructuralBuilder 
+    serverTargetID=&quot;J2EE Runtime Library&quot;
+    componentStructuralBuilderDataModel=&quot;org.eclipse.sampe.SampleStructuralDMExtension&quot;/&gt;
+&lt;/extension&gt;
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiInfo"/>
+      </appInfo>
+      <documentation>
+         [Enter API information here.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="implementation"/>
+      </appInfo>
+      <documentation>
+         [Enter information about supplied implementation of this extension point.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="copyright"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+</schema>
