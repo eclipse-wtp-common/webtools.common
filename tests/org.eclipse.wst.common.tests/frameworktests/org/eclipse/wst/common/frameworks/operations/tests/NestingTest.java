@@ -13,9 +13,6 @@ package org.eclipse.wst.common.frameworks.operations.tests;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
-import org.eclipse.wst.common.frameworks.operations.WTPOperation;
-import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
-
 /**
  * @author jsholl
  * 
@@ -23,46 +20,6 @@ import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
  * Code Style - Code Templates
  */
 public class NestingTest extends TestCase {
-	
-	
-	private class A extends WTPOperationDataModel {
-		public static final String P = "A.P";
-
-		public WTPOperation getDefaultOperation() {
-			return null;
-		}
-
-		protected void initValidBaseProperties() {
-			super.initValidBaseProperties();
-			addValidBaseProperty(P);
-		}
-	};
-
-	private class B extends WTPOperationDataModel {
-		public static final String P = "B.P";
-
-		public WTPOperation getDefaultOperation() {
-			return null;
-		}
-
-		protected void initValidBaseProperties() {
-			super.initValidBaseProperties();
-			addValidBaseProperty(P);
-		}
-	};
-
-	private class C extends WTPOperationDataModel {
-		public static final String P = "C.P";
-
-		public WTPOperation getDefaultOperation() {
-			return null;
-		}
-
-		protected void initValidBaseProperties() {
-			super.initValidBaseProperties();
-			addValidBaseProperty(P);
-		}
-	};
 
 	private A a;
 	private B b;
@@ -75,6 +32,23 @@ public class NestingTest extends TestCase {
 		c = new C();
 	}
 
+	protected void tearDown() throws Exception {
+		if (null != a) {
+			a.dispose();
+			a = null;
+		}
+		if (null != b) {
+			b.dispose();
+			b = null;
+		}
+
+		if (null != c) {
+			c.dispose();
+			c = null;
+		}
+	}
+
+
 	/**
 	 * <code>
 	 * 1    2   3    4     5    6
@@ -84,22 +58,22 @@ public class NestingTest extends TestCase {
 	 * </code>
 	 */
 	public void testIsPropertySimpleNesting0() {
-		a.addNestedModel("b", b); //1
+		a.addNestedModel("b", b); // 1
 		Assert.assertTrue(a.isProperty(B.P));
 
-		a.removeNestedModel("b"); //2
+		a.removeNestedModel("b"); // 2
 		Assert.assertFalse(a.isProperty(B.P));
 
-		a.addNestedModel("b", b); //3
+		a.addNestedModel("b", b); // 3
 		Assert.assertTrue(a.isProperty(B.P));
 
-		b.addNestedModel("c", c); //4
+		b.addNestedModel("c", c); // 4
 		Assert.assertTrue(a.isProperty(C.P));
 
-		b.removeNestedModel("c"); //5
+		b.removeNestedModel("c"); // 5
 		Assert.assertFalse(a.isProperty(C.P));
 
-		b.addNestedModel("c", c); //6
+		b.addNestedModel("c", c); // 6
 		Assert.assertTrue(a.isProperty(C.P));
 	}
 
@@ -112,18 +86,18 @@ public class NestingTest extends TestCase {
 	 * </code>
 	 */
 	public void testIsPropertySimpleNesting1() {
-		a.addNestedModel("b", b); //1
+		a.addNestedModel("b", b); // 1
 		Assert.assertTrue(a.isProperty(B.P));
 
-		b.addNestedModel("c", c); //2
+		b.addNestedModel("c", c); // 2
 		Assert.assertTrue(a.isProperty(C.P));
 		Assert.assertTrue(b.isProperty(C.P));
 
-		b.removeNestedModel("c"); //3
+		b.removeNestedModel("c"); // 3
 		Assert.assertFalse(a.isProperty(C.P));
 		Assert.assertFalse(b.isProperty(C.P));
 
-		a.removeNestedModel("b"); //4
+		a.removeNestedModel("b"); // 4
 		Assert.assertFalse(a.isProperty(B.P));
 	}
 
@@ -138,18 +112,18 @@ public class NestingTest extends TestCase {
 	 * </code>
 	 */
 	public void testIsPropertySimpleNesting2() {
-		b.addNestedModel("c", c); //1
+		b.addNestedModel("c", c); // 1
 		Assert.assertTrue(b.isProperty(C.P));
 
-		a.addNestedModel("b", b); //2
+		a.addNestedModel("b", b); // 2
 		Assert.assertTrue(a.isProperty(B.P));
 		Assert.assertTrue(a.isProperty(C.P));
 
-		a.removeNestedModel("b"); //3
+		a.removeNestedModel("b"); // 3
 		Assert.assertFalse(a.isProperty(B.P));
 		Assert.assertFalse(a.isProperty(C.P));
 
-		b.removeNestedModel("c"); //4
+		b.removeNestedModel("c"); // 4
 		Assert.assertFalse(b.isProperty(C.P));
 	}
 
@@ -163,15 +137,15 @@ public class NestingTest extends TestCase {
 	 * </code>
 	 */
 	public void testIsPropertyComplexNesting1() {
-		a.addNestedModel("b", b); //1
-		b.addNestedModel("c", c); //2
+		a.addNestedModel("b", b); // 1
+		b.addNestedModel("c", c); // 2
 		Assert.assertTrue(a.isProperty(C.P));
 		C c2 = new C();
-		b.addNestedModel("c2", c2); //3
-		b.removeNestedModel("c2"); //4
+		b.addNestedModel("c2", c2); // 3
+		b.removeNestedModel("c2"); // 4
 		Assert.assertTrue(b.isProperty(C.P));
 		Assert.assertTrue(a.isProperty(C.P));
-		b.removeNestedModel("c"); //5
+		b.removeNestedModel("c"); // 5
 		Assert.assertFalse(b.isProperty(C.P));
 		Assert.assertFalse(a.isProperty(C.P));
 	}
@@ -186,18 +160,18 @@ public class NestingTest extends TestCase {
 	 * </code>
 	 */
 	public void testIsPropertyComplexNesting2() {
-		a.addNestedModel("b", b); //1
-		b.addNestedModel("c", c); //2
+		a.addNestedModel("b", b); // 1
+		b.addNestedModel("c", c); // 2
 		Assert.assertTrue(a.isProperty(C.P));
 		C c2 = new C();
-		a.addNestedModel("c2", c2); //3
-		a.removeNestedModel("c2"); //4
+		a.addNestedModel("c2", c2); // 3
+		a.removeNestedModel("c2"); // 4
 		Assert.assertTrue(a.isProperty(C.P));
-		b.addNestedModel("c2", c2); //5
+		b.addNestedModel("c2", c2); // 5
 		Assert.assertTrue(a.isProperty(C.P));
-		b.removeNestedModel("c"); //6
+		b.removeNestedModel("c"); // 6
 		Assert.assertTrue(a.isProperty(C.P));
-		b.removeNestedModel("c2"); //7
+		b.removeNestedModel("c2"); // 7
 		Assert.assertFalse(a.isProperty(C.P));
 	}
 
@@ -212,7 +186,7 @@ public class NestingTest extends TestCase {
 	 */
 	public void testIsPropertyComplexNesting3() {
 		a.addNestedModel("b", b);
-		b.addNestedModel("c", c); //1
+		b.addNestedModel("c", c); // 1
 		Assert.assertTrue(a.isProperty(B.P));
 		Assert.assertTrue(a.isProperty(C.P));
 		Assert.assertFalse(b.isProperty(A.P));
@@ -222,7 +196,7 @@ public class NestingTest extends TestCase {
 		Assert.assertFalse(a.isProperty("foo"));
 		Assert.assertFalse(b.isProperty("foo"));
 		Assert.assertFalse(c.isProperty("foo"));
-		c.addNestedModel("a", a); //2
+		c.addNestedModel("a", a); // 2
 		Assert.assertTrue(a.isProperty(B.P));
 		Assert.assertTrue(a.isProperty(C.P));
 		Assert.assertTrue(b.isProperty(A.P));
@@ -232,7 +206,7 @@ public class NestingTest extends TestCase {
 		Assert.assertFalse(a.isProperty("foo"));
 		Assert.assertFalse(b.isProperty("foo"));
 		Assert.assertFalse(c.isProperty("foo"));
-		a.removeNestedModel("b"); //3
+		a.removeNestedModel("b"); // 3
 		Assert.assertFalse(a.isProperty(B.P));
 		Assert.assertFalse(a.isProperty(C.P));
 		Assert.assertTrue(b.isProperty(A.P));
@@ -242,7 +216,7 @@ public class NestingTest extends TestCase {
 		Assert.assertFalse(a.isProperty("foo"));
 		Assert.assertFalse(b.isProperty("foo"));
 		Assert.assertFalse(c.isProperty("foo"));
-		a.addNestedModel("b", b); //4
+		a.addNestedModel("b", b); // 4
 		Assert.assertTrue(a.isProperty(B.P));
 		Assert.assertTrue(a.isProperty(C.P));
 		Assert.assertTrue(b.isProperty(A.P));
@@ -252,7 +226,7 @@ public class NestingTest extends TestCase {
 		Assert.assertFalse(a.isProperty("foo"));
 		Assert.assertFalse(b.isProperty("foo"));
 		Assert.assertFalse(c.isProperty("foo"));
-		b.removeNestedModel("c"); //5
+		b.removeNestedModel("c"); // 5
 		Assert.assertTrue(a.isProperty(B.P));
 		Assert.assertFalse(a.isProperty(C.P));
 		Assert.assertFalse(b.isProperty(A.P));
@@ -274,13 +248,13 @@ public class NestingTest extends TestCase {
 		Assert.assertFalse(b.isProperty("foo"));
 		Assert.assertFalse(c.isProperty("foo"));
 	}
-	
-	public void testSetGetProperty1(){
-		//cylical
+
+	public void testSetGetProperty1() {
+		// cylical
 		a.addNestedModel("b", b);
 		b.addNestedModel("c", c);
 		c.addNestedModel("a", a);
-		
+
 		a.setProperty(A.P, "a");
 		a.setProperty(B.P, "b");
 		a.setProperty(C.P, "c");
@@ -293,7 +267,7 @@ public class NestingTest extends TestCase {
 		assertEquals("c", a.getProperty(C.P));
 		assertEquals("c", b.getProperty(C.P));
 		assertEquals("c", c.getProperty(C.P));
-		
+
 		b.setProperty(A.P, "aa");
 		b.setProperty(B.P, "bb");
 		b.setProperty(C.P, "cc");
@@ -320,13 +294,6 @@ public class NestingTest extends TestCase {
 		assertEquals("ccc", b.getProperty(C.P));
 		assertEquals("ccc", c.getProperty(C.P));
 	}
-	
-	public void testListeners1(){
-		//cylical
-		a.addNestedModel("b", b);
-		b.addNestedModel("c", c);
-		c.addNestedModel("a", a);
-		
-		
-	}
+
+
 }

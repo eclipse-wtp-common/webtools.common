@@ -10,27 +10,25 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.operations.tests;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.eclipse.wst.common.tests.SimpleTestSuite;
+import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModelEvent;
+import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModelListener;
 
-/**
- * @author jsholl
- * 
- * TODO To change the template for this generated type comment go to Window - Preferences - Java -
- * Code Style - Code Templates
- */
-public class WTPOperationAPITests extends TestSuite {
+public class TestListener implements WTPOperationDataModelListener {
 
-	public static Test suite() {
-		return new WTPOperationAPITests();
+	private ArrayList events = new ArrayList();
+
+	public void clearEvents() {
+		events.clear();
 	}
 
-	public WTPOperationAPITests() {
-		super();
-		addTest(new SimpleTestSuite(EventTest.class));
-		addTest(new SimpleTestSuite(NestingTest.class));
-		addTest(new SimpleTestSuite(NestedListeningTest.class));
+	public List getEvents() {
+		return events;
+	}
+
+	public void propertyChanged(WTPOperationDataModelEvent event) {
+		events.add(event);
 	}
 }

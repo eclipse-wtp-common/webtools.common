@@ -10,27 +10,18 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.operations.tests;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.eclipse.wst.common.frameworks.operations.WTPOperation;
+import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
 
-import org.eclipse.wst.common.tests.SimpleTestSuite;
+public class A extends WTPOperationDataModel {
+	public static final String P = "A.P";
 
-/**
- * @author jsholl
- * 
- * TODO To change the template for this generated type comment go to Window - Preferences - Java -
- * Code Style - Code Templates
- */
-public class WTPOperationAPITests extends TestSuite {
-
-	public static Test suite() {
-		return new WTPOperationAPITests();
+	public WTPOperation getDefaultOperation() {
+		return null;
 	}
 
-	public WTPOperationAPITests() {
-		super();
-		addTest(new SimpleTestSuite(EventTest.class));
-		addTest(new SimpleTestSuite(NestingTest.class));
-		addTest(new SimpleTestSuite(NestedListeningTest.class));
+	protected void initValidBaseProperties() {
+		super.initValidBaseProperties();
+		addValidBaseProperty(P);
 	}
 }
