@@ -51,12 +51,12 @@ public class ModuleStructuralModel extends EditModel implements IResourceChangeL
         return module;
     }
 
-    public WorkbenchApplication createWorkbenchApplication(URI handleURI, URI deployedPathURI) {
-        if (handleURI == null || deployedPathURI == null)
+    public WorkbenchApplication createWorkbenchApplication(URI handleURI, String deployedName) {
+        if (handleURI == null || deployedName == null)
             return null;
         WorkbenchApplication workBenchApplication = null;
         workBenchApplication = createWorkbenchApplication(handleURI);
-        workBenchApplication.setDeployedPath(deployedPathURI);
+        workBenchApplication.setDeployedName(deployedName);
         return workBenchApplication;
     }
 

@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCorePackageImpl.java,v 1.11 2005/02/02 21:40:42 cbridgha Exp $
+ * $Id: ModuleCorePackageImpl.java,v 1.12 2005/02/02 22:14:45 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
@@ -14,8 +14,6 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 import org.eclipse.wst.common.modulecore.DependentModule;
 import org.eclipse.wst.common.modulecore.DeployScheme;
-import org.eclipse.wst.common.modulecore.DeployedModule;
-import org.eclipse.wst.common.modulecore.IModuleType;
 import org.eclipse.wst.common.modulecore.ModuleCoreFactory;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 import org.eclipse.wst.common.modulecore.ModuleType;

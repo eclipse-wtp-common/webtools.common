@@ -6,6 +6,7 @@ public interface WTPModulesXmlMapperI {
 	String WBAPP = "wbapp";//$NON-NLS-1$
 	String WBMODULE = "wbmodule";//$NON-NLS-1$
 	String HANDLE = "handle";//$NON-NLS-1$
+	String DEPENDENTMODULE = "dep-module";//$NON-NLS-1$
 	String MODULE_TYPE = "module-type";//$NON-NLS-1$
 	String ROOT = "root";//$NON-NLS-1$
 	String META_RESOURCES = "meta-resources";//$NON-NLS-1$

@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreFactoryImpl.java,v 1.9 2005/02/02 21:40:42 cbridgha Exp $
+ * $Id: ModuleCoreFactoryImpl.java,v 1.10 2005/02/02 22:14:45 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
@@ -11,13 +11,11 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
-import org.eclipse.wst.common.modulecore.*;
-
+import org.eclipse.wst.common.modulecore.DependentModule;
 import org.eclipse.wst.common.modulecore.DeployScheme;
-import org.eclipse.wst.common.modulecore.DeployedModule;
-import org.eclipse.wst.common.modulecore.IModuleType;
 import org.eclipse.wst.common.modulecore.ModuleCoreFactory;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
+import org.eclipse.wst.common.modulecore.ModuleType;
 import org.eclipse.wst.common.modulecore.ProjectModules;
 import org.eclipse.wst.common.modulecore.WorkbenchApplication;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
