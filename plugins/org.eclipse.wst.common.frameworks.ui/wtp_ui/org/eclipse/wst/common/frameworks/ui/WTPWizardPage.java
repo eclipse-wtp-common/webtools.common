@@ -25,7 +25,9 @@ import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
 import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModelEvent;
 import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModelListener;
 
-
+/**
+ * This class is EXPERIMENTAL and is subject to substantial changes.
+ */
 public abstract class WTPWizardPage extends WizardPage implements Listener, WTPOperationDataModelListener {
 	protected static final int NEXT = 1;
 	protected static final int PREVIOUS = 2;
@@ -413,11 +415,6 @@ public abstract class WTPWizardPage extends WizardPage implements Listener, WTPO
 		return synchHelper;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.dialogs.IDialogPage#dispose()
-	 */
 	public void dispose() {
 		super.dispose();
 		if (synchHelper != null) {

@@ -16,6 +16,8 @@ package org.eclipse.wst.common.frameworks.operations;
  * 
  * This class may be instantiated; it is not intended to be subclassed.
  * 
+ * This class is EXPERIMENTAL and is subject to substantial changes.
+ * 
  * @see org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel#addListener(WTPOperationDataModelListener)
  * @see org.eclipse.wst.common.frameworks.operations.WTPOperationDataModelListener
  */

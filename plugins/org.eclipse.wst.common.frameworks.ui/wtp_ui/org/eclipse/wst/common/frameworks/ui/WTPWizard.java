@@ -26,6 +26,9 @@ import org.eclispe.wst.common.frameworks.internal.enablement.EnablementManager;
 import com.ibm.wtp.common.logger.proxy.Logger;
 
 
+/**
+ * This class is EXPERIMENTAL and is subject to substantial changes.
+ */
 public abstract class WTPWizard extends Wizard {
 	protected WTPOperationDataModel model;
 

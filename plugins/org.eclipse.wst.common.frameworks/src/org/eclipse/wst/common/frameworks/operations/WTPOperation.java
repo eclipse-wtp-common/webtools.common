@@ -33,7 +33,7 @@ import org.eclispe.wst.common.frameworks.internal.enablement.IEnablementIdentifi
 import org.eclispe.wst.common.frameworks.internal.enablement.IEnablementManager;
 import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
-
+//TODO perhaps this class should be subclassed from a new super class which more closely resembles org.eclipse.ui.actions.WorkspaceModifyOperation
 /**
  * An operation which potentially makes changes to the workspace. All resource modification should
  * be performed using this operation. The primary consequence of using this operation is that events
@@ -43,6 +43,7 @@ import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
  * <p>
  * Subclasses must implement <code>execute</code> to do the work of the operation.
  * </p>
+ * This class is EXPERIMENTAL and is subject to substantial changes.
  */
 public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 

@@ -8,12 +8,6 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-/*
- * Created on Nov 3, 2003
- * 
- * To change the template for this generated file go to Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and
- * Comments
- */
 package org.eclipse.wst.common.frameworks.ui;
 
 import java.awt.event.ActionEvent;
@@ -52,10 +46,7 @@ import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModelListene
 import org.eclipse.wst.common.frameworks.operations.WTPPropertyDescriptor;
 
 /**
- * @author jsholl
- * 
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * This class is EXPERIMENTAL and is subject to substantial changes.
  */
 public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 	protected WTPOperationDataModel dataModel;

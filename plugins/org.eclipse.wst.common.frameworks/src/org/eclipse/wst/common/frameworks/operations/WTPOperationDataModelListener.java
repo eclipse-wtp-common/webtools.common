@@ -12,6 +12,8 @@ package org.eclipse.wst.common.frameworks.operations;
  * Clients wishing to register with a WTPOperationData to receive WTPOperationDataModelEvents need
  * to implement this interface.
  * 
+ * This class is EXPERIMENTAL and is subject to substantial changes.
+ * 
  * @see org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel#addListener(WTPOperationDataModelListener)
  */
 public interface WTPOperationDataModelListener {

@@ -3,7 +3,9 @@ package org.eclipse.wst.common.frameworks.operations;
 //TODO link to an example in the tutorial
 /**
  * A WTPPropertyDescriptor provides a human readible description for a WTPDataModel propertyValue.
- * 
+ *
+ * This class is EXPERIMENTAL and is subject to substantial changes.
+ *  
  * @see org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel#getPropertyDescriptor(String)
  * @see org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel#getValidPropertyDescriptors(String)
  */

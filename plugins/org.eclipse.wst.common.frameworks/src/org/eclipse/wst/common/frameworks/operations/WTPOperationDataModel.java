@@ -64,6 +64,8 @@ import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
  * The WTO Operation framework uses DataModels to pass all parameters for execution. The DataModel
  * validation is used to ensure all the properties are valid prior to operation execution.
  * 
+ * This class is EXPERIMENTAL and is subject to substantial changes.
+ * 
  * @link org.eclipse.wst.common.frameworks.ui.WTPWizard for details on the WTP Wizard framework.
  * @link org.eclipse.wst.common.frameworks.operations.WTPOperation for details on the WTP Operation
  *       framework.
