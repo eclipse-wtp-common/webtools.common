@@ -53,6 +53,7 @@ public class ModuleCoreURIConverter extends CompatibilityWorkbenchURIConverterIm
 	 */
 	public ModuleCoreURIConverter(IProject aContainingProject, ResourceSetWorkbenchSynchronizer aSynchronizer) {
 		super(aContainingProject, aSynchronizer);
+		containingProject = aContainingProject;
 	} 
  
 	
