@@ -94,5 +94,10 @@ public class ModuleURIUtil {
 		int segmentCount = aFullyQualifiedModuleResourcePath.segmentCount(); 
 		return aFullyQualifiedModuleResourcePath.deresolve(aFullyQualifiedModuleResourcePath.trimSegments(segmentCount - 4));
 	}
+	
+	public static URI concat(URI uri1, URI uri2){
+	    URI concatURI = uri1.appendSegments(uri2.segments());
+	    return concatURI;
+	}
 
 }
