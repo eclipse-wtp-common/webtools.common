@@ -27,14 +27,14 @@
 <!--    <type name="ImageFactory" />  -->   <!-- No -->
 	</package>
 	<package name="org.eclipse.wst.common.ui.wizards">
-		<type name="ExampleProjectCreationOperation" />
-		<type name="ExampleProjectCreationWizardPage" />
-		<type name="ExampleProjectCreationWizard" />
+<!--  		<type name="ExampleProjectCreationOperation" />  -->  <!-- referenced externally only within package (ExampleProjectCreationWizardPage -->
+<!-- 		<type name="ExampleProjectCreationWizardPage" /> --> <!-- referenced externally only within package (ExampleProjectCreationWizard, and Operation -->
+<!--  		<type name="ExampleProjectCreationWizard" />  --> <!-- referenced by XMLExampleProjectCreationWizard, which is deprecated and going to be removed in M4  -->
 	</package>
 	<package name="org.eclipse.wst.common.ui.dnd">
 		<type name="ViewerDropAdapter" />
-		<type name="DragAndDropCommand" />
-		<type name="DragAndDropManager" />
+		<type name="DragAndDropCommand" />  <!-- referenced externally only within package -->
+		<type name="DragAndDropManager" />  <!--   -->
 		<type name="ObjectTransfer" />
 		<type name="DefaultDragAndDropCommand" />
 		<type name="ViewerDragAdapter" />
