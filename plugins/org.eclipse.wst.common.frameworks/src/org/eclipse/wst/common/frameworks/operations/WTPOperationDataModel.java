@@ -47,12 +47,11 @@ import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
  * <LI>Compose and decompose entire DataModels through nesting.</LI>
  * </UL>
  * 
- * <B>PropertyKeys</B>
- * Clients interact with DataModels by getting and setting properties (Objects) based with PropertyKeys. A
- * PropertyKey is a String Object uniquely identifing a particular property. The recommended
- * practice for defining PropertyKeys is to define them as static final Class level Strings and to
- * use the DataModel instance class name appended with the property name as the value (this should
- * ensure uniqueness and gives a readible value when debugging).
+ * <B>PropertyKeys </B> Clients interact with DataModels by getting and setting properties (Objects)
+ * based with PropertyKeys. A PropertyKey is a String Object uniquely identifing a particular
+ * property. The recommended practice for defining PropertyKeys is to define them as static final
+ * Class level Strings and to use the DataModel instance class name appended with the property name
+ * as the value (this should ensure uniqueness and gives a readible value when debugging).
  * 
  * 
  * 
@@ -93,7 +92,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	public static final String UI_OPERATION_HANLDER = "WTPOperationDataModel.UI_OPERATION_HANLDER"; //$NON-NLS-1$
 
 	public static IStatus OK_STATUS = new Status(IStatus.OK, "org.eclipse.wst.common.frameworks.internal", 0, "OK", null); //$NON-NLS-1$ //$NON-NLS-2$
-	
+
 	private static final String PROPERTY_NOT_LOCATED_ = WTPResourceHandler.getString("20"); //$NON-NLS-1$
 	private static final String NESTED_MODEL_NOT_LOCATED = WTPResourceHandler.getString("21"); //$NON-NLS-1$
 	private Set validProperties = new HashSet();
@@ -107,7 +106,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	private boolean operationValidationEnabled = false;
 	private boolean hasBeenExecutedAgainst = false;
 	private boolean suspendValidation = false;
-	
+
 	private WTPOperationDataModel extendedRoot;
 
 	public WTPOperationDataModel() {
@@ -599,7 +598,6 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 * 
 	 * @param aBoolean
 	 */
-	//TODO why is this here???
 	public void setIgnorePropertyChanges(boolean aBoolean) {
 		ignorePropertyChanges = aBoolean;
 	}
@@ -761,24 +759,24 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	}
 
 	/**
-	 * Use this method to set the property values from this model onto the otherModel for those that
-	 * are valid for the otherModel.
+	 * This method is EXPERIMENTAL and is subject to substantial changes.
 	 * 
-	 * @param otherModel
+	 * Gets the specified array of properties from the source DataModel and sets them on the
+	 * destination DataModel.
+	 * 
+	 * @param source
+	 * @param destination
+	 * @param properties
 	 */
-	//TODO what is this for???
-	public void synchronizeValidPropertyValues(WTPOperationDataModel otherModel, String[] properties) {
-		if (otherModel == null || properties == null || properties.length == 0)
-			return;
+	public static void copyProperties(WTPOperationDataModel source, WTPOperationDataModel destination, String[] properties) {
 		for (int i = 0; i < properties.length; i++) {
-			if (isSet(properties[i]))
-				otherModel.setProperty(properties[i], getProperty(properties[i]));
+			destination.setProperty(properties[i], source.getProperty(properties[i]));
 		}
 	}
 
+
 	/**
-	 * Remove all propertyValues.
-	 *  
+	 * Recursively removes all property values of this DataModel and all nested DataModels.
 	 */
 	public void clearAllValues() {
 		if (propertyValues != null)
@@ -799,36 +797,87 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		return hasBeenExecutedAgainst;
 	}
 
-	//TODO move to a new ExtendedDataModel class???
+	/**
+	 * ExtendedOperations
+	 *  
+	 */
 	private final void assertModelIsExtended() {
 		if (extendedRoot == null)
 			throw new IllegalStateException(WTPResourceHandler.getString("19")); //$NON-NLS-1$
 	}
 
-	//TODO move to a new ExtendedDataModel class???
+	/**
+	 * ExtendedOperations
+	 * 
+	 * This method is EXPERIMENTAL and is subject to substantial changes.
+	 * 
+	 * @param propertyName
+	 * @return
+	 */
 	protected final Object getParentProperty(String propertyName) {
 		assertModelIsExtended();
 		return extendedRoot.getProperty(propertyName);
 	}
 
-	//TODO move to a new ExtendedDataModel class???
+	/**
+	 * ExtendedOperations
+	 * 
+	 * This method is EXPERIMENTAL and is subject to substantial changes.
+	 * 
+	 * @param propertyName
+	 * @return
+	 */
 	protected final int getParentIntProperty(String propertyName) {
 		assertModelIsExtended();
 		return extendedRoot.getIntProperty(propertyName);
 	}
 
-	//TODO move to a new ExtendedDataModel class???
+	/**
+	 * ExtendedOperations
+	 * 
+	 * This method is EXPERIMENTAL and is subject to substantial changes.
+	 * 
+	 * @param propertyName
+	 * @return
+	 */
 	protected final boolean getParentBooleanProperty(String propertyName) {
 		assertModelIsExtended();
 		return extendedRoot.getBooleanProperty(propertyName);
 	}
 
-	//TODO move to a new ExtendedDataModel class???
+	/**
+	 * ExtendedOperations
+	 * 
+	 * This method is EXPERIMENTAL and is subject to substantial changes.
+	 * 
+	 * @param propertyName
+	 * @return
+	 */
 	protected final String getParentStringProperty(String propertyName) {
 		assertModelIsExtended();
 		return extendedRoot.getStringProperty(propertyName);
 	}
 
+	/**
+	 * ExtendedOperations
+	 * 
+	 * This method is EXPERIMENTAL and is subject to substantial changes.
+	 *  
+	 */
+	public IProject getTargetProject() {
+		return null;
+	}
+
+
+	//TODO remove this
+	/**
+	 * Will be removed; no replacement
+	 * 
+	 * @deprecated
+	 * @param propertyName
+	 * @param errorMessage
+	 * @return
+	 */
 	protected IStatus validateStringValue(String propertyName, String errorMessage) {
 		String name = getStringProperty(propertyName);
 		if (name == "" || name == null || name.trim().length() == 0) { //$NON-NLS-1$
@@ -837,6 +886,15 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		return OK_STATUS;
 	}
 
+	//TODO remove this
+	/**
+	 * Will be removed; no replacement
+	 * 
+	 * @deprecated
+	 * @param propertyName
+	 * @param errorMessage
+	 * @return
+	 */
 	protected IStatus validateObjectArrayValue(String propertyName, String errorMessage) {
 		Object[] objects = (Object[]) getProperty(propertyName);
 		if (objects == null || objects.length == 0) {
@@ -845,7 +903,10 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		return OK_STATUS;
 	}
 
+	//TODO remove this
 	/**
+	 * Will be removed.
+	 * 
 	 * @deprecated this can be replaced with something like this:
 	 *             ProjectCreationDataModel.getProjectHandleFromProjectName(getStringProperty(projectNameProperty))
 	 */
@@ -854,7 +915,10 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		return getProjectHandleFromName(projectName);
 	}
 
+	//TODO remove this
 	/**
+	 * Will be removed.
+	 * 
 	 * @deprecated see ProjectCreationDataModel.getProjectHadleFromProjectName()
 	 */
 	public IProject getProjectHandleFromName(String projectName) {
@@ -863,11 +927,24 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		return (null != projectName && projectName.length() > 0 && status.isOK()) ? ResourcesPlugin.getWorkspace().getRoot().getProject(projectName) : null;
 	}
 
+	//TODO remove this
 	/**
-	 * @deprecated this will be removed and left to subclasses to implement
-	 * @return
+	 * Will be removed.
+	 * 
+	 * Use this method to set the property values from this model onto the otherModel for those that
+	 * are valid for the otherModel.
+	 * 
+	 * @deprecated replace with copyProperties().
+	 * @param otherModel
 	 */
-	public IProject getTargetProject() {
-		return null;
+	public void synchronizeValidPropertyValues(WTPOperationDataModel otherModel, String[] properties) {
+		if (otherModel == null || properties == null || properties.length == 0)
+			return;
+		for (int i = 0; i < properties.length; i++) {
+			if (isSet(properties[i]))
+				otherModel.setProperty(properties[i], getProperty(properties[i]));
+		}
 	}
+
+
 }

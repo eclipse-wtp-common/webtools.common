@@ -62,7 +62,7 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 	protected Map widgetToPropertyHash;
 	protected Map propertyToWidgetHash;
 	protected Map widgetToDepControls;
-	
+
 	protected String currentProperty;
 	protected Widget currentWidget;
 	protected boolean ignoreModifyEvent = false;
@@ -124,7 +124,6 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 	}
 
 	private ComboListener comboListener;
-
 
 	private class CheckboxSelectionListener implements SelectionListener {
 		public void widgetSelected(SelectionEvent e) {
@@ -209,9 +208,9 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 					try {
 						if (currentWidget instanceof Text)
 							setWidgetValue(propertyName, flag, (Text) currentWidget);
-						else if (currentWidget instanceof Combo){
+						else if (currentWidget instanceof Combo) {
 							setWidgetValue(propertyName, flag, (Combo) currentWidget);
-						}else if (currentWidget instanceof Button)
+						} else if (currentWidget instanceof Button)
 							setWidgetValue(propertyName, flag, (Button) currentWidget);
 						else if (currentWidget instanceof Label)
 							setWidgetValue(propertyName, flag, (Label) currentWidget);
@@ -457,6 +456,15 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 		synchComposite(list, propertyName, dependentControls);
 	}
 
+	/**
+	 * Use this to synch the value of the specified Combo with the specified propertyName. The
+	 * possible values displayed to the user are determined by return of
+	 * WTPOperationDataModel.getValidPropertyDescriptors(String).
+	 * 
+	 * @param combo
+	 * @param propertyName
+	 * @param dependentControls
+	 */
 	public void synchCombo(Combo combo, String propertyName, Control[] dependentControls) {
 		synchComposite(combo, propertyName, dependentControls);
 		if (null == comboListener) {
@@ -466,7 +474,14 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 		combo.addModifyListener(comboListener);
 	}
 
-
+	/**
+	 * Use this to sync the state of the specified checkbox with the value of the specified
+	 * propertyName. The specified propertyName must contain a java.lang.Boolean typed Object.
+	 * 
+	 * @param checkbox
+	 * @param propertyName
+	 * @param dependentControls
+	 */
 	public void synchCheckbox(Button checkbox, String propertyName, Control[] dependentControls) {
 		synchComposite(checkbox, propertyName, dependentControls);
 		if (null == checkboxSelectionListener) {
