@@ -66,6 +66,6 @@ public interface RegistryConstants {
 	static final String DEP_VALIDATOR = "dependentValidator"; //$NON-NLS-1$
 	static final String DEP_VAL_VALUE = "depValValue"; //$NON-NLS-1$
 	static final String MARKER_ID = "markerId"; //$NON-NLS-1$
-	static final String MARKER_ID_VALUE = "markerId_Value"; //$NON-NLS-1$
+	static final String MARKER_ID_VALUE = "markerIdValue"; //$NON-NLS-1$
 	static final boolean DEP_VAL_VALUE_DEFAULT = false;
 }

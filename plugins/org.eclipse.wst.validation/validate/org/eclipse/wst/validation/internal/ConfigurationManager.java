@@ -107,16 +107,8 @@ public final class ConfigurationManager implements ConfigurationConstants {
 
 		try {
 			project.deleteMarkers(VALIDATION_MARKER, false, DEPTH_INFINITE); // false means only
-			// consider
-			// VALIDATION_MARKER,
-			// not variants of
-			// VALIDATION_MARKER.
-			// Since addTask only
-			// adds
-			// VALIDATION_MARKER,
-			// we don't need to
-			// consider its
-			// subtypes.
+			// consider VALIDATION_MARKER, not variants of VALIDATION_MARKER. 
+			//Since addTask only adds VALIDATION_MARKER, we don't need to consider its subtypes.
 		} catch (CoreException exc) {
 			// Couldn't retrieve the markers from the resource for some reason...
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();

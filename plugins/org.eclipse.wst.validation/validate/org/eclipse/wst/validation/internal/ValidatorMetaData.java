@@ -50,7 +50,7 @@ public class ValidatorMetaData {
 	private int _ruleGroup = RegistryConstants.ATT_RULE_GROUP_DEFAULT;
 	private boolean _async = RegistryConstants.ATT_ASYNC_DEFAULT;
 	private boolean dependentValidator = RegistryConstants.DEP_VAL_VALUE_DEFAULT;
-	private String markerId = RegistryConstants.MARKER_ID;
+	private String markerId = null;
 	private String _helperClassName = null;
 	private IConfigurationElement _helperClassElement = null;
 	private IConfigurationElement _validatorClassElement = null;

@@ -59,17 +59,26 @@ public/* final */class WorkbenchReporter implements IReporter {
 		addMessage(resource, messageOwner, null, message); // null ClassLoader = use the default
 		// (clazz.getClassLoader());
 	}
-
+	
 	public static void addMessage(IResource resource, Class messageOwner, ClassLoader cl, IMessage message) {
 		addMessage(resource, messageOwner, cl, message, null, ""); //$NON-NLS-1$
 	}
-
+	
 	public static void addMessage(IResource resource, Class clazz, IMessage message, String targetObjectName, String location) {
 		addMessage(resource, clazz, null, message, targetObjectName, location); // null = use the
 		// default
 		// ClassLoader
 		// (class.getClassLoader())
 	}
+	
+	public static void addMessage(IResource resource, Class clazz, IMessage message, String targetObjectName, String location,String markerId) {
+		addMessage(resource, clazz, null, message, targetObjectName, location,markerId); // null = use the
+		// default
+		// ClassLoader
+		// (class.getClassLoader())
+	}
+	
+	
 
 	public static void addMessage(IResource resource, Class clazz, ClassLoader cl, IMessage message, String targetObjectName, String location) {
 		if ((clazz == null) || (message == null) || (resource == null)) {
@@ -82,6 +91,18 @@ public/* final */class WorkbenchReporter implements IReporter {
 
 		addMessage(resource, getUniqueId(clazz), cl, message, targetObjectName, location);
 	}
+	
+	public static void addMessage(IResource resource, Class clazz, ClassLoader cl, IMessage message, String targetObjectName, String location, String markerId) {
+		if ((clazz == null) || (message == null) || (resource == null)) {
+			return;
+		}
+
+		if (cl == null) {
+			cl = clazz.getClassLoader();
+		}
+
+		addMessage(resource, getUniqueId(clazz), cl, message, targetObjectName, location, markerId);
+	}
 
 	public static void addMessage(IResource resource, String messageOwnerId, ClassLoader cl, IMessage message) {
 		addMessage(resource, messageOwnerId, cl, message, null, ""); //$NON-NLS-1$
@@ -90,7 +111,23 @@ public/* final */class WorkbenchReporter implements IReporter {
 	public static void addMessage(IResource resource, String messageOwnerId, ClassLoader cl, IMessage message, String targetObjectName, String location) {
 		int severity = message.getSeverity();
 		try {
-			TaskListUtility.addTask(messageOwnerId, resource, location, message.getId(), message.getText(cl), severity, targetObjectName, message.getGroupName(), message.getOffset(), message.getLength());
+			TaskListUtility.addTask(messageOwnerId, resource, location, message.getId(), message.getText(cl), severity,targetObjectName, message.getGroupName(), message.getOffset(), message.getLength());
+		} catch (CoreException exc) {
+			// Couldn't add the task to the task list for some reason...
+			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
+			if (logger.isLoggingLevel(Level.SEVERE)) {
+				LogEntry entry = ValidationPlugin.getLogEntry();
+				entry.setSourceID("WorkbenchReporter.addMessage(Class,, IResource, IMessage, String, String"); //$NON-NLS-1$
+				entry.setTargetException(exc);
+				logger.write(Level.SEVERE, entry);
+			}
+		}
+	}
+	
+	public static void addMessage(IResource resource, String messageOwnerId, ClassLoader cl, IMessage message, String targetObjectName, String location, String markerId) {
+		int severity = message.getSeverity();
+		try {
+			TaskListUtility.addTask(messageOwnerId, resource, location, message.getId(), message.getText(cl), severity,markerId,targetObjectName, message.getGroupName(), message.getOffset(), message.getLength());
 		} catch (CoreException exc) {
 			// Couldn't add the task to the task list for some reason...
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
@@ -337,6 +374,7 @@ public/* final */class WorkbenchReporter implements IReporter {
 		IWorkbenchHelper helper = vmd.getHelper(getProject());
 		return helper;
 	}
+	
 
 	public IProject getProject() {
 		return _project;
@@ -487,15 +525,16 @@ public/* final */class WorkbenchReporter implements IReporter {
 	public void addMessage(IValidator validator, IMessage message) throws MessageLimitException {
 		IResource resource = getMessageResource(validator, message.getTargetObject());
 		IWorkbenchHelper helper = null;
+		ValidatorMetaData vmd = getVMD(validator);
 		try {
 			helper = getHelper(validator);
 		} catch (InstantiationException exc) {
 			try {
 				// Unlikely that an exception will be thrown, because this method is
 				// invoked by the validator, and if the validator is invoked, it's likely
-				// that the helper has been loaded too.
-				ValidatorMetaData vmd = getVMD(validator);
-
+				// that the helper has been loaded too
+				
+				
 				// Remove the vmd from the reader's list
 				ValidationRegistryReader.getReader().disableValidator(vmd);
 
@@ -507,32 +546,13 @@ public/* final */class WorkbenchReporter implements IReporter {
 					entry.setTargetException(exc);
 					logger.write(Level.SEVERE, entry);
 				}
-
 				return;
 			} catch (IllegalArgumentException exc2) {
-				// Even the IValidator is invalid. Unfortunately, can't disable the
-				// validator because it can't be found by the registry reader.
-				// Log the reason for the disabled validator
-				Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-				if (logger.isLoggingLevel(Level.SEVERE)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("WorkbenchReporter::addMessage(IValidator, IMessage)"); //$NON-NLS-1$
-					entry.setTargetException(exc2);
-					logger.write(Level.SEVERE, entry);
-				}
+				logDisabledValidator(exc2);
 				return;
 			}
 		} catch (IllegalArgumentException exc) {
-			// Even the IValidator is invalid. Unfortunately, can't disable the
-			// validator because it can't be found by the registry reader.
-			// Log the reason for the disabled validator
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("WorkbenchReporter::addMessage(IValidator, IMessage)"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+			logDisabledValidator(exc);
 			return;
 		}
 
@@ -550,23 +570,48 @@ public/* final */class WorkbenchReporter implements IReporter {
 
 		ValidatorManager mgr = ValidatorManager.getManager();
 		if (mgr.isMessageLimitExceeded(resource.getProject())) {
-			try {
-				addTerminatedTask(resource.getProject(), validator);
-			} catch (IllegalArgumentException exc) {
-				// Even the IValidator is invalid. Unfortunately, can't disable the
-				// validator because it can't be found by the registry reader.
-				Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-				if (logger.isLoggingLevel(Level.SEVERE)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("WorkbenchReporter::addMessage(IValidator, IMessage)"); //$NON-NLS-1$
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
-			throw new MessageLimitException();
+			validateMessageLimitExceeded(validator, resource);
 		}
 
-		addMessage(resource, validator.getClass(), message, getTargetObjectName(helper, message), getLocation(helper, message));
+		addMessage(resource, validator.getClass(), message, getTargetObjectName(helper, message), getLocation(helper, message),vmd.getMarkerId());
+	}
+
+	/**
+	 * @param exc
+	 */
+	private void logDisabledValidator(IllegalArgumentException exc) {
+		// Even the IValidator is invalid. Unfortunately, can't disable the
+		// validator because it can't be found by the registry reader.
+		// Log the reason for the disabled validator
+		Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
+		if (logger.isLoggingLevel(Level.SEVERE)) {
+			LogEntry entry = ValidationPlugin.getLogEntry();
+			entry.setSourceID("WorkbenchReporter::addMessage(IValidator, IMessage)"); //$NON-NLS-1$
+			entry.setTargetException(exc);
+			logger.write(Level.SEVERE, entry);
+		}
+		return;
+	}
+
+	/**
+	 * @param validator
+	 * @param resource
+	 */
+	private void validateMessageLimitExceeded(IValidator validator, IResource resource) {
+		try {
+			addTerminatedTask(resource.getProject(), validator);
+		} catch (IllegalArgumentException exc) {
+			// Even the IValidator is invalid. Unfortunately, can't disable the
+			// validator because it can't be found by the registry reader.
+			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
+			if (logger.isLoggingLevel(Level.SEVERE)) {
+				LogEntry entry = ValidationPlugin.getLogEntry();
+				entry.setSourceID("WorkbenchReporter::addMessage(IValidator, IMessage)"); //$NON-NLS-1$
+				entry.setTargetException(exc);
+				logger.write(Level.SEVERE, entry);
+			}
+		}
+		throw new MessageLimitException();
 	}
 
 	/**

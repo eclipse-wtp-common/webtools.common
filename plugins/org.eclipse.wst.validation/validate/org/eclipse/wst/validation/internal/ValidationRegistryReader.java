@@ -439,7 +439,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	}
 
 	/**
-	 * Return the name of the helper class associated with the IValidator.
+	 * Return the name of the marker ID associated with the IValidator.
 	 */
 	public String getMarkerIdValue(IConfigurationElement element) {
 		IConfigurationElement[] markerId = element.getChildren(MARKER_ID);
@@ -1264,7 +1264,9 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		vmd.setHelperClass(element, helperImplName);
 		vmd.setValidatorClass(element); // associate the above attributes with the validator
 		vmd.addDependentValidator(getDependentValidatorValue(element));
-		vmd.setMarkerId(getMarkerIdValue(element));
+		String customMarkerId = getMarkerIdValue(element);
+		if(customMarkerId != null)
+		    vmd.setMarkerId(pluginId+"."+customMarkerId);
 
 		Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 		if (logger.isLoggingLevel(Level.FINEST)) {
