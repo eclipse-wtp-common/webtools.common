@@ -23,11 +23,7 @@ public class ArtifactEditAPITests extends TestSuite {
 
 	public ArtifactEditAPITests() {
 		super();
-/*		addTest(new SimpleTestSuite(EventTest.class));
-		addTest(new SimpleTestSuite(NestingTest.class));
-		addTest(new SimpleTestSuite(NestedListeningTest.class));
-		addTest(new SimpleTestSuite(SimpleDataModelTest.class));
-		addTest(new SimpleTestSuite(DataModelFactoryTest.class));*/
+		addTest(new SimpleTestSuite(ArtifactEditTest.class));
 	}
 
 }
