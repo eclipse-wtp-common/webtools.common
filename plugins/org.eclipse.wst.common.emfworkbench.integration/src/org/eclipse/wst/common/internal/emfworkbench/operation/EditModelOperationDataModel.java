@@ -47,7 +47,7 @@ public abstract class EditModelOperationDataModel extends WTPOperationDataModel 
 	}
 
 	public IProject getTargetProject() {
-		return ProjectCreationDataModel.getProjectHandleFromName(getStringProperty(PROJECT_NAME));
+		return ProjectCreationDataModel.getProjectHandleFromProjectName(getStringProperty(PROJECT_NAME));
 	}
 
 	protected Object getDefaultProperty(String propertyName) {

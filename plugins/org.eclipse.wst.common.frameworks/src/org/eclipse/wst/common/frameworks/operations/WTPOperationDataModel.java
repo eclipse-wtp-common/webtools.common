@@ -23,6 +23,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
@@ -801,6 +804,24 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		return OK_STATUS;
 	}
 	
+	/**
+	 * @deprecated this can be replaced with something like this:
+	 * ProjectCreationDataModel.getProjectHandleFromProjectName(getStringProperty(projectNameProperty))
+	 */
+	public IProject getProjectHandle(String projectNameProperty) {
+		String projectName = (String) getProperty(projectNameProperty);
+		return getProjectHandleFromName(projectName);
+	}
+
+	/**
+	 * @deprecated see ProjectCreationDataModel.getProjectHadleFromProjectName()
+	 */
+	public IProject getProjectHandleFromName(String projectName) {
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IStatus status = workspace.validateName(projectName, IResource.PROJECT);
+		return (null != projectName && projectName.length() > 0 && status.isOK()) ? ResourcesPlugin.getWorkspace().getRoot().getProject(projectName) : null;
+	}
+
 	/**
 	 * @deprecated this will be removed and left to subclasses to implement
 	 * @return

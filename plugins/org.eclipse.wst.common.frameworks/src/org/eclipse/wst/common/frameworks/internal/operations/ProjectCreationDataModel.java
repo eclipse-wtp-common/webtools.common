@@ -164,7 +164,7 @@ public class ProjectCreationDataModel extends WTPOperationDataModel {
 		return OK_STATUS;
 	}
 
-	public static IProject getProjectHandleFromName(String projectName) {
+	public static IProject getProjectHandleFromProjectName(String projectName) {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IStatus status = workspace.validateName(projectName, IResource.PROJECT);
 		return (null != projectName && projectName.length() > 0 && status.isOK()) ? ResourcesPlugin.getWorkspace().getRoot().getProject(projectName) : null;
