@@ -9,6 +9,8 @@
 package org.eclipse.wst.common.frameworks.operations;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -67,6 +69,15 @@ import org.eclipse.wst.common.frameworks.internal.operations.NullOperationHandle
  *       framework.
  */
 public abstract class WTPOperationDataModel implements WTPOperationDataModelListener {
+
+	/**
+	 * This property is used by the extended operation framework. Extended operations run within a
+	 * context; e.g. they run within the scope of a project, resource, file, etc. The default value
+	 * for this property is an empty List. Subclasses should configure themselves to return a list
+	 * Objects. Each Object represents a Context which should be adaptable to IProject.
+	 */
+	protected static final String EXTENDED_CONTEXT = "WTPOperationDataModel.EXTENDED_CONTEXT"; //$NON-NLS-1$
+
 	/**
 	 * An unsettable property used soley to trip validation for nested models. Clients only use this
 	 * property for validation purposes and never get or set its value. Subclasses can override
@@ -144,6 +155,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	}
 
 	private final void init_internal() {
+		addValidBaseProperty(EXTENDED_CONTEXT);
 		addValidBaseProperty(RUN_OPERATION);
 		addValidBaseProperty(CACHED_DELAYED_OPERATION);
 		addValidBaseProperty(UI_OPERATION_HANLDER);
@@ -260,6 +272,14 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		}
 	}
 
+	public Iterator getNestedModels(){
+		return nestedModels.values().iterator();
+	}
+	
+	public Iterator getNestingModels(){
+		return nestingModels.iterator();
+	}
+	
 	//TODO delete this
 	/**
 	 * @deprecated
@@ -597,6 +617,17 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 * @return
 	 */
 	protected Object getDefaultProperty(String propertyName) {
+		if (propertyName.equals(EXTENDED_CONTEXT)) {
+			Object targetProject = getTargetProject(); //TODO delete this block with
+			// getTargetProject()
+			if (null == targetProject) {
+				return Collections.EMPTY_LIST;
+			} else {
+				List list = new ArrayList();
+				list.add(targetProject);
+				return list;
+			}
+		}
 		if (propertyName.equals(RUN_OPERATION)) {
 			return Boolean.TRUE;
 		}
@@ -1165,9 +1196,10 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 
 	//	TODO delete this
 	/**
-	 * This will be deleted before WTP M4
+	 * This will be deleted before WTP M4 If this is used for extended operations, see the property
+	 * EXTENDED_CONTEXT. Otherwise, there is no replacement method.
 	 * 
-	 * @deprecated
+	 * @deprecated see #EXTENDED_CONTEXT
 	 */
 	public IProject getTargetProject() {
 		return null;

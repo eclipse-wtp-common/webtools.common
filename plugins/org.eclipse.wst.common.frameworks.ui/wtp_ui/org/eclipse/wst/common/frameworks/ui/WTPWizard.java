@@ -9,11 +9,17 @@
 package org.eclipse.wst.common.frameworks.ui;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.util.Assert;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.wst.common.frameworks.internal.operation.extensionui.WizardPageElement;
+import org.eclipse.wst.common.frameworks.internal.operation.extensionui.WizardPageExtensionManager;
+import org.eclipse.wst.common.frameworks.internal.operations.FailSafeComposedOperation;
 import org.eclipse.wst.common.frameworks.internal.ui.ErrorDialog;
 import org.eclipse.wst.common.frameworks.internal.ui.UIOperationHandler;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPCommonUIResourceHandler;
@@ -30,6 +36,11 @@ import com.ibm.wtp.common.logger.proxy.Logger;
  * This class is EXPERIMENTAL and is subject to substantial changes.
  */
 public abstract class WTPWizard extends Wizard {
+
+	private IExtendedWizardPage[] extendedPages = null;
+	private IExtendedPageHandler[] extendedPageHandlers = null;
+
+
 	protected WTPOperationDataModel model;
 
 	public WTPWizard(WTPOperationDataModel model) {
@@ -47,15 +58,161 @@ public abstract class WTPWizard extends Wizard {
 	 */
 	protected abstract WTPOperationDataModel createDefaultModel();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.wizard.Wizard#canFinish()
+	/**
+	 * @return the wizard ID that clients should extend to add to this wizard
 	 */
-	public boolean canFinish() {
-		if (super.canFinish())
-			return model.isValid();
+	public String getWizardID() {
+		return this.getClass().getName();
+	}
+	
+	/**
+	 * The <code>Wizard</code> implementation of this <code>IWizard</code> method creates all
+	 * the pages controls using <code>IDialogPage.createControl</code>. Subclasses should
+	 * reimplement this method if they want to delay creating one or more of the pages lazily. The
+	 * framework ensures that the contents of a page will be created before attempting to show it.
+	 */
+	public void createPageControls(Composite pageContainer) {
+		IWizardPage[] pages = getPages();
+		// the default behavior is to create all the pages controls
+		for (int i = 0; i < pages.length; i++) {
+			if (isExtendedPage(pages[i])) {
+				try {
+					pages[i].createControl(pageContainer);
+				} catch (Exception e) {
+					Logger.getLogger().logError(e);
+					continue;
+				}
+			} else {
+				pages[i].createControl(pageContainer);
+			}
+			// page is responsible for ensuring the created control is
+			// accessable
+			// via getControl.
+			Assert.isNotNull(pages[i].getControl());
+		}
+	}
+
+	protected boolean isExtendedPage(IWizardPage page) {
+		for (int i = 0; null != extendedPages && i < extendedPages.length; i++) {
+			if (page == extendedPages[i]) {
+				return true;
+			}
+		}
 		return false;
+	}
+
+
+	/**
+	 * This is finalized to handle the adding of extended pages. Clients should override
+	 * doAddPages() to add their pages.
+	 */
+	public final void addPages() {
+		doAddPages();
+		addExtensionPages();
+	}
+
+	/**
+	 * Subclasses should override this method to add pages.
+	 */
+	protected void doAddPages() {
+
+	}
+
+	private void addExtensionPages() {
+		String wizardID = getWizardID();
+		WizardPageElement wizElement = null;
+		if (wizardID == null)
+			return;
+		WizardPageElement[] elements = WizardPageExtensionManager.getInstance().getPageElements(getWizardID());
+		IExtendedWizardPage[] extendedPagesLocal = null;
+		IExtendedPageHandler extendedPageHandler = null;
+		List extendedPagesList = new ArrayList();
+		List extendedPageHandlerList = new ArrayList();
+		for (int i = 0; i < elements.length; i++) {
+			wizElement = elements[i];
+			try {
+				extendedPagesLocal = wizElement.createPageGroup(model);
+				if (null != extendedPagesLocal) {
+					for (int j = 0; j < extendedPagesLocal.length; j++) {
+						addPage(extendedPagesLocal[j]);
+						extendedPagesList.add(extendedPagesLocal[j]);
+					}
+				}
+				extendedPageHandler = wizElement.createPageHandler(model);
+				if (null != extendedPageHandler && !extendedPageHandlerList.contains(extendedPageHandler)) {
+					extendedPageHandlerList.add(extendedPageHandler);
+				}
+			} catch (RuntimeException runtime) {
+				Logger.getLogger().logError(WTPCommonUIResourceHandler.getString("ExtendableWizard_UI_0", new Object[]{wizElement.getPluginID(), wizElement.pageGroupID})); //$NON-NLS-1$
+				Logger.getLogger().logError(runtime);
+			}
+		}
+		extendedPages = new IExtendedWizardPage[extendedPagesList.size()];
+		for (int i = 0; i < extendedPages.length; i++) {
+			extendedPages[i] = (IExtendedWizardPage) extendedPagesList.get(i);
+		}
+		extendedPageHandlers = new IExtendedPageHandler[extendedPageHandlerList.size()];
+		for (int i = 0; i < extendedPageHandlers.length; i++) {
+			extendedPageHandlers[i] = (IExtendedPageHandler) extendedPageHandlerList.get(i);
+		}
+
+	}
+
+	public IWizardPage getNextPage(IWizardPage page) {
+		IWizardPage expectedPage = super.getNextPage(page);
+		if (expectedPage instanceof IExtendedWizardPage) {
+			IExtendedWizardPage extendedWizardPage = (IExtendedWizardPage) expectedPage;
+			if (!EnablementManager.INSTANCE.getIdentifier(extendedWizardPage.getGroupID(), getModel().getTargetProject()).isEnabled())
+				return getNextPage(expectedPage);
+		}
+		String expectedPageName = (null == expectedPage) ? null : expectedPage.getName();
+		String nextPageName = null;
+		for (int i = 0; null != extendedPageHandlers && i < extendedPageHandlers.length; i++) {
+			nextPageName = extendedPageHandlers[i].getNextPage(page.getName(), expectedPageName);
+			if (null != nextPageName) {
+				if (nextPageName.equals(IExtendedPageHandler.SKIP_PAGE)) {
+					return getNextPage(expectedPage);
+				} else if (nextPageName.startsWith(IExtendedPageHandler.PAGE_AFTER)) {
+					String tempNextPageName = nextPageName.substring(IExtendedPageHandler.PAGE_AFTER.length());
+					IWizardPage tempNextPage = getPage(tempNextPageName);
+					return null == tempNextPage ? null : super.getNextPage(tempNextPage);
+				}
+				return getPage(nextPageName);
+			}
+		}
+		return expectedPage;
+	}
+
+	public IWizardPage getPreviousPage(IWizardPage page) {
+		IWizardPage expectedPage = super.getPreviousPage(page);
+		String expectedPageName = (null == expectedPage) ? null : expectedPage.getName();
+		String previousPageName = null;
+		for (int i = 0; null != extendedPageHandlers && i < extendedPageHandlers.length; i++) {
+			previousPageName = extendedPageHandlers[i].getPreviousPage(page.getName(), expectedPageName);
+			if (null != previousPageName) {
+				if (previousPageName.equals(IExtendedPageHandler.SKIP_PAGE)) {
+					return getPreviousPage(expectedPage);
+				} else if (previousPageName.startsWith(IExtendedPageHandler.PAGE_AFTER)) {
+					String tempPreviousPageName = previousPageName.substring(IExtendedPageHandler.PAGE_AFTER.length());
+					IWizardPage tempPreviousPage = getPage(tempPreviousPageName);
+					return null == tempPreviousPage ? null : super.getPreviousPage(tempPreviousPage);
+				}
+				return getPage(previousPageName);
+			}
+		}
+		return expectedPage;
+	}
+
+	public boolean canFinish() {
+		if (!super.canFinish() || !model.isValid()) {
+			return false;
+		}
+		for (int i = 0; null != extendedPages && i < extendedPages.length; i++) {
+			if (!extendedPages[i].canPageFinish()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	protected void resetAfterFinishError() {
@@ -171,13 +328,38 @@ public abstract class WTPWizard extends Wizard {
 		return false;
 	}
 
-	//TODO this should return the dataModel's default operation by default.
+
 	/**
-	 * Return the operation that will perform the task suported by this wizard.
+	 * This is the base operation the wizard will run when finished. If the wizard is extended, then
+	 * this operation will run first followed by any extensions.
 	 * 
-	 * @return IHeadlessRunnableWithProgress
+	 * @return
 	 */
-	protected abstract WTPOperation createOperation();
+	protected WTPOperation createBaseOperation() {
+		return model.getDefaultOperation();
+	}
+
+	/**
+	 * Returs the operation this wizard is going to run. This is final to handle extended pages;
+	 * subclasses should override createBaseOperation.
+	 * 
+	 * @return
+	 */
+	protected final WTPOperation createOperation() {
+		WTPOperation baseOperation = createBaseOperation();
+		FailSafeComposedOperation composedOperation = null;
+		for (int i = 0; null != extendedPages && i < extendedPages.length; i++) {
+			WTPOperation op = extendedPages[i].createOperation();
+			if (op != null) {
+				if (composedOperation == null) {
+					composedOperation = new FailSafeComposedOperation();
+					composedOperation.append(baseOperation);
+				}
+				composedOperation.append(op);
+			}
+		}
+		return composedOperation != null ? composedOperation : baseOperation;
+	}
 
 	/**
 	 * @return Returns the model.
@@ -199,16 +381,7 @@ public abstract class WTPWizard extends Wizard {
 	 * 
 	 * @see org.eclipse.jface.wizard.Wizard#getNextPage(org.eclipse.jface.wizard.IWizardPage)
 	 */
-	public IWizardPage getNextPage(IWizardPage page) {
-		IWizardPage nextPage = super.getNextPage(page);
 
-		if (nextPage instanceof IExtendedWizardPage) {
-			IExtendedWizardPage extendedWizardPage = (IExtendedWizardPage) nextPage;
-			if (!EnablementManager.INSTANCE.getIdentifier(extendedWizardPage.getGroupID(), getModel().getTargetProject()).isEnabled())
-				return getNextPage(nextPage);
-		}
-		return nextPage;
-	}
 
 	public void addPage(IWizardPage page) {
 		if (model.isProperty(WTPWizardSkipPageDataModel.SKIP_PAGES) && null != page.getName()) {

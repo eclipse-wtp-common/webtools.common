@@ -12,6 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.eclipse.core.internal.runtime.Assert;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceStatus;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -23,13 +24,13 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.wst.common.frameworks.internal.AdaptabilityUtility;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 import org.eclipse.wst.common.frameworks.internal.enablement.nonui.WFTWrappedException;
 import org.eclipse.wst.common.frameworks.internal.operations.ComposedExtendedOperationHolder;
 import org.eclipse.wst.common.frameworks.internal.operations.ComposedOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.OperationExtensionRegistry;
 import org.eclipse.wst.common.frameworks.internal.operations.OperationStatus;
-import org.eclispe.wst.common.frameworks.internal.enablement.IEnablementIdentifier;
 import org.eclispe.wst.common.frameworks.internal.enablement.IEnablementManager;
 import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
@@ -400,13 +401,19 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 		OperationStatus returnStatus = null;
 		IStatus localStatus;
 		String opId = null;
-		IEnablementIdentifier enablementIdentifer = null;
 		for (int i = 0; i < opList.size(); i++) {
 			op = (WTPOperation) opList.get(i);
 			try {
 				opId = op.getID();
-				enablementIdentifer = IEnablementManager.INSTANCE.getIdentifier(opId, operationDataModel.getTargetProject());
-				if (enablementIdentifer.isEnabled()) {
+				boolean shouldExtendedRun = true;
+				List extendedContext = (List) operationDataModel.getProperty(WTPOperationDataModel.EXTENDED_CONTEXT);
+				for (int contextCount = 0; shouldExtendedRun && contextCount < extendedContext.size(); contextCount++) {
+					IProject project = (IProject) AdaptabilityUtility.getAdapter(extendedContext.get(contextCount), IProject.class);
+					if (null != project && !IEnablementManager.INSTANCE.getIdentifier(opId, project).isEnabled()) {
+						shouldExtendedRun = false;
+					}
+				}
+				if (shouldExtendedRun) {
 					op.setOperationDataModel(operationDataModel);
 					op.doRun(new SubProgressMonitor(pm, IProgressMonitor.UNKNOWN));
 					localStatus = op.getStatus();
