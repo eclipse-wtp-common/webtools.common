@@ -2,18 +2,15 @@
  * <copyright>
  * </copyright>
  *
- * $Id: DeploySchemeImpl.java,v 1.3 2005/01/24 21:05:22 cbridgha Exp $
+ * $Id: DeploySchemeImpl.java,v 1.4 2005/01/26 16:48:35 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
 import org.eclipse.emf.common.notify.Notification;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-
 import org.eclipse.wst.common.modulecore.DeployScheme;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 

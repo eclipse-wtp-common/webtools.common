@@ -2,32 +2,23 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchModuleImpl.java,v 1.4 2005/01/24 21:05:22 cbridgha Exp $
+ * $Id: WorkbenchModuleImpl.java,v 1.5 2005/01/26 16:48:35 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
 import java.util.Collection;
 
 import org.eclipse.emf.common.notify.Notification;
-import org.eclipse.emf.common.notify.NotificationChain;
-
 import org.eclipse.emf.common.util.EList;
-
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
-
-import org.eclipse.wst.common.modulecore.IModuleHandle;
 import org.eclipse.wst.common.modulecore.IModuleType;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
-import org.eclipse.wst.common.modulecore.ModuleResource;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
-
 import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
 
 /**
@@ -38,7 +29,8 @@ import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
  * The following features are implemented:
  * <ul>
  *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl#getHandle <em>Handle</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl#getDependentModules <em>Dependent Modules</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl#getDeployedPath <em>Deployed Path</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl#getModules <em>Modules</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl#getResources <em>Resources</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl#getModuleType <em>Module Type</em>}</li>
  * </ul>
@@ -48,24 +40,54 @@ import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
  */
 public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule {
 	/**
-	 * The cached value of the '{@link #getHandle() <em>Handle</em>}' containment reference.
+	 * The default value of the '{@link #getHandle() <em>Handle</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getHandle()
 	 * @generated
 	 * @ordered
 	 */
-	protected IModuleHandle handle = null;
+	protected static final URI HANDLE_EDEFAULT = null;
 
 	/**
-	 * The cached value of the '{@link #getDependentModules() <em>Dependent Modules</em>}' reference list.
+	 * The cached value of the '{@link #getHandle() <em>Handle</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getDependentModules()
+	 * @see #getHandle()
 	 * @generated
 	 * @ordered
 	 */
-	protected EList dependentModules = null;
+	protected URI handle = HANDLE_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getDeployedPath() <em>Deployed Path</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getDeployedPath()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final URI DEPLOYED_PATH_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getDeployedPath() <em>Deployed Path</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getDeployedPath()
+	 * @generated
+	 * @ordered
+	 */
+	protected URI deployedPath = DEPLOYED_PATH_EDEFAULT;
+
+	/**
+	 * The cached value of the '{@link #getModules() <em>Modules</em>}' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getModules()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList modules = null;
 
 	/**
 	 * The cached value of the '{@link #getResources() <em>Resources</em>}' reference list.
@@ -110,7 +132,7 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public IModuleHandle getHandle() {
+	public URI getHandle() {
 		return handle;
 	}
 
@@ -119,14 +141,11 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain basicSetHandle(IModuleHandle newHandle, NotificationChain msgs) {
-		IModuleHandle oldHandle = handle;
+	public void setHandle(URI newHandle) {
+		URI oldHandle = handle;
 		handle = newHandle;
-		if (eNotificationRequired()) {
-			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, ModuleCorePackage.WORKBENCH_MODULE__HANDLE, oldHandle, newHandle);
-			if (msgs == null) msgs = notification; else msgs.add(notification);
-		}
-		return msgs;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.WORKBENCH_MODULE__HANDLE, oldHandle, handle));
 	}
 
 	/**
@@ -134,18 +153,8 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setHandle(IModuleHandle newHandle) {
-		if (newHandle != handle) {
-			NotificationChain msgs = null;
-			if (handle != null)
-				msgs = ((InternalEObject)handle).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - ModuleCorePackage.WORKBENCH_MODULE__HANDLE, null, msgs);
-			if (newHandle != null)
-				msgs = ((InternalEObject)newHandle).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - ModuleCorePackage.WORKBENCH_MODULE__HANDLE, null, msgs);
-			msgs = basicSetHandle(newHandle, msgs);
-			if (msgs != null) msgs.dispatch();
-		}
-		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.WORKBENCH_MODULE__HANDLE, newHandle, newHandle));
+	public URI getDeployedPath() {
+		return deployedPath;
 	}
 
 	/**
@@ -153,11 +162,23 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList getDependentModules() {
-		if (dependentModules == null) {
-			dependentModules = new EObjectResolvingEList(WorkbenchModule.class, this, ModuleCorePackage.WORKBENCH_MODULE__DEPENDENT_MODULES);
+	public void setDeployedPath(URI newDeployedPath) {
+		URI oldDeployedPath = deployedPath;
+		deployedPath = newDeployedPath;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_PATH, oldDeployedPath, deployedPath));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EList getModules() {
+		if (modules == null) {
+			modules = new EObjectResolvingEList(WorkbenchModule.class, this, ModuleCorePackage.WORKBENCH_MODULE__MODULES);
 		}
-		return dependentModules;
+		return modules;
 	}
 
 	/**
@@ -189,29 +210,14 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, Class baseClass, NotificationChain msgs) {
-		if (featureID >= 0) {
-			switch (eDerivedStructuralFeatureID(featureID, baseClass)) {
-				case ModuleCorePackage.WORKBENCH_MODULE__HANDLE:
-					return basicSetHandle(null, msgs);
-				default:
-					return eDynamicInverseRemove(otherEnd, featureID, baseClass, msgs);
-			}
-		}
-		return eBasicSetContainer(null, featureID, msgs);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public Object eGet(EStructuralFeature eFeature, boolean resolve) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
 			case ModuleCorePackage.WORKBENCH_MODULE__HANDLE:
 				return getHandle();
-			case ModuleCorePackage.WORKBENCH_MODULE__DEPENDENT_MODULES:
-				return getDependentModules();
+			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_PATH:
+				return getDeployedPath();
+			case ModuleCorePackage.WORKBENCH_MODULE__MODULES:
+				return getModules();
 			case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES:
 				return getResources();
 			case ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE:
@@ -228,11 +234,14 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	public void eSet(EStructuralFeature eFeature, Object newValue) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
 			case ModuleCorePackage.WORKBENCH_MODULE__HANDLE:
-				setHandle((IModuleHandle)newValue);
+				setHandle((URI)newValue);
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE__DEPENDENT_MODULES:
-				getDependentModules().clear();
-				getDependentModules().addAll((Collection)newValue);
+			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_PATH:
+				setDeployedPath((URI)newValue);
+				return;
+			case ModuleCorePackage.WORKBENCH_MODULE__MODULES:
+				getModules().clear();
+				getModules().addAll((Collection)newValue);
 				return;
 			case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES:
 				getResources().clear();
@@ -254,10 +263,13 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	public void eUnset(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
 			case ModuleCorePackage.WORKBENCH_MODULE__HANDLE:
-				setHandle((IModuleHandle)null);
+				setHandle(HANDLE_EDEFAULT);
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE__DEPENDENT_MODULES:
-				getDependentModules().clear();
+			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_PATH:
+				setDeployedPath(DEPLOYED_PATH_EDEFAULT);
+				return;
+			case ModuleCorePackage.WORKBENCH_MODULE__MODULES:
+				getModules().clear();
 				return;
 			case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES:
 				getResources().clear();
@@ -277,15 +289,34 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	public boolean eIsSet(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
 			case ModuleCorePackage.WORKBENCH_MODULE__HANDLE:
-				return handle != null;
-			case ModuleCorePackage.WORKBENCH_MODULE__DEPENDENT_MODULES:
-				return dependentModules != null && !dependentModules.isEmpty();
+				return HANDLE_EDEFAULT == null ? handle != null : !HANDLE_EDEFAULT.equals(handle);
+			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_PATH:
+				return DEPLOYED_PATH_EDEFAULT == null ? deployedPath != null : !DEPLOYED_PATH_EDEFAULT.equals(deployedPath);
+			case ModuleCorePackage.WORKBENCH_MODULE__MODULES:
+				return modules != null && !modules.isEmpty();
 			case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES:
 				return resources != null && !resources.isEmpty();
 			case ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE:
 				return moduleType != null && !moduleType.isEmpty();
 		}
 		return eDynamicIsSet(eFeature);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String toString() {
+		if (eIsProxy()) return super.toString();
+
+		StringBuffer result = new StringBuffer(super.toString());
+		result.append(" (handle: ");
+		result.append(handle);
+		result.append(", deployedPath: ");
+		result.append(deployedPath);
+		result.append(')');
+		return result.toString();
 	}
 
 } //WorkbenchModuleImpl

@@ -2,12 +2,11 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ProjectModules.java,v 1.1 2005/01/24 21:34:03 cbridgha Exp $
+ * $Id: ProjectModules.java,v 1.2 2005/01/26 16:48:35 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
 import org.eclipse.emf.common.util.EList;
-
 import org.eclipse.emf.ecore.EObject;
 
 /**
@@ -19,7 +18,6 @@ import org.eclipse.emf.ecore.EObject;
  * The following features are supported:
  * <ul>
  *   <li>{@link org.eclipse.wst.common.modulecore.ProjectModules#getProjectName <em>Project Name</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.ProjectModules#getDeployedApplications <em>Deployed Applications</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.ProjectModules#getWorkbenchApplications <em>Workbench Applications</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.ProjectModules#getWorkbenchModules <em>Workbench Modules</em>}</li>
  * </ul>
@@ -29,7 +27,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model 
  * @generated
  */
-public interface ProjectModules extends EObject {
+public interface ProjectModules extends EObject{
 	/**
 	 * Returns the value of the '<em><b>Project Name</b></em>' attribute.
 	 * <!-- begin-user-doc -->
@@ -55,22 +53,6 @@ public interface ProjectModules extends EObject {
 	 * @generated
 	 */
 	void setProjectName(String value);
-
-	/**
-	 * Returns the value of the '<em><b>Deployed Applications</b></em>' containment reference list.
-	 * The list contents are of type {@link org.eclipse.wst.common.modulecore.DeployedApplication}.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Deployed Applications</em>' containment reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Deployed Applications</em>' containment reference list.
-	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getProjectModules_DeployedApplications()
-	 * @model type="org.eclipse.wst.common.modulecore.DeployedApplication" containment="true"
-	 * @generated
-	 */
-	EList getDeployedApplications();
 
 	/**
 	 * Returns the value of the '<em><b>Workbench Applications</b></em>' containment reference list.

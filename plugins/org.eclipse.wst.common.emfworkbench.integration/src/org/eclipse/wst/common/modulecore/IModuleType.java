@@ -2,13 +2,12 @@
  * <copyright>
  * </copyright>
  *
- * $Id: IModuleType.java,v 1.3 2005/01/24 21:05:22 cbridgha Exp $
+ * $Id: IModuleType.java,v 1.4 2005/01/26 16:48:35 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
-
 import org.eclipse.emf.ecore.EObject;
 
 /**

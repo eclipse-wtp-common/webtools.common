@@ -13,7 +13,6 @@ import java.util.Map;
 
 import org.eclipse.core.internal.boot.PlatformURLConnection;
 import org.eclipse.core.internal.boot.PlatformURLHandler;
-import org.eclipse.core.internal.resources.PlatformURLResourceConnection;
 import org.eclipse.core.internal.utils.Policy;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;

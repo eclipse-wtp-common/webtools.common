@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreSwitch.java,v 1.5 2005/01/24 21:34:03 cbridgha Exp $
+ * $Id: ModuleCoreSwitch.java,v 1.6 2005/01/26 16:48:35 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.util;
 
@@ -10,8 +10,14 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-
-import org.eclipse.wst.common.modulecore.*;
+import org.eclipse.wst.common.modulecore.DeployScheme;
+import org.eclipse.wst.common.modulecore.DeployedModule;
+import org.eclipse.wst.common.modulecore.IModuleType;
+import org.eclipse.wst.common.modulecore.ModuleCorePackage;
+import org.eclipse.wst.common.modulecore.ProjectModules;
+import org.eclipse.wst.common.modulecore.WorkbenchApplication;
+import org.eclipse.wst.common.modulecore.WorkbenchModule;
+import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
 
 /**
  * <!-- begin-user-doc -->
@@ -87,12 +93,6 @@ public class ModuleCoreSwitch {
 	 */
 	protected Object doSwitch(int classifierID, EObject theEObject) {
 		switch (classifierID) {
-			case ModuleCorePackage.DEPLOYED_APPLICATION: {
-				DeployedApplication deployedApplication = (DeployedApplication)theEObject;
-				Object result = caseDeployedApplication(deployedApplication);
-				if (result == null) result = defaultCase(theEObject);
-				return result;
-			}
 			case ModuleCorePackage.DEPLOY_SCHEME: {
 				DeployScheme deployScheme = (DeployScheme)theEObject;
 				Object result = caseDeployScheme(deployScheme);
@@ -114,12 +114,7 @@ public class ModuleCoreSwitch {
 			case ModuleCorePackage.WORKBENCH_APPLICATION: {
 				WorkbenchApplication workbenchApplication = (WorkbenchApplication)theEObject;
 				Object result = caseWorkbenchApplication(workbenchApplication);
-				if (result == null) result = defaultCase(theEObject);
-				return result;
-			}
-			case ModuleCorePackage.IMODULE_HANDLE: {
-				IModuleHandle iModuleHandle = (IModuleHandle)theEObject;
-				Object result = caseIModuleHandle(iModuleHandle);
+				if (result == null) result = caseWorkbenchModule(workbenchApplication);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -135,23 +130,14 @@ public class ModuleCoreSwitch {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
+			case ModuleCorePackage.DEPLOYED_MODULE: {
+				DeployedModule deployedModule = (DeployedModule)theEObject;
+				Object result = caseDeployedModule(deployedModule);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
 			default: return defaultCase(theEObject);
 		}
-	}
-
-	/**
-	 * Returns the result of interpretting the object as an instance of '<em>Deployed Application</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpretting the object as an instance of '<em>Deployed Application</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public Object caseDeployedApplication(DeployedApplication object) {
-		return null;
 	}
 
 	/**
@@ -215,21 +201,6 @@ public class ModuleCoreSwitch {
 	}
 
 	/**
-	 * Returns the result of interpretting the object as an instance of '<em>IModule Handle</em>'.
-	 * <!-- begin-user-doc -->
-	 * This implementation returns null;
-	 * returning a non-null result will terminate the switch.
-	 * <!-- end-user-doc -->
-	 * @param object the target of the switch.
-	 * @return the result of interpretting the object as an instance of '<em>IModule Handle</em>'.
-	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-	 * @generated
-	 */
-	public Object caseIModuleHandle(IModuleHandle object) {
-		return null;
-	}
-
-	/**
 	 * Returns the result of interpretting the object as an instance of '<em>IModule Type</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
@@ -256,6 +227,21 @@ public class ModuleCoreSwitch {
 	 * @generated
 	 */
 	public Object caseProjectModules(ProjectModules object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpretting the object as an instance of '<em>Deployed Module</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpretting the object as an instance of '<em>Deployed Module</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public Object caseDeployedModule(DeployedModule object) {
 		return null;
 	}
 

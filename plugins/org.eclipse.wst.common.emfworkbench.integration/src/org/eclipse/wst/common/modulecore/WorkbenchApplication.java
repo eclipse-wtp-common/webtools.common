@@ -2,13 +2,10 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchApplication.java,v 1.3 2005/01/24 21:05:22 cbridgha Exp $
+ * $Id: WorkbenchApplication.java,v 1.4 2005/01/26 16:48:35 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
-import org.eclipse.emf.common.util.EList;
-
-import org.eclipse.emf.ecore.EObject;
 
 /**
  * <!-- begin-user-doc -->
@@ -18,7 +15,7 @@ import org.eclipse.emf.ecore.EObject;
  * <p>
  * The following features are supported:
  * <ul>
- *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchApplication#getModules <em>Modules</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchApplication#getDeployScheme <em>Deploy Scheme</em>}</li>
  * </ul>
  * </p>
  *
@@ -26,21 +23,31 @@ import org.eclipse.emf.ecore.EObject;
  * @model 
  * @generated
  */
-public interface WorkbenchApplication extends EObject {
+public interface WorkbenchApplication extends WorkbenchModule {
 	/**
-	 * Returns the value of the '<em><b>Modules</b></em>' reference list.
-	 * The list contents are of type {@link org.eclipse.wst.common.modulecore.IModuleHandle}.
+	 * Returns the value of the '<em><b>Deploy Scheme</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Modules</em>' reference list isn't clear,
+	 * If the meaning of the '<em>Deploy Scheme</em>' reference isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Modules</em>' reference list.
-	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchApplication_Modules()
-	 * @model type="org.eclipse.wst.common.modulecore.IModuleHandle"
+	 * @return the value of the '<em>Deploy Scheme</em>' reference.
+	 * @see #setDeployScheme(DeployScheme)
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchApplication_DeployScheme()
+	 * @model required="true"
 	 * @generated
 	 */
-	EList getModules();
+	DeployScheme getDeployScheme();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.WorkbenchApplication#getDeployScheme <em>Deploy Scheme</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Deploy Scheme</em>' reference.
+	 * @see #getDeployScheme()
+	 * @generated
+	 */
+	void setDeployScheme(DeployScheme value);
 
 } // WorkbenchApplication

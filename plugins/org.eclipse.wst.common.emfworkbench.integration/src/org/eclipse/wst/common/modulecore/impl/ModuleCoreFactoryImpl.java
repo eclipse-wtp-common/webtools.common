@@ -2,19 +2,24 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreFactoryImpl.java,v 1.5 2005/01/24 21:34:03 cbridgha Exp $
+ * $Id: ModuleCoreFactoryImpl.java,v 1.6 2005/01/26 16:48:35 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
 import org.eclipse.emf.common.util.URI;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
-
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
-
-import org.eclipse.wst.common.modulecore.*;
+import org.eclipse.wst.common.modulecore.DeployScheme;
+import org.eclipse.wst.common.modulecore.DeployedModule;
+import org.eclipse.wst.common.modulecore.IModuleType;
+import org.eclipse.wst.common.modulecore.ModuleCoreFactory;
+import org.eclipse.wst.common.modulecore.ModuleCorePackage;
+import org.eclipse.wst.common.modulecore.ProjectModules;
+import org.eclipse.wst.common.modulecore.WorkbenchApplication;
+import org.eclipse.wst.common.modulecore.WorkbenchModule;
+import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
 
 /**
  * <!-- begin-user-doc -->
@@ -40,14 +45,13 @@ public class ModuleCoreFactoryImpl extends EFactoryImpl implements ModuleCoreFac
 	 */
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
-			case ModuleCorePackage.DEPLOYED_APPLICATION: return createDeployedApplication();
 			case ModuleCorePackage.DEPLOY_SCHEME: return createDeployScheme();
 			case ModuleCorePackage.WORKBENCH_MODULE: return createWorkbenchModule();
 			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE: return createWorkbenchModuleResource();
 			case ModuleCorePackage.WORKBENCH_APPLICATION: return createWorkbenchApplication();
-			case ModuleCorePackage.IMODULE_HANDLE: return createIModuleHandle();
 			case ModuleCorePackage.IMODULE_TYPE: return createIModuleType();
 			case ModuleCorePackage.PROJECT_MODULES: return createProjectModules();
+			case ModuleCorePackage.DEPLOYED_MODULE: return createDeployedModule();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -79,16 +83,6 @@ public class ModuleCoreFactoryImpl extends EFactoryImpl implements ModuleCoreFac
 			default:
 				throw new IllegalArgumentException("The datatype '" + eDataType.getName() + "' is not a valid classifier");
 		}
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public DeployedApplication createDeployedApplication() {
-		DeployedApplicationImpl deployedApplication = new DeployedApplicationImpl();
-		return deployedApplication;
 	}
 
 	/**
@@ -136,16 +130,6 @@ public class ModuleCoreFactoryImpl extends EFactoryImpl implements ModuleCoreFac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public IModuleHandle createIModuleHandle() {
-		IModuleHandleImpl iModuleHandle = new IModuleHandleImpl();
-		return iModuleHandle;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public IModuleType createIModuleType() {
 		IModuleTypeImpl iModuleType = new IModuleTypeImpl();
 		return iModuleType;
@@ -159,6 +143,16 @@ public class ModuleCoreFactoryImpl extends EFactoryImpl implements ModuleCoreFac
 	public ProjectModules createProjectModules() {
 		ProjectModulesImpl projectModules = new ProjectModulesImpl();
 		return projectModules;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public DeployedModule createDeployedModule() {
+		DeployedModuleImpl deployedModule = new DeployedModuleImpl();
+		return deployedModule;
 	}
 
 	/**

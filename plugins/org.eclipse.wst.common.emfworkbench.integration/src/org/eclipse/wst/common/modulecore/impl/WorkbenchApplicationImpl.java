@@ -2,22 +2,19 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchApplicationImpl.java,v 1.3 2005/01/24 21:05:22 cbridgha Exp $
+ * $Id: WorkbenchApplicationImpl.java,v 1.4 2005/01/26 16:48:35 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
 import java.util.Collection;
 
-import org.eclipse.emf.common.util.EList;
-
+import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
-
-import org.eclipse.emf.ecore.impl.EObjectImpl;
-
-import org.eclipse.emf.ecore.util.EObjectResolvingEList;
-
-import org.eclipse.wst.common.modulecore.IModuleHandle;
+import org.eclipse.emf.ecore.InternalEObject;
+import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.eclipse.wst.common.modulecore.DeployScheme;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 import org.eclipse.wst.common.modulecore.WorkbenchApplication;
 
@@ -28,22 +25,22 @@ import org.eclipse.wst.common.modulecore.WorkbenchApplication;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchApplicationImpl#getModules <em>Modules</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchApplicationImpl#getDeployScheme <em>Deploy Scheme</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public class WorkbenchApplicationImpl extends EObjectImpl implements WorkbenchApplication {
+public class WorkbenchApplicationImpl extends WorkbenchModuleImpl implements WorkbenchApplication {
 	/**
-	 * The cached value of the '{@link #getModules() <em>Modules</em>}' reference list.
+	 * The cached value of the '{@link #getDeployScheme() <em>Deploy Scheme</em>}' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see #getModules()
+	 * @see #getDeployScheme()
 	 * @generated
 	 * @ordered
 	 */
-	protected EList modules = null;
+	protected DeployScheme deployScheme = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -68,11 +65,37 @@ public class WorkbenchApplicationImpl extends EObjectImpl implements WorkbenchAp
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList getModules() {
-		if (modules == null) {
-			modules = new EObjectResolvingEList(IModuleHandle.class, this, ModuleCorePackage.WORKBENCH_APPLICATION__MODULES);
+	public DeployScheme getDeployScheme() {
+		if (deployScheme != null && deployScheme.eIsProxy()) {
+			DeployScheme oldDeployScheme = deployScheme;
+			deployScheme = (DeployScheme)eResolveProxy((InternalEObject)deployScheme);
+			if (deployScheme != oldDeployScheme) {
+				if (eNotificationRequired())
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOY_SCHEME, oldDeployScheme, deployScheme));
+			}
 		}
-		return modules;
+		return deployScheme;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public DeployScheme basicGetDeployScheme() {
+		return deployScheme;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setDeployScheme(DeployScheme newDeployScheme) {
+		DeployScheme oldDeployScheme = deployScheme;
+		deployScheme = newDeployScheme;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOY_SCHEME, oldDeployScheme, deployScheme));
 	}
 
 	/**
@@ -82,8 +105,19 @@ public class WorkbenchApplicationImpl extends EObjectImpl implements WorkbenchAp
 	 */
 	public Object eGet(EStructuralFeature eFeature, boolean resolve) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
+			case ModuleCorePackage.WORKBENCH_APPLICATION__HANDLE:
+				return getHandle();
+			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOYED_PATH:
+				return getDeployedPath();
 			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULES:
 				return getModules();
+			case ModuleCorePackage.WORKBENCH_APPLICATION__RESOURCES:
+				return getResources();
+			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULE_TYPE:
+				return getModuleType();
+			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOY_SCHEME:
+				if (resolve) return getDeployScheme();
+				return basicGetDeployScheme();
 		}
 		return eDynamicGet(eFeature, resolve);
 	}
@@ -95,9 +129,26 @@ public class WorkbenchApplicationImpl extends EObjectImpl implements WorkbenchAp
 	 */
 	public void eSet(EStructuralFeature eFeature, Object newValue) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
+			case ModuleCorePackage.WORKBENCH_APPLICATION__HANDLE:
+				setHandle((URI)newValue);
+				return;
+			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOYED_PATH:
+				setDeployedPath((URI)newValue);
+				return;
 			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULES:
 				getModules().clear();
 				getModules().addAll((Collection)newValue);
+				return;
+			case ModuleCorePackage.WORKBENCH_APPLICATION__RESOURCES:
+				getResources().clear();
+				getResources().addAll((Collection)newValue);
+				return;
+			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULE_TYPE:
+				getModuleType().clear();
+				getModuleType().addAll((Collection)newValue);
+				return;
+			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOY_SCHEME:
+				setDeployScheme((DeployScheme)newValue);
 				return;
 		}
 		eDynamicSet(eFeature, newValue);
@@ -110,8 +161,23 @@ public class WorkbenchApplicationImpl extends EObjectImpl implements WorkbenchAp
 	 */
 	public void eUnset(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
+			case ModuleCorePackage.WORKBENCH_APPLICATION__HANDLE:
+				setHandle(HANDLE_EDEFAULT);
+				return;
+			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOYED_PATH:
+				setDeployedPath(DEPLOYED_PATH_EDEFAULT);
+				return;
 			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULES:
 				getModules().clear();
+				return;
+			case ModuleCorePackage.WORKBENCH_APPLICATION__RESOURCES:
+				getResources().clear();
+				return;
+			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULE_TYPE:
+				getModuleType().clear();
+				return;
+			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOY_SCHEME:
+				setDeployScheme((DeployScheme)null);
 				return;
 		}
 		eDynamicUnset(eFeature);
@@ -124,8 +190,18 @@ public class WorkbenchApplicationImpl extends EObjectImpl implements WorkbenchAp
 	 */
 	public boolean eIsSet(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
+			case ModuleCorePackage.WORKBENCH_APPLICATION__HANDLE:
+				return HANDLE_EDEFAULT == null ? handle != null : !HANDLE_EDEFAULT.equals(handle);
+			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOYED_PATH:
+				return DEPLOYED_PATH_EDEFAULT == null ? deployedPath != null : !DEPLOYED_PATH_EDEFAULT.equals(deployedPath);
 			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULES:
 				return modules != null && !modules.isEmpty();
+			case ModuleCorePackage.WORKBENCH_APPLICATION__RESOURCES:
+				return resources != null && !resources.isEmpty();
+			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULE_TYPE:
+				return moduleType != null && !moduleType.isEmpty();
+			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOY_SCHEME:
+				return deployScheme != null;
 		}
 		return eDynamicIsSet(eFeature);
 	}

@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreFactory.java,v 1.5 2005/01/24 21:34:03 cbridgha Exp $
+ * $Id: ModuleCoreFactory.java,v 1.6 2005/01/26 16:48:35 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -24,15 +24,6 @@ public interface ModuleCoreFactory extends EFactory{
 	 * @generated
 	 */
 	ModuleCoreFactory eINSTANCE = new org.eclipse.wst.common.modulecore.impl.ModuleCoreFactoryImpl();
-
-	/**
-	 * Returns a new object of class '<em>Deployed Application</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Deployed Application</em>'.
-	 * @generated
-	 */
-	DeployedApplication createDeployedApplication();
 
 	/**
 	 * Returns a new object of class '<em>Deploy Scheme</em>'.
@@ -71,15 +62,6 @@ public interface ModuleCoreFactory extends EFactory{
 	WorkbenchApplication createWorkbenchApplication();
 
 	/**
-	 * Returns a new object of class '<em>IModule Handle</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>IModule Handle</em>'.
-	 * @generated
-	 */
-	IModuleHandle createIModuleHandle();
-
-	/**
 	 * Returns a new object of class '<em>IModule Type</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -96,6 +78,15 @@ public interface ModuleCoreFactory extends EFactory{
 	 * @generated
 	 */
 	ProjectModules createProjectModules();
+
+	/**
+	 * Returns a new object of class '<em>Deployed Module</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Deployed Module</em>'.
+	 * @generated
+	 */
+	DeployedModule createDeployedModule();
 
 	/**
 	 * Returns the package supported by this factory.

@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ProjectModulesImpl.java,v 1.1 2005/01/24 21:34:03 cbridgha Exp $
+ * $Id: ProjectModulesImpl.java,v 1.2 2005/01/26 16:48:35 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
@@ -10,20 +10,14 @@ import java.util.Collection;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
-
 import org.eclipse.emf.common.util.EList;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-
-import org.eclipse.wst.common.modulecore.DeployedApplication;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 import org.eclipse.wst.common.modulecore.ProjectModules;
 import org.eclipse.wst.common.modulecore.WorkbenchApplication;
@@ -37,7 +31,6 @@ import org.eclipse.wst.common.modulecore.WorkbenchModule;
  * The following features are implemented:
  * <ul>
  *   <li>{@link org.eclipse.wst.common.modulecore.impl.ProjectModulesImpl#getProjectName <em>Project Name</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.impl.ProjectModulesImpl#getDeployedApplications <em>Deployed Applications</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.impl.ProjectModulesImpl#getWorkbenchApplications <em>Workbench Applications</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.impl.ProjectModulesImpl#getWorkbenchModules <em>Workbench Modules</em>}</li>
  * </ul>
@@ -65,16 +58,6 @@ public class ProjectModulesImpl extends EObjectImpl implements ProjectModules {
 	 * @ordered
 	 */
 	protected String projectName = PROJECT_NAME_EDEFAULT;
-
-	/**
-	 * The cached value of the '{@link #getDeployedApplications() <em>Deployed Applications</em>}' containment reference list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getDeployedApplications()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList deployedApplications = null;
 
 	/**
 	 * The cached value of the '{@link #getWorkbenchApplications() <em>Workbench Applications</em>}' containment reference list.
@@ -140,18 +123,6 @@ public class ProjectModulesImpl extends EObjectImpl implements ProjectModules {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList getDeployedApplications() {
-		if (deployedApplications == null) {
-			deployedApplications = new EObjectContainmentEList(DeployedApplication.class, this, ModuleCorePackage.PROJECT_MODULES__DEPLOYED_APPLICATIONS);
-		}
-		return deployedApplications;
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
 	public EList getWorkbenchApplications() {
 		if (workbenchApplications == null) {
 			workbenchApplications = new EObjectContainmentEList(WorkbenchApplication.class, this, ModuleCorePackage.PROJECT_MODULES__WORKBENCH_APPLICATIONS);
@@ -179,8 +150,6 @@ public class ProjectModulesImpl extends EObjectImpl implements ProjectModules {
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, Class baseClass, NotificationChain msgs) {
 		if (featureID >= 0) {
 			switch (eDerivedStructuralFeatureID(featureID, baseClass)) {
-				case ModuleCorePackage.PROJECT_MODULES__DEPLOYED_APPLICATIONS:
-					return ((InternalEList)getDeployedApplications()).basicRemove(otherEnd, msgs);
 				case ModuleCorePackage.PROJECT_MODULES__WORKBENCH_APPLICATIONS:
 					return ((InternalEList)getWorkbenchApplications()).basicRemove(otherEnd, msgs);
 				case ModuleCorePackage.PROJECT_MODULES__WORKBENCH_MODULES:
@@ -201,8 +170,6 @@ public class ProjectModulesImpl extends EObjectImpl implements ProjectModules {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
 			case ModuleCorePackage.PROJECT_MODULES__PROJECT_NAME:
 				return getProjectName();
-			case ModuleCorePackage.PROJECT_MODULES__DEPLOYED_APPLICATIONS:
-				return getDeployedApplications();
 			case ModuleCorePackage.PROJECT_MODULES__WORKBENCH_APPLICATIONS:
 				return getWorkbenchApplications();
 			case ModuleCorePackage.PROJECT_MODULES__WORKBENCH_MODULES:
@@ -220,10 +187,6 @@ public class ProjectModulesImpl extends EObjectImpl implements ProjectModules {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
 			case ModuleCorePackage.PROJECT_MODULES__PROJECT_NAME:
 				setProjectName((String)newValue);
-				return;
-			case ModuleCorePackage.PROJECT_MODULES__DEPLOYED_APPLICATIONS:
-				getDeployedApplications().clear();
-				getDeployedApplications().addAll((Collection)newValue);
 				return;
 			case ModuleCorePackage.PROJECT_MODULES__WORKBENCH_APPLICATIONS:
 				getWorkbenchApplications().clear();
@@ -247,9 +210,6 @@ public class ProjectModulesImpl extends EObjectImpl implements ProjectModules {
 			case ModuleCorePackage.PROJECT_MODULES__PROJECT_NAME:
 				setProjectName(PROJECT_NAME_EDEFAULT);
 				return;
-			case ModuleCorePackage.PROJECT_MODULES__DEPLOYED_APPLICATIONS:
-				getDeployedApplications().clear();
-				return;
 			case ModuleCorePackage.PROJECT_MODULES__WORKBENCH_APPLICATIONS:
 				getWorkbenchApplications().clear();
 				return;
@@ -269,8 +229,6 @@ public class ProjectModulesImpl extends EObjectImpl implements ProjectModules {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
 			case ModuleCorePackage.PROJECT_MODULES__PROJECT_NAME:
 				return PROJECT_NAME_EDEFAULT == null ? projectName != null : !PROJECT_NAME_EDEFAULT.equals(projectName);
-			case ModuleCorePackage.PROJECT_MODULES__DEPLOYED_APPLICATIONS:
-				return deployedApplications != null && !deployedApplications.isEmpty();
 			case ModuleCorePackage.PROJECT_MODULES__WORKBENCH_APPLICATIONS:
 				return workbenchApplications != null && !workbenchApplications.isEmpty();
 			case ModuleCorePackage.PROJECT_MODULES__WORKBENCH_MODULES:
