@@ -1,8 +1,12 @@
 package org.eclipse.wst.common.modulecore.builder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.modulecore.DependentModule;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
 import org.eclipse.wst.common.modulecore.util.ModuleCore;
 
@@ -70,13 +74,21 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
      */
     public DeployableModuleBuilderDataModel() {
         super();
-        // TODO Auto-generated constructor stub
     }    /**
      * @return
      */
     private Object populateDependentModulesDM() {
-        //TODO:
-        return null;
+        WorkbenchModule wbModule = (WorkbenchModule)getProperty(WORKBENCH_MODULE);
+        List depModules = wbModule.getModules();
+        List depModulesDataModels = new ArrayList();
+        DependentDeployableModuleDataModel dependentDataModel;
+        for(int i = 0; i<depModules.size(); i++){
+            dependentDataModel = new DependentDeployableModuleDataModel();
+            dependentDataModel.setProperty(DependentDeployableModuleDataModel.DEPENDENT_MODULE, (DependentModule)depModules.get(i));
+            dependentDataModel.setProperty(DependentDeployableModuleDataModel.MODULE_STRUCTURAL_MODEL, getProperty(MODULE_STRUCTURAL_MODEL));
+            depModulesDataModels.add(dependentDataModel);
+        }
+        return depModulesDataModels;
     }
 
     /**
