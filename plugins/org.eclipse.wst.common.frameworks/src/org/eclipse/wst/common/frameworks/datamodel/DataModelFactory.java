@@ -36,7 +36,28 @@ public class DataModelFactory {
 		}
 		return reader.getProvider(id);
 	}
+    /**
+     * Looks up the appropriate IDataModelProvider by the specified provider Type String and functionGroupID String and
+     * constructs a new IDataModel. If the IDataModelProvider is not found then
+     * a RuntimeException is thrown.
+     * 
+     * @param providerKind
+     *            the String id of the provider
+     * @param functionGroupId
+     *            the String id of the enabled Function Group
+     *            
+     * @return a new IDataModel
+     */
+    public static IDataModel createDataModel(String providerKind, String functionGroupId) {
+        return createDataModel(loadProvider(providerKind, functionGroupId));
+    }
 
+    private static IDataModelProvider loadProvider(String providerKind, String functionGroupId) {
+        if (null == reader) {
+            reader = new DataModelExtensionReader();
+        }
+        return reader.getProvider(providerKind, functionGroupId);
+    }
 	/**
 	 * Looks up the appropriate IDataModelProvider using the name of the
 	 * specified class. This method is equavalent to

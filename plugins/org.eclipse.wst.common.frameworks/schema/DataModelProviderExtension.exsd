@@ -14,6 +14,8 @@
       <complexType>
          <sequence>
             <element ref="DataModelProvider"/>
+            <element ref="ProviderDefinesType" minOccurs="0" maxOccurs="1"/>
+            <element ref="ProviderImplementsType" minOccurs="0" maxOccurs="1"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -52,6 +54,51 @@
             </annotation>
          </attribute>
          <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="ProviderDefinesType">
+      <complexType>
+         <attribute name="providerType" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="providerID" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="ProviderImplementsType">
+      <complexType>
+         <attribute name="providerType" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="providerID" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="functionGroupID" type="string" use="required">
             <annotation>
                <documentation>
                   
