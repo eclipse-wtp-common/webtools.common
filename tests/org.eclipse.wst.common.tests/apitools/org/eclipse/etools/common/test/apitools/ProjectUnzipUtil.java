@@ -35,7 +35,7 @@ public class ProjectUnzipUtil {
 
 	}
 
-	public boolean createProject() {
+	public boolean createProjects() {
 		try {
 			expandZip();
 			buildProjects();

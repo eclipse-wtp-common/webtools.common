@@ -103,7 +103,7 @@ public class ArtifactEditTest extends TestCase {
 	public boolean createProject() {
 		IPath localZipPath = getLocalPath();
 		ProjectUnzipUtil util = new ProjectUnzipUtil(localZipPath, new String[]{PROJECT_NAME});
-		return util.createProject();
+		return util.createProjects();
 	}
 
 	private IPath getLocalPath() {
