@@ -3,9 +3,6 @@
 	<name>org.eclipse.wst.common.emfworkbench.integration</name>
 	<comment></comment>
 	<projects>
-		<project>com.ibm.wtp.common</project>
-		<project>com.ibm.wtp.emf</project>
-		<project>com.ibm.wtp.jdt.integration</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
