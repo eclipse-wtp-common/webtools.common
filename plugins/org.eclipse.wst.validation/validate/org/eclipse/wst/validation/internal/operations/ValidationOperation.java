@@ -47,7 +47,6 @@ import org.eclipse.wst.validation.internal.RegistryConstants;
 import org.eclipse.wst.validation.internal.ResourceConstants;
 import org.eclipse.wst.validation.internal.ResourceHandler;
 import org.eclipse.wst.validation.internal.VThreadManager;
-import org.eclipse.wst.validation.internal.ValidationMigrator;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.plugin.TimeEntry;
@@ -696,11 +695,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				return;
 			}
 			final WorkbenchReporter reporter = new WorkbenchReporter(getProject(), progressMonitor);
-
-			//If it's already been migrated, this call returns without doing anything.
-			// If it hasn't been migrated, the migration is performed the first time
-			// that the configuration is queried.
-			ValidationMigrator.singleton().migrate(progressMonitor, getProject());
 
 			try {
 				// Periodically check if the user has cancelled the operation

@@ -135,11 +135,6 @@ public final class ConfigurationManager implements ConfigurationConstants {
 				gp.getVersion(); // initialize the configuration's version attribute
 				gp.load(); // initialize this instance from the stored values
 				gp.passivate(); // store this instance as a property on the IResource
-
-				// If it's already been migrated, this call returns without doing anything.
-				// If it hasn't been migrated, the migration is performed the first time
-				// that the configuration is queried.
-				ValidationMigrator.singleton().migrateRoot(new NullProgressMonitor());
 			}
 			return gp;
 		} catch (CoreException exc) {
@@ -156,11 +151,6 @@ public final class ConfigurationManager implements ConfigurationConstants {
 				prjp.getVersion(); // initialize the configuration's version attribute
 				prjp.load(); // initialize this instance from the stored values
 				prjp.passivate(); // store this instance as a property on the IResource
-
-				// If it's already been migrated, this call returns without doing anything.
-				// If it hasn't been migrated, the migration is performed the first time
-				// that the configuration is queried.
-				ValidationMigrator.singleton().migrate(new NullProgressMonitor(), project);
 			}
 			return prjp;
 		} catch (CoreException exc) {
@@ -223,7 +213,6 @@ public final class ConfigurationManager implements ConfigurationConstants {
 	}
 
 	public void deleting(IProject project) {
-		//do nothing
 	}
 
 	public void opening(IProject project) {

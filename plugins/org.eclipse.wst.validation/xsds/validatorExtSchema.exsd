@@ -178,20 +178,6 @@
       </complexType>
    </element>
 
-   <element name="migrate">
-      <complexType>
-         <sequence>
-            <element ref="validator"/>
-         </sequence>
-      </complexType>
-   </element>
-
-   <element name="from" type="string">
-   </element>
-
-   <element name="to" type="string">
-   </element>
-
    <element name="markerId">
       <annotation>
          <documentation>
