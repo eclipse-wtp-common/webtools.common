@@ -72,33 +72,14 @@ public class DataModelWizardExtensionReader extends RegistryReader {
 	protected DataModelWizard getWizard(IDataModel dataModel) {
 		DataModelWizard wizard = null;
 		IConfigurationElement element = getExtension(dataModel.getID());
+		
 		try {
-			Class wizardClass = element.loadExtensionClass(ATTRIBUTE_CLASS);
-			Constructor constructor = wizardClass.getConstructor(new Class[]{IDataModel.class});
-			try {
-				wizard = (DataModelWizard) constructor.newInstance(new Object[]{dataModel});
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			wizard = (DataModelWizard)element.createExecutableExtension(ATTRIBUTE_CLASS);
 		} catch (CoreException e) {
-			Logger.getLogger().logError(e);
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		return wizard;
 	}
 }

@@ -12,6 +12,7 @@ package org.eclipse.wst.common.frameworks.internal.ui;
 
 import java.lang.reflect.InvocationTargetException;
 
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -27,7 +28,12 @@ public class RunnableOperationWrapper implements IRunnableWithProgress {
 	}
 
 	public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-		status = undoableOperation.execute(monitor, null);
+		try {
+			status = undoableOperation.execute(monitor, null);
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public IStatus getStatus() {
