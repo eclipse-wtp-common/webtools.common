@@ -292,58 +292,10 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 		}
 	}
 
-
 	/**
 	 * @see com.ibm.etools.emf.workbench.ReferencedResource#wasReverted()
 	 */
 	public boolean wasReverted() {
 		return false;
 	}
-	
-   /*
-   * THIS IS A HACK!!! REMOVE when bugzilla 80110 is fixed
-   */
-  // TODO REMOVE this!
-  public void setTrackingModification(boolean isTrackingModification)
-  {
-    boolean oldIsTrackingModification = this.modificationTrackingAdapter != null;
-
-    if (oldIsTrackingModification != isTrackingModification)
-    {
-      this.modificationTrackingAdapter = isTrackingModification ? createModificationTrackingAdapter() : null;
-
-      if (isTrackingModification)
-      {
-        for (Iterator i = getContents().iterator(); i.hasNext(); )
-        {
-          attachedHelper((EObject)i.next());
-        }
-      }
-      else
-      {
-        for (Iterator i = getContents().iterator(); i.hasNext(); )
-        {
-          detachedHelper((EObject)i.next());
-        }
-      }
-    }
-
-    if (eNotificationRequired())
-    {
-      Notification notification =
-        new NotificationImpl(Notification.SET, oldIsTrackingModification, isTrackingModification)
-        {
-          public Object getNotifier()
-          {
-            return ReferencedXMIResourceImpl.this;
-          }
-          public int getFeatureID(Class expectedClass)
-          {
-            return RESOURCE__IS_TRACKING_MODIFICATION;
-          }
-        };
-      eNotify(notification);
-    }
-  }
-
 }

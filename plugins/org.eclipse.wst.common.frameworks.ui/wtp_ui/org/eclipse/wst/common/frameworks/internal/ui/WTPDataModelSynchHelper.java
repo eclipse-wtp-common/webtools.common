@@ -141,7 +141,7 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 					return;
 				}
 			}
-			// setProperty(propertyName, combo.getText());
+			setProperty(propertyName, combo.getText());
 		}
 
 		public void widgetSelected(SelectionEvent e) {
@@ -158,7 +158,7 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 						return;
 					}
 				}
-				// setProperty(propertyName, combo.getItem(combo.getSelectionIndex()));
+				setProperty(propertyName, combo.getItem(combo.getSelectionIndex()));
 			}
 		}
 

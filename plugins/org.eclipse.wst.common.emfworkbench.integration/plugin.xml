@@ -56,6 +56,13 @@
          </run>
       </application>
    </extension>
+   <extension
+         point="org.eclipse.emf.ecore.generated_package">
+      <package
+            uri="projectmodule.xmi"
+            class="org.eclipse.wst.common.projectmodule.ProjectModulePackage">
+      </package>
+   </extension>
    
    <extension
         id="emfValidationHandler"

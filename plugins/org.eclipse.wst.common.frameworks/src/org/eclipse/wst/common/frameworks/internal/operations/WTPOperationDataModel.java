@@ -85,11 +85,20 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		init();
 	}
 
+	/**
+	 * This is for subclasses to perform any required initialization other than
+	 * initValidBaseProperties() and initNestedModels() both which will be called first
+	 * @see initValidBaseProperties()
+	 * @see initNestedModels()
+	 */
 	protected void init() {
 	}
 
 	/**
-	 *  
+	 * This is for subclasses to override to initialize any nested DataModels. This will be called
+	 * before init() and after initValidBaseProperties()
+	 * @see init()
+	 * @see initValidBaseProperties();
 	 */
 	protected void initNestedModels() {
 	}
@@ -281,7 +290,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 * @return
 	 */
 	protected WTPPropertyDescriptor[] doGetValidPropertyDescriptors(String propertyName) {
-		return null;
+		return new WTPPropertyDescriptor[0];
 	}
 
 	public final WTPPropertyDescriptor getPropertyDescriptor(String propertyName) {
