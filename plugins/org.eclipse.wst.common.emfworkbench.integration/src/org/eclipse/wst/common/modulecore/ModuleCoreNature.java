@@ -28,22 +28,8 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
 
     private ProjectModules projectModules;
 
-    private final static ModuleCoreFactory MODULE_FACTORY = ModuleCoreFactory.eINSTANCE;
+   
 
-    public WorkbenchModule createModuleHandle(URI uri) {
-        if (uri == null) return null;
-        WorkbenchModule module = null;
-        try {           
-            module = createModuleHandle(uri);
-        } catch (RuntimeException e) {
-            Logger.getLogger().write(e);
-        } finally {
-            if (module != null) {
-                getWorkbenchModulesMap().put(uri, module);
-            }
-        }
-        return module;
-    }
 
 
 
@@ -60,39 +46,16 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
         //update()
     }
 
-    private Resource getWTPModuleResource() {
-        URI wtpModuleURI = createWTPModuleURI();
-        if (wtpModuleURI == null)
-            return null;
-        Resource wtpModuleResource = WorkbenchResourceHelper.getResource(wtpModuleURI);
-        return wtpModuleResource;
-    }
 
-    private URI createWTPModuleURI() {
-        IPath path = getWTPModulePath();
-        if (path == null)
-            return null;
-        URI modulePathURI = URI.createPlatformResourceURI(path.toString());
-        return modulePathURI;
-    }
 
-    private IPath getWTPModulePath() {
-        IPath path = getProject().getFullPath();
-        if (path == null)
-            return null;
-        path.append(IModuleConstants.WTPMODULE_FILE_NAME);
-        return path;
-
-    }
-
-    public WorkbenchModule[] getWorkbenchModules() {
+/*    public WorkbenchModule[] getWorkbenchModules() {
         Object[] values = getWorkbenchModulesMap().values().toArray();
         WorkbenchModule[] workbenchModules = new WorkbenchModule[values.length];
         for (int i = 0; i < values.length; i++) {
             workbenchModules[i] = (WorkbenchModule) values[i];
         }
         return workbenchModules;
-    }
+    }*/
 
     private HashMap getModuleHandlesMap() {
         if (moduleHandlesMap == null)
@@ -100,11 +63,7 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
         return moduleHandlesMap;
     }
 
-    private HashMap getWorkbenchModulesMap() {
-        if (workbenchModulesMap == null)
-            workbenchModulesMap = new HashMap();
-        return workbenchModulesMap;
-    }
+ 
 
     public void configure() throws CoreException {
 
@@ -122,11 +81,9 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
         moduleProject = project;
     }
     
-    private void addResourceChangeListener(){
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(this);       
-    }
 
-    private synchronized void update() {
+
+   /* private synchronized void update() {
         moduleHandlesMap.clear();
         workbenchModulesMap.clear();
         projectModules = null;
@@ -136,9 +93,9 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
                 for (int i = 0; i < workBenchModules.size(); i++) {
                     WorkbenchModule wbm = (WorkbenchModule) workBenchModules.get(i);
                    // IModuleHandle handle = wbm.getHandle();
-                  /*  if (handle == null || handle.getHandle() == null) continue;
+                    if (handle == null || handle.getHandle() == null) continue;
                     moduleHandlesMap.put(handle.getHandle(), handle);
-                    workbenchModulesMap.put(handle, wbm);*/
+                    workbenchModulesMap.put(handle, wbm);
                 }
             }
         } catch (RuntimeException e) {
@@ -157,5 +114,5 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
         }
 
         return projectModules;
-    }
+    }*/
 }
