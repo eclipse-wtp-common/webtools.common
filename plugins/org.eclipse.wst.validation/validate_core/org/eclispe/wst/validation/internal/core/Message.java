@@ -139,6 +139,15 @@ public class Message implements IMessage {
 		params = aParams;
 		targetObject = aTargetObject;
 	}
+	
+	public Message(String aBundleName, int aSeverity, String anId, String[] aParams, Object aTargetObject, String aGroupName) {
+		bundleName = aBundleName;
+		severity = aSeverity;
+		id = anId;
+		params = aParams;
+		targetObject = aTargetObject;
+		groupName = aGroupName;
+	}
 
 	/**
 	 * @return the resource bundle which contains the messages, as identified by
