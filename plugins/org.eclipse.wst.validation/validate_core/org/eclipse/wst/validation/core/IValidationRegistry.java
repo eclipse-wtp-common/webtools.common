@@ -5,8 +5,8 @@ import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 
 
 public interface IValidationRegistry {
-	
-	IValidationRegistry instance = ValidationRegistryReader.getReader();
+	//commented out as this is causing build break. Better implementation will be provided soon
+	//IValidationRegistry instance = ValidationRegistryReader.getReader();
 	
 	/**
 	 * This api returns the IValidator given the validatorUniqueName id.
