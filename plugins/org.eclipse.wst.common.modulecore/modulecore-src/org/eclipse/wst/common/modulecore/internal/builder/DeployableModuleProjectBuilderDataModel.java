@@ -10,6 +10,7 @@ package org.eclipse.wst.common.modulecore.internal.builder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import org.eclipse.core.internal.events.ResourceDelta;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -42,7 +43,7 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
 	 */
 	public static final String MODULE_BUILDER_DM_LIST = "DeployableModuleProjectBuilderDataModel.MODULE_BUILDER_DM_LIST"; //$NON-NLS-1$
 
-	
+
 	public static final String MODULE_CORE = "DeployableModuleProjectBuilderDataModel.MODULE_CORE";
 
 	protected void init() {
@@ -115,65 +116,76 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
 	}
 
 	/**
-	 * Sorts the wbModules such that the returned list 
+	 * Sorts the wbModules such that the returned list
+	 * 
 	 * @param wbModule
 	 * @param sortedModuleList
 	 * @param wbModuleList
 	 * @return
 	 * @throws UnresolveableURIException
 	 */
-	private List computeModuleBuildOrder(WorkbenchModule wbModule, List sortedModuleList, List wbModuleList) throws UnresolveableURIException {
-		EList depModules = wbModule.getModules();
-		for (int i = 0; i< depModules.size(); i++) {
-			DependentModule depModule = (DependentModule) depModules.get(i);
-			if (getModuleCore().isLocalDependency(depModule)) {
-				WorkbenchModule depWBModule = getModuleCore().findWorkbenchModuleByModuleURI(depModule.getHandle());
-				if (!sortedModuleList.contains(depWBModule)) {
-					computeModuleBuildOrder(depWBModule, sortedModuleList, null);
+	private List computeModuleBuildOrder(WorkbenchModule wbModule, List sortedModuleList, List wbModuleList, Stack callStack) throws UnresolveableURIException {
+		if (callStack.contains(wbModule)) {
+			//TODO do something meaningful with this.
+			throw new RuntimeException("Cyclical module dependency detected.");
+		}
+		try {
+			callStack.push(wbModule);
+			EList depModules = wbModule.getModules();
+			for (int i = 0; i < depModules.size(); i++) {
+				DependentModule depModule = (DependentModule) depModules.get(i);
+				if (getModuleCore().isLocalDependency(depModule)) {
+					WorkbenchModule depWBModule = getModuleCore().findWorkbenchModuleByModuleURI(depModule.getHandle());
+					if (!sortedModuleList.contains(depWBModule)) {
+						computeModuleBuildOrder(depWBModule, sortedModuleList, null, callStack);
+					}
 				}
 			}
+			if (!sortedModuleList.contains(wbModule)) {
+				sortedModuleList.add(wbModule);
+			}
+			if (null != wbModuleList && !wbModuleList.isEmpty()) {
+				wbModule = (WorkbenchModule) wbModuleList.remove(wbModuleList.size() - 1);
+				return computeModuleBuildOrder(wbModule, sortedModuleList, wbModuleList, callStack);
+			}
+			return sortedModuleList;
+		} finally {
+			callStack.pop();
 		}
-		if(!sortedModuleList.contains(wbModule)){
-			sortedModuleList.add(wbModule);
-		}
-		if(null != wbModuleList && !wbModuleList.isEmpty()){
-			wbModule = (WorkbenchModule)wbModuleList.remove(wbModuleList.size()-1);
-			return computeModuleBuildOrder(wbModule, sortedModuleList, wbModuleList);
-		}
-		return sortedModuleList;
 	}
 
 	/**
-	 * Returns the list of WorkbenchModules in a sorted build order 
+	 * Returns the list of WorkbenchModules in a sorted build order
+	 * 
 	 * @param wbModules
 	 * @return
 	 */
-	private List computeModuleBuildOrder(WorkbenchModule[] wbModules){
-		ArrayList unsortedList = new ArrayList(wbModules.length-1);
-		for(int i=1;i<wbModules.length;i++){
+	private List computeModuleBuildOrder(WorkbenchModule[] wbModules) {
+		ArrayList unsortedList = new ArrayList(wbModules.length - 1);
+		for (int i = 1; i < wbModules.length; i++) {
 			unsortedList.add(wbModules[i]);
 		}
 		WorkbenchModule firstModule = wbModules[0];
 		List sortedList = new ArrayList(wbModules.length);
 		try {
-			sortedList = computeModuleBuildOrder(firstModule, sortedList, unsortedList);
-//			for(int i=0;i<sortedList.size(); i++){
-//				System.out.println(sortedList.get(i));
-//			}
+			sortedList = computeModuleBuildOrder(firstModule, sortedList, unsortedList, new Stack());
+			//			for(int i=0;i<sortedList.size(); i++){
+			//				System.out.println(sortedList.get(i));
+			//			}
 		} catch (UnresolveableURIException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return sortedList;
 	}
-	
+
 
 	private List populateFullModuleBuilderDataModelList() {
 		ModuleCore moduleCore = getModuleCore();
 		List moduleBuilderDataModelList = new ArrayList();
 		WorkbenchModule[] wbModules = moduleCore.getWorkbenchModules();
 
-		if (wbModules == null || wbModules.length ==0){
+		if (wbModules == null || wbModules.length == 0) {
 			return null;
 		}
 
@@ -183,7 +195,7 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
 		DeployableModuleBuilderDataModel dataModel = null;
 
 		for (int i = 0; i < sortedList.size(); i++) {
-			WorkbenchModule wbModule =(WorkbenchModule)sortedList.get(i); 
+			WorkbenchModule wbModule = (WorkbenchModule) sortedList.get(i);
 			String id = wbModule.getModuleType().getModuleTypeId();
 			if (id == null)
 				break;
