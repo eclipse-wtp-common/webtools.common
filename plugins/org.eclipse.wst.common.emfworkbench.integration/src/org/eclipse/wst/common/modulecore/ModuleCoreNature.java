@@ -48,15 +48,14 @@ public class ModuleCoreNature implements IProjectNature,
 		return null;
 	}
 
-	private IModuleHandle createHandle(URI uri) throws IllegalArgumentException {
+	private IModuleHandle createHandle(URI uri) {
 		IModuleHandle handle = null;
 		handle = MODULE_FACTORY.createIModuleHandle();
 		handle.setHandle(uri);
 		return handle;
 	}
 
-	private WorkbenchModule createModuleHandle(IModuleHandle handle)
-			throws IllegalArgumentException {
+	private WorkbenchModule createModuleHandle(IModuleHandle handle) {
 		WorkbenchModule module;
 		module = MODULE_FACTORY.createWorkbenchModule();
 		module.setHandle(handle);
