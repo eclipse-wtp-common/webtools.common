@@ -11,6 +11,7 @@
 package org.eclipse.wst.common.modulecore.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -105,7 +106,12 @@ public class ResourceTreeNode {
 		ResourceTreeNode child = findChild(aPath.segment(0), toCreateChildIfNecessary);
 		if (child == null) 
 			return findMatchingVirtualPaths(aPath);
-		return child.findModuleResources(aPath.removeFirstSegments(1), toCreateChildIfNecessary);
+		WorkbenchModuleResource[] resourcesFromChildren = child.findModuleResources(aPath.removeFirstSegments(1), toCreateChildIfNecessary);
+		WorkbenchModuleResource[] resourcesFromCurrent = findMatchingVirtualPaths(aPath);
+		WorkbenchModuleResource[] collectedResources = new WorkbenchModuleResource[resourcesFromChildren.length+resourcesFromCurrent.length];
+		System.arraycopy(resourcesFromChildren, 0, collectedResources, 0, resourcesFromChildren.length);
+		System.arraycopy(resourcesFromCurrent, 0, collectedResources, resourcesFromChildren.length, resourcesFromCurrent.length);
+		return collectedResources;
 	}
 
 	public boolean hasModuleResources() {
