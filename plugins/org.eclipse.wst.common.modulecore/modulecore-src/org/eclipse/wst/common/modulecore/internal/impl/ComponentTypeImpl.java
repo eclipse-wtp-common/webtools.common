@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentTypeImpl.java,v 1.1 2005/03/15 00:43:55 cbridgha Exp $
+ * $Id: ComponentTypeImpl.java,v 1.2 2005/03/15 02:12:30 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.internal.impl;
 
@@ -16,7 +16,11 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.util.EDataTypeUniqueEList;
+import org.eclipse.emf.ecore.util.EObjectResolvingEList;
+
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
+import org.eclipse.wst.common.modulecore.Property;
+
 import org.eclipse.wst.common.modulecore.ComponentType;
 
 /**
@@ -26,24 +30,16 @@ import org.eclipse.wst.common.modulecore.ComponentType;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ComponentTypeImpl#getMetadataResources <em>Metadata Resources</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ComponentTypeImpl#getModuleTypeId <em>Module Type Id</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.ComponentTypeImpl#getModuleTypeId <em>Module Type Id</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.ComponentTypeImpl#getVersion <em>Version</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.ComponentTypeImpl#getProperties <em>Properties</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.ComponentTypeImpl#getMetadataResources <em>Metadata Resources</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
 public class ComponentTypeImpl extends EObjectImpl implements ComponentType {
-	/**
-	 * The cached value of the '{@link #getMetadataResources() <em>Metadata Resources</em>}' attribute list.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @see #getMetadataResources()
-	 * @generated
-	 * @ordered
-	 */
-	protected EList metadataResources = null;
-
 	/**
 	 * The default value of the '{@link #getModuleTypeId() <em>Module Type Id</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -52,7 +48,7 @@ public class ComponentTypeImpl extends EObjectImpl implements ComponentType {
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String MODULE_TYPE_ID_EDEFAULT = null;
+	protected static final String MODULE_TYPE_ID_EDEFAULT = "";
 
 	/**
 	 * The cached value of the '{@link #getModuleTypeId() <em>Module Type Id</em>}' attribute.
@@ -63,6 +59,46 @@ public class ComponentTypeImpl extends EObjectImpl implements ComponentType {
 	 * @ordered
 	 */
 	protected String moduleTypeId = MODULE_TYPE_ID_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getVersion() <em>Version</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getVersion()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String VERSION_EDEFAULT = "";
+
+	/**
+	 * The cached value of the '{@link #getVersion() <em>Version</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getVersion()
+	 * @generated
+	 * @ordered
+	 */
+	protected String version = VERSION_EDEFAULT;
+
+	/**
+	 * The cached value of the '{@link #getProperties() <em>Properties</em>}' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getProperties()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList properties = null;
+
+	/**
+	 * The cached value of the '{@link #getMetadataResources() <em>Metadata Resources</em>}' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getMetadataResources()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList metadataResources = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -79,7 +115,7 @@ public class ComponentTypeImpl extends EObjectImpl implements ComponentType {
 	 * @generated
 	 */
 	protected EClass eStaticClass() {
-		return ModuleCorePackage.eINSTANCE.getModuleType();
+		return ModuleCorePackage.eINSTANCE.getComponentType();
 	}
 
 	/**
@@ -89,7 +125,7 @@ public class ComponentTypeImpl extends EObjectImpl implements ComponentType {
 	 */
 	public EList getMetadataResources() {
 		if (metadataResources == null) {
-			metadataResources = new EDataTypeUniqueEList(URI.class, this, ModuleCorePackage.MODULE_TYPE__METADATA_RESOURCES);
+			metadataResources = new EDataTypeUniqueEList(URI.class, this, ModuleCorePackage.COMPONENT_TYPE__METADATA_RESOURCES);
 		}
 		return metadataResources;
 	}
@@ -112,7 +148,40 @@ public class ComponentTypeImpl extends EObjectImpl implements ComponentType {
 		String oldModuleTypeId = moduleTypeId;
 		moduleTypeId = newModuleTypeId;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.MODULE_TYPE__MODULE_TYPE_ID, oldModuleTypeId, moduleTypeId));
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.COMPONENT_TYPE__MODULE_TYPE_ID, oldModuleTypeId, moduleTypeId));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public String getVersion() {
+		return version;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setVersion(String newVersion) {
+		String oldVersion = version;
+		version = newVersion;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.COMPONENT_TYPE__VERSION, oldVersion, version));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EList getProperties() {
+		if (properties == null) {
+			properties = new EObjectResolvingEList(Property.class, this, ModuleCorePackage.COMPONENT_TYPE__PROPERTIES);
+		}
+		return properties;
 	}
 
 	/**
@@ -122,10 +191,14 @@ public class ComponentTypeImpl extends EObjectImpl implements ComponentType {
 	 */
 	public Object eGet(EStructuralFeature eFeature, boolean resolve) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.MODULE_TYPE__METADATA_RESOURCES:
-				return getMetadataResources();
-			case ModuleCorePackage.MODULE_TYPE__MODULE_TYPE_ID:
+			case ModuleCorePackage.COMPONENT_TYPE__MODULE_TYPE_ID:
 				return getModuleTypeId();
+			case ModuleCorePackage.COMPONENT_TYPE__VERSION:
+				return getVersion();
+			case ModuleCorePackage.COMPONENT_TYPE__PROPERTIES:
+				return getProperties();
+			case ModuleCorePackage.COMPONENT_TYPE__METADATA_RESOURCES:
+				return getMetadataResources();
 		}
 		return eDynamicGet(eFeature, resolve);
 	}
@@ -137,12 +210,19 @@ public class ComponentTypeImpl extends EObjectImpl implements ComponentType {
 	 */
 	public void eSet(EStructuralFeature eFeature, Object newValue) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.MODULE_TYPE__METADATA_RESOURCES:
+			case ModuleCorePackage.COMPONENT_TYPE__MODULE_TYPE_ID:
+				setModuleTypeId((String)newValue);
+				return;
+			case ModuleCorePackage.COMPONENT_TYPE__VERSION:
+				setVersion((String)newValue);
+				return;
+			case ModuleCorePackage.COMPONENT_TYPE__PROPERTIES:
+				getProperties().clear();
+				getProperties().addAll((Collection)newValue);
+				return;
+			case ModuleCorePackage.COMPONENT_TYPE__METADATA_RESOURCES:
 				getMetadataResources().clear();
 				getMetadataResources().addAll((Collection)newValue);
-				return;
-			case ModuleCorePackage.MODULE_TYPE__MODULE_TYPE_ID:
-				setModuleTypeId((String)newValue);
 				return;
 		}
 		eDynamicSet(eFeature, newValue);
@@ -155,11 +235,17 @@ public class ComponentTypeImpl extends EObjectImpl implements ComponentType {
 	 */
 	public void eUnset(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.MODULE_TYPE__METADATA_RESOURCES:
-				getMetadataResources().clear();
-				return;
-			case ModuleCorePackage.MODULE_TYPE__MODULE_TYPE_ID:
+			case ModuleCorePackage.COMPONENT_TYPE__MODULE_TYPE_ID:
 				setModuleTypeId(MODULE_TYPE_ID_EDEFAULT);
+				return;
+			case ModuleCorePackage.COMPONENT_TYPE__VERSION:
+				setVersion(VERSION_EDEFAULT);
+				return;
+			case ModuleCorePackage.COMPONENT_TYPE__PROPERTIES:
+				getProperties().clear();
+				return;
+			case ModuleCorePackage.COMPONENT_TYPE__METADATA_RESOURCES:
+				getMetadataResources().clear();
 				return;
 		}
 		eDynamicUnset(eFeature);
@@ -172,10 +258,14 @@ public class ComponentTypeImpl extends EObjectImpl implements ComponentType {
 	 */
 	public boolean eIsSet(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.MODULE_TYPE__METADATA_RESOURCES:
-				return metadataResources != null && !metadataResources.isEmpty();
-			case ModuleCorePackage.MODULE_TYPE__MODULE_TYPE_ID:
+			case ModuleCorePackage.COMPONENT_TYPE__MODULE_TYPE_ID:
 				return MODULE_TYPE_ID_EDEFAULT == null ? moduleTypeId != null : !MODULE_TYPE_ID_EDEFAULT.equals(moduleTypeId);
+			case ModuleCorePackage.COMPONENT_TYPE__VERSION:
+				return VERSION_EDEFAULT == null ? version != null : !VERSION_EDEFAULT.equals(version);
+			case ModuleCorePackage.COMPONENT_TYPE__PROPERTIES:
+				return properties != null && !properties.isEmpty();
+			case ModuleCorePackage.COMPONENT_TYPE__METADATA_RESOURCES:
+				return metadataResources != null && !metadataResources.isEmpty();
 		}
 		return eDynamicIsSet(eFeature);
 	}
@@ -189,10 +279,12 @@ public class ComponentTypeImpl extends EObjectImpl implements ComponentType {
 		if (eIsProxy()) return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (metadataResources: ");
-		result.append(metadataResources);
-		result.append(", moduleTypeId: ");
+		result.append(" (moduleTypeId: ");
 		result.append(moduleTypeId);
+		result.append(", version: ");
+		result.append(version);
+		result.append(", metadataResources: ");
+		result.append(metadataResources);
 		result.append(')');
 		return result.toString();
 	}

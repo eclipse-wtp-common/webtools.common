@@ -79,7 +79,7 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	
 	protected void addProjectModulesIfNecessary(XMIResource aResource) { 
 		if (aResource != null && aResource.getContents().isEmpty()) {
-			ProjectComponents projectModules = ModuleCorePackage.eINSTANCE.getModuleCoreFactory().createProjectModules();
+			ProjectComponents projectModules = ModuleCorePackage.eINSTANCE.getModuleCoreFactory().createProjectComponents();
 			aResource.getContents().add(projectModules); 
 			aResource.setID(projectModules, MODULE_CORE_ID);
 		}

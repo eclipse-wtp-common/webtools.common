@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchComponentImpl.java,v 1.1 2005/03/15 00:43:55 cbridgha Exp $
+ * $Id: WorkbenchComponentImpl.java,v 1.2 2005/03/15 02:12:30 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.internal.impl;
 
@@ -39,11 +39,11 @@ import org.eclipse.wst.common.modulecore.ComponentResource;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.WorkbenchComponentImpl#getHandle <em>Handle</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.WorkbenchComponentImpl#getDeployedName <em>Deployed Name</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.WorkbenchComponentImpl#getResources <em>Resources</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.WorkbenchComponentImpl#getModuleType <em>Module Type</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.WorkbenchComponentImpl#getModules <em>Modules</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchComponentImpl#getHandle <em>Handle</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchComponentImpl#getDeployedName <em>Deployed Name</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchComponentImpl#getResources <em>Resources</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchComponentImpl#getComponentType <em>Component Type</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchComponentImpl#getReferencedComponents <em>Referenced Components</em>}</li>
  * </ul>
  * </p>
  *
@@ -77,7 +77,7 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String DEPLOYED_NAME_EDEFAULT = null;
+	protected static final String DEPLOYED_NAME_EDEFAULT = "";
 
 	/**
 	 * The cached value of the '{@link #getDeployedName() <em>Deployed Name</em>}' attribute. <!--
@@ -99,24 +99,24 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	protected EList resources = null;
 
 	/**
-	 * The cached value of the '{@link #getModuleType() <em>Module Type</em>}' reference. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getModuleType()
+	 * The cached value of the '{@link #getComponentType() <em>Component Type</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getComponentType()
 	 * @generated
 	 * @ordered
 	 */
-	protected ComponentType moduleType = null;
+	protected ComponentType componentType = null;
 
 	/**
-	 * The cached value of the '{@link #getModules() <em>Modules</em>}' reference list. <!--
-	 * begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @see #getModules()
+	 * The cached value of the '{@link #getReferencedComponents() <em>Referenced Components</em>}' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getReferencedComponents()
 	 * @generated
 	 * @ordered
 	 */
-	protected EList modules = null;
+	protected EList referencedComponents = null;
 
 	private final Map resourceIndexByDeployPath = new HashMap();
 	private final Map resourceIndexBySourcePath = new HashMap();
@@ -140,7 +140,7 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	 * @generated
 	 */
 	protected EClass eStaticClass() {
-		return ModuleCorePackage.eINSTANCE.getWorkbenchModule();
+		return ModuleCorePackage.eINSTANCE.getWorkbenchComponent();
 	}
 
 	/**
@@ -159,7 +159,7 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 		URI oldHandle = handle;
 		handle = newHandle;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.WORKBENCH_MODULE__HANDLE, oldHandle, handle));
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.WORKBENCH_COMPONENT__HANDLE, oldHandle, handle));
 	}
 
 	/**
@@ -189,18 +189,7 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 		String oldDeployedName = deployedName;
 		deployedName = newDeployedName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_NAME, oldDeployedName, deployedName));
-	}
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EList getModules() {
-		if (modules == null) {
-			modules = new EObjectResolvingEList(ReferencedComponent.class, this, ModuleCorePackage.WORKBENCH_MODULE__MODULES);
-		}
-		return modules;
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.WORKBENCH_COMPONENT__DEPLOYED_NAME, oldDeployedName, deployedName));
 	}
 
 	/**
@@ -209,44 +198,59 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	 */
 	public EList getResources() {
 		if (resources == null) {
-			resources = new EObjectContainmentWithInverseEList(ComponentResource.class, this, ModuleCorePackage.WORKBENCH_MODULE__RESOURCES, ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE);
+			resources = new EObjectContainmentWithInverseEList(ComponentResource.class, this, ModuleCorePackage.WORKBENCH_COMPONENT__RESOURCES, ModuleCorePackage.COMPONENT_RESOURCE__COMPONENT);
 		}
 		return resources;
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ComponentType getModuleType() {
-		if (moduleType != null && moduleType.eIsProxy()) {
-			ComponentType oldModuleType = moduleType;
-			moduleType = (ComponentType)eResolveProxy((InternalEObject)moduleType);
-			if (moduleType != oldModuleType) {
+	public ComponentType getComponentType() {
+		if (componentType != null && componentType.eIsProxy()) {
+			ComponentType oldComponentType = componentType;
+			componentType = (ComponentType)eResolveProxy((InternalEObject)componentType);
+			if (componentType != oldComponentType) {
 				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE, oldModuleType, moduleType));
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, ModuleCorePackage.WORKBENCH_COMPONENT__COMPONENT_TYPE, oldComponentType, componentType));
 			}
 		}
-		return moduleType;
+		return componentType;
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ComponentType basicGetModuleType() {
-		return moduleType;
+	public ComponentType basicGetComponentType() {
+		return componentType;
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setModuleType(ComponentType newModuleType) {
-		ComponentType oldModuleType = moduleType;
-		moduleType = newModuleType;
+	public void setComponentType(ComponentType newComponentType) {
+		ComponentType oldComponentType = componentType;
+		componentType = newComponentType;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE, oldModuleType, moduleType));
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.WORKBENCH_COMPONENT__COMPONENT_TYPE, oldComponentType, componentType));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EList getReferencedComponents() {
+		if (referencedComponents == null) {
+			referencedComponents = new EObjectResolvingEList(ReferencedComponent.class, this, ModuleCorePackage.WORKBENCH_COMPONENT__REFERENCED_COMPONENTS);
+		}
+		return referencedComponents;
 	}
 
 	/**
@@ -256,7 +260,7 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, Class baseClass, NotificationChain msgs) {
 		if (featureID >= 0) {
 			switch (eDerivedStructuralFeatureID(featureID, baseClass)) {
-				case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES:
+				case ModuleCorePackage.WORKBENCH_COMPONENT__RESOURCES:
 					return ((InternalEList)getResources()).basicAdd(otherEnd, msgs);
 				default:
 					return eDynamicInverseAdd(otherEnd, featureID, baseClass, msgs);
@@ -274,7 +278,7 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, Class baseClass, NotificationChain msgs) {
 		if (featureID >= 0) {
 			switch (eDerivedStructuralFeatureID(featureID, baseClass)) {
-				case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES:
+				case ModuleCorePackage.WORKBENCH_COMPONENT__RESOURCES:
 					return ((InternalEList)getResources()).basicRemove(otherEnd, msgs);
 				default:
 					return eDynamicInverseRemove(otherEnd, featureID, baseClass, msgs);
@@ -289,17 +293,17 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	 */
 	public Object eGet(EStructuralFeature eFeature, boolean resolve) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.WORKBENCH_MODULE__HANDLE:
+			case ModuleCorePackage.WORKBENCH_COMPONENT__HANDLE:
 				return getHandle();
-			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_NAME:
+			case ModuleCorePackage.WORKBENCH_COMPONENT__DEPLOYED_NAME:
 				return getDeployedName();
-			case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES:
+			case ModuleCorePackage.WORKBENCH_COMPONENT__RESOURCES:
 				return getResources();
-			case ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE:
-				if (resolve) return getModuleType();
-				return basicGetModuleType();
-			case ModuleCorePackage.WORKBENCH_MODULE__MODULES:
-				return getModules();
+			case ModuleCorePackage.WORKBENCH_COMPONENT__COMPONENT_TYPE:
+				if (resolve) return getComponentType();
+				return basicGetComponentType();
+			case ModuleCorePackage.WORKBENCH_COMPONENT__REFERENCED_COMPONENTS:
+				return getReferencedComponents();
 		}
 		return eDynamicGet(eFeature, resolve);
 	}
@@ -310,22 +314,22 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	 */
 	public void eSet(EStructuralFeature eFeature, Object newValue) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.WORKBENCH_MODULE__HANDLE:
+			case ModuleCorePackage.WORKBENCH_COMPONENT__HANDLE:
 				setHandle((URI)newValue);
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_NAME:
+			case ModuleCorePackage.WORKBENCH_COMPONENT__DEPLOYED_NAME:
 				setDeployedName((String)newValue);
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES:
+			case ModuleCorePackage.WORKBENCH_COMPONENT__RESOURCES:
 				getResources().clear();
 				getResources().addAll((Collection)newValue);
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE:
-				setModuleType((ComponentType)newValue);
+			case ModuleCorePackage.WORKBENCH_COMPONENT__COMPONENT_TYPE:
+				setComponentType((ComponentType)newValue);
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE__MODULES:
-				getModules().clear();
-				getModules().addAll((Collection)newValue);
+			case ModuleCorePackage.WORKBENCH_COMPONENT__REFERENCED_COMPONENTS:
+				getReferencedComponents().clear();
+				getReferencedComponents().addAll((Collection)newValue);
 				return;
 		}
 		eDynamicSet(eFeature, newValue);
@@ -337,20 +341,20 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	 */
 	public void eUnset(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.WORKBENCH_MODULE__HANDLE:
+			case ModuleCorePackage.WORKBENCH_COMPONENT__HANDLE:
 				setHandle(HANDLE_EDEFAULT);
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_NAME:
+			case ModuleCorePackage.WORKBENCH_COMPONENT__DEPLOYED_NAME:
 				setDeployedName(DEPLOYED_NAME_EDEFAULT);
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES:
+			case ModuleCorePackage.WORKBENCH_COMPONENT__RESOURCES:
 				getResources().clear();
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE:
-				setModuleType((ComponentType)null);
+			case ModuleCorePackage.WORKBENCH_COMPONENT__COMPONENT_TYPE:
+				setComponentType((ComponentType)null);
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE__MODULES:
-				getModules().clear();
+			case ModuleCorePackage.WORKBENCH_COMPONENT__REFERENCED_COMPONENTS:
+				getReferencedComponents().clear();
 				return;
 		}
 		eDynamicUnset(eFeature);
@@ -362,16 +366,16 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	 */
 	public boolean eIsSet(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.WORKBENCH_MODULE__HANDLE:
+			case ModuleCorePackage.WORKBENCH_COMPONENT__HANDLE:
 				return HANDLE_EDEFAULT == null ? handle != null : !HANDLE_EDEFAULT.equals(handle);
-			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_NAME:
+			case ModuleCorePackage.WORKBENCH_COMPONENT__DEPLOYED_NAME:
 				return DEPLOYED_NAME_EDEFAULT == null ? deployedName != null : !DEPLOYED_NAME_EDEFAULT.equals(deployedName);
-			case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES:
+			case ModuleCorePackage.WORKBENCH_COMPONENT__RESOURCES:
 				return resources != null && !resources.isEmpty();
-			case ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE:
-				return moduleType != null;
-			case ModuleCorePackage.WORKBENCH_MODULE__MODULES:
-				return modules != null && !modules.isEmpty();
+			case ModuleCorePackage.WORKBENCH_COMPONENT__COMPONENT_TYPE:
+				return componentType != null;
+			case ModuleCorePackage.WORKBENCH_COMPONENT__REFERENCED_COMPONENTS:
+				return referencedComponents != null && !referencedComponents.isEmpty();
 		}
 		return eDynamicIsSet(eFeature);
 	}

@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ProjectComponentsImpl.java,v 1.1 2005/03/15 00:43:55 cbridgha Exp $
+ * $Id: ProjectComponentsImpl.java,v 1.2 2005/03/15 02:12:30 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.internal.impl;
 
@@ -33,8 +33,8 @@ import org.eclipse.wst.common.modulecore.WorkbenchComponent;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ProjectComponentsImpl#getProjectName <em>Project Name</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ProjectComponentsImpl#getWorkbenchModules <em>Workbench Modules</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.ProjectComponentsImpl#getProjectName <em>Project Name</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.ProjectComponentsImpl#getComponents <em>Components</em>}</li>
  * </ul>
  * </p>
  *
@@ -49,7 +49,7 @@ public class ProjectComponentsImpl extends EObjectImpl implements ProjectCompone
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String PROJECT_NAME_EDEFAULT = null;
+	protected static final String PROJECT_NAME_EDEFAULT = "";
 
 	/**
 	 * The cached value of the '{@link #getProjectName() <em>Project Name</em>}' attribute. <!--
@@ -62,13 +62,14 @@ public class ProjectComponentsImpl extends EObjectImpl implements ProjectCompone
 	protected String projectName = PROJECT_NAME_EDEFAULT;
 
 	/**
-	 * The cached value of the '{@link #getWorkbenchModules() <em>Workbench Modules</em>}' containment reference list.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @see #getWorkbenchModules()
+	 * The cached value of the '{@link #getComponents() <em>Components</em>}' containment reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getComponents()
 	 * @generated
 	 * @ordered
 	 */
-	protected EList workbenchModules = null;
+	protected EList components = null;
 
 	private boolean isIndexed;
 
@@ -87,7 +88,7 @@ public class ProjectComponentsImpl extends EObjectImpl implements ProjectCompone
 	 * @generated
 	 */
 	protected EClass eStaticClass() {
-		return ModuleCorePackage.eINSTANCE.getProjectModules();
+		return ModuleCorePackage.eINSTANCE.getProjectComponents();
 	}
 
 	/**
@@ -106,18 +107,19 @@ public class ProjectComponentsImpl extends EObjectImpl implements ProjectCompone
 		String oldProjectName = projectName;
 		projectName = newProjectName;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.PROJECT_MODULES__PROJECT_NAME, oldProjectName, projectName));
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.PROJECT_COMPONENTS__PROJECT_NAME, oldProjectName, projectName));
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EList getWorkbenchModules() {
-		if (workbenchModules == null) {
-			workbenchModules = new EObjectContainmentEList(WorkbenchComponent.class, this, ModuleCorePackage.PROJECT_MODULES__WORKBENCH_MODULES);
+	public EList getComponents() {
+		if (components == null) {
+			components = new EObjectContainmentEList(WorkbenchComponent.class, this, ModuleCorePackage.PROJECT_COMPONENTS__COMPONENTS);
 		}
-		return workbenchModules;
+		return components;
 	}
 
 	/**
@@ -127,8 +129,8 @@ public class ProjectComponentsImpl extends EObjectImpl implements ProjectCompone
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, Class baseClass, NotificationChain msgs) {
 		if (featureID >= 0) {
 			switch (eDerivedStructuralFeatureID(featureID, baseClass)) {
-				case ModuleCorePackage.PROJECT_MODULES__WORKBENCH_MODULES:
-					return ((InternalEList)getWorkbenchModules()).basicRemove(otherEnd, msgs);
+				case ModuleCorePackage.PROJECT_COMPONENTS__COMPONENTS:
+					return ((InternalEList)getComponents()).basicRemove(otherEnd, msgs);
 				default:
 					return eDynamicInverseRemove(otherEnd, featureID, baseClass, msgs);
 			}
@@ -142,10 +144,10 @@ public class ProjectComponentsImpl extends EObjectImpl implements ProjectCompone
 	 */
 	public Object eGet(EStructuralFeature eFeature, boolean resolve) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.PROJECT_MODULES__PROJECT_NAME:
+			case ModuleCorePackage.PROJECT_COMPONENTS__PROJECT_NAME:
 				return getProjectName();
-			case ModuleCorePackage.PROJECT_MODULES__WORKBENCH_MODULES:
-				return getWorkbenchModules();
+			case ModuleCorePackage.PROJECT_COMPONENTS__COMPONENTS:
+				return getComponents();
 		}
 		return eDynamicGet(eFeature, resolve);
 	}
@@ -156,12 +158,12 @@ public class ProjectComponentsImpl extends EObjectImpl implements ProjectCompone
 	 */
 	public void eSet(EStructuralFeature eFeature, Object newValue) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.PROJECT_MODULES__PROJECT_NAME:
+			case ModuleCorePackage.PROJECT_COMPONENTS__PROJECT_NAME:
 				setProjectName((String)newValue);
 				return;
-			case ModuleCorePackage.PROJECT_MODULES__WORKBENCH_MODULES:
-				getWorkbenchModules().clear();
-				getWorkbenchModules().addAll((Collection)newValue);
+			case ModuleCorePackage.PROJECT_COMPONENTS__COMPONENTS:
+				getComponents().clear();
+				getComponents().addAll((Collection)newValue);
 				return;
 		}
 		eDynamicSet(eFeature, newValue);
@@ -173,11 +175,11 @@ public class ProjectComponentsImpl extends EObjectImpl implements ProjectCompone
 	 */
 	public void eUnset(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.PROJECT_MODULES__PROJECT_NAME:
+			case ModuleCorePackage.PROJECT_COMPONENTS__PROJECT_NAME:
 				setProjectName(PROJECT_NAME_EDEFAULT);
 				return;
-			case ModuleCorePackage.PROJECT_MODULES__WORKBENCH_MODULES:
-				getWorkbenchModules().clear();
+			case ModuleCorePackage.PROJECT_COMPONENTS__COMPONENTS:
+				getComponents().clear();
 				return;
 		}
 		eDynamicUnset(eFeature);
@@ -189,10 +191,10 @@ public class ProjectComponentsImpl extends EObjectImpl implements ProjectCompone
 	 */
 	public boolean eIsSet(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.PROJECT_MODULES__PROJECT_NAME:
+			case ModuleCorePackage.PROJECT_COMPONENTS__PROJECT_NAME:
 				return PROJECT_NAME_EDEFAULT == null ? projectName != null : !PROJECT_NAME_EDEFAULT.equals(projectName);
-			case ModuleCorePackage.PROJECT_MODULES__WORKBENCH_MODULES:
-				return workbenchModules != null && !workbenchModules.isEmpty();
+			case ModuleCorePackage.PROJECT_COMPONENTS__COMPONENTS:
+				return components != null && !components.isEmpty();
 		}
 		return eDynamicIsSet(eFeature);
 	}
@@ -237,7 +239,7 @@ public class ProjectComponentsImpl extends EObjectImpl implements ProjectCompone
 				eAdapters().add((adapter = new ModuleIndexingAdapter()));
 			
 			WorkbenchComponent module = null;
-			for(Iterator iter = getWorkbenchModules().iterator(); iter.hasNext(); ) {
+			for(Iterator iter = getComponents().iterator(); iter.hasNext(); ) {
 				module = (WorkbenchComponent) iter.next();
 				modulesIndex.put(module.getDeployedName(), module);
 			}

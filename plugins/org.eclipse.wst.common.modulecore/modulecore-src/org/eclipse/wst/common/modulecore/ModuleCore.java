@@ -377,7 +377,7 @@ public class ModuleCore implements IEditModelHandler {
 	 * @return The WorkbenchModules of the underlying model, if any.
 	 */
 	public WorkbenchComponent[] getWorkbenchModules() {
-		List wbModules = getModuleModelRoot().getWorkbenchModules();
+		List wbModules = getModuleModelRoot().getComponents();
 		return (WorkbenchComponent[]) wbModules.toArray(new WorkbenchComponent[wbModules.size()]);
 	}
 
@@ -399,9 +399,9 @@ public class ModuleCore implements IEditModelHandler {
 	public WorkbenchComponent createWorkbenchModule(String aDeployName) {
 		if (isReadOnly)
 			throwAttemptedReadOnlyModification();
-		WorkbenchComponent module = MODULE_FACTORY.createWorkbenchModule();
+		WorkbenchComponent module = MODULE_FACTORY.createWorkbenchComponent();
 		module.setDeployedName(aDeployName);
-		getModuleModelRoot().getWorkbenchModules().add(module);
+		getModuleModelRoot().getComponents().add(module);
 		return module;
 	}
 
@@ -425,7 +425,7 @@ public class ModuleCore implements IEditModelHandler {
 		if (isReadOnly)
 			throwAttemptedReadOnlyModification();
 
-		ComponentResource moduleResource = MODULE_FACTORY.createWorkbenchModuleResource();
+		ComponentResource moduleResource = MODULE_FACTORY.createComponentResource();
 		String sourcePath = IPath.SEPARATOR + aResource.getProject().getName() + IPath.SEPARATOR + aResource.getProjectRelativePath().toString();
 		moduleResource.setSourcePath(URI.createURI(sourcePath));
 		return moduleResource;
@@ -449,7 +449,7 @@ public class ModuleCore implements IEditModelHandler {
 		if (isReadOnly)
 			throwAttemptedReadOnlyModification();
 
-		ComponentType moduleType = MODULE_FACTORY.createModuleType();
+		ComponentType moduleType = MODULE_FACTORY.createComponentType();
 		moduleType.setModuleTypeId(aModuleTypeId);
 		return moduleType;
 	}
@@ -520,7 +520,7 @@ public class ModuleCore implements IEditModelHandler {
 	 */
 	public ComponentResource[] findWorkbenchModuleResourcesBySourcePath(URI aWorkspaceRelativePath) throws UnresolveableURIException {
 		ProjectComponents projectModules = getModuleModelRoot();
-		EList modules = projectModules.getWorkbenchModules();
+		EList modules = projectModules.getComponents();
 
 		WorkbenchComponent module = null;
 		ComponentResource[] resources = null;
@@ -595,7 +595,7 @@ public class ModuleCore implements IEditModelHandler {
 		ComponentType moduleType;
 		List results = new ArrayList();
 		for (int i = 0; i < availableModules.length; i++) {
-			moduleType = availableModules[i].getModuleType();
+			moduleType = availableModules[i].getComponentType();
 			if (moduleType != null && aModuleTypeId.equals(moduleType.getModuleTypeId()))
 				results.add(availableModules[i]);
 		}

@@ -131,7 +131,7 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
 		}
 		try {
 			callStack.push(wbModule);
-			EList depModules = wbModule.getModules();
+			EList depModules = wbModule.getReferencedComponents();
 			for (int i = 0; i < depModules.size(); i++) {
 				ReferencedComponent depModule = (ReferencedComponent) depModules.get(i);
 				if (getModuleCore().isLocalDependency(depModule)) {
@@ -196,10 +196,10 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
 
 		for (int i = 0; i < sortedList.size(); i++) {
 			WorkbenchComponent wbModule = (WorkbenchComponent) sortedList.get(i);
-			String id = wbModule.getModuleType().getModuleTypeId();
+			String id = wbModule.getComponentType().getModuleTypeId();
 			if (id == null)
 				break;
-			factory = DeployableModuleBuilderFactoryRegistry.INSTANCE.createDeployableFactory(wbModule.getModuleType().getModuleTypeId());
+			factory = DeployableModuleBuilderFactoryRegistry.INSTANCE.createDeployableFactory(wbModule.getComponentType().getModuleTypeId());
 			if (factory != null) {
 				dataModel = factory.createDeploymentModuleDataModel();
 				dataModel.setProperty(DeployableModuleBuilderDataModel.MODULE_CORE, moduleCore);

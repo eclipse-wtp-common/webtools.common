@@ -43,13 +43,13 @@ import org.eclipse.emf.common.util.AbstractEnumerator;
  */
 public final class DependencyType extends AbstractEnumerator {
 	/**
-	 * The '<em><b>Uses</b></em>' literal value. <!-- begin-user-doc -->
+	 * The '<em><b>Uses</b></em>' literal value.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of '<em><b>Uses</b></em>' literal object isn't clear, there really should
 	 * be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @see #USES_LITERAL
 	 * @model name="uses"
 	 * @generated
@@ -58,13 +58,13 @@ public final class DependencyType extends AbstractEnumerator {
 	public static final int USES = 0;
 
 	/**
-	 * The '<em><b>Consumes</b></em>' literal value. <!-- begin-user-doc -->
+	 * The '<em><b>Consumes</b></em>' literal value.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of '<em><b>Consumes</b></em>' literal object isn't clear, there really
 	 * should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @see #CONSUMES_LITERAL
 	 * @model name="consumes"
 	 * @generated
@@ -73,8 +73,8 @@ public final class DependencyType extends AbstractEnumerator {
 	public static final int CONSUMES = 1;
 
 	/**
-	 * The '<em><b>Uses</b></em>' literal object. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The '<em><b>Uses</b></em>' literal object.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @see #USES
 	 * @generated
 	 * @ordered
@@ -92,12 +92,16 @@ public final class DependencyType extends AbstractEnumerator {
 	public static final DependencyType CONSUMES_LITERAL = new DependencyType(CONSUMES, "consumes");
 
 	/**
-	 * An array of all the '<em><b>Dependency Type</b></em>' enumerators. <!-- begin-user-doc
+	 * An array of all the '<em><b>Dependency Type</b></em>' enumerators.
+	 * <!-- begin-user-doc
 	 * --> <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
-	private static final DependencyType[] VALUES_ARRAY = new DependencyType[]{USES_LITERAL, CONSUMES_LITERAL,};
+	private static final DependencyType[] VALUES_ARRAY =
+		new DependencyType[] {
+			USES_LITERAL,
+			CONSUMES_LITERAL,
+		};
 
 	/**
 	 * A public read-only list of all the '<em><b>Dependency Type</b></em>' enumerators. <!--
@@ -131,17 +135,15 @@ public final class DependencyType extends AbstractEnumerator {
 	 */
 	public static DependencyType get(int value) {
 		switch (value) {
-			case USES :
-				return USES_LITERAL;
-			case CONSUMES :
-				return CONSUMES_LITERAL;
+			case USES: return USES_LITERAL;
+			case CONSUMES: return CONSUMES_LITERAL;
 		}
-		return null;
+		return null;	
 	}
 
 	/**
-	 * Only this class can construct instances. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Only this class can construct instances.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	private DependencyType(int value, String name) {

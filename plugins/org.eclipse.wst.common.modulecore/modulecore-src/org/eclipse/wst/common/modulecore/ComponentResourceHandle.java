@@ -38,10 +38,7 @@ public class ComponentResourceHandle implements ComponentResource {
 	public EList getExclusions() {
 		return getComponentResource().getExclusions();
 	}
-
-	public WorkbenchComponent getModule() {
-		return getComponentResource().getModule();
-	}
+ 
 
 	public URI getSourcePath() {
 		return getComponentResource().getSourcePath();
@@ -50,10 +47,7 @@ public class ComponentResourceHandle implements ComponentResource {
 	public void setDeployedPath(URI value) {
 		getComponentResource().setDeployedPath(value);
 	}
-
-	public void setModule(WorkbenchComponent value) {
-		getComponentResource().setModule(value);
-	}
+ 
 
 	public void setSourcePath(URI value) {
 		getComponentResource().setSourcePath(value);
@@ -141,6 +135,14 @@ public class ComponentResourceHandle implements ComponentResource {
 			}
 		}
 		return componentResource;
+	}
+
+	public WorkbenchComponent getComponent() { 
+		return getComponentResource().getComponent();
+	}
+
+	public void setComponent(WorkbenchComponent aComponent) {
+		getComponentResource().setComponent(aComponent);
 	}
 	
  

@@ -154,7 +154,7 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 		try {
 			moduleCore = ModuleCore.getModuleCoreForRead(ModuleCore.getContainingProject(moduleURI));
 			wbModule = moduleCore.findWorkbenchModuleByModuleURI(moduleURI);
-			type = wbModule.getModuleType().getModuleTypeId();
+			type = wbModule.getComponentType().getModuleTypeId();
 		} catch (UnresolveableURIException e) {
 			e.printStackTrace();
 		} finally {
@@ -255,7 +255,7 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 					aResourceURI = resourceToProcess.getURI();
 					relevantModuleResources = moduleCore.findWorkbenchModuleResourcesBySourcePath(aResourceURI);
 					for (int resourcesIndex = 0; resourcesIndex < relevantModuleResources.length; resourcesIndex++) {
-						if (moduleURI.equals(relevantModuleResources[resourcesIndex].getModule().getHandle())) {
+						if (moduleURI.equals(relevantModuleResources[resourcesIndex].getComponent().getHandle())) {
 							processResource(resourceToProcess);
 							processed = true;
 						}

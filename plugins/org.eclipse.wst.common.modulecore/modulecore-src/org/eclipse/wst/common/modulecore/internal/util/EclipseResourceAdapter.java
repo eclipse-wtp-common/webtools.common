@@ -37,7 +37,7 @@ public class EclipseResourceAdapter extends AdapterImpl implements Adapter {
 	 * @see org.eclipse.emf.common.notify.Adapter#notifyChanged(org.eclipse.emf.common.notify.Notification)
 	 */
 	public void notifyChanged(Notification aNotification) {
-		if (aNotification.getFeature() == ModuleCorePackage.eINSTANCE.getWorkbenchModuleResource_SourcePath()) {
+		if (aNotification.getFeature() == ModuleCorePackage.eINSTANCE.getComponentResource_SourcePath()) {
 			if (aNotification.getEventType() == Notification.SET) {
 				resource = null;
 				hasSearchFailed = false;

@@ -26,13 +26,13 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getHandle <em>Handle</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getDeployedName <em>Deployed Name</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getResources <em>Resources</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getModuleType <em>Module Type</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getModules <em>Modules</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getComponentType <em>Component Type</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getReferencedComponents <em>Referenced Components</em>}</li>
  * </ul>
  * </p>
  *
- * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchModule()
- * @model 
+ * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchComponent()
+ * @model
  * @generated
  */
 public interface WorkbenchComponent extends EObject{
@@ -46,8 +46,8 @@ public interface WorkbenchComponent extends EObject{
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Handle</em>' attribute.
 	 * @see #setHandle(URI)
-	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchModule_Handle()
-	 * @model dataType="org.eclipse.wst.common.modulecore.URI"
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchComponent_Handle()
+	 * @model dataType="org.eclipse.wst.common.modulecore.URI" required="true"
 	 * @generated
 	 */
 	URI getHandle();
@@ -64,6 +64,7 @@ public interface WorkbenchComponent extends EObject{
 
 	/**
 	 * Returns the value of the '<em><b>Deployed Name</b></em>' attribute.
+	 * The default value is <code>""</code>.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Deployed Name</em>' attribute isn't clear,
@@ -72,8 +73,8 @@ public interface WorkbenchComponent extends EObject{
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Deployed Name</em>' attribute.
 	 * @see #setDeployedName(String)
-	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchModule_DeployedName()
-	 * @model 
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchComponent_DeployedName()
+	 * @model default="" required="true"
 	 * @generated
 	 */
 	String getDeployedName();
@@ -89,25 +90,9 @@ public interface WorkbenchComponent extends EObject{
 	void setDeployedName(String value);
 
 	/**
-	 * Returns the value of the '<em><b>Modules</b></em>' reference list.
-	 * The list contents are of type {@link org.eclipse.wst.common.modulecore.ReferencedComponent}.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Modules</em>' reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Modules</em>' reference list.
-	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchModule_Modules()
-	 * @model type="org.eclipse.wst.common.modulecore.ReferencedComponent"
-	 * @generated
-	 */
-	EList getModules();
-
-	/**
 	 * Returns the value of the '<em><b>Resources</b></em>' containment reference list.
 	 * The list contents are of type {@link org.eclipse.wst.common.modulecore.ComponentResource}.
-	 * It is bidirectional and its opposite is '{@link org.eclipse.wst.common.modulecore.ComponentResource#getModule <em>Module</em>}'.
+	 * It is bidirectional and its opposite is '{@link org.eclipse.wst.common.modulecore.ComponentResource#getComponent <em>Component</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Resources</em>' reference list isn't clear,
@@ -115,38 +100,54 @@ public interface WorkbenchComponent extends EObject{
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Resources</em>' containment reference list.
-	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchModule_Resources()
-	 * @see org.eclipse.wst.common.modulecore.ComponentResource#getModule
-	 * @model type="org.eclipse.wst.common.modulecore.ComponentResource" opposite="module" containment="true"
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchComponent_Resources()
+	 * @see org.eclipse.wst.common.modulecore.ComponentResource#getComponent
+	 * @model type="org.eclipse.wst.common.modulecore.ComponentResource" opposite="component" containment="true"
 	 * @generated
 	 */
 	EList getResources();
 
 	/**
-	 * Returns the value of the '<em><b>Module Type</b></em>' reference.
+	 * Returns the value of the '<em><b>Component Type</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Module Type</em>' reference list isn't clear,
+	 * If the meaning of the '<em>Component Type</em>' reference isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Module Type</em>' reference.
-	 * @see #setModuleType(ComponentType)
-	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchModule_ModuleType()
+	 * @return the value of the '<em>Component Type</em>' reference.
+	 * @see #setComponentType(ComponentType)
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchComponent_ComponentType()
 	 * @model required="true"
 	 * @generated
 	 */
-	ComponentType getModuleType();
+	ComponentType getComponentType();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getModuleType <em>Module Type</em>}' reference.
+	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getComponentType <em>Component Type</em>}' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Module Type</em>' reference.
-	 * @see #getModuleType()
+	 * @param value the new value of the '<em>Component Type</em>' reference.
+	 * @see #getComponentType()
 	 * @generated
 	 */
-	void setModuleType(ComponentType value);
+	void setComponentType(ComponentType value);
+
+	/**
+	 * Returns the value of the '<em><b>Referenced Components</b></em>' reference list.
+	 * The list contents are of type {@link org.eclipse.wst.common.modulecore.ReferencedComponent}.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Referenced Components</em>' reference list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Referenced Components</em>' reference list.
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchComponent_ReferencedComponents()
+	 * @model type="org.eclipse.wst.common.modulecore.ReferencedComponent"
+	 * @generated
+	 */
+	EList getReferencedComponents();
 
 	ComponentResource[] findWorkbenchModuleResourceByDeployPath(URI aDeployPath);
 	

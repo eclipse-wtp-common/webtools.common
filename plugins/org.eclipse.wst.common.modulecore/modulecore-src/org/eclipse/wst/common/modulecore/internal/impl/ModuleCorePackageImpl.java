@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCorePackageImpl.java,v 1.2 2005/03/15 00:43:55 cbridgha Exp $
+ * $Id: ModuleCorePackageImpl.java,v 1.3 2005/03/15 02:12:30 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.internal.impl;
 
@@ -19,6 +19,7 @@ import org.eclipse.wst.common.modulecore.ModuleCoreFactory;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 import org.eclipse.wst.common.modulecore.ComponentType;
 import org.eclipse.wst.common.modulecore.ProjectComponents;
+import org.eclipse.wst.common.modulecore.Property;
 import org.eclipse.wst.common.modulecore.WorkbenchComponent;
 import org.eclipse.wst.common.modulecore.ComponentResource;
 
@@ -34,35 +35,42 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass workbenchModuleEClass = null;
+	private EClass workbenchComponentEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass workbenchModuleResourceEClass = null;
+	private EClass componentResourceEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass moduleTypeEClass = null;
+	private EClass componentTypeEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass projectModulesEClass = null;
+	private EClass propertyEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass dependentModuleEClass = null;
+	private EClass referencedComponentEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass projectComponentsEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -151,8 +159,8 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getWorkbenchModule() {
-		return workbenchModuleEClass;
+	public EClass getWorkbenchComponent() {
+		return workbenchComponentEClass;
 	}
 
 	/**
@@ -160,8 +168,8 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getWorkbenchModule_Handle() {
-		return (EAttribute)workbenchModuleEClass.getEStructuralFeatures().get(0);
+	public EAttribute getWorkbenchComponent_Handle() {
+		return (EAttribute)workbenchComponentEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -169,8 +177,8 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getWorkbenchModule_DeployedName() {
-		return (EAttribute)workbenchModuleEClass.getEStructuralFeatures().get(1);
+	public EAttribute getWorkbenchComponent_DeployedName() {
+		return (EAttribute)workbenchComponentEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -178,8 +186,8 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getWorkbenchModule_Modules() {
-		return (EReference)workbenchModuleEClass.getEStructuralFeatures().get(4);
+	public EReference getWorkbenchComponent_Resources() {
+		return (EReference)workbenchComponentEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -187,8 +195,8 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getWorkbenchModule_Resources() {
-		return (EReference)workbenchModuleEClass.getEStructuralFeatures().get(2);
+	public EReference getWorkbenchComponent_ComponentType() {
+		return (EReference)workbenchComponentEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
@@ -196,8 +204,8 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getWorkbenchModule_ModuleType() {
-		return (EReference)workbenchModuleEClass.getEStructuralFeatures().get(3);
+	public EReference getWorkbenchComponent_ReferencedComponents() {
+		return (EReference)workbenchComponentEClass.getEStructuralFeatures().get(4);
 	}
 
 	/**
@@ -205,8 +213,8 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getWorkbenchModuleResource() {
-		return workbenchModuleResourceEClass;
+	public EClass getComponentResource() {
+		return componentResourceEClass;
 	}
 
 	/**
@@ -214,8 +222,8 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getWorkbenchModuleResource_SourcePath() {
-		return (EAttribute)workbenchModuleResourceEClass.getEStructuralFeatures().get(0);
+	public EAttribute getComponentResource_SourcePath() {
+		return (EAttribute)componentResourceEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -223,8 +231,8 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getWorkbenchModuleResource_DeployedPath() {
-		return (EAttribute)workbenchModuleResourceEClass.getEStructuralFeatures().get(1);
+	public EAttribute getComponentResource_DeployedPath() {
+		return (EAttribute)componentResourceEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -232,8 +240,8 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getWorkbenchModuleResource_Exclusions() {
-		return (EAttribute)workbenchModuleResourceEClass.getEStructuralFeatures().get(2);
+	public EAttribute getComponentResource_Exclusions() {
+		return (EAttribute)componentResourceEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -241,8 +249,8 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getWorkbenchModuleResource_Module() {
-		return (EReference)workbenchModuleResourceEClass.getEStructuralFeatures().get(3);
+	public EReference getComponentResource_Component() {
+		return (EReference)componentResourceEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
@@ -250,8 +258,8 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getModuleType() {
-		return moduleTypeEClass;
+	public EClass getComponentType() {
+		return componentTypeEClass;
 	}
 
 	/**
@@ -259,8 +267,8 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getModuleType_MetadataResources() {
-		return (EAttribute)moduleTypeEClass.getEStructuralFeatures().get(0);
+	public EAttribute getComponentType_ModuleTypeId() {
+		return (EAttribute)componentTypeEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -268,8 +276,8 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getModuleType_ModuleTypeId() {
-		return (EAttribute)moduleTypeEClass.getEStructuralFeatures().get(1);
+	public EAttribute getComponentType_Version() {
+		return (EAttribute)componentTypeEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -277,8 +285,8 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getProjectModules() {
-		return projectModulesEClass;
+	public EReference getComponentType_Properties() {
+		return (EReference)componentTypeEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -286,8 +294,8 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getProjectModules_ProjectName() {
-		return (EAttribute)projectModulesEClass.getEStructuralFeatures().get(0);
+	public EAttribute getComponentType_MetadataResources() {
+		return (EAttribute)componentTypeEClass.getEStructuralFeatures().get(3);
 	}
 
 	/**
@@ -295,8 +303,8 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getProjectModules_WorkbenchModules() {
-		return (EReference)projectModulesEClass.getEStructuralFeatures().get(1);
+	public EClass getProperty() {
+		return propertyEClass;
 	}
 
 	/**
@@ -304,8 +312,8 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EClass getDependentModule() {
-		return dependentModuleEClass;
+	public EAttribute getProperty_Name() {
+		return (EAttribute)propertyEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -313,8 +321,8 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getDependentModule_Handle() {
-		return (EAttribute)dependentModuleEClass.getEStructuralFeatures().get(0);
+	public EAttribute getProperty_Value() {
+		return (EAttribute)propertyEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -322,8 +330,8 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getDependentModule_DeployedPath() {
-		return (EAttribute)dependentModuleEClass.getEStructuralFeatures().get(1);
+	public EClass getReferencedComponent() {
+		return referencedComponentEClass;
 	}
 
 	/**
@@ -331,8 +339,53 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getDependentModule_DependencyType() {
-		return (EAttribute)dependentModuleEClass.getEStructuralFeatures().get(2);
+	public EAttribute getReferencedComponent_Handle() {
+		return (EAttribute)referencedComponentEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getReferencedComponent_DeployedPath() {
+		return (EAttribute)referencedComponentEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getReferencedComponent_DependencyType() {
+		return (EAttribute)referencedComponentEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getProjectComponents() {
+		return projectComponentsEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getProjectComponents_ProjectName() {
+		return (EAttribute)projectComponentsEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getProjectComponents_Components() {
+		return (EReference)projectComponentsEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -381,31 +434,37 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 		isCreated = true;
 
 		// Create classes and their features
-		workbenchModuleEClass = createEClass(WORKBENCH_MODULE);
-		createEAttribute(workbenchModuleEClass, WORKBENCH_MODULE__HANDLE);
-		createEAttribute(workbenchModuleEClass, WORKBENCH_MODULE__DEPLOYED_NAME);
-		createEReference(workbenchModuleEClass, WORKBENCH_MODULE__RESOURCES);
-		createEReference(workbenchModuleEClass, WORKBENCH_MODULE__MODULE_TYPE);
-		createEReference(workbenchModuleEClass, WORKBENCH_MODULE__MODULES);
+		workbenchComponentEClass = createEClass(WORKBENCH_COMPONENT);
+		createEAttribute(workbenchComponentEClass, WORKBENCH_COMPONENT__HANDLE);
+		createEAttribute(workbenchComponentEClass, WORKBENCH_COMPONENT__DEPLOYED_NAME);
+		createEReference(workbenchComponentEClass, WORKBENCH_COMPONENT__RESOURCES);
+		createEReference(workbenchComponentEClass, WORKBENCH_COMPONENT__COMPONENT_TYPE);
+		createEReference(workbenchComponentEClass, WORKBENCH_COMPONENT__REFERENCED_COMPONENTS);
 
-		workbenchModuleResourceEClass = createEClass(WORKBENCH_MODULE_RESOURCE);
-		createEAttribute(workbenchModuleResourceEClass, WORKBENCH_MODULE_RESOURCE__SOURCE_PATH);
-		createEAttribute(workbenchModuleResourceEClass, WORKBENCH_MODULE_RESOURCE__DEPLOYED_PATH);
-		createEAttribute(workbenchModuleResourceEClass, WORKBENCH_MODULE_RESOURCE__EXCLUSIONS);
-		createEReference(workbenchModuleResourceEClass, WORKBENCH_MODULE_RESOURCE__MODULE);
+		componentResourceEClass = createEClass(COMPONENT_RESOURCE);
+		createEAttribute(componentResourceEClass, COMPONENT_RESOURCE__SOURCE_PATH);
+		createEAttribute(componentResourceEClass, COMPONENT_RESOURCE__DEPLOYED_PATH);
+		createEAttribute(componentResourceEClass, COMPONENT_RESOURCE__EXCLUSIONS);
+		createEReference(componentResourceEClass, COMPONENT_RESOURCE__COMPONENT);
 
-		moduleTypeEClass = createEClass(MODULE_TYPE);
-		createEAttribute(moduleTypeEClass, MODULE_TYPE__METADATA_RESOURCES);
-		createEAttribute(moduleTypeEClass, MODULE_TYPE__MODULE_TYPE_ID);
+		componentTypeEClass = createEClass(COMPONENT_TYPE);
+		createEAttribute(componentTypeEClass, COMPONENT_TYPE__MODULE_TYPE_ID);
+		createEAttribute(componentTypeEClass, COMPONENT_TYPE__VERSION);
+		createEReference(componentTypeEClass, COMPONENT_TYPE__PROPERTIES);
+		createEAttribute(componentTypeEClass, COMPONENT_TYPE__METADATA_RESOURCES);
 
-		projectModulesEClass = createEClass(PROJECT_MODULES);
-		createEAttribute(projectModulesEClass, PROJECT_MODULES__PROJECT_NAME);
-		createEReference(projectModulesEClass, PROJECT_MODULES__WORKBENCH_MODULES);
+		propertyEClass = createEClass(PROPERTY);
+		createEAttribute(propertyEClass, PROPERTY__NAME);
+		createEAttribute(propertyEClass, PROPERTY__VALUE);
 
-		dependentModuleEClass = createEClass(DEPENDENT_MODULE);
-		createEAttribute(dependentModuleEClass, DEPENDENT_MODULE__HANDLE);
-		createEAttribute(dependentModuleEClass, DEPENDENT_MODULE__DEPLOYED_PATH);
-		createEAttribute(dependentModuleEClass, DEPENDENT_MODULE__DEPENDENCY_TYPE);
+		referencedComponentEClass = createEClass(REFERENCED_COMPONENT);
+		createEAttribute(referencedComponentEClass, REFERENCED_COMPONENT__HANDLE);
+		createEAttribute(referencedComponentEClass, REFERENCED_COMPONENT__DEPLOYED_PATH);
+		createEAttribute(referencedComponentEClass, REFERENCED_COMPONENT__DEPENDENCY_TYPE);
+
+		projectComponentsEClass = createEClass(PROJECT_COMPONENTS);
+		createEAttribute(projectComponentsEClass, PROJECT_COMPONENTS__PROJECT_NAME);
+		createEReference(projectComponentsEClass, PROJECT_COMPONENTS__COMPONENTS);
 
 		// Create enums
 		dependencyTypeEEnum = createEEnum(DEPENDENCY_TYPE);
@@ -440,31 +499,37 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 		// Add supertypes to classes
 
 		// Initialize classes and features; add operations and parameters
-		initEClass(workbenchModuleEClass, WorkbenchComponent.class, "WorkbenchComponent", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getWorkbenchModule_Handle(), this.getURI(), "handle", null, 0, 1, WorkbenchComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getWorkbenchModule_DeployedName(), ecorePackage.getEString(), "deployedName", null, 0, 1, WorkbenchComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getWorkbenchModule_Resources(), this.getWorkbenchModuleResource(), this.getWorkbenchModuleResource_Module(), "resources", null, 0, -1, WorkbenchComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getWorkbenchModule_ModuleType(), this.getModuleType(), null, "moduleType", null, 1, 1, WorkbenchComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getWorkbenchModule_Modules(), this.getDependentModule(), null, "modules", null, 0, -1, WorkbenchComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(workbenchComponentEClass, WorkbenchComponent.class, "WorkbenchComponent", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getWorkbenchComponent_Handle(), this.getURI(), "handle", null, 1, 1, WorkbenchComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getWorkbenchComponent_DeployedName(), ecorePackage.getEString(), "deployedName", "", 1, 1, WorkbenchComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getWorkbenchComponent_Resources(), this.getComponentResource(), this.getComponentResource_Component(), "resources", null, 0, -1, WorkbenchComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getWorkbenchComponent_ComponentType(), this.getComponentType(), null, "componentType", null, 1, 1, WorkbenchComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getWorkbenchComponent_ReferencedComponents(), this.getReferencedComponent(), null, "referencedComponents", null, 0, -1, WorkbenchComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(workbenchModuleResourceEClass, ComponentResource.class, "ComponentResource", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getWorkbenchModuleResource_SourcePath(), this.getURI(), "sourcePath", null, 0, 1, ComponentResource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getWorkbenchModuleResource_DeployedPath(), this.getURI(), "deployedPath", null, 0, 1, ComponentResource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getWorkbenchModuleResource_Exclusions(), this.getURI(), "exclusions", null, 0, -1, ComponentResource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getWorkbenchModuleResource_Module(), this.getWorkbenchModule(), this.getWorkbenchModule_Resources(), "module", null, 1, 1, ComponentResource.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(componentResourceEClass, ComponentResource.class, "ComponentResource", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getComponentResource_SourcePath(), this.getURI(), "sourcePath", null, 1, 1, ComponentResource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getComponentResource_DeployedPath(), this.getURI(), "deployedPath", null, 1, 1, ComponentResource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getComponentResource_Exclusions(), ecorePackage.getEString(), "exclusions", "", 0, -1, ComponentResource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getComponentResource_Component(), this.getWorkbenchComponent(), this.getWorkbenchComponent_Resources(), "component", null, 1, 1, ComponentResource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(moduleTypeEClass, ComponentType.class, "ComponentType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getModuleType_MetadataResources(), this.getURI(), "metadataResources", null, 0, -1, ComponentType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getModuleType_ModuleTypeId(), ecorePackage.getEString(), "moduleTypeId", null, 0, 1, ComponentType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(componentTypeEClass, ComponentType.class, "ComponentType", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getComponentType_ModuleTypeId(), ecorePackage.getEString(), "moduleTypeId", "", 1, 1, ComponentType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getComponentType_Version(), ecorePackage.getEString(), "version", "", 1, 1, ComponentType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getComponentType_Properties(), this.getProperty(), null, "properties", null, 0, -1, ComponentType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getComponentType_MetadataResources(), this.getURI(), "metadataResources", null, 0, -1, ComponentType.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(projectModulesEClass, ProjectComponents.class, "ProjectComponents", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getProjectModules_ProjectName(), ecorePackage.getEString(), "projectName", null, 0, 1, ProjectComponents.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getProjectModules_WorkbenchModules(), this.getWorkbenchModule(), null, "workbenchModules", null, 0, -1, ProjectComponents.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(propertyEClass, Property.class, "Property", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getProperty_Name(), ecorePackage.getEString(), "name", "", 1, 1, Property.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getProperty_Value(), ecorePackage.getEString(), "value", "", 1, 1, Property.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(dependentModuleEClass, ReferencedComponent.class, "ReferencedComponent", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getDependentModule_Handle(), this.getURI(), "handle", null, 0, 1, ReferencedComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getDependentModule_DeployedPath(), this.getURI(), "deployedPath", null, 0, 1, ReferencedComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getDependentModule_DependencyType(), this.getDependencyType(), "dependencyType", null, 0, 1, ReferencedComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(referencedComponentEClass, ReferencedComponent.class, "ReferencedComponent", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getReferencedComponent_Handle(), this.getURI(), "handle", null, 1, 1, ReferencedComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getReferencedComponent_DeployedPath(), this.getURI(), "deployedPath", null, 1, 1, ReferencedComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getReferencedComponent_DependencyType(), this.getDependencyType(), "dependencyType", null, 1, 1, ReferencedComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+		initEClass(projectComponentsEClass, ProjectComponents.class, "ProjectComponents", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getProjectComponents_ProjectName(), ecorePackage.getEString(), "projectName", "", 1, 1, ProjectComponents.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getProjectComponents_Components(), this.getWorkbenchComponent(), null, "components", null, 0, -1, ProjectComponents.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
 		initEEnum(dependencyTypeEEnum, DependencyType.class, "DependencyType");
@@ -476,6 +541,26 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 
 		// Create resource
 		createResource(eNS_URI);
+
+		// Create annotations
+		// keywords
+		createKeywordsAnnotations();
+	}
+
+	/**
+	 * Initializes the annotations for <b>keywords</b>.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void createKeywordsAnnotations() {
+		String source = "keywords";		
+		addAnnotation
+		  (uriEDataType, 
+		   source, 
+		   new String[] {
+			 "datatype", null
+		   });
 	}
 
 } //ModuleCorePackageImpl

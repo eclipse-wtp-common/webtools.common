@@ -9,10 +9,10 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="deployedName" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral=""/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="resources" unique="false"
-        upperBound="-1" eType="#//ComponentResource" containment="true" eOpposite="#//ComponentResource/module"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="moduleType" unique="false"
+        upperBound="-1" eType="#//ComponentResource" containment="true" eOpposite="#//ComponentResource/component"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="componentType" unique="false"
         lowerBound="1" eType="#//ComponentType"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="modules" unique="false"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="referencedComponents" unique="false"
         upperBound="-1" eType="#//ReferencedComponent"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EDataType" name="URI" instanceClassName="org.eclipse.emf.common.util.URI">
@@ -27,7 +27,7 @@
         eType="#//URI"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="exclusions" upperBound="-1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral=""/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="module" unique="false"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="component" unique="false"
         lowerBound="1" eType="#//WorkbenchComponent" eOpposite="#//WorkbenchComponent/resources"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ComponentType">
@@ -35,7 +35,7 @@
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral=""/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="version" lowerBound="1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString" defaultValueLiteral=""/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="property" upperBound="-1"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="properties" upperBound="-1"
         eType="#//Property"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="metadataResources" upperBound="-1"
         eType="#//URI"/>

@@ -24,66 +24,105 @@ import org.eclipse.emf.ecore.EObject;
  * See the package overview for an <a href="package-summary.html">overview of the model components </a>.
  * </p>
  * <!-- end-user-doc -->
- * 
+ *
  * <p>
  * The following features are supported:
  * <ul>
- * <li>
- * {@link org.eclipse.wst.common.modulecore.ComponentType#getMetadataResources <em>Metadata Resources</em>}
- * </li>
- * <li>{@link org.eclipse.wst.common.modulecore.ComponentType#getModuleTypeId <em>Module Type Id</em>}
- * </li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.ComponentType#getModuleTypeId <em>Module Type Id</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.ComponentType#getVersion <em>Version</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.ComponentType#getProperties <em>Properties</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.ComponentType#getMetadataResources <em>Metadata Resources</em>}</li>
  * </ul>
  * </p>
- * 
- * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getModuleType()
+ *
+ * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getComponentType()
  * @model
  * @generated
  */
-public interface ComponentType extends EObject {
+public interface ComponentType extends EObject{
 	/**
-	 * Returns the value of the '<em><b>Metadata Resources</b></em>' attribute list. The list
-	 * contents are of type {@link org.eclipse.emf.common.util.URI}. <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Metadata Resources</b></em>' attribute list.
+	 * The list contents are of type {@link org.eclipse.emf.common.util.URI}.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Metadata Resources</em>' attribute list isn't clear, there
 	 * really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the value of the '<em>Metadata Resources</em>' attribute list.
-	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getModuleType_MetadataResources()
-	 * @model type="org.eclipse.emf.common.util.URI"
-	 *        dataType="org.eclipse.wst.common.modulecore.URI"
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getComponentType_MetadataResources()
+	 * @model type="org.eclipse.emf.common.util.URI" dataType="org.eclipse.wst.common.modulecore.URI"
 	 * @generated
 	 */
 	EList getMetadataResources();
 
 	/**
+	 * Returns the value of the '<em><b>Module Type Id</b></em>' attribute.
+	 * The default value is <code>""</code>.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * Used to hint to the tooling how the {@see WorkbenchComponent}should be edited and processed by
 	 * the tooling.
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the value of the '<em>Module Type Id</em>' attribute.
 	 * @see #setModuleTypeId(String)
-	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getModuleType_ModuleTypeId()
-	 * @model
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getComponentType_ModuleTypeId()
+	 * @model default="" required="true"
 	 * @generated
 	 */
 	String getModuleTypeId();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.eclipse.wst.common.modulecore.ComponentType#getModuleTypeId <em>Module Type Id</em>}'
-	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Module Type Id</em>' attribute.
+	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.ComponentType#getModuleTypeId <em>Module Type Id</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Module Type Id</em>' attribute.
 	 * @see #getModuleTypeId()
 	 * @generated
 	 */
 	void setModuleTypeId(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Version</b></em>' attribute.
+	 * The default value is <code>""</code>.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Version</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Version</em>' attribute.
+	 * @see #setVersion(String)
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getComponentType_Version()
+	 * @model default="" required="true"
+	 * @generated
+	 */
+	String getVersion();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.ComponentType#getVersion <em>Version</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Version</em>' attribute.
+	 * @see #getVersion()
+	 * @generated
+	 */
+	void setVersion(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Properties</b></em>' reference list.
+	 * The list contents are of type {@link org.eclipse.wst.common.modulecore.Property}.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Properties</em>' reference list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Properties</em>' reference list.
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getComponentType_Properties()
+	 * @model type="org.eclipse.wst.common.modulecore.Property"
+	 * @generated
+	 */
+	EList getProperties();
 
 } // ComponentType

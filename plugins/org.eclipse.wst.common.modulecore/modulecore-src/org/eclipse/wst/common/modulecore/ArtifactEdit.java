@@ -128,7 +128,7 @@ public class ArtifactEdit implements IEditModelHandler {
 	 */
 	public static boolean isValidEditableModule(WorkbenchComponent aModule) throws UnresolveableURIException {
 		/* The ComponentType must be non-null, and the moduleTypeId must be non-null */
-		ComponentType moduleType = aModule.getModuleType();
+		ComponentType moduleType = aModule.getComponentType();
 		if (moduleType == null || moduleType.getModuleTypeId() == null)
 			return false;
 		if(aModule.getHandle() == null)

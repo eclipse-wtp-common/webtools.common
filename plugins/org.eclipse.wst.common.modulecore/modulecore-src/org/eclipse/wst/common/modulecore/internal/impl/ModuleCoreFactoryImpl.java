@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreFactoryImpl.java,v 1.2 2005/03/15 00:43:55 cbridgha Exp $
+ * $Id: ModuleCoreFactoryImpl.java,v 1.3 2005/03/15 02:12:30 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.internal.impl;
 
@@ -11,6 +11,8 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
+import org.eclipse.wst.common.modulecore.*;
+
 import org.eclipse.wst.common.modulecore.DependencyType;
 import org.eclipse.wst.common.modulecore.ReferencedComponent;
 import org.eclipse.wst.common.modulecore.ModuleCoreFactory;
@@ -44,11 +46,12 @@ public class ModuleCoreFactoryImpl extends EFactoryImpl implements ModuleCoreFac
 	 */
 	public EObject create(EClass eClass) {
 		switch (eClass.getClassifierID()) {
-			case ModuleCorePackage.WORKBENCH_MODULE: return createWorkbenchModule();
-			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE: return createWorkbenchModuleResource();
-			case ModuleCorePackage.MODULE_TYPE: return createModuleType();
-			case ModuleCorePackage.PROJECT_MODULES: return createProjectModules();
-			case ModuleCorePackage.DEPENDENT_MODULE: return createDependentModule();
+			case ModuleCorePackage.WORKBENCH_COMPONENT: return createWorkbenchComponent();
+			case ModuleCorePackage.COMPONENT_RESOURCE: return createComponentResource();
+			case ModuleCorePackage.COMPONENT_TYPE: return createComponentType();
+			case ModuleCorePackage.PROPERTY: return createProperty();
+			case ModuleCorePackage.REFERENCED_COMPONENT: return createReferencedComponent();
+			case ModuleCorePackage.PROJECT_COMPONENTS: return createProjectComponents();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -94,9 +97,9 @@ public class ModuleCoreFactoryImpl extends EFactoryImpl implements ModuleCoreFac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public WorkbenchComponent createWorkbenchModule() {
-		WorkbenchComponentImpl workbenchModule = new WorkbenchComponentImpl();
-		return workbenchModule;
+	public WorkbenchComponent createWorkbenchComponent() {
+		WorkbenchComponentImpl workbenchComponent = new WorkbenchComponentImpl();
+		return workbenchComponent;
 	}
 
 	/**
@@ -104,9 +107,9 @@ public class ModuleCoreFactoryImpl extends EFactoryImpl implements ModuleCoreFac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ComponentResource createWorkbenchModuleResource() {
-		ComponentResourceImpl workbenchModuleResource = new ComponentResourceImpl();
-		return workbenchModuleResource;
+	public ComponentResource createComponentResource() {
+		ComponentResourceImpl componentResource = new ComponentResourceImpl();
+		return componentResource;
 	}
 
 	/**
@@ -114,9 +117,9 @@ public class ModuleCoreFactoryImpl extends EFactoryImpl implements ModuleCoreFac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ComponentType createModuleType() {
-		ComponentTypeImpl moduleType = new ComponentTypeImpl();
-		return moduleType;
+	public ComponentType createComponentType() {
+		ComponentTypeImpl componentType = new ComponentTypeImpl();
+		return componentType;
 	}
 
 	/**
@@ -124,9 +127,9 @@ public class ModuleCoreFactoryImpl extends EFactoryImpl implements ModuleCoreFac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ProjectComponents createProjectModules() {
-		ProjectComponentsImpl projectModules = new ProjectComponentsImpl();
-		return projectModules;
+	public Property createProperty() {
+		PropertyImpl property = new PropertyImpl();
+		return property;
 	}
 
 	/**
@@ -134,9 +137,19 @@ public class ModuleCoreFactoryImpl extends EFactoryImpl implements ModuleCoreFac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ReferencedComponent createDependentModule() {
-		ReferencedComponentImpl dependentModule = new ReferencedComponentImpl();
-		return dependentModule;
+	public ReferencedComponent createReferencedComponent() {
+		ReferencedComponentImpl referencedComponent = new ReferencedComponentImpl();
+		return referencedComponent;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public ProjectComponents createProjectComponents() {
+		ProjectComponentsImpl projectComponents = new ProjectComponentsImpl();
+		return projectComponents;
 	}
 
 	/**

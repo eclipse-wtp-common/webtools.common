@@ -30,7 +30,7 @@ import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 public class DependencyTypeTranslator extends Translator implements WTPModulesXmlMapperI{
 	
 	public DependencyTypeTranslator(){
-		super(DEPENDENCY_TYPE,ModuleCorePackage.eINSTANCE.getDependentModule_DependencyType());
+		super(DEPENDENCY_TYPE,ModuleCorePackage.eINSTANCE.getReferencedComponent_DependencyType());
 	}
 	
 	/* (non-Javadoc)

@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ReferencedComponentImpl.java,v 1.1 2005/03/15 00:43:55 cbridgha Exp $
+ * $Id: ReferencedComponentImpl.java,v 1.2 2005/03/15 02:12:30 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.internal.impl;
 
@@ -23,9 +23,9 @@ import org.eclipse.wst.common.modulecore.ModuleCorePackage;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ReferencedComponentImpl#getHandle <em>Handle</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ReferencedComponentImpl#getDeployedPath <em>Deployed Path</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ReferencedComponentImpl#getDependencyType <em>Dependency Type</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.ReferencedComponentImpl#getHandle <em>Handle</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.ReferencedComponentImpl#getDeployedPath <em>Deployed Path</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.ReferencedComponentImpl#getDependencyType <em>Dependency Type</em>}</li>
  * </ul>
  * </p>
  *
@@ -107,7 +107,7 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 	 * @generated
 	 */
 	protected EClass eStaticClass() {
-		return ModuleCorePackage.eINSTANCE.getDependentModule();
+		return ModuleCorePackage.eINSTANCE.getReferencedComponent();
 	}
 
 	/**
@@ -128,7 +128,7 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 		URI oldHandle = handle;
 		handle = newHandle;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.DEPENDENT_MODULE__HANDLE, oldHandle, handle));
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.REFERENCED_COMPONENT__HANDLE, oldHandle, handle));
 	}
 
 	/**
@@ -149,7 +149,7 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 		URI oldDeployedPath = deployedPath;
 		deployedPath = newDeployedPath;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.DEPENDENT_MODULE__DEPLOYED_PATH, oldDeployedPath, deployedPath));
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.REFERENCED_COMPONENT__DEPLOYED_PATH, oldDeployedPath, deployedPath));
 	}
 
 	/**
@@ -170,7 +170,7 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 		DependencyType oldDependencyType = dependencyType;
 		dependencyType = newDependencyType == null ? DEPENDENCY_TYPE_EDEFAULT : newDependencyType;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.DEPENDENT_MODULE__DEPENDENCY_TYPE, oldDependencyType, dependencyType));
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.REFERENCED_COMPONENT__DEPENDENCY_TYPE, oldDependencyType, dependencyType));
 	}
 
 	/**
@@ -180,11 +180,11 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 	 */
 	public Object eGet(EStructuralFeature eFeature, boolean resolve) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.DEPENDENT_MODULE__HANDLE:
+			case ModuleCorePackage.REFERENCED_COMPONENT__HANDLE:
 				return getHandle();
-			case ModuleCorePackage.DEPENDENT_MODULE__DEPLOYED_PATH:
+			case ModuleCorePackage.REFERENCED_COMPONENT__DEPLOYED_PATH:
 				return getDeployedPath();
-			case ModuleCorePackage.DEPENDENT_MODULE__DEPENDENCY_TYPE:
+			case ModuleCorePackage.REFERENCED_COMPONENT__DEPENDENCY_TYPE:
 				return getDependencyType();
 		}
 		return eDynamicGet(eFeature, resolve);
@@ -197,13 +197,13 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 	 */
 	public void eSet(EStructuralFeature eFeature, Object newValue) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.DEPENDENT_MODULE__HANDLE:
+			case ModuleCorePackage.REFERENCED_COMPONENT__HANDLE:
 				setHandle((URI)newValue);
 				return;
-			case ModuleCorePackage.DEPENDENT_MODULE__DEPLOYED_PATH:
+			case ModuleCorePackage.REFERENCED_COMPONENT__DEPLOYED_PATH:
 				setDeployedPath((URI)newValue);
 				return;
-			case ModuleCorePackage.DEPENDENT_MODULE__DEPENDENCY_TYPE:
+			case ModuleCorePackage.REFERENCED_COMPONENT__DEPENDENCY_TYPE:
 				setDependencyType((DependencyType)newValue);
 				return;
 		}
@@ -217,13 +217,13 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 	 */
 	public void eUnset(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.DEPENDENT_MODULE__HANDLE:
+			case ModuleCorePackage.REFERENCED_COMPONENT__HANDLE:
 				setHandle(HANDLE_EDEFAULT);
 				return;
-			case ModuleCorePackage.DEPENDENT_MODULE__DEPLOYED_PATH:
+			case ModuleCorePackage.REFERENCED_COMPONENT__DEPLOYED_PATH:
 				setDeployedPath(DEPLOYED_PATH_EDEFAULT);
 				return;
-			case ModuleCorePackage.DEPENDENT_MODULE__DEPENDENCY_TYPE:
+			case ModuleCorePackage.REFERENCED_COMPONENT__DEPENDENCY_TYPE:
 				setDependencyType(DEPENDENCY_TYPE_EDEFAULT);
 				return;
 		}
@@ -237,11 +237,11 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 	 */
 	public boolean eIsSet(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.DEPENDENT_MODULE__HANDLE:
+			case ModuleCorePackage.REFERENCED_COMPONENT__HANDLE:
 				return HANDLE_EDEFAULT == null ? handle != null : !HANDLE_EDEFAULT.equals(handle);
-			case ModuleCorePackage.DEPENDENT_MODULE__DEPLOYED_PATH:
+			case ModuleCorePackage.REFERENCED_COMPONENT__DEPLOYED_PATH:
 				return DEPLOYED_PATH_EDEFAULT == null ? deployedPath != null : !DEPLOYED_PATH_EDEFAULT.equals(deployedPath);
-			case ModuleCorePackage.DEPENDENT_MODULE__DEPENDENCY_TYPE:
+			case ModuleCorePackage.REFERENCED_COMPONENT__DEPENDENCY_TYPE:
 				return dependencyType != DEPENDENCY_TYPE_EDEFAULT;
 		}
 		return eDynamicIsSet(eFeature);

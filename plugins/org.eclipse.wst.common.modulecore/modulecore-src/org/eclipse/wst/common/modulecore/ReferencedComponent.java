@@ -28,79 +28,67 @@ import org.eclipse.emf.ecore.EObject;
  * See the package overview for an <a href="package-summary.html">overview of the model components </a>.
  * </p>
  * <!-- end-user-doc -->
- * 
+ *
  * <p>
  * The following features are supported:
  * <ul>
- * <li>{@link org.eclipse.wst.common.modulecore.ReferencedComponent#getHandle <em>Handle</em>}</li>
- * <li>
- * {@link org.eclipse.wst.common.modulecore.ReferencedComponent#getDeployedPath <em>Deployed Path</em>}
- * </li>
- * <li>
- * {@link org.eclipse.wst.common.modulecore.ReferencedComponent#getDependencyType <em>Dependency Type</em>}
- * </li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.ReferencedComponent#getHandle <em>Handle</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.ReferencedComponent#getDeployedPath <em>Deployed Path</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.ReferencedComponent#getDependencyType <em>Dependency Type</em>}</li>
  * </ul>
  * </p>
- * 
- * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getDependentModule()
+ *
+ * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getReferencedComponent()
  * @model
  * @generated
  */
-public interface ReferencedComponent extends EObject {
+public interface ReferencedComponent extends EObject{
 	/**
-	 * Returns the value of the '
-	 * {@link org.eclipse.wst.common.modulecore.ReferencedComponent#getHandle <em>Handle</em>}'
-	 * attribute. <!-- begin-user-doc -->
+	 * Returns the value of the '<em><b>Handle</b></em>' attribute.
+	 * <!-- begin-user-doc -->
 	 * <p>
 	 * Returns a fully-qualified URI that conforms to the standard "module:" URI format. The handle
 	 * references the {@see WorkbenchComponent}represented by the current ReferencedComponent.
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the value of the '<em>Handle</em>' attribute.
 	 * @see #setHandle(URI)
-	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getDependentModule_Handle()
-	 * @model dataType="org.eclipse.wst.common.modulecore.URI"
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getReferencedComponent_Handle()
+	 * @model dataType="org.eclipse.wst.common.modulecore.URI" required="true"
 	 * @generated
 	 */
 	URI getHandle();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.eclipse.wst.common.modulecore.ReferencedComponent#getHandle <em>Handle</em>}'
-	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param A
-	 *            fully-qualified URI of the module: format.
+	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.ReferencedComponent#getHandle <em>Handle</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Handle</em>' attribute.
 	 * @see #getHandle()
 	 * @generated
 	 */
 	void setHandle(URI value);
 
 	/**
-	 * Returns the value of the '<em><b>Deployed Path</b></em>' attribute. <!-- begin-user-doc
+	 * Returns the value of the '<em><b>Deployed Path</b></em>' attribute.
+	 * <!-- begin-user-doc
 	 * -->
 	 * <p>
 	 * The deployedPath specifies the location of the ReferencedComponent's contents relative to the
 	 * containing {@see WorkbenchComponent}.
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the value of the '<em>Deployed Path</em>' attribute.
 	 * @see #setDeployedPath(URI)
-	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getDependentModule_DeployedPath()
-	 * @model dataType="org.eclipse.wst.common.modulecore.URI"
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getReferencedComponent_DeployedPath()
+	 * @model dataType="org.eclipse.wst.common.modulecore.URI" required="true"
 	 * @generated
 	 */
 	URI getDeployedPath();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.eclipse.wst.common.modulecore.ReferencedComponent#getDeployedPath <em>Deployed Path</em>}'
-	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param A
-	 *            path relative to the containing {@see WorkbenchComponent}'s output location
+	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.ReferencedComponent#getDeployedPath <em>Deployed Path</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Deployed Path</em>' attribute.
 	 * @see #getDeployedPath()
 	 * @generated
 	 */
@@ -126,12 +114,9 @@ public interface ReferencedComponent extends EObject {
 	DependencyType getDependencyType();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.eclipse.wst.common.modulecore.ReferencedComponent#getDependencyType <em>Dependency Type</em>}'
-	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Dependency Type</em>' attribute.
+	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.ReferencedComponent#getDependencyType <em>Dependency Type</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Dependency Type</em>' attribute.
 	 * @see org.eclipse.wst.common.modulecore.DependencyType
 	 * @see #getDependencyType()
 	 * @generated

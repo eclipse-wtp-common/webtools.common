@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentResourceImpl.java,v 1.1 2005/03/15 00:43:55 cbridgha Exp $
+ * $Id: ComponentResourceImpl.java,v 1.2 2005/03/15 02:12:30 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.internal.impl;
 
@@ -30,10 +30,10 @@ import org.eclipse.wst.common.modulecore.ComponentResource;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ComponentResourceImpl#getSourcePath <em>Source Path</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ComponentResourceImpl#getDeployedPath <em>Deployed Path</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ComponentResourceImpl#getExclusions <em>Exclusions</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ComponentResourceImpl#getModule <em>Module</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.ComponentResourceImpl#getSourcePath <em>Source Path</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.ComponentResourceImpl#getDeployedPath <em>Deployed Path</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.ComponentResourceImpl#getExclusions <em>Exclusions</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.ComponentResourceImpl#getComponent <em>Component</em>}</li>
  * </ul>
  * </p>
  *
@@ -110,7 +110,7 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 	 * @generated
 	 */
 	protected EClass eStaticClass() {
-		return ModuleCorePackage.eINSTANCE.getWorkbenchModuleResource();
+		return ModuleCorePackage.eINSTANCE.getComponentResource();
 	}
 
 	/**
@@ -131,7 +131,7 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 		URI oldSourcePath = sourcePath;
 		sourcePath = newSourcePath;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__SOURCE_PATH, oldSourcePath, sourcePath));
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.COMPONENT_RESOURCE__SOURCE_PATH, oldSourcePath, sourcePath));
 	}
 
 	/**
@@ -152,7 +152,7 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 		URI oldDeployedPath = deployedPath;
 		deployedPath = newDeployedPath;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__DEPLOYED_PATH, oldDeployedPath, deployedPath));
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.COMPONENT_RESOURCE__DEPLOYED_PATH, oldDeployedPath, deployedPath));
 	}
 
 	/**
@@ -162,7 +162,7 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 	 */
 	public EList getExclusions() {
 		if (exclusions == null) {
-			exclusions = new EDataTypeUniqueEList(URI.class, this, ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__EXCLUSIONS);
+			exclusions = new EDataTypeUniqueEList(String.class, this, ModuleCorePackage.COMPONENT_RESOURCE__EXCLUSIONS);
 		}
 		return exclusions;
 	}
@@ -172,8 +172,8 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public WorkbenchComponent getModule() {
-		if (eContainerFeatureID != ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE) return null;
+	public WorkbenchComponent getComponent() {
+		if (eContainerFeatureID != ModuleCorePackage.COMPONENT_RESOURCE__COMPONENT) return null;
 		return (WorkbenchComponent)eContainer;
 	}
 
@@ -182,20 +182,20 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setModule(WorkbenchComponent newModule) {
-		if (newModule != eContainer || (eContainerFeatureID != ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE && newModule != null)) {
-			if (EcoreUtil.isAncestor(this, newModule))
+	public void setComponent(WorkbenchComponent newComponent) {
+		if (newComponent != eContainer || (eContainerFeatureID != ModuleCorePackage.COMPONENT_RESOURCE__COMPONENT && newComponent != null)) {
+			if (EcoreUtil.isAncestor(this, newComponent))
 				throw new IllegalArgumentException("Recursive containment not allowed for " + toString());
 			NotificationChain msgs = null;
 			if (eContainer != null)
 				msgs = eBasicRemoveFromContainer(msgs);
-			if (newModule != null)
-				msgs = ((InternalEObject)newModule).eInverseAdd(this, ModuleCorePackage.WORKBENCH_MODULE__RESOURCES, WorkbenchComponent.class, msgs);
-			msgs = eBasicSetContainer((InternalEObject)newModule, ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE, msgs);
+			if (newComponent != null)
+				msgs = ((InternalEObject)newComponent).eInverseAdd(this, ModuleCorePackage.WORKBENCH_COMPONENT__RESOURCES, WorkbenchComponent.class, msgs);
+			msgs = eBasicSetContainer((InternalEObject)newComponent, ModuleCorePackage.COMPONENT_RESOURCE__COMPONENT, msgs);
 			if (msgs != null) msgs.dispatch();
 		}
 		else if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE, newModule, newModule));
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.COMPONENT_RESOURCE__COMPONENT, newComponent, newComponent));
 	}
 
 	/**
@@ -206,10 +206,10 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, Class baseClass, NotificationChain msgs) {
 		if (featureID >= 0) {
 			switch (eDerivedStructuralFeatureID(featureID, baseClass)) {
-				case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE:
+				case ModuleCorePackage.COMPONENT_RESOURCE__COMPONENT:
 					if (eContainer != null)
 						msgs = eBasicRemoveFromContainer(msgs);
-					return eBasicSetContainer(otherEnd, ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE, msgs);
+					return eBasicSetContainer(otherEnd, ModuleCorePackage.COMPONENT_RESOURCE__COMPONENT, msgs);
 				default:
 					return eDynamicInverseAdd(otherEnd, featureID, baseClass, msgs);
 			}
@@ -227,8 +227,8 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, Class baseClass, NotificationChain msgs) {
 		if (featureID >= 0) {
 			switch (eDerivedStructuralFeatureID(featureID, baseClass)) {
-				case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE:
-					return eBasicSetContainer(null, ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE, msgs);
+				case ModuleCorePackage.COMPONENT_RESOURCE__COMPONENT:
+					return eBasicSetContainer(null, ModuleCorePackage.COMPONENT_RESOURCE__COMPONENT, msgs);
 				default:
 					return eDynamicInverseRemove(otherEnd, featureID, baseClass, msgs);
 			}
@@ -244,8 +244,8 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 	public NotificationChain eBasicRemoveFromContainer(NotificationChain msgs) {
 		if (eContainerFeatureID >= 0) {
 			switch (eContainerFeatureID) {
-				case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE:
-					return eContainer.eInverseRemove(this, ModuleCorePackage.WORKBENCH_MODULE__RESOURCES, WorkbenchComponent.class, msgs);
+				case ModuleCorePackage.COMPONENT_RESOURCE__COMPONENT:
+					return eContainer.eInverseRemove(this, ModuleCorePackage.WORKBENCH_COMPONENT__RESOURCES, WorkbenchComponent.class, msgs);
 				default:
 					return eDynamicBasicRemoveFromContainer(msgs);
 			}
@@ -260,14 +260,14 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 	 */
 	public Object eGet(EStructuralFeature eFeature, boolean resolve) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__SOURCE_PATH:
+			case ModuleCorePackage.COMPONENT_RESOURCE__SOURCE_PATH:
 				return getSourcePath();
-			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__DEPLOYED_PATH:
+			case ModuleCorePackage.COMPONENT_RESOURCE__DEPLOYED_PATH:
 				return getDeployedPath();
-			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__EXCLUSIONS:
+			case ModuleCorePackage.COMPONENT_RESOURCE__EXCLUSIONS:
 				return getExclusions();
-			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE:
-				return getModule();
+			case ModuleCorePackage.COMPONENT_RESOURCE__COMPONENT:
+				return getComponent();
 		}
 		return eDynamicGet(eFeature, resolve);
 	}
@@ -279,18 +279,18 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 	 */
 	public void eSet(EStructuralFeature eFeature, Object newValue) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__SOURCE_PATH:
+			case ModuleCorePackage.COMPONENT_RESOURCE__SOURCE_PATH:
 				setSourcePath((URI)newValue);
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__DEPLOYED_PATH:
+			case ModuleCorePackage.COMPONENT_RESOURCE__DEPLOYED_PATH:
 				setDeployedPath((URI)newValue);
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__EXCLUSIONS:
+			case ModuleCorePackage.COMPONENT_RESOURCE__EXCLUSIONS:
 				getExclusions().clear();
 				getExclusions().addAll((Collection)newValue);
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE:
-				setModule((WorkbenchComponent)newValue);
+			case ModuleCorePackage.COMPONENT_RESOURCE__COMPONENT:
+				setComponent((WorkbenchComponent)newValue);
 				return;
 		}
 		eDynamicSet(eFeature, newValue);
@@ -303,17 +303,17 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 	 */
 	public void eUnset(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__SOURCE_PATH:
+			case ModuleCorePackage.COMPONENT_RESOURCE__SOURCE_PATH:
 				setSourcePath(SOURCE_PATH_EDEFAULT);
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__DEPLOYED_PATH:
+			case ModuleCorePackage.COMPONENT_RESOURCE__DEPLOYED_PATH:
 				setDeployedPath(DEPLOYED_PATH_EDEFAULT);
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__EXCLUSIONS:
+			case ModuleCorePackage.COMPONENT_RESOURCE__EXCLUSIONS:
 				getExclusions().clear();
 				return;
-			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE:
-				setModule((WorkbenchComponent)null);
+			case ModuleCorePackage.COMPONENT_RESOURCE__COMPONENT:
+				setComponent((WorkbenchComponent)null);
 				return;
 		}
 		eDynamicUnset(eFeature);
@@ -326,14 +326,14 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 	 */
 	public boolean eIsSet(EStructuralFeature eFeature) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
-			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__SOURCE_PATH:
+			case ModuleCorePackage.COMPONENT_RESOURCE__SOURCE_PATH:
 				return SOURCE_PATH_EDEFAULT == null ? sourcePath != null : !SOURCE_PATH_EDEFAULT.equals(sourcePath);
-			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__DEPLOYED_PATH:
+			case ModuleCorePackage.COMPONENT_RESOURCE__DEPLOYED_PATH:
 				return DEPLOYED_PATH_EDEFAULT == null ? deployedPath != null : !DEPLOYED_PATH_EDEFAULT.equals(deployedPath);
-			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__EXCLUSIONS:
+			case ModuleCorePackage.COMPONENT_RESOURCE__EXCLUSIONS:
 				return exclusions != null && !exclusions.isEmpty();
-			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE:
-				return getModule() != null;
+			case ModuleCorePackage.COMPONENT_RESOURCE__COMPONENT:
+				return getComponent() != null;
 		}
 		return eDynamicIsSet(eFeature);
 	}

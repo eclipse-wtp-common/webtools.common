@@ -69,7 +69,7 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
      */
     private Object populateDependentModulesDM() {
         WorkbenchComponent wbModule = (WorkbenchComponent)getProperty(WORKBENCH_MODULE);
-        List depModules = wbModule.getModules();
+        List depModules = wbModule.getReferencedComponents();
         List depModulesDataModels = new ArrayList();
         DependentDeployableModuleDataModel dependentDataModel;
         ModuleCore moduleCore = (ModuleCore)getProperty(MODULE_CORE);

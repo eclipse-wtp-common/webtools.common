@@ -494,7 +494,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 			structuralModel = getModuleStructuralModelForRead(Thread.currentThread());
 			ModuleCore editUtility = (ModuleCore) structuralModel.getAdapter(ModuleCore.ADAPTER_TYPE);
 			WorkbenchComponent module = editUtility.findWorkbenchModuleByDeployName(ModuleURIUtil.getDeployedName(aModuleURI));
-			return module.getModuleType().getModuleTypeId();
+			return module.getComponentType().getModuleTypeId();
 		} catch (UnresolveableURIException uurie) {
 			// Ignore
 		} finally {

@@ -25,66 +25,74 @@ import org.eclipse.emf.ecore.EFactory;
  * <code>ModuleCoreFactory moduleCoreFactory = ModuleCorePackage.eINSTANCE.getModuleCoreFactory();</code>
  * </p>
  * <!-- end-user-doc -->
- * 
  * @see org.eclipse.wst.common.modulecore.ModuleCorePackage
  * @generated
  */
-public interface ModuleCoreFactory extends EFactory {
+public interface ModuleCoreFactory extends EFactory{
 	/**
-	 * The singleton instance of the factory. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * The singleton instance of the factory.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
 	ModuleCoreFactory eINSTANCE = new org.eclipse.wst.common.modulecore.internal.impl.ModuleCoreFactoryImpl();
 
 	/**
-	 * Returns a new object of class '<em>Workbench Module</em>'. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
-	 * 
-	 * @return a new object of class '<em>Workbench Module</em>'.
+	 * Returns a new object of class '<em>Workbench Component</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Workbench Component</em>'.
 	 * @generated
 	 */
-	WorkbenchComponent createWorkbenchModule();
+	WorkbenchComponent createWorkbenchComponent();
 
 	/**
-	 * Returns a new object of class '<em>Workbench Module Resource</em>'. <!-- begin-user-doc
-	 * --> <!-- end-user-doc -->
-	 * 
-	 * @return a new object of class '<em>Workbench Module Resource</em>'.
+	 * Returns a new object of class '<em>Component Resource</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Component Resource</em>'.
 	 * @generated
 	 */
-	ComponentResource createWorkbenchModuleResource();
+	ComponentResource createComponentResource();
 
 	/**
-	 * Returns a new object of class '<em>Module Type</em>'. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
-	 * 
-	 * @return a new object of class '<em>Module Type</em>'.
+	 * Returns a new object of class '<em>Component Type</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Component Type</em>'.
 	 * @generated
 	 */
-	ComponentType createModuleType();
+	ComponentType createComponentType();
 
 	/**
-	 * Returns a new object of class '<em>Project Modules</em>'. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
-	 * 
-	 * @return a new object of class '<em>Project Modules</em>'.
+	 * Returns a new object of class '<em>Property</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Property</em>'.
 	 * @generated
 	 */
-	ProjectComponents createProjectModules();
+	Property createProperty();
 
 	/**
-	 * Returns a new object of class '<em>Dependent Module</em>'. <!-- begin-user-doc --> <!--
-	 * end-user-doc -->
-	 * 
-	 * @return a new object of class '<em>Dependent Module</em>'.
+	 * Returns a new object of class '<em>Referenced Component</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Referenced Component</em>'.
 	 * @generated
 	 */
-	ReferencedComponent createDependentModule();
+	ReferencedComponent createReferencedComponent();
 
 	/**
-	 * Returns the package supported by this factory. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
+	 * Returns a new object of class '<em>Project Components</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Project Components</em>'.
+	 * @generated
+	 */
+	ProjectComponents createProjectComponents();
+
+	/**
+	 * Returns the package supported by this factory.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @return the package supported by this factory.
 	 * @generated
 	 */

@@ -7,7 +7,7 @@
     editPluginClass="modulecore.provider.ModuleCoreEditPlugin" editorPluginClass="modulecore.presentation.ModuleCoreEditorPlugin"
     runtimeCompatibility="false">
   <foreignModel>moduleCore.ecore</foreignModel>
-  <genPackages prefix="Modulecore" basePackage="org.eclipse.wst.common" disposableProviderFactory="true"
+  <genPackages prefix="ModuleCore" basePackage="org.eclipse.wst.common" disposableProviderFactory="true"
       ecorePackage="moduleCore.ecore#/">
     <genEnums ecoreEnum="moduleCore.ecore#//DependencyType">
       <genEnumLiterals ecoreEnumLiteral="moduleCore.ecore#//DependencyType/uses"/>
@@ -18,19 +18,19 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//WorkbenchComponent/handle"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//WorkbenchComponent/deployedName"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference moduleCore.ecore#//WorkbenchComponent/resources"/>
-      <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//WorkbenchComponent/moduleType"/>
-      <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//WorkbenchComponent/modules"/>
+      <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//WorkbenchComponent/componentType"/>
+      <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//WorkbenchComponent/referencedComponents"/>
     </genClasses>
     <genClasses ecoreClass="moduleCore.ecore#//ComponentResource">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ComponentResource/sourcePath"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ComponentResource/deployedPath"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ComponentResource/exclusions"/>
-      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//ComponentResource/module"/>
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//ComponentResource/component"/>
     </genClasses>
     <genClasses ecoreClass="moduleCore.ecore#//ComponentType">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ComponentType/moduleTypeId"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ComponentType/version"/>
-      <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//ComponentType/property"/>
+      <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//ComponentType/properties"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ComponentType/metadataResources"/>
     </genClasses>
     <genClasses ecoreClass="moduleCore.ecore#//Property">

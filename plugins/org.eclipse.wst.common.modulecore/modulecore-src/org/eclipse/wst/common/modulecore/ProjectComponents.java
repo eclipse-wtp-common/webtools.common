@@ -19,69 +19,62 @@ import org.eclipse.emf.ecore.EObject;
  * See the package overview for an <a href="package-summary.html">overview of the model components </a>.
  * </p>
  * <!-- end-user-doc -->
- * 
+ *
  * <p>
  * The following features are supported:
  * <ul>
- * <li>
- * {@link org.eclipse.wst.common.modulecore.ProjectComponents#getProjectName <em>Project Name</em>}
- * </li>
- * <li>
- * {@link org.eclipse.wst.common.modulecore.ProjectComponents#getWorkbenchModules <em>Workbench Modules</em>}
- * </li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.ProjectComponents#getProjectName <em>Project Name</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.ProjectComponents#getComponents <em>Components</em>}</li>
  * </ul>
  * </p>
- * 
- * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getProjectModules()
+ *
+ * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getProjectComponents()
  * @model
  * @generated
  */
-public interface ProjectComponents extends EObject {
+public interface ProjectComponents extends EObject{
 	/**
-	 * Returns the value of the '<em><b>Project Name</b></em>' attribute. <!-- begin-user-doc
+	 * Returns the value of the '<em><b>Project Name</b></em>' attribute.
+	 * The default value is <code>""</code>.
+	 * <!-- begin-user-doc
 	 * -->
 	 * <p>
 	 * If the meaning of the '<em>Project Name</em>' attribute isn't clear, there really should
 	 * be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
 	 * @return the value of the '<em>Project Name</em>' attribute.
 	 * @see #setProjectName(String)
-	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getProjectModules_ProjectName()
-	 * @model
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getProjectComponents_ProjectName()
+	 * @model default="" required="true"
 	 * @generated
 	 */
 	String getProjectName();
 
 	/**
-	 * Sets the value of the '
-	 * {@link org.eclipse.wst.common.modulecore.ProjectComponents#getProjectName <em>Project Name</em>}'
-	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @param value
-	 *            the new value of the '<em>Project Name</em>' attribute.
+	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.ProjectComponents#getProjectName <em>Project Name</em>}' attribute.
+	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Project Name</em>' attribute.
 	 * @see #getProjectName()
 	 * @generated
 	 */
 	void setProjectName(String value);
 
 	/**
-	 * Returns the value of the '<em><b>Workbench Modules</b></em>' containment reference list.
+	 * Returns the value of the '<em><b>Components</b></em>' containment reference list.
 	 * The list contents are of type {@link org.eclipse.wst.common.modulecore.WorkbenchComponent}.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Workbench Modules</em>' containment reference list isn't
-	 * clear, there really should be more of a description here...
+	 * If the meaning of the '<em>Components</em>' containment reference list isn't clear,
+	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * 
-	 * @return the value of the '<em>Workbench Modules</em>' containment reference list.
-	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getProjectModules_WorkbenchModules()
+	 * @return the value of the '<em>Components</em>' containment reference list.
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getProjectComponents_Components()
 	 * @model type="org.eclipse.wst.common.modulecore.WorkbenchComponent" containment="true"
 	 * @generated
 	 */
-	EList getWorkbenchModules();
+	EList getComponents();
 
 	public WorkbenchComponent findWorkbenchModule(String aDeployName);
 

@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreSwitch.java,v 1.2 2005/03/15 00:43:56 cbridgha Exp $
+ * $Id: ModuleCoreSwitch.java,v 1.3 2005/03/15 02:12:30 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.internal.util;
 
@@ -10,6 +10,8 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.wst.common.modulecore.*;
+
 import org.eclipse.wst.common.modulecore.ReferencedComponent;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 import org.eclipse.wst.common.modulecore.ComponentType;
@@ -91,33 +93,39 @@ public class ModuleCoreSwitch {
 	 */
 	protected Object doSwitch(int classifierID, EObject theEObject) {
 		switch (classifierID) {
-			case ModuleCorePackage.WORKBENCH_MODULE: {
-				WorkbenchComponent workbenchModule = (WorkbenchComponent)theEObject;
-				Object result = caseWorkbenchModule(workbenchModule);
+			case ModuleCorePackage.WORKBENCH_COMPONENT: {
+				WorkbenchComponent workbenchComponent = (WorkbenchComponent)theEObject;
+				Object result = caseWorkbenchComponent(workbenchComponent);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE: {
-				ComponentResource workbenchModuleResource = (ComponentResource)theEObject;
-				Object result = caseWorkbenchModuleResource(workbenchModuleResource);
+			case ModuleCorePackage.COMPONENT_RESOURCE: {
+				ComponentResource componentResource = (ComponentResource)theEObject;
+				Object result = caseComponentResource(componentResource);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case ModuleCorePackage.MODULE_TYPE: {
-				ComponentType moduleType = (ComponentType)theEObject;
-				Object result = caseModuleType(moduleType);
+			case ModuleCorePackage.COMPONENT_TYPE: {
+				ComponentType componentType = (ComponentType)theEObject;
+				Object result = caseComponentType(componentType);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case ModuleCorePackage.PROJECT_MODULES: {
-				ProjectComponents projectModules = (ProjectComponents)theEObject;
-				Object result = caseProjectModules(projectModules);
+			case ModuleCorePackage.PROPERTY: {
+				Property property = (Property)theEObject;
+				Object result = caseProperty(property);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case ModuleCorePackage.DEPENDENT_MODULE: {
-				ReferencedComponent dependentModule = (ReferencedComponent)theEObject;
-				Object result = caseDependentModule(dependentModule);
+			case ModuleCorePackage.REFERENCED_COMPONENT: {
+				ReferencedComponent referencedComponent = (ReferencedComponent)theEObject;
+				Object result = caseReferencedComponent(referencedComponent);
+				if (result == null) result = defaultCase(theEObject);
+				return result;
+			}
+			case ModuleCorePackage.PROJECT_COMPONENTS: {
+				ProjectComponents projectComponents = (ProjectComponents)theEObject;
+				Object result = caseProjectComponents(projectComponents);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -126,77 +134,92 @@ public class ModuleCoreSwitch {
 	}
 
 	/**
-	 * Returns the result of interpretting the object as an instance of '<em>Workbench Module</em>'.
+	 * Returns the result of interpretting the object as an instance of '<em>Workbench Component</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpretting the object as an instance of '<em>Workbench Module</em>'.
+	 * @return the result of interpretting the object as an instance of '<em>Workbench Component</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseWorkbenchModule(WorkbenchComponent object) {
+	public Object caseWorkbenchComponent(WorkbenchComponent object) {
 		return null;
 	}
 
 	/**
-	 * Returns the result of interpretting the object as an instance of '<em>Workbench Module Resource</em>'.
+	 * Returns the result of interpretting the object as an instance of '<em>Component Resource</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpretting the object as an instance of '<em>Workbench Module Resource</em>'.
+	 * @return the result of interpretting the object as an instance of '<em>Component Resource</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseWorkbenchModuleResource(ComponentResource object) {
+	public Object caseComponentResource(ComponentResource object) {
 		return null;
 	}
 
 	/**
-	 * Returns the result of interpretting the object as an instance of '<em>Module Type</em>'.
+	 * Returns the result of interpretting the object as an instance of '<em>Component Type</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpretting the object as an instance of '<em>Module Type</em>'.
+	 * @return the result of interpretting the object as an instance of '<em>Component Type</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseModuleType(ComponentType object) {
+	public Object caseComponentType(ComponentType object) {
 		return null;
 	}
 
 	/**
-	 * Returns the result of interpretting the object as an instance of '<em>Project Modules</em>'.
+	 * Returns the result of interpretting the object as an instance of '<em>Property</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpretting the object as an instance of '<em>Project Modules</em>'.
+	 * @return the result of interpretting the object as an instance of '<em>Property</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseProjectModules(ProjectComponents object) {
+	public Object caseProperty(Property object) {
 		return null;
 	}
 
 	/**
-	 * Returns the result of interpretting the object as an instance of '<em>Dependent Module</em>'.
+	 * Returns the result of interpretting the object as an instance of '<em>Referenced Component</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpretting the object as an instance of '<em>Dependent Module</em>'.
+	 * @return the result of interpretting the object as an instance of '<em>Referenced Component</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseDependentModule(ReferencedComponent object) {
+	public Object caseReferencedComponent(ReferencedComponent object) {
+		return null;
+	}
+
+	/**
+	 * Returns the result of interpretting the object as an instance of '<em>Project Components</em>'.
+	 * <!-- begin-user-doc -->
+	 * This implementation returns null;
+	 * returning a non-null result will terminate the switch.
+	 * <!-- end-user-doc -->
+	 * @param object the target of the switch.
+	 * @return the result of interpretting the object as an instance of '<em>Project Components</em>'.
+	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+	 * @generated
+	 */
+	public Object caseProjectComponents(ProjectComponents object) {
 		return null;
 	}
 

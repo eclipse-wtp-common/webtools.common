@@ -33,7 +33,7 @@ public class ModuleIndexingAdapter extends AdapterImpl {
 	public void notifyChanged(Notification aNotification) {
 		if (aNotification.getNotifier() instanceof EObject) {
 			EObject notifier = (EObject) aNotification.getNotifier();
-			if (notifier.eClass().getClassifierID() == ModuleCorePackage.PROJECT_MODULES) {
+			if (notifier.eClass().getClassifierID() == ModuleCorePackage.PROJECT_COMPONENTS) {
 				ProjectComponentsImpl projectModules = (ProjectComponentsImpl) notifier;
 				synchronized (projectModules.getModulesIndex()) {
 					switch (aNotification.getEventType()) {
