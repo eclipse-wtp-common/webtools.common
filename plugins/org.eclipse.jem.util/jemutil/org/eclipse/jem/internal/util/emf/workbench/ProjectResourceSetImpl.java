@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.4 $$  $$Date: 2005/01/26 18:45:51 $$ 
+ *  $$Revision: 1.5 $$  $$Date: 2005/02/03 22:47:35 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -44,7 +44,8 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements ProjectRe
 	protected ProjectResourceSetImpl() {
 		HashMap resourceMap = new HashMap(10);
 		resourceMap.put(XMLResource.OPTION_USE_PARSER_POOL, EMFNature.SHARED_PARSER_POOL);
-		loadOptions = resourceMap;	// Tell it to cache uri->resource access.
+		loadOptions = resourceMap;
+		setURIResourceMap(new HashMap(10));	// Tell it to cache uri->resource access.
 	}
 	public ProjectResourceSetImpl(IProject aProject) {
 		this();
