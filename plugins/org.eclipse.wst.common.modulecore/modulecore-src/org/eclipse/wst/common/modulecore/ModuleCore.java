@@ -650,6 +650,17 @@ public class ModuleCore implements IEditModelHandler {
 	private void throwAttemptedReadOnlyModification() {
 		throw new IllegalStateException("Attempt to modify a ModuleCore edit facade that was loaded as read-only.");
 	}
+	
+	/**
+	 * temporary method to return first module in the project
+	 * @return first module in the project
+	 * @deprecated
+	 */
+	public WorkbenchModule getFirstModule() {
+		if (getWorkbenchModules().length>0)
+			return getWorkbenchModules()[0];
+		return null;
+	}
 
 
 }
