@@ -12,7 +12,11 @@ package org.eclipse.wst.common.modulecore.internal.operation;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.wst.common.frameworks.internal.operations.ProjectCreationDataModel;
+import org.eclipse.wst.common.frameworks.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.modulecore.ArtifactEdit;
+import org.eclipse.wst.common.modulecore.ModuleCore;
+import org.eclipse.wst.common.modulecore.WorkbenchComponent;
 /**
  * This dataModel is a common super class used for create in a module context.
  * 
@@ -58,4 +62,37 @@ public abstract class ArtifactEditOperationDataModel extends WTPOperationDataMod
 			return Boolean.FALSE;
 		return super.getDefaultProperty(propertyName);
 	}
+	
+	/* (non-Javadoc)
+     * @see org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel#getDefaultOperation()
+     */
+    public WTPOperation getDefaultOperation() {
+        return new ArtifactEditOperation(this);
+    }
+	
+	public ArtifactEdit getArtifactEditForRead(){
+		WorkbenchComponent module = getWorkbenchModule(); 
+		return getArtifactEditForRead(module);
+	}
+
+    private ArtifactEdit getArtifactEditForRead(WorkbenchComponent module) {
+        return ArtifactEdit.getArtifactEditForRead(module);
+    }
+
+    /**
+     * @return
+     */
+    protected WorkbenchComponent getWorkbenchModule() {
+        ModuleCore moduleCore = null;
+        WorkbenchComponent module = null;
+        try {
+            moduleCore = ModuleCore.getModuleCoreForRead(getTargetProject());
+            module = moduleCore.findWorkbenchModuleByDeployName(getStringProperty(MODULE_DEPLOY_NAME));
+        } finally {
+            if (null != moduleCore) {
+                moduleCore.dispose();
+            }
+        }
+        return module;
+    }
 }
