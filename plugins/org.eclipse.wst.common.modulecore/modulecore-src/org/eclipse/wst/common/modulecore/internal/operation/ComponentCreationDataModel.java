@@ -124,8 +124,10 @@ public abstract class ComponentCreationDataModel extends WTPOperationDataModel {
             IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject((String)propertyValue);
 			if (project != null) {
 	            IProjectProperties projProperties = ServerCore.getProjectProperties(project);
-	            String[] validModuleVersions = getServerVersions(getComponentID(), projProperties.getRuntimeTarget().getRuntimeType());
-	            setProperty(VALID_MODULE_VERSIONS_FOR_PROJECT_RUNTIME, validModuleVersions);
+	            if( projProperties.getRuntimeTarget() != null ){
+	            	String[] validModuleVersions = getServerVersions(getComponentID(), projProperties.getRuntimeTarget().getRuntimeType());
+	            	setProperty(VALID_MODULE_VERSIONS_FOR_PROJECT_RUNTIME, validModuleVersions);
+	            }
 			}
         } else if (IS_ENABLED.equals(propertyName)) {
             notifyEnablementChange(PROJECT_NAME);
