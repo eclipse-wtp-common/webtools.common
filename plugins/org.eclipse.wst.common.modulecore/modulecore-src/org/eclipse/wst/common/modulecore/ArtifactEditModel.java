@@ -32,7 +32,7 @@ import org.eclipse.wst.common.modulecore.internal.impl.PlatformURLModuleConnecti
  * </p>
  * <p>
  * ArtifactEditModel provides a framework for managing a set of EMF resources within a unit of work.
- * This provide basic services such as loads, saves, and synchronization for the managed resources.
+ * This provides basic services such as loads, saves, and synchronization for the managed resources.
  * ArtifactEditModels are reference counted, therefore a single instance can be shared by more than
  * one operation or editor.
  * </p>
