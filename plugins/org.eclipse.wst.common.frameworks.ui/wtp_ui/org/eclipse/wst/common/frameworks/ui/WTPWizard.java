@@ -14,7 +14,6 @@ import java.util.List;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.wst.common.frameworks.internal.operation.extensionui.IExtendedWizardPage;
 import org.eclipse.wst.common.frameworks.internal.ui.ErrorDialog;
 import org.eclipse.wst.common.frameworks.internal.ui.UIOperationHandler;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPCommonUIResourceHandler;

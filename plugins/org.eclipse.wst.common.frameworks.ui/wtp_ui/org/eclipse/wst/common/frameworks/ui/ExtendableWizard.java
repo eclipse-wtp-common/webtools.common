@@ -1,20 +1,12 @@
-/*******************************************************************************
- * Copyright (c) 2003, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+/***************************************************************************************************
+ * Copyright (c) 2003, 2004 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors:
- * IBM Corporation - initial API and implementation
- *******************************************************************************/
-/*
- * Created on Jan 16, 2004
- * 
- * To change the template for this generated file go to Window - Preferences - Java - Code Generation - Code and
- * Comments
- */
-package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
+ * Contributors: IBM Corporation - initial API and implementation
+ **************************************************************************************************/
+package org.eclipse.wst.common.frameworks.ui;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,19 +14,17 @@ import java.util.List;
 import org.eclipse.jface.util.Assert;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.wst.common.frameworks.internal.operation.extensionui.WizardPageElement;
+import org.eclipse.wst.common.frameworks.internal.operation.extensionui.WizardPageExtensionManager;
 import org.eclipse.wst.common.frameworks.internal.operations.FailSafeComposedOperation;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPCommonUIResourceHandler;
 import org.eclipse.wst.common.frameworks.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
-import org.eclipse.wst.common.frameworks.ui.WTPWizard;
 
 import com.ibm.wtp.common.logger.proxy.Logger;
 
 /**
- * @author blancett
- * 
- * To change the template for this generated type comment go to Window - Preferences - Java - Code
- * Generation - Code and Comments
+ * This class is EXPERIMENTAL and is subject to substantial changes.
  */
 public abstract class ExtendableWizard extends WTPWizard {
 

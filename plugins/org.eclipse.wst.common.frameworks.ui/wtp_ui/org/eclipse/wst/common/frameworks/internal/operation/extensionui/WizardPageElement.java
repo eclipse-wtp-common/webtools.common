@@ -11,6 +11,8 @@ package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.wst.common.frameworks.internal.AbstractRegistryDescriptor;
 import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.ui.IExtendedPageHandler;
+import org.eclipse.wst.common.frameworks.ui.IExtendedWizardPage;
 import org.eclispe.wst.common.frameworks.internal.enablement.IdentifiableComparator;
 
 import com.ibm.wtp.common.logger.proxy.Logger;
@@ -32,7 +34,7 @@ public class WizardPageElement extends AbstractRegistryDescriptor implements Com
 	protected WizardPageFactoryElement wizardPageFactoryElement;
 	protected String pluginID;
 	protected String wizardID;
-	protected String pageGroupID;
+	public String pageGroupID;
 	protected String wizardFactoryElement;
 	protected boolean allowsExtendedPagesAfter;
 	protected String pageInsertionID;

@@ -6,12 +6,8 @@
  * 
  * Contributors: IBM Corporation - initial API and implementation
  **************************************************************************************************/
-/*
- * Created on Oct 28, 2003
- * 
- * To change the template for this generated file go to Window&gt;Preferences&gt;Java&gt;Code
- * Generation&gt;Code and Comments
- */
+
+
 package org.eclipse.wst.common.frameworks.operations;
 
 import java.util.ArrayList;
@@ -33,6 +29,44 @@ import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 import org.eclipse.wst.common.frameworks.internal.operations.NullOperationHandler;
 import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
+/**
+ * WTPOperationDataModel is an essential piece of both the WTP Operation and WTP Wizard frameworks.
+ * WTPOPerationDataModels (DataModels) act as smart property containers used to pass various
+ * properties between components. DataModels are smart property containers because they can:
+ * <UL>
+ * <LI>Compute default values for their properties thus saving clients from needing to populate (or
+ * understand) all available properties.</LI>
+ * <LI>Modify the computed default values when necessary (e.g. if the default value of property A
+ * is based on property B, then A should change when B changes).</LI>
+ * <LI>Notify listeners when properties change.</LI>
+ * <LI>Check the validity of the of the proptery values (e.g. if a property is supposed to be an
+ * Integer < 10)</LI>
+ * <LI>Check the validity of the entire property set (e.g if property A is supposed to be an Iteger
+ * which is a multiple of the Integer property B).</LI>
+ * <LI>Supply an operation to execute.</LI>
+ * <LI>Compose and decompose entire DataModels through nesting.</LI>
+ * </UL>
+ * 
+ * <B>PropertyKeys</B>
+ * Clients interact with DataModels by getting and setting properties (Objects) based with PropertyKeys. A
+ * PropertyKey is a String Object uniquely identifing a particular property. The recommended
+ * practice for defining PropertyKeys is to define them as static final Class level Strings and to
+ * use the DataModel instance class name appended with the property name as the value (this should
+ * ensure uniqueness and gives a readible value when debugging).
+ * 
+ * 
+ * 
+ * The WTP Wizard framework uses DataModels to hold all the properties displayed to the user through
+ * UI controls (e.g. textboxes, comboboxes, etc.). The Wizard framework also relies on DataModels
+ * for validation, default values, and the operation executed on finish.
+ * 
+ * The WTO Operation framework uses DataModels to pass all parameters for execution. The DataModel
+ * validation is used to ensure all the properties are valid prior to operation execution.
+ * 
+ * @link org.eclipse.wst.common.frameworks.ui.WTPWizard for details on the WTP Wizard framework.
+ * @link org.eclipse.wst.common.frameworks.operations.WTPOperation for details on the WTP Operation
+ *       framework.
+ */
 public abstract class WTPOperationDataModel implements WTPOperationDataModelListener {
 	/**
 	 * An unsettable property used soley to trip validation for nested models. Clients only use this
@@ -58,9 +92,10 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 
 	public static final String UI_OPERATION_HANLDER = "WTPOperationDataModel.UI_OPERATION_HANLDER"; //$NON-NLS-1$
 
+	public static IStatus OK_STATUS = new Status(IStatus.OK, "org.eclipse.wst.common.frameworks.internal", 0, "OK", null); //$NON-NLS-1$ //$NON-NLS-2$
+	
 	private static final String PROPERTY_NOT_LOCATED_ = WTPResourceHandler.getString("20"); //$NON-NLS-1$
 	private static final String NESTED_MODEL_NOT_LOCATED = WTPResourceHandler.getString("21"); //$NON-NLS-1$
-	public static IStatus OK_STATUS = new Status(IStatus.OK, "org.eclipse.wst.common.frameworks.internal", 0, "OK", null); //$NON-NLS-1$ //$NON-NLS-2$
 	private Set validProperties = new HashSet();
 	private Set validBaseProperties = new HashSet();
 	private Map propertyValues = new Hashtable();
@@ -72,6 +107,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	private boolean operationValidationEnabled = false;
 	private boolean hasBeenExecutedAgainst = false;
 	private boolean suspendValidation = false;
+	
 	private WTPOperationDataModel extendedRoot;
 
 	public WTPOperationDataModel() {
@@ -92,6 +128,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	/**
 	 * This is for subclasses to perform any required initialization other than
 	 * initValidBaseProperties() and initNestedModels() both which will be called first
+	 * 
 	 * @see initValidBaseProperties()
 	 * @see initNestedModels()
 	 */
@@ -101,6 +138,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	/**
 	 * This is for subclasses to override to initialize any nested DataModels. This will be called
 	 * before init() and after initValidBaseProperties()
+	 * 
 	 * @see init()
 	 * @see initValidBaseProperties();
 	 */
@@ -108,9 +146,11 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	}
 
 	/**
-	 * This is for subclasses to invoke to initialize properties.  Subclasses should call this method
+	 * This is for subclasses to invoke to initialize properties. Subclasses should call this method
 	 * from initValidBaseProperties().
-	 * @param propertyName The property name to be added.
+	 * 
+	 * @param propertyName
+	 *            The property name to be added.
 	 * @see initValidBaseProperties();
 	 */
 	protected void addValidBaseProperty(String propertyName) {
@@ -119,7 +159,8 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	}
 
 	/**
-	 * This is for subclasses to override to initialize their properties.  
+	 * This is for subclasses to override to initialize their properties.
+	 * 
 	 * @see init()
 	 */
 	protected void initValidBaseProperties() {
@@ -803,10 +844,10 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		}
 		return OK_STATUS;
 	}
-	
+
 	/**
 	 * @deprecated this can be replaced with something like this:
-	 * ProjectCreationDataModel.getProjectHandleFromProjectName(getStringProperty(projectNameProperty))
+	 *             ProjectCreationDataModel.getProjectHandleFromProjectName(getStringProperty(projectNameProperty))
 	 */
 	public IProject getProjectHandle(String projectNameProperty) {
 		String projectName = (String) getProperty(projectNameProperty);
