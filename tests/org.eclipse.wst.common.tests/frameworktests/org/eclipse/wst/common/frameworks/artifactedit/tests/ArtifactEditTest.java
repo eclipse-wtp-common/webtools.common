@@ -1,13 +1,18 @@
-
 package org.eclipse.wst.common.frameworks.artifactedit.tests;
 
 
+
+import java.io.IOException;
+import java.net.URL;
 
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.ArtifactEditModel;
@@ -20,6 +25,7 @@ import org.eclipse.wst.common.frameworks.internal.operations.IOperationHandler;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelEvent;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelListener;
+import org.eclipse.wst.common.tests.CommonTestsPlugin;
 
 
 
@@ -33,7 +39,13 @@ public class ArtifactEditTest extends TestCase {
 	private ArtifactEdit artifactEditForRead;
 	private ArtifactEdit artifactEditForWrite;
 	private EditModelListener emListener;
+	private Path zipFilePath = new Path("\\frameworktests\\org\\eclipse\\wst\\common\\frameworks\\artifactedit\\tests\\TestArtifactEdit.zip");
+	private IProject project;
+
+
+
 	private IOperationHandler handler = new IOperationHandler() {
+
 
 		public boolean canContinue(String message) {
 			return false;
@@ -72,21 +84,33 @@ public class ArtifactEditTest extends TestCase {
 		}
 	};
 
-	private IProject project;
+
 
 	public IProject getTargetProject() {
 		return ResourcesPlugin.getWorkspace().getRoot().getProject(PROJECT_NAME);
 	}
 
+	public boolean createProject() {
+		URL url = CommonTestsPlugin.instance.find(zipFilePath);
+		try {
+			url = Platform.asLocalURL(url);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		IPath path = new Path(url.getPath());
+		UnzipUtil util = new UnzipUtil(path, PROJECT_NAME);
+		return util.createProject();
+	}
+
 	public ArtifactEditTest() {
 		super();
+
+		if (!getTargetProject().exists())
+			if (!createProject())
+				fail();
 		project = getTargetProject();
 	}
 
-	public void setup() {
-		project = getTargetProject();
-
-	}
 
 	public void testGetArtifactEditForReadWorkbenchComponent() {
 		StructureEdit moduleCore = null;
@@ -420,7 +444,7 @@ public class ArtifactEditTest extends TestCase {
 				getArtifactEditForRead().wait(x);
 			}
 		} catch (Exception e) {
-			//fail(e.getMessage());
+			// fail(e.getMessage());
 		}
 		pass();
 	}
@@ -435,7 +459,7 @@ public class ArtifactEditTest extends TestCase {
 				getArtifactEditForRead().wait(x);
 			}
 		} catch (Exception e) {
-			//fail(e.getMessage());
+			// fail(e.getMessage());
 		}
 		pass();
 	}
@@ -446,7 +470,7 @@ public class ArtifactEditTest extends TestCase {
 				getArtifactEditForRead().wait();
 			}
 		} catch (Exception e) {
-			//fail(e.getMessage());
+			// fail(e.getMessage());
 		}
 		pass();
 	}
