@@ -1,0 +1,3 @@
+org.eclipse.wtp.common/debug/logtrace=false
+org.eclipse.wtp.common/debug/logtracefile=false
+org.eclipse.wtp.common/debug/loglevel=WARNING

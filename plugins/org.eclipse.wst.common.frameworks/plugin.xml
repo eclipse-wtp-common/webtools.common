@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="org.eclipse.wst.common.frameworks"
+   name="org.eclipse.wst.common.frameworks"
+   version="1.0.0"
+   class="org.eclispe.wst.common.framework.plugin.WTPCommonPlugin">
+
+   <runtime>
+      <library name="common.jar">
+         <export name="*"/>
+      </library>
+      <library name="common_core.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+   <requires>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.jdt.core"/>
+      <import plugin="org.eclipse.core.runtime.compatibility"/>
+      <import plugin="com.ibm.wtp.common.util" export="true"/>
+   </requires>
+
+
+   <extension-point id="ExtendableOperation" name="ExtendabledOperation" schema="schema/ExtendableOperation.exsd"/>
+   <extension-point id="OperationExtension" name="OperationExtension" schema="schema/OperationExtension.exsd"/>
+   <extension-point id="functionGroup" name="Function Extension Group" schema="schema/functionGroup.exsd"/>
+   <extension-point id="WTPActivityBridgeHelper" name="WTPActivityBridgeHelper" schema="schema/WTPActivityBridgeHelper.exsd"/>
+
+   <extension
+         id="context.Sensitive.Class.saveHandler"
+         name="Save Handler - Headless Context Class"
+         point="org.eclipse.wst.common.framework.util.uiContextSensitiveClass">
+      <uiContextSensitiveClass
+            key="saveHandler"
+            context="Headless"
+            className="org.eclipse.wst.common.framework.SaveHandlerHeadless">
+      </uiContextSensitiveClass>
+   </extension>
+   <extension
+         id="org.eclipse.wst.common.framework.enablement"
+         point="org.eclipse.wst.common.framework.util.uiContextSensitiveClass">
+      <uiContextSensitiveClass
+            key="org.eclipse.wst.common.framework.EnablementDetermination"
+            context="Headless"
+            className="org.eclispe.wst.internal.common.framework.enablement.EnablementManager">
+      </uiContextSensitiveClass>
+   </extension>
+
+</plugin>

@@ -1,0 +1,184 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="com.ibm.etools.emf.workbench">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="com.ibm.etools.emf.workbench" id="group" name="Grouping for function contribution"/>
+      </appInfo>
+      <documentation>
+         A functionGroup provides a grouping of related function that can be contributed to the tools.  For example, a third party component may want to contribute actions, editor pages, edit model resources, and many other functions specific to a given product.  By associating all these functions with a group id, a mechanism is exposed for users to selectively enable and disable baskets of function.  Extension points that allow for a &quot;groupID&quot; attribute generally will hide those functions when the group id is disabled.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <complexType>
+         <choice>
+            <element ref="functionGroup" minOccurs="1" maxOccurs="unbounded"/>
+            <element ref="functionGroupPatternBinding" minOccurs="1" maxOccurs="unbounded"/>
+         </choice>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="functionGroup">
+      <annotation>
+         <documentation>
+            Extension point definition for a group.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="functionGroupID" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A unique id for the group.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A human readable name.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="description" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A short description of the group.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="icon" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="url" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="priority" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Ordering magnitude of plugins
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="initializerClassName" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Class used to determine plugin enablement
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="functionGroupPatternBinding">
+      <annotation>
+         <documentation>
+            This element allows one to bind function groups to patterns.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="functionGroupID" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The unique identifier of the function group to bind.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="pattern" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The pattern to be bound. Patterns are regular expressions which match unique identifiers.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         6.0
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         &lt;code&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;extension&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;point=&quot;com.ibm.wtp.common.functionGroup&quot;&amp;gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;functionGroup&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;name=&quot;Acme&amp;nbsp;Co.&amp;nbsp;Function&amp;nbsp;Extension&quot;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;functionGroupID=&quot;com.acme.acmepro&quot;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;description=&quot;The&amp;nbsp;AcmePro&amp;nbsp;Extensions&amp;nbsp;add&amp;nbsp;integration&amp;nbsp;to&amp;nbsp;the&amp;nbsp;Acme&amp;nbsp;Web&amp;nbsp;Server.&quot;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;enabledByDefault=&quot;true&quot;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;icon=&quot;...&quot;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;url=&quot;http://www.acme.com/&quot;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;/&amp;gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;/extension&amp;gt;&lt;br&gt;
+&lt;/code&gt;
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiInfo"/>
+      </appInfo>
+      <documentation>
+         WTP Function Groups can be referenced through com.ibm.wtp.common.group.WTPFunctionGroupRegistry.
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="implementation"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="copyright"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+</schema>
