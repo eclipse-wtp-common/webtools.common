@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/xsl" href="../../../../../../javadoc.xsl"?>
 <html>
     <head>
         <meta
@@ -9,10 +8,11 @@
     </head>
 
     <body>  
-
+		<p>
         The ModuleCore API allows clients to work with the Module 
 		Structural Metamodels that define abstract modules within Eclipse 
 		projects. 
+		</p>
 
         <h2>Module Structural Metamodel (MSM) Metamodel</h2>
         <BR />
@@ -20,15 +20,16 @@
             <tr>
                 <td>
                     <p>
-                        The Module Structural Metamodel (MSM) is an EMF model that allows the tooling
-                        to understand most project structures. Each project has a single (MSM)
-                        which is stored under the project root named
+                        The Module Structural Metamodel (MSM) is an EMF model that allows 
+						the tooling to understand most project structures. Each project 
+						has a single (MSM) which is stored under the project root named
                         <I>.wtpmodules</I>
                         . The XML format is defined by the Module Core namespace (
                         <a href="http://www.eclipse.org/webtools/moduleCore.xsd">
                             http://www.eclipse.org/webtools/moduleCore
                         </a>
-                        ). The following diagram is a UML representation of the metamodel.
+                        ). The following diagram is a UML representation of the 
+						Module Structural Metamodel.
 					</p>	
                 </td>
             </tr>
@@ -56,13 +57,13 @@
                 <td>                    
                     <p>
                         Each logical module contained in the project is represented by a
-                        WorkbenchModule element. The WorkbenchModule defines information about
+                        <b>WorkbenchModule</b> element. The <b>WorkbenchModule</b> defines information about
                         the type of module, the resources consumed by the module from the
-                        project, and the dependent modules. The WorkbenchModule is very generic,
+                        project, and the dependent modules. The <b>WorkbenchModule</b> is very generic,
                         and as modeled, does not necessarily correspond to only J2EE artifacts.
                     </p>
                     <p>
-                        The WorkbenchModule has a
+                        The <b>WorkbenchModule</b> has a
                         <i>deployedName</i>
                         , which is the name that will be used when the deployable form of the
                         module is constructed. For a web application, the
@@ -70,57 +71,57 @@
                         might be "MyWebApplication.war".
                     </p>
                     <p>
-                        The WorkbenchModule may be uniquely referenced by a URI (stored on the
-                        WorkbenchModule as the
+                        The <b>WorkbenchModule</b> may be uniquely referenced by a URI (stored on the
+                        <b>WorkbenchModule</b> as the
                         <i>handle</i>
                         ). The fully qualified URI to any module must begin with the module
                         protocol ("module:"), specify a subprotocol ("resource|classpath") and
-                        then a path to the referenced module. A WorkbenchModule with the
+                        then a path to the referenced module. A <b>WorkbenchModule</b> with the
                         deplyedName "MyWebApplication.war" defined in a project named
                         "MyWebModulesProject" would be referenced by the following URI:
                         "module:/resource/MyWebModulesProject/MyWebApplication.war".
                     </p>
                     <p>
-                        The WorkbenchModule has a ModuleType. The ModuleType defines a
+                        The <b>WorkbenchModule</b> has a <b>ModuleType</b>. The <b>ModuleType</b> defines a
                         <i>moduleTypeId</i>
                         , which indicates the specific kind of module. The Web Tools Platform
                         uses the
                         <i>moduleTypeId</i>
                         to determine how to work with the content module of the WorkbenchModule
-                        and prepare the module for deployment. The ModuleType may also define the
+                        and prepare the module for deployment. The <b>ModuleType</b> may also define the
                         runtime-paths of special metadata resources which are important to the
-                        WorkbenchModule. "Metadata" refers to resources which explain the content
+                        <b>WorkbenchModule</b>. "Metadata" refers to resources which explain the content
                         details of the specific modules. An example of such a file would be the
-                        “WEB-INF/web.xml” deployment descriptor for Web Applications.
+                        "WEB-INF/web.xml" deployment descriptor for Web Applications.
                     </p>
                     <p>
-                        The WorkbenchModule contains a list of WorkbenchModuleResources. Each
-                        WorkbenchModuleResource has "sourcePath" and a corresponding
+                        The <b>WorkbenchModule</b> contains a list of WorkbenchModuleResources. Each
+                        <b>WorkbenchModuleResource</b> has "sourcePath" and a corresponding
                         "deployedPath". The "sourcePath" can reference either a file or folder,
                         but the referenced resource must be contained in the same project as the
-                        WorkbenchModule definition. The "deployedPath" specifies a location
-                        relative to the deployed structure of the WorbenchModule where the
+                        <b>WorkbenchModule</b> definition. The "deployedPath" specifies a location
+                        relative to the deployed structure of the <b>WorkbenchModule</b> where the
                         contents of the referenced resource will be placed when the module is
                         prepared for deployment.
                     </p>
                     <p>
-                        The WorkbenchModule contains a list of DependentModules. Each
-                        DependentModule provides a handle that must resolve to a WorkbenchModule,
+                        The <b>WorkbenchModule</b> contains a list of <b>DependentModule</b>s. Each
+                        <b>DependentModule</b> provides a handle that must resolve to a <b>WorkbenchModule</b>,
                         a deployedPath that defines where the constructed module will be placed
-                        within the context of the deployed WorkbenchModule, and a DependencyType
-                        that can be either “consume” or “use” to indicate how the contents of
-                        that DependentModule should be absorbed by the WorkbenchModule.
-                        DependentModules may reference WorkbenchModules in other projects and on
-                        the classpath. The DependencyType will determine whether the contents of
-                        the DependentModule are absorbed as-is or archived into a *.{w|j|e}ar
+                        within the context of the deployed <b>WorkbenchModule</b>, and a <b>DependencyType</b>
+                        that can be either "consume" or "use" to indicate how the contents of
+                        that <b>DependentModule</b> should be absorbed by the <b>WorkbenchModule</b>.
+                        <b>DependentModule</b>s may reference <b>WorkbenchModule</b>s in other projects and on
+                        the classpath. The <b>DependencyType</b> will determine whether the contents of
+                        the <b>DependentModule</b> are absorbed as-is or archived into a *.{w|j|e}ar
                         file.
                     </p>
                     <p>
-                        The ProjectModules object provides a root container for all
-                        WorkbenchModules defined in a given project.
+                        The <b>ProjectModules</b> object provides a root container for all
+                        <b>WorkbenchModule</b>s defined in a given project.
                     </p>
                     <p>
-                        ModuleCore provides an instance facade to manage the underlying model for
+                        <b>ModuleCore</b> provides an instance facade to manage the underlying model for
                         clients. Static methods
                         <code>ModuleCore.getModuleCoreForRead()</code>
                         and

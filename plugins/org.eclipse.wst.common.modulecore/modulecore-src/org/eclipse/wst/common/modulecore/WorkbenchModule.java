@@ -1,9 +1,11 @@
-/**
- * <copyright>
- * </copyright>
- *
- * $Id: WorkbenchModule.java,v 1.1 2005/02/13 16:27:46 cbridgha Exp $
- */
+/***************************************************************************************************
+ * Copyright (c) 2003, 2004 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: IBM Corporation - initial API and implementation
+ **************************************************************************************************/
 package org.eclipse.wst.common.modulecore;
 
 import org.eclipse.emf.common.util.EList;
@@ -11,8 +13,11 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 
 /**
- * <!-- begin-user-doc -->
- * A representation of the model object '<em><b>Workbench Module</b></em>'.
+ * <!-- begin-user-doc --> 
+ * An EMF representation of a development-time module contained by an Eclipse project. 
+ * <p> 
+ * See the package overview for an <a href="package.html">overview of the model components</a>.
+ * </p>
  * <!-- end-user-doc -->
  *
  * <p>

@@ -30,10 +30,7 @@
 					rel="stylesheet" />
 				<xsl:apply-templates select="head/title" />
 			</head>
-			<body>
-				<xsl:apply-templates
-					select="body/h1"
-					mode="banner" />
+			<body> 
 				<xsl:apply-templates
 					select="body/*"
 					mode="body" />

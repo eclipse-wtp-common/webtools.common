@@ -21,7 +21,7 @@
     <target name="javadoc">
         <javadoc access="public" 
 				 author="false" 
-					classpath="../bin;${eclipse.basedir}\plugins\org.eclipse.osgi_3.1.0\eclipseAdaptor.jar;../../org.eclipse.wst.common.emf/bin;../../org.eclipse.wst.common.emfworkbench.integration/bin;${eclipse.basedir}\plugins\com.ibm.wtp.common.util_1.0.1\util.jar;${eclipse.basedir}\plugins\org.eclipse.core.resources_3.1.0\resources.jar;${eclipse.basedir}\plugins\org.eclipse.xsd_2.1.0\runtime\xsd.jar;${eclipse.basedir}\plugins\org.eclipse.emf.edit_2.1.0\runtime\edit.jar;${eclipse.basedir}\plugins\org.eclipse.core.runtime_3.1.0\runtime.jar;${eclipse.basedir}\plugins\org.eclipse.emf.codegen_2.1.0\runtime\codegen.jar;${eclipse.basedir}\plugins\org.eclipse.emf.ecore.xmi_2.1.0\runtime\ecore.xmi.jar;${eclipse.basedir}\plugins\org.eclipse.emf.codegen.ecore_2.1.0\runtime\codegen.ecore.jar;${eclipse.basedir}\plugins\com.ibm.wtp.emf.workbench_1.0.1.1\emfworkbench.jar;../../org.eclipse.wst.common.frameworks/bin;${eclipse.basedir}\plugins\org.eclipse.osgi_3.1.0\console.jar;${eclipse.basedir}\plugins\org.eclipse.osgi_3.1.0\core.jar;${eclipse.basedir}\plugins\org.eclipse.emf.ecore_2.1.0\runtime\ecore.jar;${eclipse.basedir}\plugins\org.eclipse.emf.common_2.1.0\runtime\common.jar" 
+					classpath="${classpath}" 
 					destdir="doc" 
 					doctitle="${component.title}" 
 					nodeprecated="false" 
@@ -42,7 +42,7 @@
 			<fileset dir="component-overview/overview/"/> 
 		</copy>
 		<delete>
-			<fileset dir="." includes="**/package.html"/>
+			<fileset dir="." includes="**/package.html,**/overview.html"/>
 		</delete>
     </target>
  

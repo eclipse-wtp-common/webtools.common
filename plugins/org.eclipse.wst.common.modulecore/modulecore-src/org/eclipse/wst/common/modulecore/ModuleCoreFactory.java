@@ -1,8 +1,11 @@
-/**
- * <copyright></copyright>
+/***************************************************************************************************
+ * Copyright (c) 2003, 2004 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
- * $Id: ModuleCoreFactory.java,v 1.2 2005/02/17 16:02:52 cbridgha Exp $
- */
+ * Contributors: IBM Corporation - initial API and implementation
+ **************************************************************************************************/
 package org.eclipse.wst.common.modulecore;
 
 import org.eclipse.emf.ecore.EFactory;
@@ -10,10 +13,18 @@ import org.eclipse.emf.ecore.EFactory;
 /**
  * <!-- begin-user-doc -->
  * <p>
- * The EMF Factory used to create instances of model objects. Clients are encouraged to use
- * {@see org.eclipse.wst.common.modulecore.ModuleCore}&nbsp; when constructing specific Module
- * Structural Metamodels for a particular project. However, the Factory provides a create method for each
- * non-abstract class of the model.
+ * The EMF Factory used to create instances of model objects.
+ * </p>
+ * <p>
+ * Clients are encouraged to use {@see org.eclipse.wst.common.modulecore.ModuleCore}&nbsp;when
+ * constructing specific Module Structural Metamodels for a particular project. However, the Factory
+ * provides a create method for each non-abstract class of the model.
+ * </p>
+ * <p>
+ * To acquire an instance of the Factory, use:
+ * </p>
+ * <p>
+ * <code>ModuleCoreFactory moduleCoreFactory = ModuleCorePackage.eINSTANCE.getModuleCoreFactory();</code>
  * </p>
  * <!-- end-user-doc -->
  * 

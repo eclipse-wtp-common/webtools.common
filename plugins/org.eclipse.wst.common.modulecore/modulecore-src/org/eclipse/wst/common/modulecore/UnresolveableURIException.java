@@ -14,6 +14,10 @@ import org.eclipse.emf.common.util.URI;
 
 /**
  * <p>
+ * Thrown whenever a URI cannot be appropriately resolved.
+ * </p>
+ * 
+ * <p>
  * The following class is experimental until fully documented.
  * </p>
  */
