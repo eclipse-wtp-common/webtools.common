@@ -33,5 +33,6 @@ public class DataModelAPITests extends TestSuite {
 		addTest(new SimpleTestSuite(NestingTest.class));
 		addTest(new SimpleTestSuite(NestedListeningTest.class));
 		addTest(new SimpleTestSuite(SimpleDataModelTest.class));
+		addTest(new SimpleTestSuite(DataModelFactoryTest.class));
 	}
 }

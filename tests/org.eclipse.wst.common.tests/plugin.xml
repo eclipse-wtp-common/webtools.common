@@ -40,5 +40,25 @@
             suiteName="IDataModel API Tests">
          </suite>
    </extension>
+   <extension
+         point="org.eclipse.wst.common.frameworks.DataModelProviderExtension">
+      <DataModelProvider
+            class="org.eclipse.wst.common.frameworks.datamodel.tests.TestDataModelProvider"
+            id="org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel"/>
+      <DataModelProvider
+            class="bogusClass"
+            id="bogus"/>
+	  <!-- Test for incomplete id's, classes' and duplicates
+      <DataModelProvider
+            class=""
+            id="org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel"/>
+      <DataModelProvider
+            class="org.eclipse.wst.common.frameworks.datamodel.tests.TestDataModelProvider"
+            id=""/>
+      <DataModelProvider
+            class="org.eclipse.wst.common.frameworks.datamodel.tests.TestDataModelProvider"
+            id="org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel"/>
+      -->
+   </extension>
 
 </plugin>
