@@ -30,14 +30,12 @@ import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.wst.validation.core.IValidationRegistry;
+import org.eclipse.jem.util.logger.LogEntry;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.core.IValidator;
 import org.eclipse.wst.validation.internal.operations.IRuleGroup;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchHelper;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
-
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
 
 
 /**
@@ -63,7 +61,7 @@ import org.eclipse.jem.util.logger.proxy.Logger;
  * <migrate><validator from="old.class.name" to="new.class.name"/> </migrate> </validator>
  * </extension>
  */
-public final class ValidationRegistryReader implements RegistryConstants, IValidationRegistry {
+public final class ValidationRegistryReader implements RegistryConstants {
 	private static ValidationRegistryReader inst = null;
 	private HashMap _validators; // list of all validators registered, with their associated
 	// ValidatorMetaData, indexed by project nature id
