@@ -14,10 +14,10 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.eclipse.wst.common.frameworks.operations.WTPOperation;
-import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
-import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModelEvent;
-import org.eclipse.wst.common.frameworks.operations.WTPPropertyDescriptor;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModelEvent;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPPropertyDescriptor;
 
 public class SimpleDataModelTest extends TestCase {
 

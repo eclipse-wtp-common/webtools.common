@@ -12,9 +12,8 @@ import junit.framework.Assert;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
-
 import org.eclipse.jem.util.RegistryReader;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
 
 /**
  * @author Administrator

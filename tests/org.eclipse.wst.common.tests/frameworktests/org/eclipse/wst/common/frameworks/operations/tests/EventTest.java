@@ -12,8 +12,8 @@ package org.eclipse.wst.common.frameworks.operations.tests;
 
 import junit.framework.TestCase;
 
-import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
-import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModelEvent;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModelEvent;
 
 public class EventTest extends TestCase {
 

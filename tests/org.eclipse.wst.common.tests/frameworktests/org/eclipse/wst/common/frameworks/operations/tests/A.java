@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.operations.tests;
 
-import org.eclipse.wst.common.frameworks.operations.WTPOperation;
-import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
 
 public class A extends WTPOperationDataModel {
 	public static final String P = "A.P";

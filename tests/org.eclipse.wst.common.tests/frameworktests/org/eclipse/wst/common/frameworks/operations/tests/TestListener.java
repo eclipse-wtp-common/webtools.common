@@ -13,8 +13,8 @@ package org.eclipse.wst.common.frameworks.operations.tests;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModelEvent;
-import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModelListener;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModelEvent;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModelListener;
 
 public class TestListener implements WTPOperationDataModelListener {
 
