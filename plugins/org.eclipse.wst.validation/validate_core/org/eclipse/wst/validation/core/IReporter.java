@@ -12,8 +12,6 @@ package org.eclipse.wst.validation.core;
 
 import java.util.List;
 
-import org.eclipse.wst.validation.internal.operations.IMessageAccess;
-
 
 
 
