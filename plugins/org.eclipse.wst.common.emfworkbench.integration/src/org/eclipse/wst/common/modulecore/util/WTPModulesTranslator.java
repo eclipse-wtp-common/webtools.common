@@ -11,13 +11,13 @@ import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 public class WTPModulesTranslator extends RootTranslator implements WTPModulesXmlMapperI{
 	public static WTPModulesTranslator INSTANCE = new WTPModulesTranslator();
 	private static Translator[] children;
-	private static ModuleCorePackage MODULE_CORE_PKG = ModuleCorePackage.eINSTANCE;
+	private static final ModuleCorePackage MODULE_CORE_PKG = ModuleCorePackage.eINSTANCE;
 	/**
 	 * @param domNameAndPath
 	 * @param eClass
 	 */
 	public WTPModulesTranslator() {
-		super(PROJECT_MODULES, MODULE_CORE_PKG.getProjectModules());
+		super(PROJECT_MODULES, ModuleCorePackage.eINSTANCE.getProjectModules());
 	}
 	/* (non-Javadoc)
 	 * @see org.eclipse.wst.common.internal.emf.resource.Translator#getChildren(java.lang.Object, int)
@@ -80,10 +80,9 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 	private static Translator createModuleTypeTranslator(EStructuralFeature afeature) {
 		GenericTranslator result = new GenericTranslator(WBMODULE, afeature);
 		result.setChildren(new Translator[] {
-			IDTranslator.INSTANCE,
-			new Translator(ROOT, MODULE_CORE_PKG.getIModuleType_Root(), DOM_ATTRIBUTE), 
-			new Translator(TYPE_NAME, MODULE_CORE_PKG.getIModuleType_TypeName(), DOM_ATTRIBUTE),
-			new Translator(META_RESOURCES, MODULE_CORE_PKG.getIModuleType_MetadataResources())
+			IDTranslator.INSTANCE,			 
+			new Translator(MODULE_TYPE_ID, MODULE_CORE_PKG.getModuleType_ModuleTypeId(), DOM_ATTRIBUTE),
+			new Translator(META_RESOURCES, MODULE_CORE_PKG.getModuleType_MetadataResources())
 		});
 		return result;
 	}

@@ -11,6 +11,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
@@ -18,6 +19,8 @@ import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import com.ibm.wtp.common.logger.proxy.Logger;
 
 public class ModuleStructuralModel extends EditModel implements IResourceChangeListener {
+	
+	public static final String MODULE_CORE_ID = "moduleCoreId"; //$NON-NLS-1$
     private final static ModuleCoreFactory MODULE_FACTORY = ModuleCoreFactory.eINSTANCE;
 
     ArrayList moduleStructureListeners = new ArrayList(3);
@@ -85,6 +88,24 @@ public class ModuleStructuralModel extends EditModel implements IResourceChangeL
     public void cacheNonResourceValidateState(List roNonResourceFiles) {
 
     }
+    
+	public WTPModulesResource  makeWTPModulesResource() {
+		return (WTPModulesResource) createResource(WTPModulesResourceFactory.WTP_MODULES_URI_OBJ);
+	}
+
+	public Resource prepareProjectModulesIfNecessary() {
+		XMIResource res = makeWTPModulesResource();		
+		addProjectModulesIfNecessary(res);
+		return res;
+	}
+	
+	protected void addProjectModulesIfNecessary(XMIResource aResource) { 
+		if (aResource != null && aResource.getContents().isEmpty()) {
+			ProjectModules projectModules = ModuleCorePackage.eINSTANCE.getModuleCoreFactory().createProjectModules();
+			aResource.getContents().add(projectModules); 
+			aResource.setID(projectModules, MODULE_CORE_ID);
+		}
+	}
 
     private Resource getWTPModuleResource() {
         URI wtpModuleURI = createWTPModuleURI();

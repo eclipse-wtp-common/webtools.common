@@ -8,10 +8,12 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.wst.common.internal.emfworkbench.CompatibilityWorkbenchURIConverterImpl;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelNature;
 
 import com.ibm.wtp.emf.workbench.EMFWorkbenchContextBase;
 import com.ibm.wtp.emf.workbench.ProjectResourceSet;
+import com.ibm.wtp.emf.workbench.WorkbenchURIConverter;
 
 //In Progress......
 
@@ -55,16 +57,24 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		getEmfContext().setDefaultToMOF5Compatibility(true);
 		// Overriding superclass to use our own URI converter, which knows about binary projects
 		ProjectResourceSet set = aNature.getResourceSet();
-//		set.setResourceFactoryRegistry(new J2EEResourceFactoryRegistry());
-//		WorkbenchURIConverter conv = initializeWorbenchURIConverter(set);
-//		set.setURIConverter(conv);
+		set.setResourceFactoryRegistry(WTPResourceFactoryRegistry.INSTANCE);
+		WorkbenchURIConverter conv = initializeWorbenchURIConverter(set);
+		set.setURIConverter(conv);
 //		initializeCacheEditModel();
 //		addAdapterFactories(set);
 //		set.getSynchronizer().addExtender(this); // added so we can be informed of closes to the
-//		// project.
 //		new J2EEResourceDependencyRegister(set); // This must be done after the URIConverter is
-//		// created.
 
+	}
+
+	/**
+	 * @param set
+	 * @return
+	 */
+	private WorkbenchURIConverter initializeWorbenchURIConverter(ProjectResourceSet set) {
+		WorkbenchURIConverter uriConverter = new CompatibilityWorkbenchURIConverterImpl();
+		uriConverter.addInputContainer(getProject());
+		return uriConverter;
 	}
 
 	public ResourceSet getResourceSet() {

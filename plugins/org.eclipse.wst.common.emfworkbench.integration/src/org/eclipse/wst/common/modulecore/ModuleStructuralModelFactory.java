@@ -36,7 +36,7 @@ public class ModuleStructuralModelFactory extends EditModelFactory {
 	 * @see org.eclipse.wst.common.internal.emfworkbench.integration.EditModelFactory#createEditModelForWrite(java.lang.String, org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext, java.util.Map)
 	 */
 	public EditModel createEditModelForWrite(String anEditModelId, EMFWorkbenchContext aContext, Map theParams) {
-		return super.createEditModelForWrite(anEditModelId, aContext);
+		return new ModuleStructuralModel(anEditModelId, aContext, false);
 	}
 	
 }

@@ -19,6 +19,7 @@ package org.eclipse.wst.common.internal.emfworkbench;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.internal.emf.resource.CompatibilityURIConverter;
 import org.eclipse.wst.common.modulecore.impl.PlatformURLModuleConnection;
@@ -80,7 +81,11 @@ public class CompatibilityWorkbenchURIConverterImpl extends WorkbenchURIConverte
 		if(PlatformURLModuleConnection.MODULE.equals(aURI.scheme())) {
 			return PlatformURLModuleConnection.resolve(aURI);
 		}
-		return super.normalize(aURI);
+		URI normalizedURI = super.normalize(aURI);
+		if(normalizedURI.scheme() == null || normalizedURI.scheme().length() == 0) {
+			normalizedURI = URI.createPlatformResourceURI(getInputContainer().getFullPath().append(normalizedURI.toString()).toString());
+		}
+		return normalizedURI;
 	}
 
 	/**

@@ -18,6 +18,6 @@ public interface WTPModulesXmlMapperI {
 	String WBAPPLICATION = "wbapplication"; //$NON-NLS-1$
 	String TYPE = "type"; //$NON-NLS-1$
 	String SERVER_TARGET = "server-target"; //$NON-NLS-1$
-	String TYPE_NAME = "type-name"; //$NON-NLS-1$
+	String MODULE_TYPE_ID = "module-type-id"; //$NON-NLS-1$
 	
 }
