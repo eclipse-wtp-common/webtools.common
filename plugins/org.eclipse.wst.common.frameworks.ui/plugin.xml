@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="org.eclipse.wst.common.frameworks.ui"
+   name="WTP UI Plug-in"
+   version="1.0.0"
+   provider-name=""
+   class="org.eclipse.wst.common.frameworks.ui.WTPUIPlugin">
+
+   <runtime>
+      <library name="wtp_ui.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+   <requires>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.ui.views"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.wst.common.frameworks"/>
+      <import plugin="org.eclipse.jdt.core"/>
+      <import plugin="org.eclipse.jdt.ui"/>
+      <import plugin="org.eclipse.core.runtime.compatibility"/>
+   </requires>
+
+
+   <extension-point id="wtpuiAction" name="WTP UI Action" schema="schema/wtpuiAction.exsd"/>
+   <extension-point id="extendedViewer" name="Extended Viewers" schema="schema/extendedViewer.exsd"/>
+   <extension-point id="extendableWizard" name="Extendable Wizard" schema="schema/extendableWizard.exsd"/>
+   <extension-point id="wizardPageGroup" name="Extendable Wizard Page" schema="schema/extendableWizardPage.exsd"/>
+
+   <extension
+         id="UITester"
+         point="com.ibm.wtp.common.util.uiTester">
+      <uiTester
+            className="org.eclipse.wst.common.frameworks.ui.UITesterImpl">
+      </uiTester>
+   </extension>
+   <extension
+         id="context.Sensitive.Class.saveHandler"
+         name="Save Handler - Headless Context Class"
+         point="com.ibm.wtp.common.util.uiContextSensitiveClass">
+      <uiContextSensitiveClass
+            key="saveHandler"
+            context="UI"
+            className="org.eclipse.wst.common.frameworks.ui.SaveHandlerUI">
+      </uiContextSensitiveClass>
+   </extension>
+   <extension
+         id="org.eclipse.wst.common.framework.ui.EnablementDetermination"
+         name="UI Enablement Determination"
+         point="com.ibm.wtp.common.util.uiContextSensitiveClass">
+      <uiContextSensitiveClass
+            key="org.eclipse.wst.common.framework.EnablementDetermination"
+            context="UI"
+            className="org.eclipse.wst.internal.common.frameworks.ui.enablement.UIEnablementManager">
+      </uiContextSensitiveClass>
+   </extension>
+   <extension
+         point="org.eclipse.wst.common.frameworks.WTPActivityBridgeHelper">
+      <WTPActivityBridgeHelper
+            class="org.eclipse.wst.internal.common.frameworks.ui.WTPActivityBridgeHelperImpl">
+      </WTPActivityBridgeHelper>
+   </extension>
+   <!--
+   <extension
+         point="org.eclipse.wst.common.frameworks.OperationExtension">
+      <operationExtension
+            postOperationClass="org.eclipse.wst.common.framework.operation.extension.ui.PostPasteActionOperation"
+            id="org.eclipse.wst.common.framework.operation.extension.ui.PasteActionOperation"/>
+   </extension>
+   -->
+   <extension
+         point="org.eclipse.wst.common.frameworks.ExtendableOperation">
+      <extendableOperation
+            class="org.eclipse.wst.common.framework.operation.extension.ui.PasteActionOperation"
+            id="org.eclipse.wst.common.framework.operation.extension.ui.PasteActionOperation"/>
+   </extension> 
+   
+   
+</plugin>

@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="com.ibm.etools.emf.workbench.ui">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="com.ibm.etools.emf.workbench.ui" id="editModelEditor" name="Edit Model Editor"/>
+      </appInfo>
+      <documentation>
+         Edit model editors represent the multi page editors that can be used to edit a collection of EMF resources.  By declaring an edit model editor, the plugin provider allows the framework to generically obtain the edit model used by the editor.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <complexType>
+         <sequence>
+            <choice>
+               <element ref="wizardPageGroup"/>
+            </choice>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="wizardPageGroup">
+      <complexType>
+         <sequence>
+            <choice>
+               <element ref="factory"/>
+            </choice>
+         </sequence>
+         <attribute name="wizardID" type="string" use="required">
+            <annotation>
+               <documentation>
+                  This must match the id defined in the extendableWizard element in the extendableWizard extension point
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="allowsExtendedPagesAfter" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="pageGroupInsertionID" type="string">
+            <annotation>
+               <documentation>
+                  If this page is to immediately after another page, this must match the pageID of the page to insert after.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="pageGroupID" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="factory">
+      <complexType>
+         <attribute name="className" type="string" use="required">
+            <annotation>
+               <documentation>
+                  This class is an instancof com.ibm.wtp.common.ui.wizard.extensions.WizardExtensionFactory
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         6.0
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         [Enter extension point usage example here.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiInfo"/>
+      </appInfo>
+      <documentation>
+         [Enter API information here.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="implementation"/>
+      </appInfo>
+      <documentation>
+         [Enter information about supplied implementation of this extension point.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="copyright"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+</schema>
