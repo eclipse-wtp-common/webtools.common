@@ -12,7 +12,6 @@ package org.eclipse.wst.common.modulecore.resources;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 
 public interface IVirtualContainer extends IVirtualResource {
 
@@ -229,35 +228,6 @@ public interface IVirtualContainer extends IVirtualResource {
 	 * @see IVirtualResource#isAccessible()
 	 */
 	public IVirtualResource[] members() throws CoreException;
-
-	/**
-	 * Returns a list of all member resources (projects, folders and files)
-	 * in this resource, in no particular order.
-	 * <p>
-	 * This is a convenience method, fully equivalent to:
-	 * <pre>
-	 *   members(includePhantoms ? INCLUDE_PHANTOMS : IVirtualResource.NONE);
-	 * </pre>
-	 * Team-private member resources are <b>not</b> included in the result.
-	 * </p>
-	 *
-	 * @param includePhantoms <code>true</code> if phantom resources are
-	 *   of interest; <code>false</code> if phantom resources are not of
-	 *   interest
-	 * @return an array of members of this resource
-	 * @exception CoreException if this request fails. Reasons include:
-	 * <ul>
-	 * <li> This resource does not exist.</li>
-	 * <li> <code>includePhantoms</code> is <code>false</code> and
-	 *     this resource does not exist.</li>
-	 * <li> <code>includePhantoms</code> is <code>false</code> and
-	 *     this resource is a project that is not open.</li>
-	 * </ul>
-	 * @see #members(int)
-	 * @see IVirtualResource#exists()
-	 * @see IVirtualResource#isPhantom()
-	 */
-	public IVirtualResource[] members(boolean includePhantoms) throws CoreException;
 
 	/**
 	 * Returns a list of all member resources (projects, folders and files)

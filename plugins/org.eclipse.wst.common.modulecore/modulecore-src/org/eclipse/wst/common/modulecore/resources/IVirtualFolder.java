@@ -10,61 +10,13 @@
  *******************************************************************************/ 
 package org.eclipse.wst.common.modulecore.resources;
 
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 
 public interface IVirtualFolder extends IVirtualContainer {
-
-
-	/**
-	 * Creates a new folder resource as a member of this handle's parent resource.
-	 * <p>
-	 * This is a convenience method, fully equivalent to:
-	 * <pre>
-	 *   create((force ? FORCE : IVirtualResource.NONE), local, monitor);
-	 * </pre>
-	 * </p>
-	 * <p>
-	 * This method changes resources; these changes will be reported
-	 * in a subsequent resource change event, including an indication 
-	 * that the folder has been added to its parent.
-	 * </p>
-	 * <p>
-	 * This method is long-running; progress and cancellation are provided
-	 * by the given progress monitor. 
-	 * </p>
-	 * 
-	 * @param force a flag controlling how to deal with resources that
-	 *    are not in sync with the local file system
-	 * @param local a flag controlling whether or not the folder will be local
-	 *    after the creation
-	 * @param monitor a progress monitor, or <code>null</code> if progress
-	 *    reporting is not desired
-	 * @exception CoreException if this method fails. Reasons include:
-	 * <ul>
-	 * <li> This resource already exists in the workspace.</li>
-	 * <li> The workspace contains a resource of a different type 
-	 *      at the same path as this resource.</li>
-	 * <li> The parent of this resource does not exist.</li>
-	 * <li> The parent of this resource is a project that is not open.</li>
-	 * <li> The parent contains a resource of a different type 
-	 *      at the same path as this resource.</li>
-	 * <li> The name of this resource is not valid (according to 
-	 *    <code>IWorkspace.validateName</code>).</li>
-	 * <li> The corresponding location in the local file system is occupied
-	 *    by a file (as opposed to a directory).</li>
-	 * <li> The corresponding location in the local file system is occupied
-	 *    by a folder and <code>force </code> is <code>false</code>.</li>
-	 * <li> Resource changes are disallowed during certain types of resource change 
-	 *       event notification.  See <code>IVirtualResourceChangeEvent</code> for more details.</li>
-	 * </ul>
-	 * @exception OperationCanceledException if the operation is canceled. 
-	 * Cancelation can occur even if no progress monitor is provided.
-	 * @see IVirtualFolder#create(int,boolean,IProgressMonitor)
-	 */
-	public void create(boolean force, boolean local, IProgressMonitor monitor) throws CoreException;
 
 	/**
 	 * Creates a new folder resource as a member of this handle's parent resource.
@@ -122,7 +74,7 @@ public interface IVirtualFolder extends IVirtualContainer {
 	 * @see IVirtualResourceRuleFactory#createRule(IVirtualResource)
 	 * @since 2.0
 	 */
-	public void create(int updateFlags, boolean local, IProgressMonitor monitor) throws CoreException;
+	public void create(int updateFlags, IProgressMonitor monitor) throws CoreException;
 
 	/**
 	 * Creates a new folder resource as a member of this handle's parent resource.
@@ -191,46 +143,6 @@ public interface IVirtualFolder extends IVirtualContainer {
 	public void createLink(IPath localLocation, int updateFlags, IProgressMonitor monitor) throws CoreException; 
 
 	/**
-	 * Deletes this resource from the workspace.
-	 * <p>
-	 * This is a convenience method, fully equivalent to:
-	 * <pre>
-	 *   delete((keepHistory ? KEEP_HISTORY : IVirtualResource.NONE) | (force ? FORCE : IVirtualResource.NONE), monitor);
-	 * </pre>
-	 * </p>
-	 * <p>
-	 * This method changes resources; these changes will be reported
-	 * in a subsequent resource change event, including an indication 
-	 * that this folder has been removed from its parent.
-	 * </p>
-	 * <p>
-	 * This method is long-running; progress and cancellation are provided
-	 * by the given progress monitor. 
-	 * </p>
-	 * 
-	 * @param force a flag controlling whether resources that are not
-	 *    in sync with the local file system will be tolerated
-	 * @param keepHistory a flag controlling whether files under this folder
-	 *    should be stored in the workspace's local history
-	 * @param monitor a progress monitor, or <code>null</code> if progress
-	 *    reporting is not desired
-	 * @exception CoreException if this method fails. Reasons include:
-	 * <ul>
-	 * <li> This resource could not be deleted for some reason.</li>
-	 * <li> This resource is out of sync with the local file system
-	 *      and <code>force</code> is <code>false</code>.</li>
-	 * <li> Resource changes are disallowed during certain types of resource change 
-	 *       event notification. See <code>IVirtualResourceChangeEvent</code> for more details.</li>
-	 * </ul>
-	 * @exception OperationCanceledException if the operation is canceled. 
-	 * Cancelation can occur even if no progress monitor is provided.
-	 *
-	 * @see IVirtualResourceRuleFactory#deleteRule(IVirtualResource)
-	 * @see IVirtualResource#delete(int,IProgressMonitor)
-	 */
-	public void delete(boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException;
-
-	/**
 	 * Returns a handle to the file with the given name in this folder.
 	 * <p> 
 	 * This is a resource handle operation; neither the resource nor
@@ -262,53 +174,7 @@ public interface IVirtualFolder extends IVirtualContainer {
 	 */
 	public IVirtualFolder getFolder(String name);
 
-	/**
-	 * Moves this resource so that it is located at the given path.  
-	 * <p>
-	 * This is a convenience method, fully equivalent to:
-	 * <pre>
-	 *   move(destination, (keepHistory ? KEEP_HISTORY : IVirtualResource.NONE) | (force ? FORCE : IVirtualResource.NONE), monitor);
-	 * </pre>
-	 * </p>
-	 * <p>
-	 * This method changes resources; these changes will be reported
-	 * in a subsequent resource change event, including an indication 
-	 * that this folder has been removed from its parent and a new folder
-	 * has been added to the parent of the destination.
-	 * </p>
-	 * <p>
-	 * This method is long-running; progress and cancellation are provided
-	 * by the given progress monitor. 
-	 * </p>
-	 * 
-	 * @param destination the destination path 
-	 * @param force a flag controlling whether resources that are not
-	 *    in sync with the local file system will be tolerated
-	 * @param keepHistory a flag controlling whether files under this folder
-	 *    should be stored in the workspace's local history
-	 * @param monitor a progress monitor, or <code>null</code> if progress
-	 *    reporting is not desired
-	 * @exception CoreException if this resource could not be moved. Reasons include:
-	 * <ul>
-	 * <li> This resource does not exist.</li>
-	 * <li> This resource or one of its descendents is not local.</li>
-	 * <li> The resource corresponding to the parent destination path does not exist.</li>
-	 * <li> The resource corresponding to the parent destination path is a closed 
-	 *      project.</li>
-	 * <li> A resource at destination path does exist.</li>
-	 * <li> A resource of a different type exists at the destination path.</li>
-	 * <li> This resource or one of its descendents is out of sync with the local file system
-	 *      and <code>force</code> is <code>false</code>.</li>
-	 * <li> The workspace and the local file system are out of sync
-	 *      at the destination resource or one of its descendents.</li>
-	 * <li> Resource changes are disallowed during certain types of resource change 
-	 *       event notification. See <code>IVirtualResourceChangeEvent</code> for more details.</li>
-	 * </ul>
-	 * @exception OperationCanceledException if the operation is canceled. 
-	 * Cancelation can occur even if no progress monitor is provided.
-	 *
-	 * @see IVirtualResourceRuleFactory#moveRule(IVirtualResource, IVirtualResource)
-	 * @see IVirtualResource#move(IPath,int,IProgressMonitor)
-	 */
-	public void move(IPath destination, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException;
+	public IFolder getRealFolder();
+	
+	public IFolder[] getRealFolders();
 }

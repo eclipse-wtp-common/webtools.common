@@ -84,17 +84,7 @@ public class VirtualContainer extends VirtualResource implements IVirtualContain
 		// moduleCore.dispose();
 		// }
 		return new VirtualFolder(getComponentHandle(), getRuntimePath().append(path));
-	}
-
-	public String getDefaultCharset() throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		// return null;
-	}
-
-	public String getDefaultCharset(boolean checkImplicit) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		// return null;
-	}
+	} 
 
 	/**
 	 * @see IContainer#getFile(org.eclipse.core.runtime.IPath)
@@ -179,7 +169,8 @@ public class VirtualContainer extends VirtualResource implements IVirtualContain
 
 					if (fullRuntimePath.segmentCount() == 1) {
 						realResource = ModuleCore.getEclipseResource(componentResources[componentResourceIndex]);
-						addVirtualResource(virtualResources, realResource, newRuntimePath);
+						if(realResource != null)
+							addVirtualResource(virtualResources, realResource, newRuntimePath);
 					} else if (fullRuntimePath.segmentCount() > 1) {
 						virtualResources.add(new VirtualFolder(getComponentHandle(), newRuntimePath));
 					}
@@ -194,32 +185,11 @@ public class VirtualContainer extends VirtualResource implements IVirtualContain
 		return (IVirtualResource[]) virtualResources.toArray(new IVirtualResource[virtualResources.size()]);
 	}
 
-	/**
-	 * @param virtualResources
-	 * @param realResource
-	 * @param newRuntimePath
-	 */
-	private void addVirtualResource(Set virtualResources, IResource realResource, IPath newRuntimePath) {
-		if (realResource.getType() == IResource.FOLDER)
-			virtualResources.add(new VirtualFolder(getComponentHandle(), newRuntimePath));
-		else
-			virtualResources.add(new VirtualFile(getComponentHandle(), newRuntimePath));
-	}
 
 	public IVirtualFile[] findDeletedMembersWithHistory(int depth, IProgressMonitor monitor) throws CoreException {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 		// return null;
-	}
-
-	public void setDefaultCharset(String charset) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
-	}
-
-	public void setDefaultCharset(String charset, IProgressMonitor monitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
-	}
+	} 
 
 	public void commit() throws CoreException{
 		
@@ -236,11 +206,15 @@ public class VirtualContainer extends VirtualResource implements IVirtualContain
 			}
 		} 
 	}
+	
+	public int getType() {
+		return IResource.ROOT;
+	}
 
 	protected void doDeleteMetaModel(int updateFlags, IProgressMonitor monitor) {
 		ModuleCore moduleCore = null;
 		try {
-			moduleCore = ModuleCore.getModuleCoreForRead(getComponentHandle().getProject());
+			moduleCore = ModuleCore.getModuleCoreForWrite(getComponentHandle().getProject());
 			WorkbenchComponent component = moduleCore.findWorkbenchModuleByDeployName(getComponentHandle().getName());
 			moduleCore.getModuleModelRoot().getComponents().remove(component);
 		} finally {
@@ -253,6 +227,19 @@ public class VirtualContainer extends VirtualResource implements IVirtualContain
 
 	protected void doDeleteRealResources(int updateFlags, IProgressMonitor monitor) throws CoreException {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
+	}
+	
+
+	/**
+	 * @param virtualResources
+	 * @param realResource
+	 * @param newRuntimePath
+	 */
+	private void addVirtualResource(Set virtualResources, IResource realResource, IPath newRuntimePath) {
+		if (realResource.getType() == IResource.FOLDER)
+			virtualResources.add(new VirtualFolder(getComponentHandle(), newRuntimePath));
+		else
+			virtualResources.add(new VirtualFile(getComponentHandle(), newRuntimePath));
 	}
 
 }

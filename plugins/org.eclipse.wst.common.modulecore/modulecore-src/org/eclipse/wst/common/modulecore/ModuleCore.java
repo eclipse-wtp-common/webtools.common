@@ -70,7 +70,6 @@ import org.eclipse.wst.common.modulecore.resources.IVirtualFolder;
 public class ModuleCore implements IEditModelHandler {
 
 	public static final Class ADAPTER_TYPE = ModuleCore.class;
-	public static final int DELETE_METAMODEL_ONLY = 0x100000; 
 
 	static final String DEPLOYABLES_ROOT = ".deployables/"; //$NON-NLS-1$
 	static String MODULE_META_FILE_NAME = ".wtpmodules"; //$NON-NLS-1$
@@ -103,7 +102,8 @@ public class ModuleCore implements IEditModelHandler {
 	 * @return A ModuleCore edit facade to access the WTP Modules Model
 	 */
 	public static ModuleCore getModuleCoreForRead(IProject aProject) {
-		return new ModuleCore(ModuleCoreNature.getModuleCoreNature(aProject), true);
+		ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(aProject);
+		return nature != null ? new ModuleCore(nature, true) : null;
 	}
 
 	/**
@@ -122,7 +122,8 @@ public class ModuleCore implements IEditModelHandler {
 	 * @return A ModuleCore edit facade to access the WTP Modules Model
 	 */
 	public static ModuleCore getModuleCoreForWrite(IProject aProject) {
-		return new ModuleCore(ModuleCoreNature.getModuleCoreNature(aProject), false);
+		ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(aProject);
+		return nature != null ? new ModuleCore(nature, false) : null;
 	}
 
 	/**
@@ -150,8 +151,8 @@ public class ModuleCore implements IEditModelHandler {
 
 	/**
 	 * <p>
-	 * For {@see WorkbenchComponent}s that are contained within a project, the containing project can
-	 * be determined with the {@see WorkbenchComponent}'s fully-qualified module URI.
+	 * For {@see WorkbenchComponent}s that are contained within a project, the containing project
+	 * can be determined with the {@see WorkbenchComponent}'s fully-qualified module URI.
 	 * </p>
 	 * <p>
 	 * The following method will return the the corresponding project for the supplied module URI,
@@ -184,12 +185,11 @@ public class ModuleCore implements IEditModelHandler {
 	/**
 	 * <p>
 	 * Returns the corresponding Eclipse IResource, if it can be determined, for the given
-	 * {@see ComponentResource}. The {@see ComponentResource#getSourcePath()}
-	 * &nbsp;must return a valid resource path for This method to return a valid value. The returned
-	 * value may be either an {@see org.eclipse.core.resources.IFile}&nbsp;or
-	 * {@see org.eclipse.core.resources.IFolder}. A client may use the return value of
-	 * {@see IResource#getType()}&nbsp;to determine what type of resource was returned. (@see
-	 * IResource#FILE} or {@see IResource#FOLDER}).
+	 * {@see ComponentResource}. The {@see ComponentResource#getSourcePath()} &nbsp;must return a
+	 * valid resource path for This method to return a valid value. The returned value may be either
+	 * an {@see org.eclipse.core.resources.IFile}&nbsp;or {@see org.eclipse.core.resources.IFolder}.
+	 * A client may use the return value of {@see IResource#getType()}&nbsp;to determine what type
+	 * of resource was returned. (@see IResource#FILE} or {@see IResource#FOLDER}).
 	 * </p>
 	 * <p>
 	 * <b>This method may return null. </b>
@@ -210,8 +210,8 @@ public class ModuleCore implements IEditModelHandler {
 
 	/**
 	 * <p>
-	 * Returns a URI for the supplied {@see WorkbenchComponent}. The URI will be relative to project
-	 * root of the flexible project that contains the {@see WorkbenchComponent}.
+	 * Returns a URI for the supplied {@see WorkbenchComponent}. The URI will be relative to
+	 * project root of the flexible project that contains the {@see WorkbenchComponent}.
 	 * </p>
 	 * <p>
 	 * <b>This method may return null. </b>
@@ -236,8 +236,8 @@ public class ModuleCore implements IEditModelHandler {
 	 * <p>
 	 * Returns a collection of the output containers for the supplied project. The collection may be
 	 * a single root output container or an array of output containers without a common root. For
-	 * clients that are looking for an output container for a specific {@see WorkbenchComponent}, see
-	 * {@see #getOutputContainerRoot(WorkbenchComponent)}.
+	 * clients that are looking for an output container for a specific {@see WorkbenchComponent},
+	 * see {@see #getOutputContainerRoot(WorkbenchComponent)}.
 	 * </p>
 	 * <p>
 	 * If the project is not a ModuleCore project, or has no ModuleCore output containers, an empty
@@ -272,15 +272,15 @@ public class ModuleCore implements IEditModelHandler {
 	public static String getDeployedName(URI aFullyQualifiedModuleURI) throws UnresolveableURIException {
 		return ModuleURIUtil.getDeployedName(aFullyQualifiedModuleURI);
 	}
-	
+
 	public static IVirtualContainer create(IProject aProject, String aName) {
 		return new VirtualContainer(aProject, aName, new Path("/")); //$NON-NLS-1$
 	}
-	
+
 	public static IVirtualFolder create(IFolder aFolder, String aComponentName, IPath aRuntimePath) {
 		return new VirtualFolder(aFolder, aComponentName, aRuntimePath);
 	}
-	
+
 	public static ComponentType getComponentType(IVirtualContainer aComponent) {
 		ModuleCore moduleCore = null;
 		ComponentType componentType = null;
@@ -289,30 +289,29 @@ public class ModuleCore implements IEditModelHandler {
 			WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(aComponent.getComponentName());
 			componentType = wbComponent.getComponentType();
 		} finally {
-			if(moduleCore != null)
+			if (moduleCore != null)
 				moduleCore.dispose();
 		}
 		return componentType;
 	}
-	
-	
+
+
 	public static void setComponentType(IVirtualContainer component, ComponentType aComponentType) {
-		ModuleCore moduleCore = null; 
+		ModuleCore moduleCore = null;
 		try {
 			moduleCore = ModuleCore.getModuleCoreForWrite(component.getProject());
 			WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(component.getComponentName());
 			wbComponent.setComponentType(aComponentType);
 		} finally {
-			if(moduleCore != null) {
+			if (moduleCore != null) {
 				moduleCore.saveIfNecessary(null);
 				moduleCore.dispose();
 			}
-		} 
+		}
 	}
-	
+
 	public static URI createComponentURI(IProject aContainingProject, String aComponentName) {
-		return URI.createURI(PlatformURLModuleConnection.MODULE_PROTOCOL+IPath.SEPARATOR+PlatformURLModuleConnection.RESOURCE_MODULE
-								+aContainingProject.getName()+IPath.SEPARATOR+aComponentName);
+		return URI.createURI(PlatformURLModuleConnection.MODULE_PROTOCOL + IPath.SEPARATOR + PlatformURLModuleConnection.RESOURCE_MODULE + aContainingProject.getName() + IPath.SEPARATOR + aComponentName);
 	}
 
 	protected ModuleCore(ModuleCoreNature aNature, boolean toAccessAsReadOnly) {
@@ -414,20 +413,22 @@ public class ModuleCore implements IEditModelHandler {
 	public ProjectComponents getModuleModelRoot() {
 		return (ProjectComponents) structuralModel.getPrimaryRootObject();
 	}
-	
+
 	/**
 	 * <p>
-	 * 	Return the an array of ComponentResource which basically represent the
-	 * source containers of a WorkbenchResource.
+	 * Return the an array of ComponentResource which basically represent the source containers of a
+	 * WorkbenchResource.
 	 * <p>
+	 * 
 	 * @param component
 	 * @return
 	 */
 	public ComponentResource[] getSourceContainers(WorkbenchComponent component) {
-		//TODO Api in progress: Need to return the Java Source containers of the project
+		// TODO Api in progress: Need to return the Java Source containers of the project
+		// TODO MDE: I don't know if I agree with the placement of this method.
 		return null;
 	}
- 
+
 	/**
 	 * <p>
 	 * Clients that wish to modify the individual {@see WorkbenchComponent}&nbsp;instances may use
@@ -444,9 +445,9 @@ public class ModuleCore implements IEditModelHandler {
 
 	/**
 	 * <p>
-	 * Create a {@see WorkbenchComponent}&nbsp;with the given deployed name. The returned module will
-	 * be contained by the root object of the current ModuleCore (so no need to re-add it to the
-	 * Module Module root object). The current ModuleCore must not be read-only to invoke This
+	 * Create a {@see WorkbenchComponent}&nbsp;with the given deployed name. The returned module
+	 * will be contained by the root object of the current ModuleCore (so no need to re-add it to
+	 * the Module Module root object). The current ModuleCore must not be read-only to invoke This
 	 * method.
 	 * </p>
 	 * 
@@ -477,8 +478,8 @@ public class ModuleCore implements IEditModelHandler {
 	 *            {@see ComponentResource}
 	 * @param aResource
 	 *            A non-null IResource that will be used to set the sourcePath
-	 * @return A {@see ComponentResource}associated with the current ModuleCore with its
-	 *         sourcePath equivalent to aResource
+	 * @return A {@see ComponentResource}associated with the current ModuleCore with its sourcePath
+	 *         equivalent to aResource
 	 * @throws IllegalStateException
 	 *             If the current ModuleCore was created as read-only
 	 */
@@ -494,15 +495,15 @@ public class ModuleCore implements IEditModelHandler {
 
 	/**
 	 * <p>
-	 * Create a {@see ComponentType}&nbsp;with the sourcePath of aResource. The returned resource will
-	 * be associated with the current ModuleCore. The current ModuleCore must not be read-only to
-	 * invoke This method.
+	 * Create a {@see ComponentType}&nbsp;with the sourcePath of aResource. The returned resource
+	 * will be associated with the current ModuleCore. The current ModuleCore must not be read-only
+	 * to invoke This method.
 	 * </p>
 	 * 
 	 * @param aResource
 	 *            A non-null IResource that will be used to set the sourcePath
-	 * @return A {@see ComponentResource}associated with the current ModuleCore with its
-	 *         sourcePath equivalent to aResource
+	 * @return A {@see ComponentResource}associated with the current ModuleCore with its sourcePath
+	 *         equivalent to aResource
 	 * @throws IllegalStateException
 	 *             If the current ModuleCore was created as read-only
 	 */
@@ -560,16 +561,15 @@ public class ModuleCore implements IEditModelHandler {
 
 	/**
 	 * <p>
-	 * Locates the {@see ComponentResource}s that contain the supplied resource in their
-	 * source path. There are no representations about the containment of the
-	 * {@see ComponentResource}s which are returned. The only guarantee is that the returned
-	 * elements are contained within the same project.
+	 * Locates the {@see ComponentResource}s that contain the supplied resource in their source
+	 * path. There are no representations about the containment of the {@see ComponentResource}s
+	 * which are returned. The only guarantee is that the returned elements are contained within the
+	 * same project.
 	 * </p>
 	 * <p>
-	 * The sourcePath of each {@see ComponentResource}&nbsp;will be mapped to either an IFile
-	 * or an IFolder. As a result, if the {@see ComponentResource}&nbsp;is a container
-	 * mapping, the path of the supplied resource may not be identical the sourcePath of the
-	 * {@see ComponentResource}.
+	 * The sourcePath of each {@see ComponentResource}&nbsp;will be mapped to either an IFile or an
+	 * IFolder. As a result, if the {@see ComponentResource}&nbsp;is a container mapping, the path
+	 * of the supplied resource may not be identical the sourcePath of the {@see ComponentResource}.
 	 * </p>
 	 * 
 	 * @param aWorkspaceRelativePath
@@ -590,25 +590,25 @@ public class ModuleCore implements IEditModelHandler {
 			module = (WorkbenchComponent) modules.get(i);
 			resources = module.findWorkbenchModuleResourceBySourcePath(aWorkspaceRelativePath);
 			if (resources != null && resources.length != 0)
-					foundResources.addAll(Arrays.asList(resources));
-			}
-			if (foundResources.size() > 0)
-				return (ComponentResource[]) foundResources.toArray(new ComponentResource[foundResources.size()]);
+				foundResources.addAll(Arrays.asList(resources));
+		}
+		if (foundResources.size() > 0)
+			return (ComponentResource[]) foundResources.toArray(new ComponentResource[foundResources.size()]);
 		return NO_RESOURCES;
 	}
 
 	/**
 	 * <p>
-	 * Returns the {@see WorkbenchComponent}&nbsp;contained by the current ModuleCore with the deploy
-	 * name aModuleName.
+	 * Returns the {@see WorkbenchComponent}&nbsp;contained by the current ModuleCore with the
+	 * deploy name aModuleName.
 	 * </p>
 	 * <p>
 	 * <b>This method may return null. </b>
 	 * </p>
 	 * 
 	 * @param aModuleName
-	 * @return The {@see WorkbenchComponent}contained by the current ModuleCore with the deploy name
-	 *         aModuleName
+	 * @return The {@see WorkbenchComponent}contained by the current ModuleCore with the deploy
+	 *         name aModuleName
 	 * @see WorkbenchComponent#getDeployedName()
 	 */
 	public WorkbenchComponent findWorkbenchModuleByDeployName(String aModuleName) {
@@ -644,12 +644,14 @@ public class ModuleCore implements IEditModelHandler {
 	 * <p>
 	 * Searches the available {@see WorkbenchComponent}s as available through
 	 * {@see #getWorkbenchModules()}&nbsp;for {@see WorkbenchComponent}s that have a
-	 * {@see WorkbenchComponent#getModuleType()}with a a module type Id as specified by aModuleTypeId.
+	 * {@see WorkbenchComponent#getModuleType()}with a a module type Id as specified by
+	 * aModuleTypeId.
 	 * </p>
 	 * 
 	 * @param aModuleTypeId
 	 *            A non-null module type id ({@see ComponentType#getModuleTypeId()})
-	 * @return A non-null array of the {@see WorkbenchComponent}s that match the given module type id
+	 * @return A non-null array of the {@see WorkbenchComponent}s that match the given module type
+	 *         id
 	 */
 	public WorkbenchComponent[] findWorkbenchModuleByType(String aModuleTypeId) {
 		WorkbenchComponent[] availableModules = getWorkbenchModules();
@@ -698,10 +700,10 @@ public class ModuleCore implements IEditModelHandler {
 			dependentCore = (ModuleCore) dependentCores.get(aModuleURI);
 			if (dependentCore == null) {
 				IProject container = getContainingProject(aModuleURI);
-				if(container != null) {
+				if (container != null) {
 					dependentCore = getModuleCoreForRead(container);
 					dependentCores.put(aModuleURI, dependentCore);
-				} else 
+				} else
 					throw new UnresolveableURIException(aModuleURI);
 			}
 		}
@@ -711,21 +713,23 @@ public class ModuleCore implements IEditModelHandler {
 	private void throwAttemptedReadOnlyModification() {
 		throw new IllegalStateException("Attempt to modify a ModuleCore edit facade that was loaded as read-only.");
 	}
-	
+
 	/**
 	 * temporary method to return first module in the project
+	 * 
 	 * @return first module in the project
 	 * @deprecated
 	 */
 	public WorkbenchComponent getFirstModule() {
-		if (getWorkbenchModules().length>0)
+		if (getWorkbenchModules().length > 0)
 			return getWorkbenchModules()[0];
 		return null;
 	}
-	
+
 	/**
-	 * temporary method to return artifact edit for first module in project
-	 * USERS MUST DISPOSE THE ARTIFACT EDIT
+	 * temporary method to return artifact edit for first module in project USERS MUST DISPOSE THE
+	 * ARTIFACT EDIT
+	 * 
 	 * @param project
 	 * @return the artifact edit for the first module
 	 * @deprecated
@@ -739,7 +743,7 @@ public class ModuleCore implements IEditModelHandler {
 			module = moduleCore.getFirstModule();
 			artEdit = ArtifactEdit.getArtifactEditForRead(module);
 		} finally {
-			if (moduleCore !=null)
+			if (moduleCore != null)
 				moduleCore.dispose();
 		}
 		return artEdit;
