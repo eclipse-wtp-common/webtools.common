@@ -116,8 +116,7 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
     private Object getOutputContainerValue() {
         if(!isSet(DEPENDENT_MODULE)) return null;
         DependentModule depModule = getDependentModule();
-        URI moduleRoot = ModuleCore.getOutputContainerRoot(getWorkBenchModuleValue());
-        return ModuleURIUtil.concat(moduleRoot, depModule.getDeployedPath()); 
+        return depModule.getDeployedPath(); 
     }
 
     private URI getHandleValue() {

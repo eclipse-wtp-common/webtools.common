@@ -16,11 +16,14 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.internal.resources.Resource;
+import org.eclipse.core.internal.resources.Workspace;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -68,12 +71,32 @@ public class DependentDeployableModuleOperation extends WTPOperation {
 		    //if consumes simply copy resources to output directory
 			IResource sourceResource = getResource(absoluteInputContainer);
 			if(sourceResource == null) return;
-			sourceResource.copy(absoluteInputContainer, true, new NullProgressMonitor());
+			smartCopy(sourceResource, absoluteOutputContainer, new NullProgressMonitor());
+			//sourceResource.copy(absoluteOutputContainer, true, new NullProgressMonitor());
 		} else {
 		    String zipName = getZipFileName();
-		    zipAndCopyResource(getResource(absoluteInputContainer), absoluteInputContainer.append(zipName).toString());
+		    zipAndCopyResource(getResource(absoluteInputContainer), absoluteOutputContainer.append(zipName).toString());
 		}    
     }
+	/**
+	 * @param sourceResource
+	 * @param absoluteInputContainer
+	 * @param monitor
+	 * @throws CoreException
+	 */
+    //TODO this is a bit sloppy; there must be existing API somewhere.
+	private void smartCopy(IResource sourceResource, IPath absoluteOutputContainer, NullProgressMonitor monitor) throws CoreException {
+		Resource targetResource =((Workspace)ResourcesPlugin.getWorkspace()).newResource(absoluteOutputContainer, sourceResource.getType()); 
+		if(!targetResource.exists()){
+			sourceResource.copy(absoluteOutputContainer, true, monitor);
+		} else if(sourceResource.getType() == Resource.FOLDER){
+			IFolder folder = (IFolder)sourceResource;
+			IResource [] members = folder.members();
+			for(int i=0;i<members.length;i++){
+				smartCopy(members[i],  absoluteOutputContainer.append(IPath.SEPARATOR+members[i].getName()), monitor);
+			}
+		}
+	}
 	/**
      * @param resource
      * @param zipName
@@ -95,8 +118,9 @@ public class DependentDeployableModuleOperation extends WTPOperation {
             WorkbenchModule workbenchModule = (WorkbenchModule)depDataModel.getProperty(DependentDeployableModuleDataModel.CONTAINING_WBMODULE);
     		IProject currentModuleProject = ModuleCore.getContainingProject(workbenchModule.getHandle());
     		IPath currentModuleProjectPath = currentModuleProject.getFullPath();
-    		URI outputContainerURI = (URI)depDataModel.getProperty(DependentDeployableModuleDataModel.OUTPUT_CONTAINER);
-    		return currentModuleProjectPath.append(outputContainerURI.toString());
+    		URI outputContainerURI = ModuleCore.getOutputContainerRoot(workbenchModule);
+    		URI deployPath = (URI)depDataModel.getProperty(DependentDeployableModuleDataModel.OUTPUT_CONTAINER);
+    		return currentModuleProjectPath.append(outputContainerURI.toString()).append(deployPath.toString());
         } catch (UnresolveableURIException e) {
         }
         return null;
