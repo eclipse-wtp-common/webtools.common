@@ -19,7 +19,7 @@ package org.eclipse.wst.common.frameworks.internal.ui;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.Workbench;
 
-import com.ibm.wtp.common.UITester;
+import org.eclipse.jem.util.UITester;
 
 
 /**

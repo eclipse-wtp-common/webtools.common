@@ -27,7 +27,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.wst.common.frameworks.internal.operations.OperationExtensionRegistry;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 
-import com.ibm.wtp.common.RegistryReader;
+import org.eclipse.jem.util.RegistryReader;
 
 /**
  * @author mdelder

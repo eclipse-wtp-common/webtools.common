@@ -45,7 +45,7 @@
    </extension>
    
       <extension
-         point="com.ibm.wtp.common.util.uiContextSensitiveClass">
+         point="org.eclipse.jem.util.uiContextSensitiveClass">
       <uiContextSensitiveClass
             context="Headless"
             key="rendererFactory"

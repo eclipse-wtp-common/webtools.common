@@ -225,11 +225,11 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 					break;
 			}
 
-			com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("MOF Change: " + notifType); //$NON-NLS-1$
-			com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("\tnotifier      : " + msg.getNotifier()); //$NON-NLS-1$
-			com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("\tchangedFeature: " + msg.getFeature()); //$NON-NLS-1$
-			com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("\toldValue      : " + msg.getOldValue()); //$NON-NLS-1$
-			com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("\tnewValue      : " + msg.getNewValue()); //$NON-NLS-1$
+			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("MOF Change: " + notifType); //$NON-NLS-1$
+			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("\tnotifier      : " + msg.getNotifier()); //$NON-NLS-1$
+			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("\tchangedFeature: " + msg.getFeature()); //$NON-NLS-1$
+			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("\toldValue      : " + msg.getOldValue()); //$NON-NLS-1$
+			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("\tnewValue      : " + msg.getNewValue()); //$NON-NLS-1$
 		}
 	}
 
@@ -599,8 +599,8 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 				removeDOMAdapter(childNode, attrAdapter);
 
 				if (fDebug) {
-					com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("\tCHILD: Adding DOM adapter: " + this); //$NON-NLS-1$
-					com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("\t\tto: " + childNode); //$NON-NLS-1$
+					org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("\tCHILD: Adding DOM adapter: " + this); //$NON-NLS-1$
+					org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("\t\tto: " + childNode); //$NON-NLS-1$
 				}
 				primAddDOMAdapter(childNode, this);
 			}
@@ -1028,8 +1028,8 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 
 		primAddDOMAdapter(fNode, this);
 		if (fDebug) {
-			com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("Adding DOM adapter: " + this); //$NON-NLS-1$
-			com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("\tto: " + fNode); //$NON-NLS-1$
+			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("Adding DOM adapter: " + this); //$NON-NLS-1$
+			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("\tto: " + fNode); //$NON-NLS-1$
 		}
 
 		// Go through the maps. All of the DOM nodes that are not listened
@@ -1494,9 +1494,9 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 			}
 
 			if (fDebug) {
-				com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("Updating DOM Node: " + node); //$NON-NLS-1$
-				com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("\tfrom: " + mofObject); //$NON-NLS-1$
-				com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("\tmap : " + map); //$NON-NLS-1$
+				org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("Updating DOM Node: " + node); //$NON-NLS-1$
+				org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("\tfrom: " + mofObject); //$NON-NLS-1$
+				org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("\tmap : " + map); //$NON-NLS-1$
 			}
 			boolean notificationFlag = isNotificationEnabled();
 			try {
@@ -1525,9 +1525,9 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	 */
 	final protected void updateDOMLinkFeature(Translator map, Node node, EObject mofObject) {
 		if (fDebug) {
-			com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("Updating DOM Node (link): " + node); //$NON-NLS-1$
-			com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("\tfrom: " + mofObject); //$NON-NLS-1$
-			com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("\tmap : " + map); //$NON-NLS-1$
+			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("Updating DOM Node (link): " + node); //$NON-NLS-1$
+			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("\tfrom: " + mofObject); //$NON-NLS-1$
+			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("\tmap : " + map); //$NON-NLS-1$
 		}
 		primUpdateDOMLinkFeature(map, node, mofObject);
 	}
@@ -1543,9 +1543,9 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	 */
 	final protected void updateDOMMultiFeature(Translator map, Node node, EObject mofObject) {
 		if (fDebug) {
-			com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("Updating DOM Node (multi): " + node); //$NON-NLS-1$
-			com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("\tfrom: " + mofObject); //$NON-NLS-1$
-			com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("\tmap : " + map); //$NON-NLS-1$
+			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("Updating DOM Node (multi): " + node); //$NON-NLS-1$
+			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("\tfrom: " + mofObject); //$NON-NLS-1$
+			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("\tmap : " + map); //$NON-NLS-1$
 		}
 		boolean notificationFlag = isNotificationEnabled();
 		try {
@@ -1619,9 +1619,9 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	 */
 	final protected void updateMOFLinkFeature(Translator map, Node node, EObject mofObject) {
 		if (fDebug) {
-			com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("Updating MOFObject (link): " + mofObject); //$NON-NLS-1$
-			com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("\tfrom: " + node); //$NON-NLS-1$
-			com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("\tmap : " + map); //$NON-NLS-1$
+			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("Updating MOFObject (link): " + mofObject); //$NON-NLS-1$
+			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("\tfrom: " + node); //$NON-NLS-1$
+			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("\tmap : " + map); //$NON-NLS-1$
 		}
 		boolean notificationFlag = isNotificationEnabled();
 		try {
@@ -1643,9 +1643,9 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	 */
 	final protected void updateMOFMultiFeature(Translator map, Node node, EObject mofObject) {
 		if (fDebug) {
-			com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("Updating MOFObject (multi): " + mofObject); //$NON-NLS-1$
-			com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("\tfrom: " + node); //$NON-NLS-1$
-			com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("\tmap : " + map); //$NON-NLS-1$
+			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("Updating MOFObject (multi): " + mofObject); //$NON-NLS-1$
+			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("\tfrom: " + node); //$NON-NLS-1$
+			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("\tmap : " + map); //$NON-NLS-1$
 		}
 		boolean notificationFlag = isNotificationEnabled();
 		try {
@@ -1702,9 +1702,9 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 		// TODO MDE Add a map.isComment() and updateMOFCommentFeature(map, node, mofObject);
 
 		if (fDebug) {
-			com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("Updating MOFObject: " + mofObject); //$NON-NLS-1$
-			com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("\tfrom: " + node); //$NON-NLS-1$
-			com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError("\tmap : " + map); //$NON-NLS-1$
+			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("Updating MOFObject: " + mofObject); //$NON-NLS-1$
+			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("\tfrom: " + node); //$NON-NLS-1$
+			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError("\tmap : " + map); //$NON-NLS-1$
 		}
 		boolean notificationFlag = isNotificationEnabled();
 		boolean hasChanged = false;

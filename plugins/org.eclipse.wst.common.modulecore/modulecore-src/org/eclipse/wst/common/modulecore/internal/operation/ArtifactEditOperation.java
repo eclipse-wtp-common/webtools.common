@@ -21,7 +21,7 @@ import org.eclipse.wst.common.modulecore.ArtifactEdit;
 import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.WorkbenchComponent;
 
-import com.ibm.wtp.emf.workbench.WorkbenchResourceHelperBase;
+import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 
 public class ArtifactEditOperation extends WTPOperation {
 	private ArtifactEdit artifactEdit;

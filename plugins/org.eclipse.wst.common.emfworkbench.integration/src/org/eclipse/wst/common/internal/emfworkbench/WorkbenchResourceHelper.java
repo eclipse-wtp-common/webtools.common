@@ -41,9 +41,9 @@ import org.eclipse.wst.common.internal.emf.resource.ReferencedResource;
 import org.eclipse.wst.common.internal.emf.resource.ReferencedXMIFactoryImpl;
 import org.eclipse.wst.common.internal.emf.utilities.ExtendedEcoreUtil;
 
-import com.ibm.wtp.emf.workbench.WorkbenchResourceHelperBase;
-import com.ibm.wtp.emf.workbench.WorkbenchURIConverter;
-import com.ibm.wtp.emf.workbench.plugin.EMFWorkbenchPlugin;
+import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
+import org.eclipse.jem.util.emf.workbench.WorkbenchURIConverter;
+import org.eclipse.jem.util.plugin.JEMUtilPlugin;
 
 /**
  * @author schacher
@@ -358,7 +358,7 @@ public class WorkbenchResourceHelper extends WorkbenchResourceHelperBase {
 	public static IFile getPlatformFile(URI uri) {
 		if (isPlatformResourceURI(uri)) {
 			String fileString = URI.decode(uri.path());
-			fileString = fileString.substring(EMFWorkbenchPlugin.PLATFORM_RESOURCE.length() + 1);
+			fileString = fileString.substring(JEMUtilPlugin.PLATFORM_RESOURCE.length() + 1);
 			return getWorkspace().getRoot().getFile(new Path(fileString));
 		}
 		return null;

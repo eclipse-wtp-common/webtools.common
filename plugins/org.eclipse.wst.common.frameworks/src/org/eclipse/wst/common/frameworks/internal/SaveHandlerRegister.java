@@ -1,6 +1,6 @@
 package org.eclipse.wst.common.frameworks.internal;
 
-import com.ibm.wtp.common.UIContextDetermination;
+import org.eclipse.jem.util.UIContextDetermination;
 
 /*
  * Licensed Material - Property of IBM (C) Copyright IBM Corp. 2001, 2002 - All

@@ -19,7 +19,7 @@ import java.util.WeakHashMap;
 
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchEditResourceHandler;
 
-import com.ibm.wtp.internal.emf.workbench.nls.EMFWorkbenchResourceHandler;
+import org.eclipse.jem.internal.util.emf.workbench.nls.EMFWorkbenchResourceHandler;
 
 /**
  * @author mdelder

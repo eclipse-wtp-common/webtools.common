@@ -25,7 +25,7 @@ import org.eclipse.wst.validation.internal.operations.IWorkbenchHelper;
 import org.eclipse.wst.validation.plugin.ValidationPlugin;
 import org.osgi.framework.Bundle;
 
-import com.ibm.wtp.common.logger.proxy.Logger;
+import org.eclipse.jem.util.logger.proxy.Logger;
 
 /**
  * This class stores information, as specified by a validator's plugin.xml tags. There is one

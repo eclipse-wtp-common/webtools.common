@@ -22,7 +22,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.wst.common.internal.emf.resource.ReferencedResource;
 import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
 
-import com.ibm.wtp.internal.emf.workbench.ProjectResourceSetImpl;
+import org.eclipse.jem.internal.util.emf.workbench.ProjectResourceSetImpl;
 
 /**
  * @author schacher
@@ -42,7 +42,7 @@ public class ProjectResourceSetEditImpl extends ProjectResourceSetImpl {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.ibm.wtp.internal.emf.workbench.ProjectResourceSetImpl#createResource(org.eclipse.emf.common.util.URI)
+	 * @see org.eclipse.jem.internal.util.emf.workbench.ProjectResourceSetImpl#createResource(org.eclipse.emf.common.util.URI)
 	 */
 	public Resource createResource(URI uri) {
 		Resource result = super.createResource(uri);

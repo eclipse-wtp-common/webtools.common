@@ -20,8 +20,8 @@ import org.eclipse.wst.validation.internal.InternalValidatorManager;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
 import org.eclipse.wst.validation.plugin.ValidationPlugin;
 
-import com.ibm.wtp.common.logger.LogEntry;
-import com.ibm.wtp.common.logger.proxy.Logger;
+import org.eclipse.jem.util.logger.LogEntry;
+import org.eclipse.jem.util.logger.proxy.Logger;
 
 /**
  * Implemented Validators must not be called directly by anyone other than instances of

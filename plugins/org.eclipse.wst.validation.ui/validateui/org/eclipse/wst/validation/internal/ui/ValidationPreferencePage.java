@@ -49,8 +49,8 @@ import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;
 
-import com.ibm.wtp.common.logger.LogEntry;
-import com.ibm.wtp.common.logger.proxy.Logger;
+import org.eclipse.jem.util.logger.LogEntry;
+import org.eclipse.jem.util.logger.proxy.Logger;
 
 /**
  * This class and its inner classes are not intended to be subclassed outside of the validation

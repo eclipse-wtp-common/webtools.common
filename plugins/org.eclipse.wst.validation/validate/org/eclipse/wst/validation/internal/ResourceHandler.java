@@ -16,8 +16,8 @@ import java.util.logging.Level;
 
 import org.eclipse.wst.validation.plugin.ValidationPlugin;
 
-import com.ibm.wtp.common.logger.LogEntry;
-import com.ibm.wtp.common.logger.proxy.Logger;
+import org.eclipse.jem.util.logger.LogEntry;
+import org.eclipse.jem.util.logger.proxy.Logger;
 
 
 /**

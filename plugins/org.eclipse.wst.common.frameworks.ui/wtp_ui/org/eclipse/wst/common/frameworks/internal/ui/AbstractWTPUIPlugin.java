@@ -17,9 +17,9 @@ package org.eclipse.wst.common.frameworks.internal.ui;
 import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
-import com.ibm.wtp.common.logger.proxy.Logger;
-import com.ibm.wtp.logger.proxyrender.DefaultPluginTraceRenderer;
-import com.ibm.wtp.logger.proxyrender.IMsgLogger;
+import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.jem.util.logger.proxyrender.DefaultPluginTraceRenderer;
+import org.eclipse.jem.util.logger.proxyrender.IMsgLogger;
 
 public abstract class AbstractWTPUIPlugin extends AbstractUIPlugin implements IMsgLogger {
 	protected static Logger logger = null;

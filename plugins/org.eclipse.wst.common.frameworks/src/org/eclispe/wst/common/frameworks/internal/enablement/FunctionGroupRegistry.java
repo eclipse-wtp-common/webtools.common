@@ -23,8 +23,8 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
-import com.ibm.wtp.common.RegistryReader;
-import com.ibm.wtp.common.logger.proxy.Logger;
+import org.eclipse.jem.util.RegistryReader;
+import org.eclipse.jem.util.logger.proxy.Logger;
 
 /**
  * The FunctionGroupRegistry will consume Configuration elements conforming to the FunctionGroup

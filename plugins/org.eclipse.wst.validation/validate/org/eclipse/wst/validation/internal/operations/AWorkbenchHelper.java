@@ -26,8 +26,8 @@ import org.eclipse.wst.validation.core.IMessage;
 import org.eclipse.wst.validation.internal.RegistryConstants;
 import org.eclipse.wst.validation.plugin.ValidationPlugin;
 
-import com.ibm.wtp.common.logger.LogEntry;
-import com.ibm.wtp.common.logger.proxy.Logger;
+import org.eclipse.jem.util.logger.LogEntry;
+import org.eclipse.jem.util.logger.proxy.Logger;
 
 /**
  * Abstract base class for registration of symbolic model names, and also provides the mechanism for

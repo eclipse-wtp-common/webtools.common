@@ -21,7 +21,7 @@ import java.util.Collection;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 
-import com.ibm.wtp.common.UIContextDetermination;
+import org.eclipse.jem.util.UIContextDetermination;
 
 /**
  * @author schacher

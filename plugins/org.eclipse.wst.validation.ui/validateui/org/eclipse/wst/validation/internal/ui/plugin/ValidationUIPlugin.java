@@ -19,8 +19,8 @@ import org.eclipse.wst.validation.internal.operations.ValidationOperation;
 import org.eclipse.wst.validation.plugin.ValidationPlugin;
 import org.osgi.framework.BundleContext;
 
-import com.ibm.wtp.common.logger.LogEntry;
-import com.ibm.wtp.common.logger.proxy.Logger;
+import org.eclipse.jem.util.logger.LogEntry;
+import org.eclipse.jem.util.logger.proxy.Logger;
 
 
 

@@ -39,12 +39,11 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.codegen.CodeGen.StreamProgressMonitor;
 import org.eclipse.emf.codegen.ecore.Generator;
+import org.eclipse.jem.util.plugin.JEMUtilPlugin;
 import org.eclipse.wst.common.frameworks.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
 
 import sun.tools.jar.Main;
-
-import com.ibm.wtp.emf.workbench.plugin.EMFWorkbenchPlugin;
 
 /**
  * @author DABERG
@@ -232,7 +231,7 @@ public class DataObjectGeneratorModel extends WTPOperationDataModel implements I
 
 					} catch (Exception exception) {
 						exception.printStackTrace();
-						throw new CoreException(new Status(IStatus.ERROR, EMFWorkbenchPlugin.ID, 0, "EMF Workbench Error", exception)); //$NON-NLS-1$
+						throw new CoreException(new Status(IStatus.ERROR, JEMUtilPlugin.ID, 0, "EMF Workbench Error", exception)); //$NON-NLS-1$
 					} finally {
 						progressMonitor.done();
 					}

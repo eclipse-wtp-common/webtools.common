@@ -19,7 +19,7 @@
    <requires>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="com.ibm.wtp.common.util" export="true"/>
+      <import plugin="org.eclipse.jem.util" export="true"/>
    </requires>
 
 
@@ -32,7 +32,7 @@
    <extension
          id="context.Sensitive.Class.saveHandler"
          name="Save Handler - Headless Context Class"
-         point="com.ibm.wtp.common.util.uiContextSensitiveClass">
+         point="org.eclipse.jem.util.uiContextSensitiveClass">
       <uiContextSensitiveClass
             key="saveHandler"
             context="Headless"
@@ -41,7 +41,7 @@
    </extension>
    <extension
          id="org.eclipse.wst.common.frameworks.internal.enablement"
-         point="com.ibm.wtp.common.util.uiContextSensitiveClass">
+         point="org.eclipse.jem.util.uiContextSensitiveClass">
       <uiContextSensitiveClass
             key="org.eclipse.wst.common.frameworks.internal.EnablementDetermination"
             context="Headless"

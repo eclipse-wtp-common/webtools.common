@@ -22,8 +22,8 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 
-import com.ibm.wtp.emf.workbench.WorkbenchResourceHelperBase;
-import com.ibm.wtp.internal.emf.workbench.ProjectResourceSetImpl;
+import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
+import org.eclipse.jem.internal.util.emf.workbench.ProjectResourceSetImpl;
 
 /**
  * This ResourceSet is to be used by plugins that are currently loading to a cached ResourceSet that
@@ -116,7 +116,7 @@ public class PassthruResourceSet extends ProjectResourceSetImpl {
 	}
 
 	/**
-	 * @see com.ibm.wtp.internal.emf.workbench.ProjectResourceSetImpl#createResourceFromHandlers(URI)
+	 * @see org.eclipse.jem.internal.util.emf.workbench.ProjectResourceSetImpl#createResourceFromHandlers(URI)
 	 */
 	protected Resource createResourceFromHandlers(URI uri) {
 		if (!isIsolated)
@@ -125,7 +125,7 @@ public class PassthruResourceSet extends ProjectResourceSetImpl {
 	}
 
 	/**
-	 * @see com.ibm.wtp.internal.emf.workbench.ProjectResourceSetImpl#getResourceFromHandlers(URI)
+	 * @see org.eclipse.jem.internal.util.emf.workbench.ProjectResourceSetImpl#getResourceFromHandlers(URI)
 	 */
 	protected Resource getResourceFromHandlers(URI uri) {
 		if (!isIsolated)

@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal;
 
-import com.ibm.wtp.common.logger.LogEntry;
+import org.eclipse.jem.util.logger.LogEntry;
 
 
 /**

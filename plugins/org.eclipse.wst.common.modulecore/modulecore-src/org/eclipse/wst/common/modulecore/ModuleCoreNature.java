@@ -25,6 +25,9 @@ import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.URIConverter;
+import org.eclipse.jem.util.emf.workbench.EMFWorkbenchContextBase;
+import org.eclipse.jem.util.emf.workbench.ProjectResourceSet;
+import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelNature;
 import org.eclipse.wst.common.modulecore.internal.impl.ArtifactEditModelFactory;
 import org.eclipse.wst.common.modulecore.internal.impl.ModuleCoreURIConverter;
@@ -32,10 +35,6 @@ import org.eclipse.wst.common.modulecore.internal.impl.ModuleStructuralModelFact
 import org.eclipse.wst.common.modulecore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.modulecore.internal.impl.WTPResourceFactoryRegistry;
 import org.eclipse.wst.common.modulecore.internal.util.IModuleConstants;
-
-import com.ibm.wtp.emf.workbench.EMFWorkbenchContextBase;
-import com.ibm.wtp.emf.workbench.ProjectResourceSet;
-import com.ibm.wtp.emf.workbench.ProjectUtilities;
 
 /**
  * <p>
@@ -395,7 +394,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	 * This method should not be invoked by clients.
 	 * </p>
 	 * 
-	 * @see com.ibm.wtp.emf.workbench.IEMFContextContributor#primaryContributeToContext(com.ibm.wtp.emf.workbench.EMFWorkbenchContextBase)
+	 * @see org.eclipse.jem.util.emf.workbench.IEMFContextContributor#primaryContributeToContext(org.eclipse.jem.util.emf.workbench.EMFWorkbenchContextBase)
 	 */
 	public void primaryContributeToContext(EMFWorkbenchContextBase aNature) {
 		if (emfContext == aNature)
@@ -439,7 +438,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	 * This method should not be invoked by clients.
 	 * </p>
 	 * 
-	 * @see com.ibm.wtp.emf.workbench.IEMFContextContributor#secondaryContributeToContext(com.ibm.wtp.emf.workbench.EMFWorkbenchContextBase)
+	 * @see org.eclipse.jem.util.emf.workbench.IEMFContextContributor#secondaryContributeToContext(org.eclipse.jem.util.emf.workbench.EMFWorkbenchContextBase)
 	 */
 	public void secondaryContributeToContext(EMFWorkbenchContextBase aNature) {
 	}
@@ -449,7 +448,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	 * This method should not be invoked by clients.
 	 * </p>
 	 * 
-	 * @see com.ibm.wtp.emf.workbench.nature.EMFNature#configure()
+	 * @see org.eclipse.jem.util.emf.workbench.nature.EMFNature#configure()
 	 */
 	public void configure() throws CoreException {
 		super.configure();

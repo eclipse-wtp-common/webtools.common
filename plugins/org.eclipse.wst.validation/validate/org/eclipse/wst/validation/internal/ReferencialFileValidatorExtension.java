@@ -20,7 +20,7 @@ import org.eclipse.core.internal.runtime.Assert;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.wst.validation.internal.operations.ReferencialFileValidator;
 
-import com.ibm.wtp.common.logger.proxy.Logger;
+import org.eclipse.jem.util.logger.proxy.Logger;
 
 /**
  * @author vijayb

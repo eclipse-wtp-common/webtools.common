@@ -24,9 +24,9 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.internal.emf.resource.CompatibilityURIConverter;
 
-import com.ibm.wtp.emf.workbench.ResourceSetWorkbenchSynchronizer;
-import com.ibm.wtp.emf.workbench.WorkbenchResourceHelperBase;
-import com.ibm.wtp.emf.workbench.WorkbenchURIConverterImpl;
+import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
+import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
+import org.eclipse.jem.util.emf.workbench.WorkbenchURIConverterImpl;
 
 /**
  * @author schacher

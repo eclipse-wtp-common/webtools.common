@@ -39,8 +39,8 @@ import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.plugin.ValidationPlugin;
 import org.eclispe.wst.validation.internal.core.Message;
 
-import com.ibm.wtp.common.logger.LogEntry;
-import com.ibm.wtp.common.logger.proxy.Logger;
+import org.eclipse.jem.util.logger.LogEntry;
+import org.eclipse.jem.util.logger.proxy.Logger;
 
 /**
  * A centralised class for accessing validation metadata.

@@ -19,8 +19,8 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.internal.emfworkbench.CompatibilityWorkbenchURIConverterImpl;
 import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
 
-import com.ibm.wtp.emf.workbench.ResourceSetWorkbenchSynchronizer;
-import com.ibm.wtp.emf.workbench.WorkbenchResourceHelperBase;
+import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
+import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 
 /**
  * <p>
@@ -68,7 +68,7 @@ public class ModuleCoreURIConverter extends CompatibilityWorkbenchURIConverterIm
 	}
 	
 	/* (non-Javadoc)
-	 * @see com.ibm.wtp.emf.workbench.WorkbenchURIConverterImpl#normalize(org.eclipse.emf.common.util.URI)
+	 * @see org.eclipse.jem.util.emf.workbench.WorkbenchURIConverterImpl#normalize(org.eclipse.emf.common.util.URI)
 	 */
 	public URI normalize(URI aURI) {
 		URI normalizedURI = null;

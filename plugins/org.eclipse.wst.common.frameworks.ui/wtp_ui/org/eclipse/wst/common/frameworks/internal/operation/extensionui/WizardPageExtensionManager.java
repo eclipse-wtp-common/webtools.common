@@ -22,8 +22,8 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPCommonUIResourceHandler;
 import org.eclispe.wst.common.frameworks.internal.enablement.EnablementManager;
 
-import com.ibm.wtp.common.RegistryReader;
-import com.ibm.wtp.common.logger.proxy.Logger;
+import org.eclipse.jem.util.RegistryReader;
+import org.eclipse.jem.util.logger.proxy.Logger;
 
 public class WizardPageExtensionManager {
 

@@ -24,7 +24,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.wst.validation.internal.operations.ReferencialFileValidator;
 import org.eclipse.wst.validation.plugin.ValidationPlugin;
 
-import com.ibm.wtp.common.RegistryReader;
+import org.eclipse.jem.util.RegistryReader;
 
 /**
  * @author vijayb

@@ -11,7 +11,7 @@ package org.eclipse.wst.common.frameworks.internal;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.common.frameworks.internal.enablement.nonui.IWFTWrappedException;
 
-import com.ibm.wtp.common.logger.proxy.Logger;
+import org.eclipse.jem.util.logger.proxy.Logger;
 
 /**
  * Insert the type's description here. Creation date: (10/19/2001 11:40:59 AM)

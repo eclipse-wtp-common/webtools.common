@@ -11,13 +11,12 @@ package org.eclipse.wst.common.modulecore;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.jem.internal.util.emf.workbench.nls.EMFWorkbenchResourceHandler;
 import org.eclipse.wst.common.frameworks.internal.operations.IOperationHandler;
 import org.eclipse.wst.common.internal.emfworkbench.edit.EditModelRegistry;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelListener;
 import org.eclipse.wst.common.internal.emfworkbench.integration.IEditModelFactory;
-
-import com.ibm.wtp.internal.emf.workbench.nls.EMFWorkbenchResourceHandler;
 
 /**
  * Provides a Facade pattern for accessing Module Content Metamodels for Web Tools Platform flexible

@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 
-import com.ibm.wtp.emf.workbench.nature.EMFNature;
+import org.eclipse.jem.util.emf.workbench.nature.EMFNature;
 
 /**
  * @author schacher

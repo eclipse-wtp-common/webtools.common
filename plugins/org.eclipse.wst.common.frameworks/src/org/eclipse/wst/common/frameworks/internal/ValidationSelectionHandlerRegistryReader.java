@@ -12,7 +12,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
-import com.ibm.wtp.common.RegistryReader;
+import org.eclipse.jem.util.RegistryReader;
 
 /**
  * @author jlanuti
@@ -47,7 +47,7 @@ public class ValidationSelectionHandlerRegistryReader extends RegistryReader {
 	
 
 	/* (non-Javadoc)
-	 * @see com.ibm.wtp.common.RegistryReader#readElement(org.eclipse.core.runtime.IConfigurationElement)
+	 * @see org.eclipse.jem.util.RegistryReader#readElement(org.eclipse.core.runtime.IConfigurationElement)
 	 */
 	public boolean readElement(IConfigurationElement element) {
 		if (!element.getName().equals(VALIDATION_SELECTION_HANDLER))

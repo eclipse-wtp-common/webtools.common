@@ -51,8 +51,8 @@ import org.eclispe.wst.common.frameworks.internal.enablement.IEnablementIdentifi
 import org.eclispe.wst.common.frameworks.internal.enablement.IEnablementIdentifierListener;
 import org.eclispe.wst.common.frameworks.internal.enablement.IEnablementManager;
 
-import com.ibm.wtp.common.logger.proxy.Logger;
-import com.ibm.wtp.emf.workbench.ProjectUtilities;
+import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 
 /**
  * @author schacher

@@ -23,8 +23,8 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEditPlugin;
 
-import com.ibm.wtp.common.RegistryReader;
-import com.ibm.wtp.common.logger.proxy.Logger;
+import org.eclipse.jem.util.RegistryReader;
+import org.eclipse.jem.util.logger.proxy.Logger;
 
 /**
  * @author mdelder

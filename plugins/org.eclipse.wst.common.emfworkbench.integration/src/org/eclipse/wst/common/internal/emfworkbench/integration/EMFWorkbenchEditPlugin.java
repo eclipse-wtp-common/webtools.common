@@ -25,7 +25,7 @@ import org.eclipse.wst.common.internal.emfworkbench.PassthruResourceSet;
 import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
 import org.osgi.framework.BundleContext;
 
-import com.ibm.wtp.emf.workbench.WorkbenchResourceHelperBase;
+import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 
 /**
  * The main plugin class to be used in the desktop.

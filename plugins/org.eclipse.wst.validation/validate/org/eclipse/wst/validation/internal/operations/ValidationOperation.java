@@ -52,8 +52,8 @@ import org.eclispe.wst.validation.internal.core.FileDelta;
 import org.eclispe.wst.validation.internal.core.Message;
 import org.eclispe.wst.validation.internal.core.ValidatorLauncher;
 
-import com.ibm.wtp.common.logger.LogEntry;
-import com.ibm.wtp.common.logger.proxy.Logger;
+import org.eclipse.jem.util.logger.LogEntry;
+import org.eclipse.jem.util.logger.proxy.Logger;
 
 /**
  * Implemented Validators methods must not be called directly by anyone other than this class, since

@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.internal.emf.utilities;
 
-import com.ibm.wtp.common.logger.proxy.Logger;
+import org.eclipse.jem.util.logger.proxy.Logger;
 
 
 

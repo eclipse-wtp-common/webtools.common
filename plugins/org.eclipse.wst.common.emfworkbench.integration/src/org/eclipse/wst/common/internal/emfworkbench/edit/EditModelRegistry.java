@@ -27,8 +27,8 @@ import org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEdit
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import org.eclipse.wst.common.internal.emfworkbench.integration.IEditModelFactory;
 
-import com.ibm.wtp.common.RegistryReader;
-import com.ibm.wtp.common.logger.proxy.Logger;
+import org.eclipse.jem.util.RegistryReader;
+import org.eclipse.jem.util.logger.proxy.Logger;
 
 /**
  * @author mdelder

@@ -15,7 +15,7 @@ import org.eclipse.wst.common.frameworks.ui.IExtendedPageHandler;
 import org.eclipse.wst.common.frameworks.ui.IExtendedWizardPage;
 import org.eclispe.wst.common.frameworks.internal.enablement.IdentifiableComparator;
 
-import com.ibm.wtp.common.logger.proxy.Logger;
+import org.eclipse.jem.util.logger.proxy.Logger;
 
 public class WizardPageElement extends AbstractRegistryDescriptor implements Comparable {
 	/** Type designation for an {@link ExtendedEditorPage} */

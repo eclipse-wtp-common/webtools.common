@@ -25,7 +25,7 @@ import org.eclispe.wst.validation.internal.core.Message;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
-import com.ibm.wtp.common.logger.LogEntry;
+import org.eclipse.jem.util.logger.LogEntry;
 
 public class ValidationPlugin extends WTPPlugin {
 	public static final String VALIDATION_PROP_FILE_NAME = "validate_base"; //$NON-NLS-1$

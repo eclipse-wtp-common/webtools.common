@@ -21,9 +21,9 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.ResourceSetWorkbenchEditSynchronizer;
 
-import com.ibm.wtp.emf.workbench.EMFWorkbenchContextBase;
-import com.ibm.wtp.emf.workbench.ResourceSetWorkbenchSynchronizer;
-import com.ibm.wtp.internal.emf.workbench.EMFWorkbenchContextFactory;
+import org.eclipse.jem.util.emf.workbench.EMFWorkbenchContextBase;
+import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
+import org.eclipse.jem.internal.util.emf.workbench.EMFWorkbenchContextFactory;
 
 /**
  * @author schacher

@@ -33,14 +33,13 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.jem.internal.util.emf.workbench.EMFWorkbenchContextFactory;
+import org.eclipse.jem.util.emf.workbench.ProjectResourceSet;
+import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
+import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.jem.util.plugin.JEMUtilPlugin;
 import org.eclipse.wst.common.internal.emf.resource.ReferencedResource;
 import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
-
-import com.ibm.wtp.common.logger.proxy.Logger;
-import com.ibm.wtp.emf.workbench.ProjectResourceSet;
-import com.ibm.wtp.emf.workbench.ResourceSetWorkbenchSynchronizer;
-import com.ibm.wtp.emf.workbench.plugin.EMFWorkbenchPlugin;
-import com.ibm.wtp.internal.emf.workbench.EMFWorkbenchContextFactory;
 
 /**
  * @author schacher
@@ -138,7 +137,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	 * push up this code to ResourceSetWorkbenchSynchronizer in next release.
 	 */
 	protected void release() {
-		if (EMFWorkbenchPlugin.isActivated()) {
+		if (JEMUtilPlugin.isActivated()) {
 			try {
 				if (resourceSet instanceof ProjectResourceSet)
 					((ProjectResourceSet) resourceSet).release();

@@ -24,7 +24,7 @@ import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
 import org.eclipse.wst.common.frameworks.ui.IExtendedPageHandler;
 import org.eclipse.wst.common.frameworks.ui.IExtendedWizardPage;
 
-import com.ibm.wtp.common.logger.proxy.Logger;
+import org.eclipse.jem.util.logger.proxy.Logger;
 
 /**
  * @author schacher

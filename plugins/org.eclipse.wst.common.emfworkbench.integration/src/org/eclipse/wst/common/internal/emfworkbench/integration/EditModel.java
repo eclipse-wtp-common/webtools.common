@@ -62,9 +62,9 @@ import org.eclispe.wst.common.frameworks.internal.enablement.EnablementIdentifie
 import org.eclispe.wst.common.frameworks.internal.enablement.IEnablementIdentifier;
 import org.eclispe.wst.common.frameworks.internal.enablement.IEnablementIdentifierListener;
 
-import com.ibm.wtp.emf.workbench.ResourceSetWorkbenchSynchronizer;
-import com.ibm.wtp.emf.workbench.WorkbenchResourceHelperBase;
-import com.ibm.wtp.internal.emf.workbench.nls.EMFWorkbenchResourceHandler;
+import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
+import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
+import org.eclipse.jem.internal.util.emf.workbench.nls.EMFWorkbenchResourceHandler;
 
 
 public class EditModel implements CommandStackListener, ResourceStateInputProvider, ResourceStateValidator, IEnablementIdentifierListener {
@@ -1189,7 +1189,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	 * @aResource.
 	 */
 	protected void primHandleSaveFailed(Resource aResource, Exception e) {
-		com.ibm.wtp.common.logger.proxy.Logger.getLogger().logError(e);
+		org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError(e);
 		Exception nested = null;
 		if (e instanceof IWFTWrappedException)
 			nested = ((IWFTWrappedException) e).getNestedException();

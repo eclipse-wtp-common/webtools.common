@@ -19,7 +19,7 @@ package org.eclipse.wst.common.internal.emf.plugin;
 import org.eclipse.wst.common.internal.emf.resource.EMF2DOMRendererFactoryDefaultHandler;
 import org.eclipse.wst.common.internal.emf.resource.RendererFactory;
 
-import com.ibm.wtp.common.UIContextDetermination;
+import org.eclipse.jem.util.UIContextDetermination;
 
 /**
  * @author schacher

@@ -15,8 +15,8 @@
    </runtime>
    <requires>
       <import plugin="org.eclipse.wst.common.frameworks"/>
-      <import plugin="com.ibm.wtp.common.util"/>
-      <import plugin="com.ibm.wtp.emf.workbench"/>
+      <import plugin="org.eclipse.jem.util"/>
+      <import plugin="org.eclipse.jem.workbench"/>
       <import plugin="org.eclipse.emf.edit"/>
       <import plugin="org.eclipse.emf.ecore.xmi"/>
       <import plugin="org.eclipse.wst.common.emf"/>
@@ -34,14 +34,14 @@
    <extension-point id="ModifierHelperFactory" name="ModifierHelperFactory" schema="schema/modifierHelperFactory.exsd"/>
 
    <extension
-         point="com.ibm.wtp.emf.workbench.internalWorkbenchContextFactory">
+         point="org.eclipse.jem.workbench.internalWorkbenchContextFactory">
       <factoryClass
             name="org.eclipse.wst.common.internal.emfworkbench.edit.EMFWorkbenchEditContextFactory">
       </factoryClass>
    </extension>
    
    <extension 
-       point="com.ibm.wtp.common.util.uiContextSensitiveClass">
+       point="org.eclipse.jem.util.uiContextSensitiveClass">
        <uiContextSensitiveClass
           key="ValidateEditContext"
           className="org.eclipse.wst.common.internal.emfworkbench.validateedit.ValidateEditHeadlessContext"

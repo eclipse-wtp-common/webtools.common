@@ -13,10 +13,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import com.ibm.wtp.emf.workbench.plugin.EMFWorkbenchPlugin;
+import org.eclipse.jem.util.plugin.JEMUtilPlugin;
 
 public interface ResourceStateValidator {
-	static final IStatus OK_STATUS = new Status(IStatus.OK, EMFWorkbenchPlugin.ID, 0, "", null); //$NON-NLS-1$
+	static final IStatus OK_STATUS = new Status(IStatus.OK, JEMUtilPlugin.ID, 0, "", null); //$NON-NLS-1$
 
 	/**
 	 * This method should be called whenever a <code>presenter</code> is activated (becomes

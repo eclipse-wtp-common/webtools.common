@@ -25,7 +25,7 @@ import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.wst.common.frameworks.internal.AbstractRegistryDescriptor;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchEditResourceHandler;
 
-import com.ibm.wtp.emf.workbench.plugin.EMFWorkbenchPlugin;
+import org.eclipse.jem.util.plugin.JEMUtilPlugin;
 
 
 public class AdapterFactoryDescriptor extends AbstractRegistryDescriptor implements Comparable {
@@ -97,7 +97,7 @@ public class AdapterFactoryDescriptor extends AbstractRegistryDescriptor impleme
 		try {
 			factory = (AdapterFactory) element.createExecutableExtension(AdapterFactoryRegistry.CLASS_NAME);
 		} catch (CoreException e) {
-			EMFWorkbenchPlugin.getLogger().logError(e);
+			JEMUtilPlugin.getLogger().logError(e);
 			factory = null;
 		}
 		return factory;
