@@ -31,9 +31,10 @@ import java.util.List;
  * Any messages which need to be displayed to the user are done through this class, and if the user
  * cancels the current function, this class is the one which registers the cancellation.
  * 
- * [issue: CS - I think it would be useful to say something about the IReporter life cycle.  
- * is an instance created when validation begins and then removed when validation ends?  Does the 
- * IReporter provide access to all messages ... or just the ones created by the associated validator? 
+ * The IReporter instance is created at the time validation begins and ends when validation is complete.
+ * There is only one IReporter instance created for all validators that are run on a IResource. The IResource
+ * provides a way to get messages put out each validator and add and delete messages for one validator
+ * at a time. 
  * ] 
  */
 public interface IReporter  {
@@ -110,10 +111,7 @@ public interface IReporter  {
 	 * The IValidator parameter must not be null.
 	 * </p>
 	 * @param origin
-	 * 			originator validator of the message.
-	 *  
-	 * 	[issue : CS - it would be very nice if we could give the impression that there's just 'one reporter per validator'. 
-	 *  This would let us simplify many of our methods and enforce that an IValidator is only modifying its own reports.]  
+	 * 			originator validator of the message.  
 	 */
 	public abstract void removeAllMessages(IValidator origin);
 
@@ -130,13 +128,9 @@ public interface IReporter  {
 	 * @param origin
 	 * 			originator validator of the message.
 	 * @param object
-	 * 			Object to which the message belongs.
+	 * 			Object to which the message belongs. Object is the target object that was set on the IMessage
+	 * when adding the message as problem marker.
 	 * 
-	 * 	[issue : CS - it would help to say a bit more about the 'object'.  Is this object something that only
-	 *  needs to exist for the life span of the validation or is this something that's longer lasting?  I assume
-	 *  the object is transient and doesn't need to be persisted? If the object a significant part of the API why
-	 *  is it not associated with an IMessage or passed in as a parameter to addMessage()?  It seems strange that the 
-	 *  'object' only comes into play when removing messages.]  
  	 */
 	public abstract void removeAllMessages(IValidator origin, Object object);
 
