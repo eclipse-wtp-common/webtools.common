@@ -73,5 +73,19 @@
         handlerClass="org.eclipse.wst.common.internal.emfworkbench.EmfValidationHandler"
         selectionType="org.eclipse.emf.ecore.EObject"/>
    </extension>
+   
+   <!--============================-->
+   <!-- Module Core Project Nature Contributions-->
+   <!--============================-->
+   <extension
+         id="org.eclipse.wst.common.emfworkbench.integration.ModuleCoreNature"
+         name="Web Properties"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="org.eclipse.wst.common.modulecore.ModuleCoreNature">
+         </run>
+      </runtime>
+   </extension>
 
 </plugin>
