@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreFactoryImpl.java,v 1.8 2005/02/02 19:51:06 cbridgha Exp $
+ * $Id: ModuleCoreFactoryImpl.java,v 1.9 2005/02/02 21:40:42 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
@@ -53,7 +53,7 @@ public class ModuleCoreFactoryImpl extends EFactoryImpl implements ModuleCoreFac
 			case ModuleCorePackage.WORKBENCH_APPLICATION: return createWorkbenchApplication();
 			case ModuleCorePackage.MODULE_TYPE: return createModuleType();
 			case ModuleCorePackage.PROJECT_MODULES: return createProjectModules();
-			case ModuleCorePackage.DEPLOYED_MODULE: return createDeployedModule();
+			case ModuleCorePackage.DEPENDENT_MODULE: return createDependentModule();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -152,9 +152,9 @@ public class ModuleCoreFactoryImpl extends EFactoryImpl implements ModuleCoreFac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public DeployedModule createDeployedModule() {
-		DeployedModuleImpl deployedModule = new DeployedModuleImpl();
-		return deployedModule;
+	public DependentModule createDependentModule() {
+		DependentModuleImpl dependentModule = new DependentModuleImpl();
+		return dependentModule;
 	}
 
 	/**

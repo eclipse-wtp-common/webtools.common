@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreAdapterFactory.java,v 1.8 2005/02/02 19:51:06 cbridgha Exp $
+ * $Id: ModuleCoreAdapterFactory.java,v 1.9 2005/02/02 21:40:42 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.util;
 
@@ -94,8 +94,8 @@ public class ModuleCoreAdapterFactory extends AdapterFactoryImpl {
 			public Object caseProjectModules(ProjectModules object) {
 				return createProjectModulesAdapter();
 			}
-			public Object caseDeployedModule(DeployedModule object) {
-				return createDeployedModuleAdapter();
+			public Object caseDependentModule(DependentModule object) {
+				return createDependentModuleAdapter();
 			}
 			public Object defaultCase(EObject object) {
 				return createEObjectAdapter();
@@ -200,16 +200,16 @@ public class ModuleCoreAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.eclipse.wst.common.modulecore.DeployedModule <em>Deployed Module</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.eclipse.wst.common.modulecore.DependentModule <em>Dependent Module</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.eclipse.wst.common.modulecore.DeployedModule
+	 * @see org.eclipse.wst.common.modulecore.DependentModule
 	 * @generated
 	 */
-	public Adapter createDeployedModuleAdapter() {
+	public Adapter createDependentModuleAdapter() {
 		return null;
 	}
 

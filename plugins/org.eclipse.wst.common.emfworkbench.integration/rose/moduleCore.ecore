@@ -10,13 +10,12 @@
   <eClassifiers xsi:type="ecore:EClass" name="WorkbenchModule">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="handle" eType="#//URI"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="deployedName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="deployedPath" eType="#//URI"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="modules" upperBound="-1"
-        eType="#//URI"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="resources" upperBound="-1"
         eType="#//WorkbenchModuleResource" containment="true" eOpposite="#//WorkbenchModuleResource/module"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="moduleType" upperBound="-1"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="moduleType" lowerBound="1"
         eType="#//ModuleType"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="modules" upperBound="-1"
+        eType="#//DependentModule"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="WorkbenchModuleResource">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="sourcePath" eType="#//URI"/>
@@ -45,5 +44,8 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="deploymentSchemes" upperBound="-1"
         eType="#//DeployScheme" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="DeployedModule"/>
+  <eClassifiers xsi:type="ecore:EClass" name="DependentModule">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="handle" eType="#//URI"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="deployedPath" eType="#//URI"/>
+  </eClassifiers>
 </ecore:EPackage>

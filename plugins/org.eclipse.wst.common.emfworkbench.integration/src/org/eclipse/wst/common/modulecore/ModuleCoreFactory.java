@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreFactory.java,v 1.7 2005/02/02 19:51:06 cbridgha Exp $
+ * $Id: ModuleCoreFactory.java,v 1.8 2005/02/02 21:40:42 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -80,13 +80,13 @@ public interface ModuleCoreFactory extends EFactory{
 	ProjectModules createProjectModules();
 
 	/**
-	 * Returns a new object of class '<em>Deployed Module</em>'.
+	 * Returns a new object of class '<em>Dependent Module</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Deployed Module</em>'.
+	 * @return a new object of class '<em>Dependent Module</em>'.
 	 * @generated
 	 */
-	DeployedModule createDeployedModule();
+	DependentModule createDependentModule();
 
 	/**
 	 * Returns the package supported by this factory.

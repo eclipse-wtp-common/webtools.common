@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchApplicationImpl.java,v 1.6 2005/02/02 19:51:06 cbridgha Exp $
+ * $Id: WorkbenchApplicationImpl.java,v 1.7 2005/02/02 21:40:42 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
@@ -20,6 +20,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.eclipse.wst.common.modulecore.DeployScheme;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
+import org.eclipse.wst.common.modulecore.ModuleType;
 import org.eclipse.wst.common.modulecore.WorkbenchApplication;
 
 /**
@@ -149,14 +150,13 @@ public class WorkbenchApplicationImpl extends WorkbenchModuleImpl implements Wor
 				return getHandle();
 			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOYED_NAME:
 				return getDeployedName();
-			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOYED_PATH:
-				return getDeployedPath();
-			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULES:
-				return getModules();
 			case ModuleCorePackage.WORKBENCH_APPLICATION__RESOURCES:
 				return getResources();
 			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULE_TYPE:
-				return getModuleType();
+				if (resolve) return getModuleType();
+				return basicGetModuleType();
+			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULES:
+				return getModules();
 			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOY_SCHEME:
 				if (resolve) return getDeployScheme();
 				return basicGetDeployScheme();
@@ -177,20 +177,16 @@ public class WorkbenchApplicationImpl extends WorkbenchModuleImpl implements Wor
 			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOYED_NAME:
 				setDeployedName((String)newValue);
 				return;
-			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOYED_PATH:
-				setDeployedPath((URI)newValue);
-				return;
-			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULES:
-				getModules().clear();
-				getModules().addAll((Collection)newValue);
-				return;
 			case ModuleCorePackage.WORKBENCH_APPLICATION__RESOURCES:
 				getResources().clear();
 				getResources().addAll((Collection)newValue);
 				return;
 			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULE_TYPE:
-				getModuleType().clear();
-				getModuleType().addAll((Collection)newValue);
+				setModuleType((ModuleType)newValue);
+				return;
+			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULES:
+				getModules().clear();
+				getModules().addAll((Collection)newValue);
 				return;
 			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOY_SCHEME:
 				setDeployScheme((DeployScheme)newValue);
@@ -212,17 +208,14 @@ public class WorkbenchApplicationImpl extends WorkbenchModuleImpl implements Wor
 			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOYED_NAME:
 				setDeployedName(DEPLOYED_NAME_EDEFAULT);
 				return;
-			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOYED_PATH:
-				setDeployedPath(DEPLOYED_PATH_EDEFAULT);
-				return;
-			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULES:
-				getModules().clear();
-				return;
 			case ModuleCorePackage.WORKBENCH_APPLICATION__RESOURCES:
 				getResources().clear();
 				return;
 			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULE_TYPE:
-				getModuleType().clear();
+				setModuleType((ModuleType)null);
+				return;
+			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULES:
+				getModules().clear();
 				return;
 			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOY_SCHEME:
 				setDeployScheme((DeployScheme)null);
@@ -242,14 +235,12 @@ public class WorkbenchApplicationImpl extends WorkbenchModuleImpl implements Wor
 				return HANDLE_EDEFAULT == null ? handle != null : !HANDLE_EDEFAULT.equals(handle);
 			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOYED_NAME:
 				return DEPLOYED_NAME_EDEFAULT == null ? deployedName != null : !DEPLOYED_NAME_EDEFAULT.equals(deployedName);
-			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOYED_PATH:
-				return DEPLOYED_PATH_EDEFAULT == null ? deployedPath != null : !DEPLOYED_PATH_EDEFAULT.equals(deployedPath);
-			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULES:
-				return modules != null && !modules.isEmpty();
 			case ModuleCorePackage.WORKBENCH_APPLICATION__RESOURCES:
 				return resources != null && !resources.isEmpty();
 			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULE_TYPE:
-				return moduleType != null && !moduleType.isEmpty();
+				return moduleType != null;
+			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULES:
+				return modules != null && !modules.isEmpty();
 			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOY_SCHEME:
 				return deployScheme != null;
 		}

@@ -20,10 +20,9 @@
     <genClasses ecoreClass="moduleCore.ecore#//WorkbenchModule">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute moduleCore.ecore#//WorkbenchModule/handle"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//WorkbenchModule/deployedName"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//WorkbenchModule/deployedPath"/>
-      <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//WorkbenchModule/modules"/>
       <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//WorkbenchModule/resources"/>
       <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//WorkbenchModule/moduleType"/>
+      <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//WorkbenchModule/modules"/>
     </genClasses>
     <genClasses ecoreClass="moduleCore.ecore#//WorkbenchModuleResource">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//WorkbenchModuleResource/sourcePath"/>
@@ -44,6 +43,9 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference moduleCore.ecore#//ProjectModules/workbenchModules"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference moduleCore.ecore#//ProjectModules/deploymentSchemes"/>
     </genClasses>
-    <genClasses ecoreClass="moduleCore.ecore#//DeployedModule"/>
+    <genClasses ecoreClass="moduleCore.ecore#//DependentModule">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//DependentModule/handle"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//DependentModule/deployedPath"/>
+    </genClasses>
   </genPackages>
 </genmodel:GenModel>

@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchModule.java,v 1.7 2005/02/02 19:51:06 cbridgha Exp $
+ * $Id: WorkbenchModule.java,v 1.8 2005/02/02 21:40:42 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -20,10 +20,9 @@ import org.eclipse.emf.ecore.EObject;
  * <ul>
  *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getHandle <em>Handle</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getDeployedName <em>Deployed Name</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getDeployedPath <em>Deployed Path</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getModules <em>Modules</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getResources <em>Resources</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getModuleType <em>Module Type</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getModules <em>Modules</em>}</li>
  * </ul>
  * </p>
  *
@@ -85,43 +84,17 @@ public interface WorkbenchModule extends EObject{
 	void setDeployedName(String value);
 
 	/**
-	 * Returns the value of the '<em><b>Deployed Path</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Deployed Path</em>' attribute isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Deployed Path</em>' attribute.
-	 * @see #setDeployedPath(URI)
-	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchModule_DeployedPath()
-	 * @model dataType="org.eclipse.wst.common.modulecore.URI"
-	 * @generated
-	 */
-	URI getDeployedPath();
-
-	/**
-	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getDeployedPath <em>Deployed Path</em>}' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Deployed Path</em>' attribute.
-	 * @see #getDeployedPath()
-	 * @generated
-	 */
-	void setDeployedPath(URI value);
-
-	/**
-	 * Returns the value of the '<em><b>Modules</b></em>' attribute list.
-	 * The list contents are of type {@link org.eclipse.emf.common.util.URI}.
+	 * Returns the value of the '<em><b>Modules</b></em>' reference list.
+	 * The list contents are of type {@link org.eclipse.wst.common.modulecore.DependentModule}.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Modules</em>' reference list isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Modules</em>' attribute list.
+	 * @return the value of the '<em>Modules</em>' reference list.
 	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchModule_Modules()
-	 * @model type="org.eclipse.emf.common.util.URI" dataType="org.eclipse.wst.common.modulecore.URI"
+	 * @model type="org.eclipse.wst.common.modulecore.DependentModule"
 	 * @generated
 	 */
 	EList getModules();
@@ -145,19 +118,29 @@ public interface WorkbenchModule extends EObject{
 	EList getResources();
 
 	/**
-	 * Returns the value of the '<em><b>Module Type</b></em>' reference list.
-	 * The list contents are of type {@link org.eclipse.wst.common.modulecore.ModuleType}.
+	 * Returns the value of the '<em><b>Module Type</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Module Type</em>' reference list isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Module Type</em>' reference list.
+	 * @return the value of the '<em>Module Type</em>' reference.
+	 * @see #setModuleType(ModuleType)
 	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchModule_ModuleType()
-	 * @model type="org.eclipse.wst.common.modulecore.ModuleType"
+	 * @model required="true"
 	 * @generated
 	 */
-	EList getModuleType();
+	ModuleType getModuleType();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getModuleType <em>Module Type</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Module Type</em>' reference.
+	 * @see #getModuleType()
+	 * @generated
+	 */
+	void setModuleType(ModuleType value);
 
 } // WorkbenchModule
