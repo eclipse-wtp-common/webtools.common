@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCorePackage.java,v 1.10 2005/02/02 21:40:42 cbridgha Exp $
+ * $Id: ModuleCorePackage.java,v 1.11 2005/02/03 14:42:15 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -33,7 +33,7 @@ public interface ModuleCorePackage extends EPackage{
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	String eNAME = "modulecore";
+	String eNAME = "modulecore"; //$NON-NLS-1$
 
 	/**
 	 * The package namespace URI.
@@ -41,7 +41,7 @@ public interface ModuleCorePackage extends EPackage{
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	String eNS_URI = "modulecore.xmi";
+	String eNS_URI = "modulecore.xmi"; //$NON-NLS-1$
 
 	/**
 	 * The package namespace name.
@@ -49,7 +49,7 @@ public interface ModuleCorePackage extends EPackage{
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	String eNS_PREFIX = "org.eclipse.wst.common.modulecore";
+	String eNS_PREFIX = "org.eclipse.wst.common.modulecore"; //$NON-NLS-1$
 
 	/**
 	 * The singleton instance of the package.

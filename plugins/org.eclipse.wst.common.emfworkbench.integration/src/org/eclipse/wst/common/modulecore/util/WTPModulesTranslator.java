@@ -23,7 +23,9 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 	 * @see org.eclipse.wst.common.internal.emf.resource.Translator#getChildren(java.lang.Object, int)
 	 */
 	public Translator[] getChildren(Object target, int versionID) {
-		return createWTPModulesTranslator();
+		if(children == null)
+			children = createWTPModulesTranslator();
+		return children;
 	}
 	
 	private static Translator[] createWTPModulesTranslator() {
@@ -44,7 +46,7 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 			IDTranslator.INSTANCE,
 			new Translator(DEPLOY_SCHEME, MODULE_CORE_PKG.getWorkbenchApplication_DeployScheme()),
 			createModuleTypeTranslator(MODULE_CORE_PKG.getWorkbenchModule_ModuleType()),
-			createWBResource(MODULE_CORE_PKG.getWorkbenchModule_Resources()),
+			createWBResourceTranslator(MODULE_CORE_PKG.getWorkbenchModule_Resources()),
 			new Translator(MODULES, MODULE_CORE_PKG.getWorkbenchModule_Modules())
 		});
 		return result;
@@ -58,7 +60,7 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 			IDTranslator.INSTANCE,
 			new Translator(HANDLE, MODULE_CORE_PKG.getWorkbenchModule_Handle(), DOM_ATTRIBUTE),
 			createModuleTypeTranslator(MODULE_CORE_PKG.getWorkbenchModule_ModuleType()),
-			createWBResource(MODULE_CORE_PKG.getWorkbenchModule_Resources()),
+			createWBResourceTranslator(MODULE_CORE_PKG.getWorkbenchModule_Resources()),
 			createDependentModuleTranslator(MODULE_CORE_PKG.getWorkbenchModule_Modules())
 		});
 		return result;
@@ -96,7 +98,7 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 		return result;
 	}
 
-	private static Translator createWBResource(EStructuralFeature afeature) {
+	private static Translator createWBResourceTranslator(EStructuralFeature afeature) {
 		GenericTranslator result = new GenericTranslator(WBRESOURCE, afeature);
 		result.setChildren(new Translator[] {
 			IDTranslator.INSTANCE,
