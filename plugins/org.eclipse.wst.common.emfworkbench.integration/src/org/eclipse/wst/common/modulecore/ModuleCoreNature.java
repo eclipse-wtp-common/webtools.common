@@ -114,8 +114,8 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
      * @see com.ibm.wtp.emf.workbench.nature.EMFNature#configure()
      */
     public void configure() throws CoreException {
-        addDeployableProjectBuilder();
         super.configure();
+        addDeployableProjectBuilder();
     }
 
     private void addDeployableProjectBuilder() throws CoreException {

@@ -30,7 +30,7 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
 	 * Required, type ModuleBuilderDataModel
 	 * default to FULL
 	 */
-	public static final String MODULE_BUILDER_DM_LIST = "DeployableModuleProjectBuilderDataModel.MODULE_BUILDER_DM"; //$NON-NLS-1$
+	public static final String MODULE_BUILDER_DM_LIST = "DeployableModuleProjectBuilderDataModel.MODULE_BUILDER_DM_LIST"; //$NON-NLS-1$
 	/**
 	 * Required, type ModuleBuilderDataModel
 	 * default to FULL
@@ -49,6 +49,7 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
 		addValidBaseProperty(PROJECT_DETLA);
 		addValidBaseProperty(MODULE_BUILDER_DM_LIST);
 		addValidBaseProperty(MODULE_STRUCTURAL_MODEL);
+		super.initValidBaseProperties();
 	}
 
     public DeployableModuleProjectBuilderDataModel() {
@@ -61,9 +62,17 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
     protected Object getDefaultProperty(String propertyName) {
         if(propertyName.equals(BUILD_KIND))
             return new Integer(IncrementalProjectBuilder.FULL_BUILD);
-        else if(propertyName.equals(MODULE_BUILDER_DM_LIST))
-            return populateModuleBuilderDataModelList();
         return super.getDefaultProperty(propertyName);
+    }
+    /* (non-Javadoc)
+     * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#doSetProperty(java.lang.String, java.lang.Object)
+     */
+    protected boolean doSetProperty(String propertyName, Object propertyValue) {
+        boolean status = super.doSetProperty(propertyName, propertyValue);
+        if(MODULE_STRUCTURAL_MODEL.equals(propertyName)) {
+            setProperty(MODULE_BUILDER_DM_LIST, populateModuleBuilderDataModelList());
+        }
+        return status;
     }
 
     /**
