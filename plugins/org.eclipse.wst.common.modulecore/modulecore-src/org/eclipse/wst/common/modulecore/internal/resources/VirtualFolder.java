@@ -16,13 +16,16 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.modulecore.ComponentResource;
 import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.WorkbenchComponent;
+import org.eclipse.wst.common.modulecore.resources.IVirtualContainer;
 import org.eclipse.wst.common.modulecore.resources.IVirtualFile;
 import org.eclipse.wst.common.modulecore.resources.IVirtualFolder;
 import org.eclipse.wst.common.modulecore.resources.IVirtualResource;
@@ -71,12 +74,11 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 	// TODO WTP:Implement this method
 	public void create(int updateFlags, boolean local, IProgressMonitor monitor) throws CoreException {
 
-		for (Iterator realFoldersIterator = realFolders.iterator(); realFoldersIterator.hasNext();) {
-			IFolder realFolder = (IFolder) realFoldersIterator.next();
-			if (!realFolder.exists()) {
-				realFolder.create(updateFlags, local, monitor);
-			}
-		}
+		IVirtualContainer container = ModuleCore.create(getProject(), getComponentHandle().getName());
+		IVirtualFolder root = container.getFolder(new Path("/"));  //$NON-NLS-1$		
+		IFolder realFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(root.getFullPath()); 
+		IFolder newFolder = realFolder.getFolder(getRuntimePath()); 
+		createResource(newFolder, updateFlags, monitor); 
 
 	}
 
@@ -106,18 +108,6 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 			}
 		}
 	}
-
-	/**
-	 * @see IFolder#createLink(org.eclipse.core.runtime.IPath, int,
-	 *      org.eclipse.core.runtime.IProgressMonitor)
-	 */
-	public void create(IPath aProjectRelativeLocation, int updateFlags, IProgressMonitor monitor) throws CoreException {
-
-		IFolder resource = getProject().getFolder(aProjectRelativeLocation);
-		createResource(resource, updateFlags, monitor);
-	}
-
-
 
 	private void createResource(IContainer resource, int updateFlags, IProgressMonitor monitor) throws CoreException {
 
