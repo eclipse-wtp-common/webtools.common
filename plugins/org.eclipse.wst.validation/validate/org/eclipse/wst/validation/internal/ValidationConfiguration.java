@@ -206,7 +206,9 @@ public abstract class ValidationConfiguration {
 			Boolean bvalue = (Boolean) getValidatorMetaData().get(vmd);
 			if (bvalue.booleanValue() == true) {
 				// If the validator is enabled
-				if ((vmd != null && vmd.isFullBuild() && fullBuild) || (!vmd.isFullBuild() && !fullBuild)) {
+				if (vmd == null)
+					continue;
+				if ((vmd.isFullBuild() && fullBuild) || (!vmd.isFullBuild() && !fullBuild)) {
 					if (!onlyReferenced || vmd.isDependentValidator())
 						temp[count++] = vmd;
 				}
