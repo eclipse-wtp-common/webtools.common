@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.core;
 
-import org.eclipse.wst.validation.internal.ValidationRegistryReader;
-import org.eclipse.wst.validation.internal.ValidatorMetaData;
 
 
 
