@@ -51,7 +51,11 @@ public class ModuleStructureModel extends EditModel implements IResourceChangeLi
     }
 
     private ModuleStructureEvent createEvent() {
-        ModuleStructureEvent event = new ModuleStructureEvent(null, getModuleResources());
+        ModuleStructureEvent event = new ModuleStructureEvent(getSource(), getModuleResources());
+        return null;
+    }
+
+    private Object getSource() {
         return null;
     }
 
