@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="org.eclipse.wst.common.emf"
+   name="EMF Utilities"
+   version="1.0.0"
+   provider-name="Eclipse.org"
+   description="Provides support and utilities for emf integration into the workbench"
+   class="org.eclipse.wst.common.internal.emf.plugin.EcoreUtilitiesPlugin">
+
+   <runtime>
+      <library name="runtime/wtpemf.jar">
+         <export name="*"/>
+      </library>
+      <library name="runtime/workbench.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+   <requires>
+      <import plugin="org.eclipse.emf.ecore.xmi"/>
+      <import plugin="org.eclipse.wst.common.frameworks"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.core.resources"/>
+   </requires>
+
+
+   <extension-point id="packageURIMap" name="PackageURIMap"/>
+
+<!-- Need to register the Ecore specific package mappings -->
+   <extension
+         point="org.eclipse.wst.common.emf.packageURIMap">
+      <map
+            uri="http://www.eclipse.org/emf/2002/Ecore"
+            prefix="ecore">
+      </map>
+      <map
+            uri="http://www.eclipse.org/emf/2002/Mapping"
+            prefix="mapping">
+      </map>
+<!-- Trick to get Mapping.xmi for MOF5 serialization -->
+      <map
+            uri="http://www.eclipse.org/emf/2002/Mapping"
+            prefix="Mapping">
+      </map>
+   </extension>
+   
+      <extension
+         point="com.ibm.wtp.common.util.uiContextSensitiveClass">
+      <uiContextSensitiveClass
+            context="Headless"
+            key="rendererFactory"
+            className="org.eclipse.wst.common.internal.emf.resource.EMF2DOMRendererFactory">
+      </uiContextSensitiveClass>
+   </extension>
+
+</plugin>

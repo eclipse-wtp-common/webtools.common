@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="org.eclipse.wst.validation.ui"
+   name="Validation Framework UI"
+   version="1.0.0"
+   provider-name="Eclipse.org"
+   description="This is only UI plugin for the validation framework. Some of the main UI functions this plugin provides are global validation references page, project validation properties page and manual run validation menu action."
+   class="org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin">
+
+   <runtime>
+      <library name="runtime/validateui.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+   <requires>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.swt"/>
+      <import plugin="org.eclipse.wst.common.frameworks.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.wst.common.frameworks"/>
+      <import plugin="org.eclipse.wst.validation"/>
+   </requires>
+
+
+<!-- ============================================== -->
+<!-- Popup Contributions                            -->
+<!-- ============================================== -->
+<!-- By saying "adaptable=true", this item will appear on both IProject and IJavaProject -->
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <viewerContribution 
+            targetID="#CommonNavigatorPopupMenu"
+            id="ValidationMenuAction">
+         <action
+               label="%VBF_UI_POPUP_RUNVALIDATION"
+               class="org.eclipse.wst.validation.internal.ui.ValidationMenuAction"
+               menubarPath="additions"
+               enablesFor="+"
+               id="ValidationAction">
+         </action>
+      </viewerContribution>
+   </extension>
+  
+
+<!-- ====================================================== -->
+<!--           Validation preference page                   -->
+<!-- ====================================================== -->
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            name="%VBF_TITLE_PREFERENCE"
+            class="org.eclipse.wst.validation.internal.ui.ValidationPreferencePage"
+            id="ValidationPreferencePage">
+      </page>
+   </extension>
+   
+<!-- ====================================================== -->
+<!--           Validation properties page                   -->
+<!-- ====================================================== -->
+<!-- By saying "adaptable=true", this item will appear on both IProject and IJavaProject -->
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            adaptable="true"
+            objectClass="org.eclipse.core.resources.IProject"
+            name="%VBF_TITLE_PROPERTIES"
+            class="org.eclipse.wst.validation.internal.ui.ValidationPropertiesPage"
+            id="ValidationPropertiesPage">
+      </page>
+   </extension>
+
+</plugin>
