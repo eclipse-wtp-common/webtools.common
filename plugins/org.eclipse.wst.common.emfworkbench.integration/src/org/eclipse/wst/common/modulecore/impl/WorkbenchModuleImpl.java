@@ -2,12 +2,13 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchModuleImpl.java,v 1.8 2005/02/02 21:40:42 cbridgha Exp $
+ * $Id: WorkbenchModuleImpl.java,v 1.9 2005/02/03 18:08:41 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
 import java.util.Collection;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 
@@ -30,6 +31,8 @@ import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 import org.eclipse.wst.common.modulecore.ModuleType;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
 import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
+
+import com.ibm.wtp.emf.workbench.ProjectResourceSet;
 
 /**
  * <!-- begin-user-doc -->
@@ -391,4 +394,8 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 		return result.toString();
 	}
 
+	public IProject getProject() {
+		
+		return ((ProjectResourceSet)eResource().getResourceSet()).getProject();
+	}
 } //WorkbenchModuleImpl
