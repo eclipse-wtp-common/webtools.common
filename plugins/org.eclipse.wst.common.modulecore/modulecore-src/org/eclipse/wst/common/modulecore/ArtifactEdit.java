@@ -129,7 +129,7 @@ public class ArtifactEdit implements IEditModelHandler {
 			return false;
 		/* and the containing project must be resolveable and accessible */
 		IProject project = ModuleCore.getContainingProject(aModule.getHandle());
-		if (project == null || project.isAccessible())
+		if (project == null || !project.isAccessible())
 			return false;
 		/* and an edit model factory must be defined for the module type */
 		IEditModelFactory factory = EditModelRegistry.getInstance().findEditModelFactoryByKey(moduleType.getModuleTypeId());
