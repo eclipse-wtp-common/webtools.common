@@ -18,9 +18,11 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.wst.common.internal.emfworkbench.CompatibilityWorkbenchURIConverterImpl;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelNature;
 import org.eclipse.wst.common.modulecore.internal.impl.ArtifactEditModelFactory;
+import org.eclipse.wst.common.modulecore.internal.impl.ModuleCoreURIConverter;
 import org.eclipse.wst.common.modulecore.internal.impl.ModuleStructuralModelFactory;
 import org.eclipse.wst.common.modulecore.internal.impl.WTPResourceFactoryRegistry;
 import org.eclipse.wst.common.modulecore.internal.util.IModuleConstants;
@@ -136,15 +138,24 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		emfContext = aNature;
 		getEmfContext().setDefaultToMOF5Compatibility(true);
 		// Overriding superclass to use our own URI converter, which knows about binary projects
-		ProjectResourceSet set = aNature.getResourceSet();
-		set.setResourceFactoryRegistry(WTPResourceFactoryRegistry.INSTANCE);
-		WorkbenchURIConverter conv = initializeWorbenchURIConverter(set);
-		set.setURIConverter(conv);
+		ProjectResourceSet projectResourceSet = aNature.getResourceSet();
+		projectResourceSet.setResourceFactoryRegistry(WTPResourceFactoryRegistry.INSTANCE);
+		createURIConverter(getProject(), projectResourceSet);
 		// initializeCacheEditModel();
 		// addAdapterFactories(set);
 		// set.getSynchronizer().addExtender(this); // added so we can be informed of closes to the
 		// new J2EEResourceDependencyRegister(set); // This must be done after the URIConverter is
 
+	}
+	
+	/**
+	 * @param project
+	 * @return
+	 */
+	private URIConverter createURIConverter(IProject aProject, ProjectResourceSet aResourceSet ) {
+		ModuleCoreURIConverter uriConverter = new ModuleCoreURIConverter(aProject, aResourceSet.getSynchronizer()); 
+		uriConverter.addInputContainer(getProject());
+		return uriConverter;
 	}
 
 	public ResourceSet getResourceSet() {
@@ -225,10 +236,5 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		return null;
 	}
 
-	private WorkbenchURIConverter initializeWorbenchURIConverter(ProjectResourceSet set) {
-		WorkbenchURIConverter uriConverter = new CompatibilityWorkbenchURIConverterImpl();
-		uriConverter.addInputContainer(getProject());
-		return uriConverter;
-	}
 
 }
