@@ -2,11 +2,10 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchModule.java,v 1.9 2005/02/03 19:26:18 cbridgha Exp $
+ * $Id: WorkbenchModule.java,v 1.10 2005/02/03 23:19:35 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -143,10 +142,7 @@ public interface WorkbenchModule extends EObject{
 	 * @generated
 	 */
 	void setModuleType(ModuleType value);
-
-	/**
-	 * @return the containing project
-	 */
-	IProject getProject();
+	
+	WorkbenchModuleResource findWorkbenchModuleResourceByDeployPath(URI aDeployPath);
 
 } // WorkbenchModule
