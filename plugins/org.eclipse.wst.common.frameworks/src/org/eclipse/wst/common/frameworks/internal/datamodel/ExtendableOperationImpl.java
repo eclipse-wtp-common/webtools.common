@@ -11,6 +11,7 @@ package org.eclipse.wst.common.frameworks.internal.datamodel;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.resources.IProject;
@@ -82,7 +83,12 @@ public final class ExtendableOperationImpl implements IUndoableOperation {
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info) {
 		DMComposedExtendedOperationHolder extOpHolder = initializeExtensionOperations();
 		IStatus preOpStatus = runPreOps(monitor, extOpHolder, info);
-		addStatus(rootOperation.execute(monitor, info));
+		try {
+			addStatus(rootOperation.execute(monitor, info));
+		} catch (ExecutionException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		IStatus postOpStatus = runPostOps(monitor, extOpHolder, info);
 		if (null != preOpStatus) {
@@ -182,10 +188,6 @@ public final class ExtendableOperationImpl implements IUndoableOperation {
 
 	public boolean canUndo() {
 		return rootOperation.canUndo();
-	}
-
-	public String getDescription() {
-		return rootOperation.getDescription();
 	}
 
 	public String getLabel() {
