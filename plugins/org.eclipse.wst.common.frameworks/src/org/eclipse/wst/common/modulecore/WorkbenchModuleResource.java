@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchModuleResource.java,v 1.1 2005/01/21 17:13:39 cbridgha Exp $
+ * $Id: WorkbenchModuleResource.java,v 1.1 2005/01/24 20:40:58 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 

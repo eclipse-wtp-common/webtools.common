@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: IModuleHandle.java,v 1.1 2005/01/17 21:08:17 cbridgha Exp $
+ * $Id: IModuleHandle.java,v 1.1 2005/01/24 20:40:58 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 

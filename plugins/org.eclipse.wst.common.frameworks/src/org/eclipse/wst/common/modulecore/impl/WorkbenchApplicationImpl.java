@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchApplicationImpl.java,v 1.1 2005/01/17 21:08:18 cbridgha Exp $
+ * $Id: WorkbenchApplicationImpl.java,v 1.1 2005/01/24 20:40:58 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
