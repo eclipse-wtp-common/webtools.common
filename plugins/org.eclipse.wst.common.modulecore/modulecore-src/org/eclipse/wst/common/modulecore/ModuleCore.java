@@ -1,13 +1,11 @@
-/*******************************************************************************
- * Copyright (c) 2003, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+/***************************************************************************************************
+ * Copyright (c) 2003, 2004 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors:
- * IBM Corporation - initial API and implementation
- *******************************************************************************/
+ * Contributors: IBM Corporation - initial API and implementation
+ **************************************************************************************************/
 package org.eclipse.wst.common.modulecore;
 
 import java.util.ArrayList;
@@ -35,24 +33,27 @@ import org.eclipse.wst.common.modulecore.internal.util.EclipseResourceAdapter;
  * be used as a static utility or an instance adapter.
  * </p>
  * <p>
- * ModuleCore hides the management of accessing edit models (
+ * ModuleCore hides the management of accessing EditModels (
  * {@see org.eclipse.wst.common.modulecore.ModuleStructuralModel}) correctly. Each project has
  * exactly one ({@see org.eclipse.wst.common.modulecore.ModuleStructuralModel}) for read and
  * exactly one for write. Each of these is shared among all clients and reference counted as
- * necessary. Clients should use ModuleCore when working with the WTP Modules Model. easier.
+ * necessary. Clients should use ModuleCore when working with the WTP Modules Strcutrual Model.
  * </p>
  * 
  * <p>
- * Each ModuleCore instance facade is designed to manage the Edit Model lifecycle for clients.
- * However, while each ModuleCore is designed to be passed around as needed, clients must enforce
- * the ModuleCore lifecycle. The most common method of acquiring a ModuleCore instance facade is to
- * use {@see #getModuleCoreForRead(IProject)}or {@see #getModuleCoreForWrite(IProject)}.
+ * Each ModuleCore edit facade is designed to manage the EditModel lifecycle for clients. However,
+ * while each ModuleCore is designed to be passed around as needed, clients must enforce the
+ * ModuleCore lifecycle. The most common method of acquiring a ModuleCore edit facade is to use
+ * {@see #getModuleCoreForRead(IProject)}&nbsp;or {@see #getModuleCoreForWrite(IProject)}.
  * </p>
  * <p>
- * When clients have concluded their use of the instance, <b>clients must call {@see #dispose()}
- * </b>.
+ * When clients have concluded their use of their ModuleCore instance adapter , <b>clients must call
+ * {@see #dispose()}</b>.
  * </p>
- * 
+ * <p>
+ * For more information about the underlying EditModel, see <a
+ * href="ModuleCoreNature.html#module-structural-model">the discussion of the ModuleStructuralModel
+ * </a>.
  * <p>
  * The following class is experimental until fully documented.
  * </p>
@@ -89,18 +90,18 @@ public class ModuleCore implements IEditModelHandler {
 	/**
 	 * 
 	 * <p>
-	 * Each ModuleCore instance facade is tied to a specific project. A project may have multiple
-	 * ModuleCore instance facades live at any given time.
+	 * Each ModuleCore edit facade is tied to a specific project. A project may have multiple
+	 * ModuleCore edit facades live at any given time.
 	 * </p>
 	 * <p>
 	 * Use to acquire a ModuleCore facade for a specific project that will not be used for editing.
-	 * Invocations of any save*() API on an instance returned from this method will throw
+	 * Invocations of any save*() API on an instance returned from This method will throw
 	 * exceptions.
 	 * </p>
 	 * 
 	 * @param aProject
 	 *            The IProject that contains the WTP Modules model to load
-	 * @return A ModuleCore instance facade to access the WTP Modules Model
+	 * @return A ModuleCore edit facade to access the WTP Modules Model
 	 */
 	public static ModuleCore getModuleCoreForRead(IProject aProject) {
 		return new ModuleCore(ModuleCoreNature.getModuleCoreNature(aProject), true);
@@ -109,8 +110,8 @@ public class ModuleCore implements IEditModelHandler {
 	/**
 	 * 
 	 * <p>
-	 * Each ModuleCore instance facade is tied to a specific project. A project may have multiple
-	 * ModuleCore instance facades live at any given time.
+	 * Each ModuleCore edit facade is tied to a specific project. A project may have multiple
+	 * ModuleCore edit facades live at any given time.
 	 * </p>
 	 * <p>
 	 * Use to acquire a ModuleCore facade for a specific project that may be used to modify the
@@ -119,7 +120,7 @@ public class ModuleCore implements IEditModelHandler {
 	 * 
 	 * @param aProject
 	 *            The IProject that contains the WTP Modules model to load
-	 * @return A ModuleCore instance facade to access the WTP Modules Model
+	 * @return A ModuleCore edit facade to access the WTP Modules Model
 	 */
 	public static ModuleCore getModuleCoreForWrite(IProject aProject) {
 		return new ModuleCore(ModuleCoreNature.getModuleCoreNature(aProject), false);
@@ -127,12 +128,12 @@ public class ModuleCore implements IEditModelHandler {
 
 	/**
 	 * <p>
-	 * A convenience API to fetch the {@see ModuleCoreNature}for a particular module URI. The
+	 * A convenience API to fetch the {@see ModuleCoreNature}&nbsp;for a particular module URI. The
 	 * module URI must be of the valid form, or an exception will be thrown. The module URI must be
-	 * contained by a project that has a {@see ModuleCoreNature}or null will be returned.
+	 * contained by a project that has a {@see ModuleCoreNature}&nbsp;or null will be returned.
 	 * </p>
 	 * <p>
-	 * <b>The following method may return null. </b>
+	 * <b>This method may return null. </b>
 	 * </p>
 	 * 
 	 * @param aModuleURI
@@ -161,7 +162,7 @@ public class ModuleCore implements IEditModelHandler {
 	 * The method will not return an inaccessible project.
 	 * </p>
 	 * <p>
-	 * <b>The following method may return null. </b>
+	 * <b>This method may return null. </b>
 	 * </p>
 	 * 
 	 * @param aModuleURI
@@ -184,15 +185,15 @@ public class ModuleCore implements IEditModelHandler {
 	/**
 	 * <p>
 	 * Returns the corresponding Eclipse IResource, if it can be determined, for the given
-	 * {@see WorkbenchModuleResource}. The {@see WorkbenchModuleResource#getSourcePath()}must
-	 * return a valid resource path for this method to return a valid value. The returned value may
-	 * be either an {@see org.eclipse.core.resources.IFile}or
+	 * {@see WorkbenchModuleResource}. The {@see WorkbenchModuleResource#getSourcePath()}
+	 * &nbsp;must return a valid resource path for This method to return a valid value. The returned
+	 * value may be either an {@see org.eclipse.core.resources.IFile}&nbsp;or
 	 * {@see org.eclipse.core.resources.IFolder}. A client may use the return value of
-	 * {@see IResource#getType()}to determine what type of resource was returned. (@see
+	 * {@see IResource#getType()}&nbsp;to determine what type of resource was returned. (@see
 	 * IResource#FILE} or {@see IResource#FOLDER}).
 	 * </p>
 	 * <p>
-	 * <b>The following method may return null. </b>
+	 * <b>This method may return null. </b>
 	 * </p>
 	 * 
 	 * @param aModuleResource
@@ -214,7 +215,7 @@ public class ModuleCore implements IEditModelHandler {
 	 * root of the flexible project that contains the {@see WorkbenchModule}.
 	 * </p>
 	 * <p>
-	 * <b>The following method may return null. </b>
+	 * <b>This method may return null. </b>
 	 * </p>
 	 * 
 	 * @param aWorkbenchModule
@@ -286,6 +287,7 @@ public class ModuleCore implements IEditModelHandler {
 	 * Force a save of the underlying model. The following method should be used with care. Unless
 	 * required, use {@see #saveIfNecessary(IProgressMonitor) instead.
 	 * </p>
+	 * {@inheritDoc}
 	 * 
 	 * @see org.eclipse.wst.common.modulecore.IEditModelHandler#save()
 	 * @throws IllegalStateException
@@ -302,6 +304,7 @@ public class ModuleCore implements IEditModelHandler {
 	 * Save the underlying model only if no other clients are currently using the model. If the
 	 * model is not shared, it will be saved. If it is shared, the save will be deferred.
 	 * </p>
+	 * {@inheritDoc}
 	 * 
 	 * @see org.eclipse.wst.common.modulecore.IEditModelHandler#saveIfNecessary()
 	 * @throws IllegalStateException
@@ -316,8 +319,9 @@ public class ModuleCore implements IEditModelHandler {
 	/**
 	 * <p>
 	 * Clients must call the following method when they have finished using the model, even if the
-	 * ModuleCore instance facade was created as read-only.
+	 * ModuleCore edit facade was created as read-only.
 	 * </p>
+	 * {@inheritDoc}
 	 * 
 	 * @see org.eclipse.wst.common.modulecore.IEditModelHandler#dispose()
 	 */
@@ -334,7 +338,7 @@ public class ModuleCore implements IEditModelHandler {
 
 	/**
 	 * <p>
-	 * Creates a default WTP Module Structural Model file if necessary.
+	 * Creates a default WTP Module Structural Metamodel file if necessary.
 	 * </p>
 	 */
 	public void prepareProjectModulesIfNecessary() {
@@ -356,9 +360,9 @@ public class ModuleCore implements IEditModelHandler {
 
 	/**
 	 * <p>
-	 * Clients that wish to modify the individual {@see WorkbenchModule}instances may use this
-	 * method. If clients need to add or remove {@see WorkbenchModule}instances, use
-	 * {@see #getProjectModules()}to get the root object and then access the contained
+	 * Clients that wish to modify the individual {@see WorkbenchModule}&nbsp;instances may use
+	 * this method. If clients need to add or remove {@see WorkbenchModule}&nbsp;instances, use
+	 * {@see #getProjectModules()}&nbsp;to get the root object and then access the contained
 	 * {@see WorkbenchModule}s through {@see ProjectModules#getWorkbenchModules()}.
 	 * 
 	 * @return The WorkbenchModules of the underlying model, if any.
@@ -370,9 +374,10 @@ public class ModuleCore implements IEditModelHandler {
 
 	/**
 	 * <p>
-	 * Create a {@see WorkbenchModule}with the given deployed name. The returned module will be
-	 * contained by the root object of the current ModuleCore (so no need to re-add it to the Module
-	 * Module root object). The current ModuleCore must not be read-only to invoke this method.
+	 * Create a {@see WorkbenchModule}&nbsp;with the given deployed name. The returned module will
+	 * be contained by the root object of the current ModuleCore (so no need to re-add it to the
+	 * Module Module root object). The current ModuleCore must not be read-only to invoke This
+	 * method.
 	 * </p>
 	 * 
 	 * @param aDeployName
@@ -393,8 +398,8 @@ public class ModuleCore implements IEditModelHandler {
 
 	/**
 	 * <p>
-	 * Create a {@see WorkbenchModuleResource}with the sourcePath of aResource. The current
-	 * ModuleCore must not be read-only to invoke this method.
+	 * Create a {@see WorkbenchModuleResource}&nbsp;with the sourcePath of aResource. The current
+	 * ModuleCore must not be read-only to invoke This method.
 	 * </p>
 	 * 
 	 * @param aModule
@@ -419,9 +424,9 @@ public class ModuleCore implements IEditModelHandler {
 
 	/**
 	 * <p>
-	 * Create a {@see ModuleType}with the sourcePath of aResource. The returned resource will be
-	 * associated with the current ModuleCore. The current ModuleCore must not be read-only to
-	 * invoke this method.
+	 * Create a {@see ModuleType}&nbsp;with the sourcePath of aResource. The returned resource will
+	 * be associated with the current ModuleCore. The current ModuleCore must not be read-only to
+	 * invoke This method.
 	 * </p>
 	 * 
 	 * @param aResource
@@ -491,9 +496,9 @@ public class ModuleCore implements IEditModelHandler {
 	 * elements are contained within the same project.
 	 * </p>
 	 * <p>
-	 * The sourcePath of each {@see WorkbenchModuleResource}will be mapped to either an IFile or an
-	 * IFolder. As a result, if the {@see WorkbenchModuleResource}is a container mapping, the path
-	 * of the supplied resource may not be identical the sourcePath of the
+	 * The sourcePath of each {@see WorkbenchModuleResource}&nbsp;will be mapped to either an IFile
+	 * or an IFolder. As a result, if the {@see WorkbenchModuleResource}&nbsp;is a container
+	 * mapping, the path of the supplied resource may not be identical the sourcePath of the
 	 * {@see WorkbenchModuleResource}.
 	 * </p>
 	 * 
@@ -524,11 +529,11 @@ public class ModuleCore implements IEditModelHandler {
 
 	/**
 	 * <p>
-	 * Returns the {@see WorkbenchModule}contained by the current ModuleCore with the deploy name
-	 * aModuleName.
+	 * Returns the {@see WorkbenchModule}&nbsp;contained by the current ModuleCore with the deploy
+	 * name aModuleName.
 	 * </p>
 	 * <p>
-	 * <b>The following method may return null. </b>
+	 * <b>This method may return null. </b>
 	 * </p>
 	 * 
 	 * @param aModuleName
@@ -542,9 +547,9 @@ public class ModuleCore implements IEditModelHandler {
 
 	/**
 	 * <p>
-	 * Locate and return the {@see WorkbenchModule}referenced by the fully-qualified aModuleURI.
-	 * The method will work correctly even if the requested {@see WorkbenchModule}is contained by
-	 * another project.
+	 * Locate and return the {@see WorkbenchModule}&nbsp;referenced by the fully-qualified
+	 * aModuleURI. The method will work correctly even if the requested {@see WorkbenchModule}
+	 * &nbsp;is contained by another project.
 	 * </p>
 	 * 
 	 * @param aModuleURI
@@ -568,7 +573,7 @@ public class ModuleCore implements IEditModelHandler {
 	/**
 	 * <p>
 	 * Searches the available {@see WorkbenchModule}s as available through
-	 * {@see #getWorkbenchModules()}for {@see WorkbenchModule}s that have a
+	 * {@see #getWorkbenchModules()}&nbsp;for {@see WorkbenchModule}s that have a
 	 * {@see WorkbenchModule#getModuleType()}with a a module type Id as specified by aModuleTypeId.
 	 * </p>
 	 * 
@@ -592,7 +597,7 @@ public class ModuleCore implements IEditModelHandler {
 
 	/**
 	 * <p>
-	 * Returns true if the {@see DependentModule}references a {@see WorkbenchModule}(
+	 * Returns true if the {@see DependentModule}&nbsp;references a {@see WorkbenchModule}(
 	 * {@see DependentModule#getHandle()}) which is contained by the project that the current
 	 * ModuleCore is managing. The following method will determine if the dependency can be
 	 * satisfied by the current project.
@@ -630,7 +635,7 @@ public class ModuleCore implements IEditModelHandler {
 	}
 
 	private void throwAttemptedReadOnlyModification() {
-		throw new IllegalStateException("Attempt to modify a ModuleCore instance facade that was loaded as read-only.");
+		throw new IllegalStateException("Attempt to modify a ModuleCore edit facade that was loaded as read-only.");
 	}
 
 

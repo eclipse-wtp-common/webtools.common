@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCorePackage.java,v 1.1 2005/02/13 16:27:46 cbridgha Exp $
+ * $Id: ModuleCorePackage.java,v 1.2 2005/02/17 16:02:52 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -15,14 +15,14 @@ import org.eclipse.emf.ecore.EReference;
 
 /**
  * <!-- begin-user-doc -->
- * The <b>Package</b> for the model.
- * It contains accessors for the meta objects to represent
+ * The <b>Package</b> contains accessors for the meta objects to represent
  * <ul>
  *   <li>each class,</li>
  *   <li>each feature of each class,</li>
  *   <li>each enum,</li>
  *   <li>and each data type</li>
- * </ul>
+ * </ul>.
+ * 
  * <!-- end-user-doc -->
  * @see org.eclipse.wst.common.modulecore.ModuleCoreFactory
  * @generated

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project default="main" basedir=".">
+
+	<property file="javadoc.properties" />
+
+	<target name="main" depends="prephtml, javadoc" description="Builds Plugin Javadoc" />
+	
+	<target name="validate" description="Validates all XML and XSLT files.">
+		<xmlvalidate lenient="true">
+			<fileset dir=".." includes="**/overview.xml,**/package.xml" />
+		</xmlvalidate>
+	</target>
+
+	<target name="prephtml" description="Transforms XML to HTML.">	
+		<xslt 	style="javadoc.xsl" 
+				includes="**/overview.xml,**/package.xml" 
+				destdir="." /> 
+	</target>
+
+    <target name="javadoc">
+        <javadoc access="public" 
+				 author="false" 
+					classpath="../bin;${eclipse.basedir}\plugins\org.eclipse.osgi_3.1.0\eclipseAdaptor.jar;../../org.eclipse.wst.common.emf/bin;../../org.eclipse.wst.common.emfworkbench.integration/bin;${eclipse.basedir}\plugins\com.ibm.wtp.common.util_1.0.1\util.jar;${eclipse.basedir}\plugins\org.eclipse.core.resources_3.1.0\resources.jar;${eclipse.basedir}\plugins\org.eclipse.xsd_2.1.0\runtime\xsd.jar;${eclipse.basedir}\plugins\org.eclipse.emf.edit_2.1.0\runtime\edit.jar;${eclipse.basedir}\plugins\org.eclipse.core.runtime_3.1.0\runtime.jar;${eclipse.basedir}\plugins\org.eclipse.emf.codegen_2.1.0\runtime\codegen.jar;${eclipse.basedir}\plugins\org.eclipse.emf.ecore.xmi_2.1.0\runtime\ecore.xmi.jar;${eclipse.basedir}\plugins\org.eclipse.emf.codegen.ecore_2.1.0\runtime\codegen.ecore.jar;${eclipse.basedir}\plugins\com.ibm.wtp.emf.workbench_1.0.1.1\emfworkbench.jar;../../org.eclipse.wst.common.frameworks/bin;${eclipse.basedir}\plugins\org.eclipse.osgi_3.1.0\console.jar;${eclipse.basedir}\plugins\org.eclipse.osgi_3.1.0\core.jar;${eclipse.basedir}\plugins\org.eclipse.emf.ecore_2.1.0\runtime\ecore.jar;${eclipse.basedir}\plugins\org.eclipse.emf.common_2.1.0\runtime\common.jar" 
+					destdir="doc" 
+					doctitle="${component.title}" 
+					nodeprecated="false" 
+					nodeprecatedlist="false" 
+					noindex="false" 
+					nonavbar="false" 
+					notree="false" 
+					overview="${plugin.basedir}\component-overview\overview.html"
+					packagenames="${api.packages}" 
+					sourcepath="${plugin.sourcefolders}" 
+					splitindex="true" 
+					stylesheetfile="${plugin.basedir}\component-overview\overview\apistyles.css" 
+					use="true" 
+					version="true"
+					breakiterator="no"
+					/> 
+		<copy todir="./doc/overview">
+			<fileset dir="component-overview/overview/"/> 
+		</copy>
+    </target>
+ 
+</project>
+
+<!--  				"  -->
