@@ -32,5 +32,6 @@ public class WTPOperationAPITests extends TestSuite {
 		addTest(new SimpleTestSuite(EventTest.class));
 		addTest(new SimpleTestSuite(NestingTest.class));
 		addTest(new SimpleTestSuite(NestedListeningTest.class));
+		addTest(new SimpleTestSuite(SimpleDataModelTest.class));
 	}
 }
