@@ -22,6 +22,7 @@
       <import plugin="org.eclipse.jem.workbench"/>
       <import plugin="org.eclipse.wst.common.emf"/>
       <import plugin="org.eclipse.emf.ecore.xmi"/>
+      <import plugin="org.eclipse.wst.server.core"/>
    </requires>
 
    <extension

@@ -36,8 +36,10 @@ public class WTPCommonMessages {
 	public static final String IS_READ_ONLY = "11"; //$NON-NLS-1$
 	public static final String RESOURCE_EXISTS_ERROR = "12"; //$NON-NLS-1$
 	public static final String PROJECT_NOT_EXISTS_ERROR = "13"; //$NON-NLS-1$
-	public static final String J2EE_SPEC_LEVEL_NOT_FOUND = "14"; //$NON-NLS-1$
+	public static final String SPEC_LEVEL_NOT_FOUND = "14"; //$NON-NLS-1$
 	public static final String PROJECT_NAME_EMPTY = "15"; //$NON-NLS-1$
 	public static final String PROJECT_ClOSED = "31"; //$NON-NLS-1$
 	public static final String PROJECT_EXISTS_AT_LOCATION_ERROR = "32"; //$NON-NLS-1$
+	public static final String ERR_EMPTY_MODULE_NAME = "34"; //$NON-NLS-1$
+	public static final String ERR_INVALID_CHARS = "34"; //$NON-NLS-1$ 
 }
