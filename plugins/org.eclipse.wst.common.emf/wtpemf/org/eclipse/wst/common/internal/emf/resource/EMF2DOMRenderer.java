@@ -167,8 +167,7 @@ public class EMF2DOMRenderer extends AbstractRendererImpl implements Renderer {
 		 * OutputFormat format = createOutputFormat(); Serializer serializer =
 		 * SerializerFactory.getSerializerFactory(Method.XML).makeSerializer(out, format);
 		 * serializer.asDOMSerializer().serialize(document);
-		 */
-		StringWriter testWriter = new StringWriter();
+		 */ 
 		try {
 			TransformerFactory factory = TransformerFactory.newInstance();
 			/*
@@ -189,17 +188,14 @@ public class EMF2DOMRenderer extends AbstractRendererImpl implements Renderer {
 			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4"); //$NON-NLS-1$ //$NON-NLS-2$
 			DOMSource source = new DOMSource(document.getDocumentElement());
 			/* source.setSystemId(getResource().getSystemId()); */
-			transformer.transform(source, new StreamResult(out));
-			transformer.transform(source, new StreamResult(testWriter));
+			transformer.transform(source, new StreamResult(out)); 
 		} catch (TransformerConfigurationException e) {
 			Logger.getLogger().logError(e);
 		} catch (TransformerFactoryConfigurationError e) {
 			Logger.getLogger().logError(e);
 		} catch (TransformerException e) {
 			Logger.getLogger().logError(e);
-		} finally {
-			testWriter.close();
-			System.out.println("CONTENTS:\n"+testWriter.toString());
+		} finally {  
 		}
 	}
 
