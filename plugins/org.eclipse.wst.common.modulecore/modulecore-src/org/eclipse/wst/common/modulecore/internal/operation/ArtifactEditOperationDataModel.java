@@ -11,6 +11,7 @@
 package org.eclipse.wst.common.modulecore.internal.operation;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.common.frameworks.internal.operations.ProjectCreationDataModel;
 import org.eclipse.wst.common.frameworks.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
@@ -20,6 +21,8 @@ import org.eclipse.wst.common.modulecore.UnresolveableURIException;
 import org.eclipse.wst.common.modulecore.WorkbenchComponent;
 
 import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonMessages;
+import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 /**
  * This dataModel is a common super class used for create in a module context.
  * 
@@ -86,7 +89,7 @@ public abstract class ArtifactEditOperationDataModel extends WTPOperationDataMod
     /**
      * @return
      */
-    protected WorkbenchComponent getWorkbenchModule() {
+    public WorkbenchComponent getWorkbenchModule() {
         ModuleCore moduleCore = null;
         WorkbenchComponent module = null;
         try {
@@ -107,5 +110,30 @@ public abstract class ArtifactEditOperationDataModel extends WTPOperationDataMod
 			Logger.getLogger().logError(ex);
 	    }
 	    return modProject;
+	}
+
+	protected IStatus doValidateProperty(String propertyName) {
+		IStatus result = super.doValidateProperty(propertyName);
+		if (!result.isOK())
+			return result;
+		if (propertyName.equals(PROJECT_NAME))
+			return validateProjectName();
+		else if (propertyName.equals(MODULE_NAME))
+			return validateModuleName();
+		return result;
+	}
+	
+	protected IStatus validateProjectName() {
+		String projectName = getStringProperty(PROJECT_NAME);
+		if (projectName == null || projectName.length()==0)
+			return WTPCommonPlugin.createErrorStatus(WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_NAME_EMPTY));
+		return WTPCommonPlugin.OK_STATUS;
+	}
+	
+	protected IStatus validateModuleName() {
+		String moduleName = getStringProperty(MODULE_NAME);
+		if (moduleName==null || moduleName.length()==0)
+			return WTPCommonPlugin.createErrorStatus(WTPCommonPlugin.getResourceString(WTPCommonMessages.ERR_EMPTY_MODULE_NAME));
+		return WTPCommonPlugin.OK_STATUS;
 	}
 }
