@@ -124,7 +124,8 @@ public class ResourceTreeNode {
 		ResourceTreeNode child = findChild(aPath.segment(0), toCreateChildIfNecessary);
 		if (child == null) 
 			return findMatchingVirtualPathsSet(aPath);
-		Set foundResources = child.findModuleResourcesSet(aPath.removeFirstSegments(1), toCreateChildIfNecessary);
+		Set foundResources = new HashSet();
+		foundResources.addAll(child.findModuleResourcesSet(aPath.removeFirstSegments(1), toCreateChildIfNecessary));
 		foundResources.addAll(findMatchingVirtualPathsSet(aPath));
 		return foundResources;
 	} 

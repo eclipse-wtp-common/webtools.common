@@ -79,7 +79,7 @@ public class ModuleCoreURIConverter extends CompatibilityWorkbenchURIConverterIm
 		} else {
 			normalizedURI = super.normalize(aURI);
 		}
-		if(normalizedURI.scheme() == null || normalizedURI.scheme().length() == 0) {
+		if(normalizedURI == null || normalizedURI.scheme() == null || normalizedURI.scheme().length() == 0) {
 			normalizedURI = URI.createPlatformResourceURI(getInputContainer().getFullPath().append(normalizedURI.toString()).toString());
 		}
 		return normalizedURI;
