@@ -1,0 +1,576 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="../../../../..//apistyles.css" type="text/css">
+<title>modulecore api overview</title>
+</head>
+<body>
+<p>
+        The ModuleCore API allows clients to work with the Module 
+		Structural Metamodels that define abstract modules within Eclipse 
+		projects. 
+		</p>
+<a name="top"></a>
+<p>
+			The following document includes information on these topics:
+			<ul>
+				
+<li>
+<a href="#structural-metamodel">Module Structural Metamodel</a> 
+					used by the tooling to understand which files should or 
+					should not be included within a module.</li> 
+				
+<li>
+<a href="#structural-metamodel">Constraints</a> enforced by the 
+					design</li>
+				
+<li>
+<a href="#module-core-examples">Examples</a> on how to use the ModuleCore API</li>
+				
+<li>{@see org.eclipse.wst.common.modulecore.ModuleCoreNature} for more 
+					information regarding how a project is made flexible, and the types of 
+					models contained by the project.
+				</li>
+			
+</ul>
+		
+</p>
+<a name="structural-metamodel"></a>
+<table width="100%" cellspacing="5" cellpadding="2" border="0">
+<tbody>
+<tr>
+<td valign="top" bgcolor="#0080c0" align="left" colspan="2"><b><font face="Arial,Helvetica" color="#ffffff">Module Structural Metamodel (MSM) Metamodel</font></b></td>
+</tr>
+</tbody>
+</table>
+<BR>
+<table width="500">
+            
+<tr>
+                
+<td>
+                    
+<p>
+                        The Module Structural Metamodel (MSM) is an EMF model that allows 
+						the tooling to understand most project structures. Each project 
+						has a single (MSM) which is stored under the project root named
+                        <I>.wtpmodules</I>
+                        . The XML format is defined by the Module Core namespace (
+                        <a href="http://www.eclipse.org/webtools/moduleCore.xsd">
+                            http://www.eclipse.org/webtools/moduleCore
+                        </a>
+                        ). The following diagram is a UML representation of the 
+						Module Structural Metamodel.
+					</p>	
+                
+</td>
+            
+</tr>
+        
+</table>
+<table cellspacing="10" cellpadding="10">
+            
+<tr>
+                
+<td>
+                    
+<p>
+                        
+<img src="../../../../../overview/module_structural_model.jpg"> 
+                    </p>
+                
+</td>
+            
+</tr>
+            
+<tr>
+                
+<td>
+                    
+<p>
+                        
+<i>Figure 1: The Module Structural Metamodel API</i>
+                    
+</p>
+                
+</td>
+            
+</tr>
+        
+</table>
+<table width="500">
+            
+<tr>
+                
+<td>                    
+                    
+<p>
+                        Each logical module contained in the project is represented by a
+                        <b>WorkbenchModule</b> element. The <b>WorkbenchModule</b> defines information about
+                        the type of module, the resources consumed by the module from the
+                        project, and the dependent modules. The <b>WorkbenchModule</b> is very generic,
+                        and as modeled, does not necessarily correspond to only J2EE artifacts.
+                    </p>
+                    
+<p>
+                        The <b>WorkbenchModule</b> has a
+                        <i>deployedName</i>
+                        , which is the name that will be used when the deployable form of the
+                        module is constructed. For a web application, the
+                        <i>deployedName</i>
+                        might be "MyWebApplication.war".
+                    </p>
+                    
+<p>
+                        The <b>WorkbenchModule</b> may be uniquely referenced by a URI (stored on the
+                        <b>WorkbenchModule</b> as the
+                        <i>handle</i>
+                        ). The fully qualified URI to any module must begin with the module
+                        protocol ("module:"), specify a subprotocol ("resource|classpath") and
+                        then a path to the referenced module. A <b>WorkbenchModule</b> with the
+                        deplyedName "MyWebApplication.war" defined in a project named
+                        "MyWebModulesProject" would be referenced by the following URI:
+                        "module:/resource/MyWebModulesProject/MyWebApplication.war".
+                    </p>
+                    
+<p>
+                        The <b>WorkbenchModule</b> has a <b>ModuleType</b>. The <b>ModuleType</b> defines a
+                        <i>moduleTypeId</i>
+                        , which indicates the specific kind of module. The Web Tools Platform
+                        uses the
+                        <i>moduleTypeId</i>
+                        to determine how to work with the content module of the WorkbenchModule
+                        and prepare the module for deployment. The <b>ModuleType</b> may also define the
+                        runtime-paths of special metadata resources which are important to the
+                        <b>WorkbenchModule</b>. "Metadata" refers to resources which explain the content
+                        details of the specific modules. An example of such a file would be the
+                        "WEB-INF/web.xml" deployment descriptor for Web Applications.
+                    </p>
+                    
+<p>
+                        The <b>WorkbenchModule</b> contains a list of WorkbenchModuleResources. Each
+                        <b>WorkbenchModuleResource</b> has "sourcePath" and a corresponding
+                        "deployedPath". The "sourcePath" can reference either a file or folder,
+                        but the referenced resource must be contained in the same project as the
+                        <b>WorkbenchModule</b> definition. The "deployedPath" specifies a location
+                        relative to the deployed structure of the <b>WorkbenchModule</b> where the
+                        contents of the referenced resource will be placed when the module is
+                        prepared for deployment.
+                    </p>
+                    
+<p>
+                        The <b>WorkbenchModule</b> contains a list of <b>DependentModule</b>s. Each
+                        <b>DependentModule</b> provides a handle that must resolve to a <b>WorkbenchModule</b>,
+                        a deployedPath that defines where the constructed module will be placed
+                        within the context of the deployed <b>WorkbenchModule</b>, and a <b>DependencyType</b>
+                        that can be either "consume" or "use" to indicate how the contents of
+                        that <b>DependentModule</b> should be absorbed by the <b>WorkbenchModule</b>.
+                        <b>DependentModule</b>s may reference <b>WorkbenchModule</b>s in other projects and on
+                        the classpath. The <b>DependencyType</b> will determine whether the contents of
+                        the <b>DependentModule</b> are absorbed as-is or archived into a *.{w|j|e}ar
+                        file.
+                    </p>
+                    
+<p>
+                        The <b>ProjectModules</b> object provides a root container for all
+                        <b>WorkbenchModule</b>s defined in a given project.
+                    </p>
+                    
+<p>
+                        
+<b>ModuleCore</b> provides an instance facade to manage the underlying model for
+                        clients. Static methods
+                        <code>ModuleCore.getModuleCoreForRead()</code>
+                        and
+                        <code>ModuleCore.getModuleCoreForWrite()</code>
+                        may be used to acquire an ModuleCore adapter, and clients are responsible
+                        for invoking
+                        <code>dispose()</code>
+                        whenever they are finished using the model.
+                    </p> 
+                
+</td>
+            
+</tr>
+        
+</table>
+<a href="#top">top</a><a name="constraints"></a>
+<table width="100%" cellspacing="5" cellpadding="2" border="0">
+<tbody>
+<tr>
+<td valign="top" bgcolor="#0080c0" align="left" colspan="2"><b><font face="Arial,Helvetica" color="#ffffff">Constraints enforced by the MSM</font></b></td>
+</tr>
+</tbody>
+</table>
+<table width="500">
+            
+<tr>
+                
+<td>
+                    
+<p>
+                        The following constraints are enforced by the model or by components in
+                        the Web Tools Platform that use the model.
+                        <ol>
+                            
+<li>
+                                
+<p>
+                                    The solution will not check dependencies for modules that are
+                                    contained in the same project. To get the full benefits of
+                                    inter-module dependency checking, modules must be separated
+                                    into different projects. We do not have the necessary
+                                    flexibility in constructing and scoping classpaths on a level
+                                    more granular than the project level, which would be needed
+                                    to support this functionality.
+                                </p>
+                            
+</li>
+                            
+<li>
+                                
+<p>
+                                    The solution will not allow a single module to span more than
+                                    one project. Within that project, we will have fairly broad
+                                    flexibility to specify which resources map to which modules.
+                                    Each module within a project must have its own source folder,
+                                    but a module may contain more than one source folder. Each
+                                    source folder may be contained by at most one module. Modules
+                                    may reference dependent modules in other projects (so a Web
+                                    Application may reference a Web Library outside of the
+                                    project that contains the Web Application).
+                                </p>
+                            
+</li>
+                            
+<li>
+                                
+<p>
+                                    The solution will not allow more than one server target per
+                                    module (and really per-project) at a time. The ability to
+                                    switch this server target (via some action or property
+                                    setting) will continue to be possible. Users that need the
+                                    capability to develop for multiple server targets will need
+                                    to manually switch and test as necessary.
+                                </p>
+                            
+</li>
+                            
+<li>
+                                
+<p>
+                                    Each module in a project will have its own output folder
+                                    structure automatically constructed for it. The output
+                                    structure will match the J2EE specification output structure
+                                    required for the module type (for J2EE modules). A new
+                                    builder will handle this responsibility and work
+                                    cooperatively with the Java builder to construct a
+                                    deployable, on-disk representation of the module structure.
+                                    The necessity for this on-disk structure to match a
+                                    J2EE-compliant layout is motivated by the requirement to have
+                                    in-workbench testing, so that users will not have to deal
+                                    with a deployer actually constructing a deployable module and
+                                    shipping it off to a server to test their code. This approach
+                                    is consistent with existing Ant-based approaches and
+                                    Application Servers which can run in a "debug" mode on disk.
+                                    Our value-add will be greater automation and integration with
+                                    the workbench -- particularly for incremental based support.
+                                    The specialized module builder would not be necessary if the
+                                    source was already in the appropriate J2EE specification
+                                    compliant structure. The default creation will still
+                                    encourage a single module per project, which conforms to the
+                                    correct J2EE structure.
+                                </p>
+                            
+</li>
+                            
+<li>
+                                
+<p>
+                                    Modules will be described using a simple XML format, and each
+                                    project will contain one
+                                    <I>.wtpmodules</I>
+                                    file that will describe all of the modules for that project.
+                                    The level of tooling to help users create these files is yet
+                                    to be determined for WTP M4. This would be a great area for
+                                    other interested developers to suggest and provide tooling
+                                    (e.g. a Wizard or Editor) to create these files from existing
+                                    structures. A schema is provided to make it easier for
+                                    consumers that want to build their own
+                                    <I>.wtpmodules</I>
+                                    by hand to take advantage of the content assist in the XML
+                                    editor.
+                                </p>
+                            
+</li>
+                        
+</ol>
+                    
+</p> 
+                
+</td>
+            
+</tr>
+        
+</table>
+<a href="#top">top</a><a name="module-core-examples"></a>
+<table width="100%" cellspacing="5" cellpadding="2" border="0">
+<tbody>
+<tr>
+<td valign="top" bgcolor="#0080c0" align="left" colspan="2"><b><font face="Arial,Helvetica" color="#ffffff">ModuleCore API: Working with the metamodel</font></b></td>
+</tr>
+</tbody>
+</table>
+<BR>
+<table width="500">
+            
+<tr>
+                
+<td>
+                    
+<p>
+                        Clients that need to work with the Module Structural Metamodel should use the
+                        ModuleCore API to access the model for each project. ModuleCore uses a
+                        mixed pattern that contains elements of Adapter and Facade. Each
+                        ModuleCore is tied to a specific project, and manages the complexity of
+                        the lifecycle of the underlying model.
+                    </p>
+                
+</td>
+            
+</tr>
+        
+</table>
+<table cellspacing="10" cellpadding="10">
+            
+<tr>
+                
+<td>
+                    
+<p>
+                        
+<img src="../../../../../overview/modulecore.jpg"> 
+                    </p>
+                
+</td>
+            
+</tr>
+            
+<tr>
+                
+<td>
+                    
+<p>
+                        
+<i>Figure 2: The ModuleCore API</i>
+                    
+</p>
+                
+</td>
+            
+</tr>
+        
+</table>
+<table width="500">
+            
+<tr>
+                
+<td>
+                    
+<p>
+                        Clients should use one of
+                        <code>ModuleCore.getModuleCoreForRead()</code>
+                        or
+                        <code>ModuleCore.getModuleCoreForWrite()</code>
+                        to acquire an instance of ModuleCore.
+                        <table cellspacing="10" cellpadding="10">
+                            
+<tr>
+                                
+<td>
+                                    
+<pre>
+IProject currentProject = ... 
+ModuleCore moduleCoreInstance = ModuleCore.getModuleCoreForRead(currentProject);
+WorkbenchModule[] modules = moduleCoreInstance.getWorkbenchModules(); 
+... work with modules ... 
+moduleCoreInstance.dispose();
+                                    </pre>
+                                
+</td>
+                            
+</tr>
+                            
+<tr>
+                                
+<td>
+                                    
+<p>
+                                        
+<i>
+                                            Figure 3: Acquiring an instance of ModuleCore for
+                                            read-only access
+                                        </i>
+                                    
+</p>
+                                
+</td>
+                            
+</tr>
+                        
+</table>
+                    
+</p>
+                    
+<p>
+                        For clients that would like to build up their own models for a given
+                        project, or modify the existing metamodel, the ModuleCore instance should
+                        be acquired for write-access.
+                        <table cellspacing="10" cellpadding="10">
+                            
+<tr>
+                                
+<td>
+                                    
+<pre>
+            
+...
+import org.eclipse.emf.common.util.URI; 
+...
+
+public static void createWebAppModule(IProject aTargetProject, 
+                      IFolder aJavaSourceFolder, 
+                      IFolder aWebContentFolder, 
+                      IResource aWebAppDeploymentDescriptor, 
+                      IProgressMonitor aProgressMonitor) 
+{
+    ModuleCore moduleCoreInstance = null;
+    try {
+        moduleCoreInstance = 
+            ModuleCore.getModuleCoreForWrite(aTargetProject);
+
+        /* Create a new module that will be 
+            contained by the current ModuleCore */
+        WorkbenchModule newModule = 
+            moduleCoreInstance.createWorkbenchModule("MyWebModule.war");
+
+        /* A Java source folder that contains 
+                the classes for the current module */
+        WorkbenchModuleResource javaSource = 
+            moduleCoreInstance.createWorkbenchModuleResource(
+                                                aJavaSourceFolder);
+        javaSource.setDeployedPath(
+                            URI.createURI("/WEB-INF/classes"));
+        newModule.getResources().add(javaSource);
+
+        /* A resource folder that contains 
+            the *.jsp, *.html, .img, ... files */
+        WorkbenchModuleResource webContent = 
+            moduleCoreInstance.createWorkbenchModuleResource(
+                                                    aWebContentFolder);
+        webContent.setDeployedPath(URI.createURI("/"));
+        newModule.getResources().add(webContent);
+
+        /* A resource that points to a valid web.xml 
+                file that follows the J2EE Web Deployment
+                Descriptor Specification
+         */
+        WorkbenchModuleResource deploymentDescriptor = 
+            moduleCoreInstance.createWorkbenchModuleResource(
+                                                aWebAppDeploymentDescriptor);
+        deploymentDescriptor.setDeployedPath(
+                                    URI.createURI("/WEB-INF/web.xml"));
+        newModule.getResources().add(deploymentDescriptor);
+
+        moduleCoreInstance.saveIfNecessary(aProgressMonitor);
+    } finally {
+        if (moduleCoreInstance != null) {
+            moduleCoreInstance.dispose();
+        }
+    }
+}
+                                    </pre>
+                                
+</td>
+                            
+</tr>
+                            
+<tr>
+                                
+<td>
+                                    
+<p>
+                                        
+<i>Figure 4: Creating a WorkbenchModule</i>
+                                    
+</p>
+                                
+</td>
+                            
+</tr>
+                        
+</table>
+                    
+</p>
+                    
+<p>
+                        For clients that would like to take an existing project an add Flexible
+                        Project Support, use the ModuleCoreNature.addModuleCoreIfNecessary() API
+                        to prepare the project to support flexible module structures. the
+                        existing metamodel, then acquire the ModuleCore instance for modification.
+                        <table cellspacing="10" cellpadding="10">
+                            
+<tr>
+                                
+<td>
+                                    
+<pre>
+... 
+import org.eclipse.emf.common.util.URI; 
+...
+public static void makeFlexible(IProject aTargetProject) {
+    ModuleCore moduleCoreInstance = null;
+    try {
+        ModuleCoreNature.addModuleCoreNatureIfNecessary(aTargetProject);
+        moduleCoreInstance = ModuleCore.getModuleCoreForWrite(aTargetProject);
+        ... work with moduleCoreInstance and underlying model ...
+        moduleCoreInstance.saveIfNecessary(aProgressMonitor);
+    } finally {
+        if (moduleCoreInstance != null) {
+            moduleCoreInstance.dispose();
+        }
+    }
+}
+                                    </pre>
+                                
+</td>
+                            
+</tr>
+                            
+<tr>
+                                
+<td>
+                                    
+<p>
+                                        
+<i>Figure 5: Add Flexible Project support to a new or existing project</i>
+                                    
+</p>
+                                
+</td>
+                            
+</tr>
+                        
+</table>
+                    
+</p>
+                
+</td>
+            
+</tr>
+        
+</table>
+<a href="#top">top</a>
+</body>
+</html>
