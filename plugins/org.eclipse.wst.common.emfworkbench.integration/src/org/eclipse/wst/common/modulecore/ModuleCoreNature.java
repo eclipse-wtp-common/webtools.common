@@ -19,14 +19,10 @@ import com.ibm.wtp.common.logger.proxy.Logger;
 
 //In Progress......
 
-public class ModuleCoreNature implements IProjectNature,
-		IResourceChangeListener {
+public class ModuleCoreNature implements IProjectNature, IResourceChangeListener {
 	private HashMap moduleHandles;
-
 	private IProject moduleProject;
-
 	private final static ModuleCoreFactory MODULE_FACTORY = ModuleCoreFactory.eINSTANCE;
-
 	private HashMap workbenchModules;
 
 	protected IModuleHandle createModuleHandle(URI uri) {
@@ -37,7 +33,7 @@ public class ModuleCoreNature implements IProjectNature,
 		try {
 			handle = createHandle(uri);
 			module = createModuleHandle(handle);
-		} catch (IllegalArgumentException e) {
+		} catch (RuntimeException e) {
 			Logger.getLogger().write(e);
 		} finally {
 			if (handle != null && module != null) {
@@ -45,7 +41,7 @@ public class ModuleCoreNature implements IProjectNature,
 				getWorkbenchModules().put(handle, module);
 			}
 		}
-		return null;
+		return handle;
 	}
 
 	private IModuleHandle createHandle(URI uri) {
