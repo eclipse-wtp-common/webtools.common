@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="org.eclipse.wst.validation"
+   name="Validation Framework"
+   description="This plugin is one of the core validation framework plugins. It has 2 extension points for a user to extend it to implement their own validators. Most of the funtion and api available in this plugin are for use internally by the validation framework."
+   version="1.0.0"
+   provider-name="IBM"
+   class="org.eclipse.wst.validation.internal.plugin.ValidationPlugin">
+
+   <runtime>
+      <library name="runtime/validate.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+   <requires>
+      <import plugin="org.eclipse.jdt.core"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.wst.common.frameworks"/>
+      <import plugin="org.eclipse.wst.validation.core" export="true"/>
+      <import plugin="org.eclipse.core.runtime.compatibility"/>
+   </requires>
+
+
+<!-- Validation extension points -->
+   <extension-point id="validator" name="Validator" schema="xsds/validatorExtSchema.exsd"/>
+   <extension-point id="postValidator" name="PostValidator" schema="xsds/postValidatorExtSchema.exsd"/>/>
+
+<!--============================-->
+<!-- Validation Contributions   -->
+<!--============================-->
+   <extension
+         id="validationbuilder"
+         name="%VALIDATION_BUILDER_NAME"
+         point="org.eclipse.core.resources.builders">
+      <builder>
+         <run
+               class="org.eclipse.wst.validation.internal.operations.ValidationBuilder">
+         </run>
+      </builder>
+   </extension>
+<!-- Problem markers must be a subtype of problemmarker to be displayed in the task view -->
+   <extension
+         id="problemmarker"
+         name="%VALIDATION_PROBLEMMARKER_NAME"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+      <attribute
+            name="owner">
+      </attribute>
+      <attribute
+            name="validationSeverity">
+      </attribute>
+      <attribute
+            name="targetObject">
+      </attribute>
+      <attribute
+            name="groupName">
+      </attribute>
+      <attribute
+            name="messageId">
+      </attribute>
+   </extension>
+<!-- Don't want to display this marker in the task view -->
+   <extension
+         id="projectmarker"
+         name="%VALIDATION_PROJECTMARKER_NAME"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.textmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+      <attribute
+            name="enabledValidatorList">
+      </attribute>
+      <attribute
+            name="autoValidate">
+      </attribute>
+      <attribute
+            name="runWhenBuild">
+      </attribute>
+      <attribute
+            name="maxNumMessages">
+      </attribute>
+      <attribute
+            name="overrideGlobalPreferences">
+      </attribute>
+      <attribute
+            name="version">
+      </attribute>
+   </extension>
+<!-- Don't want to display this marker in the task view -->
+   <extension
+         id="preferencemarker"
+         name="%VALIDATION_PREFERENCEMARKER_NAME"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.textmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+      <attribute
+            name="enabledValidatorList">
+      </attribute>
+      <attribute
+            name="autoValidate">
+      </attribute>
+      <attribute
+            name="runWhenBuild">
+      </attribute>
+      <attribute
+            name="maxNumMessages">
+      </attribute>
+      <attribute
+            name="projectsCanOverride">
+      </attribute>
+      <attribute
+            name="version">
+      </attribute>
+   </extension>
+
+</plugin>
