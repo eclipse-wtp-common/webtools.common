@@ -11,10 +11,13 @@ package org.eclipse.wst.common.modulecore;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.wst.common.frameworks.internal.operations.IOperationHandler;
 import org.eclipse.wst.common.internal.emfworkbench.edit.EditModelRegistry;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelListener;
 import org.eclipse.wst.common.internal.emfworkbench.integration.IEditModelFactory;
+
+import com.ibm.wtp.internal.emf.workbench.nls.EMFWorkbenchResourceHandler;
 
 /**
  * Provides a Facade pattern for accessing Module Content Metamodels for Web Tools Platform flexible
@@ -204,7 +207,56 @@ public class ArtifactEdit implements IEditModelHandler {
 			throwAttemptedReadOnlyModification();
 		artifactEditModel.saveIfNecessary(aMonitor, this);
 	}
+	/**
+	 * Save only if necessary. If typically a save would not occur because this edit model is
+	 * shared, the user will be prompted using the
+	 * 
+	 * @operationHandler. If the prompt returns true (the user wants to save) the entire edit model
+	 *                    will be saved. You may pass in a boolean <code>wasDirty</code> to
+	 *                    indicate whether this edit model was dirty prior to making any changes and
+	 *                    calling this method. {@link EditModel#isDirty()}
+	 */
+	public void saveIfNecessaryWithPrompt(IProgressMonitor monitor, IOperationHandler operationHandler, boolean wasDirty) {
 
+		if (shouldSave(operationHandler, wasDirty))
+			saveIfNecessary(monitor);
+		else
+			handleSaveIfNecessaryDidNotSave(monitor);
+	}
+	/**
+	 * Default is to do nothing. This method is called if a saveIfNecessary or
+	 * saveIfNecessaryWithPrompt determines not to save. This provides subclasses with an
+	 * opportunity to do some other action.
+	 */
+	private void handleSaveIfNecessaryDidNotSave(IProgressMonitor monitor) {
+		//do nothing
+	}
+	/**
+	 * Should the resources be saved.
+	 */
+	private boolean shouldSave(IOperationHandler operationHandler, boolean wasDirty) {
+		return !wasDirty ? shouldSave() : shouldSave(operationHandler);
+	}
+	/**
+	 * Prompt for a save.
+	 */
+	private boolean promptToSave(IOperationHandler operationHandler) {
+		if (operationHandler == null)
+			return false;
+		return operationHandler.canContinue(EMFWorkbenchResourceHandler.getString("The_following_resources_ne_UI_"), getArtifactEditModel().getResourceURIs(true)); //$NON-NLS-1$ = "The following resources need to be saved but are currently shared, do you want to save now?"
+	}
+	/**
+	 * Should the resources be saved.
+	 */
+	private boolean shouldSave(IOperationHandler operationHandler) {
+		return shouldSave() || promptToSave(operationHandler);
+	}
+	/**
+	 * Should the resources be saved.
+	 */
+	private boolean shouldSave() {
+		return !isReadOnly && isArtifactEditModelSelfManaged;
+	}
 	/**
 	 * <p>
 	 * Clients must call the following method when they have finished using the model, even if the
