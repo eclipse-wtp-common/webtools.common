@@ -72,14 +72,15 @@ public class DataModelWizardExtensionReader extends RegistryReader {
 	public DataModelWizard getWizard(IDataModel dataModel) {
 		DataModelWizard wizard = null;
 		IConfigurationElement element = getExtension(dataModel.getID());
-		
+
 		try {
-			wizard = (DataModelWizard)element.createExecutableExtension(ATTRIBUTE_CLASS);
+			wizard = (DataModelWizard) element.createExecutableExtension(ATTRIBUTE_CLASS);
+			wizard.setDataModel(dataModel);
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return wizard;
 	}
 }

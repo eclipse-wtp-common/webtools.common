@@ -44,14 +44,13 @@ public abstract class DataModelWizard extends Wizard {
 	private IDMExtendedWizardPage[] extendedPages = null;
 	private IDMExtendedPageHandler[] extendedPageHandlers = null;
 
-	protected IDataModel model;
+	private IDataModel dataModel;
 
-	public DataModelWizard(IDataModel model) {
-		this.model = model;
+	public DataModelWizard(IDataModel dataModel) {
+		this.dataModel = dataModel;
 	}
 
 	public DataModelWizard() {
-		this.model = DataModelFactory.createDataModel(getDefaultProvider());
 	}
 
 	protected abstract IDataModelProvider getDefaultProvider();
@@ -60,14 +59,16 @@ public abstract class DataModelWizard extends Wizard {
 	 * @return the wizard ID that clients should extend to add to this wizard
 	 */
 	public final String getWizardID() {
-		return model.getID();
+		return getDataModel().getID();
 	}
 
 	/**
-	 * The <code>Wizard</code> implementation of this <code>IWizard</code> method creates all
-	 * the pages controls using <code>IDialogPage.createControl</code>. Subclasses should
-	 * reimplement this method if they want to delay creating one or more of the pages lazily. The
-	 * framework ensures that the contents of a page will be created before attempting to show it.
+	 * The <code>Wizard</code> implementation of this <code>IWizard</code>
+	 * method creates all the pages controls using
+	 * <code>IDialogPage.createControl</code>. Subclasses should reimplement
+	 * this method if they want to delay creating one or more of the pages
+	 * lazily. The framework ensures that the contents of a page will be created
+	 * before attempting to show it.
 	 */
 	public void createPageControls(Composite pageContainer) {
 		IWizardPage[] pages = getPages();
@@ -101,8 +102,8 @@ public abstract class DataModelWizard extends Wizard {
 
 
 	/**
-	 * This is finalized to handle the adding of extended pages. Clients should override
-	 * doAddPages() to add their pages.
+	 * This is finalized to handle the adding of extended pages. Clients should
+	 * override doAddPages() to add their pages.
 	 */
 	public final void addPages() {
 		doAddPages();
@@ -129,14 +130,14 @@ public abstract class DataModelWizard extends Wizard {
 		for (int i = 0; i < elements.length; i++) {
 			wizElement = elements[i];
 			try {
-				extendedPagesLocal = wizElement.createPageGroup(model);
+				extendedPagesLocal = wizElement.createPageGroup(getDataModel());
 				if (null != extendedPagesLocal) {
 					for (int j = 0; j < extendedPagesLocal.length; j++) {
 						addPage(extendedPagesLocal[j]);
 						extendedPagesList.add(extendedPagesLocal[j]);
 					}
 				}
-				extendedPageHandler = wizElement.createPageHandler(model);
+				extendedPageHandler = wizElement.createPageHandler(getDataModel());
 				if (null != extendedPageHandler && !extendedPageHandlerList.contains(extendedPageHandler)) {
 					extendedPageHandlerList.add(extendedPageHandler);
 				}
@@ -159,7 +160,7 @@ public abstract class DataModelWizard extends Wizard {
 		IWizardPage expectedPage = super.getNextPage(page);
 		if (expectedPage instanceof IDMExtendedWizardPage) {
 			IDMExtendedWizardPage extendedWizardPage = (IDMExtendedWizardPage) expectedPage;
-			List extendedContext = getModel().getExtendedContext();
+			List extendedContext = getDataModel().getExtendedContext();
 			boolean enabled = true;
 			for (int contextCount = 0; enabled && contextCount < extendedContext.size(); contextCount++) {
 				IProject project = (IProject) AdaptabilityUtility.getAdapter(extendedContext.get(contextCount), IProject.class);
@@ -209,7 +210,7 @@ public abstract class DataModelWizard extends Wizard {
 	}
 
 	public boolean canFinish() {
-		if (!super.canFinish() || !model.isValid()) {
+		if (!super.canFinish() || !getDataModel().isValid()) {
 			return false;
 		}
 		for (int i = 0; null != extendedPages && i < extendedPages.length; i++) {
@@ -271,8 +272,9 @@ public abstract class DataModelWizard extends Wizard {
 	}
 
 	/**
-	 * Subclass can override to perform any tasks prior to running the operation. Return true to
-	 * have the operation run and false to stop the execution of the operation.
+	 * Subclass can override to perform any tasks prior to running the
+	 * operation. Return true to have the operation run and false to stop the
+	 * execution of the operation.
 	 * 
 	 * @return
 	 */
@@ -281,7 +283,8 @@ public abstract class DataModelWizard extends Wizard {
 	}
 
 	/**
-	 * Subclasses should override to perform any actions necessary after performing Finish.
+	 * Subclasses should override to perform any actions necessary after
+	 * performing Finish.
 	 */
 	protected void postPerformFinish() throws InvocationTargetException {
 	}
@@ -293,8 +296,8 @@ public abstract class DataModelWizard extends Wizard {
 	}
 
 	/**
-	 * Subclasses may override if they need to do something special when storing the default
-	 * settings for a particular page.
+	 * Subclasses may override if they need to do something special when storing
+	 * the default settings for a particular page.
 	 * 
 	 * @param page
 	 * @param pageIndex
@@ -305,8 +308,8 @@ public abstract class DataModelWizard extends Wizard {
 	}
 
 	/**
-	 * Subclasses should override if the running operation is allowed to be cancelled. The default
-	 * is false.
+	 * Subclasses should override if the running operation is allowed to be
+	 * cancelled. The default is false.
 	 * 
 	 * @return
 	 */
@@ -315,7 +318,8 @@ public abstract class DataModelWizard extends Wizard {
 	}
 
 	/**
-	 * Subclasses should override to return false if the running operation cannot be run forked.
+	 * Subclasses should override to return false if the running operation
+	 * cannot be run forked.
 	 * 
 	 * @return
 	 */
@@ -324,7 +328,7 @@ public abstract class DataModelWizard extends Wizard {
 	}
 
 	private IUndoableOperation createOperation() {
-		ExtendableOperationImpl baseOperation = (ExtendableOperationImpl) getModel().getDefaultOperation();
+		ExtendableOperationImpl baseOperation = (ExtendableOperationImpl) getDataModel().getDefaultOperation();
 		for (int i = 0; null != extendedPages && i < extendedPages.length; i++) {
 			IDataModelOperation op = extendedPages[i].createOperation();
 			if (op != null) {
@@ -334,23 +338,30 @@ public abstract class DataModelWizard extends Wizard {
 		return baseOperation;
 	}
 
+	public void setDataModel(IDataModel model) {
+		this.dataModel = model;
+	}
+
 	/**
 	 * @return Returns the model.
 	 */
-	public IDataModel getModel() {
-		return model;
+	public IDataModel getDataModel() {
+		if (null == dataModel) {
+			dataModel = DataModelFactory.createDataModel(getDefaultProvider());
+		}
+		return dataModel;
 	}
 
 	public void dispose() {
 		super.dispose();
-		if (null != model) {
-			model.dispose();
+		if (null != dataModel) {
+			dataModel.dispose();
 		}
 	}
 
 	public void addPage(IWizardPage page) {
-		if (model.isProperty(WTPWizardSkipPageDataModel.SKIP_PAGES) && null != page.getName()) {
-			List pagesToSkip = (List) model.getProperty(WTPWizardSkipPageDataModel.SKIP_PAGES);
+		if (getDataModel().isProperty(WTPWizardSkipPageDataModel.SKIP_PAGES) && null != page.getName()) {
+			List pagesToSkip = (List) getDataModel().getProperty(WTPWizardSkipPageDataModel.SKIP_PAGES);
 			if (null != pagesToSkip && pagesToSkip.contains(page.getName())) {
 				return;
 			}
