@@ -14,9 +14,9 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelEvent;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelFactory;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel;
+import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
+import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
 public class NestedListeningTest extends TestCase {
 

@@ -12,11 +12,11 @@ package org.eclipse.wst.common.frameworks.datamodel.tests;
 
 import java.util.List;
 
-import org.eclipse.wst.common.frameworks.datamodel.provisional.AbstractDataModelProvider;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelEvent;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelFactory;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelPropertyDescriptor;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel;
+import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
+import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
+import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
+import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 
 import junit.framework.Assert;

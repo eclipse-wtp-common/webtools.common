@@ -10,10 +10,10 @@
  *******************************************************************************/
 package org.eclipse.wst.common.tests.ui;
 
-import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelProvider;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.tests.TestDataModelProvider;
-import org.eclipse.wst.common.frameworks.datamodel.ui.provisional.DataModelWizard;
+import org.eclipse.wst.common.frameworks.datamodel.ui.DataModelWizard;
 
 public class TestDataModelWizard extends DataModelWizard {
 

@@ -13,8 +13,8 @@ package org.eclipse.wst.common.frameworks.datamodel.tests;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelEvent;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelListener;
+import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelListener;
 
 public class TestListener implements IDataModelListener {
 

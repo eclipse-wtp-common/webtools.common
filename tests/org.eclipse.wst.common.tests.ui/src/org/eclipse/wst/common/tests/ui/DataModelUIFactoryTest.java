@@ -12,12 +12,12 @@ package org.eclipse.wst.common.tests.ui;
 
 import junit.framework.TestCase;
 
-import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelFactory;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel;
+import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.tests.TestDataModelProvider;
-import org.eclipse.wst.common.frameworks.datamodel.ui.provisional.DataModelWizard;
-import org.eclipse.wst.common.frameworks.datamodel.ui.provisional.DataModelWizardFactory;
+import org.eclipse.wst.common.frameworks.datamodel.ui.DataModelWizard;
+import org.eclipse.wst.common.frameworks.datamodel.ui.DataModelWizardFactory;
 
 public class DataModelUIFactoryTest extends TestCase {
 

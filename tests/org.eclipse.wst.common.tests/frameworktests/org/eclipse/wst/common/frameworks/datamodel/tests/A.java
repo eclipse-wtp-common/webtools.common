@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel.tests;
 
-import org.eclipse.wst.common.frameworks.datamodel.provisional.AbstractDataModelProvider;
+import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 
 public class A extends AbstractDataModelProvider {
 	public static final String P = "A.P";
