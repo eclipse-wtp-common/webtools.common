@@ -109,7 +109,7 @@ public class ProjectUnzipUtil {
 		this.rootLocation = rootLocation;
 	}
 
-	private void buildProject() {
+	private void buildProject() throws IOException, CoreException{
 		ProjectDescriptionReader pd = new ProjectDescriptionReader();
 		IPath projectPath = new Path("\\" + projectName + "\\" + META_PROJECT_NAME);
 		IPath path = rootLocation.append(projectPath);
@@ -121,9 +121,9 @@ public class ProjectUnzipUtil {
 			project.open(getProgessMonitor());
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw e;
 		} catch (CoreException e) {
-			e.printStackTrace();
+			throw e;
 		}
 	}
 
