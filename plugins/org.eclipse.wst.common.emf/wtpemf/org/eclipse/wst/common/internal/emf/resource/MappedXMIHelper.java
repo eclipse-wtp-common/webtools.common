@@ -26,7 +26,7 @@ import org.eclipse.emf.ecore.resource.impl.URIConverterImpl;
 import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.XMLHelperImpl;
-import org.eclipse.wst.common.emf.utilities.IDUtil;
+import org.eclipse.wst.common.internal.emf.utilities.IDUtil;
 
 public class MappedXMIHelper extends XMLHelperImpl {
 
