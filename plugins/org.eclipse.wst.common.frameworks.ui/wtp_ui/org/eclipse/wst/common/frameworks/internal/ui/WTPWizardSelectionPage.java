@@ -23,7 +23,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.IWizardNode;
 import org.eclipse.jface.wizard.IWizardPage;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.ui.WTPWizardPage;
 
 /**
  * @author DABERG

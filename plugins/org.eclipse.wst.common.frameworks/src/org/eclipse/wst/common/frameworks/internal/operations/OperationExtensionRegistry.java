@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.wst.common.frameworks.operations.WTPOperation;
 import org.eclispe.wst.common.frameworks.internal.enablement.EnablementManager;
 
 import com.ibm.wtp.common.logger.proxy.Logger;

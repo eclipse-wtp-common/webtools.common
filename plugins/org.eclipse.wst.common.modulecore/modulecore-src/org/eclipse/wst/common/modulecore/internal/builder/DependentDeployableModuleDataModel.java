@@ -9,8 +9,8 @@
 package org.eclipse.wst.common.modulecore.internal.builder;
 
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.operations.WTPOperation;
+import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
 import org.eclipse.wst.common.modulecore.DependencyType;
 import org.eclipse.wst.common.modulecore.DependentModule;
 import org.eclipse.wst.common.modulecore.ModuleCore;

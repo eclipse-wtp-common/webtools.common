@@ -6,7 +6,7 @@
  * 
  * Contributors: IBM Corporation - initial API and implementation
  **************************************************************************************************/
-package org.eclipse.wst.common.frameworks.internal.ui;
+package org.eclipse.wst.common.frameworks.ui;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -15,8 +15,13 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.wst.common.frameworks.internal.operation.extensionui.IExtendedWizardPage;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.internal.ui.ErrorDialog;
+import org.eclipse.wst.common.frameworks.internal.ui.UIOperationHandler;
+import org.eclipse.wst.common.frameworks.internal.ui.WTPCommonUIResourceHandler;
+import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
+import org.eclipse.wst.common.frameworks.internal.ui.WTPWizardSkipPageDataModel;
+import org.eclipse.wst.common.frameworks.operations.WTPOperation;
+import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
 import org.eclispe.wst.common.frameworks.internal.enablement.EnablementManager;
 
 import com.ibm.wtp.common.logger.proxy.Logger;

@@ -2,7 +2,7 @@
  * Created on Nov 18, 2004 
  * @author jsholl
  */
-package org.eclipse.wst.common.frameworks.internal.operations;
+package org.eclipse.wst.common.frameworks.operations;
 
 /**
  * @author jsholl

@@ -6,7 +6,7 @@
  * 
  * Contributors: IBM Corporation - initial API and implementation
  **************************************************************************************************/
-package org.eclipse.wst.common.frameworks.internal.operations;
+package org.eclipse.wst.common.frameworks.operations;
 
 public interface WTPOperationDataModelListener {
 	/**

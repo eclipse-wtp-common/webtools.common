@@ -1,4 +1,4 @@
-package org.eclipse.wst.common.frameworks.internal.operations;
+package org.eclipse.wst.common.frameworks.operations;
 
 /*
  * Licensed Material - Property of IBM (C) Copyright IBM Corp. 2001, 2002 - All
@@ -23,6 +23,10 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 import org.eclipse.wst.common.frameworks.internal.enablement.nonui.WFTWrappedException;
+import org.eclipse.wst.common.frameworks.internal.operations.ComposedExtendedOperationHolder;
+import org.eclipse.wst.common.frameworks.internal.operations.ComposedOperation;
+import org.eclipse.wst.common.frameworks.internal.operations.IHeadlessRunnableWithProgress;
+import org.eclipse.wst.common.frameworks.internal.operations.OperationExtensionRegistry;
 import org.eclispe.wst.common.frameworks.internal.enablement.IEnablementIdentifier;
 import org.eclispe.wst.common.frameworks.internal.enablement.IEnablementManager;
 import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
@@ -240,7 +244,7 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 	 * 
 	 * @param aStatus
 	 */
-	protected final void addStatus(IStatus aStatus) {
+	public final void addStatus(IStatus aStatus) {
 		if (opStatus == null) {
 			opStatus = new OperationStatus(aStatus.getMessage(), aStatus.getException());
 			opStatus.setSeverity(aStatus.getSeverity());

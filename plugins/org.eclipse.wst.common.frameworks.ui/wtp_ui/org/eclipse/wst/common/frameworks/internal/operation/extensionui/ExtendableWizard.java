@@ -23,10 +23,10 @@ import org.eclipse.jface.util.Assert;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.common.frameworks.internal.operations.FailSafeComposedOperation;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPCommonUIResourceHandler;
-import org.eclipse.wst.common.frameworks.internal.ui.WTPWizard;
+import org.eclipse.wst.common.frameworks.operations.WTPOperation;
+import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.ui.WTPWizard;
 
 import com.ibm.wtp.common.logger.proxy.Logger;
 

@@ -8,7 +8,7 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
 
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
 
 
 public abstract class WizardExtensionFactory {

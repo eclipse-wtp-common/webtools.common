@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.wst.common.frameworks.operations.WTPOperation;
 
 /**
  * @author jsholl

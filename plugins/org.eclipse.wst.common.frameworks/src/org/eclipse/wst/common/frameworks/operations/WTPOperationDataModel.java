@@ -12,7 +12,7 @@
  * To change the template for this generated file go to Window&gt;Preferences&gt;Java&gt;Code
  * Generation&gt;Code and Comments
  */
-package org.eclipse.wst.common.frameworks.internal.operations;
+package org.eclipse.wst.common.frameworks.operations;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -30,6 +30,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
+import org.eclipse.wst.common.frameworks.internal.operations.NullOperationHandler;
 import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
 public abstract class WTPOperationDataModel implements WTPOperationDataModelListener {

@@ -13,7 +13,7 @@ package org.eclipse.wst.common.modulecore.internal.builder;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
 
 public class LocalDependencyDelayedDataModelCache {
 	private static LocalDependencyDelayedDataModelCache instance;

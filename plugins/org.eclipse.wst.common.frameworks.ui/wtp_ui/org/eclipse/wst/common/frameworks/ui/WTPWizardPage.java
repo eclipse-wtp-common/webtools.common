@@ -1,4 +1,4 @@
-package org.eclipse.wst.common.frameworks.internal.ui;
+package org.eclipse.wst.common.frameworks.ui;
 
 /*
  * Licensed Material - Property of IBM (C) Copyright IBM Corp. 2001, 2002 - All Rights Reserved. US
@@ -20,9 +20,10 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.help.WorkbenchHelp;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModelEvent;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModelListener;
+import org.eclipse.wst.common.frameworks.internal.ui.ValidationStatus;
+import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModelEvent;
+import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModelListener;
 
 
 public abstract class WTPWizardPage extends WizardPage implements Listener, WTPOperationDataModelListener {

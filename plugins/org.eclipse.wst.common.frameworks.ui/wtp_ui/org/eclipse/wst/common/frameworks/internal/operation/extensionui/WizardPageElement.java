@@ -10,7 +10,7 @@ package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.wst.common.frameworks.internal.AbstractRegistryDescriptor;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
 import org.eclispe.wst.common.frameworks.internal.enablement.IdentifiableComparator;
 
 import com.ibm.wtp.common.logger.proxy.Logger;

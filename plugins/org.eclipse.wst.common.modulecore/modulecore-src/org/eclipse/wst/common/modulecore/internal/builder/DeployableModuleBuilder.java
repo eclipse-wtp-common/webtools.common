@@ -22,7 +22,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
+import org.eclipse.wst.common.frameworks.operations.WTPOperation;
 import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.internal.util.IModuleConstants;
 

@@ -35,9 +35,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.help.WorkbenchHelp;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModelEvent;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModelListener;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPCommonUIResourceHandler;
+import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModelEvent;
+import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModelListener;
 
 
 /**

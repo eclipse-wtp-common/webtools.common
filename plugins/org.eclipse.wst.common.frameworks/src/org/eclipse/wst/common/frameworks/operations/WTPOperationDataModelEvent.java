@@ -14,7 +14,7 @@
  * To change the template for this generated file go to Window - Preferences - Java - Code Generation - Code and
  * Comments
  */
-package org.eclipse.wst.common.frameworks.internal.operations;
+package org.eclipse.wst.common.frameworks.operations;
 
 /**
  * @author jsholl

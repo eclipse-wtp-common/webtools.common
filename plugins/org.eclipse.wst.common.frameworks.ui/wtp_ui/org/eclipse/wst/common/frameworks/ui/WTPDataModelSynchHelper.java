@@ -14,7 +14,7 @@
  * To change the template for this generated file go to Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and
  * Comments
  */
-package org.eclipse.wst.common.frameworks.internal.ui;
+package org.eclipse.wst.common.frameworks.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -47,10 +47,11 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModelEvent;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModelListener;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPPropertyDescriptor;
+import org.eclipse.wst.common.frameworks.internal.ui.TimedModifyListener;
+import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModelEvent;
+import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModelListener;
+import org.eclipse.wst.common.frameworks.operations.WTPPropertyDescriptor;
 
 
 /**

@@ -17,7 +17,7 @@
 package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
 
 import org.eclipse.jface.wizard.IWizardPage;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
+import org.eclipse.wst.common.frameworks.operations.WTPOperation;
 
 /**
  * @author jsholl

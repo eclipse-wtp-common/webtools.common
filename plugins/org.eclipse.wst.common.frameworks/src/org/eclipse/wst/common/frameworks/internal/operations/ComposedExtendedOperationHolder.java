@@ -10,6 +10,8 @@ package org.eclipse.wst.common.frameworks.internal.operations;
 
 import java.util.ArrayList;
 
+import org.eclipse.wst.common.frameworks.operations.WTPOperation;
+
 
 
 

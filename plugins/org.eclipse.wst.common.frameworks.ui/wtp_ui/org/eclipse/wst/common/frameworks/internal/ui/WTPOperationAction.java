@@ -37,7 +37,7 @@ import org.eclipse.wst.common.frameworks.internal.operation.extensionui.MasterDe
 import org.eclipse.wst.common.frameworks.internal.operation.extensionui.UIOperationExtensionRegistry;
 import org.eclipse.wst.common.frameworks.internal.operation.extensionui.WTPOptionalOperationDataModel;
 import org.eclipse.wst.common.frameworks.internal.operations.ComposedOperation;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
+import org.eclipse.wst.common.frameworks.operations.WTPOperation;
 
 import com.ibm.wtp.common.logger.proxy.Logger;
 

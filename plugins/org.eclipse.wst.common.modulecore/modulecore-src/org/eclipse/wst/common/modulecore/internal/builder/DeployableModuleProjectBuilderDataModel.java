@@ -13,8 +13,8 @@ import java.util.List;
 
 import org.eclipse.core.internal.events.ResourceDelta;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.operations.WTPOperation;
+import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
 import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
 
