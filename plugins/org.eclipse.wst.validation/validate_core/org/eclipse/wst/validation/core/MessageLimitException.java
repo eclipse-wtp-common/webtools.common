@@ -17,5 +17,5 @@ package org.eclipse.wst.validation.core;
  *      because the maximum number of messages has been reported.
  */
 public class MessageLimitException extends RuntimeException {
-	final static long serialVersionUID = -7034897190745766940L;
+	private final static long serialVersionUID = -7034897190745766940L;
 }

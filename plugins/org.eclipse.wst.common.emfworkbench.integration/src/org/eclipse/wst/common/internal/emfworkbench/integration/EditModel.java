@@ -58,8 +58,6 @@ import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateIn
 import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidator;
 import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidatorImpl;
 import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidatorPresenter;
-import org.eclipse.wst.common.jdt.internal.integration.WorkingCopyManager;
-import org.eclipse.wst.common.jdt.internal.integration.WorkingCopyManagerFactory;
 import org.eclispe.wst.common.frameworks.internal.enablement.EnablementIdentifierEvent;
 import org.eclispe.wst.common.frameworks.internal.enablement.IEnablementIdentifier;
 import org.eclispe.wst.common.frameworks.internal.enablement.IEnablementIdentifierListener;
@@ -95,7 +93,6 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	protected List resources;
 	private final ClientAccessRegistry registry = new ClientAccessRegistry();
 	protected EMFWorkbenchContext emfContext = null;
-	private WorkingCopyManager workingCopyManager = null;
 	protected IProject project = null;
 
 	private Reference reference;
@@ -1368,37 +1365,6 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	 */
 	public void setAccessAsReadForUnKnownURIs(boolean b) {
 		accessAsReadForUnKnownURIs = b;
-	}
-
-	/**
-	 * Returns the working copy remembered for the compilation unit.
-	 * 
-	 * @param input
-	 *            ICompilationUnit
-	 * @return the working copy of the compilation unit, or <code>null</code> if there is no
-	 *         remembered working copy for this compilation unit
-	 */
-	public org.eclipse.jdt.core.ICompilationUnit getWorkingCopy(org.eclipse.jdt.core.ICompilationUnit cu, boolean forNewCU) throws org.eclipse.core.runtime.CoreException {
-		if (isReadOnly())
-			return null;
-		return getWorkingCopyManager().getWorkingCopy(cu, forNewCU);
-	}
-
-
-	public WorkingCopyManager getWorkingCopyManager() {
-		if (workingCopyManager == null)
-			workingCopyManager = WorkingCopyManagerFactory.newRegisteredInstance();
-		return workingCopyManager;
-	}
-
-	/**
-	 * Reset the working copy manager because the ejb-jar.xml was removed without disposing.
-	 */
-	protected void resetWorkingCopyManager() {
-		if (workingCopyManager != null) {
-			workingCopyManager.dispose();
-			workingCopyManager = null;
-		}
 	}
 
 	public String toString() {

@@ -22,14 +22,14 @@
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="id" type="string">
+         <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
                   
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="name" type="string">
+         <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
                   
@@ -81,6 +81,13 @@
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="caseSensitive" type="boolean">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
@@ -98,7 +105,7 @@
 
    <element name="dependentValidator">
       <complexType>
-         <attribute name="depValValue" type="boolean" use="required">
+         <attribute name="depValValue" type="boolean">
             <annotation>
                <documentation>
                   
@@ -110,7 +117,7 @@
 
    <element name="run">
       <complexType>
-         <attribute name="class" type="string">
+         <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
                   

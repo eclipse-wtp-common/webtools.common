@@ -2,10 +2,10 @@
 <?eclipse version="3.0"?>
 <plugin
    id="org.eclipse.wst.validation"
-   name="%pluginName"
+   name="Validation Framework"
    description="This plugin is one of the core validation framework plugins. It has 2 extension points for a user to extend it to implement their own validators. Most of the funtion and api available in this plugin are for use internally by the validation framework."
    version="1.0.0"
-   provider-name="%providerName"
+   provider-name="IBM"
    class="org.eclipse.wst.validation.internal.plugin.ValidationPlugin">
 
    <runtime>
@@ -24,8 +24,8 @@
 
 
 <!-- Validation extension points -->
-   <extension-point id="validator" name="%Validator_Extension_Point.name" schema="xsds/validatorExtSchema.exsd"/>
-   <extension-point id="postValidator" name="%PostValidator_Extension_Point.name" schema="xsds/postValidatorExtSchema.exsd"/>
+   <extension-point id="validator" name="Validator" schema="xsds/validatorExtSchema.exsd"/>
+   <extension-point id="postValidator" name="PostValidator" schema="xsds/postValidatorExtSchema.exsd"/>
    
 <!--============================-->
 <!-- Validation Contributions   -->

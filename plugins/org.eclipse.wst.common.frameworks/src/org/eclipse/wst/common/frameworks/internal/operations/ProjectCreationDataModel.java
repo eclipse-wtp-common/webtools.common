@@ -1,18 +1,16 @@
-/*******************************************************************************
- * Copyright (c) 2003, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+/***************************************************************************************************
+ * Copyright (c) 2003, 2004 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors:
- * IBM Corporation - initial API and implementation
- *******************************************************************************/
+ * Contributors: IBM Corporation - initial API and implementation
+ **************************************************************************************************/
 /*
  * Created on Oct 27, 2003
  * 
- * To change the template for this generated file go to Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and
- * Comments
+ * To change the template for this generated file go to Window&gt;Preferences&gt;Java&gt;Code
+ * Generation&gt;Code and Comments
  */
 package org.eclipse.wst.common.frameworks.internal.operations;
 
@@ -32,27 +30,24 @@ import org.eclipse.core.runtime.Path;
 import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonMessages;
 import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
-
-/**
- * @author jsholl
- * 
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 public class ProjectCreationDataModel extends WTPOperationDataModel {
 	/**
-	 * type String, project name to create, required
+	 * A required dataModel propertyName for a <code>java.lang.String</code> type. This is used to
+	 * specify the project name.
 	 */
 	public static final String PROJECT_NAME = "ProjectCreationDataModel.PROJECT_NAME"; //$NON-NLS-1$
 
 	/**
-	 * type String, the location on the file system to create the project; optional; default is
-	 * default location
+	 * An optonal dataModel propertyName for a <code>java.lang.String</code> type. Sets the local
+	 * file system location for the described project. The path must be either an absolute file
+	 * system path, or a relative path whose first segment is the name of a defined workspace path
+	 * variable. The default value is the workspace's default location.
 	 */
 	public static final String PROJECT_LOCATION = "ProjectCreationDataModel.PROJECT_LOCATION"; //$NON-NLS-1$
 
 	/**
-	 * type String [], list of all natures to add, optional, no default
+	 * An optional dataModel propertyName for a <code>java.lang.String[]</code> type. This is a
+	 * list of all natures to add to the project. There is no default value.
 	 */
 	public static final String PROJECT_NATURES = "ProjectCreationDataModel.PROJECT_NATURES"; //$NON-NLS-1$
 

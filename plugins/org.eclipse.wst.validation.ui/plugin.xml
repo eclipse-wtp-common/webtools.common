@@ -2,10 +2,10 @@
 <?eclipse version="3.0"?>
 <plugin
    id="org.eclipse.wst.validation.ui"
-   name="%pluginName"
-   description="This is only UI plugin for the validation framework. Some of the main UI functions this plugin provides are global validation references page, project validation properties page and manual run validation menu action."
+   name="Validation Framework UI"
    version="1.0.0"
-   provider-name="%providerName"
+   provider-name="IBM"
+   description="This is only UI plugin for the validation framework. Some of the main UI functions this plugin provides are global validation references page, project validation properties page and manual run validation menu action."
    class="org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin">
 
    <runtime>

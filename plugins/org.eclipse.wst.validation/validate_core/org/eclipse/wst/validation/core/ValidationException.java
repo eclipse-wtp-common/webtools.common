@@ -14,15 +14,17 @@ package org.eclipse.wst.validation.core;
 import java.util.Locale;
 
 /**
+ * <p>
  * This exception is the only exception which should be thrown by IValidators. The message in this
  * exception must be suitable for showing to the user. All ValidationExceptions will have their
  * message extracted when they're caught, and the message will be shown to the user.
+ * </p>
  */
 public class ValidationException extends Exception {
 	private Throwable _lowLevelException = null;
 	private IMessage _message = null;
 	private ClassLoader _loader = null;
-	final static long serialVersionUID = -3387516993124229949L;
+	private final static long serialVersionUID = -3387516993124229949L;
 
 	/**
 	 * Constructs a new exception with a given message string. <br>
@@ -56,14 +58,14 @@ public class ValidationException extends Exception {
 	}
 
 	/**
-	 * Returns the low-level exception associated with this ValidationException.
+	 * @return the low-level exception associated with this ValidationException.
 	 */
 	public Throwable getAssociatedException() {
 		return _lowLevelException;
 	}
 
 	/**
-	 * Returns the IMessage to be shown to the user, or null if this exception should be handled
+	 * @return the IMessage to be shown to the user, or null if this exception should be handled
 	 * internally.
 	 */
 	public IMessage getAssociatedMessage() {
@@ -71,7 +73,7 @@ public class ValidationException extends Exception {
 	}
 
 	/**
-	 * If the IValidator which threw this exception was loaded by a different ClassLoader than the
+	 * @return if the IValidator which threw this exception was loaded by a different ClassLoader than the
 	 * framework, this method returns the ClassLoader of the IValidator.
 	 */
 	public ClassLoader getClassLoader() {
@@ -79,8 +81,6 @@ public class ValidationException extends Exception {
 	}
 
 	/**
-	 * Returns the error message string of this throwable object.
-	 * 
 	 * @return the error message string of this <code>Throwable</code> object if it was
 	 *         {@link java.lang.Throwable#Throwable(String) created}with an error message string;
 	 *         or <code>null</code> if it was {@link java.lang.Throwable#Throwable() created}with
@@ -92,27 +92,31 @@ public class ValidationException extends Exception {
 	}
 
 	/**
-	 * Returns the error message string of this throwable object.
-	 * 
+	 * @param locale
+	 * 			The locale of which to get the message.
 	 * @return the error message string of this <code>Throwable</code> object if it was
 	 *         {@link java.lang.Throwable#Throwable(String) created}with an error message string;
 	 *         or <code>null</code> if it was {@link java.lang.Throwable#Throwable() created}with
 	 *         no error message.
-	 *  
 	 */
 	public String getMessage(Locale locale) {
 		return _message.getText(locale, getClassLoader());
 	}
 
 	/**
+	 * <p>
 	 * If the IValidator which threw this exception was loaded by a different ClassLoader than the
 	 * framework, this method should set the ClassLoader to be the ClassLoader of the IValidator.
+	 * </p>
+	 * @param loader
+	 *  		ClassLoader of the validator
 	 */
 	public void setClassLoader(ClassLoader loader) {
 		_loader = loader;
 	}
 
 	/**
+	 * <p>
 	 * Returns a short description of this throwable object. If this <code>Throwable</code> object
 	 * was {@link java.lang.Throwable#Throwable(String) created}with an error message string, then
 	 * the result is the concatenation of three strings:
@@ -123,6 +127,7 @@ public class ValidationException extends Exception {
 	 * </ul>
 	 * If this <code>Throwable</code> object was {@link java.lang.Throwable#Throwable() created}
 	 * with no error message string, then the name of the actual class of this object is returned.
+	 * </p>
 	 * 
 	 * @return a string representation of this <code>Throwable</code>.
 	 */
@@ -131,6 +136,7 @@ public class ValidationException extends Exception {
 	}
 
 	/**
+	 * <p>
 	 * Returns a short description of this throwable object. If this <code>Throwable</code> object
 	 * was {@link java.lang.Throwable#Throwable(String) created}with an error message string, then
 	 * the result is the concatenation of three strings:
@@ -141,6 +147,7 @@ public class ValidationException extends Exception {
 	 * </ul>
 	 * If this <code>Throwable</code> object was {@link java.lang.Throwable#Throwable() created}
 	 * with no error message string, then the name of the actual class of this object is returned.
+	 * </p>
 	 * 
 	 * @return a string representation of this <code>Throwable</code>.
 	 */

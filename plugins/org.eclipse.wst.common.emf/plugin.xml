@@ -5,6 +5,7 @@
    name="EMF Utilities"
    version="1.0.0"
    provider-name="IBM"
+   description="Provides support and utilities for emf integration into the workbench"
    class="org.eclipse.wst.common.internal.emf.plugin.EcoreUtilitiesPlugin">
 
    <runtime>
@@ -19,7 +20,6 @@
       <import plugin="org.eclipse.emf.ecore.xmi"/>
       <import plugin="org.eclipse.wst.common.frameworks"/>
       <import plugin="org.eclipse.core.runtime.compatibility"/>
-      <import plugin="org.eclipse.wst.common.annotations.core"/>
       <import plugin="org.eclipse.core.resources"/>
    </requires>
 

@@ -10,26 +10,33 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.core;
 
-
 /**
- * This interface is used, for incremental validation, to encapsulate the change status of a
- * resource. IFileDelta contains the name of the file which has changed, and a flag which indicates
- * the type of change which has occurred.
+ * <p>
+ * This interface is used, for incremental validation, to encapsulate the change 
+ * status of a resource. IFileDelta contains the name of the file which has 
+ * changed, and a flag which indicates the type of change which has occurred.
+ * </p>
  */
 public interface IFileDelta {
-	public static final int ADDED = 1; // the file has been added
+	public static final int ADDED = 1;   // the file has been added
 	public static final int CHANGED = 2; // the file has been changed
 	public static final int DELETED = 3; // the file has been deleted
 
 	/**
-	 * This method returns the flag which indicates the type of change which has occurred:
+	 * <p>
+	 * Returns the flag which indicates the type of change which has occurred:
 	 * IFileDelta.ADDED, IFileDelta.CHANGED, or IFileDelta.DELETED.
+	 * </p>
+	 * @return returns the delta type.
 	 */
 	public int getDeltaType();
 
 	/**
-	 * This method returns the name of the file which has changed. The value must not be null or the
-	 * empty string ("").
+	 * <p>
+	 * Returns the name of the file which has changed. The return value must not be 
+	 * null or the empty string ("").
+	 * </p>
+	 * @return returns the file name.
 	 */
 	public String getFileName();
 }

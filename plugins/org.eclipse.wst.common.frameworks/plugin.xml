@@ -4,6 +4,7 @@
    id="org.eclipse.wst.common.frameworks"
    name="org.eclipse.wst.common.frameworks"
    version="1.0.0"
+   description="This is a holding place for common frameworks used by components used in WTP currently it includes the following frameworks: operation/data model,function groups framework"
    class="org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin">
 
    <runtime>

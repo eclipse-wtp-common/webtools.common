@@ -21,6 +21,7 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.NotificationImpl;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipse.wst.common.emf.utilities.IDUtil;
 
 public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl implements ReferencedResource {
@@ -299,4 +300,51 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	public boolean wasReverted() {
 		return false;
 	}
+	
+   /*
+   * THIS IS A HACK!!! REMOVE when bugzilla 80110 is fixed
+   */
+  // TODO REMOVE this!
+  public void setTrackingModification(boolean isTrackingModification)
+  {
+    boolean oldIsTrackingModification = this.modificationTrackingAdapter != null;
+
+    if (oldIsTrackingModification != isTrackingModification)
+    {
+      this.modificationTrackingAdapter = isTrackingModification ? createModificationTrackingAdapter() : null;
+
+      if (isTrackingModification)
+      {
+        for (Iterator i = getContents().iterator(); i.hasNext(); )
+        {
+          attachedHelper((EObject)i.next());
+        }
+      }
+      else
+      {
+        for (Iterator i = getContents().iterator(); i.hasNext(); )
+        {
+          detachedHelper((EObject)i.next());
+        }
+      }
+    }
+
+    if (eNotificationRequired())
+    {
+      Notification notification =
+        new NotificationImpl(Notification.SET, oldIsTrackingModification, isTrackingModification)
+        {
+          public Object getNotifier()
+          {
+            return this;
+          }
+          public int getFeatureID(Class expectedClass)
+          {
+            return RESOURCE__IS_TRACKING_MODIFICATION;
+          }
+        };
+      eNotify(notification);
+    }
+  }
+
 }

@@ -16,10 +16,13 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
+ * <p>
  * Default implementation of the IMessage interface, provided for the convenience of the
  * IValidators. If an IValidator needs to run in both AAT and WSAD then this IMessage implementation
  * should be used; if the IValidator runs in WSAD alone, the WSAD LocalizedMessage may be used in
  * place of this implementation.
+ * <p>
+ * @see org.eclipse.wst.validation.core.IMessage
  */
 public class Message implements IMessage {
 	private String id = null;
@@ -32,32 +35,67 @@ public class Message implements IMessage {
 	private int length = IMessage.OFFSET_UNSET;
 	private int offset = IMessage.OFFSET_UNSET;
 
+	/**
+	 * <p>
+	 * Creates a default instance of the Message
+	 * </p>
+	 */
 	public Message() {
 		super();
 	}
 
 	/**
-	 * aBundleName must not be null or the empty string ("") aSeverity must be one of the constants
-	 * specified in SeverityEnum anId must not be null or the empty string ("")
+	 * <p>
+	 * Creates a Message object with bundle name, severity and a unique id
+	 * </p>
+	 * 
+	 * @param aBundleName 
+	 * 			Must not be null or the empty string (""). 
+	 * @param aSeverity 
+	 * 			Must be one of the constants specified in SeverityEnum. 
+	 * @param anId 
+	 * 			Must not be null or the empty string ("").
 	 */
 	public Message(String aBundleName, int aSeverity, String anId) {
 		this(aBundleName, aSeverity, anId, null, null);
 	}
 
 	/**
-	 * aBundleName must not be null or the empty string ("") aSeverity must be one of the constants
-	 * specified in SeverityEnum anId must not be null or the empty string ("") aParams may be null,
-	 * if there are no parameters in the message.
+	 * <p>
+	 * Creates a Message object with bundle name, severity, a unique id, and 
+	 * a list of parameters. 
+	 * </p>
+	 * 
+	 * @param aBundleName 
+	 * 			Must not be null or the empty string (""). 
+	 * @param aSeverity 
+	 * 			Must be one of the constants specified in SeverityEnum. 
+	 * @param anId 
+	 * 			Must not be null or the empty string ("").
+	 * @param aParams 
+	 * 			May be null, if there are no parameters in the message.
 	 */
 	public Message(String aBundleName, int aSeverity, String anId, String[] aParams) {
 		this(aBundleName, aSeverity, anId, aParams, null);
 	}
-
+	
 	/**
-	 * aBundleName must not be null or the empty string ("") aSeverity must be one of the constants
-	 * specified in SeverityEnum anId must not be null or the empty string ("") aParams may be null,
-	 * if there are no parameters in the message. targetObject may be null, if the message does not
-	 * pertain to a particular object.
+	 * <p>
+	 * Creates a Message object with bundle name, severity, a unique id, and 
+	 * a list of parameters and the target object.
+	 * </p>
+	 * 
+	 * @param aBundleName 
+	 * 			Must not be null or the empty string (""). 
+	 * @param aSeverity 
+	 * 			Must be one of the constants specified in SeverityEnum. 
+	 * @param anId 
+	 * 			Must not be null or the empty string ("").
+	 * @param aParams 
+	 * 			May be null, if there are no parameters in the message.
+	 * @param targetObject 
+	 * 			May be null, if the message does not pertain to a particular 
+	 * 			object.
 	 */
 	public Message(String aBundleName, int aSeverity, String anId, String[] aParams, Object aTargetObject) {
 		bundleName = aBundleName;
@@ -68,7 +106,7 @@ public class Message implements IMessage {
 	}
 
 	/**
-	 * Return the resource bundle which contains the messages, as identified by
+	 * @return the resource bundle which contains the messages, as identified by
 	 * 
 	 * @link #getBundleName()
 	 */

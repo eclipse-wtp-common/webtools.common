@@ -15,31 +15,29 @@ import java.util.Locale;
 import java.util.List;
 
 /**
+ * <p>
  * Interface which can be used to access messages which are stored within a reporter which retains
  * its message history.
+ * </p>
  */
 public interface IMessageAccess {
 	/**
-	 * Returns a list of messages related to the target object.
-	 * 
 	 * @param filter
 	 *            A filter which specifies a subset of messages to retrieve. null specifies, "all
 	 *            messages".
-	 * @return List <IMessage>
+	 * @return List list of messages related to the target object
 	 */
 	public abstract List getMessages(MessageFilter filter);
 
 	/**
-	 * Returns a list of messages related to the target object, translated into the specified
-	 * locale.
-	 * 
 	 * @param filter
 	 *            A filter which specifies a subset of messages to retrieve. null specifies, "all
 	 *            messages".
 	 * @param locale
 	 *            The target local to translate the messages into. null specifies, "use default
 	 *            locale".
-	 * @return List <String>
+	 * @return List a list of messages related to the target object, translated into the specified
+	 * locale.
 	 */
 	public abstract List getMessagesAsText(MessageFilter filter, Locale targetLocale);
 }

@@ -12,16 +12,33 @@ package org.eclipse.wst.validation.core;
 
 
 /**
- * Default implementation of IFileDelta.
+ * <p>
+ * Default implementation of the IFileDelta
+ * </p>
+ * 
+ * @see org.eclipse.wst.validation.core.IFileDelta
  */
 public class FileDelta implements IFileDelta {
 	private int fileDelta = 0;
 	private String fileName = null;
 
+	/**
+	 * <p>
+	 * Creates a default instance of the FileDelta
+	 * </p>
+	 */
 	public FileDelta() {
 		super();
 	}
-
+	
+	/**
+	 * <p>
+	 * Constructor is used to initialize the fields. 
+	 * </p>
+	 * 
+	 * @param aFileName specifies the file name
+	 * @param aFileDelta specifies the 
+	 */
 	public FileDelta(String aFileName, int aFileDelta) {
 		fileName = aFileName;
 		fileDelta = aFileDelta;
@@ -42,14 +59,19 @@ public class FileDelta implements IFileDelta {
 	}
 
 	/**
-	 * Set the flag which indicates the type of change that the file has undergone.
+	 * <p>
+	 * Set the flag which indicates the type of change that the file 
+	 * has undergone.
+	 * </p>
 	 */
 	public void setDeltaType(int deltaType) {
 		fileDelta = deltaType;
 	}
 
 	/**
+	 * <p>
 	 * Set the name of the file which has changed.
+	 * </p>
 	 */
 	public void setFileName(String aFileName) {
 		fileName = aFileName;

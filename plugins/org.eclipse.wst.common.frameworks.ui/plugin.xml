@@ -5,6 +5,7 @@
    name="WTP UI Plug-in"
    version="1.0.0"
    provider-name=""
+   description="This is a holding place for common frameworks UI used by components used in WTP currently it includes the following frameworks: Entendable Wizards, Extendable Actions"
    class="org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin">
 
    <runtime>

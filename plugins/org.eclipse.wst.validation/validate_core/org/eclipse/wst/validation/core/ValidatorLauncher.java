@@ -13,17 +13,23 @@ package org.eclipse.wst.validation.core;
 
 
 /**
+ * <p>
  * This singleton launches the validation on a single validator. Clients should call this class's
  * <code>start</code> method to begin the validation.
+ * </p>
  */
 public class ValidatorLauncher {
 	private static ValidatorLauncher _launcher = null;
 
+	
+	/**
+	 * Default constructor 
+	 */
 	private ValidatorLauncher() {
 	}
 
 	/**
-	 * Return the singleton launcher.
+	 * @return the singleton launcher.
 	 */
 	public static ValidatorLauncher getLauncher() {
 		if (_launcher == null) {
@@ -33,6 +39,7 @@ public class ValidatorLauncher {
 	}
 
 	/**
+	 * <p>
 	 * This method is the launch point of the validation. It runs validation on the validator
 	 * accessed by the IHelper. When the validation is complete, each validator may perform resource
 	 * cleanup, if necessary.
@@ -42,6 +49,20 @@ public class ValidatorLauncher {
 	 * If <code>helper</code>,<code>validator</code>, or <code>reporter</code> are null,
 	 * validation is not performed. <code>changedFiles</code> may be null, or empty, if a full
 	 * build should be done.
+	 * </p>
+	 * 
+	 * @param helper 
+	 * 			loads an object. 
+	 * @param validator
+	 * 			validator object to launch validation.
+	 * @param reporter
+	 * 			Is an instance of an IReporter interface, which is used for
+	 * interaction with the user.
+	 * @param changedFiles
+	 * 			Is an array of files which have been added, changed, or deleted
+	 * since the last validation. If <code>changedFiles</code> is null, or if it is an empty
+	 * array, then a full validation should be performed. Otherwise, validation on just the files
+	 * listed in the array should performed if the validator supports incremental validation.
 	 */
 	public void start(IHelper helper, IValidator validator, IReporter reporter, IFileDelta[] changedFiles) throws ValidationException {
 		if ((helper == null) || (validator == null) || (reporter == null)) {

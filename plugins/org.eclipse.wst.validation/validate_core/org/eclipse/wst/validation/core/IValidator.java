@@ -27,9 +27,12 @@ package org.eclipse.wst.validation.core;
  */
 public interface IValidator {
 	/**
+	 * <p>
 	 * Perform any resource cleanup once validation is complete. If cleanup will take some time, the
 	 * IValidator should report subtask information to the user through the IReporter parameter. The
 	 * IReporter parameter will not be null.
+	 * </p>
+	 * @param reporter used for the interaction with the user
 	 */
 	public void cleanup(IReporter reporter);
 
@@ -39,12 +42,13 @@ public interface IValidator {
 	 * <code>helper</code> and <code>reporter</code> may not be null. <code>changedFiles</code>
 	 * may be null, if a full build is desired. <br>
 	 * <br>
-	 * <code>helper</code> loads an object. <br>
-	 * <br>
-	 * <code>reporter</code> is an instance of an IReporter interface, which is used for
-	 * interaction with the user. <br>
-	 * <br>
-	 * <code>changedFiles</code> is an array of files which have been added, changed, or deleted
+	 * @param helper 
+	 * 			loads an object. 
+	 * @param reporter
+	 * 			Is an instance of an IReporter interface, which is used for
+	 * interaction with the user.
+	 * @param changedFiles
+	 * 			Is an array of files which have been added, changed, or deleted
 	 * since the last validation. If <code>changedFiles</code> is null, or if it is an empty
 	 * array, then a full validation should be performed. Otherwise, validation on just the files
 	 * listed in the array should performed if the validator supports incremental validation.
