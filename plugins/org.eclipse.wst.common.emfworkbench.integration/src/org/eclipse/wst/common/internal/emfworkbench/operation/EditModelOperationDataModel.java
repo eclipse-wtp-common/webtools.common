@@ -17,6 +17,7 @@
 package org.eclipse.wst.common.internal.emfworkbench.operation;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.wst.common.frameworks.internal.operations.ProjectCreationDataModel;
 import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
@@ -46,7 +47,7 @@ public abstract class EditModelOperationDataModel extends WTPOperationDataModel 
 	}
 
 	public IProject getTargetProject() {
-		return getProjectHandle(PROJECT_NAME);
+		return ProjectCreationDataModel.getProjectHandleFromName(getStringProperty(PROJECT_NAME));
 	}
 
 	protected Object getDefaultProperty(String propertyName) {

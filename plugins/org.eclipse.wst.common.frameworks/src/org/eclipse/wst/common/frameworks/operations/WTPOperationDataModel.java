@@ -23,9 +23,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
@@ -81,6 +78,9 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	public abstract WTPOperation getDefaultOperation();
 
 	private final void init_internal() {
+		addValidBaseProperty(RUN_OPERATION);
+		addValidBaseProperty(CACHED_DELAYED_OPERATION);
+		addValidBaseProperty(UI_OPERATION_HANLDER);
 		initValidBaseProperties();
 		initNestedModels();
 		init();
@@ -104,18 +104,22 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	protected void initNestedModels() {
 	}
 
+	/**
+	 * This is for subclasses to invoke to initialize properties.  Subclasses should call this method
+	 * from initValidBaseProperties().
+	 * @param propertyName The property name to be added.
+	 * @see initValidBaseProperties();
+	 */
 	protected void addValidBaseProperty(String propertyName) {
 		validBaseProperties.add(propertyName);
 		validProperties.add(propertyName);
 	}
 
 	/**
-	 *  
+	 * This is for subclasses to override to initialize their properties.  
+	 * @see init()
 	 */
 	protected void initValidBaseProperties() {
-		addValidBaseProperty(RUN_OPERATION);
-		addValidBaseProperty(CACHED_DELAYED_OPERATION);
-		addValidBaseProperty(UI_OPERATION_HANLDER);
 	}
 
 	public void addNestedModel(String modelName, WTPOperationDataModel dataModel) {
@@ -142,6 +146,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	/**
 	 * @return
 	 */
+	//TODO what is this???
 	protected WTPOperationDataModelListener getExtendedSynchronizer() {
 		return null;
 	}
@@ -282,28 +287,6 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		if (prop == null)
 			return ""; //$NON-NLS-1$
 		return (String) prop;
-	}
-
-	/**
-	 * Return IProject which is a handle to a project in the workspace which has the same name as
-	 * that which is returned from the String property <code>projectNameProperty</code>.
-	 * 
-	 * @param projectNameProperty
-	 * @return
-	 */
-	public IProject getProjectHandle(String projectNameProperty) {
-		String projectName = (String) getProperty(projectNameProperty);
-		return getProjectHandleFromName(projectName);
-	}
-
-	public IProject getProjectHandleFromName(String projectName) {
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IStatus status = workspace.validateName(projectName, IResource.PROJECT);
-		return (null != projectName && projectName.length() > 0 && status.isOK()) ? ResourcesPlugin.getWorkspace().getRoot().getProject(projectName) : null;
-	}
-
-	public IProject getTargetProject() {
-		return null;
 	}
 
 	/**
@@ -572,6 +555,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 * 
 	 * @param aBoolean
 	 */
+	//TODO why is this here???
 	public void setIgnorePropertyChanges(boolean aBoolean) {
 		ignorePropertyChanges = aBoolean;
 	}
@@ -738,6 +722,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 * 
 	 * @param otherModel
 	 */
+	//TODO what is this for???
 	public void synchronizeValidPropertyValues(WTPOperationDataModel otherModel, String[] properties) {
 		if (otherModel == null || properties == null || properties.length == 0)
 			return;
@@ -770,26 +755,31 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		return hasBeenExecutedAgainst;
 	}
 
+	//TODO move to a new ExtendedDataModel class???
 	private final void assertModelIsExtended() {
 		if (extendedRoot == null)
 			throw new IllegalStateException(WTPResourceHandler.getString("19")); //$NON-NLS-1$
 	}
 
+	//TODO move to a new ExtendedDataModel class???
 	protected final Object getParentProperty(String propertyName) {
 		assertModelIsExtended();
 		return extendedRoot.getProperty(propertyName);
 	}
 
+	//TODO move to a new ExtendedDataModel class???
 	protected final int getParentIntProperty(String propertyName) {
 		assertModelIsExtended();
 		return extendedRoot.getIntProperty(propertyName);
 	}
 
+	//TODO move to a new ExtendedDataModel class???
 	protected final boolean getParentBooleanProperty(String propertyName) {
 		assertModelIsExtended();
 		return extendedRoot.getBooleanProperty(propertyName);
 	}
 
+	//TODO move to a new ExtendedDataModel class???
 	protected final String getParentStringProperty(String propertyName) {
 		assertModelIsExtended();
 		return extendedRoot.getStringProperty(propertyName);
@@ -810,12 +800,12 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		}
 		return OK_STATUS;
 	}
-
-	protected static IStatus validateProjectName(String projectName) {
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IStatus status = workspace.validateName(projectName, IResource.PROJECT);
-		if (!status.isOK())
-			return status;
-		return OK_STATUS;
+	
+	/**
+	 * @deprecated this will be removed and left to subclasses to implement
+	 * @return
+	 */
+	public IProject getTargetProject() {
+		return null;
 	}
 }
