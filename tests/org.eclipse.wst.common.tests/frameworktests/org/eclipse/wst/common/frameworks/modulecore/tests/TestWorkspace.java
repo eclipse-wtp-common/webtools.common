@@ -18,6 +18,12 @@ public class TestWorkspace {
 	public static final String PROJECT_NAME = "TestVirtualAPI"; //$NON-NLS-1$
 	public static final String WEB_MODULE_1_NAME = "WebModule1.war"; //$NON-NLS-1$
 	public static final String WEB_MODULE_2_NAME = "WebModule2.war"; //$NON-NLS-1$
+	
+	public static final String NEW_WEB_MODULE_NAME = "NewWebModule.war"; //$NON-NLS-1$
+	
+
+	public static final String META_INF = "META-INF"; //$NON-NLS-1$
+	public static final String WEB_INF = "WEB-INF"; //$NON-NLS-1$
 
 	public static IProject getTargetProject() {
 		return ResourcesPlugin.getWorkspace().getRoot().getProject(PROJECT_NAME);

@@ -66,6 +66,36 @@ public class ModuleCoreAPITest extends TestCase {
 		
 		setupNavigateComponentTest();
 		setupCreateLinkTest();
+		setupCreateNewModuleTest();
+	}
+
+	public void setupCreateNewModuleTest() throws Exception {
+
+		IFolder rootFolder = TestWorkspace.getTargetProject().getFolder(TestWorkspace.NEW_WEB_MODULE_NAME);
+		if(rootFolder.exists())
+			rootFolder.delete(IResource.FORCE | IResource.ALWAYS_DELETE_PROJECT_CONTENT, null);
+		
+		ModuleCore moduleCore = null;
+
+		try {
+			moduleCore = ModuleCore.getModuleCoreForWrite(TestWorkspace.getTargetProject());
+			WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(TestWorkspace.NEW_WEB_MODULE_NAME);
+
+			if(wbComponent != null) {
+				ComponentResource[] componentResources = 
+					wbComponent.findWorkbenchModuleResourceByDeployPath(URI.createURI("/")); //$NON-NLS-1$				
+				
+				for (int i = 0; i < componentResources.length; i++) {
+					wbComponent.getResources().remove(componentResources[i]);
+				}
+			}
+
+		} finally {
+			if (moduleCore != null) {
+				moduleCore.save(null);
+				moduleCore.dispose();
+			}
+		}  
 	}
 
 	/**
@@ -78,8 +108,8 @@ public class ModuleCoreAPITest extends TestCase {
 
 		virtualResourceTree.put((images = new Path("images")), new HashMap()); //$NON-NLS-1$
 		virtualResourceTree.put((jsps = new Path("jsps")), new HashMap()); //$NON-NLS-1$
-		virtualResourceTree.put(new Path("META-INF"), new HashMap()); //$NON-NLS-1$
-		virtualResourceTree.put((WEB_INF = new Path("WEB-INF")), new HashMap()); //$NON-NLS-1$
+		virtualResourceTree.put(new Path(TestWorkspace.META_INF), new HashMap()); //$NON-NLS-1$
+		virtualResourceTree.put((WEB_INF = new Path(TestWorkspace.WEB_INF)), new HashMap()); //$NON-NLS-1$
 		virtualResourceTree.put(new Path("TestFile1.txt"), null); //$NON-NLS-1$
 		virtualResourceTree.put(new Path("TestFile2.txt"), null); //$NON-NLS-1$
 
@@ -120,9 +150,7 @@ public class ModuleCoreAPITest extends TestCase {
 				moduleCore.save(null);
 				moduleCore.dispose();
 			}
-		}
-
-
+		}  
 	} 
 
 
@@ -222,6 +250,67 @@ public class ModuleCoreAPITest extends TestCase {
 		assertTrue("There should be exactly one Component resource with the source path \"" + realImages.getProjectRelativePath() + "\".", componentResources.length == 1); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		assertTrue("The runtime path should match \"/images\".", componentResources[0].getRuntimePath().path().equals("/images")); //$NON-NLS-1$ //$NON-NLS-2$
+
+		// make sure that only one component resource is created 
+		
+		images.createLink(new Path("/WebModule2/images"), 0, null); //$NON-NLS-1$
+
+		componentResources = resourceTreeRoot.findModuleResources(realImages.getFullPath(), false);
+		
+		assertTrue("There should be exactly one Component resource with the source path \"" + realImages.getProjectRelativePath() + "\".", componentResources.length == 1); //$NON-NLS-1$ //$NON-NLS-2$
+		
+		assertTrue("The runtime path should match \"/images\".", componentResources[0].getRuntimePath().path().equals("/images")); //$NON-NLS-1$ //$NON-NLS-2$
+
+	} 
+	
+	/**
+	 * <p>
+	 * All methods lised in the "see" clauses are tested by this method.
+	 * </p>
+	 * 
+	 * @see ModuleCore#create(IProject, String)
+	 * @see IContainer#getFolder(org.eclipse.core.runtime.IPath)
+	 * @see IFolder#createLink(org.eclipse.core.runtime.IPath, int, org.eclipse.core.runtime.IProgressMonitor)
+	 * 
+	 */
+	public void testCreateWebModule() throws Exception {
+		
+		IVirtualContainer component = ModuleCore.create(TestWorkspace.getTargetProject(), TestWorkspace.NEW_WEB_MODULE_NAME);
+//		if(!component.exists())
+			component.commit();
+		IVirtualFolder root = component.getFolder(new Path("/")); //$NON-NLS-1$
+		IPath realWebContentPath = new Path(TestWorkspace.NEW_WEB_MODULE_NAME+IPath.SEPARATOR+"WebContent"); //$NON-NLS-1$
+		root.createLink(realWebContentPath, 0, null); //$NON-NLS-1$
+		
+		IVirtualFolder metaInfFolder = root.getFolder(TestWorkspace.META_INF); 
+		metaInfFolder.create(true, true, null);
+		
+		IVirtualFolder webInfFolder = root.getFolder(TestWorkspace.WEB_INF);
+		webInfFolder.create(true, true, null);
+
+		IFolder realWebContent = TestWorkspace.getTargetProject().getFolder(realWebContentPath); 
+		assertTrue("The "+realWebContent+" directory must exist.", realWebContent.exists()); //$NON-NLS-1$ //$NON-NLS-2$
+		
+		IFolder realMetaInfFolder = realWebContent.getFolder(TestWorkspace.META_INF); 
+		assertTrue("The "+realMetaInfFolder+" directory must exist.", realMetaInfFolder.exists()); //$NON-NLS-1$ //$NON-NLS-2$
+
+		IFolder realWebInfFolder = realWebContent.getFolder(TestWorkspace.WEB_INF); 
+		assertTrue("The "+realWebInfFolder+" directory must exist.", realWebInfFolder.exists()); //$NON-NLS-1$ //$NON-NLS-2$
+
+
+		ModuleCore moduleCore = ModuleCore.getModuleCoreForRead(TestWorkspace.getTargetProject());
+		WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(TestWorkspace.NEW_WEB_MODULE_NAME);
+
+		ComponentResource[] componentResources = wbComponent.findWorkbenchModuleResourceByDeployPath(URI.createURI("/"+TestWorkspace.META_INF)); //$NON-NLS-1$
+//
+//		assertTrue("There should be at least one mapping for virtual path \"/images\".", componentResources.length > 0); //$NON-NLS-1$
+//
+//		ResourceTreeRoot resourceTreeRoot = ResourceTreeRoot.getSourceResourceTreeRoot(wbComponent);
+//		componentResources = resourceTreeRoot.findModuleResources(realImages.getFullPath(), false);
+//		
+//		assertTrue("There should be exactly one Component resource with the source path \"" + realImages.getProjectRelativePath() + "\".", componentResources.length == 1); //$NON-NLS-1$ //$NON-NLS-2$
+//		
+//		assertTrue("The runtime path should match \"/images\".", componentResources[0].getRuntimePath().path().equals("/images")); //$NON-NLS-1$ //$NON-NLS-2$
 
 	} 
 
