@@ -3,7 +3,7 @@
 <plugin
    id="org.eclipse.wst.common.emf"
    name="EMF Utilities"
-   version="0.5.0"
+   version="1.0.0"
    provider-name="IBM"
    class="org.eclipse.wst.common.internal.emf.plugin.EcoreUtilitiesPlugin">
 

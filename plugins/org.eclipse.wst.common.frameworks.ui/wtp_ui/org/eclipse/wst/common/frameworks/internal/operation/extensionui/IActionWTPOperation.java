@@ -23,10 +23,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.jdt.ui.actions.SelectionDispatchAction;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IActionDelegate;
@@ -74,10 +76,7 @@ public class IActionWTPOperation extends WTPOperation {
 			throw new CoreException(new Status(IStatus.WARNING, WTPUIPlugin.PLUGIN_ID, 0, WTPCommonUIResourceHandler.getString("IActionWTPOperation_UI_0"), null)); //$NON-NLS-1$
 
 		final ISelection selection = (IStructuredSelection) getOperationDataModel().getProperty(IActionWTPOperationDataModel.ISTRUCTURED_SELECTION);
-		/*
-		 * ISelectionProvider selectionProvider = (ISelectionProvider)
-		 * getOperationDataModel().getProperty(IActionWTPOperationDataModel.ISTRUCTURED_SELECTION);
-		 */
+		final ISelectionProvider selectionProvider = (ISelectionProvider) getOperationDataModel().getProperty(IActionWTPOperationDataModel.ISELECTION_PROVIDER);
 
 		/*
 		 * if(selectionProvider != null) selection = (selection != null) ? selection :
@@ -96,14 +95,14 @@ public class IActionWTPOperation extends WTPOperation {
 					} else if (action instanceof IViewActionDelegate) {
 						((IViewActionDelegate) action).selectionChanged(action, selection);
 						((IActionDelegate) action).run(action);
-					} else if (action instanceof SelectionDispatchAction) {
+					} /*else if (action instanceof SelectionDispatchAction) {
 						((SelectionDispatchAction) action).update(selection);
 						((SelectionDispatchAction) action).run();
-					} /*
-					   * else if (action instanceof ISelectionChangedListener) {
-					   * ((ISelectionChangedListener)action).selectionChanged(new
-					   * SelectionChangedEvent(selectionProvider, selection)); action.run(); }
-					   */
+					} */
+					  else if (action instanceof ISelectionChangedListener) {
+					   	((ISelectionChangedListener)action).selectionChanged(new SelectionChangedEvent(selectionProvider, selection)); 
+					   	action.run(); 
+					}
 
 
 				} catch (RuntimeException e) {

@@ -1,18 +1,16 @@
-/*******************************************************************************
- * Copyright (c) 2003, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+/***************************************************************************************************
+ * Copyright (c) 2003, 2004 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors:
- * IBM Corporation - initial API and implementation
- *******************************************************************************/
+ * Contributors: IBM Corporation - initial API and implementation
+ **************************************************************************************************/
 /*
  * Created on Oct 28, 2003
  * 
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * To change the template for this generated file go to Window&gt;Preferences&gt;Java&gt;Code
+ * Generation&gt;Code and Comments
  */
 package org.eclipse.wst.common.frameworks.internal.operations;
 
@@ -34,13 +32,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
-
-/**
- * @author jsholl
- * 
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 public abstract class WTPOperationDataModel implements WTPOperationDataModelListener {
 	/**
 	 * An unsettable property used soley to trip validation for nested models. Clients only use this
@@ -98,7 +89,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	}
 
 	/**
-	 * 
+	 *  
 	 */
 	protected void initNestedModels() {
 	}
@@ -109,7 +100,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	}
 
 	/**
-	 * 
+	 *  
 	 */
 	protected void initValidBaseProperties() {
 		addValidBaseProperty(RUN_OPERATION);
@@ -254,9 +245,10 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 			return (String[]) values;
 		return new String[0];
 	}
-	
+
 	/**
 	 * Subclasses may override to provide specific valid property values for the given propertyName.
+	 * 
 	 * @deprecated use doGetValidPropertyDescriptors(String)
 	 * @param propertyName
 	 * @return
@@ -792,7 +784,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 
 	/**
 	 * Remove all propertyValues.
-	 * 
+	 *  
 	 */
 	public void clearAllValues() {
 		if (propertyValues != null)

@@ -42,12 +42,7 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 
 	protected WTPOperationDataModel operationDataModel;
 
-	/**
-	 * @deprecated instead of accessing this variable, call addStatus(IStatus status)
-	 */
-	protected IStatus status;
-
-	OperationStatus opStatus;
+	private OperationStatus opStatus;
 
 	private String id;
 
@@ -77,15 +72,8 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 		this.operationDataModel = operationDataModel;
 	}
 
-	public WTPOperationDataModel getOperationDataModel() {
-		return this.operationDataModel;
-	}
-
-	/**
-	 * @deprecated use addStatus(IStatus status)
-	 */
-	protected void setStatus(IStatus status) {
-		addStatus(status);
+	public final WTPOperationDataModel getOperationDataModel() {
+		return operationDataModel;
 	}
 
 	public IStatus getStatus() {
@@ -115,7 +103,7 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 
 	protected void initilize(IProgressMonitor monitor) {
 		//Making sure the status objects are initialized
-		status = null;
+		//		status = null;
 		opStatus = null;
 	}
 
@@ -197,7 +185,6 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 	}
 
 	public final void doRun(IProgressMonitor pm) throws CoreException, InvocationTargetException, InterruptedException {
-
 		boolean alreadyLocked = operationDataModel == null ? true : operationDataModel.isLocked();
 		boolean operationValidationEnabled = operationDataModel == null ? false : operationDataModel.isOperationValidationEnabled();
 		try {
@@ -206,7 +193,7 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 			}
 			if (operationValidationEnabled) {
 				operationDataModel.setOperationValidationEnabled(false);
-				status = operationDataModel.validateDataModel();
+				IStatus status = operationDataModel.validateDataModel();
 				if (!status.isOK()) {
 					//TODO display something to user and remove System.out
 					System.out.println(WTPResourceHandler.getString("24", new Object[]{status.getMessage()})); //$NON-NLS-1$
@@ -253,7 +240,7 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 	 * 
 	 * @param aStatus
 	 */
-	protected void addStatus(IStatus aStatus) {
+	protected final void addStatus(IStatus aStatus) {
 		if (opStatus == null) {
 			opStatus = new OperationStatus(aStatus.getMessage(), aStatus.getException());
 			opStatus.setSeverity(aStatus.getSeverity());
@@ -325,17 +312,13 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 		return returnStatus;
 	}
 
-	protected WTPOperation getExtendedOperation() {
-		return this;
-	}
+	//	protected WTPOperation getRootExtendedOperation() {
+	//		if (this.getRootExtendedOperation() == null)
+	//			return this;
+	//		return this.getRootExtendedOperation();
+	//	}
 
-	protected WTPOperation getRootExtendedOperation() {
-		if (this.getRootExtendedOperation() == null)
-			return this;
-		return this.getRootExtendedOperation();
-	}
-
-	protected void runNestedDefaultOperation(WTPOperationDataModel model, IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+	protected static final void runNestedDefaultOperation(WTPOperationDataModel model, IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 		WTPOperation op = model.getDefaultOperation();
 		if (op != null)
 			op.run(monitor);

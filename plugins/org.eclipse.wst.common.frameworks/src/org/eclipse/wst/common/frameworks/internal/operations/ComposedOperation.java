@@ -68,7 +68,7 @@ public class ComposedOperation extends WTPOperation {
 			}
 		} finally {
 			if (composedStatus != null)
-				setStatus(composedStatus);
+				addStatus(composedStatus);
 		}
 	}
 }

@@ -10,9 +10,6 @@
  *******************************************************************************/
 /*
  * Created on Aug 26, 2004
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
 
@@ -22,7 +19,7 @@ import java.util.Map;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.jdt.ui.actions.SelectionDispatchAction;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Shell;
@@ -71,7 +68,7 @@ public class PasteActionOperationDataModel extends IActionWTPOperationDataModel 
 	 * @param provider
 	 * @return
 	 */
-	public static WTPOperationDataModel createDataModel(SelectionDispatchAction action, IStructuredSelection selection, ISelectionProvider provider, Shell shell) {
+	public static WTPOperationDataModel createDataModel(Action action, IStructuredSelection selection, ISelectionProvider provider, Shell shell) {
 		WTPOperationDataModel dataModel = new PasteActionOperationDataModel();
 		dataModel.setProperty(IACTION, action);
 		dataModel.setProperty(ISTRUCTURED_SELECTION, selection);

@@ -16,7 +16,6 @@
    </runtime>
    <requires>
       <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.jdt.core"/>
       <import plugin="org.eclipse.core.runtime.compatibility"/>
       <import plugin="com.ibm.wtp.common.util" export="true"/>
    </requires>

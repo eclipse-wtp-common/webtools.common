@@ -23,12 +23,6 @@ import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 
 import com.ibm.wtp.emf.workbench.WorkbenchResourceHelperBase;
 
-/**
- * @author jsholl
- * 
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 public abstract class EditModelOperationDataModel extends WTPOperationDataModel {
 
 	/**
@@ -61,7 +55,7 @@ public abstract class EditModelOperationDataModel extends WTPOperationDataModel 
 		return super.getDefaultProperty(propertyName);
 	}
 
-	public EditModel getEditModelForRead(Object key) {
+	public final EditModel getEditModelForRead(Object key) {
 		EMFWorkbenchContext emfWorkbenchContext = (EMFWorkbenchContext) WorkbenchResourceHelperBase.createEMFContext(getTargetProject(), null);
 		return emfWorkbenchContext.getEditModelForRead(getStringProperty(EDIT_MODEL_ID), key);
 	}

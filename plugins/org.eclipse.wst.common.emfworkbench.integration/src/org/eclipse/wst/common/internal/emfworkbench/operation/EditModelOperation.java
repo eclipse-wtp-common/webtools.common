@@ -28,12 +28,6 @@ import org.eclipse.wst.common.internal.emfworkbench.validateedit.IValidateEditCo
 import com.ibm.wtp.common.UIContextDetermination;
 import com.ibm.wtp.emf.workbench.WorkbenchResourceHelperBase;
 
-/**
- * @author jsholl
- * 
- * To change the template for this generated type comment go to Window>Preferences>Java>Code
- * Generation>Code and Comments
- */
 public abstract class EditModelOperation extends WTPOperation {
 	protected EditModel editModel;
 	protected EMFWorkbenchContext emfWorkbenchContext;
