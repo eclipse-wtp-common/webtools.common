@@ -54,14 +54,11 @@ public class EclipseResourceAdapter extends AdapterImpl implements Adapter {
 		synchronized (this) {
 			if (resource == null) {
 				ComponentResource moduleResource = (ComponentResource) getTarget();
-				IPath sourcePath = moduleResource.getSourcePath()/*.removeFirstSegments(1)*/; // we already have a workspace-relative path
+				IPath sourcePath = moduleResource.getSourcePath();
 				resource = ResourcesPlugin.getWorkspace().getRoot().findMember(sourcePath);
-				if(resource == null) {
-					try {
-						IProject container = StructureEdit.getContainingProject(moduleResource.getComponent().getHandle());
-						resource = container.findMember(sourcePath);
-					} catch (UnresolveableURIException e) {
-					}
+				if(resource == null) { 
+					IProject container = StructureEdit.getContainingProject(moduleResource.getComponent());
+					resource = container.findMember(sourcePath); 
 				}
 				hasSearchFailed = resource == null;
 			}

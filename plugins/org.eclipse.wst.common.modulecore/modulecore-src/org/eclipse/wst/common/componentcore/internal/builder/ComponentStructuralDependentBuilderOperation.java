@@ -117,8 +117,8 @@ public class ComponentStructuralDependentBuilderOperation extends WTPOperation {
 			localWorkbenchModuleOuptutContainer = StructureEdit.getOutputContainerRoot(workbenchModule);
 
 		IPath localWorkbenchModuleOuptutContainerPath = localWorkbenchModuleOuptutContainer.getFullPath();
-		URI deployPath = (URI) depDataModel.getProperty(ComponentStructuralDependentBuilderDataModel.OUTPUT_CONTAINER);
-		return localWorkbenchModuleOuptutContainerPath.append(deployPath.toString()); 
+		IPath deployPath = (IPath) depDataModel.getProperty(ComponentStructuralDependentBuilderDataModel.OUTPUT_CONTAINER);
+		return localWorkbenchModuleOuptutContainerPath.append(deployPath); 
 	}
 
 	/**

@@ -649,6 +649,8 @@ public class StructureEdit implements IEditModelHandler {
 	 * @see WorkbenchComponent#getHandle()
 	 */
 	public WorkbenchComponent findComponentByURI(URI aModuleURI) throws UnresolveableURIException {
+		if(aModuleURI.scheme() == null && aModuleURI.segmentCount() == 1)
+			return findComponentByName(aModuleURI.segment(0));
 		ModuleURIUtil.ensureValidFullyQualifiedModuleURI(aModuleURI);
 		String projectName = aModuleURI.segment(ModuleURIUtil.ModuleURI.PROJECT_NAME_INDX);
 		String moduleName = aModuleURI.segment(ModuleURIUtil.ModuleURI.MODULE_NAME_INDX);
@@ -699,9 +701,21 @@ public class StructureEdit implements IEditModelHandler {
 	 *         directly by the current ModuleCore
 	 */
 	public boolean isLocalDependency(ReferencedComponent aDependentModule) {
-		String localProjectName = structuralModel.getProject().getName();
-		String dependentProjectName = aDependentModule.getHandle().segment(ModuleURIUtil.ModuleURI.PROJECT_NAME_INDX);
-		return localProjectName.equals(dependentProjectName);
+		URI dependentHandle = aDependentModule.getHandle();
+		// with no scheme and a simple name, the referenced component must be local
+		if(dependentHandle.scheme() == null && dependentHandle.segmentCount() == 1)  
+			return true; 
+		try {
+
+			String localProjectName = structuralModel.getProject().getName();
+			if(ModuleURIUtil.ensureValidFullyQualifiedModuleURI(dependentHandle, false)) {
+				String dependentProjectName = aDependentModule.getHandle().segment(ModuleURIUtil.ModuleURI.PROJECT_NAME_INDX);
+				return localProjectName.equals(dependentProjectName);
+			}
+		} catch (UnresolveableURIException e) {
+			// Ignore
+		}
+		return false;
 	}
 
 	/**
