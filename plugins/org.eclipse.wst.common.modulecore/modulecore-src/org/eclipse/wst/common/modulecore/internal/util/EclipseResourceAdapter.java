@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.modulecore.internal.util;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
@@ -17,8 +18,10 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
-import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 import org.eclipse.wst.common.modulecore.ComponentResource;
+import org.eclipse.wst.common.modulecore.ModuleCore;
+import org.eclipse.wst.common.modulecore.ModuleCorePackage;
+import org.eclipse.wst.common.modulecore.UnresolveableURIException;
 
 /**
  * <p>
@@ -51,8 +54,15 @@ public class EclipseResourceAdapter extends AdapterImpl implements Adapter {
 		synchronized (this) {
 			if (resource == null) {
 				ComponentResource moduleResource = (ComponentResource) getTarget();
-				IPath workspacePath = new Path(moduleResource.getSourcePath().path())/*.removeFirstSegments(1)*/; // we already have a workspace-relative path
-				resource = ResourcesPlugin.getWorkspace().getRoot().findMember(workspacePath);
+				IPath sourcePath = new Path(moduleResource.getSourcePath().path())/*.removeFirstSegments(1)*/; // we already have a workspace-relative path
+				resource = ResourcesPlugin.getWorkspace().getRoot().findMember(sourcePath);
+				if(resource == null) {
+					try {
+						IProject container = ModuleCore.getContainingProject(moduleResource.getComponent().getHandle());
+						resource = container.findMember(sourcePath);
+					} catch (UnresolveableURIException e) {
+					}
+				}
 				hasSearchFailed = resource == null;
 			}
 		}

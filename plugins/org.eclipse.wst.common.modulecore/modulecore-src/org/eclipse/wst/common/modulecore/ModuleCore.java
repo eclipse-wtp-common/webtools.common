@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -26,6 +27,9 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.wst.common.modulecore.internal.impl.ModuleURIUtil;
+import org.eclipse.wst.common.modulecore.internal.impl.PlatformURLModuleConnection;
+import org.eclipse.wst.common.modulecore.internal.resources.VirtualContainer;
+import org.eclipse.wst.common.modulecore.internal.resources.VirtualFolder;
 import org.eclipse.wst.common.modulecore.internal.util.EclipseResourceAdapter;
 
 /**
@@ -65,6 +69,7 @@ import org.eclipse.wst.common.modulecore.internal.util.EclipseResourceAdapter;
 public class ModuleCore implements IEditModelHandler {
 
 	public static final Class ADAPTER_TYPE = ModuleCore.class;
+	public static final int DELETE_METAMODEL_ONLY = 0x100000; 
 
 	static final String DEPLOYABLES_ROOT = ".deployables/"; //$NON-NLS-1$
 	static String MODULE_META_FILE_NAME = ".wtpmodules"; //$NON-NLS-1$
@@ -265,6 +270,19 @@ public class ModuleCore implements IEditModelHandler {
 	 */
 	public static String getDeployedName(URI aFullyQualifiedModuleURI) throws UnresolveableURIException {
 		return ModuleURIUtil.getDeployedName(aFullyQualifiedModuleURI);
+	}
+	
+	public static IContainer create(IProject aProject, String aName) {
+		return new VirtualContainer(aProject, aName, new Path("/")); //$NON-NLS-1$
+	}
+	
+	public static IFolder create(IFolder aFolder, String aComponentName, IPath aRuntimePath) {
+		return new VirtualFolder(aFolder, aComponentName, aRuntimePath);
+	}
+	
+	public static URI createComponentURI(IProject aContainingProject, String aComponentName) {
+		return URI.createURI(PlatformURLModuleConnection.MODULE_PROTOCOL+IPath.SEPARATOR+PlatformURLModuleConnection.RESOURCE_MODULE
+								+aContainingProject.getName()+IPath.SEPARATOR+aComponentName);
 	}
 
 	protected ModuleCore(ModuleCoreNature aNature, boolean toAccessAsReadOnly) {

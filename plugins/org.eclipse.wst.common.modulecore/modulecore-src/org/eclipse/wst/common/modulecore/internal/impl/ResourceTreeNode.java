@@ -1,13 +1,11 @@
-/*******************************************************************************
- * Copyright (c) 2003, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+/***************************************************************************************************
+ * Copyright (c) 2003, 2004 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors:
- * IBM Corporation - initial API and implementation
- *******************************************************************************/
+ * Contributors: IBM Corporation - initial API and implementation
+ **************************************************************************************************/
 package org.eclipse.wst.common.modulecore.internal.impl;
 
 import java.util.ArrayList;
@@ -23,8 +21,10 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.ComponentResource;
+import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 import org.eclipse.wst.common.modulecore.internal.util.IPathProvider;
 
 /**
@@ -77,17 +77,17 @@ public class ResourceTreeNode {
 		if (aPath.segmentCount() > 0) {
 			child = findChild(aPath.segment(0), toCreateChildIfNecessary);
 			if (child == null)
-				return null; 
-			if(aPath.segmentCount() == 1) 
-				return child; 
-			child = child.findChild(aPath.removeFirstSegments(1), toCreateChildIfNecessary); 
-			
+				return null;
+			if (aPath.segmentCount() == 1)
+				return child;
+			child = child.findChild(aPath.removeFirstSegments(1), toCreateChildIfNecessary);
+
 		}
 		return child;
 	}
 
 	public ResourceTreeNode findChild(String aPathSegment) {
-		if(aPathSegment == null || aPathSegment.length() == 0)
+		if (aPathSegment == null || aPathSegment.length() == 0)
 			return this;
 		return findChild(aPathSegment, false);
 	}
@@ -95,57 +95,65 @@ public class ResourceTreeNode {
 	public ResourceTreeNode findChild(String aPathSegment, boolean toCreateChildIfNecessary) {
 		ResourceTreeNode childNode = (ResourceTreeNode) children.get(aPathSegment);
 		if (childNode == null && toCreateChildIfNecessary)
-				childNode = addChild(aPathSegment);
+			childNode = addChild(aPathSegment);
 		return childNode;
 	}
 
 	public ComponentResource[] findModuleResources(IPath aPath, boolean toCreateChildIfNecessary) {
 
 		Set foundModuleResources = findModuleResourcesSet(aPath, toCreateChildIfNecessary);
-		if(foundModuleResources.size() == 0)
+		if (foundModuleResources.size() == 0)
 			return NO_MODULE_RESOURCES;
-		return (ComponentResource[])foundModuleResources.toArray(new ComponentResource[foundModuleResources.size()]);
+		return (ComponentResource[]) foundModuleResources.toArray(new ComponentResource[foundModuleResources.size()]);
 	}
 
 	public boolean hasModuleResources() {
 		return moduleResources.size() > 0;
 	}
-	
+
 	public ComponentResource[] getModuleResources() {
-		return (ComponentResource[])moduleResources.toArray(new ComponentResource[moduleResources.size()]);
+		return (ComponentResource[]) moduleResources.toArray(new ComponentResource[moduleResources.size()]);
 	}
-	
+
 	private Set findModuleResourcesSet(IPath aPath, boolean toCreateChildIfNecessary) {
 
 		if (aPath.segmentCount() == 0) {
 			Set resources = aggregateResources(new HashSet());
 			return resources;
-		}		
+		}
 		ResourceTreeNode child = findChild(aPath.segment(0), toCreateChildIfNecessary);
-		if (child == null) 
+		if (child == null)
 			return findMatchingVirtualPathsSet(aPath);
 		Set foundResources = new HashSet();
 		foundResources.addAll(child.findModuleResourcesSet(aPath.removeFirstSegments(1), toCreateChildIfNecessary));
 		foundResources.addAll(findMatchingVirtualPathsSet(aPath));
 		return foundResources;
-	} 
-	
+	}
+
 	private Set findMatchingVirtualPathsSet(IPath aPath) {
-		if(hasModuleResources()) {
+		if (hasModuleResources()) {
 			ComponentResource moduleResource = null;
 			IResource eclipseResource = null;
+			IResource foundResource = null;
 			IContainer eclipseContainer = null;
-			for(Iterator resourceIter = moduleResources.iterator(); resourceIter.hasNext(); ) {
+			Set resultSet = new HashSet();
+			for (Iterator resourceIter = moduleResources.iterator(); resourceIter.hasNext();) {
 				moduleResource = (ComponentResource) resourceIter.next();
 				eclipseResource = ModuleCore.getEclipseResource(moduleResource);
-				if(eclipseResource.getType() == IResource.FOLDER) {
-					eclipseContainer = (IContainer)eclipseResource;
-					if(eclipseContainer.getFile(aPath).exists() || eclipseContainer.getFolder(aPath).exists())
-						return Collections.singleton(moduleResource);
+				if (eclipseResource.getType() == IResource.FOLDER) {
+					eclipseContainer = (IContainer) eclipseResource;
+
+					ComponentResource newResource = ModuleCorePackage.eINSTANCE.getModuleCoreFactory().createComponentResource();
+					if ((foundResource = eclipseContainer.findMember(aPath)) != null) {
+						newResource.setComponent(moduleResource.getComponent());
+						newResource.setRuntimePath(URI.createURI(aPath.toString()));
+						newResource.setSourcePath(URI.createURI(foundResource.getProjectRelativePath().toString()));
+						resultSet.add(newResource);
+					}
 				}
-					
 			}
-		}  
+			return resultSet.size() > 0 ? resultSet : Collections.EMPTY_SET;
+		}
 		return Collections.EMPTY_SET;
 	}
 
@@ -170,10 +178,10 @@ public class ResourceTreeNode {
 
 	protected ResourceTreeNode addChild(String aPathSegment) {
 		ResourceTreeNode newChild = null;
-		if ( (newChild = (ResourceTreeNode) children.get(aPathSegment)) == null) {
+		if ((newChild = (ResourceTreeNode) children.get(aPathSegment)) == null) {
 			newChild = new ResourceTreeNode(aPathSegment, this, pathProvider);
 			children.put(newChild.getPathSegment(), newChild);
-		}  
+		}
 		return newChild;
 	}
 
@@ -181,11 +189,11 @@ public class ResourceTreeNode {
 		return (ResourceTreeNode) children.remove(aPathSegment);
 	}
 
-	/* package */ void addModuleResource(ComponentResource aModuleResource) {
+	/* package */void addModuleResource(ComponentResource aModuleResource) {
 		moduleResources.add(aModuleResource);
 	}
-	
-	/* package */ IPathProvider getPathProvider() { 
+
+	/* package */IPathProvider getPathProvider() {
 		return pathProvider;
 	}
 }
