@@ -56,6 +56,7 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 
 	protected String currentProperty;
 	protected Widget currentWidget;
+	protected Widget currentWidgetFromEvent; //TODO M4 see if this should be set with for listeners
 	protected boolean ignoreModifyEvent = false;
 
 	private class ModifyTextListener implements ModifyListener {
@@ -80,16 +81,21 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 			Combo combo = (Combo) e.getSource();
 			if (currentWidget == combo)
 				return;
-			String propertyName = (String) widgetToPropertyHash.get(combo);
-			WTPPropertyDescriptor[] descriptors = dataModel.getValidPropertyDescriptors(propertyName);
-			String description = combo.getText();
-			for (int i = 0; i < descriptors.length; i++) {
-				if (description.equals(descriptors[i].getPropertyDescription())) {
-					setProperty(propertyName, descriptors[i].getPropertyValue());
-					return;
+			try {
+				currentWidgetFromEvent = combo;
+				String propertyName = (String) widgetToPropertyHash.get(combo);
+				WTPPropertyDescriptor[] descriptors = dataModel.getValidPropertyDescriptors(propertyName);
+				String description = combo.getText();
+				for (int i = 0; i < descriptors.length; i++) {
+					if (description.equals(descriptors[i].getPropertyDescription())) {
+						setProperty(propertyName, descriptors[i].getPropertyValue());
+						return;
+					}
 				}
+				setProperty(propertyName, combo.getText());
+			} finally {
+				currentWidgetFromEvent = null;
 			}
-			setProperty(propertyName, combo.getText());
 		}
 
 		public void widgetSelected(SelectionEvent e) {
@@ -194,7 +200,7 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 			try {
 				dataModel.setIgnorePropertyChanges(true);
 				currentWidget = (Widget) propertyToWidgetHash.get(propertyName);
-				if (currentWidget != null) {
+				if (currentWidget != null && currentWidget != currentWidgetFromEvent) {
 					ignoreModifyEvent = true;
 					try {
 						if (currentWidget instanceof Text)
