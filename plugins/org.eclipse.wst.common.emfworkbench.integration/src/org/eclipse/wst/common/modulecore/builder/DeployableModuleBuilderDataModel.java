@@ -1,7 +1,7 @@
 package org.eclipse.wst.common.modulecore.builder;
 
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
+import org.eclipse.core.internal.resources.Project;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
@@ -17,7 +17,7 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
 	 */
 	public static final String MODULE_STRUCTURAL_MODEL = "DeployableModuleDataModel.MODULE_STRUCTURAL_MODEL"; //$NON-NLS-1$
 	/**
-	 * Required, type PATH
+	 * Required, type project relative URI
 	 */
 	public static final String OUTPUT_CONTAINER = "DeployableModuleDataModel.OUTPUT_CONTAINER"; //$NON-NLS-1$
 	/**
@@ -85,11 +85,11 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
      */
     private Object populateOutputContainer() {
         WorkbenchModule wbModule = (WorkbenchModule)getProperty(WORKBENCH_MODULE);
-        IPath path = null;
+        URI uri = null;
         if(wbModule != null){
-            path = new Path(ModuleCore.INSTANCE.getOutputContainerRoot() + "/" + wbModule.getDeployedName());
+            uri = ModuleCore.INSTANCE.getOutputContainerRoot(wbModule, (Project)getProperty(PROJECT));
         }
-        return path;
+        return uri;
     }
 
     /* (non-Javadoc)

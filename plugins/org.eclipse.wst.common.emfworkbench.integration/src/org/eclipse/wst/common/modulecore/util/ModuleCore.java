@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.internal.resources.Project;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -123,7 +124,7 @@ public class ModuleCore {
 		return getProjectModules(aStructuralModel).findWorkbenchModule(aModuleName);
 	}	
 	
-	public String getOutputContainerRoot() {
-	    return ".deployables"; //$NON-NLS-1$
+	public URI getOutputContainerRoot(WorkbenchModule wbModule, IProject proj) {
+	    return URI.createURI(proj.getProjectRelativePath().toString()+".deployables/"+wbModule.getDeployedName()); //$NON-NLS-1$
 	} 
 }
