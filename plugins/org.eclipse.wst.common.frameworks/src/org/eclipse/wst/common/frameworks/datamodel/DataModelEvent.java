@@ -11,32 +11,39 @@
 package org.eclipse.wst.common.frameworks.datamodel;
 
 /**
+ * <p>
  * This event is used to communicate property changes from IDataModels to their IDataModelListeners.
- * 
+ * </p>
+ * <p>
  * This class may be instantiated; it is not intended to be subclassed.
- * 
- * This class is EXPERIMENTAL and is subject to substantial changes.
+ * </p>
  * 
  * @see org.eclipse.wst.common.frameworks.datamodel.IDataModel#addListener(IDataModelListener)
  * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelListener
+ * 
+ * @since 1.0
  */
 public final class DataModelEvent {
 
 	/**
+	 * <p>
 	 * A flag used to specify the property's value has changed.
+	 * </p>
 	 * 
 	 * @see IDataModel#getProperty(String)
 	 * @see #getFlag()
 	 */
 	public static final int VALUE_CHG = 1;
 
-	/*
-	 * Internal
+	/**
+	 * Internal. Clients should not use.
 	 */
 	static final int DEFAULT_CHG = 2;
 
 	/**
+	 * <p>
 	 * A flag used to specify the property's enablment has changed.
+	 * </p>
 	 * 
 	 * @see IDataModel#isPropertyEnabled(String)
 	 * @see #getFlag()
@@ -44,7 +51,9 @@ public final class DataModelEvent {
 	public static final int ENABLE_CHG = 3;
 
 	/**
+	 * <p>
 	 * A flag used to specify the property's valid values have changed.
+	 * </p>
 	 * 
 	 * @see IDataModel#getValidPropertyDescriptors(String)
 	 * @see #getFlag()
@@ -57,10 +66,12 @@ public final class DataModelEvent {
 	private int flag;
 
 	/**
-	 * Constructor for WTPOperationDataModelEvent
+	 * <p>
+	 * Constructor for DataModelEvent
+	 * </p>
 	 * 
 	 * @param dataModel
-	 *            the dataModel whose property has changed
+	 *            the IDataModel whose property has changed
 	 * @param propertyName
 	 *            the name of the changed property
 	 * @param flag
@@ -73,16 +84,20 @@ public final class DataModelEvent {
 	}
 
 	/**
-	 * Returns the dataModel whose property has changed.
+	 * <p>
+	 * Returns the IDataModel whose property has changed.
+	 * </p>
 	 * 
-	 * @return the dataModel whose property has changed.
+	 * @return the IDataModel whose property has changed.
 	 */
 	public IDataModel getDataModel() {
 		return dataModel;
 	}
 
 	/**
+	 * <p>
 	 * Returns the name of the changed property.
+	 * </p>
 	 * 
 	 * @return the name of the changed property.
 	 */
@@ -91,12 +106,14 @@ public final class DataModelEvent {
 	}
 
 	/**
+	 * <p>
 	 * Returns the flag indicating the event type. Valid types are:
 	 * <ul>
 	 * <li><code>PROPERTY_CHG</code></li>
 	 * <li><code>VALID_VALUES_CHG</code></li>
 	 * <li><code>ENABLE_CHG</code></li>
 	 * </ul>
+	 * </p>
 	 * 
 	 * @return the flag indicating the event type.
 	 */
@@ -105,8 +122,10 @@ public final class DataModelEvent {
 	}
 
 	/**
-	 * Convenience method to return the dataModel's property. This is equavalent to:
+	 * <p>
+	 * Convenience method to return the IDataModel's property. This is equavalent to:
 	 * <code>getDataModel().getProperty(getPropertyName())</code>.
+	 * </p>
 	 * 
 	 * @return the dataModel's property.
 	 * @see IDataModel#getProperty(String)
@@ -116,8 +135,10 @@ public final class DataModelEvent {
 	}
 
 	/**
-	 * Convenience method to return the dataModel property's enablement state. This is equavalent
+	 * <p>
+	 * Convenience method to return the IDataModel property's enablement state. This is equavalent
 	 * to: <code>getDataModel().isPropertyEnabled(getPropertyName())</code>.
+	 * </p>
 	 * 
 	 * @return the dataModel property's enablement state.
 	 * @see IDataModel#isPropertyEnabled(String)
@@ -127,8 +148,10 @@ public final class DataModelEvent {
 	}
 
 	/**
-	 * Convenience method to return the dataModel property's valid property descriptors. This is
+	 * <p>
+	 * Convenience method to return the IDataModel property's valid property descriptors. This is
 	 * equavalent to: <code>getDataModel().getValidPropertyDescriptors(getPropertyName())</code>.
+	 * </p>
 	 * 
 	 * @return the dataModel property's valid property descriptors.
 	 * @see IDataModel#getValidPropertyDescriptors(String)

@@ -471,7 +471,7 @@ public interface IDataModel {
 
 	/**
 	 * <p>
-	 * Iterates over all base properties
+	 * Iterates over all base properties and calls v
 	 * 
 	 * @return
 	 */

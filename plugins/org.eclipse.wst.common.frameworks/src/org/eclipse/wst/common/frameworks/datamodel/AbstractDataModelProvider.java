@@ -15,21 +15,40 @@ import java.util.List;
 import org.eclipse.core.runtime.IStatus;
 
 /**
+ * <p>
  * A default implementation of <code>IDataModelProvider</code>.
+ * </p>
  * 
  * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider
+ * @since 1.0
  */
 public abstract class AbstractDataModelProvider implements IDataModelProvider {
 
+	/**
+	 * <p>
+	 * The IDataModel for this provider.
+	 * </p>
+	 */
 	protected IDataModel model = null;
 
-	protected String[] combineProperties(String[] props1, String[] props2)	{
+	/**
+	 * <p>
+	 * A utility method for combining property arrays.
+	 * </p>
+	 * 
+	 * @param props1
+	 *            a first property array
+	 * @param props2
+	 *            a second property array
+	 * @return a new property array containing the contents of the first and second property arrays.
+	 */
+	protected static String[] combineProperties(String[] props1, String[] props2) {
 		String[] properties = new String[props1.length + props2.length];
 		System.arraycopy(props1, 0, properties, 0, props1.length);
 		System.arraycopy(props2, 0, properties, props1.length, props2.length);
-		return properties;			
+		return properties;
 	}
-	
+
 	public void init() {
 	}
 

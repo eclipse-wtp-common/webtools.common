@@ -10,7 +10,25 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel;
 
+/**
+ * <p>
+ * The interface required when listening for DataModelEvents from an IDataModel.
+ * </p>
+ * 
+ * @see org.eclipse.wst.common.frameworks.datamodel.IDataModel#addListener(IDataModelListener)
+ * @see org.eclipse.wst.common.frameworks.datamodel.DataModelEvent
+ * 
+ * @since 1.0
+ */
 public interface IDataModelListener {
 
+	/**
+	 * <p>
+	 * Sent when DataModelEvents occur.
+	 * </p>
+	 * 
+	 * @param event
+	 *            the DataModelEvent
+	 */
 	public void propertyChanged(DataModelEvent event);
 }
