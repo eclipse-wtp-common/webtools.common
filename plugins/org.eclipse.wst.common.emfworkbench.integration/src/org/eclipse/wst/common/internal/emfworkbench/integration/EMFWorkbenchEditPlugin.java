@@ -23,12 +23,6 @@ import org.eclipse.wst.common.emf.utilities.ExtendedEcoreUtil;
 import org.eclipse.wst.common.internal.emfworkbench.EMFAdapterFactory;
 import org.eclipse.wst.common.internal.emfworkbench.PassthruResourceSet;
 import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
-import org.eclipse.wst.common.modulecore.ArtifactEditModel;
-import org.eclipse.wst.common.modulecore.ModuleStructuralModel;
-import org.eclipse.wst.common.modulecore.WTPModulesInit;
-import org.eclipse.wst.common.modulecore.impl.PlatformURLModuleConnection;
-import org.eclipse.wst.common.modulecore.util.ArtifactEditAdapterFactory;
-import org.eclipse.wst.common.modulecore.util.ModuleCoreEclipseAdapterFactory;
 import org.osgi.framework.BundleContext;
 
 import com.ibm.wtp.emf.workbench.WorkbenchResourceHelperBase;
@@ -78,11 +72,6 @@ public class EMFWorkbenchEditPlugin extends Plugin {
 
 		IAdapterManager manager = Platform.getAdapterManager();
 		manager.registerAdapters(new EMFAdapterFactory(), EObject.class);
-		manager.registerAdapters(new ModuleCoreEclipseAdapterFactory(), ModuleStructuralModel.class);
-		manager.registerAdapters(new ArtifactEditAdapterFactory(), ArtifactEditModel.class);
-		
-		PlatformURLModuleConnection.startup();
-		WTPModulesInit.init();
 	}
 
 	public static ResourceSet createIsolatedResourceSet(IProject project) {

@@ -56,13 +56,6 @@
          </run>
       </application>
    </extension>
-   <extension
-         point="org.eclipse.emf.ecore.generated_package">
-      <package
-            uri="modulecore.xmi"
-            class="org.eclipse.wst.common.modulecore.ModuleCorePackage">
-      </package>
-   </extension>
    
    <extension
         id="emfValidationHandler"
@@ -74,50 +67,4 @@
         selectionType="org.eclipse.emf.ecore.EObject"/>
    </extension>
    
-   <!--============================-->
-   <!-- Module Core Project Nature Contributions-->
-   <!--============================-->
-   <extension
-         id="ModuleCoreNature"
-         name="Web Properties"
-         point="org.eclipse.core.resources.natures">
-      <runtime>
-         <run
-               class="org.eclipse.wst.common.modulecore.ModuleCoreNature">
-         </run>
-      </runtime>
-   </extension>
-   <extension
-         point="org.eclipse.wst.common.emfworkbench.integration.editModel">
-      <editModel
-            editModelID="org.eclipse.wst.modulecore.structuralModel"
-            factoryClass="org.eclipse.wst.common.modulecore.ModuleStructuralModelFactory">
-         <editModelResource
-               autoload="false"
-               URI=".wtpmodules"/>
-      </editModel> 
-   </extension>
-   <!--============================-->
-   <!-- Deployable Module Builder Contribution-->
-   <!--============================-->
-   <extension
-         id="DeployableModuleBuilder"
-         name="Deployable Module Builder"
-         point="org.eclipse.core.resources.builders">
-      <builder>
-         <run
-               class="org.eclipse.wst.common.modulecore.builder.DeployableModuleBuilder">
-         </run>
-      </builder>
-   </extension>
-      <extension
-         id="LocalDependencyResolver"
-         name="Local Dependency Resolver"
-         point="org.eclipse.core.resources.builders">
-      <builder>
-         <run
-               class="org.eclipse.wst.common.modulecore.builder.LocalDependencyResolver">
-         </run>
-      </builder>
-   </extension>
 </plugin>

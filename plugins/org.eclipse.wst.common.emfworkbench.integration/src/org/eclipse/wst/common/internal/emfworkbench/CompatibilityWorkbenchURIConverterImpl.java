@@ -23,7 +23,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.internal.emf.resource.CompatibilityURIConverter;
-import org.eclipse.wst.common.modulecore.impl.PlatformURLModuleConnection;
 
 import com.ibm.wtp.emf.workbench.ResourceSetWorkbenchSynchronizer;
 import com.ibm.wtp.emf.workbench.WorkbenchResourceHelperBase;
@@ -73,24 +72,6 @@ public class CompatibilityWorkbenchURIConverterImpl extends WorkbenchURIConverte
 	 */
 	public CompatibilityWorkbenchURIConverterImpl(IContainer anInputContainer, IContainer anOutputContainer, ResourceSetWorkbenchSynchronizer aSynchronizer) {
 		super(anInputContainer, anOutputContainer, aSynchronizer);
-	}
-	
-	/* (non-Javadoc)
-	 * @see com.ibm.wtp.emf.workbench.WorkbenchURIConverterImpl#normalize(org.eclipse.emf.common.util.URI)
-	 */
-	public URI normalize(URI aURI) {
-		URI normalizedURI = null;
-		if(PlatformURLModuleConnection.MODULE.equals(aURI.scheme())) { 		
-			try {
-				normalizedURI = PlatformURLModuleConnection.resolve(aURI);
-			} catch(IOException ioe) {} 
-		} else {
-			normalizedURI = super.normalize(aURI);
-		}
-		if(normalizedURI.scheme() == null || normalizedURI.scheme().length() == 0) {
-			normalizedURI = URI.createPlatformResourceURI(getInputContainer().getFullPath().append(normalizedURI.toString()).toString());
-		}
-		return normalizedURI;
 	}
 
 	/**

@@ -6,6 +6,8 @@
  */
 package org.eclipse.wst.common.modulecore;
 
+import org.eclipse.wst.common.modulecore.internal.impl.ModuleStructureEvent;
+
 
 public interface IModuleStructureListener {
     

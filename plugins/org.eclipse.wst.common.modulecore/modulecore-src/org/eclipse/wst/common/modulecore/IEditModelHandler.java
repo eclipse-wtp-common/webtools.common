@@ -14,12 +14,48 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
  * <p>
- * The following class is experimental until fully documented.
- * </p>
+ * Provides a standard interface for managing the lifecycle of 
+ * an Edit Model. Clients which use instances of this interface
+ * are required to invoke {@see #dispose()} when they have 
+ * completed their usage. Once clients have disposed that instance,
+ * they will not be able to invoke {@see #save(IProgressMonitor)} or
+ * {@see #saveIfNecessary(IProgressMonitor)} and should be
+ * wary of using any model objects acquired from the handler,
+ * as they may become stale. 
+ * </p> 
  */
 public interface IEditModelHandler {
 
+	/**
+	 * <p>
+	 * Force a save of the underlying edit model and keep
+	 * track of progress using the supplied progress monitor.
+	 * Clients should avoid calling this version of 
+	 * save unless they are certain they require the 
+	 * model to be saved. Clients are encouraged to use
+	 * {@see #saveIfNecessary(IProgressMonitor)} instead.
+	 * </p>
+	 * @param aMonitor A valid progress monitor or null
+	 */
 	void save(IProgressMonitor aMonitor);
+	
+	/**
+	 * <p>
+	 * Save the underlying edit model, if no other consumers
+	 * are using the edit model, and keep track of progress 
+	 * using the supplied progress monitor. This version of 
+	 * save will only save if the underlying edit model 
+	 * is not shared with other consumers. 
+	 * </p>
+	 * @param aMonitor A valid progress monitor or null
+	 */
 	void saveIfNecessary(IProgressMonitor aMonitor);
+	
+	/**
+	 * <p>
+	 * Clients must invoke this method when they have
+	 * finished using the handler.
+	 * </p>
+	 */
 	void dispose();
 }

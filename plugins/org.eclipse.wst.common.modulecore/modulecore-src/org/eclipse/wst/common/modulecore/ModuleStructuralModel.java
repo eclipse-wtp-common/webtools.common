@@ -8,6 +8,8 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
+import org.eclipse.wst.common.modulecore.internal.impl.WTPModulesResource;
+import org.eclipse.wst.common.modulecore.internal.impl.WTPModulesResourceFactory;
 
 public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	

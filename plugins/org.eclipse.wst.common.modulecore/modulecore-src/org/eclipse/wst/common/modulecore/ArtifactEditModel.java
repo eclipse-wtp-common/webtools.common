@@ -21,7 +21,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import org.eclipse.wst.common.modulecore.internal.impl.PlatformURLModuleConnection;
-import org.eclipse.wst.common.modulecore.internal.util.ModuleCore;
 
 /**
  * <p>

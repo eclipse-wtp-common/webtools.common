@@ -8,27 +8,24 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/ 
-package org.eclipse.wst.common.modulecore.util;
+package org.eclipse.wst.common.modulecore.internal.impl;
 
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.wst.common.internal.emf.resource.FileNameResourceFactoryRegistry;
 
 /**
  * <p>
  * The following class is experimental until fully documented.
  * </p>
  */
-public class SourcePathProvider implements IPathProvider {
-	
-	public static IPathProvider INSTANCE = new SourcePathProvider();
-	
-	private SourcePathProvider() {} 
+public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry {
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.wst.common.modulecore.util.IPathProvider#getPath(org.eclipse.wst.common.modulecore.WorkbenchModule)
-	 */
-	public URI getPath(WorkbenchModuleResource aModuleResource) {
-		return aModuleResource.getSourcePath();
+	public static final WTPResourceFactoryRegistry INSTANCE = new WTPResourceFactoryRegistry();
+	
+	public Resource.Factory delegatedGetFactory(URI uri) {
+		if (WTPResourceFactoryRegistry.INSTANCE == this)
+			return super.delegatedGetFactory(uri);
+		return WTPResourceFactoryRegistry.INSTANCE.getFactory(uri);	
 	}
-
 }

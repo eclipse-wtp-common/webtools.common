@@ -8,14 +8,14 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/ 
-package org.eclipse.wst.common.modulecore;
+package org.eclipse.wst.common.modulecore.internal.impl;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.internal.emf.resource.Renderer;
 import org.eclipse.wst.common.internal.emf.resource.Translator;
 import org.eclipse.wst.common.internal.emf.resource.TranslatorResource;
 import org.eclipse.wst.common.internal.emf.resource.TranslatorResourceImpl;
-import org.eclipse.wst.common.modulecore.util.WTPModulesTranslator;
+import org.eclipse.wst.common.modulecore.internal.util.WTPModulesTranslator;
 
 /**
  * <p>

@@ -8,7 +8,7 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.modulecore;
+package org.eclipse.wst.common.modulecore.internal.impl;
 
 import java.io.FileNotFoundException;
 import java.net.URL;

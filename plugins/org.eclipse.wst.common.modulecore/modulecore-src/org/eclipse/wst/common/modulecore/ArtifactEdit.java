@@ -11,7 +11,6 @@
 package org.eclipse.wst.common.modulecore;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.wst.common.modulecore.internal.util.ModuleCore;
 
 /**
  * <p>
@@ -39,7 +38,7 @@ public class ArtifactEdit {
 		try {
 			IProject project = ModuleCore.getContainingProject(aModule.getHandle());
 			ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(project);
-			return nature.getModuleEditModelForRead(aModule.getHandle(), anAccessorKey);
+			return nature.getArtifactEditModelForRead(aModule.getHandle(), anAccessorKey);
 		} catch (UnresolveableURIException uue) {
 		}
 		return null;
@@ -49,7 +48,7 @@ public class ArtifactEdit {
 		try {
 			IProject project = ModuleCore.getContainingProject(aModule.getHandle());
 			ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(project);
-			return nature.getModuleEditModelForWrite(aModule.getHandle(), anAccessorKey);
+			return nature.getArtifactEditModelForWrite(aModule.getHandle(), anAccessorKey);
 		} catch (UnresolveableURIException uue) {
 		}
 		return null;

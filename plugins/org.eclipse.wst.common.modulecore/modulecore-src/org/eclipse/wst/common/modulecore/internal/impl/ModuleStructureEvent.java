@@ -4,26 +4,28 @@
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package org.eclipse.wst.common.modulecore;
+package org.eclipse.wst.common.modulecore.internal.impl;
 
 import java.util.EventObject;
+
+import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
 
 //in progress...
 
 public class ModuleStructureEvent extends EventObject {
-    private ModuleResource[] resources;
+    private WorkbenchModuleResource[] resources;
 
     public ModuleStructureEvent(Object source) {
         super(source);
     }
     
-    public ModuleStructureEvent(Object source, ModuleResource[] moduleResources) {
+    public ModuleStructureEvent(Object source, WorkbenchModuleResource[] theModuleResources) {
         super(source);
-        resources = moduleResources;
+        resources = theModuleResources;
         
     }
 
-    public ModuleResource[] getMoudleResources() {
+    public WorkbenchModuleResource[] getMoudleResources() {
         return resources;
     }
   

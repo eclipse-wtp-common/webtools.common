@@ -8,7 +8,7 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/ 
-package org.eclipse.wst.common.modulecore;
+package org.eclipse.wst.common.modulecore.internal.impl;
 
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.wst.common.emf.utilities.ExtendedEcoreUtil;
@@ -16,6 +16,7 @@ import org.eclipse.wst.common.internal.emf.resource.RendererFactory;
 import org.eclipse.wst.common.internal.emf.utilities.DOMUtilities;
 import org.eclipse.wst.common.internal.emf.utilities.EncoderDecoderRegistry;
 import org.eclipse.wst.common.internal.emf.utilities.PasswordEncoderDecoder;
+import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 
 
 /**

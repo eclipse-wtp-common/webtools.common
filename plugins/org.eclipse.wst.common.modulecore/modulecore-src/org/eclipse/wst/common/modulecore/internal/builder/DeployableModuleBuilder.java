@@ -23,8 +23,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
-import org.eclipse.wst.common.modulecore.IModuleConstants;
-import org.eclipse.wst.common.modulecore.internal.util.ModuleCore;
+import org.eclipse.wst.common.modulecore.ModuleCore;
+import org.eclipse.wst.common.modulecore.internal.util.IModuleConstants;
 
 public class DeployableModuleBuilder extends IncrementalProjectBuilder implements IModuleConstants {
     /**

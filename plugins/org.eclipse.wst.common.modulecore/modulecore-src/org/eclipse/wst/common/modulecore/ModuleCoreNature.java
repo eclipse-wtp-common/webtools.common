@@ -20,22 +20,36 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.wst.common.internal.emfworkbench.CompatibilityWorkbenchURIConverterImpl;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelNature;
-import org.eclipse.wst.common.modulecore.internal.util.ModuleCore;
+import org.eclipse.wst.common.modulecore.internal.impl.ModuleEditModelFactory;
+import org.eclipse.wst.common.modulecore.internal.impl.ModuleStructuralModelFactory;
+import org.eclipse.wst.common.modulecore.internal.impl.WTPResourceFactoryRegistry;
+import org.eclipse.wst.common.modulecore.internal.util.IModuleConstants;
 
 import com.ibm.wtp.emf.workbench.EMFWorkbenchContextBase;
 import com.ibm.wtp.emf.workbench.ProjectResourceSet;
 import com.ibm.wtp.emf.workbench.ProjectUtilities;
 import com.ibm.wtp.emf.workbench.WorkbenchURIConverter;
 
-//In Progress......
-
+/**
+* <p>
+* The following class is experimental until fully documented.
+* </p>
+*/
 public class ModuleCoreNature extends EditModelNature implements IProjectNature, IModuleConstants, IResourceChangeListener {
 
+	/**
+	 * <p>
+	 * <b>The following method may return null. </b>
+	 * </p>
+	 * 
+	 * @param aProject An accessible project
+	 * @return The ModuleCoreNature of aProject, if it exists
+	 */
 	public static ModuleCoreNature getModuleCoreNature(IProject aProject) {
 		try {
-			return (ModuleCoreNature) aProject.getNature(IModuleConstants.MODULE_NATURE_ID);
-		} catch (CoreException e) {
-			e.printStackTrace();
+			if(aProject.isAccessible())
+				return (ModuleCoreNature) aProject.getNature(IModuleConstants.MODULE_NATURE_ID);
+		} catch (CoreException e) { 
 		}
 		return null;
 	}
@@ -89,16 +103,14 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	public ModuleStructuralModel getModuleStructuralModelForWrite(Object anAccessorKey) {
 		return (ModuleStructuralModel) getEditModelForWrite(ModuleStructuralModelFactory.MODULE_STRUCTURAL_MODEL_ID, anAccessorKey);
 	}
-
-	// TODO Rename this method to getArtifactEditModelForRead
-	public ArtifactEditModel getModuleEditModelForRead(URI aModuleURI, Object anAccessorKey) {
+ 
+	public ArtifactEditModel getArtifactEditModelForRead(URI aModuleURI, Object anAccessorKey) {
 		Map params = new HashMap();
 		params.put(ModuleEditModelFactory.PARAM_MODULE_URI, aModuleURI);
 		return (ArtifactEditModel) getEditModelForRead(getArtifactEditModelId(aModuleURI), anAccessorKey, params);
 	}
-	
-	// TODO Rename this method to getArtifactEditModelForWrite
-	public ArtifactEditModel getModuleEditModelForWrite(URI aModuleURI, Object anAccessorKey) {
+	 
+	public ArtifactEditModel getArtifactEditModelForWrite(URI aModuleURI, Object anAccessorKey) {
 		Map params = new HashMap();
 		params.put(ModuleEditModelFactory.PARAM_MODULE_URI, aModuleURI);
 		return (ArtifactEditModel) getEditModelForWrite(getArtifactEditModelId(aModuleURI), anAccessorKey, params);
@@ -111,8 +123,10 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		// update()
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * <p>
+	 * The following method should not be invoked by clients.
+	 * </p> 
 	 * 
 	 * @see com.ibm.wtp.emf.workbench.IEMFContextContributor#primaryContributeToContext(com.ibm.wtp.emf.workbench.EMFWorkbenchContextBase)
 	 */
@@ -133,16 +147,6 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 
 	}
 
-	/**
-	 * @param set
-	 * @return
-	 */
-	private WorkbenchURIConverter initializeWorbenchURIConverter(ProjectResourceSet set) {
-		WorkbenchURIConverter uriConverter = new CompatibilityWorkbenchURIConverterImpl();
-		uriConverter.addInputContainer(getProject());
-		return uriConverter;
-	}
-
 	public ResourceSet getResourceSet() {
 		return getEmfContextBase().getResourceSet();
 	}
@@ -151,13 +155,10 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		return MODULE_NATURE_ID;
 	}
 
-	protected String getPluginID() {
-		return MODULE_PLUG_IN_ID;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
+	 * <p>
+	 * The following method should not be invoked by clients.
+	 * </p>  
 	 * @see com.ibm.wtp.emf.workbench.IEMFContextContributor#secondaryContributeToContext(com.ibm.wtp.emf.workbench.EMFWorkbenchContextBase)
 	 */
 	public void secondaryContributeToContext(EMFWorkbenchContextBase aNature) {
@@ -165,15 +166,20 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
+	 * <p>
+	 * The following method should not be invoked by clients.
+	 * </p>  
 	 * @see com.ibm.wtp.emf.workbench.nature.EMFNature#configure()
 	 */
 	public void configure() throws CoreException {
 		super.configure();
 		addDeployableProjectBuilder();
         addLocalDependencyResolver();
+	}
+
+	protected String getPluginID() {
+		return MODULE_PLUG_IN_ID;
 	}
 
 	private void addDeployableProjectBuilder() throws CoreException {
@@ -198,6 +204,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 			project.setDescription(description, null);
 		}
 	}
+	
     private void addLocalDependencyResolver() throws CoreException {
         ProjectUtilities.addToBuildSpec(LOCAL_DEPENDENCY_RESOLVER_ID, getProject());
     }
@@ -217,23 +224,11 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		}
 		return null;
 	}
-	/*
-	 * private synchronized void update() { moduleHandlesMap.clear(); workbenchModulesMap.clear();
-	 * projectModules = null; try { if (getProjectModules() != null) { List workBenchModules =
-	 * getProjectModules().getWorkbenchModules(); for (int i = 0; i < workBenchModules.size(); i++) {
-	 * WorkbenchModule wbm = (WorkbenchModule) workBenchModules.get(i); // IModuleHandle handle =
-	 * wbm.getHandle(); if (handle == null || handle.getHandle() == null) continue;
-	 * moduleHandlesMap.put(handle.getHandle(), handle); workbenchModulesMap.put(handle, wbm); } } }
-	 * catch (RuntimeException e) { Logger.getLogger().write(e); } }
-	 * 
-	 * private ProjectModules getProjectModules() { if (projectModules == null) { Resource resource =
-	 * getWTPModuleResource(); if (resource != null) { EList wtpModuleResourceContents =
-	 * resource.getContents(); if (wtpModuleResourceContents != null &&
-	 * wtpModuleResourceContents.get(0) != null) projectModules = (ProjectModules)
-	 * wtpModuleResourceContents.get(0); } }
-	 * 
-	 * return projectModules; }
-	 */
 
+	private WorkbenchURIConverter initializeWorbenchURIConverter(ProjectResourceSet set) {
+		WorkbenchURIConverter uriConverter = new CompatibilityWorkbenchURIConverterImpl();
+		uriConverter.addInputContainer(getProject());
+		return uriConverter;
+	}
 
 }

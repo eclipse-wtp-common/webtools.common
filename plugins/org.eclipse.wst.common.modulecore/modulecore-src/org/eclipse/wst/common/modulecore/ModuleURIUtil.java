@@ -12,7 +12,6 @@ package org.eclipse.wst.common.modulecore;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.wst.common.modulecore.internal.util.ModuleCore;
 
 /**
  * <p>

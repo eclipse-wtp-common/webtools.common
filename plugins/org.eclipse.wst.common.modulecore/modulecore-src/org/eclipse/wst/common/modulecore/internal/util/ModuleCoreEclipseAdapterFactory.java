@@ -11,6 +11,7 @@
 package org.eclipse.wst.common.modulecore.internal.util;
 
 import org.eclipse.core.runtime.IAdapterFactory;
+import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.ModuleStructuralModel;
 
 /**

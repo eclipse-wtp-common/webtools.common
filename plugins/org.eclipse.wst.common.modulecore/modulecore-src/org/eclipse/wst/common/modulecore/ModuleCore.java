@@ -8,7 +8,7 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.modulecore.util;
+package org.eclipse.wst.common.modulecore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,18 +27,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.wst.common.modulecore.DependentModule;
-import org.eclipse.wst.common.modulecore.ModuleCoreFactory;
-import org.eclipse.wst.common.modulecore.ModuleCoreNature;
-import org.eclipse.wst.common.modulecore.ModuleStructuralModel;
-import org.eclipse.wst.common.modulecore.ModuleType;
-import org.eclipse.wst.common.modulecore.ModuleURIUtil;
-import org.eclipse.wst.common.modulecore.ProjectModules;
-import org.eclipse.wst.common.modulecore.WorkbenchModule;
-import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
-import org.eclipse.wst.common.modulecore.impl.UnresolveableURIException;
-
-import com.ibm.wtp.emf.workbench.ProjectUtilities;
+import org.eclipse.wst.common.modulecore.internal.util.EclipseResourceAdapter;
 
 /**
  * <p>
@@ -248,8 +237,7 @@ public class ModuleCore implements IEditModelHandler {
 		IProject project = null;
 		try {
 			project = getContainingProject(aWorkbenchModule.getHandle());
-		} catch (UnresolveableURIException e) {
-			project = ProjectUtilities.getProject(aWorkbenchModule);
+		} catch (UnresolveableURIException e) { 
 		}
 		if (project != null)
 			return project.getFolder(new Path(DEPLOYABLES_ROOT + aWorkbenchModule.getDeployedName()));
@@ -301,7 +289,7 @@ public class ModuleCore implements IEditModelHandler {
 	 * @param aStructuralModel
 	 *            The edit model to be managed by this ModuleCore
 	 */
-	protected ModuleCore(ModuleStructuralModel aStructuralModel) {
+	public ModuleCore(ModuleStructuralModel aStructuralModel) {
 		structuralModel = aStructuralModel;
 	}
 
@@ -311,7 +299,7 @@ public class ModuleCore implements IEditModelHandler {
 	 * required, use {@see #saveIfNecessary(IProgressMonitor) instead.
 	 * </p>
 	 * 
-	 * @see org.eclipse.wst.common.modulecore.util.IEditModelHandler#save()
+	 * @see org.eclipse.wst.common.modulecore.IEditModelHandler#save()
 	 * @throws IllegalStateException
 	 *             If the ModuleCore object was created as read-only
 	 */
@@ -327,7 +315,7 @@ public class ModuleCore implements IEditModelHandler {
 	 * model is not shared, it will be saved. If it is shared, the save will be deferred.
 	 * </p>
 	 * 
-	 * @see org.eclipse.wst.common.modulecore.util.IEditModelHandler#saveIfNecessary()
+	 * @see org.eclipse.wst.common.modulecore.IEditModelHandler#saveIfNecessary()
 	 * @throws IllegalStateException
 	 *             If the ModuleCore object was created as read-only
 	 */
@@ -343,7 +331,7 @@ public class ModuleCore implements IEditModelHandler {
 	 * ModuleCore instance facade was created as read-only.
 	 * </p>
 	 * 
-	 * @see org.eclipse.wst.common.modulecore.util.IEditModelHandler#dispose()
+	 * @see org.eclipse.wst.common.modulecore.IEditModelHandler#dispose()
 	 */
 	public void dispose() {
 		if (isStructuralModelSelfManaged)

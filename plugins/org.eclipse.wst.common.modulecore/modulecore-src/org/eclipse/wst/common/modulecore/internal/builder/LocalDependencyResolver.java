@@ -17,8 +17,8 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
-import org.eclipse.wst.common.modulecore.IModuleConstants;
-import org.eclipse.wst.common.modulecore.internal.util.ModuleCore;
+import org.eclipse.wst.common.modulecore.ModuleCore;
+import org.eclipse.wst.common.modulecore.internal.util.IModuleConstants;
 
 public class LocalDependencyResolver extends IncrementalProjectBuilder implements IModuleConstants {
     /**
