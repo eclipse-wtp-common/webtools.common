@@ -12,7 +12,7 @@ package org.eclipse.wst.common.frameworks.datamodel.tests;
 
 import java.util.List;
 
-import org.eclipse.wst.common.frameworks.datamodel.provisional.BasicDataModelProvider;
+import org.eclipse.wst.common.frameworks.datamodel.provisional.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelEvent;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelPropertyDescriptor;
@@ -25,7 +25,7 @@ import junit.framework.TestCase;
 
 public class SimpleDataModelTest extends TestCase {
 
-	private class DMProvider extends BasicDataModelProvider {
+	private class DMProvider extends AbstractDataModelProvider {
 		public static final String INT_PROP = "INT_PROP";
 		public static final String INT_PROP2 = "INT_PROP2";
 		public static final String INT_PROP3 = "INT_PROP3";

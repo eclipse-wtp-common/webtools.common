@@ -10,9 +10,9 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel.tests;
 
-import org.eclipse.wst.common.frameworks.datamodel.provisional.BasicDataModelProvider;
+import org.eclipse.wst.common.frameworks.datamodel.provisional.AbstractDataModelProvider;
 
-public class C extends BasicDataModelProvider {
+public class C extends AbstractDataModelProvider {
 	public static final String P = "C.P";
 
 	public String[] getPropertyNames() {
