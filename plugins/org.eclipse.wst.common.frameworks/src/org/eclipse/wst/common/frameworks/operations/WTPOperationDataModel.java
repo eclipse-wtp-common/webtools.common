@@ -17,15 +17,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 import org.eclipse.wst.common.frameworks.internal.operations.NullOperationHandler;
-import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
 /**
  * WTPOperationDataModel is an essential piece of both the WTP Operation and WTP Wizard frameworks.
@@ -102,10 +98,13 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 
 	private static final String PROPERTY_NOT_LOCATED_ = WTPResourceHandler.getString("20"); //$NON-NLS-1$
 	private static final String NESTED_MODEL_NOT_LOCATED = WTPResourceHandler.getString("21"); //$NON-NLS-1$
+	private static final String NESTED_MODEL_DUPLICATE = WTPResourceHandler.getString("33"); //$NON-NLS-1$
+
 	private Set validProperties = new HashSet();
 	private Set validBaseProperties = new HashSet();
 	private Map propertyValues = new Hashtable();
 	private Map nestedModels;
+	private Set nestingModels;
 	private List listeners;
 	private boolean ignorePropertyChanges = false;
 	private boolean notificationEnabled = true;
@@ -114,6 +113,10 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	private boolean hasBeenExecutedAgainst = false;
 	private boolean suspendValidation = false;
 
+	//TODO Delete this
+	/**
+	 * @deprecated
+	 */
 	private WTPOperationDataModel extendedRoot;
 
 	/**
@@ -222,9 +225,20 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 			validProperties.add(NESTED_MODEL_VALIDATION_HOOK);
 			nestedModels = new Hashtable();
 		}
+		if (null == dataModel.nestingModels) {
+			dataModel.nestingModels = new HashSet();
+		}
+		if (dataModel.nestingModels.contains(this)) {
+			throw new RuntimeException(NESTED_MODEL_DUPLICATE);
+		}
+		dataModel.nestingModels.add(this);
+
 		nestedModels.put(modelName, dataModel);
-		validProperties.addAll(dataModel.validProperties);
+
+		addNestedProperties(dataModel.validProperties);
 		dataModel.addListener(this);
+
+		//TODO this block needs to be deleted.
 		WTPOperationDataModelListener extendedListener = dataModel.getExtendedSynchronizer();
 		if (extendedListener != null) {
 			if (this.extendedRoot == null)
@@ -235,10 +249,22 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		}
 	}
 
+	private void addNestedProperties(Set nestedProperties) {
+		boolean propertiesAdded = validProperties.addAll(nestedProperties);
+		//Pass the new properties up the nesting chain
+		if (propertiesAdded && nestingModels != null) {
+			Iterator iterator = nestingModels.iterator();
+			while (iterator.hasNext()) {
+				((WTPOperationDataModel) iterator.next()).addNestedProperties(nestedProperties);
+			}
+		}
+	}
+
+	//TODO delete this
 	/**
+	 * @deprecated
 	 * @return
 	 */
-	//TODO what is this???
 	protected WTPOperationDataModelListener getExtendedSynchronizer() {
 		return null;
 	}
@@ -256,7 +282,8 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		if (modelName == null || nestedModels == null)
 			return null;
 		WTPOperationDataModel model = (WTPOperationDataModel) nestedModels.remove(modelName);
-		validProperties.removeAll(model.validProperties);
+		model.nestingModels.remove(this);
+		removeNestedProperties(model.validProperties);
 		model.removeListener(this);
 		if (nestedModels.isEmpty()) {
 			nestedModels = null;
@@ -265,6 +292,46 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		}
 		return model;
 	}
+
+	private void removeNestedProperties(Set nestedProperties) {
+		Iterator iterator = nestedProperties.iterator();
+		String property = null;
+		boolean keepProperty = false;
+		Set nestedPropertiesToRemove = null;
+		while (iterator.hasNext()) {
+			keepProperty = false;
+			property = (String) iterator.next();
+			if (validBaseProperties.contains(property)) {
+				keepProperty = true;
+			}
+			if (!keepProperty && nestedModels != null) {
+				Iterator nestedModelsIterator = nestedModels.values().iterator();
+				while (!keepProperty && nestedModelsIterator.hasNext()) {
+					WTPOperationDataModel nestedModel = (WTPOperationDataModel) nestedModelsIterator.next();
+					if (nestedModel.isProperty(property)) {
+						keepProperty = true;
+					}
+				}
+			}
+			if (!keepProperty) {
+				if (null == nestedPropertiesToRemove) {
+					nestedPropertiesToRemove = new HashSet();
+				}
+				nestedPropertiesToRemove.add(property);
+			}
+		}
+
+		if (null != nestedPropertiesToRemove) {
+			validProperties.removeAll(nestedPropertiesToRemove);
+			if (nestingModels != null) {
+				Iterator nestingModelsIterator = nestingModels.iterator();
+				while (nestingModelsIterator.hasNext()) {
+					((WTPOperationDataModel) nestingModelsIterator.next()).removeNestedProperties(nestedPropertiesToRemove);
+				}
+			}
+		}
+	}
+
 
 	public final WTPOperationDataModel getNestedModel(String modelName) {
 		WTPOperationDataModel dataModel = (WTPOperationDataModel) nestedModels.get(modelName);
@@ -742,7 +809,9 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 			WTPOperationDataModelListener listener;
 			for (int i = 0; i < listeners.size(); i++) {
 				listener = (WTPOperationDataModelListener) listeners.get(i);
-				listener.propertyChanged(event);
+				if (listener != event.getDataModel()) {
+					listener.propertyChanged(event);
+				}
 			}
 		}
 	}
@@ -1039,176 +1108,68 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		return hasBeenExecutedAgainst;
 	}
 
-	///////////////////////////////////////////////////////////////////////////////////////////////
-	//TODO figure out the best way support ExtendedOperations
-	///////////////////////////////////////////////////////////////////////////////////////////////
+	//	TODO delete this
 	/**
-	 * ExtendedOperations
-	 *  
+	 * This will be deleted before WTP M4
+	 * 
+	 * @deprecated
 	 */
 	private final void assertModelIsExtended() {
 		if (extendedRoot == null)
 			throw new IllegalStateException(WTPResourceHandler.getString("19")); //$NON-NLS-1$
 	}
 
+	//	TODO delete this
 	/**
-	 * ExtendedOperations
+	 * This will be deleted before WTP M4
 	 * 
-	 * This method is EXPERIMENTAL and is subject to substantial changes.
-	 * 
-	 * @param propertyName
-	 * @return
+	 * @deprecated
 	 */
 	protected final Object getParentProperty(String propertyName) {
 		assertModelIsExtended();
 		return extendedRoot.getProperty(propertyName);
 	}
 
+	//	TODO delete this
 	/**
-	 * ExtendedOperations
+	 * This will be deleted before WTP M4
 	 * 
-	 * This method is EXPERIMENTAL and is subject to substantial changes.
-	 * 
-	 * @param propertyName
-	 * @return
+	 * @deprecated
 	 */
 	protected final int getParentIntProperty(String propertyName) {
 		assertModelIsExtended();
 		return extendedRoot.getIntProperty(propertyName);
 	}
 
+	//	TODO delete this
 	/**
-	 * ExtendedOperations
+	 * This will be deleted before WTP M4
 	 * 
-	 * This method is EXPERIMENTAL and is subject to substantial changes.
-	 * 
-	 * @param propertyName
-	 * @return
+	 * @deprecated
 	 */
 	protected final boolean getParentBooleanProperty(String propertyName) {
 		assertModelIsExtended();
 		return extendedRoot.getBooleanProperty(propertyName);
 	}
 
+	//	TODO delete this
 	/**
-	 * ExtendedOperations
+	 * This will be deleted before WTP M4
 	 * 
-	 * This method is EXPERIMENTAL and is subject to substantial changes.
-	 * 
-	 * @param propertyName
-	 * @return
+	 * @deprecated
 	 */
 	protected final String getParentStringProperty(String propertyName) {
 		assertModelIsExtended();
 		return extendedRoot.getStringProperty(propertyName);
 	}
 
+	//	TODO delete this
 	/**
-	 * ExtendedOperations
+	 * This will be deleted before WTP M4
 	 * 
-	 * This method is EXPERIMENTAL and is subject to substantial changes.
+	 * @deprecated
 	 */
 	public IProject getTargetProject() {
 		return null;
-	}
-
-	///////////////////////////////////////////////////////////////////////////////////////////////
-	//TODO remove the deprecated methods below here
-	///////////////////////////////////////////////////////////////////////////////////////////////
-	//TODO delete this
-	/**
-	 * This will be deleted before WTP M4
-	 * 
-	 * @deprecated
-	 * @see #notifyListeners(String)
-	 */
-	public void notifyListeners(String propertyName, Object oldValue, Object propertyValue) {
-		notifyListeners(propertyName, WTPOperationDataModelEvent.PROPERTY_CHG, oldValue, propertyValue);
-	}
-
-	//TODO delete this
-	/**
-	 * This will be deleted before WTP M4
-	 * 
-	 * @deprecated
-	 * @see #notifyListeners(String, int)
-	 */
-	protected void notifyListeners(String propertyName, int flag, Object oldValue, Object propertyValue) {
-		notifyListeners(new WTPOperationDataModelEvent(this, propertyName, oldValue, propertyValue, flag));
-	}
-
-	//TODO remove this
-	/**
-	 * This will be deleted before WTP M4
-	 * 
-	 * @deprecated
-	 * @param propertyName
-	 * @param errorMessage
-	 */
-	protected IStatus validateStringValue(String propertyName, String errorMessage) {
-		String name = getStringProperty(propertyName);
-		if (name == "" || name == null || name.trim().length() == 0) { //$NON-NLS-1$
-			return WTPCommonPlugin.createErrorStatus(errorMessage);
-		}
-		return OK_STATUS;
-	}
-
-	//TODO remove this
-	/**
-	 * This will be deleted before WTP M4
-	 * 
-	 * @deprecated
-	 * @param propertyName
-	 * @param errorMessage
-	 */
-	protected IStatus validateObjectArrayValue(String propertyName, String errorMessage) {
-		Object[] objects = (Object[]) getProperty(propertyName);
-		if (objects == null || objects.length == 0) {
-			return WTPCommonPlugin.createErrorStatus(errorMessage);
-		}
-		return OK_STATUS;
-	}
-
-	//TODO remove this
-	/**
-	 * This will be deleted before WTP M4
-	 * 
-	 * @deprecated this can be replaced with something like this:
-	 *             ProjectCreationDataModel.getProjectHandleFromProjectName(getStringProperty(projectNameProperty))
-	 */
-	public IProject getProjectHandle(String projectNameProperty) {
-		String projectName = (String) getProperty(projectNameProperty);
-		return getProjectHandleFromName(projectName);
-	}
-
-	//TODO remove this
-	/**
-	 * This will be deleted before WTP M4
-	 * 
-	 * @deprecated see ProjectCreationDataModel.getProjectHadleFromProjectName()
-	 */
-	public IProject getProjectHandleFromName(String projectName) {
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IStatus status = workspace.validateName(projectName, IResource.PROJECT);
-		return (null != projectName && projectName.length() > 0 && status.isOK()) ? ResourcesPlugin.getWorkspace().getRoot().getProject(projectName) : null;
-	}
-
-	//TODO remove this
-	/**
-	 * This will be deleted before WTP M4
-	 * 
-	 * Use this method to set the property values from this model onto the otherModel for those that
-	 * are valid for the otherModel.
-	 * 
-	 * @deprecated replace with copyProperties().
-	 * @param otherModel
-	 */
-	public void synchronizeValidPropertyValues(WTPOperationDataModel otherModel, String[] properties) {
-		if (otherModel == null || properties == null || properties.length == 0)
-			return;
-		for (int i = 0; i < properties.length; i++) {
-			if (isSet(properties[i]))
-				otherModel.setProperty(properties[i], getProperty(properties[i]));
-		}
 	}
 }

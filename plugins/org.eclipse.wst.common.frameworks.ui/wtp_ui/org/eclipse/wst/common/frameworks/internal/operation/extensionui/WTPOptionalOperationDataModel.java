@@ -186,7 +186,7 @@ public class WTPOptionalOperationDataModel extends WTPOperationDataModel {
 				return;
 			internalSetChecked(checked);
 			Object root = getProperty(OPERATION_TREE);
-			notifyListeners(OPERATION_TREE, root, root);
+			notifyListeners(OPERATION_TREE);
 		}
 
 		public IOperationNode getParent() {
@@ -276,7 +276,7 @@ public class WTPOptionalOperationDataModel extends WTPOperationDataModel {
 					rootNode.addChild(child);
 				}
 			}
-			notifyListeners(OPERATION_TREE, rootNode, rootNode);
+			notifyListeners(OPERATION_TREE);
 		}
 		return returnVal;
 	}

@@ -84,14 +84,10 @@ public class ProjectCreationDataModel extends WTPOperationDataModel {
 				return false;
 			}
 		}
-		Object oldValue = null;
-		if (propertyName.equals(PROJECT_NAME)) {
-			oldValue = getProperty(PROJECT_NAME);
-		}
 		boolean notify = super.doSetProperty(propertyName, propertyValue);
 		if (propertyName.equals(PROJECT_NAME) && !isSet(PROJECT_LOCATION)) {
-			notifyListeners(PROJECT_NAME, oldValue, propertyValue);
-			notifyListeners(PROJECT_LOCATION, null, null);
+			notifyListeners(PROJECT_NAME);
+			notifyListeners(PROJECT_LOCATION);
 			return false;
 		}
 		return notify;
