@@ -15,12 +15,13 @@ import java.io.IOException;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.wst.common.internal.emfworkbench.CompatibilityWorkbenchURIConverterImpl;
-import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
-
 import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
 import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
+import org.eclipse.wst.common.internal.emfworkbench.CompatibilityWorkbenchURIConverterImpl;
+import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
+import org.eclipse.wst.common.modulecore.ModuleCore;
 
 /**
  * <p>
@@ -28,6 +29,9 @@ import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
  * </p>
  */
 public class ModuleCoreURIConverter extends CompatibilityWorkbenchURIConverterImpl {
+	
+	private IProject containingProject;
+	
 	/**
 	 *  
 	 */
@@ -38,34 +42,19 @@ public class ModuleCoreURIConverter extends CompatibilityWorkbenchURIConverterIm
 	/**
 	 * @param anInputContainer
 	 */
-	public ModuleCoreURIConverter(IContainer anInputContainer) {
-		super(anInputContainer);
+	public ModuleCoreURIConverter(IProject aContainingProject) {
+		super();
+		containingProject = aContainingProject;
 	}
 
 	/**
 	 * @param aContainer
 	 * @param aSynchronizer
 	 */
-	public ModuleCoreURIConverter(IContainer aContainer, ResourceSetWorkbenchSynchronizer aSynchronizer) {
-		super(aContainer, aSynchronizer);
-	}
-
-	/**
-	 * @param anInputContainer
-	 * @param anOutputContainer
-	 */
-	public ModuleCoreURIConverter(IContainer anInputContainer, IContainer anOutputContainer) {
-		super(anInputContainer, anOutputContainer);
-	}
-
-	/**
-	 * @param anInputContainer
-	 * @param anOutputContainer
-	 * @param aSynchronizer
-	 */
-	public ModuleCoreURIConverter(IContainer anInputContainer, IContainer anOutputContainer, ResourceSetWorkbenchSynchronizer aSynchronizer) {
-		super(anInputContainer, anOutputContainer, aSynchronizer);
-	}
+	public ModuleCoreURIConverter(IProject aContainingProject, ResourceSetWorkbenchSynchronizer aSynchronizer) {
+		super(aContainingProject, aSynchronizer);
+	} 
+ 
 	
 	/* (non-Javadoc)
 	 * @see org.eclipse.jem.util.emf.workbench.WorkbenchURIConverterImpl#normalize(org.eclipse.emf.common.util.URI)
@@ -81,10 +70,30 @@ public class ModuleCoreURIConverter extends CompatibilityWorkbenchURIConverterIm
 		} else {
 			normalizedURI = super.normalize(aURI);
 		}
-		if(normalizedURI == null || normalizedURI.scheme() == null || normalizedURI.scheme().length() == 0) {
-			normalizedURI = URI.createPlatformResourceURI(getInputContainer().getFullPath().append(normalizedURI.toString()).toString());
+		if(normalizedURI == null) {
+			normalizedURI = newPlatformURI(aURI);
+		}
+		else if(normalizedURI.scheme() == null || normalizedURI.scheme().length() == 0) {
+			normalizedURI = URI.createPlatformResourceURI(getInputContainer().getFullPath().append(normalizedURI.toString()).toString());	
 		}
 		return normalizedURI;
+	}
+	
+	private URI newPlatformURI(URI aNewURI) {
+		
+		try {
+			String componentName = ModuleCore.getDeployedName(aNewURI);
+			IContainer component = ModuleCore.create(containingProject, componentName);
+
+			URI deployPathSegment = ModuleURIUtil.trimToDeployPathSegment(aNewURI);
+			IFile newFile = component.getFile(new Path(deployPathSegment.path()));
+			
+			return URI.createPlatformResourceURI(newFile.getFullPath().toString());
+			 
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	/**

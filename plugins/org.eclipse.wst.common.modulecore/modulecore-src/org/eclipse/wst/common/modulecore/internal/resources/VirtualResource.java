@@ -24,12 +24,14 @@ import org.eclipse.core.resources.ResourceAttributes;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.modulecore.ComponentResource;
 import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.WorkbenchComponent;
+import org.eclipse.wst.common.modulecore.internal.impl.ResourceTreeRoot;
 
 public abstract class VirtualResource implements IResource {
 	
@@ -166,8 +168,39 @@ public abstract class VirtualResource implements IResource {
 	
 	// TODO WTP:Implement this method 
 	public IPath getFullPath() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return null;
+		ModuleCore moduleCore = null;
+		try {
+			moduleCore = ModuleCore.getModuleCoreForRead(getProject());
+			WorkbenchComponent component = moduleCore.findWorkbenchModuleByDeployName(getComponentHandle().getName());
+			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
+			
+			ComponentResource[] componentResources = new ComponentResource[0];
+			IPath currentPath = getRuntimePath();
+			while(componentResources.length == 0) {
+				componentResources = root.findModuleResources(currentPath, false);
+				if(componentResources.length > 0) {					
+					IPath finalPath = getRuntimePath().removeFirstSegments(currentPath.segmentCount());
+					URI sourcePath = componentResources[0].getSourcePath().appendSegments(finalPath.segments());
+					if(sourcePath.segmentCount() > 0 ) {
+ 						finalPath = new Path(sourcePath.path());
+						
+						// already workspace relative
+						if(sourcePath.segment(0).equals(getComponentHandle().getProject().getName())) {
+							return finalPath;
+						} 
+						// make workspace relative
+						return new Path(IPath.SEPARATOR+getProject().getName()).append(finalPath);
+					
+					}
+				} else
+					currentPath = currentPath.removeLastSegments(1);
+			}
+		} finally {
+			if(moduleCore != null) {
+				moduleCore.dispose();
+			}
+		}
+		return getRuntimePath();
 	}
 
 	public long getLocalTimeStamp() {
@@ -198,8 +231,7 @@ public abstract class VirtualResource implements IResource {
 
 	// TODO WTP:Implement this method 
 	public IContainer getParent() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return null;
+		return new VirtualFolder(getComponentHandle(), getRuntimePath().removeLastSegments(1));
 	}
 
 	public String getPersistentProperty(QualifiedName key) throws CoreException {
