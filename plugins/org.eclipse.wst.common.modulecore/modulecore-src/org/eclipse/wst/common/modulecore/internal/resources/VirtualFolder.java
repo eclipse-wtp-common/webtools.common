@@ -81,7 +81,8 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 	}
 
 	/**
-	 * @see IFolder#createLink(org.eclipse.core.runtime.IPath, int, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see IFolder#createLink(org.eclipse.core.runtime.IPath, int,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public void createLink(IPath aProjectRelativeLocation, int updateFlags, IProgressMonitor monitor) throws CoreException {
 
@@ -106,15 +107,25 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 		}
 	}
 
+	/**
+	 * @see IFolder#createLink(org.eclipse.core.runtime.IPath, int,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
+	 */
+	public void create(IPath aProjectRelativeLocation, int updateFlags, IProgressMonitor monitor) throws CoreException {
+
+		IFolder resource = getProject().getFolder(aProjectRelativeLocation);
+		createResource(resource, updateFlags, monitor);
+	}
+
 
 
 	private void createResource(IContainer resource, int updateFlags, IProgressMonitor monitor) throws CoreException {
 
-		if (!resource.getParent().exists()) 
+		if (!resource.getParent().exists())
 			createResource(resource.getParent(), updateFlags, monitor);
-		if(!resource.exists())
-			((IFolder)resource).create(updateFlags, true, monitor); 
-		
+		if (!resource.exists())
+			((IFolder) resource).create(updateFlags, true, monitor);
+
 	}
 
 	public void move(IPath destination, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
@@ -175,22 +186,23 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 	public void setDefaultCharset(String charset, IProgressMonitor monitor) throws CoreException {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 
-	} 
+	}
 
-	public void commit() throws CoreException{
-		
-//		ModuleCore moduleCore = null;
-//		try {
-//			moduleCore = ModuleCore.getModuleCoreForWrite(getProject());
-//			WorkbenchComponent component = moduleCore.findWorkbenchModuleByDeployName(getComponentHandle().getName());
-//			if(component == null)
-//				moduleCore.createWorkbenchModule(getComponentHandle().getName());
-//		} finally {
-//			if (moduleCore != null) {
-//				moduleCore.saveIfNecessary(null);
-//				moduleCore.dispose();
-//			}
-//		} 
+	public void commit() throws CoreException {
+
+		// ModuleCore moduleCore = null;
+		// try {
+		// moduleCore = ModuleCore.getModuleCoreForWrite(getProject());
+		// WorkbenchComponent component =
+		// moduleCore.findWorkbenchModuleByDeployName(getComponentHandle().getName());
+		// if(component == null)
+		// moduleCore.createWorkbenchModule(getComponentHandle().getName());
+		// } finally {
+		// if (moduleCore != null) {
+		// moduleCore.saveIfNecessary(null);
+		// moduleCore.dispose();
+		// }
+		// }
 	}
 
 	protected void doDeleteRealResources(int updateFlags, IProgressMonitor monitor) throws CoreException {

@@ -189,6 +189,8 @@ public interface IVirtualFolder extends IVirtualContainer {
 	 * @since 2.1
 	 */
 	public void createLink(IPath localLocation, int updateFlags, IProgressMonitor monitor) throws CoreException;
+	
+	public void create(IPath localLocation, int updateFlags, IProgressMonitor monitor) throws CoreException;
 
 	/**
 	 * Deletes this resource from the workspace.
