@@ -88,7 +88,7 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
         IPath path = getProject().getFullPath();
         if (path == null)
             return null;
-        path.append(IModuleConstants.WTPMODULE_FILE_NAME);
+        path.append(IModuleConstants.WTPMODULE_URI);
         return path;
 
     }
