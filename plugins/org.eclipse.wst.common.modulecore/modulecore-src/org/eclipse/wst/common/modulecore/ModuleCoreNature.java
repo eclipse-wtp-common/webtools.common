@@ -20,7 +20,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.wst.common.internal.emfworkbench.CompatibilityWorkbenchURIConverterImpl;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelNature;
-import org.eclipse.wst.common.modulecore.internal.impl.ModuleEditModelFactory;
+import org.eclipse.wst.common.modulecore.internal.impl.ArtifactEditModelFactory;
 import org.eclipse.wst.common.modulecore.internal.impl.ModuleStructuralModelFactory;
 import org.eclipse.wst.common.modulecore.internal.impl.WTPResourceFactoryRegistry;
 import org.eclipse.wst.common.modulecore.internal.util.IModuleConstants;
@@ -106,13 +106,13 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
  
 	public ArtifactEditModel getArtifactEditModelForRead(URI aModuleURI, Object anAccessorKey) {
 		Map params = new HashMap();
-		params.put(ModuleEditModelFactory.PARAM_MODULE_URI, aModuleURI);
+		params.put(ArtifactEditModelFactory.PARAM_MODULE_URI, aModuleURI);
 		return (ArtifactEditModel) getEditModelForRead(getArtifactEditModelId(aModuleURI), anAccessorKey, params);
 	}
 	 
 	public ArtifactEditModel getArtifactEditModelForWrite(URI aModuleURI, Object anAccessorKey) {
 		Map params = new HashMap();
-		params.put(ModuleEditModelFactory.PARAM_MODULE_URI, aModuleURI);
+		params.put(ArtifactEditModelFactory.PARAM_MODULE_URI, aModuleURI);
 		return (ArtifactEditModel) getEditModelForWrite(getArtifactEditModelId(aModuleURI), anAccessorKey, params);
 	}
 	

@@ -35,9 +35,9 @@ import org.eclipse.wst.common.modulecore.internal.util.EclipseResourceAdapter;
  * be used as a static utility or an instance adapter.
  * </p>
  * <p>
- * ModuleCore hides the management of accessing Edit models (
+ * ModuleCore hides the management of accessing edit models (
  * {@see org.eclipse.wst.common.modulecore.ModuleStructuralModel}) correctly. Each project has
- * exactly one ({@see org.eclipse.wst.common.modulecore.ModuleStructuralModel}) for read and one
+ * exactly one ({@see org.eclipse.wst.common.modulecore.ModuleStructuralModel}) for read and exactly one
  * for write. Each of these is shared among all clients and reference counted as necessary. Clients
  * should use ModuleCore when working with the WTP Modules Model. easier.
  * </p>
@@ -46,8 +46,10 @@ import org.eclipse.wst.common.modulecore.internal.util.EclipseResourceAdapter;
  * Each ModuleCore instance facade is designed to manage the Edit Model lifecycle for clients.
  * However, while each ModuleCore is designed to be passed around as needed, clients must enforce
  * the ModuleCore lifecycle. The most common method of acquiring a ModuleCore instance facade is to
- * use {@see #getModuleCoreForRead(IProject)}or {@see #getModuleCoreForWrite(IProject)}. When
- * clients have concluded their use of the instance, clients must call {@see #dispose()}.
+ * use {@see #getModuleCoreForRead(IProject)}or {@see #getModuleCoreForWrite(IProject)}.
+ * </p>
+ * <p>
+ * When clients have concluded their use of the instance, <b>clients must call {@see #dispose()}</b>.
  * </p>
  * 
  * <p>
@@ -56,7 +58,7 @@ import org.eclipse.wst.common.modulecore.internal.util.EclipseResourceAdapter;
  * 
  * @see org.eclipse.wst.common.modulecore.ModuleCoreNature
  * @see org.eclipse.wst.common.modulecore.ModuleStructuralModel
- */ 
+ */
 public class ModuleCore implements IEditModelHandler {
 
 	public static interface ModuleURI {
@@ -91,6 +93,8 @@ public class ModuleCore implements IEditModelHandler {
 	 * </p>
 	 * <p>
 	 * Use to acquire a ModuleCore facade for a specific project that will not be used for editing.
+	 * Invocations of any save*() API on an instance returned from this method will throw
+	 * exceptions.
 	 * </p>
 	 * 
 	 * @param aProject
@@ -141,23 +145,6 @@ public class ModuleCore implements IEditModelHandler {
 		if (container != null)
 			return ModuleCoreNature.getModuleCoreNature(container);
 		return null;
-	}
-
-	/**
-	 * <p>
-	 * A fully-qualified module URI will contain enough information to determine the deployed name
-	 * of the module.
-	 * </p>
-	 * 
-	 * @param aModuleURI
-	 *            A valid, fully-qualified module URI
-	 * @return The deployed name of the {@see WorkbenchModule}referenced by the module URI
-	 * @throws UnresolveableURIException
-	 *             If the supplied module URI is invalid or unresolveable.
-	 */
-	public static String getDeployedNameForModule(URI aModuleURI) throws UnresolveableURIException {
-		ModuleURIUtil.ensureValidFullyQualifiedModuleURI(aModuleURI);
-		return aModuleURI.segment(ModuleCore.ModuleURI.MODULE_NAME_INDX);
 	}
 
 	/**
@@ -237,7 +224,7 @@ public class ModuleCore implements IEditModelHandler {
 		IProject project = null;
 		try {
 			project = getContainingProject(aWorkbenchModule.getHandle());
-		} catch (UnresolveableURIException e) { 
+		} catch (UnresolveableURIException e) {
 		}
 		if (project != null)
 			return project.getFolder(new Path(DEPLOYABLES_ROOT + aWorkbenchModule.getDeployedName()));
@@ -355,7 +342,7 @@ public class ModuleCore implements IEditModelHandler {
 
 	/**
 	 * <p>
-	 * When loaded for write, the current ModuleCore can return the root object, which can be used
+	 * When loaded for write, the current ModuleCore may return the root object, which can be used
 	 * to add or remove {@see WorkbenchModule}s. If a client needs to just read the existing
 	 * {@see WorkbenchModule}s, use {@see #getWorkbenchModules()}.
 	 * </p>
@@ -468,7 +455,7 @@ public class ModuleCore implements IEditModelHandler {
 	 *             If the supplied module URI is invalid or unresolveable.
 	 */
 	public WorkbenchModuleResource[] findWorkbenchModuleResourceByDeployPath(URI aModuleURI, URI aDeployedResourcePath) throws UnresolveableURIException {
-		WorkbenchModule module = findWorkbenchModuleByDeployName(getDeployedNameForModule(aModuleURI));
+		WorkbenchModule module = findWorkbenchModuleByDeployName(ModuleURIUtil.getDeployedName(aModuleURI));
 		return module.findWorkbenchModuleResourceByDeployPath(aDeployedResourcePath);
 	}
 
@@ -491,7 +478,7 @@ public class ModuleCore implements IEditModelHandler {
 		ModuleURIUtil.ensureValidFullyQualifiedModuleURI(aModuleResourcePath);
 		URI moduleURI = aModuleResourcePath.trimSegments(aModuleResourcePath.segmentCount() - 3);
 		URI deployedPath = ModuleURIUtil.trimToDeployPathSegment(aModuleResourcePath);
-		WorkbenchModule module = findWorkbenchModuleByDeployName(getDeployedNameForModule(moduleURI));
+		WorkbenchModule module = findWorkbenchModuleByDeployName(ModuleURIUtil.getDeployedName(moduleURI));
 		return module.findWorkbenchModuleResourceByDeployPath(deployedPath);
 	}
 
@@ -641,9 +628,6 @@ public class ModuleCore implements IEditModelHandler {
 		return dependentCore;
 	}
 
-	/**
-	 * 
-	 */
 	private void throwAttemptedReadOnlyModification() {
 		throw new IllegalStateException("Attempt to modify a ModuleCore instance facade that was loaded as read-only.");
 	}

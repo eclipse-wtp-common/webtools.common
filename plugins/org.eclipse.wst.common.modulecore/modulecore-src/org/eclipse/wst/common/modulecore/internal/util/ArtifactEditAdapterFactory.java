@@ -1,50 +1,55 @@
-/*
- * Created on Feb 7, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
+/*******************************************************************************
+ * Copyright (c) 2003, 2004 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ * IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.wst.common.modulecore.internal.util;
 
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.wst.common.modulecore.ArtifactEdit;
 import org.eclipse.wst.common.modulecore.ArtifactEditModel;
+import org.eclipse.wst.common.modulecore.internal.ModulecorePlugin;
 
 /**
- * @author cbridgha
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * <p>
+ * The following class is not intended to be used by clients.
+ * </p>
+ * <p>
+ * Adapts {@see ArtifactEditModel} to an {@see ArtifactEdit) 
+ * instance facade, if possible. The following class is 
+ * registered with the Platform Adapter Manager in 
+ * {@see ModulecorePlugin#start(BundleContext)}
+ * </p>
+ * @see ModulecorePlugin
  */
 public class ArtifactEditAdapterFactory implements IAdapterFactory {
-	/**
-	 * 
-	 */
-	public ArtifactEditAdapterFactory() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 
-	/* (non-Javadoc)
+	private static final Class ARTIFACT_EDIT_MODEL_CLASS = ArtifactEditModel.class;
+	
+	/**
+	 * <p>
+	 * Returns an instance facade for the given anAdaptableObject, if possible.
+	 * </p> 
 	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
 	 */
-	public Object getAdapter(Object adaptableObject, Class adapterType) {
-		ArtifactEditModel editModel = (ArtifactEditModel)adaptableObject;
-		if (editModel.getModuleType().equals(ArtifactEdit.TYPE_ID))
-			return new ArtifactEdit((ArtifactEditModel)adaptableObject);
-		else
-			return null;
-		
-		
+	public Object getAdapter(Object anAdaptableObject, Class anAdapterType) {
+		if (anAdapterType == ArtifactEdit.ADAPTER_TYPE) {
+			if (anAdaptableObject instanceof ArtifactEditModel)
+				return new ArtifactEdit((ArtifactEditModel) anAdaptableObject);
+		}
+		return null;
 	}
 
-
-	/* (non-Javadoc)
+	/**  
 	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapterList()
 	 */
 	public Class[] getAdapterList() {
-		
-		return new Class[] { ArtifactEditModel.class };
+		return new Class[]{ARTIFACT_EDIT_MODEL_CLASS};
 	}
 
 }

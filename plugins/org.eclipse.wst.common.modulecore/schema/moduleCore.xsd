@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.ibm.com/moduleCore" xmlns:tns="http://www.ibm.com/moduleCore">
+	<element name="project-modules">
+		<complexType>
+			<sequence minOccurs="1" maxOccurs="unbounded">
+				<element name="wb-module">
+					<complexType>
+                        <sequence minOccurs="0" maxOccurs="1">
+                        	<element name="module-type">
+                        		<complexType>
+                        			<attribute name="module-type-id"
+                        				type="string">
+                        			</attribute>
+                        		</complexType>
+                        	</element>
+                        	<sequence minOccurs="0" maxOccurs="unbounded">
+                        		<element name="wb-resource">
+                                    <complexType>
+                                    	<attribute name="source-path"
+                                    		type="string" use="required">
+                                    	</attribute>
+                                    	<attribute name="deploy-path"
+                                    		type="string" use="required">
+                                    	</attribute>
+                                    </complexType>
+                        		</element>
+                        	</sequence>
+                        	<sequence minOccurs="0" maxOccurs="unbounded">
+                        		<element name="dependent-module">
+                                    <complexType>
+                                    	<attribute name="handle"
+                                    		type="string" use="required">
+                                    	</attribute>
+                                    	<attribute name="deploy-path"
+                                    		type="string" use="required">
+                                    	</attribute>
+                                    	<attribute name="dependency-type"
+                                    		type="string">
+                                    	</attribute>
+                                    </complexType>
+                        		</element>
+                        	</sequence>
+                        </sequence>
+                        <attribute name="deploy-name" type="string" use="required"></attribute>
+					</complexType>
+				</element>
+			</sequence>
+			<attribute name="id" type="string"></attribute>
+		</complexType>
+	</element>
+
+</schema>

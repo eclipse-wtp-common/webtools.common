@@ -23,6 +23,18 @@ public class ModuleURIUtil {
 	public static final String PLATFORM_SCHEME = "platform"; //$NON-NLS-1$
 	public static final String RESOURCE_PROTOCOL = "resource"; //$NON-NLS-1$
 
+	/**
+	 * <p>
+	 * A fully-qualified module URI will contain enough information to determine the deployed name
+	 * of the module.
+	 * </p>
+	 * 
+	 * @param aModuleURI
+	 *            A valid, fully-qualified module URI
+	 * @return The deployed name of the {@see WorkbenchModule}referenced by the module URI
+	 * @throws UnresolveableURIException
+	 *             If the supplied module URI is invalid or unresolveable.
+	 */ 
 	public static String getDeployedName(URI aModuleURI) throws UnresolveableURIException {
 		ensureValidFullyQualifiedModuleURI(aModuleURI);
 		return aModuleURI.segment(ModuleCore.ModuleURI.MODULE_NAME_INDX);

@@ -23,7 +23,7 @@ import org.eclipse.wst.common.modulecore.ArtifactEditModel;
  * The following class is experimental until fully documented.
  * </p>
  */
-public class ModuleEditModelFactory extends EditModelFactory {
+public class ArtifactEditModelFactory extends EditModelFactory {
 	
 	public static final String MODULE_EDIT_MODEL_ID = "org.eclipse.wst.modulecore.editModel"; //$NON-NLS-1$
 	
