@@ -176,7 +176,7 @@ public interface IPerformanceMonitor
 	 * 
 	 * @return some status information
 	 */
-//	public Upload.Status upload(String description);
+	public Upload.Status upload(String description);
 //	
 //	/**
 //	 * Upload the results to the server. This causes the file to be
