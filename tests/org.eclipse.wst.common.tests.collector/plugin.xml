@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="org.eclipse.wst.common.tests.collector"
+   name="org.eclipse.wst.common.tests.collector"
+   version="1.0.0"
+   class="org.eclipse.wst.common.tests.collector.TestCollectorPlugin">
+
+   <runtime>
+      <library name="runtime/collector.jar"/>
+   </runtime>
+   <requires>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.ui.views"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.junit"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime.compatibility"/>
+   </requires>
+
+
+   <extension-point id="suites" name="suites"/>
+
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            label="Test Collector"
+            visible="true"
+            id="testCollector">
+         <menu
+               label="WTP Tests"
+               path="additions"
+               id="org.eclipse.wst.common.tests.collector.testsMenu">
+            <separator
+                  name="group1">
+            </separator>
+         </menu>
+         <action
+               label="Open"
+               tooltip="Test Collector"
+               class="org.eclipse.wst.common.tests.collector.TestCollectorActionDelegate"
+               menubarPath="org.eclipse.wst.common.tests.collector.testsMenu/group1"
+               id="org.eclipse.wst.common.tests.collector.testsAction">
+         </action>
+      </actionSet>
+   </extension>
+
+</plugin>

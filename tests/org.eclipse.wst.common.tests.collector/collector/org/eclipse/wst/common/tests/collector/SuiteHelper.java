@@ -38,9 +38,9 @@ public class SuiteHelper {
 
     public String[] getAllTests() {
         ArrayList testList = new ArrayList();
-        Enumeration enum = allTests.keys();
-        while (enum.hasMoreElements()) {
-            testList.add(enum.nextElement());
+        Enumeration enumeration = allTests.keys();
+        while (enumeration.hasMoreElements()) {
+            testList.add(enumeration.nextElement());
         }
         Collections.sort(testList, new Comparator() {
             public int compare(Object o1, Object o2) {
