@@ -24,9 +24,9 @@ package org.eclipse.wst.common.frameworks.internal.ui;
  */
 public interface WTPGenericActionIds {
 
-	String CUT = "com.ibm.wtp.generic.Cut"; //$NON-NLS-1$
-	String COPY = "com.ibm.wtp.generic.Copy"; //$NON-NLS-1$
-	String PASTE = "com.ibm.wtp.generic.Paste"; //$NON-NLS-1$
-	String RENAME = "com.ibm.wtp.generic.Rename"; //$NON-NLS-1$
-	String DELETE = "com.ibm.wtp.generic.Delete"; //$NON-NLS-1$
+	String CUT = "org.eclipse.wst.common.generic.Cut"; //$NON-NLS-1$
+	String COPY = "org.eclipse.wst.common.generic.Copy"; //$NON-NLS-1$
+	String PASTE = "org.eclipse.wst.common.generic.Paste"; //$NON-NLS-1$
+	String RENAME = "org.eclipse.wst.common.generic.Rename"; //$NON-NLS-1$
+	String DELETE = "org.eclipse.wst.common.generic.Delete"; //$NON-NLS-1$
 }

@@ -59,5 +59,15 @@
          </run>
       </application>
    </extension>
+   
+   <extension
+        id="emfValidationHandler"
+        name="emfValidationHandler"
+        point="org.eclipse.wst.common.frameworks.validationSelectionHandler">
+      <validationSelectionHandler
+        id="emfValidationHandler"
+        handlerClass="org.eclipse.wst.common.internal.emfworkbench.EmfValidationHandler"
+        selectionType="org.eclipse.emf.ecore.EObject"/>
+   </extension>
 
 </plugin>

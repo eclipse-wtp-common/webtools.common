@@ -4,7 +4,6 @@
    id="org.eclipse.wst.common.frameworks"
    name="org.eclipse.wst.common.frameworks"
    version="1.0.0"
-   provider-name="Eclipse.org"
    class="org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin">
 
    <runtime>
@@ -27,7 +26,8 @@
    <extension-point id="OperationExtension" name="OperationExtension" schema="schema/OperationExtension.exsd"/>
    <extension-point id="functionGroup" name="Function Extension Group" schema="schema/functionGroup.exsd"/>
    <extension-point id="WTPActivityBridgeHelper" name="WTPActivityBridgeHelper" schema="schema/WTPActivityBridgeHelper.exsd"/>
-
+   <extension-point id="validationSelectionHandler" name="validationSelectionHandler" schema="schema/validationSelectionHandler.exsd"/>
+   
    <extension
          id="context.Sensitive.Class.saveHandler"
          name="Save Handler - Headless Context Class"
