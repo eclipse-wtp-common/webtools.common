@@ -26,21 +26,22 @@ public interface IModuleConstants {
 
 	//moduleTypes
 	public final static String JST_WEB_MODULE = "jst.web"; //$NON-NLS-1$
+	public final static String JST_EJB_MODULE = "jst.ejb"; //$NON-NLS-1$
 	public final static String JST_UTILITY_MODULE = "jst.utility"; //$NON-NLS-1$
 	public final static String WST_WEB_MODULE = "wst.web"; //$NON-NLS-1$
 	
-	public final static String J2EE_VERSION_1_2 = "1.2";
-	public final static String J2EE_VERSION_1_3 = "1.3";
-	public final static String J2EE_VERSION_1_4 = "1.4";	
+	public final static String J2EE_VERSION_1_2 = "1.2"; //$NON-NLS-1$
+	public final static String J2EE_VERSION_1_3 = "1.3"; //$NON-NLS-1$
+	public final static String J2EE_VERSION_1_4 = "1.4"; //$NON-NLS-1$
 	
 	
-	public final static String JSP_VERSION_1_1 = "1.1";
-	public final static String JSP_VERSION_1_2 = "1.2";
-	public final static String JSP_VERSION_2_0 = "2.0";		
+	public final static String JSP_VERSION_1_1 = "1.1"; //$NON-NLS-1$
+	public final static String JSP_VERSION_1_2 = "1.2"; //$NON-NLS-1$
+	public final static String JSP_VERSION_2_0 = "2.0";	//$NON-NLS-1$	
 	
 	
-	public final static String SERVLET_VERSION_2_2 = "2.2";
-	public final static String SERVLET_VERSION_2_3 = "2.3";
-	public final static String SERVLET_VERSION_2_4 = "2.4";	
+	public final static String SERVLET_VERSION_2_2 = "2.2"; //$NON-NLS-1$
+	public final static String SERVLET_VERSION_2_3 = "2.3"; //$NON-NLS-1$
+	public final static String SERVLET_VERSION_2_4 = "2.4"; //$NON-NLS-1$	
 	 
 }
