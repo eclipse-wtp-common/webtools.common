@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleTypeImpl.java,v 1.1 2005/02/13 16:27:46 cbridgha Exp $
+ * $Id: ComponentTypeImpl.java,v 1.1 2005/03/15 00:43:55 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.internal.impl;
 
@@ -17,7 +17,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.util.EDataTypeUniqueEList;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
-import org.eclipse.wst.common.modulecore.ModuleType;
+import org.eclipse.wst.common.modulecore.ComponentType;
 
 /**
  * <!-- begin-user-doc -->
@@ -26,14 +26,14 @@ import org.eclipse.wst.common.modulecore.ModuleType;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ModuleTypeImpl#getMetadataResources <em>Metadata Resources</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ModuleTypeImpl#getModuleTypeId <em>Module Type Id</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ComponentTypeImpl#getMetadataResources <em>Metadata Resources</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ComponentTypeImpl#getModuleTypeId <em>Module Type Id</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public class ModuleTypeImpl extends EObjectImpl implements ModuleType {
+public class ComponentTypeImpl extends EObjectImpl implements ComponentType {
 	/**
 	 * The cached value of the '{@link #getMetadataResources() <em>Metadata Resources</em>}' attribute list.
 	 * <!-- begin-user-doc -->
@@ -69,7 +69,7 @@ public class ModuleTypeImpl extends EObjectImpl implements ModuleType {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected ModuleTypeImpl() {
+	protected ComponentTypeImpl() {
 		super();
 	}
 
@@ -197,4 +197,4 @@ public class ModuleTypeImpl extends EObjectImpl implements ModuleType {
 		return result.toString();
 	}
 
-} //ModuleTypeImpl
+} //ComponentTypeImpl

@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreFactoryImpl.java,v 1.1 2005/02/13 16:27:46 cbridgha Exp $
+ * $Id: ModuleCoreFactoryImpl.java,v 1.2 2005/03/15 00:43:55 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.internal.impl;
 
@@ -12,13 +12,13 @@ import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
 import org.eclipse.wst.common.modulecore.DependencyType;
-import org.eclipse.wst.common.modulecore.DependentModule;
+import org.eclipse.wst.common.modulecore.ReferencedComponent;
 import org.eclipse.wst.common.modulecore.ModuleCoreFactory;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
-import org.eclipse.wst.common.modulecore.ModuleType;
-import org.eclipse.wst.common.modulecore.ProjectModules;
-import org.eclipse.wst.common.modulecore.WorkbenchModule;
-import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
+import org.eclipse.wst.common.modulecore.ComponentType;
+import org.eclipse.wst.common.modulecore.ProjectComponents;
+import org.eclipse.wst.common.modulecore.WorkbenchComponent;
+import org.eclipse.wst.common.modulecore.ComponentResource;
 
 /**
  * <!-- begin-user-doc -->
@@ -94,8 +94,8 @@ public class ModuleCoreFactoryImpl extends EFactoryImpl implements ModuleCoreFac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public WorkbenchModule createWorkbenchModule() {
-		WorkbenchModuleImpl workbenchModule = new WorkbenchModuleImpl();
+	public WorkbenchComponent createWorkbenchModule() {
+		WorkbenchComponentImpl workbenchModule = new WorkbenchComponentImpl();
 		return workbenchModule;
 	}
 
@@ -104,8 +104,8 @@ public class ModuleCoreFactoryImpl extends EFactoryImpl implements ModuleCoreFac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public WorkbenchModuleResource createWorkbenchModuleResource() {
-		WorkbenchModuleResourceImpl workbenchModuleResource = new WorkbenchModuleResourceImpl();
+	public ComponentResource createWorkbenchModuleResource() {
+		ComponentResourceImpl workbenchModuleResource = new ComponentResourceImpl();
 		return workbenchModuleResource;
 	}
 
@@ -114,8 +114,8 @@ public class ModuleCoreFactoryImpl extends EFactoryImpl implements ModuleCoreFac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ModuleType createModuleType() {
-		ModuleTypeImpl moduleType = new ModuleTypeImpl();
+	public ComponentType createModuleType() {
+		ComponentTypeImpl moduleType = new ComponentTypeImpl();
 		return moduleType;
 	}
 
@@ -124,8 +124,8 @@ public class ModuleCoreFactoryImpl extends EFactoryImpl implements ModuleCoreFac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ProjectModules createProjectModules() {
-		ProjectModulesImpl projectModules = new ProjectModulesImpl();
+	public ProjectComponents createProjectModules() {
+		ProjectComponentsImpl projectModules = new ProjectComponentsImpl();
 		return projectModules;
 	}
 
@@ -134,8 +134,8 @@ public class ModuleCoreFactoryImpl extends EFactoryImpl implements ModuleCoreFac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public DependentModule createDependentModule() {
-		DependentModuleImpl dependentModule = new DependentModuleImpl();
+	public ReferencedComponent createDependentModule() {
+		ReferencedComponentImpl dependentModule = new ReferencedComponentImpl();
 		return dependentModule;
 	}
 

@@ -17,8 +17,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.wst.common.modulecore.UnresolveableURIException;
-import org.eclipse.wst.common.modulecore.WorkbenchModule;
-import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
+import org.eclipse.wst.common.modulecore.WorkbenchComponent;
+import org.eclipse.wst.common.modulecore.ComponentResource;
 import org.eclipse.wst.common.modulecore.internal.util.IPathProvider;
 
 /**
@@ -29,7 +29,7 @@ import org.eclipse.wst.common.modulecore.internal.util.IPathProvider;
 public class ResourceTreeRoot extends ResourceTreeNode {
 
 	
-	public static ResourceTreeRoot getSourceResourceTreeRoot(WorkbenchModule aModule) {
+	public static ResourceTreeRoot getSourceResourceTreeRoot(WorkbenchComponent aModule) {
 		ResourceTreeRootAdapter resourceTreeAdapter = (ResourceTreeRootAdapter) EcoreUtil.getAdapter(aModule.eAdapters(), ResourceTreeRootAdapter.SOURCE_ADAPTER_TYPE);
 		if (resourceTreeAdapter != null)
 			return resourceTreeAdapter.getResourceTreeRoot();
@@ -38,7 +38,7 @@ public class ResourceTreeRoot extends ResourceTreeNode {
 		return resourceTreeAdapter.getResourceTreeRoot();
 	}
 
-	public static ResourceTreeRoot getDeployResourceTreeRoot(WorkbenchModule aModule) {
+	public static ResourceTreeRoot getDeployResourceTreeRoot(WorkbenchComponent aModule) {
 		ResourceTreeRootAdapter resourceTreeAdapter = (ResourceTreeRootAdapter) EcoreUtil.getAdapter(aModule.eAdapters(), ResourceTreeRootAdapter.DEPLOY_ADAPTER_TYPE);
 		if (resourceTreeAdapter != null)
 			return resourceTreeAdapter.getResourceTreeRoot();
@@ -47,9 +47,9 @@ public class ResourceTreeRoot extends ResourceTreeNode {
 		return resourceTreeAdapter.getResourceTreeRoot();
 	}
 	
-	private final WorkbenchModule module;
+	private final WorkbenchComponent module;
 
-	public ResourceTreeRoot(WorkbenchModule aModule, IPathProvider aPathProvider) {
+	public ResourceTreeRoot(WorkbenchComponent aModule, IPathProvider aPathProvider) {
 		super("/", null, aPathProvider); //$NON-NLS-1$
 		module = aModule; 	
 		init();
@@ -57,14 +57,14 @@ public class ResourceTreeRoot extends ResourceTreeNode {
 
 	private void init() {
 		List moduleResources = module.getResources();
-		WorkbenchModuleResource moduleResource = null;
+		ComponentResource moduleResource = null;
 		for (int i = 0; i < moduleResources.size(); i++) {
-			moduleResource = (WorkbenchModuleResource) moduleResources.get(i);
+			moduleResource = (ComponentResource) moduleResources.get(i);
 			addChild(moduleResource);
 		}
 	}
 
-	public WorkbenchModuleResource[] findModuleResources(URI aURI) {
+	public ComponentResource[] findModuleResources(URI aURI) {
 		IPath path = new Path(aURI.toString());
 		try {
 			if (ModuleURIUtil.ensureValidFullyQualifiedPlatformURI(aURI, false))

@@ -7,7 +7,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.wst.common.frameworks.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
 import org.eclipse.wst.common.modulecore.ModuleCore;
-import org.eclipse.wst.common.modulecore.WorkbenchModule;
+import org.eclipse.wst.common.modulecore.WorkbenchComponent;
 
 public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataModel {
 	/**
@@ -19,7 +19,7 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
 	 */
 	public static final String OUTPUT_CONTAINER = "DeployableModuleDataModel.OUTPUT_CONTAINER"; //$NON-NLS-1$
 	/**
-	 * Required, type WorkbenchModule
+	 * Required, type WorkbenchComponent
 	 */
 	public static final String WORKBENCH_MODULE = "DeployableModuleDataModel.WORKBENCH_MODULE_RESOURCES"; //$NON-NLS-1$
 	/**
@@ -68,7 +68,7 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
      * @return
      */
     private Object populateDependentModulesDM() {
-        WorkbenchModule wbModule = (WorkbenchModule)getProperty(WORKBENCH_MODULE);
+        WorkbenchComponent wbModule = (WorkbenchComponent)getProperty(WORKBENCH_MODULE);
         List depModules = wbModule.getModules();
         List depModulesDataModels = new ArrayList();
         DependentDeployableModuleDataModel dependentDataModel;
@@ -87,7 +87,7 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
      * @return
      */
     private Object populateOutputContainer() {
-        WorkbenchModule wbModule = (WorkbenchModule)getProperty(WORKBENCH_MODULE);
+        WorkbenchComponent wbModule = (WorkbenchComponent)getProperty(WORKBENCH_MODULE);
         IFolder outputContainer = null;
         if(wbModule != null)
         	outputContainer = ModuleCore.getOutputContainerRoot(wbModule);

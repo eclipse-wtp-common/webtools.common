@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreSwitch.java,v 1.1 2005/02/13 16:27:46 cbridgha Exp $
+ * $Id: ModuleCoreSwitch.java,v 1.2 2005/03/15 00:43:56 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.internal.util;
 
@@ -10,12 +10,12 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.wst.common.modulecore.DependentModule;
+import org.eclipse.wst.common.modulecore.ReferencedComponent;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
-import org.eclipse.wst.common.modulecore.ModuleType;
-import org.eclipse.wst.common.modulecore.ProjectModules;
-import org.eclipse.wst.common.modulecore.WorkbenchModule;
-import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
+import org.eclipse.wst.common.modulecore.ComponentType;
+import org.eclipse.wst.common.modulecore.ProjectComponents;
+import org.eclipse.wst.common.modulecore.WorkbenchComponent;
+import org.eclipse.wst.common.modulecore.ComponentResource;
 
 /**
  * <!-- begin-user-doc -->
@@ -92,31 +92,31 @@ public class ModuleCoreSwitch {
 	protected Object doSwitch(int classifierID, EObject theEObject) {
 		switch (classifierID) {
 			case ModuleCorePackage.WORKBENCH_MODULE: {
-				WorkbenchModule workbenchModule = (WorkbenchModule)theEObject;
+				WorkbenchComponent workbenchModule = (WorkbenchComponent)theEObject;
 				Object result = caseWorkbenchModule(workbenchModule);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
 			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE: {
-				WorkbenchModuleResource workbenchModuleResource = (WorkbenchModuleResource)theEObject;
+				ComponentResource workbenchModuleResource = (ComponentResource)theEObject;
 				Object result = caseWorkbenchModuleResource(workbenchModuleResource);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
 			case ModuleCorePackage.MODULE_TYPE: {
-				ModuleType moduleType = (ModuleType)theEObject;
+				ComponentType moduleType = (ComponentType)theEObject;
 				Object result = caseModuleType(moduleType);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
 			case ModuleCorePackage.PROJECT_MODULES: {
-				ProjectModules projectModules = (ProjectModules)theEObject;
+				ProjectComponents projectModules = (ProjectComponents)theEObject;
 				Object result = caseProjectModules(projectModules);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
 			case ModuleCorePackage.DEPENDENT_MODULE: {
-				DependentModule dependentModule = (DependentModule)theEObject;
+				ReferencedComponent dependentModule = (ReferencedComponent)theEObject;
 				Object result = caseDependentModule(dependentModule);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
@@ -136,7 +136,7 @@ public class ModuleCoreSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseWorkbenchModule(WorkbenchModule object) {
+	public Object caseWorkbenchModule(WorkbenchComponent object) {
 		return null;
 	}
 
@@ -151,7 +151,7 @@ public class ModuleCoreSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseWorkbenchModuleResource(WorkbenchModuleResource object) {
+	public Object caseWorkbenchModuleResource(ComponentResource object) {
 		return null;
 	}
 
@@ -166,7 +166,7 @@ public class ModuleCoreSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseModuleType(ModuleType object) {
+	public Object caseModuleType(ComponentType object) {
 		return null;
 	}
 
@@ -181,7 +181,7 @@ public class ModuleCoreSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseProjectModules(ProjectModules object) {
+	public Object caseProjectModules(ProjectComponents object) {
 		return null;
 	}
 
@@ -196,7 +196,7 @@ public class ModuleCoreSwitch {
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseDependentModule(DependentModule object) {
+	public Object caseDependentModule(ReferencedComponent object) {
 		return null;
 	}
 

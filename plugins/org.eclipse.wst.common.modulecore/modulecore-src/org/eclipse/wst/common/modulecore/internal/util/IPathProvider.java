@@ -11,7 +11,7 @@
 package org.eclipse.wst.common.modulecore.internal.util;
 
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
+import org.eclipse.wst.common.modulecore.ComponentResource;
 
 /**
  * <p>
@@ -20,6 +20,6 @@ import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
  */
 public interface IPathProvider {
 	
-	URI getPath(WorkbenchModuleResource aModuleResource);
+	URI getPath(ComponentResource aModuleResource);
 
 }

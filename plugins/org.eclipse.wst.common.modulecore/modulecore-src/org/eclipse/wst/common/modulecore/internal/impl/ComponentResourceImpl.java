@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchModuleResourceImpl.java,v 1.1 2005/02/13 16:27:46 cbridgha Exp $
+ * $Id: ComponentResourceImpl.java,v 1.1 2005/03/15 00:43:55 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.internal.impl;
 
@@ -20,8 +20,8 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.util.EDataTypeUniqueEList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
-import org.eclipse.wst.common.modulecore.WorkbenchModule;
-import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
+import org.eclipse.wst.common.modulecore.WorkbenchComponent;
+import org.eclipse.wst.common.modulecore.ComponentResource;
 
 /**
  * <!-- begin-user-doc -->
@@ -30,16 +30,16 @@ import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.WorkbenchModuleResourceImpl#getSourcePath <em>Source Path</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.WorkbenchModuleResourceImpl#getDeployedPath <em>Deployed Path</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.WorkbenchModuleResourceImpl#getExclusions <em>Exclusions</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.WorkbenchModuleResourceImpl#getModule <em>Module</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ComponentResourceImpl#getSourcePath <em>Source Path</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ComponentResourceImpl#getDeployedPath <em>Deployed Path</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ComponentResourceImpl#getExclusions <em>Exclusions</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ComponentResourceImpl#getModule <em>Module</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public class WorkbenchModuleResourceImpl extends EObjectImpl implements WorkbenchModuleResource {
+public class ComponentResourceImpl extends EObjectImpl implements ComponentResource {
 	/**
 	 * The default value of the '{@link #getSourcePath() <em>Source Path</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -89,13 +89,18 @@ public class WorkbenchModuleResourceImpl extends EObjectImpl implements Workbenc
 	 * @ordered
 	 */
 	protected EList exclusions = null;
+	
+	protected static final int VIRTUAL = 0;
+	protected static final int PERSISTED = 1;
+	
+	private int type = PERSISTED;
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected WorkbenchModuleResourceImpl() {
+	protected ComponentResourceImpl() {
 		super();
 	}
 
@@ -167,9 +172,9 @@ public class WorkbenchModuleResourceImpl extends EObjectImpl implements Workbenc
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public WorkbenchModule getModule() {
+	public WorkbenchComponent getModule() {
 		if (eContainerFeatureID != ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE) return null;
-		return (WorkbenchModule)eContainer;
+		return (WorkbenchComponent)eContainer;
 	}
 
 	/**
@@ -177,7 +182,7 @@ public class WorkbenchModuleResourceImpl extends EObjectImpl implements Workbenc
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setModule(WorkbenchModule newModule) {
+	public void setModule(WorkbenchComponent newModule) {
 		if (newModule != eContainer || (eContainerFeatureID != ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE && newModule != null)) {
 			if (EcoreUtil.isAncestor(this, newModule))
 				throw new IllegalArgumentException("Recursive containment not allowed for " + toString());
@@ -185,7 +190,7 @@ public class WorkbenchModuleResourceImpl extends EObjectImpl implements Workbenc
 			if (eContainer != null)
 				msgs = eBasicRemoveFromContainer(msgs);
 			if (newModule != null)
-				msgs = ((InternalEObject)newModule).eInverseAdd(this, ModuleCorePackage.WORKBENCH_MODULE__RESOURCES, WorkbenchModule.class, msgs);
+				msgs = ((InternalEObject)newModule).eInverseAdd(this, ModuleCorePackage.WORKBENCH_MODULE__RESOURCES, WorkbenchComponent.class, msgs);
 			msgs = eBasicSetContainer((InternalEObject)newModule, ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE, msgs);
 			if (msgs != null) msgs.dispatch();
 		}
@@ -240,7 +245,7 @@ public class WorkbenchModuleResourceImpl extends EObjectImpl implements Workbenc
 		if (eContainerFeatureID >= 0) {
 			switch (eContainerFeatureID) {
 				case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE:
-					return eContainer.eInverseRemove(this, ModuleCorePackage.WORKBENCH_MODULE__RESOURCES, WorkbenchModule.class, msgs);
+					return eContainer.eInverseRemove(this, ModuleCorePackage.WORKBENCH_MODULE__RESOURCES, WorkbenchComponent.class, msgs);
 				default:
 					return eDynamicBasicRemoveFromContainer(msgs);
 			}
@@ -285,7 +290,7 @@ public class WorkbenchModuleResourceImpl extends EObjectImpl implements Workbenc
 				getExclusions().addAll((Collection)newValue);
 				return;
 			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE:
-				setModule((WorkbenchModule)newValue);
+				setModule((WorkbenchComponent)newValue);
 				return;
 		}
 		eDynamicSet(eFeature, newValue);
@@ -308,7 +313,7 @@ public class WorkbenchModuleResourceImpl extends EObjectImpl implements Workbenc
 				getExclusions().clear();
 				return;
 			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE:
-				setModule((WorkbenchModule)null);
+				setModule((WorkbenchComponent)null);
 				return;
 		}
 		eDynamicUnset(eFeature);
@@ -352,4 +357,14 @@ public class WorkbenchModuleResourceImpl extends EObjectImpl implements Workbenc
 		return result.toString();
 	}
 
-} //WorkbenchModuleResourceImpl
+	public int getType() {
+		return type;
+	}
+	
+	
+	public void setType(int type) {
+		this.type = type;
+	}
+	
+
+} //ComponentResourceImpl

@@ -34,15 +34,15 @@ import org.eclipse.wst.common.modulecore.internal.impl.PlatformURLModuleConnecti
  * {@see org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext}&nbsp; to manage the life
  * cycle of an EMF {@see org.eclipse.emf.ecore.resource.Resource}&nbsp; in a given EMF
  * {@see org.eclipse.emf.ecore.resource.ResourceSet}. There is one ArtifactEditModel per
- * {@see org.eclipse.wst.common.modulecore.WorkbenchModule}&nbsp;in each project.
+ * {@see org.eclipse.wst.common.modulecore.WorkbenchComponent}&nbsp;in each project.
  * </p>
  * 
  * @see org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext
  * @see org.eclipse.emf.ecore.resource.Resource
  * @see org.eclipse.emf.ecore.resource.ResourceSet
  * @see org.eclipse.wst.common.modulecore.ModuleCore
- * @see org.eclipse.wst.common.modulecore.WorkbenchModule
- * @see org.eclipse.wst.common.modulecore.WorkbenchModuleResource
+ * @see org.eclipse.wst.common.modulecore.WorkbenchComponent
+ * @see org.eclipse.wst.common.modulecore.ComponentResource
  */
 
 public class ArtifactEditModel extends EditModel implements IAdaptable {
@@ -149,7 +149,7 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 
 	public String getModuleType() {
 		String type = null;
-		WorkbenchModule wbModule;
+		WorkbenchComponent wbModule;
 		ModuleCore moduleCore = null;
 		try {
 			moduleCore = ModuleCore.getModuleCoreForRead(ModuleCore.getContainingProject(moduleURI));
@@ -247,7 +247,7 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 		try {
 			moduleCore = ModuleCore.getModuleCoreForRead(ModuleCore.getContainingProject(moduleURI));
 
-			WorkbenchModuleResource[] relevantModuleResources = null;
+			ComponentResource[] relevantModuleResources = null;
 			URI aResourceURI = null;
 			for (int i = 0; i < size; i++) {
 				try {

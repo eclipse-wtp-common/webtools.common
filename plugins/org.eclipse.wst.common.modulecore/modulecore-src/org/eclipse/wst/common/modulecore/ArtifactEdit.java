@@ -33,8 +33,8 @@ import com.ibm.wtp.internal.emf.workbench.nls.EMFWorkbenchResourceHandler;
  * Each ArtifactEdit facade is designed to manage the EditModel lifecycle for clients. However,
  * while each ArtifactEdit is designed to be passed around as needed, clients must enforce the
  * ArtifactEdit lifecycle. The most common method of acquiring a ArtifactEdit instance facade is to
- * use {@see #getArtifactEditForRead(WorkbenchModule)}&nbsp;or
- * {@see #getArtifactEditForWrite(WorkbenchModule)}.
+ * use {@see #getArtifactEditForRead(WorkbenchComponent)}&nbsp;or
+ * {@see #getArtifactEditForWrite(WorkbenchComponent)}.
  * </p>
  * <p>
  * When clients have concluded their use of the instance, <b>clients must call {@see #dispose()}
@@ -53,16 +53,16 @@ public class ArtifactEdit implements IEditModelHandler {
 	private final ArtifactEditModel artifactEditModel;
 	private boolean isReadOnly;
 	private boolean isArtifactEditModelSelfManaged;
-	protected WorkbenchModule module;
+	protected WorkbenchComponent module;
 
 	/**
 	 * <p>
 	 * Returns an instance facade to manage the underlying edit model for the given
-	 * {@see WorkbenchModule}. Instances of ArtifactEdit that are returned through this method must
+	 * {@see WorkbenchComponent}. Instances of ArtifactEdit that are returned through this method must
 	 * be {@see #dispose()}ed of when no longer in use.
 	 * </p>
 	 * <p>
-	 * Use to acquire an ArtifactEdit facade for a specific {@see WorkbenchModule}&nbsp;that will
+	 * Use to acquire an ArtifactEdit facade for a specific {@see WorkbenchComponent}&nbsp;that will
 	 * not be used for editing. Invocations of any save*() API on an instance returned from this
 	 * method will throw exceptions.
 	 * </p>
@@ -71,12 +71,12 @@ public class ArtifactEdit implements IEditModelHandler {
 	 * </p>
 	 * 
 	 * @param aModule
-	 *            A valid {@see WorkbenchModule}&nbsp;with a handle that resolves to an accessible
+	 *            A valid {@see WorkbenchComponent}&nbsp;with a handle that resolves to an accessible
 	 *            project in the workspace
 	 * @return An instance of ArtifactEdit that may only be used to read the underlying content
 	 *         model
 	 */
-	public static ArtifactEdit getArtifactEditForRead(WorkbenchModule aModule) {
+	public static ArtifactEdit getArtifactEditForRead(WorkbenchComponent aModule) {
 		try {
 			if (isValidEditableModule(aModule)) {
 				IProject project = ModuleCore.getContainingProject(aModule.getHandle());
@@ -91,11 +91,11 @@ public class ArtifactEdit implements IEditModelHandler {
 	/**
 	 * <p>
 	 * Returns an instance facade to manage the underlying edit model for the given
-	 * {@see WorkbenchModule}. Instances of ArtifactEdit that are returned through this method must
+	 * {@see WorkbenchComponent}. Instances of ArtifactEdit that are returned through this method must
 	 * be {@see #dispose()}ed of when no longer in use.
 	 * </p>
 	 * <p>
-	 * Use to acquire an ArtifactEdit facade for a specific {@see WorkbenchModule}&nbsp;that will
+	 * Use to acquire an ArtifactEdit facade for a specific {@see WorkbenchComponent}&nbsp;that will
 	 * be used for editing.
 	 * </p>
 	 * <p>
@@ -103,12 +103,12 @@ public class ArtifactEdit implements IEditModelHandler {
 	 * </p>
 	 * 
 	 * @param aModule
-	 *            A valid {@see WorkbenchModule}&nbsp;with a handle that resolves to an accessible
+	 *            A valid {@see WorkbenchComponent}&nbsp;with a handle that resolves to an accessible
 	 *            project in the workspace
 	 * @return An instance of ArtifactEdit that may be used to modify and persist changes to the
 	 *         underlying content model
 	 */
-	public static ArtifactEdit getArtifactEditForWrite(WorkbenchModule aModule) {
+	public static ArtifactEdit getArtifactEditForWrite(WorkbenchComponent aModule) {
 		try {
 			if (isValidEditableModule(aModule)) {
 				IProject project = ModuleCore.getContainingProject(aModule.getHandle());
@@ -122,14 +122,16 @@ public class ArtifactEdit implements IEditModelHandler {
 
 	/**
 	 * @param module
-	 *            A {@see WorkbenchModule}
+	 *            A {@see WorkbenchComponent}
 	 * @return True if the supplied module has a moduleTypeId which has a defined
 	 *         {@see IEditModelFactory}&nbsp;and is contained by an accessible project
 	 */
-	public static boolean isValidEditableModule(WorkbenchModule aModule) throws UnresolveableURIException {
-		/* The ModuleType must be non-null, and the moduleTypeId must be non-null */
-		ModuleType moduleType = aModule.getModuleType();
+	public static boolean isValidEditableModule(WorkbenchComponent aModule) throws UnresolveableURIException {
+		/* The ComponentType must be non-null, and the moduleTypeId must be non-null */
+		ComponentType moduleType = aModule.getModuleType();
 		if (moduleType == null || moduleType.getModuleTypeId() == null)
+			return false;
+		if(aModule.getHandle() == null)
 			return false;
 		/* and the containing project must be resolveable and accessible */
 		IProject project = ModuleCore.getContainingProject(aModule.getHandle());
@@ -158,16 +160,16 @@ public class ArtifactEdit implements IEditModelHandler {
 
 	/**
 	 * <p>
-	 * Creates an instance facade for the given {@see WorkbenchModule}.
+	 * Creates an instance facade for the given {@see WorkbenchComponent}.
 	 * </p>
 	 * 
 	 * @param aNature
 	 *            A non-null {@see ModuleCoreNature}&nbsp;for an accessible project
 	 * @param aModule
-	 *            A non-null {@see WorkbenchModule}&nbsp;pointing to a module from the given
+	 *            A non-null {@see WorkbenchComponent}&nbsp;pointing to a module from the given
 	 *            {@see ModuleCoreNature}
 	 */
-	public ArtifactEdit(ModuleCoreNature aNature, WorkbenchModule aModule, boolean toAccessAsReadOnly) {
+	public ArtifactEdit(ModuleCoreNature aNature, WorkbenchComponent aModule, boolean toAccessAsReadOnly) {
 		if (toAccessAsReadOnly)
 			artifactEditModel = aNature.getArtifactEditModelForRead(aModule.getHandle(), this);
 		else

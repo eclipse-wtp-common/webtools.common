@@ -13,7 +13,7 @@ import org.eclipse.emf.ecore.EObject;
 
 /**
  * <!-- begin-user-doc --> 
- * Indicates how the {@see org.eclipse.wst.common.modulecore.WorkbenchModule}&nbsp;should be handled by
+ * Indicates how the {@see org.eclipse.wst.common.modulecore.WorkbenchComponent}&nbsp;should be handled by
  * the tooling.  
  * <p>
  * In particular, the {@see #getModuleTypeId()}&nbsp; is used to coordinate other
@@ -29,9 +29,9 @@ import org.eclipse.emf.ecore.EObject;
  * The following features are supported:
  * <ul>
  * <li>
- * {@link org.eclipse.wst.common.modulecore.ModuleType#getMetadataResources <em>Metadata Resources</em>}
+ * {@link org.eclipse.wst.common.modulecore.ComponentType#getMetadataResources <em>Metadata Resources</em>}
  * </li>
- * <li>{@link org.eclipse.wst.common.modulecore.ModuleType#getModuleTypeId <em>Module Type Id</em>}
+ * <li>{@link org.eclipse.wst.common.modulecore.ComponentType#getModuleTypeId <em>Module Type Id</em>}
  * </li>
  * </ul>
  * </p>
@@ -40,7 +40,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model
  * @generated
  */
-public interface ModuleType extends EObject {
+public interface ComponentType extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Metadata Resources</b></em>' attribute list. The list
 	 * contents are of type {@link org.eclipse.emf.common.util.URI}. <!-- begin-user-doc -->
@@ -61,7 +61,7 @@ public interface ModuleType extends EObject {
 	/**
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * Used to hint to the tooling how the {@see WorkbenchModule}should be edited and processed by
+	 * Used to hint to the tooling how the {@see WorkbenchComponent}should be edited and processed by
 	 * the tooling.
 	 * </p>
 	 * <!-- end-user-doc -->
@@ -76,7 +76,7 @@ public interface ModuleType extends EObject {
 
 	/**
 	 * Sets the value of the '
-	 * {@link org.eclipse.wst.common.modulecore.ModuleType#getModuleTypeId <em>Module Type Id</em>}'
+	 * {@link org.eclipse.wst.common.modulecore.ComponentType#getModuleTypeId <em>Module Type Id</em>}'
 	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @param value
@@ -86,4 +86,4 @@ public interface ModuleType extends EObject {
 	 */
 	void setModuleTypeId(String value);
 
-} // ModuleType
+} // ComponentType

@@ -14,7 +14,7 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
-import org.eclipse.wst.common.modulecore.WorkbenchModule;
+import org.eclipse.wst.common.modulecore.WorkbenchComponent;
 
 /**
  * <p>
@@ -34,11 +34,11 @@ public class ModuleIndexingAdapter extends AdapterImpl {
 		if (aNotification.getNotifier() instanceof EObject) {
 			EObject notifier = (EObject) aNotification.getNotifier();
 			if (notifier.eClass().getClassifierID() == ModuleCorePackage.PROJECT_MODULES) {
-				ProjectModulesImpl projectModules = (ProjectModulesImpl) notifier;
+				ProjectComponentsImpl projectModules = (ProjectComponentsImpl) notifier;
 				synchronized (projectModules.getModulesIndex()) {
 					switch (aNotification.getEventType()) {
 						case Notification.ADD :
-							WorkbenchModule module = (WorkbenchModule) aNotification.getNewValue();
+							WorkbenchComponent module = (WorkbenchComponent) aNotification.getNewValue();
 							projectModules.getModulesIndex().put(module.getDeployedName(), module);
 					}
 				} 

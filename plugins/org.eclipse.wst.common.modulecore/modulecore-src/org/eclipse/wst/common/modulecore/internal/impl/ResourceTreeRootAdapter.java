@@ -13,7 +13,7 @@ package org.eclipse.wst.common.modulecore.internal.impl;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
-import org.eclipse.wst.common.modulecore.WorkbenchModule;
+import org.eclipse.wst.common.modulecore.WorkbenchComponent;
 import org.eclipse.wst.common.modulecore.internal.util.DeployedPathProvider;
 import org.eclipse.wst.common.modulecore.internal.util.IPathProvider;
 import org.eclipse.wst.common.modulecore.internal.util.SourcePathProvider;
@@ -57,7 +57,7 @@ public class ResourceTreeRootAdapter extends AdapterImpl implements Adapter {
 		synchronized(this) {
 			if(resourceTreeRoot == null) {
 				IPathProvider pathProvider= (type == DEPLOY_TREE) ? DeployedPathProvider.INSTANCE : SourcePathProvider.INSTANCE;
-				resourceTreeRoot = new ResourceTreeRoot((WorkbenchModule)getTarget(), pathProvider);
+				resourceTreeRoot = new ResourceTreeRoot((WorkbenchComponent)getTarget(), pathProvider);
 			}
 		}
 		return resourceTreeRoot;

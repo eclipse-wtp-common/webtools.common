@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: DependentModuleImpl.java,v 1.1 2005/02/13 16:27:46 cbridgha Exp $
+ * $Id: ReferencedComponentImpl.java,v 1.1 2005/03/15 00:43:55 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.internal.impl;
 
@@ -13,7 +13,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.wst.common.modulecore.DependencyType;
-import org.eclipse.wst.common.modulecore.DependentModule;
+import org.eclipse.wst.common.modulecore.ReferencedComponent;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 
 /**
@@ -23,15 +23,15 @@ import org.eclipse.wst.common.modulecore.ModuleCorePackage;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.DependentModuleImpl#getHandle <em>Handle</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.DependentModuleImpl#getDeployedPath <em>Deployed Path</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.DependentModuleImpl#getDependencyType <em>Dependency Type</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ReferencedComponentImpl#getHandle <em>Handle</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ReferencedComponentImpl#getDeployedPath <em>Deployed Path</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ReferencedComponentImpl#getDependencyType <em>Dependency Type</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public class DependentModuleImpl extends EObjectImpl implements DependentModule {
+public class ReferencedComponentImpl extends EObjectImpl implements ReferencedComponent {
 	/**
 	 * The default value of the '{@link #getHandle() <em>Handle</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -97,7 +97,7 @@ public class DependentModuleImpl extends EObjectImpl implements DependentModule 
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected DependentModuleImpl() {
+	protected ReferencedComponentImpl() {
 		super();
 	}
 
@@ -266,4 +266,4 @@ public class DependentModuleImpl extends EObjectImpl implements DependentModule 
 		return result.toString();
 	}
 
-} //DependentModuleImpl
+} //ReferencedComponentImpl

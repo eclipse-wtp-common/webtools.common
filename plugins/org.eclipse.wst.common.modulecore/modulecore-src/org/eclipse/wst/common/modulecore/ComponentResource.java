@@ -1,7 +1,7 @@
 /**
  * <copyright></copyright>
  * 
- * $Id: WorkbenchModuleResource.java,v 1.3 2005/02/18 17:50:05 cbridgha Exp $
+ * $Id: ComponentResource.java,v 1.1 2005/03/15 00:43:55 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -17,8 +17,8 @@ import org.eclipse.emf.ecore.EObject;
  * {@see #getSourcePath()}&nbsp; is a container, then the {@see #getDeployedPath()}&nbsp; will be
  * a container as well.
  * </p>Clients that require access to the underlying Eclipse Resource for a given
- * WorkbenchModuleResource should use 
- * {@see org.eclipse.wst.common.modulecore.ModuleCore#getEclipseResource(WorkbenchModuleResource)}&nbsp;
+ * ComponentResource should use 
+ * {@see org.eclipse.wst.common.modulecore.ModuleCore#getEclipseResource(ComponentResource)}&nbsp;
  * <p>
  * See the package overview for an <a href="package-summary.html">overview of the model components </a>.
  * </p>
@@ -28,15 +28,15 @@ import org.eclipse.emf.ecore.EObject;
  * The following features are supported:
  * <ul>
  * <li>
- * {@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getSourcePath <em>Source Path</em>}
+ * {@link org.eclipse.wst.common.modulecore.ComponentResource#getSourcePath <em>Source Path</em>}
  * </li>
  * <li>
- * {@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getDeployedPath <em>Deployed Path</em>}
+ * {@link org.eclipse.wst.common.modulecore.ComponentResource#getDeployedPath <em>Deployed Path</em>}
  * </li>
  * <li>
- * {@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getExclusions <em>Exclusions</em>}
+ * {@link org.eclipse.wst.common.modulecore.ComponentResource#getExclusions <em>Exclusions</em>}
  * </li>
- * <li>{@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getModule <em>Module</em>}
+ * <li>{@link org.eclipse.wst.common.modulecore.ComponentResource#getModule <em>Module</em>}
  * </li>
  * </ul>
  * </p>
@@ -45,7 +45,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model
  * @generated
  */
-public interface WorkbenchModuleResource extends EObject {
+public interface ComponentResource extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Source Path</b></em>' attribute. <!-- begin-user-doc
 	 * -->
@@ -65,7 +65,7 @@ public interface WorkbenchModuleResource extends EObject {
 
 	/**
 	 * Sets the value of the '
-	 * {@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getSourcePath <em>Source Path</em>}'
+	 * {@link org.eclipse.wst.common.modulecore.ComponentResource#getSourcePath <em>Source Path</em>}'
 	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @param value
@@ -94,7 +94,7 @@ public interface WorkbenchModuleResource extends EObject {
 
 	/**
 	 * Sets the value of the '
-	 * {@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getDeployedPath <em>Deployed Path</em>}'
+	 * {@link org.eclipse.wst.common.modulecore.ComponentResource#getDeployedPath <em>Deployed Path</em>}'
 	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @param value
@@ -124,7 +124,7 @@ public interface WorkbenchModuleResource extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Module</b></em>' container reference. It is
 	 * bidirectional and its opposite is '
-	 * {@link org.eclipse.wst.common.modulecore.WorkbenchModule#getResources <em>Resources</em>}'.
+	 * {@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getResources <em>Resources</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Module</em>' container reference isn't clear, there really
@@ -133,17 +133,17 @@ public interface WorkbenchModuleResource extends EObject {
 	 * <!-- end-user-doc -->
 	 * 
 	 * @return the value of the '<em>Module</em>' container reference.
-	 * @see #setModule(WorkbenchModule)
+	 * @see #setModule(WorkbenchComponent)
 	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchModuleResource_Module()
-	 * @see org.eclipse.wst.common.modulecore.WorkbenchModule#getResources
+	 * @see org.eclipse.wst.common.modulecore.WorkbenchComponent#getResources
 	 * @model opposite="resources" required="true"
 	 * @generated
 	 */
-	WorkbenchModule getModule();
+	WorkbenchComponent getModule();
 
 	/**
 	 * Sets the value of the '
-	 * {@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getModule <em>Module</em>}'
+	 * {@link org.eclipse.wst.common.modulecore.ComponentResource#getModule <em>Module</em>}'
 	 * container reference. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @param value
@@ -151,6 +151,6 @@ public interface WorkbenchModuleResource extends EObject {
 	 * @see #getModule()
 	 * @generated
 	 */
-	void setModule(WorkbenchModule value);
+	void setModule(WorkbenchComponent value);
 
-} // WorkbenchModuleResource
+} // ComponentResource

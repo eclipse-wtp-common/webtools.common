@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ProjectModulesImpl.java,v 1.1 2005/02/13 16:27:46 cbridgha Exp $
+ * $Id: ProjectComponentsImpl.java,v 1.1 2005/03/15 00:43:55 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.internal.impl;
 
@@ -24,8 +24,8 @@ import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
-import org.eclipse.wst.common.modulecore.ProjectModules;
-import org.eclipse.wst.common.modulecore.WorkbenchModule;
+import org.eclipse.wst.common.modulecore.ProjectComponents;
+import org.eclipse.wst.common.modulecore.WorkbenchComponent;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Project Modules</b></em>'.
@@ -33,14 +33,14 @@ import org.eclipse.wst.common.modulecore.WorkbenchModule;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ProjectModulesImpl#getProjectName <em>Project Name</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ProjectModulesImpl#getWorkbenchModules <em>Workbench Modules</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ProjectComponentsImpl#getProjectName <em>Project Name</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.ProjectComponentsImpl#getWorkbenchModules <em>Workbench Modules</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public class ProjectModulesImpl extends EObjectImpl implements ProjectModules {
+public class ProjectComponentsImpl extends EObjectImpl implements ProjectComponents {
 	/**
 	 * The default value of the '{@link #getProjectName() <em>Project Name</em>}' attribute. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
@@ -78,7 +78,7 @@ public class ProjectModulesImpl extends EObjectImpl implements ProjectModules {
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected ProjectModulesImpl() {
+	protected ProjectComponentsImpl() {
 		super();
 	}
 
@@ -115,7 +115,7 @@ public class ProjectModulesImpl extends EObjectImpl implements ProjectModules {
 	 */
 	public EList getWorkbenchModules() {
 		if (workbenchModules == null) {
-			workbenchModules = new EObjectContainmentEList(WorkbenchModule.class, this, ModuleCorePackage.PROJECT_MODULES__WORKBENCH_MODULES);
+			workbenchModules = new EObjectContainmentEList(WorkbenchComponent.class, this, ModuleCorePackage.PROJECT_MODULES__WORKBENCH_MODULES);
 		}
 		return workbenchModules;
 	}
@@ -211,10 +211,10 @@ public class ProjectModulesImpl extends EObjectImpl implements ProjectModules {
 		return result.toString();
 	}
 
-	public WorkbenchModule findWorkbenchModule(String aDeployName) {
+	public WorkbenchComponent findWorkbenchModule(String aDeployName) {
 		if (!isIndexed()) 
 			indexModules(); 
-		return (WorkbenchModule) getModulesIndex().get(aDeployName);
+		return (WorkbenchComponent) getModulesIndex().get(aDeployName);
 	}
 
 	/**
@@ -236,9 +236,9 @@ public class ProjectModulesImpl extends EObjectImpl implements ProjectModules {
 			if (adapter == null) 
 				eAdapters().add((adapter = new ModuleIndexingAdapter()));
 			
-			WorkbenchModule module = null;
+			WorkbenchComponent module = null;
 			for(Iterator iter = getWorkbenchModules().iterator(); iter.hasNext(); ) {
-				module = (WorkbenchModule) iter.next();
+				module = (WorkbenchComponent) iter.next();
 				modulesIndex.put(module.getDeployedName(), module);
 			}
 		}
@@ -252,4 +252,4 @@ public class ProjectModulesImpl extends EObjectImpl implements ProjectModules {
 		return modulesIndex;
 	}
 
-} // ProjectModulesImpl
+} // ProjectComponentsImpl

@@ -17,10 +17,10 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.wst.common.frameworks.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
-import org.eclipse.wst.common.modulecore.DependentModule;
+import org.eclipse.wst.common.modulecore.ReferencedComponent;
 import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.UnresolveableURIException;
-import org.eclipse.wst.common.modulecore.WorkbenchModule;
+import org.eclipse.wst.common.modulecore.WorkbenchComponent;
 
 public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataModel {
 	/**
@@ -124,7 +124,7 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
 	 * @return
 	 * @throws UnresolveableURIException
 	 */
-	private List computeModuleBuildOrder(WorkbenchModule wbModule, List sortedModuleList, List wbModuleList, Stack callStack) throws UnresolveableURIException {
+	private List computeModuleBuildOrder(WorkbenchComponent wbModule, List sortedModuleList, List wbModuleList, Stack callStack) throws UnresolveableURIException {
 		if (callStack.contains(wbModule)) {
 			//TODO do something meaningful with this.
 			throw new RuntimeException("Cyclical module dependency detected.");
@@ -133,9 +133,9 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
 			callStack.push(wbModule);
 			EList depModules = wbModule.getModules();
 			for (int i = 0; i < depModules.size(); i++) {
-				DependentModule depModule = (DependentModule) depModules.get(i);
+				ReferencedComponent depModule = (ReferencedComponent) depModules.get(i);
 				if (getModuleCore().isLocalDependency(depModule)) {
-					WorkbenchModule depWBModule = getModuleCore().findWorkbenchModuleByModuleURI(depModule.getHandle());
+					WorkbenchComponent depWBModule = getModuleCore().findWorkbenchModuleByModuleURI(depModule.getHandle());
 					if (!sortedModuleList.contains(depWBModule)) {
 						computeModuleBuildOrder(depWBModule, sortedModuleList, null, callStack);
 					}
@@ -145,7 +145,7 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
 				sortedModuleList.add(wbModule);
 			}
 			if (null != wbModuleList && !wbModuleList.isEmpty()) {
-				wbModule = (WorkbenchModule) wbModuleList.remove(wbModuleList.size() - 1);
+				wbModule = (WorkbenchComponent) wbModuleList.remove(wbModuleList.size() - 1);
 				return computeModuleBuildOrder(wbModule, sortedModuleList, wbModuleList, callStack);
 			}
 			return sortedModuleList;
@@ -160,12 +160,12 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
 	 * @param wbModules
 	 * @return
 	 */
-	private List computeModuleBuildOrder(WorkbenchModule[] wbModules) {
+	private List computeModuleBuildOrder(WorkbenchComponent[] wbModules) {
 		ArrayList unsortedList = new ArrayList(wbModules.length - 1);
 		for (int i = 1; i < wbModules.length; i++) {
 			unsortedList.add(wbModules[i]);
 		}
-		WorkbenchModule firstModule = wbModules[0];
+		WorkbenchComponent firstModule = wbModules[0];
 		List sortedList = new ArrayList(wbModules.length);
 		try {
 			sortedList = computeModuleBuildOrder(firstModule, sortedList, unsortedList, new Stack());
@@ -183,7 +183,7 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
 	private List populateFullModuleBuilderDataModelList() {
 		ModuleCore moduleCore = getModuleCore();
 		List moduleBuilderDataModelList = new ArrayList();
-		WorkbenchModule[] wbModules = moduleCore.getWorkbenchModules();
+		WorkbenchComponent[] wbModules = moduleCore.getWorkbenchModules();
 
 		if (wbModules == null || wbModules.length == 0) {
 			return null;
@@ -195,7 +195,7 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
 		DeployableModuleBuilderDataModel dataModel = null;
 
 		for (int i = 0; i < sortedList.size(); i++) {
-			WorkbenchModule wbModule = (WorkbenchModule) sortedList.get(i);
+			WorkbenchComponent wbModule = (WorkbenchComponent) sortedList.get(i);
 			String id = wbModule.getModuleType().getModuleTypeId();
 			if (id == null)
 				break;

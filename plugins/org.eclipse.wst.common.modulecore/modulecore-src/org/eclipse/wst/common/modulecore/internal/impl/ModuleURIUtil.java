@@ -41,7 +41,7 @@ public class ModuleURIUtil {
 	 * 
 	 * @param aModuleURI
 	 *            A valid, fully-qualified module URI
-	 * @return The deployed name of the {@see WorkbenchModule}referenced by the module URI
+	 * @return The deployed name of the {@see WorkbenchComponent}referenced by the module URI
 	 * @throws UnresolveableURIException
 	 *             If the supplied module URI is invalid or unresolveable.
 	 */ 

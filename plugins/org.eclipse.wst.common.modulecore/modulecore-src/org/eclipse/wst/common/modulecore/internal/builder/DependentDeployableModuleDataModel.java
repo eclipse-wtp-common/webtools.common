@@ -12,10 +12,10 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.frameworks.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
 import org.eclipse.wst.common.modulecore.DependencyType;
-import org.eclipse.wst.common.modulecore.DependentModule;
+import org.eclipse.wst.common.modulecore.ReferencedComponent;
 import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.UnresolveableURIException;
-import org.eclipse.wst.common.modulecore.WorkbenchModule;
+import org.eclipse.wst.common.modulecore.WorkbenchComponent;
 
 public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
     /**
@@ -24,7 +24,7 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
     public static final String CONTAINING_WBMODULE = "DependentDeployableModuleDataModel.CONTAINING_WBMODULE"; //$NON-NLS-1$
 
     /**
-     * Required, type DependentModule
+     * Required, type ReferencedComponent
      */
     public static final String DEPENDENT_MODULE = "DependentDeployableModuleDataModel.DEPENDENT_MODULE"; //$NON-NLS-1$
 
@@ -39,7 +39,7 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
     public static final String OUTPUT_CONTAINER = "DependentDeployableModuleDataModel.OUTPUT_CONTAINER"; //$NON-NLS-1$
 
     /**
-     * Calc, type WorkbenchModule
+     * Calc, type WorkbenchComponent
      */
     public static final String DEPENDENT_WBMODULE = "DependentDeployableModuleDataModel.WORKBENCH_MODULE_RESOURCES"; //$NON-NLS-1$
 
@@ -98,7 +98,7 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
         return status;
     }
 
-    private WorkbenchModule getWorkBenchModuleValue() {
+    private WorkbenchComponent getWorkBenchModuleValue() {
         if (!isSet(DEPENDENT_MODULE))
             return null;
         ModuleCore localCore = getModuleCore();
@@ -113,7 +113,7 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
     private Object getOutputContainerValue() {
         if (!isSet(DEPENDENT_MODULE))
             return null;
-        DependentModule depModule = getDependentModule();
+        ReferencedComponent depModule = getDependentModule();
         return depModule.getDeployedPath();
     }
 
@@ -129,7 +129,7 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
     private Boolean getDoesConsumeValue() {
         if (!isSet(DEPENDENT_MODULE))
             return null;
-        DependentModule depModule = (DependentModule) getProperty(DEPENDENT_MODULE);
+        ReferencedComponent depModule = (ReferencedComponent) getProperty(DEPENDENT_MODULE);
         DependencyType depType = depModule.getDependencyType();
         if (depType.getValue() == DependencyType.CONSUMES)
             return Boolean.TRUE;
@@ -150,8 +150,8 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
      * 
      * @return
      */
-    public DependentModule getDependentModule() {
-        return (DependentModule) getProperty(DEPENDENT_MODULE);
+    public ReferencedComponent getDependentModule() {
+        return (ReferencedComponent) getProperty(DEPENDENT_MODULE);
     }
 
     /**
@@ -159,8 +159,8 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
      * 
      * @return
      */
-    public WorkbenchModule getContainingWorkbenchModule() {
-        return (WorkbenchModule) getProperty(CONTAINING_WBMODULE);
+    public WorkbenchComponent getContainingWorkbenchModule() {
+        return (WorkbenchComponent) getProperty(CONTAINING_WBMODULE);
     }
 
     /*

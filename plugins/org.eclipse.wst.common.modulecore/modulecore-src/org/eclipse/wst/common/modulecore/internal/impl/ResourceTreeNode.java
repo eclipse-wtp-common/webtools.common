@@ -11,7 +11,7 @@
 package org.eclipse.wst.common.modulecore.internal.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -24,7 +24,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.common.modulecore.ModuleCore;
-import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
+import org.eclipse.wst.common.modulecore.ComponentResource;
 import org.eclipse.wst.common.modulecore.internal.util.IPathProvider;
 
 /**
@@ -37,7 +37,7 @@ public class ResourceTreeNode {
 	private Set moduleResources = new HashSet();
 	private String pathSegment;
 	private final Map children = new HashMap();
-	private static final WorkbenchModuleResource[] NO_MODULE_RESOURCES = new WorkbenchModuleResource[]{};
+	private static final ComponentResource[] NO_MODULE_RESOURCES = new ComponentResource[]{};
 	private IPathProvider pathProvider;
 	private ResourceTreeNode parent;
 
@@ -51,7 +51,7 @@ public class ResourceTreeNode {
 		return aChild;
 	}
 
-	public ResourceTreeNode addChild(WorkbenchModuleResource aModuleResource) {
+	public ResourceTreeNode addChild(ComponentResource aModuleResource) {
 		IPath moduleResourcePath = new Path(getPathProvider().getPath(aModuleResource).toString());
 		ResourceTreeNode newChild = findChild(moduleResourcePath, true);
 		newChild.addModuleResource(aModuleResource);
@@ -62,7 +62,7 @@ public class ResourceTreeNode {
 		return (ResourceTreeNode) children.remove(aChild.getPathSegment());
 	}
 
-	public ResourceTreeNode removeChild(WorkbenchModuleResource aModuleResource) {
+	public ResourceTreeNode removeChild(ComponentResource aModuleResource) {
 		IPath moduleResourcePath = new Path(getPathProvider().getPath(aModuleResource).toString());
 		ResourceTreeNode removedChild = findChild(moduleResourcePath, false);
 		return removeChild(removedChild);
@@ -99,59 +99,64 @@ public class ResourceTreeNode {
 		return childNode;
 	}
 
-	public WorkbenchModuleResource[] findModuleResources(IPath aPath, boolean toCreateChildIfNecessary) {
+	public ComponentResource[] findModuleResources(IPath aPath, boolean toCreateChildIfNecessary) {
 
-		if (aPath.segmentCount() == 0) {
-			List resources = aggregateResources(new ArrayList());
-			return (WorkbenchModuleResource[])resources.toArray(new WorkbenchModuleResource[resources.size()]);
-		}		
-		ResourceTreeNode child = findChild(aPath.segment(0), toCreateChildIfNecessary);
-		if (child == null) 
-			return findMatchingVirtualPaths(aPath);
-		WorkbenchModuleResource[] resourcesFromChildren = child.findModuleResources(aPath.removeFirstSegments(1), toCreateChildIfNecessary);
-		WorkbenchModuleResource[] resourcesFromCurrent = findMatchingVirtualPaths(aPath);
-		WorkbenchModuleResource[] collectedResources = new WorkbenchModuleResource[resourcesFromChildren.length+resourcesFromCurrent.length];
-		System.arraycopy(resourcesFromChildren, 0, collectedResources, 0, resourcesFromChildren.length);
-		System.arraycopy(resourcesFromCurrent, 0, collectedResources, resourcesFromChildren.length, resourcesFromCurrent.length);
-		return collectedResources;
+		Set foundModuleResources = findModuleResourcesSet(aPath, toCreateChildIfNecessary);
+		if(foundModuleResources.size() == 0)
+			return NO_MODULE_RESOURCES;
+		return (ComponentResource[])foundModuleResources.toArray(new ComponentResource[foundModuleResources.size()]);
 	}
 
 	public boolean hasModuleResources() {
 		return moduleResources.size() > 0;
 	}
 	
-	public WorkbenchModuleResource[] getModuleResources() {
-		return (WorkbenchModuleResource[])moduleResources.toArray(new WorkbenchModuleResource[moduleResources.size()]);
+	public ComponentResource[] getModuleResources() {
+		return (ComponentResource[])moduleResources.toArray(new ComponentResource[moduleResources.size()]);
 	}
 	
-	private WorkbenchModuleResource[] findMatchingVirtualPaths(IPath aPath) {
+	private Set findModuleResourcesSet(IPath aPath, boolean toCreateChildIfNecessary) {
+
+		if (aPath.segmentCount() == 0) {
+			Set resources = aggregateResources(new HashSet());
+			return resources;
+		}		
+		ResourceTreeNode child = findChild(aPath.segment(0), toCreateChildIfNecessary);
+		if (child == null) 
+			return findMatchingVirtualPathsSet(aPath);
+		Set foundResources = child.findModuleResourcesSet(aPath.removeFirstSegments(1), toCreateChildIfNecessary);
+		foundResources.addAll(findMatchingVirtualPathsSet(aPath));
+		return foundResources;
+	} 
+	
+	private Set findMatchingVirtualPathsSet(IPath aPath) {
 		if(hasModuleResources()) {
-			WorkbenchModuleResource moduleResource = null;
+			ComponentResource moduleResource = null;
 			IResource eclipseResource = null;
 			IContainer eclipseContainer = null;
 			for(Iterator resourceIter = moduleResources.iterator(); resourceIter.hasNext(); ) {
-				moduleResource = (WorkbenchModuleResource) resourceIter.next();
+				moduleResource = (ComponentResource) resourceIter.next();
 				eclipseResource = ModuleCore.getEclipseResource(moduleResource);
 				if(eclipseResource.getType() == IResource.FOLDER) {
 					eclipseContainer = (IContainer)eclipseResource;
 					if(eclipseContainer.getFile(aPath).exists() || eclipseContainer.getFolder(aPath).exists())
-						return new WorkbenchModuleResource[] {moduleResource};
+						return Collections.singleton(moduleResource);
 				}
 					
 			}
 		}  
-		return NO_MODULE_RESOURCES;
+		return Collections.EMPTY_SET;
 	}
 
-	private List aggregateResources(List anAggregationList) {
+	private Set aggregateResources(Set anAggregationSet) {
 		if (hasModuleResources())
-			anAggregationList.addAll(moduleResources);
+			anAggregationSet.addAll(moduleResources);
 		ResourceTreeNode childNode = null;
 		for (Iterator childrenIterator = children.values().iterator(); childrenIterator.hasNext();) {
 			childNode = (ResourceTreeNode) childrenIterator.next();
-			childNode.aggregateResources(anAggregationList);
+			childNode.aggregateResources(anAggregationSet);
 		}
-		return anAggregationList;
+		return anAggregationSet;
 	}
 
 	public int childrenCount() {
@@ -175,11 +180,11 @@ public class ResourceTreeNode {
 		return (ResourceTreeNode) children.remove(aPathSegment);
 	}
 
-	void addModuleResource(WorkbenchModuleResource aModuleResource) {
+	/* package */ void addModuleResource(ComponentResource aModuleResource) {
 		moduleResources.add(aModuleResource);
 	}
 	
-	IPathProvider getPathProvider() { 
+	/* package */ IPathProvider getPathProvider() { 
 		return pathProvider;
 	}
 }

@@ -17,13 +17,13 @@ import org.eclipse.emf.common.util.AbstractEnumerator;
 /**
  * 
  * <!-- begin-user-doc --> 
- * Indicates how a particular {@see org.eclipse.wst.common.modulecore.DependentModule}&nbsp;should be
- * absorbed by a {@see org.eclipse.wst.common.modulecore.WorkbenchModule}. 
+ * Indicates how a particular {@see org.eclipse.wst.common.modulecore.ReferencedComponent}&nbsp;should be
+ * absorbed by a {@see org.eclipse.wst.common.modulecore.WorkbenchComponent}. 
  * <p>
  * Provides two types ("uses", "consumes") which are used by
- * {@see org.eclipse.wst.common.modulecore.DependentModule}s to specify how the
- * {@see org.eclipse.wst.common.modulecore.DependentModule}&nbsp; should be absorbed by the
- * containing {@see org.eclipse.wst.common.modulecore.WorkbenchModule}.
+ * {@see org.eclipse.wst.common.modulecore.ReferencedComponent}s to specify how the
+ * {@see org.eclipse.wst.common.modulecore.ReferencedComponent}&nbsp; should be absorbed by the
+ * containing {@see org.eclipse.wst.common.modulecore.WorkbenchComponent}.
  * </p>
  * For clients that need to create one of these objects from scratch,
  * {@see org.eclipse.wst.common.modulecore.ModuleCoreFactory}.

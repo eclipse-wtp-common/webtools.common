@@ -66,7 +66,7 @@ public interface ModuleCorePackage extends EPackage{
 	 * The meta object id for the '{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl <em>Workbench Module</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.eclipse.wst.common.modulecore.internal.impl.WorkbenchModuleImpl
+	 * @see org.eclipse.wst.common.modulecore.internal.impl.WorkbenchComponentImpl
 	 * @see org.eclipse.wst.common.modulecore.internal.impl.ModuleCorePackageImpl#getWorkbenchModule()
 	 * @generated
 	 */
@@ -130,7 +130,7 @@ public interface ModuleCorePackage extends EPackage{
 	 * The meta object id for the '{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleResourceImpl <em>Workbench Module Resource</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.eclipse.wst.common.modulecore.internal.impl.WorkbenchModuleResourceImpl
+	 * @see org.eclipse.wst.common.modulecore.internal.impl.ComponentResourceImpl
 	 * @see org.eclipse.wst.common.modulecore.internal.impl.ModuleCorePackageImpl#getWorkbenchModuleResource()
 	 * @generated
 	 */
@@ -185,7 +185,7 @@ public interface ModuleCorePackage extends EPackage{
 	 * The meta object id for the '{@link org.eclipse.wst.common.modulecore.impl.ModuleTypeImpl <em>Module Type</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.eclipse.wst.common.modulecore.internal.impl.ModuleTypeImpl
+	 * @see org.eclipse.wst.common.modulecore.internal.impl.ComponentTypeImpl
 	 * @see org.eclipse.wst.common.modulecore.internal.impl.ModuleCorePackageImpl#getModuleType()
 	 * @generated
 	 */
@@ -222,7 +222,7 @@ public interface ModuleCorePackage extends EPackage{
 	 * The meta object id for the '{@link org.eclipse.wst.common.modulecore.impl.ProjectModulesImpl <em>Project Modules</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.eclipse.wst.common.modulecore.internal.impl.ProjectModulesImpl
+	 * @see org.eclipse.wst.common.modulecore.internal.impl.ProjectComponentsImpl
 	 * @see org.eclipse.wst.common.modulecore.internal.impl.ModuleCorePackageImpl#getProjectModules()
 	 * @generated
 	 */
@@ -259,7 +259,7 @@ public interface ModuleCorePackage extends EPackage{
 	 * The meta object id for the '{@link org.eclipse.wst.common.modulecore.impl.DependentModuleImpl <em>Dependent Module</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.eclipse.wst.common.modulecore.internal.impl.DependentModuleImpl
+	 * @see org.eclipse.wst.common.modulecore.internal.impl.ReferencedComponentImpl
 	 * @see org.eclipse.wst.common.modulecore.internal.impl.ModuleCorePackageImpl#getDependentModule()
 	 * @generated
 	 */
@@ -323,226 +323,226 @@ public interface ModuleCorePackage extends EPackage{
 
 
 	/**
-	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.WorkbenchModule <em>Workbench Module</em>}'.
+	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.WorkbenchComponent <em>Workbench Module</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for class '<em>Workbench Module</em>'.
-	 * @see org.eclipse.wst.common.modulecore.WorkbenchModule
+	 * @see org.eclipse.wst.common.modulecore.WorkbenchComponent
 	 * @generated
 	 */
 	EClass getWorkbenchModule();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getHandle <em>Handle</em>}'.
+	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getHandle <em>Handle</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Handle</em>'.
-	 * @see org.eclipse.wst.common.modulecore.WorkbenchModule#getHandle()
+	 * @see org.eclipse.wst.common.modulecore.WorkbenchComponent#getHandle()
 	 * @see #getWorkbenchModule()
 	 * @generated
 	 */
 	EAttribute getWorkbenchModule_Handle();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getDeployedName <em>Deployed Name</em>}'.
+	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getDeployedName <em>Deployed Name</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Deployed Name</em>'.
-	 * @see org.eclipse.wst.common.modulecore.WorkbenchModule#getDeployedName()
+	 * @see org.eclipse.wst.common.modulecore.WorkbenchComponent#getDeployedName()
 	 * @see #getWorkbenchModule()
 	 * @generated
 	 */
 	EAttribute getWorkbenchModule_DeployedName();
 
 	/**
-	 * Returns the meta object for the reference list '{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getModules <em>Modules</em>}'.
+	 * Returns the meta object for the reference list '{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getModules <em>Modules</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the reference list '<em>Modules</em>'.
-	 * @see org.eclipse.wst.common.modulecore.WorkbenchModule#getModules()
+	 * @see org.eclipse.wst.common.modulecore.WorkbenchComponent#getModules()
 	 * @see #getWorkbenchModule()
 	 * @generated
 	 */
 	EReference getWorkbenchModule_Modules();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getResources <em>Resources</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getResources <em>Resources</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the containment reference list '<em>Resources</em>'.
-	 * @see org.eclipse.wst.common.modulecore.WorkbenchModule#getResources()
+	 * @see org.eclipse.wst.common.modulecore.WorkbenchComponent#getResources()
 	 * @see #getWorkbenchModule()
 	 * @generated
 	 */
 	EReference getWorkbenchModule_Resources();
 
 	/**
-	 * Returns the meta object for the reference '{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getModuleType <em>Module Type</em>}'.
+	 * Returns the meta object for the reference '{@link org.eclipse.wst.common.modulecore.WorkbenchComponent#getModuleType <em>Module Type</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the reference '<em>Module Type</em>'.
-	 * @see org.eclipse.wst.common.modulecore.WorkbenchModule#getModuleType()
+	 * @see org.eclipse.wst.common.modulecore.WorkbenchComponent#getModuleType()
 	 * @see #getWorkbenchModule()
 	 * @generated
 	 */
 	EReference getWorkbenchModule_ModuleType();
 
 	/**
-	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource <em>Workbench Module Resource</em>}'.
+	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.ComponentResource <em>Workbench Module Resource</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for class '<em>Workbench Module Resource</em>'.
-	 * @see org.eclipse.wst.common.modulecore.WorkbenchModuleResource
+	 * @see org.eclipse.wst.common.modulecore.ComponentResource
 	 * @generated
 	 */
 	EClass getWorkbenchModuleResource();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getSourcePath <em>Source Path</em>}'.
+	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.ComponentResource#getSourcePath <em>Source Path</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Source Path</em>'.
-	 * @see org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getSourcePath()
+	 * @see org.eclipse.wst.common.modulecore.ComponentResource#getSourcePath()
 	 * @see #getWorkbenchModuleResource()
 	 * @generated
 	 */
 	EAttribute getWorkbenchModuleResource_SourcePath();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getDeployedPath <em>Deployed Path</em>}'.
+	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.ComponentResource#getDeployedPath <em>Deployed Path</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Deployed Path</em>'.
-	 * @see org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getDeployedPath()
+	 * @see org.eclipse.wst.common.modulecore.ComponentResource#getDeployedPath()
 	 * @see #getWorkbenchModuleResource()
 	 * @generated
 	 */
 	EAttribute getWorkbenchModuleResource_DeployedPath();
 
 	/**
-	 * Returns the meta object for the attribute list '{@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getExclusions <em>Exclusions</em>}'.
+	 * Returns the meta object for the attribute list '{@link org.eclipse.wst.common.modulecore.ComponentResource#getExclusions <em>Exclusions</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute list '<em>Exclusions</em>'.
-	 * @see org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getExclusions()
+	 * @see org.eclipse.wst.common.modulecore.ComponentResource#getExclusions()
 	 * @see #getWorkbenchModuleResource()
 	 * @generated
 	 */
 	EAttribute getWorkbenchModuleResource_Exclusions();
 
 	/**
-	 * Returns the meta object for the container reference '{@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getModule <em>Module</em>}'.
+	 * Returns the meta object for the container reference '{@link org.eclipse.wst.common.modulecore.ComponentResource#getModule <em>Module</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the container reference '<em>Module</em>'.
-	 * @see org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getModule()
+	 * @see org.eclipse.wst.common.modulecore.ComponentResource#getModule()
 	 * @see #getWorkbenchModuleResource()
 	 * @generated
 	 */
 	EReference getWorkbenchModuleResource_Module();
 
 	/**
-	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.ModuleType <em>Module Type</em>}'.
+	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.ComponentType <em>Module Type</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for class '<em>Module Type</em>'.
-	 * @see org.eclipse.wst.common.modulecore.ModuleType
+	 * @see org.eclipse.wst.common.modulecore.ComponentType
 	 * @generated
 	 */
 	EClass getModuleType();
 
 	/**
-	 * Returns the meta object for the attribute list '{@link org.eclipse.wst.common.modulecore.ModuleType#getMetadataResources <em>Metadata Resources</em>}'.
+	 * Returns the meta object for the attribute list '{@link org.eclipse.wst.common.modulecore.ComponentType#getMetadataResources <em>Metadata Resources</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute list '<em>Metadata Resources</em>'.
-	 * @see org.eclipse.wst.common.modulecore.ModuleType#getMetadataResources()
+	 * @see org.eclipse.wst.common.modulecore.ComponentType#getMetadataResources()
 	 * @see #getModuleType()
 	 * @generated
 	 */
 	EAttribute getModuleType_MetadataResources();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.ModuleType#getModuleTypeId <em>Module Type Id</em>}'.
+	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.ComponentType#getModuleTypeId <em>Module Type Id</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Module Type Id</em>'.
-	 * @see org.eclipse.wst.common.modulecore.ModuleType#getModuleTypeId()
+	 * @see org.eclipse.wst.common.modulecore.ComponentType#getModuleTypeId()
 	 * @see #getModuleType()
 	 * @generated
 	 */
 	EAttribute getModuleType_ModuleTypeId();
 
 	/**
-	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.ProjectModules <em>Project Modules</em>}'.
+	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.ProjectComponents <em>Project Modules</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for class '<em>Project Modules</em>'.
-	 * @see org.eclipse.wst.common.modulecore.ProjectModules
+	 * @see org.eclipse.wst.common.modulecore.ProjectComponents
 	 * @generated
 	 */
 	EClass getProjectModules();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.ProjectModules#getProjectName <em>Project Name</em>}'.
+	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.ProjectComponents#getProjectName <em>Project Name</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Project Name</em>'.
-	 * @see org.eclipse.wst.common.modulecore.ProjectModules#getProjectName()
+	 * @see org.eclipse.wst.common.modulecore.ProjectComponents#getProjectName()
 	 * @see #getProjectModules()
 	 * @generated
 	 */
 	EAttribute getProjectModules_ProjectName();
 
 	/**
-	 * Returns the meta object for the containment reference list '{@link org.eclipse.wst.common.modulecore.ProjectModules#getWorkbenchModules <em>Workbench Modules</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.eclipse.wst.common.modulecore.ProjectComponents#getWorkbenchModules <em>Workbench Modules</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the containment reference list '<em>Workbench Modules</em>'.
-	 * @see org.eclipse.wst.common.modulecore.ProjectModules#getWorkbenchModules()
+	 * @see org.eclipse.wst.common.modulecore.ProjectComponents#getWorkbenchModules()
 	 * @see #getProjectModules()
 	 * @generated
 	 */
 	EReference getProjectModules_WorkbenchModules();
 
 	/**
-	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.DependentModule <em>Dependent Module</em>}'.
+	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.ReferencedComponent <em>Dependent Module</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for class '<em>Dependent Module</em>'.
-	 * @see org.eclipse.wst.common.modulecore.DependentModule
+	 * @see org.eclipse.wst.common.modulecore.ReferencedComponent
 	 * @generated
 	 */
 	EClass getDependentModule();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.DependentModule#getHandle <em>Handle</em>}'.
+	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.ReferencedComponent#getHandle <em>Handle</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Handle</em>'.
-	 * @see org.eclipse.wst.common.modulecore.DependentModule#getHandle()
+	 * @see org.eclipse.wst.common.modulecore.ReferencedComponent#getHandle()
 	 * @see #getDependentModule()
 	 * @generated
 	 */
 	EAttribute getDependentModule_Handle();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.DependentModule#getDeployedPath <em>Deployed Path</em>}'.
+	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.ReferencedComponent#getDeployedPath <em>Deployed Path</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Deployed Path</em>'.
-	 * @see org.eclipse.wst.common.modulecore.DependentModule#getDeployedPath()
+	 * @see org.eclipse.wst.common.modulecore.ReferencedComponent#getDeployedPath()
 	 * @see #getDependentModule()
 	 * @generated
 	 */
 	EAttribute getDependentModule_DeployedPath();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.DependentModule#getDependencyType <em>Dependency Type</em>}'.
+	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.ReferencedComponent#getDependencyType <em>Dependency Type</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute '<em>Dependency Type</em>'.
-	 * @see org.eclipse.wst.common.modulecore.DependentModule#getDependencyType()
+	 * @see org.eclipse.wst.common.modulecore.ReferencedComponent#getDependencyType()
 	 * @see #getDependentModule()
 	 * @generated
 	 */

@@ -8,24 +8,24 @@ package org.eclipse.wst.common.modulecore.internal.impl;
 
 import java.util.EventObject;
 
-import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
+import org.eclipse.wst.common.modulecore.ComponentResource;
 
 //in progress...
 
 public class ModuleStructureEvent extends EventObject {
-    private WorkbenchModuleResource[] resources;
+    private ComponentResource[] resources;
 
     public ModuleStructureEvent(Object source) {
         super(source);
     }
     
-    public ModuleStructureEvent(Object source, WorkbenchModuleResource[] theModuleResources) {
+    public ModuleStructureEvent(Object source, ComponentResource[] theModuleResources) {
         super(source);
         resources = theModuleResources;
         
     }
 
-    public WorkbenchModuleResource[] getMoudleResources() {
+    public ComponentResource[] getMoudleResources() {
         return resources;
     }
   

@@ -77,7 +77,7 @@ import com.ibm.wtp.emf.workbench.ProjectUtilities;
 * <p>
 * Each ModuleCoreNature from a given project can also provide access to the
 * {@see org.eclipse.wst.common.modulecore.ArtifactEditModel}&nbsp; for each
-* {@see org.eclipse.wst.common.modulecore.WorkbenchModule}&nbsp; contained by the project. Like
+* {@see org.eclipse.wst.common.modulecore.WorkbenchComponent}&nbsp; contained by the project. Like
 * {@see org.eclipse.wst.common.modulecore.ModuleStructuralModel},
 * {@see org.eclipse.wst.common.modulecore.ArtifactEditModel}&nbsp; is a subclass of
 * {@see org.eclipse.wst.common.internal.emfworkbench.integration.EditModel}&nbsp; that contains
@@ -127,8 +127,8 @@ import com.ibm.wtp.emf.workbench.ProjectUtilities;
  * @see org.eclipse.wst.common.modulecore.ModuleCore#getModuleCoreForRead(IProject)
  * @see org.eclipse.wst.common.modulecore.ModuleCore#getModuleCoreForWrite(IProject)
  * @see org.eclipse.wst.common.modulecore.ArtifactEdit
- * @see org.eclipse.wst.common.modulecore.ArtifactEdit#getArtifactEditForRead(WorkbenchModule)
- * @see org.eclipse.wst.common.modulecore.ArtifactEdit#getArtifactEditForWrite(WorkbenchModule)
+ * @see org.eclipse.wst.common.modulecore.ArtifactEdit#getArtifactEditForRead(WorkbenchComponent)
+ * @see org.eclipse.wst.common.modulecore.ArtifactEdit#getArtifactEditForWrite(WorkbenchComponent)
  */
 public class ModuleCoreNature extends EditModelNature implements IProjectNature, IModuleConstants {
 
@@ -271,8 +271,8 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	/**
 	 * <p>
 	 * Returns an {@see ArtifactEditModel}&nbsp; to work with the underlying content of an
-	 * individual {@see WorkbenchModule}&nbsp; contained in the project. {@see ArtifactEditModel}s
-	 * are used to manipulate the content models for individual {@see WorkbenchModule}s. In
+	 * individual {@see WorkbenchComponent}&nbsp; contained in the project. {@see ArtifactEditModel}s
+	 * are used to manipulate the content models for individual {@see WorkbenchComponent}s. In
 	 * general, a content model will contain an EMF representation of the module's relevant
 	 * deployment descriptor, and possibly other EMF resources as well.
 	 * </p>
@@ -297,7 +297,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	 * <code>WebEdit editFacade = WebEdit.getWebEditForRead(aWorkbenchModule);</code>
 	 * </p>
 	 * <p>
-	 * If a particular Edit Facade is not applicable to the supplied {@see WorkbenchModule}, then
+	 * If a particular Edit Facade is not applicable to the supplied {@see WorkbenchComponent}, then
 	 * <b>null </b> will be returned.
 	 * </p>
 	 * 
@@ -318,7 +318,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	 *            {@see ModuleStructuralModel}.
 	 * @return
 	 * @see ArtifactEdit
-	 * @see ArtifactEdit#getArtifactEditForRead(WorkbenchModule)
+	 * @see ArtifactEdit#getArtifactEditForRead(WorkbenchComponent)
 	 */
 	public ArtifactEditModel getArtifactEditModelForRead(URI aModuleURI, Object anAccessorKey) {
 		Map params = new HashMap();
@@ -329,8 +329,8 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	/**
 	 * <p>
 	 * Returns an {@see ArtifactEditModel}&nbsp; to work with the underlying content of an
-	 * individual {@see WorkbenchModule}&nbsp; contained in the project. {@see ArtifactEditModel}s
-	 * are used to manipulate the content models for individual {@see WorkbenchModule}s. In
+	 * individual {@see WorkbenchComponent}&nbsp; contained in the project. {@see ArtifactEditModel}s
+	 * are used to manipulate the content models for individual {@see WorkbenchComponent}s. In
 	 * general, a content model will contain an EMF representation of the module's relevant
 	 * deployment descriptor, and possibly other EMF resources as well.
 	 * </p>
@@ -356,7 +356,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	 * <code>WebEdit editFacade = WebEdit.getWebEditForWrite(aWorkbenchModule);</code>
 	 * </p>
 	 * <p>
-	 * If a particular Edit Facade is not applicable to the supplied {@see WorkbenchModule}, then
+	 * If a particular Edit Facade is not applicable to the supplied {@see WorkbenchComponent}, then
 	 * <b>null </b> will be returned.
 	 * </p>
 	 * 
@@ -377,7 +377,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	 *            {@see ModuleStructuralModel}.
 	 * @return
 	 * @see ArtifactEdit
-	 * @see ArtifactEdit#getArtifactEditForRead(WorkbenchModule)
+	 * @see ArtifactEdit#getArtifactEditForRead(WorkbenchComponent)
 	 */
 	public ArtifactEditModel getArtifactEditModelForWrite(URI aModuleURI, Object anAccessorKey) {
 		Map params = new HashMap();
@@ -493,7 +493,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		try {
 			structuralModel = getModuleStructuralModelForRead(Thread.currentThread());
 			ModuleCore editUtility = (ModuleCore) structuralModel.getAdapter(ModuleCore.ADAPTER_TYPE);
-			WorkbenchModule module = editUtility.findWorkbenchModuleByDeployName(ModuleURIUtil.getDeployedName(aModuleURI));
+			WorkbenchComponent module = editUtility.findWorkbenchModuleByDeployName(ModuleURIUtil.getDeployedName(aModuleURI));
 			return module.getModuleType().getModuleTypeId();
 		} catch (UnresolveableURIException uurie) {
 			// Ignore

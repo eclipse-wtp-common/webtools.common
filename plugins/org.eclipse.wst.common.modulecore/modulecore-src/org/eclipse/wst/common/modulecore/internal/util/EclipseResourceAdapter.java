@@ -18,7 +18,7 @@ import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
-import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
+import org.eclipse.wst.common.modulecore.ComponentResource;
 
 /**
  * <p>
@@ -50,7 +50,7 @@ public class EclipseResourceAdapter extends AdapterImpl implements Adapter {
 			return resource;
 		synchronized (this) {
 			if (resource == null) {
-				WorkbenchModuleResource moduleResource = (WorkbenchModuleResource) getTarget();
+				ComponentResource moduleResource = (ComponentResource) getTarget();
 				IPath workspacePath = new Path(moduleResource.getSourcePath().path())/*.removeFirstSegments(1)*/; // we already have a workspace-relative path
 				resource = ResourcesPlugin.getWorkspace().getRoot().findMember(workspacePath);
 				hasSearchFailed = resource == null;

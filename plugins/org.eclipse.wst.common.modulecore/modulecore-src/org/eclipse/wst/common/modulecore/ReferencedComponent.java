@@ -13,16 +13,16 @@ import org.eclipse.emf.ecore.EObject;
 
 /**
  * <!-- begin-user-doc --> 
- * Used to reference {@see org.eclipse.wst.common.modulecore.WorkbenchModule}s either contained in
+ * Used to reference {@see org.eclipse.wst.common.modulecore.WorkbenchComponent}s either contained in
  * the same project or remotely. 
  * <p>
- * Each {@see org.eclipse.wst.common.modulecore.WorkbenchModule}&nbsp; contains a list of its
+ * Each {@see org.eclipse.wst.common.modulecore.WorkbenchComponent}&nbsp; contains a list of its
  * DependentModules.
  * </p> 
  * <p>
- * The referenced {@see WorkbenchModule}&nbsp; may be in the same project as the
- * {@see WorkbenchModule}&nbsp; that contains the current DependentModule. Use
- * {@see ModuleCore#isLocalDependency(DependentModule)}&nbsp; to make the determination.
+ * The referenced {@see WorkbenchComponent}&nbsp; may be in the same project as the
+ * {@see WorkbenchComponent}&nbsp; that contains the current ReferencedComponent. Use
+ * {@see ModuleCore#isLocalDependency(ReferencedComponent)}&nbsp; to make the determination.
  * </p> 
  * <p>
  * See the package overview for an <a href="package-summary.html">overview of the model components </a>.
@@ -32,12 +32,12 @@ import org.eclipse.emf.ecore.EObject;
  * <p>
  * The following features are supported:
  * <ul>
- * <li>{@link org.eclipse.wst.common.modulecore.DependentModule#getHandle <em>Handle</em>}</li>
+ * <li>{@link org.eclipse.wst.common.modulecore.ReferencedComponent#getHandle <em>Handle</em>}</li>
  * <li>
- * {@link org.eclipse.wst.common.modulecore.DependentModule#getDeployedPath <em>Deployed Path</em>}
+ * {@link org.eclipse.wst.common.modulecore.ReferencedComponent#getDeployedPath <em>Deployed Path</em>}
  * </li>
  * <li>
- * {@link org.eclipse.wst.common.modulecore.DependentModule#getDependencyType <em>Dependency Type</em>}
+ * {@link org.eclipse.wst.common.modulecore.ReferencedComponent#getDependencyType <em>Dependency Type</em>}
  * </li>
  * </ul>
  * </p>
@@ -46,14 +46,14 @@ import org.eclipse.emf.ecore.EObject;
  * @model
  * @generated
  */
-public interface DependentModule extends EObject {
+public interface ReferencedComponent extends EObject {
 	/**
 	 * Returns the value of the '
-	 * {@link org.eclipse.wst.common.modulecore.DependentModule#getHandle <em>Handle</em>}'
+	 * {@link org.eclipse.wst.common.modulecore.ReferencedComponent#getHandle <em>Handle</em>}'
 	 * attribute. <!-- begin-user-doc -->
 	 * <p>
 	 * Returns a fully-qualified URI that conforms to the standard "module:" URI format. The handle
-	 * references the {@see WorkbenchModule}represented by the current DependentModule.
+	 * references the {@see WorkbenchComponent}represented by the current ReferencedComponent.
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * 
@@ -67,7 +67,7 @@ public interface DependentModule extends EObject {
 
 	/**
 	 * Sets the value of the '
-	 * {@link org.eclipse.wst.common.modulecore.DependentModule#getHandle <em>Handle</em>}'
+	 * {@link org.eclipse.wst.common.modulecore.ReferencedComponent#getHandle <em>Handle</em>}'
 	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @param A
@@ -81,8 +81,8 @@ public interface DependentModule extends EObject {
 	 * Returns the value of the '<em><b>Deployed Path</b></em>' attribute. <!-- begin-user-doc
 	 * -->
 	 * <p>
-	 * The deployedPath specifies the location of the DependentModule's contents relative to the
-	 * containing {@see WorkbenchModule}.
+	 * The deployedPath specifies the location of the ReferencedComponent's contents relative to the
+	 * containing {@see WorkbenchComponent}.
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * 
@@ -96,11 +96,11 @@ public interface DependentModule extends EObject {
 
 	/**
 	 * Sets the value of the '
-	 * {@link org.eclipse.wst.common.modulecore.DependentModule#getDeployedPath <em>Deployed Path</em>}'
+	 * {@link org.eclipse.wst.common.modulecore.ReferencedComponent#getDeployedPath <em>Deployed Path</em>}'
 	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @param A
-	 *            path relative to the containing {@see WorkbenchModule}'s output location
+	 *            path relative to the containing {@see WorkbenchComponent}'s output location
 	 * @see #getDeployedPath()
 	 * @generated
 	 */
@@ -127,7 +127,7 @@ public interface DependentModule extends EObject {
 
 	/**
 	 * Sets the value of the '
-	 * {@link org.eclipse.wst.common.modulecore.DependentModule#getDependencyType <em>Dependency Type</em>}'
+	 * {@link org.eclipse.wst.common.modulecore.ReferencedComponent#getDependencyType <em>Dependency Type</em>}'
 	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @param value
@@ -138,4 +138,4 @@ public interface DependentModule extends EObject {
 	 */
 	void setDependencyType(DependencyType value);
 
-} // DependentModule
+} // ReferencedComponent

@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchModuleImpl.java,v 1.4 2005/02/18 20:13:05 cbridgha Exp $
+ * $Id: WorkbenchComponentImpl.java,v 1.1 2005/03/15 00:43:55 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.internal.impl;
 
@@ -25,13 +25,13 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-import org.eclipse.wst.common.modulecore.DependentModule;
+import org.eclipse.wst.common.modulecore.ReferencedComponent;
 import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
-import org.eclipse.wst.common.modulecore.ModuleType;
+import org.eclipse.wst.common.modulecore.ComponentType;
 import org.eclipse.wst.common.modulecore.UnresolveableURIException;
-import org.eclipse.wst.common.modulecore.WorkbenchModule;
-import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
+import org.eclipse.wst.common.modulecore.WorkbenchComponent;
+import org.eclipse.wst.common.modulecore.ComponentResource;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Workbench Module</b></em>'.
@@ -39,17 +39,17 @@ import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.WorkbenchModuleImpl#getHandle <em>Handle</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.WorkbenchModuleImpl#getDeployedName <em>Deployed Name</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.WorkbenchModuleImpl#getResources <em>Resources</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.WorkbenchModuleImpl#getModuleType <em>Module Type</em>}</li>
- *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.WorkbenchModuleImpl#getModules <em>Modules</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.WorkbenchComponentImpl#getHandle <em>Handle</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.WorkbenchComponentImpl#getDeployedName <em>Deployed Name</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.WorkbenchComponentImpl#getResources <em>Resources</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.WorkbenchComponentImpl#getModuleType <em>Module Type</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.internal.impl.WorkbenchComponentImpl#getModules <em>Modules</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
-public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule {
+public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComponent {
 	/**
 	 * The default value of the '{@link #getHandle() <em>Handle</em>}' attribute. <!--
 	 * begin-user-doc --> <!-- end-user-doc -->
@@ -106,7 +106,7 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	 * @generated
 	 * @ordered
 	 */
-	protected ModuleType moduleType = null;
+	protected ComponentType moduleType = null;
 
 	/**
 	 * The cached value of the '{@link #getModules() <em>Modules</em>}' reference list. <!--
@@ -125,13 +125,13 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 
 	private boolean isIndexedBySourcePath;
 
-	private static final WorkbenchModuleResource[] NO_MODULE_RESOURCES = new WorkbenchModuleResource[0];
+	private static final ComponentResource[] NO_MODULE_RESOURCES = new ComponentResource[0];
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected WorkbenchModuleImpl() {
+	protected WorkbenchComponentImpl() {
 		super();
 	}
 
@@ -198,7 +198,7 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	 */
 	public EList getModules() {
 		if (modules == null) {
-			modules = new EObjectResolvingEList(DependentModule.class, this, ModuleCorePackage.WORKBENCH_MODULE__MODULES);
+			modules = new EObjectResolvingEList(ReferencedComponent.class, this, ModuleCorePackage.WORKBENCH_MODULE__MODULES);
 		}
 		return modules;
 	}
@@ -209,7 +209,7 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	 */
 	public EList getResources() {
 		if (resources == null) {
-			resources = new EObjectContainmentWithInverseEList(WorkbenchModuleResource.class, this, ModuleCorePackage.WORKBENCH_MODULE__RESOURCES, ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE);
+			resources = new EObjectContainmentWithInverseEList(ComponentResource.class, this, ModuleCorePackage.WORKBENCH_MODULE__RESOURCES, ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE);
 		}
 		return resources;
 	}
@@ -218,10 +218,10 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ModuleType getModuleType() {
+	public ComponentType getModuleType() {
 		if (moduleType != null && moduleType.eIsProxy()) {
-			ModuleType oldModuleType = moduleType;
-			moduleType = (ModuleType)eResolveProxy((InternalEObject)moduleType);
+			ComponentType oldModuleType = moduleType;
+			moduleType = (ComponentType)eResolveProxy((InternalEObject)moduleType);
 			if (moduleType != oldModuleType) {
 				if (eNotificationRequired())
 					eNotify(new ENotificationImpl(this, Notification.RESOLVE, ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE, oldModuleType, moduleType));
@@ -234,7 +234,7 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ModuleType basicGetModuleType() {
+	public ComponentType basicGetModuleType() {
 		return moduleType;
 	}
 
@@ -242,8 +242,8 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setModuleType(ModuleType newModuleType) {
-		ModuleType oldModuleType = moduleType;
+	public void setModuleType(ComponentType newModuleType) {
+		ComponentType oldModuleType = moduleType;
 		moduleType = newModuleType;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE, oldModuleType, moduleType));
@@ -321,7 +321,7 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 				getResources().addAll((Collection)newValue);
 				return;
 			case ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE:
-				setModuleType((ModuleType)newValue);
+				setModuleType((ComponentType)newValue);
 				return;
 			case ModuleCorePackage.WORKBENCH_MODULE__MODULES:
 				getModules().clear();
@@ -347,7 +347,7 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 				getResources().clear();
 				return;
 			case ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE:
-				setModuleType((ModuleType)null);
+				setModuleType((ComponentType)null);
 				return;
 			case ModuleCorePackage.WORKBENCH_MODULE__MODULES:
 				getModules().clear();
@@ -392,16 +392,16 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 		return result.toString();
 	}
 
-	public WorkbenchModuleResource[] findWorkbenchModuleResourceByDeployPath(URI aDeployPath) {
+	public ComponentResource[] findWorkbenchModuleResourceByDeployPath(URI aDeployPath) {
 		// if (!isIndexedByDeployPath)
 		// indexResourcesByDeployPath();
-		// return (WorkbenchModuleResource) resourceIndexByDeployPath.get(aDeployPath);
+		// return (ComponentResource) resourceIndexByDeployPath.get(aDeployPath);
 		IPath resourcePath = new Path(aDeployPath.path());
 		ResourceTreeRoot resourceTreeRoot = ResourceTreeRoot.getDeployResourceTreeRoot(this);
 		return resourceTreeRoot.findModuleResources(resourcePath, false); 
 	}
 
-	public WorkbenchModuleResource[] findWorkbenchModuleResourceBySourcePath(URI aSourcePath) {
+	public ComponentResource[] findWorkbenchModuleResourceBySourcePath(URI aSourcePath) {
 		// if(!isIndexedBySourcePath)
 		// indexResourcesBySourcePath();
 		try {
@@ -417,4 +417,4 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	}
   
 
-} // WorkbenchModuleImpl
+} // WorkbenchComponentImpl

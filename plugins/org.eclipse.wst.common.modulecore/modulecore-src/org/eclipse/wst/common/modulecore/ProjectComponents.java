@@ -14,7 +14,7 @@ import org.eclipse.emf.ecore.EObject;
 /**
  * <!-- begin-user-doc --> 
  * Provides a root object to store and manage the
- * {@see org.eclipse.wst.common.modulecore.WorkbenchModule}s. * 
+ * {@see org.eclipse.wst.common.modulecore.WorkbenchComponent}s. * 
  * <p>
  * See the package overview for an <a href="package-summary.html">overview of the model components </a>.
  * </p>
@@ -24,10 +24,10 @@ import org.eclipse.emf.ecore.EObject;
  * The following features are supported:
  * <ul>
  * <li>
- * {@link org.eclipse.wst.common.modulecore.ProjectModules#getProjectName <em>Project Name</em>}
+ * {@link org.eclipse.wst.common.modulecore.ProjectComponents#getProjectName <em>Project Name</em>}
  * </li>
  * <li>
- * {@link org.eclipse.wst.common.modulecore.ProjectModules#getWorkbenchModules <em>Workbench Modules</em>}
+ * {@link org.eclipse.wst.common.modulecore.ProjectComponents#getWorkbenchModules <em>Workbench Modules</em>}
  * </li>
  * </ul>
  * </p>
@@ -36,7 +36,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model
  * @generated
  */
-public interface ProjectModules extends EObject {
+public interface ProjectComponents extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Project Name</b></em>' attribute. <!-- begin-user-doc
 	 * -->
@@ -56,7 +56,7 @@ public interface ProjectModules extends EObject {
 
 	/**
 	 * Sets the value of the '
-	 * {@link org.eclipse.wst.common.modulecore.ProjectModules#getProjectName <em>Project Name</em>}'
+	 * {@link org.eclipse.wst.common.modulecore.ProjectComponents#getProjectName <em>Project Name</em>}'
 	 * attribute. <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @param value
@@ -68,7 +68,7 @@ public interface ProjectModules extends EObject {
 
 	/**
 	 * Returns the value of the '<em><b>Workbench Modules</b></em>' containment reference list.
-	 * The list contents are of type {@link org.eclipse.wst.common.modulecore.WorkbenchModule}.
+	 * The list contents are of type {@link org.eclipse.wst.common.modulecore.WorkbenchComponent}.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Workbench Modules</em>' containment reference list isn't
@@ -78,11 +78,11 @@ public interface ProjectModules extends EObject {
 	 * 
 	 * @return the value of the '<em>Workbench Modules</em>' containment reference list.
 	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getProjectModules_WorkbenchModules()
-	 * @model type="org.eclipse.wst.common.modulecore.WorkbenchModule" containment="true"
+	 * @model type="org.eclipse.wst.common.modulecore.WorkbenchComponent" containment="true"
 	 * @generated
 	 */
 	EList getWorkbenchModules();
 
-	public WorkbenchModule findWorkbenchModule(String aDeployName);
+	public WorkbenchComponent findWorkbenchModule(String aDeployName);
 
-} // ProjectModules
+} // ProjectComponents

@@ -28,7 +28,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.frameworks.operations.WTPOperation;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEditPlugin;
 import org.eclipse.wst.common.modulecore.ModuleCore;
-import org.eclipse.wst.common.modulecore.WorkbenchModule;
+import org.eclipse.wst.common.modulecore.WorkbenchComponent;
 import org.eclipse.wst.common.modulecore.internal.util.ZipFileExporter;
 
 public class DependentDeployableModuleOperation extends WTPOperation {
@@ -110,7 +110,7 @@ public class DependentDeployableModuleOperation extends WTPOperation {
 	 * @return
 	 */
 	private IPath getAbsoluteOutputContainer() {
-		WorkbenchModule workbenchModule = (WorkbenchModule) depDataModel.getProperty(DependentDeployableModuleDataModel.CONTAINING_WBMODULE);
+		WorkbenchComponent workbenchModule = (WorkbenchComponent) depDataModel.getProperty(DependentDeployableModuleDataModel.CONTAINING_WBMODULE);
 		IFolder localWorkbenchModuleOuptutContainer = null;
 		if (workbenchModule != null)
 			localWorkbenchModuleOuptutContainer = ModuleCore.getOutputContainerRoot(workbenchModule);
@@ -124,14 +124,14 @@ public class DependentDeployableModuleOperation extends WTPOperation {
 	 * @return
 	 */
 	private IPath getAbsoluteInputContainer() {
-		WorkbenchModule depWBModule = (WorkbenchModule) depDataModel.getProperty(DependentDeployableModuleDataModel.DEPENDENT_WBMODULE);
+		WorkbenchComponent depWBModule = (WorkbenchComponent) depDataModel.getProperty(DependentDeployableModuleDataModel.DEPENDENT_WBMODULE);
 		if (depWBModule != null)
 			return ModuleCore.getOutputContainerRoot(depWBModule).getFullPath();
 		return null;
 	}
 
 	private String getZipFileName() {
-		WorkbenchModule depWBModule = (WorkbenchModule) depDataModel.getProperty(DependentDeployableModuleDataModel.DEPENDENT_WBMODULE);
+		WorkbenchComponent depWBModule = (WorkbenchComponent) depDataModel.getProperty(DependentDeployableModuleDataModel.DEPENDENT_WBMODULE);
 		return depWBModule.getDeployedName();
 	}
 

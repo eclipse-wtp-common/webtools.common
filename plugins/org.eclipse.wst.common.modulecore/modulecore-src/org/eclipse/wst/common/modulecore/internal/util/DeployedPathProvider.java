@@ -11,7 +11,7 @@
 package org.eclipse.wst.common.modulecore.internal.util;
 
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
+import org.eclipse.wst.common.modulecore.ComponentResource;
 
 /**
  * <p>
@@ -25,9 +25,9 @@ public class DeployedPathProvider implements IPathProvider {
 	private DeployedPathProvider() {} 
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.wst.common.modulecore.util.IPathProvider#getPath(org.eclipse.wst.common.modulecore.WorkbenchModule)
+	 * @see org.eclipse.wst.common.modulecore.util.IPathProvider#getPath(org.eclipse.wst.common.modulecore.WorkbenchComponent)
 	 */
-	public URI getPath(WorkbenchModuleResource aModuleResource) { 
+	public URI getPath(ComponentResource aModuleResource) { 
 		return aModuleResource.getDeployedPath();
 	}
 

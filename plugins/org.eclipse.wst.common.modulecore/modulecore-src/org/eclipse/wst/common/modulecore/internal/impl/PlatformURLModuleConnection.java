@@ -20,7 +20,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.UnresolveableURIException;
-import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
+import org.eclipse.wst.common.modulecore.ComponentResource;
 
 
 /**
@@ -51,7 +51,7 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
 			IResource eclipseResource = null;
 			IContainer eclipseContainer = null;
 			moduleCore = ModuleCore.getModuleCoreForRead(ModuleCore.getContainingProject(aModuleResourceDeployPath));			
-			WorkbenchModuleResource[] resources = moduleCore.findWorkbenchModuleResourceByDeployPath(aModuleResourceDeployPath);
+			ComponentResource[] resources = moduleCore.findWorkbenchModuleResourceByDeployPath(aModuleResourceDeployPath);
 			URI deployPathSegment = ModuleURIUtil.trimToDeployPathSegment(aModuleResourceDeployPath);
 // THIS ALGORITHM WILL NOT HANDLE URI OVERLAPS, 
 //			it only works when the deploypath is wholly contained within the found resource 

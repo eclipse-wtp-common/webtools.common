@@ -44,7 +44,7 @@ public interface ModuleCoreFactory extends EFactory {
 	 * @return a new object of class '<em>Workbench Module</em>'.
 	 * @generated
 	 */
-	WorkbenchModule createWorkbenchModule();
+	WorkbenchComponent createWorkbenchModule();
 
 	/**
 	 * Returns a new object of class '<em>Workbench Module Resource</em>'. <!-- begin-user-doc
@@ -53,7 +53,7 @@ public interface ModuleCoreFactory extends EFactory {
 	 * @return a new object of class '<em>Workbench Module Resource</em>'.
 	 * @generated
 	 */
-	WorkbenchModuleResource createWorkbenchModuleResource();
+	ComponentResource createWorkbenchModuleResource();
 
 	/**
 	 * Returns a new object of class '<em>Module Type</em>'. <!-- begin-user-doc --> <!--
@@ -62,7 +62,7 @@ public interface ModuleCoreFactory extends EFactory {
 	 * @return a new object of class '<em>Module Type</em>'.
 	 * @generated
 	 */
-	ModuleType createModuleType();
+	ComponentType createModuleType();
 
 	/**
 	 * Returns a new object of class '<em>Project Modules</em>'. <!-- begin-user-doc --> <!--
@@ -71,7 +71,7 @@ public interface ModuleCoreFactory extends EFactory {
 	 * @return a new object of class '<em>Project Modules</em>'.
 	 * @generated
 	 */
-	ProjectModules createProjectModules();
+	ProjectComponents createProjectModules();
 
 	/**
 	 * Returns a new object of class '<em>Dependent Module</em>'. <!-- begin-user-doc --> <!--
@@ -80,7 +80,7 @@ public interface ModuleCoreFactory extends EFactory {
 	 * @return a new object of class '<em>Dependent Module</em>'.
 	 * @generated
 	 */
-	DependentModule createDependentModule();
+	ReferencedComponent createDependentModule();
 
 	/**
 	 * Returns the package supported by this factory. <!-- begin-user-doc --> <!-- end-user-doc -->

@@ -19,7 +19,7 @@ import org.eclipse.wst.common.frameworks.operations.WTPOperation;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.modulecore.ArtifactEdit;
 import org.eclipse.wst.common.modulecore.ModuleCore;
-import org.eclipse.wst.common.modulecore.WorkbenchModule;
+import org.eclipse.wst.common.modulecore.WorkbenchComponent;
 
 import com.ibm.wtp.emf.workbench.WorkbenchResourceHelperBase;
 
@@ -43,7 +43,7 @@ public class ArtifactEditOperation extends WTPOperation {
 	protected final void initilize(IProgressMonitor monitor) {
 		ArtifactEditOperationDataModel dataModel = (ArtifactEditOperationDataModel) operationDataModel;
 		emfWorkbenchContext = (EMFWorkbenchContext) WorkbenchResourceHelperBase.createEMFContext(dataModel.getTargetProject(), null);
-		WorkbenchModule module = getWorkbenchModule(); 
+		WorkbenchComponent module = getWorkbenchModule(); 
 		artifactEdit = getArtifactEditForModule(module);
 		doInitialize(monitor);
 	}
@@ -51,17 +51,17 @@ public class ArtifactEditOperation extends WTPOperation {
 	/**
      * @return
      */
-    protected ArtifactEdit getArtifactEditForModule(WorkbenchModule module) {
+    protected ArtifactEdit getArtifactEditForModule(WorkbenchComponent module) {
         return ArtifactEdit.getArtifactEditForWrite(module);
     }
 
     /**
      * @return
      */
-    public WorkbenchModule getWorkbenchModule() {
+    public WorkbenchComponent getWorkbenchModule() {
         ArtifactEditOperationDataModel dataModel = (ArtifactEditOperationDataModel) operationDataModel;
         ModuleCore moduleCore = null;
-        WorkbenchModule module = null;
+        WorkbenchComponent module = null;
         try {
             moduleCore = ModuleCore.getModuleCoreForRead(dataModel.getTargetProject());
             module = moduleCore.findWorkbenchModuleByDeployName(dataModel.getStringProperty(ArtifactEditOperationDataModel.MODULE_DEPLOY_NAME));
