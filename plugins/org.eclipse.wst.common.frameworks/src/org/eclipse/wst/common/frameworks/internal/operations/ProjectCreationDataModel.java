@@ -35,7 +35,7 @@ public class ProjectCreationDataModel extends WTPOperationDataModel {
 	/**
 	 * A required dataModel propertyName for a <code>java.lang.String</code> type. This is used to
 	 * specify the project name.
-	 */
+	 */ 
 	public static final String PROJECT_NAME = "ProjectCreationDataModel.PROJECT_NAME"; //$NON-NLS-1$
 
 	/**
