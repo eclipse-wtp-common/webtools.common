@@ -10,14 +10,12 @@
  *******************************************************************************/
 package org.eclipse.wst.common.modulecore.internal.impl;
 
-import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 // TODO: We need to port the strings used in the exceptions.
 /**

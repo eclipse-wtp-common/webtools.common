@@ -9,7 +9,6 @@
 package org.eclipse.wst.common.modulecore;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -19,7 +18,6 @@ import org.eclipse.wst.common.internal.emfworkbench.edit.EditModelRegistry;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelListener;
 import org.eclipse.wst.common.internal.emfworkbench.integration.IEditModelFactory;
-import org.eclipse.wst.common.modulecore.internal.impl.PlatformURLModuleConnection;
 import org.eclipse.wst.common.modulecore.internal.resources.ComponentHandle;
 
 /**
@@ -87,6 +85,7 @@ public class ArtifactEdit implements IEditModelHandler {
 				return new ArtifactEdit(nature, aModule, true);
 			}
 		} catch (UnresolveableURIException uue) {
+			//Ignore
 		}
 		return null;
 	}
@@ -119,6 +118,7 @@ public class ArtifactEdit implements IEditModelHandler {
 				return new ArtifactEdit(nature, aModule, false);
 			}
 		} catch (UnresolveableURIException uue) {
+			//Ignore
 		}
 		return null;
 	}

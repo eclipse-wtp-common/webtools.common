@@ -9,7 +9,6 @@
 package org.eclipse.wst.common.modulecore.internal.resources;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -96,11 +95,11 @@ public class VirtualFile extends VirtualResource implements IVirtualFile {
 	}
 
 	protected void doDeleteMetaModel(int updateFlags,IProgressMonitor monitor) {
-		
+		//Default
 	}	
 	
 	protected void doDeleteRealResources(int updateFlags, IProgressMonitor monitor) throws CoreException {
-
+		//Default
 	}
 
 }
