@@ -96,7 +96,7 @@
 &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;extension&lt;br&gt;
 &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;id=&quot;context.Sensitive.Class.workingCopyManager&quot;&lt;br&gt;
 &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;name=&quot;Working&amp;nbsp;Copy&amp;nbsp;Manager&amp;nbsp;-&amp;nbsp;UI&amp;nbsp;Context&amp;nbsp;Class&quot;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;point=&quot;com.ibm.wtp.common.uiContextSensitiveClass&quot;&amp;gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;point=&quot;com.ibm.wtp.common.ui.ContextSensitiveClass&quot;&amp;gt;&lt;br&gt;
 &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;uiContextSensitiveClass&lt;br&gt;
 &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;context=&quot;UI&quot;&lt;br&gt;
 &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;key=&quot;workingCopyManager&quot;&lt;br&gt;
