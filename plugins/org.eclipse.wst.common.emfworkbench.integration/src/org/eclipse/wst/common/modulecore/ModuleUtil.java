@@ -1,9 +1,4 @@
-/*
- * Created on Feb 7, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
+
 package org.eclipse.wst.common.modulecore;
 
 import org.eclipse.core.resources.IProject;
@@ -19,7 +14,8 @@ public class ModuleUtil implements IModuleConstants {
     public static boolean isFlexableProject(IProject project) {
         IProjectNature nature = null;
         try {
-            nature = project.getNature(MODULE_NATURE_ID);
+            if (project.isAccessible())
+             nature = project.getNature(MODULE_NATURE_ID);
         } catch (CoreException e) {
             Logger.getLogger().write(e);
         }
