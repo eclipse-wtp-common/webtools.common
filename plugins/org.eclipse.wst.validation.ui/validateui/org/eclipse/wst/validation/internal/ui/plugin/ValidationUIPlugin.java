@@ -28,7 +28,7 @@ public class ValidationUIPlugin extends WTPUIPlugin {
 	private static ValidationUIPlugin _plugin = null;
 
 	public final static String VALIDATION_PROP_FILE_NAME = "validate_ui"; //$NON-NLS-1$
-	public static final String PLUGIN_ID = "org.eclipse.wst.validation.core.ui"; //$NON-NLS-1$
+	public static final String PLUGIN_ID = "org.eclipse.wst.validation.ui"; //$NON-NLS-1$
 
 	public ValidationUIPlugin(IPluginDescriptor descriptor) {
 		super(descriptor);

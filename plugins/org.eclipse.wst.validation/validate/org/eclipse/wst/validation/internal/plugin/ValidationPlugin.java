@@ -25,7 +25,7 @@ import com.ibm.wtp.common.logger.LogEntry;
 
 public class ValidationPlugin extends WTPPlugin {
 	public static final String VALIDATION_PROP_FILE_NAME = "validate_base"; //$NON-NLS-1$
-	public static final String PLUGIN_ID = "org.eclipse.wst.validation.core"; //$NON-NLS-1$
+	public static final String PLUGIN_ID = "org.eclipse.wst.validation"; //$NON-NLS-1$
 	private static ValidationPlugin _plugin = null;
 	private static TimeEntry _tEntry = null;
 	private static LogEntry _entry = null;
