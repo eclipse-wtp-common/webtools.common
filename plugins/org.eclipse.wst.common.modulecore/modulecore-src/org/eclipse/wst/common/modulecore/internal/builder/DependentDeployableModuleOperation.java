@@ -81,7 +81,12 @@ public class DependentDeployableModuleOperation extends WTPOperation {
 			DeployableModuleBuilder.smartCopy(sourceResource, absoluteOutputContainer, new NullProgressMonitor());
 		} else {
 			String zipName = getZipFileName();
-			zipAndCopyResource(getResource(absoluteInputContainer), absoluteOutputContainer.append(zipName).toString());
+			IPath zipNameDestination = absoluteOutputContainer.append(zipName);
+			IResource dependentZip = getResource(zipNameDestination);
+			//TODO: this is needed to stop the copying of large dependent module.  Incremental build in M4 should allow for this
+			//code to be removed.
+			if(dependentZip == null || dependentZip.exists()) return;
+			zipAndCopyResource(getResource(absoluteInputContainer), zipNameDestination.toString());
 			getResource(absoluteOutputContainer).refreshLocal(IResource.DEPTH_INFINITE, monitor);
 		}
 	}

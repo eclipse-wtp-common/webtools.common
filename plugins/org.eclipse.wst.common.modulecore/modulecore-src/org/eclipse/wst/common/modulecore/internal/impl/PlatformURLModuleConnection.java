@@ -34,6 +34,8 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
 
 	public static final String MODULE = "module"; //$NON-NLS-1$
 	public static final String MODULE_PROTOCOL = MODULE + PlatformURLHandler.PROTOCOL_SEPARATOR;
+	
+	public static final String CLASSPATH = "classpath"; //$NON-NLS-1$
 
 	public static final String RESOURCE_MODULE = "resource"; //$NON-NLS-1$
 	public static final String BINARY_MODULE = "binary"; //$NON-NLS-1$
