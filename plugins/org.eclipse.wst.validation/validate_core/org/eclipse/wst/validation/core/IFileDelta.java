@@ -16,6 +16,9 @@ package org.eclipse.wst.validation.core;
  * status of a resource. IFileDelta contains the name of the file which has 
  * changed, and a flag which indicates the type of change which has occurred.
  * </p>
+ * 
+ * [issue: CS - are there assumptions that a client can make about the fileName? Is this
+ * a URI?  In the eclipse workspace context is this 'platform:'?]
  */
 public interface IFileDelta {
 	public static final int ADDED = 1;   // the file has been added

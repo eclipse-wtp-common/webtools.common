@@ -13,6 +13,8 @@ package org.eclipse.wst.validation.core;
 
 /**
  * Enumeration values used to specify severity of a reported message.
+ * 
+ * [issue: CS - I'd suggest defining these enums directly on 'IMessage'] 
  */
 public interface SeverityEnum {
 	/**

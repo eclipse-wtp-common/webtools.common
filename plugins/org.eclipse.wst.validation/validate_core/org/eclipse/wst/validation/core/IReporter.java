@@ -27,6 +27,11 @@ package org.eclipse.wst.validation.core;
  * 
  * Any messages which need to be displayed to the user are done through this class, and if the user
  * cancels the current function, this class is the one which registers the cancellation.
+ * 
+ * [issue: CS - I think it would be useful to say something about the IReporter life cycle.  
+ * is an instance created when validation begins and then removed when validation ends?  Does the 
+ * IReporter provide access to all messages ... or just the ones created by the associated validator? 
+ * ] 
  */
 public interface IReporter extends SeverityEnum {
 	/**
@@ -67,12 +72,16 @@ public interface IReporter extends SeverityEnum {
 	 *            validator The validator issuing the subtask message.
 	 * @param IMessage
 	 *            message The message to be displayed to the user.
+	 *            
+	 * [issue : CS - I don't understand this one.  Perhaps an example would help?]           
 	 */
 	public abstract void displaySubtask(IValidator validator, IMessage message);
 
 	/**
 	 * @return the message access interface to this reporter, or null if message access is not
 	 * supported.
+	 * 
+	 * [issue : CS - Seems like overkill to have an IMessageAccess class. Why not just getMessages() to get a list.]    
 	 */
 	public IMessageAccess getMessageAccess();
 
@@ -85,6 +94,9 @@ public interface IReporter extends SeverityEnum {
 	 * </p>
 	 * 
 	 * @return true if the user cancelled validation, and false otherwise.
+	 * 
+	 * [issue : CS - this seems like it should be a method on the IValidator and not the IReporter.
+	 *  seems a bit strange that the reporter would be controlling the execution of validator.]    
 	 */
 	public abstract boolean isCancelled();
 
@@ -97,7 +109,10 @@ public interface IReporter extends SeverityEnum {
 	 * The IValidator parameter must not be null.
 	 * </p>
 	 * @param origin
-	 * 			originator validator of the message. 
+	 * 			originator validator of the message.
+	 *  
+	 * 	[issue : CS - it would be very nice if we could give the impression that there's just 'one reporter per validator'. 
+	 *  This would let us simplify many of our methods and enforce that an IValidator is only modifying its own reports.]  
 	 */
 	public abstract void removeAllMessages(IValidator origin);
 
@@ -116,7 +131,12 @@ public interface IReporter extends SeverityEnum {
 	 * @param object
 	 * 			Object to which the message belongs.
 	 * 
-	 */
+	 * 	[issue : CS - it would help to say a bit more about the 'object'.  Is this object something that only
+	 *  needs to exist for the life span of the validation or is this something that's longer lasting?  I assume
+	 *  the object is transient and doesn't need to be persisted? If the object a significant part of the API why
+	 *  is it not associated with an IMessage or passed in as a parameter to addMessage()?  It seems strange that the 
+	 *  'object' only comes into play when removing messages.]  
+ 	 */
 	public abstract void removeAllMessages(IValidator origin, Object object);
 
 	/**

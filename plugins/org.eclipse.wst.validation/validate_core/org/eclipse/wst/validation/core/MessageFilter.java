@@ -19,6 +19,9 @@ package org.eclipse.wst.validation.core;
  * filter are specified, they should be logically AND'd together by the MessageAccess
  * implementation.
  * </p>
+ * 
+ * [issue: CS - Is it possible to get rid of this class?  I think MessageFiltering should take
+ * place at the 'display' level and not at this level of the API.]
  */
 public class MessageFilter {
 	public static final int ANY_SEVERITY = -1;

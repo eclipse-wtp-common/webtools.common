@@ -17,6 +17,10 @@ package org.eclipse.wst.validation.core;
  * </p>
  * 
  * @see org.eclipse.wst.validation.core.IFileDelta
+ * 
+ *  [issue: CS - is there a reason that we need to expose this impl class as an API?
+ *   It would seem better to only expose IFileDelta.  I can't think of a reason where 
+ *   a typical client would need to create one of these.]
  */
 public class FileDelta implements IFileDelta {
 	private int fileDelta = 0;

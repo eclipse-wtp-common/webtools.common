@@ -31,6 +31,16 @@ package org.eclipse.wst.validation.core;
  * <code>loadModel</code> method. An IHelper can support more than one IValidator; 
  * the helper needs to support every model that each validator needs.
  * </p>
+ * 
+ * [issue : CS - We should remove product specify information in the documentation (above)]
+ * [issue : CS - This is a rather strange interface. Perhaps a better name would be 'IValidatorContext' 
+ * The word 'helper' seems very vague.  The loadModel(String) method seems reasonable to me since 
+ * a validator may need to load a model differently depending on the context its invoked from.
+ * In any case I'd assume that the fileName that's provided via IValidator.validate() would be the only
+ * obvious parameter that would get passed into loadModel().  We should make sure the param names are 
+ * consistent (i.e. symbolicName should by fileName). We also need to give some documentation to demonstrate
+ * how a validator would typically invoke the loadModel(String) methods from within the validate() 
+ * method body to obtain a 'context specific' model]
  */
 public interface IHelper {
 	/**
@@ -58,6 +68,10 @@ public interface IHelper {
 	 * </p>
 	 * @param symbolicName String identifier for model
 	 * @param parms 	   parms list of parameters that the model takes for invocation
+	 * 
+	 * [issue : CS - It's not at all clear how these parameters would get passed into a helper.  I'd suggest
+	 * providing getProperty() and setProperty() methods on the class to allow contextual information to be 
+	 * supplied and queried in a generic manner.]
 	 */
 	public Object loadModel(String symbolicName, Object[] parms);
 }

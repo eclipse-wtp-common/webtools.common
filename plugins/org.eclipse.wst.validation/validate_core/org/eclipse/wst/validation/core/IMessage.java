@@ -22,6 +22,23 @@ import java.util.Locale;
  * (i.e., the message with the parameters already substituted in.) Either the default Locale can be
  * used, or the caller can specify a Locale.
  * </p>
+ * 
+ * [issue: CS - The 'IMessage' interface would be simpler without the bundle related details.  I'd like to understand
+ * why we can 'precompute' the translated message. Is there some benefit to perform 'late computation' of these messages?
+ * How does this compare to the eclipse Marker (as far as I know the Marker's text() is preLocalized).
+ * Here's a list of the methods that are related to 'bundle specific' aspects and could be separate out (or designed away)?
+ *    
+ *   - getId()
+ *   - getBundle(...)
+ *   - getBundleName()
+ *   - getParams()
+ *   - getText(Locale)
+ *   - getText(ClassLoader)
+ *   - getText(Locale, ClassLoader)
+ *   - setId(String)
+ *   - setBundleName(String)
+ *   - setParams(String[])
+ * ]
  */
 public interface IMessage {
 	public static final int OFFSET_UNSET = -1; // see getLength(), getOffset()

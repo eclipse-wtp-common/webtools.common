@@ -23,6 +23,37 @@ import java.util.ResourceBundle;
  * place of this implementation.
  * <p>
  * @see org.eclipse.wst.validation.core.IMessage
+ * 
+ * [issue: CS - I'd suggest splitting this class into Message and BundleMessage (where the latter inherits
+ * from the former.  We have many messages that come (from xerces) pretranslated and don't require 'bundle'
+ * related fields and methods. Splitting this class would make it easier to understand where bundle related
+ * function is coming into play. Below I've listed out what would go into BundleMessage to demonstrate how 
+ * we can simplify the 'Message' class by factoring out the bundle related details.
+ * 
+ * Message
+ *	private Object targetObject = null;
+ *	private String groupName = null;
+ *	private int lineNumber = IMessage.LINENO_UNSET;
+ *	private int length = IMessage.OFFSET_UNSET;
+ *	private int offset = IMessage.OFFSET_UNSET;
+ *
+ *    
+ * BundleMessage
+ *	private String id = null;
+ *	private String[] params = null;
+ *	private String bundleName = null;
+ *   
+ *   - getId()
+ *   - getBundle(...)
+ *   - getBundleName()
+ *   - getParams()
+ *   - getText(Locale)
+ *   - getText(ClassLoader)
+ *   - getText(Locale, ClassLoader)
+ *   - setId(String)
+ *   - setBundleName(String)
+ *   - setParams(String[])
+ * ]
  */
 public class Message implements IMessage {
 	private String id = null;

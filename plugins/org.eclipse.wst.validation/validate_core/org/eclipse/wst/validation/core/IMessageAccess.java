@@ -19,6 +19,9 @@ import java.util.List;
  * Interface which can be used to access messages which are stored within a reporter which retains
  * its message history.
  * </p>
+ * 
+ * [issue: CS - This interface seems like overkill.  I'd think that an IReport should simply have a getMessages() method.
+ * I think MessageFiltering should take place at the 'display' level and not at this level of the API.]
  */
 public interface IMessageAccess {
 	/**
