@@ -1052,7 +1052,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 		return getResourceURIs(false);
 	}
 
-	protected String[] getResourceURIs(boolean onlyDirty) {
+	public String[] getResourceURIs(boolean onlyDirty) {
 		List list = getResources();
 		int dirtyCount = 0;
 		String[] uris = new String[list.size()];
