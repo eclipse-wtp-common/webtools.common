@@ -1,5 +1,6 @@
 package org.eclipse.wst.common.modulecore.internal.util;
 
+import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.wst.common.internal.emf.resource.GenericTranslator;
 import org.eclipse.wst.common.internal.emf.resource.IDTranslator;
@@ -54,10 +55,24 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 		GenericTranslator result = new GenericTranslator(MODULE_TYPE, afeature);
 		result.setChildren(new Translator[] {			
 			new Translator(MODULE_TYPE_ID, MODULE_CORE_PKG.getComponentType_ModuleTypeId(), DOM_ATTRIBUTE),
-			new Translator(META_RESOURCES, MODULE_CORE_PKG.getComponentType_MetadataResources())
+			new Translator(META_RESOURCES, MODULE_CORE_PKG.getComponentType_MetadataResources()),
+			new Translator(MODULE_TYPE_VERSION, MODULE_CORE_PKG.getComponentType_Version()),
+			createPropertiesTranslator(MODULE_CORE_PKG.getComponentType_Properties())
+			
 		});
 		return result;
 	}
+	
+	private static Translator createPropertiesTranslator(EStructuralFeature afeature){
+		GenericTranslator result = new GenericTranslator(PROPERTY, afeature);
+		result.setChildren(new Translator[] {
+			new Translator(PROPERTY_NAME, MODULE_CORE_PKG.getProperty_Name(), DOM_ATTRIBUTE ),
+			new Translator(PROPERTY_VALUE, MODULE_CORE_PKG.getProperty_Value(), DOM_ATTRIBUTE ),
+	
+		});
+		return result;		
+	}
+	
 	
 	private static Translator createDependentModuleTranslator(EStructuralFeature afeature) {
 		GenericTranslator result = new GenericTranslator(DEPENDENT_MODULE, afeature);
