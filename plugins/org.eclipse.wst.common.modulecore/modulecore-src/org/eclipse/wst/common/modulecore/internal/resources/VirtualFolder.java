@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -95,8 +96,7 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 			componentResource.setRuntimePath(URI.createURI(getRuntimePath().toString()));
 			component.getResources().add(componentResource);
 
-			if (!resource.exists())  
-				resource.create(updateFlags, true, monitor); 
+			createResource(resource, updateFlags, monitor);
 
 		} finally {
 			if (moduleCore != null) {
@@ -107,6 +107,15 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 	}
 
 
+
+	private void createResource(IContainer resource, int updateFlags, IProgressMonitor monitor) throws CoreException {
+
+		if (!resource.getParent().exists()) 
+			createResource(resource.getParent(), updateFlags, monitor);
+		if(!resource.exists())
+			((IFolder)resource).create(updateFlags, true, monitor); 
+		
+	}
 
 	public void move(IPath destination, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
