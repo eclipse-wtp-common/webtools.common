@@ -59,17 +59,15 @@ public class ArtifactEditModel extends EditModel implements IAdaptable{
 	public String getModuleType() {
 		String type = null;
 		WorkbenchModule wbModule;
-		ModuleStructuralModel structuralModel = null;
+		ModuleCore moduleCore = null;
 		try {
-			structuralModel = ModuleCore.getModuleStructuralModelForRead(ModuleCore.getContainingProject(moduleURI), this);
-			ModuleCore editUtility = (ModuleCore) structuralModel.getAdapter(ModuleCore.ADAPTER_TYPE);
-			wbModule = editUtility.findWorkbenchModuleByDeployName(moduleURI.segment(ModuleCore.Constants.ModuleURISegments.MODULE_NAME));
+			moduleCore = ModuleCore.getModuleCoreForRead(ModuleCore.getContainingProject(moduleURI)); 
+			wbModule = moduleCore.findWorkbenchModuleByModuleURI(moduleURI);
 			type = wbModule.getModuleType().getModuleTypeId();
-		} catch (UnresolveableURIException e) {
-			// TODO Auto-generated catch block
+		} catch (UnresolveableURIException e) { 
 			e.printStackTrace();
 		} finally {
-			structuralModel.releaseAccess(this);
+			moduleCore.dispose();
 		}
 		return type;
 	}
@@ -115,10 +113,9 @@ public class ArtifactEditModel extends EditModel implements IAdaptable{
 		int size = theResources.size();
 		Resource resourceToProcess;
 		boolean processed = false;
-		ModuleStructuralModel structuralModel = null;
+		ModuleCore moduleCore = null;
 		try {
-			structuralModel = ModuleCore.getModuleStructuralModelForRead(ModuleCore.getContainingProject(moduleURI), this);
-			ModuleCore editUtility = (ModuleCore) structuralModel.getAdapter(ModuleCore.ADAPTER_TYPE);
+			moduleCore = ModuleCore.getModuleCoreForRead(ModuleCore.getContainingProject(moduleURI));			
 			
 			WorkbenchModuleResource[] relevantModuleResources = null;
 			URI aResourceURI = null;
@@ -126,7 +123,7 @@ public class ArtifactEditModel extends EditModel implements IAdaptable{
 				try {
 					resourceToProcess = (Resource) theResources.get(i);			
 					aResourceURI = resourceToProcess.getURI();
-					relevantModuleResources = editUtility.findWorkbenchModuleResourcesBySourcePath(aResourceURI);
+					relevantModuleResources = moduleCore.findWorkbenchModuleResourcesBySourcePath(aResourceURI);
 					for (int resourcesIndex = 0; resourcesIndex < relevantModuleResources.length; resourcesIndex++) {
 						if (moduleURI.equals(relevantModuleResources[resourcesIndex].getModule().getHandle())) {
 							processResource(resourceToProcess);
@@ -139,8 +136,8 @@ public class ArtifactEditModel extends EditModel implements IAdaptable{
 			}
 		} catch (UnresolveableURIException uurie) { 
 		} finally {
-			if (structuralModel != null)
-				structuralModel.releaseAccess(this);
+			if (moduleCore != null)
+				moduleCore.dispose();
 		}
 		return processed;
 	}

@@ -11,7 +11,6 @@ import java.net.URL;
 
 import org.eclipse.core.internal.boot.PlatformURLConnection;
 import org.eclipse.core.internal.boot.PlatformURLHandler;
-import org.eclipse.core.internal.resources.PlatformURLResourceConnection;
 import org.eclipse.core.internal.utils.Policy;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
@@ -20,7 +19,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.wst.common.modulecore.ModuleStructuralModel;
 import org.eclipse.wst.common.modulecore.ModuleURIUtil;
 import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
 import org.eclipse.wst.common.modulecore.util.ModuleCore;
@@ -46,15 +44,13 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
 	}
 
 	public static URI resolve(URI aModuleResourceDeployPath) throws IOException {
-		ModuleStructuralModel structuralModel = null;
+		ModuleCore moduleCore = null;
 		URI resolvedURI = null;
-		Object key = new Object();
 		try {
 			IResource eclipseResource = null;
 			IContainer eclipseContainer = null;
-			structuralModel = ModuleCore.getModuleStructuralModelForRead(ModuleCore.getContainingProject(aModuleResourceDeployPath), key);
-			ModuleCore editUtility = (ModuleCore) structuralModel.getAdapter(ModuleCore.ADAPTER_TYPE);
-			WorkbenchModuleResource[] resources = editUtility.findWorkbenchModuleResourceByDeployPath(aModuleResourceDeployPath);
+			moduleCore = ModuleCore.getModuleCoreForRead(ModuleCore.getContainingProject(aModuleResourceDeployPath));			
+			WorkbenchModuleResource[] resources = moduleCore.findWorkbenchModuleResourceByDeployPath(aModuleResourceDeployPath);
 			URI deployPathSegment = ModuleURIUtil.trimToDeployPathSegment(aModuleResourceDeployPath);
 // THIS ALGORITHM WILL NOT HANDLE URI OVERLAPS, 
 //			it only works when the deploypath is wholly contained within the found resource 
@@ -81,8 +77,8 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
 		} catch (UnresolveableURIException uurie) {
 			throw new IOException(uurie.toString());
 		} finally {
-			if (structuralModel != null)
-				structuralModel.releaseAccess(key);
+			if (moduleCore != null)
+				moduleCore.dispose();
 		}
 		return resolvedURI;
 	}

@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.modulecore.IModuleConstants;
+import org.eclipse.wst.common.modulecore.ModuleCoreNature;
 import org.eclipse.wst.common.modulecore.ModuleStructuralModel;
 import org.eclipse.wst.common.modulecore.util.ModuleCore;
 
@@ -31,7 +32,8 @@ public class DeployableModuleBuilder extends IncrementalProjectBuilder implement
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
 	    ModuleStructuralModel structuralModel = null;
         try{
-            structuralModel = ModuleCore.getModuleStructuralModelForRead(getProject(), this);
+        	ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(getProject());
+            structuralModel = nature.getModuleStructuralModelForRead(this);
 		    DeployableModuleProjectBuilderDataModel dataModel = new DeployableModuleProjectBuilderDataModel();
 		    dataModel.setProperty(DeployableModuleProjectBuilderDataModel.PROJECT, getProject());
 		    dataModel.setProperty(DeployableModuleProjectBuilderDataModel.PROJECT_DETLA, getDelta(getProject()));
