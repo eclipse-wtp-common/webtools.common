@@ -51,7 +51,7 @@ public abstract class DataModelWizard extends Wizard {
 	}
 
 	public DataModelWizard() {
-		this.model = DataModelFactory.INSTANCE.createDataModel(getDefaultProvider());
+		this.model = DataModelFactory.createDataModel(getDefaultProvider());
 	}
 
 	protected abstract IDataModelProvider getDefaultProvider();

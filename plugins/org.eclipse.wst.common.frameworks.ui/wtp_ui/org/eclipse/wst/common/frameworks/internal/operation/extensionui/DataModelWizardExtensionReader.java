@@ -69,7 +69,7 @@ public class DataModelWizardExtensionReader extends RegistryReader {
 		return element;
 	}
 
-	protected DataModelWizard getWizard(IDataModel dataModel) {
+	public DataModelWizard getWizard(IDataModel dataModel) {
 		DataModelWizard wizard = null;
 		IConfigurationElement element = getExtension(dataModel.getID());
 		
