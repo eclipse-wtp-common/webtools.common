@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchModuleImpl.java,v 1.6 2005/01/26 21:34:08 cbridgha Exp $
+ * $Id: WorkbenchModuleImpl.java,v 1.7 2005/02/02 19:51:06 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
@@ -19,12 +19,14 @@ import org.eclipse.emf.ecore.InternalEObject;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
+import org.eclipse.emf.ecore.util.EDataTypeUniqueEList;
 import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.eclipse.wst.common.modulecore.IModuleType;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
+import org.eclipse.wst.common.modulecore.ModuleType;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
 import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
 
@@ -36,6 +38,7 @@ import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
  * The following features are implemented:
  * <ul>
  *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl#getHandle <em>Handle</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl#getDeployedName <em>Deployed Name</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl#getDeployedPath <em>Deployed Path</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl#getModules <em>Modules</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl#getResources <em>Resources</em>}</li>
@@ -67,6 +70,26 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	protected URI handle = HANDLE_EDEFAULT;
 
 	/**
+	 * The default value of the '{@link #getDeployedName() <em>Deployed Name</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getDeployedName()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String DEPLOYED_NAME_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getDeployedName() <em>Deployed Name</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getDeployedName()
+	 * @generated
+	 * @ordered
+	 */
+	protected String deployedName = DEPLOYED_NAME_EDEFAULT;
+
+	/**
 	 * The default value of the '{@link #getDeployedPath() <em>Deployed Path</em>}' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -87,7 +110,7 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	protected URI deployedPath = DEPLOYED_PATH_EDEFAULT;
 
 	/**
-	 * The cached value of the '{@link #getModules() <em>Modules</em>}' reference list.
+	 * The cached value of the '{@link #getModules() <em>Modules</em>}' attribute list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getModules()
@@ -160,6 +183,27 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public String getDeployedName() {
+		return deployedName;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setDeployedName(String newDeployedName) {
+		String oldDeployedName = deployedName;
+		deployedName = newDeployedName;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_NAME, oldDeployedName, deployedName));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public URI getDeployedPath() {
 		return deployedPath;
 	}
@@ -183,7 +227,7 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	 */
 	public EList getModules() {
 		if (modules == null) {
-			modules = new EObjectResolvingEList(WorkbenchModule.class, this, ModuleCorePackage.WORKBENCH_MODULE__MODULES);
+			modules = new EDataTypeUniqueEList(URI.class, this, ModuleCorePackage.WORKBENCH_MODULE__MODULES);
 		}
 		return modules;
 	}
@@ -207,7 +251,7 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	 */
 	public EList getModuleType() {
 		if (moduleType == null) {
-			moduleType = new EObjectResolvingEList(IModuleType.class, this, ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE);
+			moduleType = new EObjectResolvingEList(ModuleType.class, this, ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE);
 		}
 		return moduleType;
 	}
@@ -257,6 +301,8 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 		switch (eDerivedStructuralFeatureID(eFeature)) {
 			case ModuleCorePackage.WORKBENCH_MODULE__HANDLE:
 				return getHandle();
+			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_NAME:
+				return getDeployedName();
 			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_PATH:
 				return getDeployedPath();
 			case ModuleCorePackage.WORKBENCH_MODULE__MODULES:
@@ -278,6 +324,9 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 		switch (eDerivedStructuralFeatureID(eFeature)) {
 			case ModuleCorePackage.WORKBENCH_MODULE__HANDLE:
 				setHandle((URI)newValue);
+				return;
+			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_NAME:
+				setDeployedName((String)newValue);
 				return;
 			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_PATH:
 				setDeployedPath((URI)newValue);
@@ -308,6 +357,9 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 			case ModuleCorePackage.WORKBENCH_MODULE__HANDLE:
 				setHandle(HANDLE_EDEFAULT);
 				return;
+			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_NAME:
+				setDeployedName(DEPLOYED_NAME_EDEFAULT);
+				return;
 			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_PATH:
 				setDeployedPath(DEPLOYED_PATH_EDEFAULT);
 				return;
@@ -333,6 +385,8 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 		switch (eDerivedStructuralFeatureID(eFeature)) {
 			case ModuleCorePackage.WORKBENCH_MODULE__HANDLE:
 				return HANDLE_EDEFAULT == null ? handle != null : !HANDLE_EDEFAULT.equals(handle);
+			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_NAME:
+				return DEPLOYED_NAME_EDEFAULT == null ? deployedName != null : !DEPLOYED_NAME_EDEFAULT.equals(deployedName);
 			case ModuleCorePackage.WORKBENCH_MODULE__DEPLOYED_PATH:
 				return DEPLOYED_PATH_EDEFAULT == null ? deployedPath != null : !DEPLOYED_PATH_EDEFAULT.equals(deployedPath);
 			case ModuleCorePackage.WORKBENCH_MODULE__MODULES:
@@ -356,8 +410,12 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (handle: ");
 		result.append(handle);
+		result.append(", deployedName: ");
+		result.append(deployedName);
 		result.append(", deployedPath: ");
 		result.append(deployedPath);
+		result.append(", modules: ");
+		result.append(modules);
 		result.append(')');
 		return result.toString();
 	}

@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchModule.java,v 1.6 2005/01/26 21:34:08 cbridgha Exp $
+ * $Id: WorkbenchModule.java,v 1.7 2005/02/02 19:51:06 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.EObject;
  * The following features are supported:
  * <ul>
  *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getHandle <em>Handle</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getDeployedName <em>Deployed Name</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getDeployedPath <em>Deployed Path</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getModules <em>Modules</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getResources <em>Resources</em>}</li>
@@ -58,6 +59,32 @@ public interface WorkbenchModule extends EObject{
 	void setHandle(URI value);
 
 	/**
+	 * Returns the value of the '<em><b>Deployed Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Deployed Name</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Deployed Name</em>' attribute.
+	 * @see #setDeployedName(String)
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchModule_DeployedName()
+	 * @model 
+	 * @generated
+	 */
+	String getDeployedName();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getDeployedName <em>Deployed Name</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Deployed Name</em>' attribute.
+	 * @see #getDeployedName()
+	 * @generated
+	 */
+	void setDeployedName(String value);
+
+	/**
 	 * Returns the value of the '<em><b>Deployed Path</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <p>
@@ -84,17 +111,17 @@ public interface WorkbenchModule extends EObject{
 	void setDeployedPath(URI value);
 
 	/**
-	 * Returns the value of the '<em><b>Modules</b></em>' reference list.
-	 * The list contents are of type {@link org.eclipse.wst.common.modulecore.WorkbenchModule}.
+	 * Returns the value of the '<em><b>Modules</b></em>' attribute list.
+	 * The list contents are of type {@link org.eclipse.emf.common.util.URI}.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Modules</em>' reference list isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Modules</em>' reference list.
+	 * @return the value of the '<em>Modules</em>' attribute list.
 	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchModule_Modules()
-	 * @model type="org.eclipse.wst.common.modulecore.WorkbenchModule"
+	 * @model type="org.eclipse.emf.common.util.URI" dataType="org.eclipse.wst.common.modulecore.URI"
 	 * @generated
 	 */
 	EList getModules();
@@ -119,7 +146,7 @@ public interface WorkbenchModule extends EObject{
 
 	/**
 	 * Returns the value of the '<em><b>Module Type</b></em>' reference list.
-	 * The list contents are of type {@link org.eclipse.wst.common.modulecore.IModuleType}.
+	 * The list contents are of type {@link org.eclipse.wst.common.modulecore.ModuleType}.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Module Type</em>' reference list isn't clear,
@@ -128,7 +155,7 @@ public interface WorkbenchModule extends EObject{
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Module Type</em>' reference list.
 	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchModule_ModuleType()
-	 * @model type="org.eclipse.wst.common.modulecore.IModuleType"
+	 * @model type="org.eclipse.wst.common.modulecore.ModuleType"
 	 * @generated
 	 */
 	EList getModuleType();

@@ -19,8 +19,9 @@
     </genClasses>
     <genClasses ecoreClass="moduleCore.ecore#//WorkbenchModule">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute moduleCore.ecore#//WorkbenchModule/handle"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//WorkbenchModule/deployedName"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//WorkbenchModule/deployedPath"/>
-      <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//WorkbenchModule/modules"/>
+      <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//WorkbenchModule/modules"/>
       <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//WorkbenchModule/resources"/>
       <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//WorkbenchModule/moduleType"/>
     </genClasses>
@@ -33,10 +34,9 @@
     <genClasses ecoreClass="moduleCore.ecore#//WorkbenchApplication">
       <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//WorkbenchApplication/deployScheme"/>
     </genClasses>
-    <genClasses ecoreClass="moduleCore.ecore#//IModuleType">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//IModuleType/root"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//IModuleType/metadataResources"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//IModuleType/typeName"/>
+    <genClasses ecoreClass="moduleCore.ecore#//ModuleType">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ModuleType/metadataResources"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ModuleType/moduleTypeId"/>
     </genClasses>
     <genClasses ecoreClass="moduleCore.ecore#//ProjectModules">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ProjectModules/projectName"/>

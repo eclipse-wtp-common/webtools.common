@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchApplicationImpl.java,v 1.5 2005/01/26 21:34:08 cbridgha Exp $
+ * $Id: WorkbenchApplicationImpl.java,v 1.6 2005/02/02 19:51:06 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
@@ -147,6 +147,8 @@ public class WorkbenchApplicationImpl extends WorkbenchModuleImpl implements Wor
 		switch (eDerivedStructuralFeatureID(eFeature)) {
 			case ModuleCorePackage.WORKBENCH_APPLICATION__HANDLE:
 				return getHandle();
+			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOYED_NAME:
+				return getDeployedName();
 			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOYED_PATH:
 				return getDeployedPath();
 			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULES:
@@ -171,6 +173,9 @@ public class WorkbenchApplicationImpl extends WorkbenchModuleImpl implements Wor
 		switch (eDerivedStructuralFeatureID(eFeature)) {
 			case ModuleCorePackage.WORKBENCH_APPLICATION__HANDLE:
 				setHandle((URI)newValue);
+				return;
+			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOYED_NAME:
+				setDeployedName((String)newValue);
 				return;
 			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOYED_PATH:
 				setDeployedPath((URI)newValue);
@@ -204,6 +209,9 @@ public class WorkbenchApplicationImpl extends WorkbenchModuleImpl implements Wor
 			case ModuleCorePackage.WORKBENCH_APPLICATION__HANDLE:
 				setHandle(HANDLE_EDEFAULT);
 				return;
+			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOYED_NAME:
+				setDeployedName(DEPLOYED_NAME_EDEFAULT);
+				return;
 			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOYED_PATH:
 				setDeployedPath(DEPLOYED_PATH_EDEFAULT);
 				return;
@@ -232,6 +240,8 @@ public class WorkbenchApplicationImpl extends WorkbenchModuleImpl implements Wor
 		switch (eDerivedStructuralFeatureID(eFeature)) {
 			case ModuleCorePackage.WORKBENCH_APPLICATION__HANDLE:
 				return HANDLE_EDEFAULT == null ? handle != null : !HANDLE_EDEFAULT.equals(handle);
+			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOYED_NAME:
+				return DEPLOYED_NAME_EDEFAULT == null ? deployedName != null : !DEPLOYED_NAME_EDEFAULT.equals(deployedName);
 			case ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOYED_PATH:
 				return DEPLOYED_PATH_EDEFAULT == null ? deployedPath != null : !DEPLOYED_PATH_EDEFAULT.equals(deployedPath);
 			case ModuleCorePackage.WORKBENCH_APPLICATION__MODULES:

@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreFactory.java,v 1.6 2005/01/26 16:48:35 cbridgha Exp $
+ * $Id: ModuleCoreFactory.java,v 1.7 2005/02/02 19:51:06 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -62,13 +62,13 @@ public interface ModuleCoreFactory extends EFactory{
 	WorkbenchApplication createWorkbenchApplication();
 
 	/**
-	 * Returns a new object of class '<em>IModule Type</em>'.
+	 * Returns a new object of class '<em>Module Type</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>IModule Type</em>'.
+	 * @return a new object of class '<em>Module Type</em>'.
 	 * @generated
 	 */
-	IModuleType createIModuleType();
+	ModuleType createModuleType();
 
 	/**
 	 * Returns a new object of class '<em>Project Modules</em>'.

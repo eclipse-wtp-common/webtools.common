@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreSwitch.java,v 1.7 2005/01/26 19:32:14 cbridgha Exp $
+ * $Id: ModuleCoreSwitch.java,v 1.8 2005/02/02 19:51:06 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.util;
 
@@ -120,9 +120,9 @@ public class ModuleCoreSwitch {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case ModuleCorePackage.IMODULE_TYPE: {
-				IModuleType iModuleType = (IModuleType)theEObject;
-				Object result = caseIModuleType(iModuleType);
+			case ModuleCorePackage.MODULE_TYPE: {
+				ModuleType moduleType = (ModuleType)theEObject;
+				Object result = caseModuleType(moduleType);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -203,17 +203,17 @@ public class ModuleCoreSwitch {
 	}
 
 	/**
-	 * Returns the result of interpretting the object as an instance of '<em>IModule Type</em>'.
+	 * Returns the result of interpretting the object as an instance of '<em>Module Type</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpretting the object as an instance of '<em>IModule Type</em>'.
+	 * @return the result of interpretting the object as an instance of '<em>Module Type</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseIModuleType(IModuleType object) {
+	public Object caseModuleType(ModuleType object) {
 		return null;
 	}
 

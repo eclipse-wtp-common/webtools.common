@@ -33,12 +33,14 @@ import org.eclipse.wst.common.modulecore.WorkbenchModule;
  * </p>
  */
 public class ModuleCore {
-
+	
+	
+	static ModuleCore INSTANCE = new ModuleCore();
 	static String MODULE_META_FILE_NAME = ".modules";
 
-	private static HashMap projectModules; // Module list keyed by name
+	private HashMap projectModules; // Module list keyed by name
 
-	public static void createModuleMetaData(IProject project) {
+	public void createModuleMetaData(IProject project) {
 		IFile file = project.getFile(MODULE_META_FILE_NAME);
 		Resource resource = WorkbenchResourceHelper.getExistingOrCreateResource(URI.createPlatformResourceURI(file.getFullPath().toString()));
 		// URI metadataPath =
@@ -55,7 +57,7 @@ public class ModuleCore {
 		}
 	}
 
-	public static void loadModuleMetaData(IProject project) {
+	public void loadModuleMetaData(IProject project) {
 		String metadataPath = project.getFullPath().append(MODULE_META_FILE_NAME).toOSString();
 		Resource resource = new ResourceSetImpl().createResource(URI.createURI(metadataPath));
 		Collection modules = EcoreUtil.getObjectsByType(resource.getContents(), ModuleCorePackage.eINSTANCE.getWorkbenchModule());
@@ -68,19 +70,19 @@ public class ModuleCore {
 	/*
 	 * Javadoc copied from interface.
 	 */
-	public static Resource.Factory getResourceFactory(URI uri) {
+	public Resource.Factory getResourceFactory(URI uri) {
 
 		return Resource.Factory.Registry.INSTANCE.getFactory(uri);
 	}
  
-	public static WorkbenchModule getModuleNamed(ModuleStructuralModel aStructuralModel, String moduleName) {
+	public WorkbenchModule getModuleNamed(ModuleStructuralModel aStructuralModel, String moduleName) {
 		return (WorkbenchModule) projectModules.get(moduleName);
 	}
 
 	/**
 	 * @return
 	 */
-	private static void createDefaultStructure(Resource resource, IProject project) {
+	private void createDefaultStructure(Resource resource, IProject project) {
 		WorkbenchModule module = ModuleCoreFactory.eINSTANCE.createWorkbenchModule();
 		// TODO Handle Handle
 		// module.setName(project.getName());

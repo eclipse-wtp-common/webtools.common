@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCorePackage.java,v 1.8 2005/01/26 21:34:08 cbridgha Exp $
+ * $Id: ModuleCorePackage.java,v 1.9 2005/02/02 19:51:06 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -116,22 +116,31 @@ public interface ModuleCorePackage extends EPackage{
 	int WORKBENCH_MODULE__HANDLE = 0;
 
 	/**
+	 * The feature id for the '<em><b>Deployed Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int WORKBENCH_MODULE__DEPLOYED_NAME = 1;
+
+	/**
 	 * The feature id for the '<em><b>Deployed Path</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int WORKBENCH_MODULE__DEPLOYED_PATH = 1;
+	int WORKBENCH_MODULE__DEPLOYED_PATH = 2;
 
 	/**
-	 * The feature id for the '<em><b>Modules</b></em>' reference list.
+	 * The feature id for the '<em><b>Modules</b></em>' attribute list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int WORKBENCH_MODULE__MODULES = 2;
+	int WORKBENCH_MODULE__MODULES = 3;
 
 	/**
 	 * The feature id for the '<em><b>Resources</b></em>' containment reference list.
@@ -140,7 +149,7 @@ public interface ModuleCorePackage extends EPackage{
 	 * @generated
 	 * @ordered
 	 */
-	int WORKBENCH_MODULE__RESOURCES = 3;
+	int WORKBENCH_MODULE__RESOURCES = 4;
 
 	/**
 	 * The feature id for the '<em><b>Module Type</b></em>' reference list.
@@ -149,7 +158,7 @@ public interface ModuleCorePackage extends EPackage{
 	 * @generated
 	 * @ordered
 	 */
-	int WORKBENCH_MODULE__MODULE_TYPE = 4;
+	int WORKBENCH_MODULE__MODULE_TYPE = 5;
 
 	/**
 	 * The number of structural features of the the '<em>Workbench Module</em>' class.
@@ -158,7 +167,7 @@ public interface ModuleCorePackage extends EPackage{
 	 * @generated
 	 * @ordered
 	 */
-	int WORKBENCH_MODULE_FEATURE_COUNT = 5;
+	int WORKBENCH_MODULE_FEATURE_COUNT = 6;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleResourceImpl <em>Workbench Module Resource</em>}' class.
@@ -235,6 +244,15 @@ public interface ModuleCorePackage extends EPackage{
 	int WORKBENCH_APPLICATION__HANDLE = WORKBENCH_MODULE__HANDLE;
 
 	/**
+	 * The feature id for the '<em><b>Deployed Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int WORKBENCH_APPLICATION__DEPLOYED_NAME = WORKBENCH_MODULE__DEPLOYED_NAME;
+
+	/**
 	 * The feature id for the '<em><b>Deployed Path</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -244,7 +262,7 @@ public interface ModuleCorePackage extends EPackage{
 	int WORKBENCH_APPLICATION__DEPLOYED_PATH = WORKBENCH_MODULE__DEPLOYED_PATH;
 
 	/**
-	 * The feature id for the '<em><b>Modules</b></em>' reference list.
+	 * The feature id for the '<em><b>Modules</b></em>' attribute list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -289,23 +307,14 @@ public interface ModuleCorePackage extends EPackage{
 	int WORKBENCH_APPLICATION_FEATURE_COUNT = WORKBENCH_MODULE_FEATURE_COUNT + 1;
 
 	/**
-	 * The meta object id for the '{@link org.eclipse.wst.common.modulecore.impl.IModuleTypeImpl <em>IModule Type</em>}' class.
+	 * The meta object id for the '{@link org.eclipse.wst.common.modulecore.impl.ModuleTypeImpl <em>Module Type</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.eclipse.wst.common.modulecore.impl.IModuleTypeImpl
-	 * @see org.eclipse.wst.common.modulecore.impl.ModuleCorePackageImpl#getIModuleType()
+	 * @see org.eclipse.wst.common.modulecore.impl.ModuleTypeImpl
+	 * @see org.eclipse.wst.common.modulecore.impl.ModuleCorePackageImpl#getModuleType()
 	 * @generated
 	 */
-	int IMODULE_TYPE = 4;
-
-	/**
-	 * The feature id for the '<em><b>Root</b></em>' attribute.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 * @ordered
-	 */
-	int IMODULE_TYPE__ROOT = 0;
+	int MODULE_TYPE = 4;
 
 	/**
 	 * The feature id for the '<em><b>Metadata Resources</b></em>' attribute list.
@@ -314,25 +323,25 @@ public interface ModuleCorePackage extends EPackage{
 	 * @generated
 	 * @ordered
 	 */
-	int IMODULE_TYPE__METADATA_RESOURCES = 1;
+	int MODULE_TYPE__METADATA_RESOURCES = 0;
 
 	/**
-	 * The feature id for the '<em><b>Type Name</b></em>' attribute.
+	 * The feature id for the '<em><b>Module Type Id</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IMODULE_TYPE__TYPE_NAME = 2;
+	int MODULE_TYPE__MODULE_TYPE_ID = 1;
 
 	/**
-	 * The number of structural features of the the '<em>IModule Type</em>' class.
+	 * The number of structural features of the the '<em>Module Type</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int IMODULE_TYPE_FEATURE_COUNT = 3;
+	int MODULE_TYPE_FEATURE_COUNT = 2;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.wst.common.modulecore.impl.ProjectModulesImpl <em>Project Modules</em>}' class.
@@ -473,6 +482,17 @@ public interface ModuleCorePackage extends EPackage{
 	EAttribute getWorkbenchModule_Handle();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getDeployedName <em>Deployed Name</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Deployed Name</em>'.
+	 * @see org.eclipse.wst.common.modulecore.WorkbenchModule#getDeployedName()
+	 * @see #getWorkbenchModule()
+	 * @generated
+	 */
+	EAttribute getWorkbenchModule_DeployedName();
+
+	/**
 	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getDeployedPath <em>Deployed Path</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -484,15 +504,15 @@ public interface ModuleCorePackage extends EPackage{
 	EAttribute getWorkbenchModule_DeployedPath();
 
 	/**
-	 * Returns the meta object for the reference list '{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getModules <em>Modules</em>}'.
+	 * Returns the meta object for the attribute list '{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getModules <em>Modules</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference list '<em>Modules</em>'.
+	 * @return the meta object for the attribute list '<em>Modules</em>'.
 	 * @see org.eclipse.wst.common.modulecore.WorkbenchModule#getModules()
 	 * @see #getWorkbenchModule()
 	 * @generated
 	 */
-	EReference getWorkbenchModule_Modules();
+	EAttribute getWorkbenchModule_Modules();
 
 	/**
 	 * Returns the meta object for the containment reference list '{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getResources <em>Resources</em>}'.
@@ -592,47 +612,36 @@ public interface ModuleCorePackage extends EPackage{
 	EReference getWorkbenchApplication_DeployScheme();
 
 	/**
-	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.IModuleType <em>IModule Type</em>}'.
+	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.ModuleType <em>Module Type</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>IModule Type</em>'.
-	 * @see org.eclipse.wst.common.modulecore.IModuleType
+	 * @return the meta object for class '<em>Module Type</em>'.
+	 * @see org.eclipse.wst.common.modulecore.ModuleType
 	 * @generated
 	 */
-	EClass getIModuleType();
+	EClass getModuleType();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.IModuleType#getRoot <em>Root</em>}'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Root</em>'.
-	 * @see org.eclipse.wst.common.modulecore.IModuleType#getRoot()
-	 * @see #getIModuleType()
-	 * @generated
-	 */
-	EAttribute getIModuleType_Root();
-
-	/**
-	 * Returns the meta object for the attribute list '{@link org.eclipse.wst.common.modulecore.IModuleType#getMetadataResources <em>Metadata Resources</em>}'.
+	 * Returns the meta object for the attribute list '{@link org.eclipse.wst.common.modulecore.ModuleType#getMetadataResources <em>Metadata Resources</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute list '<em>Metadata Resources</em>'.
-	 * @see org.eclipse.wst.common.modulecore.IModuleType#getMetadataResources()
-	 * @see #getIModuleType()
+	 * @see org.eclipse.wst.common.modulecore.ModuleType#getMetadataResources()
+	 * @see #getModuleType()
 	 * @generated
 	 */
-	EAttribute getIModuleType_MetadataResources();
+	EAttribute getModuleType_MetadataResources();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.IModuleType#getTypeName <em>Type Name</em>}'.
+	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.ModuleType#getModuleTypeId <em>Module Type Id</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Type Name</em>'.
-	 * @see org.eclipse.wst.common.modulecore.IModuleType#getTypeName()
-	 * @see #getIModuleType()
+	 * @return the meta object for the attribute '<em>Module Type Id</em>'.
+	 * @see org.eclipse.wst.common.modulecore.ModuleType#getModuleTypeId()
+	 * @see #getModuleType()
 	 * @generated
 	 */
-	EAttribute getIModuleType_TypeName();
+	EAttribute getModuleType_ModuleTypeId();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.ProjectModules <em>Project Modules</em>}'.

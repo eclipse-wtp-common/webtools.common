@@ -9,13 +9,14 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="WorkbenchModule">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="handle" eType="#//URI"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="deployedName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="deployedPath" eType="#//URI"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="modules" upperBound="-1"
-        eType="#//WorkbenchModule"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="modules" upperBound="-1"
+        eType="#//URI"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="resources" upperBound="-1"
         eType="#//WorkbenchModuleResource" containment="true" eOpposite="#//WorkbenchModuleResource/module"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="moduleType" upperBound="-1"
-        eType="#//IModuleType"/>
+        eType="#//ModuleType"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="WorkbenchModuleResource">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="sourcePath" eType="#//URI"/>
@@ -29,11 +30,10 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="deployScheme" lowerBound="1"
         eType="#//DeployScheme"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="IModuleType">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="root" eType="#//URI"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ModuleType">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="metadataResources" upperBound="-1"
         eType="#//URI"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="typeName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="moduleTypeId" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EDataType" name="URI" instanceClassName="org.eclipse.emf.common.util.URI"/>
   <eClassifiers xsi:type="ecore:EClass" name="ProjectModules">
