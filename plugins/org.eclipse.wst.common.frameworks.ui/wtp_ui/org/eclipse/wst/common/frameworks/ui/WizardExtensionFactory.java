@@ -6,13 +6,14 @@
  * 
  * Contributors: IBM Corporation - initial API and implementation
  **************************************************************************************************/
-package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
+package org.eclipse.wst.common.frameworks.ui;
 
 import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
-import org.eclipse.wst.common.frameworks.ui.IExtendedPageHandler;
-import org.eclipse.wst.common.frameworks.ui.IExtendedWizardPage;
 
 
+/**
+ * This interface is EXPERIMENTAL and is subject to substantial changes.
+ */
 public abstract class WizardExtensionFactory {
 
 	public WizardExtensionFactory() {
