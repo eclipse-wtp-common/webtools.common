@@ -16,7 +16,6 @@ import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
 import org.eclipse.wst.common.modulecore.DependencyType;
 import org.eclipse.wst.common.modulecore.DependentModule;
-import org.eclipse.wst.common.modulecore.ModuleURIUtil;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
 import org.eclipse.wst.common.modulecore.impl.UnresolveableURIException;
 import org.eclipse.wst.common.modulecore.util.ModuleCore;
@@ -48,12 +47,7 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
 	 */
 	public static final String DOES_CONSUME = "DependentDeployableModuleDataModel.DOES_CONSUME"; //$NON-NLS-1$
 
-	/**
-	 * Calc, type boolean
-	 */
-	public static final String NEEDS_PREPROCESSING = "DependentDeployableModuleDataModel.NEEDS_PREPROCESSING"; //$NON-NLS-1$
-
-    ModuleCore moduleCore = null;
+	ModuleCore moduleCore = null;
 	
     public DependentDeployableModuleDataModel() {
         super();
@@ -70,7 +64,6 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
 		addValidBaseProperty(OUTPUT_CONTAINER);
 		addValidBaseProperty(DOES_CONSUME);
 		addValidBaseProperty(DEPENDENT_WBMODULE);
-		addValidBaseProperty(NEEDS_PREPROCESSING);
 		addValidBaseProperty(CONTAINING_WBMODULE);
 	}
 	/* (non-Javadoc)
@@ -89,19 +82,11 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
             setProperty(HANDLE, getHandleValue());
             setProperty(OUTPUT_CONTAINER, getOutputContainerValue());
             setProperty(DEPENDENT_WBMODULE, getWorkBenchModuleValue());
-            setProperty(NEEDS_PREPROCESSING, getNeedsPreprocessingValue());
             setProperty(DOES_CONSUME, getDoesConsumeValue());
         } 
         return status;
     }
-    private Object getNeedsPreprocessingValue() {
-        if(!isSet(DEPENDENT_MODULE)) return null; 
-        ModuleCore localCore = getModuleCore();
-        if(localCore != null)
-        	return Boolean.valueOf(localCore.isLocalDependency(getDependentModule())); 
-        return null;
-    }
-
+    
     private WorkbenchModule getWorkBenchModuleValue() {
         if(!isSet(DEPENDENT_MODULE)) return null;
         ModuleCore localCore = getModuleCore();
