@@ -134,6 +134,12 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	}
 
 	/**
+	 * @see IDataModelProvider#dispose()
+	 */
+	public void dispose() {
+	}
+
+	/**
 	 * <p>
 	 * Convenience method for getting a property from the backing IDataModel.
 	 * </p>
@@ -239,5 +245,18 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	 */
 	protected final String getStringProperty(String propertyName) {
 		return model.getStringProperty(propertyName);
+	}
+
+	/**
+	 * <p>
+	 * Convenience method for checking if a property is set from the backing IDataModel.
+	 * </p>
+	 * 
+	 * @param propertyName
+	 *            the property name
+	 * @return <code>true</code> if the property is set, <code>false</code> otherwise.
+	 */
+	protected final boolean isPropertySet(String propertyName) {
+		return model.isPropertySet(propertyName);
 	}
 }

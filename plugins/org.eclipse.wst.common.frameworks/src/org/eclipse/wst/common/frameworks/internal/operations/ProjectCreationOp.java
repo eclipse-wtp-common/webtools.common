@@ -16,31 +16,28 @@
  */
 package org.eclipse.wst.common.frameworks.internal.operations;
 
-import java.lang.reflect.InvocationTargetException;
-
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
-/**
- * @deprecated
- * @see org.eclipse.wst.common.frameworks.internal.operations.IProjectCreationProperties
- */
-public class ProjectCreationOperation extends WTPOperation {
+public class ProjectCreationOp extends AbstractDataModelOperation {
 
-	public ProjectCreationOperation(ProjectCreationDataModel dataModel) {
+	public ProjectCreationOp(IDataModel dataModel) {
 		super(dataModel);
 	}
 
-	protected void execute(IProgressMonitor monitor) throws CoreException, InvocationTargetException, InterruptedException {
+	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		try {
-			ProjectCreationDataModel dataModel = (ProjectCreationDataModel) operationDataModel;
-
-			IProjectDescription desc = dataModel.getProjectDescription();
-			IProject project = dataModel.getProject();
+			IProjectDescription desc = (IProjectDescription) model.getProperty(IProjectCreationProperties.PROJECT_DESCRIPTION);
+			IProject project = (IProject) model.getProperty(IProjectCreationProperties.PROJECT);
 			if (!project.exists()) {
 				project.create(desc, new SubProgressMonitor(monitor, IProgressMonitor.UNKNOWN));
 			}
@@ -49,16 +46,38 @@ public class ProjectCreationOperation extends WTPOperation {
 				throw new OperationCanceledException();
 			project.open(new SubProgressMonitor(monitor, IProgressMonitor.UNKNOWN));
 
-			String[] natureIds = (String[]) dataModel.getProperty(ProjectCreationDataModel.PROJECT_NATURES);
+			String[] natureIds = (String[]) model.getProperty(IProjectCreationProperties.PROJECT_NATURES);
 			if (null != natureIds) {
 				desc = project.getDescription();
 				desc.setNatureIds(natureIds);
 				project.setDescription(desc, monitor);
 			}
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		} finally {
 			monitor.done();
 		}
 		if (monitor.isCanceled())
 			throw new OperationCanceledException();
+		return OK_STATUS;
+	}
+
+	public boolean canUndo() {
+		return false;
+	}
+
+	public boolean canRedo() {
+		return false;
+	}
+
+	public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -78,4 +78,6 @@ public interface IDataModelProvider {
 
 	public String getID();
 
+	public void dispose();
+
 }

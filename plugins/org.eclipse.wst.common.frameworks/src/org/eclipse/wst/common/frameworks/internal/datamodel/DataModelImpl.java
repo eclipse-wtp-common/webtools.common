@@ -426,6 +426,7 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 	}
 
 	public void dispose() {
+		provider.dispose();
 	}
 
 	public IUndoableOperation getDefaultOperation() {

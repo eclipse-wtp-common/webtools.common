@@ -26,59 +26,30 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
-/**
- * @deprecated
- * @see org.eclipse.wst.common.frameworks.internal.operations.IProjectCreationProperties
- */
-public class ProjectCreationDataModel extends WTPOperationDataModel {
-	/**
-	 * A required dataModel propertyName for a <code>java.lang.String</code> type. This is used to
-	 * specify the project name.
-	 */
-	public static final String PROJECT_NAME = "ProjectCreationDataModel.PROJECT_NAME"; //$NON-NLS-1$
+public class ProjectCreationDataModelProvider extends AbstractDataModelProvider implements IProjectCreationProperties {
 
-	/**
-	 * An optonal dataModel propertyName for a <code>java.lang.String</code> type. Sets the local
-	 * file system location for the described project. The path must be either an absolute file
-	 * system path, or a relative path whose first segment is the name of a defined workspace path
-	 * variable. The default value is the workspace's default location.
-	 */
-	public static final String PROJECT_LOCATION = "ProjectCreationDataModel.PROJECT_LOCATION"; //$NON-NLS-1$
-
-	/**
-	 * An optional dataModel propertyName for a <code>java.lang.String[]</code> type. This is a
-	 * list of all natures to add to the project. There is no default value.
-	 */
-	public static final String PROJECT_NATURES = "ProjectCreationDataModel.PROJECT_NATURES"; //$NON-NLS-1$
-
-	public static ProjectCreationDataModel createProjectCreationDataModel(String projectName) {
-		ProjectCreationDataModel dataModel = new ProjectCreationDataModel();
-		dataModel.setProperty(PROJECT_NAME, projectName);
-		return dataModel;
+	public IDataModelOperation getDefaultOperation() {
+		return new ProjectCreationOp(model);
 	}
 
-	public WTPOperation getDefaultOperation() {
-		return new ProjectCreationOperation(this);
+	public String[] getPropertyNames() {
+		return new String[]{PROJECT_NAME, PROJECT_LOCATION, PROJECT_NATURES, PROJECT_DESCRIPTION};
 	}
 
-	protected void initValidBaseProperties() {
-		super.initValidBaseProperties();
-		addValidBaseProperty(PROJECT_NAME);
-		addValidBaseProperty(PROJECT_LOCATION);
-		addValidBaseProperty(PROJECT_NATURES);
-	}
-
-	protected Object getDefaultProperty(String propertyName) {
+	public Object getDefaultProperty(String propertyName) {
 		if (PROJECT_LOCATION.equals(propertyName)) {
 			return getDefaultLocation();
 		}
 		return super.getDefaultProperty(propertyName);
 	}
 
-	protected boolean doSetProperty(String propertyName, Object propertyValue) {
+	public boolean propertySet(String propertyName, Object propertyValue) {
 		if (propertyValue != null && propertyName.equals(PROJECT_LOCATION)) {
 			IPath path = getRootLocation();
 			if (path.equals(new Path((String) propertyValue))) {
@@ -86,13 +57,12 @@ public class ProjectCreationDataModel extends WTPOperationDataModel {
 				return false;
 			}
 		}
-		boolean notify = super.doSetProperty(propertyName, propertyValue);
-		if (propertyName.equals(PROJECT_NAME) && !isSet(PROJECT_LOCATION)) {
-			notifyListeners(PROJECT_NAME);
-			notifyListeners(PROJECT_LOCATION);
+		if (propertyName.equals(PROJECT_NAME) && !isPropertySet(PROJECT_LOCATION)) {
+			model.notifyPropertyChange(PROJECT_NAME, IDataModel.VALUE_CHG);
+			model.notifyPropertyChange(PROJECT_LOCATION, IDataModel.VALUE_CHG);
 			return false;
 		}
-		return notify;
+		return true;
 	}
 
 	private String getDefaultLocation() {
@@ -107,23 +77,22 @@ public class ProjectCreationDataModel extends WTPOperationDataModel {
 		return ResourcesPlugin.getWorkspace().getRoot().getLocation();
 	}
 
-	public IProjectDescription getProjectDescription() {
+	private IProjectDescription getProjectDescription() {
 		String projectName = (String) getProperty(PROJECT_NAME);
 		IProjectDescription desc = ResourcesPlugin.getWorkspace().newProjectDescription(projectName);
-		if (isSet(PROJECT_LOCATION)) {
-			String projectLocation = (String) getProperty(ProjectCreationDataModel.PROJECT_LOCATION);
+		if (isPropertySet(PROJECT_LOCATION)) {
+			String projectLocation = (String) getProperty(ProjectCreationDataModelProvider.PROJECT_LOCATION);
 			desc.setLocation(new Path(projectLocation));
 		}
 		return desc;
 	}
 
-	public IProject getProject() {
+	protected IProject getProject() {
 		String projectName = (String) getProperty(PROJECT_NAME);
 		return (null != projectName && projectName.length() > 0) ? ResourcesPlugin.getWorkspace().getRoot().getProject(projectName) : null;
 	}
 
-	protected IStatus doValidateProperty(String propertyName) {
-
+	public IStatus validate(String propertyName) {
 		if (propertyName.equals(PROJECT_NAME)) {
 			IStatus status = validateName();
 			if (!status.isOK())
@@ -139,7 +108,7 @@ public class ProjectCreationDataModel extends WTPOperationDataModel {
 			String projectLoc = getStringProperty(PROJECT_LOCATION);
 			return validateExisting(projectName, projectLoc);
 		}
-		return super.doValidateProperty(propertyName);
+		return OK_STATUS;
 	}
 
 	/**
@@ -189,18 +158,14 @@ public class ProjectCreationDataModel extends WTPOperationDataModel {
 			IResource variant = ((Project) getProject()).findExistingResourceVariant(getProject().getFullPath());
 			if (variant != null) {
 				// TODO Fix this string
-				return WTPCommonPlugin.createErrorStatus("Resource already exists with a different case."/*
-																											 * Policy.bind("resources.existsDifferentCase",
-																											 * variant.getFullPath().toString())
-																											 */); //$NON-NLS-1$
+				return WTPCommonPlugin.createErrorStatus("Resource already exists with a different case.");
 			}
 		}
-
 		return OK_STATUS;
 	}
 
 	private IStatus validateLocation() {
-		if (isSet(PROJECT_LOCATION)) {
+		if (isPropertySet(PROJECT_LOCATION)) {
 			String loc = (String) getProperty(PROJECT_LOCATION);
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();
 			IPath path = new Path(loc);
