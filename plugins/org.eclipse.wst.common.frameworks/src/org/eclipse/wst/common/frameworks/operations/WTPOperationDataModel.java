@@ -123,12 +123,6 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	private boolean hasBeenExecutedAgainst = false;
 	private boolean suspendValidation = false;
 
-	//TODO Delete this
-	/**
-	 * @deprecated
-	 */
-	private WTPOperationDataModel extendedRoot;
-
 	/**
 	 * <p>
 	 * The WTPOperationDataModel constructor. This constructor will first add the base
@@ -248,21 +242,11 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 
 		addNestedProperties(dataModel.validProperties);
 		dataModel.addListener(this);
-
-		//TODO this block needs to be deleted.
-		WTPOperationDataModelListener extendedListener = dataModel.getExtendedSynchronizer();
-		if (extendedListener != null) {
-			if (this.extendedRoot == null)
-				dataModel.extendedRoot = this;
-			else
-				dataModel.extendedRoot = this.extendedRoot;
-			this.addListener(extendedListener);
-		}
 	}
 
 	private void addNestedProperties(Set nestedProperties) {
 		boolean propertiesAdded = validProperties.addAll(nestedProperties);
-		//Pass the new properties up the nesting chain
+		// Pass the new properties up the nesting chain
 		if (propertiesAdded && nestingModels != null) {
 			Iterator iterator = nestingModels.iterator();
 			while (iterator.hasNext()) {
@@ -271,21 +255,12 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		}
 	}
 
-	public Iterator getNestedModels(){
+	public Iterator getNestedModels() {
 		return nestedModels.values().iterator();
 	}
-	
-	public Iterator getNestingModels(){
+
+	public Iterator getNestingModels() {
 		return nestingModels.iterator();
-	}
-	
-	//TODO delete this
-	/**
-	 * @deprecated
-	 * @return
-	 */
-	protected WTPOperationDataModelListener getExtendedSynchronizer() {
-		return null;
 	}
 
 	/**
@@ -617,7 +592,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 */
 	protected Object getDefaultProperty(String propertyName) {
 		if (propertyName.equals(EXTENDED_CONTEXT)) {
-			Object targetProject = getTargetProject(); //TODO delete this block with
+			Object targetProject = getTargetProject(); // TODO delete this block with
 			// getTargetProject()
 			if (null == targetProject) {
 				return Collections.EMPTY_LIST;
@@ -1138,62 +1113,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		return hasBeenExecutedAgainst;
 	}
 
-	//	TODO delete this
-	/**
-	 * This will be deleted before WTP M4
-	 * 
-	 * @deprecated
-	 */
-	private final void assertModelIsExtended() {
-		if (extendedRoot == null)
-			throw new IllegalStateException(WTPResourceHandler.getString("19")); //$NON-NLS-1$
-	}
-
-	//	TODO delete this
-	/**
-	 * This will be deleted before WTP M4
-	 * 
-	 * @deprecated
-	 */
-	protected final Object getParentProperty(String propertyName) {
-		assertModelIsExtended();
-		return extendedRoot.getProperty(propertyName);
-	}
-
-	//	TODO delete this
-	/**
-	 * This will be deleted before WTP M4
-	 * 
-	 * @deprecated
-	 */
-	protected final int getParentIntProperty(String propertyName) {
-		assertModelIsExtended();
-		return extendedRoot.getIntProperty(propertyName);
-	}
-
-	//	TODO delete this
-	/**
-	 * This will be deleted before WTP M4
-	 * 
-	 * @deprecated
-	 */
-	protected final boolean getParentBooleanProperty(String propertyName) {
-		assertModelIsExtended();
-		return extendedRoot.getBooleanProperty(propertyName);
-	}
-
-	//	TODO delete this
-	/**
-	 * This will be deleted before WTP M4
-	 * 
-	 * @deprecated
-	 */
-	protected final String getParentStringProperty(String propertyName) {
-		assertModelIsExtended();
-		return extendedRoot.getStringProperty(propertyName);
-	}
-
-	//	TODO delete this
+	// TODO delete this
 	/**
 	 * This will be deleted before WTP M4 If this is used for extended operations, see the property
 	 * EXTENDED_CONTEXT. Otherwise, there is no replacement method.
