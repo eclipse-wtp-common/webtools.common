@@ -16,6 +16,8 @@ public interface IModuleConstants {
 	public final static String MODULE_NATURE_ID = "org.eclipse.wst.common.emfworkbench.integration.ModuleCoreNature"; //$NON-NLS-1$
 
 	//moduleTypes
-	public final static String JST_WEB_MODULE = "jst.web";
-	public final static String WST_WEB_MODULE = "wst.web";
+	public final static String JST_WEB_MODULE = "jst.web"; //$NON-NLS-1$
+	public final static String WST_WEB_MODULE = "wst.web"; //$NON-NLS-1$
+	
+	public final static String UTILITY_MODULE = "jst.utility"; //$NON-NLS-1$
 }

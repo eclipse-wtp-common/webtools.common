@@ -26,10 +26,11 @@ import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
 import org.eclipse.wst.common.modulecore.ModuleCoreFactory;
 import org.eclipse.wst.common.modulecore.ModuleCoreNature;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
-import org.eclipse.wst.common.modulecore.ModuleEditModel;
+import org.eclipse.wst.common.modulecore.ArtifactEditModel;
 import org.eclipse.wst.common.modulecore.ModuleStructuralModel;
 import org.eclipse.wst.common.modulecore.ProjectModules;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
+import org.eclipse.wst.common.modulecore.impl.UnresolveableURIException;
 
 /**
  * <p>
@@ -37,20 +38,31 @@ import org.eclipse.wst.common.modulecore.WorkbenchModule;
  * </p>
  */
 public class ArtifactEdit {
-	
-	
+
+
 	public static ArtifactEdit INSTANCE = new ArtifactEdit();
 
 	/*
 	 * Javadoc copied from interface.
 	 */
-	public ModuleEditModel getModuleEditModelForRead(WorkbenchModule wbModule, Object anAccessorKey) {
-		ModuleCoreNature aNature = ModuleCoreNature.getModuleCoreNature(wbModule.getProject());
-		return aNature.getModuleEditModelForRead(wbModule.getHandle(),anAccessorKey);
-	}
-	public ModuleEditModel getModuleEditModelForWrite(WorkbenchModule wbModule, Object anAccessorKey) {
-		ModuleCoreNature aNature = ModuleCoreNature.getModuleCoreNature(wbModule.getProject());
-		return aNature.getModuleEditModelForWrite(wbModule.getHandle(),anAccessorKey);
+	public ArtifactEditModel getModuleEditModelForRead(WorkbenchModule aModule, Object anAccessorKey) {
+		try {
+			IProject project = ModuleCore.INSTANCE.getContainingProject(aModule.getHandle());
+			ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(project);
+			return nature.getModuleEditModelForRead(aModule.getHandle(), anAccessorKey);
+		} catch (UnresolveableURIException uue) {
+		}
+		return null;
 	}
 
+	public ArtifactEditModel getModuleEditModelForWrite(WorkbenchModule aModule, Object anAccessorKey) {
+		try {
+			IProject project = ModuleCore.INSTANCE.getContainingProject(aModule.getHandle());
+			ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(project);
+			return nature.getModuleEditModelForWrite(aModule.getHandle(), anAccessorKey);
+		} catch (UnresolveableURIException uue) {
+		}
+		return null;
+
+	}
 }

@@ -17,6 +17,9 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.wst.common.modulecore.ModuleStructuralModel;
+import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
+import org.eclipse.wst.common.modulecore.util.ModuleCore;
 
 
 /**
@@ -38,22 +41,21 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
         super(aURL);        
     }
 
-    public static URI resolve(URI aURI)  {
-        System.out.println("URI: " + aURI);
-        IPath moduleRelativePath = new Path(aURI.toString()); 
-        String moduleName = moduleRelativePath.segment(1);        
-        
-        IPath resolvedPath = null; //handle.getResolvedPath().append(moduleRelativePath.removeFirstSegments(2));           
-
-		int count = resolvedPath.segmentCount(); 
-		// if there are two segments then the second is a project name.
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(resolvedPath.segment(0));
-		if (!project.exists()) {
-//			String message = Policy.bind("url.couldNotResolve", project.getName(), aURI.toString()); //$NON-NLS-1$
-//			throw new IOException(message);
-			return aURI;
-		} 
-		return URI.createPlatformResourceURI(resolvedPath.toString());
+    public static URI resolve(URI aURI) throws IOException {
+    	ModuleStructuralModel structuralModel = null;
+    	URI resolvedURI = null;
+    	Object key = new Object();
+    	try {
+    		structuralModel = ModuleCore.INSTANCE.getModuleStructuralModelForRead(aURI, key);
+    		WorkbenchModuleResource resource = ModuleCore.INSTANCE.findWorkbenchModuleResourceByDeployPath(structuralModel, aURI);
+    		resolvedURI = resource.getSourcePath();
+    	} catch (UnresolveableURIException uurie) {
+    		throw new IOException(uurie.toString());
+    	} finally {
+    		if(structuralModel != null)
+    			structuralModel.releaseAccess(key);
+    	}
+    	return resolvedURI;
     }
     
     /* (non-Javadoc)

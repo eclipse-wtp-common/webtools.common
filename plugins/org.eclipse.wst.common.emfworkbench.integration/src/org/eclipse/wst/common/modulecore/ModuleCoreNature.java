@@ -14,6 +14,8 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.wst.common.internal.emfworkbench.CompatibilityWorkbenchURIConverterImpl;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelNature;
+import org.eclipse.wst.common.modulecore.impl.UnresolveableURIException;
+import org.eclipse.wst.common.modulecore.util.ModuleCore;
 
 import com.ibm.wtp.emf.workbench.EMFWorkbenchContextBase;
 import com.ibm.wtp.emf.workbench.ProjectResourceSet;
@@ -47,16 +49,16 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		return (ModuleStructuralModel) getEditModelForWrite(ModuleStructuralModelFactory.MODULE_STRUCTURAL_MODEL_ID, anAccessorKey);
 	}
 
-	public ModuleEditModel getModuleEditModelForRead(URI aModuleURI, Object anAccessorKey) {
+	public ArtifactEditModel getModuleEditModelForRead(URI aModuleURI, Object anAccessorKey) {
 		Map params = new HashMap();
-		params.put(ModuleEditModelFactory.PARAM_MODULE_URI, aModuleURI);
-		return (ModuleEditModel) getEditModelForRead(ModuleEditModelFactory.MODULE_EDIT_MODEL_ID, anAccessorKey, params);
+		params.put(ModuleEditModelFactory.PARAM_MODULE_URI, aModuleURI);  
+		return (ArtifactEditModel) getEditModelForRead(getArtifactEditModelId(aModuleURI), anAccessorKey, params);
 	}
 
-	public ModuleEditModel getModuleEditModelForWrite(URI aModuleURI, Object anAccessorKey) {
+	public ArtifactEditModel getModuleEditModelForWrite(URI aModuleURI, Object anAccessorKey) {
 		Map params = new HashMap();
 		params.put(ModuleEditModelFactory.PARAM_MODULE_URI, aModuleURI);
-		return (ModuleEditModel) getEditModelForWrite(ModuleEditModelFactory.MODULE_EDIT_MODEL_ID, anAccessorKey, params);
+		return (ArtifactEditModel) getEditModelForWrite(getArtifactEditModelId(aModuleURI), anAccessorKey, params);
 	}
 
 	/*
@@ -140,6 +142,20 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
             project.setDescription(description, null);
         }
     }
+    
+	private String getArtifactEditModelId(URI aModuleURI) {
+		ModuleStructuralModel structuralModel = null;		
+		try {
+			structuralModel = getModuleStructuralModelForRead(Thread.currentThread());			
+			WorkbenchModule module = ModuleCore.INSTANCE.findWorkbenchModuleByDeployName(structuralModel, ModuleURIUtil.getDeployedName(aModuleURI));
+			return module.getModuleType().getModuleTypeId();
+		} catch(UnresolveableURIException uurie) {
+		} finally {
+			if(structuralModel != null)
+				structuralModel.releaseAccess(Thread.currentThread());
+		}
+		return null;
+	}
 	/*
 	 * private synchronized void update() { moduleHandlesMap.clear(); workbenchModulesMap.clear();
 	 * projectModules = null; try { if (getProjectModules() != null) { List workBenchModules =

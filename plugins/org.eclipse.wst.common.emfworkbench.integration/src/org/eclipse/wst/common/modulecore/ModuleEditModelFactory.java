@@ -36,7 +36,7 @@ public class ModuleEditModelFactory extends EditModelFactory {
 		if(moduleURI == null)
 			throw new IllegalStateException("A Module URI must be provided");
 		
-		return  new ModuleEditModel(editModelID, context, true, moduleURI);
+		return  new ArtifactEditModel(editModelID, context, true, moduleURI);
 	}
 	
 	/* (non-Javadoc)
@@ -46,7 +46,7 @@ public class ModuleEditModelFactory extends EditModelFactory {
 		URI moduleURI = (URI) ((params != null) ? params.get(PARAM_MODULE_URI) : null);
 		if(moduleURI == null)
 			throw new IllegalStateException("A Module URI must be provided");
-		return  new ModuleEditModel(editModelID, context, false, moduleURI);
+		return  new ArtifactEditModel(editModelID, context, false, moduleURI);
 	}
 	
 	/* (non-Javadoc)

@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchModuleImpl.java,v 1.10 2005/02/03 23:19:46 cbridgha Exp $
+ * $Id: WorkbenchModuleImpl.java,v 1.11 2005/02/04 14:50:19 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -35,6 +37,7 @@ import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 import org.eclipse.wst.common.modulecore.ModuleType;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
 import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
+import org.eclipse.wst.common.modulecore.util.ModuleCore;
 
 /**
  * <!-- begin-user-doc -->
@@ -124,9 +127,12 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	 */
 	protected EList modules = null;
 	
-	private final Map resourceIndex = new HashMap();
+	private final Map resourceIndexByDeployPath = new HashMap();
+	private final Map resourceIndexBySourcePath = new HashMap();
 
-	private boolean isIndexed;
+	private boolean isIndexedByDeployPath;
+
+	private boolean isIndexedBySourcePath;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -175,13 +181,24 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	public String getDeployedName() {
 		return deployedName;
 	}
+	
+	public void setDeployedName(String newDeployedName) {
+		setDeployedNameGen(newDeployedName);
+		// TODO A more advanced adapter should be applied to keep the handle up to date.
+		if(eResource() != null) {
+			URI resourceURI = eResource().getURI();
+			String safeDeployedName = getDeployedName() != null ? getDeployedName() : "";
+			if(resourceURI != null && resourceURI.segmentCount() >= 2) 
+				setHandle(URI.createURI(PlatformURLModuleConnection.MODULE_PROTOCOL+IPath.SEPARATOR+"resource"+IPath.SEPARATOR+resourceURI.segment(1)+IPath.SEPARATOR+safeDeployedName));
+		}
+	}
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setDeployedName(String newDeployedName) {
+	private void setDeployedNameGen(String newDeployedName) {
 		String oldDeployedName = deployedName;
 		deployedName = newDeployedName;
 		if (eNotificationRequired())
@@ -401,19 +418,22 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	}
 	
 	public WorkbenchModuleResource findWorkbenchModuleResourceByDeployPath(URI aDeployPath) {
-		if(!isIndexed) 
-			indexResources(); 
-		return (WorkbenchModuleResource) resourceIndex.get(aDeployPath);
+		if(!isIndexedByDeployPath) 
+			indexResourcesByDeployPath(); 
+		return (WorkbenchModuleResource) resourceIndexByDeployPath.get(aDeployPath);
 	}
-
-	/**
-	 * 
-	 */
-	private void indexResources() { 
-		if (isIndexed)
+	
+	public WorkbenchModuleResource findWorkbenchModuleResourceBySourcePath(URI aSourcePath) {
+		if(!isIndexedBySourcePath) 
+			indexResourcesBySourcePath(); 
+		return (WorkbenchModuleResource) resourceIndexByDeployPath.get(aSourcePath);		
+	}
+	
+	private void indexResourcesByDeployPath() { 
+		if (isIndexedByDeployPath)
 			return;
 
-		synchronized (resourceIndex) {
+		synchronized (resourceIndexByDeployPath) {
 // TODO We need a resource indexing adapter to keep the index up to date			
 //			Adapter adapter = EcoreUtil.getAdapter(eAdapters(), ModuleIndexingAdapter.class);
 //			if (adapter == null) 
@@ -422,10 +442,29 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 			WorkbenchModuleResource resource = null;
 			for(Iterator iter = getResources().iterator(); iter.hasNext(); ) {
 				resource = (WorkbenchModuleResource) iter.next();
-				resourceIndex.put(resource.getDeployedPath(), resource);
+				resourceIndexByDeployPath.put(resource.getDeployedPath(), resource);
 			}
 		} 
-		isIndexed = true;		
+		isIndexedByDeployPath = true;		
+	}
+	
+	private void indexResourcesBySourcePath() { 
+		if (isIndexedBySourcePath)
+			return;
+
+		synchronized (resourceIndexBySourcePath) {
+// TODO We need a resource indexing adapter to keep the index up to date			
+//			Adapter adapter = EcoreUtil.getAdapter(eAdapters(), ModuleIndexingAdapter.class);
+//			if (adapter == null) 
+//				eAdapters().add((adapter = new ModuleIndexingAdapter()));
+			
+			WorkbenchModuleResource resource = null;
+			for(Iterator iter = getResources().iterator(); iter.hasNext(); ) {
+				resource = (WorkbenchModuleResource) iter.next();
+				resourceIndexBySourcePath.put(resource.getSourcePath(), resource);
+			}
+		} 
+		isIndexedBySourcePath = true;		
 	}
 
 } //WorkbenchModuleImpl
