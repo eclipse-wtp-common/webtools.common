@@ -72,12 +72,8 @@ public abstract class ArtifactEditOperationDataModel extends WTPOperationDataMod
 	
 	public ArtifactEdit getArtifactEditForRead(){
 		WorkbenchComponent module = getWorkbenchModule(); 
-		return getArtifactEditForRead(module);
+		return ArtifactEdit.getArtifactEditForRead(module);
 	}
-
-    private ArtifactEdit getArtifactEditForRead(WorkbenchComponent module) {
-        return ArtifactEdit.getArtifactEditForRead(module);
-    }
 
     /**
      * @return
