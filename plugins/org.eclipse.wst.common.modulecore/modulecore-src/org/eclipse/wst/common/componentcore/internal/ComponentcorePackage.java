@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentcorePackage.java,v 1.1 2005/04/04 07:05:00 cbridgha Exp $
+ * $Id: ComponentcorePackage.java,v 1.2 2005/04/05 03:35:37 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal;
 
@@ -162,13 +162,22 @@ public interface ComponentcorePackage extends EPackage{
 	int COMPONENT_RESOURCE__COMPONENT = 3;
 
 	/**
+	 * The feature id for the '<em><b>Resource Type</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int COMPONENT_RESOURCE__RESOURCE_TYPE = 4;
+
+	/**
 	 * The number of structural features of the the '<em>Component Resource</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int COMPONENT_RESOURCE_FEATURE_COUNT = 4;
+	int COMPONENT_RESOURCE_FEATURE_COUNT = 5;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.wst.common.componentcore.internal.impl.ComponentTypeImpl <em>Component Type</em>}' class.
@@ -483,6 +492,17 @@ public interface ComponentcorePackage extends EPackage{
 	 * @generated
 	 */
 	EReference getComponentResource_Component();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.componentcore.internal.ComponentResource#getResourceType <em>Resource Type</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Resource Type</em>'.
+	 * @see org.eclipse.wst.common.componentcore.internal.ComponentResource#getResourceType()
+	 * @see #getComponentResource()
+	 * @generated
+	 */
+	EAttribute getComponentResource_ResourceType();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.wst.common.componentcore.internal.ComponentType <em>Component Type</em>}'.

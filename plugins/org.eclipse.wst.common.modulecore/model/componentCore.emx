@@ -523,6 +523,9 @@
       <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_kOVl5JTYEdmy2onHYKlABg" value="1"/>
       <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_kOVl45TYEdmy2onHYKlABg" value="1"/>
     </ownedAttribute>
+    <ownedAttribute xmi:id="_jw5GQKV-EdmoYeO-WR9aDg" name="resourceType">
+      <type xmi:type="uml:PrimitiveType" href="pathmap://UML2_LIBRARIES/UML2PrimitiveTypes.library.uml2#_IXlH8a86EdieaYgxtVWN8Q"/>
+    </ownedAttribute>
   </ownedMember>
   <ownedMember xmi:type="uml:Class" xmi:id="_3A0B2474025F41EC1D5103E2" name="ComponentType">
     <ownedAttribute xmi:id="_3A0B2474025F41EC21340357" name="componentTypeId">

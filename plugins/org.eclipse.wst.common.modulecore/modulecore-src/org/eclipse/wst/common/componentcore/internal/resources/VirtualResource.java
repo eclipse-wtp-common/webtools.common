@@ -16,8 +16,6 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceProxyVisitor;
-import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -51,38 +49,7 @@ public abstract class VirtualResource implements IVirtualResource {
 	
 	protected VirtualResource(IProject aProject, String aComponentName, IPath aRuntimePath) {
 		this(ComponentHandle.create(aProject, aComponentName), aRuntimePath);		
-	}	
-
-	public void accept(IResourceProxyVisitor visitor, int memberFlags) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
-	}
-
-	public void accept(IResourceVisitor visitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
-	}
-
-	public void accept(IResourceVisitor visitor, int depth, boolean includePhantoms) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
-	}
-
-	public void accept(IResourceVisitor visitor, int depth, int memberFlags) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
-	}   
-	
-	public void delete(boolean force, IProgressMonitor monitor) throws CoreException {
-		delete(force ? IResource.FORCE : IResource.NONE, monitor);
-	}
-
-	public void delete(boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
-		int updateFlags = force ? IResource.FORCE : IResource.NONE;
-		updateFlags |= keepHistory ? IResource.KEEP_HISTORY : IResource.NONE;
-		delete(updateFlags, monitor);
-	}
-
+	}	 
 
 	public void delete(int updateFlags, IProgressMonitor monitor) throws CoreException {
 		

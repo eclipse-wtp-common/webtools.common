@@ -176,8 +176,11 @@ public class StructureEdit implements IEditModelHandler {
 	 *             If the supplied module URI is invalid or unresolveable.
 	 */
 	public static IProject getContainingProject(WorkbenchComponent aComponent) {	
-		IProject project = ProjectUtilities.getProject(aComponent);
-		if (project != null && project.isAccessible())
+		String projectName = aComponent.getHandle().segment(ModuleURIUtil.ModuleURI.PROJECT_NAME_INDX);
+		if (projectName == null || projectName.length() == 0)
+			return null;
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+		if (project.isAccessible())
 			return project;
 		return null;
 	}

@@ -121,7 +121,7 @@ public interface WorkbenchComponent extends EObject{
 	 * @generated
 	 */
 	EList getReferencedComponents();
-	
+
 	URI getHandle();
 
 	ComponentResource[] findWorkbenchModuleResourceByDeployPath(URI aDeployPath);

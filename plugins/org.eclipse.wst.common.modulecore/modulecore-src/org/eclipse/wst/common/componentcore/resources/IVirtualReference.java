@@ -17,6 +17,8 @@ public interface IVirtualReference {
 	
 	public void create(int updateFlags, IProgressMonitor aMonitor);
 	
+	public boolean exists();
+	
 	public void setRuntimePath(IPath aRuntimePath);
 	
 	public IPath getRuntimePath();
@@ -25,6 +27,8 @@ public interface IVirtualReference {
 	
 	public int getDependencyType();
 	
+	public IVirtualComponent getEnclosingComponent();
 	
+	public IVirtualComponent getReferencedComponent();
 
 }

@@ -1,7 +1,7 @@
 /**
  * <copyright></copyright>
  * 
- * $Id: ComponentResource.java,v 1.1 2005/04/04 07:05:00 cbridgha Exp $
+ * $Id: ComponentResource.java,v 1.2 2005/04/05 03:35:37 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal;
 
@@ -33,6 +33,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.ComponentResource#getRuntimePath <em>Runtime Path</em>}</li>
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.ComponentResource#getExclusions <em>Exclusions</em>}</li>
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.ComponentResource#getComponent <em>Component</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.componentcore.internal.ComponentResource#getResourceType <em>Resource Type</em>}</li>
  * </ul>
  * </p>
  *
@@ -137,5 +138,32 @@ public interface ComponentResource extends EObject{
 	 * @generated
 	 */
 	void setComponent(WorkbenchComponent value);
+
+	/**
+	 * Returns the value of the '<em><b>Resource Type</b></em>' attribute.
+	 * The default value is <code>""</code>.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Resource Type</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Resource Type</em>' attribute.
+	 * @see #setResourceType(String)
+	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getComponentResource_ResourceType()
+	 * @model default="" required="true"
+	 * @generated
+	 */
+	String getResourceType();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.wst.common.componentcore.internal.ComponentResource#getResourceType <em>Resource Type</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Resource Type</em>' attribute.
+	 * @see #getResourceType()
+	 * @generated
+	 */
+	void setResourceType(String value);
 
 } // ComponentResource

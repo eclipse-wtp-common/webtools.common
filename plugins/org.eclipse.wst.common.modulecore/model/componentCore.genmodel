@@ -3,8 +3,8 @@
     xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
     xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.eclipse.wst.common.modulecore/modulecore-src"
     editDirectory="/org.eclipse.wst.common.modulecore.edit/src" editorDirectory="/org.eclipse.wst.common.modulecore.editor/src"
-    modelPluginID="org.eclipse.wst.common.modulecore" runtimeJar="true" modelName="ComponentCore2"
-    editPluginClass="componentcore.provider.ComponentCore2EditPlugin" editorPluginClass="componentcore.presentation.ComponentCore2EditorPlugin"
+    modelPluginID="org.eclipse.wst.common.modulecore" runtimeJar="true" modelName="ComponentCore"
+    editPluginClass="componentcore.provider.ComponentCoreEditPlugin" editorPluginClass="componentcore.presentation.ComponentCoreEditorPlugin"
     runtimeCompatibility="false">
   <foreignModel>componentCore.ecore</foreignModel>
   <genPackages prefix="Componentcore" basePackage="org.eclipse.wst.common.componentcore.internal"
@@ -26,6 +26,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute componentCore.ecore#//ComponentResource/runtimePath"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute componentCore.ecore#//ComponentResource/exclusions"/>
       <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference componentCore.ecore#//ComponentResource/component"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute componentCore.ecore#//ComponentResource/resourceType"/>
     </genClasses>
     <genClasses ecoreClass="componentCore.ecore#//ComponentType">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute componentCore.ecore#//ComponentType/componentTypeId"/>

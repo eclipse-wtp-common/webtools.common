@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentResourceImpl.java,v 1.1 2005/04/04 07:04:59 cbridgha Exp $
+ * $Id: ComponentResourceImpl.java,v 1.2 2005/04/05 03:35:37 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
@@ -34,6 +34,7 @@ import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.ComponentResourceImpl#getRuntimePath <em>Runtime Path</em>}</li>
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.ComponentResourceImpl#getExclusions <em>Exclusions</em>}</li>
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.ComponentResourceImpl#getComponent <em>Component</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.ComponentResourceImpl#getResourceType <em>Resource Type</em>}</li>
  * </ul>
  * </p>
  *
@@ -90,6 +91,26 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 	 */
 	protected EList exclusions = null;
 	
+	/**
+	 * The default value of the '{@link #getResourceType() <em>Resource Type</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getResourceType()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String RESOURCE_TYPE_EDEFAULT = "";
+
+	/**
+	 * The cached value of the '{@link #getResourceType() <em>Resource Type</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getResourceType()
+	 * @generated
+	 * @ordered
+	 */
+	protected String resourceType = RESOURCE_TYPE_EDEFAULT;
+
 	protected static final int VIRTUAL = 0;
 	protected static final int PERSISTED = 1;
 	
@@ -203,6 +224,27 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public String getResourceType() {
+		return resourceType;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setResourceType(String newResourceType) {
+		String oldResourceType = resourceType;
+		resourceType = newResourceType;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ComponentcorePackage.COMPONENT_RESOURCE__RESOURCE_TYPE, oldResourceType, resourceType));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, Class baseClass, NotificationChain msgs) {
 		if (featureID >= 0) {
 			switch (eDerivedStructuralFeatureID(featureID, baseClass)) {
@@ -268,6 +310,8 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 				return getExclusions();
 			case ComponentcorePackage.COMPONENT_RESOURCE__COMPONENT:
 				return getComponent();
+			case ComponentcorePackage.COMPONENT_RESOURCE__RESOURCE_TYPE:
+				return getResourceType();
 		}
 		return eDynamicGet(eFeature, resolve);
 	}
@@ -292,6 +336,9 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 			case ComponentcorePackage.COMPONENT_RESOURCE__COMPONENT:
 				setComponent((WorkbenchComponent)newValue);
 				return;
+			case ComponentcorePackage.COMPONENT_RESOURCE__RESOURCE_TYPE:
+				setResourceType((String)newValue);
+				return;
 		}
 		eDynamicSet(eFeature, newValue);
 	}
@@ -315,6 +362,9 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 			case ComponentcorePackage.COMPONENT_RESOURCE__COMPONENT:
 				setComponent((WorkbenchComponent)null);
 				return;
+			case ComponentcorePackage.COMPONENT_RESOURCE__RESOURCE_TYPE:
+				setResourceType(RESOURCE_TYPE_EDEFAULT);
+				return;
 		}
 		eDynamicUnset(eFeature);
 	}
@@ -334,6 +384,8 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 				return exclusions != null && !exclusions.isEmpty();
 			case ComponentcorePackage.COMPONENT_RESOURCE__COMPONENT:
 				return getComponent() != null;
+			case ComponentcorePackage.COMPONENT_RESOURCE__RESOURCE_TYPE:
+				return RESOURCE_TYPE_EDEFAULT == null ? resourceType != null : !RESOURCE_TYPE_EDEFAULT.equals(resourceType);
 		}
 		return eDynamicIsSet(eFeature);
 	}
@@ -353,6 +405,8 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 		result.append(runtimePath);
 		result.append(", exclusions: ");
 		result.append(exclusions);
+		result.append(", resourceType: ");
+		result.append(resourceType);
 		result.append(')');
 		return result.toString();
 	}
