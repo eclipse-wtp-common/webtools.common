@@ -13,10 +13,17 @@ package org.eclipse.wst.common.modulecore.builder;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
+import org.eclipse.core.internal.resources.Resource;
+import org.eclipse.core.internal.resources.Workspace;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.modulecore.IModuleConstants;
 
@@ -63,4 +70,26 @@ public class DeployableModuleBuilder extends IncrementalProjectBuilder implement
         // remove entire .deployables
         super.clean(monitor);
     }
+    
+	/**
+	 * @param sourceResource
+	 * @param absoluteInputContainer
+	 * @param monitor
+	 * @throws CoreException
+	 */
+    //TODO this is a bit sloppy; there must be existing API somewhere.
+	public static void smartCopy(IResource sourceResource, IPath absoluteOutputContainer, NullProgressMonitor monitor) throws CoreException {
+		Resource targetResource =((Workspace)ResourcesPlugin.getWorkspace()).newResource(absoluteOutputContainer, sourceResource.getType()); 
+		if(!targetResource.exists()){
+			sourceResource.copy(absoluteOutputContainer, true, monitor);
+		} else if(sourceResource.getType() == Resource.FOLDER){
+			IFolder folder = (IFolder)sourceResource;
+			IResource [] members = folder.members();
+			for(int i=0;i<members.length;i++){
+				smartCopy(members[i],  absoluteOutputContainer.append(IPath.SEPARATOR+members[i].getName()), monitor);
+			}
+		} else {
+			//TODO present a warning to the user about duplicate resources
+		}
+	}
 }

@@ -71,32 +71,13 @@ public class DependentDeployableModuleOperation extends WTPOperation {
 		    //if consumes simply copy resources to output directory
 			IResource sourceResource = getResource(absoluteInputContainer);
 			if(sourceResource == null) return;
-			smartCopy(sourceResource, absoluteOutputContainer, new NullProgressMonitor());
-			//sourceResource.copy(absoluteOutputContainer, true, new NullProgressMonitor());
+			DeployableModuleBuilder.smartCopy(sourceResource, absoluteOutputContainer, new NullProgressMonitor());
 		} else {
 		    String zipName = getZipFileName();
 		    zipAndCopyResource(getResource(absoluteInputContainer), absoluteOutputContainer.append(zipName).toString());
 		}    
     }
-	/**
-	 * @param sourceResource
-	 * @param absoluteInputContainer
-	 * @param monitor
-	 * @throws CoreException
-	 */
-    //TODO this is a bit sloppy; there must be existing API somewhere.
-	private void smartCopy(IResource sourceResource, IPath absoluteOutputContainer, NullProgressMonitor monitor) throws CoreException {
-		Resource targetResource =((Workspace)ResourcesPlugin.getWorkspace()).newResource(absoluteOutputContainer, sourceResource.getType()); 
-		if(!targetResource.exists()){
-			sourceResource.copy(absoluteOutputContainer, true, monitor);
-		} else if(sourceResource.getType() == Resource.FOLDER){
-			IFolder folder = (IFolder)sourceResource;
-			IResource [] members = folder.members();
-			for(int i=0;i<members.length;i++){
-				smartCopy(members[i],  absoluteOutputContainer.append(IPath.SEPARATOR+members[i].getName()), monitor);
-			}
-		}
-	}
+
 	/**
      * @param resource
      * @param zipName
