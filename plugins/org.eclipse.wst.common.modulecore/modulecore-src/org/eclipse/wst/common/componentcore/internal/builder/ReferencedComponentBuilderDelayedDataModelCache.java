@@ -13,13 +13,13 @@ package org.eclipse.wst.common.componentcore.internal.builder;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
-public class ComponentStructuralBuilderDelayedDataModelCache {
-	private static ComponentStructuralBuilderDelayedDataModelCache instance;
+public class ReferencedComponentBuilderDelayedDataModelCache {
+	private static ReferencedComponentBuilderDelayedDataModelCache instance;
 	private List list = new ArrayList();
 
-	private ComponentStructuralBuilderDelayedDataModelCache() {
+	private ReferencedComponentBuilderDelayedDataModelCache() {
 		super();
 	}
 	
@@ -27,7 +27,7 @@ public class ComponentStructuralBuilderDelayedDataModelCache {
 		return list;
 	}
 	
-	public void addToCache(WTPOperationDataModel dataModel) {
+	public void addToCache(IDataModel dataModel) {
 		list.add(dataModel);
 	}
 	
@@ -35,9 +35,9 @@ public class ComponentStructuralBuilderDelayedDataModelCache {
 	    list.clear();
 	}
 	                                       
-	public static ComponentStructuralBuilderDelayedDataModelCache getInstance() {
+	public static ReferencedComponentBuilderDelayedDataModelCache getInstance() {
 		if (instance == null)
-			instance = new ComponentStructuralBuilderDelayedDataModelCache();
+			instance = new ReferencedComponentBuilderDelayedDataModelCache();
 		return instance;
 	}
 }

@@ -1,15 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2004 IBM Corporation and others. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 which accompanies this distribution,
- * and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Copyright (c) 2003, 2004, 2005 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  * 
- * Contributors: IBM Corporation - initial API and implementation
- ******************************************************************************/
+ * Contributors:
+ * IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.builder;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,24 +19,25 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.emf.common.util.URI;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.componentcore.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.componentcore.internal.util.ZipFileExporter;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
+import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEditPlugin;
 
-public class ComponentStructuralDependentBuilderOperation extends WTPOperation {
+public class ReferencedComponentBuilderOperation extends AbstractDataModelOperation implements IReferencedComponentBuilderDataModelProperties {
 	private static String ERROR_EXPORTING_MSG = "Zip Error Message"; //$NON-NLS-1$
-
-	private ComponentStructuralDependentBuilderDataModel depDataModel = null;
 
 	private ZipFileExporter exporter = null;
 
@@ -49,54 +51,72 @@ public class ComponentStructuralDependentBuilderOperation extends WTPOperation {
 	private IProgressMonitor monitor;
 
 	private int inputContainerSegmentCount;
+    /**
+     * @param model
+     */
+    public ReferencedComponentBuilderOperation(IDataModel model) {
+        super(model);
+        
+    }
 
-	/**
-	 * @param operationDataModel
-	 */
-	public ComponentStructuralDependentBuilderOperation(ComponentStructuralDependentBuilderDataModel operationDataModel) {
-		super(operationDataModel);
-		depDataModel = (ComponentStructuralDependentBuilderDataModel) operationDataModel;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.core.commands.operations.IUndoableOperation#execute(org.eclipse.core.runtime.IProgressMonitor, org.eclipse.core.runtime.IAdaptable)
+     */
+    public IStatus execute(IProgressMonitor monitor, IAdaptable info) {
+        try {
+            this.monitor = monitor;
+			IPath absoluteOutputContainer = getAbsoluteOutputContainer();
+			// create output container folder if it does not exist
+			IFolder outputContainerFolder = createFolder(absoluteOutputContainer);
+			IPath absoluteInputContainer = getAbsoluteInputContainer();
+	
+			if (absoluteOutputContainer == null || absoluteInputContainer == null)
+				return OK_STATUS;
+	
+			if (model.getBooleanProperty(DOES_CONSUME)) {
+				// if consumes simply copy resources to output directory
+				IResource sourceResource = getResource(absoluteInputContainer);
+				if (sourceResource == null)
+					return OK_STATUS;
+				ComponentStructuralBuilder.smartCopy(sourceResource, absoluteOutputContainer, new NullProgressMonitor());
+			} else {
+				String zipName = getZipFileName();
+				IPath zipNameDestination = absoluteOutputContainer.append(zipName);
+				IResource dependentZip = getResource(zipNameDestination);
+				//TODO: this is needed to stop the copying of large dependent module.  Incremental build in M4 should allow for this
+				//code to be removed.
+				if(dependentZip == null || dependentZip.exists()) return OK_STATUS;
+				zipAndCopyResource(getResource(absoluteInputContainer), dependentZip);
+				getResource(absoluteOutputContainer).refreshLocal(IResource.DEPTH_INFINITE, monitor);
+			}
+		
+        } catch (CoreException ex) {
+            Logger.getLogger().log(ex.getMessage());
+        }
+        return OK_STATUS;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperation#execute(org.eclipse.core.runtime.IProgressMonitor)
-	 */
-	protected void execute(IProgressMonitor monitor) throws CoreException, InvocationTargetException, InterruptedException {
-		this.monitor = monitor;
-		IPath absoluteOutputContainer = getAbsoluteOutputContainer();
-		// create output container folder if it does not exist
-		IFolder outputContainerFolder = createFolder(absoluteOutputContainer);
-		IPath absoluteInputContainer = getAbsoluteInputContainer();
+    /* (non-Javadoc)
+     * @see org.eclipse.core.commands.operations.IUndoableOperation#redo(org.eclipse.core.runtime.IProgressMonitor, org.eclipse.core.runtime.IAdaptable)
+     */
+    public IStatus redo(IProgressMonitor monitor, IAdaptable info) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-		if (absoluteOutputContainer == null || absoluteInputContainer == null)
-			return;
-
-		if (depDataModel.getBooleanProperty(ComponentStructuralDependentBuilderDataModel.DOES_CONSUME)) {
-			// if consumes simply copy resources to output directory
-			IResource sourceResource = getResource(absoluteInputContainer);
-			if (sourceResource == null)
-				return;
-			ComponentStructuralBuilder.smartCopy(sourceResource, absoluteOutputContainer, new NullProgressMonitor());
-		} else {
-			String zipName = getZipFileName();
-			IPath zipNameDestination = absoluteOutputContainer.append(zipName);
-			IResource dependentZip = getResource(zipNameDestination);
-			//TODO: this is needed to stop the copying of large dependent module.  Incremental build in M4 should allow for this
-			//code to be removed.
-			if(dependentZip == null || dependentZip.exists()) return;
-			zipAndCopyResource(getResource(absoluteInputContainer), dependentZip);
-			getResource(absoluteOutputContainer).refreshLocal(IResource.DEPTH_INFINITE, monitor);
-		}
-	}
-
+    /* (non-Javadoc)
+     * @see org.eclipse.core.commands.operations.IUndoableOperation#undo(org.eclipse.core.runtime.IProgressMonitor, org.eclipse.core.runtime.IAdaptable)
+     */
+    public IStatus undo(IProgressMonitor monitor, IAdaptable info) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 	/**
 	 * @param inputResource
 	 * @param zipName
 	 * @return
 	 */
-	private void zipAndCopyResource(IResource inputResource, IResource outputResource) throws InterruptedException {
+	private void zipAndCopyResource(IResource inputResource, IResource outputResource) {
 		try {
 			String osPath = outputResource.getLocation().toOSString();
 			exporter = new ZipFileExporter(osPath, true, true);
@@ -104,6 +124,9 @@ public class ComponentStructuralDependentBuilderOperation extends WTPOperation {
 			exportResource(inputResource);
 			exporter.finished();
 		} catch (IOException ioEx) {
+            ioEx.printStackTrace();
+		} catch (InterruptedException iEx){		 
+            iEx.printStackTrace();
 		}
 	}
 
@@ -111,28 +134,28 @@ public class ComponentStructuralDependentBuilderOperation extends WTPOperation {
 	 * @return
 	 */
 	private IPath getAbsoluteOutputContainer() {
-		WorkbenchComponent workbenchModule = (WorkbenchComponent) depDataModel.getProperty(ComponentStructuralDependentBuilderDataModel.CONTAINING_WBMODULE);
+		WorkbenchComponent workbenchModule = (WorkbenchComponent) model.getProperty(CONTAINING_WBMODULE);
 		IFolder localWorkbenchModuleOuptutContainer = null;
 		if (workbenchModule != null)
 			localWorkbenchModuleOuptutContainer = StructureEdit.getOutputContainerRoot(workbenchModule);
 
 		IPath localWorkbenchModuleOuptutContainerPath = localWorkbenchModuleOuptutContainer.getFullPath();
-		IPath deployPath = (IPath) depDataModel.getProperty(ComponentStructuralDependentBuilderDataModel.OUTPUT_CONTAINER);
-		return localWorkbenchModuleOuptutContainerPath.append(deployPath); 
+		IPath deployPath = (IPath) model.getProperty(OUTPUT_CONTAINER);
+		return localWorkbenchModuleOuptutContainerPath.append(deployPath.toString()); 
 	}
 
 	/**
 	 * @return
 	 */
 	private IPath getAbsoluteInputContainer() {
-		WorkbenchComponent depWBModule = (WorkbenchComponent) depDataModel.getProperty(ComponentStructuralDependentBuilderDataModel.DEPENDENT_WBMODULE);
+		WorkbenchComponent depWBModule = (WorkbenchComponent) model.getProperty(DEPENDENT_WBMODULE);
 		if (depWBModule != null)
 			return StructureEdit.getOutputContainerRoot(depWBModule).getFullPath();
 		return null;
 	}
 
 	private String getZipFileName() {
-		WorkbenchComponent depWBModule = (WorkbenchComponent) depDataModel.getProperty(ComponentStructuralDependentBuilderDataModel.DEPENDENT_WBMODULE);
+		WorkbenchComponent depWBModule = (WorkbenchComponent) model.getProperty(DEPENDENT_WBMODULE);
 		String typeID = depWBModule.getComponentType().getComponentTypeId();
 		String zipFileName = depWBModule.getName();
 		zipFileName = zipFileName.replace('.', '_');
@@ -156,9 +179,9 @@ public class ComponentStructuralDependentBuilderOperation extends WTPOperation {
 	private IResource getResource(IPath absolutePath) throws CoreException {
 		IResource resource = null;
 		if (absolutePath != null && !absolutePath.isEmpty()) {
-			resource = getWorkspace().getRoot().getFolder(absolutePath);
+			resource = ResourcesPlugin.getWorkspace().getRoot().getFolder(absolutePath);
 			if (resource == null || !(resource instanceof IFolder)) {
-				resource = getWorkspace().getRoot().getFile(absolutePath);
+				resource = ResourcesPlugin.getWorkspace().getRoot().getFile(absolutePath);
 			}
 		}
 		return resource;
@@ -172,7 +195,7 @@ public class ComponentStructuralDependentBuilderOperation extends WTPOperation {
 	public IFolder createFolder(IPath absolutePath) throws CoreException {
 		if (absolutePath == null || absolutePath.isEmpty())
 			return null;
-		IFolder folder = getWorkspace().getRoot().getFolder(absolutePath);
+		IFolder folder = ResourcesPlugin.getWorkspace().getRoot().getFolder(absolutePath);
 		// check if the parent is there
 		IContainer parent = folder.getParent();
 		if (parent != null && !parent.exists() && (parent instanceof IFolder))

@@ -8,9 +8,10 @@
  ******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.builder;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.internal.resources.Resource;
 import org.eclipse.core.internal.resources.Workspace;
 import org.eclipse.core.resources.IFolder;
@@ -23,16 +24,17 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.componentcore.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
+import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
-public class ComponentStructuralBuilder extends IncrementalProjectBuilder implements IModuleConstants {
+public class ComponentStructuralBuilder extends IncrementalProjectBuilder implements IModuleConstants, IProjectComponentsBuilderDataModelProperties {
     /**
      * Builder id of this incremental project builder.
      */
     public static final String BUILDER_ID = COMPONENT_STRUCTURAL_BUILDER_ID;
-
     /**
      *  
      */
@@ -53,29 +55,25 @@ public class ComponentStructuralBuilder extends IncrementalProjectBuilder implem
 		IResource wtpmoduleFile = getProject().findMember(".wtpmodules"); //$NON-NLS-1$
 		wtpmoduleFile.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE); 
 
-        ComponentStructuralProjectBuilderDataModel builderDataModel = new ComponentStructuralProjectBuilderDataModel();
+        IDataModel builderDataModel = DataModelFactory.createDataModel(new ProjectComponentsBuilderDataModelProvider());
         try {
             moduleCore = StructureEdit.getStructureEditForRead(getProject());
-            builderDataModel.setProperty(ComponentStructuralProjectBuilderDataModel.MODULE_CORE, moduleCore);
-            builderDataModel.setProperty(ComponentStructuralProjectBuilderDataModel.PROJECT, getProject());
-            builderDataModel.setProperty(ComponentStructuralProjectBuilderDataModel.PROJECT_DETLA, getDelta(getProject()));
+            builderDataModel.setProperty(MODULE_CORE, moduleCore);
+            builderDataModel.setProperty(PROJECT, getProject());
+            builderDataModel.setProperty(PROJECT_DETLA, getDelta(getProject()));
             //TODO: implement incremental builds
             // dataModel.setProperty(DeployableModuleProjectBuilderDataModel.BUILD_KIND;
-            WTPOperation op = builderDataModel.getDefaultOperation();
+            IUndoableOperation op = builderDataModel.getDefaultOperation();
             if (op != null)
-                try {
-                    op.run(monitor);
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            return null;
+                op.execute(monitor, null);
+        } catch (ExecutionException e) {
+            Logger.getLogger().log(e.getMessage());
         } finally {
             if (null != moduleCore) {
                 moduleCore.dispose();
             }
         }
+        return null;
     }
 
     protected void clean(IProgressMonitor monitor) throws CoreException {

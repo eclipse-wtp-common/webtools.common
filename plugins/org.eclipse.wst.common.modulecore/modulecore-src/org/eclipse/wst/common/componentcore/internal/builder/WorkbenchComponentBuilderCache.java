@@ -13,22 +13,22 @@ package org.eclipse.wst.common.componentcore.internal.builder;
 import java.util.HashMap;
 
 
-public class ComponentStructuralBuilderCache {
+public class WorkbenchComponentBuilderCache {
     private HashMap extensionMap = new HashMap();
     /**
      * 
      */
-    public ComponentStructuralBuilderCache() {
+    public WorkbenchComponentBuilderCache() {
         super();
     }
     
-    public  void addComponentStructrualBuilderForID(ComponentStructuralBuilderDataModel builderInstance, String componentID){
+    public  void addComponentStructrualBuilderForID(WorkbenchComponentBuilderDataModelProvider builderInstance, String componentID){
         extensionMap.put(componentID, builderInstance);
     }
 
-    public ComponentStructuralBuilderDataModel getAvailableComponentStructuralBuilderForID(String componentID) {
+    public WorkbenchComponentBuilderDataModelProvider getAvailableComponentStructuralBuilderForID(String componentID) {
         if(extensionMap.containsKey(componentID))
-            return (ComponentStructuralBuilderDataModel)extensionMap.get(componentID);
+            return (WorkbenchComponentBuilderDataModelProvider)extensionMap.get(componentID);
         return null;
     }
 }

@@ -39,17 +39,17 @@ public class ComponentStructuralBuilderExtensionRegistry {
 		builderExtensions = ComponentStructuralBuilderExtensionReader.getExtensionPoints();
 	}
 	
-	protected static ComponentStructuralBuilderDataModel getComponentStructuralBuilderDMForServerTargetID(String serverTargetID, String componentTypeID) {
+	protected static WorkbenchComponentBuilderDataModelProvider getComponentStructuralBuilderDMForServerTargetID(String serverTargetID, String componentTypeID) {
 	    if(!extPointHasRead)
 	        getExtensionPoints();
 	    if(builderExtensions == null || builderExtensions.isEmpty()) return null;
 	    
-	    ComponentStructuralBuilderCache cache = null;
+	    WorkbenchComponentBuilderCache cache = null;
 	    if(builderExtensions.containsKey(serverTargetID))
-	        cache = (ComponentStructuralBuilderCache)builderExtensions.get(serverTargetID);
+	        cache = (WorkbenchComponentBuilderCache)builderExtensions.get(serverTargetID);
 	    if(cache == null) {
 	        if(builderExtensions.containsKey("default")){
-	            cache = (ComponentStructuralBuilderCache)builderExtensions.get("default");
+	            cache = (WorkbenchComponentBuilderCache)builderExtensions.get("default");
 	        }
 	    }
 	    if(cache == null)

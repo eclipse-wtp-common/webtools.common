@@ -42,14 +42,14 @@ public class ComponentStructuralBuilderExtensionReader extends RegistryReader {
 			return false;
 		String serverTargetID = element.getAttribute(SERVER_TARGET_ID);
 		String componentTypeID = element.getAttribute(COMPONENT_TYPE_ID);
-		ComponentStructuralBuilderDataModel dm = null;
+		WorkbenchComponentBuilderDataModelProvider provider = null;
         try {
-            dm = (ComponentStructuralBuilderDataModel) element.createExecutableExtension(COMPONENT_STRUCTURAL_BUILDER);
+            provider = (WorkbenchComponentBuilderDataModelProvider) element.createExecutableExtension(COMPONENT_STRUCTURAL_BUILDER);
         } catch (CoreException e) {
             Logger.getLogger().log(e.toString());
         }
-        if(dm != null)
-            addExtensionPoint(serverTargetID, componentTypeID, dm);
+        if(provider != null)
+            addExtensionPoint(serverTargetID, componentTypeID, provider);
 		return true;
 
 	}
@@ -60,13 +60,13 @@ public class ComponentStructuralBuilderExtensionReader extends RegistryReader {
 	 * @param extensions
 	 *            The extensions to set
 	 */
-	private static void addExtensionPoint(String serverTargetID, String componentType, ComponentStructuralBuilderDataModel builderDM) {
-	    ComponentStructuralBuilderCache builderCache = null;
+	private static void addExtensionPoint(String serverTargetID, String componentType, WorkbenchComponentBuilderDataModelProvider provider) {
+	    WorkbenchComponentBuilderCache builderCache = null;
 	    if(builderExtensions.containsKey(serverTargetID))
-	        builderCache = (ComponentStructuralBuilderCache)builderExtensions.get(serverTargetID);
+	        builderCache = (WorkbenchComponentBuilderCache)builderExtensions.get(serverTargetID);
 	    else
-	        builderCache = new ComponentStructuralBuilderCache();
-		builderCache.addComponentStructrualBuilderForID(builderDM, componentType);
+	        builderCache = new WorkbenchComponentBuilderCache();
+		builderCache.addComponentStructrualBuilderForID(provider, componentType);
 	    builderExtensions.put(serverTargetID, builderCache);
 	}
 
