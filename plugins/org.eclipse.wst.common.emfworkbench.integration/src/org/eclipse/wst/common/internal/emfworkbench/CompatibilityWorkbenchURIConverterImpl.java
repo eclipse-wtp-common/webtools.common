@@ -21,7 +21,6 @@ import java.io.IOException;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.internal.emf.resource.CompatibilityURIConverter;
 import org.eclipse.wst.common.modulecore.impl.PlatformURLModuleConnection;
@@ -84,7 +83,8 @@ public class CompatibilityWorkbenchURIConverterImpl extends WorkbenchURIConverte
 			URI resolvedURI = null;
 			try {
 				 resolvedURI = PlatformURLModuleConnection.resolve(aURI);
-			} catch(IOException ioe) {				
+			} catch(IOException ioe) {
+				//Ignore
 			}
 			return resolvedURI;
 				

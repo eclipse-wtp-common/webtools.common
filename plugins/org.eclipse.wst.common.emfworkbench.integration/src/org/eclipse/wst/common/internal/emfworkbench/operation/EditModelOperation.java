@@ -38,6 +38,7 @@ public abstract class EditModelOperation extends WTPOperation {
 	}
 
 	public EditModelOperation() {
+		//Default constructor
 	}
 
 	protected final void initilize(IProgressMonitor monitor) {
@@ -48,6 +49,7 @@ public abstract class EditModelOperation extends WTPOperation {
 	}
 
 	protected void doInitialize(IProgressMonitor monitor) {
+		//init
 	}
 
 	protected final void dispose(IProgressMonitor monitor) {
@@ -78,6 +80,7 @@ public abstract class EditModelOperation extends WTPOperation {
 	}
 
 	protected void doDispose(IProgressMonitor monitor) {
+		//dispose
 	}
 
 	/**

@@ -311,7 +311,7 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 	 * @see org.eclipse.wst.common.internal.emfworkbench.ISynchronizerExtender#projectChanged(org.eclipse.core.resources.IResourceDelta)
 	 */
 	public void projectChanged(IResourceDelta delta) {
-
+		//default nothing
 	}
 
 	/*

@@ -40,6 +40,7 @@ public class ChildCommand extends EditModelCommand {
 	 * Does nothing
 	 */
 	public void execute() {
+		//does nothing
 	}
 
 	protected void executeInModel(AbstractEditModelCommand cmd) {

@@ -46,6 +46,7 @@ public class ComposedEditModel extends EditModel implements EditModelListener {
 
 
 	public void createChildrenIfNecessary(ComposedAccessorKey composedAccessorKey) {
+		//do nothing
 	}
 
 	/**

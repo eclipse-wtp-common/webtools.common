@@ -75,6 +75,7 @@ public class CompoundingCommandStack implements CommandStack {
 	 * @see org.eclipse.emf.common.command.CommandStack#undo()
 	 */
 	public void undo() {
+		//default
 	}
 
 	/*
@@ -119,6 +120,7 @@ public class CompoundingCommandStack implements CommandStack {
 	 * @see org.eclipse.emf.common.command.CommandStack#redo()
 	 */
 	public void redo() {
+		//redo
 	}
 
 	/*
@@ -127,6 +129,7 @@ public class CompoundingCommandStack implements CommandStack {
 	 * @see org.eclipse.emf.common.command.CommandStack#flush()
 	 */
 	public void flush() {
+		//flush
 	}
 
 	/*
@@ -135,6 +138,7 @@ public class CompoundingCommandStack implements CommandStack {
 	 * @see org.eclipse.emf.common.command.CommandStack#addCommandStackListener(org.eclipse.emf.common.command.CommandStackListener)
 	 */
 	public void addCommandStackListener(CommandStackListener listener) {
+		//default
 	}
 
 	/*
@@ -143,5 +147,6 @@ public class CompoundingCommandStack implements CommandStack {
 	 * @see org.eclipse.emf.common.command.CommandStack#removeCommandStackListener(org.eclipse.emf.common.command.CommandStackListener)
 	 */
 	public void removeCommandStackListener(CommandStackListener listener) {
+		//default
 	}
 }

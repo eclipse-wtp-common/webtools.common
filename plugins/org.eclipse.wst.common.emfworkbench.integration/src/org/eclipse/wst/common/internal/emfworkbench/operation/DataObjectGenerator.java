@@ -89,7 +89,7 @@ public class DataObjectGenerator extends WTPOperation {
 	/**
 	 * @see com.ibm.etools.ctc.ant.task.util.BaseProjectBuilder#generate(org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	protected boolean prepareGenerate() throws CoreException {
+	protected boolean prepareGenerate() {
 		// Collect all generated EPackages
 		ePackages = new ArrayList();
 		// Packages generated from XSDs

@@ -38,6 +38,7 @@ public abstract class ModelModifierOperation extends EditModelOperation {
 	protected ModelModifier modifier;
 
 	public ModelModifierOperation() {
+		//default constructor
 	}
 
 	/**
@@ -92,6 +93,7 @@ public abstract class ModelModifierOperation extends EditModelOperation {
 			}
 
 			public void adaptAllNew(Notifier notifier) {
+				//do nothing
 			}
 		}, editModel.getCommandStack());
 	}
@@ -111,7 +113,8 @@ public abstract class ModelModifierOperation extends EditModelOperation {
 	 * This is a hook to allow subclasses to perform additional tasks after the commands are
 	 * executed using the helpers.
 	 */
-	protected void postExecuteCommands(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+	protected void postExecuteCommands(IProgressMonitor monitor) {
+		//do nothing
 	}
 
 	/**

@@ -335,6 +335,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	 * opportunity to do some other action.
 	 */
 	protected void handleSaveIfNecessaryDidNotSave(IProgressMonitor monitor) {
+		//do nothing
 	}
 
 	/**
@@ -348,7 +349,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	 * This will force all of the referenced Resources to be saved.
 	 */
 	public void save(IProgressMonitor monitor) throws PleaseMigrateYourCodeError {
-
+		//save
 	}
 
 	/**
@@ -554,6 +555,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	 * @see ResourceStateInputProvider#cacheNonResourceValidateState(List)
 	 */
 	public void cacheNonResourceValidateState(List roNonResourceFiles) {
+		//do nothing
 	}
 
 	/**
@@ -718,6 +720,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 			try {
 				resource.load(Collections.EMPTY_MAP); //reload it
 			} catch (IOException e) {
+				//Ignore
 			}
 		}
 		return resource;
@@ -1337,6 +1340,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 					if (res != null)
 						processResource(res);
 				} catch (Exception e) {
+					//Ignore
 				}
 			}
 		}

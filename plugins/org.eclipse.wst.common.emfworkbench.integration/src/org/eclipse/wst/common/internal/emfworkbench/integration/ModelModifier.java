@@ -391,7 +391,7 @@ public class ModelModifier {
 			super.dispose();
 			baseCommand.dispose();
 		}
-	};
+	}
 
 	/**
 	 * Return a Remove Command that will be executed by a CommandStack.

@@ -38,6 +38,7 @@ public class InvertedCommand extends AbstractEditModelCommand {
 	 * Does nothing
 	 */
 	public void execute() {
+		//does nothing
 	}
 
 	/**
