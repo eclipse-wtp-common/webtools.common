@@ -39,8 +39,8 @@ import org.eclipse.wst.common.modulecore.impl.WorkbenchModuleImpl;
 public class ModuleCore {
 	
 	
-	static ModuleCore INSTANCE = new ModuleCore();
-	static String MODULE_META_FILE_NAME = ".modules";
+	public static ModuleCore INSTANCE = new ModuleCore();
+	static String MODULE_META_FILE_NAME = ".wtpmodules";
 
 	private HashMap projectModules; // Module list keyed by name
 
