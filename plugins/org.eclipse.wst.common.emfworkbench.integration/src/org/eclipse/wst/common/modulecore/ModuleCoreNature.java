@@ -31,8 +31,7 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
     private final static ModuleCoreFactory MODULE_FACTORY = ModuleCoreFactory.eINSTANCE;
 
     public IModuleHandle createModuleHandle(URI uri) {
-        if (uri == null)
-            return null;
+        if (uri == null) return null;
         IModuleHandle handle = null;
         WorkbenchModule module = null;
         try {
@@ -132,13 +131,13 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
     }
     
     private void addResourceChangeListener(){
-        Resource resource = getWTPModuleResource();
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(this);       
     }
 
     private synchronized void update() {
         moduleHandlesMap.clear();
         workbenchModulesMap.clear();
+        projectModules = null;
         try {
             if (getProjectModules() != null) {
                 List workBenchModules = getProjectModules().getWorkbenchModules();
@@ -149,7 +148,6 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
                     moduleHandlesMap.put(handle.getHandle(), handle);
                     workbenchModulesMap.put(handle, wbm);
                 }
-
             }
         } catch (RuntimeException e) {
             Logger.getLogger().write(e);
