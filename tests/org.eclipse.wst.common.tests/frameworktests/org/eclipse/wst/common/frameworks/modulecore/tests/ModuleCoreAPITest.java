@@ -209,13 +209,13 @@ public class ModuleCoreAPITest extends TestCase {
 	 * All methods lised in the "see" clauses are tested by this method.
 	 * </p>
 	 * 
-	 * @see ModuleCore#create(IProject, String)
+	 * @see ModuleCore#createContainer(IProject, String)
 	 * @see IContainer#getFolder(org.eclipse.core.runtime.IPath)
 	 * @see IContainer#members()
 	 */
 	public void testNavigateComponent() throws Exception {
 
-		IVirtualContainer component = ModuleCore.create(TestWorkspace.getTargetProject(), TestWorkspace.WEB_MODULE_1_NAME);
+		IVirtualContainer component = ModuleCore.createContainer(TestWorkspace.getTargetProject(), TestWorkspace.WEB_MODULE_1_NAME);
 		IVirtualFolder root = component.getFolder(new Path("/")); //$NON-NLS-1$ 
 		assertTree(virtualResourceTree, root);
 
@@ -227,7 +227,7 @@ public class ModuleCoreAPITest extends TestCase {
 	 * All methods lised in the "see" clauses are tested by this method.
 	 * </p>
 	 * 
-	 * @see ModuleCore#create(IProject, String)
+	 * @see ModuleCore#createContainer(IProject, String)
 	 * @see IContainer#getFolder(org.eclipse.core.runtime.IPath)
 	 * @see IFolder#createLink(org.eclipse.core.runtime.IPath, int,
 	 *      org.eclipse.core.runtime.IProgressMonitor)
@@ -235,7 +235,7 @@ public class ModuleCoreAPITest extends TestCase {
 	 */
 	public void testCreateLink() throws Exception {
 
-		IVirtualContainer component = ModuleCore.create(TestWorkspace.getTargetProject(), TestWorkspace.WEB_MODULE_2_NAME);
+		IVirtualContainer component = ModuleCore.createContainer(TestWorkspace.getTargetProject(), TestWorkspace.WEB_MODULE_2_NAME);
 		IVirtualFolder images = component.getFolder(new Path("/images")); //$NON-NLS-1$		
 		images.createLink(new Path("/WebModule2/images"), 0, null); //$NON-NLS-1$
 
@@ -279,7 +279,7 @@ public class ModuleCoreAPITest extends TestCase {
 	 * All methods lised in the "see" clauses are tested by this method.
 	 * </p>
 	 * 
-	 * @see ModuleCore#create(IProject, String)
+	 * @see ModuleCore#createContainer(IProject, String)
 	 * @see IContainer#getFolder(org.eclipse.core.runtime.IPath)
 	 * @see IFolder#createLink(org.eclipse.core.runtime.IPath, int,
 	 *      org.eclipse.core.runtime.IProgressMonitor)
@@ -287,9 +287,9 @@ public class ModuleCoreAPITest extends TestCase {
 	 */
 	public void testCreateWebModule() throws Exception {
 
-		IVirtualContainer component = ModuleCore.create(TestWorkspace.getTargetProject(), TestWorkspace.NEW_WEB_MODULE_NAME);
+		IVirtualContainer component = ModuleCore.createContainer(TestWorkspace.getTargetProject(), TestWorkspace.NEW_WEB_MODULE_NAME);
 		// if(!component.exists())
-		component.commit();
+		component.create(0, null);
 		IVirtualFolder root = component.getFolder(new Path("/")); //$NON-NLS-1$
 		IPath realWebContentPath = new Path(TestWorkspace.NEW_WEB_MODULE_NAME + IPath.SEPARATOR + "WebContent"); //$NON-NLS-1$
 		root.createLink(realWebContentPath, 0, null); //$NON-NLS-1$

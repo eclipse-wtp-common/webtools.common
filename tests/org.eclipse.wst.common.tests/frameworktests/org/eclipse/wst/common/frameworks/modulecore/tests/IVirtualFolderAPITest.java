@@ -62,7 +62,7 @@ public class IVirtualFolderAPITest extends TestCase {
 		
 		realWebInfFolder = TEST_PROJECT.getFolder(WEBINF_FOLDER_REAL_PATH);
 		
-		component = ModuleCore.create(TEST_PROJECT, TestWorkspace.WEB_MODULE_1_NAME);
+		component = ModuleCore.createContainer(TEST_PROJECT, TestWorkspace.WEB_MODULE_1_NAME);
 		webInfFolder = component.getFolder(WEBINF_FOLDER_RUNTIME_PATH); 		
 
 		testdataFolder = component.getFolder(TESTDATA_FOLDER_RUNTIME_PATH); 
@@ -71,7 +71,7 @@ public class IVirtualFolderAPITest extends TestCase {
 		deletemeVirtualFolder = component.getFolder(DELETEME_PATH);
 		deletemeVirtualFolder.create(IVirtualResource.FORCE, null);
 		
-		deletemeFolder = deletemeVirtualFolder.getRealFolder();		
+		deletemeFolder = deletemeVirtualFolder.getUnderlyingFolder();		
 		
 	}
 	
