@@ -199,8 +199,6 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		DataModelImpl nestedDataModel = (DataModelImpl) dataModel;
 		if (null == nestedDataModel.nestingModels) {
 			nestedDataModel.nestingModels = new HashSet();
-			allPropertyNames = new HashSet();
-			allPropertyNames.addAll(basePropertyNames);
 			nestedPropertyNames = new HashSet();
 		}
 		if (nestedDataModel.nestingModels.contains(this)) {
@@ -210,7 +208,7 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 
 		nestedModels.put(modelName, nestedDataModel);
 
-		addNestedProperties(null == nestedDataModel.allPropertyNames ? nestedDataModel.basePropertyNames : nestedDataModel.allPropertyNames);
+		addNestedProperties(nestedDataModel.allPropertyNames);
 		nestedDataModel.addListener(this);
 	}
 
