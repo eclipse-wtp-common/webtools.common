@@ -14,7 +14,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
 
-import com.ibm.wtp.common.RegistryReader;
+import org.eclipse.jem.util.RegistryReader;
 
 /**
  * @author Administrator
@@ -40,7 +40,7 @@ public class DataModelVerifierFactory extends RegistryReader{
 		return instance;
 	}
 	/* (non-Javadoc)
-	 * @see com.ibm.wtp.common.RegistryReader#readElement(org.eclipse.core.runtime.IConfigurationElement)
+	 * @see org.eclipse.jem.util.RegistryReader#readElement(org.eclipse.core.runtime.IConfigurationElement)
 	 */
 	public boolean readElement(IConfigurationElement element) {
 		if (!element.getName().equals(DATA_MODEL_VERIFIER_LIST_EXT))

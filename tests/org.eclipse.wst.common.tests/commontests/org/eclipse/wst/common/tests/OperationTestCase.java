@@ -28,7 +28,7 @@ public abstract class OperationTestCase extends BaseTestCase {
 
 	public static String fileSep = System.getProperty("file.separator"); //$NON-NLS-1$
 
-    public static IStatus OK_STATUS = new Status(IStatus.OK, "com.ibm.wtp.common", 0, "OK", null); //$NON-NLS-1$ //$NON-NLS-2$
+    public static IStatus OK_STATUS = new Status(IStatus.OK, "org.eclipse.jem.util", 0, "OK", null); //$NON-NLS-1$ //$NON-NLS-2$
 
     //public abstract void testBVT() throws Exception;
     
