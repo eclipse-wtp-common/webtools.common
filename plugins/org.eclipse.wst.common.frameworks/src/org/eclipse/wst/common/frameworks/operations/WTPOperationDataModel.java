@@ -136,10 +136,10 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 
 	/**
 	 * This is for subclasses to perform any required initialization other than
-	 * initValidBaseProperties() and initNestedModels() both which will be called first
+	 * initValidBaseProperties() and initNestedModels() both which will be called first.
 	 * 
-	 * @see initValidBaseProperties()
-	 * @see initNestedModels()
+	 * @see #initValidBaseProperties()
+	 * @see #initNestedModels()
 	 */
 	protected void init() {
 	}
@@ -148,8 +148,8 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 * This is for subclasses to override to initialize any nested DataModels. This will be called
 	 * before init() and after initValidBaseProperties()
 	 * 
-	 * @see init()
-	 * @see initValidBaseProperties();
+	 * @see #init()
+	 * @see #initValidBaseProperties()
 	 */
 	protected void initNestedModels() {
 	}
@@ -162,13 +162,14 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 *            The property name to be added.
 	 * @see initValidBaseProperties();
 	 */
-	protected void addValidBaseProperty(String propertyName) {
+	protected final void addValidBaseProperty(String propertyName) {
 		validBaseProperties.add(propertyName);
 		validProperties.add(propertyName);
 	}
 
 	/**
-	 * This is for subclasses to override to initialize their properties.
+	 * This is for subclasses to override to initialize their properties. The default implementation
+	 * of this method does nothing.
 	 * 
 	 * @see init()
 	 */
@@ -226,22 +227,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		return dataModel;
 	}
 
-	public final Object getProperty(String propertyName) {
-		checkValidPropertyName(propertyName);
-		if (isBaseProperty(propertyName)) {
-			return doGetProperty(propertyName);
-		} else if (nestedModels != null) {
-			WTPOperationDataModel dataModel = null;
-			Object[] keys = nestedModels.keySet().toArray();
-			for (int i = 0; i < keys.length; i++) {
-				dataModel = (WTPOperationDataModel) nestedModels.get(keys[i]);
-				if (dataModel.isProperty(propertyName)) {
-					return dataModel.getProperty(propertyName);
-				}
-			}
-		}
-		throw new RuntimeException(PROPERTY_NOT_LOCATED_ + propertyName);
-	}
+
 
 	/**
 	 * Subclasses can override this method to determine if a given propertyName should be enabled
@@ -329,11 +315,17 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	}
 
 	/**
-	 * Return a property of type String. If the property value is null, an empty String will be
-	 * returned.
+	 * <p>
+	 * A convenience method for getting Strings. If the property is set then this method is
+	 * equavalent to:
+	 * <p>
+	 * <code>(String)getProperty(propertyName)</code>
+	 * <p>
+	 * If the property is unset, the empty String, <code>""</code>, will be returned.
 	 * 
 	 * @param propertyName
-	 * @return
+	 * @param value
+	 * @see #setProperty(String, Object)
 	 */
 	public final String getStringProperty(String propertyName) {
 		Object prop = getProperty(propertyName);
@@ -343,10 +335,18 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	}
 
 	/**
-	 * Return a property of type boolean. If the property value is null, an false will be returned.
+	 * <p>
+	 * A convenience method for getting booleans. If the property is set then this method is
+	 * equavalent to:
+	 * <p>
+	 * <code>((Boolean)getProperty(propertyName)).booleanValue();</code>
+	 * <p>
+	 * If the property is unset, <code>false</code> will be returned.
 	 * 
 	 * @param propertyName
-	 * @return
+	 * @param value
+	 * @see #setProperty(String, Object)
+	 * @see #setBooleanProperty(String, int)
 	 */
 	public final boolean getBooleanProperty(String propertyName) {
 		Object prop = getProperty(propertyName);
@@ -356,10 +356,18 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	}
 
 	/**
-	 * Return a property of type int. If the property value is null, a -1 will be returned.
+	 * <p>
+	 * A convenience method for getting ints. If the property is set then this method is equavalent
+	 * to:
+	 * <p>
+	 * <code>((Integer)getProperty(propertyName)).intValue();</code>
+	 * <p>
+	 * If the property is unset, <code>-1</code> will be returned.
 	 * 
 	 * @param propertyName
-	 * @return
+	 * @param value
+	 * @see #setProperty(String, Object)
+	 * @see #setIntProperty(String, int)
 	 */
 	public final int getIntProperty(String propertyName) {
 		Object prop = getProperty(propertyName);
@@ -368,20 +376,36 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		return ((Integer) prop).intValue();
 	}
 
+	/**
+	 * <p>
+	 * A convenience method for setting booleans. This method is equavalent to:
+	 * <p>
+	 * <code>setProperty(propertyName, (value) ? Boolean.TRUE : Boolean.FALSE);</code>
+	 * </p>
+	 * 
+	 * @param propertyName
+	 * @param value
+	 * @see #setProperty(String, Object)
+	 * @see #getBooleanProperty(String)
+	 */
 	public final void setBooleanProperty(String propertyName, boolean value) {
-		Boolean b = getBoolean(value);
-		setProperty(propertyName, b);
+		setProperty(propertyName, (value) ? Boolean.TRUE : Boolean.FALSE);
 	}
 
-	protected Boolean getBoolean(boolean b) {
-		if (b)
-			return Boolean.TRUE;
-		return Boolean.FALSE;
-	}
-
+	/**
+	 * <p>
+	 * A convenience method for setting ints. This method is equavalent to:
+	 * <p>
+	 * <code>setProperty(propertyName, new Integer(value));</code>
+	 * </p>
+	 * 
+	 * @param propertyName
+	 * @param value
+	 * @see #setProperty(String, Object
+	 * @see #getIntProperty(String))
+	 */
 	public void setIntProperty(String propertyName, int value) {
-		Integer i = new Integer(value);
-		setProperty(propertyName, i);
+		setProperty(propertyName, new Integer(value));
 	}
 
 	protected Object doGetProperty(String propertyName) {
@@ -392,7 +416,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	}
 
 	/**
-	 * Override this method to compute default property values
+	 * Override this method to compute default property values.
 	 * 
 	 * @param propertyName
 	 * @return
@@ -407,30 +431,111 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		return null;
 	}
 
-	/*
-	 * This assumes that checkValidPropertyName(String) has already been called.
+	/**
+	 * Returns <code>true</code> if the specified propertyName is a valid propertyName for this
+	 * root DataModel only. Nested DataModels are not checked.
+	 * 
+	 * @param propertyName
+	 * @return
+	 * @see #isProperty(String)
 	 */
-	private boolean isBaseProperty(String propertyName) {
+	public final boolean isBaseProperty(String propertyName) {
 		if (validBaseProperties != null)
 			return validBaseProperties.contains(propertyName);
 		return true;
 	}
 
-	public boolean isProperty(String propertyName) {
+	/**
+	 * Returns <code>true</code> if the specified propertyName is a valid propertyName for this
+	 * DataModel or any of its (recursively) nested DataModels.
+	 * 
+	 * @param propertyName
+	 * @return
+	 * @see #isBaseProperty(String)
+	 */
+	public final boolean isProperty(String propertyName) {
 		return validProperties.contains(propertyName);
 	}
 
-	protected void checkValidPropertyName(String propertyName) {
+	private void checkValidPropertyName(String propertyName) {
 		if (!validProperties.contains(propertyName)) {
 			throw new RuntimeException(PROPERTY_NOT_LOCATED_ + propertyName);
 		}
 	}
 
 	/**
-	 * unset a property by passing null for the value
+	 * <p>
+	 * Returns the property value for the specified propertyName.
+	 * <p>
+	 * If the specified propertyName is not a property (see#isProperty(String)) then a
+	 * RuntimeException will be thrown.
+	 * <p>
+	 * If the specified propertyName is a base property (see#isBaseProperty(String)) then it will
+	 * immediatly be set and nested models will not be affected. If it is not a base property (i.e.
+	 * it is a property for a nested DataModel) then a recursive search through nested DataModels
+	 * will be conducted. The first nested DataModel having the property will return its value.
+	 * 
+	 * @param propertyName
+	 * @return
+	 * 
+	 * <p>
+	 * There are also convenience methods for getting properties representing property types of
+	 * boolean, int, and String
+	 * <p>
+	 * @see #getBooleanProperty(String)
+	 * @see #getIntProperty(String)
+	 * @see #getStringProperty(String)
+	 */
+	public final Object getProperty(String propertyName) {
+		checkValidPropertyName(propertyName);
+		if (isBaseProperty(propertyName)) {
+			return doGetProperty(propertyName);
+		} else if (nestedModels != null) {
+			WTPOperationDataModel dataModel = null;
+			Object[] keys = nestedModels.keySet().toArray();
+			for (int i = 0; i < keys.length; i++) {
+				dataModel = (WTPOperationDataModel) nestedModels.get(keys[i]);
+				if (dataModel.isProperty(propertyName)) {
+					return dataModel.getProperty(propertyName);
+				}
+			}
+		}
+		throw new RuntimeException(PROPERTY_NOT_LOCATED_ + propertyName);
+	}
+
+	/**
+	 * <p>
+	 * Sets the specified propertyName to the specified propertyValue. Subsequent calls to
+	 * #getProperty(String) will return the same propertyValue.
+	 * <p>
+	 * When a propertyValue other than <code>null</code> is set, then the property is considered
+	 * "set" (see #isSet(String)), conversly, a propertyValue of <code>null</code> is considered
+	 * "unset".
+	 * <p>
+	 * If the specified propertyName is not a property (see#isProperty(String)) then a
+	 * RuntimeException will be thrown.
+	 * <p>
+	 * Attempting to set a propertyName when this DataModel is locked (see #isLocked()) will result
+	 * in a thrown IllegalStateException. An IllegalStateException will not be thrown, however, if
+	 * the propertyName is a Result Property, (see #isResultProperty(String)).
+	 * <p>
 	 * 
 	 * @param propertyName
 	 * @param propertyValue
+	 * 
+	 * 
+	 * @see #getProperty(String)
+	 * @see #isSet(String)
+	 * @see #isProperty(String)
+	 * @see #isResultProperty(String)
+	 * @see #isLocked()
+	 * 
+	 * <p>
+	 * There are also convenience methods for setting properties representing property types of
+	 * boolean and int.
+	 * <p>
+	 * @see #setBooleanProperty(String, boolean)
+	 * @see #setIntProperty(String, int)
 	 */
 	public final void setProperty(String propertyName, Object propertyValue) {
 		if (isLocked() && !isResultProperty(propertyName))
