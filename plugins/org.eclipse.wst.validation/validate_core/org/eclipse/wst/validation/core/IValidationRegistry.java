@@ -1,6 +1,12 @@
 package org.eclipse.wst.validation.core;
 
+import org.eclipse.wst.validation.internal.ValidationRegistryReader;
+
+
+
 public interface IValidationRegistry {
+	
+	IValidationRegistry instance = ValidationRegistryReader.getReader();
 	
 	/**
 	 * This api returns the IValidator given the validatorUniqueName id.
