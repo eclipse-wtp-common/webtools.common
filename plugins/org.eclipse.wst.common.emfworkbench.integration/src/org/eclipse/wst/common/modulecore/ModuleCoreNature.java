@@ -19,8 +19,11 @@ import com.ibm.wtp.common.logger.proxy.Logger;
 
 //In Progress......
 
-public class ModuleCoreNature implements IProjectNature, IResourceChangeListener {
+public class ModuleCoreNature implements IProjectNature,
+		IResourceChangeListener {
 	private HashMap moduleHandles;
+
+	private IProject moduleProject;
 
 	private final static ModuleCoreFactory MODULE_FACTORY = ModuleCoreFactory.eINSTANCE;
 
@@ -52,7 +55,8 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
 		return handle;
 	}
 
-	private WorkbenchModule createModuleHandle(IModuleHandle handle)throws IllegalArgumentException {
+	private WorkbenchModule createModuleHandle(IModuleHandle handle)
+			throws IllegalArgumentException {
 		WorkbenchModule module;
 		module = MODULE_FACTORY.createWorkbenchModule();
 		module.setHandle(handle);
@@ -75,33 +79,20 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
 		return workbenchModules;
 	}
 
-
 	public void configure() throws CoreException {
-	
-		
+
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.resources.IProjectNature#deconfigure()
-	 */
 	public void deconfigure() throws CoreException {
-		
-		
+
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.resources.IProjectNature#getProject()
-	 */
 	public IProject getProject() {
-		
-		return null;
+		return moduleProject;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.resources.IProjectNature#setProject(org.eclipse.core.resources.IProject)
-	 */
 	public void setProject(IProject project) {
-		// TODO Auto-generated method stub
-		
+		moduleProject = project;
+
 	}
 }
