@@ -11,41 +11,46 @@
 package org.eclipse.wst.common.frameworks.datamodel.provisional;
 
 /**
- * This event is used to communicate property changes from WTPOperationDataModels to their
- * WTPOperationDataModelListeners.
+ * This event is used to communicate property changes from IDataModels to their IDataModelListeners.
  * 
  * This class may be instantiated; it is not intended to be subclassed.
  * 
  * This class is EXPERIMENTAL and is subject to substantial changes.
  * 
- * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#addListener(WTPOperationDataModelListener)
- * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModelListener
+ * @see org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel#addListener(IDataModelListener)
+ * @see org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelListener
  */
-public class DataModelEvent {
+public final class DataModelEvent {
 
 	/**
 	 * A flag used to specify the property's value has changed.
 	 * 
-	 * @see WTPOperationDataModel#getProperty(String)
+	 * @see IDataModel#getProperty(String)
 	 * @see #getFlag()
 	 */
-	public static final int PROPERTY_CHG = 1;
+	public static final int VALUE_CHG = 1;
 
-	/**
-	 * A flag used to specify the property's valid values have changed.
-	 * 
-	 * @see WTPOperationDataModel#getValidPropertyDescriptors(String)
-	 * @see #getFlag()
+	/*
+	 * Internal
 	 */
-	public static final int VALID_VALUES_CHG = 2;
+	static final int DEFAULT_CHG = 2;
 
 	/**
 	 * A flag used to specify the property's enablment has changed.
 	 * 
-	 * @see WTPOperationDataModel#isEnabled(String)
+	 * @see IDataModel#isPropertyEnabled(String)
 	 * @see #getFlag()
 	 */
 	public static final int ENABLE_CHG = 3;
+
+	/**
+	 * A flag used to specify the property's valid values have changed.
+	 * 
+	 * @see IDataModel#getValidPropertyDescriptors(String)
+	 * @see #getFlag()
+	 */
+	public static final int VALID_VALUES_CHG = 4;
+
 
 	private IDataModel dataModel;
 	private String propertyName;
@@ -104,7 +109,7 @@ public class DataModelEvent {
 	 * <code>getDataModel().getProperty(getPropertyName())</code>.
 	 * 
 	 * @return the dataModel's property.
-	 * @see WTPOperationDataModel#getProperty(String)
+	 * @see IDataModel#getProperty(String)
 	 */
 	public Object getProperty() {
 		return dataModel.getProperty(propertyName);
@@ -112,10 +117,10 @@ public class DataModelEvent {
 
 	/**
 	 * Convenience method to return the dataModel property's enablement state. This is equavalent
-	 * to: <code>getDataModel().isEnabled(getPropertyName())</code>.
+	 * to: <code>getDataModel().isPropertyEnabled(getPropertyName())</code>.
 	 * 
 	 * @return the dataModel property's enablement state.
-	 * @see WTPOperationDataModel#isEnabled(String)
+	 * @see IDataModel#isPropertyEnabled(String)
 	 */
 	public boolean isPropertyEnabled() {
 		return dataModel.isPropertyEnabled(propertyName);
@@ -126,9 +131,9 @@ public class DataModelEvent {
 	 * equavalent to: <code>getDataModel().getValidPropertyDescriptors(getPropertyName())</code>.
 	 * 
 	 * @return the dataModel property's valid property descriptors.
-	 * @see WTPOperationDataModel#getValidPropertyDescriptors(String)
+	 * @see IDataModel#getValidPropertyDescriptors(String)
 	 */
-	public IDataModelPropertyDescriptor[] getValidPropertyDescriptors() {
+	public DataModelPropertyDescriptor[] getValidPropertyDescriptors() {
 		return dataModel.getValidPropertyDescriptors(propertyName);
 	}
 }

@@ -40,17 +40,16 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelEvent;
+import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelPropertyDescriptor;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelListener;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelPropertyDescriptor;
-import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelImpl;
 import org.eclipse.wst.common.frameworks.internal.ui.TimedModifyListener;
 
 /**
  * This class is EXPERIMENTAL and is subject to substantial changes.
  */
 public class DataModelSynchHelper implements IDataModelListener {
-	protected DataModelImpl dataModel;
+	protected IDataModel dataModel;
 	protected Map widgetToPropertyHash;
 	protected Map propertyToWidgetHash;
 	protected Map widgetToDepControls;
@@ -86,7 +85,7 @@ public class DataModelSynchHelper implements IDataModelListener {
 			try {
 				currentWidgetFromEvent = combo;
 				String propertyName = (String) widgetToPropertyHash.get(combo);
-				IDataModelPropertyDescriptor[] descriptors = dataModel.getValidPropertyDescriptors(propertyName);
+				DataModelPropertyDescriptor[] descriptors = dataModel.getValidPropertyDescriptors(propertyName);
 				String description = combo.getText();
 				for (int i = 0; i < descriptors.length; i++) {
 					if (description.equals(descriptors[i].getPropertyDescription())) {
@@ -106,7 +105,7 @@ public class DataModelSynchHelper implements IDataModelListener {
 				return;
 			String propertyName = (String) widgetToPropertyHash.get(combo);
 			if (combo.getSelectionIndex() >= 0) {
-				IDataModelPropertyDescriptor[] descriptors = dataModel.getValidPropertyDescriptors(propertyName);
+				DataModelPropertyDescriptor[] descriptors = dataModel.getValidPropertyDescriptors(propertyName);
 				String description = combo.getItem(combo.getSelectionIndex());
 				for (int i = 0; i < descriptors.length; i++) {
 					if (description.equals(descriptors[i].getPropertyDescription())) {
@@ -140,7 +139,7 @@ public class DataModelSynchHelper implements IDataModelListener {
 	private CheckboxSelectionListener checkboxSelectionListener;
 
 	public DataModelSynchHelper(IDataModel model) {
-		this.dataModel = (DataModelImpl) model;
+		this.dataModel = model;
 		dataModel.addListener(this);
 	}
 
@@ -200,7 +199,7 @@ public class DataModelSynchHelper implements IDataModelListener {
 	public void synchUIWithModel(String propertyName, int flag) {
 		if (null != propertyToWidgetHash && propertyToWidgetHash.containsKey(propertyName)) {
 			try {
-				dataModel.setIgnorePropertyChanges(true);
+				// dataModel.setIgnorePropertyChanges(true);
 				currentWidget = (Widget) propertyToWidgetHash.get(propertyName);
 				if (currentWidget != null && currentWidget != currentWidgetFromEvent) {
 					ignoreModifyEvent = true;
@@ -226,7 +225,7 @@ public class DataModelSynchHelper implements IDataModelListener {
 				}
 			} finally {
 				currentWidget = null;
-				dataModel.setIgnorePropertyChanges(false);
+				// dataModel.setIgnorePropertyChanges(false);
 			}
 		}
 	}
@@ -289,7 +288,7 @@ public class DataModelSynchHelper implements IDataModelListener {
 	protected void setWidgetValue(String propertyName, int flag, Combo combo) {
 		if (flag == DataModelEvent.VALID_VALUES_CHG || combo.getItemCount() == 0) {
 			// Display properties should only fire if the contents change.
-			IDataModelPropertyDescriptor[] descriptors = dataModel.getValidPropertyDescriptors(propertyName);
+			DataModelPropertyDescriptor[] descriptors = dataModel.getValidPropertyDescriptors(propertyName);
 			String[] items = new String[descriptors.length];
 			for (int i = 0; i < descriptors.length; i++) {
 				items[i] = descriptors[i].getPropertyDescription();
@@ -408,7 +407,7 @@ public class DataModelSynchHelper implements IDataModelListener {
 				String propertyName = null;
 				while (propertyNames.hasNext()) {
 					propertyName = (String) propertyNames.next();
-					synchUIWithModel(propertyName, DataModelEvent.PROPERTY_CHG);
+					synchUIWithModel(propertyName, DataModelEvent.VALUE_CHG);
 				}
 			}
 		}
@@ -426,7 +425,7 @@ public class DataModelSynchHelper implements IDataModelListener {
 				widgetToDepControls = new HashMap();
 			widgetToDepControls.put(widget, depControls);
 		}
-		synchUIWithModel(propertyName, DataModelEvent.PROPERTY_CHG);
+		synchUIWithModel(propertyName, DataModelEvent.VALUE_CHG);
 	}
 
 	public void synchText(Text text, String propertyName, Control[] dependentControls) {

@@ -10,11 +10,16 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel.provisional;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
 
-
+/**
+ * <p>
+ * This interface is not intended to be implemented by clients.
+ * </p>
+ */
 public interface IDataModel {
 
 	public IDataModelOperation getDefaultOperation();
@@ -185,21 +190,42 @@ public interface IDataModel {
 	 */
 	public void setStringProperty(String propertyName, String propertyValue);
 
+	/**
+	 * <p>
+	 * This method is used to nest the specified IDataModel within this IDataModel. The
+	 * <code>modelName</code> argument should be a unique String to identify this particular
+	 * nested IDataModel. The same String is required when accessing the nested IDataModel using
+	 * either <code>getNestedModel(String)</code> or <code>removeNestedModel(String)</code>. If
+	 * the specified nested IDataModel has already been nested under this IDataModel, then calling
+	 * this method will have no effect.F
+	 * </p>
+	 * <p>
+	 * Refer to <A HREF="#nestedDataModels"> <CODE>NestedDataModels</CODE> </A>.
+	 * </p>
+	 * 
+	 * @param modelName
+	 *            the name of the IDataModel to be nested
+	 * @param dataModel
+	 *            the IDataModel to be nested
+	 * 
+	 * @see #getNestedModel(String)
+	 * @see #removeNestedModel(String)
+	 */
 	public void addNestedModel(String nestedModelName, IDataModel dataModel);
 
 	public IDataModel removeNestedModel(String nestedModelName);
 
 	public IDataModel getNestedModel(String nestedModelName);
 
-	public IDataModel[] getNestedModels();
+	public Collection getNestedModels();
 
-	public IDataModel[] getNestingModels();
+	public Collection getNestingModels();
 
-	public String[] getBaseProperties();
+	public Collection getBaseProperties();
 
-	public String[] getNestedProperties();
+	public Collection getNestedProperties();
 
-	public String[] getAllProperties();
+	public Collection getAllProperties();
 
 	/**
 	 * Returns <code>true</code> if the specified propertyName is a valid propertyName for this
@@ -266,7 +292,7 @@ public interface IDataModel {
 	 * @see #doGetValidPropertyDescriptors(String)
 	 * @see #doGetPropertyDescriptor(String)
 	 */
-	public IDataModelPropertyDescriptor getPropertyDescriptor(String propertyName);
+	public DataModelPropertyDescriptor getPropertyDescriptor(String propertyName);
 
 	/**
 	 * <p>
@@ -295,20 +321,72 @@ public interface IDataModel {
 	 * @see #getPropertyDescriptor(String)
 	 * @see #doGetValidPropertyDescriptors(String)
 	 */
-	public IDataModelPropertyDescriptor[] getValidPropertyDescriptors(String propertyName);
+	public DataModelPropertyDescriptor[] getValidPropertyDescriptors(String propertyName);
 
 	public void addListener(IDataModelListener dataModelListener);
 
 	public void removeListener(IDataModelListener dataModelListener);
 
+	/**
+	 * <p>
+	 * A constant used for notification.
+	 * </p>
+	 * 
+	 * @see DataModelEvent#VALUE_CHG
+	 * @see #notifyPropertyChange(String, int)
+	 */
+	public static final int VALUE_CHG = DataModelEvent.VALUE_CHG;
+	/**
+	 * <p>
+	 * A constant used for notification. This contant is different from the others because it does
+	 * not map to an even type on DataModelEvent. When notifying with this type, a check is done to
+	 * see whether the property is set. If the property is set, then a <code>VALUE_CHG</code> is
+	 * fired, otherwise nothing happens.
+	 * </p>
+	 * 
+	 * @see #notifyPropertyChange(String, int)
+	 */
+	public static final int DEFAULT_CHG = DataModelEvent.DEFAULT_CHG;
+	/**
+	 * <p>
+	 * A constant used for notification.
+	 * </p>
+	 * 
+	 * @see DataModelEvent#ENABLE_CHG
+	 * @see #notifyPropertyChange(String, int)
+	 */
+	public static final int ENABLE_CHG = DataModelEvent.ENABLE_CHG;
+	/**
+	 * <p>
+	 * A constant used for notification.
+	 * </p>
+	 * 
+	 * @see DataModelEvent#VALID_VALUES_CHG
+	 * @see #notifyPropertyChange(String, int)
+	 */
+	public static final int VALID_VALUES_CHG = DataModelEvent.VALID_VALUES_CHG;
 
-	public void notifyValidValuesChange(String propertyName);
-
-	public void notifyEnablementChange(String propertyName);
-
-	public void notifyListeners(String propertyName);
-
-	public void notifyListeners(String propertyName, int flag);
+	/**
+	 * <p>
+	 * Notify all listeners of a property change. <code>eventType</code> specifies the type of
+	 * change. Acceptible values for eventType are <code>VALUE_CHG</code>,
+	 * <code>DEFAULT_CHG</code>, <code>ENABLE_CHG</code>, <code>VALID_VALUES_CHG</code>. If
+	 * the eventType is <code>DEFAULT_CHG</code> and the specified property is set, then this
+	 * method will do nothing.
+	 * </p>
+	 * 
+	 * @param propertyName
+	 *            the name of the property changing
+	 * @param eventType
+	 *            the type of event to fire
+	 * 
+	 * @see #VALUE_CHG
+	 * @see #DEFAULT_CHG
+	 * @see #ENABLE_CHG
+	 * @see #VALID_VALUES_CHG
+	 * @see DataModelEvent
+	 */
+	public void notifyPropertyChange(String propertyName, int eventType);
 
 	public void dispose();
 

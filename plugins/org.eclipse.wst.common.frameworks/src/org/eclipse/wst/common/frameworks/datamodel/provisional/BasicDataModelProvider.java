@@ -14,9 +14,17 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
 
+/**
+ * A default implementation of <code>IDataModelProvider</code>.
+ * 
+ * @see org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelProvider
+ */
 public abstract class BasicDataModelProvider implements IDataModelProvider {
 
 	protected IDataModel model = null;
+
+	public void init() {
+	}
 
 	public final void setDataModel(IDataModel dataModel) {
 		this.model = dataModel;
@@ -26,10 +34,28 @@ public abstract class BasicDataModelProvider implements IDataModelProvider {
 		return model;
 	}
 
-	public Object getProperty(String propertyName){
+	/**
+	 * <p>
+	 * Convenience method for getting a property from the backing IDataModel. This is equavalent to
+	 * <code>getDataModel().getProperty(propertyName)</code>.
+	 * </p>
+	 * 
+	 * @param propertyName
+	 * @return the property value
+	 */
+	protected final Object getProperty(String propertyName) {
 		return model.getProperty(propertyName);
 	}
-	
+
+	protected final boolean getBooleanProperty(String propertyName) {
+		return model.getBooleanProperty(propertyName);
+	}
+
+	protected final int getIntProperty(String propertyName) {
+		return model.getIntProperty(propertyName);
+	}
+
+
 	public boolean setProperty(String propertyName, Object propertyValue) {
 		return true;
 	}
@@ -38,31 +64,27 @@ public abstract class BasicDataModelProvider implements IDataModelProvider {
 		return null;
 	}
 
-	public void init() {
-	}
-
 	public boolean isPropertyEnabled(String propertyName) {
 		return true;
 	}
 
 	public IStatus validateProperty(String propertyName) {
-		return OK_STATUS;
-	}
-
-	public IDataModelPropertyDescriptor getPropertyDescriptor(String propertyName) {
 		return null;
 	}
 
-	public IDataModelPropertyDescriptor[] getValidPropertyDescriptors(String propertyName) {
+	public DataModelPropertyDescriptor getPropertyDescriptor(String propertyName) {
+		return null;
+	}
+
+	public DataModelPropertyDescriptor[] getValidPropertyDescriptors(String propertyName) {
 		return null;
 	}
 
 	public List getExtendedContext() {
 		return null;
 	}
-	
-	public DataModelOperation getDefaultOperation(){
+
+	public DataModelOperation getDefaultOperation() {
 		return null;
 	}
-
 }

@@ -18,7 +18,7 @@ import org.eclipse.core.runtime.Status;
 public interface IDataModelProvider {
 
 	public static IStatus OK_STATUS = new Status(IStatus.OK, "org.eclipse.wst.common.frameworks.internal", 0, "OK", null); //$NON-NLS-1$ //$NON-NLS-2$
-	
+
 	public void setDataModel(IDataModel dataModel);
 
 	public IDataModel getDataModel();
@@ -40,17 +40,17 @@ public interface IDataModelProvider {
 	public Object getDefaultProperty(String propertyName);
 
 	public boolean isPropertyEnabled(String propertyName);
-	
+
 	public IStatus validateProperty(String propertyName);
-	
+
 	public boolean setProperty(String propertyName, Object propertyValue);
-	
-	public IDataModelPropertyDescriptor getPropertyDescriptor(String propertyName);
-	
-	public IDataModelPropertyDescriptor [] getValidPropertyDescriptors(String propertyName);
-	
+
+	public DataModelPropertyDescriptor getPropertyDescriptor(String propertyName);
+
+	public DataModelPropertyDescriptor[] getValidPropertyDescriptors(String propertyName);
+
 	public List getExtendedContext();
-	
+
 	public DataModelOperation getDefaultOperation();
 
 }

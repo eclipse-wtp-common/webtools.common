@@ -37,7 +37,7 @@ public class WTPOperationDataModelEvent {
 	 * @see WTPOperationDataModel#getValidPropertyDescriptors(String)
 	 * @see #getFlag()
 	 */
-	public static final int VALID_VALUES_CHG = 2;
+	public static final int VALID_VALUES_CHG = 4;
 
 	/**
 	 * A flag used to specify the property's enablment has changed.

@@ -356,7 +356,7 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 	 */
 	public void propertyChanged(DataModelEvent event) {
 		String propertyName = event.getPropertyName();
-		if (validationPropertyNames != null && (event.getFlag() == DataModelEvent.PROPERTY_CHG || (!isPageComplete() && event.getFlag() == DataModelEvent.VALID_VALUES_CHG))) {
+		if (validationPropertyNames != null && (event.getFlag() == DataModelEvent.VALUE_CHG || (!isPageComplete() && event.getFlag() == DataModelEvent.VALID_VALUES_CHG))) {
 			for (int i = 0; i < validationPropertyNames.length; i++) {
 				if (validationPropertyNames[i].equals(propertyName)) {
 					validatePage();

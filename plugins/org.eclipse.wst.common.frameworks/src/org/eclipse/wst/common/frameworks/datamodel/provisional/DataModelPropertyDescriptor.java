@@ -9,7 +9,7 @@ package org.eclipse.wst.common.frameworks.datamodel.provisional;
  * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#getPropertyDescriptor(String)
  * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#getValidPropertyDescriptors(String)
  */
-public class DataModelPropertyDescriptor implements IDataModelPropertyDescriptor {
+public final class DataModelPropertyDescriptor {
 
 	/**
 	 * A convenience method which returns an array of WTPPropertyDescriptors. If <code>values</code>
@@ -21,11 +21,11 @@ public class DataModelPropertyDescriptor implements IDataModelPropertyDescriptor
 	 *            the array of property values
 	 * @return the constructed WTPPropertyDescriptor array
 	 */
-	public static IDataModelPropertyDescriptor[] createDescriptors(Object[] values) {
+	public static DataModelPropertyDescriptor[] createDescriptors(Object[] values) {
 		if (null == values) {
-			return new IDataModelPropertyDescriptor[0];
+			return new DataModelPropertyDescriptor[0];
 		}
-		IDataModelPropertyDescriptor[] descriptors = new DataModelPropertyDescriptor[values.length];
+		DataModelPropertyDescriptor[] descriptors = new DataModelPropertyDescriptor[values.length];
 		for (int i = 0; i < descriptors.length; i++) {
 			descriptors[i] = new DataModelPropertyDescriptor(values[i]);
 		}
@@ -46,11 +46,11 @@ public class DataModelPropertyDescriptor implements IDataModelPropertyDescriptor
 	 *            the array of property descriptions cooresponding the values array
 	 * @return the constructed WTPPropertyDescriptor array
 	 */
-	public static IDataModelPropertyDescriptor[] createDescriptors(Object[] values, String[] descriptions) {
+	public static DataModelPropertyDescriptor[] createDescriptors(Object[] values, String[] descriptions) {
 		if (null == values) {
-			return new IDataModelPropertyDescriptor[0];
+			return new DataModelPropertyDescriptor[0];
 		}
-		IDataModelPropertyDescriptor[] descriptors = new DataModelPropertyDescriptor[values.length];
+		DataModelPropertyDescriptor[] descriptors = new DataModelPropertyDescriptor[values.length];
 		for (int i = 0; i < descriptors.length; i++) {
 			descriptors[i] = new DataModelPropertyDescriptor(values[i], descriptions[i]);
 		}

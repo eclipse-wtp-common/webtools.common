@@ -9,6 +9,7 @@
 package org.eclipse.wst.common.frameworks.internal.datamodel;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -24,27 +25,21 @@ import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelProperty
 import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelListener;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelOperation;
-import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelPropertyDescriptor;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelProvider;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 
-public class DataModelImpl implements IDataModel, IDataModelListener {
+public final class DataModelImpl implements IDataModel, IDataModelListener {
 
 	private static final String PROPERTY_NOT_LOCATED_ = WTPResourceHandler.getString("20"); //$NON-NLS-1$
 	private static final String NESTED_MODEL_NOT_LOCATED = WTPResourceHandler.getString("21"); //$NON-NLS-1$
-	private static final String NESTED_MODEL_DUPLICATE = WTPResourceHandler.getString("33"); //$NON-NLS-1$
 
-	private Set allPropertyNames = null; // lazily initialzed when nested models added
-	private Set nestedPropertyNames = null; // lazily initialzed when nested models added
 	private Set basePropertyNames = new HashSet();
+	private Set allPropertyNames = new HashSet();
+	private Set nestedPropertyNames; // lazily initialzed when nested models added
 	private Map propertyValues = new Hashtable();
 	private Map nestedModels;
 	private Set nestingModels;
 	private List listeners;
-	private boolean ignorePropertyChanges = false;
-	private boolean notificationEnabled = true;
-	private boolean operationValidationEnabled = false;
-	private boolean hasBeenExecutedAgainst = false;
 
 	private IDataModelProvider provider;
 
@@ -64,34 +59,35 @@ public class DataModelImpl implements IDataModel, IDataModelListener {
 
 	private void addBaseProperty(String propertyName) {
 		basePropertyNames.add(propertyName);
+		allPropertyNames.add(propertyName);
 	}
 
 	public boolean isBaseProperty(String propertyName) {
 		return basePropertyNames.contains(propertyName);
 	}
 
-	public String[] getBaseProperties() {
-		return (String[]) basePropertyNames.toArray();
+	public Collection getBaseProperties() {
+		return Collections.unmodifiableCollection(basePropertyNames);
 	}
 
 	public boolean isProperty(String propertyName) {
-		return null == allPropertyNames ? basePropertyNames.contains(propertyName) : allPropertyNames.contains(propertyName);
+		return allPropertyNames.contains(propertyName);
 	}
 
-	public String[] getAllProperties() {
-		return (String[]) (null == allPropertyNames ? basePropertyNames.toArray() : allPropertyNames.toArray());
+	public Collection getAllProperties() {
+		return Collections.unmodifiableCollection(allPropertyNames);
 	}
 
 	public boolean isNestedProperty(String propertyName) {
-		return null == nestedPropertyNames ? false : nestedPropertyNames.contains(propertyName);
+		return null != nestedPropertyNames && nestedPropertyNames.contains(propertyName);
 	}
 
-	public String[] getNestedProperties() {
-		return (String[]) (null == allPropertyNames ? new String[0] : nestedPropertyNames.toArray());
+	public Collection getNestedProperties() {
+		return Collections.unmodifiableCollection(nestedPropertyNames);
 	}
 
 	private void checkValidPropertyName(String propertyName) {
-		if (!allPropertyNames.contains(propertyName)) {
+		if (!isProperty(propertyName)) {
 			throw new RuntimeException(PROPERTY_NOT_LOCATED_ + propertyName);
 		}
 	}
@@ -163,7 +159,6 @@ public class DataModelImpl implements IDataModel, IDataModelListener {
 
 
 	public void setProperty(String propertyName, Object propertyValue) {
-		// TODO add locking, result & ignore back???
 		DataModelImpl dataModel = getOwningDataModel(propertyName);
 		dataModel.internalSetProperty(propertyName, propertyValue);
 	}
@@ -176,7 +171,7 @@ public class DataModelImpl implements IDataModel, IDataModelListener {
 			else if (propertyValues.containsKey(propertyName))
 				propertyValues.remove(propertyName);
 			if (provider.setProperty(propertyName, propertyValue)) {
-				notifyListeners(propertyName, DataModelEvent.PROPERTY_CHG);
+				notifyPropertyChange(propertyName, DataModelEvent.VALUE_CHG);
 			}
 		}
 	}
@@ -205,16 +200,17 @@ public class DataModelImpl implements IDataModel, IDataModelListener {
 		if (null == nestedDataModel.nestingModels) {
 			nestedDataModel.nestingModels = new HashSet();
 			allPropertyNames = new HashSet();
+			allPropertyNames.addAll(basePropertyNames);
 			nestedPropertyNames = new HashSet();
 		}
 		if (nestedDataModel.nestingModels.contains(this)) {
-			throw new RuntimeException(NESTED_MODEL_DUPLICATE);
+			return;
 		}
 		nestedDataModel.nestingModels.add(this);
 
 		nestedModels.put(modelName, nestedDataModel);
 
-		addNestedProperties(null == nestedDataModel.allPropertyNames ? nestedDataModel.nestedPropertyNames : nestedDataModel.allPropertyNames);
+		addNestedProperties(null == nestedDataModel.allPropertyNames ? nestedDataModel.basePropertyNames : nestedDataModel.allPropertyNames);
 		nestedDataModel.addListener(this);
 	}
 
@@ -229,12 +225,12 @@ public class DataModelImpl implements IDataModel, IDataModelListener {
 		}
 	}
 
-	public IDataModel[] getNestedModels() {
-		return (IDataModel[]) nestedModels.values().toArray();
+	public Collection getNestedModels() {
+		return Collections.unmodifiableCollection(nestedModels.values());
 	}
 
-	public IDataModel[] getNestingModels() {
-		return (IDataModel[]) nestingModels.toArray();
+	public Collection getNestingModels() {
+		return Collections.unmodifiableCollection(nestingModels);
 	}
 
 	public IDataModel removeNestedModel(String modelName) {
@@ -290,7 +286,6 @@ public class DataModelImpl implements IDataModel, IDataModelListener {
 		}
 	}
 
-
 	public IDataModel getNestedModel(String modelName) {
 		IDataModel dataModel = (IDataModel) nestedModels.get(modelName);
 		if (null == dataModel) {
@@ -299,48 +294,30 @@ public class DataModelImpl implements IDataModel, IDataModelListener {
 		return dataModel;
 	}
 
-	public IDataModelPropertyDescriptor[] getValidPropertyDescriptors(String propertyName) {
+	public DataModelPropertyDescriptor[] getValidPropertyDescriptors(String propertyName) {
 		DataModelImpl dataModel = getOwningDataModel(propertyName);
-		IDataModelPropertyDescriptor[] descriptors = dataModel.provider.getValidPropertyDescriptors(propertyName);
-		return descriptors == null ? new IDataModelPropertyDescriptor[0] : descriptors;
+		DataModelPropertyDescriptor[] descriptors = dataModel.provider.getValidPropertyDescriptors(propertyName);
+		return descriptors == null ? new DataModelPropertyDescriptor[0] : descriptors;
 	}
 
-	public IDataModelPropertyDescriptor getPropertyDescriptor(String propertyName) {
+	public DataModelPropertyDescriptor getPropertyDescriptor(String propertyName) {
 		DataModelImpl dataModel = getOwningDataModel(propertyName);
-		IDataModelPropertyDescriptor descriptor = dataModel.provider.getPropertyDescriptor(propertyName);
+		DataModelPropertyDescriptor descriptor = dataModel.provider.getPropertyDescriptor(propertyName);
 		return descriptor == null ? new DataModelPropertyDescriptor(getProperty(propertyName)) : descriptor;
 	}
 
-	/**
-	 * Convenience method to create a WTPOperationDataModelEvent.PROPERTY_CHG event and notify
-	 * listeners.
-	 * 
-	 * @param propertyName
-	 * @see #notifyListeners(DataModelEvent)
-	 */
-	public void notifyListeners(String propertyName) {
-		notifyListeners(propertyName, DataModelEvent.PROPERTY_CHG);
-	}
-
-	/**
-	 * Convenience method to create a WTPOperationDataModelEvent event of the specified type and
-	 * notify listeners.
-	 * 
-	 * @param propertyName
-	 * @see DataModelEvent for the list of valid flag values
-	 */
-	public void notifyListeners(String propertyName, int flag) {
+	public void notifyPropertyChange(String propertyName, int flag) {
+		if (flag == DEFAULT_CHG) {
+			if (isPropertySet(propertyName)) {
+				return;
+			} else
+				flag = VALUE_CHG;
+		}
 		notifyListeners(new DataModelEvent(this, propertyName, flag));
 	}
 
-	/**
-	 * Notifies all registerd WTPOperationDataModelListeners of the specified
-	 * WTPOperationDataModelEvent.
-	 * 
-	 * @param event
-	 */
-	protected void notifyListeners(DataModelEvent event) {
-		if (notificationEnabled && listeners != null && !listeners.isEmpty()) {
+	private void notifyListeners(DataModelEvent event) {
+		if (listeners != null && !listeners.isEmpty()) {
 			IDataModelListener listener;
 			for (int i = 0; i < listeners.size(); i++) {
 				listener = (IDataModelListener) listeners.get(i);
@@ -418,16 +395,6 @@ public class DataModelImpl implements IDataModel, IDataModelListener {
 		return true;
 	}
 
-	/**
-	 * Use this method when the model should ignore any property set calls. Remember to always reset
-	 * the value in a finally block.
-	 * 
-	 * @param aBoolean
-	 */
-	public void setIgnorePropertyChanges(boolean aBoolean) {
-		ignorePropertyChanges = aBoolean;
-	}
-
 	public boolean isPropertyValid(String propertyName) {
 		return validateProperty(propertyName).isOK();
 	}
@@ -436,50 +403,6 @@ public class DataModelImpl implements IDataModel, IDataModelListener {
 		DataModelImpl dataModel = getOwningDataModel(propertyName);
 		IStatus status = dataModel.provider.validateProperty(propertyName);
 		return status == null ? IDataModelProvider.OK_STATUS : status;
-	}
-
-	/**
-	 * This method should be called from doSetProperty(String, Object) when a change to a
-	 * propertyName will cause default values within the model to change. The passed propertyName is
-	 * another property that may need to have its default value recomputed. This allows for UIs to
-	 * refresh.
-	 * 
-	 * @param propertyName
-	 */
-	public void notifyDefaultChange(String propertyName) {
-		if (!isPropertySet(propertyName))
-			notifyListeners(propertyName, DataModelEvent.PROPERTY_CHG);
-	}
-
-	/**
-	 * This method should be called when the valid values for the given propertyName may need to be
-	 * recaculated. This allows for UIs to refresh.
-	 * 
-	 * @param propertyName
-	 */
-	public void notifyValidValuesChange(String propertyName) {
-		notifyListeners(propertyName, DataModelEvent.VALID_VALUES_CHG);
-	}
-
-	public void notifyEnablementChange(String propertyName) {
-		notifyListeners(propertyName, DataModelEvent.ENABLE_CHG);
-	}
-
-
-	protected boolean isNotificationEnabled() {
-		return notificationEnabled;
-	}
-
-	protected void setNotificationEnabled(boolean notificationEnabled) {
-		this.notificationEnabled = notificationEnabled;
-	}
-
-	public final boolean isOperationValidationEnabled() {
-		return operationValidationEnabled;
-	}
-
-	public final void setOperationValidationEnabled(boolean operationValidationEnabled) {
-		this.operationValidationEnabled = operationValidationEnabled;
 	}
 
 	public List getExtendedContext() {
@@ -493,5 +416,4 @@ public class DataModelImpl implements IDataModel, IDataModelListener {
 	public IDataModelOperation getDefaultOperation() {
 		return provider.getDefaultOperation();
 	}
-
 }
