@@ -23,6 +23,7 @@ import org.eclipse.wst.common.modulecore.impl.UnresolveableURIException;
  */
 public class ArtifactEdit {
 
+	public static String TYPE_ID = "NO_TYPE";
 	private ArtifactEditModel artifactEditModel;
 	/**
 	 * @param model

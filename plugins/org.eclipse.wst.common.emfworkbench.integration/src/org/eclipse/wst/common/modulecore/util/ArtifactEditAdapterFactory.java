@@ -28,8 +28,13 @@ public class ArtifactEditAdapterFactory implements IAdapterFactory {
 	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object, java.lang.Class)
 	 */
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
+		ArtifactEditModel editModel = (ArtifactEditModel)adaptableObject;
+		if (editModel.getModuleType().equals(ArtifactEdit.TYPE_ID))
+			return new ArtifactEdit((ArtifactEditModel)adaptableObject);
+		else
+			return null;
 		
-		return new ArtifactEdit((ArtifactEditModel)adaptableObject);
+		
 	}
 
 
