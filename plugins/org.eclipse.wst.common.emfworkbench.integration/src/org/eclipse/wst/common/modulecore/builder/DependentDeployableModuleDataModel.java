@@ -77,16 +77,6 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
      * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#getDefaultProperty(java.lang.String)
      */
     protected Object getDefaultProperty(String propertyName) {
-        if(propertyName.equals(HANDLE))
-            return getHandleValue();
-        if(propertyName.equals(OUTPUT_CONTAINER))
-            return getOutputContainerValue();
-        if(propertyName.equals(DEPENDENT_WBMODULE))
-            return getWorkBenchModuleValue();
-        if(propertyName.equals(NEEDS_PREPROCESSING))
-            return getNeedsPreprocessingValue();
-        if(propertyName.equals(DOES_CONSUME))
-            return getDoesConsumeValue();
         return super.getDefaultProperty(propertyName);
     }
 
@@ -96,11 +86,11 @@ public class DependentDeployableModuleDataModel extends WTPOperationDataModel {
     protected boolean doSetProperty(String propertyName, Object propertyValue) {
         boolean status = super.doSetProperty(propertyName, propertyValue);
         if(propertyName.equals(DEPENDENT_MODULE)){
-            notifyDefaultChange(HANDLE);
-            notifyDefaultChange(OUTPUT_CONTAINER);
-            notifyDefaultChange(DEPENDENT_WBMODULE);
-            notifyDefaultChange(NEEDS_PREPROCESSING);
-            notifyDefaultChange(DOES_CONSUME);
+            setProperty(HANDLE, getHandleValue());
+            setProperty(OUTPUT_CONTAINER, getOutputContainerValue());
+            setProperty(DEPENDENT_WBMODULE, getWorkBenchModuleValue());
+            setProperty(NEEDS_PREPROCESSING, getNeedsPreprocessingValue());
+            setProperty(DOES_CONSUME, getDoesConsumeValue());
         } 
         return status;
     }
