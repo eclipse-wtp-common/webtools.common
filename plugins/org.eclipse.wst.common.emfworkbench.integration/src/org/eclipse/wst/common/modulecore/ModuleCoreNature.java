@@ -3,7 +3,9 @@ package org.eclipse.wst.common.modulecore;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -21,6 +23,7 @@ import com.ibm.wtp.emf.workbench.WorkbenchURIConverter;
 
 public class ModuleCoreNature extends EditModelNature implements IProjectNature, IModuleConstants, IResourceChangeListener {
 
+   
 	public void resourceChanged(IResourceChangeEvent anEvent) {
 		// event.getDelta()
 		// IResource changedResource = (IResource)event.getResource();
@@ -107,7 +110,36 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		// TODO Auto-generated method stub
 		
 	}
+	/* (non-Javadoc)
+     * @see com.ibm.wtp.emf.workbench.nature.EMFNature#configure()
+     */
+    public void configure() throws CoreException {
+        addDeployableProjectBuilder();
+        super.configure();
+    }
 
+    private void addDeployableProjectBuilder() throws CoreException {
+        IProjectDescription description = project.getDescription();
+        ICommand[] builderCommands = description.getBuildSpec();
+        boolean previouslyAdded = false;
+        
+        for(int i = 0; i<builderCommands.length; i++){
+            if(builderCommands[i].getBuilderName().equals(DEPLOYABLE_MODULE_BUILDER_ID))
+                //builder already added no need to add again
+                previouslyAdded = true;
+            	break;
+        }
+        if(!previouslyAdded){
+            //builder not found, must be added
+            ICommand command = description.newCommand();
+            command.setBuilderName(DEPLOYABLE_MODULE_BUILDER_ID);
+            ICommand[] updatedBuilderCommands = new ICommand[builderCommands.length + 1];
+            System.arraycopy(builderCommands, 0, updatedBuilderCommands, 1, builderCommands.length);
+            updatedBuilderCommands[0] = command;
+            description.setBuildSpec(updatedBuilderCommands);
+            project.setDescription(description, null);
+        }
+    }
 	/*
 	 * private synchronized void update() { moduleHandlesMap.clear(); workbenchModulesMap.clear();
 	 * projectModules = null; try { if (getProjectModules() != null) { List workBenchModules =
@@ -125,4 +157,6 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	 * 
 	 * return projectModules; }
 	 */
+
+
 }

@@ -8,11 +8,15 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
+import org.eclipse.wst.common.modulecore.IModuleConstants;
 import org.eclipse.wst.common.modulecore.ModuleStructuralModel;
 import org.eclipse.wst.common.modulecore.util.ModuleCore;
 
-public class DeployableModuleBuilder extends IncrementalProjectBuilder {
-
+public class DeployableModuleBuilder extends IncrementalProjectBuilder implements IModuleConstants {
+	/**
+	 * Builder id of this incremental project builder.
+	 */
+	public static final String BUILDER_ID = DEPLOYABLE_MODULE_BUILDER_ID;
 	/**
 	 * 
 	 */
