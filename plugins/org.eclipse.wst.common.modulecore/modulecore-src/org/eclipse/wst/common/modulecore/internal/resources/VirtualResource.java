@@ -178,6 +178,10 @@ public abstract class VirtualResource implements IVirtualResource {
 	public String getName() {
 		return getRuntimePath().lastSegment();
 	}
+	
+	public String getComponentName() {
+		return getComponentHandle().getName();
+	}
 
 	// TODO WTP:Implement this method 
 	public IVirtualContainer getParent() {
@@ -190,12 +194,41 @@ public abstract class VirtualResource implements IVirtualResource {
 
 	// TODO WTP:Implement this method 
 	public IPath getProjectRelativePath() {
-		return getRuntimePath();
-	}
 
-	public IPath getRawLocation() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return null;
+		ModuleCore moduleCore = null;
+		try {
+			moduleCore = ModuleCore.getModuleCoreForRead(getProject());
+			WorkbenchComponent component = moduleCore.findWorkbenchModuleByDeployName(getComponentHandle().getName());
+			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
+			
+			ComponentResource[] componentResources = new ComponentResource[0];
+			IPath currentPath = null;
+			IPath potentialMatchRuntimePath = null; 
+			
+			do { 
+				currentPath = (currentPath == null) ? getRuntimePath() : currentPath.removeLastSegments(1);
+				componentResources = root.findModuleResources(currentPath, false);
+				for (int i = 0; i < componentResources.length; i++) {
+					potentialMatchRuntimePath = new Path(componentResources[i].getRuntimePath().path());					
+					if(isPotentalMatch(potentialMatchRuntimePath)) {
+						IPath sourcePath = new Path(componentResources[i].getSourcePath().path());
+						IPath subpath = getRuntimePath().removeFirstSegments(potentialMatchRuntimePath.segmentCount());
+						IPath finalPath = sourcePath.append(subpath);
+						// already workspace relative
+						if(finalPath.segment(0).equals(getComponentHandle().getProject().getName())) {
+							return finalPath.removeFirstSegments(1);
+						} 
+						// make workspace relative
+						return finalPath;
+					}
+				}   
+			} while(currentPath.segmentCount() > 0 && componentResources.length == 0);
+		} finally {
+			if(moduleCore != null) {
+				moduleCore.dispose();
+			}
+		}
+		return getRuntimePath();
 	} 
 
 	public int getType() {
@@ -248,12 +281,7 @@ public abstract class VirtualResource implements IVirtualResource {
 		//return false;
 	}
 
-
-	public ComponentHandle getComponentHandle() {
-		return componentHandle;
-	} 
-
-	protected IPath getRuntimePath() {
+	public IPath getRuntimePath() {
 		return runtimePath;
 	}  
 
@@ -271,5 +299,9 @@ public abstract class VirtualResource implements IVirtualResource {
 	
 	public boolean equals(Object anOther) {
 		return hashCode() == ((anOther != null && anOther instanceof VirtualResource) ? anOther.hashCode() : 0 );
-	}
+	} 
+
+	public ComponentHandle getComponentHandle() {
+		return componentHandle;
+	} 
 }

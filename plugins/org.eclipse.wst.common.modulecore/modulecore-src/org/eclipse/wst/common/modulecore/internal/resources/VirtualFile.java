@@ -9,9 +9,6 @@
 package org.eclipse.wst.common.modulecore.internal.resources;
 
 import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFileState;
@@ -22,35 +19,32 @@ import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.wst.common.modulecore.resources.IVirtualFile;
 
 public class VirtualFile extends VirtualResource implements IVirtualFile {
+	 
+	private final IFile realFile;
 	
-	private final Set realFiles = new HashSet();
-	
-	public VirtualFile(IFile aRealFile, String aComponentName, IPath aRuntimePath) {
-		super(aRealFile.getProject(), aComponentName, aRuntimePath);
-		realFiles.add(aRealFile);		
-	}
+//	public VirtualFile(IFile aRealFile, String aComponentName, IPath aRuntimePath) {
+//		super(aRealFile.getProject(), aComponentName, aRuntimePath); 
+//	}
 
 	protected VirtualFile(ComponentHandle aComponentHandle, IPath aRuntimePath) {
 		super(aComponentHandle, aRuntimePath);
+		realFile = getProject().getFile(getProjectRelativePath());
 	}
 
-	public void appendContents(InputStream source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
+	public void appendContents(InputStream source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {		
+		realFile.create(source, force, monitor);
 	}
 
 	public void appendContents(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
+		realFile.appendContents(source, updateFlags, monitor);
 	}
 
 	public void create(InputStream source, boolean force, IProgressMonitor monitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
+		realFile.create(source, force, monitor);
 	}
 
 	public void create(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
+		realFile.create(source, updateFlags, monitor);
 
 	}
 	public void createLink(IPath aProjectRelativeLocation, int updateFlags, IProgressMonitor monitor) throws CoreException {
@@ -82,44 +76,34 @@ public class VirtualFile extends VirtualResource implements IVirtualFile {
 		
 	}
 
-	public void delete(boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
+	public void delete(boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException { 
+		realFile.delete(force, keepHistory, monitor);
 
 	}
 
 	public String getCharset() throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return null;
+		return realFile.getCharset();
 	}
 
 	public String getCharset(boolean checkImplicit) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return null;
+		return realFile.getCharset(checkImplicit);
 	}
 
-	public IContentDescription getContentDescription() throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return null;
+	public IContentDescription getContentDescription() throws CoreException { 
+		return realFile.getContentDescription();
 	}
 
-	public InputStream getContents() throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return null;
+	public InputStream getContents() throws CoreException { 
+		return realFile.getContents();
 	}
 
 	public InputStream getContents(boolean force) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return null;
+		return realFile.getContents(force);
 	}
+ 
 
-	public int getEncoding() throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return 0;
-	}
-
-	public IFileState[] getHistory(IProgressMonitor monitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		//return null;
+	public IFileState[] getHistory(IProgressMonitor monitor) throws CoreException { 
+		return realFile.getHistory(monitor);
 	}
 
 	public void move(IPath destination, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
@@ -127,41 +111,29 @@ public class VirtualFile extends VirtualResource implements IVirtualFile {
 
 	}
 
-	public void setCharset(String newCharset) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
-	}
-
-	public void setCharset(String newCharset, IProgressMonitor monitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
+	public void setCharset(String newCharset, IProgressMonitor monitor) throws CoreException { 
+		realFile.setCharset(newCharset, monitor);
 
 	}
 
 	public void setContents(InputStream source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
+		realFile.setContents(source, force, keepHistory, monitor);
 	}
 
 	public void setContents(IFileState source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
+		realFile.setContents(source, force, keepHistory, monitor);
 	}
 
 	public void setContents(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
+		realFile.setContents(source, updateFlags, monitor);
 	}
 
 	public void setContents(IFileState source, int updateFlags, IProgressMonitor monitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-
+		realFile.setContents(source, updateFlags, monitor);
 	}
 	
 	protected void doDeleteRealResources(int updateFlags, IProgressMonitor monitor) throws CoreException {
-		for (Iterator iter = realFiles.iterator(); iter.hasNext();) {
-			IFile realFile = (IFile ) iter.next();
-			realFile.delete(updateFlags, monitor);			
-		}
+		realFile.delete(updateFlags, monitor);
 	}
 
 }

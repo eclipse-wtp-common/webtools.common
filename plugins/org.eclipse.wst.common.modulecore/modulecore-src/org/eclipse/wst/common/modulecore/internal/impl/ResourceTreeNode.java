@@ -8,12 +8,10 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.modulecore.internal.impl;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,8 +20,8 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.ComponentResource;
+import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 import org.eclipse.wst.common.modulecore.internal.util.IPathProvider;
 
@@ -101,7 +99,7 @@ public class ResourceTreeNode {
 
 	public ComponentResource[] findModuleResources(IPath aPath, boolean toCreateChildIfNecessary) {
 
-		Set foundModuleResources = findModuleResourcesSet(aPath, toCreateChildIfNecessary);
+		Set foundModuleResources = findModuleResourcesSet(aPath, aPath, toCreateChildIfNecessary);
 		if (foundModuleResources.size() == 0)
 			return NO_MODULE_RESOURCES;
 		return (ComponentResource[]) foundModuleResources.toArray(new ComponentResource[foundModuleResources.size()]);
@@ -115,7 +113,7 @@ public class ResourceTreeNode {
 		return (ComponentResource[]) moduleResources.toArray(new ComponentResource[moduleResources.size()]);
 	}
 
-	private Set findModuleResourcesSet(IPath aPath, boolean toCreateChildIfNecessary) {
+	private Set findModuleResourcesSet(IPath aFullPath, IPath aPath, boolean toCreateChildIfNecessary) {
 
 		if (aPath.segmentCount() == 0) {
 			Set resources = aggregateResources(new HashSet());
@@ -123,14 +121,14 @@ public class ResourceTreeNode {
 		}
 		ResourceTreeNode child = findChild(aPath.segment(0), toCreateChildIfNecessary);
 		if (child == null)
-			return findMatchingVirtualPathsSet(aPath);
+			return findMatchingVirtualPathsSet(aFullPath, aPath);
 		Set foundResources = new HashSet();
-		foundResources.addAll(child.findModuleResourcesSet(aPath.removeFirstSegments(1), toCreateChildIfNecessary));
-		foundResources.addAll(findMatchingVirtualPathsSet(aPath));
+		foundResources.addAll(child.findModuleResourcesSet(aFullPath, aPath.removeFirstSegments(1), toCreateChildIfNecessary));
+		foundResources.addAll(findMatchingVirtualPathsSet(aFullPath, aPath));
 		return foundResources;
 	}
 
-	private Set findMatchingVirtualPathsSet(IPath aPath) {
+	private Set findMatchingVirtualPathsSet(IPath aFullPath, IPath aPath) {
 		if (hasModuleResources()) {
 			ComponentResource moduleResource = null;
 			IResource eclipseResource = null;
@@ -145,8 +143,9 @@ public class ResourceTreeNode {
 
 					ComponentResource newResource = ModuleCorePackage.eINSTANCE.getModuleCoreFactory().createComponentResource();
 					if ((foundResource = eclipseContainer.findMember(aPath)) != null) {
-						newResource.setComponent(moduleResource.getComponent());
-						newResource.setRuntimePath(URI.createURI(aPath.toString()));
+						newResource.setComponent(moduleResource.getComponent());		
+						URI runtimeURI = moduleResource.getRuntimePath().appendSegments(aPath.segments());
+						newResource.setRuntimePath(runtimeURI);
 						newResource.setSourcePath(URI.createURI(foundResource.getProjectRelativePath().toString()));
 						resultSet.add(newResource);
 					}

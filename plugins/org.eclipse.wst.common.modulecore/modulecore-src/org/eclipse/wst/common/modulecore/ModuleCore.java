@@ -286,7 +286,7 @@ public class ModuleCore implements IEditModelHandler {
 		ComponentType componentType = null;
 		try {
 			moduleCore = ModuleCore.getModuleCoreForRead(aComponent.getProject());
-			WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(aComponent.getComponentHandle().getName());
+			WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(aComponent.getComponentName());
 			componentType = wbComponent.getComponentType();
 		} finally {
 			if(moduleCore != null)
@@ -300,7 +300,7 @@ public class ModuleCore implements IEditModelHandler {
 		ModuleCore moduleCore = null; 
 		try {
 			moduleCore = ModuleCore.getModuleCoreForWrite(component.getProject());
-			WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(component.getComponentHandle().getName());
+			WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(component.getComponentName());
 			wbComponent.setComponentType(aComponentType);
 		} finally {
 			if(moduleCore != null) {

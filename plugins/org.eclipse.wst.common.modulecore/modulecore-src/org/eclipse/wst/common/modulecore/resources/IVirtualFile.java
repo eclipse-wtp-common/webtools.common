@@ -413,36 +413,6 @@ public interface IVirtualFile extends IVirtualResource {
 	 * Returns the name of a charset to be used when decoding the contents of this 
 	 * file into characters. 
 	 * <p>
-	 * This refinement of the corresponding <code>IEncodingStorage</code> method
-	 * is a convenience method, fully equivalent to:
-	 * <pre>
-	 *   getCharset(true);
-	 * </pre>
-	 * </p><p>
-	 * <b>Note</b>:  this method does not check whether the result is a supported
-	 * charset name. Callers should be prepared to handle 
-	 * <code>UnsupportedEncodingException</code> where this charset is used. 
-	 * </p>
-	 *  
-	 * @return the name of a charset
-	 * @exception CoreException if this method fails. Reasons include:
-	 * <ul>
-	 * <li> This resource could not be read.</li>
-	 * <li> This resource is not local.</li>
-	 * <li> The corresponding location in the local file system
-	 *       is occupied by a directory.</li>
-	 * </ul>
-	 * @see IVirtualFile#getCharset(boolean) 
-	 * @see IEncodedStorage#getCharset()
-	 * @see IContainer#getDefaultCharset()
-	 * @since 3.0
-	 */
-	public String getCharset() throws CoreException;
-
-	/**
-	 * Returns the name of a charset to be used when decoding the contents of this 
-	 * file into characters. 
-	 * <p>
 	 * If checkImplicit is <code>false</code>, this method will return the 
 	 * charset defined by calling <code>setCharset</code>, provided this file 
 	 * exists, or <code>null</code> otherwise.
@@ -545,30 +515,6 @@ public interface IVirtualFile extends IVirtualResource {
 	public InputStream getContents(boolean force) throws CoreException;
 
 	/**
-	 * Returns a constant identifying the character encoding of this file, or 
-	 * ENCODING_UNKNOWN if it could not be determined.  The returned constant
-	 * will be one of the ENCODING_* constants defined on IVirtualFile.
-	 * 
-	 * This method attempts to guess the file's character encoding by analyzing
-	 * the first few bytes of the file.  If no identifying pattern is found at the 
-	 * beginning of the file, ENC_UNKNOWN will be returned.  This method will
-	 * not attempt any complex analysis of the file to make a guess at the 
-	 * encoding that is used.
-	 * 
-	 * @return The character encoding of this file
-	 * @exception CoreException if this method fails. Reasons include:
-	 * <ul>
-	 * <li> This resource does not exist.</li>
-	 * <li> This resource could not be read.</li>
-	 * <li> This resource is not local.</li>
-	 * <li> The corresponding location in the local file system
-	 *       is occupied by a directory.</li>
-	 * </ul>
-	 * @deprecated use IVirtualFile#getCharset instead
-	 */
-	public int getEncoding() throws CoreException;
-
-	/**
 	 * Returns the full path of this file. 
 	 * This refinement of the corresponding <code>IStorage</code> and <code>IVirtualResource</code>
 	 * methods links the semantics of resource and storage object paths such that
@@ -668,23 +614,6 @@ public interface IVirtualFile extends IVirtualResource {
 	 * @see IVirtualResourceRuleFactory#moveRule(IVirtualResource, IVirtualResource)
 	 */
 	public void move(IPath destination, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException;
-
-	/**
-	 * Sets the charset for this file. Passing a value of <code>null</code>
-	 * will remove the charset setting for this resource.
-	 * 
-	 * @param newCharset a charset name, or <code>null</code>
-	 * @exception CoreException if this method fails. Reasons include:
-	 * <ul>
-	 * <li> This resource does not exist.</li>
-	 * <li> An error happened while persisting this setting.</li> 
-	 * </ul>
-	 * @see #getCharset()
-	 * @since 3.0
-	 * @deprecated Replaced by {@link #setCharset(String, IProgressMonitor)} which 
-	 * 	is a workspace operation and reports changes in resource deltas.
-	 */
-	public void setCharset(String newCharset) throws CoreException;
 
 	/**
 	 * Sets the charset for this file. Passing a value of <code>null</code>
