@@ -1,8 +1,5 @@
 package org.eclipse.wst.common.modulecore;
 
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
-
 import java.util.HashMap;
 
 import org.eclipse.core.resources.IProject;
@@ -10,7 +7,11 @@ import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 
+import com.ibm.wtp.common.logger.proxy.Logger;
+import com.ibm.wtp.emf.workbench.WorkbenchResourceHelperBase;
 import com.ibm.wtp.internal.emf.workbench.EMFWorkbenchContextFactory;
 
 //In Progress......
@@ -45,11 +46,21 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
     }
 
  
-    private EMFWorkbenchContext getEMFWorkBenchContext() {
-
-        EMFWorkbenchContextFactory.INSTANCE.getEMFContext(getProject());
-
+    private EMFWorkbenchContext getEMFWorkBenchContext() {        
+        EMFWorkbenchContext emfContext = (EMFWorkbenchContext)EMFWorkbenchContextFactory.INSTANCE.getEMFContext(getProject());
+        if (emfContext == null)
+            try {
+                emfContext = createEmfContext();
+            } catch (CoreException e) {
+                Logger.getLogger().logError(e);
+            }
         return null;
+    }
+    
+    protected EMFWorkbenchContext createEmfContext() throws CoreException  {      
+        EMFWorkbenchContext emfContext  = (EMFWorkbenchContext)WorkbenchResourceHelperBase.createEMFContext(getProject(), null);
+       
+    	return emfContext;
     }
 
     private HashMap getEditModelsForRead() {
