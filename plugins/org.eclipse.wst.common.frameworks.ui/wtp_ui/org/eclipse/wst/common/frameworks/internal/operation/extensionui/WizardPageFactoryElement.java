@@ -23,7 +23,6 @@ import org.eclipse.wst.common.frameworks.internal.ConfigurationElementWrapper;
 import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
 import org.eclipse.wst.common.frameworks.ui.IExtendedPageHandler;
 import org.eclipse.wst.common.frameworks.ui.IExtendedWizardPage;
-import org.eclipse.wst.common.frameworks.ui.WizardExtensionFactory;
 
 import com.ibm.wtp.common.logger.proxy.Logger;
 
