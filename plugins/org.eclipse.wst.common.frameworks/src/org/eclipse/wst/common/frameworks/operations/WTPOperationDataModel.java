@@ -47,9 +47,9 @@ import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
  * <LI>Compose and decompose entire DataModels through nesting.</LI>
  * </UL>
  * 
- * <B>PropertyKeys </B> Clients interact with DataModels by getting and setting properties (Objects)
- * based with PropertyKeys. A PropertyKey is a String Object uniquely identifing a particular
- * property. The recommended practice for defining PropertyKeys is to define them as static final
+ * <B>PropertyNames</B> Clients interact with DataModels by getting and setting properties (Objects)
+ * with PropertyNames. A PropertyName is a String Object uniquely identifing a particular
+ * property. The recommended practice for defining PropertyNames is to define them as static final
  * Class level Strings and to use the DataModel instance class name appended with the property name
  * as the value (this should ensure uniqueness and gives a readible value when debugging).
  * 
@@ -176,6 +176,12 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	protected void initValidBaseProperties() {
 	}
 
+	/**
+	 * <p>
+	 * 
+	 * @param modelName
+	 * @param dataModel
+	 */
 	public void addNestedModel(String modelName, WTPOperationDataModel dataModel) {
 		if (dataModel == null)
 			return;
@@ -226,8 +232,6 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		}
 		return dataModel;
 	}
-
-
 
 	/**
 	 * Subclasses can override this method to determine if a given propertyName should be enabled
@@ -408,13 +412,6 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		setProperty(propertyName, new Integer(value));
 	}
 
-	protected Object doGetProperty(String propertyName) {
-		if (propertyValues.containsKey(propertyName)) {
-			return propertyValues.get(propertyName);
-		}
-		return getDefaultProperty(propertyName);
-	}
-
 	/**
 	 * Override this method to compute default property values.
 	 * 
@@ -501,6 +498,21 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 			}
 		}
 		throw new RuntimeException(PROPERTY_NOT_LOCATED_ + propertyName);
+	}
+
+	/**
+	 * <p>
+	 * Though generally unecessary, implementors may override this method as they see fit.
+	 * <p>
+	 * 
+	 * @param propertyName
+	 * @return
+	 */
+	protected Object doGetProperty(String propertyName) {
+		if (propertyValues.containsKey(propertyName)) {
+			return propertyValues.get(propertyName);
+		}
+		return getDefaultProperty(propertyName);
 	}
 
 	/**
@@ -911,7 +923,10 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	public boolean hasBeenExecutedAgainst() {
 		return hasBeenExecutedAgainst;
 	}
-
+	
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	//TODO figure out the best way support ExtendedOperations
+	///////////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * ExtendedOperations
 	 *  
@@ -983,7 +998,9 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		return null;
 	}
 
-
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	//TODO remove the deprecated methods below here
+	///////////////////////////////////////////////////////////////////////////////////////////////
 	//TODO remove this
 	/**
 	 * Will be removed; no replacement
