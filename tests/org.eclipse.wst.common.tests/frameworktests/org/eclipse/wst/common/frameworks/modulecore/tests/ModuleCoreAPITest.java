@@ -16,11 +16,9 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
@@ -28,6 +26,10 @@ import org.eclipse.wst.common.modulecore.ComponentResource;
 import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.WorkbenchComponent;
 import org.eclipse.wst.common.modulecore.internal.impl.ResourceTreeRoot;
+import org.eclipse.wst.common.modulecore.resources.IVirtualContainer;
+import org.eclipse.wst.common.modulecore.resources.IVirtualFile;
+import org.eclipse.wst.common.modulecore.resources.IVirtualFolder;
+import org.eclipse.wst.common.modulecore.resources.IVirtualResource;
 
 /**
  * 
@@ -41,8 +43,8 @@ import org.eclipse.wst.common.modulecore.internal.impl.ResourceTreeRoot;
  */
 public class ModuleCoreAPITest extends TestCase {
 
-	private static final Class IFOLDER_CLASS = IFolder.class;
-	private static final Class IFILE_CLASS = IFile.class;
+	private static final Class IFOLDER_CLASS = IVirtualFolder.class;
+	private static final Class IFILE_CLASS = IVirtualFile.class;
 
 	private final Map virtualResourceTree = new HashMap();
 	private static final Map IGNORE = new HashMap();
@@ -124,7 +126,7 @@ public class ModuleCoreAPITest extends TestCase {
 	} 
 
 
-	public void assertTree(Map resourceTree, IFolder virtualFolder) throws Exception {
+	public void assertTree(Map resourceTree, IVirtualFolder virtualFolder) throws Exception {
 		assertTree(resourceTree, virtualFolder, ""); //$NON-NLS-1$
 	}
 
@@ -140,9 +142,9 @@ public class ModuleCoreAPITest extends TestCase {
 	 * @param virtualFolder
 	 * @param indent
 	 */
-	public void assertTree(Map resourceTree, IFolder virtualFolder, String indent) throws Exception {
+	public void assertTree(Map resourceTree, IVirtualFolder virtualFolder, String indent) throws Exception {
 		// API_TEST VirtualContainer.members()
-		IResource[] members = virtualFolder.members(); 
+		IVirtualResource[] members = virtualFolder.members(); 
 		
 		assertEquals("The number of resources contained by \"" + virtualFolder.getProjectRelativePath() + "\"", //$NON-NLS-1$ //$NON-NLS-2$
 					resourceTree.size(), members.length);
@@ -156,7 +158,7 @@ public class ModuleCoreAPITest extends TestCase {
 			if (subTree != null) {
 				assertType(members[i], IFOLDER_CLASS);
 				if (subTree != IGNORE)
-					assertTree(subTree, (IFolder) members[i], indent + "\t"); //$NON-NLS-1$
+					assertTree(subTree, (IVirtualFolder) members[i], indent + "\t"); //$NON-NLS-1$
 			} else {
 				assertType(members[i], IFILE_CLASS);
 			} 
@@ -165,7 +167,7 @@ public class ModuleCoreAPITest extends TestCase {
 
 	/**
 	 */
-	public void assertType(IResource resource, Class type) {
+	public void assertType(IVirtualResource resource, Class type) {
 		assertTrue("Expected a(n) " + type.getName() + " for member: " + resource.getProjectRelativePath(), //$NON-NLS-1$ //$NON-NLS-2$
 					type.isInstance(resource));
 	}
@@ -181,8 +183,8 @@ public class ModuleCoreAPITest extends TestCase {
 	 */
 	public void testNavigateComponent() throws Exception { 
  
-		IContainer component = ModuleCore.create(TestWorkspace.getTargetProject(), TestWorkspace.WEB_MODULE_1_NAME); 
-		IFolder root = component.getFolder(new Path("/")); //$NON-NLS-1$ 
+		IVirtualContainer component = ModuleCore.create(TestWorkspace.getTargetProject(), TestWorkspace.WEB_MODULE_1_NAME); 
+		IVirtualFolder root = component.getFolder(new Path("/")); //$NON-NLS-1$ 
 		assertTree(virtualResourceTree, root);
 
 	}
@@ -200,8 +202,8 @@ public class ModuleCoreAPITest extends TestCase {
 	 */
 	public void testCreateLink() throws Exception {
 		
-		IContainer component = ModuleCore.create(TestWorkspace.getTargetProject(), TestWorkspace.WEB_MODULE_2_NAME); 
-		IFolder images = component.getFolder(new Path("/images")); //$NON-NLS-1$		
+		IVirtualContainer component = ModuleCore.create(TestWorkspace.getTargetProject(), TestWorkspace.WEB_MODULE_2_NAME); 
+		IVirtualFolder images = component.getFolder(new Path("/images")); //$NON-NLS-1$		
 		images.createLink(new Path("/WebModule2/images"), 0, null); //$NON-NLS-1$
 
 		IFolder realImages = TestWorkspace.getTargetProject().getFolder(new Path("/WebModule2/images")); //$NON-NLS-1$
