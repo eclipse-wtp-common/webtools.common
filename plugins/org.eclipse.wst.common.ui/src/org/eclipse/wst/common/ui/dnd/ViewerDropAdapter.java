@@ -281,7 +281,10 @@ public class ViewerDropAdapter extends DropTargetAdapter
         //
         commandTarget = target;
         command = dragAndDropManager.createCommand(target, getLocation(event), event.operations, event.detail, source);
-        valid = command.canExecute();
+        if (command != null)
+        {
+        	valid = command.canExecute();
+        }
       }
       else
       {
@@ -299,7 +302,10 @@ public class ViewerDropAdapter extends DropTargetAdapter
           // If so, revalidate the command.
           //
           command.reinitialize(target, location, event.operations, operation, source);
+          if (command != null)
+          {
           valid = command.canExecute();
+          }
         }
         else
         {
@@ -315,7 +321,10 @@ public class ViewerDropAdapter extends DropTargetAdapter
           //
           command = dragAndDropCommandInformation.createCommand();
 
-          valid = command.canExecute();
+          if (command != null)
+          {
+          	valid = command.canExecute();
+          }
         }
       }
 
@@ -383,7 +392,14 @@ public class ViewerDropAdapter extends DropTargetAdapter
       // Transfer the data and extract it.
       //
       Object object = objectTransfer.nativeToJava(event.currentDataType);
-      return extractDragSource(object);
+      if (object == null)
+      {
+      	return null;
+      }
+      else
+      {
+      	return extractDragSource(object);
+      }
     }
   }
 
