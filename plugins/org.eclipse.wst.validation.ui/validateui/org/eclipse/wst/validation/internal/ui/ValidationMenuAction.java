@@ -35,7 +35,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IActionDelegate;
+import org.eclipse.ui.IViewActionDelegate;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.wst.common.frameworks.internal.ValidationSelectionHandlerRegistryReader;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
@@ -53,7 +54,7 @@ import com.ibm.wtp.common.logger.proxy.Logger;
  * This class implements the pop-up menu item "Run Validation" When the item is selected, this
  * action triggers a validation of the project, using all configured, enabled validators.
  */
-public class ValidationMenuAction implements IActionDelegate {
+public class ValidationMenuAction implements IViewActionDelegate {
 	private ISelection _currentSelection = null;
 	protected static final String SEP = "/"; //$NON-NLS-1$
 	private Display _currentDisplay = null;
@@ -545,7 +546,13 @@ public class ValidationMenuAction implements IActionDelegate {
 	 * 
 	 * @see org.eclipse.ui.IActionDelegate2#dispose()
 	 */
-	public void dispose() {
-		// TODO Auto-generated method stub
+	public void dispose() { 
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.IViewActionDelegate#init(org.eclipse.ui.IViewPart)
+	 */
+	public void init(IViewPart view) { 
+		
 	}
 }

@@ -336,7 +336,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
         {
           public Object getNotifier()
           {
-            return this;
+            return ReferencedXMIResourceImpl.this;
           }
           public int getFeatureID(Class expectedClass)
           {

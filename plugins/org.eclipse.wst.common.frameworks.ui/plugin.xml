@@ -55,7 +55,7 @@
       <uiContextSensitiveClass
             key="org.eclipse.wst.common.frameworks.internal.EnablementDetermination"
             context="UI"
-            className="org.eclipse.wst.internal.common.frameworks.ui.enablement.UIEnablementManager">
+            className="org.eclipse.wst.common.frameworks.internal.ui.UIEnablementManager">
       </uiContextSensitiveClass>
    </extension>
    <extension
