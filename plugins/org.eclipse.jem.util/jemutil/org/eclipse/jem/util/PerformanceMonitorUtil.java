@@ -10,9 +10,11 @@
  *******************************************************************************/
 /*
  *  $RCSfile: PerformanceMonitorUtil.java,v $
- *  $Revision: 1.1 $  $Date: 2005/01/07 20:19:23 $ 
+ *  $Revision: 1.2 $  $Date: 2005/01/12 16:57:32 $ 
  */
 package org.eclipse.jem.util;
+import java.util.EventObject;
+
 import org.eclipse.perfmsr.core.IPerformanceMonitor;
 
 /**
@@ -25,6 +27,63 @@ import org.eclipse.perfmsr.core.IPerformanceMonitor;
  * @since 1.0.0
  */
 public abstract class PerformanceMonitorUtil {
+	/**
+	 * Event for PerformanceListener notification.
+	 * 
+	 * @since 1.1.0
+	 */
+	public static class PerformanceEvent extends EventObject {
+		
+		PerformanceEvent(Object source, int step) {
+			super(source);
+			snapshowWithTypes = false;
+			this.step = step;
+			this.types = 0;	// Not set.
+		}
+		
+		PerformanceEvent(Object source, int step, int types) {
+			super(source);
+			snapshowWithTypes = true;
+			this.step = step;
+			this.types = types;
+		}
+
+		
+		/**
+		 * Snapshot with types if <code>true</code>.
+		 * @since 1.1.0
+		 */
+		public final boolean snapshowWithTypes;
+
+		/**
+		 * Step of snapshot
+		 * @since 1.1.0
+		 */
+		public final int step;
+		
+		/**
+		 * types of snapshot.
+		 * @since 1.1.0
+		 */
+		public final int types;
+	}
+	
+	/**
+	 * Performance Listener interface
+	 * 
+	 * @since 1.1.0
+	 */
+	public interface PerformanceListener {
+		/**
+		 * Snapshot was called.
+		 * @param event
+		 * 
+		 * @since 1.1.0
+		 */
+		public void snapshot(PerformanceEvent event);
+	}
+	
+	private PerformanceListener[] listeners;
 
 	public interface Types {
 
@@ -107,7 +166,27 @@ public abstract class PerformanceMonitorUtil {
 	 * @param step
 	 *            this identifies the step that the snapshot is for
 	 */
-	public abstract void snapshot(int step);
+	public final void snapshot(int step) {
+		doSnapshot(step);
+		if (listeners != null)
+			notifySnapshot(new PerformanceEvent(this, step));
+	}
+	
+	private void notifySnapshot(PerformanceEvent event) {
+		PerformanceListener[] list = listeners;
+		for (int i = 0; i < list.length; i++) {
+			list[i].snapshot(event);
+		}
+	}
+	
+	/**
+	 * Do the actual snapshot
+	 * @param step
+	 * 
+	 * @see #snapshot(int)
+	 * @since 1.1.0
+	 */
+	protected abstract void doSnapshot(int step);
 
 	/**
 	 * Take a snapshot of the selected performance measurements.
@@ -120,6 +199,65 @@ public abstract class PerformanceMonitorUtil {
 	 * 
 	 * @see IPerformanceMonitor.Types
 	 */
-	public abstract void snapshot(int step, int types);
+	public void snapshot(int step, int types) {
+		doSnapshot(step, types);
+		if (listeners != null)
+			notifySnapshot(new PerformanceEvent(this, step, types));		
+	}
+	
+	/**
+	 * Do the actual snapshot
+	 * @param step
+	 * 
+	 * @see #snapshot(int, int)
+	 * @since 1.1.0
+	 */
+	protected abstract void doSnapshot(int step, int types);	
+	
+	/**
+	 * Add listener to list.
+	 * @param listener
+	 * 
+	 * @since 1.1.0
+	 */
+	public void addPerformanceListener(PerformanceListener listener) {
+		if (findListener(listener) != -1)
+			return;
+		PerformanceListener[] newList = new PerformanceListener[listeners != null ? listeners.length+1 : 1];
+		if (listeners != null)
+			System.arraycopy(listeners, 0, newList, 0, listeners.length);
+		newList[newList.length-1] = listener;
+		listeners = newList;
+	}
+	
+	private int findListener(PerformanceListener listener) {
+		if (listeners != null) {
+			for (int i = 0; i < listeners.length; i++) {
+				if (listeners[i] == listener)
+					return i;
+			}
+		}
+		return -1;
+	}
+	
+	/**
+	 * Remove the listener from the list.
+	 * @param listener
+	 * 
+	 * @since 1.1.0
+	 */
+	public void removePerformanceListener(PerformanceListener listener) {
+		int index = findListener(listener);
+		if (index != -1) {
+			if (listeners.length == 1) {
+				listeners = null;
+				return;
+			}
+			PerformanceListener[] newList = new PerformanceListener[listeners.length-1];
+			System.arraycopy(listeners, 0, newList, 0, index);
+			System.arraycopy(listeners, index+1, newList, index, newList.length-index);
+			listeners = newList;
+		}
+	}
 
 }

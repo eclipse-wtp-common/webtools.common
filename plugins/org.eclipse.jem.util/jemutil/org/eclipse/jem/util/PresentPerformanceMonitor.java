@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $RCSfile: PresentPerformanceMonitor.java,v $
- *  $Revision: 1.1 $  $Date: 2005/01/07 20:19:23 $ 
+ *  $Revision: 1.2 $  $Date: 2005/01/12 16:57:32 $ 
  */
 package org.eclipse.jem.util;
 import org.eclipse.perfmsr.core.IPerformanceMonitor;
@@ -54,20 +54,18 @@ public class PresentPerformanceMonitor extends PerformanceMonitorUtil {
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jem.util.PerformanceMonitorUtil#snapshot(int)
+	 *  (non-Javadoc)
+	 * @see org.eclipse.jem.util.PerformanceMonitorUtil#doSnapshot(int)
 	 */
-	public void snapshot(int step) {
+	protected void doSnapshot(int step) {
 		monitor.snapshot(step);
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jem.util.PerformanceMonitorUtil#snapshot(int, int)
+	 *  (non-Javadoc)
+	 * @see org.eclipse.jem.util.PerformanceMonitorUtil#doSnapshot(int, int)
 	 */
-	public void snapshot(int step, int types) {
+	protected void doSnapshot(int step, int types) {
 		monitor.snapshot(step, types);
 	}
 
