@@ -192,7 +192,7 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 
 	/**
 	 * <p>
-	 * Gathers resources the underlying resource set, determines if interested (@link
+	 * Gathers resources from the underlying resource set, determines if interested (@link
 	 * processLoadedResources(URI aModuleURI))and request access (@link access(ReferencedResource
 	 * aResource))to each resource incrementing the write/read count.
 	 * </p>
