@@ -30,7 +30,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.wst.common.frameworks.internal.operations.IHeadlessRunnableWithProgress;
+import org.eclipse.wst.common.frameworks.operations.IHeadlessRunnableWithProgress;
 import org.eclipse.wst.validation.core.FileDelta;
 import org.eclipse.wst.validation.core.IFileDelta;
 import org.eclipse.wst.validation.core.IReporter;

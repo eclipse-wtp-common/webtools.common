@@ -8,26 +8,13 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-/*
- * Created on Oct 29, 2003
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
-package org.eclipse.wst.common.frameworks.operations;
+package org.eclipse.wst.common.frameworks.internal.operations;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
-/**
- * @author jsholl
- * 
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 public class OperationStatus extends MultiStatus {
-
 
 	public OperationStatus(String message, Throwable e) {
 		super(WTPCommonPlugin.PLUGIN_ID, 0, new IStatus[]{}, message, e);
@@ -37,13 +24,6 @@ public class OperationStatus extends MultiStatus {
 		this(WTPCommonPlugin.PLUGIN_ID, 0, children, "", null); //$NON-NLS-1$
 	}
 
-	/**
-	 * @param pluginId
-	 * @param code
-	 * @param children
-	 * @param message
-	 * @param exception
-	 */
 	public OperationStatus(String pluginId, int code, IStatus[] children, String message, Throwable exception) {
 		super(pluginId, code, children, message, exception);
 	}
@@ -56,43 +36,18 @@ public class OperationStatus extends MultiStatus {
 		}
 	}
 
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.core.runtime.Status#setCode(int)
-	 */
 	public void setCode(int code) {
 		super.setCode(code);
 	}
 
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.core.runtime.Status#setException(java.lang.Throwable)
-	 */
 	public void setException(Throwable exception) {
 		super.setException(exception);
 	}
 
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.core.runtime.Status#setMessage(java.lang.String)
-	 */
 	public void setMessage(String message) {
 		super.setMessage(message);
 	}
 
-
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.core.runtime.Status#setSeverity(int)
-	 */
 	public void setSeverity(int severity) {
 		super.setSeverity(severity);
 	}

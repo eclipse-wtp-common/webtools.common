@@ -6,8 +6,6 @@
  * 
  * Contributors: IBM Corporation - initial API and implementation
  **************************************************************************************************/
-
-
 package org.eclipse.wst.common.frameworks.operations;
 
 import java.util.ArrayList;
@@ -280,7 +278,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 * you can override this in an outer model since enablement may be different in the outer model.
 	 * 
 	 * @param propertyName
-	 * @return
+	 * @return the property's enablment state, null indicates there is no state
 	 */
 	public final Boolean isEnabled(String propertyName) {
 		checkValidPropertyName(propertyName);
@@ -453,7 +451,8 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 * If the property is unset, <code>false</code> will be returned.
 	 * 
 	 * @param propertyName
-	 * @param value
+	 *            the property name
+	 * @return the boolean value of the property
 	 * @see #setProperty(String, Object)
 	 * @see #setBooleanProperty(String, int)
 	 */
@@ -474,7 +473,8 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 * If the property is unset, <code>-1</code> will be returned.
 	 * 
 	 * @param propertyName
-	 * @param value
+	 *            the property name
+	 * @return the int value of the property
 	 * @see #setProperty(String, Object)
 	 * @see #setIntProperty(String, int)
 	 */
@@ -493,7 +493,9 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 * </p>
 	 * 
 	 * @param propertyName
+	 *            the name of the property
 	 * @param value
+	 *            the <code>boolean</code> value of the property
 	 * @see #setProperty(String, Object)
 	 * @see #getBooleanProperty(String)
 	 */
@@ -509,7 +511,9 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 * </p>
 	 * 
 	 * @param propertyName
+	 *            the name of the property
 	 * @param value
+	 *            the <code>int</code> value of the property
 	 * @see #setProperty(String, Object)
 	 * @see #getIntProperty(String)
 	 */
@@ -682,13 +686,10 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	private final void internalSetProperty(String propertyName, Object propertyValue) {
 		Object oldValue = propertyValues.get(propertyName);
 		if (valueChanged(propertyValue, oldValue)) {
-			doSetProperty(propertyName, oldValue, propertyValue);
+			if (doSetProperty(propertyName, propertyValue)) {
+				notifyListeners(propertyName, WTPOperationDataModelEvent.PROPERTY_CHG);
+			}
 		}
-	}
-
-	private void doSetProperty(String propertyName, Object oldValue, Object newValue) {
-		if (doSetProperty(propertyName, newValue))
-			notifyListeners(propertyName, oldValue, newValue);
 	}
 
 	/*
@@ -702,31 +703,38 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		return true;
 	}
 
-	/**
-	 * @param propertyValue
-	 * @param oldValue
-	 * @return
-	 */
 	private boolean valueChanged(Object o1, Object o2) {
 		return o1 != o2 && ((o1 != null && !o1.equals(o2)) || !o2.equals(o1));
 	}
 
 	/**
-	 * @param oldValue
-	 * @param propertyValue
+	 * Convenience method to create a WTPOperationDataModelEvent.PROPERTY_CHG event and notify
+	 * listeners.
+	 * 
+	 * @param propertyName
+	 * @see #notifyListeners(WTPOperationDataModelEvent)
 	 */
-	public void notifyListeners(String propertyName, Object oldValue, Object propertyValue) {
-		notifyListeners(propertyName, WTPOperationDataModelEvent.PROPERTY_CHG, oldValue, propertyValue);
+	protected void notifyListeners(String propertyName) {
+		notifyListeners(propertyName, WTPOperationDataModelEvent.PROPERTY_CHG);
 	}
 
 	/**
-	 * @param oldValue
-	 * @param propertyValue
+	 * Convenience method to create a WTPOperationDataModelEvent event of the specified type and
+	 * notify listeners.
+	 * 
+	 * @param propertyName
+	 * @see WTPOperationDataModelEvent for the list of valid flag values
 	 */
-	protected void notifyListeners(String propertyName, int flag, Object oldValue, Object propertyValue) {
-		notifyListeners(new WTPOperationDataModelEvent(this, propertyName, oldValue, propertyValue, flag));
+	protected void notifyListeners(String propertyName, int flag) {
+		notifyListeners(new WTPOperationDataModelEvent(this, propertyName, flag));
 	}
 
+	/**
+	 * Notifies all registerd WTPOperationDataModelListeners of the specified
+	 * WTPOperationDataModelEvent.
+	 * 
+	 * @param event
+	 */
 	protected void notifyListeners(WTPOperationDataModelEvent event) {
 		if (notificationEnabled && listeners != null && !listeners.isEmpty()) {
 			WTPOperationDataModelListener listener;
@@ -922,7 +930,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 */
 	public void notifyDefaultChange(String propertyName) {
 		if (!isSet(propertyName))
-			notifyListeners(propertyName, null, null);
+			notifyListeners(propertyName, WTPOperationDataModelEvent.PROPERTY_CHG);
 	}
 
 	/**
@@ -932,13 +940,14 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 * @param propertyName
 	 */
 	public void notifyValidValuesChange(String propertyName) {
-		notifyListeners(propertyName, WTPOperationDataModelEvent.VALID_VALUES_CHG, null, null);
+		notifyListeners(propertyName, WTPOperationDataModelEvent.VALID_VALUES_CHG);
 	}
 
 	protected void notifyEnablementChange(String propertyName) {
 		Boolean enable = isEnabled(propertyName);
-		if (enable != null)
-			notifyListeners(propertyName, WTPOperationDataModelEvent.ENABLE_CHG, null, enable);
+		if (enable != null) {
+			notifyListeners(propertyName, WTPOperationDataModelEvent.ENABLE_CHG);
+		}
 	}
 
 	public void dispose() {
@@ -1096,7 +1105,6 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 * ExtendedOperations
 	 * 
 	 * This method is EXPERIMENTAL and is subject to substantial changes.
-	 *  
 	 */
 	public IProject getTargetProject() {
 		return null;
@@ -1105,14 +1113,35 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	//TODO remove the deprecated methods below here
 	///////////////////////////////////////////////////////////////////////////////////////////////
+	//TODO delete this
+	/**
+	 * This will be deleted before WTP M4
+	 * 
+	 * @deprecated
+	 * @see #notifyListeners(String)
+	 */
+	public void notifyListeners(String propertyName, Object oldValue, Object propertyValue) {
+		notifyListeners(propertyName, WTPOperationDataModelEvent.PROPERTY_CHG, oldValue, propertyValue);
+	}
+
+	//TODO delete this
+	/**
+	 * This will be deleted before WTP M4
+	 * 
+	 * @deprecated
+	 * @see #notifyListeners(String, int)
+	 */
+	protected void notifyListeners(String propertyName, int flag, Object oldValue, Object propertyValue) {
+		notifyListeners(new WTPOperationDataModelEvent(this, propertyName, oldValue, propertyValue, flag));
+	}
+
 	//TODO remove this
 	/**
-	 * Will be removed; no replacement
+	 * This will be deleted before WTP M4
 	 * 
 	 * @deprecated
 	 * @param propertyName
 	 * @param errorMessage
-	 * @return
 	 */
 	protected IStatus validateStringValue(String propertyName, String errorMessage) {
 		String name = getStringProperty(propertyName);
@@ -1124,12 +1153,11 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 
 	//TODO remove this
 	/**
-	 * Will be removed; no replacement
+	 * This will be deleted before WTP M4
 	 * 
 	 * @deprecated
 	 * @param propertyName
 	 * @param errorMessage
-	 * @return
 	 */
 	protected IStatus validateObjectArrayValue(String propertyName, String errorMessage) {
 		Object[] objects = (Object[]) getProperty(propertyName);
@@ -1141,7 +1169,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 
 	//TODO remove this
 	/**
-	 * Will be removed.
+	 * This will be deleted before WTP M4
 	 * 
 	 * @deprecated this can be replaced with something like this:
 	 *             ProjectCreationDataModel.getProjectHandleFromProjectName(getStringProperty(projectNameProperty))
@@ -1153,7 +1181,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 
 	//TODO remove this
 	/**
-	 * Will be removed.
+	 * This will be deleted before WTP M4
 	 * 
 	 * @deprecated see ProjectCreationDataModel.getProjectHadleFromProjectName()
 	 */
@@ -1165,7 +1193,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 
 	//TODO remove this
 	/**
-	 * Will be removed.
+	 * This will be deleted before WTP M4
 	 * 
 	 * Use this method to set the property values from this model onto the otherModel for those that
 	 * are valid for the otherModel.
@@ -1181,6 +1209,4 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 				otherModel.setProperty(properties[i], getProperty(properties[i]));
 		}
 	}
-
-
 }

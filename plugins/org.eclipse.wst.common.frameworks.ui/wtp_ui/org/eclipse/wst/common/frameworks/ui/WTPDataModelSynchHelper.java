@@ -169,7 +169,7 @@ public class WTPDataModelSynchHelper implements WTPOperationDataModelListener {
 		String propertyName = event.getPropertyName();
 		int flag = event.getFlag();
 		if (flag == WTPOperationDataModelEvent.ENABLE_CHG)
-			setEnablement(propertyName, ((Boolean) event.getNewValue()).booleanValue());
+			setEnablement(propertyName, event.isEnabled().booleanValue());
 		else
 			synchUIWithModel(propertyName, flag);
 	}

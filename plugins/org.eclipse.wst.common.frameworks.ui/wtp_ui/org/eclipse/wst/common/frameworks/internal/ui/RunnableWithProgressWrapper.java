@@ -11,7 +11,7 @@ package org.eclipse.wst.common.frameworks.internal.ui;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.jface.operation.IRunnableContext;
-import org.eclipse.wst.common.frameworks.internal.operations.IHeadlessRunnableWithProgress;
+import org.eclipse.wst.common.frameworks.operations.IHeadlessRunnableWithProgress;
 
 
 /**
@@ -38,7 +38,7 @@ public class RunnableWithProgressWrapper implements org.eclipse.jface.operation.
 	 * 
 	 * @return com.ibm.etools.j2ee.operations.IHeadlessRunnableWithProgress
 	 */
-	protected org.eclipse.wst.common.frameworks.internal.operations.IHeadlessRunnableWithProgress getHeadlessRunnable() {
+	protected org.eclipse.wst.common.frameworks.operations.IHeadlessRunnableWithProgress getHeadlessRunnable() {
 		return headlessRunnable;
 	}
 
@@ -73,7 +73,7 @@ public class RunnableWithProgressWrapper implements org.eclipse.jface.operation.
 	 * @param newHeadlessRunnable
 	 *            com.ibm.etools.j2ee.operations.IHeadlessRunnableWithProgress
 	 */
-	protected void setHeadlessRunnable(org.eclipse.wst.common.frameworks.internal.operations.IHeadlessRunnableWithProgress newHeadlessRunnable) {
+	protected void setHeadlessRunnable(org.eclipse.wst.common.frameworks.operations.IHeadlessRunnableWithProgress newHeadlessRunnable) {
 		headlessRunnable = newHeadlessRunnable;
 	}
 }

@@ -1,4 +1,4 @@
-package org.eclipse.wst.common.frameworks.internal.operations;
+package org.eclipse.wst.common.frameworks.operations;
 
 /*
  * Licensed Material - Property of IBM 

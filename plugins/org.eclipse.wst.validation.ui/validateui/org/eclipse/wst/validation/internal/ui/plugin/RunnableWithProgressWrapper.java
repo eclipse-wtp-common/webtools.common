@@ -17,7 +17,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.wst.common.frameworks.internal.operations.IHeadlessRunnableWithProgress;
+import org.eclipse.wst.common.frameworks.operations.IHeadlessRunnableWithProgress;
 import org.eclipse.wst.validation.internal.operations.ValidationOperation;
 
 

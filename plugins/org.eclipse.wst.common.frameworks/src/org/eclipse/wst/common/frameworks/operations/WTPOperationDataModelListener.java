@@ -15,27 +15,35 @@ package org.eclipse.wst.common.frameworks.operations;
  * @see org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel#addListener(WTPOperationDataModelListener)
  */
 public interface WTPOperationDataModelListener {
+	//TODO delete this
 	/**
-	 * Use WTPOperationDataModelEvent.PROPERTY_CHG instead.
-	 * @deprecated
+	 * This will be deleted before WTP M4. Use WTPOperationDataModelEvent.PROPERTY_CHG instead.
+	 * 
+	 * @deprecated Use WTPOperationDataModelEvent.PROPERTY_CHG instead.
 	 */
 	final int PROPERTY_CHG = WTPOperationDataModelEvent.PROPERTY_CHG;
-	
+
+	//TODO delete this
 	/**
-	 * Use WTPOperationDataModelEvent.VALID_VALUES_CHG instead.
-	 * @deprecated
+	 * This will be deleted before WTP M4. Use WTPOperationDataModelEvent.VALID_VALUES_CHG instead.
+	 * 
+	 * @deprecated Use WTPOperationDataModelEvent.VALID_VALUES_CHG instead.
 	 */
 	final int VALID_VALUES_CHG = WTPOperationDataModelEvent.VALID_VALUES_CHG;
-	
+
+	//TODO delete this
 	/**
-	 * Use WTPOperationDataModelEvent.ENABLE_CHG instead.
-	 * @deprecated
+	 * This will be deleted before WTP M4. Use WTPOperationDataModelEvent.ENABLE_CHG instead.
+	 * 
+	 * @deprecated Use WTPOperationDataModelEvent.ENABLE_CHG instead.
 	 */
 	final int ENABLE_CHG = WTPOperationDataModelEvent.ENABLE_CHG;
+
 	/**
 	 * This method is invoked on listening clients when a property changes.
 	 * 
 	 * @param event
+	 *            the event carrying the notification.
 	 */
 	void propertyChanged(WTPOperationDataModelEvent event);
 

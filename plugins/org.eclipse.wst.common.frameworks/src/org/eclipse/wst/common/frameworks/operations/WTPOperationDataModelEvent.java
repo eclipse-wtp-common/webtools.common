@@ -8,41 +8,70 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-/*
- * Created on Feb 6, 2004
- * 
- * To change the template for this generated file go to Window - Preferences - Java - Code Generation - Code and
- * Comments
- */
 package org.eclipse.wst.common.frameworks.operations;
 
 /**
- * @author jsholl
+ * This event is used to communicate property changes from WTPOperationDataModels to their
+ * WTPOperationDataModelListeners.
  * 
- * To change the template for this generated type comment go to Window - Preferences - Java - Code
- * Generation - Code and Comments
+ * This class may be instantiated; it is not intended to be subclassed.
+ * 
+ * @see org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel#addListener(WTPOperationDataModelListener)
+ * @see org.eclipse.wst.common.frameworks.operations.WTPOperationDataModelListener
  */
 public class WTPOperationDataModelEvent {
 
 	/**
-	 * Flags associated with the propertyChanged event. <code>PROPERTY_CHG</code>= A simple
-	 * property change. <code>VALID_VALUES_CHG</code>= The valid values for the given property
-	 * have changed. <code>ENABLE_CHG</code>= The enablement for the given property has changed.
+	 * A flag used to specify the property's value has changed.
+	 * 
+	 * @see WTPOperationDataModel#getProperty(String)
+	 * @see #getFlag()
 	 */
 	public static final int PROPERTY_CHG = 1;
+
+	/**
+	 * A flag used to specify the property's valid values have changed.
+	 * 
+	 * @see WTPOperationDataModel#getValidPropertyDescriptors(String)
+	 * @see #getFlag()
+	 */
 	public static final int VALID_VALUES_CHG = 2;
+
+	/**
+	 * A flag used to specify the property's enablment has changed.
+	 * 
+	 * @see WTPOperationDataModel#isEnabled(String)
+	 * @see #getFlag()
+	 */
 	public static final int ENABLE_CHG = 3;
 
 	private WTPOperationDataModel dataModel;
 	private String propertyName;
-	private Object oldValue;
-	private Object newValue;
 	private int flag;
 
+	//TODO delete this
+	private Object oldValue;
+	//TODO delete this
+	private Object newValue;
+
+	//TODO delete this
+	/**
+	 * This will be deleted before WTP M4.
+	 * 
+	 * @deprecated use WTPOperationDataModelEvent(WTPOperationDataModel, String, int) instead
+	 * @see #WTPOperationDataModelEvent(WTPOperationDataModel, String, int)
+	 */
 	public WTPOperationDataModelEvent(WTPOperationDataModel dataModel, String propertyName, Object oldValue, Object newValue) {
 		this(dataModel, propertyName, oldValue, newValue, PROPERTY_CHG);
 	}
 
+	//TODO delete this
+	/**
+	 * This will be deleted before WTP M4.
+	 * 
+	 * @deprecated use WTPOperationDataModelEvent(WTPOperationDataModel, String, int) instead
+	 * @see #WTPOperationDataModelEvent(WTPOperationDataModel, String, int)
+	 */
 	public WTPOperationDataModelEvent(WTPOperationDataModel dataModel, String propertyName, Object oldValue, Object newValue, int flag) {
 		this.dataModel = dataModel;
 		this.propertyName = propertyName;
@@ -51,24 +80,107 @@ public class WTPOperationDataModelEvent {
 		this.flag = flag;
 	}
 
+	/**
+	 * Constructor for WTPOperationDataModelEvent
+	 * 
+	 * @param dataModel
+	 *            the dataModel whose property has changed
+	 * @param propertyName
+	 *            the name of the changed property
+	 * @param flag
+	 *            contains a flag specifiying the event type
+	 */
+	public WTPOperationDataModelEvent(WTPOperationDataModel dataModel, String propertyName, int flag) {
+		this.dataModel = dataModel;
+		this.propertyName = propertyName;
+		this.flag = flag;
+	}
+
+	/**
+	 * Returns the dataModel whose property has changed.
+	 * 
+	 * @return the dataModel whose property has changed.
+	 */
 	public WTPOperationDataModel getDataModel() {
 		return dataModel;
 	}
 
-	public int getFlag() {
-		return flag;
-	}
-
-	public Object getNewValue() {
-		return newValue;
-	}
-
-	public Object getOldValue() {
-		return oldValue;
-	}
-
+	/**
+	 * Returns the name of the changed property.
+	 * 
+	 * @return the name of the changed property.
+	 */
 	public String getPropertyName() {
 		return propertyName;
 	}
 
+	/**
+	 * Returns the flag indicating the event type. Valid types are:
+	 * <ul>
+	 * <li><code>PROPERTY_CHG</code></li>
+	 * <li><code>VALID_VALUES_CHG</code></li>
+	 * <li><code>ENABLE_CHG</code></li>
+	 * </ul>
+	 * 
+	 * @return the flag indicating the event type.
+	 */
+	public int getFlag() {
+		return flag;
+	}
+
+	/**
+	 * Convenience method to return the dataModel's property. This is equavalent to:
+	 * <code>getDataModel().getProperty(getPropertyName())</code>.
+	 * 
+	 * @return the dataModel's property.
+	 * @see WTPOperationDataModel#getProperty(String)
+	 */
+	public Object getProperty() {
+		return dataModel.getProperty(propertyName);
+	}
+
+	/**
+	 * Convenience method to return the dataModel property's enablement state. This is equavalent
+	 * to: <code>getDataModel().isEnabled(getPropertyName())</code>.
+	 * 
+	 * @return the dataModel property's enablement state.
+	 * @see WTPOperationDataModel#isEnabled(String)
+	 */
+	public Boolean isEnabled() {
+		return dataModel.isEnabled(propertyName);
+	}
+
+	/**
+	 * Convenience method to return the dataModel property's valid property descriptors. This is
+	 * equavalent to: <code>getDataModel().getValidPropertyDescriptors(getPropertyName())</code>.
+	 * 
+	 * @return the dataModel property's valid property descriptors.
+	 * @see WTPOperationDataModel#getValidPropertyDescriptors(String)
+	 */
+	public WTPPropertyDescriptor[] getValidPropertyDescriptors() {
+		return dataModel.getValidPropertyDescriptors(propertyName);
+	}
+
+	//TODO delete this
+	/**
+	 * This will be deleted before WTP M4.
+	 * 
+	 * @deprecated call either getProperty(), isEnabled(), or getValidPropertyDescriptors()
+	 *             depending on the flag
+	 * @return
+	 */
+	public Object getNewValue() {
+		return newValue;
+	}
+
+	//TODO delete this
+	/**
+	 * This will be deleted before WTP M4.
+	 * 
+	 * @deprecated there is no replacement method
+	 * @return
+	 */
+	public Object getOldValue() {
+		return oldValue;
+	}
 }
