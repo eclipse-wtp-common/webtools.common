@@ -17,6 +17,7 @@ public interface IModuleConstants {
 
 	//moduleTypes
 	public final static String JST_WEB_MODULE = "jst.web"; //$NON-NLS-1$
+	public final static String JAVA_UTIL_MODULE = "java.util"; //$NON-NLS-1$
 	public final static String WST_WEB_MODULE = "wst.web"; //$NON-NLS-1$
 	
 	public final static String UTILITY_MODULE = "jst.utility"; //$NON-NLS-1$
