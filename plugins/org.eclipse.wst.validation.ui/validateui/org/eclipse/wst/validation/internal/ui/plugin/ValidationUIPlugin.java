@@ -15,7 +15,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.wst.common.framework.operation.IHeadlessRunnableWithProgress;
-import org.eclipse.wst.common.ui.WTPUIPlugin;
+import org.eclipse.wst.common.frameworks.ui.WTPUIPlugin;
 import org.eclipse.wst.validation.internal.operations.ValidationOperation;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
@@ -83,7 +83,7 @@ public class ValidationUIPlugin extends WTPUIPlugin {
 	}
 
 	public static IRunnableWithProgress getRunnableWithProgress(IHeadlessRunnableWithProgress aHeadlessRunnableWithProgress) {
-		return new org.eclipse.wst.common.ui.RunnableWithProgressWrapper(aHeadlessRunnableWithProgress);
+		return new org.eclipse.wst.common.frameworks.ui.RunnableWithProgressWrapper(aHeadlessRunnableWithProgress);
 	}
 
 	// Need a third, ValidationOperation version of this method, because ValidationOperation
