@@ -14,10 +14,11 @@
  */
 package org.eclipse.wst.common.frameworks.internal;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPluginDescriptor;
+import java.util.ResourceBundle;
+
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.wst.common.frameworks.internal.enablement.nonui.WorkbenchUtil;
+import org.osgi.framework.BundleContext;
 
 import com.ibm.wtp.common.logger.proxy.Logger;
 import com.ibm.wtp.logger.proxyrender.DefaultPluginTraceRenderer;
@@ -25,12 +26,15 @@ import com.ibm.wtp.logger.proxyrender.IMsgLogger;
 
 public abstract class WTPPlugin extends Plugin implements IMsgLogger {
 	protected static Logger logger = null;
+	protected static WTPPlugin instance = null; 
+	public ResourceBundle resourceBundle;
 
 	/**
 	 * @param descriptor
 	 */
-	public WTPPlugin(IPluginDescriptor descriptor) {
-		super(descriptor);
+	public WTPPlugin() {
+		super();
+		instance = this;
 	}
 
 	public Logger getMsgLogger() {
@@ -53,14 +57,15 @@ public abstract class WTPPlugin extends Plugin implements IMsgLogger {
 	}
 
 	public abstract String getPluginID();
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.core.runtime.Plugin#startup()
 	 */
-	public void startup() throws CoreException {
-		super.startup();
+	public void start(BundleContext context) throws Exception  {
+		super.start(context);
 		WorkbenchUtil.setWorkbenchIsRunning(true);
 	}
+	
 }

@@ -19,7 +19,7 @@
    <requires>
       <import plugin="org.eclipse.emf.ecore.xmi"/>
       <import plugin="org.eclipse.wst.common.frameworks"/>
-      <import plugin="org.eclipse.core.runtime.compatibility"/>
+      <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.resources"/>
    </requires>
 

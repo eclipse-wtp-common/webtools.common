@@ -12,13 +12,14 @@ import java.util.Locale;
 
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Plugin;
 import org.eclipse.wst.common.frameworks.internal.WTPPlugin;
 import org.eclipse.wst.validation.core.Message;
 import org.eclipse.wst.validation.core.SeverityEnum;
 import org.eclipse.wst.validation.internal.EventManager;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 
 import com.ibm.wtp.common.logger.LogEntry;
 
@@ -38,8 +39,8 @@ public class ValidationPlugin extends WTPPlugin {
 	 * @param descriptor
 	 *            org.eclipse.core.runtime.IPluginDescriptor
 	 */
-	public ValidationPlugin(IPluginDescriptor descriptor) {
-		super(descriptor);
+	public ValidationPlugin() {
+		super();
 		if (_plugin == null) {
 			_plugin = this;
 			//Commenting off the following lines the Plugin is not activated and the
@@ -124,25 +125,25 @@ public class ValidationPlugin extends WTPPlugin {
 	 * getMsgLogger().setMsgLoggerConfig(msgLoggerConfig); }
 	 */
 	public static boolean isActivated() {
-		IPluginDescriptor desc = Platform.getPluginRegistry().getPluginDescriptor(PLUGIN_ID);
-		if (desc != null)
-			return desc.isPluginActivated();
+		Bundle bundle = Platform.getBundle(PLUGIN_ID);
+		if (bundle != null)
+			return bundle.getState() == Bundle.ACTIVE;
 		return false;
 	}
 
 	/**
 	 * @see Plugin#startup()
 	 */
-	public void startup() throws CoreException {
-		super.startup();
+	public void start(BundleContext context) throws Exception {
+		super.start(context);
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(EventManager.getManager(), IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE | IResourceChangeEvent.POST_BUILD | IResourceChangeEvent.PRE_BUILD | IResourceChangeEvent.POST_CHANGE);
 	}
 
 	/**
 	 * @see org.eclipse.core.runtime.Plugin#shutdown()
 	 */
-	public void shutdown() throws CoreException {
-		super.shutdown();
+	public void stop(BundleContext context) throws Exception {
+		super.stop(context);
 		EventManager.getManager().shutdown();
 	}
 

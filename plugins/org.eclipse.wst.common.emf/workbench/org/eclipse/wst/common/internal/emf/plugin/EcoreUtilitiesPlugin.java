@@ -16,10 +16,9 @@
  */
 package org.eclipse.wst.common.internal.emf.plugin;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.wst.common.internal.emf.resource.RendererFactory;
+import org.osgi.framework.BundleContext;
 
 /**
  * @author DABERG
@@ -33,8 +32,8 @@ public class EcoreUtilitiesPlugin extends Plugin {
 	/**
 	 * @param descriptor
 	 */
-	public EcoreUtilitiesPlugin(IPluginDescriptor descriptor) {
-		super(descriptor);
+	public EcoreUtilitiesPlugin() {
+		super();
 	}
 
 	/*
@@ -42,8 +41,8 @@ public class EcoreUtilitiesPlugin extends Plugin {
 	 * 
 	 * @see org.eclipse.core.runtime.Plugin#startup()
 	 */
-	public void startup() throws CoreException {
-		super.startup();
+	public void start(BundleContext context) throws Exception {
+		super.start(context);
 		RendererFactory.setDefaultHandler(PluginRendererFactoryDefaultHandler.INSTANCE);
 		PackageURIMapReader reader = new PackageURIMapReader();
 		reader.processExtensions();

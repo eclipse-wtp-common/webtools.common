@@ -20,7 +20,7 @@
       <import plugin="org.eclipse.emf.edit"/>
       <import plugin="org.eclipse.emf.ecore.xmi"/>
       <import plugin="org.eclipse.wst.common.emf"/>
-      <import plugin="org.eclipse.core.runtime.compatibility"/>
+      <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.emf.codegen"/>
       <import plugin="org.eclipse.emf.codegen.ecore"/>

@@ -22,7 +22,6 @@ import java.util.ResourceBundle;
 
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.frameworks.internal.WTPPlugin;
@@ -42,11 +41,8 @@ public class WTPCommonPlugin extends WTPPlugin {
 	//	The shared instance.
 	private static WTPCommonPlugin plugin;
 
-	//	Resource bundle.
-	private ResourceBundle resourceBundle;
-
-	public WTPCommonPlugin(IPluginDescriptor descriptor) {
-		super(descriptor);
+	public WTPCommonPlugin() {
+		super();
 		plugin = this;
 		try {
 			resourceBundle = ResourceBundle.getBundle("wtp_common"); //$NON-NLS-1$

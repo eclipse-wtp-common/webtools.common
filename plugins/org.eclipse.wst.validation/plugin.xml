@@ -19,7 +19,7 @@
    <requires>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.wst.common.frameworks"/>
-      <import plugin="org.eclipse.core.runtime.compatibility"/>
+      <import plugin="org.eclipse.core.runtime"/>
    </requires>
 
 

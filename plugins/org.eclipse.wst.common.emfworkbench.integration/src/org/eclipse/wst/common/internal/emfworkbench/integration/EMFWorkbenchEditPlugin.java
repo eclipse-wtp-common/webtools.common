@@ -13,9 +13,7 @@ package org.eclipse.wst.common.internal.emfworkbench.integration;
 import java.io.FileNotFoundException;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdapterManager;
-import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.emf.common.util.WrappedException;
@@ -31,6 +29,7 @@ import org.eclipse.wst.common.modulecore.WTPModulesInit;
 import org.eclipse.wst.common.modulecore.impl.PlatformURLModuleConnection;
 import org.eclipse.wst.common.modulecore.util.ArtifactEditAdapterFactory;
 import org.eclipse.wst.common.modulecore.util.ModuleCoreEclipseAdapterFactory;
+import org.osgi.framework.BundleContext;
 
 import com.ibm.wtp.emf.workbench.WorkbenchResourceHelperBase;
 
@@ -51,8 +50,8 @@ public class EMFWorkbenchEditPlugin extends Plugin {
 	/**
 	 * The constructor.
 	 */
-	public EMFWorkbenchEditPlugin(IPluginDescriptor descriptor) {
-		super(descriptor);
+	public EMFWorkbenchEditPlugin() {
+		super();
 		plugin = this; 
 	}
 
@@ -68,8 +67,8 @@ public class EMFWorkbenchEditPlugin extends Plugin {
 	 * 
 	 * @see org.eclipse.core.runtime.Plugin#startup()
 	 */
-	public void startup() throws CoreException {
-		super.startup();
+	public void start(BundleContext context) throws Exception {
+		super.start(context);
 		ExtendedEcoreUtil.setFileNotFoundDetector(new ExtendedEcoreUtil.FileNotFoundDetector() {
 			public boolean isFileNotFound(WrappedException wrappedEx) {
 				return WorkbenchResourceHelperBase.isResourceNotFound(wrappedEx) || wrappedEx.exception() instanceof FileNotFoundException;

@@ -11,13 +11,13 @@ package org.eclipse.wst.validation.internal.ui.plugin;
 import java.util.logging.Level;
 
 import org.eclipse.core.resources.IWorkspaceRunnable;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPluginDescriptor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.wst.common.frameworks.internal.operations.IHeadlessRunnableWithProgress;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 import org.eclipse.wst.validation.internal.operations.ValidationOperation;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.osgi.framework.BundleContext;
 
 import com.ibm.wtp.common.logger.LogEntry;
 import com.ibm.wtp.common.logger.proxy.Logger;
@@ -30,8 +30,8 @@ public class ValidationUIPlugin extends WTPUIPlugin {
 	public final static String VALIDATION_PROP_FILE_NAME = "validate_ui"; //$NON-NLS-1$
 	public static final String VALIDATION_PLUGIN_ID = "org.eclipse.wst.validation.ui"; //$NON-NLS-1$
 
-	public ValidationUIPlugin(IPluginDescriptor descriptor) {
-		super(descriptor);
+	public ValidationUIPlugin() {
+		super();
 		if (_plugin == null) {
 			_plugin = this;
 		}
@@ -59,7 +59,7 @@ public class ValidationUIPlugin extends WTPUIPlugin {
 	 */
 	public static String getResourceString(String key) {
 		try {
-			return getPlugin().getDescriptor().getResourceString(key);
+			return Platform.getResourceString(Platform.getBundle(VALIDATION_PLUGIN_ID), key);
 		} catch (Exception e) {
 			e.printStackTrace();
 			Logger logger = WTPUIPlugin.getLogger();
@@ -93,8 +93,8 @@ public class ValidationUIPlugin extends WTPUIPlugin {
 		return new RunnableWithProgressWrapper(op);
 	}
 
-	public void startup() throws CoreException {
-		super.startup();
+	public void start(BundleContext context) throws Exception {
+		super.start(context);
 		//	org.eclipse.wst.validation.internal.operations.ValidatorManager.setResourceUtilClass(org.eclipse.wst.validation.internal.operations.ui.UIResourceUtil.class);
 	}
 }
