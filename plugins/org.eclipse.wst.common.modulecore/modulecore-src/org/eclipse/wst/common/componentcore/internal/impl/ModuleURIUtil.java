@@ -10,9 +10,12 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.impl;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.wst.common.componentcore.StructureEdit;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
+import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 
 /**
  * 
@@ -21,6 +24,8 @@ import org.eclipse.wst.common.componentcore.UnresolveableURIException;
  * </p>
  */
 public class ModuleURIUtil {
+
+	protected static final String RESOURCE_URI_PROTOCOL = PlatformURLModuleConnection.MODULE_PROTOCOL+IPath.SEPARATOR+PlatformURLModuleConnection.RESOURCE_MODULE+IPath.SEPARATOR;
 
 	public static interface ModuleURI {
 		public static final int SUB_PROTOCOL_INDX = 0;
@@ -126,5 +131,19 @@ public class ModuleURIUtil {
 	public static URI concat(URI uri1, URI uri2){
 	    URI concatURI = uri1.appendSegments(uri2.segments());
 	    return concatURI;
+	}
+	
+	public static URI fullyQualifyURI(WorkbenchComponent aComponent) {
+		try {
+			if(ensureValidFullyQualifiedModuleURI(aComponent.getHandle(), false))
+				return aComponent.getHandle(); 
+			IProject project = StructureEdit.getContainingProject(aComponent);
+			if(project != null) {
+				return URI.createURI(RESOURCE_URI_PROTOCOL + project.getName() + IPath.SEPARATOR + aComponent.getName());
+			} 
+		} catch (UnresolveableURIException e) {
+			// Ignore
+		}
+		return null; 
 	}
 }
