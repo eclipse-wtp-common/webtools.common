@@ -47,7 +47,6 @@
             <element ref="helper"/>
             <element ref="dependentValidator" minOccurs="0" maxOccurs="1"/>
             <element ref="run"/>
-            <element ref="migrate"/>
             <element ref="markerId" minOccurs="0" maxOccurs="1"/>
          </sequence>
          <attribute name="to" type="string">
@@ -72,6 +71,13 @@
          <sequence>
          </sequence>
          <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="include" type="boolean">
             <annotation>
                <documentation>
                   
