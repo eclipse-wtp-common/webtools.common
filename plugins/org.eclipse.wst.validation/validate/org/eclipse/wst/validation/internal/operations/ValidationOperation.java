@@ -31,7 +31,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.wst.common.frameworks.operations.IHeadlessRunnableWithProgress;
-import org.eclipse.wst.validation.core.FileDelta;
 import org.eclipse.wst.validation.core.IFileDelta;
 import org.eclipse.wst.validation.core.IReporter;
 import org.eclipse.wst.validation.core.IValidator;
@@ -51,6 +50,7 @@ import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.plugin.TimeEntry;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.eclispe.wst.validation.internal.core.FileDelta;
 
 import com.ibm.wtp.common.logger.LogEntry;
 import com.ibm.wtp.common.logger.proxy.Logger;
