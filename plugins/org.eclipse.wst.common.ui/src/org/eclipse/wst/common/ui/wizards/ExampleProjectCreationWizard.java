@@ -13,8 +13,8 @@
 package org.eclipse.wst.common.ui.wizards;
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 
-import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -24,6 +24,8 @@ import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -104,16 +106,16 @@ public class ExampleProjectCreationWizard extends BasicNewResourceWizard impleme
 	}
 	
 	protected IConfigurationElement[] getExtendedConfigurationElements() {
-		IExtensionRegistry registry = InternalPlatform.getDefault().getRegistry();
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
 		IExtensionPoint exampleWizardXP = registry.getExtensionPoint(EXAMPLE_WIZARD_XP_ID);
 		if(exampleWizardXP == null){
 			return new IConfigurationElement[0];
 		}
 		IExtension extension = exampleWizardXP.getExtension(getWizardExtensionId());
-		if(extension == null){
-			return new IConfigurationElement[0];
+		if(extension != null){
+			return extension.getConfigurationElements();
 		}
-		IConfigurationElement[] exampleWizardCEs = extension.getConfigurationElements();
+		IConfigurationElement[] exampleWizardCEs = exampleWizardXP.getConfigurationElements();
 		return exampleWizardCEs;
 	}
 
@@ -139,7 +141,8 @@ public class ExampleProjectCreationWizard extends BasicNewResourceWizard impleme
 		if (exampleConfigElement != null) {
 			String banner = exampleConfigElement.getAttribute("banner"); //$NON-NLS-1$
 			if (banner != null) {
-				ImageDescriptor desc = this.getImageDescriptor(banner);
+				URL imageURL = Platform.find(Platform.getBundle(exampleConfigElement.getDeclaringExtension().getNamespace()), new Path(banner));
+				ImageDescriptor desc = ImageDescriptor.createFromURL(imageURL);
 				setDefaultPageImageDescriptor(desc);
 			}
 		}
@@ -206,20 +209,20 @@ public class ExampleProjectCreationWizard extends BasicNewResourceWizard impleme
 		if (title != null) {
 			setWindowTitle(title);
 		}
+		String wizardId = getWizardExtensionId(); //$NON-NLS-1$
 		IConfigurationElement[] exampleWizardCEs = getExtendedConfigurationElements();
 		for (int i = 0; i < exampleWizardCEs.length; i++) {
 			IConfigurationElement element = exampleWizardCEs[i];
-			String wizardId = wizardConfigElement.getAttribute("id"); //$NON-NLS-1$
-			String extWizardId = element.getAttribute("id"); 		  //$NON-NLS-1$
+			String extWizardId = element.getAttribute("id"); //$NON-NLS-1$
 			if(wizardId != null && extWizardId != null && wizardId.equals(extWizardId)){
 				exampleConfigElement = element;
 			}
 		}
-		initializeDefaultPageImageDescriptor();
+//		initializeDefaultPageImageDescriptor();
 	}
 	
 	public String getWizardExtensionId(){
-		return EXAMPLE_WIZARD_XP_ID;
+		return wizardConfigElement.getAttribute("id"); //$NON-NLS-1$
 	}
 
 }
