@@ -17,10 +17,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -77,7 +79,13 @@ public class ModuleCore implements IEditModelHandler {
 	public static URI getOutputContainerRoot(WorkbenchModule aWorkbenchModule) {
 		return URI.createURI(DEPLOYABLES_ROOT + aWorkbenchModule.getDeployedName()); 
 	}
-
+	
+	public static IResource[] getOutputContainersForProject(IProject proj) {
+	    IFolder folder = proj.getFolder(new Path(DEPLOYABLES_ROOT));
+	    IResource[] outputResources = {folder};
+	    return outputResources;
+	}
+	
 	public static Resource.Factory getResourceFactory(URI aURI) {
 		return Resource.Factory.Registry.INSTANCE.getFactory(aURI);
 	}

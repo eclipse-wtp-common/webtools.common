@@ -11,6 +11,8 @@
 package org.eclipse.wst.common.modulecore.builder;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.internal.resources.Resource;
@@ -26,6 +28,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.modulecore.IModuleConstants;
+import org.eclipse.wst.common.modulecore.WorkbenchModule;
+import org.eclipse.wst.common.modulecore.util.ModuleCore;
 
 public class DeployableModuleBuilder extends IncrementalProjectBuilder implements IModuleConstants {
     /**
@@ -66,8 +70,12 @@ public class DeployableModuleBuilder extends IncrementalProjectBuilder implement
     }
 
     protected void clean(IProgressMonitor monitor) throws CoreException {
-
-        // remove entire .deployables
+        IResource[] oldOutput = ModuleCore.getOutputContainersForProject(getProject());
+        if(oldOutput != null) {
+            for(int i = 0; i < oldOutput.length; i++) {
+                oldOutput[i].delete(true, monitor);
+            }
+        }
         super.clean(monitor);
     }
     
