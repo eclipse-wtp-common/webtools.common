@@ -1,0 +1,288 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="com.ibm.wtp.common.ui">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="com.ibm.wtp.common.ui" id="WTPUIOperation" name="WTP UI Operation"/>
+      </appInfo>
+      <documentation>
+         This extension point is for WTP Operations which need to be tied to a generic UI action, such as CUT, COPY, PASTE, DELETE, and RENAME.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <complexType>
+         <sequence>
+            <choice>
+               <element ref="masterOperation"/>
+               <element ref="slaveOperation"/>
+            </choice>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="masterOperation">
+      <annotation>
+         <documentation>
+            A masterOperation enables an existing WTP Operation to be used in a UI action. Generic Ids aggregate a set of masterOperations for the same Abstract action (like a &quot;CUT&quot; operation). WTP Operations are themselves extendible, so for any masterOperation defined, there may be any number of pre|post operations. These pre|post operation can have slaveOperation elements defined which indicate the pre|post operation may be run independently.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="selectionEnablement"/>
+         </sequence>
+         <attribute name="extendedGenericId" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The ID of the Generic Action you would like to contribute to. (e.g. The id for CUT, COPY, PASTE, DELETE, RENAME).
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="operationClass" type="string">
+            <annotation>
+               <documentation>
+                  The fully qualified class of your operation. Your operation must extend com.ibm.wtp.common.operation.WTPOperation and must provide a no-arguments default constructor. If this attribute is not provided, the getDefaultOperation() returned by the dataModel will be used.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A name to display in the dialog for your action (if the operation is optional). You can use the standard &quot;%key&quot; for translatable text stored in plugin.properties.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="description" type="string">
+            <annotation>
+               <documentation>
+                  A description to display in the dialog for your action (if the operation is optional). You can use the standard &quot;%key&quot; for translatable text stored in plugin.properties.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="populatorClass" type="string" use="required">
+            <annotation>
+               <documentation>
+                  An implementation of com.ibm.wtp.common.operation.extension.ui.WTPOperationDataModelUICreator. The populatorClass knows how to provide a WTP Operation Data Model based on a given selection. The getDefaultOperation() method of the data model will be ignored if the operationClass is provided.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="alwaysExecute" type="boolean">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="overrideId" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="selectionEnablement" type="string">
+      <annotation>
+         <documentation>
+            The selectionEnablement element allows you to filter which kinds of selection your object is applicable to using Standard Eclipse Action Expresions.
+         </documentation>
+      </annotation>
+   </element>
+
+   <element name="slaveOperation">
+      <annotation>
+         <documentation>
+            The slaveOperation element defines display information for operations which extend a declared master operation. If a pre|post operation of a master does not have a corresponding slaveOperation element, then the pre|post operation will be consider required, and not be displayed to the user.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="operationClass" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The fully qualified class of your operation. Your operation must extend com.ibm.wtp.common.operation.WTPOperation and must provide a no-arguments default constructor. For slave operations, the data model of the master operation will be provided. Therefore, slaves cannot override the data model using a seperate populatorClass.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A name to display in the dialog for your action (if the operation is optional). You can use the standard &quot;%key&quot; for translatable text stored in plugin.properties.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="description" type="string">
+            <annotation>
+               <documentation>
+                  A description to display in the dialog for your action (if the operation is optional). You can use the standard &quot;%key&quot; for translatable text stored in plugin.properties.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         6.0.0
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         The following example declares two Master Operations (&lt;code&gt;com.acme.ui.operation.MasterOperationA&lt;/code&gt; and &lt;code&gt;com.acme.ui.operation.MasterOperationB&lt;/code&gt;) which are attached to the Generic ID &lt;code&gt;com.acme.ui.WTPOptionalOperationTest&lt;/code&gt;. 
+The scenario has Master A which has as a pre-operation of Slave A and a post-operation of Slave C. Slave A is made optional by the &lt;code&gt;slaveOperation&lt;/code&gt; element, while Slave C will always be run (no &lt;code&gt;slaveOperation&lt;/code&gt; is given to run it seperately). Slave A further has an optional pre-operation (Slave B) that can be executed indepently of either Slave A or Master A.
+&lt;pre&gt;
+   &lt;extension
+         point=&quot;com.ibm.wtp.common.ui.wtpuiAction&quot;&gt;
+      &lt;masterOperation
+            populatorClass=&quot;com.acme.ui.operation.AcmeOperationPopulator&quot;
+            name=&quot;%master_a_name&quot;
+            operationClass=&quot;com.acme.ui.operation.MasterOperationA&quot;
+            extendedGenericId=&quot;com.acme.ui.WTPOptionalOperationTest&quot;
+            description=&quot;%master_a_description&quot;&gt;
+      &lt;/masterOperation&gt; 
+   &lt;slaveOperation
+            name=&quot;Slave A&quot;
+            operationClass=&quot;com.acme.ui.operation.SlaveOperationA&quot;&gt;
+      &lt;/slaveOperation&gt; 
+      &lt;slaveOperation
+            name=&quot;Slave B&quot;
+            operationClass=&quot;com.acme.ui.operation.SlaveOperationB&quot;&gt;
+      &lt;/slaveOperation&gt;      
+      &lt;masterOperation
+            populatorClass=&quot;com.acme.ui.operation.AcmeOperationPopulator&quot;
+            name=&quot;EAR Project Action&quot;
+            operationClass=&quot;com.acme.ui.operation.MasterOperationB&quot;
+            extendedGenericId=&quot;com.acme.ui.WTPOptionalOperationTest&quot;&gt;
+            &lt;selectionEnablement&gt; 
+             &lt;objectState name=&quot;projectNature&quot; value=&quot;org.eclipse.jst.j2ee.EARNature&quot; /&gt;
+            &lt;/selectionEnablement&gt;
+      &lt;/masterOperation&gt;   
+   &lt;/extension&gt;
+&lt;/pre&gt;   
+
+For each of the slaveOperations referenced above, you must have a corresponding WTP Operation Extension declared similar to the following:
+ 
+&lt;pre&gt; 
+   &lt;extension
+         id=&quot;wtpuiAciton.Acme.Extensions&quot;
+         point=&quot;com.ibm.wtp.common.ExtendableOperation&quot;&gt;
+      &lt;extendableOperation
+            class=&quot;com.acme.ui.operation.MasterOperationA&quot;
+            id=&quot;com.acme.ui.operation.MasterOperationA&quot;&gt;
+      &lt;/extendableOperation&gt;
+      &lt;extendableOperation
+            class=&quot;com.acme.ui.operation.SlaveOperationA&quot;
+            id=&quot;com.acme.ui.operation.SlaveOperationA&quot;&gt;
+      &lt;/extendableOperation&gt;
+   &lt;/extension&gt;
+   &lt;extension
+         point=&quot;com.ibm.wtp.common.OperationExtension&quot;&gt;
+      &lt;!-- Made optional by the above declaration --&gt;
+      &lt;operationExtension
+            preOperationClass=&quot;com.acme.ui.operation.SlaveOperationA&quot;
+            id=&quot;com.acme.ui.operation.MasterOperationA&quot;&gt;
+      &lt;/operationExtension&gt; 
+      &lt;!-- Made optional by the above declaration --&gt;
+      &lt;operationExtension
+            postOperationClass=&quot;com.acme.ui.operation.SlaveOperationB&quot;
+            id=&quot;com.acme.ui.operation.SlaveOperationA&quot;&gt;
+      &lt;/operationExtension&gt;   
+      &lt;!-- Non-optional operation, will always run --&gt;
+      &lt;operationExtension
+            postOperationClass=&quot;com.acme.ui.operation.SlaveOperationC&quot;
+            id=&quot;com.acme.ui.operation.MasterOperationA&quot;&gt;
+      &lt;/operationExtension&gt;  
+   &lt;/extension&gt; 
+&lt;/pre&gt;
+
+In general, users extending existing actions only need to declare the following: 
+&lt;pre&gt;
+ &lt;extension
+         point=&quot;com.ibm.wtp.common.OperationExtension&quot;&gt; 
+ &lt;!-- The action referenced must be declared as extensible by the   com.ibm.wtp.common.ExtendableOperation extension point --&gt;         
+      &lt;operationExtension
+            preOperationClass=&quot;...YOUR CLASS...&quot;            
+            id=&quot;...ID OF EXISTING OPERATION...&quot;&gt; 
+      &lt;/operationExtension&gt; 
+ &lt;/extension&gt;      
+&lt;/pre&gt;      
+
+And if your operation is optional declare the slaveOperation:
+
+&lt;pre&gt; 
+   &lt;extension
+         point=&quot;com.ibm.wtp.common.ui.wtpuiAction&quot;&gt; 
+   &lt;slaveOperation
+            name=&quot;..NAME OF YOUR OPERATION...&quot;
+            description=&quot;...DESCRIPTION OF YOUR ACTION...&quot;
+            operationClass=&quot;...YOUR CLASS...&quot;&gt;
+      &lt;/slaveOperation&gt; 
+   &lt;/extension&gt;      
+&lt;/pre&gt;
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiInfo"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="implementation"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="copyright"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+</schema>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="org.eclipse.wst.common.emfworkbench.integration"
+   name="EMF Workbench Edit Plug-in"
+   description="This plugin provides the extensible edit model and edit model operation framework used to keep editors in synch. The DynamicAdapterFactory framework is also provided so adapters can register themselves to be picked up globally."
+   version="1.0.0"
+   provider-name="IBM"
+   class="org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEditPlugin">
+
+   <runtime>
+      <library name="emfworkbenchedit.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+   <requires>
+      <import plugin="org.eclipse.jdt.core"/>
+      <import plugin="org.eclipse.wst.common.frameworks"/>
+      <import plugin="com.ibm.wtp.common.util"/>
+      <import plugin="com.ibm.wtp.emf.workbench"/>
+      <import plugin="org.eclipse.emf.edit"/>
+      <import plugin="org.eclipse.emf.ecore.xmi"/>
+      <import plugin="org.eclipse.wst.common.emf"/>
+      <import plugin="org.eclipse.core.runtime.compatibility"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.wst.common.jdt.integration"/>
+      <import plugin="org.eclipse.emf.codegen"/>
+      <import plugin="org.eclipse.emf.codegen.ecore"/>
+      <import plugin="org.eclipse.xsd"/>
+      <import plugin="org.eclipse.jdt.launching"/>
+   </requires>
+
+
+   <extension-point id="editModel" name="EMF Resource Edit Model" schema="schema/editModel.exsd"/>
+   <extension-point id="editModelExtension" name="Edit Model Extensions" schema="schema/editModelExtension.exsd"/>
+   <extension-point id="adapterFactory" name="Adapter Factory Extension" schema="schema/adapterFactory.exsd"/>
+   <extension-point id="ModifierHelperFactory" name="ModifierHelperFactory" schema="schema/modifierHelperFactory.exsd"/>
+
+   <extension
+         point="com.ibm.wtp.emf.workbench.internalWorkbenchContextFactory">
+      <factoryClass
+            name="org.eclipse.wst.common.internal.emfworkbench.edit.EMFWorkbenchEditContextFactory">
+      </factoryClass>
+   </extension>
+   
+   <extension 
+       point="com.ibm.wtp.common.util.uiContextSensitiveClass">
+       <uiContextSensitiveClass
+          key="ValidateEditContext"
+          className="org.eclipse.wst.common.internal.emfworkbench.validateedit.ValidateEditHeadlessContext"
+          context="Headless"/>
+  </extension>
+  <extension
+         id="Generator"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run
+               class="org.eclipse.wst.common.internal.emfworkbench.operation.DataObjectGeneratorModel">
+         </run>
+      </application>
+   </extension>
+
+</plugin>
