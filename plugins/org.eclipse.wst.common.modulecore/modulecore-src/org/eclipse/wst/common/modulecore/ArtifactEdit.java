@@ -53,6 +53,7 @@ public class ArtifactEdit implements IEditModelHandler {
 	private final ArtifactEditModel artifactEditModel;
 	private boolean isReadOnly;
 	private boolean isArtifactEditModelSelfManaged;
+	protected WorkbenchModule module;
 
 	/**
 	 * <p>
