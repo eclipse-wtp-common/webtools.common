@@ -28,6 +28,7 @@ public interface IFileDelta {
 	 * IFileDelta.ADDED, IFileDelta.CHANGED, or IFileDelta.DELETED.
 	 * </p>
 	 * @return returns the delta type.
+	 * @since WTP 1.0
 	 */
 	public int getDeltaType();
 
@@ -37,6 +38,7 @@ public interface IFileDelta {
 	 * null or the empty string ("").
 	 * </p>
 	 * @return returns the file name.
+	 * @since WTP 1.0
 	 */
 	public String getFileName();
 }

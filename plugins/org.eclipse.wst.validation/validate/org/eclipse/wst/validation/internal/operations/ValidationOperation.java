@@ -35,6 +35,7 @@ import org.eclipse.wst.validation.core.IFileDelta;
 import org.eclipse.wst.validation.core.IMessage;
 import org.eclipse.wst.validation.core.IReporter;
 import org.eclipse.wst.validation.core.IValidator;
+import org.eclipse.wst.validation.core.MessageLimitException;
 import org.eclipse.wst.validation.core.ValidationException;
 import org.eclipse.wst.validation.internal.FilterUtil;
 import org.eclipse.wst.validation.internal.InternalValidatorManager;
@@ -49,7 +50,6 @@ import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.plugin.ValidationPlugin;
 import org.eclispe.wst.validation.internal.core.FileDelta;
 import org.eclispe.wst.validation.internal.core.Message;
-import org.eclispe.wst.validation.internal.core.MessageLimitException;
 import org.eclispe.wst.validation.internal.core.ValidatorLauncher;
 
 import com.ibm.wtp.common.logger.LogEntry;

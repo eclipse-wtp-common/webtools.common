@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.core;
 
-import org.eclispe.wst.validation.internal.core.MessageLimitException;
 
 
 
