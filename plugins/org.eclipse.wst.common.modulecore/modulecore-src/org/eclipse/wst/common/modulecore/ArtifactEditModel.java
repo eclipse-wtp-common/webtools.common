@@ -262,10 +262,10 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 	/**
 	 * 
 	 * <p>
-	 * Generic way to retrieve containing information, within the platform
+	 * Generic way to retrieve containing information, within the platform.
 	 * </p>
 	 * 
-	 * @return instance of adapterType for this adapter class from adapter factory stored in the
+	 * @return instance of the adapterType for this adapter class from adapter factory stored in the
 	 *         adapter manager (@see AdapterManager)
 	 *  
 	 */
