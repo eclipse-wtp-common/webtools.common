@@ -29,7 +29,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	
 	public static ModuleCoreNature getModuleCoreNature(IProject aProject) {
 		try {
-			return (ModuleCoreNature) aProject.getNature(ModuleCoreNature.MODULE_NATURE_ID);
+			return (ModuleCoreNature) aProject.getNature(IModuleConstants.MODULE_NATURE_ID);
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}
