@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $RCSfile: PresentPerformanceMonitor.java,v $
- *  $Revision: 1.2 $  $Date: 2005/01/12 16:57:32 $ 
+ *  $Revision: 1.3 $  $Date: 2005/02/02 20:51:09 $ 
  */
 package org.eclipse.jem.util;
 import org.eclipse.perfmsr.core.IPerformanceMonitor;
@@ -27,6 +27,13 @@ import org.eclipse.perfmsr.core.PerfMsrCorePlugin;
  */
 public class PresentPerformanceMonitor extends PerformanceMonitorUtil {
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.jem.util.PerformanceMonitorUtil#upload(java.lang.String)
+	 */
+	public boolean upload(String description) {
+		return monitor.upload(description).success;
+	}
+	
 	private IPerformanceMonitor monitor;
 
 	/*

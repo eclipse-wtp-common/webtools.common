@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $RCSfile: PerformanceMonitorUtil.java,v $
- *  $Revision: 1.2 $  $Date: 2005/01/12 16:57:32 $ 
+ *  $Revision: 1.3 $  $Date: 2005/02/02 20:51:09 $ 
  */
 package org.eclipse.jem.util;
 import java.util.EventObject;
@@ -259,5 +259,15 @@ public abstract class PerformanceMonitorUtil {
 			listeners = newList;
 		}
 	}
-
+	/**
+	 * Upload the results to the server. This causes the file to be
+	 * closed, and the monitor to be placed into the finished state.
+	 * 
+	 * This method can only be called if the uploadhost, uploadport and uploaduserid
+	 * have been configured before hand.
+	 * 
+	 * @param description an optional description (it can be null)
+	 * 
+	 */
+	public boolean upload(String description){return false;}
 }
