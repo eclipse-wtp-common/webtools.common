@@ -197,7 +197,8 @@ public class EditModelRegistry extends RegistryReader {
 				if (this.configurationElement != null) {
 					try {
 						this.factory = (IEditModelFactory) this.configurationElement.createExecutableExtension(FACTORY_CLASS_ATTR);
-						Boolean value = Boolean.valueOf(this.configurationElement.getAttribute(LOAD_UNKNOWN_RESOURCES_ATTR));
+						String loadUnknownResourceAsReadOnly = this.configurationElement.getAttribute(LOAD_UNKNOWN_RESOURCES_ATTR);
+						Boolean value = loadUnknownResourceAsReadOnly != null ? Boolean.valueOf(loadUnknownResourceAsReadOnly) : Boolean.FALSE;
 						this.factory.setLoadKnownResourcesAsReadOnly(value.booleanValue());
 						discardConfigurationElementIfNecessary();
 					} catch (CoreException e) {

@@ -636,8 +636,12 @@ public class ModuleCore implements IEditModelHandler {
 		synchronized (dependentCores) {
 			dependentCore = (ModuleCore) dependentCores.get(aModuleURI);
 			if (dependentCore == null) {
-				dependentCore = getModuleCoreForRead(getContainingProject(aModuleURI));
-				dependentCores.put(aModuleURI, dependentCore);
+				IProject container = getContainingProject(aModuleURI);
+				if(container != null) {
+					dependentCore = getModuleCoreForRead(container);
+					dependentCores.put(aModuleURI, dependentCore);
+				} else 
+					throw new UnresolveableURIException(aModuleURI);
 			}
 		}
 		return dependentCore;
