@@ -10,9 +10,6 @@ package org.eclipse.wst.common.frameworks.internal.ui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.event.EventListenerList;
-
-
 
 public class Timer {
 	/**
