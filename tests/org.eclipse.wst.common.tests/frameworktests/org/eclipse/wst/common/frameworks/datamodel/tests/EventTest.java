@@ -19,7 +19,7 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 public class EventTest extends TestCase {
 
 	public void testEventCreation() {
-		IDataModel dm = DataModelFactory.INSTANCE.createDataModel(new A());
+		IDataModel dm = DataModelFactory.createDataModel(new A());
 		dm.setProperty(A.P, "aaa");
 		DataModelEvent event = new DataModelEvent(dm, A.P, DataModelEvent.VALUE_CHG);
 		assertEquals(dm, event.getDataModel());

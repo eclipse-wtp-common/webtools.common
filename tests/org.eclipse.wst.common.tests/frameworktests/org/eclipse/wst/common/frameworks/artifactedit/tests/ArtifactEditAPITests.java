@@ -8,10 +8,10 @@ package org.eclipse.wst.common.frameworks.artifactedit.tests;
 
 
 
-import org.eclipse.wst.common.tests.SimpleTestSuite;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
+import org.eclipse.wst.common.tests.SimpleTestSuite;
 
 public class ArtifactEditAPITests extends TestSuite {
 	

@@ -31,9 +31,9 @@ public class NestingTest extends TestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		a = DataModelFactory.INSTANCE.createDataModel(new A());
-		b = DataModelFactory.INSTANCE.createDataModel(new B());
-		c = DataModelFactory.INSTANCE.createDataModel(new C());
+		a = DataModelFactory.createDataModel(new A());
+		b = DataModelFactory.createDataModel(new B());
+		c = DataModelFactory.createDataModel(new C());
 	}
 
 	protected void tearDown() throws Exception {
@@ -265,7 +265,7 @@ public class NestingTest extends TestCase {
 		a.addNestedModel("b", b); // 1
 		b.addNestedModel("c", c); // 2
 		Assert.assertTrue(a.isProperty(C.P));
-		IDataModel c2 = DataModelFactory.INSTANCE.createDataModel(new C());
+		IDataModel c2 = DataModelFactory.createDataModel(new C());
 		b.addNestedModel("c2", c2); // 3
 		b.removeNestedModel("c2"); // 4
 		Assert.assertTrue(b.isProperty(C.P));
@@ -288,7 +288,7 @@ public class NestingTest extends TestCase {
 		a.addNestedModel("b", b); // 1
 		b.addNestedModel("c", c); // 2
 		Assert.assertTrue(a.isProperty(C.P));
-		IDataModel c2 = DataModelFactory.INSTANCE.createDataModel(new C());
+		IDataModel c2 = DataModelFactory.createDataModel(new C());
 		a.addNestedModel("c2", c2); // 3
 		a.removeNestedModel("c2"); // 4
 		Assert.assertTrue(a.isProperty(C.P));

@@ -21,7 +21,7 @@ public class DataModelFactoryTest extends TestCase {
 	public void testBogusExtension() {
 		Exception exception = null;
 		try {
-			IDataModel dataModel = DataModelFactory.INSTANCE.createDataModel("bogus");
+			IDataModel dataModel = DataModelFactory.createDataModel("bogus");
 		} catch (Exception e) {
 			exception = e;
 		}
@@ -31,7 +31,7 @@ public class DataModelFactoryTest extends TestCase {
 	public void testInvalidExtensionID() {
 		Exception exception = null;
 		try {
-			IDataModel dataModel = DataModelFactory.INSTANCE.createDataModel("badID");
+			IDataModel dataModel = DataModelFactory.createDataModel("badID");
 		} catch (Exception e) {
 			exception = e;
 		}
@@ -41,7 +41,7 @@ public class DataModelFactoryTest extends TestCase {
 	public void testInvalidExtensionClass() {
 		Exception exception = null;
 		try {
-			IDataModel dataModel = DataModelFactory.INSTANCE.createDataModel(Object.class);
+			IDataModel dataModel = DataModelFactory.createDataModel(Object.class);
 		} catch (Exception e) {
 			exception = e;
 		}
@@ -49,18 +49,18 @@ public class DataModelFactoryTest extends TestCase {
 	}
 
 	public void testValidExtensionID() {
-		IDataModel dataModel = DataModelFactory.INSTANCE.createDataModel("org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel");
+		IDataModel dataModel = DataModelFactory.createDataModel("org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel");
 		assertTrue(dataModel.isProperty(ITestDataModel.FOO));
 	}
 
 
 	public void testValidExtensionClass() {
-		IDataModel dataModel = DataModelFactory.INSTANCE.createDataModel(ITestDataModel.class);
+		IDataModel dataModel = DataModelFactory.createDataModel(ITestDataModel.class);
 		assertTrue(dataModel.isProperty(ITestDataModel.FOO));
 	}
 
 	public void testValidExtensionInstance() {
-		IDataModel dataModel = DataModelFactory.INSTANCE.createDataModel(new TestDataModelProvider());
+		IDataModel dataModel = DataModelFactory.createDataModel(new TestDataModelProvider());
 		assertTrue(dataModel.isProperty(ITestDataModel.FOO));
 	}
 

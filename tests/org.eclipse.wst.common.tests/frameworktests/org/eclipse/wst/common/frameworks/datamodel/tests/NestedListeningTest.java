@@ -25,9 +25,9 @@ public class NestedListeningTest extends TestCase {
 		TestListener bL = new TestListener();
 		TestListener cL = new TestListener();
 
-		IDataModel a = DataModelFactory.INSTANCE.createDataModel(new A());
-		IDataModel b = DataModelFactory.INSTANCE.createDataModel(new B());
-		IDataModel c = DataModelFactory.INSTANCE.createDataModel(new C());
+		IDataModel a = DataModelFactory.createDataModel(new A());
+		IDataModel b = DataModelFactory.createDataModel(new B());
+		IDataModel c = DataModelFactory.createDataModel(new C());
 		a.addListener(aL);
 		b.addListener(bL);
 		c.addListener(cL);

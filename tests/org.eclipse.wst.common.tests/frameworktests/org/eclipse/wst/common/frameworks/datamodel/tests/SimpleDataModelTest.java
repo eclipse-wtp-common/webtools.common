@@ -12,15 +12,15 @@ package org.eclipse.wst.common.frameworks.datamodel.tests;
 
 import java.util.List;
 
+import junit.framework.Assert;
+import junit.framework.TestCase;
+
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
-
-import junit.framework.Assert;
-import junit.framework.TestCase;
 
 
 public class SimpleDataModelTest extends TestCase {
@@ -110,7 +110,7 @@ public class SimpleDataModelTest extends TestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		dm = DataModelFactory.INSTANCE.createDataModel(new DMProvider());
+		dm = DataModelFactory.createDataModel(new DMProvider());
 		dmL = new TestListener();
 		dm.addListener(dmL);
 	}
