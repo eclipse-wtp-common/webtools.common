@@ -29,7 +29,7 @@ public interface DataModelFactory {
 	/**
 	 * Looks up the appropriate IDataModelProvider using the name of the specified class. This
 	 * method is equavalent to
-	 * <code>createDataModel(dataModelProviderClassID.getClass().getName())</code>.
+	 * <code>createDataModel(dataModelProviderClassID.getName())</code>.
 	 * 
 	 * @param dataModelProviderClass
 	 *            the class whose name is the id of the IDataModelProvider

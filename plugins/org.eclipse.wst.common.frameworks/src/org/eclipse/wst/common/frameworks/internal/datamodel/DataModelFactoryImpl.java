@@ -16,28 +16,21 @@ import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelProvide
 
 public class DataModelFactoryImpl implements DataModelFactory {
 
+	private DataModelExtensionReader reader;
+
 	public IDataModel createDataModel(String dataModelProviderID) {
-		return createDataModel(lookupProviderClass(dataModelProviderID));
+		return createDataModel(loadProvider(dataModelProviderID));
 	}
 
-	private Class lookupProviderClass(String dataModelProviderID) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public IDataModel createDataModel(Class dataModelProviderClass) {
-		IDataModelProvider provider;
-		try {
-			provider = (IDataModelProvider) dataModelProviderClass.newInstance();
-			return createDataModel(provider);
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	private IDataModelProvider loadProvider(String id) {
+		if (null == reader) {
+			reader = new DataModelExtensionReader();
 		}
-		return null;
+		return reader.getProvider(id);
+	}
+
+	public IDataModel createDataModel(Class dataModelProviderID) {
+		return createDataModel(dataModelProviderID.getName());
 	}
 
 	public IDataModel createDataModel(IDataModelProvider provider) {
