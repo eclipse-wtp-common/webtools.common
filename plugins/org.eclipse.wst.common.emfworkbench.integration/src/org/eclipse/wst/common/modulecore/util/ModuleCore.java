@@ -131,4 +131,7 @@ public class ModuleCore {
 	public URI getOutputContainerRoot(WorkbenchModule wbModule, IProject proj) {
 	    return URI.createURI(proj.getProjectRelativePath().toString()+".deployables/"+wbModule.getDeployedName()); //$NON-NLS-1$
 	} 
+	public URI getProjectRootOutputContainer(IProject proj) {
+	    return URI.createURI(proj.getProjectRelativePath().toString()+".deployables/");
+	}
 }

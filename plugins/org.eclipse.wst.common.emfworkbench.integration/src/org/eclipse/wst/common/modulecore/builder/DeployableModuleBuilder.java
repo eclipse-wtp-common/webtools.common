@@ -7,6 +7,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.modulecore.IModuleConstants;
 import org.eclipse.wst.common.modulecore.ModuleStructuralModel;
@@ -54,7 +55,8 @@ public class DeployableModuleBuilder extends IncrementalProjectBuilder implement
 	}
 
 	protected void clean(IProgressMonitor monitor) throws CoreException {
-		// TODO Clean Workspace
+		URI rootOutputURI = ModuleCore.INSTANCE.getProjectRootOutputContainer(getProject());
+		//remove entire .deployables
 		super.clean(monitor);
     }
 }
