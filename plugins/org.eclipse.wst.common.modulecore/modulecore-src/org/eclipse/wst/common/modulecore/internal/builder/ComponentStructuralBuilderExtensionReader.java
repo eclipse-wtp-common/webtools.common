@@ -24,7 +24,8 @@ public class ComponentStructuralBuilderExtensionReader extends RegistryReader {
 	static final String ELEMENT_DEPLOYABLE_MODULE_BUILDER_EXT = "componentStructuralBuilder"; //$NON-NLS-1$
 	//static final String ATT_OP_TYPE = "operationType"; //$NON-NLS-1$
 	static final String SERVER_TARGET_ID = "serverTargetID"; //$NON-NLS-1$
-	static final String DEPLOYABLE_MODULE_BUILDER = "componentStructuralBuilderDataModel"; //$NON-NLS-1$
+	static final String COMPONENT_STRUCTURAL_BUILDER = "componentStructuralBuilderDataModel"; //$NON-NLS-1$
+	static final String COMPONENT_TYPE_ID = "componentTypeID"; //$NON-NLS-1$
 
     public ComponentStructuralBuilderExtensionReader() {
         super(ModulecorePlugin.PLUGIN_ID, "ComponentStructuralBuilder"); //$NON-NLS-1$
@@ -40,14 +41,15 @@ public class ComponentStructuralBuilderExtensionReader extends RegistryReader {
 	    if (!element.getName().equals(ELEMENT_DEPLOYABLE_MODULE_BUILDER_EXT))
 			return false;
 		String serverTargetID = element.getAttribute(SERVER_TARGET_ID);
-		ComponentStructuralProjectBuilderDataModel op = null;
+		String componentTypeID = element.getAttribute(COMPONENT_TYPE_ID);
+		ComponentStructuralBuilderDataModel dm = null;
         try {
-            op = (ComponentStructuralProjectBuilderDataModel) element.createExecutableExtension(DEPLOYABLE_MODULE_BUILDER);
+            dm = (ComponentStructuralBuilderDataModel) element.createExecutableExtension(COMPONENT_STRUCTURAL_BUILDER);
         } catch (CoreException e) {
             Logger.getLogger().log(e.toString());
         }
-        if(op != null)
-            addExtensionPoint(serverTargetID, op);
+        if(dm != null)
+            addExtensionPoint(serverTargetID, componentTypeID, dm);
 		return true;
 
 	}
@@ -58,8 +60,14 @@ public class ComponentStructuralBuilderExtensionReader extends RegistryReader {
 	 * @param extensions
 	 *            The extensions to set
 	 */
-	private static void addExtensionPoint(String serverTargetID, ComponentStructuralProjectBuilderDataModel builderOp) {
-		builderExtensions.put(serverTargetID, builderOp);
+	private static void addExtensionPoint(String serverTargetID, String componentType, ComponentStructuralBuilderDataModel builderDM) {
+	    ComponentStructuralBuilderCache builderCache = null;
+	    if(builderExtensions.containsKey(serverTargetID))
+	        builderCache = (ComponentStructuralBuilderCache)builderExtensions.get(serverTargetID);
+	    else
+	        builderCache = new ComponentStructuralBuilderCache();
+		builderCache.addComponentStructrualBuilderForID(builderDM, componentType);
+	    builderExtensions.put(serverTargetID, builderCache);
 	}
 
 	protected static HashMap getExtensionPoints() {

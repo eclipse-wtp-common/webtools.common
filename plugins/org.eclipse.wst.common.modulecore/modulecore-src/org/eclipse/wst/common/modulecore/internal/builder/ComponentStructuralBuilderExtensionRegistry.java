@@ -14,13 +14,13 @@ import java.util.HashMap;
 
 public class ComponentStructuralBuilderExtensionRegistry {
     
-	protected static boolean extPointHasRead = false;
+	protected static boolean extPointHasRead = false; //$NON-NLS-1$
 
-	protected static ComponentStructuralBuilderExtensionRegistry instance = null;
+	protected static ComponentStructuralBuilderExtensionRegistry INSTANCE = null; //$NON-NLS-1$
 
-	protected static HashMap builderExtensions = null;
+	protected static HashMap builderExtensions = null; //$NON-NLS-1$
 
-	protected static ComponentStructuralBuilderExtensionReader builderExtensionReader = null;
+	protected static ComponentStructuralBuilderExtensionReader builderExtensionReader = null; //$NON-NLS-1$
     /**
      * 
      */
@@ -28,19 +28,33 @@ public class ComponentStructuralBuilderExtensionRegistry {
         super();
     }
     
-	private static HashMap getExtensionPoints() {
+	private static void getExtensionPoints() {
 		if (!extPointHasRead) {
 		    builderExtensionReader = new ComponentStructuralBuilderExtensionReader();
 		    builderExtensionReader.readRegistry();
 			extPointHasRead = true;
 		}
 		if (builderExtensionReader == null)
-			return null;
-		return ComponentStructuralBuilderExtensionReader.getExtensionPoints();
+			return;
+		builderExtensions = ComponentStructuralBuilderExtensionReader.getExtensionPoints();
 	}
 	
-	protected static ComponentStructuralProjectBuilderDataModel getComponentStructuralBuilderDMForServerTargetID(String serverTargetID) {
-	    return (ComponentStructuralProjectBuilderDataModel)getExtensionPoints().get(serverTargetID);
+	protected static ComponentStructuralBuilderDataModel getComponentStructuralBuilderDMForServerTargetID(String serverTargetID, String componentTypeID) {
+	    if(!extPointHasRead)
+	        getExtensionPoints();
+	    if(builderExtensions == null || builderExtensions.isEmpty()) return null;
+	    
+	    ComponentStructuralBuilderCache cache = null;
+	    if(builderExtensions.containsKey(serverTargetID))
+	        cache = (ComponentStructuralBuilderCache)builderExtensions.get(serverTargetID);
+	    if(cache == null) {
+	        if(builderExtensions.containsKey("default")){
+	            cache = (ComponentStructuralBuilderCache)builderExtensions.get("default");
+	        }
+	    }
+	    if(cache == null)
+	        return null;
+	    return cache.getAvailableComponentStructuralBuilderForID(componentTypeID);
 	}
 	/**
 	 * Gets the instance.
@@ -48,8 +62,8 @@ public class ComponentStructuralBuilderExtensionRegistry {
 	 * @return Returns a EjbPageExtensionRegistry
 	 */
 	public static ComponentStructuralBuilderExtensionRegistry getInstance() {
-		if (instance == null)
-			instance = new ComponentStructuralBuilderExtensionRegistry();
-		return instance;
+		if (INSTANCE == null)
+		    INSTANCE = new ComponentStructuralBuilderExtensionRegistry();
+		return INSTANCE;
 	}
 }

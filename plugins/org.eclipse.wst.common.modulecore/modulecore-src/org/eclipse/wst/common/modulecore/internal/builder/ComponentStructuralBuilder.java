@@ -26,9 +26,6 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.internal.util.IModuleConstants;
-import org.eclipse.wst.server.core.IProjectProperties;
-import org.eclipse.wst.server.core.IRuntime;
-import org.eclipse.wst.server.core.ServerCore;
 
 public class ComponentStructuralBuilder extends IncrementalProjectBuilder implements IModuleConstants {
     /**
@@ -50,25 +47,18 @@ public class ComponentStructuralBuilder extends IncrementalProjectBuilder implem
      *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
      */
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
-        IProjectProperties props = ServerCore.getProjectProperties(getProject());
-        IRuntime runtime = props.getRuntimeTarget();
-        ComponentStructuralProjectBuilderDataModel builderDataModel = null;
         ModuleCore moduleCore = null;
         
         // clean markers
 		IResource wtpmoduleFile = getProject().findMember(".wtpmodules"); //$NON-NLS-1$
 		wtpmoduleFile.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE); 
-		
-        //Check for possible registered overrides of base project builder and run in place of basic builder
-		//else create and run default builder
-        builderDataModel = getStructuralComponentBuilderIfRegistered(runtime);
-        if(builderDataModel == null)
-            builderDataModel = new BasicComponentStructuralProjectBuilderDataModel();
+
+        ComponentStructuralProjectBuilderDataModel builderDataModel = new ComponentStructuralProjectBuilderDataModel();
         try {
             moduleCore = ModuleCore.getModuleCoreForRead(getProject());
-            builderDataModel.setProperty(BasicComponentStructuralProjectBuilderDataModel.MODULE_CORE, moduleCore);
-            builderDataModel.setProperty(BasicComponentStructuralProjectBuilderDataModel.PROJECT, getProject());
-            builderDataModel.setProperty(BasicComponentStructuralProjectBuilderDataModel.PROJECT_DETLA, getDelta(getProject()));
+            builderDataModel.setProperty(ComponentStructuralProjectBuilderDataModel.MODULE_CORE, moduleCore);
+            builderDataModel.setProperty(ComponentStructuralProjectBuilderDataModel.PROJECT, getProject());
+            builderDataModel.setProperty(ComponentStructuralProjectBuilderDataModel.PROJECT_DETLA, getDelta(getProject()));
             //TODO: implement incremental builds
             // dataModel.setProperty(DeployableModuleProjectBuilderDataModel.BUILD_KIND;
             WTPOperation op = builderDataModel.getDefaultOperation();
@@ -86,18 +76,6 @@ public class ComponentStructuralBuilder extends IncrementalProjectBuilder implem
                 moduleCore.dispose();
             }
         }
-    }
-
-    /**
-     * @param runtime
-     * @return
-     */
-    private ComponentStructuralProjectBuilderDataModel getStructuralComponentBuilderIfRegistered(IRuntime runtime) {
-		if(runtime != null) { 
-            ComponentStructuralProjectBuilderDataModel builderOverride = ComponentStructuralBuilderExtensionRegistry.getComponentStructuralBuilderDMForServerTargetID(runtime.getId());
-                return builderOverride;
-        }
-        return null;
     }
 
     protected void clean(IProgressMonitor monitor) throws CoreException {

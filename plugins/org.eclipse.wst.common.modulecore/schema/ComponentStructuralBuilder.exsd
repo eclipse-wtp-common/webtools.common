@@ -48,6 +48,13 @@
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="componentTypeID" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
          <attribute name="componentStructuralBuilderDataModel" type="string" use="required">
             <annotation>
                <documentation>

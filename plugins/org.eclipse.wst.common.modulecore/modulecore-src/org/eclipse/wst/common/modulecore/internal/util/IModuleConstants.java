@@ -33,6 +33,8 @@ public interface IModuleConstants {
 	public final static String JST_APPCLIENT_MODULE = "jst.appclient"; //$NON-NLS-1$
 	public final static String JST_CONNECTOR_MODULE = "jst.connector"; //$NON-NLS-1$
 	
+	public final static String DEPENDENT_MODULE = "dependent"; //$NON-NLS-1$
+	
 	public final static String J2EE_VERSION_1_2 = "1.2"; //$NON-NLS-1$
 	public final static String J2EE_VERSION_1_3 = "1.3"; //$NON-NLS-1$
 	public final static String J2EE_VERSION_1_4 = "1.4"; //$NON-NLS-1$

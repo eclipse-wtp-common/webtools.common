@@ -17,19 +17,19 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 
-public class BasicComponentStructuralProjectBuilderOperation extends WTPOperation {
+public class ComponentStructuralProjectBuilderOperation extends WTPOperation {
 
     /**
      * @param operationDataModel
      */
-    public BasicComponentStructuralProjectBuilderOperation(BasicComponentStructuralProjectBuilderDataModel operationDataModel) {
+    public ComponentStructuralProjectBuilderOperation(ComponentStructuralProjectBuilderDataModel operationDataModel) {
         super(operationDataModel);
     }
 
     /**
      * 
      */
-    public BasicComponentStructuralProjectBuilderOperation() {
+    public ComponentStructuralProjectBuilderOperation() {
         super();
     }
 
@@ -37,8 +37,8 @@ public class BasicComponentStructuralProjectBuilderOperation extends WTPOperatio
      * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperation#execute(org.eclipse.core.runtime.IProgressMonitor)
      */
     protected void execute(IProgressMonitor monitor) throws CoreException, InvocationTargetException, InterruptedException {
-        BasicComponentStructuralProjectBuilderDataModel deployProjectDM = (BasicComponentStructuralProjectBuilderDataModel)operationDataModel;
-        List deployableModuleDM = (List)deployProjectDM.getProperty(BasicComponentStructuralProjectBuilderDataModel.MODULE_BUILDER_DM_LIST);
+        ComponentStructuralProjectBuilderDataModel deployProjectDM = (ComponentStructuralProjectBuilderDataModel)operationDataModel;
+        List deployableModuleDM = (List)deployProjectDM.getProperty(ComponentStructuralProjectBuilderDataModel.MODULE_BUILDER_DM_LIST);
     
         WTPOperation op = null;
         if(deployableModuleDM == null) return;
