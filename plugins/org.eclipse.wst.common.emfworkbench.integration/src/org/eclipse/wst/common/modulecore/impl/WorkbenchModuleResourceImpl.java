@@ -2,21 +2,28 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchModuleResourceImpl.java,v 1.4 2005/01/26 16:48:35 cbridgha Exp $
+ * $Id: WorkbenchModuleResourceImpl.java,v 1.5 2005/01/26 21:34:08 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
 import java.util.Collection;
 
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.notify.NotificationChain;
+
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.InternalEObject;
+
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.util.EDataTypeUniqueEList;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
+import org.eclipse.wst.common.modulecore.WorkbenchModule;
 import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
 
 /**
@@ -29,6 +36,7 @@ import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
  *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleResourceImpl#getSourcePath <em>Source Path</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleResourceImpl#getDeployedPath <em>Deployed Path</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleResourceImpl#getExclusions <em>Exclusions</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleResourceImpl#getModule <em>Module</em>}</li>
  * </ul>
  * </p>
  *
@@ -162,6 +170,92 @@ public class WorkbenchModuleResourceImpl extends EObjectImpl implements Workbenc
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public WorkbenchModule getModule() {
+		if (eContainerFeatureID != ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE) return null;
+		return (WorkbenchModule)eContainer;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setModule(WorkbenchModule newModule) {
+		if (newModule != eContainer || (eContainerFeatureID != ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE && newModule != null)) {
+			if (EcoreUtil.isAncestor(this, newModule))
+				throw new IllegalArgumentException("Recursive containment not allowed for " + toString());
+			NotificationChain msgs = null;
+			if (eContainer != null)
+				msgs = eBasicRemoveFromContainer(msgs);
+			if (newModule != null)
+				msgs = ((InternalEObject)newModule).eInverseAdd(this, ModuleCorePackage.WORKBENCH_MODULE__RESOURCES, WorkbenchModule.class, msgs);
+			msgs = eBasicSetContainer((InternalEObject)newModule, ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE, msgs);
+			if (msgs != null) msgs.dispatch();
+		}
+		else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE, newModule, newModule));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, Class baseClass, NotificationChain msgs) {
+		if (featureID >= 0) {
+			switch (eDerivedStructuralFeatureID(featureID, baseClass)) {
+				case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE:
+					if (eContainer != null)
+						msgs = eBasicRemoveFromContainer(msgs);
+					return eBasicSetContainer(otherEnd, ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE, msgs);
+				default:
+					return eDynamicInverseAdd(otherEnd, featureID, baseClass, msgs);
+			}
+		}
+		if (eContainer != null)
+			msgs = eBasicRemoveFromContainer(msgs);
+		return eBasicSetContainer(otherEnd, featureID, msgs);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, Class baseClass, NotificationChain msgs) {
+		if (featureID >= 0) {
+			switch (eDerivedStructuralFeatureID(featureID, baseClass)) {
+				case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE:
+					return eBasicSetContainer(null, ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE, msgs);
+				default:
+					return eDynamicInverseRemove(otherEnd, featureID, baseClass, msgs);
+			}
+		}
+		return eBasicSetContainer(null, featureID, msgs);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain eBasicRemoveFromContainer(NotificationChain msgs) {
+		if (eContainerFeatureID >= 0) {
+			switch (eContainerFeatureID) {
+				case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE:
+					return eContainer.eInverseRemove(this, ModuleCorePackage.WORKBENCH_MODULE__RESOURCES, WorkbenchModule.class, msgs);
+				default:
+					return eDynamicBasicRemoveFromContainer(msgs);
+			}
+		}
+		return eContainer.eInverseRemove(this, EOPPOSITE_FEATURE_BASE - eContainerFeatureID, null, msgs);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public Object eGet(EStructuralFeature eFeature, boolean resolve) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
 			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__SOURCE_PATH:
@@ -170,6 +264,8 @@ public class WorkbenchModuleResourceImpl extends EObjectImpl implements Workbenc
 				return getDeployedPath();
 			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__EXCLUSIONS:
 				return getExclusions();
+			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE:
+				return getModule();
 		}
 		return eDynamicGet(eFeature, resolve);
 	}
@@ -191,6 +287,9 @@ public class WorkbenchModuleResourceImpl extends EObjectImpl implements Workbenc
 				getExclusions().clear();
 				getExclusions().addAll((Collection)newValue);
 				return;
+			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE:
+				setModule((WorkbenchModule)newValue);
+				return;
 		}
 		eDynamicSet(eFeature, newValue);
 	}
@@ -211,6 +310,9 @@ public class WorkbenchModuleResourceImpl extends EObjectImpl implements Workbenc
 			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__EXCLUSIONS:
 				getExclusions().clear();
 				return;
+			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE:
+				setModule((WorkbenchModule)null);
+				return;
 		}
 		eDynamicUnset(eFeature);
 	}
@@ -228,6 +330,8 @@ public class WorkbenchModuleResourceImpl extends EObjectImpl implements Workbenc
 				return DEPLOYED_PATH_EDEFAULT == null ? deployedPath != null : !DEPLOYED_PATH_EDEFAULT.equals(deployedPath);
 			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__EXCLUSIONS:
 				return exclusions != null && !exclusions.isEmpty();
+			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE:
+				return getModule() != null;
 		}
 		return eDynamicIsSet(eFeature);
 	}

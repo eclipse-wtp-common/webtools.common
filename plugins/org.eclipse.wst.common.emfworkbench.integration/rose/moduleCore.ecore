@@ -13,7 +13,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="modules" upperBound="-1"
         eType="#//WorkbenchModule"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="resources" upperBound="-1"
-        eType="#//WorkbenchModuleResource"/>
+        eType="#//WorkbenchModuleResource" containment="true" eOpposite="#//WorkbenchModuleResource/module"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="moduleType" upperBound="-1"
         eType="#//IModuleType"/>
   </eClassifiers>
@@ -22,6 +22,8 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="deployedPath" eType="#//URI"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="exclusions" upperBound="-1"
         eType="#//URI"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="module" lowerBound="1"
+        eType="#//WorkbenchModule" transient="true" eOpposite="#//WorkbenchModule/resources"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="WorkbenchApplication" eSuperTypes="#//WorkbenchModule">
     <eStructuralFeatures xsi:type="ecore:EReference" name="deployScheme" lowerBound="1"

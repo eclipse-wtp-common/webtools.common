@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCorePackage.java,v 1.7 2005/01/26 19:32:14 cbridgha Exp $
+ * $Id: ModuleCorePackage.java,v 1.8 2005/01/26 21:34:08 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -134,7 +134,7 @@ public interface ModuleCorePackage extends EPackage{
 	int WORKBENCH_MODULE__MODULES = 2;
 
 	/**
-	 * The feature id for the '<em><b>Resources</b></em>' reference list.
+	 * The feature id for the '<em><b>Resources</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -198,13 +198,22 @@ public interface ModuleCorePackage extends EPackage{
 	int WORKBENCH_MODULE_RESOURCE__EXCLUSIONS = 2;
 
 	/**
+	 * The feature id for the '<em><b>Module</b></em>' container reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int WORKBENCH_MODULE_RESOURCE__MODULE = 3;
+
+	/**
 	 * The number of structural features of the the '<em>Workbench Module Resource</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int WORKBENCH_MODULE_RESOURCE_FEATURE_COUNT = 3;
+	int WORKBENCH_MODULE_RESOURCE_FEATURE_COUNT = 4;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.wst.common.modulecore.impl.WorkbenchApplicationImpl <em>Workbench Application</em>}' class.
@@ -244,7 +253,7 @@ public interface ModuleCorePackage extends EPackage{
 	int WORKBENCH_APPLICATION__MODULES = WORKBENCH_MODULE__MODULES;
 
 	/**
-	 * The feature id for the '<em><b>Resources</b></em>' reference list.
+	 * The feature id for the '<em><b>Resources</b></em>' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -486,10 +495,10 @@ public interface ModuleCorePackage extends EPackage{
 	EReference getWorkbenchModule_Modules();
 
 	/**
-	 * Returns the meta object for the reference list '{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getResources <em>Resources</em>}'.
+	 * Returns the meta object for the containment reference list '{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getResources <em>Resources</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference list '<em>Resources</em>'.
+	 * @return the meta object for the containment reference list '<em>Resources</em>'.
 	 * @see org.eclipse.wst.common.modulecore.WorkbenchModule#getResources()
 	 * @see #getWorkbenchModule()
 	 * @generated
@@ -549,6 +558,17 @@ public interface ModuleCorePackage extends EPackage{
 	 * @generated
 	 */
 	EAttribute getWorkbenchModuleResource_Exclusions();
+
+	/**
+	 * Returns the meta object for the container reference '{@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getModule <em>Module</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the container reference '<em>Module</em>'.
+	 * @see org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getModule()
+	 * @see #getWorkbenchModuleResource()
+	 * @generated
+	 */
+	EReference getWorkbenchModuleResource_Module();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.WorkbenchApplication <em>Workbench Application</em>}'.

@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCorePackageImpl.java,v 1.8 2005/01/26 19:32:14 cbridgha Exp $
+ * $Id: ModuleCorePackageImpl.java,v 1.9 2005/01/26 21:34:08 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
@@ -275,6 +275,15 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EReference getWorkbenchModuleResource_Module() {
+		return (EReference)workbenchModuleResourceEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getWorkbenchApplication() {
 		return workbenchApplicationEClass;
 	}
@@ -430,6 +439,7 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 		createEAttribute(workbenchModuleResourceEClass, WORKBENCH_MODULE_RESOURCE__SOURCE_PATH);
 		createEAttribute(workbenchModuleResourceEClass, WORKBENCH_MODULE_RESOURCE__DEPLOYED_PATH);
 		createEAttribute(workbenchModuleResourceEClass, WORKBENCH_MODULE_RESOURCE__EXCLUSIONS);
+		createEReference(workbenchModuleResourceEClass, WORKBENCH_MODULE_RESOURCE__MODULE);
 
 		workbenchApplicationEClass = createEClass(WORKBENCH_APPLICATION);
 		createEReference(workbenchApplicationEClass, WORKBENCH_APPLICATION__DEPLOY_SCHEME);
@@ -486,13 +496,14 @@ public class ModuleCorePackageImpl extends EPackageImpl implements ModuleCorePac
 		initEAttribute(getWorkbenchModule_Handle(), this.getURI(), "handle", null, 0, 1, WorkbenchModule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getWorkbenchModule_DeployedPath(), this.getURI(), "deployedPath", null, 0, 1, WorkbenchModule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getWorkbenchModule_Modules(), this.getWorkbenchModule(), null, "modules", null, 0, -1, WorkbenchModule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEReference(getWorkbenchModule_Resources(), this.getWorkbenchModuleResource(), null, "resources", null, 0, -1, WorkbenchModule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getWorkbenchModule_Resources(), this.getWorkbenchModuleResource(), this.getWorkbenchModuleResource_Module(), "resources", null, 0, -1, WorkbenchModule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getWorkbenchModule_ModuleType(), this.getIModuleType(), null, "moduleType", null, 0, -1, WorkbenchModule.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(workbenchModuleResourceEClass, WorkbenchModuleResource.class, "WorkbenchModuleResource", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getWorkbenchModuleResource_SourcePath(), this.getURI(), "sourcePath", null, 0, 1, WorkbenchModuleResource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getWorkbenchModuleResource_DeployedPath(), this.getURI(), "deployedPath", null, 0, 1, WorkbenchModuleResource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getWorkbenchModuleResource_Exclusions(), this.getURI(), "exclusions", null, 0, -1, WorkbenchModuleResource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getWorkbenchModuleResource_Module(), this.getWorkbenchModule(), this.getWorkbenchModule_Resources(), "module", null, 1, 1, WorkbenchModuleResource.class, IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(workbenchApplicationEClass, WorkbenchApplication.class, "WorkbenchApplication", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getWorkbenchApplication_DeployScheme(), this.getDeployScheme(), null, "deployScheme", null, 1, 1, WorkbenchApplication.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

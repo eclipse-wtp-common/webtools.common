@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchModuleResource.java,v 1.4 2005/01/26 16:48:35 cbridgha Exp $
+ * $Id: WorkbenchModuleResource.java,v 1.5 2005/01/26 21:34:08 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -21,6 +21,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getSourcePath <em>Source Path</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getDeployedPath <em>Deployed Path</em>}</li>
  *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getExclusions <em>Exclusions</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getModule <em>Module</em>}</li>
  * </ul>
  * </p>
  *
@@ -28,7 +29,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model 
  * @generated
  */
-public interface WorkbenchModuleResource extends EObject {
+public interface WorkbenchModuleResource extends EObject{
 	/**
 	 * Returns the value of the '<em><b>Source Path</b></em>' attribute.
 	 * <!-- begin-user-doc -->
@@ -96,5 +97,33 @@ public interface WorkbenchModuleResource extends EObject {
 	 * @generated
 	 */
 	EList getExclusions();
+
+	/**
+	 * Returns the value of the '<em><b>Module</b></em>' container reference.
+	 * It is bidirectional and its opposite is '{@link org.eclipse.wst.common.modulecore.WorkbenchModule#getResources <em>Resources</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Module</em>' container reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Module</em>' container reference.
+	 * @see #setModule(WorkbenchModule)
+	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchModuleResource_Module()
+	 * @see org.eclipse.wst.common.modulecore.WorkbenchModule#getResources
+	 * @model opposite="resources" required="true"
+	 * @generated
+	 */
+	WorkbenchModule getModule();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getModule <em>Module</em>}' container reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Module</em>' container reference.
+	 * @see #getModule()
+	 * @generated
+	 */
+	void setModule(WorkbenchModule value);
 
 } // WorkbenchModuleResource

@@ -2,20 +2,27 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchModuleImpl.java,v 1.5 2005/01/26 16:48:35 cbridgha Exp $
+ * $Id: WorkbenchModuleImpl.java,v 1.6 2005/01/26 21:34:08 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
 import java.util.Collection;
 
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.notify.NotificationChain;
+
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.InternalEObject;
+
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
+import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
+import org.eclipse.emf.ecore.util.InternalEList;
+
 import org.eclipse.wst.common.modulecore.IModuleType;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
@@ -90,7 +97,7 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	protected EList modules = null;
 
 	/**
-	 * The cached value of the '{@link #getResources() <em>Resources</em>}' reference list.
+	 * The cached value of the '{@link #getResources() <em>Resources</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getResources()
@@ -188,7 +195,7 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	 */
 	public EList getResources() {
 		if (resources == null) {
-			resources = new EObjectResolvingEList(WorkbenchModuleResource.class, this, ModuleCorePackage.WORKBENCH_MODULE__RESOURCES);
+			resources = new EObjectContainmentWithInverseEList(WorkbenchModuleResource.class, this, ModuleCorePackage.WORKBENCH_MODULE__RESOURCES, ModuleCorePackage.WORKBENCH_MODULE_RESOURCE__MODULE);
 		}
 		return resources;
 	}
@@ -203,6 +210,42 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 			moduleType = new EObjectResolvingEList(IModuleType.class, this, ModuleCorePackage.WORKBENCH_MODULE__MODULE_TYPE);
 		}
 		return moduleType;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, Class baseClass, NotificationChain msgs) {
+		if (featureID >= 0) {
+			switch (eDerivedStructuralFeatureID(featureID, baseClass)) {
+				case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES:
+					return ((InternalEList)getResources()).basicAdd(otherEnd, msgs);
+				default:
+					return eDynamicInverseAdd(otherEnd, featureID, baseClass, msgs);
+			}
+		}
+		if (eContainer != null)
+			msgs = eBasicRemoveFromContainer(msgs);
+		return eBasicSetContainer(otherEnd, featureID, msgs);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, Class baseClass, NotificationChain msgs) {
+		if (featureID >= 0) {
+			switch (eDerivedStructuralFeatureID(featureID, baseClass)) {
+				case ModuleCorePackage.WORKBENCH_MODULE__RESOURCES:
+					return ((InternalEList)getResources()).basicRemove(otherEnd, msgs);
+				default:
+					return eDynamicInverseRemove(otherEnd, featureID, baseClass, msgs);
+			}
+		}
+		return eBasicSetContainer(null, featureID, msgs);
 	}
 
 	/**

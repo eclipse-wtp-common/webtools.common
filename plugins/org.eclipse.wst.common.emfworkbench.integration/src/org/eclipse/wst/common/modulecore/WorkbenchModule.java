@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchModule.java,v 1.5 2005/01/26 16:48:35 cbridgha Exp $
+ * $Id: WorkbenchModule.java,v 1.6 2005/01/26 21:34:08 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -100,17 +100,19 @@ public interface WorkbenchModule extends EObject{
 	EList getModules();
 
 	/**
-	 * Returns the value of the '<em><b>Resources</b></em>' reference list.
+	 * Returns the value of the '<em><b>Resources</b></em>' containment reference list.
 	 * The list contents are of type {@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource}.
+	 * It is bidirectional and its opposite is '{@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getModule <em>Module</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Resources</em>' reference list isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Resources</em>' reference list.
+	 * @return the value of the '<em>Resources</em>' containment reference list.
 	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchModule_Resources()
-	 * @model type="org.eclipse.wst.common.modulecore.WorkbenchModuleResource"
+	 * @see org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getModule
+	 * @model type="org.eclipse.wst.common.modulecore.WorkbenchModuleResource" opposite="module" containment="true"
 	 * @generated
 	 */
 	EList getResources();

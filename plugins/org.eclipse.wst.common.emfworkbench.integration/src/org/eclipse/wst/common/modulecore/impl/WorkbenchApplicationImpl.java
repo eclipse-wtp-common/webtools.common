@@ -2,18 +2,22 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchApplicationImpl.java,v 1.4 2005/01/26 16:48:35 cbridgha Exp $
+ * $Id: WorkbenchApplicationImpl.java,v 1.5 2005/01/26 21:34:08 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
 import java.util.Collection;
 
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.notify.NotificationChain;
+
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
+import org.eclipse.emf.ecore.util.InternalEList;
+
 import org.eclipse.wst.common.modulecore.DeployScheme;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 import org.eclipse.wst.common.modulecore.WorkbenchApplication;
@@ -96,6 +100,42 @@ public class WorkbenchApplicationImpl extends WorkbenchModuleImpl implements Wor
 		deployScheme = newDeployScheme;
 		if (eNotificationRequired())
 			eNotify(new ENotificationImpl(this, Notification.SET, ModuleCorePackage.WORKBENCH_APPLICATION__DEPLOY_SCHEME, oldDeployScheme, deployScheme));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain eInverseAdd(InternalEObject otherEnd, int featureID, Class baseClass, NotificationChain msgs) {
+		if (featureID >= 0) {
+			switch (eDerivedStructuralFeatureID(featureID, baseClass)) {
+				case ModuleCorePackage.WORKBENCH_APPLICATION__RESOURCES:
+					return ((InternalEList)getResources()).basicAdd(otherEnd, msgs);
+				default:
+					return eDynamicInverseAdd(otherEnd, featureID, baseClass, msgs);
+			}
+		}
+		if (eContainer != null)
+			msgs = eBasicRemoveFromContainer(msgs);
+		return eBasicSetContainer(otherEnd, featureID, msgs);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, Class baseClass, NotificationChain msgs) {
+		if (featureID >= 0) {
+			switch (eDerivedStructuralFeatureID(featureID, baseClass)) {
+				case ModuleCorePackage.WORKBENCH_APPLICATION__RESOURCES:
+					return ((InternalEList)getResources()).basicRemove(otherEnd, msgs);
+				default:
+					return eDynamicInverseRemove(otherEnd, featureID, baseClass, msgs);
+			}
+		}
+		return eBasicSetContainer(null, featureID, msgs);
 	}
 
 	/**
