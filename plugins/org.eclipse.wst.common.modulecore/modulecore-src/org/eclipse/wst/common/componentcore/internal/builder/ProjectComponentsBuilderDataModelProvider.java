@@ -22,10 +22,11 @@ import org.eclipse.wst.common.componentcore.StructureEdit;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
-import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
+import org.eclipse.wst.common.frameworks.internal.enablement.DataModelEnablementFactory;
 import org.eclipse.wst.server.core.IProjectProperties;
 import org.eclipse.wst.server.core.ServerCore;
 
@@ -148,30 +149,49 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
 
 		List sortedList = computeModuleBuildOrder(wbModules);
 
-		ComponentStructuralBuilderExtensionRegistry registry = null;
 		WorkbenchComponentBuilderDataModelProvider provider = null;
 		
         IProjectProperties props = ServerCore.getProjectProperties((IProject)model.getProperty(PROJECT));
         String runtimeID = props.getRuntimeTarget().getId();
-
-		for (int i = 0; i < sortedList.size(); i++) {
-			WorkbenchComponent wbModule = (WorkbenchComponent) sortedList.get(i);
-			String id = wbModule.getComponentType().getComponentTypeId();
-			if (id == null)
+        
+        IDataModel dataModel = null;
+        IProject curProject = (IProject)model.getProperty(PROJECT);
+		
+        String builderType = null;
+        for (int i = 0; i < sortedList.size(); i++) {
+			WorkbenchComponent wbComponent = (WorkbenchComponent) sortedList.get(i);
+			String typeId = wbComponent.getComponentType().getComponentTypeId();
+			if (typeId == null)
 				break;
-			provider = ComponentStructuralBuilderExtensionRegistry.getComponentStructuralBuilderDMForServerTargetID(runtimeID, wbModule.getComponentType().getComponentTypeId());
-			
-			if(provider == null) 
-			    break;
-			IDataModel dataModel = DataModelFactory.createDataModel(provider);
-			dataModel.setProperty(IWorkbenchComponentBuilderDataModelProperties.MODULE_CORE, moduleCore);
-			dataModel.setProperty(IWorkbenchComponentBuilderDataModelProperties.PROJECT, model.getProperty(PROJECT));
-			dataModel.setProperty(IWorkbenchComponentBuilderDataModelProperties.WORKBENCH_MODULE, wbModule);
-			moduleBuilderDataModelList.add(dataModel);
+            builderType = getBuilderTypeFromComponentID(typeId);
+			dataModel = DataModelEnablementFactory.createDataModel(builderType, curProject);
+            if(dataModel != null) {
+    			dataModel.setProperty(IWorkbenchComponentBuilderDataModelProperties.MODULE_CORE, moduleCore);
+    			dataModel.setProperty(IWorkbenchComponentBuilderDataModelProperties.PROJECT, model.getProperty(PROJECT));
+    			dataModel.setProperty(IWorkbenchComponentBuilderDataModelProperties.WORKBENCH_MODULE, wbComponent);
+    			moduleBuilderDataModelList.add(dataModel);
+            }
 		}
 		return moduleBuilderDataModelList;
 	}
 
+    //TODO: remove and implement mechanism to register new builders for type
+    private String getBuilderTypeFromComponentID(String id){
+        if(id.equals(IModuleConstants.JST_APPCLIENT_MODULE))
+            return "AppClientComponentBuilder";
+        if(id.equals(IModuleConstants.JST_EAR_MODULE))
+            return "EARComponentBuilder";
+        if(id.equals(IModuleConstants.JST_EJB_MODULE))
+            return "EJBComponentBuilder";
+        if(id.equals(IModuleConstants.JST_WEB_MODULE))
+            return "WebComponentBuilder";
+        if(id.equals(IModuleConstants.JST_CONNECTOR_MODULE))
+            return "ConnectorComponentBuilder";
+        if(id.equals(IModuleConstants.JST_UTILITY_MODULE))
+            return "JavaUtilityComponentBuilder";
+        return null;
+    }
+    
 	private List populateDeltaModuleBuilderDataModelList(ResourceDelta delta) {
 		//TODO: handle delta information correcty
 		return populateFullModuleBuilderDataModelList();
