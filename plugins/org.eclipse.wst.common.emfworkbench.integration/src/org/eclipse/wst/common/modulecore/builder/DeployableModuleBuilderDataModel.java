@@ -3,7 +3,7 @@ package org.eclipse.wst.common.modulecore.builder;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
 
-public abstract class DeployableModuleDataModel extends WTPOperationDataModel {
+public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataModel {
 	/**
 	 * Required, type IProject
 	 */
@@ -39,7 +39,7 @@ public abstract class DeployableModuleDataModel extends WTPOperationDataModel {
     /**
      * 
      */
-    public DeployableModuleDataModel() {
+    public DeployableModuleBuilderDataModel() {
         super();
         // TODO Auto-generated constructor stub
     }

@@ -2,7 +2,7 @@ package org.eclipse.wst.common.modulecore.builder;
 
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 
-public class DependentDeployableModuleDataModel extends DeployableModuleDataModel {
+public class DependentDeployableModuleDataModel extends DeployableModuleBuilderDataModel {
 
     /**
      * 

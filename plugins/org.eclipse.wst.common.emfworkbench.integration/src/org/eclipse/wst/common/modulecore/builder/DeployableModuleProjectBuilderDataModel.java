@@ -94,11 +94,11 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
         
         if(wbModules == null) return null;
         
-        DeployableModuleFactory factory = null;
-        DeployableModuleDataModel dataModel = null;
+        DeployableModuleBuilderFactory factory = null;
+        DeployableModuleBuilderDataModel dataModel = null;
         
         for(int i = 0; i<wbModules.length; i++){
-            factory = DeployableModuleFactoryRegistry.INSTANCE.createDeployableFactory(wbModules[i].getModuleType().getModuleTypeId());
+            factory = DeployableModuleBuilderFactoryRegistry.INSTANCE.createDeployableFactory(wbModules[i].getModuleType().getModuleTypeId());
             if(factory != null) {
                 dataModel = factory.createDeploymentModuleDataModel();
                 // TODO: set relevant DM info;
