@@ -26,5 +26,7 @@ public interface IVirtualComponent extends IVirtualContainer {
 	IPath[] getMetaResources();
 	void setMetaResources(IPath[] theMetaResourcePaths);
 	
+	IVirtualResource[] getResources(String aResourceType);
+	
 
 }

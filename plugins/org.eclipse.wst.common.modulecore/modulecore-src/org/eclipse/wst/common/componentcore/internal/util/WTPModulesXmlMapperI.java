@@ -18,4 +18,5 @@ public interface WTPModulesXmlMapperI {
 	String PROPERTY = "property"; //$NON-NLS-1$
 	String PROPERTY_NAME = "name";//$NON-NLS-1$
 	String PROPERTY_VALUE = "value";//$NON-NLS-1$
+	String RESOURCE_TYPE = "resource-type";//$NON-NLS-1$
 }

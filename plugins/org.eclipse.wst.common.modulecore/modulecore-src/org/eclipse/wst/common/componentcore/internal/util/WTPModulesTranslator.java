@@ -89,6 +89,7 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 			IDTranslator.INSTANCE,
 			new IPathTranslator(SOURCE_PATH, MODULE_CORE_PKG.getComponentResource_SourcePath(), DOM_ATTRIBUTE),
 			new IPathTranslator(RUNTIME_PATH, MODULE_CORE_PKG.getComponentResource_RuntimePath(), DOM_ATTRIBUTE),
+			new IPathTranslator(RESOURCE_TYPE, MODULE_CORE_PKG.getComponentResource_ResourceType(), DOM_ATTRIBUTE),
 			new Translator(EXCLUSIONS, MODULE_CORE_PKG.getComponentResource_Exclusions())
 		});
 		return result;
