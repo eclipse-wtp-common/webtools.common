@@ -20,7 +20,6 @@ import java.util.Collection;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-
 import org.eclipse.jem.util.UIContextDetermination;
 
 /**

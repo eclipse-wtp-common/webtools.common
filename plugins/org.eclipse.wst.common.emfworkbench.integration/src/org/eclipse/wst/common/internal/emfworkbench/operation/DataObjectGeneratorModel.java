@@ -40,8 +40,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.codegen.CodeGen.StreamProgressMonitor;
 import org.eclipse.emf.codegen.ecore.Generator;
 import org.eclipse.jem.util.plugin.JEMUtilPlugin;
-import org.eclipse.wst.common.frameworks.operations.WTPOperation;
-import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
 
 import sun.tools.jar.Main;
 

@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentTypeImpl.java,v 1.2 2005/03/15 02:12:30 cbridgha Exp $
+ * $Id: ComponentTypeImpl.java,v 1.3 2005/03/24 23:03:49 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.internal.impl;
 
@@ -17,11 +17,9 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.emf.ecore.util.EDataTypeUniqueEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
-
+import org.eclipse.wst.common.modulecore.ComponentType;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 import org.eclipse.wst.common.modulecore.Property;
-
-import org.eclipse.wst.common.modulecore.ComponentType;
 
 /**
  * <!-- begin-user-doc -->

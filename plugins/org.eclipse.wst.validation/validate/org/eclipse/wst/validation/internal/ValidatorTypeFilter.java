@@ -13,10 +13,9 @@ package org.eclipse.wst.validation.internal;
 import java.util.logging.Level;
 
 import org.eclipse.core.resources.IResource;
-import org.eclipse.wst.validation.plugin.ValidationPlugin;
-
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.validation.plugin.ValidationPlugin;
 
 /**
  * Represents a type filter tag in a validator's plugin.xml file. e.g. &lt;filter

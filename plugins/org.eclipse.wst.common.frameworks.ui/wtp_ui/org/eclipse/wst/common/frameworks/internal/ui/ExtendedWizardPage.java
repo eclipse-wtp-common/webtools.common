@@ -6,11 +6,10 @@
  * 
  * Contributors: IBM Corporation - initial API and implementation
  **************************************************************************************************/
-package org.eclipse.wst.common.frameworks.ui;
+package org.eclipse.wst.common.frameworks.internal.ui;
 
 import org.eclipse.core.internal.runtime.Assert;
-import org.eclipse.wst.common.frameworks.internal.ui.WTPCommonUIResourceHandler;
-import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
 
 /**
  * This class is EXPERIMENTAL and is subject to substantial changes.

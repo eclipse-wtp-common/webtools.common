@@ -8,9 +8,9 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
 
-import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
-import org.eclipse.wst.common.frameworks.ui.IExtendedPageHandler;
-import org.eclipse.wst.common.frameworks.ui.IExtendedWizardPage;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.internal.ui.IExtendedPageHandler;
+import org.eclipse.wst.common.frameworks.internal.ui.IExtendedWizardPage;
 
 
 /**

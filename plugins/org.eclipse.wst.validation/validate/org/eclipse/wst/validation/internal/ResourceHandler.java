@@ -14,10 +14,9 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 
-import org.eclipse.wst.validation.plugin.ValidationPlugin;
-
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.validation.plugin.ValidationPlugin;
 
 
 /**

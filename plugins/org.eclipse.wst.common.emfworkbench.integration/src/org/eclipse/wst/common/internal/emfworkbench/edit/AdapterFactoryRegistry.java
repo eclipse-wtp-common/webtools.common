@@ -21,10 +21,9 @@ import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEditPlugin;
-
 import org.eclipse.jem.util.RegistryReader;
 import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEditPlugin;
 
 /**
  * @author mdelder

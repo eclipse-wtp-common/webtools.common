@@ -19,11 +19,10 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.wst.validation.core.IMessage;
-import org.eclipse.wst.validation.plugin.ValidationPlugin;
-
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.validation.core.IMessage;
+import org.eclipse.wst.validation.plugin.ValidationPlugin;
 
 /**
  * This class must be called only by the validation framework.

@@ -19,10 +19,9 @@ package org.eclipse.wst.common.internal.emfworkbench.integration;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.jem.internal.util.emf.workbench.ProjectResourceSetImpl;
 import org.eclipse.wst.common.internal.emf.resource.ReferencedResource;
 import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
-
-import org.eclipse.jem.internal.util.emf.workbench.ProjectResourceSetImpl;
 
 /**
  * @author schacher

@@ -17,12 +17,11 @@ package org.eclipse.wst.common.frameworks.internal;
 import java.util.ResourceBundle;
 
 import org.eclipse.core.runtime.Plugin;
-import org.eclipse.wst.common.frameworks.internal.enablement.nonui.WorkbenchUtil;
-import org.osgi.framework.BundleContext;
-
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jem.util.logger.proxyrender.DefaultPluginTraceRenderer;
 import org.eclipse.jem.util.logger.proxyrender.IMsgLogger;
+import org.eclipse.wst.common.frameworks.internal.enablement.nonui.WorkbenchUtil;
+import org.osgi.framework.BundleContext;
 
 public abstract class WTPPlugin extends Plugin implements IMsgLogger {
 	protected static Logger logger = null;

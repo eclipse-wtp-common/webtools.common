@@ -6,7 +6,7 @@
  * 
  * Contributors: IBM Corporation - initial API and implementation
  **************************************************************************************************/
-package org.eclipse.wst.common.frameworks.operations;
+package org.eclipse.wst.common.frameworks.internal.operations;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -27,10 +27,6 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.wst.common.frameworks.internal.AdaptabilityUtility;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 import org.eclipse.wst.common.frameworks.internal.enablement.nonui.WFTWrappedException;
-import org.eclipse.wst.common.frameworks.internal.operations.ComposedExtendedOperationHolder;
-import org.eclipse.wst.common.frameworks.internal.operations.ComposedOperation;
-import org.eclipse.wst.common.frameworks.internal.operations.OperationExtensionRegistry;
-import org.eclipse.wst.common.frameworks.internal.operations.OperationStatus;
 import org.eclispe.wst.common.frameworks.internal.enablement.IEnablementManager;
 import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 

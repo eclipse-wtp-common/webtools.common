@@ -18,12 +18,11 @@ package org.eclipse.wst.common.internal.emfworkbench.edit;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
-import org.eclipse.wst.common.internal.emfworkbench.integration.ResourceSetWorkbenchEditSynchronizer;
-
+import org.eclipse.jem.internal.util.emf.workbench.EMFWorkbenchContextFactory;
 import org.eclipse.jem.util.emf.workbench.EMFWorkbenchContextBase;
 import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
-import org.eclipse.jem.internal.util.emf.workbench.EMFWorkbenchContextFactory;
+import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
+import org.eclipse.wst.common.internal.emfworkbench.integration.ResourceSetWorkbenchEditSynchronizer;
 
 /**
  * @author schacher

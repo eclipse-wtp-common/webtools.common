@@ -6,7 +6,7 @@
  * 
  * Contributors: IBM Corporation - initial API and implementation
  **************************************************************************************************/
-package org.eclipse.wst.common.frameworks.operations;
+package org.eclipse.wst.common.frameworks.internal.operations;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,7 +22,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
-import org.eclipse.wst.common.frameworks.internal.operations.NullOperationHandler;
 
 /**
  * WTPOperationDataModel is an essential piece of both the WTP Operation and WTP Wizard frameworks.

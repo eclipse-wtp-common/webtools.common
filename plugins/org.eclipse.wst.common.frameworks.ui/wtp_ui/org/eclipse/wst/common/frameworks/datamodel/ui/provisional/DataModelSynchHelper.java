@@ -43,8 +43,8 @@ import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelEvent;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelListener;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelPropertyDescriptor;
+import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelImpl;
 import org.eclipse.wst.common.frameworks.internal.ui.TimedModifyListener;
-import org.eclipse.wst.common.internal.datamodel.DataModelImpl;
 
 /**
  * This class is EXPERIMENTAL and is subject to substantial changes.

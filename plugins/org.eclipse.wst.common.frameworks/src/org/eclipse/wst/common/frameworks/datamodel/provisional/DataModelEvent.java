@@ -18,8 +18,8 @@ package org.eclipse.wst.common.frameworks.datamodel.provisional;
  * 
  * This class is EXPERIMENTAL and is subject to substantial changes.
  * 
- * @see org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel#addListener(WTPOperationDataModelListener)
- * @see org.eclipse.wst.common.frameworks.operations.WTPOperationDataModelListener
+ * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#addListener(WTPOperationDataModelListener)
+ * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModelListener
  */
 public class DataModelEvent {
 

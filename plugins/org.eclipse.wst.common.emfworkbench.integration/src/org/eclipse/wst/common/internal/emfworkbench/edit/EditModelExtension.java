@@ -18,9 +18,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.wst.common.frameworks.internal.ConfigurationElementWrapper;
-
 import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.common.frameworks.internal.ConfigurationElementWrapper;
 
 
 public class EditModelExtension extends ConfigurationElementWrapper {

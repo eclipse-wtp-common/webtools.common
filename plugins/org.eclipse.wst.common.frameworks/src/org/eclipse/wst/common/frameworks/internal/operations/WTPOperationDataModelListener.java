@@ -6,7 +6,7 @@
  * 
  * Contributors: IBM Corporation - initial API and implementation
  **************************************************************************************************/
-package org.eclipse.wst.common.frameworks.operations;
+package org.eclipse.wst.common.frameworks.internal.operations;
 
 /**
  * Clients wishing to register with a WTPOperationData to receive WTPOperationDataModelEvents need
@@ -14,7 +14,7 @@ package org.eclipse.wst.common.frameworks.operations;
  * 
  * This class is EXPERIMENTAL and is subject to substantial changes.
  * 
- * @see org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel#addListener(WTPOperationDataModelListener)
+ * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#addListener(WTPOperationDataModelListener)
  */
 public interface WTPOperationDataModelListener {
 	//TODO delete this

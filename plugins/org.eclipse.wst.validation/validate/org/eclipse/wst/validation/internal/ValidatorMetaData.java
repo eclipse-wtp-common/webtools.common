@@ -20,12 +20,11 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.core.IValidator;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchHelper;
 import org.eclipse.wst.validation.plugin.ValidationPlugin;
 import org.osgi.framework.Bundle;
-
-import org.eclipse.jem.util.logger.proxy.Logger;
 
 /**
  * This class stores information, as specified by a validator's plugin.xml tags. There is one

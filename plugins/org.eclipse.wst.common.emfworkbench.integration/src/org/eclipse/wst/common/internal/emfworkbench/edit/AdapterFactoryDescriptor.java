@@ -22,10 +22,9 @@ import org.eclipse.core.internal.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.emf.common.notify.AdapterFactory;
+import org.eclipse.jem.util.plugin.JEMUtilPlugin;
 import org.eclipse.wst.common.frameworks.internal.AbstractRegistryDescriptor;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchEditResourceHandler;
-
-import org.eclipse.jem.util.plugin.JEMUtilPlugin;
 
 
 public class AdapterFactoryDescriptor extends AbstractRegistryDescriptor implements Comparable {

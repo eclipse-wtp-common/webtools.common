@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel.provisional;
 
-import org.eclipse.wst.common.internal.datamodel.DataModelFactoryImpl;
+import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelFactoryImpl;
 
 public interface DataModelFactory {
 

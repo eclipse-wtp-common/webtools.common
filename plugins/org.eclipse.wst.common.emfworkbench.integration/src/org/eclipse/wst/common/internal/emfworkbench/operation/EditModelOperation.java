@@ -18,15 +18,14 @@ package org.eclipse.wst.common.internal.emfworkbench.operation;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.command.CommandStack;
+import org.eclipse.jem.util.UIContextDetermination;
+import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 import org.eclipse.wst.common.frameworks.internal.operations.IOperationHandler;
-import org.eclipse.wst.common.frameworks.operations.WTPOperation;
-import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import org.eclipse.wst.common.internal.emfworkbench.validateedit.IValidateEditContext;
-
-import org.eclipse.jem.util.UIContextDetermination;
-import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 
 public abstract class EditModelOperation extends WTPOperation {
 	protected EditModel editModel;

@@ -11,7 +11,7 @@
 
 package org.eclipse.wst.common.modulecore.internal.operation;
 
-import org.eclipse.wst.common.frameworks.operations.WTPOperation;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 
 public abstract class ComponentCreationOperation extends WTPOperation {
 

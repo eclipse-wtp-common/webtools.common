@@ -13,14 +13,13 @@ package org.eclipse.wst.common.internal.emf.resource;
 
 import java.io.IOException;
 
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import org.eclipse.jem.util.logger.proxy.Logger;
 
 /**
  * The EMF2SAXDocumentHandler is utilized by the SAX parser to announce XML Events, such as

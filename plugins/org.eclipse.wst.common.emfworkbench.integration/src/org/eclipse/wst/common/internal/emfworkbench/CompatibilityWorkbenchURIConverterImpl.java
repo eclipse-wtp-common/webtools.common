@@ -16,17 +16,14 @@
  */
 package org.eclipse.wst.common.internal.emfworkbench;
 
-import java.io.IOException;
-
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.wst.common.internal.emf.resource.CompatibilityURIConverter;
-
 import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
 import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 import org.eclipse.jem.util.emf.workbench.WorkbenchURIConverterImpl;
+import org.eclipse.wst.common.internal.emf.resource.CompatibilityURIConverter;
 
 /**
  * @author schacher

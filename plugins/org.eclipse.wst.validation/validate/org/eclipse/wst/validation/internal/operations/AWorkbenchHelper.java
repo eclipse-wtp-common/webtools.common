@@ -22,12 +22,11 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jem.util.logger.LogEntry;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.core.IMessage;
 import org.eclipse.wst.validation.internal.RegistryConstants;
 import org.eclipse.wst.validation.plugin.ValidationPlugin;
-
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
 
 /**
  * Abstract base class for registration of symbolic model names, and also provides the mechanism for

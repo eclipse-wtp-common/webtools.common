@@ -8,10 +8,10 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.frameworks.ui;
+package org.eclipse.wst.common.frameworks.internal.ui;
 
 import org.eclipse.jface.wizard.IWizardPage;
-import org.eclipse.wst.common.frameworks.operations.WTPOperation;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 
 /**
  * This interface is EXPERIMENTAL and is subject to substantial changes.

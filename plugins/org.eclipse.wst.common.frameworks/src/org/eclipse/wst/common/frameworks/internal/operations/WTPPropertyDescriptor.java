@@ -1,4 +1,4 @@
-package org.eclipse.wst.common.frameworks.operations;
+package org.eclipse.wst.common.frameworks.internal.operations;
 
 //TODO link to an example in the tutorial
 /**
@@ -6,8 +6,8 @@ package org.eclipse.wst.common.frameworks.operations;
  *
  * This class is EXPERIMENTAL and is subject to substantial changes.
  *  
- * @see org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel#getPropertyDescriptor(String)
- * @see org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel#getValidPropertyDescriptors(String)
+ * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#getPropertyDescriptor(String)
+ * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#getValidPropertyDescriptors(String)
  */
 public class WTPPropertyDescriptor {
 

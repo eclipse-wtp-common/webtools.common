@@ -24,7 +24,6 @@ import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.ui.provisional.IDMExtendedPageHandler;
 import org.eclipse.wst.common.frameworks.datamodel.ui.provisional.IDMExtendedWizardPage;
 import org.eclipse.wst.common.frameworks.internal.ConfigurationElementWrapper;
-import org.eclipse.wst.common.frameworks.ui.IExtendedPageHandler;
 
 /**
  * @author schacher

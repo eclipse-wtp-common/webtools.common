@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel.provisional;
 
-import org.eclipse.wst.common.frameworks.operations.IHeadlessRunnableWithProgress;
+import org.eclipse.wst.common.frameworks.internal.operations.IHeadlessRunnableWithProgress;
 
 public interface IDataModelOperation extends IHeadlessRunnableWithProgress{
 

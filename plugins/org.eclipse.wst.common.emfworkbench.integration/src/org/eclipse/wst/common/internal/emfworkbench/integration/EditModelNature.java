@@ -18,9 +18,8 @@ package org.eclipse.wst.common.internal.emfworkbench.integration;
 
 import java.util.Map;
 
-import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
-
 import org.eclipse.jem.util.emf.workbench.nature.EMFNature;
+import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 
 /**
  * @author schacher

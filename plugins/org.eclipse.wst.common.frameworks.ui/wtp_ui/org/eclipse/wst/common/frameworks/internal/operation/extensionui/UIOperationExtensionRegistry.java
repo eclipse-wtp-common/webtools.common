@@ -23,11 +23,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.jem.util.RegistryReader;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.wst.common.frameworks.internal.operations.OperationExtensionRegistry;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
-
-import org.eclipse.jem.util.RegistryReader;
 
 /**
  * @author mdelder

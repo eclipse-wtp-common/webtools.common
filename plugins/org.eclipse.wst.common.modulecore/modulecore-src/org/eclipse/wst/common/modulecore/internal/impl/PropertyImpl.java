@@ -2,18 +2,15 @@
  * <copyright>
  * </copyright>
  *
- * $Id: PropertyImpl.java,v 1.1 2005/03/15 02:12:30 cbridgha Exp $
+ * $Id: PropertyImpl.java,v 1.2 2005/03/24 23:03:49 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.internal.impl;
 
 import org.eclipse.emf.common.notify.Notification;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EStructuralFeature;
-
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 import org.eclipse.wst.common.modulecore.Property;
 

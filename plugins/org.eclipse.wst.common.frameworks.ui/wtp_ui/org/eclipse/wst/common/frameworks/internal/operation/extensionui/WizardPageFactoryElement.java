@@ -19,12 +19,11 @@ package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.wst.common.frameworks.internal.ConfigurationElementWrapper;
-import org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel;
-import org.eclipse.wst.common.frameworks.ui.IExtendedPageHandler;
-import org.eclipse.wst.common.frameworks.ui.IExtendedWizardPage;
-
 import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.common.frameworks.internal.ConfigurationElementWrapper;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.internal.ui.IExtendedPageHandler;
+import org.eclipse.wst.common.frameworks.internal.ui.IExtendedWizardPage;
 
 /**
  * @author schacher
