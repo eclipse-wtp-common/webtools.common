@@ -43,7 +43,7 @@ public interface ConfigurationConstants {
 	// maintaining one local name ensures that there's no confusion writing the migration code.
 	// These are the QualifiedNames used to persist the user's settings.
 	/* package */static final String ENABLED_VALIDATORS = "enabledValidatorList"; //$NON-NLS-1$ // String
-	public static final String J2EE_PLUGIN_ID = "com.ibm.wtp.j2ee"; //$NON-NLS-1$ // For 4.03, this is the plugin id that the validation constants were declared in.
+	public static final String J2EE_PLUGIN_ID = "org.eclipse.jst.j2ee"; //$NON-NLS-1$ // For 4.03, this is the plugin id that the validation constants were declared in.
 	/* package */static final String MAXNUMMESSAGES = "maxNumMessages"; //$NON-NLS-1$ // integer
 	public static final String PLUGIN_ID = ValidationPlugin.PLUGIN_ID;
 	/* package */static final String PREF_PROJECTS_CAN_OVERRIDE = "projectsCanOverride"; //$NON-NLS-1$ // boolean

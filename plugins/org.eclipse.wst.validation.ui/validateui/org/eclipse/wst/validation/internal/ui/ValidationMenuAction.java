@@ -37,8 +37,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IActionDelegate;
 import org.eclipse.wst.common.frameworks.internal.ValidationSelectionHandlerRegistryReader;
-import org.eclipse.wst.common.navigator.views.INavigatorActionDelegate;
-import org.eclipse.wst.common.navigator.views.INavigatorExtensionSite;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
@@ -55,7 +53,7 @@ import com.ibm.wtp.common.logger.proxy.Logger;
  * This class implements the pop-up menu item "Run Validation" When the item is selected, this
  * action triggers a validation of the project, using all configured, enabled validators.
  */
-public class ValidationMenuAction implements IActionDelegate, INavigatorActionDelegate {
+public class ValidationMenuAction implements IActionDelegate {
 	private ISelection _currentSelection = null;
 	protected static final String SEP = "/"; //$NON-NLS-1$
 	private Display _currentDisplay = null;
@@ -522,9 +520,7 @@ public class ValidationMenuAction implements IActionDelegate, INavigatorActionDe
 	 * 
 	 * @see org.eclipse.wst.common.navigator.internal.views.navigator.INavigatorActionsExtension#init(org.eclipse.wst.common.navigator.internal.views.navigator.INavigatorExtensionSite)
 	 */
-	public void init(INavigatorExtensionSite site) {
 
-	}
 
 	/*
 	 * (non-Javadoc)
