@@ -34,6 +34,9 @@ public class DataModelFactoryImpl implements DataModelFactory {
 	}
 
 	public IDataModel createDataModel(IDataModelProvider provider) {
+		if(null == provider){
+			throw new NullPointerException();
+		}
 		DataModelImpl dataModel = new DataModelImpl(provider);
 		return dataModel;
 	}

@@ -87,4 +87,8 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	public IDataModelOperation getDefaultOperation() {
 		return null;
 	}
+
+	public String getID() {
+		return this.getClass().getName();
+	}
 }

@@ -29,7 +29,7 @@ import org.eclipse.wst.common.frameworks.internal.operations.IHeadlessRunnableWi
  */
 public class WTPUIPlugin extends AbstractUIPlugin {
 
-	public static final String PLUGIN_ID = "org.eclipse.wst.common.frameworks.internal.ui"; //$NON-NLS-1$
+	public static final String PLUGIN_ID = "org.eclipse.wst.common.frameworks.ui"; //$NON-NLS-1$
 	public static final String EXTENDED_VIEWER_REGISTRY_EXTENSION_POINT = "extendedViewer"; //$NON-NLS-1$
 	// The shared instance.
 	private static WTPUIPlugin plugin;

@@ -53,4 +53,6 @@ public interface IDataModelProvider {
 
 	public IDataModelOperation getDefaultOperation();
 
+	public String getID();
+
 }

@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelOperation;
+import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelProvider;
 import org.eclipse.wst.common.frameworks.internal.AdaptabilityUtility;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ExtendableOperationImpl;
 import org.eclipse.wst.common.frameworks.internal.enablement.IEnablementManager;
@@ -43,7 +44,6 @@ public abstract class DataModelWizard extends Wizard {
 	private IDMExtendedWizardPage[] extendedPages = null;
 	private IDMExtendedPageHandler[] extendedPageHandlers = null;
 
-
 	protected IDataModel model;
 
 	public DataModelWizard(IDataModel model) {
@@ -51,16 +51,16 @@ public abstract class DataModelWizard extends Wizard {
 	}
 
 	public DataModelWizard() {
-		this.model = DataModelFactory.INSTANCE.createDataModel(getDefaultProviderClass());
+		this.model = DataModelFactory.INSTANCE.createDataModel(getDefaultProvider());
 	}
 
-	protected abstract Class getDefaultProviderClass();
+	protected abstract IDataModelProvider getDefaultProvider();
 
 	/**
 	 * @return the wizard ID that clients should extend to add to this wizard
 	 */
-	public String getWizardID() {
-		return this.getClass().getName();
+	public final String getWizardID() {
+		return model.getID();
 	}
 
 	/**

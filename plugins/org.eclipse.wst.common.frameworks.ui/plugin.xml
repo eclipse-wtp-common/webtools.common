@@ -19,7 +19,7 @@
       <import plugin="org.eclipse.jface.text"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.wst.common.frameworks"/>
+      <import plugin="org.eclipse.wst.common.frameworks" export="true"/>
       <import plugin="org.eclipse.jdt.core"/>
       <import plugin="org.eclipse.jdt.ui"/>
       <import plugin="org.eclipse.core.runtime"/>
@@ -30,6 +30,7 @@
    <extension-point id="extendedViewer" name="Extended Viewers" schema="schema/extendedViewer.exsd"/>
    <extension-point id="extendableWizard" name="Extendable Wizard" schema="schema/extendableWizard.exsd"/>
    <extension-point id="wizardPageGroup" name="Extendable Wizard Page" schema="schema/extendableWizardPage.exsd"/>
+   <extension-point id="DataModelWizardExtension" name="DataModelWizard" schema="schema/DataModelWizardExtension.exsd"/>
 
    <extension
          id="UITester"

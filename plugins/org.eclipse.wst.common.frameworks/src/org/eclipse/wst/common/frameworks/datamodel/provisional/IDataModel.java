@@ -18,11 +18,79 @@ import org.eclipse.core.runtime.IStatus;
 
 /**
  * <p>
+ * IDataModels are the core piece of a framework used to simplify data collection, operation
+ * execution, and Wizard generation.
+ * </p>
+ * <p>
+ * IDataModels are primaryly an intelligent mechanism for managing data. Each IDataModel tracks
+ * specific Objects known as "properties". Each property may be set or get using its property name.
+ * A Collection of property names for an IDataModel instance may be retreived using
+ * <code>getAllProperties()</code>. In addition to getting/setting properties, IDataModels may
+ * also provide default values for unset properties, human readable descriptors for properties,
+ * enumerations of valid property values, and validation for properties.
+ * </p>
+ * <p>
+ * IDataModels may also be nested (and unnested) recursively within each other. When one IDataModel
+ * is nested within another, then client code may access all properties on the former through the
+ * latter. This is especially useful when the same IDataModel (tracking the same properties) may be
+ * used within the context of several different broader scenarios. Nesting may apply to any
+ * IDataModel, and may be abitraryly deep (even cylical if you dare). Nesting offers flexibility,
+ * especially for extension by 3rd party clients.
+ * </p>
+ * </p>
+ * Each IDataModel may also supply an IDataModelOperation (a subclass of
+ * org.eclipse.core.commands.operations.IUndoableOperation) for execution. When executed within the
+ * IDataModel framework all these operations are inherently and abitrarily extendable.
+ * </p>
+ * <p>
+ * Each IDataModel may also indirectly supply a DataModelWizard. This indirection is necessary to
+ * spilt UI dependencies from the core IDataModel framework. DataModelWizards are also inherently
+ * extendable.
+ * </p>
+ * <p>
+ * IDataModels are not meant to be instantiated directly, rather they are built from an
+ * IDataModelProvider. Clients wishing to construct their own IDataModel must implement an
+ * IDataModelProvider. Clients wishing to utilize an IDataModel must create it using the
+ * DataModelFactory.
+ * </p>
+ * 
+ * <p>
  * This interface is not intended to be implemented by clients.
  * </p>
+ * 
+ * @see org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModelProvider
+ * @see org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelFactory
  */
 public interface IDataModel {
 
+	/**
+	 * <p>
+	 * Returns the unique ID which identifies this IDataModel instance. The same ID should be used
+	 * by the default operation (if any) for clients to extend or instantiate directly, the
+	 * DataModelWizard (if any) for clients to extend or instantiate directly.
+	 * </p>
+	 * <p>
+	 * An IDataModel implementor defines this in IDataModelProvider.
+	 * </p>
+	 * 
+	 * @see IDataModelProvider#getID()
+	 * 
+	 * @return the unique ID for this IDataModel
+	 */
+	public String getID();
+
+	/**
+	 * <p>
+	 * Returns the default operation to execute against this IDataModel.
+	 * </p>
+	 * <p>
+	 * An IDataModel implementor defines this in IDataModelProvider.
+	 * </p>
+	 * 
+	 * @see IDataModelProvider#getDefaultOperation()
+	 * 
+	 * @return
+	 */
 	public IUndoableOperation getDefaultOperation();
 
 	public List getExtendedContext();
@@ -36,10 +104,10 @@ public interface IDataModel {
 	 * RuntimeException will be thrown.
 	 * </p>
 	 * <p>
-	 * If the specified propertyName is a base property {@see #isBaseProperty(String)}then it will
-	 * immediatly be set and nested models will not be affected. If it is not a base property (i.e.
-	 * it is a property for a nested DataModel) then a recursive search through nested DataModels
-	 * will be conducted. The first nested DataModel having the property will return its value.
+	 * If the specified propertyName is a base property {@see #isBaseProperty(String)}then it is
+	 * immediatly returned. If it is not a base property then a recursive search through the nested
+	 * IDataModels is conducted to return the property. If more than one nested IDataModel defines
+	 * the property, the returned value will be that of the first nested IDataModel found.
 	 * </p>
 	 * 
 	 * @param propertyName
@@ -55,6 +123,11 @@ public interface IDataModel {
 	 * <p>
 	 * Returns the default property value for the specified propertyName.
 	 * </p>
+	 * <p>
+	 * An IDataModel implementor defines this in IDataModelProvider.
+	 * </p>
+	 * 
+	 * @see IDataModelProvider#getDefaultProperty(String)
 	 */
 	public Object getDefaultProperty(String propertyName);
 
@@ -123,7 +196,11 @@ public interface IDataModel {
 	 * in a thrown IllegalStateException. An IllegalStateException will not be thrown, however, if
 	 * the propertyName is a Result Property, (see #isResultProperty(String)).
 	 * <p>
+	 * <p>
+	 * An IDataModel implementor may define additional post set logic in IDataModelProvider.
+	 * </p>
 	 * 
+	 * @see IDataModelProvider#setProperty(String, Object)
 	 * @param propertyName
 	 * @param propertyValue
 	 * 
@@ -226,23 +303,73 @@ public interface IDataModel {
 	 */
 	public IDataModel removeNestedModel(String nestedModelName);
 
+	/**
+	 * Returns <code>true</code> if a nested model exists (at the top level only) with the
+	 * specified name and <code>false</code> otherwise.
+	 * 
+	 * @param nestedModelName
+	 * @return Returns <code>true</code> if a nested model exists (at the top level only) with the
+	 *         specified name and <code>false</code> otherwise.
+	 */
 	public boolean isNestedModel(String nestedModelName);
 
+	/**
+	 * Returns the nested IDataModel identified the by the specified name. A RuntimeException is
+	 * thrown if there is no such nested IDataModel (i.e. isNestedModel() would return
+	 * <code>false</code>).
+	 * 
+	 * @param nestedModelName
+	 * @return the nested IDataModel
+	 */
 	public IDataModel getNestedModel(String nestedModelName);
 
+	/**
+	 * Returns a Collection of all nested IDataModels, or an empty Collection if none exist.
+	 * 
+	 * @return a Collection of all nested IDataModels, or an empty Collection if none exist.
+	 */
 	public Collection getNestedModels();
 
+	/**
+	 * Returns a Collection of all nesting (the inverse of nested) IDataModels, or an empty
+	 * Collection if none exist.
+	 * 
+	 * @return a Collection of all nesting (the inverse of nested) IDataModels, or an empty
+	 *         Collection if none exist.
+	 */
 	public Collection getNestingModels();
 
+	/**
+	 * Returns a Collection of all base properties (not including nested properties), or an empty
+	 * Collection if none exist.
+	 * 
+	 * @return a Collection of all base properties (not including nested properties), or an empty
+	 *         Collection if none exist.
+	 */
 	public Collection getBaseProperties();
 
+	/**
+	 * Returns a Collection of all properties of recursively nested IDataModels, or an empty
+	 * Collection if none exist.
+	 * 
+	 * @return a Collection of all properties of recursively nested IDataModels, or an empty
+	 *         Collection if none exist.
+	 */
 	public Collection getNestedProperties();
 
+	/**
+	 * Returns a Collection of all properties (the union of getBaseProperties() and
+	 * getNestedProperties()), or an empty Collection if none exist.
+	 * 
+	 * @return a Collection of all properties (the union of getBaseProperties() and
+	 *         getNestedProperties()), or an empty Collection if none exist.
+	 */
 	public Collection getAllProperties();
 
 	/**
 	 * Returns <code>true</code> if the specified propertyName is a valid propertyName for this
-	 * root DataModel only. Nested DataModels are not checked.
+	 * root IDataModel only. Nested IDataModels are not checked, though it is possible for a nested
+	 * IDataModel to contain the same property.
 	 * 
 	 * @param propertyName
 	 * @return
@@ -252,7 +379,7 @@ public interface IDataModel {
 
 	/**
 	 * Returns <code>true</code> if the specified propertyName is a valid propertyName for this
-	 * DataModel or any of its (recursively) nested DataModels.
+	 * DataModel or any of its (recursively) nested IDataModels.
 	 * 
 	 * @param propertyName
 	 * @return
@@ -260,18 +387,87 @@ public interface IDataModel {
 	 */
 	public boolean isProperty(String propertyName);
 
+	/**
+	 * Returns <code>true</code> if the specified propertyName is a valid propertyName any of its
+	 * (recursively) nested IDataModels. The root IDataModel is not checked, though it is possible
+	 * for the root IDataModel to contain the same property.
+	 * 
+	 * @param propertyName
+	 * @return
+	 * @see #isBaseProperty(String)
+	 */
 	public boolean isNestedProperty(String propertyName);
 
+	/**
+	 * Returns <code>true</code> if the specified property has been set on the IDataModel. If it
+	 * has not been set, then a call to get the same property will return the default value.
+	 * 
+	 * @param propertyName
+	 * @return
+	 */
 	public boolean isPropertySet(String propertyName);
 
+	/**
+	 * <p>
+	 * Returns <code>true</code> if the specified property is enabled and <code>false</code>
+	 * otherwise.
+	 * </p>
+	 * <p>
+	 * An IDataModel implementor defines this in IDataModelProvider.
+	 * </p>
+	 * 
+	 * @see IDataModelProvider#isPropertyEnabled(String)
+	 * 
+	 * @param propertyName
+	 * @return <code>true</code> if the specified property is enabled and <code>false</code>
+	 *         otherwise.
+	 */
 	public boolean isPropertyEnabled(String propertyName);
 
+	/**
+	 * <p>
+	 * Returns <code>false</code> if the the IStatus returned by validateProperty(String) is ERROR
+	 * and <code>true</code> otherwise.
+	 * </p>
+	 * 
+	 * @param propertyName
+	 * @return <code>false</code> if the the IStatus returned by validateProperty(String) is ERROR
+	 *         and <code>true</code> otherwise.
+	 */
 	public boolean isPropertyValid(String propertyName);
 
+	/**
+	 * <p>
+	 * Returns an IStatus for the specified property. Retuns an IStatus.OK if the returned value is
+	 * valid with respect itself, other properites, and broader context of the IDataModel.
+	 * IStatus.ERROR is returned if the returned value is invalid. IStatus.WARNING may also be
+	 * returned if the value is not optimal.
+	 * </p>
+	 * <p>
+	 * An IDataModel implementor defines this in IDataModelProvider.
+	 * </p>
+	 * 
+	 * @see IDataModelProvider#validateProperty(String)
+	 */
 	public IStatus validateProperty(String propertyName);
 
+	/**
+	 * <p>
+	 * Returns <code>false</code> if the IStatus returned by validate(true) is ERROR and
+	 * <code>true</code> otherwise.
+	 * </p>
+	 * 
+	 * @return <code>false</code> if the IStatus returned by validate(true) is ERROR and
+	 *         <code>true</code> otherwise.
+	 */
 	public boolean isValid();
 
+	/**
+	 * <p>
+	 * Iterates over all base properties 
+	 * 
+	 * @return
+	 */
 	public IStatus validate();
 
 	public IStatus validate(boolean stopAtFirstFailure);

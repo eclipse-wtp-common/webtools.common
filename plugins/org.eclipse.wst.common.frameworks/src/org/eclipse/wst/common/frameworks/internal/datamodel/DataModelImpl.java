@@ -394,16 +394,11 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 	 * @return boolean
 	 */
 	public boolean isValid() {
-		IStatus status = validate(true);
-		if (status.isOK())
-			return true;
-		if (status.getSeverity() == IStatus.ERROR)
-			return false;
-		return true;
+		return validate(true).getSeverity() != IStatus.ERROR;
 	}
 
 	public boolean isPropertyValid(String propertyName) {
-		return validateProperty(propertyName).isOK();
+		return validateProperty(propertyName).getSeverity() != IStatus.ERROR;
 	}
 
 	public IStatus validateProperty(String propertyName) {
@@ -426,5 +421,10 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 
 	public String toString() {
 		return "IDataModel, provider=" + provider.toString();
+	}
+
+	public String getID() {
+		String id = provider.getID();
+		return null != id ? id : "";
 	}
 }
