@@ -11,6 +11,10 @@
 
 package org.eclipse.wst.common.modulecore.internal.operation;
 
+import java.lang.reflect.InvocationTargetException;
+
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 
 public abstract class ComponentCreationOperation extends WTPOperation {
@@ -22,4 +26,7 @@ public abstract class ComponentCreationOperation extends WTPOperation {
 	public ComponentCreationOperation() {
 		super();
 	}
+	protected void execute(IProgressMonitor monitor) throws CoreException, InvocationTargetException, InterruptedException {
+        //super.execute(monitor);
+    }	
 }
