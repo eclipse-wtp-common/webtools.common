@@ -129,8 +129,7 @@ public class DeployableModuleProjectBuilderDataModel extends WTPOperationDataMod
      * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#getDefaultOperation()
      */
     public WTPOperation getDefaultOperation() {
-        // TODO Auto-generated method stub
-        return null;
+        return new DeployableModuleProjectBuilderOperation(this);
     }
 
 }
