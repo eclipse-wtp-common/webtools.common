@@ -23,7 +23,7 @@ import org.eclipse.wst.common.modulecore.WorkbenchComponent;
 
 public class BasicComponentStructuralProjectBuilderDataModel extends ComponentStructuralProjectBuilderDataModel {
     
-	public static final String MODULE_BUILDER_DM_LIST = "DeployableModuleProjectBuilderDataModel.MODULE_BUILDER_DM_LIST"; //$NON-NLS-1$
+	public static final String MODULE_BUILDER_DM_LIST = "BasicComponentStructuralProjectBuilderDataModel.MODULE_BUILDER_DM_LIST"; //$NON-NLS-1$
 	
 	public BasicComponentStructuralProjectBuilderDataModel() {
 		super();
@@ -31,6 +31,7 @@ public class BasicComponentStructuralProjectBuilderDataModel extends ComponentSt
 	
 	protected void initValidBaseProperties() {
 		addValidBaseProperty(MODULE_BUILDER_DM_LIST);
+		super.initValidBaseProperties();
 	}
 	/*
 	 * (non-Javadoc)

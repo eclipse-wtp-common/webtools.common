@@ -32,7 +32,7 @@ public abstract class ComponentStructuralProjectBuilderDataModel extends WTPOper
 	 * Required, type String. The initializing builder will set this field to the name value of the 
 	 * project which is currently being built.
 	 */
-	public static final String PROJECT = "DeployableModuleProjectBuilderDataModel.PROJECT"; //$NON-NLS-1$
+	public static final String PROJECT = "ComponentStructuralProjectBuilderDataModel.PROJECT"; //$NON-NLS-1$
 
 	/**
 	 * Required, type Integer. The initializing builder will set this field to the int value based on the build
@@ -47,7 +47,7 @@ public abstract class ComponentStructuralProjectBuilderDataModel extends WTPOper
 	 * @see IncrementalProjectBuilder.AUTO_BUILD
 	 * <li><code>AUTO_BUILD</code>- indicates an automatically triggered
 	 */
-	public static final String BUILD_KIND = "DeployableModuleProjectBuilderDataModel.BUILD_KIND"; //$NON-NLS-1$
+	public static final String BUILD_KIND = "ComponentStructuralProjectBuilderDataModel.BUILD_KIND"; //$NON-NLS-1$
 	/**
 	 * Required, type Integer. The initializing builder will set this field to the IResourceDelta value based on the delta
 	 * passed to the IncrementalProjectBuilder during a build call.  This field can be used along with the BUILD_KIND to 
@@ -55,7 +55,7 @@ public abstract class ComponentStructuralProjectBuilderDataModel extends WTPOper
 	 * 
 	 * @see org.eclipse.core.resources.IResourceDelta
 	 */
-	public static final String PROJECT_DETLA = "DeployableModuleProjectBuilderDataModel.PROJECT_DETLA"; //$NON-NLS-1$
+	public static final String PROJECT_DETLA = "ComponentStructuralProjectBuilderDataModel.PROJECT_DETLA"; //$NON-NLS-1$
 
 	/**
 	 * Required, type org.eclipse.wst.common.modulecore.ModuleCore. The initializing builder will set this field to the ModuleCore associated
@@ -64,7 +64,7 @@ public abstract class ComponentStructuralProjectBuilderDataModel extends WTPOper
 	 * 
 	 * @see org.eclipse.wst.common.modulecore.ModuleCore
 	 */
-	public static final String MODULE_CORE = "DeployableModuleProjectBuilderDataModel.MODULE_CORE";
+	public static final String MODULE_CORE = "ComponentStructuralProjectBuilderDataModel.MODULE_CORE";
 
 	/**
 	 * <p>
