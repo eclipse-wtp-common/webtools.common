@@ -35,9 +35,9 @@ import org.eclipse.wst.common.emf.utilities.DefaultOverridableResourceFactoryReg
 import org.eclipse.wst.common.emfworkbench.integration.EditModel;
 import org.eclipse.wst.common.emfworkbench.integration.EditModelEvent;
 import org.eclipse.wst.common.emfworkbench.integration.ProjectResourceSetEditImpl;
+import org.eclipse.wst.common.internal.emf.resource.CompatibilityXMIResource;
+import org.eclipse.wst.common.internal.emf.resource.ReferencedXMIFactoryImpl;
 import org.eclipse.wst.common.internal.emfworkbench.edit.EditModelRegistry;
-import org.eclipse.wst.internal.common.emf.resource.CompatibilityXMIResource;
-import org.eclipse.wst.internal.common.emf.resource.ReferencedXMIFactoryImpl;
 
 import com.ibm.wtp.common.logger.proxy.Logger;
 import com.ibm.wtp.emf.workbench.EMFWorkbenchContextBase;

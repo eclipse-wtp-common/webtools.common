@@ -3,7 +3,7 @@
 <schema targetNamespace="com.ibm.wtp.common">
 <annotation>
       <appInfo>
-         <meta.schema plugin="com.ibm.wtp.common" id="WTPActivityBridge" name="WTPActivityBridge"/>
+         <meta.schema plugin="org.eclipse.wst.common.frameworks" id="WTPActivityBridge" name="WTPActivityBridge"/>
       </appInfo>
       <documentation>
          [Enter description of this extension point.]

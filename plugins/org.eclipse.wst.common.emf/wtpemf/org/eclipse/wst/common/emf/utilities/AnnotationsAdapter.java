@@ -18,7 +18,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.impl.EStructuralFeatureImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.wst.internal.common.emf.utilities.CloneablePublic;
+import org.eclipse.wst.common.internal.emf.utilities.CloneablePublic;
 
 
 

@@ -190,7 +190,7 @@ The scenario has Master A which has as a pre-operation of Slave A and a post-ope
             operationClass=&quot;com.acme.ui.operation.MasterOperationB&quot;
             extendedGenericId=&quot;com.acme.ui.WTPOptionalOperationTest&quot;&gt;
             &lt;selectionEnablement&gt; 
-             &lt;objectState name=&quot;projectNature&quot; value=&quot;com.ibm.wtp.j2ee.EARNature&quot; /&gt;
+             &lt;objectState name=&quot;projectNature&quot; value=&quot;org.eclipse.jst.j2ee.EARNature&quot; /&gt;
             &lt;/selectionEnablement&gt;
       &lt;/masterOperation&gt;   
    &lt;/extension&gt;

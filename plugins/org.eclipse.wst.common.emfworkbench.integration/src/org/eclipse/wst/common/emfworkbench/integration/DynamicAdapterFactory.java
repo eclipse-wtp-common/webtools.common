@@ -48,8 +48,8 @@ import org.eclispe.wst.common.framework.enablement.EnablementIdentifierEvent;
 import org.eclispe.wst.common.framework.enablement.IEnablementIdentifier;
 import org.eclispe.wst.common.framework.enablement.IEnablementIdentifierListener;
 import org.eclispe.wst.common.framework.enablement.IEnablementManager;
-import org.eclispe.wst.internal.common.framework.enablement.EnablementIdentifier;
-import org.eclispe.wst.internal.common.framework.enablement.EnablementManager;
+import org.eclispe.wst.common.internal.framework.enablement.EnablementIdentifier;
+import org.eclispe.wst.common.internal.framework.enablement.EnablementManager;
 
 import com.ibm.wtp.common.logger.proxy.Logger;
 import com.ibm.wtp.emf.workbench.ProjectUtilities;

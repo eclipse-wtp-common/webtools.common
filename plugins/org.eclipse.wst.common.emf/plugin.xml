@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin
-   id="org.eclipse.wst.emf"
+   id="org.eclipse.wst.common.emf"
    name="EMF Utilities"
    version="0.5.0"
    provider-name="IBM"
-   class="org.eclipse.wst.internal.emf.plugin.EcoreUtilitiesPlugin">
+   class="org.eclipse.wst.common.internal.emf.plugin.EcoreUtilitiesPlugin">
 
    <runtime>
       <library name="runtime/wtpemf.jar">
@@ -28,7 +28,7 @@
 
 <!-- Need to register the Ecore specific package mappings -->
    <extension
-         point="com.ibm.wtp.emf.packageURIMap">
+         point="org.eclipse.wst.common.emf.packageURIMap">
       <map
             uri="http://www.eclipse.org/emf/2002/Ecore"
             prefix="ecore">
@@ -45,11 +45,11 @@
    </extension>
    
       <extension
-         point="org.eclipse.wst.common.framework.util.uiContextSensitiveClass">
+         point="com.ibm.wtp.common.util.uiContextSensitiveClass">
       <uiContextSensitiveClass
             context="Headless"
             key="rendererFactory"
-            className="org.eclipse.wst.internal.common.emf.resource.EMF2DOMRendererFactory">
+            className="org.eclipse.wst.common.internal.emf.resource.EMF2DOMRendererFactory">
       </uiContextSensitiveClass>
    </extension>
 

@@ -20,10 +20,10 @@
       <import plugin="com.ibm.wtp.emf.workbench"/>
       <import plugin="org.eclipse.emf.edit"/>
       <import plugin="org.eclipse.emf.ecore.xmi"/>
-      <import plugin="org.eclipse.wst.emf"/>
+      <import plugin="org.eclipse.wst.common.emf"/>
       <import plugin="org.eclipse.core.runtime.compatibility"/>
       <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.wst.jdt.integration"/>
+      <import plugin="org.eclipse.wst.common.jdt.integration"/>
       <import plugin="org.eclipse.emf.codegen"/>
       <import plugin="org.eclipse.emf.codegen.ecore"/>
       <import plugin="org.eclipse.xsd"/>

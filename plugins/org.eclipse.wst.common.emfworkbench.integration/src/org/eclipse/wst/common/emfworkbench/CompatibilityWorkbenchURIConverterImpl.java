@@ -20,7 +20,7 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.wst.internal.common.emf.resource.CompatibilityURIConverter;
+import org.eclipse.wst.common.internal.emf.resource.CompatibilityURIConverter;
 
 import com.ibm.wtp.emf.workbench.ResourceSetWorkbenchSynchronizer;
 import com.ibm.wtp.emf.workbench.WorkbenchResourceHelperBase;

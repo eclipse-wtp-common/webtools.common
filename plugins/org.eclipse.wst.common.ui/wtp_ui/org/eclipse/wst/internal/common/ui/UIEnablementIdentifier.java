@@ -23,7 +23,7 @@ import org.eclipse.ui.activities.IIdentifierListener;
 import org.eclipse.ui.activities.IdentifierEvent;
 import org.eclispe.wst.common.framework.enablement.EnablementIdentifierEvent;
 import org.eclispe.wst.common.framework.enablement.IEnablementManager;
-import org.eclispe.wst.internal.common.framework.enablement.EnablementIdentifier;
+import org.eclispe.wst.common.internal.framework.enablement.EnablementIdentifier;
 
 
 /**
@@ -64,7 +64,7 @@ class UIEnablementIdentifier extends EnablementIdentifier implements IIdentifier
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclispe.wst.internal.common.framework.enablement.EnablementIdentifier#getNewEnabled()
+	 * @see org.eclispe.wst.common.internal.framework.enablement.EnablementIdentifier#getNewEnabled()
 	 */
 	protected boolean getNewEnabled() {
 		return activityIdentifier.isEnabled() && super.getNewEnabled();

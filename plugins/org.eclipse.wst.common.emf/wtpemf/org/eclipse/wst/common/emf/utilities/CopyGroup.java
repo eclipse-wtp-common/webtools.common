@@ -17,7 +17,7 @@ import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.wst.internal.common.emf.utilities.Association;
+import org.eclipse.wst.common.internal.emf.utilities.Association;
 
 /**
  * This class is used to copy a group of RefObjects and/or Resources. This group will ensure that

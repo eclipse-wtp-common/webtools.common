@@ -24,9 +24,9 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
-import org.eclipse.wst.internal.common.emf.utilities.IsLoadingDetector;
-import org.eclipse.wst.internal.common.emf.utilities.IsLoadingProxyAdapter;
-import org.eclipse.wst.internal.common.emf.utilities.WFTUtilsResourceHandler;
+import org.eclipse.wst.common.internal.emf.utilities.IsLoadingDetector;
+import org.eclipse.wst.common.internal.emf.utilities.IsLoadingProxyAdapter;
+import org.eclipse.wst.common.internal.emf.utilities.WFTUtilsResourceHandler;
 
 
 

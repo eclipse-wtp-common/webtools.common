@@ -20,7 +20,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.wst.common.emfworkbench.WorkbenchResourceHelper;
-import org.eclipse.wst.internal.common.emf.resource.ReferencedResource;
+import org.eclipse.wst.common.internal.emf.resource.ReferencedResource;
 
 import com.ibm.wtp.internal.emf.workbench.ProjectResourceSetImpl;
 

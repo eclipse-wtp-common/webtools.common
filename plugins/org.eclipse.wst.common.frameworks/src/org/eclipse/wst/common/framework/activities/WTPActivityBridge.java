@@ -35,7 +35,7 @@ import com.ibm.wtp.common.logger.proxy.Logger;
  * Code Generation - Code and Comments
  */
 public class WTPActivityBridge {
-	private static final String PLUGIN_ID = "org.eclipse.wst.common.framework"; //$NON-NLS-1$
+	private static final String PLUGIN_ID = "org.eclipse.wst.common.frameworks"; //$NON-NLS-1$
 	private static final String EXTENSION_POINT = "WTPActivityBridgeHelper"; //$NON-NLS-1$
 	private static final String LISTENER_CLASS = "class"; //$NON-NLS-1$
 

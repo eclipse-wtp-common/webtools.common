@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclispe.wst.internal.common.framework.enablement.EnablementManager;
+import org.eclispe.wst.common.internal.framework.enablement.EnablementManager;
 
 import com.ibm.wtp.common.logger.proxy.Logger;
 

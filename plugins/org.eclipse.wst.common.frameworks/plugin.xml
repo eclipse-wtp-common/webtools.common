@@ -22,7 +22,7 @@
    </requires>
 
 
-   <extension-point id="ExtendableOperation" name="ExtendabledOperation" schema="schema/ExtendableOperation.exsd"/>
+   <extension-point id="ExtendableOperation" name="Extendable Operation" schema="schema/ExtendableOperation.exsd"/>
    <extension-point id="OperationExtension" name="OperationExtension" schema="schema/OperationExtension.exsd"/>
    <extension-point id="functionGroup" name="Function Extension Group" schema="schema/functionGroup.exsd"/>
    <extension-point id="WTPActivityBridgeHelper" name="WTPActivityBridgeHelper" schema="schema/WTPActivityBridgeHelper.exsd"/>
@@ -30,7 +30,7 @@
    <extension
          id="context.Sensitive.Class.saveHandler"
          name="Save Handler - Headless Context Class"
-         point="org.eclipse.wst.common.framework.util.uiContextSensitiveClass">
+         point="com.ibm.wtp.common.util.uiContextSensitiveClass">
       <uiContextSensitiveClass
             key="saveHandler"
             context="Headless"
@@ -39,11 +39,11 @@
    </extension>
    <extension
          id="org.eclipse.wst.common.framework.enablement"
-         point="org.eclipse.wst.common.framework.util.uiContextSensitiveClass">
+         point="com.ibm.wtp.common.util.uiContextSensitiveClass">
       <uiContextSensitiveClass
             key="org.eclipse.wst.common.framework.EnablementDetermination"
             context="Headless"
-            className="org.eclispe.wst.internal.common.framework.enablement.EnablementManager">
+            className="org.eclispe.wst.common.internal.framework.enablement.EnablementManager">
       </uiContextSensitiveClass>
    </extension>
 

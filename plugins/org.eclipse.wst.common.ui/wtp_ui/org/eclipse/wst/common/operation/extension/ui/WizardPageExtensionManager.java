@@ -20,7 +20,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.common.ui.WTPCommonUIResourceHandler;
-import org.eclispe.wst.internal.common.framework.enablement.EnablementManager;
+import org.eclispe.wst.common.internal.framework.enablement.EnablementManager;
 
 import com.ibm.wtp.common.RegistryReader;
 import com.ibm.wtp.common.logger.proxy.Logger;
@@ -54,7 +54,7 @@ public class WizardPageExtensionManager {
 		IExtensionPoint[] point = new IExtensionPoint[]{Platform.getPluginRegistry().getExtensionPoint(ORG_ECLIPSE_UI, "exportWizards"), //$NON-NLS-1$
 					Platform.getPluginRegistry().getExtensionPoint(ORG_ECLIPSE_UI, "importWizards"), //$NON-NLS-1$
 					Platform.getPluginRegistry().getExtensionPoint(ORG_ECLIPSE_UI, "newWizards"), //$NON-NLS-1$
-					Platform.getPluginRegistry().getExtensionPoint("org.eclipse.wst.common.framework.ui", "extendableWizard")}; //$NON-NLS-1$ //$NON-NLS-2$
+					Platform.getPluginRegistry().getExtensionPoint("org.eclipse.wst.common.ui", "extendableWizard")}; //$NON-NLS-1$ //$NON-NLS-2$
 
 		for (int x = 0; x < point.length; x++) {
 			IConfigurationElement[] elements = point[x].getConfigurationElements();

@@ -35,7 +35,7 @@ import org.eclipse.wst.common.framework.WTPPlugin;
  */
 public class WTPCommonPlugin extends WTPPlugin {
 
-	public static final String PLUGIN_ID = "org.eclipse.wst.common.framework"; //$NON-NLS-1$
+	public static final String PLUGIN_ID = "org.eclipse.wst.common.frameworks"; //$NON-NLS-1$
 	public static final String GROUP_REGISTRY_EXTENSION_POINT = "functionGroup"; //$NON-NLS-1$
 	public static final IStatus OK_STATUS = new Status(IStatus.OK, PLUGIN_ID, 0, "OK", null); //$NON-NLS-1$
 

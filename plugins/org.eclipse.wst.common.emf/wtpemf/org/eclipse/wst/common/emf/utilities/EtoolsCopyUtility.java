@@ -27,9 +27,9 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.ETypedElement;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.wst.internal.common.emf.utilities.Association;
-import org.eclipse.wst.internal.common.emf.utilities.CloneablePublic;
-import org.eclipse.wst.internal.common.emf.utilities.DeferredReferenceUtilityAction;
+import org.eclipse.wst.common.internal.emf.utilities.Association;
+import org.eclipse.wst.common.internal.emf.utilities.CloneablePublic;
+import org.eclipse.wst.common.internal.emf.utilities.DeferredReferenceUtilityAction;
 
 
 /**
