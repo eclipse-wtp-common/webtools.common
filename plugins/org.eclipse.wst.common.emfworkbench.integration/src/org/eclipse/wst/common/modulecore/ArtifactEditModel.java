@@ -22,7 +22,6 @@ import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import org.eclipse.wst.common.modulecore.impl.PlatformURLModuleConnection;
 import org.eclipse.wst.common.modulecore.impl.UnresolveableURIException;
-import org.eclipse.wst.common.modulecore.util.ArtifactEdit;
 import org.eclipse.wst.common.modulecore.util.ModuleCore;
 
 /**
@@ -33,8 +32,7 @@ import org.eclipse.wst.common.modulecore.util.ModuleCore;
 public class ArtifactEditModel extends EditModel implements IAdaptable{
 
 	private final URI moduleURI;
-	private final IPath modulePath;
-	private ArtifactEdit editAdapter;
+	private final IPath modulePath;	
 
 	public ArtifactEditModel(String anEditModelId, EMFWorkbenchContext aContext, boolean toMakeReadOnly, URI aModuleURI) {
 		this(anEditModelId, aContext, toMakeReadOnly, true, aModuleURI);
@@ -57,6 +55,7 @@ public class ArtifactEditModel extends EditModel implements IAdaptable{
 		URI resourceURI = URI.createURI(PlatformURLModuleConnection.MODULE_PROTOCOL+requestPath.toString());
 		return super.getResource(resourceURI);
 	}
+	
 	public String getModuleType() {
 		String type = null;
 		WorkbenchModule wbModule;
@@ -73,7 +72,10 @@ public class ArtifactEditModel extends EditModel implements IAdaptable{
 			structuralModel.releaseAccess(this);
 		}
 		return type;
-		
+	}
+	
+	public URI getModuleURI() {
+		return moduleURI;
 	}
 
 
@@ -122,8 +124,8 @@ public class ArtifactEditModel extends EditModel implements IAdaptable{
 			URI aResourceURI = null;
 			for (int i = 0; i < size; i++) {
 				try {
-					resourceToProcess = (Resource) theResources.get(i);
-					aResourceURI = ModuleURIUtil.trimWorkspacePathToProjectRelativeURI(resourceToProcess.getURI());
+					resourceToProcess = (Resource) theResources.get(i);			
+					aResourceURI = resourceToProcess.getURI();
 					relevantModuleResources = editUtility.findWorkbenchModuleResourcesBySourcePath(aResourceURI);
 					for (int resourcesIndex = 0; resourcesIndex < relevantModuleResources.length; resourcesIndex++) {
 						if (moduleURI.equals(relevantModuleResources[resourcesIndex].getModule().getHandle())) {
@@ -142,12 +144,8 @@ public class ArtifactEditModel extends EditModel implements IAdaptable{
 		}
 		return processed;
 	}
+	
 	public Object getAdapter(Class adapterType) {
-		if (editAdapter != null)
-			return editAdapter;
-		else {
-			editAdapter = (ArtifactEdit)Platform.getAdapterManager().getAdapter(this,adapterType);
-		}
-		return editAdapter;
+		return Platform.getAdapterManager().getAdapter(this,adapterType);	
 	}
 }

@@ -11,13 +11,16 @@
 package org.eclipse.wst.common.modulecore.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.wst.common.modulecore.ModuleCoreNature;
 import org.eclipse.wst.common.modulecore.ModuleStructuralModel;
 import org.eclipse.wst.common.modulecore.ModuleURIUtil;
@@ -86,11 +89,37 @@ public class ModuleCore {
 		return ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 	}		
 	
-	private static String getDeployedNameForModule(URI aModuleURI) throws UnresolveableURIException { 
+	public static String getDeployedNameForModule(URI aModuleURI) throws UnresolveableURIException { 
 		ModuleURIUtil.ensureValidFullyQualifiedModuleURI(aModuleURI);
 		return aModuleURI.segment(ModuleCore.Constants.ModuleURISegments.MODULE_NAME);
 	}
 	
+	public static ResourceTreeRoot getSourceResourceTreeRoot(WorkbenchModule aModule) {
+		ResourceTreeRootAdapter resourceTreeAdapter = (ResourceTreeRootAdapter) EcoreUtil.getAdapter(aModule.eAdapters(), ResourceTreeRootAdapter.SOURCE_ADAPTER_TYPE);
+		if(resourceTreeAdapter != null)
+			return resourceTreeAdapter.getResourceTreeRoot(); 
+		resourceTreeAdapter = new ResourceTreeRootAdapter(ResourceTreeRootAdapter.SOURCE_TREE);
+		aModule.eAdapters().add(resourceTreeAdapter);
+		return resourceTreeAdapter.getResourceTreeRoot();
+	}	
+	
+	public static ResourceTreeRoot getDeployResourceTreeRoot(WorkbenchModule aModule) {
+		ResourceTreeRootAdapter resourceTreeAdapter = (ResourceTreeRootAdapter) EcoreUtil.getAdapter(aModule.eAdapters(), ResourceTreeRootAdapter.DEPLOY_ADAPTER_TYPE);
+		if(resourceTreeAdapter != null)
+			return resourceTreeAdapter.getResourceTreeRoot(); 
+		resourceTreeAdapter = new ResourceTreeRootAdapter(ResourceTreeRootAdapter.DEPLOY_TREE);
+		aModule.eAdapters().add(resourceTreeAdapter);
+		return resourceTreeAdapter.getResourceTreeRoot();
+	}
+	
+	public static IResource getResource(WorkbenchModuleResource aResource) {
+		EclipseResourceAdapter eclipseResourceAdapter = (EclipseResourceAdapter) EcoreUtil.getAdapter(aResource.eAdapters(), EclipseResourceAdapter.ADAPTER_TYPE);
+		if(eclipseResourceAdapter != null)
+			return eclipseResourceAdapter.getEclipseResource(); 
+		eclipseResourceAdapter = new EclipseResourceAdapter();
+		aResource.eAdapters().add(eclipseResourceAdapter);
+		return eclipseResourceAdapter.getEclipseResource();
+	}	
 	
 	public ProjectModules getProjectModules() {
 		return (ProjectModules) structuralModel.getPrimaryRootObject();
@@ -101,31 +130,32 @@ public class ModuleCore {
 		return (WorkbenchModule[]) wbModules.toArray(new WorkbenchModule[wbModules.size()]);
 	}
 
-	public WorkbenchModuleResource findWorkbenchModuleResourceByDeployPath(URI aModuleURI, URI aDeployedResourcePath)  throws UnresolveableURIException {
+	public WorkbenchModuleResource[] findWorkbenchModuleResourceByDeployPath(URI aModuleURI, URI aDeployedResourcePath)  throws UnresolveableURIException {
 		WorkbenchModule module = findWorkbenchModuleByDeployName(getDeployedNameForModule(aModuleURI));
 		return module.findWorkbenchModuleResourceByDeployPath(aDeployedResourcePath);
 	}
 	
-	public WorkbenchModuleResource findWorkbenchModuleResourceByDeployPath(URI aModuleResourcePath) throws UnresolveableURIException {
+	public WorkbenchModuleResource[] findWorkbenchModuleResourceByDeployPath(URI aModuleResourcePath) throws UnresolveableURIException {
 		ModuleURIUtil.ensureValidFullyQualifiedModuleURI(aModuleResourcePath);
 		URI moduleURI = aModuleResourcePath.trimSegments(aModuleResourcePath.segmentCount() - 3);
-		URI deployedPath = aModuleResourcePath.deresolve(aModuleResourcePath.trimSegments(aModuleResourcePath.segmentCount() - 4));
+		URI deployedPath = ModuleURIUtil.trimToDeployPathSegment(aModuleResourcePath);
 		WorkbenchModule module = findWorkbenchModuleByDeployName(getDeployedNameForModule(moduleURI));
 		return module.findWorkbenchModuleResourceByDeployPath(deployedPath);
 	}	
-	
-	public WorkbenchModuleResource[] findWorkbenchModuleResourcesBySourcePath(URI aProjectRelativePath) throws UnresolveableURIException {
+
+
+	public WorkbenchModuleResource[] findWorkbenchModuleResourcesBySourcePath(URI aWorkspaceRelativePath) throws UnresolveableURIException {
 		ProjectModules projectModules = getProjectModules();
 		EList modules = projectModules.getWorkbenchModules();
 		
 		WorkbenchModule module = null;
-		WorkbenchModuleResource resource = null;
+		WorkbenchModuleResource[] resources = null;
 		List foundResources = new ArrayList(); 		
 		for(int i=0; i<modules.size(); i++) {
-			 module = (WorkbenchModule) modules.get(i);
-			 resource = module.findWorkbenchModuleResourceBySourcePath(aProjectRelativePath);
-			 if(resource != null)
-			 	foundResources.add(resource);
+			 module = (WorkbenchModule) modules.get(i);			 
+			 resources = module.findWorkbenchModuleResourceBySourcePath(aWorkspaceRelativePath);
+			 if(resources.length != 0)
+			 	foundResources.addAll(Arrays.asList(resources));
 		}
 		if(foundResources.size() > 0)
 			return (WorkbenchModuleResource[]) foundResources.toArray(new WorkbenchModuleResource[foundResources.size()]);

@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchModuleImpl.java,v 1.13 2005/02/07 21:07:01 cbridgha Exp $
+ * $Id: WorkbenchModuleImpl.java,v 1.14 2005/02/08 19:57:09 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
@@ -11,9 +11,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
@@ -33,6 +36,8 @@ import org.eclipse.wst.common.modulecore.ModuleURIUtil;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
 import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
 import org.eclipse.wst.common.modulecore.util.ModuleCore;
+import org.eclipse.wst.common.modulecore.util.ResourceTreeRoot;
+import org.omg.CORBA.NO_MEMORY;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Workbench Module</b></em>'.
@@ -136,6 +141,8 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	private boolean isIndexedByDeployPath;
 
 	private boolean isIndexedBySourcePath;
+
+	private static final WorkbenchModuleResource[] NO_MODULE_RESOURCES = new WorkbenchModuleResource[0];
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -422,45 +429,26 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 		return result.toString();
 	}
 
-	public WorkbenchModuleResource findWorkbenchModuleResourceByDeployPath(URI aDeployPath) {
-		if (!isIndexedByDeployPath)
-			indexResourcesByDeployPath();
-		return (WorkbenchModuleResource) resourceIndexByDeployPath.get(aDeployPath);
+	public WorkbenchModuleResource[] findWorkbenchModuleResourceByDeployPath(URI aDeployPath) {
+		// if (!isIndexedByDeployPath)
+		// indexResourcesByDeployPath();
+		// return (WorkbenchModuleResource) resourceIndexByDeployPath.get(aDeployPath);
+		IPath resourcePath = new Path(aDeployPath.path());
+		ResourceTreeRoot resourceTreeRoot = ModuleCore.getDeployResourceTreeRoot(this);
+		return resourceTreeRoot.findModuleResources(resourcePath, false); 
 	}
 
-	public WorkbenchModuleResource findWorkbenchModuleResourceBySourcePath(URI aSourcePath) {
+	public WorkbenchModuleResource[] findWorkbenchModuleResourceBySourcePath(URI aSourcePath) {
 		// if(!isIndexedBySourcePath)
 		// indexResourcesBySourcePath();
-
-
-		URI projectRelativePath = null;
 		try {
-			String relativePath = null;
 			if (ModuleURIUtil.ensureValidFullyQualifiedPlatformURI(aSourcePath, false)) {
-				String projectName = aSourcePath.segment(1);
-				if (getHandle().segment(1).equals(aSourcePath.segment(1))) {
-					WorkbenchModuleResource resource;
-					for (Iterator resourceIterator = getResources().iterator(); resourceIterator.hasNext();) {
-						resource = (WorkbenchModuleResource) resourceIterator.next();
-						// URI.create
-					}
-
-
-//					String projectName = aSourcePath.segment(1);
-//					IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-//					String relativePath = ModuleURIUtil.trimToRelativePath(aSourcePath, 2).toString();
-				}
-
+				IPath resourcePath = new Path(aSourcePath.path()).removeFirstSegments(1);
+				ResourceTreeRoot resourceTreeRoot = ModuleCore.getSourceResourceTreeRoot(this);
+				return resourceTreeRoot.findModuleResources(resourcePath, false);
 			}
-
-			else
-				projectRelativePath = aSourcePath;
 		} catch (UnresolveableURIException e) {
 			e.printStackTrace();
-		}
-		if (projectRelativePath != null) {
-
-
 		}
 		return null;
 	}

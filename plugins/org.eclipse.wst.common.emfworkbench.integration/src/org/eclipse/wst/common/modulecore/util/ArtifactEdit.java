@@ -25,6 +25,7 @@ public class ArtifactEdit {
 
 	public static String TYPE_ID = "NO_TYPE";
 	private ArtifactEditModel artifactEditModel;
+	public static final Class ADAPTER_TYPE = ArtifactEdit.class;
 	/**
 	 * @param model
 	 */

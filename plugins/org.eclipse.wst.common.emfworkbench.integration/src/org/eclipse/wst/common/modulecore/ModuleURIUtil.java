@@ -84,5 +84,15 @@ public class ModuleURIUtil {
 		}
 		return URI.createURI(relativePath.toString());
 	}
+	
+	
+	/**
+	 * @param aModuleResourcePath
+	 * @return
+	 */
+	public static URI trimToDeployPathSegment(URI aFullyQualifiedModuleResourcePath) {
+		int segmentCount = aFullyQualifiedModuleResourcePath.segmentCount(); 
+		return aFullyQualifiedModuleResourcePath.deresolve(aFullyQualifiedModuleResourcePath.trimSegments(segmentCount - 4));
+	}
 
 }

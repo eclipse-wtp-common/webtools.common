@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchModule.java,v 1.11 2005/02/04 14:50:19 cbridgha Exp $
+ * $Id: WorkbenchModule.java,v 1.12 2005/02/08 19:57:09 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -143,8 +143,8 @@ public interface WorkbenchModule extends EObject{
 	 */
 	void setModuleType(ModuleType value);
 	
-	WorkbenchModuleResource findWorkbenchModuleResourceByDeployPath(URI aDeployPath);
+	WorkbenchModuleResource[] findWorkbenchModuleResourceByDeployPath(URI aDeployPath);
 	
-	WorkbenchModuleResource findWorkbenchModuleResourceBySourcePath(URI aSourcePath);
+	WorkbenchModuleResource[] findWorkbenchModuleResourceBySourcePath(URI aSourcePath);
 
 } // WorkbenchModule
