@@ -39,7 +39,7 @@ public class SourceLinkTranslator extends Translator {
 	 */
 	public SourceLinkTranslator(String domNameAndPath, EStructuralFeature aFeature, TranslatorPath path, int style) {
 		super(domNameAndPath, aFeature, path);
-		fStyle = style;
+		fStyle |= style;
 	}
 
 	/**
