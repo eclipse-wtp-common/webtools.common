@@ -101,10 +101,10 @@ public class ComponentStructuralDependentBuilderDataModel extends WTPOperationDa
     private WorkbenchComponent getWorkBenchModuleValue() {
         if (!isSet(DEPENDENT_MODULE))
             return null;
-        StructureEdit localCore = getModuleCore();
+        StructureEdit localCore = (StructureEdit) getProperty(MODULE_CORE);
         try {
             if (localCore != null)
-                return localCore.findComponentByURI(getDependentModule().getHandle());
+                return localCore.findComponentByURI(((ReferencedComponent) getProperty(DEPENDENT_MODULE)).getHandle());
         } catch (UnresolveableURIException e) {
         }
         return null;
@@ -113,14 +113,14 @@ public class ComponentStructuralDependentBuilderDataModel extends WTPOperationDa
     private Object getOutputContainerValue() {
         if (!isSet(DEPENDENT_MODULE))
             return null;
-        ReferencedComponent depModule = getDependentModule();
+        ReferencedComponent depModule = (ReferencedComponent) getProperty(DEPENDENT_MODULE);;
         return depModule.getRuntimePath();
     }
 
     private URI getHandleValue() {
         if (!isSet(DEPENDENT_MODULE))
             return null;
-        return getDependentModule().getHandle();
+        return ((ReferencedComponent) getProperty(DEPENDENT_MODULE)).getHandle();
     }
 
     /**
@@ -139,40 +139,10 @@ public class ComponentStructuralDependentBuilderDataModel extends WTPOperationDa
     /*
      * (non-Javadoc)
      * 
-     * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#dispose()
-     */
-    public void dispose() {
-        super.dispose();
-    }
-
-    /**
-     * Convenience Method for property DEPENDENT_MODULE
-     * 
-     * @return
-     */
-    public ReferencedComponent getDependentModule() {
-        return (ReferencedComponent) getProperty(DEPENDENT_MODULE);
-    }
-
-    /**
-     * Convenience Method for property CONTAINING_WBMODULE
-     * 
-     * @return
-     */
-    public WorkbenchComponent getContainingWorkbenchModule() {
-        return (WorkbenchComponent) getProperty(CONTAINING_WBMODULE);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see org.eclipse.wst.common.modulecore.builder.DeployableModuleDataModel#getDefaultOperation()
      */
     public WTPOperation getDefaultOperation() {
         return new ComponentStructuralDependentBuilderOperation(this);
     }
 
-    private StructureEdit getModuleCore() {
-        return (StructureEdit) getProperty(MODULE_CORE);
-    }
 }
