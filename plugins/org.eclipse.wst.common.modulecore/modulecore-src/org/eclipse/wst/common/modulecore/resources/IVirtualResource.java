@@ -8,7 +8,6 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.modulecore.resources;
 
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IPathVariableManager;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -706,7 +705,7 @@ public interface IVirtualResource extends ISchedulingRule {
 	 *            the other object
 	 * @return an indication of whether the objects are equals
 	 * @see #getType()
-	 * @see #getFullPath()
+	 * @see #getWorkspaceRelativePath()
 	 * @see #getWorkspace()
 	 */
 	public boolean equals(Object other);
@@ -775,7 +774,7 @@ public interface IVirtualResource extends ISchedulingRule {
 	 * @see #getProjectRelativePath()
 	 * @see Path#ROOT
 	 */
-	public IPath getFullPath();
+	public IPath getWorkspaceRelativePath();
  
 	/**
 	 * Returns the absolute path in the local file system to this resource, or <code>null</code>
@@ -830,7 +829,7 @@ public interface IVirtualResource extends ISchedulingRule {
 	 * </p>
 	 * 
 	 * @return the name of the resource
-	 * @see #getFullPath()
+	 * @see #getWorkspaceRelativePath()
 	 * @see #getProjectRelativePath()
 	 */
 	public String getName();
@@ -884,7 +883,7 @@ public interface IVirtualResource extends ISchedulingRule {
 	 * </p>
 	 * 
 	 * @return the relative path of this resource with respect to its project
-	 * @see #getFullPath()
+	 * @see #getWorkspaceRelativePath()
 	 * @see #getProject()
 	 * @see Path#EMPTY
 	 */

@@ -77,7 +77,7 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 
 		IVirtualContainer container = ModuleCore.create(getProject(), getComponentHandle().getName());
 		IVirtualFolder root = container.getFolder(new Path("/"));  //$NON-NLS-1$		
-		IFolder realFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(root.getFullPath()); 
+		IFolder realFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(root.getWorkspaceRelativePath()); 
 		IFolder newFolder = realFolder.getFolder(getRuntimePath()); 
 		createResource(newFolder, updateFlags, monitor); 
 

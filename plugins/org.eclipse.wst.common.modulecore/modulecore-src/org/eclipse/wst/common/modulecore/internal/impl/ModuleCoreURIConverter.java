@@ -90,7 +90,7 @@ public class ModuleCoreURIConverter extends CompatibilityWorkbenchURIConverterIm
 			URI deployPathSegment = ModuleURIUtil.trimToDeployPathSegment(aNewURI);
 			IVirtualFile newFile = component.getFile(new Path(deployPathSegment.path()));
 			
-			return URI.createPlatformResourceURI(newFile.getFullPath().toString());
+			return URI.createPlatformResourceURI(newFile.getWorkspaceRelativePath().toString());
 			 
 		} catch(Exception e) {
 			e.printStackTrace();

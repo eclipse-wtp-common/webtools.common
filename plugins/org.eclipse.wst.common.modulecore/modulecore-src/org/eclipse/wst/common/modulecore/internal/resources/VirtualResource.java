@@ -127,7 +127,7 @@ public abstract class VirtualResource implements IVirtualResource {
 	}
 	
 	// TODO WTP:Implement this method 
-	public IPath getFullPath() {
+	public IPath getWorkspaceRelativePath() {
 		ModuleCore moduleCore = null;
 		try {
 			moduleCore = ModuleCore.getModuleCoreForRead(getProject());

@@ -575,10 +575,10 @@ public interface IVirtualFile extends IVirtualResource {
 	 * <code>IVirtualFile</code>s always have a path and that path is relative to the
 	 * containing workspace.
 	 *
-	 * @see IVirtualResource#getFullPath()
+	 * @see IVirtualResource#getWorkspaceRelativePath()
 	 * @see IStorage#getFullPath()
 	 */
-	public IPath getFullPath();
+	public IPath getWorkspaceRelativePath();
 
 	/**
 	 * Returns a list of past states of this file known to this workspace.
