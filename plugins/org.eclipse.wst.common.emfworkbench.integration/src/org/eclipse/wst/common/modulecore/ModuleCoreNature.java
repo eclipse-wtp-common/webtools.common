@@ -21,6 +21,7 @@ import org.eclipse.wst.common.modulecore.util.ModuleCore;
 
 import com.ibm.wtp.emf.workbench.EMFWorkbenchContextBase;
 import com.ibm.wtp.emf.workbench.ProjectResourceSet;
+import com.ibm.wtp.emf.workbench.ProjectUtilities;
 import com.ibm.wtp.emf.workbench.WorkbenchURIConverter;
 
 //In Progress......
@@ -144,6 +145,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
     public void configure() throws CoreException {
         super.configure();
         addDeployableProjectBuilder();
+        addLocalDependencyResolver();
     }
 
     private void addDeployableProjectBuilder() throws CoreException {
@@ -167,6 +169,9 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
             description.setBuildSpec(updatedBuilderCommands);
             project.setDescription(description, null);
         }
+    }
+    private void addLocalDependencyResolver() throws CoreException {
+        ProjectUtilities.addToBuildSpec(LOCAL_DEPENDENCY_RESOLVER_ID, getProject());
     }
     
 	private String getArtifactEditModelId(URI aModuleURI) {

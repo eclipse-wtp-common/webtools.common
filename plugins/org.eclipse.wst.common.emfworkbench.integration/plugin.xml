@@ -100,13 +100,23 @@
    <!--============================-->
    <!-- Deployable Module Builder Contribution-->
    <!--============================-->
-   	   <extension
+   <extension
          id="DeployableModuleBuilder"
          name="Deployable Module Builder"
          point="org.eclipse.core.resources.builders">
       <builder>
          <run
                class="org.eclipse.wst.common.modulecore.builder.DeployableModuleBuilder">
+         </run>
+      </builder>
+   </extension>
+      <extension
+         id="LocalDependencyResolver"
+         name="Local Dependency Resolver"
+         point="org.eclipse.core.resources.builders">
+      <builder>
+         <run
+               class="org.eclipse.wst.common.modulecore.builder.LocalDependencyResolver">
          </run>
       </builder>
    </extension>
