@@ -12,7 +12,6 @@ package org.eclipse.wst.common.modulecore.internal.impl;
 
 import java.io.IOException;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Path;
@@ -22,6 +21,8 @@ import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 import org.eclipse.wst.common.internal.emfworkbench.CompatibilityWorkbenchURIConverterImpl;
 import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
 import org.eclipse.wst.common.modulecore.ModuleCore;
+import org.eclipse.wst.common.modulecore.resources.IVirtualContainer;
+import org.eclipse.wst.common.modulecore.resources.IVirtualFile;
 
 /**
  * <p>
@@ -84,10 +85,10 @@ public class ModuleCoreURIConverter extends CompatibilityWorkbenchURIConverterIm
 		
 		try {
 			String componentName = ModuleCore.getDeployedName(aNewURI);
-			IContainer component = ModuleCore.create(containingProject, componentName);
+			IVirtualContainer component = ModuleCore.create(containingProject, componentName);
 
 			URI deployPathSegment = ModuleURIUtil.trimToDeployPathSegment(aNewURI);
-			IFile newFile = component.getFile(new Path(deployPathSegment.path()));
+			IVirtualFile newFile = component.getFile(new Path(deployPathSegment.path()));
 			
 			return URI.createPlatformResourceURI(newFile.getFullPath().toString());
 			 

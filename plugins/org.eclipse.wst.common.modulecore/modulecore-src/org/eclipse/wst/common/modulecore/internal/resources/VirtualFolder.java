@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -23,8 +22,11 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.modulecore.ComponentResource;
 import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.WorkbenchComponent;
+import org.eclipse.wst.common.modulecore.resources.IVirtualFile;
+import org.eclipse.wst.common.modulecore.resources.IVirtualFolder;
+import org.eclipse.wst.common.modulecore.resources.IVirtualResource;
 
-public class VirtualFolder extends VirtualContainer implements IFolder {
+public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 
 	private final Set realFolders = new HashSet();
 
@@ -118,25 +120,25 @@ public class VirtualFolder extends VirtualContainer implements IFolder {
 	}
 
 	// TODO WTP:Implement this method
-	public IResource findMember(String name) {
+	public IVirtualResource findMember(String name) {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 		// return null;
 	}
 
 	// TODO WTP:Implement this method
-	public IResource findMember(String name, boolean includePhantoms) {
+	public IVirtualResource findMember(String name, boolean includePhantoms) {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 		// return null;
 	}
 
 	// TODO WTP:Implement this method
-	public IResource findMember(IPath path) {
+	public IVirtualResource findMember(IPath path) {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 		// return null;
 	}
 
 	// TODO WTP:Implement this method
-	public IResource findMember(IPath path, boolean includePhantoms) {
+	public IVirtualResource findMember(IPath path, boolean includePhantoms) {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 		// return null;
 	}
@@ -151,7 +153,7 @@ public class VirtualFolder extends VirtualContainer implements IFolder {
 		// return null;
 	}
 
-	public IFile[] findDeletedMembersWithHistory(int depth, IProgressMonitor monitor) throws CoreException {
+	public IVirtualFile[] findDeletedMembersWithHistory(int depth, IProgressMonitor monitor) throws CoreException {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 		// return null;
 	}

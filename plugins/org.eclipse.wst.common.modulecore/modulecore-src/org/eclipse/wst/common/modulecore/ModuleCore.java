@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -31,6 +30,8 @@ import org.eclipse.wst.common.modulecore.internal.impl.PlatformURLModuleConnecti
 import org.eclipse.wst.common.modulecore.internal.resources.VirtualContainer;
 import org.eclipse.wst.common.modulecore.internal.resources.VirtualFolder;
 import org.eclipse.wst.common.modulecore.internal.util.EclipseResourceAdapter;
+import org.eclipse.wst.common.modulecore.resources.IVirtualContainer;
+import org.eclipse.wst.common.modulecore.resources.IVirtualFolder;
 
 /**
  * <p>
@@ -272,12 +273,41 @@ public class ModuleCore implements IEditModelHandler {
 		return ModuleURIUtil.getDeployedName(aFullyQualifiedModuleURI);
 	}
 	
-	public static IContainer create(IProject aProject, String aName) {
+	public static IVirtualContainer create(IProject aProject, String aName) {
 		return new VirtualContainer(aProject, aName, new Path("/")); //$NON-NLS-1$
 	}
 	
-	public static IFolder create(IFolder aFolder, String aComponentName, IPath aRuntimePath) {
+	public static IVirtualFolder create(IFolder aFolder, String aComponentName, IPath aRuntimePath) {
 		return new VirtualFolder(aFolder, aComponentName, aRuntimePath);
+	}
+	
+	public static ComponentType getComponentType(IVirtualContainer aComponent) {
+		ModuleCore moduleCore = null;
+		ComponentType componentType = null;
+		try {
+			moduleCore = ModuleCore.getModuleCoreForRead(aComponent.getProject());
+			WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(aComponent.getComponentHandle().getName());
+			componentType = wbComponent.getComponentType();
+		} finally {
+			if(moduleCore != null)
+				moduleCore.dispose();
+		}
+		return componentType;
+	}
+	
+	
+	public static void setComponentType(IVirtualContainer component, ComponentType aComponentType) {
+		ModuleCore moduleCore = null; 
+		try {
+			moduleCore = ModuleCore.getModuleCoreForWrite(component.getProject());
+			WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(component.getComponentHandle().getName());
+			wbComponent.setComponentType(aComponentType);
+		} finally {
+			if(moduleCore != null) {
+				moduleCore.saveIfNecessary(null);
+				moduleCore.dispose();
+			}
+		} 
 	}
 	
 	public static URI createComponentURI(IProject aContainingProject, String aComponentName) {

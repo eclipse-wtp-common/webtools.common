@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -26,8 +25,12 @@ import org.eclipse.wst.common.modulecore.ComponentResource;
 import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.WorkbenchComponent;
 import org.eclipse.wst.common.modulecore.internal.impl.ResourceTreeRoot;
+import org.eclipse.wst.common.modulecore.resources.IVirtualContainer;
+import org.eclipse.wst.common.modulecore.resources.IVirtualFile;
+import org.eclipse.wst.common.modulecore.resources.IVirtualFolder;
+import org.eclipse.wst.common.modulecore.resources.IVirtualResource;
 
-public class VirtualContainer extends VirtualResource implements IContainer {
+public class VirtualContainer extends VirtualResource implements IVirtualContainer {
 
 	public VirtualContainer(IProject aProject, String aName, IPath aRuntimePath) {
 		super(aProject, aName, aRuntimePath);
@@ -46,25 +49,25 @@ public class VirtualContainer extends VirtualResource implements IContainer {
 	/**
 	 * @see IContainer#findMember(java.lang.String)
 	 */
-	public IResource findMember(String aChildName) { 
+	public IVirtualResource findMember(String aChildName) { 
 		return findMember(aChildName, false);
 	}
 
 	/**
 	 * @see IContainer#findMember(java.lang.String, boolean)
 	 */
-	public IResource findMember(String aChildName, boolean includePhantoms) {
+	public IVirtualResource findMember(String aChildName, boolean includePhantoms) {
 		return findMember(getRuntimePath().append(aChildName), includePhantoms);
 	}
 
 	/**
 	 * @see IContainer#findMember(org.eclipse.core.runtime.IPath)
 	 */
-	public IResource findMember(IPath aChildPath) { 
+	public IVirtualResource findMember(IPath aChildPath) { 
 		return findMember(aChildPath, false);
 	}
 
-	public IResource findMember(IPath path, boolean includePhantoms) {
+	public IVirtualResource findMember(IPath path, boolean includePhantoms) {
 
 //		ModuleCore moduleCore = null;
 //		Set virtualResources = null;
@@ -96,14 +99,14 @@ public class VirtualContainer extends VirtualResource implements IContainer {
 	/**
 	 * @see IContainer#getFile(org.eclipse.core.runtime.IPath)
 	 */
-	public IFile getFile(IPath aPath) {
+	public IVirtualFile getFile(IPath aPath) {
 		return new VirtualFile(getComponentHandle(), getRuntimePath().append(aPath));
 	}
 
 	/**
 	 * @see IContainer#getFolder(org.eclipse.core.runtime.IPath)
 	 */
-	public IFolder getFolder(IPath aPath) {
+	public IVirtualFolder  getFolder(IPath aPath) {
 		return new VirtualFolder(getComponentHandle(), getRuntimePath().append(aPath));
 	}
 	
@@ -111,35 +114,35 @@ public class VirtualContainer extends VirtualResource implements IContainer {
 	/**
 	 * @see IFolder#getFile(java.lang.String) 
 	 */
-	public IFile getFile(String name) {
+	public IVirtualFile getFile(String name) {
 		return getFile(new Path(name));
 	}
 
 	/**
 	 * @see IFolder#getFolder(java.lang.String)
 	 */
-	public IFolder getFolder(String name) {
+	public IVirtualFolder  getFolder(String name) {
 		return getFolder(new Path(name));
 	}
 
 	/**
 	 * @see IContainer#members()
 	 */
-	public IResource[] members() throws CoreException {
+	public IVirtualResource[] members() throws CoreException {
 		return members(IResource.NONE);
 	}
 
 	/**
 	 * @see IContainer#members(boolean)
 	 */
-	public IResource[] members(boolean includePhantoms) throws CoreException {
+	public IVirtualResource[] members(boolean includePhantoms) throws CoreException {
 		return members(includePhantoms ? INCLUDE_PHANTOMS : IResource.NONE);
 	}
  
 	/**
 	 * @see IContainer#members(int)
 	 */
-	public IResource[] members(int memberFlags) throws CoreException {
+	public IVirtualResource[] members(int memberFlags) throws CoreException {
 		
 		ModuleCore moduleCore = null;
 		Set virtualResources = null;
@@ -163,7 +166,7 @@ public class VirtualContainer extends VirtualResource implements IContainer {
 
 					realResource = ModuleCore.getEclipseResource(componentResources[componentResourceIndex]); 
 					if(realResource.getType() == IResource.FOLDER) {
-						IFolder realFolder = (IFolder) realResource;
+						IFolder  realFolder = (IFolder) realResource;
 						IResource[] realChildResources = realFolder.members(memberFlags);
 						for (int realResourceIndex = 0; realResourceIndex < realChildResources.length; realResourceIndex++) {
 							newRuntimePath = getRuntimePath().append(realChildResources[realResourceIndex].getName());
@@ -188,7 +191,7 @@ public class VirtualContainer extends VirtualResource implements IContainer {
 			if(moduleCore != null)
 				moduleCore.dispose();
 		}
-		return (IResource[]) virtualResources.toArray(new IResource[virtualResources.size()]);
+		return (IVirtualResource[]) virtualResources.toArray(new IVirtualResource[virtualResources.size()]);
 	}
 
 	/**
@@ -203,7 +206,7 @@ public class VirtualContainer extends VirtualResource implements IContainer {
 			virtualResources.add(new VirtualFile(getComponentHandle(), newRuntimePath));
 	}
 	 
-	public IFile[] findDeletedMembersWithHistory(int depth, IProgressMonitor monitor) throws CoreException {
+	public IVirtualFile[] findDeletedMembersWithHistory(int depth, IProgressMonitor monitor) throws CoreException {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 		//return null;
 	}

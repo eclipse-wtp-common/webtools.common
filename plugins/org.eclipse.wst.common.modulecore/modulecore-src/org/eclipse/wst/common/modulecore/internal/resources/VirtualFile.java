@@ -15,13 +15,13 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFileState;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.content.IContentDescription;
+import org.eclipse.wst.common.modulecore.resources.IVirtualFile;
 
-public class VirtualFile extends VirtualResource implements IFile {
+public class VirtualFile extends VirtualResource implements IVirtualFile {
 	
 	private final Set realFiles = new HashSet();
 	

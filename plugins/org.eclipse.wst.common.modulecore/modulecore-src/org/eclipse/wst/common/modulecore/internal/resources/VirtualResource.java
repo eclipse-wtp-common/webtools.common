@@ -12,7 +12,6 @@ package org.eclipse.wst.common.modulecore.internal.resources;
 
 import java.util.Arrays;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -32,8 +31,10 @@ import org.eclipse.wst.common.modulecore.ComponentResource;
 import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.WorkbenchComponent;
 import org.eclipse.wst.common.modulecore.internal.impl.ResourceTreeRoot;
+import org.eclipse.wst.common.modulecore.resources.IVirtualContainer;
+import org.eclipse.wst.common.modulecore.resources.IVirtualResource;
 
-public abstract class VirtualResource implements IResource {
+public abstract class VirtualResource implements IVirtualResource {
 	
 	private ComponentHandle componentHandle;
 	private IPath runtimePath;
@@ -230,7 +231,7 @@ public abstract class VirtualResource implements IResource {
 	}
 
 	// TODO WTP:Implement this method 
-	public IContainer getParent() {
+	public IVirtualContainer getParent() {
 		return new VirtualFolder(getComponentHandle(), getRuntimePath().removeLastSegments(1));
 	}
 
@@ -404,7 +405,7 @@ public abstract class VirtualResource implements IResource {
 	}
 
 
-	protected ComponentHandle getComponentHandle() {
+	public ComponentHandle getComponentHandle() {
 		return componentHandle;
 	} 
 
