@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.ibm.com/moduleCore" xmlns:tns="http://www.ibm.com/moduleCore">
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.eclipse.org/webtools/moduleCore" xmlns:tns="http://www.eclipse.org/webtools/moduleCore">
 	<element name="project-modules">
 		<complexType>
 			<sequence minOccurs="1" maxOccurs="unbounded">

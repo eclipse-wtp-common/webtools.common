@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="javadoc">
+    <target name="javadoc">
+        <javadoc access="public" 
+				 author="false" 
+					classpath="../bin;D:\Development\targets\m5-target\eclipse\plugins\org.eclipse.osgi_3.1.0\eclipseAdaptor.jar;../../org.eclipse.wst.common.emf/bin;../../org.eclipse.wst.common.emfworkbench.integration/bin;D:\Development\targets\m5-target\eclipse\plugins\com.ibm.wtp.common.util_1.0.1\util.jar;D:\Development\targets\m5-target\eclipse\plugins\org.eclipse.core.resources_3.1.0\resources.jar;D:\Development\targets\m5-target\eclipse\plugins\org.eclipse.xsd_2.1.0\runtime\xsd.jar;D:\Development\targets\m5-target\eclipse\plugins\org.eclipse.emf.edit_2.1.0\runtime\edit.jar;D:\Development\targets\m5-target\eclipse\plugins\org.eclipse.core.runtime_3.1.0\runtime.jar;D:\Development\targets\m5-target\eclipse\plugins\org.eclipse.emf.codegen_2.1.0\runtime\codegen.jar;D:\Development\targets\m5-target\eclipse\plugins\org.eclipse.emf.ecore.xmi_2.1.0\runtime\ecore.xmi.jar;D:\Development\targets\m5-target\eclipse\plugins\org.eclipse.emf.codegen.ecore_2.1.0\runtime\codegen.ecore.jar;D:\Development\targets\m5-target\eclipse\plugins\com.ibm.wtp.emf.workbench_1.0.1.1\emfworkbench.jar;../../org.eclipse.wst.common.frameworks/bin;D:\Development\targets\m5-target\eclipse\plugins\org.eclipse.osgi_3.1.0\console.jar;D:\Development\targets\m5-target\eclipse\plugins\org.eclipse.osgi_3.1.0\core.jar;D:\Development\targets\m5-target\eclipse\plugins\org.eclipse.emf.ecore_2.1.0\runtime\ecore.jar;D:\Development\targets\m5-target\eclipse\plugins\org.eclipse.emf.common_2.1.0\runtime\common.jar" 
+					destdir="doc" 
+					doctitle="ModuleCore API" 
+					nodeprecated="false" 
+					nodeprecatedlist="false" 
+					noindex="false" 
+					nonavbar="false" 
+					notree="false" 
+					overview="D:\Development\workspaces\eclipseWTP\WTP\org.eclipse.wst.common.modulecore\apispec\overview-files\module_core_api.html" 
+					packagenames="org.eclipse.wst.common.modulecore" 
+					sourcepath="../modulecore-src;../property_files" 
+					splitindex="true" 
+					stylesheetfile="D:\Development\workspaces\eclipseWTP\WTP\org.eclipse.wst.common.modulecore\apispec\overview-files\overview\apistyles.css" 
+					use="true" 
+					version="true"
+					breakiterator="yes"
+					/>
+
+		<copy todir="doc/overview">
+			<fileset dir="overview-files/overview" />
+		</copy>
+    </target>
+</project>

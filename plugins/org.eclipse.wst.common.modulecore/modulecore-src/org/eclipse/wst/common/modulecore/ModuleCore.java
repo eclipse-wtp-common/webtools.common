@@ -37,9 +37,9 @@ import org.eclipse.wst.common.modulecore.internal.util.EclipseResourceAdapter;
  * <p>
  * ModuleCore hides the management of accessing edit models (
  * {@see org.eclipse.wst.common.modulecore.ModuleStructuralModel}) correctly. Each project has
- * exactly one ({@see org.eclipse.wst.common.modulecore.ModuleStructuralModel}) for read and exactly one
- * for write. Each of these is shared among all clients and reference counted as necessary. Clients
- * should use ModuleCore when working with the WTP Modules Model. easier.
+ * exactly one ({@see org.eclipse.wst.common.modulecore.ModuleStructuralModel}) for read and
+ * exactly one for write. Each of these is shared among all clients and reference counted as
+ * necessary. Clients should use ModuleCore when working with the WTP Modules Model. easier.
  * </p>
  * 
  * <p>
@@ -49,7 +49,8 @@ import org.eclipse.wst.common.modulecore.internal.util.EclipseResourceAdapter;
  * use {@see #getModuleCoreForRead(IProject)}or {@see #getModuleCoreForWrite(IProject)}.
  * </p>
  * <p>
- * When clients have concluded their use of the instance, <b>clients must call {@see #dispose()}</b>.
+ * When clients have concluded their use of the instance, <b>clients must call {@see #dispose()}
+ * </b>.
  * </p>
  * 
  * <p>
@@ -61,7 +62,7 @@ import org.eclipse.wst.common.modulecore.internal.util.EclipseResourceAdapter;
  */
 public class ModuleCore implements IEditModelHandler {
 
-	public static interface ModuleURI {
+	static interface ModuleURI {
 		public static final int SUB_PROTOCOL_INDX = 0;
 		public static final int PROJECT_NAME_INDX = 1;
 		public static final int MODULE_NAME_INDX = 2;
@@ -370,8 +371,8 @@ public class ModuleCore implements IEditModelHandler {
 	/**
 	 * <p>
 	 * Create a {@see WorkbenchModule}with the given deployed name. The returned module will be
-	 * contained by the root object of the current ModuleCore. The current ModuleCore must not be
-	 * read-only to invoke this method.
+	 * contained by the root object of the current ModuleCore (so no need to re-add it to the Module
+	 * Module root object). The current ModuleCore must not be read-only to invoke this method.
 	 * </p>
 	 * 
 	 * @param aDeployName
@@ -631,5 +632,6 @@ public class ModuleCore implements IEditModelHandler {
 	private void throwAttemptedReadOnlyModification() {
 		throw new IllegalStateException("Attempt to modify a ModuleCore instance facade that was loaded as read-only.");
 	}
+
 
 }
