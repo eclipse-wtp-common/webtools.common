@@ -32,13 +32,6 @@ import com.ibm.wtp.emf.workbench.WorkbenchURIConverter;
 
 public class ModuleCoreNature extends EditModelNature implements IProjectNature, IModuleConstants, IResourceChangeListener {
 
-
-	public void resourceChanged(IResourceChangeEvent anEvent) {
-		// event.getDelta()
-		// IResource changedResource = (IResource)event.getResource();
-		// update()
-	}
-
 	public static ModuleCoreNature getModuleCoreNature(IProject aProject) {
 		try {
 			return (ModuleCoreNature) aProject.getNature(IModuleConstants.MODULE_NATURE_ID);
@@ -98,16 +91,25 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		return (ModuleStructuralModel) getEditModelForWrite(ModuleStructuralModelFactory.MODULE_STRUCTURAL_MODEL_ID, anAccessorKey);
 	}
 
+	// TODO Rename this method to getArtifactEditModelForRead
 	public ArtifactEditModel getModuleEditModelForRead(URI aModuleURI, Object anAccessorKey) {
 		Map params = new HashMap();
 		params.put(ModuleEditModelFactory.PARAM_MODULE_URI, aModuleURI);
 		return (ArtifactEditModel) getEditModelForRead(getArtifactEditModelId(aModuleURI), anAccessorKey, params);
 	}
-
+	
+	// TODO Rename this method to getArtifactEditModelForWrite
 	public ArtifactEditModel getModuleEditModelForWrite(URI aModuleURI, Object anAccessorKey) {
 		Map params = new HashMap();
 		params.put(ModuleEditModelFactory.PARAM_MODULE_URI, aModuleURI);
 		return (ArtifactEditModel) getEditModelForWrite(getArtifactEditModelId(aModuleURI), anAccessorKey, params);
+	}
+	
+
+	public void resourceChanged(IResourceChangeEvent anEvent) {
+		// event.getDelta()
+		// IResource changedResource = (IResource)event.getResource();
+		// update()
 	}
 
 	/*

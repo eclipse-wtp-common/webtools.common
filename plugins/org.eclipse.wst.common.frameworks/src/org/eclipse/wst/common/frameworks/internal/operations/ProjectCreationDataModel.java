@@ -18,7 +18,6 @@ import java.io.File;
 
 import org.eclipse.core.internal.localstore.CoreFileSystemLibrary;
 import org.eclipse.core.internal.resources.Project;
-import org.eclipse.core.internal.utils.Policy;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
@@ -174,8 +173,10 @@ public class ProjectCreationDataModel extends WTPOperationDataModel {
 		if (!CoreFileSystemLibrary.isCaseSensitive()) {
 			//now look for a matching case variant in the tree
 			IResource variant = ((Project) getProject()).findExistingResourceVariant(getProject().getFullPath());
-			if (variant != null)
-				return WTPCommonPlugin.createErrorStatus(Policy.bind("resources.existsDifferentCase", variant.getFullPath().toString())); //$NON-NLS-1$
+			if (variant != null) { 
+				// TODO Fix this string
+				return WTPCommonPlugin.createErrorStatus("Resource already exists with a different case."/*Policy.bind("resources.existsDifferentCase", variant.getFullPath().toString())*/); //$NON-NLS-1$
+			}
 		}
 
 		return OK_STATUS;

@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchModuleImpl.java,v 1.15 2005/02/09 02:48:39 cbridgha Exp $
+ * $Id: WorkbenchModuleImpl.java,v 1.16 2005/02/12 15:58:44 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
@@ -32,7 +32,6 @@ import org.eclipse.wst.common.modulecore.ModuleURIUtil;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
 import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
 import org.eclipse.wst.common.modulecore.util.ModuleCore;
-import org.eclipse.wst.common.modulecore.util.ResourceTreeRoot;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Workbench Module</b></em>'.
@@ -398,7 +397,7 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 		// indexResourcesByDeployPath();
 		// return (WorkbenchModuleResource) resourceIndexByDeployPath.get(aDeployPath);
 		IPath resourcePath = new Path(aDeployPath.path());
-		ResourceTreeRoot resourceTreeRoot = ModuleCore.getDeployResourceTreeRoot(this);
+		ResourceTreeRoot resourceTreeRoot = ResourceTreeRoot.getDeployResourceTreeRoot(this);
 		return resourceTreeRoot.findModuleResources(resourcePath, false); 
 	}
 
@@ -408,7 +407,7 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 		try {
 			if (ModuleURIUtil.ensureValidFullyQualifiedPlatformURI(aSourcePath, false)) {
 				IPath resourcePath = new Path(aSourcePath.path()).removeFirstSegments(1);
-				ResourceTreeRoot resourceTreeRoot = ModuleCore.getSourceResourceTreeRoot(this);
+				ResourceTreeRoot resourceTreeRoot = ResourceTreeRoot.getSourceResourceTreeRoot(this);
 				return resourceTreeRoot.findModuleResources(resourcePath, false);
 			}
 		} catch (UnresolveableURIException e) {
@@ -416,50 +415,6 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 		}
 		return null;
 	}
-
-	private void indexResourcesByDeployPath() {
-		if (isIndexedByDeployPath)
-			return;
-
-		synchronized (resourceIndexByDeployPath) {
-			// TODO We need a resource indexing adapter to keep the index up to date
-			// Adapter adapter = EcoreUtil.getAdapter(eAdapters(), ModuleIndexingAdapter.class);
-			// if (adapter == null)
-			// eAdapters().add((adapter = new ModuleIndexingAdapter()));
-
-			WorkbenchModuleResource resource = null;
-			for (Iterator iter = getResources().iterator(); iter.hasNext();) {
-				resource = (WorkbenchModuleResource) iter.next();
-				resourceIndexByDeployPath.put(resource.getDeployedPath(), resource);
-			}
-		}
-		isIndexedByDeployPath = true;
-	}
-
-	// private void indexResourcesBySourcePath() {
-	// if (isIndexedBySourcePath)
-	// return;
-	//
-	// synchronized (resourceIndexBySourcePath) {
-	// // TODO We need a resource indexing adapter to keep the index up to date
-	// // Adapter adapter = EcoreUtil.getAdapter(eAdapters(), ModuleIndexingAdapter.class);
-	// // if (adapter == null)
-	// // eAdapters().add((adapter = new ModuleIndexingAdapter()));
-	//			
-	// WorkbenchModuleResource resource = null;
-	// URI projectRelativePath = null;
-	// for(Iterator iter = getResources().iterator(); iter.hasNext(); ) {
-	// try {
-	// resource = (WorkbenchModuleResource) iter.next();
-	// projectRelativePath =
-	// ModuleURIUtil.trimWorkspacePathToProjectRelativeURI(resource.getSourcePath());
-	// resourceIndexBySourcePath.put(projectRelativePath, resource);
-	// } catch (UnresolveableURIException e) {
-	// e.printStackTrace();
-	// }
-	// }
-	// }
-	// isIndexedBySourcePath = true;
-	// }
+  
 
 } // WorkbenchModuleImpl

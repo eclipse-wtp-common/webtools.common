@@ -8,17 +8,18 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.modulecore.util;
+package org.eclipse.wst.common.modulecore.impl;
 
 import java.util.List;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.wst.common.modulecore.ModuleURIUtil;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
 import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
-import org.eclipse.wst.common.modulecore.impl.UnresolveableURIException;
+import org.eclipse.wst.common.modulecore.util.IPathProvider;
 
 /**
  * <p>
@@ -27,6 +28,25 @@ import org.eclipse.wst.common.modulecore.impl.UnresolveableURIException;
  */
 public class ResourceTreeRoot extends ResourceTreeNode {
 
+	
+	public static ResourceTreeRoot getSourceResourceTreeRoot(WorkbenchModule aModule) {
+		ResourceTreeRootAdapter resourceTreeAdapter = (ResourceTreeRootAdapter) EcoreUtil.getAdapter(aModule.eAdapters(), ResourceTreeRootAdapter.SOURCE_ADAPTER_TYPE);
+		if (resourceTreeAdapter != null)
+			return resourceTreeAdapter.getResourceTreeRoot();
+		resourceTreeAdapter = new ResourceTreeRootAdapter(ResourceTreeRootAdapter.SOURCE_TREE);
+		aModule.eAdapters().add(resourceTreeAdapter);
+		return resourceTreeAdapter.getResourceTreeRoot();
+	}
+
+	public static ResourceTreeRoot getDeployResourceTreeRoot(WorkbenchModule aModule) {
+		ResourceTreeRootAdapter resourceTreeAdapter = (ResourceTreeRootAdapter) EcoreUtil.getAdapter(aModule.eAdapters(), ResourceTreeRootAdapter.DEPLOY_ADAPTER_TYPE);
+		if (resourceTreeAdapter != null)
+			return resourceTreeAdapter.getResourceTreeRoot();
+		resourceTreeAdapter = new ResourceTreeRootAdapter(ResourceTreeRootAdapter.DEPLOY_TREE);
+		aModule.eAdapters().add(resourceTreeAdapter);
+		return resourceTreeAdapter.getResourceTreeRoot();
+	}
+	
 	private final WorkbenchModule module;
 
 	public ResourceTreeRoot(WorkbenchModule aModule, IPathProvider aPathProvider) {

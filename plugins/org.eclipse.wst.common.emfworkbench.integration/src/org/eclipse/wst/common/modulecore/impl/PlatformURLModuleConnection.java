@@ -11,7 +11,6 @@ import java.net.URL;
 
 import org.eclipse.core.internal.boot.PlatformURLConnection;
 import org.eclipse.core.internal.boot.PlatformURLHandler;
-import org.eclipse.core.internal.utils.Policy;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -99,7 +98,8 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
 		// if there are two segments then the second is a project name.
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(resolvedPath.segment(0));
 		if (!project.exists()) {
-			String message = Policy.bind("url.couldNotResolve", project.getName(), url.toExternalForm()); //$NON-NLS-1$
+			// TODO Fix this string
+			String message = "Could not resolve URL"; //Policy.bind("url.couldNotResolve", project.getName(), url.toExternalForm()); //$NON-NLS-1$
 			throw new IOException(message);
 		}
 		IPath result = null;

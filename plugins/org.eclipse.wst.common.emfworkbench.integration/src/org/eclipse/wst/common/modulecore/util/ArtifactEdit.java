@@ -23,9 +23,10 @@ import org.eclipse.wst.common.modulecore.impl.UnresolveableURIException;
  */
 public class ArtifactEdit {
 
-	public static String TYPE_ID = "NO_TYPE";
-	private ArtifactEditModel artifactEditModel;
 	public static final Class ADAPTER_TYPE = ArtifactEdit.class;
+	public static final String TYPE_ID = "ARTIFACT_EDIT_TYPE"; //$NON-NLS-1$ 
+	private ArtifactEditModel artifactEditModel;
+	
 	/**
 	 * @param model
 	 */

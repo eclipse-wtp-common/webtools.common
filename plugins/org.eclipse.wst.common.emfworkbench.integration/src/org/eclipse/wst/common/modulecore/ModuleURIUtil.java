@@ -27,7 +27,7 @@ public class ModuleURIUtil {
 
 	public static String getDeployedName(URI aModuleURI) throws UnresolveableURIException {
 		ensureValidFullyQualifiedModuleURI(aModuleURI);
-		return aModuleURI.segment(ModuleCore.Constants.ModuleURISegments.MODULE_NAME);
+		return aModuleURI.segment(ModuleCore.ModuleURI.MODULE_NAME_INDX);
 	}
 
 	public static boolean ensureValidFullyQualifiedModuleURI(URI aModuleURI) throws UnresolveableURIException {
