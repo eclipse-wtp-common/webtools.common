@@ -23,6 +23,13 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 
 	protected IDataModel model = null;
 
+	protected String[] combineProperties(String[] props1, String[] props2)	{
+		String[] properties = new String[props1.length + props2.length];
+		System.arraycopy(props1, 0, properties, 0, props1.length);
+		System.arraycopy(props2, 0, properties, props1.length, props2.length);
+		return properties;			
+	}
+	
 	public void init() {
 	}
 

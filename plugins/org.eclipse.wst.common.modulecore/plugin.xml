@@ -23,6 +23,7 @@
       <import plugin="org.eclipse.wst.common.emf"/>
       <import plugin="org.eclipse.emf.ecore.xmi"/>
       <import plugin="org.eclipse.wst.server.core"/>
+      <import plugin="org.eclipse.core.commands"/>
    </requires>
 
    <extension-point id="ComponentStructuralBuilder" name="ComponentStructuralBuilder" schema="schema/ComponentStructuralBuilder.exsd"/>
