@@ -11,9 +11,10 @@ import com.ibm.wtp.common.logger.proxy.Logger;
 
 public class ModuleUtil implements IModuleConstants {
 
-    public static boolean isFlexableProject(IProject project) {
+    public static boolean isFlexibleProject(IProject project) {
         IProjectNature nature = null;
         try {
+            //should check 
             if (project.isAccessible())
              nature = project.getNature(MODULE_NATURE_ID);
         } catch (CoreException e) {
