@@ -17,9 +17,12 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModelEvent;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPPropertyDescriptor;
+import org.eclipse.wst.common.modulecore.ModuleCoreFactory;
+import org.eclipse.wst.common.modulecore.Property;
 import org.eclipse.wst.server.core.IModuleType;
 import org.eclipse.wst.server.core.IProjectProperties;
 import org.eclipse.wst.server.core.IRuntimeType;
@@ -228,4 +231,19 @@ public abstract class ComponentCreationDataModel extends WTPOperationDataModel {
             return true;
         return false;
     }
+    
+    public IProject getProject(){
+    	String projName = getStringProperty(PROJECT_NAME);
+    	return ProjectUtilities.getProject(projName);
+    }
+    
+    public String getComponentName(){
+    	return getStringProperty(COMPONENT_NAME);
+    }
+    
+    public String getComponentDeployName(){
+    	return getStringProperty(COMPONENT_DEPLOY_NAME);
+    }
+	protected abstract String getVersion();
+	protected abstract List getProperties();
 }
