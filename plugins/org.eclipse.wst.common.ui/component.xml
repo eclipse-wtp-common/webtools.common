@@ -26,11 +26,11 @@
 <!--  	<type name="WindowUtility" />  -->   <!-- Remove class, clean up xsd.ui -->
 <!--    <type name="ImageFactory" />  -->   <!-- No -->
 	</package>
-	<package name="org.eclipse.wst.common.ui.wizards">
+<!--	<package name="org.eclipse.wst.common.ui.wizards">  -->
 <!--  		<type name="ExampleProjectCreationOperation" />  -->  <!-- referenced externally only within package (ExampleProjectCreationWizardPage -->
 <!-- 		<type name="ExampleProjectCreationWizardPage" /> --> <!-- referenced externally only within package (ExampleProjectCreationWizard, and Operation -->
 <!--  		<type name="ExampleProjectCreationWizard" />  --> <!-- referenced by XMLExampleProjectCreationWizard, which is deprecated and going to be removed in M4  -->
-	</package>
+<!--	</package> -->
 	<package name="org.eclipse.wst.common.ui.dnd">
 		<type name="ViewerDropAdapter" />
 		<type name="DragAndDropCommand" />  <!-- referenced externally only within package -->
@@ -39,31 +39,14 @@
 		<type name="DefaultDragAndDropCommand" />
 		<type name="ViewerDragAdapter" />
 	</package>
-	<package name="org.eclipse.wst.common.ui.resource">
-		<type name="ResourceDeleteListener" />
-	</package>
-	<package name="org.eclipse.wst.common.ui.dialogs">
-		<type name="SelectSingleFileDialog" />
-	</package>
+<!--	<package name="org.eclipse.wst.common.ui.resource"> -->
+<!--		<type name="ResourceDeleteListener" />  -->  <!-- no references -->
+<!--	</package> -->
+<!--	<package name="org.eclipse.wst.common.ui.dialogs">  -->
+<!--		<type name="SelectSingleFileDialog" />  -->    <!-- No, should look into base for support?
+<!--	</package>  -->
 	<package name="org.eclipse.wst.common.ui.actionhandler">
 		<type name="ActionHandlerListener" />
-	</package>
-	<package name="org.eclipse.wst.common.ui.properties">
-		<type name="ISection" />
-		<type name="IDynamicTabListSection" />
-		<type name="ITabSelectionListener" />
-		<type name="ITabbedPropertySheetPageContributor" />
-		<type name="ISectionDescriptorProvider" />
-		<type name="IDynamicTabItem" />
-		<type name="ITypeMapper" />
-		<type name="AbstractPropertySection" />
-		<type name="IDynamicTabListContentProvider" />
-		<type name="AbstractDynamicTabListPropertySection" />
-		<type name="TabbedPropertySheetPage" />
-		<type name="TabbedPropertySheetWidgetFactory" />
-		<type name="AdvancedPropertySection" />
-		<type name="ITabbedPropertyConstants" />
-		<type name="ISectionDescriptor" />
 	</package>
 	<package name="org.eclipse.wst.common.uriresolver">
 		<type name="URIResolverPlugin" />
