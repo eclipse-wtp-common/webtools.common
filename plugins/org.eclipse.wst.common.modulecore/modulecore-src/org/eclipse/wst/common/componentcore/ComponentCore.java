@@ -13,9 +13,11 @@ package org.eclipse.wst.common.componentcore;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.wst.common.componentcore.internal.resources.FlexibleProject;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualComponent;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualFile;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualFolder;
+import org.eclipse.wst.common.componentcore.resources.IFlexibleProject;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualContainer;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
@@ -24,6 +26,11 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
 public class ComponentCore {
 
+
+	public static IFlexibleProject createFlexibleProject(IProject aProject) {
+		return new FlexibleProject(aProject); 
+	}
+	
 	public static IVirtualComponent createComponent(IProject aProject, String aComponentName) {
 		return new VirtualComponent(aProject, aComponentName, new Path("/")); //$NON-NLS-1$
 	}
