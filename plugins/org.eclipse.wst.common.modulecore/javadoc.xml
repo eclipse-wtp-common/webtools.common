@@ -41,6 +41,9 @@
 		<copy todir="./doc/overview">
 			<fileset dir="component-overview/overview/"/> 
 		</copy>
+		<delete>
+			<fileset dir="." includes="**/package.html"/>
+		</delete>
     </target>
  
 </project>
