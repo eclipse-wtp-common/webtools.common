@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreSwitch.java,v 1.10 2005/02/02 22:14:45 cbridgha Exp $
+ * $Id: ModuleCoreSwitch.java,v 1.11 2005/02/07 16:02:19 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.util;
 
@@ -75,13 +75,9 @@ public class ModuleCoreSwitch {
 		if (theEClass.eContainer() == modelPackage) {
 			return doSwitch(theEClass.getClassifierID(), theEObject);
 		}
-		else {
-			List eSuperTypes = theEClass.getESuperTypes();
-			return
-				eSuperTypes.isEmpty() ?
-					defaultCase(theEObject) :
-					doSwitch((EClass)eSuperTypes.get(0), theEObject);
-		}
+		
+		List eSuperTypes = theEClass.getESuperTypes();
+		return eSuperTypes.isEmpty() ? defaultCase(theEObject) : doSwitch((EClass)eSuperTypes.get(0), theEObject);
 	}
 
 	/**

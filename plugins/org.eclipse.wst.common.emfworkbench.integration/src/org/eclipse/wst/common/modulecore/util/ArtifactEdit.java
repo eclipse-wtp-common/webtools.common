@@ -10,25 +10,9 @@
  *******************************************************************************/
 package org.eclipse.wst.common.modulecore.util;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
-import org.eclipse.wst.common.modulecore.ModuleCoreFactory;
-import org.eclipse.wst.common.modulecore.ModuleCoreNature;
-import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 import org.eclipse.wst.common.modulecore.ArtifactEditModel;
-import org.eclipse.wst.common.modulecore.ModuleStructuralModel;
-import org.eclipse.wst.common.modulecore.ProjectModules;
+import org.eclipse.wst.common.modulecore.ModuleCoreNature;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
 import org.eclipse.wst.common.modulecore.impl.UnresolveableURIException;
 
@@ -51,6 +35,7 @@ public class ArtifactEdit {
 			ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(project);
 			return nature.getModuleEditModelForRead(aModule.getHandle(), anAccessorKey);
 		} catch (UnresolveableURIException uue) {
+			//Ignore
 		}
 		return null;
 	}
@@ -61,6 +46,7 @@ public class ArtifactEdit {
 			ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(project);
 			return nature.getModuleEditModelForWrite(aModule.getHandle(), anAccessorKey);
 		} catch (UnresolveableURIException uue) {
+			//Ignore
 		}
 		return null;
 

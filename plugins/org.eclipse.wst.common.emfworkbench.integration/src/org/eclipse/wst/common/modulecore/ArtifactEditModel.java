@@ -18,7 +18,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
-import org.eclipse.wst.common.modulecore.impl.PlatformURLModuleConnection;
 import org.eclipse.wst.common.modulecore.impl.UnresolveableURIException;
 import org.eclipse.wst.common.modulecore.util.ModuleCore;
 
@@ -84,7 +83,7 @@ public class ArtifactEditModel extends EditModel {
 				}
 			}
 		} catch (UnresolveableURIException uurie) {
-
+			//Ignore
 		} finally {
 			if (structuralModel != null)
 				structuralModel.releaseAccess(this);

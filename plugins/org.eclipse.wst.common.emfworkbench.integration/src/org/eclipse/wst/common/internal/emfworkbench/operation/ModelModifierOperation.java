@@ -113,7 +113,7 @@ public abstract class ModelModifierOperation extends EditModelOperation {
 	 * This is a hook to allow subclasses to perform additional tasks after the commands are
 	 * executed using the helpers.
 	 */
-	protected void postExecuteCommands(IProgressMonitor monitor) {
+	protected void postExecuteCommands(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 		//do nothing
 	}
 

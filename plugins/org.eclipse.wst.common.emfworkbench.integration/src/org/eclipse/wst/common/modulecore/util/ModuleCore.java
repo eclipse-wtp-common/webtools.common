@@ -103,7 +103,7 @@ public class ModuleCore {
 		return module.findWorkbenchModuleResourceByDeployPath(deployedPath);
 	}	
 	
-	public WorkbenchModuleResource[] findWorkbenchModuleResourcesBySourcePath(ModuleStructuralModel aModuleStucturalModule, URI aResourcePath) throws UnresolveableURIException {
+	public WorkbenchModuleResource[] findWorkbenchModuleResourcesBySourcePath(ModuleStructuralModel aModuleStucturalModule, URI aResourcePath) {
 		ProjectModules projectModules = getProjectModules(aModuleStucturalModule);
 		EList modules = projectModules.getWorkbenchModules();
 		WorkbenchModule module = null;

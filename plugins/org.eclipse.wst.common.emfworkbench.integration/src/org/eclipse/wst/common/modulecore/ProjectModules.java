@@ -2,12 +2,11 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ProjectModules.java,v 1.6 2005/02/03 23:30:38 cbridgha Exp $
+ * $Id: ProjectModules.java,v 1.7 2005/02/07 16:02:19 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 
 /**

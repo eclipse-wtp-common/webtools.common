@@ -14,10 +14,10 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
-import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 
 import com.ibm.wtp.common.logger.proxy.Logger;
+import com.ibm.wtp.emf.workbench.WorkbenchResourceHelperBase;
 
 public class ModuleStructuralModel extends EditModel implements IResourceChangeListener {
 	
@@ -93,10 +93,11 @@ public class ModuleStructuralModel extends EditModel implements IResourceChangeL
     }
 
     public void resourceChanged(IResourceChangeEvent event) {
+    	//do nothing
     }
 
     public void cacheNonResourceValidateState(List roNonResourceFiles) {
-
+    	//do nothing
     }
     
 	public WTPModulesResource  makeWTPModulesResource() {
@@ -121,7 +122,7 @@ public class ModuleStructuralModel extends EditModel implements IResourceChangeL
         URI wtpModuleURI = createWTPModuleURI();
         if (wtpModuleURI == null)
             return null;
-        Resource wtpModuleResource = WorkbenchResourceHelper.getResource(wtpModuleURI);
+        Resource wtpModuleResource = WorkbenchResourceHelperBase.getResource(wtpModuleURI);
         return wtpModuleResource;
     }
 

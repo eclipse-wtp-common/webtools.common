@@ -32,7 +32,7 @@ public class WTPModulesResourceFactory extends TranslatorResourceFactory {
 	 * Method registerDtds.
 	 */
 	public static void registerDtds() {
-		
+		//do nothing
 	}
 
 	/**
