@@ -22,24 +22,24 @@ import org.eclipse.wst.common.frameworks.datamodel.ui.DataModelWizardFactory;
 public class DataModelUIFactoryTest extends TestCase {
 
 	public void testValidExtensionID() {
-		IDataModel dataModel = DataModelFactory.INSTANCE.createDataModel("org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel");
+		IDataModel dataModel = DataModelFactory.createDataModel("org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel");
 		assertTrue(dataModel.isProperty(ITestDataModel.FOO));
-		DataModelWizard wizard = DataModelWizardFactory.INSTANCE.createWizard("org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel");
+		DataModelWizard wizard = DataModelWizardFactory.createWizard("org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel");
 		assertNotNull(wizard);
 	}
 
 
 	public void testValidExtensionClass() {
-		IDataModel dataModel = DataModelFactory.INSTANCE.createDataModel(ITestDataModel.class);
+		IDataModel dataModel = DataModelFactory.createDataModel(ITestDataModel.class);
 		assertTrue(dataModel.isProperty(ITestDataModel.FOO));
-		DataModelWizard wizard = DataModelWizardFactory.INSTANCE.createWizard(ITestDataModel.class);
+		DataModelWizard wizard = DataModelWizardFactory.createWizard(ITestDataModel.class);
 		assertNotNull(wizard);
 	}
 
 	public void testValidExtensionInstance() {
-		IDataModel dataModel = DataModelFactory.INSTANCE.createDataModel(new TestDataModelProvider());
+		IDataModel dataModel = DataModelFactory.createDataModel(new TestDataModelProvider());
 		assertTrue(dataModel.isProperty(ITestDataModel.FOO));
-		DataModelWizard wizard = DataModelWizardFactory.INSTANCE.createWizard(dataModel);
+		DataModelWizard wizard = DataModelWizardFactory.createWizard(dataModel);
 		assertNotNull(wizard);
 		assertTrue(dataModel == ((TestDataModelWizard) wizard).getDataModel());
 	}
