@@ -11,7 +11,9 @@
 package org.eclipse.wst.common.frameworks.modulecore.tests;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 
 public class TestWorkspace {
 
@@ -29,6 +31,12 @@ public class TestWorkspace {
 		return ResourcesPlugin.getWorkspace().getRoot().getProject(PROJECT_NAME);
 	}
 
-	public static void init() { 		
+	public static void init() {
+		
+		try {
+			getTargetProject().refreshLocal(IResource.DEPTH_INFINITE, null);
+		} catch (CoreException e) { 
+			e.printStackTrace();
+		}
 	}
 }

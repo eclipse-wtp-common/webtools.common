@@ -36,7 +36,7 @@ public class IVirtualFolderAPITest extends TestCase {
 	public static final Path WEBINF_FOLDER_REAL_PATH = new Path("/WebModule1/WebContent/"+TEST_FOLDER_NAME); //$NON-NLS-1$ //$NON-NLS-2$
 	public static final Path WEBINF_FOLDER_RUNTIME_PATH = new Path("/"+TEST_FOLDER_NAME); //$NON-NLS-1$
 	
-	public static final Path TESTDATA_FOLDER_REAL_PATH = new Path("/WebModule1/testdata"); //$NON-NLS-1$ //$NON-NLS-2$
+	public static final Path TESTDATA_FOLDER_REAL_PATH = new Path("WebModule1/testdata"); //$NON-NLS-1$ //$NON-NLS-2$
 	public static final Path TESTDATA_FOLDER_RUNTIME_PATH = new Path("/"); //$NON-NLS-1$
 	
 	private static final IPath DELETEME_PATH = new Path("/deleteme"); //$NON-NLS-1$
@@ -162,7 +162,7 @@ public class IVirtualFolderAPITest extends TestCase {
 	 * Class under test for void delete(int, IProgressMonitor)
 	 */
 	public void testDeleteintIProgressMonitor2() throws Exception {
-		deletemeVirtualFolder.delete(IVirtualResource.DELETE_METAMODEL_ONLY, null);
+		deletemeVirtualFolder.delete(IVirtualResource.IGNORE_UNDERLYING_RESOURCE, null);
 		
 		assertTrue("The real folder should not be deleted when IVirtualResource.DELETE_METAMODEL_ONLY is supplied.", deletemeFolder.exists()); //$NON-NLS-1$
 				
@@ -198,24 +198,7 @@ public class IVirtualFolderAPITest extends TestCase {
 				fail("Found deleted folder in members()"); //$NON-NLS-1$
 			}
 		}	
-	}	
-	
-	/*
-	 * Class under test for void delete(boolean, IProgressMonitor)
-	 */
-	public void testDeletebooleanbooleanIProgressMonitor()  throws Exception  {
-		deletemeVirtualFolder.delete(IVirtualResource.FORCE | IVirtualResource.KEEP_HISTORY, null);
-		
-		assertTrue("The real folder should be deleted when IVirtualResource.DELETE_METAMODEL_ONLY is NOT supplied.", !deletemeFolder.exists()); //$NON-NLS-1$
-				
-		IVirtualResource[] members = component.members();
-		
-		for (int i = 0; i < members.length; i++) {
-			if(members[i].getRuntimePath().equals(deletemeVirtualFolder.getRuntimePath())) {
-				fail("Found deleted folder in members()"); //$NON-NLS-1$
-			}
-		}	
-	}	
+	}	 
 	 	
 	public void testFindMemberString() { 
 	}

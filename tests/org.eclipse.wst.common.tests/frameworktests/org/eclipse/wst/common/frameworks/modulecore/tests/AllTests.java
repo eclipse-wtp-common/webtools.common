@@ -18,6 +18,8 @@ public class AllTests extends TestCase {
 	
 	public static TestSuite suite() {
 		
+		TestWorkspace.init();
+		
 		TestSuite suite = new TestSuite(); 
 		
 		suite.addTestSuite(IVirtualFolderAPITest.class);
