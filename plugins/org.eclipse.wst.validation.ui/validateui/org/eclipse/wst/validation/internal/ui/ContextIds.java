@@ -10,10 +10,10 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal.ui;
 
-import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;
+import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 
 public interface ContextIds {
-	static final String PREFIX = ValidationUIPlugin.PLUGIN_ID;
+	static final String PREFIX = WTPUIPlugin.PLUGIN_ID;
 
 	// context ids for the Validation Properties Page
 	public static final String VALIDATION_PROPERTIES_PAGE = PREFIX + ".jvpp0000"; //$NON-NLS-1$
