@@ -25,7 +25,7 @@
 
 <!-- Validation extension points -->
    <extension-point id="validator" name="Validator" schema="xsds/validatorExtSchema.exsd"/>
-   <extension-point id="postValidator" name="PostValidator" schema="xsds/postValidatorExtSchema.exsd"/>
+   <extension-point id="referencialFileValidator" name="ReferencialFileValidator" schema="xsds/referencialFileExtSchema.exsd"/>
    
 <!--============================-->
 <!-- Validation Contributions   -->

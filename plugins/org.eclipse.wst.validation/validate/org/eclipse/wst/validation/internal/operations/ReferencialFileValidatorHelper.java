@@ -31,11 +31,11 @@ import org.eclipse.core.runtime.CoreException;
  * To change the template for this generated type comment go to Window - Preferences - Java - Code
  * Generation - Code and Comments
  */
-public class PostValidatorHelper {
+public class ReferencialFileValidatorHelper {
 	/**
 	 *  
 	 */
-	public PostValidatorHelper() {
+	public ReferencialFileValidatorHelper() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

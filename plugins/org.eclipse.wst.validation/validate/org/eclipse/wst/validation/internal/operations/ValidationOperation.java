@@ -41,7 +41,7 @@ import org.eclipse.wst.validation.core.ValidationException;
 import org.eclipse.wst.validation.core.ValidatorLauncher;
 import org.eclipse.wst.validation.internal.FilterUtil;
 import org.eclipse.wst.validation.internal.InternalValidatorManager;
-import org.eclipse.wst.validation.internal.PostValidatorRegistryReader;
+import org.eclipse.wst.validation.internal.ReferencialFileValidatorRegistryReader;
 import org.eclipse.wst.validation.internal.RegistryConstants;
 import org.eclipse.wst.validation.internal.ResourceConstants;
 import org.eclipse.wst.validation.internal.ResourceHandler;
@@ -706,7 +706,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				checkCanceled(reporter);
 				preValidate(reporter);
 				validate(reporter);
-				postValidate(reporter);
+				validateReferencialFiles(reporter);
 			} catch (CoreException exc) {
 				if (logger.isLoggingLevel(Level.SEVERE)) {
 					LogEntry entry = ValidationPlugin.getLogEntry();
@@ -731,16 +731,16 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	/**
 	 * @param reporter
 	 */
-	private void postValidate(WorkbenchReporter reporter) {
-		PostValidatorRegistryReader reader = PostValidatorRegistryReader.getInstance();
+	private void validateReferencialFiles(WorkbenchReporter reporter) {
+		ReferencialFileValidatorRegistryReader reader = ReferencialFileValidatorRegistryReader.getInstance();
 		if (reader != null) {
 			reader.readRegistry();
-			PostValidator postValidator = reader.getPostValidator();
-			if (postValidator != null) {
+			ReferencialFileValidator refFileValidator = reader.getReferencialFileValidator();
+			if (refFileValidator != null) {
 				if (_delta != null) {
-					postValidateFileDelta(reporter, postValidator);
+					refFileValidateFileDelta(reporter, refFileValidator);
 				} else if (_project != null) {
-					postValidateProject(reporter, postValidator);
+					postValidateProject(reporter, refFileValidator);
 				}
 			}
 		}
@@ -748,9 +748,9 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 
 	/**
 	 * @param reporter
-	 * @param postValidator
+	 * @param referencialFileValidator
 	 */
-	private void postValidateFileDelta(WorkbenchReporter reporter, PostValidator postValidator) {
+	private void refFileValidateFileDelta(WorkbenchReporter reporter, ReferencialFileValidator refFileValidator) {
 		IResourceDelta[] resourceDelta = _delta.getAffectedChildren(IResourceDelta.ADDED | IResourceDelta.CHANGED | IResourceDelta.REMOVED);
 		List inputFiles = new ArrayList();
 		List referencingFiles = new ArrayList();
@@ -762,7 +762,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				} else if (resource instanceof IFile)
 					inputFiles.add(resource);
 			}
-			List rFilesToValidate = postValidator.getReferencedFile(inputFiles);
+			List rFilesToValidate = refFileValidator.getReferencedFile(inputFiles);
 			if (rFilesToValidate != null && !rFilesToValidate.isEmpty())
 				referencingFiles.addAll(rFilesToValidate);
 			try {
@@ -791,9 +791,9 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 
 	/**
 	 * @param reporter
-	 * @param postValidator
+	 * @param referencialFileValidator
 	 */
-	private void postValidateProject(WorkbenchReporter reporter, PostValidator postValidator) {
+	private void postValidateProject(WorkbenchReporter reporter, ReferencialFileValidator refFileValidator) {
 		Set set = ValidationRegistryReader.getReader().getValidatorMetaData(_project);
 		Iterator it = set.iterator();
 		while (it.hasNext()) {
@@ -801,7 +801,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			List filters = data.getNameFilters();
 			List files = getAllFilesForFilter(filters);
 			if (!files.isEmpty()) {
-				List fileForValidation = postValidator.getReferencedFile(files);
+				List fileForValidation = refFileValidator.getReferencedFile(files);
 				try {
 					validateReferencingFiles(reporter, fileForValidation);
 				} catch (Exception e) {
@@ -817,7 +817,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 */
 	private List getAllFilesForFilter(List filters) {
 		if (!filters.isEmpty()) {
-			List allProjectFiles = PostValidatorHelper.getAllProjectFiles(_project);
+			List allProjectFiles = ReferencialFileValidatorHelper.getAllProjectFiles(_project);
 			List filterFiles = new ArrayList();
 			for (int i = 0; i < filters.size(); i++) {
 				String fileName = (String) filters.get(i);

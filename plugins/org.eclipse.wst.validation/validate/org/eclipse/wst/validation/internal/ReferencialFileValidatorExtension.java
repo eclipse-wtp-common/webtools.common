@@ -18,7 +18,7 @@ package org.eclipse.wst.validation.internal;
 
 import org.eclipse.core.internal.runtime.Assert;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.wst.validation.internal.operations.PostValidator;
+import org.eclipse.wst.validation.internal.operations.ReferencialFileValidator;
 
 import com.ibm.wtp.common.logger.proxy.Logger;
 
@@ -28,12 +28,12 @@ import com.ibm.wtp.common.logger.proxy.Logger;
  * To change the template for this generated type comment go to Window - Preferences - Java - Code
  * Generation - Code and Comments
  */
-public class PostValidatorExtension {
+public class ReferencialFileValidatorExtension {
 	private String id = null;
-	private PostValidator instance;
+	private ReferencialFileValidator instance;
 	private boolean errorCondition = false;
 	private IConfigurationElement element;
-	public static final String POST_VALIDATOR_EXTENSION = "postValidator"; //$NON-NLS-1$
+	public static final String REF_FILE_VALIDATOR_EXTENSION = "referencialFileValidator"; //$NON-NLS-1$
 	public static final String RUN = "run"; //$NON-NLS-1$
 	public static final String ATT_ID = "id"; //$NON-NLS-1$
 	public static final String ATT_CLASS = "class"; //$NON-NLS-1$
@@ -41,14 +41,14 @@ public class PostValidatorExtension {
 	/**
 	 *  
 	 */
-	public PostValidatorExtension() {
+	public ReferencialFileValidatorExtension() {
 		super();
 	}
 
-	public PostValidator getInstance() {
+	public ReferencialFileValidator getInstance() {
 		try {
 			if (instance == null && !errorCondition)
-				instance = (PostValidator) element.createExecutableExtension("run"); //$NON-NLS-1$
+				instance = (ReferencialFileValidator) element.createExecutableExtension("run"); //$NON-NLS-1$
 		} catch (Throwable e) {
 			Logger.getLogger().logError(e);
 			errorCondition = true;
@@ -56,8 +56,8 @@ public class PostValidatorExtension {
 		return instance;
 	}
 
-	public PostValidatorExtension(IConfigurationElement element) {
-		Assert.isLegal(POST_VALIDATOR_EXTENSION.equals(element.getName()), "Extensions must be of the type \"" + POST_VALIDATOR_EXTENSION + "\"."); //$NON-NLS-1$ //$NON-NLS-2$
+	public ReferencialFileValidatorExtension(IConfigurationElement element) {
+		Assert.isLegal(REF_FILE_VALIDATOR_EXTENSION.equals(element.getName()), "Extensions must be of the type \"" + REF_FILE_VALIDATOR_EXTENSION + "\"."); //$NON-NLS-1$ //$NON-NLS-2$
 		this.element = element;
 		init();
 	}

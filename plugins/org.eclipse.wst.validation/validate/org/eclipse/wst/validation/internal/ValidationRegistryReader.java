@@ -1199,11 +1199,11 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			return null;
 		}
 
-		//String validatorImplName = runChildren[0].getAttribute(ATT_CLASS);
 		//WTP Bugzilla defect: 82338
 		//Using the Unique Identifier give the flexibility of the same validator class used by other validator extentions without writing a new validation class
+		//Reverting the fix back as the class name defined in the ext is unique to this validator and has to be used for the unique id in the validation metadata
+		String validatorImplName = runChildren[0].getAttribute(ATT_CLASS);
 		
-		String validatorImplName = runChildren[0].getDeclaringExtension().getUniqueIdentifier();
 		if (validatorImplName == null) {
 			// Same as before; how can we instantiate when...
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();

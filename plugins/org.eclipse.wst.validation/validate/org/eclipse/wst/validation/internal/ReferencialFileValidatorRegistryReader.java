@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.wst.validation.internal.operations.PostValidator;
+import org.eclipse.wst.validation.internal.operations.ReferencialFileValidator;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 import com.ibm.wtp.common.RegistryReader;
@@ -33,17 +33,17 @@ import com.ibm.wtp.common.RegistryReader;
  * To change the template for this generated type comment go to Window - Preferences - Java - Code
  * Generation - Code and Comments
  */
-public class PostValidatorRegistryReader extends RegistryReader {
-	static PostValidatorRegistryReader instance = null;
-	protected List postValidationExtensions;
+public class ReferencialFileValidatorRegistryReader extends RegistryReader {
+	static ReferencialFileValidatorRegistryReader instance = null;
+	protected List referencialFileValidationExtensions;
 
 	/**
 	 * @param arg0
 	 * @param arg1
 	 * @param arg2
 	 */
-	public PostValidatorRegistryReader() {
-		super(Platform.getPluginRegistry(), ValidationPlugin.PLUGIN_ID, "postValidator"); //$NON-NLS-1$
+	public ReferencialFileValidatorRegistryReader() {
+		super(Platform.getPluginRegistry(), ValidationPlugin.PLUGIN_ID, "referencialFileValidator"); //$NON-NLS-1$
 	}
 
 	/*
@@ -52,7 +52,7 @@ public class PostValidatorRegistryReader extends RegistryReader {
 	 * @see org.eclipse.wst.common.frameworks.internal.RegistryReader#readElement(org.eclipse.core.runtime.IConfigurationElement)
 	 */
 	public boolean readElement(IConfigurationElement element) {
-		if (PostValidatorExtension.POST_VALIDATOR_EXTENSION.equals(element.getName())) {
+		if (ReferencialFileValidatorExtension.REF_FILE_VALIDATOR_EXTENSION.equals(element.getName())) {
 			addExtension(element);
 			return true;
 		}
@@ -66,7 +66,7 @@ public class PostValidatorRegistryReader extends RegistryReader {
 	 *            The extensions to set
 	 */
 	protected void addExtension(IConfigurationElement newExtension) {
-		getPostValidatorExtensions().add(new PostValidatorExtension(newExtension));
+		getReferencialFileValidationExtensions().add(new ReferencialFileValidatorExtension(newExtension));
 	}
 
 	/**
@@ -75,21 +75,21 @@ public class PostValidatorRegistryReader extends RegistryReader {
 	 * @param extensions
 	 *            The extensions to set
 	 */
-	protected void addExtensionPoint(PostValidatorExtension newExtension) {
-		if (postValidationExtensions == null)
-			postValidationExtensions = new ArrayList();
-		postValidationExtensions.add(newExtension);
+	protected void addExtensionPoint(ReferencialFileValidatorExtension newExtension) {
+		if (referencialFileValidationExtensions == null)
+			referencialFileValidationExtensions = new ArrayList();
+		referencialFileValidationExtensions.add(newExtension);
 	}
 
 	/**
 	 * @return the appropriate handler for the project based on priorities of those which are
 	 *         available and enabled
 	 */
-	public PostValidator getPostValidator() {
-		PostValidatorExtension postValExt;
-		for (Iterator postValItr = getPostValidatorExtensions().iterator(); postValItr.hasNext();) {
-			postValExt = (PostValidatorExtension) postValItr.next();
-			return postValExt.getInstance();
+	public ReferencialFileValidator getReferencialFileValidator() {
+		ReferencialFileValidatorExtension refFileValExt;
+		for (Iterator refFileValItr = getReferencialFileValidationExtensions().iterator(); refFileValItr.hasNext();) {
+			refFileValExt = (ReferencialFileValidatorExtension) refFileValItr.next();
+			return refFileValExt.getInstance();
 		}
 		return null;
 	}
@@ -99,9 +99,9 @@ public class PostValidatorRegistryReader extends RegistryReader {
 	 * 
 	 * @return Returns a EJBCodegenHandlerExtensionReader
 	 */
-	public static PostValidatorRegistryReader getInstance() {
+	public static ReferencialFileValidatorRegistryReader getInstance() {
 		if (instance == null) {
-			instance = new PostValidatorRegistryReader();
+			instance = new ReferencialFileValidatorRegistryReader();
 			instance.readRegistry();
 		}
 		return instance;
@@ -110,10 +110,10 @@ public class PostValidatorRegistryReader extends RegistryReader {
 	/**
 	 * @return Returns the handlerExtensions.
 	 */
-	protected List getPostValidatorExtensions() {
-		if (postValidationExtensions == null)
-			postValidationExtensions = new ArrayList();
-		return postValidationExtensions;
+	protected List getReferencialFileValidationExtensions() {
+		if (referencialFileValidationExtensions == null)
+			referencialFileValidationExtensions = new ArrayList();
+		return referencialFileValidationExtensions;
 	}
 
 }
