@@ -88,10 +88,13 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 * Optional Operation handler to allow user to prompt on save defaults to NullOperationHandler()
 	 * set to UIOperationHanlder() to add prompt
 	 */
-
 	public static final String UI_OPERATION_HANLDER = "WTPOperationDataModel.UI_OPERATION_HANLDER"; //$NON-NLS-1$
 
-	public static IStatus OK_STATUS = new Status(IStatus.OK, "org.eclipse.wst.common.frameworks.internal", 0, "OK", null); //$NON-NLS-1$ //$NON-NLS-2$
+	/**
+	 * This is a convenience static status for subclasses to return during validation when the
+	 * validation is OK.
+	 */
+	protected static IStatus OK_STATUS = new Status(IStatus.OK, "org.eclipse.wst.common.frameworks.internal", 0, "OK", null); //$NON-NLS-1$ //$NON-NLS-2$
 
 	private static final String PROPERTY_NOT_LOCATED_ = WTPResourceHandler.getString("20"); //$NON-NLS-1$
 	private static final String NESTED_MODEL_NOT_LOCATED = WTPResourceHandler.getString("21"); //$NON-NLS-1$
@@ -113,6 +116,13 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		init_internal();
 	}
 
+	/**
+	 * Subclasses should override to return a WTPOperation to execute using this DataModel instance.
+	 * The goal is for clients of to be able to simple create an instance of a particular DataModel,
+	 * set a few properties on it, and then execute the operation returned by getDefaultOperation()
+	 * 
+	 * @return an initialized and executable WTPOperation
+	 */
 	public abstract WTPOperation getDefaultOperation();
 
 	private final void init_internal() {

@@ -18,7 +18,6 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -86,22 +85,22 @@ public class DependentDeployableModuleOperation extends WTPOperation {
 			//TODO: this is needed to stop the copying of large dependent module.  Incremental build in M4 should allow for this
 			//code to be removed.
 			if(dependentZip == null || dependentZip.exists()) return;
-			zipAndCopyResource(getResource(absoluteInputContainer), zipNameDestination.toString());
+			zipAndCopyResource(getResource(absoluteInputContainer), dependentZip);
 			getResource(absoluteOutputContainer).refreshLocal(IResource.DEPTH_INFINITE, monitor);
 		}
 	}
 
 	/**
-	 * @param resource
+	 * @param inputResource
 	 * @param zipName
 	 * @return
 	 */
-	private void zipAndCopyResource(IResource resource, String zipNameDestination) throws InterruptedException {
+	private void zipAndCopyResource(IResource inputResource, IResource outputResource) throws InterruptedException {
 		try {
-			String osPath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString() + zipNameDestination;
+			String osPath = outputResource.getLocation().toOSString();
 			exporter = new ZipFileExporter(osPath, true, true);
-			inputContainerSegmentCount = resource.getFullPath().segmentCount();
-			exportResource(resource);
+			inputContainerSegmentCount = inputResource.getFullPath().segmentCount();
+			exportResource(inputResource);
 			exporter.finished();
 		} catch (IOException ioEx) {
 		}
