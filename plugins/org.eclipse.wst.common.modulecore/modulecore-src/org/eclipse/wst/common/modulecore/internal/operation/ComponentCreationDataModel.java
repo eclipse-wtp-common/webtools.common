@@ -129,7 +129,7 @@ public abstract class ComponentCreationDataModel extends WTPOperationDataModel {
         } else if (IS_ENABLED.equals(propertyName)) {
             notifyEnablementChange(PROJECT_NAME);
         }  else if (COMPONENT_NAME.equals(propertyName))
-			setProperty(COMPONENT_DEPLOY_NAME,propertyValue);
+			setProperty(COMPONENT_DEPLOY_NAME, propertyValue + getComponentExtension());
         return true;
     }
     
