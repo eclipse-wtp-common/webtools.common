@@ -28,10 +28,10 @@
       <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//WorkbenchModule/resources"/>
       <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//WorkbenchModule/moduleType"/>
     </genClasses>
-    <genClasses ecoreClass="moduleCore.ecore#//ModuleResource">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ModuleResource/path"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ModuleResource/root"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//ModuleResource/exclusions"/>
+    <genClasses ecoreClass="moduleCore.ecore#//WorkbenchModuleResource">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//WorkbenchModuleResource/sourcePath"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//WorkbenchModuleResource/deployedPath"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute moduleCore.ecore#//WorkbenchModuleResource/exclusions"/>
     </genClasses>
     <genClasses ecoreClass="moduleCore.ecore#//WorkbenchApplication">
       <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference moduleCore.ecore#//WorkbenchApplication/modules"/>

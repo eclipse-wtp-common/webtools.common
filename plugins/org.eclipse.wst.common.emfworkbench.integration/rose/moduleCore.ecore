@@ -20,13 +20,13 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="dependentModules" upperBound="-1"
         eType="#//WorkbenchModule"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="resources" upperBound="-1"
-        eType="#//ModuleResource"/>
+        eType="#//WorkbenchModuleResource"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="moduleType" upperBound="-1"
         eType="#//IModuleType"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ModuleResource">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="path" eType="#//URI"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="root" eType="#//URI"/>
+  <eClassifiers xsi:type="ecore:EClass" name="WorkbenchModuleResource">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="sourcePath" eType="#//URI"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="deployedPath" eType="#//URI"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="exclusions" upperBound="-1"
         eType="#//URI"/>
   </eClassifiers>

@@ -111,7 +111,7 @@
 		origin_y   	0
 		items      	(list diagram_item_list
 		    (object CategoryView "Logical View::moduleCore" @1
-			location   	(464, 448)
+			location   	(352, 320)
 			font       	(object Font
 			    size       	10
 			    face       	"Arial"
@@ -123,7 +123,7 @@
 			    default_color 	TRUE)
 			label      	(object ItemLabel
 			    Parent_View 	@1
-			    location   	(320, 364)
+			    location   	(208, 236)
 			    fill_color 	13434879
 			    nlines     	2
 			    max_width  	288

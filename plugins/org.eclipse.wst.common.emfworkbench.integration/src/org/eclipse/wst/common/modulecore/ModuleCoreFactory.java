@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreFactory.java,v 1.1 2005/01/17 21:08:17 cbridgha Exp $
+ * $Id: ModuleCoreFactory.java,v 1.2 2005/01/21 17:13:39 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -16,7 +16,7 @@ import org.eclipse.emf.ecore.EFactory;
  * @see org.eclipse.wst.common.modulecore.ModuleCorePackage
  * @generated
  */
-public interface ModuleCoreFactory extends EFactory {
+public interface ModuleCoreFactory extends EFactory{
 	/**
 	 * The singleton instance of the factory.
 	 * <!-- begin-user-doc -->
@@ -53,13 +53,13 @@ public interface ModuleCoreFactory extends EFactory {
 	WorkbenchModule createWorkbenchModule();
 
 	/**
-	 * Returns a new object of class '<em>Module Resource</em>'.
+	 * Returns a new object of class '<em>Workbench Module Resource</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Module Resource</em>'.
+	 * @return a new object of class '<em>Workbench Module Resource</em>'.
 	 * @generated
 	 */
-	ModuleResource createModuleResource();
+	WorkbenchModuleResource createWorkbenchModuleResource();
 
 	/**
 	 * Returns a new object of class '<em>Workbench Application</em>'.

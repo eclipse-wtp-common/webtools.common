@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreAdapterFactory.java,v 1.1 2005/01/17 21:08:17 cbridgha Exp $
+ * $Id: ModuleCoreAdapterFactory.java,v 1.2 2005/01/21 17:13:39 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.util;
 
@@ -79,8 +79,8 @@ public class ModuleCoreAdapterFactory extends AdapterFactoryImpl {
 			public Object caseWorkbenchModule(WorkbenchModule object) {
 				return createWorkbenchModuleAdapter();
 			}
-			public Object caseModuleResource(ModuleResource object) {
-				return createModuleResourceAdapter();
+			public Object caseWorkbenchModuleResource(WorkbenchModuleResource object) {
+				return createWorkbenchModuleResourceAdapter();
 			}
 			public Object caseWorkbenchApplication(WorkbenchApplication object) {
 				return createWorkbenchApplicationAdapter();
@@ -152,16 +152,16 @@ public class ModuleCoreAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.eclipse.wst.common.modulecore.ModuleResource <em>Module Resource</em>}'.
+	 * Creates a new adapter for an object of class '{@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource <em>Workbench Module Resource</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
 	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
 	 * <!-- end-user-doc -->
 	 * @return the new adapter.
-	 * @see org.eclipse.wst.common.modulecore.ModuleResource
+	 * @see org.eclipse.wst.common.modulecore.WorkbenchModuleResource
 	 * @generated
 	 */
-	public Adapter createModuleResourceAdapter() {
+	public Adapter createWorkbenchModuleResourceAdapter() {
 		return null;
 	}
 

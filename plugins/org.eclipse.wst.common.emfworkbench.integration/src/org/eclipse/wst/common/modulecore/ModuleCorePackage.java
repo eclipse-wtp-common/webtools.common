@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCorePackage.java,v 1.1 2005/01/17 21:08:17 cbridgha Exp $
+ * $Id: ModuleCorePackage.java,v 1.2 2005/01/21 17:13:39 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -26,7 +26,7 @@ import org.eclipse.emf.ecore.EReference;
  * @see org.eclipse.wst.common.modulecore.ModuleCoreFactory
  * @generated
  */
-public interface ModuleCorePackage extends EPackage {
+public interface ModuleCorePackage extends EPackage{
 	/**
 	 * The package name.
 	 * <!-- begin-user-doc -->
@@ -198,32 +198,32 @@ public interface ModuleCorePackage extends EPackage {
 	int WORKBENCH_MODULE_FEATURE_COUNT = 4;
 
 	/**
-	 * The meta object id for the '{@link org.eclipse.wst.common.modulecore.impl.ModuleResourceImpl <em>Module Resource</em>}' class.
+	 * The meta object id for the '{@link org.eclipse.wst.common.modulecore.impl.WorkbenchModuleResourceImpl <em>Workbench Module Resource</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.eclipse.wst.common.modulecore.impl.ModuleResourceImpl
-	 * @see org.eclipse.wst.common.modulecore.impl.ModuleCorePackageImpl#getModuleResource()
+	 * @see org.eclipse.wst.common.modulecore.impl.WorkbenchModuleResourceImpl
+	 * @see org.eclipse.wst.common.modulecore.impl.ModuleCorePackageImpl#getWorkbenchModuleResource()
 	 * @generated
 	 */
-	int MODULE_RESOURCE = 3;
+	int WORKBENCH_MODULE_RESOURCE = 3;
 
 	/**
-	 * The feature id for the '<em><b>Path</b></em>' attribute.
+	 * The feature id for the '<em><b>Source Path</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int MODULE_RESOURCE__PATH = 0;
+	int WORKBENCH_MODULE_RESOURCE__SOURCE_PATH = 0;
 
 	/**
-	 * The feature id for the '<em><b>Root</b></em>' attribute.
+	 * The feature id for the '<em><b>Deployed Path</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int MODULE_RESOURCE__ROOT = 1;
+	int WORKBENCH_MODULE_RESOURCE__DEPLOYED_PATH = 1;
 
 	/**
 	 * The feature id for the '<em><b>Exclusions</b></em>' attribute list.
@@ -232,16 +232,16 @@ public interface ModuleCorePackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int MODULE_RESOURCE__EXCLUSIONS = 2;
+	int WORKBENCH_MODULE_RESOURCE__EXCLUSIONS = 2;
 
 	/**
-	 * The number of structural features of the the '<em>Module Resource</em>' class.
+	 * The number of structural features of the the '<em>Workbench Module Resource</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int MODULE_RESOURCE_FEATURE_COUNT = 3;
+	int WORKBENCH_MODULE_RESOURCE_FEATURE_COUNT = 3;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.wst.common.modulecore.impl.WorkbenchApplicationImpl <em>Workbench Application</em>}' class.
@@ -486,47 +486,47 @@ public interface ModuleCorePackage extends EPackage {
 	EReference getWorkbenchModule_ModuleType();
 
 	/**
-	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.ModuleResource <em>Module Resource</em>}'.
+	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource <em>Workbench Module Resource</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for class '<em>Module Resource</em>'.
-	 * @see org.eclipse.wst.common.modulecore.ModuleResource
+	 * @return the meta object for class '<em>Workbench Module Resource</em>'.
+	 * @see org.eclipse.wst.common.modulecore.WorkbenchModuleResource
 	 * @generated
 	 */
-	EClass getModuleResource();
+	EClass getWorkbenchModuleResource();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.ModuleResource#getPath <em>Path</em>}'.
+	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getSourcePath <em>Source Path</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Path</em>'.
-	 * @see org.eclipse.wst.common.modulecore.ModuleResource#getPath()
-	 * @see #getModuleResource()
+	 * @return the meta object for the attribute '<em>Source Path</em>'.
+	 * @see org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getSourcePath()
+	 * @see #getWorkbenchModuleResource()
 	 * @generated
 	 */
-	EAttribute getModuleResource_Path();
+	EAttribute getWorkbenchModuleResource_SourcePath();
 
 	/**
-	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.ModuleResource#getRoot <em>Root</em>}'.
+	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getDeployedPath <em>Deployed Path</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the attribute '<em>Root</em>'.
-	 * @see org.eclipse.wst.common.modulecore.ModuleResource#getRoot()
-	 * @see #getModuleResource()
+	 * @return the meta object for the attribute '<em>Deployed Path</em>'.
+	 * @see org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getDeployedPath()
+	 * @see #getWorkbenchModuleResource()
 	 * @generated
 	 */
-	EAttribute getModuleResource_Root();
+	EAttribute getWorkbenchModuleResource_DeployedPath();
 
 	/**
-	 * Returns the meta object for the attribute list '{@link org.eclipse.wst.common.modulecore.ModuleResource#getExclusions <em>Exclusions</em>}'.
+	 * Returns the meta object for the attribute list '{@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getExclusions <em>Exclusions</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @return the meta object for the attribute list '<em>Exclusions</em>'.
-	 * @see org.eclipse.wst.common.modulecore.ModuleResource#getExclusions()
-	 * @see #getModuleResource()
+	 * @see org.eclipse.wst.common.modulecore.WorkbenchModuleResource#getExclusions()
+	 * @see #getWorkbenchModuleResource()
 	 * @generated
 	 */
-	EAttribute getModuleResource_Exclusions();
+	EAttribute getWorkbenchModuleResource_Exclusions();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.wst.common.modulecore.WorkbenchApplication <em>Workbench Application</em>}'.

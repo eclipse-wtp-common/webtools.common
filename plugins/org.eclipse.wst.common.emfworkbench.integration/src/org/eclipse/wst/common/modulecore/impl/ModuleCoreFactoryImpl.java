@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreFactoryImpl.java,v 1.1 2005/01/17 21:08:18 cbridgha Exp $
+ * $Id: ModuleCoreFactoryImpl.java,v 1.2 2005/01/21 17:13:39 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
@@ -43,7 +43,7 @@ public class ModuleCoreFactoryImpl extends EFactoryImpl implements ModuleCoreFac
 			case ModuleCorePackage.DEPLOYED_APPLICATION: return createDeployedApplication();
 			case ModuleCorePackage.DEPLOY_SCHEME: return createDeployScheme();
 			case ModuleCorePackage.WORKBENCH_MODULE: return createWorkbenchModule();
-			case ModuleCorePackage.MODULE_RESOURCE: return createModuleResource();
+			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE: return createWorkbenchModuleResource();
 			case ModuleCorePackage.WORKBENCH_APPLICATION: return createWorkbenchApplication();
 			case ModuleCorePackage.IMODULE_HANDLE: return createIModuleHandle();
 			case ModuleCorePackage.IMODULE_TYPE: return createIModuleType();
@@ -115,9 +115,9 @@ public class ModuleCoreFactoryImpl extends EFactoryImpl implements ModuleCoreFac
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ModuleResource createModuleResource() {
-		ModuleResourceImpl moduleResource = new ModuleResourceImpl();
-		return moduleResource;
+	public WorkbenchModuleResource createWorkbenchModuleResource() {
+		WorkbenchModuleResourceImpl workbenchModuleResource = new WorkbenchModuleResourceImpl();
+		return workbenchModuleResource;
 	}
 
 	/**

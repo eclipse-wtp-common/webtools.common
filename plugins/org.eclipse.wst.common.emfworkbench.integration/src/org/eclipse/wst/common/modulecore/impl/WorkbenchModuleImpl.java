@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchModuleImpl.java,v 1.1 2005/01/17 21:08:18 cbridgha Exp $
+ * $Id: WorkbenchModuleImpl.java,v 1.2 2005/01/21 17:13:39 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
@@ -27,6 +27,8 @@ import org.eclipse.wst.common.modulecore.IModuleType;
 import org.eclipse.wst.common.modulecore.ModuleCorePackage;
 import org.eclipse.wst.common.modulecore.ModuleResource;
 import org.eclipse.wst.common.modulecore.WorkbenchModule;
+
+import org.eclipse.wst.common.modulecore.WorkbenchModuleResource;
 
 /**
  * <!-- begin-user-doc -->
@@ -165,7 +167,7 @@ public class WorkbenchModuleImpl extends EObjectImpl implements WorkbenchModule 
 	 */
 	public EList getResources() {
 		if (resources == null) {
-			resources = new EObjectResolvingEList(ModuleResource.class, this, ModuleCorePackage.WORKBENCH_MODULE__RESOURCES);
+			resources = new EObjectResolvingEList(WorkbenchModuleResource.class, this, ModuleCorePackage.WORKBENCH_MODULE__RESOURCES);
 		}
 		return resources;
 	}

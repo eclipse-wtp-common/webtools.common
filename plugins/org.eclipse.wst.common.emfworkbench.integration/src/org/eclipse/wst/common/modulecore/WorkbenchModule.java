@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchModule.java,v 1.1 2005/01/17 21:08:17 cbridgha Exp $
+ * $Id: WorkbenchModule.java,v 1.2 2005/01/21 17:13:39 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -29,7 +29,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model 
  * @generated
  */
-public interface WorkbenchModule extends EObject {
+public interface WorkbenchModule extends EObject{
 	/**
 	 * Returns the value of the '<em><b>Handle</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
@@ -74,7 +74,7 @@ public interface WorkbenchModule extends EObject {
 
 	/**
 	 * Returns the value of the '<em><b>Resources</b></em>' reference list.
-	 * The list contents are of type {@link org.eclipse.wst.common.modulecore.ModuleResource}.
+	 * The list contents are of type {@link org.eclipse.wst.common.modulecore.WorkbenchModuleResource}.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Resources</em>' reference list isn't clear,
@@ -83,7 +83,7 @@ public interface WorkbenchModule extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Resources</em>' reference list.
 	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getWorkbenchModule_Resources()
-	 * @model type="org.eclipse.wst.common.modulecore.ModuleResource"
+	 * @model type="org.eclipse.wst.common.modulecore.WorkbenchModuleResource"
 	 * @generated
 	 */
 	EList getResources();

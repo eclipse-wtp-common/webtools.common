@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleCoreSwitch.java,v 1.1 2005/01/17 21:08:17 cbridgha Exp $
+ * $Id: ModuleCoreSwitch.java,v 1.2 2005/01/21 17:13:39 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.util;
 
@@ -105,9 +105,9 @@ public class ModuleCoreSwitch {
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
-			case ModuleCorePackage.MODULE_RESOURCE: {
-				ModuleResource moduleResource = (ModuleResource)theEObject;
-				Object result = caseModuleResource(moduleResource);
+			case ModuleCorePackage.WORKBENCH_MODULE_RESOURCE: {
+				WorkbenchModuleResource workbenchModuleResource = (WorkbenchModuleResource)theEObject;
+				Object result = caseWorkbenchModuleResource(workbenchModuleResource);
 				if (result == null) result = defaultCase(theEObject);
 				return result;
 			}
@@ -179,17 +179,17 @@ public class ModuleCoreSwitch {
 	}
 
 	/**
-	 * Returns the result of interpretting the object as an instance of '<em>Module Resource</em>'.
+	 * Returns the result of interpretting the object as an instance of '<em>Workbench Module Resource</em>'.
 	 * <!-- begin-user-doc -->
 	 * This implementation returns null;
 	 * returning a non-null result will terminate the switch.
 	 * <!-- end-user-doc -->
 	 * @param object the target of the switch.
-	 * @return the result of interpretting the object as an instance of '<em>Module Resource</em>'.
+	 * @return the result of interpretting the object as an instance of '<em>Workbench Module Resource</em>'.
 	 * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
 	 * @generated
 	 */
-	public Object caseModuleResource(ModuleResource object) {
+	public Object caseWorkbenchModuleResource(WorkbenchModuleResource object) {
 		return null;
 	}
 
