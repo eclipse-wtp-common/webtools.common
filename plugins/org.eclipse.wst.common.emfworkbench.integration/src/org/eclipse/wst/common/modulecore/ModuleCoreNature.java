@@ -5,7 +5,10 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.EList;
@@ -17,7 +20,7 @@ import com.ibm.wtp.common.logger.proxy.Logger;
 
 //In Progress......
 
-public class ModuleCoreNature implements IProjectNature {
+public class ModuleCoreNature implements IProjectNature, IResourceChangeListener {
     private HashMap moduleHandlesMap;
 
     private HashMap workbenchModulesMap;
@@ -62,6 +65,9 @@ public class ModuleCoreNature implements IProjectNature {
     }
 
     public void resourceChanged(IResourceChangeEvent event) {
+        //event.getDelta()
+       // IResource changedResource = (IResource)event.getResource();
+        //update()
     }
 
     private Resource getWTPModuleResource() {
@@ -125,8 +131,13 @@ public class ModuleCoreNature implements IProjectNature {
     public void setProject(IProject project) {
         moduleProject = project;
     }
+    
+    private void addResourceChangeListener(){
+        Resource resource = getWTPModuleResource();
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(this);       
+    }
 
-    private void update() {
+    private synchronized void update() {
         moduleHandlesMap.clear();
         workbenchModulesMap.clear();
         try {
