@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component xmlns="http://eclipse.org/wtp/releng/tools/component-model"
+	name="org.eclipse.wst.common.snippets">
+	<component-depends unrestricted="true"/>
+	<plugin id="org.eclipse.wst.common.snippets" />
+	<package name="org.eclipse.wst.common.snippets.core">
+		<type name="ISnippetEntry" reference="true" implement="false" subclass="false" instantiate="false" />
+		<type name="ISnippetItem" reference="true" implement="false" subclass="false" instantiate="false" />
+		<type name="ISnippetInsertion" reference="true" implement="true" subclass="true" instantiate="false" />
+	</package>
+	<package name="org.eclipse.wst.common.snippets.editors">
+		<type name="VariableItemEditor" reference="false" implement="false" subclass="false" instantiate="false" />
+	</package>
+	<package name="org.eclipse.wst.common.snippets.insertions">
+		<type name="VariableInsertion" reference="false" implement="false" subclass="false" instantiate="false" />
+	</package>
+</component>

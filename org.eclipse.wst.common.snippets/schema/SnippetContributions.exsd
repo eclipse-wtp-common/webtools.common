@@ -1,0 +1,289 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.wst.common.snippets">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="org.eclipse.wst.common.snippets" id="SnippetContributions" name="%snippet.contributions"/>
+      </appInfo>
+      <documentation>
+         Contributions to be shown in the Snippets view. Plugins may contribute new categories and items into those categories that have custom behavior when dropped onto an editor or certain views.
+      </documentation>
+   </annotation>
+
+   <element name="category">
+      <annotation>
+         <documentation>
+            Defines a category within the Snippets model, represented as a drawer in the Snippets view.  Drawers are used to categorize items much like a simple filing cabinet.  Categories contributed without any items within them will not be loaded into the Snippets model.  Categories without specific file types or content types will always have their drawers default to shown if the view is managing drawers according to the active editor.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="description" type="string">
+            <annotation>
+               <documentation>
+                  A verbose label to show to the user.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="icon" type="string">
+            <annotation>
+               <documentation>
+                  The small icon to show for this category.  The value of this attributes specifies a path relative to the plugin&apos;s installation folder.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A unique ID for this category.  It will be used exactly as supplied within the Snippets model.  It is recommended that the plugin ID be used to prefix any categories contributed.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="label" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A brief label to show to the user.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="largeicon" type="string">
+            <annotation>
+               <documentation>
+                  The large icon to show for this category.  The value of this attributes specifies a path relative to the plugin&apos;s installation folder.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="filetypes" type="string">
+            <annotation>
+               <documentation>
+                  A list of file types identical to that used to register editors.  If the Snippets View has its drawer visibility tied to the active editor, the drawer will be hidden unless the filename from the active editor matches a value from this attribute&apos;s value.  More than one value may be specified if separated by commas.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="contenttypes" type="string">
+            <annotation>
+               <documentation>
+                  A list of content types.  If the Snippets View has its drawer visibility tied to the active editor, the drawer will be hidden unless the input from the active editor matches a value from this attribute&apos;s value.  More than one value may be specified if separated by commas.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="item">
+      <annotation>
+         <documentation>
+            Individual snippet item for the Snippets view. Contains text and information to help control and customize the related drag and drop behavior.
+         </documentation>
+      </annotation>
+      <complexType>
+         <choice>
+            <element ref="content"/>
+            <element ref="variable" minOccurs="0" maxOccurs="unbounded"/>
+         </choice>
+         <attribute name="class" type="string">
+            <annotation>
+               <documentation>
+                  An implementor of org.eclipse.wst.common.snippets.core.ISnippetsInsertion, it controls most of the interaction between the Snippets view and the rest of the workbench.  It may be asked to insert the item into an editor by itself or provide information to control the Snippets view&apos;s drag and drop behavior.  When one is not specified, org.eclipse.wst.common.snippets.insertions.VariableInsertion will be used.  It provides querying for user-supplied values for variables and a simple text preview pane when inserting text into an editor.  For drag and drop, it provides a SWT Transfer type that is usually associated with org.eclipse.wst.common.snippets.dnd.VariableTextDropAction.  This drop action class will open the same variable querying and preview capable dialog when the OS-level drag and drop operation is completed.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="description" type="string">
+            <annotation>
+               <documentation>
+                  A verbose label to show to the user.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="category" type="string">
+            <annotation>
+               <documentation>
+                  The id of the category into which this item should be placed.  If the a category with the corresponding id is not found, this item will not be loaded into the Snippets model.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="editorclass" type="string">
+            <annotation>
+               <documentation>
+                  An implementation of org.eclipse.wst.common.snippets.editors.ISnippetEditor.  When the user brings up the Customizer dialog, selecting an item from the left-hand tree will display an editing page on the right.  Snippets will provide controls for editing the name and description of an item in addition to any controls provided by the editorclass.  A new instance of the class is used for every item being edited.  The default class, org.eclipse.wst.common.snippets.editors.VariableItemEditor provides a table for creating and editing variables and a text editor for the content.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="icon" type="string">
+            <annotation>
+               <documentation>
+                  The small icon to show for this item.  The value of this attributes specifies a path relative to the plugin&apos;s installation folder.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A unique ID for this item.  It will be used exactly as supplied within the Snippets model.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="label" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A brief label to show to the user.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="largeicon" type="string">
+            <annotation>
+               <documentation>
+                  The large icon to show for this item.  The value of this attributes specifies a path relative to the plugin&apos;s installation folder.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="content" type="string">
+      <annotation>
+         <documentation>
+            Specifies the raw data for this Snippets item, usually as a CDATA section.  The insertion object and editor must both understand how to manipulate this data.  The default implementations understand embedded variable markers.
+         </documentation>
+      </annotation>
+   </element>
+
+   <element name="variable">
+      <annotation>
+         <documentation>
+            A marker describing a replaceable section of the content.  The user should be asked for the value to use whenever Snippets is inserting the parent Item.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="default" type="string">
+            <annotation>
+               <documentation>
+                  The variable&apos;s default value.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="description" type="string">
+            <annotation>
+               <documentation>
+                  The description of this variable.  With the default insertion class, it will be shown in a description pane when the variable is selected.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A unique ID for this variable.  It will be used exactly as supplied within the Snippets model.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  The label to show to the user.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         V1.0
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         &lt;pre&gt;
+   &lt;extension
+         point=&quot;org.eclipse.wst.common.snippets.SnippetContributions&quot;&gt;
+      &lt;category
+            icon=&quot;icons/tag-jsp.gif&quot;
+            label=&quot;JSP&quot;
+            description=&quot;Java Server Pages&quot;
+            id=&quot;org.eclipse.wst.jsp.category0&quot;
+            contenttypes=&quot;org.eclipse.wst.jsp.core.jspsource&quot;
+            filetypes=&quot;*.jsp, *.jsf, *.jspf&quot;&gt;
+      &lt;/category&gt;
+      &lt;item
+            icon=&quot;icons/tag-generic.gif&quot;
+            category=&quot;org.eclipse.wst.jsp.category0&quot;
+            label=&quot;%jsp_hidden_comment&quot;
+            id=&quot;org.eclipse.wst.jsp.jsp_hidden_comment&quot;&gt;
+         &lt;content&gt;
+            %jsp_hidden_comment_content
+         &lt;/content&gt;
+      &lt;/item&gt;
+      &lt;item
+            category=&quot;org.eclipse.wst.jsp.category0&quot;
+            label=&quot;%jsp_page_directive&quot;
+            id=&quot;org.eclipse.wst.jsp.jsp_page_directive&quot;&gt;
+         &lt;content&gt;
+            %jsp_page_directive_content
+         &lt;/content&gt;
+      &lt;/item&gt;
+      &lt;item
+            icon=&quot;icons/jsptaglib.gif&quot;
+            category=&quot;org.eclipse.wst.jsp.category0&quot;
+            label=&quot;%jsp_taglib_directive&quot;
+            class=&quot;org.eclipse.wst.common.snippets.insertions.PrependInsertion&quot;
+            id=&quot;org.eclipse.wst.jsp.jsp_taglib_directive&quot;&gt;
+         &lt;content&gt;
+            &lt;![CDATA[ &lt;%@taglib uri=&quot;$uri&quot; prefix=&quot;$prefix&quot; %&gt; ]]&gt;
+         &lt;/content&gt;
+         &lt;variable
+               description=&quot;%jsp_taglib_directive_uri&quot;
+               id=&quot;uri&quot;&gt;
+         &lt;/variable&gt;
+         &lt;variable
+               default=&quot;mylib&quot;
+               description=&quot;%jsp_taglib_directive_prefix&quot;
+               id=&quot;prefix&quot;&gt;
+         &lt;/variable&gt;
+      &lt;/item&gt;
+   &lt;/extension&gt;
+&lt;/pre&gt;
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiInfo"/>
+      </appInfo>
+      <documentation>
+         This API and extension point are still being developed.  As such, extenders should expect incompatible changes in the near future.  The baseline for API and extension point stability will be WTP 1.0.
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="implementation"/>
+      </appInfo>
+      <documentation>
+         The supplied implementation of the Snippets view requires the Graphical Editing Framework and Structured Source Editing components.
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="copyright"/>
+      </appInfo>
+      <documentation>
+         Copyright (c) 2004 IBM Corporation and others.
+
+All rights reserved. This program and the accompanying materials
+are made available under the terms of the Eclipse Public License v1.0
+which accompanies this distribution, and is available at
+http://www.eclipse.org/legal/epl-v10.html
+
+Contributors:
+    IBM Corporation - initial API and implementation
+      </documentation>
+   </annotation>
+
+</schema>

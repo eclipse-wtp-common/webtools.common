@@ -1,0 +1,4 @@
+This revision of the org.eclipse.wst.common.snippets plugin is a work in
+progress.  The persistant model will change in the near future and the
+extension point support may change as well.  No compatibily is promised
+until WTP 1.0.

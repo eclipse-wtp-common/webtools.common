@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="org.eclipse.wst.common.snippets" default="javadoc">
+    <target name="javadoc">
+        <javadoc destdir="doc\api" access="public" use="true" notree="false" nonavbar="false" noindex="false" splitindex="false" author="false" version="false" nodeprecatedlist="false" nodeprecated="false" packagenames="org.eclipse.wst.common.snippets.insertions,org.eclipse.wst.common.snippets.util,org.eclipse.wst.common.snippets.dnd,org.eclipse.wst.common.snippets.actions,org.eclipse.wst.common.snippets,org.eclipse.wst.common.snippets.editors,org.eclipse.wst.common.snippets.core" sourcepath="src" classpath="bin;\org.eclipse.core.runtime.compatibility\bin;\org.eclipse.ui.ide\bin;\org.eclipse.jface.text\bin;\org.eclipse.ui.workbench.texteditor\bin;\org.eclipse.ui.editors\bin;\org.eclipse.gef\bin;..\org.eclipse.wst.sse.editor\bin;..\org.eclipse.wst.sse.model\bin;\org.eclipse.ui\bin;\org.eclipse.core.resources\bin;\org.eclipse.core.runtime\bin" doctitle="Snippets API Reference"/>
+    </target>
+</project>
