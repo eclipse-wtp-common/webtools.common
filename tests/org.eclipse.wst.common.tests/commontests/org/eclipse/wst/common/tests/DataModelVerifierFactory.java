@@ -12,10 +12,7 @@ import junit.framework.Assert;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtension;
-import org.eclipse.wst.common.frameworks.internal.operations.OperationExtension;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
-import org.eclispe.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
 import com.ibm.wtp.common.RegistryReader;
 
