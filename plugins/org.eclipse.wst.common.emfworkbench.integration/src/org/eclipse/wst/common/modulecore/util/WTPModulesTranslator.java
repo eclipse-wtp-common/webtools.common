@@ -31,7 +31,7 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 				IDTranslator.INSTANCE,
 				createWBAppTranslator(MODULE_CORE_PKG.getProjectModules_WorkbenchApplications()),
 				createWBModuleTranslator(MODULE_CORE_PKG.getProjectModules_WorkbenchModules()),
-				createDeployableAppTranslator(MODULE_CORE_PKG.getProjectModules_DeployedApplications())
+				createDeploySchemeTranslator(MODULE_CORE_PKG.getProjectModules_DeploymentSchemes())
 		};
 	}
 
@@ -42,20 +42,10 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 		GenericTranslator result = new GenericTranslator(WBAPP, afeature);
 		result.setChildren(new Translator[] {
 			IDTranslator.INSTANCE,
-			new Translator(WBMODULE, MODULE_CORE_PKG.getWorkbenchApplication_Modules())
-		});
-		return result;
-	}
-	/**
-	 * @return
-	 */
-	private static Translator createDeployableAppTranslator(EStructuralFeature afeature) {
-		GenericTranslator result = new GenericTranslator(DEPLOYABLE_APP, afeature);
-		result.setChildren(new Translator[] {
-			IDTranslator.INSTANCE,
-			new Translator(WBAPPLICATION, MODULE_CORE_PKG.getDeployedApplication_Application(), DOM_ATTRIBUTE),
-			new Translator(DEPLOY_SCHEME, MODULE_CORE_PKG.getDeployedApplication_DeployScheme()),
-			new Translator(SERVER_TARGET, MODULE_CORE_PKG.getDeployScheme_ServerTarget())
+			new Translator(DEPLOY_SCHEME, MODULE_CORE_PKG.getWorkbenchApplication_DeployScheme()),
+			createModuleTypeTranslator(MODULE_CORE_PKG.getWorkbenchModule_ModuleType()),
+			createWBResource(MODULE_CORE_PKG.getWorkbenchModule_Resources()),
+			new Translator(MODULES, MODULE_CORE_PKG.getWorkbenchModule_Modules())
 		});
 		return result;
 	}
@@ -67,12 +57,26 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 		result.setChildren(new Translator[] {
 			IDTranslator.INSTANCE,
 			new Translator(HANDLE, MODULE_CORE_PKG.getWorkbenchModule_Handle(), DOM_ATTRIBUTE),
+			new Translator(DEPLOY_PATH, MODULE_CORE_PKG.getWorkbenchModule_DeployedPath(), DOM_ATTRIBUTE),
 			createModuleTypeTranslator(MODULE_CORE_PKG.getWorkbenchModule_ModuleType()),
 			createWBResource(MODULE_CORE_PKG.getWorkbenchModule_Resources()),
-			new Translator(WBMODULE, MODULE_CORE_PKG.getWorkbenchApplication_Modules())
+			new Translator(MODULES, MODULE_CORE_PKG.getWorkbenchModule_Modules())
 		});
 		return result;
 	}
+	/**
+	 * @return
+	 */
+	private static Translator createDeploySchemeTranslator(EStructuralFeature afeature) {
+		GenericTranslator result = new GenericTranslator(DEPLOY_SCHEME, afeature);
+		result.setChildren(new Translator[] {
+			IDTranslator.INSTANCE,
+			new Translator(TYPE, MODULE_CORE_PKG.getDeployScheme_Type()),
+			new Translator(SERVER_TARGET, MODULE_CORE_PKG.getDeployScheme_ServerTarget())
+		});
+		return result;
+	}
+	
 	private static Translator createModuleTypeTranslator(EStructuralFeature afeature) {
 		GenericTranslator result = new GenericTranslator(WBMODULE, afeature);
 		result.setChildren(new Translator[] {
