@@ -42,10 +42,8 @@ public class DeployableModuleBuilder extends IncrementalProjectBuilder implement
 	            try {
 	                op.run(monitor);
 	            } catch (InvocationTargetException e) {
-	                // TODO Auto-generated catch block
 	                e.printStackTrace();
 	            } catch (InterruptedException e) {
-	                // TODO Auto-generated catch block
 	                e.printStackTrace();
 	            }
         } finally {
@@ -56,7 +54,7 @@ public class DeployableModuleBuilder extends IncrementalProjectBuilder implement
 	}
 
 	protected void clean(IProgressMonitor monitor) throws CoreException {
-		// TODO Auto-generated method stub
+		// TODO Clean Workspace
 		super.clean(monitor);
     }
 }
