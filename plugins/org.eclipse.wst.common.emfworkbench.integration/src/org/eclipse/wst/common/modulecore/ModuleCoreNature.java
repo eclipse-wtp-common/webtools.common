@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -146,8 +145,7 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
                 for (int i = 0; i < workBenchModules.size(); i++) {
                     WorkbenchModule wbm = (WorkbenchModule) workBenchModules.get(i);
                     IModuleHandle handle = wbm.getHandle();
-                    if (handle == null || handle.getHandle() == null)
-                        continue;
+                    if (handle == null || handle.getHandle() == null) continue;
                     moduleHandlesMap.put(handle.getHandle(), handle);
                     workbenchModulesMap.put(handle, wbm);
                 }
