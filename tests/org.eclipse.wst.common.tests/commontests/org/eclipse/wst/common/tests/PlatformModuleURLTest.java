@@ -13,7 +13,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.eclipse.wst.common.modulecore.internal.impl.PlatformURLModuleConnection;
+import org.eclipse.wst.common.componentcore.internal.impl.PlatformURLModuleConnection;
 
 public class PlatformModuleURLTest extends TestCase {
 

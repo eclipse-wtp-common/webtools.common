@@ -19,13 +19,14 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.wst.common.modulecore.ComponentResource;
-import org.eclipse.wst.common.modulecore.ModuleCore;
-import org.eclipse.wst.common.modulecore.WorkbenchComponent;
-import org.eclipse.wst.common.modulecore.resources.IVirtualContainer;
-import org.eclipse.wst.common.modulecore.resources.IVirtualFile;
-import org.eclipse.wst.common.modulecore.resources.IVirtualFolder;
-import org.eclipse.wst.common.modulecore.resources.IVirtualResource;
+import org.eclipse.wst.common.componentcore.ComponentCore;
+import org.eclipse.wst.common.componentcore.StructureEdit;
+import org.eclipse.wst.common.componentcore.internal.ComponentResource;
+import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
+import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
+import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 
 public class IVirtualFolderAPITest extends TestCase {
 	
@@ -41,7 +42,7 @@ public class IVirtualFolderAPITest extends TestCase {
 	
 	private static final IPath DELETEME_PATH = new Path("/deleteme"); //$NON-NLS-1$
 	
-	private IVirtualContainer component;
+	private IVirtualComponent component;
 	
 	private IVirtualFolder webInfFolder;
 	private IFolder realWebInfFolder;
@@ -62,7 +63,7 @@ public class IVirtualFolderAPITest extends TestCase {
 		
 		realWebInfFolder = TEST_PROJECT.getFolder(WEBINF_FOLDER_REAL_PATH);
 		
-		component = ModuleCore.createContainer(TEST_PROJECT, TestWorkspace.WEB_MODULE_1_NAME);
+		component = ComponentCore.createComponent(TEST_PROJECT, TestWorkspace.WEB_MODULE_1_NAME);
 		webInfFolder = component.getFolder(WEBINF_FOLDER_RUNTIME_PATH); 		
 
 		testdataFolder = component.getFolder(TESTDATA_FOLDER_RUNTIME_PATH); 
@@ -123,7 +124,7 @@ public class IVirtualFolderAPITest extends TestCase {
 	}
 	
 	public void testGetComponentName() { 
-		assertEquals("The component name of the virtual resource must match the test project.", TestWorkspace.WEB_MODULE_1_NAME, webInfFolder.getComponentName()); //$NON-NLS-1$
+		assertEquals("The component name of the virtual resource must match the test project.", TestWorkspace.WEB_MODULE_1_NAME, webInfFolder.getComponent()); //$NON-NLS-1$
 	}
 	
 	public void testGetFileString() {
@@ -167,11 +168,11 @@ public class IVirtualFolderAPITest extends TestCase {
 		assertTrue("The real folder should not be deleted when IVirtualResource.DELETE_METAMODEL_ONLY is supplied.", deletemeFolder.exists()); //$NON-NLS-1$
 				
 		// only handles explicit mappings
-		ModuleCore moduleCore = null;
+		StructureEdit moduleCore = null;
 		try {
 			URI runtimeURI = URI.createURI(deletemeVirtualFolder.getRuntimePath().toString());
-			moduleCore = ModuleCore.getModuleCoreForWrite(TEST_PROJECT);
-			WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(TestWorkspace.WEB_MODULE_1_NAME);
+			moduleCore = StructureEdit.getStructureEditForWrite(TEST_PROJECT);
+			WorkbenchComponent wbComponent = moduleCore.findComponentByName(TestWorkspace.WEB_MODULE_1_NAME);
 			ComponentResource[] resources = wbComponent.findWorkbenchModuleResourceByDeployPath(runtimeURI);
 			assertTrue("There should be no matching components found in the model.", resources.length == 0); //$NON-NLS-1$
 			

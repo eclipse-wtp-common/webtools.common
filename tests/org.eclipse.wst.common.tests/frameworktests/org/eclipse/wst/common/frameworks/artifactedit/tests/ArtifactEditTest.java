@@ -9,17 +9,17 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.wst.common.componentcore.ArtifactEdit;
+import org.eclipse.wst.common.componentcore.ArtifactEditModel;
+import org.eclipse.wst.common.componentcore.StructureEdit;
+import org.eclipse.wst.common.componentcore.ModuleCoreNature;
+import org.eclipse.wst.common.componentcore.UnresolveableURIException;
+import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.internal.resources.ComponentHandle;
 import org.eclipse.wst.common.frameworks.internal.operations.IOperationHandler;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelEvent;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelListener;
-import org.eclipse.wst.common.modulecore.ArtifactEdit;
-import org.eclipse.wst.common.modulecore.ArtifactEditModel;
-import org.eclipse.wst.common.modulecore.ModuleCore;
-import org.eclipse.wst.common.modulecore.ModuleCoreNature;
-import org.eclipse.wst.common.modulecore.UnresolveableURIException;
-import org.eclipse.wst.common.modulecore.WorkbenchComponent;
-import org.eclipse.wst.common.modulecore.internal.resources.ComponentHandle;
 
 
 
@@ -89,11 +89,11 @@ public class ArtifactEditTest extends TestCase {
 	}
 
 	public void testGetArtifactEditForReadWorkbenchComponent() {
-		ModuleCore moduleCore = null;
+		StructureEdit moduleCore = null;
 		ArtifactEdit edit = null;
 		try {
-			moduleCore = ModuleCore.getModuleCoreForRead(project);
-			WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(WEB_MODULE_NAME);
+			moduleCore = StructureEdit.getStructureEditForRead(project);
+			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
 			edit = ArtifactEdit.getArtifactEditForRead(wbComponent);
 
 		} finally {
@@ -107,11 +107,11 @@ public class ArtifactEditTest extends TestCase {
 	}
 
 	public void testGetArtifactEditForWriteWorkbenchComponent() {
-		ModuleCore moduleCore = null;
+		StructureEdit moduleCore = null;
 		ArtifactEdit edit = null;
 		try {
-			moduleCore = ModuleCore.getModuleCoreForWrite(project);
-			WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(WEB_MODULE_NAME);
+			moduleCore = StructureEdit.getStructureEditForWrite(project);
+			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
 			edit = ArtifactEdit.getArtifactEditForWrite(wbComponent);
 
 		} finally {
@@ -125,11 +125,11 @@ public class ArtifactEditTest extends TestCase {
 
 
 	public void testGetArtifactEditForReadComponentHandle() {
-		ModuleCore moduleCore = null;
+		StructureEdit moduleCore = null;
 		ArtifactEdit edit = null;
 		try {
-			moduleCore = ModuleCore.getModuleCoreForRead(project);
-			WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(WEB_MODULE_NAME);
+			moduleCore = StructureEdit.getStructureEditForRead(project);
+			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
 			ComponentHandle handle = ComponentHandle.create(project, wbComponent.getName());
 			edit = ArtifactEdit.getArtifactEditForRead(handle);
 
@@ -144,11 +144,11 @@ public class ArtifactEditTest extends TestCase {
 
 
 	public void testGetArtifactEditForWriteComponentHandle() {
-		ModuleCore moduleCore = null;
+		StructureEdit moduleCore = null;
 		ArtifactEdit edit = null;
 		try {
-			moduleCore = ModuleCore.getModuleCoreForWrite(project);
-			WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(WEB_MODULE_NAME);
+			moduleCore = StructureEdit.getStructureEditForWrite(project);
+			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
 			ComponentHandle handle = ComponentHandle.create(project, wbComponent.getName());
 			edit = ArtifactEdit.getArtifactEditForWrite(handle);
 
@@ -162,11 +162,11 @@ public class ArtifactEditTest extends TestCase {
 	}
 
 	public void testIsValidEditableModule() {
-		ModuleCore moduleCore = null;
+		StructureEdit moduleCore = null;
 		WorkbenchComponent wbComponent = null;
 		try {
-			moduleCore = ModuleCore.getModuleCoreForWrite(project);
-			wbComponent = moduleCore.findWorkbenchModuleByDeployName(WEB_MODULE_NAME);
+			moduleCore = StructureEdit.getStructureEditForWrite(project);
+			wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
 			ComponentHandle handle = ComponentHandle.create(project, wbComponent.getName());
 		} finally {
 			if (moduleCore != null) {
@@ -184,11 +184,11 @@ public class ArtifactEditTest extends TestCase {
 
 
 	public void testArtifactEditModuleCoreNatureWorkbenchComponentboolean() {
-		ModuleCore moduleCore = null;
+		StructureEdit moduleCore = null;
 		WorkbenchComponent wbComponent = null;
 		try {
-			moduleCore = ModuleCore.getModuleCoreForWrite(project);
-			wbComponent = moduleCore.findWorkbenchModuleByDeployName(WEB_MODULE_NAME);
+			moduleCore = StructureEdit.getStructureEditForWrite(project);
+			wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
 		} finally {
 			if (moduleCore != null) {
 				moduleCore.dispose();
@@ -208,12 +208,12 @@ public class ArtifactEditTest extends TestCase {
 	}
 
 	public void testArtifactEditComponentHandleboolean() {
-		ModuleCore moduleCore = null;
+		StructureEdit moduleCore = null;
 		WorkbenchComponent wbComponent = null;
 		ComponentHandle handle = null;
 		try {
-			moduleCore = ModuleCore.getModuleCoreForWrite(project);
-			wbComponent = moduleCore.findWorkbenchModuleByDeployName(WEB_MODULE_NAME);
+			moduleCore = StructureEdit.getStructureEditForWrite(project);
+			wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
 			handle = ComponentHandle.create(project, wbComponent.getName());
 		} finally {
 			if (moduleCore != null) {
@@ -228,11 +228,11 @@ public class ArtifactEditTest extends TestCase {
 	}
 
 	public void testSave() {
-		ModuleCore moduleCore = null;
+		StructureEdit moduleCore = null;
 		ArtifactEdit edit = null;
 		try {
-			moduleCore = ModuleCore.getModuleCoreForWrite(project);
-			WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(WEB_MODULE_NAME);
+			moduleCore = StructureEdit.getStructureEditForWrite(project);
+			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
 			edit = ArtifactEdit.getArtifactEditForWrite(wbComponent);
 			try {
 				edit.save(new NullProgressMonitor());
@@ -251,11 +251,11 @@ public class ArtifactEditTest extends TestCase {
 	}
 
 	public void testSaveIfNecessary() {
-		ModuleCore moduleCore = null;
+		StructureEdit moduleCore = null;
 		ArtifactEdit edit = null;
 		try {
-			moduleCore = ModuleCore.getModuleCoreForWrite(project);
-			WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(WEB_MODULE_NAME);
+			moduleCore = StructureEdit.getStructureEditForWrite(project);
+			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
 			edit = ArtifactEdit.getArtifactEditForWrite(wbComponent);
 			try {
 				edit.saveIfNecessary(new NullProgressMonitor());
@@ -274,10 +274,10 @@ public class ArtifactEditTest extends TestCase {
 
 	public void testSaveIfNecessaryWithPrompt() {
 		ArtifactEdit edit = null;
-		ModuleCore moduleCore = null;
+		StructureEdit moduleCore = null;
 		try {
-			moduleCore = ModuleCore.getModuleCoreForWrite(project);
-			WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(WEB_MODULE_NAME);
+			moduleCore = StructureEdit.getStructureEditForWrite(project);
+			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
 			edit = ArtifactEdit.getArtifactEditForWrite(wbComponent);
 			try {
 				edit.saveIfNecessaryWithPrompt(new NullProgressMonitor(), handler, true);
@@ -307,10 +307,10 @@ public class ArtifactEditTest extends TestCase {
 
 	public void testGetContentModelRoot() {
 		ArtifactEdit edit = null;
-		ModuleCore moduleCore = null;
+		StructureEdit moduleCore = null;
 		try {
-			moduleCore = ModuleCore.getModuleCoreForRead(project);
-			WorkbenchComponent wbComponent = moduleCore.findWorkbenchModuleByDeployName(WEB_MODULE_NAME);
+			moduleCore = StructureEdit.getStructureEditForRead(project);
+			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
 			edit = ArtifactEdit.getArtifactEditForRead(wbComponent);
 			Object object = edit.getContentModelRoot();
 			assertNotNull(object);

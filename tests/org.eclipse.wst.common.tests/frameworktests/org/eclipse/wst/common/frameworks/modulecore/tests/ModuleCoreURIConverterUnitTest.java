@@ -15,7 +15,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.wst.common.modulecore.internal.impl.ModuleCoreURIConverter;
+import org.eclipse.wst.common.componentcore.internal.impl.ComponentCoreURIConverter;
 
 public class ModuleCoreURIConverterUnitTest  extends TestCase {
 
@@ -35,7 +35,7 @@ public class ModuleCoreURIConverterUnitTest  extends TestCase {
 	
 	public void testNormalizeDDURI() throws Exception { 
 		
-		ModuleCoreURIConverter converter = new ModuleCoreURIConverter(TestWorkspace.getTargetProject());
+		ComponentCoreURIConverter converter = new ComponentCoreURIConverter(TestWorkspace.getTargetProject());
 		
 		URI inputURI = URI.createURI("module:/resource/TestVirtualAPI/WebModule2.war/WEB-INF/web.xml"); //$NON-NLS-1$
 		
