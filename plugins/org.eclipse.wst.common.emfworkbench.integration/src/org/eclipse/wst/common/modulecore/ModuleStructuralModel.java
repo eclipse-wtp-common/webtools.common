@@ -17,21 +17,20 @@ import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 
 import com.ibm.wtp.common.logger.proxy.Logger;
 
-public class ModuleStructureModel extends EditModel implements IResourceChangeListener {
+public class ModuleStructuralModel extends EditModel implements IResourceChangeListener {
     private final static ModuleCoreFactory MODULE_FACTORY = ModuleCoreFactory.eINSTANCE;
 
     ArrayList moduleStructureListeners = new ArrayList(3);
 
     private HashMap workbenchModulesMap;
 
-    public ModuleStructureModel(String editModelID, EMFWorkbenchContext context, boolean readOnly) {
+    public ModuleStructuralModel(String editModelID, EMFWorkbenchContext context, boolean readOnly) {
         super(editModelID, context, readOnly);
     }
 
     private void addResourceChangeListener() {
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
     }
-
 
     public WorkbenchModule createWorkbenchModule(URI uri) {
         if (uri == null)

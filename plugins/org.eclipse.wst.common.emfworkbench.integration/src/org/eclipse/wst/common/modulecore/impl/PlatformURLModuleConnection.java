@@ -8,17 +8,15 @@ package org.eclipse.wst.common.modulecore.impl;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.eclipse.core.internal.boot.PlatformURLConnection;
 import org.eclipse.core.internal.boot.PlatformURLHandler;
 import org.eclipse.core.internal.utils.Policy;
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.URI;
 
 
 /**
@@ -29,19 +27,34 @@ import org.eclipse.core.runtime.Path;
  */
 public class PlatformURLModuleConnection extends PlatformURLConnection {
      
-    public static final String MODULE = "module:";  //$NON-NLS-1$
+    public static final String MODULE = "module";  //$NON-NLS-1$
+    public static final String MODULE_PROTOCOL = MODULE + PlatformURLHandler.PROTOCOL_SEPARATOR;
     
-    private static Map moduleMap = new HashMap();
+    public static final String RESOURCE_MODULE = "resource"; //$NON-NLS-1$
+    public static final String BINARY_MODULE = "binary"; //$NON-NLS-1$
     
-    static {
-    	IProject container = ResourcesPlugin.getWorkspace().getRoot().getProject("Project");
-    	moduleMap.put("MyModule", new ModuleHandle(container, new Path("modules/ejb-jar1")));    	
-    }
     
     public PlatformURLModuleConnection(URL aURL) {
         super(aURL);        
     }
 
+    public static URI resolve(URI aURI)  {
+        System.out.println("URI: " + aURI);
+        IPath moduleRelativePath = new Path(aURI.toString()); 
+        String moduleName = moduleRelativePath.segment(1);        
+        
+        IPath resolvedPath = null; //handle.getResolvedPath().append(moduleRelativePath.removeFirstSegments(2));           
+
+		int count = resolvedPath.segmentCount(); 
+		// if there are two segments then the second is a project name.
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(resolvedPath.segment(0));
+		if (!project.exists()) {
+//			String message = Policy.bind("url.couldNotResolve", project.getName(), aURI.toString()); //$NON-NLS-1$
+//			throw new IOException(message);
+			return aURI;
+		} 
+		return URI.createPlatformResourceURI(resolvedPath.toString());
+    }
     
     /* (non-Javadoc)
      * @see org.eclipse.core.internal.boot.PlatformURLConnection#resolve()
@@ -50,8 +63,8 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
         System.out.println("URL: " + getURL());
         IPath moduleRelativePath = new Path(getURL().toExternalForm()); 
         String moduleName = moduleRelativePath.segment(1);        
-        ModuleHandle handle = (ModuleHandle) moduleMap.get(moduleName);
-        IPath resolvedPath = handle.getResolvedPath().append(moduleRelativePath.removeFirstSegments(2));           
+        
+        IPath resolvedPath = null; //handle.getResolvedPath().append(moduleRelativePath.removeFirstSegments(2));           
 
 		int count = resolvedPath.segmentCount(); 
 		// if there are two segments then the second is a project name.
@@ -74,17 +87,9 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
     public static void startup() {
         PlatformURLHandler.register(PlatformURLModuleConnection.MODULE,PlatformURLModuleConnection.class);
     }
+    
+//    private IProject getRelevantProject(URI aModuleURI) {
+//    	aModuleURI.segment()
+//    }
 }
-
-class ModuleHandle {
-	public final IContainer container;
-	public final IPath sourcePath;
-	public ModuleHandle(IContainer aContainer, IPath aSourcePath) {
-		container = aContainer;
-		sourcePath = aSourcePath;
-	}
-	
-	public IPath getResolvedPath() {
-		return container.getFolder(sourcePath).getFullPath();
-	}
-}
+ 
