@@ -9,6 +9,6 @@ package org.eclipse.wst.common.modulecore;
 
 public interface IModuleConstants {
 	
-	public final static String WTPMODULE_URI = ".wtpModule"; //$NON-NLS-1$
+	public final static String WTPMODULE_FILE_NAME = ".wtpModule"; //$NON-NLS-1$
 
 }
