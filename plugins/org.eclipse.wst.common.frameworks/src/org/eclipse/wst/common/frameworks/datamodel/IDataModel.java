@@ -27,17 +27,17 @@ import org.eclipse.core.runtime.IStatus;
  * A Collection of property names for an IDataModel instance may be retreived using
  * <code>getAllProperties()</code>. In addition to getting/setting properties, IDataModels may
  * also provide default values for unset properties, human readable descriptors for properties,
- * enumerations of valid property values, and validation for properties.
+ * enumerations of valid property values, validation for properties, and enablement for properties.
  * </p>
  * <p>
- * IDataModels may also be nested (and unnested) recursively within each other. When one IDataModel
+ * IDataModels may also be nested (and unnested) recursively within another. When one IDataModel
  * is nested within another, then client code may access all properties on the former through the
  * latter. This is especially useful when the same IDataModel (tracking the same properties) may be
  * used within the context of several different broader scenarios. Nesting may apply to any
  * IDataModel, and may be abitraryly deep (even cylical if you dare). Nesting offers flexibility,
  * especially for extension by 3rd party clients.
  * </p>
- * </p>
+ * <p>
  * Each IDataModel may also supply an IDataModelOperation (a subclass of
  * org.eclipse.core.commands.operations.IUndoableOperation) for execution. When executed within the
  * IDataModel framework all these operations are inherently and abitrarily extendable.
@@ -60,6 +60,8 @@ import org.eclipse.core.runtime.IStatus;
  * 
  * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider
  * @see org.eclipse.wst.common.frameworks.datamodel.DataModelFactory
+ * 
+ * @since 1.0
  */
 public interface IDataModel {
 
