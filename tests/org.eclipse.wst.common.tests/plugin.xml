@@ -58,7 +58,7 @@
       <ProviderImplementsType
       		providerType="testProviderNeedsReplaced"
       		providerID="org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel"
-      		functionGroupID="correctFG"/>	   		
+			/>	   		
 	  <!-- Test for incomplete id's, classes' and duplicates
       <DataModelProvider
             class=""
