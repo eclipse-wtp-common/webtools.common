@@ -51,37 +51,6 @@ public class WTPOperationDataModelEvent {
 	private String propertyName;
 	private int flag;
 
-	//TODO delete this
-	private Object oldValue;
-	//TODO delete this
-	private Object newValue;
-
-	//TODO delete this
-	/**
-	 * This will be deleted before WTP M4.
-	 * 
-	 * @deprecated use WTPOperationDataModelEvent(WTPOperationDataModel, String, int) instead
-	 * @see #WTPOperationDataModelEvent(WTPOperationDataModel, String, int)
-	 */
-	public WTPOperationDataModelEvent(WTPOperationDataModel dataModel, String propertyName, Object oldValue, Object newValue) {
-		this(dataModel, propertyName, oldValue, newValue, PROPERTY_CHG);
-	}
-
-	//TODO delete this
-	/**
-	 * This will be deleted before WTP M4.
-	 * 
-	 * @deprecated use WTPOperationDataModelEvent(WTPOperationDataModel, String, int) instead
-	 * @see #WTPOperationDataModelEvent(WTPOperationDataModel, String, int)
-	 */
-	public WTPOperationDataModelEvent(WTPOperationDataModel dataModel, String propertyName, Object oldValue, Object newValue, int flag) {
-		this.dataModel = dataModel;
-		this.propertyName = propertyName;
-		this.oldValue = oldValue;
-		this.newValue = newValue;
-		this.flag = flag;
-	}
-
 	/**
 	 * Constructor for WTPOperationDataModelEvent
 	 * 
@@ -161,28 +130,5 @@ public class WTPOperationDataModelEvent {
 	 */
 	public WTPPropertyDescriptor[] getValidPropertyDescriptors() {
 		return dataModel.getValidPropertyDescriptors(propertyName);
-	}
-
-	//TODO delete this
-	/**
-	 * This will be deleted before WTP M4.
-	 * 
-	 * @deprecated call either getProperty(), isEnabled(), or getValidPropertyDescriptors()
-	 *             depending on the flag
-	 * @return
-	 */
-	public Object getNewValue() {
-		return newValue;
-	}
-
-	//TODO delete this
-	/**
-	 * This will be deleted before WTP M4.
-	 * 
-	 * @deprecated there is no replacement method
-	 * @return
-	 */
-	public Object getOldValue() {
-		return oldValue;
 	}
 }
