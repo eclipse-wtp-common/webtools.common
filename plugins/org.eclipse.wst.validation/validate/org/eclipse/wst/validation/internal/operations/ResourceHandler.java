@@ -16,4 +16,5 @@ package org.eclipse.wst.validation.internal.operations;
  *             .properties file appropriate for the machine's Locale.
  */
 public final class ResourceHandler extends org.eclipse.wst.validation.internal.ResourceHandler {
+	//Default
 }

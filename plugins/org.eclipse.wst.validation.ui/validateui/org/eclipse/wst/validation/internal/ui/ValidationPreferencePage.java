@@ -40,9 +40,11 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.help.WorkbenchHelp;
+import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.GlobalConfiguration;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
+import org.eclipse.wst.validation.internal.ValidationConfiguration;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;
@@ -258,6 +260,7 @@ public class ValidationPreferencePage extends PreferencePage implements IWorkben
 			 * Disposes of this content provider. This is called by the viewer when it is disposed.
 			 */
 			public void dispose() {
+				//dispose
 			}
 
 			/**
@@ -301,6 +304,7 @@ public class ValidationPreferencePage extends PreferencePage implements IWorkben
 			 *            an input
 			 */
 			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+				//do nothing
 			}
 
 
@@ -472,7 +476,7 @@ public class ValidationPreferencePage extends PreferencePage implements IWorkben
 			validatorList.setInput(pagePreferences.getValidators());
 			validatorList.getTable().addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
-					pagePreferences.setEnabledValidators(GlobalConfiguration.convertToArray(validatorList.getCheckedElements()));
+					pagePreferences.setEnabledValidators(ValidationConfiguration.convertToArray(validatorList.getCheckedElements()));
 					try {
 						updateWidgets();
 					} catch (InvocationTargetException exc) {
@@ -537,6 +541,7 @@ public class ValidationPreferencePage extends PreferencePage implements IWorkben
 				 *            an event containing information about the key press
 				 */
 				public void keyPressed(KeyEvent e) {
+					//do nothing
 				}
 
 				/**
@@ -641,7 +646,7 @@ public class ValidationPreferencePage extends PreferencePage implements IWorkben
 
 		public boolean performSelectAll() throws InvocationTargetException {
 			validatorList.setAllChecked(true);
-			pagePreferences.setEnabledValidators(GlobalConfiguration.convertToArray(validatorList.getCheckedElements()));
+			pagePreferences.setEnabledValidators(ValidationConfiguration.convertToArray(validatorList.getCheckedElements()));
 			updateWidgets();
 			selectAllButton.setFocus();
 			return true;
@@ -649,7 +654,7 @@ public class ValidationPreferencePage extends PreferencePage implements IWorkben
 
 		public boolean performDeselectAll() throws InvocationTargetException {
 			validatorList.setAllChecked(false);
-			pagePreferences.setEnabledValidators(GlobalConfiguration.convertToArray(validatorList.getCheckedElements()));
+			pagePreferences.setEnabledValidators(ValidationConfiguration.convertToArray(validatorList.getCheckedElements()));
 			updateWidgets();
 			deselectAllButton.setFocus();
 			return true;
@@ -684,7 +689,7 @@ public class ValidationPreferencePage extends PreferencePage implements IWorkben
 			}
 
 			pagePreferences.setMaximumNumberOfMessages(checkInteger());
-			pagePreferences.setEnabledValidators(GlobalConfiguration.convertToArray(validatorList.getCheckedElements()));
+			pagePreferences.setEnabledValidators(ValidationConfiguration.convertToArray(validatorList.getCheckedElements()));
 
 			pagePreferences.passivate();
 			pagePreferences.store();
@@ -824,6 +829,7 @@ public class ValidationPreferencePage extends PreferencePage implements IWorkben
 	 * @see IWorkbenchPreferencePage#init(IWorkbench)
 	 */
 	public void init(IWorkbench workbench) {
+		//init
 	}
 
 	protected void noDefaultAndApplyButton() {
@@ -884,7 +890,7 @@ public class ValidationPreferencePage extends PreferencePage implements IWorkben
 	}
 
 	private void logError(Throwable exc) {
-		Logger logger = ValidationUIPlugin.getLogger();
+		Logger logger = WTPUIPlugin.getLogger();
 		if (logger.isLoggingLevel(Level.SEVERE)) {
 			LogEntry entry = ValidationUIPlugin.getLogEntry();
 			entry.setSourceIdentifier("ValidationPreferencePage.displayAndLogError"); //$NON-NLS-1$

@@ -57,6 +57,7 @@ public class ValidatorMetaData {
 	private boolean _cannotLoad = false;
 
 	/* package */ValidatorMetaData() {
+		//default
 	}
 
 	/**
@@ -425,6 +426,7 @@ public class ValidatorMetaData {
 		private Set _ids = null;
 
 		public MigrationMetaData() {
+			//default
 		}
 
 		public void addId(String oldId, String newId) {

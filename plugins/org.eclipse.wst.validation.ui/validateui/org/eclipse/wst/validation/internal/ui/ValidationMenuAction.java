@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.wst.common.frameworks.internal.ValidationSelectionHandlerRegistryReader;
+import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
@@ -205,7 +206,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		try {
 			selected.accept(getFolderVisitor());
 		} catch (CoreException exc) {
-			Logger logger = ValidationUIPlugin.getLogger();
+			Logger logger = WTPUIPlugin.getLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationUIPlugin.getLogEntry();
 				entry.setSourceIdentifier("ValidationMenuAction.addSelected(IFolder)"); //$NON-NLS-1$
@@ -260,7 +261,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 			// validate all EJBs in this project
 			dialog.run(true, true, runnable); // fork, cancelable.
 		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationUIPlugin.getLogger();
+			Logger logger = WTPUIPlugin.getLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationUIPlugin.getLogEntry();
 				entry.setSourceID("ValidationMenuAction.run(IAction)"); //$NON-NLS-1$
@@ -277,7 +278,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		} catch (InterruptedException exc) {
 			// User cancelled validation
 		} catch (Throwable exc) {
-			Logger logger = ValidationUIPlugin.getLogger();
+			Logger logger = WTPUIPlugin.getLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationUIPlugin.getLogEntry();
 				entry.setSourceID("ValidationMenuAction.run(IAction)"); //$NON-NLS-1$
@@ -331,7 +332,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	 * @param exc
 	 */
 	private void logException(ProgressAndTextDialog dialog, IProject project, Throwable exc) {
-		Logger logger = ValidationUIPlugin.getLogger();
+		Logger logger = WTPUIPlugin.getLogger();
 		if (logger.isLoggingLevel(Level.SEVERE)) {
 			LogEntry entry = ValidationUIPlugin.getLogEntry();
 			entry.setSourceID("ValidationMenuAction.validate"); //$NON-NLS-1$
@@ -539,6 +540,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	 * @see org.eclipse.ui.IActionDelegate2#init(org.eclipse.jface.action.IAction)
 	 */
 	public void init(IAction action) {
+		//init
 	}
 
 	/*
@@ -547,12 +549,14 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	 * @see org.eclipse.ui.IActionDelegate2#dispose()
 	 */
 	public void dispose() { 
+		//dispose
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IViewActionDelegate#init(org.eclipse.ui.IViewPart)
 	 */
 	public void init(IViewPart view) { 
+		//init
 		
 	}
 }

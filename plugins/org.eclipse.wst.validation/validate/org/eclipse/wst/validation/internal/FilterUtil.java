@@ -55,15 +55,18 @@ public final class FilterUtil {
 	}
 
 	private interface VMDDeltaVisitor extends VMDRecorder, IResourceDeltaVisitor {
+		//constructor
 	}
 
 	private interface VMDResourceVisitor extends VMDRecorder, IResourceVisitor {
+		//constructor
 	}
 
 	/**
 	 * Don't let anyone create an instance of this class.
 	 */
 	private FilterUtil() {
+		//default
 	}
 
 	/**

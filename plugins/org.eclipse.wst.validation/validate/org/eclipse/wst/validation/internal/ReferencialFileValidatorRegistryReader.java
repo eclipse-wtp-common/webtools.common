@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.validation.internal.operations.ReferencialFileValidator;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
@@ -43,7 +42,7 @@ public class ReferencialFileValidatorRegistryReader extends RegistryReader {
 	 * @param arg2
 	 */
 	public ReferencialFileValidatorRegistryReader() {
-		super(Platform.getPluginRegistry(), ValidationPlugin.PLUGIN_ID, "referencialFileValidator"); //$NON-NLS-1$
+		super(ValidationPlugin.PLUGIN_ID, "referencialFileValidator"); //$NON-NLS-1$
 	}
 
 	/*

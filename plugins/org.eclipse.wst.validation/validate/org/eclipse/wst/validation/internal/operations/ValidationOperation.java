@@ -37,6 +37,7 @@ import org.eclipse.wst.validation.core.IReporter;
 import org.eclipse.wst.validation.core.IValidator;
 import org.eclipse.wst.validation.core.Message;
 import org.eclipse.wst.validation.core.MessageLimitException;
+import org.eclipse.wst.validation.core.SeverityEnum;
 import org.eclipse.wst.validation.core.ValidationException;
 import org.eclipse.wst.validation.core.ValidatorLauncher;
 import org.eclipse.wst.validation.internal.FilterUtil;
@@ -353,7 +354,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		}
 		String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 		Message message = ValidationPlugin.getMessage();
-		message.setSeverity(IReporter.NORMAL_SEVERITY);
+		message.setSeverity(SeverityEnum.NORMAL_SEVERITY);
 		message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 		message.setParams(msgParm);
 		try {
@@ -458,7 +459,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		}
 		String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 		Message message = ValidationPlugin.getMessage();
-		message.setSeverity(IReporter.NORMAL_SEVERITY);
+		message.setSeverity(SeverityEnum.NORMAL_SEVERITY);
 		message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 		message.setParams(msgParm);
 		try {
@@ -964,7 +965,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 					reporter.displaySubtask(mssg);
 					String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 					Message message = ValidationPlugin.getMessage();
-					message.setSeverity(IReporter.NORMAL_SEVERITY);
+					message.setSeverity(SeverityEnum.NORMAL_SEVERITY);
 					message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 					message.setParams(msgParm);
 					reporter.addMessage(validator, message);
@@ -1101,7 +1102,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			reporter.displaySubtask(mssg);
 			String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 			Message message = ValidationPlugin.getMessage();
-			message.setSeverity(IReporter.NORMAL_SEVERITY);
+			message.setSeverity(SeverityEnum.NORMAL_SEVERITY);
 			message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 			message.setParams(msgParm);
 			reporter.addMessage(validator, message);
@@ -1195,7 +1196,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			reporter.displaySubtask(mssg);
 			String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 			Message message = ValidationPlugin.getMessage();
-			message.setSeverity(IReporter.NORMAL_SEVERITY);
+			message.setSeverity(SeverityEnum.NORMAL_SEVERITY);
 			message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 			message.setParams(msgParm);
 			reporter.addMessage(validator, message);
@@ -1358,7 +1359,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			reporter.displaySubtask(mssg);
 			String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 			Message message = ValidationPlugin.getMessage();
-			message.setSeverity(IReporter.NORMAL_SEVERITY);
+			message.setSeverity(SeverityEnum.NORMAL_SEVERITY);
 			message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 			message.setParams(msgParm);
 			reporter.addMessage(validator, message);
@@ -1383,7 +1384,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				}
 				String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 				Message message = ValidationPlugin.getMessage();
-				message.setSeverity(IReporter.NORMAL_SEVERITY);
+				message.setSeverity(SeverityEnum.NORMAL_SEVERITY);
 				message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 				message.setParams(msgParm);
 				try {
@@ -1413,7 +1414,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				}
 				String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 				Message message = ValidationPlugin.getMessage();
-				message.setSeverity(IReporter.NORMAL_SEVERITY);
+				message.setSeverity(SeverityEnum.NORMAL_SEVERITY);
 				message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 				message.setParams(msgParm);
 				try {
@@ -1471,19 +1472,19 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		private IValidator _validator = null;
 		private ValidatorMetaData _vmd = null;
 		private IWorkbenchHelper _helper = null;
-		private IFileDelta[] _delta = null;
+		private IFileDelta[] __delta = null;
 
 		public ProjectRunnable(WorkbenchReporter reporter, IValidator validator, ValidatorMetaData vmd, IWorkbenchHelper helper, IFileDelta[] delta, Iterator iterator) {
 			_reporter = reporter;
 			_validator = validator;
 			_vmd = vmd;
 			_helper = helper;
-			_delta = delta;
+			__delta = delta;
 		}
 
 		public void run() {
 			try {
-				internalValidate(_reporter, _validator, _vmd, _helper, _delta);
+				internalValidate(_reporter, _validator, _vmd, _helper, __delta);
 			} catch (OperationCanceledException exc) {
 				// User can't cancel a job in a background thread, so ignore
 				// this exception.

@@ -320,7 +320,7 @@ public class ProjectConfiguration extends ValidationConfiguration {
 	 * The project's nature has changed, so recalculate the validators that are configured on the
 	 * project, and reset the values of the project to the default.
 	 */
-	public void resetProjectNature() throws InvocationTargetException {
+	public void resetProjectNature() {
 		/*
 		 * We do not want to perform the resetting the of the validators as the nature never gets
 		 * reset due to change in the project references - VKB GlobalConfiguration gp =

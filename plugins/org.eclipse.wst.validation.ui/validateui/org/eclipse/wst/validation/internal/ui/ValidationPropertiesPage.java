@@ -39,9 +39,11 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.help.WorkbenchHelp;
+import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.GlobalConfiguration;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
+import org.eclipse.wst.validation.internal.ValidationConfiguration;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;
@@ -245,6 +247,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 			 * Disposes of this content provider. This is called by the viewer when it is disposed.
 			 */
 			public void dispose() {
+				//dispose
 			}
 
 			/**
@@ -288,6 +291,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 			 *            an input
 			 */
 			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+				//do nothing
 			}
 
 
@@ -466,7 +470,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 			validatorList.setSorter(new ValidationViewerSorter());
 			validatorList.getTable().addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
-					pagePreferences.setEnabledValidators(ProjectConfiguration.convertToArray(validatorList.getCheckedElements()));
+					pagePreferences.setEnabledValidators(ValidationConfiguration.convertToArray(validatorList.getCheckedElements()));
 					try {
 						updateWidgets();
 					} catch (InvocationTargetException exc) {
@@ -530,6 +534,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 				 *            an event containing information about the key press
 				 */
 				public void keyPressed(KeyEvent e) {
+					//do nothing
 				}
 
 				/**
@@ -583,7 +588,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 
 		public boolean performSelectAll() throws InvocationTargetException {
 			validatorList.setAllChecked(true);
-			pagePreferences.setEnabledValidators(ProjectConfiguration.convertToArray(validatorList.getCheckedElements()));
+			pagePreferences.setEnabledValidators(ValidationConfiguration.convertToArray(validatorList.getCheckedElements()));
 			updateWidgets();
 			selectAllButton.setFocus();
 			return true;
@@ -591,7 +596,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 
 		public boolean performDeselectAll() throws InvocationTargetException {
 			validatorList.setAllChecked(false);
-			pagePreferences.setEnabledValidators(ProjectConfiguration.convertToArray(validatorList.getCheckedElements()));
+			pagePreferences.setEnabledValidators(ValidationConfiguration.convertToArray(validatorList.getCheckedElements()));
 			updateWidgets();
 			deselectAllButton.setFocus();
 			return true;
@@ -763,7 +768,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 				}
 
 				pagePreferences.setMaximumNumberOfMessages(checkInteger());
-				pagePreferences.setEnabledValidators(ProjectConfiguration.convertToArray(validatorList.getCheckedElements()));
+				pagePreferences.setEnabledValidators(ValidationConfiguration.convertToArray(validatorList.getCheckedElements()));
 			} else {
 				pagePreferences.resetToDefault(); // If the project can't or doesn't override,
 				// update its values to match the global
@@ -991,7 +996,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 	}
 
 	void logError(Throwable exc) {
-		Logger logger = ValidationUIPlugin.getLogger();
+		Logger logger = WTPUIPlugin.getLogger();
 		if (logger.isLoggingLevel(Level.SEVERE)) {
 			LogEntry entry = ValidationUIPlugin.getLogEntry();
 			entry.setSourceIdentifier("ValidationPropertiesPage.displayAndLogError"); //$NON-NLS-1$

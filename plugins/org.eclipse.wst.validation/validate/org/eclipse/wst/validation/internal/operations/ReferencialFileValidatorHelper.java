@@ -50,6 +50,7 @@ public class ReferencialFileValidatorHelper {
 		try {
 			result = collectFiles(project.members(), result);
 		} catch (CoreException e) {
+			//Ignore
 		}
 		return result;
 	}

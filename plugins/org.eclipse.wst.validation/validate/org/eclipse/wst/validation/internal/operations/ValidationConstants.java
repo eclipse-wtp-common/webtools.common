@@ -21,4 +21,5 @@ import org.eclipse.wst.validation.internal.ResourceConstants;
  * See the plugin.properties file, in the plugin's directory, for the contents of the strings.
  */
 public interface ValidationConstants extends ResourceConstants {
+	//Default
 }

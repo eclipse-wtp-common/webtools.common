@@ -31,6 +31,7 @@ public class ValidatorTypeFilter {
 	// Java string.
 
 	/* package */ValidatorTypeFilter() {
+		//default
 	}
 
 	/* package */ValidatorTypeFilter(String mustImplementClass) {

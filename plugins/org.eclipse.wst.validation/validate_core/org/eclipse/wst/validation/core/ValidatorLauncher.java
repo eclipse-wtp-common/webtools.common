@@ -26,6 +26,7 @@ public class ValidatorLauncher {
 	 * Default constructor 
 	 */
 	private ValidatorLauncher() {
+		//Default constructor
 	}
 
 	/**

@@ -55,6 +55,7 @@ public final class ValidationMigrator implements ConfigurationConstants {
 
 
 	private ValidationMigrator() {
+		//Default constructor
 	}
 
 	public static ValidationMigrator singleton() {
@@ -117,8 +118,8 @@ public final class ValidationMigrator implements ConfigurationConstants {
 			_projectMigrator = new ProjectMigrator() {
 				private IProject _project = null;
 
-				public void setProject(IProject project) {
-					_project = project;
+				public void setProject(IProject aProject) {
+					_project = aProject;
 				}
 
 				public IProject getProject() {

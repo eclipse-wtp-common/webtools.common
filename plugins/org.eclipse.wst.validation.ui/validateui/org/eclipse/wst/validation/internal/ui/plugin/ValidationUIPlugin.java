@@ -28,7 +28,7 @@ public class ValidationUIPlugin extends WTPUIPlugin {
 	private static ValidationUIPlugin _plugin = null;
 
 	public final static String VALIDATION_PROP_FILE_NAME = "validate_ui"; //$NON-NLS-1$
-	public static final String PLUGIN_ID = "org.eclipse.wst.validation.ui"; //$NON-NLS-1$
+	public static final String VALIDATION_PLUGIN_ID = "org.eclipse.wst.validation.ui"; //$NON-NLS-1$
 
 	public ValidationUIPlugin(IPluginDescriptor descriptor) {
 		super(descriptor);
@@ -62,7 +62,7 @@ public class ValidationUIPlugin extends WTPUIPlugin {
 			return getPlugin().getDescriptor().getResourceString(key);
 		} catch (Exception e) {
 			e.printStackTrace();
-			Logger logger = ValidationUIPlugin.getLogger();
+			Logger logger = WTPUIPlugin.getLogger();
 			if (logger.isLoggingLevel(Level.FINE)) {
 				LogEntry entry = getLogEntry();
 				entry.setSourceID("ValidationUIPlugin.getResourceString(String)"); //$NON-NLS-1$

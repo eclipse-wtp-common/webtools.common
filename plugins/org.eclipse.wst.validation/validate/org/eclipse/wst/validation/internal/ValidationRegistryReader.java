@@ -1266,7 +1266,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		vmd.addDependentValidator(getDependentValidatorValue(element));
 		String customMarkerId = getMarkerIdValue(element);
 		if(customMarkerId != null)
-		    vmd.setMarkerId(pluginId+"."+customMarkerId);
+		    vmd.setMarkerId(pluginId+"."+customMarkerId); //$NON-NLS-1$
 
 		Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 		if (logger.isLoggingLevel(Level.FINEST)) {

@@ -77,6 +77,7 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 	 * @deprecated Override closing() instead, and use getProject()
 	 */
 	public void closing(IProject project) {
+		//do nothing
 	}
 
 	/**
@@ -98,6 +99,7 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 	 * @deprecated Override deleting() instead, and use getProject()
 	 */
 	public void deleting(IProject project) {
+		//do nothing
 	}
 
 	/**
@@ -442,6 +444,7 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 	 * IWorkbenchHelper's setProject() method should be called here.
 	 */
 	public void initialize() {
+		//do nothing
 	}
 
 	/**

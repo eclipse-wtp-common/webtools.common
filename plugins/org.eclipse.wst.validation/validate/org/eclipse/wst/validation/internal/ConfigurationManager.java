@@ -31,6 +31,7 @@ public final class ConfigurationManager implements ConfigurationConstants {
 	private static ConfigurationManager inst = null;
 
 	private ConfigurationManager() {
+		//Default constructor
 	}
 
 	public static ConfigurationManager getManager() {
@@ -222,6 +223,7 @@ public final class ConfigurationManager implements ConfigurationConstants {
 	}
 
 	public void deleting(IProject project) {
+		//do nothing
 	}
 
 	public void opening(IProject project) {

@@ -14,6 +14,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 
+import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;
 
 import com.ibm.wtp.common.logger.LogEntry;
@@ -41,7 +42,7 @@ public class ResourceHandler {
 				_bundle = ResourceBundle.getBundle(ValidationUIPlugin.getBundleName());
 			} catch (MissingResourceException exc) {
 				_bundle = null;
-				Logger logger = ValidationUIPlugin.getLogger();
+				Logger logger = WTPUIPlugin.getLogger();
 				if (logger.isLoggingLevel(Level.FINE)) {
 					LogEntry entry = ValidationUIPlugin.getLogEntry();
 					entry.setSourceID("org.eclipse.wst.validation.internal.operations.ui.ResourceHandler.getBundle()"); //$NON-NLS-1$
@@ -58,7 +59,7 @@ public class ResourceHandler {
 		try {
 			ResourceBundle bundle = getBundle();
 			if (bundle == null) {
-				Logger logger = ValidationUIPlugin.getLogger();
+				Logger logger = WTPUIPlugin.getLogger();
 				if (logger.isLoggingLevel(Level.FINE)) {
 					LogEntry entry = ValidationUIPlugin.getLogEntry();
 					entry.setSourceID("org.eclipse.wst.validation.internal.operations.ui.ResourceHandler.getExternalizedMessage(String)"); //$NON-NLS-1$
@@ -70,7 +71,7 @@ public class ResourceHandler {
 
 			return bundle.getString(key);
 		} catch (NullPointerException exc) {
-			Logger logger = ValidationUIPlugin.getLogger();
+			Logger logger = WTPUIPlugin.getLogger();
 			if (logger.isLoggingLevel(Level.FINE)) {
 				LogEntry entry = ValidationUIPlugin.getLogEntry();
 				entry.setSourceID("org.eclipse.wst.validation.internal.operations.ui.ResourceHandler.getExternalizedMessage(String)"); //$NON-NLS-1$
@@ -87,7 +88,7 @@ public class ResourceHandler {
 		try {
 			res = java.text.MessageFormat.format(getExternalizedMessage(key), parms);
 		} catch (MissingResourceException exc) {
-			Logger logger = ValidationUIPlugin.getLogger();
+			Logger logger = WTPUIPlugin.getLogger();
 			if (logger.isLoggingLevel(Level.FINE)) {
 				LogEntry entry = ValidationUIPlugin.getLogEntry();
 				entry.setSourceID("org.eclipse.wst.validation.internal.operations.ui.ResourceHandler.getExternalizedMessage(String, String[])"); //$NON-NLS-1$
@@ -96,7 +97,7 @@ public class ResourceHandler {
 				logger.write(Level.FINE, entry);
 			}
 		} catch (NullPointerException exc) {
-			Logger logger = ValidationUIPlugin.getLogger();
+			Logger logger = WTPUIPlugin.getLogger();
 			if (logger.isLoggingLevel(Level.FINE)) {
 				LogEntry entry = ValidationUIPlugin.getLogEntry();
 				entry.setSourceID("org.eclipse.wst.validation.internal.operations.ui.ResourceHandler.getExternalizedMessage(String, String[])"); //$NON-NLS-1$

@@ -29,6 +29,7 @@ public class ValidatorNameFilter {
 	 * Insert the method's description here. Creation date: (12/4/00 11:08:41 AM)
 	 */
 	/* package */ValidatorNameFilter() {
+		//default
 	}
 
 	/**

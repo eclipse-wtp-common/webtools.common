@@ -79,6 +79,7 @@ public class VThreadManager {
 							logger.write(Level.FINE, entry);
 						}
 					} finally {
+						//do nothing
 					}
 				}
 			}
@@ -111,11 +112,11 @@ public class VThreadManager {
 	}
 
 	private class Jobs {
-		private Vector _jobs = null; // The queued Runnables that need to be run.
+		private Vector __jobs = null; // The queued Runnables that need to be run.
 		private boolean _isActive = false; // Is a job being run in the validation thread?
 
 		public Jobs() {
-			_jobs = new Vector();
+			__jobs = new Vector();
 		}
 
 		public synchronized void queue(Runnable runnable) {
@@ -125,7 +126,7 @@ public class VThreadManager {
 			// instead of the last state of changes.
 
 			// Have to wait for the current Runnable to finish, so add this to the end of the queue
-			_jobs.add(runnable);
+			__jobs.add(runnable);
 			notifyAll();
 		}
 
@@ -133,18 +134,19 @@ public class VThreadManager {
 		 * Pop the Runnable off of the head of the queue.
 		 */
 		synchronized Runnable dequeue() {
-			while (_jobs.size() == 0) {
+			while (__jobs.size() == 0) {
 				try {
 					wait();
 				} catch (InterruptedException exc) {
+					//Ignore
 				}
 			} // Block on the semaphore; break when a job has been added to the queue.
 
 			Runnable job = null;
-			if (_jobs.size() > 0) {
-				job = (Runnable) _jobs.get(0);
+			if (__jobs.size() > 0) {
+				job = (Runnable) __jobs.get(0);
 				if (job != null) {
-					_jobs.remove(0);
+					__jobs.remove(0);
 				}
 			}
 			return job;
@@ -162,7 +164,7 @@ public class VThreadManager {
 		 * Return true if all of the Runnables have been run.
 		 */
 		public synchronized boolean isDone() {
-			return ((_jobs.size() == 0) && !isActive());
+			return ((__jobs.size() == 0) && !isActive());
 		}
 	}
 }

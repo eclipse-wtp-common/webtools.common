@@ -15,4 +15,5 @@ package org.eclipse.wst.validation.internal.ui;
  * @deprecated For use by the validation framework only.
  */
 public interface ValidationUIConstants extends org.eclipse.wst.validation.internal.ui.ResourceConstants {
+	//Default
 }
