@@ -82,6 +82,7 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 		result.setChildren(new Translator[] {
 			IDTranslator.INSTANCE,
 			new Translator(ROOT, MODULE_CORE_PKG.getIModuleType_Root(), DOM_ATTRIBUTE), 
+			new Translator(TYPE_NAME, MODULE_CORE_PKG.getIModuleType_TypeName(), DOM_ATTRIBUTE),
 			new Translator(META_RESOURCES, MODULE_CORE_PKG.getIModuleType_MetadataResources())
 		});
 		return result;
