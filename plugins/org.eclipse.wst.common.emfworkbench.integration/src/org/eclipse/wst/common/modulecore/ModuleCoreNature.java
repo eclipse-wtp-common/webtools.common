@@ -45,9 +45,8 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
         return structureModule;
     }
 
- 
-    private EMFWorkbenchContext getEMFWorkBenchContext() {        
-        EMFWorkbenchContext emfContext = (EMFWorkbenchContext)EMFWorkbenchContextFactory.INSTANCE.getEMFContext(getProject());
+    private EMFWorkbenchContext getEMFWorkBenchContext() {
+        EMFWorkbenchContext emfContext = (EMFWorkbenchContext) EMFWorkbenchContextFactory.INSTANCE.getEMFContext(getProject());
         if (emfContext == null)
             try {
                 emfContext = createEmfContext();
@@ -56,11 +55,10 @@ public class ModuleCoreNature implements IProjectNature, IResourceChangeListener
             }
         return null;
     }
-    
-    protected EMFWorkbenchContext createEmfContext() throws CoreException  {      
-        EMFWorkbenchContext emfContext  = (EMFWorkbenchContext)WorkbenchResourceHelperBase.createEMFContext(getProject(), null);
-       
-    	return emfContext;
+
+    protected EMFWorkbenchContext createEmfContext() throws CoreException {
+        EMFWorkbenchContext emfContext = (EMFWorkbenchContext) WorkbenchResourceHelperBase.createEMFContext(getProject(), null);
+        return emfContext;
     }
 
     private HashMap getEditModelsForRead() {
