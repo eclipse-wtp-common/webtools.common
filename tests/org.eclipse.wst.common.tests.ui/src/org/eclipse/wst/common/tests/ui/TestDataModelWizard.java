@@ -17,12 +17,12 @@ import org.eclipse.wst.common.frameworks.datamodel.ui.DataModelWizard;
 
 public class TestDataModelWizard extends DataModelWizard {
 
-	public TestDataModelWizard(IDataModel dataModel) {
-		super(dataModel);
+	public TestDataModelWizard() {
+		super();
 	}
 
-	public IDataModel getDataModel() {
-		return model;
+	public TestDataModelWizard(IDataModel dataModel) {
+		super(dataModel);
 	}
 
 	protected IDataModelProvider getDefaultProvider() {

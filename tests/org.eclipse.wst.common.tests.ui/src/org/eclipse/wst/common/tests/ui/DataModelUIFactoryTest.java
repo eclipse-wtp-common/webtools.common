@@ -26,6 +26,7 @@ public class DataModelUIFactoryTest extends TestCase {
 		assertTrue(dataModel.isProperty(ITestDataModel.FOO));
 		DataModelWizard wizard = DataModelWizardFactory.createWizard("org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel");
 		assertNotNull(wizard);
+		assertNotNull(wizard.getDataModel());
 	}
 
 
@@ -34,14 +35,18 @@ public class DataModelUIFactoryTest extends TestCase {
 		assertTrue(dataModel.isProperty(ITestDataModel.FOO));
 		DataModelWizard wizard = DataModelWizardFactory.createWizard(ITestDataModel.class);
 		assertNotNull(wizard);
+		assertNotNull(wizard.getDataModel());
 	}
 
 	public void testValidExtensionInstance() {
+		int startInstanceCount = TestDataModelProvider.getInstanceCount();
 		IDataModel dataModel = DataModelFactory.createDataModel(new TestDataModelProvider());
 		assertTrue(dataModel.isProperty(ITestDataModel.FOO));
 		DataModelWizard wizard = DataModelWizardFactory.createWizard(dataModel);
 		assertNotNull(wizard);
-		assertTrue(dataModel == ((TestDataModelWizard) wizard).getDataModel());
+		assertTrue(dataModel == wizard.getDataModel());
+		int endInstanceCount = TestDataModelProvider.getInstanceCount();
+		assertEquals(1, endInstanceCount-startInstanceCount);
 	}
 
 }
