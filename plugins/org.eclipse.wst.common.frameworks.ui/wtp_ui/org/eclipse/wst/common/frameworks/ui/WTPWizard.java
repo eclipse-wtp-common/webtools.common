@@ -171,6 +171,7 @@ public abstract class WTPWizard extends Wizard {
 		return false;
 	}
 
+	//TODO this should return the dataModel's default operation by default.
 	/**
 	 * Return the operation that will perform the task suported by this wizard.
 	 * 
