@@ -15,6 +15,7 @@ import junit.framework.TestCase;
 
 import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel;
+import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 
 /**
  * @author jsholl
@@ -51,6 +52,103 @@ public class NestingTest extends TestCase {
 		}
 	}
 
+	public void testInvalidNestedModel() {
+		String NESTED_MODEL_NOT_LOCATED = WTPResourceHandler.getString("21"); //$NON-NLS-1$
+		Exception ex = null;
+		try {
+			a.getNestedModel("foo");
+		} catch (RuntimeException e) {
+			ex = e;
+		}
+		Assert.assertNotNull(ex);
+		Assert.assertTrue(ex.getMessage().startsWith(NESTED_MODEL_NOT_LOCATED));
+		ex = null;
+		try {
+			a.getNestedModel(null);
+		} catch (RuntimeException e) {
+			ex = e;
+		}
+		Assert.assertNotNull(ex);
+		Assert.assertTrue(ex.getMessage().startsWith(NESTED_MODEL_NOT_LOCATED));
+		
+		a.addNestedModel("b", b);
+		ex = null;
+		try {
+			a.getNestedModel(null);
+		} catch (RuntimeException e) {
+			ex = e;
+		}
+		Assert.assertNotNull(ex);
+		Assert.assertTrue(ex.getMessage().startsWith(NESTED_MODEL_NOT_LOCATED));
+		
+	}
+
+	public void testIsNestedModel() {
+		Assert.assertFalse(a.isNestedModel(""));
+		Assert.assertFalse(a.isNestedModel(null));
+		a.addNestedModel("b", b);
+		Assert.assertTrue(a.isNestedModel("b"));
+		Assert.assertFalse(a.isNestedModel("c"));
+		a.addNestedModel("c", c);
+		Assert.assertTrue(a.isNestedModel("c"));
+	}
+
+	public void testRemoveNonExistentModels() {
+		Assert.assertNull(a.removeNestedModel("a"));
+		Assert.assertNull(a.removeNestedModel(null));
+	}
+
+	public void testGetNestedAndGetNesting() {
+		Assert.assertEquals(0, a.getNestedModels().size());
+		Assert.assertEquals(0, b.getNestingModels().size());
+
+		Assert.assertTrue(a.addNestedModel("b", b));
+		Assert.assertEquals(1, a.getNestedModels().size());
+		Assert.assertTrue(a.getNestedModels().contains(b));
+		Assert.assertEquals(b, a.getNestedModel("b"));
+		Assert.assertEquals(1, b.getNestingModels().size());
+		Assert.assertTrue(b.getNestingModels().contains(a));
+
+		Assert.assertTrue(a.addNestedModel("c", c));
+		Assert.assertEquals(2, a.getNestedModels().size());
+		Assert.assertTrue(a.getNestedModels().contains(c));
+		Assert.assertEquals(c, a.getNestedModel("c"));
+		Assert.assertEquals(1, c.getNestingModels().size());
+		Assert.assertTrue(c.getNestingModels().contains(a));
+
+		Assert.assertTrue(b.addNestedModel("c", c));
+		Assert.assertEquals(1, b.getNestedModels().size());
+		Assert.assertTrue(b.getNestedModels().contains(c));
+		Assert.assertEquals(2, c.getNestingModels().size());
+		Assert.assertTrue(c.getNestingModels().contains(b));
+
+		Assert.assertEquals(b, a.removeNestedModel("b"));
+		Assert.assertEquals(1, a.getNestedModels().size());
+		Assert.assertEquals(0, b.getNestingModels().size());
+
+		Assert.assertEquals(c, a.removeNestedModel("c"));
+		Assert.assertEquals(0, a.getNestedModels().size());
+		Assert.assertEquals(1, c.getNestingModels().size());
+		Assert.assertTrue(c.getNestingModels().contains(b));
+
+		Assert.assertEquals(c, b.removeNestedModel("c"));
+		Assert.assertEquals(0, b.getNestedModels().size());
+		Assert.assertEquals(0, c.getNestingModels().size());
+	}
+
+	public void testSelfNest() {
+		Assert.assertFalse(a.addNestedModel("a", a));
+		Assert.assertEquals(0, a.getNestedModels().size());
+	}
+
+	public void testDuplicateNest() {
+		Assert.assertTrue(a.addNestedModel("b1", b));
+		Assert.assertEquals(b, a.getNestedModel("b1"));
+		Assert.assertFalse(a.addNestedModel("b2", b));
+		Assert.assertEquals(b, a.getNestedModel("b1"));
+		Assert.assertFalse(a.isNestedModel("b2"));
+	}
+
 
 	/**
 	 * <code>
@@ -62,22 +160,34 @@ public class NestingTest extends TestCase {
 	 */
 	public void testIsPropertySimpleNesting0() {
 		a.addNestedModel("b", b); // 1
+		Assert.assertFalse(a.isBaseProperty(B.P));
 		Assert.assertTrue(a.isProperty(B.P));
+		Assert.assertTrue(a.isNestedProperty(B.P));
 
 		a.removeNestedModel("b"); // 2
+		Assert.assertFalse(a.isBaseProperty(B.P));
 		Assert.assertFalse(a.isProperty(B.P));
+		Assert.assertFalse(a.isNestedProperty(B.P));
 
 		a.addNestedModel("b", b); // 3
+		Assert.assertFalse(a.isBaseProperty(B.P));
 		Assert.assertTrue(a.isProperty(B.P));
+		Assert.assertTrue(a.isNestedProperty(B.P));
 
 		b.addNestedModel("c", c); // 4
+		Assert.assertFalse(a.isBaseProperty(C.P));
 		Assert.assertTrue(a.isProperty(C.P));
+		Assert.assertTrue(a.isNestedProperty(C.P));
 
 		b.removeNestedModel("c"); // 5
+		Assert.assertFalse(a.isBaseProperty(C.P));
 		Assert.assertFalse(a.isProperty(C.P));
+		Assert.assertFalse(a.isNestedProperty(C.P));
 
 		b.addNestedModel("c", c); // 6
+		Assert.assertFalse(a.isBaseProperty(C.P));
 		Assert.assertTrue(a.isProperty(C.P));
+		Assert.assertTrue(a.isNestedProperty(C.P));
 	}
 
 	/**
@@ -90,18 +200,30 @@ public class NestingTest extends TestCase {
 	 */
 	public void testIsPropertySimpleNesting1() {
 		a.addNestedModel("b", b); // 1
+		Assert.assertFalse(a.isBaseProperty(B.P));
 		Assert.assertTrue(a.isProperty(B.P));
+		Assert.assertTrue(a.isNestedProperty(B.P));
 
 		b.addNestedModel("c", c); // 2
+		Assert.assertFalse(a.isBaseProperty(C.P));
 		Assert.assertTrue(a.isProperty(C.P));
+		Assert.assertTrue(a.isNestedProperty(C.P));
+		Assert.assertFalse(b.isBaseProperty(C.P));
 		Assert.assertTrue(b.isProperty(C.P));
+		Assert.assertTrue(b.isNestedProperty(C.P));
 
 		b.removeNestedModel("c"); // 3
+		Assert.assertFalse(a.isBaseProperty(C.P));
 		Assert.assertFalse(a.isProperty(C.P));
+		Assert.assertFalse(a.isNestedProperty(C.P));
+		Assert.assertFalse(b.isBaseProperty(C.P));
 		Assert.assertFalse(b.isProperty(C.P));
+		Assert.assertFalse(b.isNestedProperty(C.P));
 
 		a.removeNestedModel("b"); // 4
+		Assert.assertFalse(a.isBaseProperty(B.P));
 		Assert.assertFalse(a.isProperty(B.P));
+		Assert.assertFalse(a.isNestedProperty(B.P));
 	}
 
 	/**

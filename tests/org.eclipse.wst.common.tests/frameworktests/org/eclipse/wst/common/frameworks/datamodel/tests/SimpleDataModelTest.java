@@ -17,7 +17,9 @@ import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelEvent;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.DataModelPropertyDescriptor;
 import org.eclipse.wst.common.frameworks.datamodel.provisional.IDataModel;
+import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
 
 
@@ -107,6 +109,53 @@ public class SimpleDataModelTest extends TestCase {
 		dm = DataModelFactory.INSTANCE.createDataModel(new DMProvider());
 		dmL = new TestListener();
 		dm.addListener(dmL);
+	}
+
+	public void testInvalidProperty() {
+		String PROPERTY_NOT_LOCATED_ = WTPResourceHandler.getString("20"); //$NON-NLS-1$
+		Exception ex = null;
+		try {
+			dm.getProperty("foo");
+		} catch (RuntimeException e) {
+			ex = e;
+		}
+		Assert.assertNotNull(ex);
+		Assert.assertTrue(ex.getMessage().startsWith(PROPERTY_NOT_LOCATED_));
+		ex = null;
+		try {
+			dm.getIntProperty("foo");
+		} catch (RuntimeException e) {
+			ex = e;
+		}
+		Assert.assertNotNull(ex);
+		Assert.assertTrue(ex.getMessage().startsWith(PROPERTY_NOT_LOCATED_));
+		ex = null;
+		ex = null;
+		try {
+			dm.getBooleanProperty("foo");
+		} catch (RuntimeException e) {
+			ex = e;
+		}
+		Assert.assertNotNull(ex);
+		Assert.assertTrue(ex.getMessage().startsWith(PROPERTY_NOT_LOCATED_));
+		ex = null;
+		ex = null;
+		try {
+			dm.getStringProperty("foo");
+		} catch (RuntimeException e) {
+			ex = e;
+		}
+		Assert.assertNotNull(ex);
+		Assert.assertTrue(ex.getMessage().startsWith(PROPERTY_NOT_LOCATED_));
+		ex = null;
+		try {
+			dm.getStringProperty(null);
+		} catch (RuntimeException e) {
+			ex = e;
+		}
+		Assert.assertNotNull(ex);
+		Assert.assertTrue(ex.getMessage().startsWith(PROPERTY_NOT_LOCATED_));
+		
 	}
 
 	public void testPropertyDescriptors() {
