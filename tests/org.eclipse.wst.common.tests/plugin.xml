@@ -49,6 +49,16 @@
       <DataModelProvider
             class="bogusClass"
             id="bogus"/>
+      <ProviderDefinesType
+      		providerType="testProviderCorrect"
+      		providerID="org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel"/>
+      <ProviderDefinesType
+      		providerType="testProviderNeedsReplaced"
+      		providerID="org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModelBogus"/>		
+      <ProviderImplementsType
+      		providerType="testProviderNeedsReplaced"
+      		providerID="org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel"
+      		functionGroupID="correctFG"/>	   		
 	  <!-- Test for incomplete id's, classes' and duplicates
       <DataModelProvider
             class=""
