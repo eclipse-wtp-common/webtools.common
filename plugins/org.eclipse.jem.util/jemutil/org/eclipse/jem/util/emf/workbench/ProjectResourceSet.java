@@ -10,22 +10,48 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSet.java,v $$
- *  $$Revision: 1.1 $$  $$Date: 2005/01/07 20:19:23 $$ 
+ *  $$Revision: 1.2 $$  $$Date: 2005/02/04 23:12:01 $$ 
  */
 package org.eclipse.jem.util.emf.workbench;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 
 /**
  * A ResourceSet for an entire project. It allows sharing of resources from multiple editors/viewers for a project.
+ * <p>
+ * An additional Notification type is sent out by ProjectResourceSet's of project resource set about to be released. A release is
+ * called when projects are about to be closed. They release all of the resources and unload them. This notification can be used 
+ * to know that this is about to happen and to do something before the resources become invalid. It will be sent out just before the
+ * resource set will be released. 
  * 
+ * @see ProjectResourceSet#SPECIAL_NOTIFICATION_TYPE
+ * @see ProjectResourceSet#PROJECTRESOURCESET_ABOUT_TO_RELEASE_ID 
  * @since 1.0.0
  */
 
 public interface ProjectResourceSet extends ResourceSet {
 
 	IProject getProject();
+	
+	/**
+	 * Notification type in notifications from the ProjectResourceSet for
+	 * special notifications, and not the standard ones from ResourceSet.
+	 * 
+	 * @see org.eclipse.emf.common.notify.Notification#getEventType()
+	 * @since 1.1.0
+	 */
+	static int SPECIAL_NOTIFICATION_TYPE = Notification.EVENT_TYPE_COUNT+4;
+	
+	/**
+	 * Notification Feature ID for resource set about to be released.
+	 * Use {@link org.eclipse.emf.common.notify.Notification#getFeatureID(java.lang.Class)} to
+	 * get this id. The getFeature() on notification will return null.
+	 * 
+	 * @since 1.1.0
+	 */
+	static int PROJECTRESOURCESET_ABOUT_TO_RELEASE_ID = 1000;
 
 	/**
 	 * Call when the ResourceSet is no longer to be used.

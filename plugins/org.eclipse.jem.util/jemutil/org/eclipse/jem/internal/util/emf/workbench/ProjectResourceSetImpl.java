@@ -10,18 +10,16 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.5 $$  $$Date: 2005/02/03 22:47:35 $$ 
+ *  $$Revision: 1.6 $$  $$Date: 2005/02/04 23:12:28 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.notify.impl.NotificationImpl;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -29,9 +27,8 @@ import org.eclipse.emf.ecore.resource.Resource.Factory.Registry;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.resource.impl.URIConverterImpl;
 import org.eclipse.emf.ecore.xmi.XMLResource;
-import org.eclipse.jem.util.emf.workbench.ProjectResourceSet;
-import org.eclipse.jem.util.emf.workbench.ResourceHandler;
-import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
+
+import org.eclipse.jem.util.emf.workbench.*;
 import org.eclipse.jem.util.emf.workbench.nature.EMFNature;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jem.util.plugin.JEMUtilPlugin;
@@ -42,10 +39,8 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements ProjectRe
 	protected List resourceHandlers = new ArrayList();
 	protected ResourceSetWorkbenchSynchronizer synchronizer;
 	protected ProjectResourceSetImpl() {
-		HashMap resourceMap = new HashMap(10);
-		resourceMap.put(XMLResource.OPTION_USE_PARSER_POOL, EMFNature.SHARED_PARSER_POOL);
-		loadOptions = resourceMap;
 		setURIResourceMap(new HashMap(10));	// Tell it to cache uri->resource access.
+		getLoadOptions().put(XMLResource.OPTION_USE_PARSER_POOL, EMFNature.SHARED_PARSER_POOL);
 	}
 	public ProjectResourceSetImpl(IProject aProject) {
 		this();
@@ -117,7 +112,26 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements ProjectRe
 		}
 		return null;
 	}
+	
 	public void release() {
+		// Send out notification of release.
+		if (eNotificationRequired()) {
+			eNotify(new NotificationImpl(SPECIAL_NOTIFICATION_TYPE, null, null, Notification.NO_INDEX, false) {
+				/* (non-Javadoc)
+				 * @see org.eclipse.emf.common.notify.impl.NotificationImpl#getFeatureID(java.lang.Class)
+				 */
+				public int getFeatureID(Class expectedClass) {
+					return PROJECTRESOURCESET_ABOUT_TO_RELEASE_ID;
+				}
+				
+				/* (non-Javadoc)
+				 * @see org.eclipse.emf.common.notify.impl.NotificationImpl#getNotifier()
+				 */
+				public Object getNotifier() {
+					return ProjectResourceSetImpl.this;
+				}
+			});
+		}
 		setIsReleasing(true);
 		if (synchronizer != null)
 			synchronizer.dispose();
