@@ -91,16 +91,22 @@ public class ArtifactEditTest extends TestCase {
 	}
 
 	public boolean createProject() {
+		IPath localZipPath = getLocalPath();
+		ProjectUnzipUtil util = new ProjectUnzipUtil(localZipPath, PROJECT_NAME);
+		return util.createProject();
+	}
+
+	private IPath getLocalPath() {
 		URL url = CommonTestsPlugin.instance.find(zipFilePath);
 		try {
 			url = Platform.asLocalURL(url);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		IPath path = new Path(url.getPath());
-		ProjectUnzipUtil util = new ProjectUnzipUtil(path, PROJECT_NAME);
-		return util.createProject();
+		return new Path(url.getPath());
 	}
+
+
 
 	public ArtifactEditTest() {
 		super();
