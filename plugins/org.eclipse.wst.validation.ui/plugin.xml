@@ -6,7 +6,7 @@
    description="This is only UI plugin for the validation framework. Some of the main UI functions this plugin provides are global validation references page, project validation properties page and manual run validation menu action."
    version="6.0.0"
    provider-name="IBM"
-   class="org.eclipse.wst.validation.internal.operations.ui.plugin.ValidationUIPlugin">
+   class="org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin">
 
    <runtime>
       <library name="runtime/validateui.jar">
@@ -15,7 +15,7 @@
    </runtime>
    <requires>
       <import plugin="org.eclipse.ui.ide"/>
-      <import plugin="org.eclipse.jst.navigator.views"/>
+      <import plugin="org.eclipse.wst.common.navigator.views"/>
       <import plugin="org.eclipse.jface.text"/>
       <import plugin="org.eclipse.ui.workbench.texteditor"/>
       <import plugin="org.eclipse.ui.editors"/>
@@ -30,7 +30,7 @@
       <import plugin="org.eclipse.wst.common.frameworks"/>
       <import plugin="org.eclipse.jdt.core"/>
       <import plugin="org.eclipse.core.runtime.compatibility"/>
-      <import plugin="org.eclipse.jst.navigator.views"/>
+      <import plugin="org.eclipse.wst.common.navigator.views"/>
       <import plugin="org.eclipse.emf.ecore"/>
       <import plugin="com.ibm.wtp.emf.workbench"/>
    </requires>
@@ -48,7 +48,7 @@
             id="ValidationMenuAction">
          <action
                label="%VBF_UI_POPUP_RUNVALIDATION"
-               class="org.eclipse.wst.validation.internal.operations.ui.ValidationMenuAction"
+               class="org.eclipse.wst.validation.internal.ui.ValidationMenuAction"
                menubarPath="additions"
                enablesFor="+"
                id="ValidationAction">
@@ -62,7 +62,7 @@
             id="ValidationMenuAction">
          <action
                label="%VBF_UI_POPUP_RUNVALIDATION"
-               class="org.eclipse.wst.validation.internal.operations.ui.ValidationMenuAction"
+               class="org.eclipse.wst.validation.internal.ui.ValidationMenuAction"
                menubarPath="additions"
                enablesFor="+"
                id="ValidationAction">
@@ -90,7 +90,7 @@
    </extension>
 <!-- Should be handled by Object Contribution 
    <extension
-         point="org.eclipse.jst.navigator.internal.views.navigator.navigatorActions">
+         point="org.eclipse.wst.common.navigator.internal.views.navigator.navigatorActions">
       <navigatorActions
             priority="15"
             id="org.eclipse.wst.validation.core.Actions">
@@ -111,7 +111,7 @@
          point="org.eclipse.ui.preferencePages">
       <page
             name="%VBF_TITLE_PREFERENCE"
-            class="org.eclipse.wst.validation.internal.operations.ui.ValidationPreferencePage"
+            class="org.eclipse.wst.validation.internal.ui.ValidationPreferencePage"
             id="ValidationPreferencePage">
       </page>
    </extension>
@@ -125,7 +125,7 @@
             adaptable="true"
             objectClass="org.eclipse.core.resources.IProject"
             name="%VBF_TITLE_PROPERTIES"
-            class="org.eclipse.wst.validation.internal.operations.ui.ValidationPropertiesPage"
+            class="org.eclipse.wst.validation.internal.ui.ValidationPropertiesPage"
             id="ValidationPropertiesPage">
       </page>
    </extension>
