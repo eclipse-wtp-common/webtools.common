@@ -213,7 +213,7 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 	 * <p>
 	 * Checks to make sure a flexible module structure exist for the resources in the resource set.
 	 * This is achieved by querying ModuleCore(@see ModuleCore) for existing
-	 * WorkbenchModuleResources (@see WorkbenchModuleResources). If the resource exist it process
+	 * WorkbenchModuleResources (@see WorkbenchModuleResources). If the resource exist it processes
 	 * the resource (@link processResource(Resource aResource)). Processing the resource increments
 	 * the read/write count.
 	 * </p>*
