@@ -466,7 +466,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		boolean previouslyAdded = false;
 
 		for (int i = 0; i < builderCommands.length; i++) {
-			if (builderCommands[i].getBuilderName().equals(DEPLOYABLE_MODULE_BUILDER_ID))
+			if (builderCommands[i].getBuilderName().equals(COMPONENT_STRUCTURAL_BUILDER_ID))
 				// builder already added no need to add again
 				previouslyAdded = true;
 			break;
@@ -474,7 +474,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		if (!previouslyAdded) {
 			// builder not found, must be added
 			ICommand command = description.newCommand();
-			command.setBuilderName(DEPLOYABLE_MODULE_BUILDER_ID);
+			command.setBuilderName(COMPONENT_STRUCTURAL_BUILDER_ID);
 			ICommand[] updatedBuilderCommands = new ICommand[builderCommands.length + 1];
 			System.arraycopy(builderCommands, 0, updatedBuilderCommands, 1, builderCommands.length);
 			updatedBuilderCommands[0] = command;

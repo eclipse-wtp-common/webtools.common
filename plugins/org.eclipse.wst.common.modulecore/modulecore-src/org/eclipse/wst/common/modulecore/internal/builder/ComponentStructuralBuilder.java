@@ -34,7 +34,7 @@ public class ComponentStructuralBuilder extends IncrementalProjectBuilder implem
     /**
      * Builder id of this incremental project builder.
      */
-    public static final String BUILDER_ID = DEPLOYABLE_MODULE_BUILDER_ID;
+    public static final String BUILDER_ID = COMPONENT_STRUCTURAL_BUILDER_ID;
 
     /**
      *  
