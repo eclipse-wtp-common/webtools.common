@@ -33,5 +33,12 @@
             suiteName="WTP Operation API Tests">
          </suite>
    </extension>
+   <extension
+         point="org.eclipse.wst.common.tests.collector.suites">
+         <suite
+            suiteClass="org.eclipse.wst.common.frameworks.datamodel.tests.DataModelAPITests"
+            suiteName="IDataModel API Tests">
+         </suite>
+   </extension>
 
 </plugin>
