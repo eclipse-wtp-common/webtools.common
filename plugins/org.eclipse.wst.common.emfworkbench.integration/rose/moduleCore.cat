@@ -99,7 +99,8 @@
 		(object ClassAttribute "exclusions"
 		    quid       	"41E3DF9E011E"
 		    stereotype 	"0..*"
-		    type       	"String"
+		    type       	"URI"
+		    quidu      	"41EC26DA027A"
 		    exportControl 	"Public")))
 	(object Class "WorkbenchApplication"
 	    quid       	"41E3E40B0272")
@@ -264,23 +265,6 @@
 		    line_color 	3342489
 		    fill_color 	13434879
 		    quidu      	"41E3DF4E0318"
-		    compartment 	(object Compartment
-			Parent_View 	@1
-			location   	(2161, 355)
-			font       	(object Font
-			    size       	10
-			    face       	"Arial"
-			    bold       	FALSE
-			    italics    	FALSE
-			    underline  	FALSE
-			    strike     	FALSE
-			    color      	0
-			    default_color 	TRUE)
-			icon_style 	"Icon"
-			fill_color 	16777215
-			anchor     	2
-			nlines     	3
-			max_width  	421)
 		    width      	432
 		    height     	236
 		    annotation 	8
@@ -311,23 +295,6 @@
 		    line_color 	3342489
 		    fill_color 	13434879
 		    quidu      	"41E3DF3D00D9"
-		    compartment 	(object Compartment
-			Parent_View 	@2
-			location   	(1049, 364)
-			font       	(object Font
-			    size       	10
-			    face       	"Arial"
-			    bold       	FALSE
-			    italics    	FALSE
-			    underline  	FALSE
-			    strike     	FALSE
-			    color      	0
-			    default_color 	TRUE)
-			icon_style 	"Icon"
-			fill_color 	13434879
-			anchor     	2
-			nlines     	2
-			max_width  	222)
 		    width      	416
 		    height     	186
 		    annotation 	8
@@ -387,7 +354,7 @@
 			    supplier   	@1
 			    vertices   	(list Points
 				(1803, 391)
-				(2151, 396))
+				(2151, 395))
 			    line_style 	0
 			    label      	(object SegLabel @6
 				Parent_View 	@4
@@ -464,7 +431,7 @@
 			fill_color 	13434879
 			anchor     	2
 			nlines     	2
-			max_width  	272)
+			max_width  	281)
 		    width      	322
 		    height     	186
 		    annotation 	8
@@ -653,7 +620,7 @@
 			    supplier   	@8
 			    vertices   	(list Points
 				(638, 535)
-				(814, 623))
+				(814, 622))
 			    line_style 	0
 			    label      	(object SegLabel @18
 				Parent_View 	@16
@@ -716,7 +683,7 @@
 			    supplier   	@9
 			    vertices   	(list Points
 				(638, 535)
-				(463, 447))
+				(465, 447))
 			    line_style 	0)))
 		(object ClassView "Class" "Logical View::moduleCore::ModuleResource" @21
 		    ShowCompartmentStereotypes 	TRUE
@@ -734,10 +701,10 @@
 			default_color 	TRUE)
 		    label      	(object ItemLabel
 			Parent_View 	@21
-			location   	(229, 1277)
+			location   	(249, 1277)
 			fill_color 	13434879
 			nlines     	1
-			max_width  	566
+			max_width  	526
 			justify    	0
 			label      	"ModuleResource")
 		    icon_style 	"Icon"
@@ -746,7 +713,7 @@
 		    quidu      	"41E3DF670039"
 		    compartment 	(object Compartment
 			Parent_View 	@21
-			location   	(229, 1338)
+			location   	(249, 1338)
 			font       	(object Font
 			    size       	10
 			    face       	"Arial"
@@ -760,8 +727,8 @@
 			fill_color 	13434879
 			anchor     	2
 			nlines     	4
-			max_width  	563)
-		    width      	584
+			max_width  	522)
+		    width      	544
 		    height     	286
 		    annotation 	8
 		    autoResize 	TRUE)
@@ -807,7 +774,7 @@
 			fill_color 	13434879
 			anchor     	2
 			nlines     	4
-			max_width  	691)
+			max_width  	700)
 		    width      	712
 		    height     	286
 		    annotation 	8
@@ -1109,7 +1076,7 @@
 			    supplier   	@23
 			    vertices   	(list Points
 				(944, 1074)
-				(582, 987))
+				(582, 985))
 			    line_style 	0)))
 		(object ClassView "Class" "Logical View::moduleCore::URI" @38
 		    ShowCompartmentStereotypes 	TRUE
@@ -1162,7 +1129,7 @@
 			fill_color 	13434879
 			anchor     	2
 			nlines     	2
-			max_width  	916)
+			max_width  	925)
 		    width      	938
 		    height     	242
 		    annotation 	8

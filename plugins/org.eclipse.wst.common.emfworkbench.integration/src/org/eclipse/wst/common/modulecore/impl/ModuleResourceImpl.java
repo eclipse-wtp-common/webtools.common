@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleResourceImpl.java,v 1.1 2005/01/17 21:08:18 cbridgha Exp $
+ * $Id: ModuleResourceImpl.java,v 1.2 2005/01/17 21:33:28 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore.impl;
 
@@ -157,7 +157,7 @@ public class ModuleResourceImpl extends EObjectImpl implements ModuleResource {
 	 */
 	public EList getExclusions() {
 		if (exclusions == null) {
-			exclusions = new EDataTypeUniqueEList(String.class, this, ModuleCorePackage.MODULE_RESOURCE__EXCLUSIONS);
+			exclusions = new EDataTypeUniqueEList(URI.class, this, ModuleCorePackage.MODULE_RESOURCE__EXCLUSIONS);
 		}
 		return exclusions;
 	}

@@ -28,7 +28,7 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="path" eType="#//URI"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="root" eType="#//URI"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="exclusions" upperBound="-1"
-        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+        eType="#//URI"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="WorkbenchApplication">
     <eStructuralFeatures xsi:type="ecore:EReference" name="modules" upperBound="-1"

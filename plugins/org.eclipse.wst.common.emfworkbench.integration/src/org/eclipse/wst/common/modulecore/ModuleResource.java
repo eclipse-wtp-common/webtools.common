@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ModuleResource.java,v 1.1 2005/01/17 21:08:17 cbridgha Exp $
+ * $Id: ModuleResource.java,v 1.2 2005/01/17 21:33:28 cbridgha Exp $
  */
 package org.eclipse.wst.common.modulecore;
 
@@ -29,7 +29,7 @@ import org.eclipse.emf.ecore.EObject;
  * @model 
  * @generated
  */
-public interface ModuleResource extends EObject {
+public interface ModuleResource extends EObject{
 	/**
 	 * Returns the value of the '<em><b>Path</b></em>' attribute.
 	 * <!-- begin-user-doc -->
@@ -84,7 +84,7 @@ public interface ModuleResource extends EObject {
 
 	/**
 	 * Returns the value of the '<em><b>Exclusions</b></em>' attribute list.
-	 * The list contents are of type {@link java.lang.String}.
+	 * The list contents are of type {@link org.eclipse.emf.common.util.URI}.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Exclusions</em>' attribute list isn't clear,
@@ -93,7 +93,7 @@ public interface ModuleResource extends EObject {
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Exclusions</em>' attribute list.
 	 * @see org.eclipse.wst.common.modulecore.ModuleCorePackage#getModuleResource_Exclusions()
-	 * @model type="java.lang.String"
+	 * @model type="org.eclipse.emf.common.util.URI" dataType="org.eclipse.wst.common.modulecore.URI"
 	 * @generated
 	 */
 	EList getExclusions();
