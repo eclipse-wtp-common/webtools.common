@@ -42,14 +42,6 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
      * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#getDefaultProperty(java.lang.String)
      */
     protected Object getDefaultProperty(String propertyName) {
-        if(propertyName.equals(OUTPUT_CONTAINER)){
-            if(isSet(WORKBENCH_MODULE))
-                return populateOutputContainer();
-        }
-        else if(propertyName.equals(DEPENDENT_MODULES_DM_LIST)){
-            if(isSet(WORKBENCH_MODULE))
-                return populateDependentModulesDM();
-        }
         return super.getDefaultProperty(propertyName);
     }
     /* (non-Javadoc)
@@ -58,8 +50,8 @@ public abstract class DeployableModuleBuilderDataModel extends WTPOperationDataM
     protected boolean doSetProperty(String propertyName, Object propertyValue) {
         boolean status = super.doSetProperty(propertyName, propertyValue);
         if(propertyName.equals(WORKBENCH_MODULE)) {
-            notifyDefaultChange(OUTPUT_CONTAINER);
-            notifyDefaultChange(DEPENDENT_MODULES_DM_LIST);
+        	setProperty(OUTPUT_CONTAINER, populateOutputContainer());
+        	setProperty(DEPENDENT_MODULES_DM_LIST, populateDependentModulesDM());
         }
         return status;
     }
