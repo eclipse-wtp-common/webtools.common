@@ -8,7 +8,7 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.validation.internal.plugin;
+package org.eclipse.wst.validation.internal;
 
 import com.ibm.wtp.common.logger.LogEntry;
 

@@ -13,7 +13,7 @@ package org.eclipse.wst.validation.internal;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.QualifiedName;
-import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.plugin.ValidationPlugin;
 
 
 /**
@@ -27,7 +27,8 @@ public interface ConfigurationConstants {
 	/* package */static final String BUILD_SETTING = "runWhenBuild"; //$NON-NLS-1$ // boolean
 
 	// Defaults for the preference and project values
-	/* package */static String CURRENT_VERSION = ValidationPlugin.getPlugin().getDescriptor().getVersionIdentifier().toString().intern(); //$NON-NLS-1$ // this is a constant, so it should be intern
+	
+	/* package */static String CURRENT_VERSION = (String) ValidationPlugin.getPlugin().getBundle().getHeaders().get(org.osgi.framework.Constants.BUNDLE_VERSION); //$NON-NLS-1$ // this is a constant, so it should be intern
 	/* package */static final boolean DEFAULT_ASYNC = false;
 	/* package */static final boolean DEFAULT_AUTO_SETTING = true;
 	/* package */static final boolean DEFAULT_BUILD_SETTING = true;

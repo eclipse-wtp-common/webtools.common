@@ -8,7 +8,13 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.validation.core;
+package org.eclispe.wst.validation.internal.core;
+
+import org.eclipse.wst.validation.core.IFileDelta;
+import org.eclipse.wst.validation.core.IHelper;
+import org.eclipse.wst.validation.core.IReporter;
+import org.eclipse.wst.validation.core.IValidator;
+import org.eclipse.wst.validation.core.ValidationException;
 
 
 
@@ -17,9 +23,6 @@ package org.eclipse.wst.validation.core;
  * This singleton launches the validation on a single validator. Clients should call this class's
  * <code>start</code> method to begin the validation.
  * </p>
- * 
- *  [issue: CS - this class doesn't seem to buy the client very much. Is this really useful API?
- *  Why isn't this simply an implementation detail of the validation framework?] 
  */
 public class ValidatorLauncher {
 	private static ValidatorLauncher _launcher = null;

@@ -32,25 +32,25 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.wst.common.frameworks.operations.IHeadlessRunnableWithProgress;
 import org.eclipse.wst.validation.core.IFileDelta;
+import org.eclipse.wst.validation.core.IMessage;
 import org.eclipse.wst.validation.core.IReporter;
 import org.eclipse.wst.validation.core.IValidator;
-import org.eclipse.wst.validation.core.Message;
-import org.eclipse.wst.validation.core.MessageLimitException;
-import org.eclipse.wst.validation.core.SeverityEnum;
 import org.eclipse.wst.validation.core.ValidationException;
-import org.eclipse.wst.validation.core.ValidatorLauncher;
 import org.eclipse.wst.validation.internal.FilterUtil;
 import org.eclipse.wst.validation.internal.InternalValidatorManager;
 import org.eclipse.wst.validation.internal.ReferencialFileValidatorRegistryReader;
 import org.eclipse.wst.validation.internal.RegistryConstants;
 import org.eclipse.wst.validation.internal.ResourceConstants;
 import org.eclipse.wst.validation.internal.ResourceHandler;
+import org.eclipse.wst.validation.internal.TimeEntry;
 import org.eclipse.wst.validation.internal.VThreadManager;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
-import org.eclipse.wst.validation.internal.plugin.TimeEntry;
-import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.plugin.ValidationPlugin;
 import org.eclispe.wst.validation.internal.core.FileDelta;
+import org.eclispe.wst.validation.internal.core.Message;
+import org.eclispe.wst.validation.internal.core.MessageLimitException;
+import org.eclispe.wst.validation.internal.core.ValidatorLauncher;
 
 import com.ibm.wtp.common.logger.LogEntry;
 import com.ibm.wtp.common.logger.proxy.Logger;
@@ -353,7 +353,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		}
 		String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 		Message message = ValidationPlugin.getMessage();
-		message.setSeverity(SeverityEnum.NORMAL_SEVERITY);
+		message.setSeverity(IMessage.NORMAL_SEVERITY);
 		message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 		message.setParams(msgParm);
 		try {
@@ -458,7 +458,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		}
 		String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 		Message message = ValidationPlugin.getMessage();
-		message.setSeverity(SeverityEnum.NORMAL_SEVERITY);
+		message.setSeverity(IMessage.NORMAL_SEVERITY);
 		message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 		message.setParams(msgParm);
 		try {
@@ -959,7 +959,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 					reporter.displaySubtask(mssg);
 					String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 					Message message = ValidationPlugin.getMessage();
-					message.setSeverity(SeverityEnum.NORMAL_SEVERITY);
+					message.setSeverity(IMessage.NORMAL_SEVERITY);
 					message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 					message.setParams(msgParm);
 					reporter.addMessage(validator, message);
@@ -1096,7 +1096,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			reporter.displaySubtask(mssg);
 			String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 			Message message = ValidationPlugin.getMessage();
-			message.setSeverity(SeverityEnum.NORMAL_SEVERITY);
+			message.setSeverity(IMessage.NORMAL_SEVERITY);
 			message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 			message.setParams(msgParm);
 			reporter.addMessage(validator, message);
@@ -1190,7 +1190,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			reporter.displaySubtask(mssg);
 			String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 			Message message = ValidationPlugin.getMessage();
-			message.setSeverity(SeverityEnum.NORMAL_SEVERITY);
+			message.setSeverity(IMessage.NORMAL_SEVERITY);
 			message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 			message.setParams(msgParm);
 			reporter.addMessage(validator, message);
@@ -1353,7 +1353,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			reporter.displaySubtask(mssg);
 			String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 			Message message = ValidationPlugin.getMessage();
-			message.setSeverity(SeverityEnum.NORMAL_SEVERITY);
+			message.setSeverity(IMessage.NORMAL_SEVERITY);
 			message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 			message.setParams(msgParm);
 			reporter.addMessage(validator, message);
@@ -1378,7 +1378,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				}
 				String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 				Message message = ValidationPlugin.getMessage();
-				message.setSeverity(SeverityEnum.NORMAL_SEVERITY);
+				message.setSeverity(IMessage.NORMAL_SEVERITY);
 				message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 				message.setParams(msgParm);
 				try {
@@ -1408,7 +1408,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				}
 				String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 				Message message = ValidationPlugin.getMessage();
-				message.setSeverity(SeverityEnum.NORMAL_SEVERITY);
+				message.setSeverity(IMessage.NORMAL_SEVERITY);
 				message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 				message.setParams(msgParm);
 				try {

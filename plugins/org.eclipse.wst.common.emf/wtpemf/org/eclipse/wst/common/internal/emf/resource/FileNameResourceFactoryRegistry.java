@@ -14,7 +14,7 @@ import java.util.List;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.Resource.Factory;
-import org.eclipse.wst.common.emf.utilities.DefaultOverridableResourceFactoryRegistry;
+import org.eclipse.wst.common.internal.emf.utilities.DefaultOverridableResourceFactoryRegistry;
 
 
 public abstract class FileNameResourceFactoryRegistry extends DefaultOverridableResourceFactoryRegistry {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2004 IBM Corporation and others.
+ * Copyright (c) 2003, 2004 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,14 +8,28 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.validation.core;
+/*
+ * Created on May 12, 2003
+ *
+ */
+package org.eclipse.wst.common.internal.emf.utilities;
 
 /**
- * This exception is thrown by
- * 
- * @see IReporter#addMessage(IValidator, IMessage) method if no more messages can be reported
- *      because the maximum number of messages has been reported.
+ * Exception thrown when a proxy can not be resolved
  */
-public class MessageLimitException extends RuntimeException {
-	private final static long serialVersionUID = -7034897190745766940L;
+public class DanglingHREFException extends Exception {
+
+
+	public DanglingHREFException() {
+		super();
+	}
+
+	/**
+	 * @param s
+	 */
+	public DanglingHREFException(String s) {
+		super(s);
+	}
+
+
 }

@@ -39,13 +39,6 @@ import java.util.Locale;
  *   - setBundleName(String)
  *   - setParams(String[])
  * ]
- * [issue: CS - I'd propose the addition of get/set attributes methods.  These methods would be
- * very useful to us in order to 'stash away' private specialized stated into a message.  For example,
- * in some contexts we'd like to associate specialized Marker or UI related information to make it easy to
- * compute accurate 'red squiggle' location or 'quick fix' information.  I would be convenient to be able to support
- * this without having to downcast to some specialized interface (and avoid tight coupling between validator impl and UI)
- * These methods would improve fidelity of IMessage to Marker conversions where some attributes could be passed thru to the
- * marker (perhaps these attribute names could be listed in the IValidator's extension point in the plugin.xml).
  * 
  *   - void setAttribute(String attributeName, Object value)
  *   - Object getAttribute(String attributeName);
@@ -54,6 +47,27 @@ import java.util.Locale;
 public interface IMessage {
 	public static final int OFFSET_UNSET = -1; // see getLength(), getOffset()
 	public static final int LINENO_UNSET = 0;
+	/**
+	 * Typically used to specify error messages.
+	 */
+	public static final int HIGH_SEVERITY = 0x0001;
+	/**
+	 * Typically used to specify warning messages.
+	 */
+	public static final int NORMAL_SEVERITY = 0x0002;
+	/**
+	 * Typically used to specify information messages.
+	 */
+	public static final int LOW_SEVERITY = 0x0004;
+	/**
+	 * Specify high (error) and normal (warning) messages. Typically used with a MessageFilter, to
+	 * filter out information messages.
+	 */
+	public static final int ERROR_AND_WARNING = HIGH_SEVERITY | NORMAL_SEVERITY;
+	/**
+	 * Specify all types of messages. Typically used with a MessageFilter.
+	 */
+	public static final int ALL_MESSAGES = ERROR_AND_WARNING | LOW_SEVERITY;
 
 	/**
 	 * @return the name of the bundle which this message is contained in.
@@ -98,9 +112,8 @@ public interface IMessage {
 	 * </p>
 	 * @return line number of the location of the problem.
 	 * 
-	 * [issue: CS - I'd propose naming this method 'getLineNumber' (see IMarker)]
 	 */
-	public int getLineNo();
+	public int getLineNumber();
 
 	/**
 	 * <p>
@@ -128,9 +141,9 @@ public interface IMessage {
 	 * <p>
 	 * Returns the severity level of the message. One of SeverityEnum constants.
 	 * 
-	 * @see SeverityEnum#HIGH_SEVERITY
-	 * @see SeverityEnum#NORMAL_SEVERITY
-	 * @see SeverityEnum#LOW_SEVERITY
+	 * @see IMessage#HIGH_SEVERITY
+	 * @see IMessage#NORMAL_SEVERITY
+	 * @see IMessage#LOW_SEVERITY
 	 * </p>
 	 * 
 	 * @return the severity level of the message
@@ -182,6 +195,25 @@ public interface IMessage {
 	 * bundle loaded by the specified ClassLoader.
 	 */
 	public java.lang.String getText(Locale locale, ClassLoader classLoader);
+	
+	/**
+	 * Provides a way to store some additional attributes that a message would like to store
+	 * that can used by some other parties that are interested in those attribute values. Basically
+	 * a convienince to pass object values around that can consumed by other Objects it they need it
+	 * @param attributeName
+	 * @return an Object basically the value associated with the object name.
+	 */
+	
+	public Object getAttribute(String attributeName);
+	
+	/**
+	 * Set the attributeName and value as key value pair
+	 * @see getAttribute(String attributeName).
+	 * @param attributeName
+	 */
+	
+	void setAttribute(String attributeName, Object value);
+	   
 
 	/**
 	 * Set the name of the bundle which this message is contained in.
@@ -272,9 +304,9 @@ public interface IMessage {
 	/**
 	 * Sets the severity level of the message. One of SeverityEnum constants.
 	 * 
-	 * @see SeverityEnum#HIGH_SEVERITY
-	 * @see SeverityEnum#NORMAL_SEVERITY
-	 * @see SeverityEnum#LOW_SEVERITY
+	 * @see IMessage#HIGH_SEVERITY
+	 * @see IMessage#NORMAL_SEVERITY
+	 * @see IMessage#LOW_SEVERITY
 	 * 
 	 * @param newSeverity
 	 *            severity level of the message

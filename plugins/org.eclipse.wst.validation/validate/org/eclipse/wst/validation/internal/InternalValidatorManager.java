@@ -23,10 +23,10 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.wst.validation.core.Message;
-import org.eclipse.wst.validation.core.SeverityEnum;
+import org.eclipse.wst.validation.core.IMessage;
 import org.eclipse.wst.validation.internal.operations.WorkbenchReporter;
-import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.plugin.ValidationPlugin;
+import org.eclispe.wst.validation.internal.core.Message;
 
 import com.ibm.wtp.common.logger.LogEntry;
 import com.ibm.wtp.common.logger.proxy.Logger;
@@ -90,7 +90,7 @@ public final class InternalValidatorManager {
 	 */
 	public void addOperationTask(IProject project, ValidatorMetaData vmd, String messageId, String[] parms) {
 		Message message = ValidationPlugin.getMessage();
-		message.setSeverity(SeverityEnum.LOW_SEVERITY);
+		message.setSeverity(IMessage.LOW_SEVERITY);
 		message.setId(messageId);
 		message.setParams(parms);
 		message.setGroupName(OP_GROUP);

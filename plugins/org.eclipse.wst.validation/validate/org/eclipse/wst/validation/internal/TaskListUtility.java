@@ -20,8 +20,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.validation.core.IMessage;
-import org.eclipse.wst.validation.core.SeverityEnum;
-import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.plugin.ValidationPlugin;
 
 import com.ibm.wtp.common.logger.LogEntry;
 import com.ibm.wtp.common.logger.proxy.Logger;
@@ -229,20 +228,20 @@ public class TaskListUtility implements ConfigurationConstants {
 	 */
 	private static int getSeverity(int severityEnumValue) {
 		switch (severityEnumValue) {
-			case (SeverityEnum.HIGH_SEVERITY) : {
+			case (IMessage.HIGH_SEVERITY) : {
 				return IMarker.SEVERITY_ERROR;
 			}
 
-			case (SeverityEnum.LOW_SEVERITY) : {
+			case (IMessage.LOW_SEVERITY) : {
 				return IMarker.SEVERITY_INFO;
 			}
 
-			case (SeverityEnum.NORMAL_SEVERITY) : {
+			case (IMessage.NORMAL_SEVERITY) : {
 				return IMarker.SEVERITY_WARNING;
 			}
 
-			case (SeverityEnum.ALL_MESSAGES) :
-			case (SeverityEnum.ERROR_AND_WARNING) :
+			case (IMessage.ALL_MESSAGES) :
+			case (IMessage.ERROR_AND_WARNING) :
 			default : {
 				// assume it's a warning.
 				return IMarker.SEVERITY_WARNING;
@@ -389,7 +388,7 @@ public class TaskListUtility implements ConfigurationConstants {
 	}
 
 	private static IMarker[] getValidationTasks(IResource resource, String[] messageOwners, int depth) {
-		IMarker[] markers = getValidationTasks(resource, SeverityEnum.ALL_MESSAGES, depth);
+		IMarker[] markers = getValidationTasks(resource, IMessage.ALL_MESSAGES, depth);
 		if (markers.length == 0) {
 			return NO_MARKERS;
 		}
@@ -487,7 +486,7 @@ public class TaskListUtility implements ConfigurationConstants {
 		}
 
 		try {
-			IMarker[] markers = getValidationTasks(resource, SeverityEnum.ALL_MESSAGES);
+			IMarker[] markers = getValidationTasks(resource, IMessage.ALL_MESSAGES);
 			ResourcesPlugin.getWorkspace().deleteMarkers(markers);
 		} catch (CoreException exc) {
 			// Couldn't remove the task from the task list for some reason...

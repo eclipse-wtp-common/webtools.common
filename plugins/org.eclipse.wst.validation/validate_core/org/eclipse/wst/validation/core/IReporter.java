@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.core;
 
+import org.eclispe.wst.validation.internal.core.MessageLimitException;
+
 
 
 /*
@@ -33,7 +35,7 @@ package org.eclipse.wst.validation.core;
  * IReporter provide access to all messages ... or just the ones created by the associated validator? 
  * ] 
  */
-public interface IReporter extends SeverityEnum {
+public interface IReporter  {
 	/**
 	 * <p>
 	 * Add a locale-independent validation message. It will be displayed later, with all of the
@@ -62,7 +64,9 @@ public interface IReporter extends SeverityEnum {
 	 * <p>
 	 * Show a text representation of this message, formatted in the default Locale, to the user
 	 * immediately. This message indicates which subtask is currently being processed. The message
-	 * is not stored. 
+	 * is not stored. The subtask message in this context is the subtask in a IProgressMontior 
+	 * 
+	 * @see subTask(String name) in IProgressMonitor
 	 * </p>
 	 * <p>
 	 * Both parameters must not be null. 
@@ -72,8 +76,7 @@ public interface IReporter extends SeverityEnum {
 	 *            validator The validator issuing the subtask message.
 	 * @param IMessage
 	 *            message The message to be displayed to the user.
-	 *            
-	 * [issue : CS - I don't understand this one.  Perhaps an example would help?]           
+	 *                       
 	 */
 	public abstract void displaySubtask(IValidator validator, IMessage message);
 
@@ -94,9 +97,7 @@ public interface IReporter extends SeverityEnum {
 	 * </p>
 	 * 
 	 * @return true if the user cancelled validation, and false otherwise.
-	 * 
-	 * [issue : CS - this seems like it should be a method on the IValidator and not the IReporter.
-	 *  seems a bit strange that the reporter would be controlling the execution of validator.]    
+	 *  
 	 */
 	public abstract boolean isCancelled();
 

@@ -37,7 +37,6 @@ public class ReferencialFileValidatorHelper {
 	 */
 	public ReferencialFileValidatorHelper() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	/**

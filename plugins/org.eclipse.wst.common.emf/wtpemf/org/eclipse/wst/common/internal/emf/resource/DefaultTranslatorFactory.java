@@ -20,8 +20,8 @@ import java.util.List;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.wst.common.emf.utilities.NamespaceAdapter;
 import org.eclipse.wst.common.internal.emf.utilities.Namespace;
+import org.eclipse.wst.common.internal.emf.utilities.NamespaceAdapter;
 
 
 /**
