@@ -74,14 +74,30 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 		return this.id;
 	}
 
+	/**
+	 * Note: This method is for internal use only. Clients should not call this method.
+	 * 
+	 * @param operationDataModel
+	 */
 	public final void setOperationDataModel(WTPOperationDataModel operationDataModel) {
 		this.operationDataModel = operationDataModel;
 	}
 
+	/**
+	 * Returns the dataModels used by this operation.
+	 * 
+	 * @return the dataModels used by this operation.
+	 */
 	public final WTPOperationDataModel getOperationDataModel() {
 		return operationDataModel;
 	}
 
+	/**
+	 * Returns the result status of this operation. If this operation net been executed, then it
+	 * will return null.
+	 * 
+	 * @return he result status of this operation.
+	 */
 	public IStatus getStatus() {
 		if (null == opStatus)
 			return WTPCommonPlugin.OK_STATUS;
@@ -240,11 +256,20 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 		return true;
 	}
 
+	//TODO lock down addStatus so it throws runtime exceptions if not called during execute.
+	//TODO make this protected and create a package level accessor for WTPOperationJobAdapter
 	/**
-	 * This is to track the status of the main flow of operations (extended operation stati are
-	 * added through addExtendedStatus) execute() should call this method as necessary.
+	 * <p>
+	 * Adds a status to this opererations status. If this operation currently has no status, then
+	 * the specified status becomes the operation's status. If the operation already has a status,
+	 * then that status is converted to a multistatus and the specified status is appendend to it.
+	 * </p>
+	 * <p>
+	 * This method should only be called from the execute() method of subclasses.
+	 * </p>
 	 * 
 	 * @param aStatus
+	 *            the status to add.
 	 */
 	public final void addStatus(IStatus aStatus) {
 		if (opStatus == null) {
