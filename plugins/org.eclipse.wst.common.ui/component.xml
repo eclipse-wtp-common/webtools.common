@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component xmlns="http://eclipse.org/wtp/releng/tools/component-model"
-	name="wst.common">
+	name="org.eclipse.wst.common">
 	<component-depends unrestricted="true"></component-depends>
 	<plugin id="org.eclipse.wst.common.ui" fragment="false" />
 	<plugin id="org.eclipse.wst.common.ui.properties" fragment="false" />
