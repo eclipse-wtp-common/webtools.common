@@ -21,6 +21,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.modulecore.ModuleCore;
 import org.eclipse.wst.common.modulecore.UnresolveableURIException;
 import org.eclipse.wst.common.modulecore.ComponentResource;
+import org.eclipse.wst.common.modulecore.WorkbenchComponent;
 
 
 /**
@@ -58,8 +59,8 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
 // 			
 //			for (int resourceIndex = 0; resourceIndex < resources.length; resourceIndex++) {
 			if(resources.length == 1) {
-				if (resources[0].getRuntimePath().equals(aModuleResourceDeployPath))
-					return URI.createPlatformResourceURI(resources[0].getSourcePath().toString());
+				if (resources[0].getRuntimePath().equals(deployPathSegment))
+					return URI.createPlatformResourceURI(normalizeToWorkspaceRelative(resources[0].getSourcePath(),aModuleResourceDeployPath).toString());
 				return URI.createPlatformResourceURI(resources[0].getSourcePath().appendSegments(deployPathSegment.segments()).toString());
 			}
 //
@@ -82,6 +83,13 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
 				moduleCore.dispose();
 		}
 		return resolvedURI;
+	}
+
+	private static URI normalizeToWorkspaceRelative(URI sourcePath, URI moduleResourceDeployPath) throws UnresolveableURIException {
+		
+		String projectName = ModuleURIUtil.trimModuleResourcePathToModuleURI(moduleResourceDeployPath).trimSegments(1).lastSegment();
+		
+		return URI.createURI(projectName + '/' + sourcePath.toString());
 	}
 
 	/*

@@ -75,7 +75,9 @@ public class ModuleCoreURIConverter extends CompatibilityWorkbenchURIConverterIm
 		if(PlatformURLModuleConnection.MODULE.equals(aURI.scheme())) { 		
 			try {
 				normalizedURI = PlatformURLModuleConnection.resolve(aURI);
-			} catch(IOException ioe) {} 
+			} catch(IOException ioe) {
+				ioe.printStackTrace();
+			} 
 		} else {
 			normalizedURI = super.normalize(aURI);
 		}
