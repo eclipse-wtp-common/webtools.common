@@ -31,6 +31,12 @@ public abstract class ArtifactEditOperationDataModel extends WTPOperationDataMod
 	 */
 	public static final String MODULE_NAME = "ArtifactEditOperationDataModel.MODULE_NAME"; //$NON-NLS-1$
 	/**
+	 * Required
+	 */	
+	
+	public static final String MODULE_DEPLOY_NAME = "ArtifactEditOperationDataModel.MODULE_DEPLOY_NAME"; //$NON-NLS-1$
+	
+	/**
 	 * Optional, should save with prompt...defaults to false
 	 */
 	public static final String PROMPT_ON_SAVE = "ArtifactEditOperationDataModel.PROMPT_ON_SAVE"; //$NON-NLS-1$
@@ -39,6 +45,7 @@ public abstract class ArtifactEditOperationDataModel extends WTPOperationDataMod
 		super.initValidBaseProperties();
 		addValidBaseProperty(PROJECT_NAME);
 		addValidBaseProperty(MODULE_NAME);
+		addValidBaseProperty(MODULE_DEPLOY_NAME);
 		addValidBaseProperty(PROMPT_ON_SAVE);
 	}
 
