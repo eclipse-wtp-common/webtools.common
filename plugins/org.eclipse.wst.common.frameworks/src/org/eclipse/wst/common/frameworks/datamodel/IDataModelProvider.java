@@ -41,7 +41,17 @@ public interface IDataModelProvider {
 
 	public boolean isPropertyEnabled(String propertyName);
 
-	public IStatus validateProperty(String propertyName);
+	/**
+	 * IDataModelProviders should perform property validation here. All calls to
+	 * IDataModel.validateProperty(String) are routed to the appropriate IDatModelProvider. When
+	 * IDataModel.validate() or IDataModel.validate(boolean) are called to validate the entire
+	 * IDataModel, any nested model names are also passed through to the IDataModelProvider for a
+	 * chance to validate the nested IDataModel in an appropriate manner.
+	 * 
+	 * @param propertyName
+	 * @return
+	 */
+	public IStatus validate(String name);
 
 	public boolean setProperty(String propertyName, Object propertyValue);
 

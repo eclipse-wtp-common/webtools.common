@@ -231,6 +231,10 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		return nestedModels != null ? Collections.unmodifiableCollection(nestedModels.values()) : Collections.EMPTY_SET;
 	}
 
+	public Collection getNestedModelNames() {
+		return nestedModels != null ? Collections.unmodifiableCollection(nestedModels.keySet()) : Collections.EMPTY_SET;
+	}
+
 	public Collection getNestingModels() {
 		return nestingModels != null ? Collections.unmodifiableCollection(nestingModels) : Collections.EMPTY_SET;
 	}
@@ -345,13 +349,21 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 
 	public IStatus validate(boolean stopOnFirstFailure) {
 		IStatus status = null;
-		if (basePropertyNames != null && !basePropertyNames.isEmpty()) {
-			IStatus propStatus;
-			String propName;
-			Iterator it = basePropertyNames.iterator();
+		IStatus propStatus;
+		String propName;
+		Iterator it;
+		for (int i = 0; i < 2; i++) {
+			switch (i) {
+				case 0 :
+					it = basePropertyNames.iterator();
+					break;
+				case 1 :
+				default :
+					it = getNestedModelNames().iterator();
+			}
 			while (it.hasNext()) {
 				propName = (String) it.next();
-				propStatus = validateProperty(propName);
+				propStatus = provider.validate(propName);
 				if (status == null || status.isOK())
 					status = propStatus;
 				else {
@@ -368,6 +380,7 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 					return status;
 			}
 		}
+
 		if (status == null)
 			return IDataModelProvider.OK_STATUS;
 		return status;
@@ -403,7 +416,7 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 
 	public IStatus validateProperty(String propertyName) {
 		DataModelImpl dataModel = getOwningDataModel(propertyName);
-		IStatus status = dataModel.provider.validateProperty(propertyName);
+		IStatus status = dataModel.provider.validate(propertyName);
 		return status == null ? IDataModelProvider.OK_STATUS : status;
 	}
 

@@ -331,6 +331,13 @@ public interface IDataModel {
 	public Collection getNestedModels();
 
 	/**
+	 * Returns a Collection of all nested IDataModels names, or an empty Collection if none exist.
+	 * 
+	 * @return a Collection of all nested IDataModels names, or an empty Collection if none exist.
+	 */
+	public Collection getNestedModelNames();
+
+	/**
 	 * Returns a Collection of all nesting (the inverse of nested) IDataModels, or an empty
 	 * Collection if none exist.
 	 * 
@@ -447,7 +454,7 @@ public interface IDataModel {
 	 * An IDataModel implementor defines this in IDataModelProvider.
 	 * </p>
 	 * 
-	 * @see IDataModelProvider#validateProperty(String)
+	 * @see IDataModelProvider#validate(String)
 	 */
 	public IStatus validateProperty(String propertyName);
 
@@ -464,7 +471,7 @@ public interface IDataModel {
 
 	/**
 	 * <p>
-	 * Iterates over all base properties 
+	 * Iterates over all base properties
 	 * 
 	 * @return
 	 */
