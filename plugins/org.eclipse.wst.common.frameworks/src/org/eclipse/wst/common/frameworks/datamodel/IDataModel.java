@@ -202,7 +202,7 @@ public interface IDataModel {
 	 * An IDataModel implementor may define additional post set logic in IDataModelProvider.
 	 * </p>
 	 * 
-	 * @see IDataModelProvider#setProperty(String, Object)
+	 * @see IDataModelProvider#propertySet(String, Object)
 	 * @param propertyName
 	 * @param propertyValue
 	 * 

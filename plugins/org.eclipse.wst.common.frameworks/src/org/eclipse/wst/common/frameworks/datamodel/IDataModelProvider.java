@@ -53,7 +53,20 @@ public interface IDataModelProvider {
 	 */
 	public IStatus validate(String name);
 
-	public boolean setProperty(String propertyName, Object propertyValue);
+	/**
+	 * <p>
+	 * This is a special callback hook for the IDataModel provider to be notified of a setProperty()
+	 * call invoked on the backing IDataModel. This method is called after the actual value has been
+	 * stored by the IDataModel but before any general notifications are fired to its listeners.
+	 * Thus this IDataModelProvider may react to updates apropriately by setting other properties,
+	 * notifying default changes, notifying valid value changes, etc.
+	 * </p>
+	 * 
+	 * @param propertyName
+	 * @param propertyValue
+	 * @return <code>true</code> to fire a VALUE_CHG DataModelEvent.
+	 */
+	public boolean propertySet(String propertyName, Object propertyValue);
 
 	public DataModelPropertyDescriptor getPropertyDescriptor(String propertyName);
 

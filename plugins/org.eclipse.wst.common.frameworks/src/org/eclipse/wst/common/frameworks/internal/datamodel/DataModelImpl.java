@@ -169,7 +169,7 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 				propertyValues.put(propertyName, propertyValue);
 			else if (propertyValues.containsKey(propertyName))
 				propertyValues.remove(propertyName);
-			if (provider.setProperty(propertyName, propertyValue)) {
+			if (provider.propertySet(propertyName, propertyValue)) {
 				notifyPropertyChange(propertyName, DataModelEvent.VALUE_CHG);
 			}
 		}

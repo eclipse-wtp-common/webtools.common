@@ -32,7 +32,7 @@ public abstract class WorkbenchComponentBuilderDataModelProvider extends Abstrac
     /* (non-Javadoc)
      * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#doSetProperty(java.lang.String, java.lang.Object)
      */
-    public boolean setProperty(String propertyName, Object propertyValue) {
+    public boolean propertySet(String propertyName, Object propertyValue) {
         if(propertyName.equals(WORKBENCH_MODULE)) {
         	model.setProperty(OUTPUT_CONTAINER, populateOutputContainer());
         	model.setProperty(DEPENDENT_MODULES_DM_LIST, populateDependentModulesDM());

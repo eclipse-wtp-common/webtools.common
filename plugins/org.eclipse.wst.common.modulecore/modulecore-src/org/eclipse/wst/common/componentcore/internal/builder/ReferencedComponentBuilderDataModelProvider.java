@@ -33,7 +33,7 @@ public class ReferencedComponentBuilderDataModelProvider extends AbstractDataMod
      * @see org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider#doSetProperty(java.lang.String,
      *      java.lang.Object)
      */
-    public boolean setProperty(String propertyName, Object propertyValue) {
+    public boolean propertySet(String propertyName, Object propertyValue) {
         if (propertyName.equals(DEPENDENT_MODULE)) {
             model.setProperty(HANDLE, getHandleValue());
             model.setProperty(OUTPUT_CONTAINER, getOutputContainerValue());

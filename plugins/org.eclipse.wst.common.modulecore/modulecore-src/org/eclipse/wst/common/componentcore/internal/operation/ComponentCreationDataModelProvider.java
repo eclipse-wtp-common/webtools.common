@@ -48,7 +48,7 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
      */
     public void init() {
         super.init();
-		setProperty(COMPONENT_VERSION, getDefaultProperty(COMPONENT_VERSION));
+		propertySet(COMPONENT_VERSION, getDefaultProperty(COMPONENT_VERSION));
     }
     
 	public String[] getPropertyNames() {
@@ -64,7 +64,7 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
         }
     }
 
-    public boolean setProperty(String propertyName, Object propertyValue) {
+    public boolean propertySet(String propertyName, Object propertyValue) {
 
         if (PROJECT_NAME.equals(propertyName) && propertyValue !=null && ((String)propertyValue).length()!=0) {
             IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject((String)propertyValue);
@@ -72,12 +72,12 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 	            IProjectProperties projProperties = ServerCore.getProjectProperties(project);
 	            if( projProperties.getRuntimeTarget() != null ){
 	            	String[] validModuleVersions = getServerVersions(getComponentID(), projProperties.getRuntimeTarget().getRuntimeType());
-	            	setProperty(VALID_MODULE_VERSIONS_FOR_PROJECT_RUNTIME, validModuleVersions);
+	            	propertySet(VALID_MODULE_VERSIONS_FOR_PROJECT_RUNTIME, validModuleVersions);
 	            }
 			}
         }
         else if (COMPONENT_NAME.equals(propertyName))
-			setProperty(COMPONENT_DEPLOY_NAME, propertyValue);
+			propertySet(COMPONENT_DEPLOY_NAME, propertyValue);
         else if (COMPONENT_DEPLOY_NAME.equals(propertyName))
 			getDataModel().setProperty(COMPONENT_DEPLOY_NAME, propertyValue);        
          return true;

@@ -43,7 +43,7 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
 	 * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#doSetProperty(java.lang.String,
 	 *      java.lang.Object)
 	 */
-	public boolean setProperty(String propertyName, Object propertyValue) {
+	public boolean propertySet(String propertyName, Object propertyValue) {
 		if (PROJECT.equals(propertyName)) {
 
 			//TODO: remove for M4 when incremental build available
