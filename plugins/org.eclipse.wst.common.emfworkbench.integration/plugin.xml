@@ -5,7 +5,7 @@
    name="EMF Workbench Edit Plug-in"
    description="This plugin provides the extensible edit model and edit model operation framework used to keep editors in synch. The DynamicAdapterFactory framework is also provided so adapters can register themselves to be picked up globally."
    version="1.0.0"
-   provider-name="IBM"
+   provider-name="Eclipse.org"
    class="org.eclipse.wst.common.emfworkbench.integration.EMFWorkbenchEditPlugin">
 
    <runtime>

@@ -4,7 +4,7 @@
    id="org.eclipse.wst.common.frameworks.ui"
    name="WTP UI Plug-in"
    version="1.0.0"
-   provider-name=""
+   provider-name="Eclipse.org"
    class="org.eclipse.wst.common.frameworks.ui.WTPUIPlugin">
 
    <runtime>
