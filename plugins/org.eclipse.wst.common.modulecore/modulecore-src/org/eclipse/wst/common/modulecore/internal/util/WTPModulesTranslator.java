@@ -51,7 +51,7 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 		return result;
 	}
 	private static Translator createModuleTypeTranslator(EStructuralFeature afeature) {
-		GenericTranslator result = new GenericTranslator(WBMODULE, afeature);
+		GenericTranslator result = new GenericTranslator(MODULE_TYPE, afeature);
 		result.setChildren(new Translator[] {			
 			new Translator(MODULE_TYPE_ID, MODULE_CORE_PKG.getModuleType_ModuleTypeId(), DOM_ATTRIBUTE),
 			new Translator(META_RESOURCES, MODULE_CORE_PKG.getModuleType_MetadataResources())
