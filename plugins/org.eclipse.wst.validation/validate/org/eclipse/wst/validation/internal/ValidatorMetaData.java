@@ -21,7 +21,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.wst.validation.internal.core.IValidator;
+import org.eclipse.wst.validation.core.IValidator;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchHelper;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 

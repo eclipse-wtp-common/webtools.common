@@ -25,7 +25,7 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.wst.validation.internal.core.SeverityEnum;
+import org.eclipse.wst.validation.core.SeverityEnum;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
@@ -369,7 +369,7 @@ public final class ValidationMigrator implements ConfigurationConstants {
 					String name = c.getBuilderName();
 					if (name.equals("com.ibm.etools.j2ee.validationbuilder")) { //$NON-NLS-1$
 						oldIdIndex = j;
-					} else if (name.equals("org.eclipse.wst.validation.internal.core.validationbuilder")) { //$NON-NLS-1$
+					} else if (name.equals("org.eclipse.wst.validation.core.validationbuilder")) { //$NON-NLS-1$
 						newIdIndex = j;
 					}
 				}
@@ -389,7 +389,7 @@ public final class ValidationMigrator implements ConfigurationConstants {
 				} else if (oldIdIndex > -1) {
 					// Delete the old and add the new.
 					ICommand command = description.newCommand();
-					command.setBuilderName("org.eclipse.wst.validation.internal.core.validationbuilder"); //$NON-NLS-1$
+					command.setBuilderName("org.eclipse.wst.validation.core.validationbuilder"); //$NON-NLS-1$
 					commands[oldIdIndex] = command;
 					description.setBuildSpec(commands);
 				}

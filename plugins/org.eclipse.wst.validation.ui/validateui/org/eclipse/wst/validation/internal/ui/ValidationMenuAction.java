@@ -28,9 +28,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
@@ -39,6 +36,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IActionDelegate;
+import org.eclipse.wst.common.frameworks.internal.ValidationSelectionHandlerRegistryReader;
 import org.eclipse.wst.common.navigator.views.INavigatorActionDelegate;
 import org.eclipse.wst.common.navigator.views.INavigatorExtensionSite;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
@@ -52,7 +50,6 @@ import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;
 
 import com.ibm.wtp.common.logger.LogEntry;
 import com.ibm.wtp.common.logger.proxy.Logger;
-import com.ibm.wtp.emf.workbench.ProjectUtilities;
 
 /**
  * This class implements the pop-up menu item "Run Validation" When the item is selected, this
@@ -130,17 +127,12 @@ public class ValidationMenuAction implements IActionDelegate, INavigatorActionDe
 	private void addSelected(ValidateAction action, Object selected) {
 		if (selected instanceof IProject) {
 			addSelected((IProject) selected);
-		} else if (selected instanceof IJavaProject) {
-			addSelected((IJavaProject) selected);
 		} else if (selected instanceof IFile) {
 			addSelected((IFile) selected);
 		} else if (selected instanceof IFolder) {
 			addVisitor((IFolder) selected);
-		} else if (selected instanceof EObject) {
-			EObject eObject = (EObject) selected;
-			Resource resource = eObject.eResource();
-			IProject project = ProjectUtilities.getProject(resource);
-			addSelected(project);
+		} else if (isValidType(getExtendedType(selected))) {
+			addSelected(action,getExtendedType(selected));
 		} else {
 			// Not a valid input type. Must be IProject, IJavaProject, or
 			// IResource.
@@ -164,6 +156,15 @@ public class ValidationMenuAction implements IActionDelegate, INavigatorActionDe
 			}
 		}
 	}
+	
+	private Object getExtendedType(Object selected) {
+		Object result = ValidationSelectionHandlerRegistryReader.getInstance().getExtendedType(selected);
+		return result == null ? selected : result;
+	}
+	
+	private boolean isValidType(Object object) {
+		return object instanceof IProject || object instanceof IFile || object instanceof IFolder;
+	}
 
 	private void addSelected(IProject selected) {
 		_selectedResources.put(selected, null); // whatever the values were
@@ -171,14 +172,14 @@ public class ValidationMenuAction implements IActionDelegate, INavigatorActionDe
 		// needs to be revalidated now
 	}
 
-	private void addSelected(IJavaProject selected) {
-		_selectedResources.put(selected.getProject(), null); // whatever the
-		// values were
-		// before, the
-		// entire project
-		// needs to be
-		// revalidated now
-	}
+//	private void addSelected(IJavaProject selected) {
+//		_selectedResources.put(selected.getProject(), null); // whatever the
+//		// values were
+//		// before, the
+//		// entire project
+//		// needs to be
+//		// revalidated now
+//	}
 
 	void addSelected(IResource selected) {
 		IProject project = selected.getProject();

@@ -29,7 +29,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.wst.validation.internal.core.IFileDelta;
+import org.eclipse.wst.validation.core.IFileDelta;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchHelper;
 import org.eclipse.wst.validation.internal.operations.WorkbenchFileDelta;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;

@@ -9,23 +9,24 @@
    class="org.eclipse.wst.validation.internal.plugin.ValidationPlugin">
 
    <runtime>
-      <library name="runtime/validate.jar">
+      <library name="validate.jar">
+         <export name="*"/>
+      </library>
+      <library name="common.jar">
          <export name="*"/>
       </library>
    </runtime>
    <requires>
-      <import plugin="org.eclipse.jdt.core"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.wst.common.frameworks"/>
-      <import plugin="org.eclipse.wst.validation.core" export="true"/>
       <import plugin="org.eclipse.core.runtime.compatibility"/>
    </requires>
 
 
 <!-- Validation extension points -->
    <extension-point id="validator" name="Validator" schema="xsds/validatorExtSchema.exsd"/>
-   <extension-point id="postValidator" name="PostValidator" schema="xsds/postValidatorExtSchema.exsd"/>/>
-
+   <extension-point id="postValidator" name="PostValidator" schema="xsds/postValidatorExtSchema.exsd"/>
+   
 <!--============================-->
 <!-- Validation Contributions   -->
 <!--============================-->

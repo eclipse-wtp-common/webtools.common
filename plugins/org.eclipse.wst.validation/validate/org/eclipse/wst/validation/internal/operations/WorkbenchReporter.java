@@ -17,15 +17,15 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.wst.validation.core.IMessage;
+import org.eclipse.wst.validation.core.IMessageAccess;
+import org.eclipse.wst.validation.core.IReporter;
+import org.eclipse.wst.validation.core.IValidator;
+import org.eclipse.wst.validation.core.MessageLimitException;
 import org.eclipse.wst.validation.internal.ResourceConstants;
 import org.eclipse.wst.validation.internal.TaskListUtility;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
-import org.eclipse.wst.validation.internal.core.IMessage;
-import org.eclipse.wst.validation.internal.core.IMessageAccess;
-import org.eclipse.wst.validation.internal.core.IReporter;
-import org.eclipse.wst.validation.internal.core.IValidator;
-import org.eclipse.wst.validation.internal.core.MessageLimitException;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 import com.ibm.wtp.common.logger.LogEntry;
@@ -465,14 +465,14 @@ public/* final */class WorkbenchReporter implements IReporter {
 	}
 
 	/**
-	 * @see org.eclipse.wst.validation.internal.core.core.IReporter#getMessageAccess()
+	 * @see org.eclipse.wst.validation.core.core.IReporter#getMessageAccess()
 	 */
 	public IMessageAccess getMessageAccess() {
 		return null;
 	}
 
 	/**
-	 * @see org.eclipse.wst.validation.internal.core.core.IReporter#isCancelled()
+	 * @see org.eclipse.wst.validation.core.core.IReporter#isCancelled()
 	 */
 	public boolean isCancelled() {
 		if (getProgressMonitor() != null) {
@@ -482,7 +482,7 @@ public/* final */class WorkbenchReporter implements IReporter {
 	}
 
 	/**
-	 * @see org.eclipse.wst.validation.internal.core.core.IReporter#addMessage(IValidator, IMessage)
+	 * @see org.eclipse.wst.validation.core.core.IReporter#addMessage(IValidator, IMessage)
 	 */
 	public void addMessage(IValidator validator, IMessage message) throws MessageLimitException {
 		IResource resource = getMessageResource(validator, message.getTargetObject());
@@ -570,7 +570,7 @@ public/* final */class WorkbenchReporter implements IReporter {
 	}
 
 	/**
-	 * @see org.eclipse.wst.validation.internal.core.core.IReporter#displaySubtask(IValidator, IMessage)
+	 * @see org.eclipse.wst.validation.core.core.IReporter#displaySubtask(IValidator, IMessage)
 	 */
 	public void displaySubtask(IValidator validator, IMessage message) {
 		if ((message == null) || (message.equals(""))) { //$NON-NLS-1$
@@ -581,7 +581,7 @@ public/* final */class WorkbenchReporter implements IReporter {
 	}
 
 	/**
-	 * @see org.eclipse.wst.validation.internal.core.core.IReporter#removeAllMessages(IValidator)
+	 * @see org.eclipse.wst.validation.core.core.IReporter#removeAllMessages(IValidator)
 	 */
 	public void removeAllMessages(IValidator validator) {
 		if (validator == null) { // getHelper could be null if the user cancelled before something
@@ -593,7 +593,7 @@ public/* final */class WorkbenchReporter implements IReporter {
 	}
 
 	/**
-	 * @see org.eclipse.wst.validation.internal.core.core.IReporter#removeAllMessages(IValidator, Object)
+	 * @see org.eclipse.wst.validation.core.core.IReporter#removeAllMessages(IValidator, Object)
 	 */
 	public void removeAllMessages(IValidator validator, Object object) {
 		IResource resource = getMessageResource(validator, object);
@@ -635,7 +635,7 @@ public/* final */class WorkbenchReporter implements IReporter {
 	}
 
 	/**
-	 * @see org.eclipse.wst.validation.internal.core.core.IReporter#removeMessageSubset(IValidator, Object, String)
+	 * @see org.eclipse.wst.validation.core.core.IReporter#removeMessageSubset(IValidator, Object, String)
 	 */
 	public void removeMessageSubset(IValidator validator, Object obj, String groupName) {
 		IResource resource = getMessageResource(validator, obj);

@@ -30,7 +30,7 @@ import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IPluginRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.wst.validation.internal.core.IValidator;
+import org.eclipse.wst.validation.core.IValidator;
 import org.eclipse.wst.validation.internal.operations.IRuleGroup;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchHelper;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
@@ -52,12 +52,12 @@ import com.ibm.wtp.common.logger.proxy.Logger;
  * 
  * The Validator itself is initialized in the "initializeValidator" method.
  * 
- * <extension point="org.eclipse.wst.validation.internal.core.core.validator" id="EJBValidator" name="EJB
+ * <extension point="org.eclipse.wst.validation.core.core.validator" id="EJBValidator" name="EJB
  * Validator"> <validator><projectNature id="com.ibm.etools.j2ee.EJBNature" include="false"/>
  * <filter objectClass="org.eclipse.core.resources.IFile" nameFilter = "ejb-jar.xml"/> <filter
  * objectClass="org.eclipse.core.resources.IFile" nameFilter = "*.java"/> <helper
- * class="org.eclipse.wst.validation.internal.core.core.ejb.workbenchimpl.EJBHelper"/> <run
- * class="org.eclipse.wst.validation.internal.core.core.ejb.EJBValidator" incremental="false" enabled="false"
+ * class="org.eclipse.wst.validation.core.core.ejb.workbenchimpl.EJBHelper"/> <run
+ * class="org.eclipse.wst.validation.core.core.ejb.EJBValidator" incremental="false" enabled="false"
  * pass="fast,full" async="false"/> <aggregateValidator class="my.aggregate.ValidatorClass"/>
  * <migrate><validator from="old.class.name" to="new.class.name"/> </migrate> </validator>
  * </extension>

@@ -17,9 +17,9 @@ import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.wst.common.frameworks.internal.WTPPlugin;
+import org.eclipse.wst.validation.core.Message;
+import org.eclipse.wst.validation.core.SeverityEnum;
 import org.eclipse.wst.validation.internal.EventManager;
-import org.eclipse.wst.validation.internal.core.Message;
-import org.eclipse.wst.validation.internal.core.SeverityEnum;
 
 import com.ibm.wtp.common.logger.LogEntry;
 

@@ -13,7 +13,7 @@ package org.eclipse.wst.validation.internal.operations;
 import java.util.Locale;
 
 import org.eclipse.core.resources.IResource;
-import org.eclipse.wst.validation.internal.core.Message;
+import org.eclipse.wst.validation.core.Message;
 
 
 /**

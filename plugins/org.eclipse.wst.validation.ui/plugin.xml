@@ -19,15 +19,12 @@
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.swt"/>
-      <import plugin="org.eclipse.wst.validation.mof" export="true"/>
       <import plugin="org.eclipse.wst.common.frameworks.ui"/>
       <import plugin="org.eclipse.core.runtime.compatibility"/>
       <import plugin="org.eclipse.wst.common.frameworks"/>
-      <import plugin="org.eclipse.jdt.core"/>
       <import plugin="org.eclipse.core.runtime.compatibility"/>
       <import plugin="org.eclipse.wst.common.navigator.views"/>
-      <import plugin="org.eclipse.emf.ecore"/>
-      <import plugin="com.ibm.wtp.emf.workbench"/>
+      <import plugin="org.eclipse.wst.validation"/>
    </requires>
 
 
@@ -83,22 +80,7 @@
          </visibility>
       </objectContribution>
    </extension>
-<!-- Should be handled by Object Contribution 
-   <extension
-         point="org.eclipse.wst.common.navigator.internal.views.navigator.navigatorActions">
-      <navigatorActions
-            priority="15"
-            id="org.eclipse.wst.validation.internal.core.Actions">
-         <action
-               label="%VBF_UI_POPUP_RUNVALIDATION"
-               class="org.eclipse.wst.validation.internal.operations.ui.ValidationMenuAction"
-               menubarPath="project"
-               enablesFor="1"
-               id="validateResource">
-         </action>
-      </navigatorActions>
-   </extension>
-   -->
+
 <!-- ====================================================== -->
 <!--           Validation preference page                   -->
 <!-- ====================================================== -->
@@ -110,6 +92,7 @@
             id="ValidationPreferencePage">
       </page>
    </extension>
+   
 <!-- ====================================================== -->
 <!--           Validation properties page                   -->
 <!-- ====================================================== -->

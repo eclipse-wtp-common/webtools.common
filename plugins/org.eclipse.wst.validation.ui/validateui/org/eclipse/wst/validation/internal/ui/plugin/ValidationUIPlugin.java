@@ -83,7 +83,7 @@ public class ValidationUIPlugin extends WTPUIPlugin {
 	}
 
 	public static IRunnableWithProgress getRunnableWithProgress(IHeadlessRunnableWithProgress aHeadlessRunnableWithProgress) {
-		return new org.eclipse.wst.common.frameworks.internal.ui.RunnableWithProgressWrapper(aHeadlessRunnableWithProgress);
+		return new RunnableWithProgressWrapper(aHeadlessRunnableWithProgress);
 	}
 
 	// Need a third, ValidationOperation version of this method, because ValidationOperation

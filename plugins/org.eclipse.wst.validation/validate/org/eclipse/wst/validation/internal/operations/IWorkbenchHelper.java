@@ -13,7 +13,7 @@ package org.eclipse.wst.validation.internal.operations;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.wst.validation.internal.core.IHelper;
+import org.eclipse.wst.validation.core.IHelper;
 
 
 

@@ -22,12 +22,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jdt.core.IClasspathEntry;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.wst.validation.core.IMessage;
 import org.eclipse.wst.validation.internal.RegistryConstants;
-import org.eclipse.wst.validation.internal.core.IMessage;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 import com.ibm.wtp.common.logger.LogEntry;
@@ -41,7 +37,7 @@ import com.ibm.wtp.common.logger.proxy.Logger;
 public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 	private IProject _project = null;
 	private Hashtable _modelRegistry = null;
-	private static final IContainer[] NO_CONTAINERS = new IContainer[0];
+//	private static final IContainer[] NO_CONTAINERS = new IContainer[0];
 	private int _ruleGroup = RegistryConstants.ATT_RULE_GROUP_DEFAULT;
 
 	public AWorkbenchHelper() {
@@ -262,12 +258,12 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 	 * If the IProject is associated with an EJBNatureRuntime, return the IJavaProject which
 	 * represents it.
 	 */
-	public static IJavaProject getJavaProject(IProject project) {
-		if (project == null) {
-			return null;
-		}
-		return JavaCore.create(project);
-	}
+//	public static IJavaProject getJavaProject(IProject project) {
+//		if (project == null) {
+//			return null;
+//		}
+//		return JavaCore.create(project);
+//	}
 
 	/**
 	 * Given an IMessage's target object, return the line number, of the IFile, which the target
@@ -355,84 +351,84 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 		return _project;
 	}
 
+//	/**
+//	 * Return the folders (or project) which contain the .java source files.
+//	 */
+//	public static IContainer[] getProjectSourceContainers(IProject project) {
+//		if (project == null) {
+//			return NO_CONTAINERS;
+//		}
+//
+//		IJavaProject jp = getJavaProject(project);
+//		if (jp == null) {
+//			return NO_CONTAINERS;
+//		}
+//
+//		return getProjectSourceContainers(jp);
+//	}
+
 	/**
 	 * Return the folders (or project) which contain the .java source files.
 	 */
-	public static IContainer[] getProjectSourceContainers(IProject project) {
-		if (project == null) {
-			return NO_CONTAINERS;
-		}
-
-		IJavaProject jp = getJavaProject(project);
-		if (jp == null) {
-			return NO_CONTAINERS;
-		}
-
-		return getProjectSourceContainers(jp);
-	}
-
-	/**
-	 * Return the folders (or project) which contain the .java source files.
-	 */
-	public static IContainer[] getProjectSourceContainers(IJavaProject javaProject) {
-		if (javaProject == null) {
-			return NO_CONTAINERS;
-		}
-		IProject project = javaProject.getProject();
-
-		IClasspathEntry[] classpath = null;
-		try {
-			classpath = javaProject.getResolvedClasspath(true); // true means ignore unresolved
-			// (missing) variables, instead of
-			// throwing an exception
-		} catch (JavaModelException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("AWorkbenchHelper::getProjectSourceContainers(IJavaProject)"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
-			return NO_CONTAINERS;
-		}
-
-		if (classpath == null) {
-			return NO_CONTAINERS;
-		}
-
-		// Traverse the classpath, and calculate a list of just the
-		// IFolders and IProjects (i.e., IContainers) which contain source
-		IContainer[] icontainers = new IContainer[classpath.length];
-		int validCount = 0;
-		for (int i = 0; i < classpath.length; i++) {
-			IClasspathEntry entry = classpath[i];
-			if (entry.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
-				IPath entryPath = entry.getPath();
-				IPath relEntryPath = getContainerRelativePath(entryPath, project);
-				if (relEntryPath == null) {
-					// classpath entry refers to something which doesn't exist
-					continue;
-				}
-
-				IResource outputResource = project.findMember(relEntryPath);
-				if (outputResource == null) {
-					// classpath entry refers to something which doesn't exist
-					continue;
-				}
-
-				if (outputResource instanceof IContainer) {
-					icontainers[validCount++] = (IContainer) outputResource;
-				}
-			}
-		}
-
-		//  following line causes a ClassCastException, so construct an array of IContainers
-		// explicitly
-		//	return (IContainer[])icontainers.toArray();
-		IContainer[] containers = new IContainer[validCount];
-		System.arraycopy(icontainers, 0, containers, 0, validCount);
-		return containers;
-	}
+//	public static IContainer[] getProjectSourceContainers(IJavaProject javaProject) {
+//		if (javaProject == null) {
+//			return NO_CONTAINERS;
+//		}
+//		IProject project = javaProject.getProject();
+//
+//		IClasspathEntry[] classpath = null;
+//		try {
+//			classpath = javaProject.getResolvedClasspath(true); // true means ignore unresolved
+//			// (missing) variables, instead of
+//			// throwing an exception
+//		} catch (JavaModelException exc) {
+//			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
+//			if (logger.isLoggingLevel(Level.SEVERE)) {
+//				LogEntry entry = ValidationPlugin.getLogEntry();
+//				entry.setSourceID("AWorkbenchHelper::getProjectSourceContainers(IJavaProject)"); //$NON-NLS-1$
+//				entry.setTargetException(exc);
+//				logger.write(Level.SEVERE, entry);
+//			}
+//			return NO_CONTAINERS;
+//		}
+//
+//		if (classpath == null) {
+//			return NO_CONTAINERS;
+//		}
+//
+//		// Traverse the classpath, and calculate a list of just the
+//		// IFolders and IProjects (i.e., IContainers) which contain source
+//		IContainer[] icontainers = new IContainer[classpath.length];
+//		int validCount = 0;
+//		for (int i = 0; i < classpath.length; i++) {
+//			IClasspathEntry entry = classpath[i];
+//			if (entry.getEntryKind() == IClasspathEntry.CPE_SOURCE) {
+//				IPath entryPath = entry.getPath();
+//				IPath relEntryPath = getContainerRelativePath(entryPath, project);
+//				if (relEntryPath == null) {
+//					// classpath entry refers to something which doesn't exist
+//					continue;
+//				}
+//
+//				IResource outputResource = project.findMember(relEntryPath);
+//				if (outputResource == null) {
+//					// classpath entry refers to something which doesn't exist
+//					continue;
+//				}
+//
+//				if (outputResource instanceof IContainer) {
+//					icontainers[validCount++] = (IContainer) outputResource;
+//				}
+//			}
+//		}
+//
+//		//  following line causes a ClassCastException, so construct an array of IContainers
+//		// explicitly
+//		//	return (IContainer[])icontainers.toArray();
+//		IContainer[] containers = new IContainer[validCount];
+//		System.arraycopy(icontainers, 0, containers, 0, validCount);
+//		return containers;
+//	}
 
 	public int getRuleGroup() {
 		return _ruleGroup;
@@ -454,22 +450,22 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 	 * output folder too, this method will return true. If res is null, or is not found in one of
 	 * the source containers, this method will return false.
 	 */
-	public boolean isInJavaSourcePath(IResource res) {
-		if (res == null) {
-			return false;
-		}
-
-		IContainer[] containers = getProjectSourceContainers(res.getProject());
-		for (int c = 0; c < containers.length; c++) {
-			IPath resourcePath = getContainerRelativePath(res, containers[c]);
-			if (resourcePath != null) {
-				// file has been found
-				return true;
-			}
-		}
-
-		return false;
-	}
+//	public boolean isInJavaSourcePath(IResource res) {
+//		if (res == null) {
+//			return false;
+//		}
+//
+//		IContainer[] containers = getProjectSourceContainers(res.getProject());
+//		for (int c = 0; c < containers.length; c++) {
+//			IPath resourcePath = getContainerRelativePath(res, containers[c]);
+//			if (resourcePath != null) {
+//				// file has been found
+//				return true;
+//			}
+//		}
+//
+//		return false;
+//	}
 
 	/**
 	 * Return true if the given symbolic name is registered, and can be loaded by AWorkbenchHelper's
