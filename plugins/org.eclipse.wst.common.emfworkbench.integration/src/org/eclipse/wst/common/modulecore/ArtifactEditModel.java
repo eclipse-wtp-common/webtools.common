@@ -12,14 +12,17 @@ package org.eclipse.wst.common.modulecore;
 
 import java.util.List;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import org.eclipse.wst.common.modulecore.impl.PlatformURLModuleConnection;
 import org.eclipse.wst.common.modulecore.impl.UnresolveableURIException;
+import org.eclipse.wst.common.modulecore.util.ArtifactEdit;
 import org.eclipse.wst.common.modulecore.util.ModuleCore;
 
 /**
@@ -27,10 +30,11 @@ import org.eclipse.wst.common.modulecore.util.ModuleCore;
  * The following class is experimental until fully documented.
  * </p>
  */
-public class ArtifactEditModel extends EditModel {
+public class ArtifactEditModel extends EditModel implements IAdaptable{
 
 	private final URI moduleURI;
 	private final IPath modulePath;
+	private ArtifactEdit editAdapter;
 
 	public ArtifactEditModel(String anEditModelId, EMFWorkbenchContext aContext, boolean toMakeReadOnly, URI aModuleURI) {
 		this(anEditModelId, aContext, toMakeReadOnly, true, aModuleURI);
@@ -53,6 +57,25 @@ public class ArtifactEditModel extends EditModel {
 		URI resourceURI = URI.createURI(PlatformURLModuleConnection.MODULE_PROTOCOL+requestPath.toString());
 		return super.getResource(resourceURI);
 	}
+	public String getModuleType() {
+		String type = null;
+		WorkbenchModule wbModule;
+		ModuleStructuralModel structuralModel = null;
+		try {
+			structuralModel = ModuleCore.getModuleStructuralModelForRead(ModuleCore.getContainingProject(moduleURI), this);
+			ModuleCore editUtility = (ModuleCore) structuralModel.getAdapter(ModuleCore.ADAPTER_CLASS);
+			wbModule = editUtility.findWorkbenchModuleByDeployName(moduleURI.segment(ModuleCore.Constants.ModuleURISegments.MODULE_NAME));
+			type = wbModule.getModuleType().getModuleTypeId();
+		} catch (UnresolveableURIException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			structuralModel.releaseAccess(this);
+		}
+		return type;
+		
+	}
+
 
 	/*
 	 * (non-Javadoc)
@@ -118,5 +141,13 @@ public class ArtifactEditModel extends EditModel {
 				structuralModel.releaseAccess(this);
 		}
 		return processed;
+	}
+	public Object getAdapter(Class adapterType) {
+		if (editAdapter != null)
+			return editAdapter;
+		else {
+			editAdapter = (ArtifactEdit)Platform.getAdapterManager().getAdapter(this,adapterType);
+		}
+		return editAdapter;
 	}
 }

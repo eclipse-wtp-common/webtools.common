@@ -23,13 +23,19 @@ import org.eclipse.wst.common.modulecore.impl.UnresolveableURIException;
  */
 public class ArtifactEdit {
 
-
-	public static ArtifactEdit INSTANCE = new ArtifactEdit();
+	private ArtifactEditModel artifactEditModel;
+	/**
+	 * @param model
+	 */
+	public ArtifactEdit(ArtifactEditModel model) {
+		
+		artifactEditModel = model;
+	}
 
 	/*
 	 * Javadoc copied from interface.
 	 */
-	public ArtifactEditModel getModuleEditModelForRead(WorkbenchModule aModule, Object anAccessorKey) {
+	public static ArtifactEditModel getModuleEditModelForRead(WorkbenchModule aModule, Object anAccessorKey) {
 		try {
 			IProject project = ModuleCore.getContainingProject(aModule.getHandle());
 			ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(project);
@@ -39,7 +45,7 @@ public class ArtifactEdit {
 		return null;
 	}
 
-	public ArtifactEditModel getModuleEditModelForWrite(WorkbenchModule aModule, Object anAccessorKey) {
+	public static ArtifactEditModel getModuleEditModelForWrite(WorkbenchModule aModule, Object anAccessorKey) {
 		try {
 			IProject project = ModuleCore.getContainingProject(aModule.getHandle());
 			ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(project);
@@ -48,5 +54,8 @@ public class ArtifactEdit {
 		}
 		return null;
 
+	}
+	public ArtifactEditModel getArtifactEditModel() {
+		return artifactEditModel;
 	}
 }
