@@ -17,6 +17,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.wst.common.componentcore.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
@@ -24,8 +25,7 @@ import org.eclipse.wst.common.frameworks.internal.enablement.DataModelEnablement
 
 public abstract class WorkbenchComponentBuilderDataModelProvider extends AbstractDataModelProvider implements IWorkbenchComponentBuilderDataModelProperties{
     
-    public static final String REFERENCED_COMPONENT_BUILDER_ID = "referencedComponentBuilder";
-    /* (non-Javadoc)
+     /* (non-Javadoc)
      * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider#getPropertyNames()
      */
     public String[] getPropertyNames() {
@@ -50,7 +50,7 @@ public abstract class WorkbenchComponentBuilderDataModelProvider extends Abstrac
         StructureEdit moduleCore = (StructureEdit)model.getProperty(MODULE_CORE);
         IProject project = (IProject)model.getProperty(PROJECT);
         for(int i = 0; i<depModules.size(); i++){
-            dependentDataModel = DataModelEnablementFactory.createDataModel(REFERENCED_COMPONENT_BUILDER_ID, project);
+            dependentDataModel = DataModelEnablementFactory.createDataModel(IModuleConstants.DEPENDENT_MODULE + ".builder", project);
             if(dependentDataModel != null) {
                 dependentDataModel.setProperty(IReferencedComponentBuilderDataModelProperties.MODULE_CORE, moduleCore);
                 dependentDataModel.setProperty(IReferencedComponentBuilderDataModelProperties.CONTAINING_WBMODULE, getProperty(WORKBENCH_MODULE));

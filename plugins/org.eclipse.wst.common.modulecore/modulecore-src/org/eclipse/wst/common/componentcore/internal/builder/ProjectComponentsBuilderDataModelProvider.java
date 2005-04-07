@@ -22,7 +22,6 @@ import org.eclipse.wst.common.componentcore.StructureEdit;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
-import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
@@ -163,7 +162,7 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
 			String typeId = wbComponent.getComponentType().getComponentTypeId();
 			if (typeId == null)
 				break;
-            builderType = getBuilderTypeFromComponentID(typeId);
+            builderType = typeId + ".builder";
 			dataModel = DataModelEnablementFactory.createDataModel(builderType, curProject);
             if(dataModel != null) {
     			dataModel.setProperty(IWorkbenchComponentBuilderDataModelProperties.MODULE_CORE, moduleCore);
@@ -174,23 +173,6 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
 		}
 		return moduleBuilderDataModelList;
 	}
-
-    //TODO: remove and implement mechanism to register new builders for type
-    private String getBuilderTypeFromComponentID(String id){
-        if(id.equals(IModuleConstants.JST_APPCLIENT_MODULE))
-            return "AppClientComponentBuilder";
-        if(id.equals(IModuleConstants.JST_EAR_MODULE))
-            return "EARComponentBuilder";
-        if(id.equals(IModuleConstants.JST_EJB_MODULE))
-            return "EJBComponentBuilder";
-        if(id.equals(IModuleConstants.JST_WEB_MODULE))
-            return "WebComponentBuilder";
-        if(id.equals(IModuleConstants.JST_CONNECTOR_MODULE))
-            return "ConnectorComponentBuilder";
-        if(id.equals(IModuleConstants.JST_UTILITY_MODULE))
-            return "JavaUtilityComponentBuilder";
-        return null;
-    }
     
 	private List populateDeltaModuleBuilderDataModelList(ResourceDelta delta) {
 		//TODO: handle delta information correcty

@@ -90,7 +90,7 @@
             class="org.eclipse.wst.common.componentcore.internal.builder.ReferencedComponentBuilderDataModelProvider"
             id="org.eclipse.wst.common.componentcore.internal.builder.ReferencedComponentBuilderDataModelProvider"/>
       <ProviderDefinesType
-      		providerType="referencedComponentBuilder"
+      		providerType="dependent.builder"
       		providerID="org.eclipse.wst.common.componentcore.internal.builder.ReferencedComponentBuilderDataModelProvider"/>
 	</extension>
    

@@ -59,7 +59,6 @@ public class DataModelFactory {
     }
 
     private static List loadProviderForProviderKind(String providerKind) {
-        reader = null;
         if (null == reader) {
             reader = new DataModelExtensionReader();
         }
