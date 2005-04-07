@@ -16,7 +16,20 @@ import org.eclipse.wst.common.frameworks.datamodel.DataModelProviderDescriptor;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
 public class DataModelEnablementFactory {
-    
+    /**
+     * Looks up the appropriate IDataModelProvider by the specified providerKind String and a context of the 
+     * containing Project.  The method gets an array of DataModelProviderDescriptor from the base DataModelFactory 
+     * then filters out Providers based on function group enablement.  Finally the Provider with the highest priority
+     * is returned.  If the IDataModelProvider is not found then
+     * a RuntimeException is logged and null is returned.
+     * 
+     * @param providerKind
+     *            the String id of the provider kind
+     * @param curProject
+     *            the containing IProject
+     *            
+     * @return a new IDataModel
+     */
    public static IDataModel createDataModel(String providerKind, IProject curProject) {
        DataModelProviderDescriptor[] providers = DataModelFactory.getProviderDescriptorsForProviderKind(providerKind);
        if(providers == null) 

@@ -43,15 +43,13 @@ public class DataModelFactory {
 	}
     /**
      * Looks up the appropriate IDataModelProvider by the specified provider Type String and functionGroupID String and
-     * constructs an arry of new IDataModels. If the IDataModelProvider is not found then
+     * constructs an array of new DataModelProviderDescriptor. If the IDataModelProvider is not found then
      * a RuntimeException is logged and null is returned.
      * 
      * @param providerKind
      *            the String id of the provider
-     * @param functionGroupId
-     *            the String id of the enabled Function Group
      *            
-     * @return a new IDataModel
+     * @return DataModelProviderDescriptor[]
      */
     public static DataModelProviderDescriptor[] getProviderDescriptorsForProviderKind(String providerKind) {
         List providers = loadProviderForProviderKind(providerKind);
