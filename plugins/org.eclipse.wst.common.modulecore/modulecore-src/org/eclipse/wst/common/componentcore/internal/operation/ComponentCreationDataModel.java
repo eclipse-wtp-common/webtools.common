@@ -104,7 +104,6 @@ public abstract class ComponentCreationDataModel extends WTPOperationDataModel {
         addValidBaseProperty(FINAL_PERSPECTIVE);
 		addValidBaseProperty(COMPONENT_VERSION);
 		addValidBaseProperty(VALID_MODULE_VERSIONS_FOR_PROJECT_RUNTIME);
-        super.initValidBaseProperties();
     }
 
     protected Boolean basicIsEnabled(String propertyName) {
