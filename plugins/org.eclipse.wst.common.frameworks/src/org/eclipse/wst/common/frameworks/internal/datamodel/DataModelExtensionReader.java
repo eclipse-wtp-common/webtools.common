@@ -98,8 +98,8 @@ public class DataModelExtensionReader extends RegistryReader {
     
     private void addImplementsExtension(String type, String id) {
         List cache;
-        if (providerExtensions.containsKey(type))
-            cache = (List)providerExtensions.get(type);
+        if (implementsExtensions.containsKey(type))
+            cache = (List)implementsExtensions.get(type);
         else
             cache = new ArrayList();
         cache.add(id);
@@ -126,18 +126,16 @@ public class DataModelExtensionReader extends RegistryReader {
     
     protected List getImplementsExtensions(String providerType) {
         readRegistryIfNecessary();
-        List extensions;
-        if (!implementsExtensions.containsKey(providerType)) {
-            extensions = new ArrayList();
-            extensions.add(getDefinesExtension(providerType));
-            return extensions;
-        }        
-        List providerIds = (List)implementsExtensions.get(providerType);
-        if(providerIds == null || providerIds.isEmpty()) {
-            extensions = new ArrayList();
-            extensions.add(getDefinesExtension(providerType));
-            return extensions;
+        List providerIds = new ArrayList();        
+        providerIds.add(getDefinesExtension(providerType));
+        if (!implementsExtensions.containsKey(providerType)){
+            return providerIds;        
         }
+        List implementsIds = (List)implementsExtensions.get(providerType);
+        if(implementsIds == null || implementsIds.isEmpty()) {
+            return providerIds;
+        }
+        providerIds.addAll(implementsIds);
         return providerIds;
     }
     
