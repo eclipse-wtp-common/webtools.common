@@ -59,8 +59,11 @@ public class DataModelFactoryTest extends TestCase {
         IDataModel dataModel = DataModelFactory.createDataModel(descs[0].createProviderInstance());
         assertTrue(dataModel.isProperty(ITestDataModel.FOO));
     }
-    
+
     public void testValidExtensionIDImplementorForProviderType() {
+        DataModelProviderDescriptor[] descs = DataModelFactory.getProviderDescriptorsForProviderKind("testProviderCorrect");
+        IDataModel dataModel = DataModelFactory.createDataModel(descs[0].createProviderInstance());
+        assertTrue(dataModel.isProperty(ITestDataModel.FOO));
        // IDataModel dataModel = DataModelFactory.createDataModel("testProviderNeedsReplaced", "correctFG");
         //assertTrue(dataModel.isProperty(ITestDataModel.FOO));
     }
