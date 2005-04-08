@@ -14,17 +14,17 @@ public interface IComponentCreationDataModelProperties {
 	/**
      * Required
      */
-    public static final String PROJECT_NAME = "ComponentCreationDataModel.PROJECT_NAME"; //$NON-NLS-1$
+    public static final String PROJECT_NAME = "IComponentCreationDataModelProperties.PROJECT_NAME"; //$NON-NLS-1$
 
     /**
      * Required
      */
-    public static final String COMPONENT_NAME = "ComponentCreationDataModel.COMPONENT_NAME"; //$NON-NLS-1$
+    public static final String COMPONENT_NAME = "IComponentCreationDataModelProperties.COMPONENT_NAME"; //$NON-NLS-1$
 	/**
 	 * Required
 	 */	
 	
-	public static final String COMPONENT_DEPLOY_NAME = "ComponentCreationDataModel.MODULE_DEPLOY_NAME"; //$NON-NLS-1$
+	public static final String COMPONENT_DEPLOY_NAME = "IComponentCreationDataModelProperties.MODULE_DEPLOY_NAME"; //$NON-NLS-1$
 	
     /**
      * An optional dataModel propertyName for a <code>Boolean</code> type. The
@@ -32,7 +32,7 @@ public interface IComponentCreationDataModelProperties {
      * <code>Boolean.TRUE</code> then a default deployment descriptor and
      * supporting bindings files will be generated.
      */
-    public static final String CREATE_DEFAULT_FILES = "ComponentCreationDataModel.CREATE_DEFAULT_FILES"; //$NON-NLS-1$
+    public static final String CREATE_DEFAULT_FILES = "IComponentCreationDataModelProperties.CREATE_DEFAULT_FILES"; //$NON-NLS-1$
 
     /**
      * An optional dataModel propertyName for a <code>Boolean</code> type. The
@@ -40,22 +40,22 @@ public interface IComponentCreationDataModelProperties {
      * <code>Boolean.TRUE</code> then a default deployment descriptor and
      * supporting bindings files will be generated.
      */
-    public static final String SHOULD_CREATE_PROJECT = "ComponentCreationDataModel.SHOULD_CREATE_PROJECT"; //$NON-NLS-1$
+    public static final String SHOULD_CREATE_PROJECT = "IComponentCreationDataModelProperties.SHOULD_CREATE_PROJECT"; //$NON-NLS-1$
 
     /**
      * Optional, type String
      */
-    public static final String FINAL_PERSPECTIVE = "ComponentCreationDataModel.FINAL_PERSPECTIVE"; //$NON-NLS-1$
+    public static final String FINAL_PERSPECTIVE = "IComponentCreationDataModelProperties.FINAL_PERSPECTIVE"; //$NON-NLS-1$
 
 	/**
 	 * type Integer
 	 */
-	public static final String COMPONENT_VERSION = "ComponentCreationDataModel.COMPONENT_VERSION"; //$NON-NLS-1$
+	public static final String COMPONENT_VERSION = "IComponentCreationDataModelProperties.COMPONENT_VERSION"; //$NON-NLS-1$
 	
 	/**
 	 * type Integer
 	 */
-	public static final String VALID_MODULE_VERSIONS_FOR_PROJECT_RUNTIME = "ComponentCreationDataModel.VALID_MODULE_VERSIONS_FOR_PROJECT_RUNTIME"; //$NON-NLS-1$
+	public static final String VALID_MODULE_VERSIONS_FOR_PROJECT_RUNTIME = "IComponentCreationDataModelProperties.VALID_MODULE_VERSIONS_FOR_PROJECT_RUNTIME"; //$NON-NLS-1$
 
 	
 }
