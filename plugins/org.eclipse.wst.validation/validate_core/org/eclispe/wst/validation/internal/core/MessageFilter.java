@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclispe.wst.validation.internal.core;
 
-import org.eclipse.wst.validation.core.IValidator;
+import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 
 
 /**

@@ -23,9 +23,9 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.wst.validation.core.IMessage;
 import org.eclipse.wst.validation.internal.operations.WorkbenchReporter;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 import org.eclispe.wst.validation.internal.core.Message;
 
 import org.eclipse.jem.util.logger.LogEntry;

@@ -16,7 +16,7 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.eclipse.wst.validation.core.IMessage;
+import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 
 /**
  * <p>
@@ -25,7 +25,7 @@ import org.eclipse.wst.validation.core.IMessage;
  * should be used; if the IValidator runs in WSAD alone, the WSAD LocalizedMessage may be used in
  * place of this implementation.
  * <p>
- * @see org.eclipse.wst.validation.core.IMessage
+ * @see org.eclipse.wst.validation.internal.provisional.core.IMessage
  * 
  * [issue: CS - I'd suggest splitting this class into Message and BundleMessage (where the latter inherits
  * from the former.  We have many messages that come (from xerces) pretranslated and don't require 'bundle'

@@ -1,7 +1,7 @@
-package org.eclipse.wst.validation;
+package org.eclipse.wst.validation.internal.provisional;
 
-import org.eclipse.wst.validation.core.IValidator;
 import org.eclipse.wst.validation.internal.ValidationFactoryImpl;
+import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 
 /**
  * This interface provides a way to access an instance of the ValidationFactoryImpl

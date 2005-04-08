@@ -21,8 +21,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
-import org.eclipse.wst.validation.core.IMessage;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 
 /**
  * This class must be called only by the validation framework.

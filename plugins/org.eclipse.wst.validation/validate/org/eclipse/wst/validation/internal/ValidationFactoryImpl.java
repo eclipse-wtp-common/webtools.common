@@ -1,7 +1,7 @@
 package org.eclipse.wst.validation.internal;
 
-import org.eclipse.wst.validation.ValidationFactory;
-import org.eclipse.wst.validation.core.IValidator;
+import org.eclipse.wst.validation.internal.provisional.ValidationFactory;
+import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 
 public class ValidationFactoryImpl implements ValidationFactory {
 	static ValidationFactory inst = null;

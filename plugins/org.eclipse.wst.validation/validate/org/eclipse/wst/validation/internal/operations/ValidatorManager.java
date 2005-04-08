@@ -26,8 +26,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.wst.validation.core.IMessage;
-import org.eclipse.wst.validation.core.IValidator;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.InternalValidatorManager;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
@@ -37,6 +35,8 @@ import org.eclipse.wst.validation.internal.ValidationConfiguration;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.internal.provisional.core.IMessage;
+import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 import org.eclispe.wst.validation.internal.core.Message;
 
 import org.eclipse.jem.util.logger.LogEntry;
@@ -840,7 +840,7 @@ public final class ValidatorManager {
 	 * 
 	 * If an operation is used to make changes that should not be validated, then use the technique
 	 * documented in the "Preventing Validation" topic of the "Validation Guide" (in the
-	 * org.eclipse.wst.validation.core.core.prop plugin). If you don't, validation may not be suspended.
+	 * org.eclipse.wst.validation.internal.provisional.core.core.prop plugin). If you don't, validation may not be suspended.
 	 */
 	public void suspendValidation(IProject project, boolean suspend) {
 		if (project == null) {
@@ -871,7 +871,7 @@ public final class ValidatorManager {
 	 * 
 	 * If an operation is used to make changes that should not be validated, then use the technique
 	 * documented in the "Preventing Validation" topic of the "Validation Guide" (in the
-	 * org.eclipse.wst.validation.core.core.prop plugin). If you don't, validation may not be suspended.
+	 * org.eclipse.wst.validation.internal.provisional.core.core.prop plugin). If you don't, validation may not be suspended.
 	 */
 	public void suspendAllValidation(boolean suspend) {
 		_suspendAllValidation = suspend;

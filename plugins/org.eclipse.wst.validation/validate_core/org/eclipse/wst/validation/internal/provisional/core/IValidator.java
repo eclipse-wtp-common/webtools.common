@@ -8,7 +8,7 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.validation.core;
+package org.eclipse.wst.validation.internal.provisional.core;
 
 /**
  * This is the base interface for all Validators. A Validator is a class which verifies that objects
