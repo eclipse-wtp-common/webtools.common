@@ -48,25 +48,17 @@ public class DataModelFactoryTest extends TestCase {
 		}
 		assertNotNull(exception);
 	}
-
+    
+    public void testValidExtensionIDAndProviderType() {
+        DataModelProviderDescriptor[] descs = DataModelFactory.getProviderDescriptorsForProviderKind("testProviderBase");
+        IDataModel dataModel = DataModelFactory.createDataModel(descs[0].createProviderInstance());
+        assertTrue(dataModel.isProperty(ITestDataModel.FOO));
+    }
+    
 	public void testValidExtensionID() {
 		IDataModel dataModel = DataModelFactory.createDataModel("org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel");
 		assertTrue(dataModel.isProperty(ITestDataModel.FOO));
 	}
-
-    public void testValidExtensionIDAndProviderType() {
-        DataModelProviderDescriptor[] descs = DataModelFactory.getProviderDescriptorsForProviderKind("testProviderCorrect");
-        IDataModel dataModel = DataModelFactory.createDataModel(descs[0].createProviderInstance());
-        assertTrue(dataModel.isProperty(ITestDataModel.FOO));
-    }
-
-    public void testValidExtensionIDImplementorForProviderType() {
-        DataModelProviderDescriptor[] descs = DataModelFactory.getProviderDescriptorsForProviderKind("testProviderCorrect");
-        IDataModel dataModel = DataModelFactory.createDataModel(descs[0].createProviderInstance());
-        assertTrue(dataModel.isProperty(ITestDataModel.FOO));
-       // IDataModel dataModel = DataModelFactory.createDataModel("testProviderNeedsReplaced", "correctFG");
-        //assertTrue(dataModel.isProperty(ITestDataModel.FOO));
-    }
     
 	public void testValidExtensionClass() {
 		IDataModel dataModel = DataModelFactory.createDataModel(ITestDataModel.class);

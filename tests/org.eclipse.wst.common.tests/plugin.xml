@@ -50,15 +50,18 @@
             class="bogusClass"
             id="bogus"/>
       <ProviderDefinesType
-      		providerType="testProviderCorrect"
+      		providerType="testProviderBase"
       		providerID="org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel"/>
       <ProviderDefinesType
-      		providerType="testProviderNeedsReplaced"
+      		providerType="testProviderBogus"
+      		providerID="org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel"/>
+      <ProviderImplementsType
+      		providerType="testProviderBogus"
       		providerID="org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModelBogus"/>		
       <ProviderImplementsType
-      		providerType="testProviderNeedsReplaced"
-      		providerID="org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel"
-			/>	   		
+      		providerType="testProviderBogus"
+      		providerID="fake.nonregistered.functiongroup.ITestDataModel"
+	 />	   		
 	  <!-- Test for incomplete id's, classes' and duplicates
       <DataModelProvider
             class=""
