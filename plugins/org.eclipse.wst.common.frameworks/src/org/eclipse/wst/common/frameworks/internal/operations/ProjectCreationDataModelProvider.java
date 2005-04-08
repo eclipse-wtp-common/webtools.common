@@ -57,7 +57,7 @@ public class ProjectCreationDataModelProvider extends AbstractDataModelProvider 
 				return false;
 			}
 		}
-		if (propertyName.equals(PROJECT_NAME) && !isPropertySet(PROJECT_LOCATION)) {
+		if (propertyName.equals(PROJECT_NAME) && !getDataModel().isPropertySet(PROJECT_LOCATION)) {
 			model.notifyPropertyChange(PROJECT_NAME, IDataModel.VALUE_CHG);
 			model.notifyPropertyChange(PROJECT_LOCATION, IDataModel.VALUE_CHG);
 			return false;
@@ -80,7 +80,7 @@ public class ProjectCreationDataModelProvider extends AbstractDataModelProvider 
 	private IProjectDescription getProjectDescription() {
 		String projectName = (String) getProperty(PROJECT_NAME);
 		IProjectDescription desc = ResourcesPlugin.getWorkspace().newProjectDescription(projectName);
-		if (isPropertySet(PROJECT_LOCATION)) {
+		if (getDataModel().isPropertySet(PROJECT_LOCATION)) {
 			String projectLocation = (String) getProperty(ProjectCreationDataModelProvider.PROJECT_LOCATION);
 			desc.setLocation(new Path(projectLocation));
 		}
@@ -165,7 +165,7 @@ public class ProjectCreationDataModelProvider extends AbstractDataModelProvider 
 	}
 
 	private IStatus validateLocation() {
-		if (isPropertySet(PROJECT_LOCATION)) {
+		if (getDataModel().isPropertySet(PROJECT_LOCATION)) {
 			String loc = (String) getProperty(PROJECT_LOCATION);
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();
 			IPath path = new Path(loc);
