@@ -6,8 +6,6 @@ import java.util.ResourceBundle;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
-import org.eclipse.wst.common.componentcore.ArtifactEditModel;
-import org.eclipse.wst.common.componentcore.ModuleStructuralModel;
 import org.eclipse.wst.common.componentcore.internal.impl.PlatformURLModuleConnection;
 import org.eclipse.wst.common.componentcore.internal.impl.WTPModulesInit;
 import org.eclipse.wst.common.componentcore.internal.util.ArtifactEditAdapterFactory;

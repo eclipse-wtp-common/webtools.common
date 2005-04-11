@@ -29,6 +29,7 @@ import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.ComponentType;
 import org.eclipse.wst.common.componentcore.internal.ComponentcoreFactory;
+import org.eclipse.wst.common.componentcore.internal.ModuleStructuralModel;
 import org.eclipse.wst.common.componentcore.internal.ProjectComponents;
 import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
@@ -69,7 +70,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualContainer;
  * </p>
  * 
  * @see org.eclipse.wst.common.componentcore.ModuleCoreNature
- * @see org.eclipse.wst.common.componentcore.ModuleStructuralModel
+ * @see org.eclipse.wst.common.componentcore.internal.ModuleStructuralModel
  */
 public class StructureEdit implements IEditModelHandler {
 

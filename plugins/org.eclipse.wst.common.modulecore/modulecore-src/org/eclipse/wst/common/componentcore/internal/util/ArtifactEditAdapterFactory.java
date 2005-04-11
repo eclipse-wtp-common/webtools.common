@@ -12,7 +12,7 @@ package org.eclipse.wst.common.componentcore.internal.util;
 
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.wst.common.componentcore.ArtifactEdit;
-import org.eclipse.wst.common.componentcore.ArtifactEditModel;
+import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
 
 /**
  * <p>

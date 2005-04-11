@@ -12,7 +12,7 @@ package org.eclipse.wst.common.componentcore.internal.util;
 
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.wst.common.componentcore.StructureEdit;
-import org.eclipse.wst.common.componentcore.ModuleStructuralModel;
+import org.eclipse.wst.common.componentcore.internal.ModuleStructuralModel;
 
 /**
  * <p>

@@ -12,7 +12,7 @@ package org.eclipse.wst.common.componentcore.internal.impl;
 
 import java.util.Map;
 
-import org.eclipse.wst.common.componentcore.ModuleStructuralModel;
+import org.eclipse.wst.common.componentcore.internal.ModuleStructuralModel;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelFactory;
