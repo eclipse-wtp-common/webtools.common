@@ -29,7 +29,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
-public abstract class ComponentCreationOperationEx extends AbstractDataModelOperation {
+public abstract class ComponentCreationOperationEx extends AbstractDataModelOperation implements IComponentCreationDataModelProperties{
 
 	public ComponentCreationOperationEx(IDataModel model) {
 		super(model);
@@ -51,9 +51,7 @@ public abstract class ComponentCreationOperationEx extends AbstractDataModelOper
 
 	
 	//to make it  abstract
-	protected  void createComponent(){
-		
-	}
+	protected void createComponent(){};
 	
     protected void setupComponentType(String typeID) {
     	//ComponentCreationDataModel dataModel = (ComponentCreationDataModel)operationDataModel;
@@ -73,15 +71,15 @@ public abstract class ComponentCreationOperationEx extends AbstractDataModelOper
     }	
     
     protected IProject getProject(){
-    	String name = model.getStringProperty(ComponentCreationDataModelProvider.PROJECT_NAME);
+    	String name = model.getStringProperty(PROJECT_NAME);
     	return ProjectUtilities.getProject(name);
     }
     
     protected String getComponentName(){
-    	return model.getStringProperty(ComponentCreationDataModelProvider.COMPONENT_NAME);
+    	return model.getStringProperty(COMPONENT_NAME);
     }
     public String getComponentDeployName(){
-    	return model.getStringProperty(ComponentCreationDataModelProvider.COMPONENT_DEPLOY_NAME);
+    	return model.getStringProperty(COMPONENT_DEPLOY_NAME);
     }    
     
     protected abstract String getVersion();
