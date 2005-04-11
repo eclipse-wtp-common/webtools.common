@@ -115,7 +115,7 @@ public class ProjectUnzipUtil {
 	private void buildProjects() throws IOException, CoreException {
 		for (int i = 0; i < projectNames.length; i++) {
 			ProjectDescriptionReader pd = new ProjectDescriptionReader();
-			IPath projectPath = new Path("\\" + projectNames[i] + "\\" + META_PROJECT_NAME);
+			IPath projectPath = new Path("/" + projectNames[i] + "/" + META_PROJECT_NAME);
 			IPath path = rootLocation.append(projectPath);
 			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectNames[i]);
 			ProjectDescription description;
