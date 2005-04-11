@@ -21,32 +21,35 @@ public class DataModelFactoryTest extends TestCase {
 
 	public void testBogusExtension() {
 		Exception exception = null;
+		IDataModel dataModel = null;
 		try {
-			IDataModel dataModel = DataModelFactory.createDataModel("bogus");
+			dataModel  = DataModelFactory.createDataModel("bogus");
 		} catch (Exception e) {
 			exception = e;
 		}
-		assertNotNull(exception);
+		assertNull(dataModel);
 	}
 
 	public void testInvalidExtensionID() {
 		Exception exception = null;
+		IDataModel dataModel = null;
 		try {
-			IDataModel dataModel = DataModelFactory.createDataModel("badID");
+			dataModel = DataModelFactory.createDataModel("badID");
 		} catch (Exception e) {
 			exception = e;
 		}
-		assertNotNull(exception);
+		assertNull(dataModel);
 	}
 
 	public void testInvalidExtensionClass() {
 		Exception exception = null;
+		IDataModel dataModel = null;
 		try {
-			IDataModel dataModel = DataModelFactory.createDataModel(Object.class);
+			 dataModel = DataModelFactory.createDataModel(Object.class);
 		} catch (Exception e) {
 			exception = e;
 		}
-		assertNotNull(exception);
+		assertNull(dataModel);
 	}
     
     public void testValidExtensionIDAndProviderType() {

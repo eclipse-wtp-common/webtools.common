@@ -335,7 +335,7 @@ public class ArtifactEditTest extends TestCase {
 		pass();
 	}
 
-	public void testGetContentModelRoot() {
+	/*public void testGetContentModelRoot() {
 		ArtifactEdit edit = null;
 		StructureEdit moduleCore = null;
 		try {
@@ -354,7 +354,7 @@ public class ArtifactEditTest extends TestCase {
 			}
 		}
 
-	}
+	}*/
 
 	public void testAddListener() {
 		ArtifactEdit edit = getArtifactEditForRead();

@@ -74,5 +74,13 @@
             id="org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel"/>
       -->
    </extension>
-
+   
+    <extension
+         point="org.eclipse.wst.common.tests.collector.suites">
+      <suite
+            class=" org.eclipse.wst.common.frameworks.tests.bvt.AutomatedBVT"
+            name="Common Framework BVT Tests"/>
+   </extension>
+   
+  
 </plugin>
