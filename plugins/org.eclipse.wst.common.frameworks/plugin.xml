@@ -17,9 +17,9 @@
       </library>
    </runtime>
    <requires>
-      <import plugin="org.eclipse.core.commands" export="true"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.core.commands" export="true"/>
       <import plugin="org.eclipse.jem.util" export="true"/>
    </requires>
 
