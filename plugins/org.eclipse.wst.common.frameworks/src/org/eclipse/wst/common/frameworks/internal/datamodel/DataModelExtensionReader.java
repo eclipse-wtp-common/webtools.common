@@ -24,61 +24,60 @@ import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
 public class DataModelExtensionReader extends RegistryReader {
 
-  private static final String EXTENSION = "DataModelProviderExtension";
-	
-    private static final String PROVIDER_ELEMENT = "DataModelProvider";
-    private static final String DEFINES_TYPE_ELEMENT = "ProviderDefinesType";
-    private static final String IMPLEMENTS_TYPE_ELEMENT = "ProviderImplementsType";
-	
-    private static final String ATTRIBUTE_ID = "id";
+	private static final String EXTENSION = "DataModelProviderExtension";
+
+	private static final String PROVIDER_ELEMENT = "DataModelProvider";
+	private static final String DEFINES_TYPE_ELEMENT = "ProviderDefinesType";
+	private static final String IMPLEMENTS_TYPE_ELEMENT = "ProviderImplementsType";
+
+	private static final String ATTRIBUTE_ID = "id";
 	private static final String ATTRIBUTE_CLASS = "class";
-    private static final String ATTRIBUTE_PROVIDER_TYPE = "providerType";
-    private static final String ATTRIBUTE_PROVIDER_ID = "providerID";
-    private static final String ATTRIBUTE_FG = "functionGroupID";
-    
+	private static final String ATTRIBUTE_PROVIDER_TYPE = "providerType";
+	private static final String ATTRIBUTE_PROVIDER_ID = "providerID";
+	private static final String ATTRIBUTE_FG = "functionGroupID";
 
 	private HashMap providerExtensions;
-    private HashMap definesExtensions;
-    private HashMap implementsExtensions;
-    
-    private boolean hasInitialized = false;
-    
+	private HashMap definesExtensions;
+	private HashMap implementsExtensions;
+
+	private boolean hasInitialized = false;
+
 	public DataModelExtensionReader() {
 		super(WTPCommonPlugin.PLUGIN_ID, EXTENSION);
-    }
+	}
 
 	public boolean readElement(IConfigurationElement element) {
 		if (element.getName().equals(PROVIDER_ELEMENT)) {
-    		String id = element.getAttribute(ATTRIBUTE_ID);
-    		if (null == id || id.trim().length() == 0) {
-    			Logger.getLogger().logError(new RuntimeException("Extension:" + EXTENSION + " Element:" + PROVIDER_ELEMENT + " is missing " + ATTRIBUTE_ID));
-    		}
-    		String className = element.getAttribute(ATTRIBUTE_CLASS);
-    		if (null == className || className.trim().length() == 0) {
-    			Logger.getLogger().logError(new RuntimeException("Extension:" + EXTENSION + " Element:" + PROVIDER_ELEMENT + " is missing " + ATTRIBUTE_CLASS));
-    		}
-            addProviderExtension(id, element);
-        } else if(element.getName().equals(DEFINES_TYPE_ELEMENT)){
-            String type = element.getAttribute(ATTRIBUTE_PROVIDER_TYPE);
-            if (null == type || type.trim().length() == 0) {
-                Logger.getLogger().logError(new RuntimeException("Extension:" + EXTENSION + " Element:" + DEFINES_TYPE_ELEMENT + " is missing " + ATTRIBUTE_PROVIDER_TYPE));
-            }
-            String id = element.getAttribute(ATTRIBUTE_PROVIDER_ID);
-            if (null == id || id.trim().length() == 0) {
-                Logger.getLogger().logError(new RuntimeException("Extension:" + EXTENSION + " Element:" + DEFINES_TYPE_ELEMENT + " is missing " + ATTRIBUTE_PROVIDER_ID));
-            }
-            addDefinesExtension(type, id);
-        } else if(element.getName().equals(IMPLEMENTS_TYPE_ELEMENT)){
-            String type = element.getAttribute(ATTRIBUTE_PROVIDER_TYPE);
-            if (null == type || type.trim().length() == 0) {
-                Logger.getLogger().logError(new RuntimeException("Extension:" + EXTENSION + " Element:" + DEFINES_TYPE_ELEMENT + " is missing " + ATTRIBUTE_PROVIDER_TYPE));
-            }
-            String id = element.getAttribute(ATTRIBUTE_PROVIDER_ID);
-            if (null == id || id.trim().length() == 0) {
-                Logger.getLogger().logError(new RuntimeException("Extension:" + EXTENSION + " Element:" + DEFINES_TYPE_ELEMENT + " is missing " + ATTRIBUTE_PROVIDER_ID));
-            }
-            addImplementsExtension(type, id);
-        }
+			String id = element.getAttribute(ATTRIBUTE_ID);
+			if (null == id || id.trim().length() == 0) {
+				Logger.getLogger().logError(new RuntimeException("Extension:" + EXTENSION + " Element:" + PROVIDER_ELEMENT + " is missing " + ATTRIBUTE_ID));
+			}
+			String className = element.getAttribute(ATTRIBUTE_CLASS);
+			if (null == className || className.trim().length() == 0) {
+				Logger.getLogger().logError(new RuntimeException("Extension:" + EXTENSION + " Element:" + PROVIDER_ELEMENT + " is missing " + ATTRIBUTE_CLASS));
+			}
+			addProviderExtension(id, element);
+		} else if (element.getName().equals(DEFINES_TYPE_ELEMENT)) {
+			String type = element.getAttribute(ATTRIBUTE_PROVIDER_TYPE);
+			if (null == type || type.trim().length() == 0) {
+				Logger.getLogger().logError(new RuntimeException("Extension:" + EXTENSION + " Element:" + DEFINES_TYPE_ELEMENT + " is missing " + ATTRIBUTE_PROVIDER_TYPE));
+			}
+			String id = element.getAttribute(ATTRIBUTE_PROVIDER_ID);
+			if (null == id || id.trim().length() == 0) {
+				Logger.getLogger().logError(new RuntimeException("Extension:" + EXTENSION + " Element:" + DEFINES_TYPE_ELEMENT + " is missing " + ATTRIBUTE_PROVIDER_ID));
+			}
+			addDefinesExtension(type, id);
+		} else if (element.getName().equals(IMPLEMENTS_TYPE_ELEMENT)) {
+			String type = element.getAttribute(ATTRIBUTE_PROVIDER_TYPE);
+			if (null == type || type.trim().length() == 0) {
+				Logger.getLogger().logError(new RuntimeException("Extension:" + EXTENSION + " Element:" + DEFINES_TYPE_ELEMENT + " is missing " + ATTRIBUTE_PROVIDER_TYPE));
+			}
+			String id = element.getAttribute(ATTRIBUTE_PROVIDER_ID);
+			if (null == id || id.trim().length() == 0) {
+				Logger.getLogger().logError(new RuntimeException("Extension:" + EXTENSION + " Element:" + DEFINES_TYPE_ELEMENT + " is missing " + ATTRIBUTE_PROVIDER_ID));
+			}
+			addImplementsExtension(type, id);
+		}
 		return true;
 	}
 
@@ -88,72 +87,72 @@ public class DataModelExtensionReader extends RegistryReader {
 		}
 		providerExtensions.put(id, element);
 	}
-    
-    private void addDefinesExtension(String type, String id) {
-        if (definesExtensions.containsKey(type)) {
-            Logger.getLogger().logError(new RuntimeException("Duplicate " + PROVIDER_ELEMENT + " " + ATTRIBUTE_PROVIDER_TYPE + " " + type));
-        }
-        definesExtensions.put(type, id);
-    }
-    
-    private void addImplementsExtension(String type, String id) {
-        List cache;
-        if (implementsExtensions.containsKey(type))
-            cache = (List)implementsExtensions.get(type);
-        else
-            cache = new ArrayList();
-        cache.add(id);
-        implementsExtensions.put(type, cache);
-    }
-    
+
+	private void addDefinesExtension(String type, String id) {
+		if (definesExtensions.containsKey(type)) {
+			Logger.getLogger().logError(new RuntimeException("Duplicate " + PROVIDER_ELEMENT + " " + ATTRIBUTE_PROVIDER_TYPE + " " + type));
+		}
+		definesExtensions.put(type, id);
+	}
+
+	private void addImplementsExtension(String type, String id) {
+		List cache;
+		if (implementsExtensions.containsKey(type))
+			cache = (List) implementsExtensions.get(type);
+		else
+			cache = new ArrayList();
+		cache.add(id);
+		implementsExtensions.put(type, cache);
+	}
+
 	protected IConfigurationElement getProviderExtension(String id) {
-        readRegistryIfNecessary();
+		readRegistryIfNecessary();
 		IConfigurationElement element = (IConfigurationElement) providerExtensions.get(id);
 		if (null == element) {
 			Logger.getLogger().log(new RuntimeException("Extension:" + EXTENSION + " Element:" + PROVIDER_ELEMENT + " not found for " + ATTRIBUTE_ID + ": " + id));
 		}
 		return element;
 	}
-    
-    protected String getDefinesExtension(String providerType) {
-        readRegistryIfNecessary();
-        String element = (String) definesExtensions.get(providerType);
-        if (null == element) {
-            Logger.getLogger().log(new RuntimeException("Extension:" + EXTENSION + " Element:" + DEFINES_TYPE_ELEMENT + " not found for " + ATTRIBUTE_PROVIDER_TYPE + ": " + providerType));
-        }
-        return element;
-    }
-    
-    protected List getImplementsExtensions(String providerType) {
-        readRegistryIfNecessary();
-        List providerIds = new ArrayList();        
-        providerIds.add(getDefinesExtension(providerType));
-        if (!implementsExtensions.containsKey(providerType)){
-            return providerIds;        
-        }
-        List implementsIds = (List)implementsExtensions.get(providerType);
-        if(implementsIds == null || implementsIds.isEmpty()) {
-            return providerIds;
-        }
-        providerIds.addAll(implementsIds);
-        return providerIds;
-    }
-    
-    private void readRegistryIfNecessary() {
-        if (!hasInitialized) {
-            providerExtensions = new HashMap();
-            definesExtensions = new HashMap();
-            implementsExtensions = new HashMap();
-            readRegistry();
-            hasInitialized = true;
-        }
-    }
-    
+
+	protected String getDefinesExtension(String providerType) {
+		readRegistryIfNecessary();
+		String element = (String) definesExtensions.get(providerType);
+		if (null == element) {
+			Logger.getLogger().log(new RuntimeException("Extension:" + EXTENSION + " Element:" + DEFINES_TYPE_ELEMENT + " not found for " + ATTRIBUTE_PROVIDER_TYPE + ": " + providerType));
+		}
+		return element;
+	}
+
+	protected List getImplementsExtensions(String providerType) {
+		readRegistryIfNecessary();
+		List providerIds = new ArrayList();
+		providerIds.add(getDefinesExtension(providerType));
+		if (!implementsExtensions.containsKey(providerType)) {
+			return providerIds;
+		}
+		List implementsIds = (List) implementsExtensions.get(providerType);
+		if (implementsIds == null || implementsIds.isEmpty()) {
+			return providerIds;
+		}
+		providerIds.addAll(implementsIds);
+		return providerIds;
+	}
+
+	private void readRegistryIfNecessary() {
+		if (!hasInitialized) {
+			providerExtensions = new HashMap();
+			definesExtensions = new HashMap();
+			implementsExtensions = new HashMap();
+			readRegistry();
+			hasInitialized = true;
+		}
+	}
+
 	public IDataModelProvider getProvider(String id) {
 		IDataModelProvider provider = null;
 		IConfigurationElement element = getProviderExtension(id);
-        if(element == null)
-            return null;
+		if (element == null)
+			return null;
 		try {
 			provider = (IDataModelProvider) element.createExecutableExtension(ATTRIBUTE_CLASS);
 		} catch (CoreException e) {
@@ -161,17 +160,17 @@ public class DataModelExtensionReader extends RegistryReader {
 		}
 		return provider;
 	}
-    
-    public List getProviderDescriptorsForProviderKind(String providerType) {
-        List providerIds = (List)getImplementsExtensions(providerType);
-        List providers = new ArrayList();
-        for(int i = 0; i<providerIds.size(); i++){
-            providers.add(getProviderDescriptor((String)providerIds.get(i)));
-        }
-        return providers;
-    }
-    
-    private DataModelProviderDescriptor getProviderDescriptor(String id){
-        return new DataModelProviderDescriptor(id);
-    }
+
+	public List getProviderDescriptorsForProviderKind(String providerType) {
+		List providerIds = getImplementsExtensions(providerType);
+		List providers = new ArrayList();
+		for (int i = 0; i < providerIds.size(); i++) {
+			providers.add(getProviderDescriptor((String) providerIds.get(i)));
+		}
+		return providers;
+	}
+
+	private DataModelProviderDescriptor getProviderDescriptor(String id) {
+		return new DataModelProviderDescriptor(id);
+	}
 }

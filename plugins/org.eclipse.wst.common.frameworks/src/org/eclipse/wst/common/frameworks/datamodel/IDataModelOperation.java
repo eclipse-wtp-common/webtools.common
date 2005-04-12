@@ -29,7 +29,7 @@ public interface IDataModelOperation extends IUndoableOperation {
 	 * Sets the unique operation id. Typically, clients should not invoke this method.
 	 * </p>
 	 * 
-	 * @param id
+	 * @param id the unique operation id
 	 */
 	public void setID(String id);
 
