@@ -42,7 +42,7 @@ public class ArtifactEditTest extends TestCase {
 	private ArtifactEdit artifactEditForRead;
 	private ArtifactEdit artifactEditForWrite;
 	private EditModelListener emListener;
-	private Path zipFilePath = new Path("/frameworktests/org/eclipse/wst/common/frameworks/artifactedit/tests/TestArtifactEdit.zip");
+	private Path zipFilePath = new Path("frameworktests/org/eclipse/wst/common/frameworks/artifactedit/tests/TestArtifactEdit.zip");
 	private IProject project;
 
 
