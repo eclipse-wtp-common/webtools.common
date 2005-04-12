@@ -11,19 +11,16 @@
 package org.eclipse.wst.common.componentcore.internal.operation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPPropertyDescriptor;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 import org.eclipse.wst.server.core.IModuleType;
@@ -53,8 +50,7 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
     
 	public String[] getPropertyNames() {
 		return new String[]{PROJECT_NAME, COMPONENT_NAME, COMPONENT_DEPLOY_NAME, CREATE_DEFAULT_FILES,
-					FINAL_PERSPECTIVE, COMPONENT_VERSION,
-					VALID_MODULE_VERSIONS_FOR_PROJECT_RUNTIME};
+					COMPONENT_VERSION, VALID_MODULE_VERSIONS_FOR_PROJECT_RUNTIME};
 	}
 
 	
@@ -120,8 +116,6 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 			return OK_STATUS;
 			
 		}else if(propertyName.equals(CREATE_DEFAULT_FILES)){
-			return OK_STATUS;
-		}else if(propertyName.equals(FINAL_PERSPECTIVE)){
 			return OK_STATUS;
 		}else if(propertyName.equals(VALID_MODULE_VERSIONS_FOR_PROJECT_RUNTIME)){
 			return OK_STATUS;
