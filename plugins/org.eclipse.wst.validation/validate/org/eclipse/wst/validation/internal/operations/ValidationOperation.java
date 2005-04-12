@@ -44,14 +44,15 @@ import org.eclipse.wst.validation.internal.VThreadManager;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
-import org.eclipse.wst.validation.internal.provisional.core.IFileDelta;
 import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 import org.eclipse.wst.validation.internal.provisional.core.IReporter;
+import org.eclipse.wst.validation.internal.provisional.core.IValidationContext;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 import org.eclipse.wst.validation.internal.provisional.core.MessageLimitException;
-import org.eclipse.wst.validation.internal.provisional.core.ValidationException;
 import org.eclispe.wst.validation.internal.core.FileDelta;
+import org.eclispe.wst.validation.internal.core.IFileDelta;
 import org.eclispe.wst.validation.internal.core.Message;
+import org.eclispe.wst.validation.internal.core.ValidationException;
 import org.eclispe.wst.validation.internal.core.ValidatorLauncher;
 
 /**
@@ -103,6 +104,8 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	private Boolean _isAutoBuild = null; // Is the global auto-build preference
 	// enabled?
 	private Set _launchedValidators = null; // A list of the validators that
+	
+	protected IValidationContext context;
 
 	// are enabled and were launched
 	// (i.e., that have input to
@@ -220,87 +223,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			}
 		} catch (MessageLimitException e) {
 			ValidatorManager.getManager().addMessageLimitExceeded(getProject());
-		}
-	}
-
-	/**
-	 * @deprecated Will be removed in Milestone 3. Should not be called outside of the validation
-	 *             framework.
-	 */
-	protected final void launchValidator(WorkbenchReporter reporter, ValidatorMetaData vmd, IWorkbenchHelper helper, IFileDelta[] delta) {
-		if (reporter == null) {
-			return;
-		}
-		checkCanceled(reporter);
-		Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-		// Check to see if a full build must be performed, or if a delta
-		// build is to be performed, if there are files to verify for that
-		// validator. (If it's delta, but there are no files, calling
-		// validate on that validator starts a full build, instead of just
-		// returning.)
-		try {
-			// Validate the resource; this step will add errors/warnings to the
-			// task list, and remove errors/warnings from the task list.
-			if (helper instanceof AWorkbenchHelper) {
-				// Initialize the "loadRuleGroup" method with the group of
-				// rules
-				// which the validator should validate.
-				((AWorkbenchHelper) helper).setRuleGroup(getRuleGroup());
-			}
-			long start = System.currentTimeMillis();
-			String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_STARTING_VALIDATION, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
-			reporter.displaySubtask(message);
-			ValidatorLauncher.getLauncher().start(helper, vmd.getValidator(), reporter, delta);
-			if (logger.isLoggingLevel(Level.INFO)) {
-				logValidationInfo(vmd, delta, logger, start);
-			}
-			message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_ENDING_VALIDATION, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
-			reporter.displaySubtask(message);
-		} catch (MessageLimitException exc) {
-			throw exc;
-		} catch (OperationCanceledException exc) {
-			throw exc;
-		} catch (ValidationException exc) {
-			handleValidationExceptions(reporter, vmd, logger, exc);
-		} catch (Throwable exc) {
-			handleThrowables(reporter, vmd, logger, exc);
-		} finally {
-			try {
-				vmd.getValidator().cleanup(reporter);
-			} catch (MessageLimitException e) {
-				throw e;
-			} catch (OperationCanceledException e) {
-				throw e;
-			} catch (Throwable exc) {
-				handleThrowables(reporter, vmd, logger, exc);
-				return;
-			}
-			try {
-				helper.cleanup(reporter);
-			} catch (MessageLimitException e) {
-				throw e;
-			} catch (Throwable exc) {
-				handleHelperCleanupExceptions(reporter, vmd, logger, exc);
-				return;
-			} finally {
-				// Now that cleanup has been called, set the project to null.
-				// This project's
-				// resources have been freed so this project should also be
-				// cleared on the helper.
-				// If it isn't set to null, then the next time that the helper
-				// is retrieved from
-				// the ValidatorMetaData, the resources allocated for this
-				// project, in the
-				// helper's initialize method, will not be reallocated if the
-				// project is the same.
-				helper.setProject(null);
-			}
-			// Tell the progress monitor that we've completed n units of work
-			// (i.e., n resources validated by one validator).
-			reporter.getProgressMonitor().worked(delta.length); // One unit of
-			// work = 1
-			// (i.e., 1
-			// resource)
 		}
 	}
 
@@ -574,7 +496,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 */
 	private void loadFileDeltas(IProgressMonitor monitor) throws CoreException {
 		// Although, for a full build, we don't build up a list of changed
-		// files, we do need to notify each IWorkbenchHelper that an
+		// files, we do need to notify each IWorkbenchContext that an
 		// IResource has been filtered in.
 		// It's a full validation if the IResourceDelta is null and the
 		// Object[] (or IResource[]) is also null.
@@ -853,7 +775,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 						ValidatorMetaData data = (ValidatorMetaData) it.next();
 						if (data.isApplicableTo(refFile)) {
 							IValidator validator = data.getValidator();
-							validator.validate(data.getHelper(project), reporter, changedfiles);
+							validator.validate(data.getHelper(project),reporter);
 							validatedFiles.add(refFile);
 						}
 					}
@@ -884,7 +806,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		}
 		checkCanceled(reporter);
 		reporter.getProgressMonitor().beginTask(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_PROGRESSMONITOR_TITLE), getUnitsOfWork());
-		IWorkbenchHelper helper = null;
 		IValidator validator = null;
 		ValidatorMetaData vmd = null;
 		Iterator iterator = null;
@@ -965,7 +886,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 					continue;
 				}
 				try {
-					helper = vmd.getHelper(getProject());
+					//helper = vmd.getHelper(getProject());
 					validator = vmd.getValidator();
 				} catch (InstantiationException exc) {
 					// Remove the vmd from the reader's list
@@ -979,19 +900,30 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 					}
 					continue;
 				}
+				setFilesToValidateOnContext(delta);
 				if (isFork() && vmd.isAsync()) {
 					// Don't appear to run in the foreground by sending
 					// progress to the IProgressMonitor in the
 					// WorkbenchMonitor. Suppress the status messages by
 					// changing the IProgressMonitor to a
 					// NullProgressMonitor.
-					VThreadManager.getManager().queue(wrapInRunnable(nullReporter, validator, vmd, helper, delta, iterator));
+					VThreadManager.getManager().queue(wrapInRunnable(nullReporter, validator, vmd,(WorkbenchContext)getContext(),delta, iterator));
 				} else {
-					internalValidate(reporter, validator, vmd, helper, delta);
+					internalValidate(reporter, validator, vmd,delta);
 				}
 			}
 		} catch (OperationCanceledException exc) {
 			handleOperationCancelledValidateException(reporter, validator, vmd, iterator, logger, exc);
+		}
+	}
+
+	private void setFilesToValidateOnContext(IFileDelta[] delta) {
+		 if (context instanceof WorkbenchContext) {
+			 for(int i = 0; i < delta.length; i++) {
+				 IFileDelta file = (IFileDelta)delta[i];
+				 if(file.getDeltaType() != IFileDelta.DELETED )
+					 ((WorkbenchContext)context).getValidationFileURIs().add(file.getFileName());
+			 } 	
 		}
 	}
 
@@ -1053,7 +985,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	}
 
 	/* package */
-	void internalValidate(final WorkbenchReporter reporter, final IValidator validator, final ValidatorMetaData vmd, final IWorkbenchHelper helper, final IFileDelta[] delta) throws OperationCanceledException {
+	void internalValidate(final WorkbenchReporter reporter, final IValidator validator, final ValidatorMetaData vmd, final IFileDelta[] delta) throws OperationCanceledException {
 		final Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 		try {
 			checkCanceled(reporter);
@@ -1069,7 +1001,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			// needs to, and if it tries to add a message when the limit is
 			// exceeded, let
 			// the WorkbenchReporter take care of it.
-			launchValidator(reporter, validator, vmd, helper, delta);
+			launchValidator(reporter, validator, vmd,(WorkbenchContext)getContext(),delta);
 		} catch (OperationCanceledException exc) {
 			// This is handled in the validate(WorkbenchReporter) method.
 			throw exc;
@@ -1214,7 +1146,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 * completion of the <code>validate</code>), increment the IProgressMonitor's status by one
 	 * (i.e., one resource has been processed.)
 	 */
-	private final void launchValidator(WorkbenchReporter reporter, IValidator validator, ValidatorMetaData vmd, IWorkbenchHelper helper, IFileDelta[] delta) {
+	private final void launchValidator(WorkbenchReporter reporter, IValidator validator, ValidatorMetaData vmd, IWorkbenchContext helper, IFileDelta[] delta) {
 		if (reporter == null) {
 			return;
 		}
@@ -1228,11 +1160,11 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		try {
 			// Validate the resource; this step will add errors/warnings to the
 			// task list, and remove errors/warnings from the task list.
-			if (helper instanceof AWorkbenchHelper) {
+			if (helper instanceof WorkbenchContext) {
 				// Initialize the "loadRuleGroup" method with the group of
 				// rules
 				// which the validator should validate.
-				((AWorkbenchHelper) helper).setRuleGroup(getRuleGroup());
+				((WorkbenchContext) helper).setRuleGroup(getRuleGroup());
 			}
 			long start = System.currentTimeMillis();
 			String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_STARTING_VALIDATION, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
@@ -1242,7 +1174,8 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				// tests.
 				getLaunchedValidators().add(vmd);
 			}
-			ValidatorLauncher.getLauncher().start(helper, validator, reporter, delta);
+			setFilesToValidateOnContext(delta);
+			ValidatorLauncher.getLauncher().start(helper, validator, reporter);
 			long finish = System.currentTimeMillis();
 			if (logger.isLoggingLevel(Level.INFO)) {
 				TimeEntry entry = ValidationPlugin.getTimeEntry();
@@ -1442,7 +1375,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		}
 	}
 
-	private Runnable wrapInRunnable(final WorkbenchReporter reporter, final IValidator validator, final ValidatorMetaData vmd, final IWorkbenchHelper helper, final IFileDelta[] delta, final Iterator iterator) {
+	private Runnable wrapInRunnable(final WorkbenchReporter reporter, final IValidator validator, final ValidatorMetaData vmd, final IWorkbenchContext helper, final IFileDelta[] delta, final Iterator iterator) {
 		// Need to create a new Runnable each time because several Runnable
 		// instances may exist at the same time.
 		Runnable runnable = new ProjectRunnable(reporter, validator, vmd, helper, delta, iterator);
@@ -1452,7 +1385,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	/*
 	 * // For convenience, keep this method in the class but commented out. // When async needs to
 	 * be tested, this method may be needed again. private static void debug(String prefix,
-	 * IWorkbenchHelper helper) { IProject hProject = helper.getProject(); System.err.println(prefix +
+	 * IWorkbenchContext helper) { IProject hProject = helper.getProject(); System.err.println(prefix +
 	 * "Start ValidationOperation "+Thread.currentThread().getName() + "::" + hProject.getName());
 	 * if( Thread.currentThread().getName().equals("ValidationThread") &&
 	 * (hProject.getName().indexOf("noFork") > -1)) { Thread.dumpStack(); } else
@@ -1464,10 +1397,10 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		private WorkbenchReporter _reporter = null;
 		private IValidator _validator = null;
 		private ValidatorMetaData _vmd = null;
-		private IWorkbenchHelper _helper = null;
+		private IValidationContext _helper = null;
 		private IFileDelta[] __delta = null;
 
-		public ProjectRunnable(WorkbenchReporter reporter, IValidator validator, ValidatorMetaData vmd, IWorkbenchHelper helper, IFileDelta[] delta, Iterator iterator) {
+		public ProjectRunnable(WorkbenchReporter reporter, IValidator validator, ValidatorMetaData vmd, IWorkbenchContext helper, IFileDelta[] delta, Iterator iterator) {
 			_reporter = reporter;
 			_validator = validator;
 			_vmd = vmd;
@@ -1477,7 +1410,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 
 		public void run() {
 			try {
-				internalValidate(_reporter, _validator, _vmd, _helper, __delta);
+				internalValidate(_reporter, _validator, _vmd,__delta);
 			} catch (OperationCanceledException exc) {
 				// User can't cancel a job in a background thread, so ignore
 				// this exception.
@@ -1487,5 +1420,19 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		public IProject getProject() {
 			return _reporter.getProject();
 		}
+	}
+
+	/**
+	 * @return Returns the context.
+	 */
+	public IValidationContext getContext() {
+		return context;
+	}
+
+	/**
+	 * @param context The context to set.
+	 */
+	public void setContext(IValidationContext context) {
+		this.context = context;
 	}
 }

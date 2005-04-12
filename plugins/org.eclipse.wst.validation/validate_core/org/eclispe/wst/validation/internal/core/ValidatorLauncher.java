@@ -10,11 +10,9 @@
  *******************************************************************************/
 package org.eclispe.wst.validation.internal.core;
 
-import org.eclipse.wst.validation.internal.provisional.core.IFileDelta;
 import org.eclipse.wst.validation.internal.provisional.core.IReporter;
 import org.eclipse.wst.validation.internal.provisional.core.IValidationContext;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
-import org.eclipse.wst.validation.internal.provisional.core.ValidationException;
 
 
 
@@ -71,7 +69,7 @@ public class ValidatorLauncher {
 	 * array, then a full validation should be performed. Otherwise, validation on just the files
 	 * listed in the array should performed if the validator supports incremental validation.
 	 */
-	public void start(IValidationContext helper, IValidator validator, IReporter reporter, IFileDelta[] changedFiles) throws ValidationException {
+	public void start(IValidationContext helper, IValidator validator, IReporter reporter) throws ValidationException {
 		if ((helper == null) || (validator == null) || (reporter == null)) {
 			return;
 		}
@@ -85,11 +83,11 @@ public class ValidatorLauncher {
 
 		// If the validator is about to perform a full build, remove all of its previous validation
 		// messages.
-		if ((changedFiles == null) || (changedFiles.length == 0)) {
+		if ((helper.getURIs() == null) || (helper.getURIs().length == 0)) {
 			reporter.removeAllMessages(validator);
 		}
 
-		validator.validate(helper, reporter, changedFiles);
+		validator.validate(helper, reporter);
 		validator.cleanup(reporter);
 	}
 }

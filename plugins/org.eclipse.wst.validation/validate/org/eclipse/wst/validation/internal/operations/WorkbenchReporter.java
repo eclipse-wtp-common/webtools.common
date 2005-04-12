@@ -268,7 +268,7 @@ public final class WorkbenchReporter implements IReporter {
 		return vmd.getMsgLogger();
 	}
 
-	public static String getLocation(IWorkbenchHelper helper, IMessage message) {
+	public static String getLocation(IWorkbenchContext helper, IMessage message) {
 		if (message == null) {
 			return getLocationText(helper, null);
 		}
@@ -279,7 +279,7 @@ public final class WorkbenchReporter implements IReporter {
 		return String.valueOf(lineNo);
 	}
 
-	public static String getLocationText(IWorkbenchHelper helper, Object targetObject) {
+	public static String getLocationText(IWorkbenchContext helper, Object targetObject) {
 		String location = null;
 		try {
 			location = helper.getLocation(targetObject);
@@ -313,14 +313,14 @@ public final class WorkbenchReporter implements IReporter {
 
 	// TODO This method was made protected for the SaberReporter. Make this method private again
 	// once the framework supports IMarker.PRIORITY.
-	protected static String getTargetObjectName(IWorkbenchHelper helper, IMessage message) {
+	protected static String getTargetObjectName(IWorkbenchContext helper, IMessage message) {
 		if (message == null) {
 			return getTargetObjectName(helper, null);
 		}
 		return getTargetObjectName(helper, message.getTargetObject());
 	}
 
-	private static String getTargetObjectName(IWorkbenchHelper helper, Object targetObject) {
+	private static String getTargetObjectName(IWorkbenchContext helper, Object targetObject) {
 		String targetObjectName = null;
 		try {
 			targetObjectName = helper.getTargetObjectName(targetObject);
@@ -349,7 +349,7 @@ public final class WorkbenchReporter implements IReporter {
 	/**
 	 * @deprecated. The IValidationContext will be ignored.
 	 */
-	public WorkbenchReporter(IWorkbenchHelper helper, IProgressMonitor monitor, IProject project) {
+	public WorkbenchReporter(IWorkbenchContext helper, IProgressMonitor monitor, IProject project) {
 		this(project, monitor);
 	}
 
@@ -365,9 +365,9 @@ public final class WorkbenchReporter implements IReporter {
 
 	// TODO This method was made protected for the SaberReporter. Make it private again once the
 	// framework support IMarker.PRIORITY.
-	protected IWorkbenchHelper getHelper(IValidator validator) throws InstantiationException, IllegalArgumentException {
+	protected IWorkbenchContext getHelper(IValidator validator) throws InstantiationException, IllegalArgumentException {
 		ValidatorMetaData vmd = getVMD(validator);
-		IWorkbenchHelper helper = vmd.getHelper(getProject());
+		IWorkbenchContext helper = vmd.getHelper(getProject());
 		return helper;
 	}
 	
@@ -415,7 +415,7 @@ public final class WorkbenchReporter implements IReporter {
 
 			if (resource == null) {
 				try {
-					IWorkbenchHelper helper = getHelper(validator);
+					IWorkbenchContext helper = getHelper(validator);
 					resource = helper.getResource(object);
 				} catch (InstantiationException exc) {
 					try {
@@ -520,7 +520,7 @@ public final class WorkbenchReporter implements IReporter {
 	 */
 	public void addMessage(IValidator validator, IMessage message) throws MessageLimitException {
 		IResource resource = getMessageResource(validator, message.getTargetObject());
-		IWorkbenchHelper helper = null;
+		IWorkbenchContext helper = null;
 		ValidatorMetaData vmd = getVMD(validator);
 		try {
 			helper = getHelper(validator);
@@ -647,7 +647,7 @@ public final class WorkbenchReporter implements IReporter {
 			return;
 		}
 
-		IWorkbenchHelper helper = null;
+		IWorkbenchContext helper = null;
 		try {
 			helper = vmd.getHelper(resource.getProject());
 		} catch (InstantiationException exc) {
@@ -690,7 +690,7 @@ public final class WorkbenchReporter implements IReporter {
 		}
 
 
-		IWorkbenchHelper helper = null;
+		IWorkbenchContext helper = null;
 		try {
 			helper = vmd.getHelper(resource.getProject());
 		} catch (InstantiationException exc) {

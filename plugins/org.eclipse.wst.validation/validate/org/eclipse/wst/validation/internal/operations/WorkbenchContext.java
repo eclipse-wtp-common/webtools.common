@@ -12,7 +12,9 @@ package org.eclipse.wst.validation.internal.operations;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.eclipse.core.resources.IContainer;
@@ -33,13 +35,14 @@ import org.eclipse.wst.validation.internal.provisional.core.IMessage;
  * registering the load model method which loads a specific type of MOF model, as identified by the
  * symbolic model name.
  */
-public abstract class AWorkbenchHelper implements IWorkbenchHelper {
+public class WorkbenchContext implements IWorkbenchContext {
 	private IProject _project = null;
 	private Hashtable _modelRegistry = null;
 //	private static final IContainer[] NO_CONTAINERS = new IContainer[0];
 	private int _ruleGroup = RegistryConstants.ATT_RULE_GROUP_DEFAULT;
+	public List validationFileURIs = null; 
 
-	public AWorkbenchHelper() {
+	public WorkbenchContext() {
 		super();
 
 		_modelRegistry = new Hashtable();
@@ -48,7 +51,7 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 	}
 
 	/**
-	 * When the validation is complete, this method will be called so that the IWorkbenchHelper can
+	 * When the validation is complete, this method will be called so that the IWorkbenchContext can
 	 * clean up any resources it allocated during the validation.
 	 * 
 	 * If the cleanup is a long-running operation, subtask messages should be sent to the IReporter.
@@ -149,7 +152,7 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 				Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 				if (logger.isLoggingLevel(Level.SEVERE)) {
 					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("AWorkbenchHelper::getContainerRelativePath(IResource, IContainer)"); //$NON-NLS-1$
+					entry.setSourceID("WorkbenchContext::getContainerRelativePath(IResource, IContainer)"); //$NON-NLS-1$
 					entry.setTargetException(exc);
 					logger.write(Level.SEVERE, entry);
 				}
@@ -282,7 +285,7 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("AWorkbenchHelper.getLineNo(Object)"); //$NON-NLS-1$
+				entry.setSourceID("WorkbenchContext.getLineNo(Object)"); //$NON-NLS-1$
 				entry.setTargetException(exc);
 				logger.write(Level.SEVERE, entry);
 			}
@@ -290,7 +293,7 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 		}
 
 	}
-
+	
 	/**
 	 * Given an IMessage's target object, return the line number, of the IFile, which the target
 	 * object represents, if possible. If the object is null, or if access to line numbers is not
@@ -327,7 +330,7 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("AWorkbenchHelper::getMethod(String, Class[])"); //$NON-NLS-1$
+				entry.setSourceID("WorkbenchContext::getMethod(String, Class[])"); //$NON-NLS-1$
 				entry.setTargetException(exc);
 				logger.write(Level.SEVERE, entry);
 			}
@@ -338,14 +341,14 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 	}
 
 	/**
-	 * @see IWorkbenchHelper.getPortableName(IResource)
+	 * @see IWorkbenchContext.getPortableName(IResource)
 	 */
 	public String getPortableName(IResource resource) {
 		return resource.getFullPath().toString();
 	}
 
 	/**
-	 * Return the IProject which is about to be validated. Each IWorkbenchHelper knows how to
+	 * Return the IProject which is about to be validated. Each IWorkbenchContext knows how to
 	 * traverse a certain type of IProject, for example, an EJB project or a web project.
 	 */
 	public final IProject getProject() {
@@ -386,7 +389,7 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 //			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 //			if (logger.isLoggingLevel(Level.SEVERE)) {
 //				LogEntry entry = ValidationPlugin.getLogEntry();
-//				entry.setSourceID("AWorkbenchHelper::getProjectSourceContainers(IJavaProject)"); //$NON-NLS-1$
+//				entry.setSourceID("WorkbenchContext::getProjectSourceContainers(IJavaProject)"); //$NON-NLS-1$
 //				entry.setTargetException(exc);
 //				logger.write(Level.SEVERE, entry);
 //			}
@@ -439,8 +442,8 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 	 * This method can be overriden by AWorkbenchHelpers, if they wish to perform some
 	 * initialization once the IProject is set. Default is to do nothing.
 	 * 
-	 * For example, if this IWorkbenchHelper delegates to another IWorkbenchHelper, then that
-	 * IWorkbenchHelper's setProject() method should be called here.
+	 * For example, if this IWorkbenchContext delegates to another IWorkbenchContext, then that
+	 * IWorkbenchContext's setProject() method should be called here.
 	 */
 	public void initialize() {
 		//do nothing
@@ -470,8 +473,8 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 //	}
 
 	/**
-	 * Return true if the given symbolic name is registered, and can be loaded by AWorkbenchHelper's
-	 * "loadModel" method. For further information, see the comment above AWorkbenchHelper's
+	 * Return true if the given symbolic name is registered, and can be loaded by WorkbenchContext's
+	 * "loadModel" method. For further information, see the comment above WorkbenchContext's
 	 * "registerModel" method.
 	 */
 	public final boolean isRegistered(String symbolicName) {
@@ -513,7 +516,7 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("AWorkbenchHelper::loadModel(String, Object[])"); //$NON-NLS-1$
+				entry.setSourceID("WorkbenchContext::loadModel(String, Object[])"); //$NON-NLS-1$
 				entry.setTargetException(exc);
 				logger.write(Level.SEVERE, entry);
 			}
@@ -522,7 +525,7 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("AWorkbenchHelper::loadModel(String, Object[])"); //$NON-NLS-1$
+				entry.setSourceID("WorkbenchContext::loadModel(String, Object[])"); //$NON-NLS-1$
 				entry.setTargetException(exc);
 				logger.write(Level.SEVERE, entry);
 
@@ -536,7 +539,7 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("AWorkbenchHelper::loadModel(String, Object[])"); //$NON-NLS-1$
+				entry.setSourceID("WorkbenchContext::loadModel(String, Object[])"); //$NON-NLS-1$
 				entry.setTargetException(exc);
 				logger.write(Level.SEVERE, entry);
 			}
@@ -545,7 +548,7 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("AWorkbenchHelper::loadModel(String, Object[])"); //$NON-NLS-1$
+				entry.setSourceID("WorkbenchContext::loadModel(String, Object[])"); //$NON-NLS-1$
 				entry.setTargetException(exc);
 				logger.write(Level.SEVERE, entry);
 			}
@@ -571,12 +574,12 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 	 * Register a load method for a symbolic name. A load method is defined as a method which takes
 	 * no parameters and returns a RefObject.
 	 * 
-	 * Every subclass of AWorkbenchHelper, for every static type of symbolic name which it supports,
+	 * Every subclass of WorkbenchContext, for every static type of symbolic name which it supports,
 	 * should call registerModel. For IWorkbenchHelpers which support dynamic symbolic names, such
-	 * as file names, each IWorkbenchHelper should override the "loadModel" method. Their
+	 * as file names, each IWorkbenchContext should override the "loadModel" method. Their
 	 * "loadModel" should first call this class' "isRegistered" method to see if they're dealing
 	 * with a static symbolic name, or a dynamic one. If the symbolic name is registered, the
-	 * child's "loadModel" method should just return the result of AWorkbenchHelper's "loadModel"
+	 * child's "loadModel" method should just return the result of WorkbenchContext's "loadModel"
 	 * method. Otherwise, it should return the result based on its own processing.
 	 * 
 	 * When this method is called, the load method identified by loadMethodName is located & stored
@@ -595,12 +598,12 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 	 * Register a load method for a symbolic name. A load method is defined as a method which takes
 	 * no parameters and returns a RefObject.
 	 * 
-	 * Every subclass of AWorkbenchHelper, for every static type of symbolic name which it supports,
+	 * Every subclass of WorkbenchContext, for every static type of symbolic name which it supports,
 	 * should call registerModel. For IWorkbenchHelpers which support dynamic symbolic names, such
-	 * as file names, each IWorkbenchHelper should override the "loadModel" method. Their
+	 * as file names, each IWorkbenchContext should override the "loadModel" method. Their
 	 * "loadModel" should first call this class' "isRegistered" method to see if they're dealing
 	 * with a static symbolic name, or a dynamic one. If the symbolic name is registered, the
-	 * child's "loadModel" method should just return the result of AWorkbenchHelper's "loadModel"
+	 * child's "loadModel" method should just return the result of WorkbenchContext's "loadModel"
 	 * method. Otherwise, it should return the result based on its own processing.
 	 * 
 	 * When this method is called, the load method identified by loadMethodName is located & stored
@@ -644,11 +647,11 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 	}
 
 	/**
-	 * This method is called by the Validation Framework, to initialize the IWorkbenchHelper so that
+	 * This method is called by the Validation Framework, to initialize the IWorkbenchContext so that
 	 * it can gather information from the current project.
 	 * 
-	 * If an IWorkbenchHelper delegates some model loading to another IWorkbenchHelper, this method
-	 * should be overriden so that the delegatee IWorkbenchHelper is initialized with the IProject.
+	 * If an IWorkbenchContext delegates some model loading to another IWorkbenchContext, this method
+	 * should be overriden so that the delegatee IWorkbenchContext is initialized with the IProject.
 	 */
 	public final void setProject(IProject project) {
 		_project = project;
@@ -660,7 +663,7 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 	}
 
 	/**
-	 * Notifies this IWorkbenchHelper that the Validation Framework is shutting down. There will be
+	 * Notifies this IWorkbenchContext that the Validation Framework is shutting down. There will be
 	 * calls to closing(IProject) and possibly deleting(IProject) following this call, but the
 	 * resources may already be closed by the time that those methods are called, so EVERYTHING
 	 * should be cleaned up in this method. The parameter passed in is the project which is about to
@@ -674,7 +677,7 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 	}
 
 	/**
-	 * Notifies this IWorkbenchHelper that the Validation Framework is shutting down. There will be
+	 * Notifies this IWorkbenchContext that the Validation Framework is shutting down. There will be
 	 * calls to closing(IProject) and possibly deleting(IProject) following this call, but the
 	 * resources may already be closed by the time that those methods are called, so EVERYTHING
 	 * should be cleaned up in this method. The parameter passed in is the project which is about to
@@ -686,5 +689,29 @@ public abstract class AWorkbenchHelper implements IWorkbenchHelper {
 	public void shutdown(IProject project) {
 		// Default is to assume that no resources were allocated; therefore,
 		// no cleanup needs to be done.
+	}
+
+	public String getTargetObjectName(Object object) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String[] getURIs() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
+	 * @return Returns the validationFileURIs.
+	 */
+	public List getValidationFileURIs() {
+		return validationFileURIs;
+	}
+
+	/**
+	 * @param validationFileURIs The validationFileURIs to set.
+	 */
+	public void setValidationFileURIs(List validationFileURIs) {
+		this.validationFileURIs = validationFileURIs;
 	}
 }

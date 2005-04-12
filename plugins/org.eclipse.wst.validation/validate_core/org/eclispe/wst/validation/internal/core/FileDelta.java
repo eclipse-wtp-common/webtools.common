@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclispe.wst.validation.internal.core;
 
-import org.eclipse.wst.validation.internal.provisional.core.IFileDelta;
 
 
 /**
@@ -18,7 +17,7 @@ import org.eclipse.wst.validation.internal.provisional.core.IFileDelta;
  * Default implementation of the IFileDelta
  * </p>
  * 
- * @see org.eclipse.wst.validation.internal.provisional.core.IFileDelta
+ * @see org.eclispe.wst.validation.internal.core.IFileDelta
  * 
  *  [issue: CS - is there a reason that we need to expose this impl class as an API?
  *   It would seem better to only expose IFileDelta.  I can't think of a reason where 

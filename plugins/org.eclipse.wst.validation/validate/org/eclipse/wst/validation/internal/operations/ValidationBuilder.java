@@ -23,6 +23,8 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jem.util.logger.LogEntry;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.InternalValidatorManager;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
@@ -31,9 +33,6 @@ import org.eclipse.wst.validation.internal.ResourceHandler;
 import org.eclipse.wst.validation.internal.TimeEntry;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
-
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
 
 /**
  * Validation Framework Builder.
@@ -45,6 +44,7 @@ import org.eclipse.jem.util.logger.proxy.Logger;
 public class ValidationBuilder extends IncrementalProjectBuilder {
 	public static final int NO_DELTA_CHANGE = -1; // Since IResourceConstants
 	protected List referencedProjects;
+	protected IWorkbenchContext workbenchContext = null;
 
 	// doesn't have a "no delta"
 	// flag, let this constant be
@@ -75,6 +75,12 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 		} catch (CoreException core) {
 			return null;
 		}
+	}
+	
+	public IWorkbenchContext getWorkbenchContext() {
+		if(workbenchContext == null)
+			workbenchContext = new WorkbenchContext();
+		return workbenchContext;
 	}
 
 
@@ -197,7 +203,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 						executionMap |= 0x10;
 					return referenced;
 				}
-				EnabledIncrementalValidatorsOperation operation = new EnabledIncrementalValidatorsOperation(project, delta, prjp.runAsync());
+				EnabledIncrementalValidatorsOperation operation = new EnabledIncrementalValidatorsOperation(project,getWorkbenchContext(), delta, prjp.runAsync());
 				operation.run(monitor);
 			}
 			return referenced;

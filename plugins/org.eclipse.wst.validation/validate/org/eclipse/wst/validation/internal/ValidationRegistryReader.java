@@ -33,7 +33,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.operations.IRuleGroup;
-import org.eclipse.wst.validation.internal.operations.IWorkbenchHelper;
+import org.eclipse.wst.validation.internal.operations.IWorkbenchContext;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 
@@ -458,10 +458,10 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		return helpers[0].getAttribute(ATT_CLASS);
 	}
 
-	/* package */static IWorkbenchHelper createHelper(IConfigurationElement element, String helperClassName) {
-		IWorkbenchHelper wh = null;
+	/* package */static IWorkbenchContext createHelper(IConfigurationElement element, String helperClassName) {
+		IWorkbenchContext wh = null;
 		try {
-			wh = (IWorkbenchHelper) element.createExecutableExtension(TAG_HELPER_CLASS);
+			wh = (IWorkbenchContext) element.createExecutableExtension(TAG_HELPER_CLASS);
 		} catch (Throwable exc) {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {

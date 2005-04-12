@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal.provisional.core;
 
+import org.eclispe.wst.validation.internal.core.ValidationException;
+
 /**
  * This is the base interface for all Validators. A Validator is a class which verifies that objects
  * follow some rules. For example, in a MOF model which represents an EJB jar, the EJB specification
@@ -65,5 +67,5 @@ public interface IValidator {
 	 * domain of another API to manage manage incremental file changes and triggering validations accordingly. 
 	 * Do we have a current use case in WTP where the validator does anything more validate a file from the changedFiles list?]
 	 */
-	public void validate(IValidationContext helper, IReporter reporter, IFileDelta[] changedFiles) throws ValidationException;
+	public void validate(IValidationContext helper, IReporter reporter) throws ValidationException;
 }

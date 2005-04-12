@@ -8,10 +8,12 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.validation.internal.provisional.core;
+package org.eclispe.wst.validation.internal.core;
 
 
 import java.util.Locale;
+
+import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 
 /**
  * <p>

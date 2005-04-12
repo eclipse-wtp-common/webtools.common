@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal.provisional.core;
 
+import java.util.List;
+
 
 /**
  * <p>
@@ -43,7 +45,7 @@ public interface IValidationContext {
 	 * IValidatorContext. For an example our internal implementation of the loadModel use
 	 * method names for symbolicNames to load the model object to be validated. Users can
 	 * use their own model load mechanism.
-	 * @see <code>AWorkbenchHelper</code>
+	 * @see <code>WorkbenchContext</code>
 	 * 
 	 * </p>
 	 * @since 1.0
@@ -72,4 +74,6 @@ public interface IValidationContext {
 	 * supplied and queried in a generic manner.]
 	 */
 	public Object loadModel(String symbolicName, Object[] parms);
+	
+	public String[] getURIs();
 }

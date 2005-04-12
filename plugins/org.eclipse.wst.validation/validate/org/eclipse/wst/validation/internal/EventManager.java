@@ -26,7 +26,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jem.util.UIContextDetermination;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
-import org.eclipse.wst.validation.internal.operations.IWorkbenchHelper;
+import org.eclipse.wst.validation.internal.operations.IWorkbenchContext;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 /**
@@ -81,7 +81,7 @@ public class EventManager implements IResourceChangeListener {
 						continue;
 					}
 
-					IWorkbenchHelper helper = null;
+					IWorkbenchContext helper = null;
 					try {
 						helper = vmd.getHelper(project);
 						helper.closing();
@@ -152,7 +152,7 @@ public class EventManager implements IResourceChangeListener {
 						continue;
 					}
 
-					IWorkbenchHelper helper = null;
+					IWorkbenchContext helper = null;
 					try {
 						helper = vmd.getHelper(project);
 						helper.deleting();
@@ -325,9 +325,9 @@ public class EventManager implements IResourceChangeListener {
 			 */
 
 			// If the validators are loaded, then for every project in the workbench,
-			// we must see if it has been loaded. If it has, every enabled IWorkbenchHelper
+			// we must see if it has been loaded. If it has, every enabled IWorkbenchContext
 			// must be called to clean up. If the project hasn't been loaded, then no
-			// IWorkbenchHelper built anything, and there's nothing to clean up.
+			// IWorkbenchContext built anything, and there's nothing to clean up.
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();
 			IWorkspaceRoot workspaceRoot = workspace.getRoot();
 			IProject[] projects = workspaceRoot.getProjects();
@@ -364,7 +364,7 @@ public class EventManager implements IResourceChangeListener {
 									continue;
 								}
 
-								IWorkbenchHelper helper = vmd.getHelper(project);
+								IWorkbenchContext helper = vmd.getHelper(project);
 								if (helper != null) {
 									try {
 										helper.shutdown();

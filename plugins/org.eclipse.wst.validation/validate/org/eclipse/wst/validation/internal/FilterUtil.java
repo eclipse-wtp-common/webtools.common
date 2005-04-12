@@ -31,10 +31,10 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
-import org.eclipse.wst.validation.internal.operations.IWorkbenchHelper;
+import org.eclipse.wst.validation.internal.operations.IWorkbenchContext;
 import org.eclipse.wst.validation.internal.operations.WorkbenchFileDelta;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
-import org.eclipse.wst.validation.internal.provisional.core.IFileDelta;
+import org.eclispe.wst.validation.internal.core.IFileDelta;
 
 /**
  * Utility class for the ValidationOperation hierarchy.
@@ -228,7 +228,7 @@ public final class FilterUtil {
 
 		Iterator iterator = enabledValidators.iterator();
 		boolean cannotLoad = false;
-		IWorkbenchHelper helper = null;
+		IWorkbenchContext helper = null;
 		while (iterator.hasNext()) {
 			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
 			try {
@@ -288,7 +288,7 @@ public final class FilterUtil {
 		return result;
 	}
 
-	public static WorkbenchFileDelta getFileDelta(IWorkbenchHelper helper, ValidatorMetaData vmd, IResource resource, int iresourceDeltaType) {
+	public static WorkbenchFileDelta getFileDelta(IWorkbenchContext helper, ValidatorMetaData vmd, IResource resource, int iresourceDeltaType) {
 		// strip off the eclipse-specific information
 		String fileName = helper.getPortableName(resource);
 		if (fileName == null) {
@@ -297,7 +297,7 @@ public final class FilterUtil {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("FilterUtil::getFileDelta(IWorkbenchHelper, ValidatorMetaData, IResource, int)"); //$NON-NLS-1$
+				entry.setSourceID("FilterUtil::getFileDelta(IWorkbenchContext, ValidatorMetaData, IResource, int)"); //$NON-NLS-1$
 				entry.setMessageTypeID(ResourceConstants.VBF_EXC_SYNTAX_NULL_NAME);
 				entry.setTokens(new String[]{resource.getName(), vmd.getValidatorDisplayName()});
 				logger.write(Level.SEVERE, entry);
@@ -311,7 +311,7 @@ public final class FilterUtil {
 			} else {
 				if (logger.isLoggingLevel(Level.SEVERE)) {
 					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("FilterUtil::getFileDelta(IWorkbenchHelper, ValidtaorMetaData, IResource, int)"); //$NON-NLS-1$
+					entry.setSourceID("FilterUtil::getFileDelta(IWorkbenchContext, ValidtaorMetaData, IResource, int)"); //$NON-NLS-1$
 					entry.setText("portableName is null and path is null for resource " + resource); //$NON-NLS-1$
 					logger.write(Level.SEVERE, entry);
 				}
@@ -328,7 +328,7 @@ public final class FilterUtil {
 	 * Add the IResource to the vmd's list of resources to validate. Return true if the add was
 	 * successful or false if the add was not successful.
 	 */
-	static boolean addToFileList(Map enabledValidators, IWorkbenchHelper helper, ValidatorMetaData vmd, IResource resource, int resourceDelta, boolean isFullBuild) {
+	static boolean addToFileList(Map enabledValidators, IWorkbenchContext helper, ValidatorMetaData vmd, IResource resource, int resourceDelta, boolean isFullBuild) {
 		if ((vmd == null) || (resource == null)) {
 			return false;
 		}
@@ -428,7 +428,7 @@ public final class FilterUtil {
 			if (!filterOut(monitor, vmd, resource, resourceDelta)) {
 				try {
 					// Notify the helper that a resource is about to be filtered in
-					IWorkbenchHelper helper = vmd.getHelper(resource.getProject());
+					IWorkbenchContext helper = vmd.getHelper(resource.getProject());
 					addToFileList(enabledValidators, helper, vmd, resource, resourceDelta, isFullBuild);
 				} catch (InstantiationException exc) {
 					cannotLoad = true;

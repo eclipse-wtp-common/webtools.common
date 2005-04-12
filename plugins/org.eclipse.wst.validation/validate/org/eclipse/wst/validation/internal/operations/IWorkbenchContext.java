@@ -23,9 +23,9 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidationContext;
  * also needs to load items from the eclipse workbench. This interface should be extended by
  * workbench IHelpers, so that items can be added to, and from, the task list.
  */
-public interface IWorkbenchHelper extends IValidationContext {
+public interface IWorkbenchContext extends IValidationContext {
 	/**
-	 * When the validation is complete, this method will be called so that the IWorkbenchHelper can
+	 * When the validation is complete, this method will be called so that the IWorkbenchContext can
 	 * clean up any resources it allocated during the validation.
 	 * 
 	 * If the cleanup is a long-running operation, subtask messages should be sent to the IReporter.
@@ -105,7 +105,7 @@ public interface IWorkbenchHelper extends IValidationContext {
 	 * Return the name of the resource, without the project-specific information in front.
 	 * 
 	 * This method is used by ValidationOperation to calculate the non-environment specific names of
-	 * the files. Only the IWorkbenchHelper implementation knows how much information to strip off
+	 * the files. Only the IWorkbenchContext implementation knows how much information to strip off
 	 * of the IResource name. For example, if there is an EJB Project named "MyEJBProject", and it
 	 * uses the default names for the source and output folders, "source" and "ejbModule",
 	 * respectively, then the current implementation of EJB Helper knows how much of that structure
@@ -122,14 +122,14 @@ public interface IWorkbenchHelper extends IValidationContext {
 	 * 
 	 * The output of this method is used by the ValidationOperation, when it is calculating the list
 	 * of added/changed/deleted file names for incremental validation. If getPortableName(IResource)
-	 * returns null, that means that the IWorkbenchHelper's implementation does not support that
+	 * returns null, that means that the IWorkbenchContext's implementation does not support that
 	 * particular type of resource, and the resource should not be included in the array of
 	 * IFileDelta objects in the IValidator's "validate" method.
 	 */
 	public String getPortableName(IResource resource);
 
 	/**
-	 * Return the IProject which is about to be validated. Each IWorkbenchHelper knows how to
+	 * Return the IProject which is about to be validated. Each IWorkbenchContext knows how to
 	 * traverse a certain type of IProject, for example, an EJB project or a web project.
 	 */
 	public IProject getProject();
@@ -159,13 +159,13 @@ public interface IWorkbenchHelper extends IValidationContext {
 	public void registerResource(IResource resource);
 
 	/**
-	 * This method is called by the Validation Framework, to initialize the IWorkbenchHelper so that
+	 * This method is called by the Validation Framework, to initialize the IWorkbenchContext so that
 	 * it can gather information from the current project.
 	 */
 	public void setProject(IProject project);
 
 	/**
-	 * Notifies this IWorkbenchHelper that the Validation Framework is shutting down. There will be
+	 * Notifies this IWorkbenchContext that the Validation Framework is shutting down. There will be
 	 * calls to closing(IProject) and possibly deleting(IProject) following this call, but the
 	 * resources may already be closed by the time that those methods are called, so EVERYTHING
 	 * should be cleaned up in this method. The parameter passed in is the project which is about to

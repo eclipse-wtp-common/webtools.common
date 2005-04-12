@@ -79,6 +79,55 @@ public class EnabledIncrementalValidatorsOperation extends EnabledValidatorsOper
 	public EnabledIncrementalValidatorsOperation(IProject project, IResourceDelta delta, boolean async) {
 		this(project, delta, RegistryConstants.ATT_RULE_GROUP_DEFAULT, async);
 	}
+	
+	/**
+	 * IProject must exist and be open.
+	 * 
+	 * If delta is null, a full validation of the project using only the incremental validators is
+	 * performed. If delta is not null, all enabled incremental validators that validate resources
+	 * in the delta will validate those resources.
+	 * 
+	 * If async is true, all thread-safe validators will run in the background validation thread,
+	 * and all other validators will run in the main thread. If async is false, all validators will
+	 * run in the main thread.
+	 */
+	public EnabledIncrementalValidatorsOperation(IProject project, IWorkbenchContext context, IResourceDelta delta, boolean async) {
+		this(project,context, delta, RegistryConstants.ATT_RULE_GROUP_DEFAULT, async);
+	}
+	
+	/**
+	 * IProject must exist and be open.
+	 * 
+	 * If delta is null, a full validation of the project using only the incremental validators is
+	 * performed. If delta is not null, all enabled incremental validators that validate resources
+	 * in the delta will validate those resources.
+	 * 
+	 * If async is true, all thread-safe validators will run in the background validation thread,
+	 * and all other validators will run in the main thread. If async is false, all validators will
+	 * run in the main thread.
+	 */
+	public EnabledIncrementalValidatorsOperation(IProject project,IWorkbenchContext context, IResourceDelta delta, int ruleGroup, boolean async) {
+		super(project, ruleGroup, shouldForce(delta), async);
+		try {
+			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
+			setEnabledValidators(InternalValidatorManager.wrapInSet(prjp.getEnabledIncrementalValidators(true)));
+		} catch (InvocationTargetException exc) {
+			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
+			if (logger.isLoggingLevel(Level.SEVERE)) {
+				LogEntry entry = ValidationPlugin.getLogEntry();
+				entry.setSourceID("EnabledIncrementalVAlidatorsOperation(IProject<" + project.getName() + ">, IResourceDelta, int, boolean)"); //$NON-NLS-1$  //$NON-NLS-2$
+				entry.setTargetException(exc);
+				logger.write(Level.SEVERE, exc);
+
+				if (exc.getTargetException() != null) {
+					entry.setTargetException(exc);
+					logger.write(Level.SEVERE, exc);
+				}
+			}
+		}
+		setDelta(delta);
+		setContext(context);
+	}
 
 	/**
 	 * IProject must exist and be open.

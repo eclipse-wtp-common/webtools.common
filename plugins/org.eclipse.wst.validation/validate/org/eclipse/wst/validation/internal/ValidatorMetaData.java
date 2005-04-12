@@ -21,7 +21,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jem.util.logger.proxy.Logger;
-import org.eclipse.wst.validation.internal.operations.IWorkbenchHelper;
+import org.eclipse.wst.validation.internal.operations.IWorkbenchContext;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 import org.osgi.framework.Bundle;
@@ -35,7 +35,7 @@ public class ValidatorMetaData {
 	private ValidatorFilter[] _filters = null;
 	private ValidatorNameFilter[] _projectNatureFilters = null;
 	private IValidator _validator = null;
-	private IWorkbenchHelper _helper = null;
+	private IWorkbenchContext _helper = null;
 	private String _validatorDisplayName = null;
 	private String _validatorUniqueName = null;
 	private String[] _aggregatedValidators = null;
@@ -153,21 +153,21 @@ public class ValidatorMetaData {
 	 * if the helper's plugin is disabled for some reason. Before the InstantiationException is
 	 * thrown, this validator will be disabled.
 	 * 
-	 * The IWorkbenchHelper must ALWAYS have its project set before it is used; but it can't be
+	 * The IWorkbenchContext must ALWAYS have its project set before it is used; but it can't be
 	 * created with the IProject. So, before using the single instance, always initialize that
 	 * instance with the IProject.
 	 * 
 	 * If this validator supports asynchronous validation, then instead of maintaining a single the
-	 * helper instance, create a new IWorkbenchHelper instance every time that the helper is needed.
+	 * helper instance, create a new IWorkbenchContext instance every time that the helper is needed.
 	 * This feature is provided because several validation Runnables may be queued to run, and if
 	 * those Runnables's project is different from the current validation's project, then the
 	 * current validation will suddenly start validating another project.
 	 */
 	//TODO just want to remember to figure out the many-temporary-objects problem if this method
 	// continues to new an IValidationContext every time - Ruth
-	public IWorkbenchHelper getHelper(IProject project) throws InstantiationException {
+	public IWorkbenchContext getHelper(IProject project) throws InstantiationException {
 		if (isAsync()) {
-			IWorkbenchHelper helper = ValidationRegistryReader.createHelper(_helperClassElement, _helperClassName);
+			IWorkbenchContext helper = ValidationRegistryReader.createHelper(_helperClassElement, _helperClassName);
 			if (helper == null) {
 				setCannotLoad();
 				throw new InstantiationException(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_DISABLEH, new String[]{_helperClassName, getValidatorUniqueName()}));
@@ -193,7 +193,7 @@ public class ValidatorMetaData {
 	}
 
 	/**
-	 * cannotLoad is false if both the IValidator and IWorkbenchHelper instance can be instantiated.
+	 * cannotLoad is false if both the IValidator and IWorkbenchContext instance can be instantiated.
 	 * This method should be called only by the validation framework, and only if an
 	 * InstantiationException was thrown.
 	 * 
@@ -204,7 +204,7 @@ public class ValidatorMetaData {
 	}
 
 	/**
-	 * Return false if both the IValidator and IWorkbenchHelper instance can be instantiated.
+	 * Return false if both the IValidator and IWorkbenchContext instance can be instantiated.
 	 * 
 	 * @return boolean
 	 */
