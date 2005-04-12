@@ -90,11 +90,15 @@ public class ArtifactEditTest extends TestCase {
 	public ArtifactEditTest() {
 		super();
 
+	}
+	
+	protected void setUp() throws Exception {
 		if (!getTargetProject().exists())
 			if (!createProject())
 				fail();
 		project = getTargetProject();
 	}
+	
 
 	public IProject getTargetProject() {
 		return ResourcesPlugin.getWorkspace().getRoot().getProject(PROJECT_NAME);
