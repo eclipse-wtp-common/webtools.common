@@ -13,7 +13,6 @@ package org.eclipse.wst.common.frameworks.datamodel.tests;
 import junit.framework.TestCase;
 
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
-import org.eclipse.wst.common.frameworks.datamodel.DataModelProviderDescriptor;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
 public class DataModelFactoryTest extends TestCase {
@@ -53,8 +52,8 @@ public class DataModelFactoryTest extends TestCase {
 	}
     
     public void testValidExtensionIDAndProviderType() {
-        DataModelProviderDescriptor[] descs = DataModelFactory.getProviderDescriptorsForProviderKind("testProviderBase");
-        IDataModel dataModel = DataModelFactory.createDataModel(descs[0].createProviderInstance());
+        String[] descs = DataModelFactory.getDataModelProviderIDsForKind("testProviderBase");
+        IDataModel dataModel = DataModelFactory.createDataModel(descs[0]);
         assertTrue(dataModel.isProperty(ITestDataModel.FOO));
     }
     
