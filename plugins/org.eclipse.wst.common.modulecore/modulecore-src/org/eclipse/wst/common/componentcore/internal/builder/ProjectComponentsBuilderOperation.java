@@ -34,13 +34,13 @@ public class ProjectComponentsBuilderOperation extends AbstractDataModelOperatio
      */
     public IStatus execute(IProgressMonitor monitor, IAdaptable info) {
         try {
-            List deployableModuleDM = (List)model.getProperty(MODULE_BUILDER_DM_LIST);
+            List deployableModuleDM = (List)model.getProperty(COMPONENT_BUILDER_DM_LIST);
             IUndoableOperation op = null;
             if(deployableModuleDM == null) return OK_STATUS;
             for(int i = 0; i < deployableModuleDM.size(); i++){
                 IDataModel moduleDM = (IDataModel)deployableModuleDM.get(i);
                 
-                List depModuleList = (List)moduleDM.getProperty(IWorkbenchComponentBuilderDataModelProperties.DEPENDENT_MODULES_DM_LIST);
+                List depModuleList = (List)moduleDM.getProperty(IWorkbenchComponentBuilderDataModelProperties.DEPENDENT_COMPONENT_DM_LIST);
                 for(int j = 0; j < depModuleList.size(); j++){
                 	IDataModel depModuleDM = (IDataModel)depModuleList.get(j);
                 	ReferencedComponentBuilderDelayedDataModelCache.getInstance().addToCache(depModuleDM);

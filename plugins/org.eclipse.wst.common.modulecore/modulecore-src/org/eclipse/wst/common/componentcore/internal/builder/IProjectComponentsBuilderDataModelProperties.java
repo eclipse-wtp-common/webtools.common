@@ -10,7 +10,25 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.builder;
 
-public interface IProjectComponentsBuilderDataModelProperties {
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties;
+/**
+ * <p>
+ * IProjectComponentsBuilderDataModelProperties supplies the properties to the IDataModel and 
+ * associated DataModelProvider ProjectComponentsBuilderDataModelProvider used for 
+ * the Project Component section of the ComponentStructuralBuilder. 
+ * @see org.eclipse.wst.common.componentcore.internal.builder.ComponentStructuralBuilder
+ * </p>
+ * <p>
+ * This interface is not intended to be implemented by clients.
+ * </p>
+ * 
+ * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider
+ * @see org.eclipse.wst.common.frameworks.datamodel.DataModelFactory
+ * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties
+ * 
+ * @since 1.0
+ */
+public interface IProjectComponentsBuilderDataModelProperties extends IDataModelProperties{
 	/**
 	 * Required, type String. The initializing builder will set this field to the name value of the 
 	 * project which is currently being built.
@@ -41,14 +59,19 @@ public interface IProjectComponentsBuilderDataModelProperties {
 	public static final String PROJECT_DETLA = "IProjectComponentsBuilderDataModelProperties.PROJECT_DETLA"; //$NON-NLS-1$
 
 	/**
-	 * Required, type org.eclipse.wst.common.modulecore.ModuleCore. The initializing builder will set this field to the ModuleCore associated
+	 * Required, type ComponentCore. The initializing builder will set this field to the ModuleCore associated
 	 * with the project which is currently being built.  This field can be used to retrieve information about components and their associated 
 	 * dependent components present in the current project.
 	 * 
-	 * @see org.eclipse.wst.common.componentcore.StructureEdit
+	 * @see org.eclipse.wst.common.componentcore.ComponentCore
 	 */
-	public static final String MODULE_CORE = "IProjectComponentsBuilderDataModelProperties.MODULE_CORE";
-	
-	public static final String MODULE_BUILDER_DM_LIST = "IProjectComponentsBuilderDataModelProperties.MODULE_BUILDER_DM_LIST"; //$NON-NLS-1$
+	public static final String COMPONENT_CORE = "IProjectComponentsBuilderDataModelProperties.COMPONENT_CORE";
+    /**
+     * Populatd, type List. The initializing builder will set this field to a List of initialized ComponentStructuralBuilders.  
+     * This field represents builder IDataModel for all components present in the current project.
+     * @see org.eclipse.wst.common.frameworks.datamodel.IDataModel
+     * @see WorkbenchComponentBuilderDataModelProvider
+     */
+	public static final String COMPONENT_BUILDER_DM_LIST = "IProjectComponentsBuilderDataModelProperties.COMPONENT_BUILDER_DM_LIST"; //$NON-NLS-1$
 
 }

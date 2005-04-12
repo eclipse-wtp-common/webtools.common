@@ -35,7 +35,7 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
      * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider#getPropertyNames()
      */
     public String[] getPropertyNames() {
-        return new String[]{PROJECT, BUILD_KIND, PROJECT_DETLA, MODULE_CORE, MODULE_BUILDER_DM_LIST};
+        return new String[]{PROJECT, BUILD_KIND, PROJECT_DETLA, COMPONENT_CORE, COMPONENT_BUILDER_DM_LIST};
     }
 	/*
 	 * (non-Javadoc)
@@ -48,7 +48,7 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
 
 			//TODO: remove for M4 when incremental build available
 			model.setProperty(BUILD_KIND, new Integer(IncrementalProjectBuilder.FULL_BUILD));
-			model.setProperty(MODULE_BUILDER_DM_LIST, populateModuleBuilderDataModelList());
+			model.setProperty(COMPONENT_BUILDER_DM_LIST, populateModuleBuilderDataModelList());
 		}
 		return true;
 	}
@@ -91,8 +91,8 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
 			EList depModules = wbModule.getReferencedComponents();
 			for (int i = 0; i < depModules.size(); i++) {
 				ReferencedComponent depModule = (ReferencedComponent) depModules.get(i);
-				if (((StructureEdit) model.getProperty(MODULE_CORE)).isLocalDependency(depModule)) {
-					WorkbenchComponent depWBModule = ((StructureEdit) model.getProperty(MODULE_CORE)).findComponentByURI(depModule.getHandle());
+				if (((StructureEdit) model.getProperty(COMPONENT_CORE)).isLocalDependency(depModule)) {
+					WorkbenchComponent depWBModule = ((StructureEdit) model.getProperty(COMPONENT_CORE)).findComponentByURI(depModule.getHandle());
 					if (!sortedModuleList.contains(depWBModule)) {
 						computeModuleBuildOrder(depWBModule, sortedModuleList, null, callStack);
 					}
@@ -138,7 +138,7 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
 
 
 	private List populateFullModuleBuilderDataModelList() {
-		StructureEdit moduleCore = (StructureEdit) model.getProperty(MODULE_CORE);
+		StructureEdit moduleCore = (StructureEdit) model.getProperty(COMPONENT_CORE);
 		List moduleBuilderDataModelList = new ArrayList();
 		WorkbenchComponent[] wbModules = moduleCore.getWorkbenchModules();
 
@@ -165,9 +165,9 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
             builderType = typeId + ".builder";
 			dataModel = DataModelEnablementFactory.createDataModel(builderType, curProject);
             if(dataModel != null) {
-    			dataModel.setProperty(IWorkbenchComponentBuilderDataModelProperties.MODULE_CORE, moduleCore);
+    			dataModel.setProperty(IWorkbenchComponentBuilderDataModelProperties.COMPONENT_CORE, moduleCore);
     			dataModel.setProperty(IWorkbenchComponentBuilderDataModelProperties.PROJECT, model.getProperty(PROJECT));
-    			dataModel.setProperty(IWorkbenchComponentBuilderDataModelProperties.WORKBENCH_MODULE, wbComponent);
+    			dataModel.setProperty(IWorkbenchComponentBuilderDataModelProperties.WORKBENCH_COMPONENT, wbComponent);
     			moduleBuilderDataModelList.add(dataModel);
             }
 		}

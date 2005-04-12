@@ -58,7 +58,7 @@ public class ComponentStructuralBuilder extends IncrementalProjectBuilder implem
         IDataModel builderDataModel = DataModelFactory.createDataModel(new ProjectComponentsBuilderDataModelProvider());
         try {
             moduleCore = StructureEdit.getStructureEditForRead(getProject());
-            builderDataModel.setProperty(MODULE_CORE, moduleCore);
+            builderDataModel.setProperty(COMPONENT_CORE, moduleCore);
             builderDataModel.setProperty(PROJECT, getProject());
             builderDataModel.setProperty(PROJECT_DETLA, getDelta(getProject()));
             //TODO: implement incremental builds

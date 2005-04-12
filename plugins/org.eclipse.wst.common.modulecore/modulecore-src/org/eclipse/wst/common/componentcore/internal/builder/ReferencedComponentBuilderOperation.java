@@ -134,7 +134,7 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 	 * @return
 	 */
 	private IPath getAbsoluteOutputContainer() {
-		WorkbenchComponent workbenchModule = (WorkbenchComponent) model.getProperty(CONTAINING_WBMODULE);
+		WorkbenchComponent workbenchModule = (WorkbenchComponent) model.getProperty(CONTAINING_WB_COMPONENT);
 		IFolder localWorkbenchModuleOuptutContainer = null;
 		if (workbenchModule != null)
 			localWorkbenchModuleOuptutContainer = StructureEdit.getOutputContainerRoot(workbenchModule);
@@ -148,14 +148,14 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 	 * @return
 	 */
 	private IPath getAbsoluteInputContainer() {
-		WorkbenchComponent depWBModule = (WorkbenchComponent) model.getProperty(DEPENDENT_WBMODULE);
+		WorkbenchComponent depWBModule = (WorkbenchComponent) model.getProperty(DEPENDENT_WB_COMPONENT);
 		if (depWBModule != null)
 			return StructureEdit.getOutputContainerRoot(depWBModule).getFullPath();
 		return null;
 	}
 
 	private String getZipFileName() {
-		WorkbenchComponent depWBModule = (WorkbenchComponent) model.getProperty(DEPENDENT_WBMODULE);
+		WorkbenchComponent depWBModule = (WorkbenchComponent) model.getProperty(DEPENDENT_WB_COMPONENT);
 		String typeID = depWBModule.getComponentType().getComponentTypeId();
 		String zipFileName = depWBModule.getName();
 		zipFileName = zipFileName.replace('.', '_');

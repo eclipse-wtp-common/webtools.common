@@ -8,8 +8,10 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.operation;
 
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties;
 
-public interface IComponentCreationDataModelProperties {
+
+public interface IComponentCreationDataModelProperties extends IDataModelProperties {
 
 	/**
      * Required

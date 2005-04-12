@@ -29,32 +29,32 @@ public abstract class WorkbenchComponentBuilderDataModelProvider extends Abstrac
      * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider#getPropertyNames()
      */
     public String[] getPropertyNames() {
-        return new String[]{PROJECT, OUTPUT_CONTAINER, PROJECT, WORKBENCH_MODULE, DEPENDENT_MODULES_DM_LIST, MODULE_CORE};
+        return new String[]{PROJECT, OUTPUT_CONTAINER, PROJECT, WORKBENCH_COMPONENT, DEPENDENT_COMPONENT_DM_LIST, COMPONENT_CORE};
     }
     /* (non-Javadoc)
      * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#doSetProperty(java.lang.String, java.lang.Object)
      */
     public boolean propertySet(String propertyName, Object propertyValue) {
-        if(propertyName.equals(WORKBENCH_MODULE)) {
+        if(propertyName.equals(WORKBENCH_COMPONENT)) {
         	model.setProperty(OUTPUT_CONTAINER, populateOutputContainer());
-        	model.setProperty(DEPENDENT_MODULES_DM_LIST, populateDependentModulesDM());
+        	model.setProperty(DEPENDENT_COMPONENT_DM_LIST, populateDependentModulesDM());
         }
         return true;
     }
 
     private Object populateDependentModulesDM() {
-        WorkbenchComponent wbModule = (WorkbenchComponent)model.getProperty(WORKBENCH_MODULE);
+        WorkbenchComponent wbModule = (WorkbenchComponent)model.getProperty(WORKBENCH_COMPONENT);
         List depModules = wbModule.getReferencedComponents();
         List depModulesDataModels = new ArrayList();
         IDataModel dependentDataModel = null;
-        StructureEdit moduleCore = (StructureEdit)model.getProperty(MODULE_CORE);
+        StructureEdit moduleCore = (StructureEdit)model.getProperty(COMPONENT_CORE);
         IProject project = (IProject)model.getProperty(PROJECT);
         for(int i = 0; i<depModules.size(); i++){
             dependentDataModel = DataModelEnablementFactory.createDataModel(IModuleConstants.DEPENDENT_MODULE + ".builder", project);
             if(dependentDataModel != null) {
-                dependentDataModel.setProperty(IReferencedComponentBuilderDataModelProperties.MODULE_CORE, moduleCore);
-                dependentDataModel.setProperty(IReferencedComponentBuilderDataModelProperties.CONTAINING_WBMODULE, getProperty(WORKBENCH_MODULE));
-                dependentDataModel.setProperty(IReferencedComponentBuilderDataModelProperties.DEPENDENT_MODULE, depModules.get(i));
+                dependentDataModel.setProperty(IReferencedComponentBuilderDataModelProperties.COMPONENT_CORE, moduleCore);
+                dependentDataModel.setProperty(IReferencedComponentBuilderDataModelProperties.CONTAINING_WB_COMPONENT, getProperty(WORKBENCH_COMPONENT));
+                dependentDataModel.setProperty(IReferencedComponentBuilderDataModelProperties.DEPENDENT_COMPONENT, depModules.get(i));
                 depModulesDataModels.add(dependentDataModel);
             }
         }
@@ -65,7 +65,7 @@ public abstract class WorkbenchComponentBuilderDataModelProvider extends Abstrac
      * @return
      */
     private Object populateOutputContainer() {
-        WorkbenchComponent wbModule = (WorkbenchComponent)model.getProperty(WORKBENCH_MODULE);
+        WorkbenchComponent wbModule = (WorkbenchComponent)model.getProperty(WORKBENCH_COMPONENT);
         IFolder outputContainer = null;
         if(wbModule != null)
         	outputContainer = StructureEdit.getOutputContainerRoot(wbModule);

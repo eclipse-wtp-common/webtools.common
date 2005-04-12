@@ -25,7 +25,7 @@ public class ReferencedComponentBuilderDataModelProvider extends AbstractDataMod
      * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider#getPropertyNames()
      */
     public String[] getPropertyNames() {
-        return new String[]{CONTAINING_WBMODULE, DEPENDENT_MODULE, DEPENDENT_WBMODULE, DOES_CONSUME, HANDLE, MODULE_CORE, OUTPUT_CONTAINER};
+        return new String[]{CONTAINING_WB_COMPONENT, DEPENDENT_COMPONENT, DEPENDENT_WB_COMPONENT, DOES_CONSUME, COMPONENT_CORE, OUTPUT_CONTAINER};
     }
     /*
      * (non-Javadoc)
@@ -34,47 +34,46 @@ public class ReferencedComponentBuilderDataModelProvider extends AbstractDataMod
      *      java.lang.Object)
      */
     public boolean propertySet(String propertyName, Object propertyValue) {
-        if (propertyName.equals(DEPENDENT_MODULE)) {
-            model.setProperty(HANDLE, getHandleValue());
+        if (propertyName.equals(DEPENDENT_COMPONENT)) {
             model.setProperty(OUTPUT_CONTAINER, getOutputContainerValue());
             model.setProperty(DOES_CONSUME, getDoesConsumeValue());
-            model.setProperty(DEPENDENT_WBMODULE, getWorkBenchModuleValue());
+            model.setProperty(DEPENDENT_WB_COMPONENT, getWorkBenchModuleValue());
         }
         return true;
     }
 
     private WorkbenchComponent getWorkBenchModuleValue() {
-        if (!model.isPropertySet(DEPENDENT_MODULE))
+        if (!model.isPropertySet(DEPENDENT_COMPONENT))
             return null;
-        StructureEdit localCore = (StructureEdit) model.getProperty(MODULE_CORE);
+        StructureEdit localCore = (StructureEdit) model.getProperty(COMPONENT_CORE);
         try {
             if (localCore != null)
-                return localCore.findComponentByURI(((ReferencedComponent) model.getProperty(DEPENDENT_MODULE)).getHandle());
+                return localCore.findComponentByURI(((ReferencedComponent) model.getProperty(DEPENDENT_COMPONENT)).getHandle());
         } catch (UnresolveableURIException e) {
         }
         return null;
     }
 
     private Object getOutputContainerValue() {
-        if (!model.isPropertySet(DEPENDENT_MODULE))
+        if (!model.isPropertySet(DEPENDENT_COMPONENT))
             return null;
-        ReferencedComponent depModule = (ReferencedComponent) model.getProperty(DEPENDENT_MODULE);;
+        ReferencedComponent depModule = (ReferencedComponent) model.getProperty(DEPENDENT_COMPONENT);;
         return depModule.getRuntimePath();
     }
 
     private URI getHandleValue() {
-        if (!model.isPropertySet(DEPENDENT_MODULE))
+        if (!model.isPropertySet(DEPENDENT_COMPONENT))
             return null;
-        return ((ReferencedComponent) model.getProperty(DEPENDENT_MODULE)).getHandle();
+        return ((ReferencedComponent) model.getProperty(DEPENDENT_COMPONENT)).getHandle();
     }
 
     /**
      * @return
      */
     private Boolean getDoesConsumeValue() {
-        if (!model.isPropertySet(DEPENDENT_MODULE))
+        if (!model.isPropertySet(DEPENDENT_COMPONENT))
             return null;
-        ReferencedComponent depModule = (ReferencedComponent) model.getProperty(DEPENDENT_MODULE);
+        ReferencedComponent depModule = (ReferencedComponent) model.getProperty(DEPENDENT_COMPONENT);
         DependencyType depType = depModule.getDependencyType();
         if (depType.getValue() == DependencyType.CONSUMES)
             return Boolean.TRUE;

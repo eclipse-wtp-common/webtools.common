@@ -53,7 +53,7 @@ public class ComponentStructuralBuilderDependencyResolver extends IncrementalPro
             IUndoableOperation op = null;
             for (int i = 0; i < delayedOperationDMs.size(); i++) {
                 dataModel = (IDataModel) delayedOperationDMs.get(i);
-                dataModel.setProperty(IReferencedComponentBuilderDataModelProperties.MODULE_CORE, moduleCore);
+                dataModel.setProperty(IReferencedComponentBuilderDataModelProperties.COMPONENT_CORE, moduleCore);
                 op = dataModel.getDefaultOperation();
                 if (op != null) {
                     op.execute(monitor, null);
