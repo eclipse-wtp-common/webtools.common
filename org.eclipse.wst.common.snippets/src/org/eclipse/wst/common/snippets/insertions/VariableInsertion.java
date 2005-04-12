@@ -34,9 +34,16 @@ import org.eclipse.wst.common.snippets.internal.ui.EntrySerializer;
 import org.eclipse.wst.sse.core.util.StringUtils;
 import org.eclipse.wst.sse.ui.extension.IExtendedSimpleEditor;
 
+/**
+ * An insertion implementation that supports ISnippetVariables. The content
+ * string of the item can contain markers, in the form ${+variable+}, that
+ * will be replaced with user-supplied values at insertion time.
+ */
 public class VariableInsertion extends AbstractInsertion {
 
-
+	/**
+	 * Default public constructor
+	 */
 	public VariableInsertion() {
 		super();
 	}
@@ -46,10 +53,12 @@ public class VariableInsertion extends AbstractInsertion {
 	}
 
 	/**
-	 * 
-	 * @param part
-	 * @param editor
-	 * @throws BadLocationException
+	 * Performs the insertion
+	 * @param part the part into which to insert
+	 * @param editor an implementor of IExtendedSimpleEditor to facilitate
+	 *            manipulation of the document
+	 * @throws BadLocationException if the editor's selected range is invalid
+	 *             in the simple editor's document
 	 */
 	protected void doInsert(IEditorPart part, IExtendedSimpleEditor editor) throws BadLocationException {
 		String replacement = getInsertString(part.getEditorSite().getShell());

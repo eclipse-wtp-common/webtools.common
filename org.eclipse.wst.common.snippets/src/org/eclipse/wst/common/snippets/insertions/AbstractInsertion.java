@@ -80,7 +80,7 @@ public abstract class AbstractInsertion implements ISnippetsInsertion {
 	 * 
 	 * @param host a shell from which UI elements may be opened to help
 	 *            determine what String to return
-	 *            
+	 * 
 	 * @return the String to be inserted
 	 */
 	public String getInsertString(Shell host) {
@@ -97,9 +97,6 @@ public abstract class AbstractInsertion implements ISnippetsInsertion {
 		return fItem;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.wst.common.snippets.core.ISnippetsInsertion#getTransfers()
-	 */
 	public Transfer[] getTransfers() {
 		if (supportedTransfers == null)
 			supportedTransfers = createTransfers();
@@ -153,5 +150,4 @@ public abstract class AbstractInsertion implements ISnippetsInsertion {
 	public void setItem(ISnippetItem item) {
 		this.fItem = item;
 	}
-
 }

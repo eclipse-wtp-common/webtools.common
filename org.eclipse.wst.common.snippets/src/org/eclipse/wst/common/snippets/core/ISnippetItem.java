@@ -9,14 +9,14 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 
-
 package org.eclipse.wst.common.snippets.core;
 
 import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
 import org.eclipse.wst.common.snippets.internal.ISnippetVariable;
 
-
 /**
+ * A snippet item is the actual object draggable from the Snippets view.
+ * 
  * This interface is not meant to be implemented by clients.
  */
 public interface ISnippetItem extends ISnippetsEntry {
@@ -49,7 +49,8 @@ public interface ISnippetItem extends ISnippetsEntry {
 	String getClassName();
 
 	/**
-	 * @return the content string for this item
+	 * @return the content string for this item; the text inserted may not be
+	 *         identical
 	 */
 	String getContentString();
 
@@ -84,6 +85,7 @@ public interface ISnippetItem extends ISnippetsEntry {
 	/**
 	 * @param the name of the category holding this item. This is a handle
 	 *            only method; the category need not exist yet.
+	 * @deprecated - should not be changeable
 	 */
 	void setCategoryName(String name);
 
@@ -96,6 +98,7 @@ public interface ISnippetItem extends ISnippetsEntry {
 
 	/**
 	 * @param the new content string for this item
+	 * @deprecated - should not be changeable
 	 */
 	void setContentString(String content);
 

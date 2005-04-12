@@ -17,9 +17,9 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.ui.IEditorPart;
 
 /**
- * The generic insertion interface. Implementors are responsible for
- * supporting the drag-and-drop mechanism and inserting the snippet's text
- * into an editor part.
+ * An insertion class is responsible for inserting a snippet item's contents
+ * into editors. Implementors are responsible for supporting the drag-and-drop
+ * mechanism and inserting the snippet's text into a given editor part.
  */
 public interface ISnippetsInsertion {
 

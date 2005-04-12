@@ -64,10 +64,12 @@ import org.eclipse.wst.common.snippets.internal.ui.ValueChangedListener;
 import org.eclipse.wst.sse.core.util.StringUtils;
 import org.eclipse.wst.sse.ui.util.Sorter;
 
+/**
+ * A snippet item editor that can define snippet variables
+ */
 public class VariableItemEditor implements ISnippetEditor {
-	public static class CompletionProposalSorter extends Sorter {
-
-		protected Collator collator = Collator.getInstance();
+	private static class CompletionProposalSorter extends Sorter {
+		Collator collator = Collator.getInstance();
 
 		public boolean compare(Object elementOne, Object elementTwo) {
 			/**
@@ -83,7 +85,6 @@ public class VariableItemEditor implements ISnippetEditor {
 	}
 
 	private class ItemEditorSourceViewerConfiguration extends SourceViewerConfiguration {
-
 		private IContentAssistProcessor fProcessor = null;
 
 		public ItemEditorSourceViewerConfiguration() {
@@ -181,7 +182,6 @@ public class VariableItemEditor implements ISnippetEditor {
 		 * @see SourceViewerConfiguration#getContentAssistant(ISourceViewer)
 		 */
 		public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
-
 			ContentAssistant assistant = new ContentAssistant();
 			assistant.setContentAssistProcessor(fProcessor, IDocument.DEFAULT_CONTENT_TYPE);
 
@@ -214,9 +214,6 @@ public class VariableItemEditor implements ISnippetEditor {
 		getListeners().add(listener);
 	}
 
-	/**
-	 * @see ISnippetEditor#createContents(Composite)
-	 */
 	public Control createContents(Composite parent) {
 		// create the contents of the variable editing dialog
 
@@ -405,14 +402,13 @@ public class VariableItemEditor implements ISnippetEditor {
 			}
 		});
 
-		// Add the "Insert Variable Placeholder" button to invoke content
-		// assist
-		//
-		// Derived from the JDT template editor, I'm not sure I like this idea
-		// as
-		// it's mostly a crutch for not making content assist obviously
-		// available
-		// in the source viewer
+		/*
+		 * Add the "Insert Variable Placeholder" button to invoke content
+		 * assist like the JDT Template editor.
+		 * 
+		 * I'm not sure I like this idea as it's mostly a crutch for not
+		 * making content assist obviously available in the source viewer.
+		 */
 		final Button insertVariableButton = new Button(parent, SWT.PUSH);
 		insertVariableButton.setText(SnippetsPlugin.getResourceString("%Insert_Variable_17")); //$NON-NLS-1$
 		insertVariableButton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_BEGINNING));
