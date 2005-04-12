@@ -18,7 +18,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jem.util.RegistryReader;
 import org.eclipse.jem.util.logger.proxy.Logger;
-import org.eclipse.wst.common.frameworks.datamodel.DataModelProviderDescriptor;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
@@ -123,19 +122,21 @@ public class DataModelExtensionReader extends RegistryReader {
 		return element;
 	}
 
-	protected List getImplementsExtensions(String providerType) {
+	public String[] getProviderDescriptorsForProviderKind(String providerType) {
 		readRegistryIfNecessary();
-		List providerIds = new ArrayList();
-		providerIds.add(getDefinesExtension(providerType));
-		if (!implementsExtensions.containsKey(providerType)) {
-			return providerIds;
+		List providerList = new ArrayList();
+		providerList.add(getDefinesExtension(providerType));
+		if (implementsExtensions.containsKey(providerType)) {
+			List implementsIds = (List) implementsExtensions.get(providerType);
+			if (implementsIds != null && !implementsIds.isEmpty()) {
+				providerList.addAll(implementsIds);
+			}
 		}
-		List implementsIds = (List) implementsExtensions.get(providerType);
-		if (implementsIds == null || implementsIds.isEmpty()) {
-			return providerIds;
+		String[] providerArray = new String[providerList.size()];
+		for (int i = 0; i < providerArray.length; i++) {
+			providerArray[i] = (String) providerList.get(i);
 		}
-		providerIds.addAll(implementsIds);
-		return providerIds;
+		return providerArray;
 	}
 
 	private void readRegistryIfNecessary() {
@@ -161,16 +162,4 @@ public class DataModelExtensionReader extends RegistryReader {
 		return provider;
 	}
 
-	public List getProviderDescriptorsForProviderKind(String providerType) {
-		List providerIds = getImplementsExtensions(providerType);
-		List providers = new ArrayList();
-		for (int i = 0; i < providerIds.size(); i++) {
-			providers.add(getProviderDescriptor((String) providerIds.get(i)));
-		}
-		return providers;
-	}
-
-	private DataModelProviderDescriptor getProviderDescriptor(String id) {
-		return new DataModelProviderDescriptor(id);
-	}
 }
