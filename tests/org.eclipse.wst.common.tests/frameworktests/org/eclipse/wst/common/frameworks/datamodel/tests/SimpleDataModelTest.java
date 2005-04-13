@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel.tests;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -114,9 +115,17 @@ public class SimpleDataModelTest extends TestCase {
 
 
 		public String getID() {
-			return null;
+			return id;
 		}
+
+		public List getExtendedContext() {
+			return extendedContext;
+		}
+
 	}
+
+	private String id;
+	private List extendedContext;
 
 	private IDataModel dm;
 	private TestListener dmL;
@@ -126,6 +135,20 @@ public class SimpleDataModelTest extends TestCase {
 		dm = DataModelFactory.createDataModel(new DMProvider());
 		dmL = new TestListener();
 		dm.addListener(dmL);
+	}
+
+	public void testBasics() {
+		id = null;
+		assertEquals("", dm.getID());
+		id = "foo";
+		assertEquals("foo", dm.getID());
+		extendedContext = null;
+		assertNotNull(dm.getExtendedContext());
+		extendedContext = new ArrayList();
+		assertTrue(dm.getExtendedContext() == extendedContext);
+		extendedContext.add("foo");
+		assertTrue(dm.getExtendedContext() == extendedContext);
+		assertNotNull(dm.getDefaultOperation());
 	}
 
 	public void testInvalidProperty() {
@@ -226,6 +249,35 @@ public class SimpleDataModelTest extends TestCase {
 		assertEquals("foo10true", dm.getStringProperty(DMProvider.STRING_PROP));
 	}
 
+	public void testAddRemoveListener() {
+		dmL.clearEvents();
+		dm.notifyPropertyChange(DMProvider.INT_PROP2, IDataModel.DEFAULT_CHG);
+		List events = dmL.getEvents();
+		assertEquals(1, events.size());
+
+		dmL.clearEvents();
+		dm.removeListener(dmL);
+		dm.notifyPropertyChange(DMProvider.INT_PROP2, IDataModel.DEFAULT_CHG);
+		events = dmL.getEvents();
+		assertEquals(0, events.size());
+
+		dmL.clearEvents();
+		dm.addListener(dmL);
+		dm.addListener(dmL);
+		dm.addListener(dmL);
+		dm.addListener(dmL);
+		dm.addListener(dmL);
+		dm.notifyPropertyChange(DMProvider.INT_PROP2, IDataModel.DEFAULT_CHG);
+		events = dmL.getEvents();
+		assertEquals(1, events.size());
+
+		dmL.clearEvents();
+		dm.removeListener(dmL);
+		dm.notifyPropertyChange(DMProvider.INT_PROP2, IDataModel.DEFAULT_CHG);
+		events = dmL.getEvents();
+		assertEquals(0, events.size());
+	}
+
 	public void testFiringEvents() {
 		dmL.clearEvents();
 		dm.notifyPropertyChange(DMProvider.INT_PROP2, IDataModel.DEFAULT_CHG);
@@ -290,6 +342,8 @@ public class SimpleDataModelTest extends TestCase {
 		assertEquals(DMProvider.STRING_PROP, event.getPropertyName());
 		assertEquals(DataModelEvent.VALUE_CHG, event.getFlag());
 		assertEquals("foo11true", event.getProperty());
+		assertEquals("foo11true", dm.getDefaultProperty(DMProvider.STRING_PROP));
+		assertEquals("foo11true", dm.getProperty(DMProvider.STRING_PROP));
 
 		event = (DataModelEvent) events.get(3);
 		assertEquals(DMProvider.INT_PROP, event.getPropertyName());
@@ -310,14 +364,17 @@ public class SimpleDataModelTest extends TestCase {
 		assertEquals(DMProvider.STRING_PROP, event.getPropertyName());
 		assertEquals(DataModelEvent.VALUE_CHG, event.getFlag());
 		assertEquals("foo11false", event.getProperty());
+		assertEquals("foo11false", dm.getDefaultProperty(DMProvider.STRING_PROP));
+		assertEquals("foo11false", dm.getProperty(DMProvider.STRING_PROP));
 
 		event = (DataModelEvent) events.get(2);
 		assertEquals(DMProvider.BOOLEAN_PROP, event.getPropertyName());
 		assertEquals(DataModelEvent.VALUE_CHG, event.getFlag());
 		assertEquals(false, dm.getBooleanProperty(DMProvider.BOOLEAN_PROP));
 
-		dm.setProperty(DMProvider.STRING_PROP, "bar");
+		dm.setStringProperty(DMProvider.STRING_PROP, "bar");
 		assertEquals("bar", dm.getStringProperty(DMProvider.STRING_PROP));
+		assertEquals("foo11false", dm.getDefaultProperty(DMProvider.STRING_PROP));
 		dmL.clearEvents();
 		dm.setBooleanProperty(DMProvider.BOOLEAN_PROP, true);
 		events = dmL.getEvents();
@@ -328,7 +385,7 @@ public class SimpleDataModelTest extends TestCase {
 		assertEquals(DMProvider.BOOLEAN_PROP, event.getPropertyName());
 
 		assertEquals("bar", dm.getStringProperty(DMProvider.STRING_PROP));
-		dm.setProperty(DMProvider.STRING_PROP, null);
+		dm.setStringProperty(DMProvider.STRING_PROP, null);
 		assertEquals("foo11true", dm.getStringProperty(DMProvider.STRING_PROP));
 		dmL.clearEvents();
 		dm.setBooleanProperty(DMProvider.BOOLEAN_PROP, false);

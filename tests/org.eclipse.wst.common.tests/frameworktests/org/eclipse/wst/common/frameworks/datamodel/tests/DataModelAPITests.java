@@ -35,5 +35,6 @@ public class DataModelAPITests extends TestSuite {
 		addTest(new SimpleTestSuite(SimpleDataModelTest.class));
 		addTest(new SimpleTestSuite(DataModelFactoryTest.class));
         addTest(new SimpleTestSuite(DataModelEnablementTest.class));
+		addTest(new SimpleTestSuite(TestAbstractDMProvider.class));
 	}
 }
