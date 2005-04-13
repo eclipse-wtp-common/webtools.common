@@ -103,7 +103,7 @@ public class SimpleDataModelTest extends TestCase {
 		public String getID() {
 			return null;
 		}
-	};
+	}
 
 	private IDataModel dm;
 	private TestListener dmL;
@@ -272,6 +272,7 @@ public class SimpleDataModelTest extends TestCase {
 		assertEquals(DMProvider.BOOLEAN_PROP2, event.getPropertyName());
 		assertEquals(DataModelEvent.ENABLE_CHG, event.getFlag());
 		assertFalse(dm.isPropertyEnabled(DMProvider.BOOLEAN_PROP2));
+		assertFalse(event.isPropertyEnabled());
 
 		event = (DataModelEvent) events.get(1);
 		assertEquals(DMProvider.STRING_PROP, event.getPropertyName());
@@ -305,6 +306,7 @@ public class SimpleDataModelTest extends TestCase {
 		assertEquals(DMProvider.BOOLEAN_PROP2, event.getPropertyName());
 		assertEquals(DataModelEvent.ENABLE_CHG, event.getFlag());
 		assertFalse(dm.isPropertyEnabled(DMProvider.BOOLEAN_PROP2));
+		assertFalse(event.isPropertyEnabled());
 
 		event = (DataModelEvent) events.get(1);
 		assertEquals(DMProvider.STRING_PROP, event.getPropertyName());

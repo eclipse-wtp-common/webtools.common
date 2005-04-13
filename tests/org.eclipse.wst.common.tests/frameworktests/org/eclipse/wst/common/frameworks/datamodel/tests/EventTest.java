@@ -30,6 +30,7 @@ public class EventTest extends TestCase {
 		assertEquals("bbb", event.getProperty());
 		event = new DataModelEvent(dm, A.P, DataModelEvent.ENABLE_CHG);
 		assertEquals(DataModelEvent.ENABLE_CHG, event.getFlag());
+		assertEquals(dm.isPropertyEnabled(A.P), event.isPropertyEnabled());
 		event = new DataModelEvent(dm, A.P, DataModelEvent.VALID_VALUES_CHG);
 		assertEquals(DataModelEvent.VALID_VALUES_CHG, event.getFlag());
 	}
