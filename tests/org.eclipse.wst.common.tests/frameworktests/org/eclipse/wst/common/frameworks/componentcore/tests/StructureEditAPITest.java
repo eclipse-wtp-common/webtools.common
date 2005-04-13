@@ -624,30 +624,25 @@ public class StructureEditAPITest extends TestCase {
 
 	public void testGetFirstArtifactEditForRead() {
 		StructureEdit moduleCore = null;
+		ArtifactEdit edit = null;
 		try {
-			ArtifactEdit edit = StructureEdit.getFirstArtifactEditForRead(project);
+			edit = StructureEdit.getFirstArtifactEditForRead(project);
+
 		} finally {
 			if (moduleCore != null) {
 				moduleCore.dispose();
+				edit.dispose();
 
 			}
-			assertNotNull(moduleCore);
+			assertNotNull(edit);
 
 		}
 	}
 
 	public void testCreateComponentURI() {
 		StructureEdit moduleCore = null;
-		try {
-			StructureEdit.createComponentURI(project,"testComp");
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
+		URI uri = StructureEdit.createComponentURI(project, "testComp");
+		assertNotNull(uri);
 
-			}
-			assertNotNull(moduleCore);
-
-		}
 	}
-
 }
