@@ -14,7 +14,12 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.AbstractOperation;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
@@ -28,6 +33,45 @@ public class TestAbstractDMProvider extends TestCase {
 	private static final String BOOLEAN = "BOOLEAN";
 	private static final String STRING = "STRING";
 	private static final String OBJECT = "OBJECT";
+
+	private class DMOp extends AbstractDataModelOperation {
+
+		public DMOp() {
+			super();
+		}
+
+		public DMOp(IDataModel model) {
+			super(model);
+		}
+
+		public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+			return null;
+		}
+
+		public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+			return null;
+		}
+
+		public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+			return null;
+		}
+
+		public void setID(String id) {
+			super.setID(id);
+		}
+
+		public String getID() {
+			return super.getID();
+		}
+
+		public void setDataModel(IDataModel model) {
+			super.setDataModel(model);
+		}
+
+		public IDataModel getDataModel() {
+			return super.getDataModel();
+		}
+	}
 
 	private class DMProvider extends AbstractDataModelProvider {
 
@@ -95,6 +139,9 @@ public class TestAbstractDMProvider extends TestCase {
 	AbstractDataModelProvider dmp = null;
 	IDataModel dm = null;
 
+	IDataModelOperation idmo = null;
+	AbstractDataModelOperation dmo = null;
+
 	protected void setUp() throws Exception {
 		super.setUp();
 		dmp = new DMProvider();
@@ -136,5 +183,24 @@ public class TestAbstractDMProvider extends TestCase {
 		assertTrue(idmp.getID().equals(idmp.getClass().getName()));
 		idmp.dispose();
 	}
+
+	public void testAbstractDataModelOperation() {
+		dmo = new DMOp();
+		dmo = new DMOp(dm);
+		idmo = dmo;
+		dmo.setID("foo");
+		assertTrue(dmo.getID().equals("foo"));
+		dmo.setDataModel(dm);
+		assertTrue(dm == dmo.getDataModel());
+	}
 	
+	public void testIDataModelOperation() {
+		dmo = new DMOp();
+		idmo = dmo;
+		idmo.setID("foo");
+		assertTrue(idmo.getID().equals("foo"));
+		idmo.setDataModel(dm);
+		assertTrue(dm == idmo.getDataModel());
+	}
+
 }
