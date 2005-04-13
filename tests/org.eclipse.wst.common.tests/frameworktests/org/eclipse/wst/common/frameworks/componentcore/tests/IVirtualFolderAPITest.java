@@ -87,6 +87,16 @@ public class IVirtualFolderAPITest extends TestCase {
 	public void testGetFileExtension() {
 		assertTrue("The /WEB-INF folder should have no file extension.", webInfFolder.getFileExtension() == null); //$NON-NLS-1$
 	}
+	
+	public void testGetUnderlyingFolders() {
+		IFolder[] deletemeFolder = deletemeVirtualFolder.getUnderlyingFolders();
+		assertEquals(deletemeFolder.length==1,true);
+	}
+	
+	public void testGetUnderlyingFolder() {
+		IFolder deletemeFolder = deletemeVirtualFolder.getUnderlyingFolder();
+		assertNotNull(deletemeFolder);
+	}
 
 	public void testGetWorkspaceRelativePath() {
 		IPath realPath = realWebInfFolder.getFullPath();
@@ -120,24 +130,16 @@ public class IVirtualFolderAPITest extends TestCase {
 	}  
 
 	public void testGetType() {
-		assertEquals("The type of the virtual resource must match the test project.", IResource.FOLDER, webInfFolder.getType()); //$NON-NLS-1$
+		assertEquals("The type of the virtual resource must match the type of the test project.", IVirtualResource.FOLDER, webInfFolder.getType()); //$NON-NLS-1$
 	}
 	
-	public void testGetComponentName() { 
-		assertEquals("The component name of the virtual resource must match the test project.", TestWorkspace.WEB_MODULE_1_NAME, webInfFolder.getComponent()); //$NON-NLS-1$
-	}
 	
-	public void testGetFileString() {
-		IVirtualFile testFile1txt = testdataFolder.getFile("TestFile1.txt"); //$NON-NLS-1$
-		assertEquals("The test file project relative path must match.", TESTDATA_FOLDER_REAL_PATH.append("TestFile1.txt"), testFile1txt.getProjectRelativePath()); //$NON-NLS-1$
-	}
-	
-	public void testGetFilePath() {
+	/*public void testGetFilePath() {
 		IVirtualFile test3jsp = testdataFolder.getFile(new Path("/jsps/TestJsp3.jsp"));
 		
 		IPath expectedPath = TESTDATA_FOLDER_REAL_PATH.append(new Path("/jsps/TestJsp3.jsp"));
 		assertEquals("The test file project relative path must match.", expectedPath, test3jsp.getProjectRelativePath()); //$NON-NLS-1$
-	}
+	}*/
 	
 	public void testIsAccessible() {
 	}
@@ -145,7 +147,7 @@ public class IVirtualFolderAPITest extends TestCase {
 	/*
 	 * Class under test for void delete(int, IProgressMonitor)
 	 */
-	public void testDeleteintIProgressMonitor() throws Exception {
+	/*public void testDeleteintIProgressMonitor() throws Exception {
 		deletemeVirtualFolder.delete(0, null);
 		
 		assertTrue("The real folder should be deleted when IVirtualResource.DELETE_METAMODEL_ONLY is NOT supplied.", !deletemeFolder.exists()); //$NON-NLS-1$
@@ -157,12 +159,12 @@ public class IVirtualFolderAPITest extends TestCase {
 				fail("Found deleted folder in members()"); //$NON-NLS-1$
 			}
 		}		
-	}
+	}*/
 	
 	/*
 	 * Class under test for void delete(int, IProgressMonitor)
 	 */
-	public void testDeleteintIProgressMonitor2() throws Exception {
+	/*public void testDeleteintIProgressMonitor2() throws Exception {
 		deletemeVirtualFolder.delete(IVirtualResource.IGNORE_UNDERLYING_RESOURCE, null);
 		
 		assertTrue("The real folder should not be deleted when IVirtualResource.DELETE_METAMODEL_ONLY is supplied.", deletemeFolder.exists()); //$NON-NLS-1$
@@ -182,12 +184,12 @@ public class IVirtualFolderAPITest extends TestCase {
 				moduleCore.dispose();
 			}
 		}
-	}
+	}*/
 	
 	/*
 	 * Class under test for void delete(boolean, IProgressMonitor)
 	 */
-	public void testDeletebooleanIProgressMonitor()  throws Exception  {
+	/*public void testDeletebooleanIProgressMonitor()  throws Exception  {
 		deletemeVirtualFolder.delete(IVirtualResource.FORCE, null);
 		
 		assertTrue("The real folder should be deleted when IVirtualResource.DELETE_METAMODEL_ONLY is NOT supplied.", !deletemeFolder.exists()); //$NON-NLS-1$
@@ -199,24 +201,7 @@ public class IVirtualFolderAPITest extends TestCase {
 				fail("Found deleted folder in members()"); //$NON-NLS-1$
 			}
 		}	
-	}	 
+	}	*/ 
 	 	
-	public void testFindMemberString() { 
-	}
-	
-	public void testFindMemberStringBoolean() { 
-	}
-	
-	public void testFindMemberIPath() {
-	}
-
-	public void testFindMemberIPathBoolean() { 
-	}
-
-	public void testContains() {
-	}
-
-	public void testIsConflicting() {
-	}
 
 }
