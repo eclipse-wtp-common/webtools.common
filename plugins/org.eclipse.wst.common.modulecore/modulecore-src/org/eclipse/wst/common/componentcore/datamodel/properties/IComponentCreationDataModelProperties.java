@@ -46,7 +46,7 @@ public interface IComponentCreationDataModelProperties extends IDataModelPropert
 	 * Required, type String. The user defined deploy name of the component to be created. The
 	 * DataModelProvider will default the name to the COMPONENT_NAME.
 	 */
-	public static final String COMPONENT_DEPLOY_NAME = "IComponentCreationDataModelProperties.MODULE_DEPLOY_NAME"; //$NON-NLS-1$
+	public static final String COMPONENT_DEPLOY_NAME = "IComponentCreationDataModelProperties.COMPONENT_DEPLOY_NAME"; //$NON-NLS-1$
 
 	// TODO delete this
 	/**
