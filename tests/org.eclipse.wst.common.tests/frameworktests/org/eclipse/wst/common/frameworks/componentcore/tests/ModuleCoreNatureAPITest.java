@@ -1,4 +1,4 @@
-package org.eclipse.wst.common.frameworks.artifactedit.tests;
+package org.eclipse.wst.common.frameworks.componentcore.tests;
 
 import java.io.IOException;
 import java.net.URL;
@@ -24,7 +24,7 @@ import org.eclipse.wst.common.tests.CommonTestsPlugin;
 
 import junit.framework.TestCase;
 
-public class ModuleCoreNatureTest extends TestCase {
+public class ModuleCoreNatureAPITest extends TestCase {
 
 	public static String fileSep = System.getProperty("file.separator");
 	public static final String PROJECT_NAME = "TestArtifactEdit";

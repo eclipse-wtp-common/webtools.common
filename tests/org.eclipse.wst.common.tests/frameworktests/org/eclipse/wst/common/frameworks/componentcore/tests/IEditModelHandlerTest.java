@@ -1,4 +1,4 @@
-package org.eclipse.wst.common.frameworks.artifactedit.tests;
+package org.eclipse.wst.common.frameworks.componentcore.tests;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.common.componentcore.IEditModelHandler;

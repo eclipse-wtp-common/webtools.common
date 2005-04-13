@@ -43,7 +43,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
  * be run using a Headless Eclipse.
  * </p>
  */
-public class ModuleCoreAPITest extends TestCase {
+public class ModuleCoreAPIFVTest extends TestCase {
 
 	private static final Class IFOLDER_CLASS = IVirtualFolder.class;
 	private static final Class IFILE_CLASS = IVirtualFile.class;
@@ -55,11 +55,11 @@ public class ModuleCoreAPITest extends TestCase {
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite();
-		suite.addTestSuite(ModuleCoreAPITest.class);
+		suite.addTestSuite(ModuleCoreAPIFVTest.class);
 		return suite;
 	}
 
-	public ModuleCoreAPITest(String name) {
+	public ModuleCoreAPIFVTest(String name) {
 		super(name);
 	}
 
@@ -131,7 +131,7 @@ public class ModuleCoreAPITest extends TestCase {
 
 	/**
 	 * Checks for and removes the mapping and folder that will be created by
-	 * {@link ModuleCoreAPITest#testCreateLink()}.
+	 * {@link ModuleCoreAPIFVTest#testCreateLink()}.
 	 */
 	public void tearDownCreateLinkTest() throws Exception {
 		IFolder module2Images = TestWorkspace.getTargetProject().getFolder(new Path("/WebModule2/images")); //$NON-NLS-1$

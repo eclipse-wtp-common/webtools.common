@@ -1,4 +1,4 @@
-package org.eclipse.wst.common.frameworks.artifactedit.tests;
+package org.eclipse.wst.common.frameworks.componentcore.tests;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.wst.common.componentcore.internal.resources.FlexibleProject;

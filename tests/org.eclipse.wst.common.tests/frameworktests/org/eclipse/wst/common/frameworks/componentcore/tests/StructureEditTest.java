@@ -1,4 +1,4 @@
-package org.eclipse.wst.common.frameworks.artifactedit.tests;
+package org.eclipse.wst.common.frameworks.componentcore.tests;
 
 import java.io.IOException;
 import java.net.URL;
