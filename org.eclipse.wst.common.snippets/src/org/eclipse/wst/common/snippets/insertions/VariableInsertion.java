@@ -31,7 +31,7 @@ import org.eclipse.wst.common.snippets.internal.Logger;
 import org.eclipse.wst.common.snippets.internal.VariableItemHelper;
 import org.eclipse.wst.common.snippets.internal.dnd.VariableTextTransfer;
 import org.eclipse.wst.common.snippets.internal.ui.EntrySerializer;
-import org.eclipse.wst.sse.core.util.StringUtils;
+import org.eclipse.wst.sse.core.internal.util.StringUtils;
 import org.eclipse.wst.sse.ui.extension.IExtendedSimpleEditor;
 
 /**

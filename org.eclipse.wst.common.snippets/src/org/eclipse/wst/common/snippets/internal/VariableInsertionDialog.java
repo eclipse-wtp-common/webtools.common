@@ -37,7 +37,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.common.snippets.core.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.ui.StringPropertyTableViewer;
 import org.eclipse.wst.common.snippets.internal.ui.ValueChangedListener;
-import org.eclipse.wst.sse.core.util.StringUtils;
+import org.eclipse.wst.sse.core.internal.util.StringUtils;
 
 public class VariableInsertionDialog extends Dialog {
 	private List disposeListeners = new ArrayList();

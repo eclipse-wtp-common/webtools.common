@@ -61,7 +61,7 @@ import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
 import org.eclipse.wst.common.snippets.internal.palette.SnippetVariable;
 import org.eclipse.wst.common.snippets.internal.ui.StringPropertyTableViewer;
 import org.eclipse.wst.common.snippets.internal.ui.ValueChangedListener;
-import org.eclipse.wst.sse.core.util.StringUtils;
+import org.eclipse.wst.sse.core.internal.util.StringUtils;
 import org.eclipse.wst.sse.ui.util.Sorter;
 
 /**
