@@ -13,8 +13,6 @@ package org.eclipse.wst.common.componentcore.internal.operation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IComponentCreationDataModelProperties;
@@ -24,9 +22,7 @@ import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 import org.eclipse.wst.server.core.IModuleType;
-import org.eclipse.wst.server.core.IProjectProperties;
 import org.eclipse.wst.server.core.IRuntimeType;
-import org.eclipse.wst.server.core.ServerCore;
 
 /**
  * This dataModel is a common super class used for creation of WTP Components.
@@ -38,22 +34,15 @@ import org.eclipse.wst.server.core.ServerCore;
  * @since WTP 1.0
  */
 public abstract class ComponentCreationDataModelProvider extends AbstractDataModelProvider implements IComponentCreationDataModelProperties{
-    
-    
-	/* (non-Javadoc)
-     * @see org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel#init()
-     */
+
     public void init() {
         super.init();
-		propertySet(COMPONENT_VERSION, getDefaultProperty(COMPONENT_VERSION));
     }
     
 	public String[] getPropertyNames() {
-		return new String[]{PROJECT_NAME, COMPONENT_NAME, COMPONENT_DEPLOY_NAME, CREATE_DEFAULT_FILES,
-					COMPONENT_VERSION, VALID_MODULE_VERSIONS_FOR_PROJECT_RUNTIME};
+		return new String[]{PROJECT_NAME, COMPONENT_NAME, COMPONENT_DEPLOY_NAME, CREATE_DEFAULT_FILES};
 	}
 
-	
     public void propertyChanged(DataModelEvent event) {
         if (event.getFlag() == DataModelEvent.VALUE_CHG) {
             event.getDataModel();
@@ -61,31 +50,20 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
     }
 
     public boolean propertySet(String propertyName, Object propertyValue) {
-
-        if (PROJECT_NAME.equals(propertyName) && propertyValue !=null && ((String)propertyValue).length()!=0) {
-            IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject((String)propertyValue);
-			if (project != null) {
-	            IProjectProperties projProperties = ServerCore.getProjectProperties(project);
-	            if( projProperties.getRuntimeTarget() != null ){
-	            	String[] validModuleVersions = getServerVersions(getComponentID(), projProperties.getRuntimeTarget().getRuntimeType());
-	            	model.setProperty(VALID_MODULE_VERSIONS_FOR_PROJECT_RUNTIME, validModuleVersions);
-	            }
-			}
-        }
-        else if (COMPONENT_NAME.equals(propertyName))
+        if (COMPONENT_NAME.equals(propertyName))
 			model.setProperty(COMPONENT_DEPLOY_NAME, propertyValue);
         else if (COMPONENT_DEPLOY_NAME.equals(propertyName))
 			model.setProperty(COMPONENT_DEPLOY_NAME, propertyValue);        
          return true;
     }
     
-	public DataModelPropertyDescriptor[] getValidPropertyDescriptors(String propertyName) {
-		if (propertyName.equals(COMPONENT_VERSION)) {
-			return getValidComponentVersionDescriptors();
-		}
-		return super.getValidPropertyDescriptors(propertyName);
-	}
-	
+    public Object getDefaultProperty(String propertyName) {
+        if (propertyName.equals(CREATE_DEFAULT_FILES)) {
+            return Boolean.TRUE;
+        }
+        return super.getDefaultProperty(propertyName);
+    }
+    
     public IStatus validate(String propertyName) {
         if (propertyName.equals(COMPONENT_NAME)) {
             IStatus status = OK_STATUS;
@@ -101,9 +79,7 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
                 	return OK_STATUS;
             } else
                 return status;
-        } else if (COMPONENT_VERSION.equals(propertyName)) {
-			return validateComponentVersionProperty();
-		} else if (propertyName.equals(PROJECT_NAME)) {
+        } else if (propertyName.equals(PROJECT_NAME)) {
 			IStatus status = OK_STATUS;
 			String projectName = model.getStringProperty(PROJECT_NAME);
 			if (projectName == null || projectName.length()==0) {
@@ -115,42 +91,11 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 			return OK_STATUS;	
 		}else if(propertyName.equals(CREATE_DEFAULT_FILES)){
 			return OK_STATUS;
-		}else if(propertyName.equals(VALID_MODULE_VERSIONS_FOR_PROJECT_RUNTIME)){
-			return OK_STATUS;
 		}
         return super.validate(propertyName);
     }
     
-	private IStatus validateComponentVersionProperty() {
-		int componentVersion = model.getIntProperty(COMPONENT_VERSION);
-		if (componentVersion == -1)
-			return WTPCommonPlugin.createErrorStatus(WTPCommonPlugin.getResourceString(WTPCommonMessages.SPEC_LEVEL_NOT_FOUND));
-		return OK_STATUS;
-	}
-	
-    public Object getDefaultProperty(String propertyName) {
-        if (propertyName.equals(CREATE_DEFAULT_FILES)) {
-            return Boolean.TRUE;
-        } else if (propertyName.equals(COMPONENT_VERSION)) {
-			return getDefaultComponentVersion();
-		}
-        return super.getDefaultProperty(propertyName);
-    }
-
-
-	protected abstract DataModelPropertyDescriptor[] getValidComponentVersionDescriptors();
-
-	protected abstract EClass getComponentType();
-
-	protected abstract String getComponentExtension();
-	
-	protected abstract Integer getDefaultComponentVersion();
-
-	
-	
-	protected abstract String getComponentID();
-	
-	protected static String[] getServerVersions(String moduleID, IRuntimeType type) {
+    protected static String[] getServerVersions(String moduleID, IRuntimeType type) {
         List list = new ArrayList();
         if (type == null)
             return null;
@@ -172,7 +117,6 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
         }
         return versions;
     }
-
     private static boolean matches(String a, String b) {
         if (a == null || b == null || "*".equals(a) || "*".equals(b) || a.startsWith(b) || b.startsWith(a)) //$NON-NLS-1$ //$NON-NLS-2$
             return true;
@@ -181,14 +125,24 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
     
     
     protected String getComponentName(){
-    	return model.getStringProperty(COMPONENT_NAME);
+        return model.getStringProperty(COMPONENT_NAME);
     }
     
     protected String getComponentDeployName(){
-    	return model.getStringProperty(COMPONENT_DEPLOY_NAME);
+        return model.getStringProperty(COMPONENT_DEPLOY_NAME);
     }
     
+    protected abstract DataModelPropertyDescriptor[] getValidComponentVersionDescriptors();
+
+	protected abstract EClass getComponentType();
+
+	protected abstract String getComponentExtension();
+
+	protected abstract String getComponentID();
+    
 	protected abstract String getVersion();
+    
 	protected abstract List getProperties();
-		
+
+    protected abstract Integer getDefaultComponentVersion();
 }

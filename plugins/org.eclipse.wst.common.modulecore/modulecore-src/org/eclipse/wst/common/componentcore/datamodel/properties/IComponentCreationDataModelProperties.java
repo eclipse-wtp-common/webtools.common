@@ -56,17 +56,4 @@ public interface IComponentCreationDataModelProperties extends IDataModelPropert
 	 */
 	public static final String CREATE_DEFAULT_FILES = "IComponentCreationDataModelProperties.CREATE_DEFAULT_FILES"; //$NON-NLS-1$
 
-	// TODO delete this
-	/**
-	 * Required, type Integer. The user defined version of the component.
-	 */
-	public static final String COMPONENT_VERSION = "IComponentCreationDataModelProperties.COMPONENT_VERSION"; //$NON-NLS-1$
-
-	// TODO delete this
-	/**
-	 * type Integer
-	 */
-	public static final String VALID_MODULE_VERSIONS_FOR_PROJECT_RUNTIME = "IComponentCreationDataModelProperties.VALID_MODULE_VERSIONS_FOR_PROJECT_RUNTIME"; //$NON-NLS-1$
-
-
 }
