@@ -18,7 +18,6 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IComponentCreationDataModelProperties;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
-import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 import org.eclipse.wst.server.core.IModuleType;
@@ -132,15 +131,11 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
         return model.getStringProperty(COMPONENT_DEPLOY_NAME);
     }
     
-    protected abstract DataModelPropertyDescriptor[] getValidComponentVersionDescriptors();
-
 	protected abstract EClass getComponentType();
 
 	protected abstract String getComponentExtension();
 
 	protected abstract String getComponentID();
-    
-	protected abstract String getVersion();
     
 	protected abstract List getProperties();
 
