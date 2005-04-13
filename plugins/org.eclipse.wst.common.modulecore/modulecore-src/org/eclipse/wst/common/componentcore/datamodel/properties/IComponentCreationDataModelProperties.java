@@ -6,7 +6,7 @@
  * 
  * Contributors: IBM Corporation - initial API and implementation
  **************************************************************************************************/
-package org.eclipse.wst.common.componentcore.internal.operation;
+package org.eclipse.wst.common.componentcore.datamodel.properties;
 
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties;
 

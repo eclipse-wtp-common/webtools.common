@@ -20,6 +20,8 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.wst.common.componentcore.StructureEdit;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
+import org.eclipse.wst.common.componentcore.datamodel.properties.IProjectComponentsBuilderDataModelProperties;
+import org.eclipse.wst.common.componentcore.datamodel.properties.IWorkbenchComponentBuilderDataModelProperties;
 import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;

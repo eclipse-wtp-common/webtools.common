@@ -8,7 +8,7 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.componentcore.internal.builder;
+package org.eclipse.wst.common.componentcore.datamodel.properties;
 
 import org.eclipse.wst.common.componentcore.internal.DependencyType;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties;
