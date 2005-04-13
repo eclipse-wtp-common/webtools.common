@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.datamodel.properties;
 
-import org.eclipse.wst.common.componentcore.internal.builder.ReferencedComponentBuilderDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties;
+
 /**
  * <p>
  * IWorkbenchComponentBuilderDataModelProperties supplies the properties to the IDataModel and 
