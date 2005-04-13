@@ -23,7 +23,6 @@ package org.eclipse.wst.common.frameworks.datamodel;
  * 
  * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider
  * @see org.eclipse.wst.common.frameworks.datamodel.DataModelFactory
- * @see 
  * 
  * @since 1.0
  */
