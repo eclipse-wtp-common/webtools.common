@@ -15,6 +15,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.etools.common.test.apitools.ProjectUnzipUtil;
 import org.eclipse.jem.util.emf.workbench.EMFWorkbenchContextBase;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
+import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
@@ -166,6 +167,13 @@ public class ModuleCoreNatureAPITest extends TestCase {
 		ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(project);
 		assertNotNull(nature);
 	}
+	
+	public void testUnresolveableURIException() {
+		UnresolveableURIException uriEx =   new UnresolveableURIException(moduleURI);
+		assertNotNull(uriEx);
+	}
+	
+
 
 
 }
