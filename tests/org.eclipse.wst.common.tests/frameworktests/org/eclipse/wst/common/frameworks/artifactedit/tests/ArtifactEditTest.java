@@ -3,7 +3,6 @@ package org.eclipse.wst.common.frameworks.artifactedit.tests;
 
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import junit.framework.TestCase;
@@ -11,7 +10,6 @@ import junit.framework.TestCase;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -28,12 +26,14 @@ import org.eclipse.wst.common.frameworks.internal.operations.IOperationHandler;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelEvent;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelListener;
+import org.eclipse.wst.common.tests.CommonTestsPlugin;
 
 
 
 
 
 public class ArtifactEditTest extends TestCase {
+	public static String fileSep = System.getProperty("file.separator");
 	public static final String PROJECT_NAME = "TestArtifactEdit";
 	public static final String WEB_MODULE_NAME = "WebModule1";
 	public static final URI moduleURI = URI.createURI("module:/resource/TestArtifactEdit/WebModule1");
@@ -43,7 +43,7 @@ public class ArtifactEditTest extends TestCase {
 	private ArtifactEdit artifactEditForRead;
 	private ArtifactEdit artifactEditForWrite;
 	private EditModelListener emListener;
-	private Path zipFilePath = new Path("/frameworktests/org/eclipse/wst/common/frameworks/artifactedit/tests/TestArtifactEdit.zip");
+	private Path zipFilePath = new Path("TestData" + fileSep  + "TestArtifactEdit.zip");
 	private IProject project;
 
 
@@ -114,16 +114,7 @@ public class ArtifactEditTest extends TestCase {
 	
 
 	private IPath getLocalPath() {
-	     IPluginDescriptor pluginDescriptor = Platform.getPluginRegistry().getPluginDescriptor("org.eclipse.wst.common.tests");
-         URL url = pluginDescriptor.getInstallURL(); 
-		 try {
-			url = new URL(url.toString()+ zipFilePath);
-		} catch (MalformedURLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-          
-		
+		URL url = CommonTestsPlugin.instance.find(zipFilePath);
 		try {
 			url = Platform.asLocalURL(url);
 		} catch (IOException e) {
