@@ -10,41 +10,54 @@
  *******************************************************************************/ 
 package org.eclipse.wst.common.frameworks.componentcore.tests;
 
-import junit.framework.TestCase;
+import java.util.Properties;
 
-public class IVirtualComponentAPITest extends TestCase {
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
+
+public class IVirtualComponentAPITest extends BaseVirtualTest {
+
+	public IVirtualComponentAPITest(String name) {
+		super(name);
+		// TODO Auto-generated constructor stub
+	}
 
 	public void testGetName() {
-	}
-
-	public void testGetComponent() {
-	}
-
-	/*
-	 * Class under test for void VirtualComponent(IProject, String, IPath)
-	 */
-	public void testVirtualComponentIProjectStringIPath() {
-	}
-
-	/*
-	 * Class under test for void VirtualComponent(ComponentHandle, IPath)
-	 */
-	public void testVirtualComponentComponentHandleIPath() {
+		
+		String name = component.getName();
 	}
 
 	public void testGetComponentTypeId() {
+		String id = component.getComponentTypeId() ;
 	}
 
 	public void testSetComponentTypeId() {
+		String id = "jst.ejb";
+		component.setComponentTypeId(id) ;
 	}
 
 	public void testGetMetaProperties() {
+		Properties properties = component.getMetaProperties() ;
 	}
 
 	public void testGetMetaResources() {
+		IPath[] metaresources = component.getMetaResources() ;
+
 	}
 
 	public void testSetMetaResources() {
+		
+		IPath[] metaresources = new IPath[1];
+		metaresources[0] = new Path("/test");
+		component.setMetaResources(metaresources) ;
+
+	}
+	
+	public void testGetResources() {
+		String resource = "/test";
+		IVirtualResource[] virtualResource = component.getResources(resource) ;
+
 	}
 
 }

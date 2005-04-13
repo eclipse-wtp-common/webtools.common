@@ -10,32 +10,37 @@
  *******************************************************************************/ 
 package org.eclipse.wst.common.frameworks.componentcore.tests;
 
-import junit.framework.TestCase;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 
-public class IVirtualFileAPITest extends TestCase {
 
-	public void testGetUnderlyingResource() {
+public class IVirtualFileAPITest extends BaseVirtualTest {
+
+	protected IVirtualFile testFile1;
+	protected IFile realTestFile1;
+	public static final Path TEST_FILE_REAL_PATH = new Path("WebModule1/testdata/TestFile1.txt"); //$NON-NLS-1$ //$NON-NLS-2$
+	public static final Path TEST_FILE_RUNTIME_PATH = new Path("/"); //$NON-NLS-1$
+
+
+	public IVirtualFileAPITest(String name) {
+		super(name);
+		
 	}
-
-	/*
-	 * Class under test for void VirtualFile(IProject, String, IPath)
-	 */
-	public void testVirtualFileIProjectStringIPath() {
-	}
-
-	public void testCreateLink() {
-	}
-
-	public void testGetType() {
-	}
-
-	public void testGetUnderlyingResources() {
+	protected void setUp() throws Exception {
+		// TODO Auto-generated method stub
+		super.setUp();
+		testFile1 = component.getFile(TESTDATA_FOLDER_RUNTIME_PATH); 
+		realTestFile1 = TEST_PROJECT.getFile(TESTDATA_FOLDER_REAL_PATH);
+		
 	}
 
 	public void testGetUnderlyingFile() {
+		IFile file = testFile1.getUnderlyingFile();
 	}
 
 	public void testGetUnderlyingFiles() {
+		IFile[] file = testFile1.getUnderlyingFiles();
 	}
 
 }

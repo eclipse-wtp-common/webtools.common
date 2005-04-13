@@ -16,15 +16,11 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.componentcore.ComponentCore;
-import org.eclipse.wst.common.componentcore.StructureEdit;
-import org.eclipse.wst.common.componentcore.internal.ComponentResource;
-import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
-import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 
@@ -76,6 +72,13 @@ public class IVirtualFolderAPITest extends TestCase {
 		
 	}
 	
+	public void testDelete() throws CoreException {
+		assertEquals(((IVirtualResource)deletemeVirtualFolder).exists(),true);
+		((IVirtualResource)deletemeVirtualFolder).delete(IVirtualResource.FORCE, null);
+		// assertEquals(deletemeFolder.exists(),false);
+		
+	}
+	
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		
@@ -85,7 +88,7 @@ public class IVirtualFolderAPITest extends TestCase {
 	}
 
 	public void testGetFileExtension() {
-		assertTrue("The /WEB-INF folder should have no file extension.", webInfFolder.getFileExtension() == null); //$NON-NLS-1$
+		assertTrue("The /WEB-INF folder should have no file extension.", ((IVirtualResource)webInfFolder).getFileExtension() == null); //$NON-NLS-1$
 	}
 	
 	public void testGetUnderlyingFolders() {
@@ -93,16 +96,31 @@ public class IVirtualFolderAPITest extends TestCase {
 		assertEquals(deletemeFolder.length==1,true);
 	}
 	
+	public void testGetUnderlyingResources() {
+		IResource[] deletemeFolder = ((IVirtualResource)deletemeVirtualFolder).getUnderlyingResources();
+		assertEquals(deletemeFolder.length==1,true);
+	}
+	
+	
 	public void testGetUnderlyingFolder() {
 		IFolder deletemeFolder = deletemeVirtualFolder.getUnderlyingFolder();
 		assertNotNull(deletemeFolder);
 	}
 
+	public void testGetUnderlyingResource() {
+		IResource deletemeFolder = deletemeVirtualFolder.getUnderlyingResource();
+		assertNotNull(deletemeFolder);
+	}
+	
 	public void testGetWorkspaceRelativePath() {
 		IPath realPath = realWebInfFolder.getFullPath();
-		IPath virtualPath = webInfFolder.getWorkspaceRelativePath();
+		IPath virtualPath = ((IVirtualResource)webInfFolder).getWorkspaceRelativePath();
 		assertEquals("The workspace relative path of the virtual resource must match the real resource", realPath, virtualPath); //$NON-NLS-1$
 
+	}
+	
+	public void testGetComponent() { 
+		assertNotNull(((IVirtualResource)webInfFolder).getComponent()); //$NON-NLS-1$
 	}
 
 	public void testGetProjectRelativePath() {
@@ -122,15 +140,21 @@ public class IVirtualFolderAPITest extends TestCase {
 	}
 
 	public void testGetParent() {
-		assertEquals("The parent of the virtual resource must match the component.", component, webInfFolder.getParent()); //$NON-NLS-1$
+		assertEquals("The parent of the virtual resource must match the component.", component, ((IVirtualResource)webInfFolder).getParent()); //$NON-NLS-1$
+	}
+	
+	public void testEquals() {
+		IVirtualResource resource = ((IVirtualResource)webInfFolder).getParent();
+		boolean bRetValue = resource.equals(component);
+		assertTrue(bRetValue);
 	}
 
 	public void testGetProject() {
-		assertEquals("The project of the virtual resource must match the test project.", TEST_PROJECT, webInfFolder.getProject()); //$NON-NLS-1$
+		assertEquals("The project of the virtual resource must match the test project.", TEST_PROJECT, ((IVirtualResource)webInfFolder).getProject()); //$NON-NLS-1$
 	}  
 
 	public void testGetType() {
-		assertEquals("The type of the virtual resource must match the type of the test project.", IVirtualResource.FOLDER, webInfFolder.getType()); //$NON-NLS-1$
+		assertEquals("The type of the virtual resource must match the type of the test project.", IVirtualResource.FOLDER, ((IVirtualResource)webInfFolder).getType()); //$NON-NLS-1$
 	}
 	
 	
@@ -141,7 +165,10 @@ public class IVirtualFolderAPITest extends TestCase {
 		assertEquals("The test file project relative path must match.", expectedPath, test3jsp.getProjectRelativePath()); //$NON-NLS-1$
 	}*/
 	
-	public void testIsAccessible() {
+	public void testIsAccessible() throws CoreException {
+//		assertEquals(((IVirtualResource)deletemeVirtualFolder).isAccessible(),true);
+//		((IVirtualResource)deletemeVirtualFolder).delete(IVirtualResource.FORCE, null);
+//		assertEquals(deletemeVirtualFolder.isAccessible(),false);
 	}
 
 	/*
