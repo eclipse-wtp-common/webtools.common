@@ -344,7 +344,7 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 	}
 
 	public IStatus validate() {
-		return validate(false);
+		return validate(true);
 	}
 
 	public IStatus validate(boolean stopOnFirstFailure) {

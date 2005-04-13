@@ -94,7 +94,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	/**
 	 * @see IDataModelProvider#validate(String)
 	 */
-	public IStatus validate(String propertyName) {
+	public IStatus validate(String name) {
 		return null;
 	}
 

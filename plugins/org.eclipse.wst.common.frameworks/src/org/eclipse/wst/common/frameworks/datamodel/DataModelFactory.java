@@ -17,6 +17,9 @@ public class DataModelFactory {
 
 	private static DataModelExtensionReader reader;
 
+	private DataModelFactory(){
+	}
+	
 	/**
 	 * Looks up the appropriate IDataModelProvider by the specified id and constructs a new
 	 * IDataModel. If the IDataModelProvider is not found then a RuntimeException is logged and null
@@ -33,7 +36,7 @@ public class DataModelFactory {
 		return createDataModel(provider);
 	}
 
-	protected static IDataModelProvider loadProvider(String id) {
+	private static IDataModelProvider loadProvider(String id) {
 		if (null == reader) {
 			reader = new DataModelExtensionReader();
 		}

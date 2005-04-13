@@ -30,8 +30,8 @@ import org.eclipse.core.runtime.IStatus;
  * enumerations of valid property values, validation for properties, and enablement for properties.
  * </p>
  * <p>
- * IDataModels may also be nested (and unnested) recursively within another. When one IDataModel
- * is nested within another, then client code may access all properties on the former through the
+ * IDataModels may also be nested (and unnested) recursively within another. When one IDataModel is
+ * nested within another, then client code may access all properties on the former through the
  * latter. This is especially useful when the same IDataModel (tracking the same properties) may be
  * used within the context of several different broader scenarios. Nesting may apply to any
  * IDataModel, and may be abitraryly deep (even cylical if you dare). Nesting offers flexibility,
@@ -473,12 +473,24 @@ public interface IDataModel {
 
 	/**
 	 * <p>
-	 * Iterates over all base properties and calls v
+	 * Equavalent to calling validate(true)
+	 * </p>
 	 * 
-	 * @return
+	 * @return an IStatus
 	 */
 	public IStatus validate();
 
+	/**
+	 * <p>
+	 * Iterates over all base properties and nested models IDs and calls validate(String). This
+	 * method returns when any call to validate(String) returns an IStatus error and
+	 * stopAtFirstFailure is set to true.
+	 * <p>
+	 * 
+	 * @param stopAtFirstFailure
+	 *            whether validation should stop at the first failure
+	 * @return an IStatus
+	 */
 	public IStatus validate(boolean stopAtFirstFailure);
 
 
