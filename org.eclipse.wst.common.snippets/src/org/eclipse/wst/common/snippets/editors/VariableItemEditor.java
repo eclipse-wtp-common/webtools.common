@@ -62,7 +62,7 @@ import org.eclipse.wst.common.snippets.internal.palette.SnippetVariable;
 import org.eclipse.wst.common.snippets.internal.ui.StringPropertyTableViewer;
 import org.eclipse.wst.common.snippets.internal.ui.ValueChangedListener;
 import org.eclipse.wst.sse.core.internal.util.StringUtils;
-import org.eclipse.wst.sse.ui.util.Sorter;
+import org.eclipse.wst.sse.ui.internal.util.Sorter;
 
 /**
  * A snippet item editor that can define snippet variables

@@ -18,7 +18,7 @@ import java.util.List;
 
 import org.eclipse.wst.common.snippets.core.ISnippetItem;
 import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
-import org.eclipse.wst.sse.ui.util.Sorter;
+import org.eclipse.wst.sse.ui.internal.util.Sorter;
 
 public class EntrySorter extends Sorter {
 

@@ -40,7 +40,7 @@
 
 <!-- register transfer types and drop actions -->
    <extension
-         point="org.eclipse.wst.sse.ui.dropTargetTransfers">
+         point="org.eclipse.wst.sse.ui.dropTargetTransfers"> 
 <!-- Structured Source Editors (and those with compatible configuration points) -->
       <dropTargetContribution
             targetID="org.eclipse.wst.sse.ui.internal.StructuredTextEditor"

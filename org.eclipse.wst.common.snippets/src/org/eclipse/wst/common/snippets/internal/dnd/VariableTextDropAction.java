@@ -17,8 +17,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.common.snippets.core.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.VariableItemHelper;
 import org.eclipse.wst.common.snippets.internal.ui.EntryDeserializer;
-import org.eclipse.wst.sse.ui.extension.AbstractDropAction;
-import org.eclipse.wst.sse.ui.extension.IExtendedSimpleEditor;
+import org.eclipse.wst.sse.ui.internal.AbstractDropAction;
+import org.eclipse.wst.sse.ui.internal.IExtendedSimpleEditor;
 
 public class VariableTextDropAction extends AbstractDropAction {
 

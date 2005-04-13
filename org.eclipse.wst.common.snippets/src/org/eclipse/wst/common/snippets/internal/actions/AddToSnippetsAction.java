@@ -30,8 +30,8 @@ import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteItem;
 import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteItemFactory;
 import org.eclipse.wst.common.snippets.internal.ui.SnippetsView;
 import org.eclipse.wst.common.snippets.internal.util.UserDrawerSelector;
-import org.eclipse.wst.sse.ui.extension.IExtendedEditorAction;
-import org.eclipse.wst.sse.ui.extension.IExtendedSimpleEditor;
+import org.eclipse.wst.sse.ui.internal.IExtendedEditorAction;
+import org.eclipse.wst.sse.ui.internal.IExtendedSimpleEditor;
 
 /**
  * A contributable IExtendedEditorAction capable of placing the current
