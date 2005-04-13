@@ -26,12 +26,13 @@ import org.eclipse.gef.ui.palette.customize.PaletteCustomizerDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
 import org.eclipse.wst.common.snippets.internal.SnippetDefinitions;
-import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
+import org.eclipse.wst.common.snippets.internal.SnippetsMessages;
 import org.eclipse.wst.common.snippets.internal.SnippetsPluginImageHelper;
 import org.eclipse.wst.common.snippets.internal.SnippetsPluginImages;
 import org.eclipse.wst.common.snippets.internal.model.SnippetManager;
@@ -42,7 +43,7 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 	private class ExportAction extends PaletteCustomizationAction {
 		public ExportAction() {
 			setEnabled(false);
-			setText(SnippetsPlugin.getResourceString("%SnippetCustomizerDialog.1")); //$NON-NLS-1$
+			setText(SnippetsMessages.SnippetCustomizerDialog_1); //$NON-NLS-1$
 			setImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_ELCL_EXPORT));
 			setDisabledImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_DLCL_EXPORT));
 			setHoverImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_CLCL_EXPORT));
@@ -65,8 +66,8 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 				if (existingCategory == null)
 					definitions.getCategories().add(exportCategory);
 				else {
-					String title = SnippetsPlugin.getResourceString("%SnippetCustomizerDialog.2"); //$NON-NLS-1$
-					String message = SnippetsPlugin.getResourceString("%SnippetCustomizerDialog.4", new String[]{existingCategory.getLabel()}); //$NON-NLS-1$
+					String title = SnippetsMessages.SnippetCustomizerDialog_2; //$NON-NLS-1$
+					String message = NLS.bind(SnippetsMessages.SnippetCustomizerDialog_4, new String[]{existingCategory.getLabel()});
 					boolean answer = MessageDialog.openConfirm(getShell(), title, message);
 					if (answer) {
 						definitions.getCategories().remove(existingCategory);
@@ -117,7 +118,7 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 	private class ImportAction extends PaletteCustomizationAction {
 		public ImportAction() {
 			setEnabled(false);
-			setText(SnippetsPlugin.getResourceString("%SnippetCustomizerDialog.0")); //$NON-NLS-1$
+			setText(SnippetsMessages.SnippetCustomizerDialog_0); //$NON-NLS-1$
 			setImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_ELCL_IMPORT));
 			setDisabledImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_DLCL_IMPORT));
 			setHoverImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_CLCL_IMPORT));
@@ -147,8 +148,8 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 					boolean found = false;
 					for (int j = 0; j < currentCategories.size(); j++) {
 						if (((PaletteEntry) currentCategories.get(j)).getId().compareToIgnoreCase((((PaletteEntry) importCategories.get(i))).getId()) == 0) {
-							String title = SnippetsPlugin.getResourceString("%SnippetCustomizerDialog.2"); //$NON-NLS-1$
-							String message = SnippetsPlugin.getResourceString("%SnippetCustomizerDialog.3", new String[]{((PaletteEntry) currentCategories.get(j)).getLabel()}); //$NON-NLS-1$
+							String title = SnippetsMessages.SnippetCustomizerDialog_2; //$NON-NLS-1$
+							String message = NLS.bind(SnippetsMessages.SnippetCustomizerDialog_3, new String[]{((PaletteEntry) currentCategories.get(j)).getLabel()});
 							boolean answer = MessageDialog.openConfirm(getShell(), title, message);
 							if (answer) {
 								SnippetManager.getInstance().getPaletteRoot().remove((PaletteEntry) currentCategories.get(j));

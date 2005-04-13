@@ -15,7 +15,7 @@ import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.palette.PaletteEntry;
 import org.eclipse.wst.common.snippets.core.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
-import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
+import org.eclipse.wst.common.snippets.internal.SnippetsMessages;
 
 public class DeleteItemAction extends AbstractItemAction {
 
@@ -30,7 +30,7 @@ public class DeleteItemAction extends AbstractItemAction {
 	 */
 	public DeleteItemAction(GraphicalViewer viewer, PaletteEntry entry) {
 		super(viewer, entry);
-		setText(SnippetsPlugin.getResourceString("%Delete_1")); //$NON-NLS-1$
+		setText(SnippetsMessages.Delete_1); //$NON-NLS-1$
 		setId("delete"); //$NON-NLS-1$
 	}
 

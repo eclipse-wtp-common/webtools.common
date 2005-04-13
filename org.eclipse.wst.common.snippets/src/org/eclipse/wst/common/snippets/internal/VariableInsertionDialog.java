@@ -93,7 +93,7 @@ public class VariableInsertionDialog extends Dialog {
 	 */
 	protected void createButtonsForButtonBar(Composite parent) {
 		super.createButtonsForButtonBar(parent);
-		getButton(IDialogConstants.OK_ID).setText(SnippetsPlugin.getResourceString("%Insert_14")); //$NON-NLS-1$
+		getButton(IDialogConstants.OK_ID).setText(SnippetsMessages.Insert_14); //$NON-NLS-1$
 	}
 
 	/*
@@ -119,25 +119,25 @@ public class VariableInsertionDialog extends Dialog {
 		instructions.setBackground(composite.getBackground());
 		doubleWide.heightHint = instructions.getFont().getFontData()[0].getHeight() * 3;
 		instructions.setLayoutData(doubleWide);
-		instructions.setText(SnippetsPlugin.getResourceString("%Edit_Instruction")); //$NON-NLS-1$
+		instructions.setText(SnippetsMessages.Edit_Instruction); //$NON-NLS-1$
 		instructions.setEditable(false);
 
 		Text tableLabel = new Text(composite, SWT.NONE);
 		tableLabel.setBackground(composite.getBackground());
-		tableLabel.setText(SnippetsPlugin.getResourceString("%Variables__4")); //$NON-NLS-1$
+		tableLabel.setText(SnippetsMessages.Variables__4); //$NON-NLS-1$
 		tableLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		tableLabel.setEditable(false);
 
 		Text descriptionBoxLabel = new Text(composite, SWT.NONE);
 		descriptionBoxLabel.setBackground(composite.getBackground());
-		descriptionBoxLabel.setText(SnippetsPlugin.getResourceString("%Description_of_variable__5")); //$NON-NLS-1$
+		descriptionBoxLabel.setText(SnippetsMessages.Description_of_variable__5); //$NON-NLS-1$
 		descriptionBoxLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		descriptionBoxLabel.setEditable(false);
 
 		// pity we can't just use a PropertySheetPage, but the column headers
 		// aren't customizable
 		fTableViewer = new StringPropertyTableViewer();
-		fTableViewer.setColumnNames(new String[]{SnippetsPlugin.getResourceString("%Variable_Name_6"), SnippetsPlugin.getResourceString("%Value_7")}); //$NON-NLS-1$ //$NON-NLS-2$
+		fTableViewer.setColumnNames(new String[]{SnippetsMessages.Variable_Name_6, SnippetsMessages.Value_7}); //$NON-NLS-1$ //$NON-NLS-2$
 		fTableViewer.setEditFirstColumn(false);
 		fTableViewer.createContents(composite);
 		GridData data = new GridData(GridData.FILL_BOTH);
@@ -162,13 +162,13 @@ public class VariableInsertionDialog extends Dialog {
 		fDescriptionPane.setEditable(false);
 		fDescriptionPane.addVerifyKeyListener(createVerifyListener(fDescriptionPane));
 		fDescriptionPane.setFont(JFaceResources.getDialogFont());
-		setAccessible(fDescriptionPane, SnippetsPlugin.getResourceString("%Description_of_variable__5")); //$NON-NLS-1$
+		setAccessible(fDescriptionPane, SnippetsMessages.Description_of_variable__5); //$NON-NLS-1$
 
 		doubleWide = new GridData(GridData.FILL_BOTH);
 		doubleWide.horizontalSpan = 2;
 		Text previewLabel = new Text(composite, SWT.NULL);
 		previewLabel.setBackground(composite.getBackground());
-		previewLabel.setText(SnippetsPlugin.getResourceString("%Preview__9")); //$NON-NLS-1$
+		previewLabel.setText(SnippetsMessages.Preview__9); //$NON-NLS-1$
 		previewLabel.setEditable(false);
 
 		doubleWide = new GridData(GridData.FILL_BOTH);
@@ -186,7 +186,7 @@ public class VariableInsertionDialog extends Dialog {
 		fPreviewPane.setEditable(false);
 		fPreviewPane.setFont(JFaceResources.getTextFont());
 		fPreviewPane.setLayoutData(doubleWide);
-		setAccessible(fPreviewPane, SnippetsPlugin.getResourceString("%Preview__9")); //$NON-NLS-1$
+		setAccessible(fPreviewPane, SnippetsMessages.Preview__9); //$NON-NLS-1$
 
 		if (fItem != null) {
 			fTableViewer.clear();
@@ -224,9 +224,9 @@ public class VariableInsertionDialog extends Dialog {
 		String shellLabel = ""; //$NON-NLS-1$
 		String itemLabel = getItem().getLabel();
 		if (itemLabel != null && itemLabel.length() > 0)
-			shellLabel = SnippetsPlugin.getResourceString("%Insert_Template___1") + " " + itemLabel; //$NON-NLS-1$ //$NON-NLS-2$
+			shellLabel = SnippetsMessages.Insert_Template___1 + " " + itemLabel; //$NON-NLS-1$ //$NON-NLS-2$
 		else
-			shellLabel = SnippetsPlugin.getResourceString("%Insert_Template_2"); //$NON-NLS-1$
+			shellLabel = SnippetsMessages.Insert_Template_2; //$NON-NLS-1$
 
 		return shellLabel;
 	}

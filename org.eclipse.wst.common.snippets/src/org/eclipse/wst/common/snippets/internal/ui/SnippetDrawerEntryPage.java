@@ -49,7 +49,7 @@ import org.eclipse.ui.dialogs.ListSelectionDialog;
 import org.eclipse.ui.help.WorkbenchHelp;
 import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.IHelpContextIds;
-import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
+import org.eclipse.wst.common.snippets.internal.SnippetsMessages;
 import org.eclipse.wst.common.snippets.internal.util.VisibilityUtil;
 
 public class SnippetDrawerEntryPage extends DrawerEntryPage {
@@ -123,8 +123,8 @@ public class SnippetDrawerEntryPage extends DrawerEntryPage {
 
 	protected void browsePressed() {
 		ListSelectionDialog dialog = new ListSelectionDialog(getControl().getShell(), Platform.getContentTypeManager(), new ContentTypeStructuredContentProvider(), new ContentTypeLabelProvider(), null);
-		dialog.setTitle(SnippetsPlugin.getResourceString("%SnippetDrawerEntryPage.5")); //$NON-NLS-1$
-		dialog.setMessage(SnippetsPlugin.getResourceString("%SnippetDrawerEntryPage.6")); //$NON-NLS-1$
+		dialog.setTitle(SnippetsMessages.SnippetDrawerEntryPage_5); //$NON-NLS-1$
+		dialog.setMessage(SnippetsMessages.SnippetDrawerEntryPage_6); //$NON-NLS-1$
 		ArrayList initialSelections = new ArrayList();
 		IContentType[] contentTypes = Platform.getContentTypeManager().getAllContentTypes();
 		ISnippetsEntry snippetEntry = (ISnippetsEntry) getEntry();
@@ -185,16 +185,16 @@ public class SnippetDrawerEntryPage extends DrawerEntryPage {
 		};
 
 		fAlwaysShowButton = new Button(radioGroup, SWT.RADIO);
-		fAlwaysShowButton.setText(SnippetsPlugin.getResourceString("%SnippetDrawerEntryPage.1")); //$NON-NLS-1$
+		fAlwaysShowButton.setText(SnippetsMessages.SnippetDrawerEntryPage_1); //$NON-NLS-1$
 		fAlwaysShowButton.setSelection(true);
 		fAlwaysShowButton.addSelectionListener(updateEnablement);
 
 		fAlwaysHideButton = new Button(radioGroup, SWT.RADIO);
-		fAlwaysHideButton.setText(SnippetsPlugin.getResourceString("%SnippetDrawerEntryPage.2")); //$NON-NLS-1$
+		fAlwaysHideButton.setText(SnippetsMessages.SnippetDrawerEntryPage_2); //$NON-NLS-1$
 		fAlwaysHideButton.addSelectionListener(updateEnablement);
 
 		fCustomButton = new Button(radioGroup, SWT.RADIO);
-		fCustomButton.setText(SnippetsPlugin.getResourceString("%SnippetDrawerEntryPage.3")); //$NON-NLS-1$
+		fCustomButton.setText(SnippetsMessages.SnippetDrawerEntryPage_3); //$NON-NLS-1$
 		fCustomButton.addSelectionListener(updateEnablement);
 
 		return radioGroup;
@@ -217,7 +217,7 @@ public class SnippetDrawerEntryPage extends DrawerEntryPage {
 		fContentTypeText.setLayoutData(contentTypeTextGridData);
 
 		fBrowseButton = new Button(contentTypeTextRow, SWT.PUSH);
-		fBrowseButton.setText(SnippetsPlugin.getResourceString("%SnippetDrawerEntryPage.4")); //$NON-NLS-1$
+		fBrowseButton.setText(SnippetsMessages.SnippetDrawerEntryPage_4); //$NON-NLS-1$
 		fBrowseButton.setEnabled(false);
 		GridData browseButtonGridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 		fBrowseButton.setLayoutData(browseButtonGridData);
@@ -237,7 +237,7 @@ public class SnippetDrawerEntryPage extends DrawerEntryPage {
 		Control[] tablist = new Control[panel.getTabList().length + 2];
 		System.arraycopy(panel.getTabList(), 0, tablist, 0, tablist.length - 2);
 
-		createLabel(panel, SWT.NONE, SnippetsPlugin.getResourceString("%SnippetDrawerEntryPage.0")); //$NON-NLS-1$
+		createLabel(panel, SWT.NONE, SnippetsMessages.SnippetDrawerEntryPage_0); //$NON-NLS-1$
 		tablist[tablist.length - 2] = createContentTypeRadios(panel);
 
 		tablist[tablist.length - 1] = createContentTypeTextRow(panel);

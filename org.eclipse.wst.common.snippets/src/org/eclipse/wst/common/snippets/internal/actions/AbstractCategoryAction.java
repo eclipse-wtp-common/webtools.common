@@ -17,7 +17,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.wst.common.snippets.core.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
-import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
+import org.eclipse.wst.common.snippets.internal.SnippetsMessages;
 import org.eclipse.wst.common.snippets.internal.ui.SnippetsView;
 
 public abstract class AbstractCategoryAction extends Action {
@@ -27,7 +27,7 @@ public abstract class AbstractCategoryAction extends Action {
 		public String isValid(String name) {
 			// Don't allow blank names
 			if (name == null || name.length() < 1) {
-				return (SnippetsPlugin.getResourceString("%A_name_must_be_specified_1")); //$NON-NLS-1$
+				return (SnippetsMessages.A_name_must_be_specified_1); //$NON-NLS-1$
 			}
 			return null;
 		}

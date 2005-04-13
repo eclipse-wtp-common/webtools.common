@@ -22,6 +22,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.help.WorkbenchHelp;
 import org.eclipse.wst.common.snippets.internal.IHelpContextIds;
 import org.eclipse.wst.common.snippets.internal.Logger;
+import org.eclipse.wst.common.snippets.internal.SnippetsMessages;
 import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
 import org.eclipse.wst.common.snippets.internal.SnippetsPluginImageHelper;
 import org.eclipse.wst.common.snippets.internal.SnippetsPluginImages;
@@ -57,7 +58,7 @@ public class AddToSnippetsAction extends Action implements IExtendedEditorAction
 	protected IExtendedSimpleEditor fExtendedSimpleEditor = null;
 
 	public AddToSnippetsAction() {
-		super(SnippetsPlugin.getResourceString("%Add_to_Snippets..._3")); //$NON-NLS-1$
+		super(SnippetsMessages.Add_to_Snippets____3); //$NON-NLS-1$
 		setImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_OBJ_SNIPPETS));
 		WorkbenchHelp.setHelp(this, IHelpContextIds.MENU_ADD_TO_SNIPPETS);
 	}

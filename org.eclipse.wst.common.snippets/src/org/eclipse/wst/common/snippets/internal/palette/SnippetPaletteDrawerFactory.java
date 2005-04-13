@@ -15,7 +15,7 @@ import org.eclipse.gef.palette.PaletteEntry;
 import org.eclipse.gef.palette.PaletteTemplateEntry;
 import org.eclipse.gef.ui.palette.customize.PaletteDrawerFactory;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
+import org.eclipse.wst.common.snippets.internal.SnippetsMessages;
 import org.eclipse.wst.common.snippets.internal.SnippetsPluginImageHelper;
 import org.eclipse.wst.common.snippets.internal.SnippetsPluginImages;
 
@@ -23,7 +23,7 @@ public class SnippetPaletteDrawerFactory extends PaletteDrawerFactory {
 
 	public SnippetPaletteDrawerFactory() {
 		super();
-		setLabel(SnippetsPlugin.getResourceString("%New_Category_Title")); //$NON-NLS-1$
+		setLabel(SnippetsMessages.New_Category_Title); //$NON-NLS-1$
 		setImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_CLCL_NEW_CATEGORY));
 	}
 
@@ -31,10 +31,10 @@ public class SnippetPaletteDrawerFactory extends PaletteDrawerFactory {
 	 * @see org.eclipse.gef.ui.palette.customize.PaletteEntryFactory#createNewEntry(org.eclipse.swt.widgets.Shell)
 	 */
 	protected PaletteEntry createNewEntry(Shell shell) {
-		SnippetPaletteDrawer drawer = new SnippetPaletteDrawer(SnippetsPlugin.getResourceString("%Unnamed_Category")); //$NON-NLS-1$
+		SnippetPaletteDrawer drawer = new SnippetPaletteDrawer(SnippetsMessages.Unnamed_Category); //$NON-NLS-1$
 		drawer.setType(PaletteDrawer.PALETTE_TYPE_DRAWER);
 		drawer.setDrawerType(PaletteTemplateEntry.PALETTE_TYPE_TEMPLATE);
-		drawer.setId(SnippetsPlugin.getResourceString("%category") + "_" + System.currentTimeMillis()); //$NON-NLS-1$ //$NON-NLS-2$
+		drawer.setId(SnippetsMessages.category + "_" + System.currentTimeMillis()); //$NON-NLS-1$ //$NON-NLS-2$
 		drawer.setUserModificationPermission(PaletteEntry.PERMISSION_FULL_MODIFICATION);
 		drawer.setFilters(getDefaultFilters());
 		return drawer;

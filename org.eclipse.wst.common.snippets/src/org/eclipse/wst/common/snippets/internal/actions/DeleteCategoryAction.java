@@ -14,6 +14,7 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.palette.PaletteContainer;
 import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
 import org.eclipse.wst.common.snippets.internal.SnippetDefinitions;
+import org.eclipse.wst.common.snippets.internal.SnippetsMessages;
 import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
 import org.eclipse.wst.common.snippets.internal.ui.SnippetsView;
 
@@ -21,7 +22,7 @@ public class DeleteCategoryAction extends AbstractCategoryAction {
 
 
 	public DeleteCategoryAction(SnippetsView viewer, PaletteContainer container) {
-		super(SnippetsPlugin.getResourceString("%Delete_1"), viewer, container); //$NON-NLS-1$
+		super(SnippetsMessages.Delete_1, viewer, container); //$NON-NLS-1$
 	}
 
 	public void run() {

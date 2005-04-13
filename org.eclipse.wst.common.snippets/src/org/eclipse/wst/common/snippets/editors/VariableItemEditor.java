@@ -57,7 +57,7 @@ import org.eclipse.wst.common.snippets.core.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.IHelpContextIds;
 import org.eclipse.wst.common.snippets.internal.ISnippetVariable;
 import org.eclipse.wst.common.snippets.internal.Logger;
-import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
+import org.eclipse.wst.common.snippets.internal.SnippetsMessages;
 import org.eclipse.wst.common.snippets.internal.palette.SnippetVariable;
 import org.eclipse.wst.common.snippets.internal.ui.StringPropertyTableViewer;
 import org.eclipse.wst.common.snippets.internal.ui.ValueChangedListener;
@@ -124,7 +124,7 @@ public class VariableItemEditor implements ISnippetEditor {
 								public String getDisplayString() {
 									String display = varname;
 									if (display == null)
-										display = "";
+										display = ""; //$NON-NLS-1$
 									return display;
 								}
 
@@ -230,7 +230,7 @@ public class VariableItemEditor implements ISnippetEditor {
 		variableComposite.setLayout(sublayout);
 
 		Label nameLabel = new Label(variableComposite, SWT.NONE);
-		nameLabel.setText(SnippetsPlugin.getResourceString("%Variables__4")); //$NON-NLS-1$
+		nameLabel.setText(SnippetsMessages.Variables__4); //$NON-NLS-1$
 		GridData doubleData = new GridData(GridData.FILL_HORIZONTAL);
 		nameLabel.setLayoutData(doubleData);
 
@@ -238,9 +238,9 @@ public class VariableItemEditor implements ISnippetEditor {
 		throwAway.setLayoutData(new GridData());
 
 		// saved and made final here to update the template text area below
-		final String nameProperty = SnippetsPlugin.getResourceString("%Name_5"); //$NON-NLS-1$
+		final String nameProperty = SnippetsMessages.Name_5; //$NON-NLS-1$
 		fTableViewer = new StringPropertyTableViewer();
-		fTableViewer.setColumnNames(new String[]{nameProperty, SnippetsPlugin.getResourceString("%Description_6"), SnippetsPlugin.getResourceString("%Default_Value_7")}); //$NON-NLS-1$ //$NON-NLS-2$
+		fTableViewer.setColumnNames(new String[]{nameProperty, SnippetsMessages.Description_6, SnippetsMessages.Default_Value_7}); //$NON-NLS-1$ //$NON-NLS-2$
 		fTableViewer.createContents(variableComposite);
 
 		GridData data = new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL);
@@ -275,7 +275,7 @@ public class VariableItemEditor implements ISnippetEditor {
 		// input.
 		// TODO: for usability, throw up a dialog in the middle
 		Button addButton = new Button(variableButtons, SWT.PUSH);
-		addButton.setText(SnippetsPlugin.getResourceString("%New_1")); //$NON-NLS-1$
+		addButton.setText(SnippetsMessages.New_1); //$NON-NLS-1$
 		addButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		addButton.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -297,11 +297,11 @@ public class VariableItemEditor implements ISnippetEditor {
 		// add the Remove button with a listener to enable it only when a
 		// cell is selected and in focus
 		final Button removeButton = new Button(variableButtons, SWT.PUSH);
-		removeButton.setText(SnippetsPlugin.getResourceString("%Remove_15")); //$NON-NLS-1$
+		removeButton.setText(SnippetsMessages.Remove_15); //$NON-NLS-1$
 		removeButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		nameLabel = new Label(parent, SWT.NONE);
-		nameLabel.setText(SnippetsPlugin.getResourceString("%Template_Pattern__16")); //$NON-NLS-1$
+		nameLabel.setText(SnippetsMessages.Template_Pattern__16); //$NON-NLS-1$
 		nameLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		// create a source viewer for to edit the text (makes it easier to
@@ -387,7 +387,7 @@ public class VariableItemEditor implements ISnippetEditor {
 
 		// specifically associate the template pattern label w/ the content
 		// styled text so screen reader reads it
-		setAccessible(content, SnippetsPlugin.getResourceString("%Template_Pattern__16")); //$NON-NLS-1$
+		setAccessible(content, SnippetsMessages.Template_Pattern__16); //$NON-NLS-1$
 
 		// add a value change listener to the fTableViewer so that changes to
 		// the name property of a variable
@@ -410,7 +410,7 @@ public class VariableItemEditor implements ISnippetEditor {
 		 * making content assist obviously available in the source viewer.
 		 */
 		final Button insertVariableButton = new Button(parent, SWT.PUSH);
-		insertVariableButton.setText(SnippetsPlugin.getResourceString("%Insert_Variable_17")); //$NON-NLS-1$
+		insertVariableButton.setText(SnippetsMessages.Insert_Variable_17); //$NON-NLS-1$
 		insertVariableButton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_BEGINNING));
 		insertVariableButton.setEnabled(fTableViewer.getTable().getItemCount() > 0);
 		insertVariableButton.addSelectionListener(new SelectionListener() {

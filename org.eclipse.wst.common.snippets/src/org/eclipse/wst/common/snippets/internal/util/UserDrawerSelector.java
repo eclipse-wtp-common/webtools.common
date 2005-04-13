@@ -26,6 +26,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.help.WorkbenchHelp;
 import org.eclipse.wst.common.snippets.internal.IHelpContextIds;
 import org.eclipse.wst.common.snippets.internal.Logger;
+import org.eclipse.wst.common.snippets.internal.SnippetsMessages;
 import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
 import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteDrawerFactory;
 import org.eclipse.wst.common.snippets.internal.ui.SnippetsView;
@@ -35,7 +36,7 @@ public class UserDrawerSelector {
 		public String isValid(String name) {
 			// Don't allow blank names
 			if (name == null || name.length() < 1) {
-				return (SnippetsPlugin.getResourceString("%A_name_must_be_specified_1")); //$NON-NLS-1$
+				return (SnippetsMessages.A_name_must_be_specified_1); //$NON-NLS-1$
 			}
 			return null;
 		}
@@ -92,7 +93,7 @@ public class UserDrawerSelector {
 			for (int i = 0; i < modifiableCategories.size(); i++) {
 				userDrawers[i] = ((PaletteDrawer) modifiableCategories.get(i)).getLabel();
 			}
-			CComboSelectionDialog dlg = new CComboSelectionDialog(fShell, SnippetsPlugin.getResourceString("%New_Category_Title"), (fSelectionPrompt != null ? fSelectionPrompt : SnippetsPlugin.getResourceString("%choose_or_create")), userDrawers, 0, new CategoryNameValidator()) { //$NON-NLS-1$ //$NON-NLS-2$
+			CComboSelectionDialog dlg = new CComboSelectionDialog(fShell, SnippetsMessages.New_Category_Title, (fSelectionPrompt != null ? fSelectionPrompt : SnippetsMessages.choose_or_create), userDrawers, 0, new CategoryNameValidator()) { //$NON-NLS-1$ //$NON-NLS-2$
 				protected Control createDialogArea(Composite parent) {
 					Control mainHook = super.createDialogArea(parent);
 					WorkbenchHelp.setHelp(mainHook, IHelpContextIds.DIALOG_EDIT_CATEGORY);
@@ -144,9 +145,9 @@ public class UserDrawerSelector {
 					defaultNewDrawerName = currentEditor.getEditorInput().getName();
 				}
 				if (defaultNewDrawerName == null) {
-					defaultNewDrawerName = SnippetsPlugin.getResourceString("%new_category_name");
+					defaultNewDrawerName = SnippetsMessages.new_category_name; //$NON-NLS-1$
 				}
-				InputDialog d = new InputDialog(fShell, SnippetsPlugin.getResourceString("%New_Category_Title"), (fInputPrompt != null ? fInputPrompt : SnippetsPlugin.getResourceString("%force_create")), defaultNewDrawerName, new CategoryNameValidator()) {//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				InputDialog d = new InputDialog(fShell, SnippetsMessages.New_Category_Title, (fInputPrompt != null ? fInputPrompt : SnippetsMessages.force_create), defaultNewDrawerName, new CategoryNameValidator()) {//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					protected Control createContents(Composite parent) {
 						Control mainHook = super.createContents(parent);
 						WorkbenchHelp.setHelp(mainHook, IHelpContextIds.DIALOG_EDIT_CATEGORY);

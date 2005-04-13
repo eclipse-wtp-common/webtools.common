@@ -34,7 +34,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
+import org.eclipse.wst.common.snippets.internal.SnippetsMessages;
 import org.eclipse.wst.common.snippets.internal.util.AccessibleTableViewer;
 
 public class StringPropertyTableViewer {
@@ -252,7 +252,7 @@ public class StringPropertyTableViewer {
 	 */
 	public String[] getColumnNames() {
 		if (fColumnNames == null)
-			return new String[]{SnippetsPlugin.getResourceString("%Variable_Name_3"), SnippetsPlugin.getResourceString("%Value_4")}; //$NON-NLS-1$ //$NON-NLS-2$
+			return new String[]{SnippetsMessages.Variable_Name_3, SnippetsMessages.Value_4}; //$NON-NLS-1$ //$NON-NLS-2$
 		return fColumnNames;
 	}
 
