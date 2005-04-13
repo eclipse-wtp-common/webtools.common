@@ -25,17 +25,23 @@ public interface ISnippetEditor {
 	/**
 	 * Adds a modify listener to this editor. Typically the UI surrounding
 	 * this editor will listen for modifications.
+	 * 
 	 * @param listener the to be added
 	 */
 	void addModifyListener(ModifyListener listener);
 
 	/**
 	 * Fill-in the contents of an editing Dialog.
+	 * 
+	 * @param parent the parent composite for the editor's control
+	 * @return the main control provided by the editor
 	 */
 	Control createContents(Composite parent);
 
 	/**
 	 * Get the ISnippetItem being edited.
+	 * 
+	 * @return the item being edited
 	 */
 	ISnippetItem getItem();
 
@@ -48,6 +54,8 @@ public interface ISnippetEditor {
 
 	/**
 	 * Set the ISnippetItem to edit.
+	 * 
+	 * @param item the item to edit
 	 */
 	void setItem(ISnippetItem item);
 
