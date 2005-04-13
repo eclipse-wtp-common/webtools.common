@@ -15,7 +15,6 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.operations.AbstractOperation;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;

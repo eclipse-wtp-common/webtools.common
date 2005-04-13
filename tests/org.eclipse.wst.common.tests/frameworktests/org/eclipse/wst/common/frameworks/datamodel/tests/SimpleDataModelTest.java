@@ -21,6 +21,7 @@ import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelListener;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 
 
@@ -247,6 +248,23 @@ public class SimpleDataModelTest extends TestCase {
 		assertEquals(10, ((Integer) dm.getProperty(DMProvider.INT_PROP)).intValue());
 		assertEquals("foo10true", (String) dm.getProperty(DMProvider.STRING_PROP));
 		assertEquals("foo10true", dm.getStringProperty(DMProvider.STRING_PROP));
+	}
+
+	public void testPropertyChangedOnListener() {
+		dmL.clearEvents();
+		DataModelEvent event = new DataModelEvent(dm, A.P, DataModelEvent.VALUE_CHG);
+		dmL.propertyChanged(event);
+		List events = dmL.getEvents();
+		assertEquals(1, events.size());
+		assertTrue(events.contains(event));
+
+		dmL.clearEvents();
+		IDataModelListener idml = dmL;
+		idml.propertyChanged(event);
+		events = dmL.getEvents();
+		assertEquals(1, events.size());
+		assertTrue(events.contains(event));
+
 	}
 
 	public void testAddRemoveListener() {
