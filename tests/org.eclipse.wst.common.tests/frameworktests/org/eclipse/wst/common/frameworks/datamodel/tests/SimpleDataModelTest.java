@@ -100,6 +100,19 @@ public class SimpleDataModelTest extends TestCase {
 			return null;
 		}
 
+		public DataModelPropertyDescriptor getPropertyDescriptor(String propertyName) {
+			Object property = getProperty(propertyName);
+			if (INT_PROP2.equals(propertyName)) {
+				return new DataModelPropertyDescriptor(property);
+			} else if (INT_PROP3.equals(propertyName) || INT_PROP4.equals(propertyName)) {
+				String[] descriptions = new String[]{"one", "two", "three"};
+				int value = ((Integer) property).intValue();
+				return new DataModelPropertyDescriptor(property, descriptions[value - 1]);
+			}
+			return null;
+		}
+
+
 		public String getID() {
 			return null;
 		}
@@ -181,6 +194,25 @@ public class SimpleDataModelTest extends TestCase {
 			int value = i + 1;
 			assertEquals(value, ((Integer) descriptors[i].getPropertyValue()).intValue());
 			assertEquals(descriptions[i], descriptors[i].getPropertyDescription());
+		}
+		for (int i = 1; i < 4; i++) {
+			dm.setIntProperty(DMProvider.INT_PROP2, i);
+			DataModelPropertyDescriptor descriptor = dm.getPropertyDescriptor(DMProvider.INT_PROP2);
+			assertEquals(descriptor.getPropertyValue(), dm.getProperty(DMProvider.INT_PROP2));
+			assertEquals(((Integer) descriptor.getPropertyValue()).intValue(), dm.getIntProperty(DMProvider.INT_PROP2));
+			assertTrue(descriptor.getPropertyDescription().equals(Integer.toString(i)));
+
+			dm.setIntProperty(DMProvider.INT_PROP3, i);
+			descriptor = dm.getPropertyDescriptor(DMProvider.INT_PROP3);
+			assertEquals(descriptor.getPropertyValue(), dm.getProperty(DMProvider.INT_PROP3));
+			assertEquals(((Integer) descriptor.getPropertyValue()).intValue(), dm.getIntProperty(DMProvider.INT_PROP3));
+			assertTrue(descriptor.getPropertyDescription().equals(descriptions[i - 1]));
+
+			dm.setIntProperty(DMProvider.INT_PROP4, i);
+			descriptor = dm.getPropertyDescriptor(DMProvider.INT_PROP4);
+			assertEquals(descriptor.getPropertyValue(), dm.getProperty(DMProvider.INT_PROP4));
+			assertEquals(((Integer) descriptor.getPropertyValue()).intValue(), dm.getIntProperty(DMProvider.INT_PROP4));
+			assertTrue(descriptor.getPropertyDescription().equals(descriptions[i - 1]));
 		}
 	}
 
@@ -317,8 +349,6 @@ public class SimpleDataModelTest extends TestCase {
 		assertEquals(DMProvider.BOOLEAN_PROP, event.getPropertyName());
 		assertEquals(DataModelEvent.VALUE_CHG, event.getFlag());
 		assertEquals(false, dm.getBooleanProperty(DMProvider.BOOLEAN_PROP));
-
-
 	}
 
 }
