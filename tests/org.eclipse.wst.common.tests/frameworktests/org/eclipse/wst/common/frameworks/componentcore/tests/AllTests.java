@@ -21,7 +21,7 @@ public class AllTests extends TestCase {
 		TestSuite suite = new TestSuite(); 
 		
 		suite.addTestSuite(IVirtualFolderAPITest.class);
-		suite.addTestSuite(ModuleCoreAPIFVTest.class);
+		suite.addTestSuite(ModuleCoreAPIFVTTest.class);
 		suite.addTestSuite(ModuleCoreURIConverterUnitTest.class);
 		
 		return suite;
