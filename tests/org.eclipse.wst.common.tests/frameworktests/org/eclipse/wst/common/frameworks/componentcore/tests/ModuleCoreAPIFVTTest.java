@@ -219,6 +219,7 @@ public class ModuleCoreAPIFVTTest extends TestCase {
 
 		IVirtualComponent component = ComponentCore.createComponent(TestWorkspace.getTargetProject(), TestWorkspace.WEB_MODULE_1_NAME);
 		IVirtualFolder root = component.getFolder(new Path("/")); //$NON-NLS-1$ 
+		// TODO
 		//assertTree(virtualResourceTree, root);
 
 	}
