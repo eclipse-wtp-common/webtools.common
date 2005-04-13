@@ -17,6 +17,9 @@
          </documentation>
       </annotation>
       <complexType>
+         <sequence>
+            <element ref="item" minOccurs="0" maxOccurs="unbounded"/>
+         </sequence>
          <attribute name="description" type="string">
             <annotation>
                <documentation>
@@ -43,6 +46,9 @@
                <documentation>
                   A brief label to show to the user.
                </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
             </annotation>
          </attribute>
          <attribute name="largeicon" type="string">
@@ -76,10 +82,10 @@
          </documentation>
       </annotation>
       <complexType>
-         <choice>
+         <sequence>
             <element ref="content"/>
             <element ref="variable" minOccurs="0" maxOccurs="unbounded"/>
-         </choice>
+         </sequence>
          <attribute name="class" type="string">
             <annotation>
                <documentation>
@@ -91,13 +97,6 @@
             <annotation>
                <documentation>
                   A verbose label to show to the user.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="category" type="string">
-            <annotation>
-               <documentation>
-                  The id of the category into which this item should be placed.  If the a category with the corresponding id is not found, this item will not be loaded into the Snippets model.
                </documentation>
             </annotation>
          </attribute>
@@ -209,43 +208,40 @@
             id=&quot;org.eclipse.wst.jsp.category0&quot;
             contenttypes=&quot;org.eclipse.wst.jsp.core.jspsource&quot;
             filetypes=&quot;*.jsp, *.jsf, *.jspf&quot;&gt;
+        &lt;item
+              icon=&quot;icons/tag-generic.gif&quot;
+              label=&quot;%jsp_hidden_comment&quot;
+              id=&quot;org.eclipse.wst.jsp.jsp_hidden_comment&quot;&gt;
+           &lt;content&gt;
+              %jsp_hidden_comment_content
+           &lt;/content&gt;
+        &lt;/item&gt;
+        &lt;item
+              label=&quot;%jsp_page_directive&quot;
+              id=&quot;org.eclipse.wst.jsp.jsp_page_directive&quot;&gt;
+           &lt;content&gt;
+              %jsp_page_directive_content
+           &lt;/content&gt;
+        &lt;/item&gt;
+        &lt;item
+              icon=&quot;icons/jsptaglib.gif&quot;
+              label=&quot;%jsp_taglib_directive&quot;
+              class=&quot;org.eclipse.wst.common.snippets.insertions.PrependInsertion&quot;
+              id=&quot;org.eclipse.wst.jsp.jsp_taglib_directive&quot;&gt;
+           &lt;content&gt;
+              &lt;![CDATA[ &lt;%@taglib uri=&quot;$uri&quot; prefix=&quot;$prefix&quot; %&gt; ]]&gt;
+           &lt;/content&gt;
+           &lt;variable
+                 description=&quot;%jsp_taglib_directive_uri&quot;
+                 id=&quot;uri&quot;&gt;
+           &lt;/variable&gt;
+           &lt;variable
+                 default=&quot;mylib&quot;
+                 description=&quot;%jsp_taglib_directive_prefix&quot;
+                 id=&quot;prefix&quot;&gt;
+           &lt;/variable&gt;
+        &lt;/item&gt;
       &lt;/category&gt;
-      &lt;item
-            icon=&quot;icons/tag-generic.gif&quot;
-            category=&quot;org.eclipse.wst.jsp.category0&quot;
-            label=&quot;%jsp_hidden_comment&quot;
-            id=&quot;org.eclipse.wst.jsp.jsp_hidden_comment&quot;&gt;
-         &lt;content&gt;
-            %jsp_hidden_comment_content
-         &lt;/content&gt;
-      &lt;/item&gt;
-      &lt;item
-            category=&quot;org.eclipse.wst.jsp.category0&quot;
-            label=&quot;%jsp_page_directive&quot;
-            id=&quot;org.eclipse.wst.jsp.jsp_page_directive&quot;&gt;
-         &lt;content&gt;
-            %jsp_page_directive_content
-         &lt;/content&gt;
-      &lt;/item&gt;
-      &lt;item
-            icon=&quot;icons/jsptaglib.gif&quot;
-            category=&quot;org.eclipse.wst.jsp.category0&quot;
-            label=&quot;%jsp_taglib_directive&quot;
-            class=&quot;org.eclipse.wst.common.snippets.insertions.PrependInsertion&quot;
-            id=&quot;org.eclipse.wst.jsp.jsp_taglib_directive&quot;&gt;
-         &lt;content&gt;
-            &lt;![CDATA[ &lt;%@taglib uri=&quot;$uri&quot; prefix=&quot;$prefix&quot; %&gt; ]]&gt;
-         &lt;/content&gt;
-         &lt;variable
-               description=&quot;%jsp_taglib_directive_uri&quot;
-               id=&quot;uri&quot;&gt;
-         &lt;/variable&gt;
-         &lt;variable
-               default=&quot;mylib&quot;
-               description=&quot;%jsp_taglib_directive_prefix&quot;
-               id=&quot;prefix&quot;&gt;
-         &lt;/variable&gt;
-      &lt;/item&gt;
    &lt;/extension&gt;
 &lt;/pre&gt;
       </documentation>
