@@ -21,7 +21,6 @@ import org.eclipse.wst.common.componentcore.datamodel.properties.IComponentCreat
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 import org.eclipse.wst.server.core.IModuleType;
@@ -69,14 +68,14 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 	            IProjectProperties projProperties = ServerCore.getProjectProperties(project);
 	            if( projProperties.getRuntimeTarget() != null ){
 	            	String[] validModuleVersions = getServerVersions(getComponentID(), projProperties.getRuntimeTarget().getRuntimeType());
-	            	propertySet(VALID_MODULE_VERSIONS_FOR_PROJECT_RUNTIME, validModuleVersions);
+	            	model.setProperty(VALID_MODULE_VERSIONS_FOR_PROJECT_RUNTIME, validModuleVersions);
 	            }
 			}
         }
         else if (COMPONENT_NAME.equals(propertyName))
-			propertySet(COMPONENT_DEPLOY_NAME, propertyValue);
+			model.setProperty(COMPONENT_DEPLOY_NAME, propertyValue);
         else if (COMPONENT_DEPLOY_NAME.equals(propertyName))
-			getDataModel().setProperty(COMPONENT_DEPLOY_NAME, propertyValue);        
+			model.setProperty(COMPONENT_DEPLOY_NAME, propertyValue);        
          return true;
     }
     
@@ -90,7 +89,7 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
     public IStatus validate(String propertyName) {
         if (propertyName.equals(COMPONENT_NAME)) {
             IStatus status = OK_STATUS;
-            String moduleName = getDataModel().getStringProperty(COMPONENT_NAME);
+            String moduleName = model.getStringProperty(COMPONENT_NAME);
             if (status.isOK()) {
                 if (moduleName.indexOf("#") != -1) { //$NON-NLS-1$
                     String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.ERR_INVALID_CHARS); //$NON-NLS-1$
@@ -102,20 +101,18 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
                 	return OK_STATUS;
             } else
                 return status;
-
         } else if (COMPONENT_VERSION.equals(propertyName)) {
 			return validateComponentVersionProperty();
 		} else if (propertyName.equals(PROJECT_NAME)) {
 			IStatus status = OK_STATUS;
-			String projectName = getDataModel().getStringProperty(PROJECT_NAME);
+			String projectName = model.getStringProperty(PROJECT_NAME);
 			if (projectName == null || projectName.length()==0) {
 				String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_NAME_EMPTY);
 				status =  WTPCommonPlugin.createErrorStatus(errorMessage); 
 			}
 			return status;
 		}else if(propertyName.equals(COMPONENT_DEPLOY_NAME)){
-			return OK_STATUS;
-			
+			return OK_STATUS;	
 		}else if(propertyName.equals(CREATE_DEFAULT_FILES)){
 			return OK_STATUS;
 		}else if(propertyName.equals(VALID_MODULE_VERSIONS_FOR_PROJECT_RUNTIME)){
@@ -125,7 +122,7 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
     }
     
 	private IStatus validateComponentVersionProperty() {
-		int componentVersion = getIntProperty(COMPONENT_VERSION);
+		int componentVersion = model.getIntProperty(COMPONENT_VERSION);
 		if (componentVersion == -1)
 			return WTPCommonPlugin.createErrorStatus(WTPCommonPlugin.getResourceString(WTPCommonMessages.SPEC_LEVEL_NOT_FOUND));
 		return OK_STATUS;
@@ -193,9 +190,5 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
     
 	protected abstract String getVersion();
 	protected abstract List getProperties();
-	
-	public IDataModelOperation getDefaultOperation() {
-		return null;
-	}
 		
 }
