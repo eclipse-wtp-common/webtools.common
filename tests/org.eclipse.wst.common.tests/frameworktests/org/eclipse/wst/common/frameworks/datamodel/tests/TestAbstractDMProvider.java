@@ -123,14 +123,14 @@ public class TestAbstractDMProvider extends TestCase {
 		}
 
 		public void protectedTest() {
-			getProperty(INTEGER);
-			setProperty(INTEGER, new Integer(1));
-			getBooleanProperty(BOOLEAN);
-			setBooleanProperty(BOOLEAN, true);
-			getIntProperty(INTEGER);
-			setIntProperty(INTEGER, 1);
-			getStringProperty(STRING);
-			isPropertySet(INTEGER);
+			super.getProperty(INTEGER);
+			super.setProperty(INTEGER, new Integer(1));
+			super.getBooleanProperty(BOOLEAN);
+			super.setBooleanProperty(BOOLEAN, true);
+			super.getIntProperty(INTEGER);
+			super.setIntProperty(INTEGER, 1);
+			super.getStringProperty(STRING);
+			super.isPropertySet(INTEGER);
 		}
 	}
 
