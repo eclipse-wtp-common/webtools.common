@@ -14,7 +14,6 @@ package org.eclipse.wst.validation.internal.operations;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.wst.validation.internal.RegistryConstants;
 
 
@@ -30,22 +29,7 @@ import org.eclipse.wst.validation.internal.RegistryConstants;
  * This operation is not intended to be subclassed outside of the validation framework.
  */
 public class EnabledValidatorsOperation extends ValidatorSubsetOperation {
-	/**
-	 * @deprecated Will be removed in Milestone 3. For delta validation, use
-	 *             EnabledIncrementalValidatorsOperation instead.
-	 */
-	public EnabledValidatorsOperation(IProject project, IResourceDelta delta) {
-		this(project, delta, RegistryConstants.ATT_RULE_GROUP_DEFAULT);
-	}
-
-	/**
-	 * @deprecated Will be removed in Milestone 3. For delta validation, use
-	 *             EnabledIncrementalValidatorsOperation instead.
-	 */
-	public EnabledValidatorsOperation(IProject project, IResourceDelta delta, int ruleGroup) {
-		super(project, delta, ruleGroup);
-		setEnabledValidators(ValidatorManager.getManager().getEnabledValidators(project));
-	}
+	
 
 	/**
 	 * @deprecated Will be removed in Milestone 3. Use EnabledValidatorsOperation(IProject, boolean)
