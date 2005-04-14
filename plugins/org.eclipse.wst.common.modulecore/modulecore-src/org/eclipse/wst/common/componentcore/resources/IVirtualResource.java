@@ -364,5 +364,25 @@ public interface IVirtualResource extends ISchedulingRule, IAdaptable {
 	 * @see IProject#isOpen()
 	 */
 	public boolean isAccessible();
+	
+	/**
+	 * The resourceType provides meta-information about the types of content this virtual resource may represent. Examples
+	 * include "java", "resources", "bpel", etc. 
+	 * <p>
+	 * The resourceType may be null, and {@link IVirtualComponent} will always return null for this method. 
+	 * </p>
+	 * @return A client-set resourceType string
+	 */
+	public String getResourceType();
+	
+	/**
+	 * The resourceType provides meta-information about the types of content this virtual resource may represent. Examples
+	 * include "java", "resources", "bpel", etc. 
+	 * <p>
+	 * The resourceType may be null, and {@link IVirtualComponent} will always return null for this method. 
+	 * </p>
+	 * @param A client-set resourceType string
+	 */
+	public void setResourceType(String aResourceType);
 
 }

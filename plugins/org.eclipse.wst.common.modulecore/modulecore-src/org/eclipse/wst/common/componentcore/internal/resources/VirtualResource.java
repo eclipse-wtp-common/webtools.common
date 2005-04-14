@@ -38,6 +38,7 @@ public abstract class VirtualResource implements IVirtualResource {
 	private String toString;
 	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 	private IVirtualComponent component;
+	private String resourceType;
 	
 	
 	protected VirtualResource(ComponentHandle aComponentHandle, IPath aRuntimePath) {
@@ -196,6 +197,16 @@ public abstract class VirtualResource implements IVirtualResource {
 	
 	public IResource getUnderlyingResource() {
 		return null;
+	}
+	
+	//TODO Persist the resource type to the model
+	public void setResourceType(String aResourceType) {
+		resourceType = aResourceType;		
+	}
+	
+	//TODO Fetch the resource type from the model.
+	public String getResourceType() {
+		return resourceType;
 	}
 
 	protected ComponentHandle getComponentHandle() {
