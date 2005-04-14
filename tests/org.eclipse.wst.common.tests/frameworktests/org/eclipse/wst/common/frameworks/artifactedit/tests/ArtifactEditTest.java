@@ -2,6 +2,7 @@ package org.eclipse.wst.common.frameworks.artifactedit.tests;
 
 
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -10,6 +11,7 @@ import junit.framework.TestCase;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -30,8 +32,6 @@ import org.eclipse.wst.common.tests.CommonTestsPlugin;
 
 
 
-
-
 public class ArtifactEditTest extends TestCase {
 	public static String fileSep = System.getProperty("file.separator");
 	public static final String PROJECT_NAME = "TestArtifactEdit";
@@ -43,7 +43,7 @@ public class ArtifactEditTest extends TestCase {
 	private ArtifactEdit artifactEditForRead;
 	private ArtifactEdit artifactEditForWrite;
 	private EditModelListener emListener;
-	private Path zipFilePath = new Path("TestData" + fileSep  + "TestArtifactEdit.zip");
+	private Path zipFilePath = new Path("TestData" + fileSep + "TestArtifactEdit.zip");
 	private IProject project;
 
 
@@ -92,14 +92,14 @@ public class ArtifactEditTest extends TestCase {
 		super();
 
 	}
-	
+
 	protected void setUp() throws Exception {
 		if (!getTargetProject().exists())
 			if (!createProject())
 				fail();
 		project = getTargetProject();
 	}
-	
+
 
 	public IProject getTargetProject() {
 		return ResourcesPlugin.getWorkspace().getRoot().getProject(PROJECT_NAME);
@@ -110,17 +110,20 @@ public class ArtifactEditTest extends TestCase {
 		ProjectUnzipUtil util = new ProjectUnzipUtil(localZipPath, new String[]{PROJECT_NAME});
 		return util.createProjects();
 	}
-	
-	
+
+
 
 	private IPath getLocalPath() {
-		URL url = CommonTestsPlugin.instance.find(zipFilePath);
+		IPluginDescriptor pluginDescriptor = Platform.getPluginRegistry().getPluginDescriptor("org.eclipse.wst.common.tests");
+		URL url = pluginDescriptor.getInstallURL();
+		String path = null;
 		try {
-			url = Platform.asLocalURL(url);
+			path = Platform.asLocalURL(url).getFile() + "TestData" + "/" + "TestArtifactEdit.zip";
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return new Path(url.getPath());
+		return new Path(path);
 	}
 
 
@@ -350,9 +353,9 @@ public class ArtifactEditTest extends TestCase {
 			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
 			edit = ArtifactEdit.getArtifactEditForRead(wbComponent);
 			Object object = edit.getContentModelRoot();
-			//assertNotNull(object);
+			// assertNotNull(object);
 		} catch (Exception e) {
-			//TODO fail(e.getMessage());
+			// TODO fail(e.getMessage());
 		} finally {
 			if (moduleCore != null) {
 				moduleCore.dispose();
