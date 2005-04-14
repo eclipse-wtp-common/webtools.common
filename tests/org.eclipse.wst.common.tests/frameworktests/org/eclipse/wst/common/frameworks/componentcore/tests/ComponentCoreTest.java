@@ -68,6 +68,7 @@ public class ComponentCoreTest extends TestCase {
 
 	public void testCreateComponent() {
 		try {
+			new ComponentCore();
 			ComponentCore.createComponent(project, "test");
 		
 		} catch (Exception e) {
