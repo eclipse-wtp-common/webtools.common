@@ -69,6 +69,7 @@ public class ComponentCoreTest extends TestCase {
 	public void testCreateComponent() {
 		try {
 			ComponentCore.createComponent(project, "test");
+		
 		} catch (Exception e) {
 			fail(e.toString());
 		};
@@ -84,7 +85,7 @@ public class ComponentCoreTest extends TestCase {
 
 	public void testCreateFile() {
 		try {
-			ComponentCore.createFolder(project, "test", new Path("test/runtimePath/file"));
+			ComponentCore.createFile(project, "test", new Path("test/runtimePath/file"));
 		} catch (Exception e) {
 			fail(e.toString());
 		};
