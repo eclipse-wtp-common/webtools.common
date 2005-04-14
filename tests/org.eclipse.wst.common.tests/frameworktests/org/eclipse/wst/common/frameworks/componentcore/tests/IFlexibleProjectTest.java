@@ -28,14 +28,17 @@ public class IFlexibleProjectTest extends TestCase {
 	}
 
 	public void testGetComponents() {
-		new FlexProjectTest().getComponents();
+		IFlexibleProject flex = new FlexProjectTest();
+		flex.getComponents();
 	}
 
 	public void testGetComponent() {
-		new FlexProjectTest().getComponent(null);
+		IFlexibleProject flex = new FlexProjectTest();
+		flex.getComponent(null);
 	}
 
 	public void testGetProject() {
-		new FlexProjectTest().getProject();
+		IFlexibleProject flex = new FlexProjectTest();
+		flex.getProject();
 	}
 }

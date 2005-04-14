@@ -21,15 +21,19 @@ public class IEditModelHandlerTest extends TestCase {
 	}
 
 	public void testSave() {
-		new EditModelHandlerTest().save(null);
+		IEditModelHandler handler = new EditModelHandlerTest();
+		handler.save(null);
 	}
 
 	public void testSaveIfNecessary() {
-		new EditModelHandlerTest().saveIfNecessary(null);
+		IEditModelHandler handler = new EditModelHandlerTest();
+		handler.saveIfNecessary(null);
+		
 	}
 
 	public void testDispose() {
-		new EditModelHandlerTest().dispose();
+		IEditModelHandler handler = new EditModelHandlerTest();
+		handler.dispose();
 	}
 
 }

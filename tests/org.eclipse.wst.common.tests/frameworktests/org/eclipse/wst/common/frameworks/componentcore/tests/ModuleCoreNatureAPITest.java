@@ -79,6 +79,7 @@ public class ModuleCoreNatureAPITest extends TestCase {
 	}
 
 	public void testGetModuleCoreNature() {
+		new ModuleCoreNature();
 		ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(project);
 		assertNotNull(nature);
 	}
@@ -87,6 +88,7 @@ public class ModuleCoreNatureAPITest extends TestCase {
 
 	public void testGetModuleStructuralModelForRead() {
 		ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(project);
+		nature.getModuleStructuralModelForRead(this);
 		ArtifactEditModel model = nature.getArtifactEditModelForRead(moduleURI, this);
 		assertNotNull(model);
 	}
@@ -154,6 +156,7 @@ public class ModuleCoreNatureAPITest extends TestCase {
 	public void testGetPluginID() {
 		// protected cant test unless in same package....
 		ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(project);
+		
 	}
 
 	public void testAddModuleCoreNatureIfNecessary() {
