@@ -11,8 +11,10 @@
 package org.eclipse.wst.common.frameworks.componentcore.tests;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
+import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 
 
 public class IVirtualFileAPITest extends BaseVirtualTest {
@@ -41,6 +43,12 @@ public class IVirtualFileAPITest extends BaseVirtualTest {
 
 	public void testGetUnderlyingFiles() {
 		IFile[] file = testFile1.getUnderlyingFiles();
+	}
+	
+	public void testIsAccessible() throws CoreException {
+		assertEquals(((IVirtualResource)deletemeVirtualFolder).isAccessible(),true);
+		((IVirtualResource)deletemeVirtualFolder).delete(IVirtualResource.FORCE, null);
+		//assertEquals(deletemeVirtualFolder.isAccessible(),false);
 	}
 
 }

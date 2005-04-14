@@ -23,7 +23,6 @@ import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
-import org.eclipse.wst.common.frameworks.componentcore.virtualpath.tests.TestWorkspace;
 
 public class IVirtualFolderAPITest extends TestCase {
 	
@@ -109,7 +108,7 @@ public class IVirtualFolderAPITest extends TestCase {
 	}
 
 	public void testGetUnderlyingResource() {
-		IResource deletemeFolder = deletemeVirtualFolder.getUnderlyingResource();
+		IResource deletemeFolder = ((IVirtualResource)deletemeVirtualFolder).getUnderlyingResource();
 		assertNotNull(deletemeFolder);
 	}
 	
@@ -131,7 +130,7 @@ public class IVirtualFolderAPITest extends TestCase {
 	}
 
 	public void testGetRuntimePath() { 
-		IPath virtualPath = webInfFolder.getRuntimePath();
+		IPath virtualPath = ((IVirtualResource)webInfFolder).getRuntimePath();
 		assertEquals("The runtime path of the virtual resource must match the real resource", WEBINF_FOLDER_RUNTIME_PATH, virtualPath); //$NON-NLS-1$
 	
 	}
@@ -166,11 +165,7 @@ public class IVirtualFolderAPITest extends TestCase {
 		assertEquals("The test file project relative path must match.", expectedPath, test3jsp.getProjectRelativePath()); //$NON-NLS-1$
 	}*/
 	
-	public void testIsAccessible() throws CoreException {
-//		assertEquals(((IVirtualResource)deletemeVirtualFolder).isAccessible(),true);
-//		((IVirtualResource)deletemeVirtualFolder).delete(IVirtualResource.FORCE, null);
-//		assertEquals(deletemeVirtualFolder.isAccessible(),false);
-	}
+
 
 	/*
 	 * Class under test for void delete(int, IProgressMonitor)
