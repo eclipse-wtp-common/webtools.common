@@ -28,8 +28,6 @@ import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.internal.enablement.DataModelEnablementFactory;
-import org.eclipse.wst.server.core.IProjectProperties;
-import org.eclipse.wst.server.core.ServerCore;
 
 public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModelProvider implements IProjectComponentsBuilderDataModelProperties {
 
@@ -150,11 +148,6 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
 
 		List sortedList = computeModuleBuildOrder(wbModules);
 
-		WorkbenchComponentBuilderDataModelProvider provider = null;
-		
-        IProjectProperties props = ServerCore.getProjectProperties((IProject)model.getProperty(PROJECT));
-        String runtimeID = props.getRuntimeTarget().getId();
-        
         IDataModel dataModel = null;
         IProject curProject = (IProject)model.getProperty(PROJECT);
 		
