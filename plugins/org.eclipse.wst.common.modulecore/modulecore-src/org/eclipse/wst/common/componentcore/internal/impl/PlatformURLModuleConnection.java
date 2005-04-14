@@ -14,6 +14,7 @@ import org.eclipse.core.internal.boot.PlatformURLHandler;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.componentcore.StructureEdit;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
@@ -50,14 +51,17 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
 			moduleCore = StructureEdit.getStructureEditForRead(StructureEdit.getContainingProject(aModuleResourceDeployPath));			
 			ComponentResource[] resources = moduleCore.findResourcesByRuntimePath(aModuleResourceDeployPath);
 			URI deployPathSegment = ModuleURIUtil.trimToDeployPathSegment(aModuleResourceDeployPath);
+			//deployPathSegment = URI.createURI(deployPathSegment);
+		    IPath deployPath = new Path(deployPathSegment.path());
+			deployPath = deployPath.makeAbsolute();
 // THIS ALGORITHM WILL NOT HANDLE URI OVERLAPS, 
 //			it only works when the deploypath is wholly contained within the found resource 
 // 			
 //			for (int resourceIndex = 0; resourceIndex < resources.length; resourceIndex++) {
 			if(resources.length == 1) {
-				if (resources[0].getRuntimePath().equals(deployPathSegment))
+				if (resources[0].getRuntimePath().equals(deployPath))
 					return URI.createPlatformResourceURI(normalizeToWorkspaceRelative(resources[0].getSourcePath(),aModuleResourceDeployPath).toString());
-				return URI.createPlatformResourceURI(resources[0].getSourcePath().append(deployPathSegment.path()).toString());
+				return URI.createPlatformResourceURI(resources[0].getSourcePath().append(deployPath).toString());
 			}
 //
 //				eclipseResource = ModuleCore.getResource(resources[resourceIndex]);
