@@ -11,14 +11,17 @@ import java.net.URL;
 
 import org.eclipse.core.internal.boot.PlatformURLConnection;
 import org.eclipse.core.internal.boot.PlatformURLHandler;
+import org.eclipse.core.internal.resources.Workspace;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.StructureEdit;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
+import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 
 /**
  * @author mdelder
@@ -50,6 +53,7 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
 			//IContainer eclipseContainer = null;
 			moduleCore = StructureEdit.getStructureEditForRead(StructureEdit.getContainingProject(aModuleResourceDeployPath));			
 			ComponentResource[] resources = moduleCore.findResourcesByRuntimePath(aModuleResourceDeployPath);
+			
 			URI deployPathSegment = ModuleURIUtil.trimToDeployPathSegment(aModuleResourceDeployPath);
 			//deployPathSegment = URI.createURI(deployPathSegment);
 		    IPath deployPath = new Path(deployPathSegment.path());
@@ -59,9 +63,11 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
 // 			
 //			for (int resourceIndex = 0; resourceIndex < resources.length; resourceIndex++) {
 			if(resources.length == 1) {
+				WorkbenchComponent comp = resources[0].getComponent();
+				IProject project = StructureEdit.getContainingProject(comp);
 				if (resources[0].getRuntimePath().equals(deployPath))
-					return URI.createPlatformResourceURI(normalizeToWorkspaceRelative(resources[0].getSourcePath(),aModuleResourceDeployPath).toString());
-				return URI.createPlatformResourceURI(resources[0].getSourcePath().append(deployPath).toString());
+					return URI.createPlatformResourceURI(normalizeToWorkspaceRelative(project,resources[0].getSourcePath(),aModuleResourceDeployPath).toString());
+				return URI.createPlatformResourceURI(resources[0].getRuntimePath().toString());
 			}
 //
 //				eclipseResource = ModuleCore.getResource(resources[resourceIndex]);
@@ -85,11 +91,10 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
 		return resolvedURI;
 	}
 
-	private static URI normalizeToWorkspaceRelative(IPath sourcePath, URI moduleResourceDeployPath) throws UnresolveableURIException {
-		
-		String projectName = sourcePath.segment(0);
-		
+	private static URI normalizeToWorkspaceRelative(IProject project, IPath sourcePath, URI moduleResourceDeployPath) throws UnresolveableURIException {
+		String projectName = project.getName();
 		return URI.createURI(projectName + '/' + sourcePath.toString());
+	
 	}
 
 	/*
