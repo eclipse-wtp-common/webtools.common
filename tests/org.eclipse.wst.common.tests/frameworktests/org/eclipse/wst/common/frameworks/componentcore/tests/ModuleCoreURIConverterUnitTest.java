@@ -16,6 +16,7 @@ import junit.framework.TestSuite;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.componentcore.internal.impl.ComponentCoreURIConverter;
+import org.eclipse.wst.common.frameworks.componentcore.virtualpath.tests.TestWorkspace;
 
 public class ModuleCoreURIConverterUnitTest  extends TestCase {
 

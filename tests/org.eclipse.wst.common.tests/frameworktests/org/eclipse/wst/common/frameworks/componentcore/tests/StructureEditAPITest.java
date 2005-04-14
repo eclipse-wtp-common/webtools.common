@@ -168,7 +168,7 @@ public class StructureEditAPITest extends TestCase {
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(project);
 			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
-			ComponentResource componentResource = wbComponent.findWorkbenchModuleResourceByDeployPath(URI.createURI("/TestArtifactEdit/WebModule1"))[0];
+			ComponentResource componentResource = wbComponent.findResourcesByRuntimePath(new Path("/TestArtifactEdit/WebModule1"))[0];
 			moduleCore.getEclipseResource(componentResource);
 		} finally {
 			if (moduleCore != null) {
@@ -185,7 +185,7 @@ public class StructureEditAPITest extends TestCase {
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(project);
 			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
-			ComponentResource componentResource = wbComponent.findWorkbenchModuleResourceByDeployPath(URI.createURI("/TestArtifactEdit/WebModule1"))[0];
+			ComponentResource componentResource = wbComponent.findResourcesByRuntimePath(new Path("/TestArtifactEdit/WebModule1"))[0];
 			StructureEdit.getOutputContainerRoot(wbComponent);
 		} finally {
 			if (moduleCore != null) {
@@ -201,7 +201,7 @@ public class StructureEditAPITest extends TestCase {
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(project);
 			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
-			ComponentResource componentResource = wbComponent.findWorkbenchModuleResourceByDeployPath(URI.createURI("/TestArtifactEdit/WebModule1"))[0];
+			ComponentResource componentResource = wbComponent.findResourcesByRuntimePath(new Path("/TestArtifactEdit/WebModule1"))[0];
 			StructureEdit.getOutputContainersForProject(project);
 		} finally {
 			if (moduleCore != null) {
@@ -217,7 +217,7 @@ public class StructureEditAPITest extends TestCase {
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(project);
 			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
-			ComponentResource componentResource = wbComponent.findWorkbenchModuleResourceByDeployPath(URI.createURI("/TestArtifactEdit/WebModule1"))[0];
+			ComponentResource componentResource = wbComponent.findResourcesByRuntimePath(new Path("/TestArtifactEdit/WebModule1"))[0];
 			try {
 				StructureEdit.getDeployedName(moduleURI);
 			} catch (UnresolveableURIException e) {
@@ -238,7 +238,7 @@ public class StructureEditAPITest extends TestCase {
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(project);
 			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
-			ComponentResource componentResource = wbComponent.findWorkbenchModuleResourceByDeployPath(URI.createURI("/TestArtifactEdit/WebModule1"))[0];
+			ComponentResource componentResource = wbComponent.findResourcesByRuntimePath(new Path("/TestArtifactEdit/WebModule1"))[0];
 			StructureEdit.getComponentType(new VirtualComponent(project, "", new Path("")));
 		} finally {
 			if (moduleCore != null) {
@@ -254,7 +254,7 @@ public class StructureEditAPITest extends TestCase {
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(project);
 			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
-			ComponentResource componentResource = wbComponent.findWorkbenchModuleResourceByDeployPath(URI.createURI("/TestArtifactEdit/WebModule1"))[0];
+			ComponentResource componentResource = wbComponent.findResourcesByRuntimePath(new Path("/TestArtifactEdit/WebModule1"))[0];
 			VirtualComponent vc = new VirtualComponent(project, "", new Path(""));
 			StructureEdit.setComponentType(vc, wbComponent.getComponentType());
 		} finally {

@@ -34,6 +34,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
+import org.eclipse.wst.common.frameworks.componentcore.virtualpath.tests.TestWorkspace;
 
 /**
  * 
@@ -88,7 +89,7 @@ public class ModuleCoreAPIFVTTest extends TestCase {
 			WorkbenchComponent wbComponent = moduleCore.findComponentByName(TestWorkspace.NEW_WEB_MODULE_NAME);
 
 			if (wbComponent != null) {
-				ComponentResource[] componentResources = wbComponent.findWorkbenchModuleResourceByDeployPath(URI.createURI("/")); //$NON-NLS-1$				
+				ComponentResource[] componentResources = wbComponent.findResourcesByRuntimePath(new Path("/")); //$NON-NLS-1$				
 
 				for (int i = 0; i < componentResources.length; i++) {
 					wbComponent.getResources().remove(componentResources[i]);
@@ -145,7 +146,7 @@ public class ModuleCoreAPIFVTTest extends TestCase {
 			moduleCore = StructureEdit.getStructureEditForWrite(TestWorkspace.getTargetProject());
 			WorkbenchComponent wbComponent = moduleCore.findComponentByName(TestWorkspace.WEB_MODULE_2_NAME);
 
-			ComponentResource[] componentResources = wbComponent.findWorkbenchModuleResourceByDeployPath(URI.createURI("/images")); //$NON-NLS-1$
+			ComponentResource[] componentResources = wbComponent.findResourcesByRuntimePath(new Path("/images")); //$NON-NLS-1$
 
 			for (int i = 0; i < componentResources.length; i++) {
 				wbComponent.getResources().remove(componentResources[i]);
@@ -250,7 +251,7 @@ public class ModuleCoreAPIFVTTest extends TestCase {
 			moduleCore = StructureEdit.getStructureEditForRead(TestWorkspace.getTargetProject());
 			WorkbenchComponent wbComponent = moduleCore.findComponentByName(TestWorkspace.WEB_MODULE_2_NAME);
 
-			ComponentResource[] componentResources = wbComponent.findWorkbenchModuleResourceByDeployPath(URI.createURI("/images")); //$NON-NLS-1$
+			ComponentResource[] componentResources = wbComponent.findResourcesByRuntimePath(new Path("/images")); //$NON-NLS-1$
 
 			assertTrue("There should be at least one mapping for virtual path \"/images\".", componentResources.length > 0); //$NON-NLS-1$
 
@@ -317,7 +318,7 @@ public class ModuleCoreAPIFVTTest extends TestCase {
 			moduleCore = StructureEdit.getStructureEditForRead(TestWorkspace.getTargetProject());
 			WorkbenchComponent wbComponent = moduleCore.findComponentByName(TestWorkspace.NEW_WEB_MODULE_NAME);
 
-			ComponentResource[] componentResources = wbComponent.findWorkbenchModuleResourceByDeployPath(URI.createURI("/" + TestWorkspace.META_INF)); //$NON-NLS-1$
+			ComponentResource[] componentResources = wbComponent.findResourcesByRuntimePath(new Path("/" + TestWorkspace.META_INF)); //$NON-NLS-1$
 
 			assertTrue("There should be at least one mapping for virtual path \"/" + TestWorkspace.META_INF + "\".", componentResources.length > 0); //$NON-NLS-1$ //$NON-NLS-2$
 

@@ -8,7 +8,7 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/ 
-package org.eclipse.wst.common.frameworks.componentcore.tests;
+package org.eclipse.wst.common.frameworks.componentcore.virtualpath.tests;
 
 import java.io.IOException;
 import java.net.URL;
