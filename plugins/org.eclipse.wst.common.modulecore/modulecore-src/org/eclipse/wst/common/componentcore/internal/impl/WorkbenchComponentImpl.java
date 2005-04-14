@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchComponentImpl.java,v 1.1 2005/04/04 07:04:59 cbridgha Exp $
+ * $Id: WorkbenchComponentImpl.java,v 1.2 2005/04/14 04:44:09 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
@@ -12,7 +12,6 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
@@ -26,7 +25,6 @@ import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
-import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.ComponentType;
 import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
@@ -369,28 +367,14 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 		return result.toString();
 	}
 
-	public ComponentResource[] findWorkbenchModuleResourceByDeployPath(URI aDeployPath) {
-		// if (!isIndexedByDeployPath)
-		// indexResourcesByDeployPath();
-		// return (ComponentResource) resourceIndexByDeployPath.get(aDeployPath);
-		IPath resourcePath = new Path(aDeployPath.path());
+	public ComponentResource[] findResourcesByRuntimePath(IPath aDeployPath) { 
 		ResourceTreeRoot resourceTreeRoot = ResourceTreeRoot.getDeployResourceTreeRoot(this);
-		return resourceTreeRoot.findModuleResources(resourcePath, false); 
+		return resourceTreeRoot.findModuleResources(aDeployPath, false); 
 	}
 
-	public ComponentResource[] findWorkbenchModuleResourceBySourcePath(URI aSourcePath) {
-		// if(!isIndexedBySourcePath)
-		// indexResourcesBySourcePath();
-		try {
-			if (ModuleURIUtil.ensureValidFullyQualifiedPlatformURI(aSourcePath, false)) {
-				IPath resourcePath = new Path(aSourcePath.path()).removeFirstSegments(1);
-				ResourceTreeRoot resourceTreeRoot = ResourceTreeRoot.getSourceResourceTreeRoot(this);
-				return resourceTreeRoot.findModuleResources(resourcePath, false);
-			}
-		} catch (UnresolveableURIException e) {
-			e.printStackTrace();
-		}
-		return NO_MODULE_RESOURCES;
+	public ComponentResource[] findResourcesBySourcePath(IPath aSourcePath) { 
+		ResourceTreeRoot resourceTreeRoot = ResourceTreeRoot.getSourceResourceTreeRoot(this);
+		return resourceTreeRoot.findModuleResources(aSourcePath, false); 
 	}
   
 

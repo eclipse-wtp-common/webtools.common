@@ -8,6 +8,7 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.componentcore.internal;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -124,8 +125,8 @@ public interface WorkbenchComponent extends EObject{
 
 	URI getHandle();
 
-	ComponentResource[] findWorkbenchModuleResourceByDeployPath(URI aDeployPath);
+	ComponentResource[] findResourcesByRuntimePath(IPath aDeployPath);
 	
-	ComponentResource[] findWorkbenchModuleResourceBySourcePath(URI aSourcePath);
+	ComponentResource[] findResourcesBySourcePath(IPath aSourcePath);
 
 } // WorkbenchComponent

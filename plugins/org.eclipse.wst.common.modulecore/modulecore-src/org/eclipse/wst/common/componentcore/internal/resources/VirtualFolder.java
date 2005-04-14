@@ -14,7 +14,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
@@ -114,13 +113,13 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 
 		// only handles explicit mappings
 		StructureEdit moduleCore = null;
-		try {
-			URI runtimeURI = URI.createURI(getRuntimePath().toString());
+		try { 
+			IPath runtimePath = getRuntimePath();
 			moduleCore = StructureEdit.getStructureEditForWrite(getProject());
 			WorkbenchComponent component = moduleCore.findComponentByName(getComponent().getName());
-			ComponentResource[] resources = component.findWorkbenchModuleResourceByDeployPath(runtimeURI);
+			ComponentResource[] resources = component.findResourcesByRuntimePath(runtimePath);
 			for (int i = 0; i < resources.length; i++) {
-				if(runtimeURI.equals(resources[i].getRuntimePath())) 
+				if(runtimePath.equals(resources[i].getRuntimePath())) 
 					component.getResources().remove(resources[i]);								
 			}
 			
@@ -137,13 +136,13 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 		// only handles explicit mappings
 		StructureEdit moduleCore = null;
 		try {
-			URI runtimeURI = URI.createURI(getRuntimePath().toString());
+			IPath runtimePath = getRuntimePath();
 			moduleCore = StructureEdit.getStructureEditForWrite(getProject());
 			WorkbenchComponent component = moduleCore.findComponentByName(getComponent().getName());
-			ComponentResource[] resources = component.findWorkbenchModuleResourceByDeployPath(runtimeURI);
+			ComponentResource[] resources = component.findResourcesByRuntimePath(runtimePath);
 			IResource realResource;
 			for (int i = 0; i < resources.length; i++) {
-				if(runtimeURI.equals(resources[i].getRuntimePath())) {
+				if(runtimePath.equals(resources[i].getRuntimePath())) {
 					realResource = StructureEdit.getEclipseResource(resources[i]);
 					if(realResource != null && realResource.getType() == getType())
 						realResource.delete(updateFlags, monitor);

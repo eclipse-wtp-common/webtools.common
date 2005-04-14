@@ -14,6 +14,16 @@ import java.util.Properties;
 
 import org.eclipse.core.runtime.IPath;
 
+/**
+ * Represents a component as defined by the .wtpmodules file. 
+ * <p>
+ * A component
+ * is a container of virtual resources which has other features
+ * that describe the component including:
+ * <ul>
+ * 	<li>{@link #getComponentTypeId()}
+ * </p>
+ */
 public interface IVirtualComponent extends IVirtualContainer {
 	
 	String getName();
@@ -27,6 +37,9 @@ public interface IVirtualComponent extends IVirtualContainer {
 	void setMetaResources(IPath[] theMetaResourcePaths);
 	
 	IVirtualResource[] getResources(String aResourceType);
+	
+	IVirtualReference[] getReferences();
+	void setReferences(IVirtualReference[] references);
 	
 
 }

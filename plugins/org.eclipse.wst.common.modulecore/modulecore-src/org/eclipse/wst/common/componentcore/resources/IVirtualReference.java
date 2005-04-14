@@ -12,8 +12,12 @@ package org.eclipse.wst.common.componentcore.resources;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.wst.common.componentcore.internal.DependencyType;
 
 public interface IVirtualReference {
+	
+	int DEPENDENCY_TYPE_USES = DependencyType.USES;
+	int DEPENDENCY_TYPE_CONSUMES = DependencyType.CONSUMES;
 	
 	public void create(int updateFlags, IProgressMonitor aMonitor);
 	

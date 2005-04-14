@@ -12,49 +12,67 @@ package org.eclipse.wst.common.componentcore.internal.resources;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
 public class VirtualReference implements IVirtualReference {
+	
+	private IVirtualComponent referencedComponent;
+	private IVirtualComponent enclosingComponent;
+	private IPath runtimePath;
+	private int dependencyType;
 
-	public void create(int updateFlags, IProgressMonitor aMonitor) {
-		// TODO Auto-generated method stub
+	public VirtualReference() {
+		
+	}
+	
+	
+	public VirtualReference(IVirtualComponent anEnclosingComponent, IVirtualComponent aReferencedComponent) {
+		this(anEnclosingComponent, aReferencedComponent, new Path(String.valueOf(IPath.SEPARATOR)), DEPENDENCY_TYPE_USES); 
+	}
+	
+	public VirtualReference(IVirtualComponent anEnclosingComponent, IVirtualComponent aReferencedComponent, IPath aRuntimePath) {
+		this(anEnclosingComponent, aReferencedComponent, aRuntimePath, DEPENDENCY_TYPE_USES);
+	}
+
+	public VirtualReference(IVirtualComponent anEnclosingComponent, IVirtualComponent aReferencedComponent, IPath aRuntimePath, int aDependencyType) {
+		enclosingComponent = anEnclosingComponent;
+		referencedComponent = aReferencedComponent;
+		runtimePath = aRuntimePath;
+		dependencyType = aDependencyType;
+	}
+
+	public void create(int updateFlags, IProgressMonitor aMonitor) { 
 
 	}
 
-	public void setRuntimePath(IPath aRuntimePath) {
-		// TODO Auto-generated method stub
-
+	public void setRuntimePath(IPath aRuntimePath) { 
+		runtimePath = aRuntimePath;
 	}
 
-	public IPath getRuntimePath() {
-		// TODO Auto-generated method stub
-		return null;
+	public IPath getRuntimePath() { 
+		return runtimePath;
 	}
 
 	public void setDependencyType(int aDependencyType) {
-		// TODO Auto-generated method stub
-
+		dependencyType = aDependencyType;
 	}
 
-	public int getDependencyType() {
-		// TODO Auto-generated method stub
-		return 0;
+	public int getDependencyType() { 
+		return dependencyType;
 	}
 
-	public boolean exists() {
-		// TODO Auto-generated method stub
+	public boolean exists() { 
 		return false;
 	}
 
-	public IVirtualComponent getEnclosingComponent() {
-		// TODO Auto-generated method stub
-		return null;
+	public IVirtualComponent getEnclosingComponent() { 
+		return enclosingComponent;
 	}
 
-	public IVirtualComponent getReferencedComponent() {
-		// TODO Auto-generated method stub
-		return null;
+	public IVirtualComponent getReferencedComponent() { 
+		return referencedComponent;
 	}
 
 }

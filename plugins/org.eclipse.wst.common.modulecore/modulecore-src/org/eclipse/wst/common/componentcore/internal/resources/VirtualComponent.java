@@ -23,6 +23,7 @@ import org.eclipse.wst.common.componentcore.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 
 public class VirtualComponent extends VirtualContainer implements IVirtualComponent {
@@ -101,6 +102,14 @@ public class VirtualComponent extends VirtualContainer implements IVirtualCompon
 				return ComponentCore.createFolder(getProject(), getName(), aComponentResource.getRuntimePath());
 		}
 		return null;
+	}
+
+	public IVirtualReference[] getReferences() { 
+		return null;
+	}
+
+	public void setReferences(IVirtualReference[] references) { 
+		
 	}
 	
 	

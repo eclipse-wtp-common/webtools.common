@@ -20,7 +20,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
@@ -65,7 +64,7 @@ public abstract class VirtualResource implements IVirtualResource {
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(getComponentHandle().getProject());
 			WorkbenchComponent component = moduleCore.findComponentByName(getComponentHandle().getName());
-			ComponentResource[] resources = component.findWorkbenchModuleResourceByDeployPath(URI.createURI(getRuntimePath().toOSString()));
+			ComponentResource[] resources = component.findResourcesByRuntimePath(getRuntimePath());
 			component.getResources().removeAll(Arrays.asList(resources));
 		} finally {
 			if(moduleCore != null) {

@@ -541,6 +541,7 @@ public class StructureEdit implements IEditModelHandler {
 	 * Search the given module (indicated by aModuleURI) for the {@see ComponentResource}s
 	 * identified by the module-relative path (indicated by aDeployedResourcePath).
 	 * </p>
+	 * @deprecated To be removed at next Integration Build 04/14/05 MDE. No substitute. (No clients).
 	 * 
 	 * @param aModuleURI
 	 *            A valid, fully-qualified module URI
@@ -553,8 +554,8 @@ public class StructureEdit implements IEditModelHandler {
 	 */
 	public ComponentResource[] findResourcesByRuntimePath(URI aModuleURI, URI aDeployedResourcePath) throws UnresolveableURIException {
 		WorkbenchComponent module = findComponentByName(ModuleURIUtil.getDeployedName(aModuleURI));
-		return module.findWorkbenchModuleResourceByDeployPath(aDeployedResourcePath);
-	}
+		return module.findResourcesByRuntimePath(new Path(aDeployedResourcePath.path()));
+	} 
 
 	/**
 	 * <p>
@@ -562,6 +563,7 @@ public class StructureEdit implements IEditModelHandler {
 	 * {@see ComponentResource}s identified by the module-qualified path (indicated by
 	 * aDeployedResourcePath).
 	 * </p>
+	 * @deprecated To be removed at next Integration Build 04/14/05 MDE Use IPath Signature instead.
 	 * 
 	 * @param aModuleResourcePath
 	 *            A valid fully-qualified URI of a deployed resource within a specific
@@ -572,11 +574,28 @@ public class StructureEdit implements IEditModelHandler {
 	 *             If the supplied module URI is invalid or unresolveable.
 	 */
 	public ComponentResource[] findResourcesByRuntimePath(URI aModuleResourcePath) throws UnresolveableURIException {
-		ModuleURIUtil.ensureValidFullyQualifiedModuleURI(aModuleResourcePath);
-		URI moduleURI = aModuleResourcePath.trimSegments(aModuleResourcePath.segmentCount() - 3);
-		URI deployedPath = ModuleURIUtil.trimToDeployPathSegment(aModuleResourcePath);
-		WorkbenchComponent module = findComponentByName(ModuleURIUtil.getDeployedName(moduleURI));
-		return module.findWorkbenchModuleResourceByDeployPath(deployedPath);
+
+		return findResourcesByRuntimePath(ModuleURIUtil.getDeployedName(aModuleResourcePath), new Path(aModuleResourcePath.path()));
+	}
+	
+	/**
+	 * <p>
+	 * Search the the module (indicated by the root of aModuleResourcePath) for the
+	 * {@see ComponentResource}s identified by the module-qualified path (indicated by
+	 * aDeployedResourcePath).
+	 * </p> 
+	 * 
+	 * @param aModuleResourcePath
+	 *            A valid fully-qualified URI of a deployed resource within a specific
+	 *            WorkbenchComponent
+	 * @return An array of WorkbenchModuleResources that contain the URI specified by
+	 *         aModuleResourcePath
+	 * @throws UnresolveableURIException
+	 *             If the supplied module URI is invalid or unresolveable.
+	 */
+	public ComponentResource[] findResourcesByRuntimePath(String aModuleName, IPath aModuleResourcePath) {   
+		WorkbenchComponent module = findComponentByName(aModuleName);
+		return module.findResourcesByRuntimePath(aModuleResourcePath);
 	}
 
 	/**
@@ -591,6 +610,7 @@ public class StructureEdit implements IEditModelHandler {
 	 * IFolder. As a result, if the {@see ComponentResource}&nbsp;is a container mapping, the path
 	 * of the supplied resource may not be identical the sourcePath of the {@see ComponentResource}.
 	 * </p>
+	 * @deprecated To be removed at next Integration Build 04/14/05 MDE Use IPath Signature instead.
 	 * 
 	 * @param aWorkspaceRelativePath
 	 *            A valid fully-qualified workspace-relative path of a given resource
@@ -600,6 +620,30 @@ public class StructureEdit implements IEditModelHandler {
 	 *             If the supplied module URI is invalid or unresolveable.
 	 */
 	public ComponentResource[] findResourcesBySourcePath(URI aWorkspaceRelativePath) throws UnresolveableURIException {
+		return findResourcesBySourcePath(new Path(aWorkspaceRelativePath.path()));
+	}	
+	
+	/**
+	 * <p>
+	 * Locates the {@see ComponentResource}s that contain the supplied resource in their source
+	 * path. There are no representations about the containment of the {@see ComponentResource}s
+	 * which are returned. The only guarantee is that the returned elements are contained within the
+	 * same project.
+	 * </p>
+	 * <p>
+	 * The sourcePath of each {@see ComponentResource}&nbsp;will be mapped to either an IFile or an
+	 * IFolder. As a result, if the {@see ComponentResource}&nbsp;is a container mapping, the path
+	 * of the supplied resource may not be identical the sourcePath of the {@see ComponentResource}.
+	 * </p> 
+	 * 
+	 * @param aWorkspaceRelativePath
+	 *            A valid fully-qualified workspace-relative path of a given resource
+	 * @return An array of WorkbenchModuleResources which have sourcePaths that contain the given
+	 *         resource
+	 * @throws UnresolveableURIException
+	 *             If the supplied module URI is invalid or unresolveable.
+	 */
+	public ComponentResource[] findResourcesBySourcePath(IPath aWorkspaceRelativePath) throws UnresolveableURIException {
 		ProjectComponents projectModules = getComponentModelRoot();
 		EList modules = projectModules.getComponents();
 
@@ -608,7 +652,7 @@ public class StructureEdit implements IEditModelHandler {
 		List foundResources = new ArrayList();
 		for (int i = 0; i < modules.size(); i++) {
 			module = (WorkbenchComponent) modules.get(i);
-			resources = module.findWorkbenchModuleResourceBySourcePath(aWorkspaceRelativePath);
+			resources = module.findResourcesBySourcePath(aWorkspaceRelativePath);
 			if (resources != null && resources.length != 0)
 				foundResources.addAll(Arrays.asList(resources));
 		}
