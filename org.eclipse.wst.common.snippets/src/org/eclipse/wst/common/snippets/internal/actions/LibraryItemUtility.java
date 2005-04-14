@@ -12,8 +12,8 @@
 
 package org.eclipse.wst.common.snippets.internal.actions;
 
-import org.eclipse.wst.common.snippets.core.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.ISnippetVariable;
+import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
 
 
 public class LibraryItemUtility {

@@ -19,15 +19,15 @@ import org.eclipse.gef.palette.PaletteEntry;
 import org.eclipse.gef.palette.PaletteTemplateEntry;
 import org.eclipse.gef.ui.palette.PaletteCustomizer;
 import org.eclipse.gef.ui.palette.customize.EntryPage;
-import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
-import org.eclipse.wst.common.snippets.editors.ISnippetEditor;
 import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
 import org.eclipse.wst.common.snippets.internal.Logger;
+import org.eclipse.wst.common.snippets.internal.editors.ISnippetEditor;
 import org.eclipse.wst.common.snippets.internal.model.SnippetManager;
 import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteDrawer;
 import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteDrawerFactory;
 import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteItem;
 import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteItemFactory;
+import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry;
 
 
 public class SnippetsCustomizer extends PaletteCustomizer {

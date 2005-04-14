@@ -10,7 +10,7 @@
  *******************************************************************************/
 
 
-package org.eclipse.wst.common.snippets.core;
+package org.eclipse.wst.common.snippets.internal.provisional;
 
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.Transfer;

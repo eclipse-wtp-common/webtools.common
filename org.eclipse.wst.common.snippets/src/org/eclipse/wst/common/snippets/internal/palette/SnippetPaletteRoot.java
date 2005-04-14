@@ -53,7 +53,7 @@ public class SnippetPaletteRoot extends PaletteRoot implements IEntryChangeListe
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.wst.common.snippets.core.IEntryChangeListener#modelChanged(com.ibm.sed.library.SnippetDefinitions,
+	 * @see org.eclipse.wst.common.snippets.internal.provisional.IEntryChangeListener#modelChanged(com.ibm.sed.library.SnippetDefinitions,
 	 *      com.ibm.sed.library.SnippetDefinitions)
 	 */
 	public void modelChanged(SnippetDefinitions oldDefinitions, SnippetDefinitions newDefinitions) {

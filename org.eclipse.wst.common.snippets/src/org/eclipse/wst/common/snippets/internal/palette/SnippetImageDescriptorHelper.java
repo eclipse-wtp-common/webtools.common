@@ -13,12 +13,12 @@
 package org.eclipse.wst.common.snippets.internal.palette;
 
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.wst.common.snippets.core.ISnippetItem;
-import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
 import org.eclipse.wst.common.snippets.internal.PluginRecord;
 import org.eclipse.wst.common.snippets.internal.SnippetsPluginImageHelper;
 import org.eclipse.wst.common.snippets.internal.SnippetsPluginImages;
+import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
+import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry;
 
 
 public class SnippetImageDescriptorHelper {

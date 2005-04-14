@@ -9,12 +9,12 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.wst.common.snippets.editors;
+package org.eclipse.wst.common.snippets.internal.editors;
 
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.wst.common.snippets.core.ISnippetItem;
+import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
 
 /**
  * A snippet editor is responsible for creating the interface from which a

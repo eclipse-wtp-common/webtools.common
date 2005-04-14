@@ -10,7 +10,7 @@
  *******************************************************************************/
 
 
-package org.eclipse.wst.common.snippets.insertions;
+package org.eclipse.wst.common.snippets.internal.provisional.insertions;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -25,11 +25,11 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.eclipse.wst.common.snippets.core.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.ISnippetVariable;
 import org.eclipse.wst.common.snippets.internal.Logger;
 import org.eclipse.wst.common.snippets.internal.VariableItemHelper;
 import org.eclipse.wst.common.snippets.internal.dnd.VariableTextTransfer;
+import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.ui.EntrySerializer;
 import org.eclipse.wst.sse.core.internal.util.StringUtils;
 import org.eclipse.wst.sse.ui.internal.IExtendedSimpleEditor;

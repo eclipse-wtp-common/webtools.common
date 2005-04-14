@@ -15,13 +15,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.gef.palette.PaletteDrawer;
-import org.eclipse.wst.common.snippets.core.ISnippetItem;
-import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
 import org.eclipse.wst.common.snippets.internal.ISnippetVariable;
 import org.eclipse.wst.common.snippets.internal.Logger;
 import org.eclipse.wst.common.snippets.internal.SnippetDefinitions;
 import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
+import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
+import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry;
 
 
 public abstract class AbstractModelFactory {

@@ -10,7 +10,7 @@
  *******************************************************************************/
 
 
-package org.eclipse.wst.common.snippets.core;
+package org.eclipse.wst.common.snippets.internal.provisional;
 
 /**
  * A Snippets Entry is an abstract notion encapsulating the values used to

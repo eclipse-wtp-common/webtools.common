@@ -19,9 +19,9 @@ import java.util.List;
 import org.eclipse.gef.palette.PaletteContainer;
 import org.eclipse.gef.palette.PaletteTemplateEntry;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.wst.common.snippets.core.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
 import org.eclipse.wst.common.snippets.internal.ISnippetVariable;
+import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
 
 
 public class SnippetPaletteItem extends PaletteTemplateEntry implements ISnippetItem {
@@ -169,7 +169,7 @@ public class SnippetPaletteItem extends PaletteTemplateEntry implements ISnippet
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.wst.common.snippets.core.ISnippetsEntry#setFilters(java.lang.String[])
+	 * @see org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry#setFilters(java.lang.String[])
 	 */
 	public void setFilters(String[] filters) {
 		fFilters = filters;

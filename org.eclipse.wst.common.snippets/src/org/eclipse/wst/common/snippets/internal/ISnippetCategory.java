@@ -14,8 +14,8 @@ package org.eclipse.wst.common.snippets.internal;
 
 import java.util.List;
 
-import org.eclipse.wst.common.snippets.core.ISnippetItem;
-import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
+import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
+import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry;
 
 public interface ISnippetCategory extends ISnippetsEntry {
 

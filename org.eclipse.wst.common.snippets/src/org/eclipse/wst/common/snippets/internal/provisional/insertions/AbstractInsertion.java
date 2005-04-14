@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.snippets.insertions;
+package org.eclipse.wst.common.snippets.internal.provisional.insertions;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -21,9 +21,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.eclipse.wst.common.snippets.core.ISnippetItem;
-import org.eclipse.wst.common.snippets.core.ISnippetsInsertion;
 import org.eclipse.wst.common.snippets.internal.Logger;
+import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
+import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsInsertion;
 
 
 /**

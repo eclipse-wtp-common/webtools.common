@@ -16,8 +16,8 @@ import org.eclipse.gef.palette.PaletteDrawer;
 import org.eclipse.gef.palette.PaletteEntry;
 import org.eclipse.gef.palette.PaletteTemplateEntry;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.wst.common.snippets.core.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
+import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
 
 
 public class SnippetPaletteDrawer extends PaletteDrawer implements ISnippetCategory {
@@ -119,7 +119,7 @@ public class SnippetPaletteDrawer extends PaletteDrawer implements ISnippetCateg
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.wst.common.snippets.core.ISnippetCategory#remove(org.eclipse.wst.common.snippets.core.ISnippetItem)
+	 * @see org.eclipse.wst.common.snippets.internal.provisional.ISnippetCategory#remove(org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem)
 	 */
 	public void remove(ISnippetItem item) {
 		super.remove((PaletteEntry) item);
@@ -128,7 +128,7 @@ public class SnippetPaletteDrawer extends PaletteDrawer implements ISnippetCateg
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.wst.common.snippets.core.ISnippetsEntry#setFilters(java.lang.String[])
+	 * @see org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry#setFilters(java.lang.String[])
 	 */
 	public void setFilters(String[] filters) {
 		fFilters = filters;

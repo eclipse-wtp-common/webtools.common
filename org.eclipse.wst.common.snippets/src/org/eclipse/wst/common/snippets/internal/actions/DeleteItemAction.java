@@ -13,9 +13,9 @@ package org.eclipse.wst.common.snippets.internal.actions;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.palette.PaletteEntry;
-import org.eclipse.wst.common.snippets.core.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
 import org.eclipse.wst.common.snippets.internal.SnippetsMessages;
+import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
 
 public class DeleteItemAction extends AbstractItemAction {
 

@@ -16,12 +16,12 @@ import org.eclipse.gef.ui.palette.customize.DefaultEntryPage;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.wst.common.snippets.core.ISnippetItem;
-import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
-import org.eclipse.wst.common.snippets.editors.ISnippetEditor;
-import org.eclipse.wst.common.snippets.editors.VariableItemEditor;
 import org.eclipse.wst.common.snippets.internal.Logger;
 import org.eclipse.wst.common.snippets.internal.PluginRecord;
+import org.eclipse.wst.common.snippets.internal.editors.ISnippetEditor;
+import org.eclipse.wst.common.snippets.internal.editors.VariableItemEditor;
+import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
+import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry;
 import org.osgi.framework.Bundle;
 
 
