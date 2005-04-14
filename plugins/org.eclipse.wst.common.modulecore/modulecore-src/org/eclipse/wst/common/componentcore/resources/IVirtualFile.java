@@ -19,8 +19,17 @@ import org.eclipse.core.resources.IFile;
  * </p>
  */
 public interface IVirtualFile extends IVirtualResource {  
-	
+	/**
+	 * returns the underlying IFile, returns first IFile if multiple exist.
+	 * 
+	 * @return the underlying IFile
+	 */
 	public IFile getUnderlyingFile();
-	
+	/**
+	 * returns the array of underlying IFiles that are mapped to the same runtime path.
+	 * 
+	 * @return the array of underlying IFiles mapped to the runtime path
+	 */
 	public IFile[] getUnderlyingFiles();
+	
 }

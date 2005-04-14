@@ -19,8 +19,18 @@ import org.eclipse.core.resources.IFolder;
  * </p>
  */
 public interface IVirtualFolder extends IVirtualContainer { 
-
+	/**
+	 * returns the underlying IFolder mapped to the runtime path, 
+	 * returns first IFolder if multiple exist.
+	 * 
+	 * @return the underlying IFolder
+	 */
 	public IFolder getUnderlyingFolder();
-	
+	/**
+	 * returns the underlying IFolders mapped to the runtime path. 
+	 * Multiple IFolders can be mapped to the same runtime path.
+	 * 
+	 * @return the array of underlying IFolders
+	 */
 	public IFolder[] getUnderlyingFolders();
 }
