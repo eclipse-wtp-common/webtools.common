@@ -25,7 +25,6 @@ import org.eclipse.wst.common.snippets.internal.ISnippetVariable;
 import org.eclipse.wst.common.snippets.internal.PluginRecord;
 import org.eclipse.wst.common.snippets.internal.SnippetDefinitions;
 import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry;
 import org.eclipse.wst.sse.core.internal.util.StringUtils;
 import org.osgi.framework.Bundle;
@@ -52,15 +51,21 @@ public class ModelFactoryForPlugins extends AbstractModelFactory {
 				definitions.getCategories().add(category);
 				if (Debug.debugDefinitionPersistence)
 					System.out.println("Plugin reader creating category " + category.getId()); //$NON-NLS-1$
-			}
-		}
-		else if (name.equals(SnippetsPlugin.NAMES.ITEM)) {
-			ISnippetItem item = createItem(element);
-			if (item != null) {
-				assignSource(item, definitions, element);
-				definitions.getItems().add(item);
-				if (Debug.debugDefinitionPersistence)
-					System.out.println("Plugin reader creating item " + item.getId()); //$NON-NLS-1$
+				
+				// add items for category
+				IConfigurationElement[] children = element.getChildren(SnippetsPlugin.NAMES.ITEM);
+				for (int i = 0; i < children.length; i++) {
+					IConfigurationElement child = children[i];
+					SnippetPaletteItem item = createItem(child);
+					if (item != null) {
+						// add item's associated category
+						setProperty(item, SnippetsPlugin.NAMES.CATEGORY, element.getAttribute(SnippetsPlugin.NAMES.ID));
+						assignSource(item, definitions, element);
+						definitions.getItems().add(item);
+						if (Debug.debugDefinitionPersistence)
+							System.out.println("Plugin reader creating item " + item.getId()); //$NON-NLS-1$
+					}
+				}
 			}
 		}
 	}
