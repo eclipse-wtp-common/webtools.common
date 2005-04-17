@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Cache Tests Plug-in
+Bundle-SymbolicName: org.eclipse.wst.internal.cache.tests
+Bundle-Version: 1.0.0
+Bundle-ClassPath: tests.jar
+Bundle-Activator: org.eclipse.wst.internal.cache.tests.internal.CacheTestsPlugin
+Bundle-Vendor: Eclipse
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.junit,
+ org.eclipse.wst.internet.cache,
+ org.eclipse.core.resources,
+ org.eclipse.wst.common.uriresolver
+Eclipse-AutoStart: true
