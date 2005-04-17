@@ -64,7 +64,11 @@ public class ExtensibleURIResolver implements URIResolver
 		for (Iterator i = resolverRegistry.getMatchingURIResolvers(list, URIResolverExtensionRegistry.STAGE_PRENORMALIZATION).iterator(); i.hasNext();)
 		{
 			URIResolverExtension resolver = (URIResolverExtension) i.next();
-			result = resolver.resolve(project, baseLocation, publicId, result);
+			String tempresult = resolver.resolve(project, baseLocation, publicId, result);
+			if(tempresult != null)
+			{
+			  result = tempresult;
+			}
 		}
 
 		// normalize the uri
@@ -77,7 +81,11 @@ public class ExtensibleURIResolver implements URIResolver
 		for (Iterator i = resolverRegistry.getMatchingURIResolvers(list, URIResolverExtensionRegistry.STAGE_POSTNORMALIZATION).iterator(); i.hasNext();)
 		{
 			URIResolverExtension resolver = (URIResolverExtension) i.next();
-			result = resolver.resolve(project, baseLocation, publicId, result);
+			String tempresult = resolver.resolve(project, baseLocation, publicId, result);
+			if(tempresult != null)
+			{
+			  result = tempresult;
+			}
 		}
 
 		return result;
