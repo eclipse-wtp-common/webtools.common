@@ -25,7 +25,7 @@ public class CacheJob extends Job
 {
   private static final String _UI_CACHE_MONITOR_NAME = "_UI_CACHE_MONITOR_NAME";
   private static final String _UI_CACHE_MONITOR_CACHING = "_UI_CACHE_MONITOR_CACHING";
-  private String[] specifiedURIsToCache;
+  private String[] specifiedURIsToCache = null;
   private static final long SCHEDULE_TIME = 3600000;
 
   /**
@@ -34,7 +34,7 @@ public class CacheJob extends Job
   public CacheJob()
   {
     super(CachePlugin.getResourceString(_UI_CACHE_MONITOR_NAME));
-    specifiedURIsToCache = ToCacheRegistryReader.getInstance().getURIsToCache();
+    //specifiedURIsToCache = ToCacheRegistryReader.getInstance().getURIsToCache();
   }
 
   /**
