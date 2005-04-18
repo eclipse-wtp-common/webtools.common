@@ -18,6 +18,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
+import org.eclipse.wst.common.componentcore.StructureEdit;
+import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModelEvent;
@@ -155,6 +157,7 @@ public abstract class ComponentCreationDataModel extends WTPOperationDataModel {
 					String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.ERR_EMPTY_MODULE_NAME);
 					return WTPCommonPlugin.createErrorStatus(errorMessage); 
                 }
+				return checkForDuplicateName(moduleName);
             } else
                 return status;
 
@@ -171,6 +174,28 @@ public abstract class ComponentCreationDataModel extends WTPOperationDataModel {
 		}
         return super.doValidateProperty(propertyName);
     }
+	
+	protected IStatus checkForDuplicateName(String componentName){
+
+		IStatus status = OK_STATUS;
+		StructureEdit structureEdit = null;
+		try{
+	
+			structureEdit = StructureEdit.getStructureEditForRead(getProject());
+			WorkbenchComponent component = structureEdit.findComponentByName(componentName);
+			if( component != null ){
+				
+				String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.DUPLICATE_COMPONENT_NAME);
+				status = WTPCommonPlugin.createErrorStatus(errorMessage); 				
+			}
+		
+		}finally{
+		       if (null != structureEdit) {
+				   structureEdit.dispose();
+		       }			
+		}
+		return status;
+	}
     
 	private IStatus validateComponentVersionProperty() {
 		int componentVersion = getIntProperty(COMPONENT_VERSION);
