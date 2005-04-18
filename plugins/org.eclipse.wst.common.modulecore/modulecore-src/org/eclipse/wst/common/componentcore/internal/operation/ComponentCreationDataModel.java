@@ -18,6 +18,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
+import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModelEvent;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPPropertyDescriptor;
@@ -173,6 +174,7 @@ public abstract class ComponentCreationDataModel extends WTPOperationDataModel {
     
 	private IStatus validateComponentVersionProperty() {
 		int componentVersion = getIntProperty(COMPONENT_VERSION);
+			
 		if (componentVersion == -1)
 			return WTPCommonPlugin.createErrorStatus(WTPCommonPlugin.getResourceString(WTPCommonMessages.SPEC_LEVEL_NOT_FOUND));
 		return OK_STATUS;
@@ -225,12 +227,34 @@ public abstract class ComponentCreationDataModel extends WTPOperationDataModel {
         return versions;
     }
 
+//    private static boolean matches(String a, String b) {
+//        if (a == null || b == null || "*".equals(a) || "*".equals(b) || a.startsWith(b) || b.startsWith(a)) //$NON-NLS-1$ //$NON-NLS-2$
+//            return true;
+//        return false;
+//    }
+    
+	//To do: remove hard coded string being compared. 
     private static boolean matches(String a, String b) {
-        if (a == null || b == null || "*".equals(a) || "*".equals(b) || a.startsWith(b) || b.startsWith(a)) //$NON-NLS-1$ //$NON-NLS-2$
-            return true;
+		
+		if( a.equals("j2ee.web")){//$NON-NLS-1$
+			if( b.equals(IModuleConstants.JST_WEB_MODULE)){
+				return true;
+			}
+		}
+		else if ( a.equals("j2ee.ejb")){//$NON-NLS-1$
+			if( b.equals(IModuleConstants.JST_EJB_MODULE)){
+				return true;
+			}
+		}else if ( a.equals("j2ee.ear")){//$NON-NLS-1$
+			if( b.equals(IModuleConstants.JST_EAR_MODULE) ||  b.equals(IModuleConstants.JST_APPCLIENT_MODULE) || 
+					b.equals(IModuleConstants.JST_CONNECTOR_MODULE)){
+				return true;
+			}			
+		}
         return false;
     }
-    
+	
+	
     public IProject getProject(){
     	String projName = getStringProperty(PROJECT_NAME);
     	return ProjectUtilities.getProject(projName);
