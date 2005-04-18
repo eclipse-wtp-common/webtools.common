@@ -28,7 +28,7 @@ import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.wst.common.snippets.internal.Logger;
-import org.eclipse.wst.sse.core.exceptions.SourceEditingRuntimeException;
+import org.eclipse.wst.sse.core.internal.provisional.exceptions.SourceEditingRuntimeException;
 import org.eclipse.wst.sse.core.internal.util.JarUtilities;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.DOMImplementation;
