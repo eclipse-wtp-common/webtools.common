@@ -11,8 +11,8 @@
 package org.eclipse.wst.validation.internal.operations;
 
 import org.eclipse.core.resources.IResource;
-import org.eclispe.wst.validation.internal.core.FileDelta;
-import org.eclispe.wst.validation.internal.core.IFileDelta;
+import org.eclipse.wst.validation.internal.core.FileDelta;
+import org.eclipse.wst.validation.internal.core.IFileDelta;
 
 
 /**

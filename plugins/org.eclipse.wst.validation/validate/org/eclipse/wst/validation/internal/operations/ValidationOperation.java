@@ -43,17 +43,17 @@ import org.eclipse.wst.validation.internal.TimeEntry;
 import org.eclipse.wst.validation.internal.VThreadManager;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
+import org.eclipse.wst.validation.internal.core.FileDelta;
+import org.eclipse.wst.validation.internal.core.IFileDelta;
+import org.eclipse.wst.validation.internal.core.Message;
+import org.eclipse.wst.validation.internal.core.ValidationException;
+import org.eclipse.wst.validation.internal.core.ValidatorLauncher;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 import org.eclipse.wst.validation.internal.provisional.core.IReporter;
 import org.eclipse.wst.validation.internal.provisional.core.IValidationContext;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 import org.eclipse.wst.validation.internal.provisional.core.MessageLimitException;
-import org.eclispe.wst.validation.internal.core.FileDelta;
-import org.eclispe.wst.validation.internal.core.IFileDelta;
-import org.eclispe.wst.validation.internal.core.Message;
-import org.eclispe.wst.validation.internal.core.ValidationException;
-import org.eclispe.wst.validation.internal.core.ValidatorLauncher;
 
 /**
  * Implemented Validators methods must not be called directly by anyone other than this class, since

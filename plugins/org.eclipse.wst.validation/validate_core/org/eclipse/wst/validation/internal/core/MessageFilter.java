@@ -8,7 +8,7 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclispe.wst.validation.internal.core;
+package org.eclipse.wst.validation.internal.core;
 
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 

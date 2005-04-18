@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal.provisional.core;
 
-import org.eclispe.wst.validation.internal.core.ValidationException;
+import org.eclipse.wst.validation.internal.core.ValidationException;
 
 /**
  * This is the base interface for all Validators. A Validator is a class which verifies that objects

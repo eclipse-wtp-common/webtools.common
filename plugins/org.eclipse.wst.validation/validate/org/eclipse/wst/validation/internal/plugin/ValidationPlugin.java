@@ -17,8 +17,8 @@ import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.wst.common.frameworks.internal.WTPPlugin;
 import org.eclipse.wst.validation.internal.EventManager;
 import org.eclipse.wst.validation.internal.TimeEntry;
+import org.eclipse.wst.validation.internal.core.Message;
 import org.eclipse.wst.validation.internal.provisional.core.IMessage;
-import org.eclispe.wst.validation.internal.core.Message;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 

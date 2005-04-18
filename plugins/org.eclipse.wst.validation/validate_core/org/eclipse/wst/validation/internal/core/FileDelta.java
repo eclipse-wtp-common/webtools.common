@@ -8,7 +8,7 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclispe.wst.validation.internal.core;
+package org.eclipse.wst.validation.internal.core;
 
 
 
@@ -17,7 +17,7 @@ package org.eclispe.wst.validation.internal.core;
  * Default implementation of the IFileDelta
  * </p>
  * 
- * @see org.eclispe.wst.validation.internal.core.IFileDelta
+ * @see org.eclipse.wst.validation.internal.core.IFileDelta
  * 
  *  [issue: CS - is there a reason that we need to expose this impl class as an API?
  *   It would seem better to only expose IFileDelta.  I can't think of a reason where 
