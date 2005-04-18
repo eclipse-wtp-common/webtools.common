@@ -16,8 +16,8 @@ import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.tests.TestDataModelProvider;
-import org.eclipse.wst.common.frameworks.datamodel.ui.DataModelWizard;
-import org.eclipse.wst.common.frameworks.datamodel.ui.DataModelWizardFactory;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizard;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizardFactory;
 
 public class DataModelUIFactoryTest extends TestCase {
 

@@ -13,7 +13,7 @@ package org.eclipse.wst.common.tests.ui;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.tests.TestDataModelProvider;
-import org.eclipse.wst.common.frameworks.datamodel.ui.DataModelWizard;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizard;
 
 public class TestDataModelWizard extends DataModelWizard {
 
