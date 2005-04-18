@@ -66,6 +66,33 @@ public class EnabledValidatorsOperation extends ValidatorSubsetOperation {
 	public EnabledValidatorsOperation(IProject project, boolean async) {
 		this(project, RegistryConstants.ATT_RULE_GROUP_DEFAULT, DEFAULT_FORCE, async);
 	}
+	
+	/**
+	 * Run all enabled validators on the project.
+	 * 
+	 * IProject must exist and be open.
+	 * 
+	 * If async is true, the validation will run all thread-safe validators in the background
+	 * validation thread, and all other validators in the main thread. If async is false, all
+	 * validators will run in in the main thread.
+	 */
+	public EnabledValidatorsOperation(IProject project, IWorkbenchContext aWorkbenchContext, boolean async) {
+		this(project, aWorkbenchContext, RegistryConstants.ATT_RULE_GROUP_DEFAULT, DEFAULT_FORCE, async);
+	}
+	
+	/**
+	 * Run all enabled validators on the project with the identified ruleGroup.
+	 * 
+	 * IProject must exist and be open.
+	 * 
+	 * If async is true, the validation will run all thread-safe validators in the background
+	 * validation thread, and all other validators in the main thread. If async is false, all
+	 * validators will run in in the main thread.
+	 */
+	public EnabledValidatorsOperation(IProject project, IWorkbenchContext aWorkbenchContext, int ruleGroup, boolean force, boolean async) {
+		this(project, aWorkbenchContext, ValidatorManager.getManager().getEnabledValidators(project), ruleGroup, force, async);
+	}
+	
 
 	/**
 	 * Run all enabled validators on the project with the identified ruleGroup.
@@ -115,6 +142,20 @@ public class EnabledValidatorsOperation extends ValidatorSubsetOperation {
 	 */
 	protected EnabledValidatorsOperation(IProject project, Set enabledValidators, int ruleGroup, boolean force, boolean async) {
 		super(project, force, ruleGroup, async);
+		setEnabledValidators(enabledValidators);
+	}
+	
+	/**
+	 * Run the identified validators on the project with the ruleGroup.
+	 * 
+	 * IProject must exist and be open.
+	 * 
+	 * If async is true, the validation will run all thread-safe validators in the background
+	 * validation thread, and all other validators in the main thread. If async is false, all
+	 * validators will run in in the main thread.
+	 */
+	protected EnabledValidatorsOperation(IProject project, IWorkbenchContext aWorkbenchContext, Set enabledValidators, int ruleGroup, boolean force, boolean async) {
+		super(project,aWorkbenchContext,force, ruleGroup, async);
 		setEnabledValidators(enabledValidators);
 	}
 }

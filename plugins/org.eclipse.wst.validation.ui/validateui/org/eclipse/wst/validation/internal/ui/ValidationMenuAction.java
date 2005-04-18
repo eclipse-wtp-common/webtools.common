@@ -46,7 +46,9 @@ import org.eclipse.wst.validation.internal.ProjectConfiguration;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.operations.EnabledIncrementalValidatorsOperation;
 import org.eclipse.wst.validation.internal.operations.EnabledValidatorsOperation;
+import org.eclipse.wst.validation.internal.operations.IWorkbenchContext;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
+import org.eclipse.wst.validation.internal.operations.WorkbenchContext;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;
 
@@ -60,6 +62,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	private Display _currentDisplay = null;
 	private IResourceVisitor _folderVisitor = null;
 	private Map _selectedResources = null;
+	protected IWorkbenchContext workbenchContext;
 
 	public ValidationMenuAction() {
 		super();
@@ -400,9 +403,9 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		// successfully?
 		EnabledValidatorsOperation validOp = null;
 		if (resources == null) {
-			validOp = new EnabledValidatorsOperation(project, prjp.runAsync());
+			validOp = new EnabledValidatorsOperation(project,getWorkbenchContext(), prjp.runAsync());
 		} else {
-			validOp = new EnabledIncrementalValidatorsOperation(resources, project, prjp.runAsync());
+			validOp = new EnabledIncrementalValidatorsOperation(resources,getWorkbenchContext(),project, prjp.runAsync());
 		}
 		if (validOp.isNecessary(monitor)) {
 			ResourcesPlugin.getWorkspace().run(validOp, monitor);
@@ -423,6 +426,12 @@ public class ValidationMenuAction implements IViewActionDelegate {
 			String internalErrorMessage = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PROJECT, new String[]{project.getName()});
 			dialog.addText(internalErrorMessage);
 		}
+	}
+
+	public IWorkbenchContext getWorkbenchContext() {
+		if(workbenchContext == null)
+			workbenchContext = new WorkbenchContext();
+		return workbenchContext;
 	}
 
 	/**

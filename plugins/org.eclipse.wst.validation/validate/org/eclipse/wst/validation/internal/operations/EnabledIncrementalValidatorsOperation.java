@@ -174,7 +174,7 @@ public class EnabledIncrementalValidatorsOperation extends EnabledValidatorsOper
 	 * and all other validators will run in the main thread. If async is false, all validators will
 	 * run in the main thread.
 	 */
-	public EnabledIncrementalValidatorsOperation(IResource[] changedResources, IProject project, boolean async) {
+	public EnabledIncrementalValidatorsOperation(IResource[] changedResources,IWorkbenchContext aWorkbenchContext, IProject project, boolean async) {
 		super(project, RegistryConstants.ATT_RULE_GROUP_DEFAULT, shouldForce(changedResources), async);
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
@@ -193,23 +193,9 @@ public class EnabledIncrementalValidatorsOperation extends EnabledValidatorsOper
 				}
 			}
 		}
-		setFileDeltas(FilterUtil.getFileDeltas(getEnabledValidators(), changedResources, false)); // construct
-		// an
-		// array
-		// of
-		// IFileDelta[]
-		// to
-		// wrap
-		// the
-		// Object[];
-		// one
-		// IFileDelta
-		// for
-		// each
-		// Object
-		// in
-		// the
-		// array
+		//construct an array of IFileDelta[] to wrap the Object[]; one IFileDelta for each Object in the array
+		setFileDeltas(FilterUtil.getFileDeltas(getEnabledValidators(), changedResources, false));
+		setContext(aWorkbenchContext);
 	}
 
 }

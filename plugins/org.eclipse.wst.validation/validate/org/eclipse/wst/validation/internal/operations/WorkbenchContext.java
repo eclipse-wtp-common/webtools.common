@@ -13,6 +13,7 @@ package org.eclipse.wst.validation.internal.operations;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.logging.Level;
@@ -41,13 +42,23 @@ public class WorkbenchContext implements IWorkbenchContext {
 //	private static final IContainer[] NO_CONTAINERS = new IContainer[0];
 	private int _ruleGroup = RegistryConstants.ATT_RULE_GROUP_DEFAULT;
 	public List validationFileURIs = null; 
+	public static final String GET_PROJECT_FILES = "getAllFiles";
+	public static final String GET_FILE = "getFile";
+	private static final IContainer[] NO_CONTAINERS = new IContainer[0];
+	public static final String VALIDATION_MARKER = "com.ibm.etools.validation.problemmarker";
+	public static final String VALIDATION_MARKER_OWNER = "owner";  
 
 	public WorkbenchContext() {
 		super();
-
 		_modelRegistry = new Hashtable();
 
 		registerModel(IRuleGroup.PASS_LEVEL, "loadRuleGroup"); //$NON-NLS-1$
+		
+		//the following will register the helper's symbolic methods
+	    Class [] args = new Class[1] ;
+	    args[0] = String.class ;  // a string argument denoting a specific JSP.
+		registerModel(GET_FILE, "getFile", args);//$NON-NLS-1$
+		registerModel(GET_PROJECT_FILES, "getFiles", args);//$NON-NLS-1$
 	}
 
 	/**
@@ -354,6 +365,66 @@ public class WorkbenchContext implements IWorkbenchContext {
 	public final IProject getProject() {
 		return _project;
 	}
+	
+	  /**
+	   * Get the IFile for the given filename.
+	   * 
+	   * @param filename The name of the file to retrieve.
+	   * @return An IFile representing the file specified or null if it can't be resolved.
+	   */
+	  public IFile getFile(String filename)
+	  {
+	    //    System.out.println("file name = " + filename);
+	    IResource res = getProject().findMember(filename, true); // true means include phantom resources
+	    if (res instanceof IFile) 
+	    {
+	      return (IFile) res;
+	    }
+	    return null;
+	  }
+	  
+	  /**
+	   * Get the collection of files from the project that are relevant for the
+	   * validator with the given class name.
+	   * 
+	   * @param validatorClassName The name of the validator class.
+	   * @return The collection of files relevant for the validator class specified.
+	   */
+	  public Collection getFiles(String validatorClassName)
+	  {
+	    IProject project = getProject();
+	    List files = new ArrayList();
+	    getFiles(files, project, validatorClassName);
+	    return files;
+	  }
+
+	  /**
+	   * Get the collection of files from the project that are relevant for the
+	   * validator with the given class name.
+	   * 
+	   * @param files The files relevant for the class name.
+	   * @param resource The resource to look for files in.
+	   * @param validatorClassName The name of the validator class.
+	   */
+	  protected void getFiles(Collection files, IContainer resource, String validatorClassName)
+	  {
+	    try
+	    {
+	      IResource [] resourceArray = resource.members(false);
+	      for (int i=0; i<resourceArray.length; i++)
+	      {       
+	        if (ValidatorManager.getManager().isApplicableTo(validatorClassName, resourceArray[i])) 
+	        {
+	          if (resourceArray[i] instanceof IFile) 
+				  files.add(resourceArray[i]);
+	        }
+	        if (resourceArray[i].getType() == IResource.FOLDER)
+	         getFiles(files,(IContainer)resourceArray[i], validatorClassName) ;
+	      }
+	    }
+	    catch (Exception e) {}
+	  }
+	  
 
 //	/**
 //	 * Return the folders (or project) which contain the .java source files.

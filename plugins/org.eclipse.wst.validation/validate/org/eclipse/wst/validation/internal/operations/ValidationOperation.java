@@ -191,6 +191,21 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		_force = force;
 		_enabledValidators = new HashSet();
 	}
+	
+	/**
+	 * Internal.
+	 */
+	protected ValidationOperation(IProject project, IValidationContext aContext, IResourceDelta delta, Boolean isAutoBuild, int ruleGroup, boolean force, boolean fork) {
+		super();
+		_project = project;
+		_delta = delta;
+		_isAutoBuild = isAutoBuild;
+		_ruleGroup = ruleGroup;
+		_fork = fork;
+		_force = force;
+		_enabledValidators = new HashSet();
+		context = aContext;
+	}
 
 	/**
 	 * @deprecated Will be removed in Milestone 3.
@@ -900,7 +915,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 					}
 					continue;
 				}
-				setFilesToValidateOnContext(delta);
+				initValidateContext(getProject(),delta);
 				if (isFork() && vmd.isAsync()) {
 					// Don't appear to run in the foreground by sending
 					// progress to the IProgressMonitor in the
@@ -917,13 +932,14 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		}
 	}
 
-	private void setFilesToValidateOnContext(IFileDelta[] delta) {
+	private void initValidateContext(IProject project, IFileDelta[] delta) {
 		 if (context instanceof WorkbenchContext) {
+			 ((WorkbenchContext)context).setProject(project);
 			 for(int i = 0; i < delta.length; i++) {
 				 IFileDelta file = (IFileDelta)delta[i];
 				 if(file.getDeltaType() != IFileDelta.DELETED )
 					 ((WorkbenchContext)context).getValidationFileURIs().add(file.getFileName());
-			 } 	
+			 } 
 		}
 	}
 
@@ -1174,7 +1190,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				// tests.
 				getLaunchedValidators().add(vmd);
 			}
-			setFilesToValidateOnContext(delta);
+			initValidateContext(reporter.getProject(),delta);
 			ValidatorLauncher.getLauncher().start(helper, validator, reporter);
 			long finish = System.currentTimeMillis();
 			if (logger.isLoggingLevel(Level.INFO)) {

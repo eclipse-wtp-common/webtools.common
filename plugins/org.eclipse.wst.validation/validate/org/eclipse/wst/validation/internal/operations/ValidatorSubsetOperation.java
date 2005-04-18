@@ -66,6 +66,24 @@ public class ValidatorSubsetOperation extends ValidationOperation {
 	 * validation thread, and all other validators in the main thread. If async is false, all
 	 * validators will run in in the main thread.
 	 */
+	public ValidatorSubsetOperation(IProject project, IWorkbenchContext aWorkenchContext, boolean force, int ruleGroup, boolean async) {
+		super(project, aWorkenchContext, null, null, ruleGroup, force, async);
+	}
+	
+
+	/**
+	 * Create an operation that runs a full validation on the named validators using the
+	 * <code>ruleGroup</code> pass. Use this constructor only if you want to run a validator that
+	 * supports the two passes: FAST and FULL.
+	 * 
+	 * If force is true, validation is run whether or not it needs to.
+	 * 
+	 * IProject must exist and be open.
+	 * 
+	 * If async is true, the validation will run all thread-safe validators in the background
+	 * validation thread, and all other validators in the main thread. If async is false, all
+	 * validators will run in in the main thread.
+	 */
 	public ValidatorSubsetOperation(IProject project, boolean force, int ruleGroup, boolean async) {
 		super(project, null, null, ruleGroup, force, async);
 	}
