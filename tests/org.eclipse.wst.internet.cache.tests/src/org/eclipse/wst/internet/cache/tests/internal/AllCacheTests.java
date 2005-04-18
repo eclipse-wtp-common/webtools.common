@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.internal.cache.tests.internal;
+package org.eclipse.wst.internet.cache.tests.internal;
 import junit.framework.Test;
 
 import org.eclipse.wst.internet.cache.internal.CacheEntryTest;
