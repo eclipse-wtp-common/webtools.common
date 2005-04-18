@@ -31,7 +31,7 @@ public class CachePlugin extends AbstractUIPlugin {
 	//Resource bundle.
 	private ResourceBundle resourceBundle;
   
-  private CacheJob job;
+  private CacheJob job = null;
 	
 	/**
 	 * The constructor.
