@@ -327,7 +327,7 @@ public class Cache
 	  }
 	  catch(Exception e)
 	  {
-		  System.out.println(e);
+      // Do nothing.
 	  }
 	  finally
 	  {
