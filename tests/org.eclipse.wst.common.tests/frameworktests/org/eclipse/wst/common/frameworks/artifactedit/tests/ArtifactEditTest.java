@@ -2,8 +2,11 @@ package org.eclipse.wst.common.frameworks.artifactedit.tests;
 
 
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import junit.framework.TestCase;
@@ -114,16 +117,62 @@ public class ArtifactEditTest extends TestCase {
 
 
 	private IPath getLocalPath() {
+
 		IPluginDescriptor pluginDescriptor = Platform.getPluginRegistry().getPluginDescriptor("org.eclipse.wst.common.tests");
 		URL url = pluginDescriptor.getInstallURL();
-		String path = null;
+
 		try {
-			path = Platform.asLocalURL(url).getFile() + "TestData" + "/" + "TestArtifactEdit.zip";
-		} catch (IOException e) {
+			url = new URL(url.toString() + zipFilePath);
+
+		} catch (MalformedURLException e1) {
 			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		try {
+			url = Platform.asLocalURL(url);
+			printLocalPath(url);
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return new Path(path);
+		return new Path(url.getPath());
+	}
+
+
+
+	private void printLocalPath(URL url) {
+		IPath path = ResourcesPlugin.getWorkspace().getRoot().getLocation();
+		File file = new File(path.append("PlatformInfo.txt").toOSString());
+		BufferedWriter bw;
+		String osName = System.getProperty("os.name");
+		String fileSeperator = System.getProperty("path.separator");
+		URL urlFindUsingPlugin = CommonTestsPlugin.instance.find(zipFilePath);
+		try {
+			urlFindUsingPlugin = Platform.asLocalURL(urlFindUsingPlugin);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		String javaFileSeperator = new Character(File.pathSeparatorChar).toString();
+
+
+		try {
+			bw = new BufferedWriter(new FileWriter(file));
+			bw.write("pluginDescriptor URL " + url.toString());
+			bw.write("\n");
+			bw.write("Operating System: " + osName);
+			bw.write("\n");
+			bw.write("System file seperator: " + fileSeperator);
+			bw.write("\n");
+			bw.write("Using Pluign.find URL:" + urlFindUsingPlugin.toString());
+			bw.write("\n");
+			bw.write("Java file seperator: " + javaFileSeperator);
+			bw.write("\n");
+			bw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+
 	}
 
 
