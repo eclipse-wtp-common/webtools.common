@@ -1,4 +1,4 @@
-package org.eclipse.wst.common.frameworks.datamodel.ui;
+package org.eclipse.wst.common.frameworks.internal.datamodel.ui;
 
 /*
  * Licensed Material - Property of IBM (C) Copyright IBM Corp. 2001, 2002 - All Rights Reserved. US

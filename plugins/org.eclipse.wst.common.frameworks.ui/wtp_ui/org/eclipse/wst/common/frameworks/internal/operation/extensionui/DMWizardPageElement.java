@@ -11,9 +11,9 @@ package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-import org.eclipse.wst.common.frameworks.datamodel.ui.IDMExtendedPageHandler;
-import org.eclipse.wst.common.frameworks.datamodel.ui.IDMExtendedWizardPage;
 import org.eclipse.wst.common.frameworks.internal.AbstractRegistryDescriptor;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedPageHandler;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedWizardPage;
 import org.eclipse.wst.common.frameworks.internal.enablement.IdentifiableComparator;
 
 public class DMWizardPageElement extends AbstractRegistryDescriptor implements Comparable {

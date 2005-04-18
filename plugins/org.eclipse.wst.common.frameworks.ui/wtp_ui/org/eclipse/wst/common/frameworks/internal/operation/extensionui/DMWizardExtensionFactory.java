@@ -9,8 +9,8 @@
 package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
 
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-import org.eclipse.wst.common.frameworks.datamodel.ui.IDMExtendedPageHandler;
-import org.eclipse.wst.common.frameworks.datamodel.ui.IDMExtendedWizardPage;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedPageHandler;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedWizardPage;
 
 /**
  * This interface is EXPERIMENTAL and is subject to substantial changes.

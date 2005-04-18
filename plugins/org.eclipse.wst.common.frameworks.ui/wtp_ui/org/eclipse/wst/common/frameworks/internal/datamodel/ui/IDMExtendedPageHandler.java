@@ -6,7 +6,7 @@
  * 
  * Contributors: IBM Corporation - initial API and implementation
  **************************************************************************************************/
-package org.eclipse.wst.common.frameworks.datamodel.ui;
+package org.eclipse.wst.common.frameworks.internal.datamodel.ui;
 
 /**
  * This interface is EXPERIMENTAL and is subject to substantial changes.
