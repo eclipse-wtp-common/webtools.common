@@ -26,11 +26,4 @@
             class="org.eclipse.wst.internet.cache.internal.CacheURIResolverExtension">
       </resolverExtension>
    </extension>
-   
-   <extension point="org.eclipse.wst.internet.cache.cacheresource">
-     <cacheresource uri="http://schemas.xmlsoap.org/wsdl/"/>
-     <cacheresource uri="http://schemas.xmlsoap.org/wsdl/soap/"/>
-     <cacheresource uri="http://schemas.xmlsoap.org/wsdl/mime/"/>
-     <cacheresource uri="http://schemas.xmlsoap.org/wsdl/http/"/>
-   </extension> 
 </plugin>
