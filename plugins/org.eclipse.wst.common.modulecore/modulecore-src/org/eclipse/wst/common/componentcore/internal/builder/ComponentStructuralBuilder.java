@@ -160,7 +160,8 @@ public class ComponentStructuralBuilder extends IncrementalProjectBuilder implem
         if (!targetResource.exists()) {
             sourceResource.copy(absoluteOutputContainer, true, monitor);
         } else if (resourceHasChanged(sourceResource)){
-            targetResource.delete(IResource.FORCE, monitor);
+            if(targetResource.exists())
+                targetResource.delete(IResource.FORCE, monitor);
             sourceResource.copy(absoluteOutputContainer, true, monitor);            
         }  else if (sourceResource.getType() == Resource.FOLDER) {
             IFolder folder = (IFolder) sourceResource;

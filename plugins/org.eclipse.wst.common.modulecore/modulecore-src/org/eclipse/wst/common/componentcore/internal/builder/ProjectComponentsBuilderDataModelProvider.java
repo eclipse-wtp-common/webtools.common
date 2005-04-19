@@ -22,6 +22,7 @@ import org.eclipse.wst.common.componentcore.StructureEdit;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IProjectComponentsBuilderDataModelProperties;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IWorkbenchComponentBuilderDataModelProperties;
+import org.eclipse.wst.common.componentcore.internal.ComponentType;
 import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
@@ -154,7 +155,10 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
         String builderType = null;
         for (int i = 0; i < sortedList.size(); i++) {
 			WorkbenchComponent wbComponent = (WorkbenchComponent) sortedList.get(i);
-			String typeId = wbComponent.getComponentType().getComponentTypeId();
+            ComponentType type = wbComponent.getComponentType();
+            if(type == null)
+                break;
+			String typeId = type.getComponentTypeId();
 			if (typeId == null)
 				break;
             builderType = typeId + ".builder";
