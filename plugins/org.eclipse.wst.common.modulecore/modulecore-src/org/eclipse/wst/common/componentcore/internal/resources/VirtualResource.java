@@ -78,9 +78,9 @@ public abstract class VirtualResource implements IVirtualResource {
 
 	protected abstract void doDeleteRealResources(int updateFlags, IProgressMonitor monitor) throws CoreException;
 
-	// TODO WTP:Implement this method 
 	public boolean exists() {
-		return true;
+		IResource resource = getUnderlyingResource();
+		return resource != null && resource.exists();
 	}
 
 	public String getFileExtension() {
@@ -196,10 +196,7 @@ public abstract class VirtualResource implements IVirtualResource {
 	public boolean equals(Object anOther) {
 		return hashCode() == ((anOther != null && anOther instanceof VirtualResource) ? anOther.hashCode() : 0 );
 	} 
-	
-	public IResource getUnderlyingResource() {
-		return null;
-	}
+	 
 	
 	//TODO Persist the resource type to the model
 	public void setResourceType(String aResourceType) {

@@ -51,6 +51,19 @@ public class VirtualComponent extends VirtualContainer implements IVirtualCompon
 		return getComponentHandle().getName();
 	}
 	
+	public boolean exists() { 
+		StructureEdit core = null;
+		try {
+			core = StructureEdit.getStructureEditForRead(getProject());
+			WorkbenchComponent component = core.findComponentByName(getName()); 
+			return component != null;
+		} finally {
+			if(core != null)
+				core.dispose();
+		}
+		
+	}
+	
 	public String getComponentTypeId() { 
 
 		StructureEdit core = null;
