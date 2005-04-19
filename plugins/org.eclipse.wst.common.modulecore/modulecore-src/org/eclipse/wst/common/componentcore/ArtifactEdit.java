@@ -10,6 +10,7 @@ package org.eclipse.wst.common.componentcore;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jem.internal.util.emf.workbench.nls.EMFWorkbenchResourceHandler;
@@ -439,6 +440,13 @@ public class ArtifactEdit implements IEditModelHandler {
 	 */
 	protected ArtifactEditModel getArtifactEditModel() {
 		return artifactEditModel;
+	}
+	
+	/**
+	 * @return The EMF command stack managed by the underlying editmodel
+	 */
+	public CommandStack getCommandStack() {
+		return artifactEditModel.getCommandStack();
 	}
 
 	private void throwAttemptedReadOnlyModification() {
