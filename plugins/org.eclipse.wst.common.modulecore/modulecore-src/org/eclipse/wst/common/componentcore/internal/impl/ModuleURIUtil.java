@@ -146,4 +146,9 @@ public class ModuleURIUtil {
 		}
 		return null; 
 	}
+	
+
+	public static URI fullyQualifyURI(IProject aProject, String aComponentName) {
+		return URI.createURI(RESOURCE_URI_PROTOCOL + aProject.getName() + IPath.SEPARATOR + aComponentName);
+	}
 }

@@ -20,8 +20,15 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.StructureEdit;
+import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
+import org.eclipse.wst.common.componentcore.internal.ComponentType;
+import org.eclipse.wst.common.componentcore.internal.ComponentcoreFactory;
+import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
+import org.eclipse.wst.common.componentcore.internal.DependencyType;
+import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
@@ -44,14 +51,38 @@ public class VirtualComponent extends VirtualContainer implements IVirtualCompon
 		return getComponentHandle().getName();
 	}
 	
-	public String getComponentTypeId() {
-		// TODO Auto-generated method stub
-		return null;
+	public String getComponentTypeId() { 
+
+		StructureEdit core = null;
+		try {
+			core = StructureEdit.getStructureEditForRead(getProject());
+			WorkbenchComponent component = core.findComponentByName(getName()); 
+			ComponentType cType = component.getComponentType();
+			return cType.getComponentTypeId();
+		} finally {
+			if(core != null)
+				core.dispose();
+		}
 	}
 
 	public void setComponentTypeId(String aComponentTypeId) {
-		// TODO Auto-generated method stub
 
+		StructureEdit core = null;
+		try {
+			core = StructureEdit.getStructureEditForWrite(getProject());
+			WorkbenchComponent component = core.findComponentByName(getName()); 
+			ComponentType cType = component.getComponentType();
+			if(cType != null) {
+				cType = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentType();
+				component.setComponentType(cType);
+			}
+			cType.setComponentTypeId(aComponentTypeId);
+		} finally {
+			if(core != null) {
+				core.saveIfNecessary(null);
+				core.dispose();
+			}
+		}
 	}
 
 	public Properties getMetaProperties() {
@@ -105,11 +136,67 @@ public class VirtualComponent extends VirtualContainer implements IVirtualCompon
 	}
 
 	public IVirtualReference[] getReferences() { 
-		return null;
+		StructureEdit core = null;
+		try {
+			core = StructureEdit.getStructureEditForRead(getProject());
+			WorkbenchComponent component = core.findComponentByName(getName());
+			List referencedComponents = component.getReferencedComponents();
+			ReferencedComponent referencedComponent = null;
+			
+			List references = new ArrayList();
+			IVirtualComponent targetComponent = null;
+			IProject targetProject = null;
+			String targetComponentName = null;
+			for (Iterator iter = referencedComponents.iterator(); iter.hasNext();) {
+				referencedComponent = (ReferencedComponent) iter.next();
+				try { 
+					targetProject = StructureEdit.getContainingProject(referencedComponent.getHandle());
+				} catch(UnresolveableURIException uurie) { } 
+				// if the project cannot be resolved, assume it's local
+				if(targetProject == null)
+					targetProject = getProject();
+				
+				try {
+					targetComponentName = StructureEdit.getDeployedName(referencedComponent.getHandle());
+					targetComponent = ComponentCore.createComponent(targetProject, targetComponentName); 
+					references.add(new VirtualReference(this, targetComponent, referencedComponent.getRuntimePath(), referencedComponent.getDependencyType().getValue()));
+					
+				} catch (UnresolveableURIException e) { 
+				}
+				 
+			}
+			
+			return (IVirtualReference[]) references.toArray(new IVirtualReference[references.size()]);
+		} finally {
+			if(core != null)
+				core.dispose();
+		}		
 	}
 
 	public void setReferences(IVirtualReference[] references) { 
-		
+		StructureEdit core = null;
+		try {
+			core = StructureEdit.getStructureEditForWrite(getProject());
+			WorkbenchComponent component = core.findComponentByName(getName());
+			List referencedComponents = component.getReferencedComponents();
+			ReferencedComponent referencedComponent = null;
+			  
+			component.getReferencedComponents().clear();
+			ComponentcoreFactory factory = ComponentcorePackage.eINSTANCE.getComponentcoreFactory();
+			for (int i=0; i<references.length; i++) {
+				referencedComponent = factory.createReferencedComponent();				
+				referencedComponent.setDependencyType(DependencyType.get(references[i].getDependencyType()));
+				referencedComponent.setRuntimePath(references[i].getRuntimePath());
+				referencedComponent.setHandle(ModuleURIUtil.fullyQualifyURI(references[i].getReferencedComponent().getProject(), references[i].getReferencedComponent().getName()));
+				component.getReferencedComponents().add(referencedComponent);
+			}
+			 
+		} finally {
+			if(core != null) {
+				core.saveIfNecessary(null);
+				core.dispose();
+			}
+		}	
 	}
 	
 	

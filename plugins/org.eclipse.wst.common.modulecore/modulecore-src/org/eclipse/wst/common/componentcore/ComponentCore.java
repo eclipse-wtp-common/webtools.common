@@ -17,6 +17,7 @@ import org.eclipse.wst.common.componentcore.internal.resources.FlexibleProject;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualComponent;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualFile;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualFolder;
+import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
 import org.eclipse.wst.common.componentcore.resources.IFlexibleProject;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualContainer;
@@ -43,8 +44,8 @@ public class ComponentCore {
 		return new VirtualFile(aProject, aComponentName, aRuntimePath);	
 	}
 
-	public static IVirtualReference createReference(IVirtualContainer aContainer, IVirtualContainer aReferencedContainer) {
-		return null;
+	public static IVirtualReference createReference(IVirtualComponent aComponent, IVirtualComponent aReferencedComponent) {
+		return new VirtualReference(aComponent, aReferencedComponent);
 	}
 
 }
