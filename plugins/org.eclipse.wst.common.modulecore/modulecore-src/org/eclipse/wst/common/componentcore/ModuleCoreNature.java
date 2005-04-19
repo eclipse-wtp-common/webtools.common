@@ -15,11 +15,15 @@ import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.emf.common.util.URI;
@@ -173,42 +177,24 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 			if (aProject.hasNature(IModuleConstants.MODULE_NATURE_ID))
 				return getModuleCoreNature(aProject);
 
-			/* To avoid potential deadlocks, we need to execute the following as a Job */
-			Job addNatureJob = new Job("Add ModuleCore Nature") {
-				protected IStatus run(IProgressMonitor monitor) {
-					try {
-						IProjectDescription description = aProject.getDescription();
-
-						String[] currentNatureIds = description.getNatureIds();
-						String[] newNatureIds = new String[currentNatureIds.length + 1];
-						System.arraycopy(currentNatureIds, 0, newNatureIds, 0, currentNatureIds.length);
-						newNatureIds[currentNatureIds.length] = IModuleConstants.MODULE_NATURE_ID;
-						description.setNatureIds(newNatureIds);
-						aProject.setDescription(description, monitor);
-					} catch (CoreException e) {
-						e.printStackTrace();
-					}
-					return Status.OK_STATUS;
-				}
-			};
-			/* Because we want to return the nature, we will wait for the Job to finish executing */
-			final boolean[] mutex = new boolean[]{true};
-			addNatureJob.addJobChangeListener(new JobChangeAdapter() {
-				public void done(IJobChangeEvent event) {
-					mutex[0] = false;
-				}
-			});
-			addNatureJob.schedule();
+			IJobManager manager = Platform.getJobManager();
+			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();	
 			if (aMonitor != null)
 				aMonitor.beginTask("Add ModuleCore Nature", 5);
-			while (mutex[0]) {
-				try {
-					Thread.sleep(200);
-					if (aMonitor != null)
-						aMonitor.worked(1);
-				} catch (InterruptedException ie) {
-				}
-			}
+			manager.beginRule(root, aMonitor);
+			try {
+				IProjectDescription description = aProject.getDescription();
+				String[] currentNatureIds = description.getNatureIds();
+				String[] newNatureIds = new String[currentNatureIds.length + 1];
+				System.arraycopy(currentNatureIds, 0, newNatureIds, 0, currentNatureIds.length);
+				newNatureIds[currentNatureIds.length] = IModuleConstants.MODULE_NATURE_ID;
+				description.setNatureIds(newNatureIds);
+				aProject.setDescription(description, aMonitor);
+			} catch (CoreException e) {
+				e.printStackTrace(); 				
+			} finally {
+				manager.endRule(root);
+			} 			
 			if (aMonitor != null)
 				aMonitor.done();
 		} catch (CoreException e) {
