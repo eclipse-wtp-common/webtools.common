@@ -107,30 +107,32 @@ public abstract class VirtualResource implements IVirtualResource {
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(getProject());
 			WorkbenchComponent component = moduleCore.findComponentByName(getComponentHandle().getName());
-			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
-			
-			ComponentResource[] componentResources = new ComponentResource[0];
-			IPath currentPath = null;
-			IPath potentialMatchRuntimePath = null; 
-			
-			do { 
-				currentPath = (currentPath == null) ? getRuntimePath() : currentPath.removeLastSegments(1);
-				componentResources = root.findModuleResources(currentPath, false);
-				for (int i = 0; i < componentResources.length; i++) {
-					potentialMatchRuntimePath = componentResources[i].getRuntimePath();					
-					if(isPotentalMatch(potentialMatchRuntimePath)) {
-						IPath sourcePath = componentResources[i].getSourcePath();
-						IPath subpath = getRuntimePath().removeFirstSegments(potentialMatchRuntimePath.segmentCount());
-						IPath finalPath = sourcePath.append(subpath);
-						// already workspace relative
-						if(finalPath.segment(0).equals(getComponentHandle().getProject().getName())) {
-							return finalPath.removeFirstSegments(1);
-						} 
-						// make workspace relative
-						return finalPath;
-					}
-				}   
-			} while(currentPath.segmentCount() > 0 && componentResources.length == 0);
+			if(component != null) {
+				ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
+				
+				ComponentResource[] componentResources = new ComponentResource[0];
+				IPath currentPath = null;
+				IPath potentialMatchRuntimePath = null; 
+				
+				do { 
+					currentPath = (currentPath == null) ? getRuntimePath() : currentPath.removeLastSegments(1);
+					componentResources = root.findModuleResources(currentPath, false);
+					for (int i = 0; i < componentResources.length; i++) {
+						potentialMatchRuntimePath = componentResources[i].getRuntimePath();					
+						if(isPotentalMatch(potentialMatchRuntimePath)) {
+							IPath sourcePath = componentResources[i].getSourcePath();
+							IPath subpath = getRuntimePath().removeFirstSegments(potentialMatchRuntimePath.segmentCount());
+							IPath finalPath = sourcePath.append(subpath);
+							// already workspace relative
+							if(finalPath.segment(0).equals(getComponentHandle().getProject().getName())) {
+								return finalPath.removeFirstSegments(1);
+							} 
+							// make workspace relative
+							return finalPath;
+						}
+					}   
+				} while(currentPath.segmentCount() > 0 && componentResources.length == 0);
+			}
 		} finally {
 			if(moduleCore != null) {
 				moduleCore.dispose();
