@@ -8,6 +8,8 @@
  ******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.builder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -18,6 +20,8 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -36,6 +40,8 @@ public class ComponentStructuralBuilder extends IncrementalProjectBuilder implem
      * Builder id of this incremental project builder.
      */
     public static final String BUILDER_ID = COMPONENT_STRUCTURAL_BUILDER_ID;
+    
+    public static List changedResources = null;
     /**
      *  
      */
@@ -50,6 +56,12 @@ public class ComponentStructuralBuilder extends IncrementalProjectBuilder implem
      *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
      */
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
+        changedResources = new ArrayList();
+        
+        IResourceDelta buildDelta = getDelta(getProject());
+        if(buildDelta != null && kind != CLEAN_BUILD) {
+            processDelta(buildDelta, monitor);
+        }
         StructureEdit moduleCore = null;
         
         // clean markers
@@ -61,7 +73,7 @@ public class ComponentStructuralBuilder extends IncrementalProjectBuilder implem
             moduleCore = StructureEdit.getStructureEditForRead(getProject());
             builderDataModel.setProperty(COMPONENT_CORE, moduleCore);
             builderDataModel.setProperty(PROJECT, getProject());
-            builderDataModel.setProperty(PROJECT_DETLA, getDelta(getProject()));
+            builderDataModel.setProperty(PROJECT_DETLA, buildDelta);
             //TODO: implement incremental builds
             // dataModel.setProperty(DeployableModuleProjectBuilderDataModel.BUILD_KIND;
             IUndoableOperation op = builderDataModel.getDefaultOperation();
@@ -75,6 +87,55 @@ public class ComponentStructuralBuilder extends IncrementalProjectBuilder implem
             }
         }
         return null;
+    }
+    /**
+     * Process an incremental build delta.
+     * 
+     * @return <code>true</code> if the delta requires a copy
+     * @param dest
+     *            the destination folder; may or may not exist
+     * @param monitor
+     *            the progress monitor, or <code>null</code> if none
+     * @exception CoreException
+     *                if something goes wrong
+     */
+    protected void processDelta(IResourceDelta delta, final IProgressMonitor monitor) {
+        IResourceDeltaVisitor visitor = new IResourceDeltaVisitor() {
+
+            public boolean visit(IResourceDelta subdelta) throws CoreException {
+                IResource resource = subdelta.getResource();
+                if (resource.getType() == IResource.FILE || resource.getType() == IResource.FOLDER) {
+                        int kind = subdelta.getKind();
+                        switch (kind) {
+                            case IResourceDelta.ADDED :
+                            case IResourceDelta.CHANGED :
+                                addChangedResourceIfLeaf(resource, subdelta);
+                                break;
+                            case IResourceDelta.REMOVED :
+                               // deleteCorrespondingFile((IFile) resource, classesFolder, outputFolder, monitor);
+                                break;
+                            case IResourceDelta.ADDED_PHANTOM :
+                                break;
+                            case IResourceDelta.REMOVED_PHANTOM :
+                                break;
+                        }
+                }
+                return true;
+            }
+
+            private void addChangedResourceIfLeaf(IResource file, IResourceDelta delta) {
+                IResourceDelta[] children = delta.getAffectedChildren();
+                if(children == null || children.length == 0)
+                    changedResources.add(file);
+            }
+        };
+        if (delta != null) {
+            try {
+                delta.accept(visitor);
+            } catch (CoreException e) {
+                // should not happen
+            }
+        }
     }
 
     protected void clean(IProgressMonitor monitor) throws CoreException {
@@ -98,7 +159,10 @@ public class ComponentStructuralBuilder extends IncrementalProjectBuilder implem
         Resource targetResource = ((Workspace) ResourcesPlugin.getWorkspace()).newResource(absoluteOutputContainer, sourceResource.getType());
         if (!targetResource.exists()) {
             sourceResource.copy(absoluteOutputContainer, true, monitor);
-        } else if (sourceResource.getType() == Resource.FOLDER) {
+        } else if (resourceHasChanged(sourceResource)){
+            targetResource.delete(IResource.FORCE, monitor);
+            sourceResource.copy(absoluteOutputContainer, true, monitor);            
+        }  else if (sourceResource.getType() == Resource.FOLDER) {
             IFolder folder = (IFolder) sourceResource;
             IResource[] members = folder.members();
             for (int i = 0; i < members.length; i++) {
@@ -107,5 +171,13 @@ public class ComponentStructuralBuilder extends IncrementalProjectBuilder implem
         } else {
             //TODO present a warning to the user about duplicate resources
         }
+    }
+
+    private static boolean resourceHasChanged(IResource targetResource) {
+        for(int i = 0; i<changedResources.size(); i++){
+            if(targetResource.equals(changedResources.get(i)))
+                return true;
+        }
+        return false;
     }
 }
