@@ -11,6 +11,9 @@
 package org.eclipse.wst.common.componentcore.internal.resources;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.wst.common.componentcore.StructureEdit;
+import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 
 public class ComponentHandle {
 	
@@ -35,6 +38,26 @@ public class ComponentHandle {
 
 	public static ComponentHandle create(IProject aProject, String aComponentName) {
 		return new ComponentHandle(aProject, aComponentName);
+	}
+	
+	public static ComponentHandle create(IProject aContext, URI aComponentURI) {
+		IProject componentProject = null;
+		String componentName = null;
+		if(aComponentURI == null)
+			return null;
+		if(aComponentURI.segmentCount() == 1) {
+			componentProject = aContext;
+			componentName = aComponentURI.segment(0);
+		} else {
+			try {
+				componentProject  = StructureEdit.getContainingProject(aComponentURI);
+				componentName = StructureEdit.getDeployedName(aComponentURI);
+			} catch (UnresolveableURIException e) {
+				return null;
+			}
+		}
+		
+		return new ComponentHandle(componentProject, componentName);
 	}
 	
 	public String toString() {

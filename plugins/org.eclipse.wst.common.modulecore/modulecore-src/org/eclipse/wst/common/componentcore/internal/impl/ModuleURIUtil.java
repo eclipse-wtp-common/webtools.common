@@ -16,6 +16,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.componentcore.StructureEdit;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.internal.resources.ComponentHandle;
 
 /**
  * 
@@ -150,5 +151,9 @@ public class ModuleURIUtil {
 
 	public static URI fullyQualifyURI(IProject aProject, String aComponentName) {
 		return URI.createURI(RESOURCE_URI_PROTOCOL + aProject.getName() + IPath.SEPARATOR + aComponentName);
+	}
+
+	public static URI fullyQualifyURI(ComponentHandle aHandle) {
+		return fullyQualifyURI(aHandle.getProject(), aHandle.getName());
 	}
 }

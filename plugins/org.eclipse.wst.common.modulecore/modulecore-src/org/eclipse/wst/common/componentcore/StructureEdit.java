@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.ComponentType;
 import org.eclipse.wst.common.componentcore.internal.ComponentcoreFactory;
@@ -35,6 +34,7 @@ import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.internal.impl.PlatformURLModuleConnection;
+import org.eclipse.wst.common.componentcore.internal.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.internal.util.EclipseResourceAdapter;
 import org.eclipse.wst.common.componentcore.resources.IVirtualContainer;
 
@@ -731,6 +731,33 @@ public class StructureEdit implements IEditModelHandler {
 		if (results.size() == 0)
 			return NO_MODULES;
 		return (WorkbenchComponent[]) results.toArray(new WorkbenchComponent[results.size()]);
+	}
+	
+	/**
+	 * Find and return the ReferencedComponent that represents the depedency from aComponent to aReferencedComponent.
+	 * <p>This method could return null.</p>
+	 * @param aComponent
+	 * @param aReferencedComponent
+	 * @return
+	 */
+	public ReferencedComponent findReferencedComponent(WorkbenchComponent aComponent, WorkbenchComponent aReferencedComponent) {
+		if(aComponent == null || aReferencedComponent == null)
+			return null;
+		
+		IProject containingProject = getContainingProject(aComponent);
+		IProject referencedProject = getContainingProject(aReferencedComponent);
+		
+		EList referencedComponents = aComponent.getReferencedComponents();
+		 
+		for (Iterator iter = referencedComponents.iterator(); iter.hasNext();) {
+			ReferencedComponent referencedComponent = (ReferencedComponent) iter.next();
+			ComponentHandle referencedHandle = ComponentHandle.create(containingProject, referencedComponent.getHandle());
+			if(referencedProject.equals(referencedHandle.getProject()) && 
+				aReferencedComponent.getName().equals(referencedHandle.getName())) 
+				return referencedComponent;			
+			
+		}
+		return null;
 	}
 
 	/**
