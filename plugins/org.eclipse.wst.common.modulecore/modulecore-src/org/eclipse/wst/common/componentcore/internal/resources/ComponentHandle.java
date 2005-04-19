@@ -48,5 +48,17 @@ public class ComponentHandle {
 			hashCode = toString().hashCode();
 		return hashCode;
 	}
+	
+	public boolean equals(Object obj) {
+		if(obj instanceof ComponentHandle) {
+			ComponentHandle other = (ComponentHandle) obj;
+			return getProject().equals(other.getProject()) && 
+					( (getName() == null && other.getName() == null) || 
+						getName().equals(other.getName())
+					);
+		}
+		return false;
+	}
+	
 
 }
