@@ -72,10 +72,10 @@ public class ComponentStructuralBuilder extends IncrementalProjectBuilder implem
         try {
             moduleCore = StructureEdit.getStructureEditForRead(getProject());
             builderDataModel.setProperty(COMPONENT_CORE, moduleCore);
+            builderDataModel.setIntProperty(BUILD_KIND, kind);
             builderDataModel.setProperty(PROJECT, getProject());
             builderDataModel.setProperty(PROJECT_DETLA, buildDelta);
-            //TODO: implement incremental builds
-            // dataModel.setProperty(DeployableModuleProjectBuilderDataModel.BUILD_KIND;
+            builderDataModel.setProperty(CHANGED_RESOURCES_DELTA, changedResources);
             IUndoableOperation op = builderDataModel.getDefaultOperation();
             if (op != null)
                 op.execute(monitor, null);

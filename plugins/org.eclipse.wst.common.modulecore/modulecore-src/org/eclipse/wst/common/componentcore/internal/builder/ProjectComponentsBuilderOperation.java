@@ -43,12 +43,19 @@ public class ProjectComponentsBuilderOperation extends AbstractDataModelOperatio
                 IDataModel moduleDM = (IDataModel)deployableModuleDM.get(i);
                 
                 List depModuleList = (List)moduleDM.getProperty(IWorkbenchComponentBuilderDataModelProperties.DEPENDENT_COMPONENT_DM_LIST);
+                IDataModel depModuleDM;
                 for(int j = 0; j < depModuleList.size(); j++){
-                	IDataModel depModuleDM = (IDataModel)depModuleList.get(j);
+                	depModuleDM = (IDataModel)depModuleList.get(j);
                 	ReferencedComponentBuilderDelayedDataModelCache.getInstance().addToCache(depModuleDM);
                 }
                 op = moduleDM.getDefaultOperation();
                 op.execute(monitor, null);
+            }
+            List additionalDepModels = (List)model.getProperty(ADDITIONAL_REFERENCED_BUILDER_DM_LIST);
+            IDataModel additionalDepModuleDM;
+            for(int k = 0; k < additionalDepModels.size(); k++) {
+                additionalDepModuleDM = (IDataModel)additionalDepModels.get(k);
+                ReferencedComponentBuilderDelayedDataModelCache.getInstance().addToCache(additionalDepModuleDM);
             }
         } catch (ExecutionException e) {
             Logger.getLogger().log(e.getMessage());

@@ -21,10 +21,12 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.wst.common.componentcore.StructureEdit;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IProjectComponentsBuilderDataModelProperties;
+import org.eclipse.wst.common.componentcore.datamodel.properties.IReferencedComponentBuilderDataModelProperties;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IWorkbenchComponentBuilderDataModelProperties;
 import org.eclipse.wst.common.componentcore.internal.ComponentType;
 import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
@@ -36,7 +38,12 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
      * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider#getPropertyNames()
      */
     public String[] getPropertyNames() {
-        return new String[]{PROJECT, BUILD_KIND, PROJECT_DETLA, COMPONENT_CORE, COMPONENT_BUILDER_DM_LIST};
+        return new String[]{PROJECT, BUILD_KIND, PROJECT_DETLA, CHANGED_RESOURCES_DELTA, ADDITIONAL_REFERENCED_BUILDER_DM_LIST, COMPONENT_CORE, COMPONENT_BUILDER_DM_LIST};
+    }
+    public void init() {
+        super.init();
+        model.setProperty(ADDITIONAL_REFERENCED_BUILDER_DM_LIST, new ArrayList());
+        model.setIntProperty(BUILD_KIND, IncrementalProjectBuilder.FULL_BUILD);
     }
 	/*
 	 * (non-Javadoc)
@@ -46,10 +53,10 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
 	 */
 	public boolean propertySet(String propertyName, Object propertyValue) {
 		if (PROJECT.equals(propertyName)) {
-
-			//TODO: remove for M4 when incremental build available
-			model.setProperty(BUILD_KIND, new Integer(IncrementalProjectBuilder.FULL_BUILD));
 			model.setProperty(COMPONENT_BUILDER_DM_LIST, populateModuleBuilderDataModelList());
+            if(((Integer)model.getProperty(BUILD_KIND)).intValue() == (IncrementalProjectBuilder.INCREMENTAL_BUILD)){
+                createAdditionalBuildersIfNecessary();
+            }
 		}
 		return true;
 	}
@@ -60,12 +67,15 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
 		//TODO: delta information should be taken into consideration
 		List moduleDMList = null;
 		switch (((Integer) model.getProperty(BUILD_KIND)).intValue()) {
-			case IncrementalProjectBuilder.FULL_BUILD :
+            case IncrementalProjectBuilder.CLEAN_BUILD :	
+            case IncrementalProjectBuilder.FULL_BUILD :
 				moduleDMList = populateFullModuleBuilderDataModelList();
+                populateDependencyCache();
 				break;
 			case IncrementalProjectBuilder.INCREMENTAL_BUILD :
 				moduleDMList = populateDeltaModuleBuilderDataModelList((ResourceDelta) getProperty(PROJECT_DETLA));
-				break;
+
+                break;
 			default :
 				moduleDMList = populateFullModuleBuilderDataModelList();
 				break;
@@ -73,7 +83,31 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
 		return moduleDMList;
 	}
 
-	/**
+    private void populateDependencyCache() {
+        // TODO Auto-generated method stub
+        
+    }
+    
+	private void createAdditionalBuildersIfNecessary() {
+        
+    }
+    
+    private void createAdditionalReferencedBuilders(WorkbenchComponent containingWBComponent, ReferencedComponent depComponent) {
+        List depModulesDataModels = (List)model.getProperty(ADDITIONAL_REFERENCED_BUILDER_DM_LIST);
+        IDataModel dependentDataModel = null;
+        StructureEdit moduleCore = (StructureEdit)model.getProperty(COMPONENT_CORE);
+        IProject project = (IProject)model.getProperty(PROJECT);
+        dependentDataModel = DataModelEnablementFactory.createDataModel(IModuleConstants.DEPENDENT_MODULE + ".builder", project);
+        if(dependentDataModel != null) {
+            dependentDataModel.setProperty(IReferencedComponentBuilderDataModelProperties.COMPONENT_CORE, moduleCore);
+            dependentDataModel.setProperty(IReferencedComponentBuilderDataModelProperties.CONTAINING_WB_COMPONENT, containingWBComponent);
+            dependentDataModel.setProperty(IReferencedComponentBuilderDataModelProperties.DEPENDENT_COMPONENT, depComponent);
+            depModulesDataModels.add(dependentDataModel);
+        }
+        model.setProperty(ADDITIONAL_REFERENCED_BUILDER_DM_LIST, dependentDataModel);
+    }
+
+    /**
 	 * Sorts the wbModules such that the returned list
 	 * 
 	 * @param wbModule

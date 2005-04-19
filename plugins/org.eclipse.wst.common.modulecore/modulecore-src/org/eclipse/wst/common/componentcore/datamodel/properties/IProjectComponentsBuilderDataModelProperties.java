@@ -57,6 +57,12 @@ public interface IProjectComponentsBuilderDataModelProperties extends IDataModel
 	 * @see org.eclipse.core.resources.IResourceDelta
 	 */
 	public static final String PROJECT_DETLA = "IProjectComponentsBuilderDataModelProperties.PROJECT_DETLA"; //$NON-NLS-1$
+    
+    /**
+     * Populatd, type List. The initializing builder will set this field to a List of changed resources as calculated via a resource walker of 
+     * IResouceDelta provided on the project via the project builder framework.  This list will be a list of IResources.
+     */
+    public static final String CHANGED_RESOURCES_DELTA = "IProjectComponentsBuilderDataModelProperties.CHANGED_RESOURCES_DELTA"; //$NON-NLS-1$
 
 	/**
 	 * Required, type ComponentCore. The initializing builder will set this field to the ModuleCore associated
@@ -66,6 +72,7 @@ public interface IProjectComponentsBuilderDataModelProperties extends IDataModel
 	 * @see org.eclipse.wst.common.componentcore.ComponentCore
 	 */
 	public static final String COMPONENT_CORE = "IProjectComponentsBuilderDataModelProperties.COMPONENT_CORE";
+
     /**
      * Populatd, type List. The initializing builder will set this field to a List of initialized ComponentStructuralBuilders.  
      * This field represents builder IDataModel for all components present in the current project.
@@ -73,5 +80,10 @@ public interface IProjectComponentsBuilderDataModelProperties extends IDataModel
      * @see WorkbenchComponentBuilderDataModelProvider
      */
 	public static final String COMPONENT_BUILDER_DM_LIST = "IProjectComponentsBuilderDataModelProperties.COMPONENT_BUILDER_DM_LIST"; //$NON-NLS-1$
+    /**
+     * Populatd, type List. The provider will populate this list of additional IDataModels for ReferencedComponentBjuilderDataModelProvider.  This list
+     * will handle all rebuilding that needs to be done during an incremental build. 
+     */
+    public static final String ADDITIONAL_REFERENCED_BUILDER_DM_LIST = "IProjectComponentsBuilderDataModelProperties.ADDITIONAL_DEPENDENT_BUILDER_DM_LIST"; //$NON-NLS-1$
 
 }
