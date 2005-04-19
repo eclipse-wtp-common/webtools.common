@@ -71,7 +71,7 @@ public class VirtualComponent extends VirtualContainer implements IVirtualCompon
 			core = StructureEdit.getStructureEditForRead(getProject());
 			WorkbenchComponent component = core.findComponentByName(getName()); 
 			ComponentType cType = component.getComponentType();
-			return cType.getComponentTypeId();
+			return cType != null ? cType.getComponentTypeId() : ""; 
 		} finally {
 			if(core != null)
 				core.dispose();
