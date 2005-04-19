@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -49,9 +48,9 @@ public class TestWorkspace {
 		
 		try {
 			IProject project = getTargetProject();
-			if (!project.exists())
-				createProject();
-			project.refreshLocal(IResource.DEPTH_INFINITE, null);
+			if (project.exists())
+				project.delete(true, true, null);
+			createProject(); 
 		} catch (CoreException e) { 
 			e.printStackTrace();
 		}

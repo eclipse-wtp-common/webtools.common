@@ -13,7 +13,8 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.etools.common.test.apitools.ProjectUnzipUtil;
 import org.eclipse.wst.common.componentcore.ComponentCore;
-import org.eclipse.wst.common.componentcore.internal.resources.VirtualContainer;
+import org.eclipse.wst.common.componentcore.internal.resources.VirtualComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.tests.CommonTestsPlugin;
 
 public class ComponentCoreTest extends TestCase {
@@ -93,7 +94,7 @@ public class ComponentCoreTest extends TestCase {
 	}
 
 	public void testCreateReference() {
-		VirtualContainer container = new VirtualContainer(project, "test", new Path("test/runtimePath/file"));
+		IVirtualComponent container = new VirtualComponent(project, "test", new Path("test/runtimePath/file"));
 		
 		try {
 			ComponentCore.createReference(container,container);

@@ -13,6 +13,7 @@ import java.util.zip.ZipFile;
 import org.eclipse.core.internal.resources.ProjectDescription;
 import org.eclipse.core.internal.resources.ProjectDescriptionReader;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -38,6 +39,7 @@ public class ProjectUnzipUtil {
 	public boolean createProjects() {
 		try {
 			expandZip();
+			ResourcesPlugin.getWorkspace().getRoot().refreshLocal(IResource.DEPTH_INFINITE, null);
 			buildProjects();
 		} catch (CoreException e) {
 			e.printStackTrace();

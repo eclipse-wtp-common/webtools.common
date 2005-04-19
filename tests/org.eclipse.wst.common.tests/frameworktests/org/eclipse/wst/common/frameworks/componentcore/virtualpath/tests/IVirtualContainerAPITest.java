@@ -53,9 +53,9 @@ public abstract class IVirtualContainerAPITest extends IVirtualResourceAPITest {
 
 	protected void assertRequirements() {
 		super.assertRequirements();
-		assertNotNull("The target virtual container must be specified.", targetVirtualContainer);
-		assertNotNull("The target platform container must be specified.", targetPlatformContainer);
-		assertNotNull("The expected platform container path must be specified.", expectedPlatformContainerPath);
+//		assertNotNull("The target virtual container must be specified.", targetVirtualContainer);
+//		assertNotNull("The target platform container must be specified.", targetPlatformContainer);
+//		assertNotNull("The expected platform container path must be specified.", expectedPlatformContainerPath);
 	}
 	
 
