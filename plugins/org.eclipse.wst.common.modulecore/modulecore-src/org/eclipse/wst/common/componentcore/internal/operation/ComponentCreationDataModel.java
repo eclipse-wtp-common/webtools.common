@@ -262,7 +262,11 @@ public abstract class ComponentCreationDataModel extends WTPOperationDataModel {
 	// To do: remove hard coded string being compared.
 	private static boolean matches(String serverTypeID, String j2eeModuleID) {
 
-		if (serverTypeID.equals("j2ee.*")) {
+		if (serverTypeID.equals("j2ee")) {
+			if (j2eeModuleID.equals(IModuleConstants.JST_WEB_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_EJB_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_EAR_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_APPCLIENT_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_CONNECTOR_MODULE)) {
+				return true;
+			}
+		}else if (serverTypeID.equals("j2ee.*")) {
 			if (j2eeModuleID.equals(IModuleConstants.JST_WEB_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_EJB_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_EAR_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_APPCLIENT_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_CONNECTOR_MODULE)) {
 				return true;
 			}
