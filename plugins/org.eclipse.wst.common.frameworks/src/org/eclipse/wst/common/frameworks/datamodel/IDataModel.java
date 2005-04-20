@@ -13,7 +13,6 @@ package org.eclipse.wst.common.frameworks.datamodel;
 import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IStatus;
 
 /**

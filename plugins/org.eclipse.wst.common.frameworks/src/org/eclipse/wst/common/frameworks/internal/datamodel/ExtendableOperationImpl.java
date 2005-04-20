@@ -13,7 +13,6 @@ import java.util.List;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoContext;
-import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -35,7 +34,7 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 
 	private IDataModelOperation rootOperation;
 	private List appendedOperations;
-	
+
 	private OperationStatus opStatus;
 
 	public ExtendableOperationImpl(IDataModelOperation rootOperation) {
@@ -72,14 +71,14 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 		}
 		opStatus.addExtendedStatus(aStatus);
 	}
-	
-	public void appendOperation(IDataModelOperation appendedOperation){
-		if(appendedOperations == null){
+
+	public void appendOperation(IDataModelOperation appendedOperation) {
+		if (appendedOperations == null) {
 			appendedOperations = new ArrayList(3);
 		}
 		appendedOperations.add(appendedOperation);
 	}
-	
+
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info) {
 		DMComposedExtendedOperationHolder extOpHolder = initializeExtensionOperations();
 		IStatus preOpStatus = runPreOps(monitor, extOpHolder, info);
@@ -97,21 +96,21 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 		if (null != postOpStatus) {
 			addExtendedStatus(postOpStatus);
 		}
-		if(appendedOperations != null){
+		if (appendedOperations != null) {
 			OperationStatus composedStatus = null;
-			for(int i=0;i<appendedOperations.size(); i++){
-				try{
-					ExtendableOperationImpl op = new ExtendableOperationImpl((IDataModelOperation)appendedOperations.get(i));
+			for (int i = 0; i < appendedOperations.size(); i++) {
+				try {
+					ExtendableOperationImpl op = new ExtendableOperationImpl((IDataModelOperation) appendedOperations.get(i));
 					IStatus status = op.execute(new SubProgressMonitor(monitor, 1, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK), info);
 					if (composedStatus == null)
 						composedStatus = new OperationStatus(new IStatus[]{status});
 					else
 						composedStatus.add(status);
-				} catch(Exception e){
+				} catch (Exception e) {
 					Logger.getLogger().logError(e);
 				}
 			}
-			if(null != composedStatus){
+			if (null != composedStatus) {
 				addStatus(composedStatus);
 			}
 		}
@@ -212,7 +211,6 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 
 	public void setID(String id) {
 		rootOperation.setID(id);
-		
 	}
 
 	public String getID() {
@@ -221,7 +219,6 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 
 	public void setDataModel(IDataModel model) {
 		rootOperation.setDataModel(model);
-		
 	}
 
 	public IDataModel getDataModel() {

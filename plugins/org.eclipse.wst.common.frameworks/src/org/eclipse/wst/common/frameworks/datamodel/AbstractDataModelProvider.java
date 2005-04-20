@@ -243,7 +243,7 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	 * 
 	 * @see IDataModel#getStringProperty(String)
 	 */
-	public final String getStringProperty(String propertyName) {
+	protected final String getStringProperty(String propertyName) {
 		return model.getStringProperty(propertyName);
 	}
 
