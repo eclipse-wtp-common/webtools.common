@@ -442,6 +442,12 @@ public class ArtifactEditTest extends TestCase {
 		assertTrue(edit.hasEditModel(artifactEditModelForRead));
 		edit.dispose();
 	}
+	public void testGetComponentHandle() {
+
+		ArtifactEdit edit = getArtifactEditForRead();
+		assertTrue(edit.getComponentHandle() != null);
+		edit.dispose();
+	}
 
 	public void testGetArtifactEditModel() {
 		ArtifactEdit edit = getArtifactEditForRead();
