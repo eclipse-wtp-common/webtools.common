@@ -456,7 +456,7 @@ public class ArtifactEdit implements IEditModelHandler {
 		return artifactEditModel.getCommandStack();
 	}
 	/**
-	 * @return The EMF command stack managed by the underlying editmodel
+	 * @return The isDirty flag based the underlying editmodel's list of resources.
 	 */
 	public boolean isDirty() {
 		return artifactEditModel.isDirty();
