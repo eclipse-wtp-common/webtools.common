@@ -15,6 +15,7 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.wst.validation.internal.RegistryConstants;
+import org.eclipse.wst.validation.internal.provisional.core.IValidationContext;
 
 
 /**
@@ -117,18 +118,22 @@ public class EnabledValidatorsOperation extends ValidatorSubsetOperation {
 	 * validators will run in in the main thread.
 	 */
 	protected EnabledValidatorsOperation(IProject project, Set enabledValidators, boolean async) {
-		this(project, enabledValidators, RegistryConstants.ATT_RULE_GROUP_DEFAULT, DEFAULT_FORCE, async); // true
-		// =
-		// force
-		// validation
-		// to
-		// run
-		// whether
-		// or
-		// not
-		// auto-validate
-		// is
-		// on
+		this(project, enabledValidators, RegistryConstants.ATT_RULE_GROUP_DEFAULT, DEFAULT_FORCE, async); 
+		// true = force validation to run whether or not auto-validate is on
+	}
+	
+	/**
+	 * Run the identified validators on the project.
+	 * 
+	 * IProject must exist and be open.
+	 * 
+	 * If async is true, the validation will run all thread-safe validators in the background
+	 * validation thread, and all other validators in the main thread. If async is false, all
+	 * validators will run in in the main thread.
+	 */
+	protected EnabledValidatorsOperation(IProject project,IWorkbenchContext aWorkbenchContext, Set enabledValidators, boolean async) {
+		this(project,aWorkbenchContext, enabledValidators, RegistryConstants.ATT_RULE_GROUP_DEFAULT, DEFAULT_FORCE, async); 
+		// true = force validation to run whether or not auto-validate is on
 	}
 
 	/**

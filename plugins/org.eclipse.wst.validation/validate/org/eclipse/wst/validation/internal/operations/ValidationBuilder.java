@@ -78,8 +78,10 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 	}
 	
 	public IWorkbenchContext getWorkbenchContext() {
-		if(workbenchContext == null)
+		if(workbenchContext == null) {
 			workbenchContext = new WorkbenchContext();
+			workbenchContext.setProject(getProject());
+		}
 		return workbenchContext;
 	}
 
@@ -256,7 +258,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 		ValidatorMetaData[] enabledValidators = prjp.getEnabledFullBuildValidators(true, onlyDependentValidators);
 		if ((enabledValidators != null) && (enabledValidators.length > 0)) {
 			Set enabledValidatorsSet = InternalValidatorManager.wrapInSet(enabledValidators);
-			EnabledValidatorsOperation op = new EnabledValidatorsOperation(getProject(), enabledValidatorsSet, prjp.runAsync());
+			EnabledValidatorsOperation op = new EnabledValidatorsOperation(getProject(),getWorkbenchContext(),enabledValidatorsSet, prjp.runAsync());
 			op.run(monitor);
 		}
 	}
