@@ -6,6 +6,7 @@ import java.net.URL;
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -98,6 +99,15 @@ public class ComponentCoreTest extends TestCase {
 		
 		try {
 			ComponentCore.createReference(container,container);
+		} catch (Exception e) {
+			fail(e.toString());
+		};
+	}
+	public void testCreateResources() {
+		IResource res = project.getFile(new Path("WebModule1/WebContent/WEB-INF/web.xml"));
+		
+		try {
+			ComponentCore.createResources(res);
 		} catch (Exception e) {
 			fail(e.toString());
 		};
