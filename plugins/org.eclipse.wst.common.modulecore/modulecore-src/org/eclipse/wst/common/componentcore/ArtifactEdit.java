@@ -58,7 +58,6 @@ public class ArtifactEdit implements IEditModelHandler {
 	private final ArtifactEditModel artifactEditModel;
 	private boolean isReadOnly;
 	private boolean isArtifactEditModelSelfManaged;
-	protected WorkbenchComponent module;
 
 	/**
 	 * <p>
@@ -433,6 +432,14 @@ public class ArtifactEdit implements IEditModelHandler {
 	 */
 	public boolean hasEditModel(EditModel editModel) {
 		return artifactEditModel == editModel;
+	}
+	/**
+	 * 
+	 * @return ComponentHandle - returns the handle of the underlying workbench component.
+	 */
+	public ComponentHandle getComponentHandle() {
+		
+		return getArtifactEditModel().getComponentHandle();
 	}
 
 	/**

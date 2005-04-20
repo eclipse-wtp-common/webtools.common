@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.wst.common.componentcore.StructureEdit;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.impl.PlatformURLModuleConnection;
+import org.eclipse.wst.common.componentcore.internal.resources.ComponentHandle;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 
@@ -164,6 +165,16 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 				moduleCore.dispose();
 		}
 		return type;
+	}
+	public ComponentHandle getComponentHandle() {
+		ComponentHandle handle = null;
+		try {
+			handle = ComponentHandle.create(StructureEdit.getContainingProject(moduleURI),moduleURI);
+		} catch (UnresolveableURIException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return handle;
 	}
 
 	public URI getModuleURI() {
