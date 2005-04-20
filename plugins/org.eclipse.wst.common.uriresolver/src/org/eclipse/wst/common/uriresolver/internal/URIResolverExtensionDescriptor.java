@@ -32,16 +32,18 @@ public class URIResolverExtensionDescriptor
 	public List projectNatureIds;
 	protected String resourceType;
 	protected int stage = URIResolverExtensionRegistry.STAGE_POSTNORMALIZATION;
+  protected String priority = URIResolverExtensionRegistry.PRIORITY_MEDIUM;
 	protected ClassLoader classLoader;
 	protected boolean error;
 
-	public URIResolverExtensionDescriptor(String className, ClassLoader classLoader, List projectNatureIds, String resourceType, int stage)
+	public URIResolverExtensionDescriptor(String className, ClassLoader classLoader, List projectNatureIds, String resourceType, int stage, String priority)
 	{
 		this.className = className;
 		this.classLoader = classLoader;
 		this.projectNatureIds = projectNatureIds;
 		this.resourceType = resourceType;
 		this.stage = stage;
+    this.priority = priority;
 	}
 
 	public URIResolverExtension getResolver()

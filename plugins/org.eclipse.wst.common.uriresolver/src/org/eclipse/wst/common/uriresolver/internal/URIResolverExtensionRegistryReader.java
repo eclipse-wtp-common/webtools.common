@@ -39,6 +39,7 @@ public class URIResolverExtensionRegistryReader {
 	    protected static final String VAL_STAGE_PRE = "prenormalization";
 	    protected static final String VAL_STAGE_POST = "postnormalization";
 	    protected static final String ATT_VALUE = "value";
+      protected static final String ATT_PRIORITY = "priority";
 	   
 
 		protected URIResolverExtensionRegistry registry;
@@ -75,6 +76,11 @@ public class URIResolverExtensionRegistryReader {
 				//String projectNatureId = element.getAttribute(ATT_PROJECT_NATURE_ID);
 				String resourceType = element.getAttribute(ATT_RESOURCE_TYPE);
 				String stage = element.getAttribute(ATT_STAGE);	
+        String priority = element.getAttribute(ATT_PRIORITY); 
+        if(priority == null || priority.equals(""))
+        {
+          priority = URIResolverExtensionRegistry.PRIORITY_MEDIUM;
+        }
 				List projectNatureIds = new ArrayList();
 				IConfigurationElement[] ids = element.getChildren(ELEM_PROJECT_NATURE_ID);
 				int numids = ids.length;
@@ -95,7 +101,7 @@ public class URIResolverExtensionRegistryReader {
 						{
 						  stageint = URIResolverExtensionRegistry.STAGE_PRENORMALIZATION;
 						}
-						registry.put(className, classLoader, projectNatureIds, resourceType, stageint);
+						registry.put(className, classLoader, projectNatureIds, resourceType, stageint, priority);
 					} catch (Exception e) {
 					}
 				}

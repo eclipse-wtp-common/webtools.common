@@ -19,7 +19,6 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.wst.common.uriresolver.URIResolverExtension;
 
 
 
@@ -27,31 +26,44 @@ public class URIResolverExtensionRegistry {
 	protected HashMap map = new HashMap();
 	public static final int STAGE_PRENORMALIZATION = 1;
 	public static final int STAGE_POSTNORMALIZATION = 2;	
+  public static final String PRIORITY_LOW = "low";
+  public static final String PRIORITY_MEDIUM = "medium";
+  public static final String PRIORITY_HIGH = "high";
 	protected final static String NULL_PROJECT_NATURE_ID = "";
 	
 	public URIResolverExtensionRegistry() {
 	}
 
-	public void put(String className, ClassLoader classLoader, List projectNatureIds, String resourceType, int stage) {
+	public void put(String className, ClassLoader classLoader, List projectNatureIds, String resourceType, int stage, String priority) {
 		if(projectNatureIds == null)
 		  projectNatureIds = new ArrayList();
 		if(projectNatureIds.isEmpty())
 		{
 		  projectNatureIds.add(NULL_PROJECT_NATURE_ID);
 		}
-		URIResolverExtensionDescriptor info = new URIResolverExtensionDescriptor(className, classLoader, projectNatureIds, resourceType, stage);
+		URIResolverExtensionDescriptor info = new URIResolverExtensionDescriptor(className, classLoader, projectNatureIds, resourceType, stage, priority);
 		
 		Iterator idsIter = projectNatureIds.iterator();
 		while(idsIter.hasNext())
 		{
 		  String key = (String)idsIter.next();
 		  
-		  List list = (List)map.get(key);   
-		  if (list == null)
-		  {			
-			list = new ArrayList();
-			map.put(key, list);
-		  }
+      HashMap priorityMap = (HashMap)map.get(key);
+      if(priorityMap == null)
+      {
+        priorityMap = new HashMap();
+        map.put(key, priorityMap);
+        priorityMap.put(PRIORITY_HIGH, new ArrayList());
+        priorityMap.put(PRIORITY_MEDIUM, new ArrayList());
+        priorityMap.put(PRIORITY_LOW, new ArrayList());
+      }
+      List list = (List)priorityMap.get(priority);
+		  //List list = (List)map.get(key);   
+//		  if (list == null)
+//		  {			
+//			list = new ArrayList();
+//			priorityMap.put(priority, list);
+//		  }
 		
 		  list.add(info);	
 		}
@@ -59,7 +71,8 @@ public class URIResolverExtensionRegistry {
 	
 	
 	/**
-	 * Return a list of URIResolverExtensionDescriptor objects that apply to this project.
+	 * Return a list of URIResolverExtensionDescriptor objects that apply to this project. The list
+   * is in the priority order high, medium, low.
 	 * 
 	 */
 	public List getExtensionDescriptors(IProject project)
@@ -73,7 +86,9 @@ public class URIResolverExtensionRegistry {
 				    project == null ||
 					project.hasNature(key))
 				{				
-					result.addAll((List)map.get(key)); 
+					result.addAll((List)((HashMap)map.get(key)).get(PRIORITY_HIGH)); 
+          result.addAll((List)((HashMap)map.get(key)).get(PRIORITY_MEDIUM)); 
+          result.addAll((List)((HashMap)map.get(key)).get(PRIORITY_LOW)); 
 				}	
 			}
 			catch (CoreException e)
@@ -103,10 +118,10 @@ public class URIResolverExtensionRegistry {
 		return result;
 	}	
 
-	public URIResolverExtension get(String key) {
-		URIResolverExtensionDescriptor info = (URIResolverExtensionDescriptor) map.get(key);
-		return info != null ? info.getResolver() : null;
-	}
+//	public URIResolverExtension get(String key) {
+//		URIResolverExtensionDescriptor info = (URIResolverExtensionDescriptor) map.get(key);
+//		return info != null ? info.getResolver() : null;
+//	}
 
 
 	
