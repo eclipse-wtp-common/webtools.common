@@ -455,6 +455,12 @@ public class ArtifactEdit implements IEditModelHandler {
 	public CommandStack getCommandStack() {
 		return artifactEditModel.getCommandStack();
 	}
+	/**
+	 * @return The EMF command stack managed by the underlying editmodel
+	 */
+	public boolean isDirty() {
+		return artifactEditModel.isDirty();
+	}
 
 	private void throwAttemptedReadOnlyModification() {
 		throw new IllegalStateException("Attempt to modify an ArtifactEdit instance facade that was loaded as read-only.");
