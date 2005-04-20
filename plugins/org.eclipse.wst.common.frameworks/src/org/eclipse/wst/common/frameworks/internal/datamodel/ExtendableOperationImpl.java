@@ -31,7 +31,7 @@ import org.eclipse.wst.common.frameworks.internal.operations.DMOperationExtensio
 import org.eclipse.wst.common.frameworks.internal.operations.OperationStatus;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
-public final class ExtendableOperationImpl implements IUndoableOperation {
+public final class ExtendableOperationImpl implements IDataModelOperation {
 
 	private IDataModelOperation rootOperation;
 	private List appendedOperations;
@@ -208,5 +208,23 @@ public final class ExtendableOperationImpl implements IUndoableOperation {
 
 	public void removeContext(IUndoContext context) {
 		rootOperation.removeContext(context);
+	}
+
+	public void setID(String id) {
+		rootOperation.setID(id);
+		
+	}
+
+	public String getID() {
+		return rootOperation.getID();
+	}
+
+	public void setDataModel(IDataModel model) {
+		rootOperation.setDataModel(model);
+		
+	}
+
+	public IDataModel getDataModel() {
+		return rootOperation.getDataModel();
 	}
 }

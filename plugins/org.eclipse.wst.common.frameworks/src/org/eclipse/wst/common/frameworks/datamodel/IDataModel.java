@@ -93,7 +93,7 @@ public interface IDataModel {
 	 * 
 	 * @return
 	 */
-	public IUndoableOperation getDefaultOperation();
+	public IDataModelOperation getDefaultOperation();
 
 	public List getExtendedContext();
 
