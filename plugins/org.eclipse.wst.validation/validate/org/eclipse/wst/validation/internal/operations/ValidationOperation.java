@@ -935,10 +935,12 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	private void initValidateContext(IProject project, IFileDelta[] delta) {
 		 if (context instanceof WorkbenchContext) {
 			 ((WorkbenchContext)context).setProject(project);
+			 ((WorkbenchContext)context).setValidationFileURIs(new ArrayList());
 			 for(int i = 0; i < delta.length; i++) {
 				 IFileDelta file = (IFileDelta)delta[i];
-				 if(file.getDeltaType() != IFileDelta.DELETED )
+				 if(file.getDeltaType() != IFileDelta.DELETED ) {
 					 ((WorkbenchContext)context).getValidationFileURIs().add(file.getFileName());
+				 }
 			 } 
 		}
 	}

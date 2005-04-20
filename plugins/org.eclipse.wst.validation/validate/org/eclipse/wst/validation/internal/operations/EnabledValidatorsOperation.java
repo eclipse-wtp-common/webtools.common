@@ -15,7 +15,6 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.wst.validation.internal.RegistryConstants;
-import org.eclipse.wst.validation.internal.provisional.core.IValidationContext;
 
 
 /**
