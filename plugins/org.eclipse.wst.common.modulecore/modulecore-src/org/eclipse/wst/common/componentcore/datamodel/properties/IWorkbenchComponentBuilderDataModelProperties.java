@@ -62,4 +62,19 @@ public interface IWorkbenchComponentBuilderDataModelProperties extends IDataMode
      * @see org.eclipse.wst.common.componentcore.ComponentCore
      */
 	public static final String COMPONENT_CORE = "IWorkbenchComponentBuilderDataModelProperties.COMPONENT_CORE";
+    /**
+     * Required, type Integer. The initializing builder will set this field to the int value based on the build
+     * kind passed to the IncrementalProjectBuilder
+     * 
+     * @see IncrementalProjectBuilder.FULL_BUILD
+     * <li><code>FULL_BUILD</code>- indicates a full build.</li>
+     * 
+     * @see IncrementalProjectBuilder.INCREMENTAL_BUILD
+     * <li><code>INCREMENTAL_BUILD</code>- indicates an incremental build.</li>
+     * 
+     * @see IncrementalProjectBuilder.AUTO_BUILD
+     * <li><code>AUTO_BUILD</code>- indicates an automatically triggered
+     */
+    public static final String BUILD_KIND_FOR_DEP = "IWorkbenchComponentBuilderDataModelProperties.BUILD_KIND_FOR_DEP"; //$NON-NLS-1$
+    
 }

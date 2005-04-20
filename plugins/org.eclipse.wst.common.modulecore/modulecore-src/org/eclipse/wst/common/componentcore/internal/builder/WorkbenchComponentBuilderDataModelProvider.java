@@ -15,10 +15,15 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.componentcore.StructureEdit;
+import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IReferencedComponentBuilderDataModelProperties;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IWorkbenchComponentBuilderDataModelProperties;
+import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.internal.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
@@ -31,7 +36,7 @@ public abstract class WorkbenchComponentBuilderDataModelProvider extends Abstrac
      * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider#getPropertyNames()
      */
     public String[] getPropertyNames() {
-        return new String[]{PROJECT, OUTPUT_CONTAINER, PROJECT, WORKBENCH_COMPONENT, DEPENDENT_COMPONENT_DM_LIST, COMPONENT_CORE};
+        return new String[]{PROJECT, OUTPUT_CONTAINER, PROJECT, WORKBENCH_COMPONENT, DEPENDENT_COMPONENT_DM_LIST, COMPONENT_CORE, BUILD_KIND_FOR_DEP};
     }
     /* (non-Javadoc)
      * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#doSetProperty(java.lang.String, java.lang.Object)
@@ -40,8 +45,40 @@ public abstract class WorkbenchComponentBuilderDataModelProvider extends Abstrac
         if(propertyName.equals(WORKBENCH_COMPONENT)) {
         	model.setProperty(OUTPUT_CONTAINER, populateOutputContainer());
         	model.setProperty(DEPENDENT_COMPONENT_DM_LIST, populateDependentModulesDM());
-        }
+            if(model.isPropertySet(BUILD_KIND_FOR_DEP))
+                updateDepGraphIfNecessary();
+        } else if(propertyName.equals(BUILD_KIND_FOR_DEP) && model.isPropertySet(WORKBENCH_COMPONENT)) {
+            updateDepGraphIfNecessary();
+        } 
         return true;
+    }
+
+    private void updateDepGraphIfNecessary() {
+        if(model.getIntProperty(BUILD_KIND_FOR_DEP) != IncrementalProjectBuilder.INCREMENTAL_BUILD) {
+            ComponentHandle componentHandle;
+            ComponentHandle refComponentHandle;
+            IProject project = null;
+            
+            IProject refProject = (IProject)model.getProperty(PROJECT);
+            WorkbenchComponent wbModule = (WorkbenchComponent)model.getProperty(WORKBENCH_COMPONENT);
+            List depModules = wbModule.getReferencedComponents();
+            
+            for(int i = 0; i<depModules.size(); i++){
+                project = null;
+                refComponentHandle = ComponentHandle.create(refProject, wbModule.getName());
+                
+                try {
+                    project = StructureEdit.getContainingProject(((ReferencedComponent)depModules.get(i)).getHandle());
+                } catch (UnresolveableURIException e) {
+                    Logger.getLogger().log(e.getMessage());
+                }
+                
+                if(project != null) {
+                    componentHandle = ComponentHandle.create(project, ((ReferencedComponent)depModules.get(i)).getHandle());
+                    DependencyGraph.getInstance().addReference(componentHandle, refComponentHandle);
+                }
+            }
+        }
     }
 
     private Object populateDependentModulesDM() {

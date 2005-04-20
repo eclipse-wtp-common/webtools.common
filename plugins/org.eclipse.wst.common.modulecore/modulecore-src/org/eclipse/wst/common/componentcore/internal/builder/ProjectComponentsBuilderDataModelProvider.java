@@ -16,8 +16,10 @@ import java.util.Stack;
 
 import org.eclipse.core.internal.events.ResourceDelta;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.StructureEdit;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IProjectComponentsBuilderDataModelProperties;
@@ -26,7 +28,10 @@ import org.eclipse.wst.common.componentcore.datamodel.properties.IWorkbenchCompo
 import org.eclipse.wst.common.componentcore.internal.ComponentType;
 import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.internal.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
+import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
@@ -54,7 +59,7 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
 	public boolean propertySet(String propertyName, Object propertyValue) {
 		if (PROJECT.equals(propertyName)) {
 			model.setProperty(COMPONENT_BUILDER_DM_LIST, populateModuleBuilderDataModelList());
-            if(((Integer)model.getProperty(BUILD_KIND)).intValue() == (IncrementalProjectBuilder.INCREMENTAL_BUILD)){
+            if(model.getIntProperty(BUILD_KIND) == (IncrementalProjectBuilder.INCREMENTAL_BUILD) && model.isPropertySet(CHANGED_RESOURCES_DELTA)){
                 createAdditionalBuildersIfNecessary();
             }
 		}
@@ -64,17 +69,14 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
 	 * @return
 	 */
 	private Object populateModuleBuilderDataModelList() {
-		//TODO: delta information should be taken into consideration
 		List moduleDMList = null;
-		switch (((Integer) model.getProperty(BUILD_KIND)).intValue()) {
+		switch (model.getIntProperty(BUILD_KIND)) {
             case IncrementalProjectBuilder.CLEAN_BUILD :	
             case IncrementalProjectBuilder.FULL_BUILD :
 				moduleDMList = populateFullModuleBuilderDataModelList();
-                populateDependencyCache();
 				break;
 			case IncrementalProjectBuilder.INCREMENTAL_BUILD :
 				moduleDMList = populateDeltaModuleBuilderDataModelList((ResourceDelta) getProperty(PROJECT_DETLA));
-
                 break;
 			default :
 				moduleDMList = populateFullModuleBuilderDataModelList();
@@ -82,16 +84,41 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
 		}
 		return moduleDMList;
 	}
-
-    private void populateDependencyCache() {
-        // TODO Auto-generated method stub
-        
-    }
     
 	private void createAdditionalBuildersIfNecessary() {
-        
+        List deltaResources = (List)model.getProperty(CHANGED_RESOURCES_DELTA);
+        IVirtualResource[] vResources = null;
+        for(int i = 0; i<deltaResources.size(); i++) {
+            vResources = ComponentCore.createResources((IResource)deltaResources.get(i));
+            createAdditionalBuildersForVResoures(vResources);
+        }
     }
     
+    private void createAdditionalBuildersForVResoures(IVirtualResource[] resources) {
+        IVirtualComponent vReferencedComponent;
+        IProject project;
+        ComponentHandle referencedComponentHandle;
+        ComponentHandle[] referencingComponentHandles;
+        for (int i = 0; i < resources.length; i++) {
+            vReferencedComponent = resources[i].getComponent();
+            referencedComponentHandle = ComponentHandle.create(vReferencedComponent.getProject(), vReferencedComponent.getName());
+            referencingComponentHandles = DependencyGraph.getInstance().getReferencingComponents(referencedComponentHandle);
+            for (int j = 0; j < referencingComponentHandles.length; j++) {
+                StructureEdit sEdit = null;
+                try {
+                    sEdit = StructureEdit.getStructureEditForRead(vReferencedComponent.getProject());
+                    WorkbenchComponent referencedWBComponent = sEdit.findComponentByName(referencedComponentHandle.getName());
+                    WorkbenchComponent referencingWBComponent = sEdit.findComponentByName(referencingComponentHandles[j].getName());
+                    ReferencedComponent referencedComponent = sEdit.findReferencedComponent(referencingWBComponent, referencedWBComponent);
+                    createAdditionalReferencedBuilders(referencingWBComponent, referencedComponent);
+                } finally {
+                    if(sEdit != null)
+                        sEdit.dispose();
+                    sEdit = null;
+                }
+            }        
+        }
+    }
     private void createAdditionalReferencedBuilders(WorkbenchComponent containingWBComponent, ReferencedComponent depComponent) {
         List depModulesDataModels = (List)model.getProperty(ADDITIONAL_REFERENCED_BUILDER_DM_LIST);
         IDataModel dependentDataModel = null;
@@ -198,6 +225,7 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
             builderType = typeId + ".builder";
 			dataModel = DataModelEnablementFactory.createDataModel(builderType, curProject);
             if(dataModel != null) {
+                dataModel.setProperty(IWorkbenchComponentBuilderDataModelProperties.BUILD_KIND_FOR_DEP, model.getProperty(BUILD_KIND));
     			dataModel.setProperty(IWorkbenchComponentBuilderDataModelProperties.COMPONENT_CORE, moduleCore);
     			dataModel.setProperty(IWorkbenchComponentBuilderDataModelProperties.PROJECT, model.getProperty(PROJECT));
     			dataModel.setProperty(IWorkbenchComponentBuilderDataModelProperties.WORKBENCH_COMPONENT, wbComponent);
