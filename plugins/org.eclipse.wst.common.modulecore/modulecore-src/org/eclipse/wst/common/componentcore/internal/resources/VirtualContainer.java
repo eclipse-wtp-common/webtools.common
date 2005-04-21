@@ -136,7 +136,7 @@ public class VirtualContainer extends VirtualResource implements IVirtualContain
 	public IVirtualResource[] members(int memberFlags) throws CoreException {
 
 		StructureEdit moduleCore = null;
-		Set virtualResources = null;
+		Set virtualResources = new HashSet();
 		try {
 
 			moduleCore = StructureEdit.getStructureEditForRead(getComponentHandle().getProject());
@@ -144,7 +144,7 @@ public class VirtualContainer extends VirtualResource implements IVirtualContain
 			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
 			ComponentResource[] componentResources = root.findModuleResources(getRuntimePath(), false);
 
-			virtualResources = new HashSet();
+			
 			IResource realResource = null;
 			IPath fullRuntimePath = null;
 			IPath newRuntimePath = null;
@@ -179,7 +179,10 @@ public class VirtualContainer extends VirtualResource implements IVirtualContain
 
 			}
 
-		} finally {
+		}catch(Exception e){
+			if (virtualResources == null)
+				return new IVirtualResource[0];			
+		}finally {
 			if (moduleCore != null)
 				moduleCore.dispose();
 		}

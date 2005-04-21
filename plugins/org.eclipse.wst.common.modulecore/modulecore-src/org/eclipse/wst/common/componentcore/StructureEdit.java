@@ -676,7 +676,7 @@ public class StructureEdit implements IEditModelHandler {
 	 * @see WorkbenchComponent#getDeployedName()
 	 */
 	public WorkbenchComponent findComponentByName(String aModuleName) {
-		return getComponentModelRoot().findWorkbenchModule(aModuleName);
+		return getComponentModelRoot() != null ? getComponentModelRoot().findWorkbenchModule(aModuleName) : null;
 	}
 
 	/**

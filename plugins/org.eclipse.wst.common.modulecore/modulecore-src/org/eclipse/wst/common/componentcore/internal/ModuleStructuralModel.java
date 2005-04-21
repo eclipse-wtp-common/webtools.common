@@ -58,7 +58,8 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	 * @see org.eclipse.wst.common.internal.emfworkbench.integration.EditModel#getPrimaryRootObject()
 	 */
 	public EObject getPrimaryRootObject() {
-		if(getPrimaryResource().getContents().size() == 0)
+		Resource res = getPrimaryResource();
+		if(res != null && res.getContents().size() == 0)
 			prepareProjectModulesIfNecessary();
 		return super.getPrimaryRootObject();
 	}
