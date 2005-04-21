@@ -24,6 +24,7 @@
       <import plugin="org.eclipse.emf.ecore.xmi"/>
       <import plugin="org.eclipse.wst.server.core"/>
       <import plugin="org.eclipse.core.commands"/>
+      <import plugin="org.eclipse.emf.edit"/>
    </requires>
 
    

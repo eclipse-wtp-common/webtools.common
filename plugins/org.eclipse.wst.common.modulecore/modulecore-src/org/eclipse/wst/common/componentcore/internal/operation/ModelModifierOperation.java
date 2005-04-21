@@ -14,7 +14,7 @@
  * To change the template for this generated file go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-package org.eclipse.wst.common.internal.emfworkbench.operation;
+package org.eclipse.wst.common.componentcore.internal.operation;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -27,19 +27,14 @@ import org.eclipse.emf.edit.domain.AdapterFactoryEditingDomain;
 import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.wst.common.internal.emfworkbench.integration.ModelModifier;
 
-
 /**
  * @author DABERG
  * 
  * To change the template for this generated type comment go to Window>Preferences>Java>Code
  * Generation>Code and Comments
  */
-public abstract class ModelModifierOperation extends EditModelOperation {
+public abstract class ModelModifierOperation extends ArtifactEditOperation {
 	protected ModelModifier modifier;
-
-	public ModelModifierOperation() {
-		//default constructor
-	}
 
 	/**
 	 * @param dataModel
@@ -95,7 +90,7 @@ public abstract class ModelModifierOperation extends EditModelOperation {
 			public void adaptAllNew(Notifier notifier) {
 				//do nothing
 			}
-		}, editModel.getCommandStack());
+		}, getArtifactEdit().getCommandStack());
 	}
 
 	/*
