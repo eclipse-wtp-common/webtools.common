@@ -124,8 +124,14 @@ public abstract class VirtualResource implements IVirtualResource {
 							IPath subpath = getRuntimePath().removeFirstSegments(potentialMatchRuntimePath.segmentCount());
 							IPath finalPath = sourcePath.append(subpath);
 							// already workspace relative
-							if(finalPath.segment(0).equals(getComponentHandle().getProject().getName())) {
-								return finalPath.removeFirstSegments(1);
+                            String projName = getComponentHandle().getProject().getName();
+							if(finalPath.segment(0).equals(projName)) {
+                                if(projName.equals(component.getName())){
+                                    if(finalPath.segment(1).equals(projName))
+                                        return finalPath.removeFirstSegments(1);    
+                                } else {
+                                    return finalPath.removeFirstSegments(1);
+                                }
 							} 
 							// make workspace relative
 							return finalPath;
