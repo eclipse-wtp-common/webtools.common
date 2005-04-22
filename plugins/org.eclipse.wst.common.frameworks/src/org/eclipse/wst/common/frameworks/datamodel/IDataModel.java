@@ -618,5 +618,7 @@ public interface IDataModel {
 	public void notifyPropertyChange(String propertyName, int eventType);
 
 	public void dispose();
+	
+	public IDataModelProperties getDataModelPropertyInterface();
 
 }

@@ -25,6 +25,7 @@ import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelListener;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 
@@ -440,5 +441,9 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 	public String getID() {
 		String id = provider.getID();
 		return null != id ? id : "";
+	}
+	
+	public IDataModelProperties getDataModelPropertyInterface() {
+		return (IDataModelProperties)provider;
 	}
 }
