@@ -120,7 +120,7 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 	private void zipAndCopyResource(IResource inputResource, IResource outputResource) {
 		try {
 			String osPath = outputResource.getLocation().toOSString();
-			exporter = new ZipFileExporter(osPath, true, true);
+			exporter = new ZipFileExporter(osPath, true);
 			inputContainerSegmentCount = inputResource.getFullPath().segmentCount();
 			exportResource(inputResource);
 			exporter.finished();
