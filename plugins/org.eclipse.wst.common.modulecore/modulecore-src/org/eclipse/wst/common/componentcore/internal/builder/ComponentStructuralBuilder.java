@@ -146,7 +146,8 @@ public class ComponentStructuralBuilder extends IncrementalProjectBuilder implem
         IFolder[] oldOutput = StructureEdit.getOutputContainersForProject(getProject());
         if(oldOutput != null) {
             for(int i = 0; i < oldOutput.length; i++) {
-                oldOutput[i].delete(true, monitor);
+                if(oldOutput[i].exists())
+                    oldOutput[i].delete(true, monitor);
             }
         }
         cleanDepGraph();
