@@ -365,20 +365,22 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 			while (it.hasNext()) {
 				propName = (String) it.next();
 				propStatus = provider.validate(propName);
-				if (status == null || status.isOK())
-					status = propStatus;
-				else {
-					if (status.isMultiStatus())
-						((MultiStatus) status).merge(propStatus);
+				if (propStatus != null) {
+					if (status == null || status.isOK())
+						status = propStatus;
 					else {
-						MultiStatus multi = new MultiStatus("org.eclipse.wst.common.frameworks.internal", 0, "", null); //$NON-NLS-1$ //$NON-NLS-2$
-						multi.merge(status);
-						multi.merge(propStatus);
-						status = multi;
+						if (status.isMultiStatus())
+							((MultiStatus) status).merge(propStatus);
+						else {
+							MultiStatus multi = new MultiStatus("org.eclipse.wst.common.frameworks.internal", 0, "", null); //$NON-NLS-1$ //$NON-NLS-2$
+							multi.merge(status);
+							multi.merge(propStatus);
+							status = multi;
+						}
 					}
+					if (stopOnFirstFailure && status != null && !status.isOK() && status.getSeverity() == IStatus.ERROR)
+						return status;
 				}
-				if (stopOnFirstFailure && status != null && !status.isOK() && status.getSeverity() == IStatus.ERROR)
-					return status;
 			}
 		}
 
@@ -442,8 +444,8 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		String id = provider.getID();
 		return null != id ? id : "";
 	}
-	
+
 	public IDataModelProperties getDataModelPropertyInterface() {
-		return (IDataModelProperties)provider;
+		return (IDataModelProperties) provider;
 	}
 }

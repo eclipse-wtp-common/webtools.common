@@ -57,7 +57,7 @@ public class ArtifactEditProviderOperation extends AbstractDataModelOperation {
         WorkbenchComponent module = null;
         try {
             moduleCore = StructureEdit.getStructureEditForRead((IProject)model.getProperty(ArtifactEditOperationDataModelProvider.PROJECT_NAME));
-            module = moduleCore.findComponentByName((String)model.getStringProperty(ArtifactEditOperationDataModelProvider.MODULE_NAME));
+            module = moduleCore.findComponentByName((String)model.getStringProperty(ArtifactEditOperationDataModelProvider.COMPONENT_NAME));
         } finally {
             if (null != moduleCore) {
                 moduleCore.dispose();
