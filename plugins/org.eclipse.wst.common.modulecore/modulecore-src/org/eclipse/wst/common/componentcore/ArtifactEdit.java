@@ -56,7 +56,7 @@ public class ArtifactEdit implements IEditModelHandler {
 
 	public static final Class ADAPTER_TYPE = ArtifactEdit.class;
 	private final ArtifactEditModel artifactEditModel;
-	private boolean isReadOnly;
+	protected boolean isReadOnly;
 	private boolean isArtifactEditModelSelfManaged;
 
 	/**
