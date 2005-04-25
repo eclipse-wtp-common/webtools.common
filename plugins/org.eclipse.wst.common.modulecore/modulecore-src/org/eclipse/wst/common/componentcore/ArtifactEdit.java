@@ -17,7 +17,7 @@ import org.eclipse.jem.internal.util.emf.workbench.nls.EMFWorkbenchResourceHandl
 import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
 import org.eclipse.wst.common.componentcore.internal.ComponentType;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
-import org.eclipse.wst.common.componentcore.internal.resources.ComponentHandle;
+import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.frameworks.internal.operations.IOperationHandler;
 import org.eclipse.wst.common.internal.emfworkbench.edit.EditModelRegistry;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
@@ -426,7 +426,9 @@ public class ArtifactEdit implements IEditModelHandler {
 	 * <p>
 	 * This method may be removed soon. Avoid adding dependencies to it.
 	 * </p>
-	 * 
+	 * <p>
+	 * This method is considered internal and not published as API.
+	 * </p>
 	 * @param editModel
 	 * @return
 	 */
