@@ -34,6 +34,7 @@ import org.eclipse.jem.util.emf.workbench.ProjectResourceSet;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
 import org.eclipse.wst.common.componentcore.internal.ModuleStructuralModel;
+import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.impl.ArtifactEditModelFactory;
 import org.eclipse.wst.common.componentcore.internal.impl.ComponentCoreURIConverter;
@@ -129,9 +130,9 @@ import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelNature;
  * <p>
  * The following class is experimental until fully documented.
  * </p> 
- * @see org.eclipse.wst.common.componentcore.StructureEdit
- * @see org.eclipse.wst.common.componentcore.StructureEdit#getStructureEditForRead(IProject)
- * @see org.eclipse.wst.common.componentcore.StructureEdit#getStructureEditForWrite(IProject)
+ * @see org.eclipse.wst.common.componentcore.internal.StructureEdit
+ * @see org.eclipse.wst.common.componentcore.internal.StructureEdit#getStructureEditForRead(IProject)
+ * @see org.eclipse.wst.common.componentcore.internal.StructureEdit#getStructureEditForWrite(IProject)
  * @see org.eclipse.wst.common.componentcore.ArtifactEdit
  * @see org.eclipse.wst.common.componentcore.ArtifactEdit#getArtifactEditForRead(WorkbenchComponent)
  * @see org.eclipse.wst.common.componentcore.ArtifactEdit#getArtifactEditForWrite(WorkbenchComponent)

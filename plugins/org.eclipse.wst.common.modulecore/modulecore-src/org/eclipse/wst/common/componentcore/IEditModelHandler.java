@@ -18,7 +18,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * {@see #save(IProgressMonitor)}or {@see #saveIfNecessary(IProgressMonitor)}&nbsp;and should be wary of
  * using any model objects acquired from the handler, as they may be or become stale.
  * </p>
- * @see org.eclipse.wst.common.componentcore.StructureEdit
+ * @see org.eclipse.wst.common.componentcore.internal.StructureEdit
  * @see org.eclipse.wst.common.componentcore.ArtifactEdit
  */
 public interface IEditModelHandler {
