@@ -12,8 +12,8 @@ package org.eclipse.wst.common.componentcore.resources;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.wst.common.componentcore.StructureEdit;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
+import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 
 /**
  * Provides a handle to a component within a project.
