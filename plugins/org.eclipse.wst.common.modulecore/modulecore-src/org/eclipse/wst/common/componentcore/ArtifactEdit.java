@@ -56,7 +56,7 @@ public class ArtifactEdit implements IEditModelHandler {
 
 	public static final Class ADAPTER_TYPE = ArtifactEdit.class;
 	private final ArtifactEditModel artifactEditModel;
-	protected boolean isReadOnly;
+	private boolean isReadOnly;
 	private boolean isArtifactEditModelSelfManaged;
 
 	/**
@@ -296,7 +296,7 @@ public class ArtifactEdit implements IEditModelHandler {
 	 *             If the ModuleCore object was created as read-only
 	 */
 	public void save(IProgressMonitor aMonitor) {
-		if (isReadOnly)
+		if (isReadOnly())
 			throwAttemptedReadOnlyModification();
 		artifactEditModel.save(aMonitor, this);
 	}
@@ -312,7 +312,7 @@ public class ArtifactEdit implements IEditModelHandler {
 	 *             If the ModuleCore object was created as read-only
 	 */
 	public void saveIfNecessary(IProgressMonitor aMonitor) {
-		if (isReadOnly)
+		if (isReadOnly())
 			throwAttemptedReadOnlyModification();
 		artifactEditModel.saveIfNecessary(aMonitor, this);
 	}
@@ -370,7 +370,7 @@ public class ArtifactEdit implements IEditModelHandler {
 	 * Should the resources be saved.
 	 */
 	private boolean shouldSave() {
-		return !isReadOnly && isArtifactEditModelSelfManaged;
+		return !isReadOnly() && isArtifactEditModelSelfManaged;
 	}
 
 	/**
@@ -464,5 +464,9 @@ public class ArtifactEdit implements IEditModelHandler {
 
 	private void throwAttemptedReadOnlyModification() {
 		throw new IllegalStateException("Attempt to modify an ArtifactEdit instance facade that was loaded as read-only.");
+	}
+
+	public boolean isReadOnly() {
+		return isReadOnly;
 	}
 }
