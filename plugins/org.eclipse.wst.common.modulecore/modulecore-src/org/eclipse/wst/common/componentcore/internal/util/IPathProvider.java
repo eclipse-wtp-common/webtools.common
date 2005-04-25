@@ -11,6 +11,7 @@
 package org.eclipse.wst.common.componentcore.internal.util;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 
 /**
@@ -21,5 +22,7 @@ import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 public interface IPathProvider {
 	
 	IPath getPath(ComponentResource aModuleResource);
+	
+	EStructuralFeature getFeature();
 
 }

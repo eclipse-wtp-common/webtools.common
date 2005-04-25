@@ -507,9 +507,8 @@ public class StructureEdit implements IEditModelHandler {
 		if (isReadOnly)
 			throwAttemptedReadOnlyModification();
 
-		ComponentResource moduleResource = COMPONENT_FACTORY.createComponentResource();
-		String sourcePath = IPath.SEPARATOR + aResource.getProject().getName() + IPath.SEPARATOR + aResource.getProjectRelativePath().toString();
-		moduleResource.setSourcePath(new Path(sourcePath));
+		ComponentResource moduleResource = COMPONENT_FACTORY.createComponentResource(); 
+		moduleResource.setSourcePath(aResource.getProjectRelativePath().makeAbsolute());
 		return moduleResource;
 	}
 

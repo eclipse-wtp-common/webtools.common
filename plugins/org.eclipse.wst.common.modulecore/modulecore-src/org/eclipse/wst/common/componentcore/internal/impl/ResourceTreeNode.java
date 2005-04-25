@@ -18,8 +18,6 @@ import java.util.Set;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.componentcore.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
@@ -32,12 +30,12 @@ import org.eclipse.wst.common.componentcore.internal.util.IPathProvider;
  */
 public class ResourceTreeNode {
 
-	private Set moduleResources = new HashSet();
-	private String pathSegment;
-	private final Map children = new HashMap();
+	private final Set moduleResources = Collections.synchronizedSet(new HashSet());	
+	private final Map children = Collections.synchronizedMap(new HashMap());
 	private static final ComponentResource[] NO_MODULE_RESOURCES = new ComponentResource[]{};
 	private IPathProvider pathProvider;
 	private ResourceTreeNode parent;
+	private String pathSegment;
 
 	public ResourceTreeNode(String aPathSegment, ResourceTreeNode parent, IPathProvider aPathProvider) {
 		pathSegment = aPathSegment;
@@ -50,8 +48,7 @@ public class ResourceTreeNode {
 	}
 
 	public ResourceTreeNode addChild(ComponentResource aModuleResource) {
-		IPath moduleResourcePath = new Path(getPathProvider().getPath(aModuleResource).toString());
-		ResourceTreeNode newChild = findChild(moduleResourcePath, true);
+		ResourceTreeNode newChild = findChild(getPathProvider().getPath(aModuleResource), true);
 		newChild.addModuleResource(aModuleResource);
 		return newChild;
 	}
@@ -60,9 +57,13 @@ public class ResourceTreeNode {
 		return (ResourceTreeNode) children.remove(aChild.getPathSegment());
 	}
 
-	public ResourceTreeNode removeChild(ComponentResource aModuleResource) {
-		IPath moduleResourcePath = new Path(getPathProvider().getPath(aModuleResource).toString());
-		ResourceTreeNode removedChild = findChild(moduleResourcePath, false);
+	public ResourceTreeNode removeChild(ComponentResource aModuleResource) { 
+		ResourceTreeNode removedChild = findChild(getPathProvider().getPath(aModuleResource), false);
+		return removeChild(removedChild);
+	}
+
+	public ResourceTreeNode removeChild(IPath targetPath, ComponentResource aModuleResource) { 
+		ResourceTreeNode removedChild = findChild(targetPath, false);
 		return removeChild(removedChild);
 	}
 

@@ -231,11 +231,10 @@ public class VirtualContainer extends VirtualResource implements IVirtualContain
 				ComponentResource componentResource = moduleCore.createWorkbenchModuleResource(resource);
 				componentResource.setRuntimePath(getRuntimePath());
 				component.getResources().add(componentResource);
-			} else {
-				URI projectRelativeURI = URI.createURI(aProjectRelativeLocation.toString());
+			} else { 
 				boolean foundMapping = false;
 				for (int resourceIndx = 0; resourceIndx < resources.length && !foundMapping; resourceIndx++) {
-					if(projectRelativeURI.equals(resources[resourceIndx].getSourcePath()))
+					if(aProjectRelativeLocation.equals(resources[resourceIndx].getSourcePath()))
 						foundMapping = true;
 				}
 				if(!foundMapping) {

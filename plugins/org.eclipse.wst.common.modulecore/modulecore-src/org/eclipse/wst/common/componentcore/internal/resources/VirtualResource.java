@@ -109,35 +109,34 @@ public abstract class VirtualResource implements IVirtualResource {
 			WorkbenchComponent component = moduleCore.findComponentByName(getComponentHandle().getName());
 			if(component != null) {
 				ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
+				// still need some sort of loop here to search subpieces of the runtime path.
+				ComponentResource[] componentResources = null;
 				
-				ComponentResource[] componentResources = new ComponentResource[0];
+				IPath searchPath = null;
+				do{ 
+					searchPath = (searchPath == null) ? getRuntimePath(): searchPath.removeLastSegments(1);
+					componentResources = root.findModuleResources(searchPath, false);
+					
+				} while(componentResources.length == 0 && searchPath.segmentCount() > 0);
+				
+				int currentMatchLength = 0;
+				int bestMatchLength = 0;
+				IPath estimatedPath = getRuntimePath();
 				IPath currentPath = null;
-				IPath potentialMatchRuntimePath = null; 
-				
-				do { 
-					currentPath = (currentPath == null) ? getRuntimePath() : currentPath.removeLastSegments(1);
-					componentResources = root.findModuleResources(currentPath, false);
-					for (int i = 0; i < componentResources.length; i++) {
-						potentialMatchRuntimePath = componentResources[i].getRuntimePath();					
-						if(isPotentalMatch(potentialMatchRuntimePath)) {
-							IPath sourcePath = componentResources[i].getSourcePath();
-							IPath subpath = getRuntimePath().removeFirstSegments(potentialMatchRuntimePath.segmentCount());
-							IPath finalPath = sourcePath.append(subpath);
-							// already workspace relative
-                            String projName = getComponentHandle().getProject().getName();
-							if(finalPath.segment(0).equals(projName)) {
-                                if(projName.equals(component.getName())){
-                                    if(finalPath.segment(1).equals(projName))
-                                        return finalPath.removeFirstSegments(1);    
-                                } else {
-                                    return finalPath.removeFirstSegments(1);
-                                }
-							} 
-							// make workspace relative
-							return finalPath;
-						}
-					}   
-				} while(currentPath.segmentCount() > 0 && componentResources.length == 0);
+				final IPath runtimePath = getRuntimePath();
+				for (int i = 0; i < componentResources.length; i++) { 
+					currentPath = componentResources[i].getRuntimePath();
+					currentMatchLength = currentPath.matchingFirstSegments(runtimePath);
+					if(currentMatchLength == runtimePath.segmentCount()) // complete match
+						return componentResources[i].getSourcePath();
+					else if(currentMatchLength == currentPath.segmentCount() && currentMatchLength > bestMatchLength) {
+						bestMatchLength = currentMatchLength;
+						IPath sourcePath = componentResources[i].getSourcePath();
+						IPath subpath = runtimePath.removeFirstSegments(currentMatchLength);
+						estimatedPath = sourcePath.append(subpath);  
+					} 
+				}    
+				return estimatedPath;
 			}
 		} finally {
 			if(moduleCore != null) {
