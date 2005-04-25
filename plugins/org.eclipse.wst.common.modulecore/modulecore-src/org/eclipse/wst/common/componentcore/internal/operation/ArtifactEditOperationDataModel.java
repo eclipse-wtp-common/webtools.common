@@ -92,14 +92,20 @@ public abstract class ArtifactEditOperationDataModel extends WTPOperationDataMod
     public WorkbenchComponent getWorkbenchModule() {
         StructureEdit moduleCore = null;
         WorkbenchComponent module = null;
-        try {
-            moduleCore = StructureEdit.getStructureEditForRead(getTargetProject());
-            module = moduleCore.findComponentByName(getStringProperty(MODULE_NAME));
-        } finally {
-            if (null != moduleCore) {
-                moduleCore.dispose();
-            }
-        }
+		IProject project = getTargetProject();
+		if (project.exists() && project.isAccessible()) {
+	        try {
+				
+	            moduleCore = StructureEdit.getStructureEditForRead(project);
+				if(moduleCore == null )
+					return null;
+	            module = moduleCore.findComponentByName(getStringProperty(MODULE_NAME));
+	        } finally {
+	            if (null != moduleCore) {
+	                moduleCore.dispose();
+	            }
+	        }
+		}
         return module;
     }
 	private IProject getProjectForGivenComponent(WorkbenchComponent wbComp) {
