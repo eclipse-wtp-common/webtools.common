@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,6 +22,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
+import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.util.IPathProvider;
 
 /**
@@ -58,13 +60,23 @@ public class ResourceTreeNode {
 	}
 
 	public ResourceTreeNode removeChild(ComponentResource aModuleResource) { 
-		ResourceTreeNode removedChild = findChild(getPathProvider().getPath(aModuleResource), false);
-		return removeChild(removedChild);
+		ResourceTreeNode containingChild = findChild(getPathProvider().getPath(aModuleResource), false);
+		containingChild.removeResource(aModuleResource);
+		if(containingChild.hasModuleResources())
+			return containingChild;
+		return removeChild(containingChild);
 	}
 
 	public ResourceTreeNode removeChild(IPath targetPath, ComponentResource aModuleResource) { 
-		ResourceTreeNode removedChild = findChild(targetPath, false);
-		return removeChild(removedChild);
+		ResourceTreeNode containingChild = findChild(targetPath, false);
+		containingChild.removeResource(aModuleResource);
+		if(containingChild.hasModuleResources())
+			return containingChild;
+		return removeChild(containingChild);
+	}
+	
+	public void removeResource(ComponentResource aResource) {
+		moduleResources.remove(aResource);
 	}
 
 	public ResourceTreeNode findChild(IPath aPath) {
@@ -138,23 +150,47 @@ public class ResourceTreeNode {
 			Set resultSet = new HashSet();
 			for (Iterator resourceIter = moduleResources.iterator(); resourceIter.hasNext();) {
 				moduleResource = (ComponentResource) resourceIter.next();
-				eclipseResource = StructureEdit.getEclipseResource(moduleResource);
-				if (eclipseResource != null && eclipseResource.getType() == IResource.FOLDER) {
-					eclipseContainer = (IContainer) eclipseResource;
-
-					ComponentResource newResource = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentResource();
-					if ((foundResource = eclipseContainer.findMember(aPath)) != null) {
-						newResource.setComponent(moduleResource.getComponent());		
+				if(moduleResource.getRuntimePath() != null) {
+					eclipseResource = StructureEdit.getEclipseResource(moduleResource);
+					
+					if (eclipseResource != null && eclipseResource.getType() == IResource.FOLDER) {
+						eclipseContainer = (IContainer) eclipseResource;
+				 
 						IPath runtimeURI = moduleResource.getRuntimePath().append(aPath);
-						newResource.setRuntimePath(runtimeURI);
-						newResource.setSourcePath(foundResource.getProjectRelativePath());
-						resultSet.add(newResource);
+						
+						// check for existing subpath in tree
+						ComponentResource newResource = 
+							findExistingComponentResource(moduleResource.getComponent(), runtimeURI);
+						
+						if(newResource == null) {
+							// flesh out the tree
+							newResource = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentResource();
+							if ((foundResource = eclipseContainer.findMember(aPath)) != null) {
+								newResource.setComponent(moduleResource.getComponent());		
+								
+								newResource.setRuntimePath(runtimeURI);
+								newResource.setSourcePath(foundResource.getProjectRelativePath());
+								resultSet.add(newResource);
+							}
+						}
 					}
+		
 				}
 			}
 			return resultSet.size() > 0 ? resultSet : Collections.EMPTY_SET;
 		}
 		return Collections.EMPTY_SET;
+	}
+
+	private ComponentResource findExistingComponentResource(WorkbenchComponent component, IPath runtimeURI) { 
+		List resources = component.getResources();
+		for (Iterator iter = resources.iterator(); iter.hasNext();) {
+			ComponentResource element = (ComponentResource) iter.next();
+			if(runtimeURI.equals(element.getRuntimePath()))
+				return element;
+			
+		}
+		return null;
 	}
 
 	private Set aggregateResources(Set anAggregationSet) {

@@ -40,7 +40,8 @@ public class ResourceTreeRoot extends ResourceTreeNode {
 				switch(msg.getEventType()) {
 				case Notification.ADD:
 					resource = (ComponentResource) msg.getNewValue();
-					resource.eAdapters().add(getResourcePathListenerAdapter());					
+					if(resource != null)
+						resource.eAdapters().add(getResourcePathListenerAdapter());					
 					break; 
 				case Notification.ADD_MANY:
 					List newValues = (List) msg.getNewValue();					
@@ -51,7 +52,8 @@ public class ResourceTreeRoot extends ResourceTreeNode {
 					break;
 				case Notification.REMOVE:
 					resource = (ComponentResource) msg.getNewValue();
-					resource.eAdapters().remove(getResourcePathListenerAdapter());
+					if(resource != null)
+						resource.eAdapters().remove(getResourcePathListenerAdapter());
 					break;
 				case Notification.REMOVE_MANY:
 					List removedValues = (List) msg.getNewValue();					
@@ -69,10 +71,10 @@ public class ResourceTreeRoot extends ResourceTreeNode {
 		
 		public void setTarget(Notifier newTarget) {
 			if(newTarget instanceof ComponentResource) {				
-				if(getTarget() != null) {
-					if(getPathProvider().getPath((ComponentResource)getTarget()) != null)
-						removeChild((ComponentResource)getTarget());
-				}
+//				if(getTarget() != null) {
+//					if(getPathProvider().getPath((ComponentResource)getTarget()) != null)
+//						removeChild((ComponentResource)getTarget());
+//				}
 				ComponentResource resource = (ComponentResource) newTarget;
 				if(resource != null) {
 					if(getPathProvider().getPath(resource) != null)
@@ -103,7 +105,7 @@ public class ResourceTreeRoot extends ResourceTreeNode {
 		}
 	}
 
-	
+	// TODO The source tree should be attached to the project modules root, not each module.
 	public static ResourceTreeRoot getSourceResourceTreeRoot(WorkbenchComponent aModule) {
 		ResourceTreeRootAdapter resourceTreeAdapter = (ResourceTreeRootAdapter) EcoreUtil.getAdapter(aModule.eAdapters(), ResourceTreeRootAdapter.SOURCE_ADAPTER_TYPE);
 		if (resourceTreeAdapter != null)
