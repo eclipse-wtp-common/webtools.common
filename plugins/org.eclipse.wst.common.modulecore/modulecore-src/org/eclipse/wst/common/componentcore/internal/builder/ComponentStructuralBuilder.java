@@ -70,7 +70,8 @@ public class ComponentStructuralBuilder extends IncrementalProjectBuilder implem
         
         // clean markers
 		IResource wtpmoduleFile = getProject().findMember(".wtpmodules"); //$NON-NLS-1$
-		wtpmoduleFile.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE); 
+		if(wtpmoduleFile != null)
+			wtpmoduleFile.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE); 
 
         IDataModel builderDataModel = DataModelFactory.createDataModel(new ProjectComponentsBuilderDataModelProvider());
         try {
