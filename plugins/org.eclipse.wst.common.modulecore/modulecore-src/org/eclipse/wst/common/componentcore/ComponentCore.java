@@ -67,7 +67,7 @@ public class ComponentCore {
 		List foundResources = new ArrayList();
 		try {
 			se = StructureEdit.getStructureEditForRead(proj);
-			ComponentResource[] resources = se.findResourcesBySourcePath(aResource.getFullPath());
+			ComponentResource[] resources = se.findResourcesBySourcePath(aResource.getProjectRelativePath());
 			for (int i = 0; i < resources.length; i++) {
 				if (aResource.getType() == IResource.FILE)
 					foundResources.add(new VirtualFile(proj,resources[i].getComponent().getName(), resources[i].getRuntimePath()));
