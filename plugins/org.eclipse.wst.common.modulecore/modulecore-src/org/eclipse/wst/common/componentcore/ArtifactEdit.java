@@ -74,7 +74,7 @@ public class ArtifactEdit implements IEditModelHandler {
 	 * <p>
 	 * <b>The following method may return null. </b>
 	 * </p>
-	 * 
+	 * <p>Note: This method is for internal use only. Clients should not call this method.</p>
 	 * @param aModule
 	 *            A valid {@see WorkbenchComponent}&nbsp;with a handle that resolves to an
 	 *            accessible project in the workspace
@@ -103,7 +103,7 @@ public class ArtifactEdit implements IEditModelHandler {
 	 * <p>
 	 * <b>The following method may return null. </b>
 	 * </p>
-	 * 
+	 * <p>Note: This method is for internal use only. Clients should not call this method.</p>
 	 * @param aModule
 	 *            A valid {@see WorkbenchComponent}&nbsp;with a handle that resolves to an
 	 *            accessible project in the workspace
@@ -181,6 +181,7 @@ public class ArtifactEdit implements IEditModelHandler {
 	}
 
 	/**
+	 * <p>Note: This method is for internal use only. Clients should not call this method.</p>
 	 * @param module
 	 *            A {@see WorkbenchComponent}
 	 * @return True if the supplied module has a moduleTypeId which has a defined
@@ -222,7 +223,7 @@ public class ArtifactEdit implements IEditModelHandler {
 	 * <p>
 	 * Creates an instance facade for the given {@see WorkbenchComponent}.
 	 * </p>
-	 * 
+	 * <p>Note: This method is for internal use only. Clients should not call this method.</p>
 	 * @param aNature
 	 *            A non-null {@see ModuleCoreNature}&nbsp;for an accessible project
 	 * @param aModule
