@@ -11,17 +11,18 @@ import java.net.URL;
 
 import org.eclipse.core.internal.boot.PlatformURLConnection;
 import org.eclipse.core.internal.boot.PlatformURLHandler;
-import org.eclipse.core.internal.resources.Workspace;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
+import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 
 /**
  * @author mdelder
@@ -43,52 +44,20 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
 	public PlatformURLModuleConnection(URL aURL) {
 		super(aURL);
 	}
-
-	// TODO FIX THIS --MDE
-	public static URI resolve(URI aModuleResourceDeployPath) throws IOException {
-		StructureEdit moduleCore = null;
-		URI resolvedURI = null;
+ 
+	public static URI resolve(URI aModuleResourceRuntimePath) throws IOException {
 		try {
-			//IResource eclipseResource = null;
-			//IContainer eclipseContainer = null;
-			moduleCore = StructureEdit.getStructureEditForRead(StructureEdit.getContainingProject(aModuleResourceDeployPath));			
-			ComponentResource[] resources = moduleCore.findResourcesByRuntimePath(aModuleResourceDeployPath);
-			
-			URI deployPathSegment = ModuleURIUtil.trimToDeployPathSegment(aModuleResourceDeployPath);
-			//deployPathSegment = URI.createURI(deployPathSegment);
-		    IPath deployPath = new Path(deployPathSegment.path());
-			deployPath = deployPath.makeAbsolute();
-// THIS ALGORITHM WILL NOT HANDLE URI OVERLAPS, 
-//			it only works when the deploypath is wholly contained within the found resource 
-// 			
-//			for (int resourceIndex = 0; resourceIndex < resources.length; resourceIndex++) {
-			if(resources.length == 1) {
-				WorkbenchComponent comp = resources[0].getComponent();
-				IProject project = StructureEdit.getContainingProject(comp);
-				if (resources[0].getRuntimePath().equals(deployPath))
-					return URI.createPlatformResourceURI(normalizeToWorkspaceRelative(project,resources[0].getSourcePath(),aModuleResourceDeployPath).toString());
-				return URI.createPlatformResourceURI(resources[0].getRuntimePath().toString());
-			}
-//
-//				eclipseResource = ModuleCore.getResource(resources[resourceIndex]);
-//				if (eclipseResource.getType() == IResource.FOLDER) {
-//					eclipseContainer = ((IContainer) eclipseResource);
-//					URI containerURI = URI.createURI(eclipseContainer.getFullPath().toString()); 
-//					for(int i=0; i<containerURI.segmentCount();i++) {
-//						if(containerURI.segment(i).equals(deployPathSegment.segment(deployPathSegmentIndex)))
-//					}
-//					System.out.println(eclipseResourceURI);
-//					
-//				}
-
-//			}
-		} catch (UnresolveableURIException uurie) {
-			throw new IOException(uurie.toString());
-		} finally {
-			if (moduleCore != null)
-				moduleCore.dispose();
+			IProject componentProject = StructureEdit.getContainingProject(aModuleResourceRuntimePath);
+			String componentName = ModuleURIUtil.getDeployedName(aModuleResourceRuntimePath);
+			URI runtimeURI = ModuleURIUtil.trimToDeployPathSegment(aModuleResourceRuntimePath);
+			IPath runtimePath = new Path(runtimeURI.path());
+			IVirtualComponent component = ComponentCore.createComponent(componentProject, componentName);
+			IVirtualFile vFile = component.getFile(runtimePath);
+			return URI.createPlatformResourceURI(vFile.getWorkspaceRelativePath().toString());
+		} catch (UnresolveableURIException e) {
 		}
-		return resolvedURI;
+		return aModuleResourceRuntimePath;
+		 
 	}
 
 	private static URI normalizeToWorkspaceRelative(IProject project, IPath sourcePath, URI moduleResourceDeployPath) throws UnresolveableURIException {

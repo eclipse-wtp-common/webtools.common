@@ -573,7 +573,9 @@ public class StructureEdit implements IEditModelHandler {
 	 */
 	public ComponentResource[] findResourcesByRuntimePath(URI aModuleResourcePath) throws UnresolveableURIException {
 
-		return findResourcesByRuntimePath(ModuleURIUtil.getDeployedName(aModuleResourcePath), new Path(aModuleResourcePath.path()));
+		URI deployedURI = ModuleURIUtil.trimToDeployPathSegment(aModuleResourcePath);
+		IPath deployedPath = new Path(deployedURI.path());
+		return findResourcesByRuntimePath(ModuleURIUtil.getDeployedName(aModuleResourcePath), deployedPath);
 	}
 	
 	/**
