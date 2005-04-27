@@ -131,13 +131,13 @@ public abstract class VirtualResource implements IVirtualResource {
 	}
  
 	private boolean canSearchContinue(ComponentResource[] componentResources, IPath searchPath) {
-		return (componentResources.length == 0 && searchPath.segmentCount() > 0);
+		return (searchPath.segmentCount() > 0);
 	}  
 	
 	private IPath findBestMatch(ComponentResource[] theComponentResources) {
 
 		int currentMatchLength = 0;
-		int bestMatchLength = 0;
+		int bestMatchLength = -1;
 		IPath estimatedPath = null;
 		IPath currentPath = null;
 		final IPath runtimePath = getRuntimePath();

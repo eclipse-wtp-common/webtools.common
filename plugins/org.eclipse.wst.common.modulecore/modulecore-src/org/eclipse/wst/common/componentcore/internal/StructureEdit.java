@@ -650,7 +650,7 @@ public class StructureEdit implements IEditModelHandler {
 		List foundResources = new ArrayList();
 		for (int i = 0; i < modules.size(); i++) {
 			module = (WorkbenchComponent) modules.get(i);
-			resources = module.findResourcesBySourcePath(aWorkspaceRelativePath);
+			resources = module.findResourcesBySourcePath(aWorkspaceRelativePath.removeFirstSegments(0));
 			if (resources != null && resources.length != 0)
 				foundResources.addAll(Arrays.asList(resources));
 		}
