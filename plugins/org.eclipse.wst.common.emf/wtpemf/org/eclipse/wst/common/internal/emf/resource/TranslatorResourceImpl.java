@@ -358,12 +358,23 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	public boolean isSharedForWrite() {
 		return super.isSharedForWrite() || renderer.isSharedForWrite();
 	}
+	
+	public boolean isLoaded() {
+		synchronized(this) {
+			return super.isLoaded();
+		}
+	}
 
 	public void load(Map options) throws IOException {
-		if (renderer.useStreamsForIO()) {
-			super.load(options);
-		} else if (!isLoaded) {
-			load(null, options);
+		synchronized (this) {
+			if(isLoaded) return;
+			//System.out.println(Thread.currentThread() + " TranslatorResource.load(): " + this);
+			if (renderer.useStreamsForIO()) {
+				super.load(options);
+			} else if (!isLoaded) {
+				load(null, options);
+			}
 		}
+
 	}
 }

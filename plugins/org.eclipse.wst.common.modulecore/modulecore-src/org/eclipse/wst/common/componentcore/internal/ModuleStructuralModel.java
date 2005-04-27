@@ -8,6 +8,9 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.componentcore.internal;
 
+import java.io.IOException;
+import java.util.HashMap;
+
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.ecore.EObject;
@@ -58,10 +61,13 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	 * @see org.eclipse.wst.common.internal.emfworkbench.integration.EditModel#getPrimaryRootObject()
 	 */
 	public EObject getPrimaryRootObject() {
-		Resource res = getPrimaryResource();
-		if(res != null && res.getContents().size() == 0)
+		
+		EObject modelRoot = super.getPrimaryRootObject();
+		if(modelRoot == null) {
 			prepareProjectModulesIfNecessary();
-		return super.getPrimaryRootObject();
+			return super.getPrimaryRootObject();
+		}
+		return modelRoot;
 	}
        
 	public WTPModulesResource  makeWTPModulesResource() {
@@ -69,8 +75,15 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	}
 
 	public Resource prepareProjectModulesIfNecessary() {
-		XMIResource res = makeWTPModulesResource();		
-		addProjectModulesIfNecessary(res);
+
+		XMIResource res = (XMIResource) getPrimaryResource();
+		if(res == null)
+			res = makeWTPModulesResource();		
+		try {
+			addProjectModulesIfNecessary(res);
+		} catch (IOException e) {		
+			e.printStackTrace();
+		}
 		return res;
 	}
 	
@@ -78,12 +91,15 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 		return Platform.getAdapterManager().getAdapter(this, anAdapter); 
 	}
 	
-	protected void addProjectModulesIfNecessary(XMIResource aResource) { 
-		if (aResource != null && aResource.getContents().isEmpty()) {
-			ProjectComponents projectModules = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createProjectComponents();
-			projectModules.setProjectName(project.getName());
-			aResource.getContents().add(projectModules); 
-			aResource.setID(projectModules, MODULE_CORE_ID);
+	protected void addProjectModulesIfNecessary(XMIResource aResource) throws IOException {
+		
+		if (aResource != null) { 
+			if(aResource.getContents().isEmpty()) {
+				ProjectComponents projectModules = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createProjectComponents();
+				projectModules.setProjectName(project.getName());
+				aResource.getContents().add(projectModules); 
+				aResource.setID(projectModules, MODULE_CORE_ID);
+			}
 		}
 	}
 }

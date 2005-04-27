@@ -89,6 +89,8 @@ public class StructureEdit implements IEditModelHandler {
 	private boolean isStructuralModelSelfManaged;
 	private boolean isReadOnly;
 
+	private static final WorkbenchComponent[] NO_COMPONENTS = new WorkbenchComponent[0];
+
 	/**
 	 * 
 	 * <p>
@@ -458,8 +460,12 @@ public class StructureEdit implements IEditModelHandler {
 	 * @return The WorkbenchModules of the underlying model, if any.
 	 */
 	public WorkbenchComponent[] getWorkbenchModules() {
-		List wbModules = getComponentModelRoot().getComponents();
-		return (WorkbenchComponent[]) wbModules.toArray(new WorkbenchComponent[wbModules.size()]);
+		ProjectComponents pc = getComponentModelRoot();
+		if(pc != null) {
+			List wbModules = getComponentModelRoot().getComponents();
+			return (WorkbenchComponent[]) wbModules.toArray(new WorkbenchComponent[wbModules.size()]);
+		}
+		return NO_COMPONENTS;
 	}
 
 	/**

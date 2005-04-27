@@ -35,6 +35,7 @@ import org.eclipse.wst.common.internal.emf.utilities.Revisit;
 import org.eclipse.wst.common.internal.emf.utilities.StringUtil;
 import org.eclipse.wst.common.internal.emf.utilities.WFTUtilsResourceHandler;
 import org.w3c.dom.Attr;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 import org.w3c.dom.Element;
@@ -611,8 +612,12 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	 * Reorder a child before a given node
 	 */
 	protected void reorderDOMChild(Node parentNode, Node childNode, Node insertBeforeNode, Translator map) {
-		removeDOMChild(parentNode, childNode, false);
-		parentNode.insertBefore(childNode, insertBeforeNode);
+		try {
+			removeDOMChild(parentNode, childNode, false);
+			parentNode.insertBefore(childNode, insertBeforeNode);
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 	}
 
 	protected String getNewlineString(Node node) {
@@ -634,21 +639,22 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	 * Remove a child node
 	 */
 	protected void removeDOMChild(Node parentNode, Node childNode, boolean removeAdapter) {
-		if (childNode == null)
-			return;
-
-		// Look for any whitespace preceeding the node being
-		// removed and remove it as well.
-		Text prevText = DOMUtilities.getPreviousTextSibling(childNode);
-		if (prevText != null && DOMUtilities.isWhitespace(prevText)) {
-			parentNode.removeChild(prevText);
+		try {
+			if (childNode == null)
+				return;
+			// Look for any whitespace preceeding the node being
+			// removed and remove it as well.
+			Text prevText = DOMUtilities.getPreviousTextSibling(childNode);
+			if (prevText != null && DOMUtilities.isWhitespace(prevText)) {
+				parentNode.removeChild(prevText);
+			}
+			// Remove the node.
+			if (removeAdapter)
+				removeAdapters(childNode);
+			parentNode.removeChild(childNode);
+		} catch (Throwable e) { 
+			e.printStackTrace();
 		}
-
-		// Remove the node.
-		if (removeAdapter)
-			removeAdapters(childNode);
-
-		parentNode.removeChild(childNode);
 	}
 
 	/**

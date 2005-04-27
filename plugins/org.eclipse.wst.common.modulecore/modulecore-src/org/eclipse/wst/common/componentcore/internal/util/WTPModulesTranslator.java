@@ -1,6 +1,10 @@
 package org.eclipse.wst.common.componentcore.internal.util;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.emf.common.notify.Notifier;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
 import org.eclipse.wst.common.internal.emf.resource.GenericTranslator;
 import org.eclipse.wst.common.internal.emf.resource.IDTranslator;
@@ -18,7 +22,15 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 	 */
 	public WTPModulesTranslator() {
 		super(PROJECT_MODULES, ComponentcorePackage.eINSTANCE.getProjectComponents());
-	}
+	}	
+	
+//	public void setMOFValue(Notifier owner, Object value, int newIndex) {		
+//		super.setMOFValue(owner, value, newIndex);
+//		EObject target = ((EObject)value);
+//		IProject project = ProjectUtilities.getProject(target);
+//		if(project != null)
+//			target.eSet(ComponentcorePackage.eINSTANCE.getProjectComponents_ProjectName(), project.getName());
+//	}
 	/* (non-Javadoc)
 	 * @see org.eclipse.wst.common.internal.emf.resource.Translator#getChildren(java.lang.Object, int)
 	 */
