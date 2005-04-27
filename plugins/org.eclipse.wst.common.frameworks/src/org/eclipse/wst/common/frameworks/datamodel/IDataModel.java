@@ -619,6 +619,4 @@ public interface IDataModel {
 
 	public void dispose();
 	
-	public IDataModelProperties getDataModelPropertyInterface();
-
 }
