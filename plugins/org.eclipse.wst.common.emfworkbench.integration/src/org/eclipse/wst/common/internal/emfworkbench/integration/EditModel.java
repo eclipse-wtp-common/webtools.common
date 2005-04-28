@@ -85,6 +85,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	protected EditModelEvent dirtyModelEvent;
 	protected boolean isNotifing = false;
 	protected boolean disposing = false;
+	private boolean disposed = false;
 	protected ResourceStateValidator stateValidator;
 	protected boolean accessAsReadForUnKnownURIs;
 	protected ResourceAdapter resourceAdapter = new ResourceAdapter();
@@ -106,6 +107,8 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	}
 
 	public EditModel(String editModelID, EMFWorkbenchContext context, boolean readOnly) {
+		if (context == null)
+			throw new IllegalStateException("EMF context can't be null");
 		this.editModelID = editModelID;
 		this.readOnly = readOnly;
 		this.emfContext = context;
@@ -139,6 +142,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	}
 
 	public void dispose() {
+		disposed = true;
 		disposing = true;
 		if (commandStack != null)
 			commandStack.removeCommandStackListener(this);
@@ -890,8 +894,19 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	}
 
 	public EMFWorkbenchContext getEmfContext() {
+		if (isDisposed())
+			throw new IllegalStateException("Edit Model already disposed");
+		if (emfContext == null)
+			throw new IllegalStateException("EMF context is null");
 		return emfContext;
 	}
+
+	private boolean isDisposed() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
 
 	public IProject getProject() {
 		return project;

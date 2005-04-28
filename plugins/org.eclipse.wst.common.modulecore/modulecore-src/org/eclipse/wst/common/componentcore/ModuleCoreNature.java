@@ -477,18 +477,18 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		ProjectUtilities.addToBuildSpec(COMPONENT_STRUCTURAL_DEPENDENCY_RESOLVER_ID, getProject());
 	}
 
-	private String getArtifactEditModelId(URI aModuleURI) {
-		ModuleStructuralModel structuralModel = null;
+	private String getArtifactEditModelId(URI aModuleURI) { 
+		StructureEdit editUtility = null;
 		try {
-			structuralModel = getModuleStructuralModelForRead(Thread.currentThread());
-			StructureEdit editUtility = (StructureEdit) structuralModel.getAdapter(StructureEdit.ADAPTER_TYPE);
+			IProject project = StructureEdit.getContainingProject(aModuleURI);
+			editUtility = StructureEdit.getStructureEditForRead(project);
 			WorkbenchComponent module = editUtility.findComponentByName(ModuleURIUtil.getDeployedName(aModuleURI));
 			return module.getComponentType().getComponentTypeId();
 		} catch (UnresolveableURIException uurie) {
 			// Ignore
 		} finally {
-			if (structuralModel != null)
-				structuralModel.releaseAccess(Thread.currentThread());
+			if (editUtility != null)
+				editUtility.dispose();
 		}
 		return null;
 	}
