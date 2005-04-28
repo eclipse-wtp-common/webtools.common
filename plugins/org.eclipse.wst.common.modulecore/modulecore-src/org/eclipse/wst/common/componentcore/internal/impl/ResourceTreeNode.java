@@ -51,8 +51,11 @@ public class ResourceTreeNode {
 
 	public ResourceTreeNode addChild(ComponentResource aModuleResource) {
 		ResourceTreeNode newChild = findChild(getPathProvider().getPath(aModuleResource), true);
-		newChild.addModuleResource(aModuleResource);
-		return newChild;
+		if(newChild != null) {
+			newChild.addModuleResource(aModuleResource);
+			return newChild;
+		}
+		return null;
 	}
 
 	public ResourceTreeNode removeChild(ResourceTreeNode aChild) {
@@ -61,18 +64,24 @@ public class ResourceTreeNode {
 
 	public ResourceTreeNode removeChild(ComponentResource aModuleResource) { 
 		ResourceTreeNode containingChild = findChild(getPathProvider().getPath(aModuleResource), false);
-		containingChild.removeResource(aModuleResource);
-		if(containingChild.hasModuleResources())
-			return containingChild;
-		return removeChild(containingChild);
+		if(containingChild != null) {
+			containingChild.removeResource(aModuleResource);
+			if(containingChild.hasModuleResources())
+				return containingChild;
+			return removeChild(containingChild);
+		}
+		return null;
 	}
 
 	public ResourceTreeNode removeChild(IPath targetPath, ComponentResource aModuleResource) { 
 		ResourceTreeNode containingChild = findChild(targetPath, false);
-		containingChild.removeResource(aModuleResource);
-		if(containingChild.hasModuleResources())
-			return containingChild;
-		return removeChild(containingChild);
+		if(containingChild != null) {
+			containingChild.removeResource(aModuleResource);
+			if(containingChild.hasModuleResources())
+				return containingChild;
+			return removeChild(containingChild);
+		}
+		return null;			
 	}
 	
 	public void removeResource(ComponentResource aResource) {
@@ -84,6 +93,8 @@ public class ResourceTreeNode {
 	}
 
 	public ResourceTreeNode findChild(IPath aPath, boolean toCreateChildIfNecessary) {
+		if(aPath == null)
+			return null;
 		ResourceTreeNode child = this;
 		if (aPath.segmentCount() > 0) {
 			child = findChild(aPath.segment(0), toCreateChildIfNecessary);
