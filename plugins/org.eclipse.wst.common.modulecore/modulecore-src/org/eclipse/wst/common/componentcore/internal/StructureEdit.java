@@ -642,14 +642,14 @@ public class StructureEdit implements IEditModelHandler {
 	 * of the supplied resource may not be identical the sourcePath of the {@see ComponentResource}.
 	 * </p> 
 	 * 
-	 * @param aWorkspaceRelativePath
-	 *            A valid fully-qualified workspace-relative path of a given resource
+	 * @param aProjectRelativePath
+	 *            A valid project-relative path of a given resource
 	 * @return An array of WorkbenchModuleResources which have sourcePaths that contain the given
 	 *         resource
 	 * @throws UnresolveableURIException
 	 *             If the supplied module URI is invalid or unresolveable.
 	 */
-	public ComponentResource[] findResourcesBySourcePath(IPath aWorkspaceRelativePath) throws UnresolveableURIException {
+	public ComponentResource[] findResourcesBySourcePath(IPath aProjectRelativePath) throws UnresolveableURIException {
 		ProjectComponents projectModules = getComponentModelRoot();
 		EList modules = projectModules.getComponents();
 
@@ -658,9 +658,14 @@ public class StructureEdit implements IEditModelHandler {
 		List foundResources = new ArrayList();
 		for (int i = 0; i < modules.size(); i++) {
 			module = (WorkbenchComponent) modules.get(i);
-			resources = module.findResourcesBySourcePath(aWorkspaceRelativePath.removeFirstSegments(0));
+			resources = module.findResourcesBySourcePath(aProjectRelativePath);
 			if (resources != null && resources.length != 0)
 				foundResources.addAll(Arrays.asList(resources));
+			else {
+				resources = module.findResourcesBySourcePath(aProjectRelativePath.removeFirstSegments(1));
+				if (resources != null && resources.length != 0)
+					foundResources.addAll(Arrays.asList(resources));
+			}
 		}
 		if (foundResources.size() > 0)
 			return (ComponentResource[]) foundResources.toArray(new ComponentResource[foundResources.size()]);
