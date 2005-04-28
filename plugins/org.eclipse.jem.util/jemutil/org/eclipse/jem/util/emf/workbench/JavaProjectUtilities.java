@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $RCSfile: JavaProjectUtilities.java,v $
- *  $Revision: 1.2 $  $Date: 2005/02/15 23:04:14 $ 
+ *  $Revision: 1.3 $  $Date: 2005/04/28 15:39:18 $ 
  */
 package org.eclipse.jem.util.emf.workbench;
 
@@ -320,10 +320,19 @@ public class JavaProjectUtilities extends ProjectUtilities {
 	}
 
 	private static void collectClasspathEntryURL(IClasspathEntry entry, List urls) {
-		URL url = ProjectUtilities.createFileURL(entry.getPath());
+		IPath path = entry.getPath();
+		if (null == path.getDevice()) {
+			IFile jarFile = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+			if (jarFile.exists()) {
+				path = jarFile.getLocation();
+			}
+		}
+
+		URL url = ProjectUtilities.createFileURL(path);
 		if (url != null)
 			urls.add(url);
 	}
+
 
 	private static IJavaProject getJavaProject(IClasspathEntry entry) {
 		IProject proj = ResourcesPlugin.getWorkspace().getRoot().getProject(entry.getPath().segment(0));
