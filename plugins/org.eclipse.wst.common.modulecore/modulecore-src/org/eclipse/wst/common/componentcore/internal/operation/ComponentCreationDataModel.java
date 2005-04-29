@@ -120,6 +120,11 @@ public abstract class ComponentCreationDataModel extends WTPOperationDataModel {
 	}
 
 	protected boolean doSetProperty(String propertyName, Object propertyValue) {
+		if(COMPONENT_VERSION.equals(propertyName)){
+			if(!(propertyValue instanceof Integer)){
+				return false;
+			}
+		}
 		super.doSetProperty(propertyName, propertyValue);
 		if (PROJECT_NAME.equals(propertyName) && propertyValue != null && ((String) propertyValue).length() != 0) {
 			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject((String) propertyValue);
