@@ -120,7 +120,7 @@ public abstract class ComponentCreationDataModel extends WTPOperationDataModel {
 	}
 
 	protected boolean doSetProperty(String propertyName, Object propertyValue) {
-		if(COMPONENT_VERSION.equals(propertyName)){
+		if(propertyValue != null && COMPONENT_VERSION.equals(propertyName)){
 			if(!(propertyValue instanceof Integer)){
 				return false;
 			}
