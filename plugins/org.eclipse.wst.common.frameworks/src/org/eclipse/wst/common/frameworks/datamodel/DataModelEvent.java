@@ -67,7 +67,7 @@ public final class DataModelEvent {
 
 	/**
 	 * <p>
-	 * Constructor for DataModelEvent
+	 * Constructor for DataModelEvent.
 	 * </p>
 	 * 
 	 * @param dataModel

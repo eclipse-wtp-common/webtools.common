@@ -48,8 +48,8 @@ public interface IDataModelProvider extends IDataModelProperties {
 	 * IDataModel, any nested model names are also passed through to the IDataModelProvider for a
 	 * chance to validate the nested IDataModel in an appropriate manner.
 	 * 
-	 * @param propertyName
-	 * @return
+	 * @param name
+	 * @return an IStatus
 	 */
 	public IStatus validate(String name);
 

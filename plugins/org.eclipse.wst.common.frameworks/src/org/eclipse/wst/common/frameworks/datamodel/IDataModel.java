@@ -48,9 +48,9 @@ import org.eclipse.core.runtime.IStatus;
  * </p>
  * <p>
  * IDataModels are not meant to be instantiated directly, rather they are built from an
- * IDataModelProvider. Clients wishing to construct their own IDataModel must implement an
+ * IDataModelProvider. Clients wishing to define their own IDataModel must do so by implementing an
  * IDataModelProvider. Clients wishing to utilize an IDataModel must create it using the
- * DataModelFactory.
+ * DataModelFactory with the associated IDataModelProvider.
  * </p>
  * 
  * <p>
@@ -69,6 +69,10 @@ public interface IDataModel {
 	 * Returns the unique ID which identifies this IDataModel instance. The same ID should be used
 	 * by the default operation (if any) for clients to extend or instantiate directly, the
 	 * DataModelWizard (if any) for clients to extend or instantiate directly.
+	 * </p>
+	 * <p>
+	 * Note, this is not the same as a hashcode. Multiple IDataModel instances created with the same
+	 * IDataModelProvider type will all have the same ID.
 	 * </p>
 	 * <p>
 	 * An IDataModel implementor defines this in IDataModelProvider.
@@ -90,10 +94,34 @@ public interface IDataModel {
 	 * 
 	 * @see IDataModelProvider#getDefaultOperation()
 	 * 
-	 * @return
+	 * @return the default operation
 	 */
 	public IDataModelOperation getDefaultOperation();
 
+	/**
+	 * <p>
+	 * This method only pertains to IDataModels for extedended operations. The returned extended
+	 * context is used by the IDataModelOperation framework to determine whether a particular
+	 * extended operation should execute. The returned list is should contain Objects adaptable to
+	 * IProject. This IDataModel's function groups are looked up through the extension mechanism. If
+	 * a function group is defined, it is first checked for enablement. Then each adapted IProject
+	 * is inspected to verify it handles the function group. If all these conditions are met, then
+	 * the extended operation associated with this IDataModel is executed; otherwise it is skipped.
+	 * If no function group is defined, or no extended context is defined (i.e. this method returns
+	 * an empty list, or the objects in the returned list are not adaptable to IProject) then the
+	 * extended operation will execute (it will never be skipped).
+	 * </p>
+	 * <p>
+	 * An IDataModel implementor defines this in IDataModelProvider.
+	 * </p>
+	 * <p>
+	 * This method should not be called by clients.
+	 * </p>
+	 * 
+	 * @return a List of Objects adaptable to IProject
+	 * 
+	 * @see IDataModelProvider#getExtendedContext()
+	 */
 	public List getExtendedContext();
 
 	/**
@@ -101,19 +129,35 @@ public interface IDataModel {
 	 * Returns the property value for the specified propertyName.
 	 * </p>
 	 * <p>
-	 * If the specified propertyName is not a property {@see #isProperty(String)}then a
-	 * RuntimeException will be thrown.
+	 * If the specified propertyName is not a property then a RuntimeException will be thrown.
 	 * </p>
 	 * <p>
-	 * If the specified propertyName is a base property {@see #isBaseProperty(String)}then it is
-	 * immediatly returned. If it is not a base property then a recursive search through the nested
-	 * IDataModels is conducted to return the property. If more than one nested IDataModel defines
-	 * the property, the returned value will be that of the first nested IDataModel found.
+	 * Before the property is returned, first the owning IDataModel must be located. If the
+	 * specified propertyName is a base property {@link #isBaseProperty(String)}, then this
+	 * IDataModel is the owner. Otherwise, a recursive search through the nested IDataModels is
+	 * conducted to locate the owning IDataModel. If more than one nested IDataModel defines the
+	 * property, then the first one located is considered the owning IDataModel.
+	 * </p>
+	 * <p>
+	 * Once the owning IDataModel is found the property is checked to see if it is set
+	 * {@link #isPropertySet(String)}. If the property is set, the set value is returned. If the
+	 * property is not set, its default is returned {@link #getDefaultProperty(String)}.
+	 * </p>
+	 * <p>
+	 * There are convenience methods for getting primitive <code>int</code> and
+	 * <code>boolean</code> types as well as Strings.
+	 * <ul>
+	 * <li>{@link #getIntProperty(String)}</li>
+	 * <li>{@link #getBooleanProperty(String)}</li>
+	 * <li>{@link #getStringProperty(String)}</li>
+	 * </ul>
 	 * </p>
 	 * 
 	 * @param propertyName
-	 * @return
+	 *            the property name
+	 * @return the property
 	 * 
+	 * @see #setProperty(String, Object)
 	 * @see #getBooleanProperty(String)
 	 * @see #getIntProperty(String)
 	 * @see #getStringProperty(String)
@@ -136,10 +180,14 @@ public interface IDataModel {
 	 * <p>
 	 * A convenience method for getting ints. If the property is set then this method is equavalent
 	 * to:
+	 * </p>
 	 * <p>
 	 * <code>((Integer)getProperty(propertyName)).intValue();</code>
+	 * </p>
 	 * <p>
-	 * If the property is unset, <code>-1</code> will be returned.
+	 * <code>-1</code> is returned if a call to getProperty(propertyName) returns
+	 * <code>null</code>.
+	 * </p>
 	 * 
 	 * @param propertyName
 	 *            the property name
@@ -153,16 +201,20 @@ public interface IDataModel {
 	 * <p>
 	 * A convenience method for getting booleans. If the property is set then this method is
 	 * equavalent to:
+	 * </p>
 	 * <p>
 	 * <code>((Boolean)getProperty(propertyName)).booleanValue();</code>
+	 * </p>
 	 * <p>
-	 * If the property is unset, <code>false</code> will be returned.
+	 * <code>false</code> is returned if a call to getProperty(propertyName) returns
+	 * <code>null</code>.
+	 * </p>
 	 * 
 	 * @param propertyName
 	 *            the property name
 	 * @return the boolean value of the property
 	 * @see #setProperty(String, Object)
-	 * @see #setBooleanProperty(String, int)
+	 * @see #setBooleanProperty(String, boolean)
 	 */
 	public boolean getBooleanProperty(String propertyName);
 
@@ -170,13 +222,16 @@ public interface IDataModel {
 	 * <p>
 	 * A convenience method for getting Strings. If the property is set then this method is
 	 * equavalent to:
+	 * </p>
 	 * <p>
 	 * <code>(String)getProperty(propertyName)</code>
+	 * </p>
 	 * <p>
-	 * If the property is unset, the empty String, <code>""</code>, will be returned.
+	 * <code>""</code> is returned if a call to getProperty(propertyName) returns
+	 * <code>null</code>.
+	 * </p>
 	 * 
 	 * @param propertyName
-	 * @param value
 	 * @see #setProperty(String, Object)
 	 */
 	public String getStringProperty(String propertyName);
@@ -184,40 +239,41 @@ public interface IDataModel {
 	/**
 	 * <p>
 	 * Sets the specified propertyName to the specified propertyValue. Subsequent calls to
-	 * #getProperty(String) will return the same propertyValue.
+	 * {@link #getProperty(String)} will return the same propertyValue.
+	 * </p>
 	 * <p>
 	 * When a propertyValue other than <code>null</code> is set, then the property is considered
-	 * "set" (see #isSet(String)), conversly, a propertyValue of <code>null</code> is considered
-	 * "unset".
+	 * "set" (see {@link #isPropertySet(String)}), conversly, a propertyValue of <code>null</code>
+	 * is considered "unset".
+	 * </p>
 	 * <p>
-	 * If the specified propertyName is not a property (see#isProperty(String)) then a
+	 * If the specified propertyName is not a property (see {@link #isProperty(String)}) then a
 	 * RuntimeException will be thrown.
+	 * </p>
 	 * <p>
-	 * Attempting to set a propertyName when this DataModel is locked (see #isLocked()) will result
-	 * in a thrown IllegalStateException. An IllegalStateException will not be thrown, however, if
-	 * the propertyName is a Result Property, (see #isResultProperty(String)).
+	 * There are convenience methods for setting primitive <code>int</code> and
+	 * <code>boolean</code> types as well as Strings.
+	 * <ul>
+	 * <li>{@link #setIntProperty(String, int)}</li>
+	 * <li>{@link #setBooleanProperty(String, boolean)}</li>
+	 * <li>{@link #setStringProperty(String, String)}</li>
+	 * </ul>
+	 * </p>
 	 * <p>
-	 * <p>
-	 * An IDataModel implementor may define additional post set logic in IDataModelProvider.
+	 * An IDataModel implementor may define additional post set logic in
+	 * {@link IDataModelProvider#propertySet(String, Object)}.
 	 * </p>
 	 * 
-	 * @see IDataModelProvider#propertySet(String, Object)
 	 * @param propertyName
+	 *            the name of the property to set
 	 * @param propertyValue
+	 *            the value to set the property
 	 * 
 	 * 
 	 * @see #getProperty(String)
-	 * @see #isSet(String)
+	 * @see #isPropertySet(String)
 	 * @see #isProperty(String)
-	 * @see #isResultProperty(String)
-	 * @see #isLocked()
-	 * 
-	 * <p>
-	 * There are also convenience methods for setting properties representing property types of
-	 * boolean and int.
-	 * <p>
-	 * @see #setBooleanProperty(String, boolean)
-	 * @see #setIntProperty(String, int)
+	 * @see IDataModelProvider#propertySet(String, Object)
 	 */
 	public void setProperty(String propertyName, Object propertyValue);
 
@@ -225,12 +281,12 @@ public interface IDataModel {
 	 * <p>
 	 * A convenience method for setting ints. This method is equavalent to:
 	 * <p>
-	 * <code>setProperty(propertyName, new Integer(value));</code>
+	 * <code>setProperty(propertyName, new Integer(propertyValue));</code>
 	 * </p>
 	 * 
 	 * @param propertyName
 	 *            the name of the property
-	 * @param value
+	 * @param propertyValue
 	 *            the <code>int</code> value of the property
 	 * @see #setProperty(String, Object)
 	 * @see #getIntProperty(String)
@@ -246,7 +302,7 @@ public interface IDataModel {
 	 * 
 	 * @param propertyName
 	 *            the name of the property
-	 * @param value
+	 * @param propertyValue
 	 *            the <code>boolean</code> value of the property
 	 * @see #setProperty(String, Object)
 	 * @see #getBooleanProperty(String)
@@ -257,39 +313,36 @@ public interface IDataModel {
 	 * <p>
 	 * A convenience method for setting Strings. This method is equavalent to:
 	 * <p>
-	 * <code>setProperty(propertyName, value);</code>
+	 * <code>setProperty(propertyName, propertyValue);</code>
 	 * </p>
 	 * 
 	 * @param propertyName
 	 *            the name of the property
-	 * @param value
+	 * @param propertyValue
 	 *            the value of the property
 	 * @see #setProperty(String, Object)
-	 * @see #getBooleanProperty(String)
+	 * @see #getStringProperty(String)
 	 */
 	public void setStringProperty(String propertyName, String propertyValue);
 
 	/**
 	 * <p>
 	 * This method is used to nest the specified IDataModel within this IDataModel. The
-	 * <code>modelName</code> argument should be a unique String to identify this particular
+	 * <code>nestedModelName</code> argument should be a unique String to identify this particular
 	 * nested IDataModel. The same String is required when accessing the nested IDataModel using
-	 * either <code>getNestedModel(String)</code> or <code>removeNestedModel(String)</code>. If
-	 * the specified nested IDataModel has already been nested under this IDataModel or it is the
-	 * same instance as this IDataModel, then calling this method will have no effect.
-	 * </p>
-	 * <p>
-	 * Refer to <A HREF="#nestedDataModels"> <CODE>NestedDataModels</CODE> </A>.
+	 * either {@link #getNestedModel(String)} or {@link #removeNestedModel(String)}. If the
+	 * specified nested IDataModel has already been nested under this IDataModel or it is the same
+	 * instance as this IDataModel, then calling this method will have no effect.
 	 * </p>
 	 * 
-	 * @param modelName
+	 * @param nestedModelName
 	 *            the name of the IDataModel to be nested
 	 * @param dataModel
 	 *            the IDataModel to be nested
+	 * @return <code>true</code> if the nesting was successful, <code>false</code> otherwise.
 	 * 
 	 * @see #getNestedModel(String)
 	 * @see #removeNestedModel(String)
-	 * @return <code>true</code> if the nesting was successful, <code>false</code> otherwise.
 	 */
 	public boolean addNestedModel(String nestedModelName, IDataModel dataModel);
 
@@ -299,6 +352,7 @@ public interface IDataModel {
 	 * </p>
 	 * 
 	 * @param nestedModelName
+	 *            the name of the nested IDataModel to remove.
 	 * @return the IDataModel removed, or <code>null</code> if the nested model does not exist or
 	 *         if the specified name is null.
 	 */
@@ -309,6 +363,7 @@ public interface IDataModel {
 	 * specified name and <code>false</code> otherwise.
 	 * 
 	 * @param nestedModelName
+	 *            the name of the nested IDataModel to check.
 	 * @return Returns <code>true</code> if a nested model exists (at the top level only) with the
 	 *         specified name and <code>false</code> otherwise.
 	 */
@@ -320,6 +375,7 @@ public interface IDataModel {
 	 * <code>false</code>).
 	 * 
 	 * @param nestedModelName
+	 *            the name of the nested IDataModel to get.
 	 * @return the nested IDataModel
 	 */
 	public IDataModel getNestedModel(String nestedModelName);
@@ -380,8 +436,12 @@ public interface IDataModel {
 	 * IDataModel to contain the same property.
 	 * 
 	 * @param propertyName
-	 * @return
+	 *            the property name to check
+	 * @return <code>true</code> if this property is a base property, <code>false</code>
+	 *         otherwise.
+	 * 
 	 * @see #isProperty(String)
+	 * @see #isNestedProperty(String)
 	 */
 	public boolean isBaseProperty(String propertyName);
 
@@ -390,18 +450,21 @@ public interface IDataModel {
 	 * DataModel or any of its (recursively) nested IDataModels.
 	 * 
 	 * @param propertyName
-	 * @return
+	 *            the property name to check
+	 * @return <code>true</code> if this is a property, <code>false</code> otherwise.
+	 * 
 	 * @see #isBaseProperty(String)
 	 */
 	public boolean isProperty(String propertyName);
 
 	/**
-	 * Returns <code>true</code> if the specified propertyName is a valid propertyName any of its
-	 * (recursively) nested IDataModels. The root IDataModel is not checked, though it is possible
-	 * for the root IDataModel to contain the same property.
+	 * Returns <code>true</code> if the specified propertyName is a valid propertyName for any of
+	 * its (recursively) nested IDataModels. The root IDataModel is not checked, though it is
+	 * possible for the root IDataModel to contain the same property.
 	 * 
 	 * @param propertyName
-	 * @return
+	 *            the property name to check
+	 * @return <code>true</code> if the property is nested, <code>false</code> otherwise.
 	 * @see #isBaseProperty(String)
 	 */
 	public boolean isNestedProperty(String propertyName);
@@ -411,7 +474,8 @@ public interface IDataModel {
 	 * has not been set, then a call to get the same property will return the default value.
 	 * 
 	 * @param propertyName
-	 * @return
+	 *            the property name to check
+	 * @return <code>true</code> if the property is set, <code>false</code> otherwise.
 	 */
 	public boolean isPropertySet(String propertyName);
 
@@ -427,6 +491,7 @@ public interface IDataModel {
 	 * @see IDataModelProvider#isPropertyEnabled(String)
 	 * 
 	 * @param propertyName
+	 *            the property name to check
 	 * @return <code>true</code> if the specified property is enabled and <code>false</code>
 	 *         otherwise.
 	 */
@@ -439,6 +504,7 @@ public interface IDataModel {
 	 * </p>
 	 * 
 	 * @param propertyName
+	 *            the property name to check
 	 * @return <code>false</code> if the the IStatus returned by validateProperty(String) is ERROR
 	 *         and <code>true</code> otherwise.
 	 */
@@ -472,7 +538,7 @@ public interface IDataModel {
 
 	/**
 	 * <p>
-	 * Equavalent to calling validate(true)
+	 * Equavalent to calling <code>validate(true)</code>.
 	 * </p>
 	 * 
 	 * @return an IStatus
@@ -496,64 +562,86 @@ public interface IDataModel {
 
 	/**
 	 * <p>
-	 * Returns a WTPPropertyDescriptor for the specified property. The
-	 * <code>getPropertyValue()</code> method on the returned WTPPropertyDescriptor will be the
-	 * same value as returned by <code>getPropertyValue(propertyName)</code>.
+	 * Returns a DataModelPropertyDescriptor for the specified property. The
+	 * <code>getPropertyValue()</code> method on the returned DataModelPropertyDescriptor will be
+	 * the same value as returned by <code>getPropertyValue(propertyName)</code>.
 	 * </p>
 	 * <p>
-	 * Following the example introduced in {@see #getValidPropertyDescriptors(String)}, suppose the
-	 * <code>SHIRT_SIZE</code> property is currently set to 1. A call to this method would return
-	 * a WTPPropertyDescriptor whose <code>getPropertyValue()</code> returns <code>1</code> and
-	 * whose <code>getPropertyDescription()</code> returns <code>small</code>.
+	 * Following the example introduced in {@link #getValidPropertyDescriptors(String)}, suppose
+	 * the <code>SHIRT_SIZE</code> property is currently set to 1. A call to this method would
+	 * return a DataModelPropertyDescriptor whose <code>getPropertyValue()</code> returns
+	 * <code>1</code> and whose <code>getPropertyDescription()</code> returns <code>small</code>.
 	 * </p>
 	 * <p>
 	 * Also, note that even if a particular property is not confined to a finite set of values as
-	 * defined by {@see #getValidPropertyDescriptors(String)}this method will always return a valid
-	 * WTPPropertyDescriptor.
+	 * defined by {@link #getValidPropertyDescriptors(String)}this method will always return a
+	 * valid DataModelPropertyDescriptor.
 	 * </p>
+	 * 
 	 * <p>
-	 * Subclasses should should override {@see #doGetPropertyDescriptor(String)}as necessary.
+	 * An IDataModel implementor defines this in IDataModelProvider.
 	 * </p>
 	 * 
 	 * @param propertyName
-	 * @return the WTPPropertyDescriptor for the specified property
+	 * @return the DataModelPropertyDescriptor for the specified property
 	 * 
-	 * @see #doGetValidPropertyDescriptors(String)
-	 * @see #doGetPropertyDescriptor(String)
+	 * @see #getValidPropertyDescriptors(String)
 	 */
 	public DataModelPropertyDescriptor getPropertyDescriptor(String propertyName);
 
 	/**
 	 * <p>
-	 * Returns a WTPPropertyDescriptor array consisting of all valid WTPPropertyDescriptors for the
-	 * specified property. Each WTPPropertyDescriptor {@see WTPPropertyDescriptor for details}
-	 * contains a value and a human readible description for the value. The set of all values in the
-	 * returned array are those values which are valid for the DataModel. This value set only makes
-	 * sense when valid property values conform to a well defined finite set. If no such value set
-	 * exists for the property, the a 0 length array is returned. <code>null</code> is never
-	 * returned.
+	 * Returns a DataModelPropertyDescriptor array consisting of all valid
+	 * DataModelPropertyDescriptors for the specified property. Each
+	 * {@link DataModelPropertyDescriptor} contains a value and a human readible description for the
+	 * value. The set of all values in the returned array are those values which are valid for the
+	 * IDataModel. This value set only makes sense when valid property values conform to a well
+	 * defined finite set. If no such value set exists for the property, then a 0 length array is
+	 * returned. <code>null</code> is never returned.
 	 * </p>
 	 * <p>
 	 * As an example, suppose there is a property called <code>SHIRT_SIZE</code> which is an
 	 * <code>Integer</code> type. Also suppse that valid shirt sizes are only small, medium, or
 	 * large. However, the actual values representing small, medium, and large are 1, 2, and 3
 	 * respectively. A call to <code>getValidPropertyDescriptors(SHIRT_SIZE)</code> would return a
-	 * WTPPropertyDescriptor array where the value, description pairs would be {(1, small), (2,
-	 * medium), (3, large)}.
+	 * DataModelPropertyDescriptor array where the value, description pairs would be {(1, small),
+	 * (2, medium), (3, large)}.
 	 * </p>
 	 * <p>
-	 * Subclasses should override {@see #doGetValidPropertyDescriptors(String)}as necessary.
+	 * An IDataModel implementor defines this in IDataModelProvider.
 	 * </p>
 	 * 
+	 * 
 	 * @param propertyName
-	 * @return the array of valid WTPPropertyDescriptors
+	 *            then name of the property to check
+	 * @return the array of valid DataModelPropertyDescriptors
 	 * @see #getPropertyDescriptor(String)
-	 * @see #doGetValidPropertyDescriptors(String)
 	 */
 	public DataModelPropertyDescriptor[] getValidPropertyDescriptors(String propertyName);
 
+	/**
+	 * <p>
+	 * Adds the specified IDataModelListener to listen for DataModelEvents. If the specified
+	 * listener has already been added, calling this method will have no effect.
+	 * </p>
+	 * 
+	 * @param dataModelListener
+	 *            the new listener to add.
+	 * 
+	 * @see #removeListener(IDataModelListener)
+	 */
 	public void addListener(IDataModelListener dataModelListener);
 
+	/**
+	 * <p>
+	 * Remove the specified IDataModelListener. If the specified listener is not a registered
+	 * listenr on this IDataModel, then calling this method will have no effect.
+	 * </p>
+	 * 
+	 * @param dataModelListener
+	 *            the listener to remove.
+	 * @see #addListener(IDataModelListener)
+	 */
 	public void removeListener(IDataModelListener dataModelListener);
 
 	/**
@@ -568,9 +656,9 @@ public interface IDataModel {
 	/**
 	 * <p>
 	 * A constant used for notification. This contant is different from the others because it does
-	 * not map to an even type on DataModelEvent. When notifying with this type, a check is done to
-	 * see whether the property is set. If the property is set, then a <code>VALUE_CHG</code> is
-	 * fired, otherwise nothing happens.
+	 * not map to an event type on DataModelEvent. When notifying with this type, a check is first
+	 * done to see whether the property is set. If the property is <empf>NOT</emph> set, then a
+	 * <code>VALUE_CHG</code> is fired, otherwise nothing happens.
 	 * </p>
 	 * 
 	 * @see #notifyPropertyChange(String, int)
@@ -603,6 +691,10 @@ public interface IDataModel {
 	 * the eventType is <code>DEFAULT_CHG</code> and the specified property is set, then this
 	 * method will do nothing.
 	 * </p>
+	 * <p>
+	 * Typically this method should only be invoked by an IDataModelProvider from its propertySet
+	 * implementation.
+	 * </p>
 	 * 
 	 * @param propertyName
 	 *            the name of the property changing
@@ -617,6 +709,13 @@ public interface IDataModel {
 	 */
 	public void notifyPropertyChange(String propertyName, int eventType);
 
+	/**
+	 * <p>
+	 * A typical dispose method used to clean up any resources not handled by general garbage
+	 * collection.
+	 * </p>
+	 * 
+	 */
 	public void dispose();
-	
+
 }

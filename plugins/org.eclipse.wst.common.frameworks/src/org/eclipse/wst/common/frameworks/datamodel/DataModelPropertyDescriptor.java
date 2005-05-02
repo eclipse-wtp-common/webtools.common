@@ -79,7 +79,7 @@ public final class DataModelPropertyDescriptor {
 
 	/**
 	 * <p>
-	 * This is equavalent to calling <code>DataModelPropertyDescriptor(propertyValue, null);</code>
+	 * This is equavalent to calling <code>DataModelPropertyDescriptor(propertyValue, null)</code>.
 	 * </p>
 	 * 
 	 * @param propertyValue

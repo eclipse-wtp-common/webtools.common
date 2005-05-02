@@ -17,13 +17,15 @@ public class DataModelFactory {
 
 	private static DataModelExtensionReader reader;
 
-	private DataModelFactory(){
+	private DataModelFactory() {
 	}
-	
+
 	/**
+	 * <p>
 	 * Looks up the appropriate IDataModelProvider by the specified id and constructs a new
 	 * IDataModel. If the IDataModelProvider is not found then a RuntimeException is logged and null
 	 * is returned.
+	 * </p>
 	 * 
 	 * @param dataModelProviderID
 	 *            the id of the IDataModelProvider
@@ -44,7 +46,9 @@ public class DataModelFactory {
 	}
 
 	/**
+	 * <p>
 	 * Looks up the appropriate dataModelProviderIDs by the specified dataModelProviderKindID.
+	 * </p>
 	 * 
 	 * @param dataModelProviderKindID
 	 *            the String id of the dataModelProviderKindID
@@ -57,7 +61,7 @@ public class DataModelFactory {
 	}
 
 
-	private static String [] loadProviderForProviderKind(String providerKind) {
+	private static String[] loadProviderForProviderKind(String providerKind) {
 		if (null == reader) {
 			reader = new DataModelExtensionReader();
 		}
@@ -65,21 +69,25 @@ public class DataModelFactory {
 	}
 
 	/**
+	 * <p>
 	 * Looks up the appropriate IDataModelProvider using the name of the specified class. This
 	 * method is equavalent to <code>createDataModel(dataModelProviderClassID.getName())</code>.
+	 * </p>
 	 * 
 	 * @param dataModelProviderClass
 	 *            the class whose name is the id of the IDataModelProvider
 	 * @return a new IDataModel
 	 */
-	public static IDataModel createDataModel(Class dataModelProviderID) {
-		return createDataModel(dataModelProviderID.getName());
+	public static IDataModel createDataModel(Class dataModelProviderClass) {
+		return createDataModel(dataModelProviderClass.getName());
 	}
 
 	/**
-	 * Creates a new IDataModel using the the specified instance of an IDataModelProvider
+	 * <p>
+	 * Creates a new IDataModel using the the specified instance of an IDataModelProvider.
+	 * </p>
 	 * 
-	 * @param dataModelProviderInstance
+	 * @param provider
 	 * @return a new IDataModel
 	 */
 	public static IDataModel createDataModel(IDataModelProvider provider) {
