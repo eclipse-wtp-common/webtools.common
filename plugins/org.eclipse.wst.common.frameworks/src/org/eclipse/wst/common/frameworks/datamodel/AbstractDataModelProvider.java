@@ -50,12 +50,20 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	}
 
 	/**
+	 * <p>
+	 * A default implementation of init(). Subclasses should override as necessary.
+	 * </p>
+	 * 
 	 * @see IDataModelProvider#init()
 	 */
 	public void init() {
 	}
 
 	/**
+	 * </p>
+	 * An implemenation of setDataModel().
+	 * </p>
+	 * 
 	 * @see IDataModelProvider#setDataModel(IDataModel)
 	 */
 	public final void setDataModel(IDataModel dataModel) {
@@ -63,6 +71,10 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	}
 
 	/**
+	 * <p>
+	 * An implemenation of getDataModel().
+	 * </p>
+	 * 
 	 * @see IDataModelProvider#getDataModel()
 	 */
 	public final IDataModel getDataModel() {
@@ -71,6 +83,15 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 
 
 	/**
+	 * </p>
+	 * A default impleneation of propertySet(). Subclasses should override as necessary.
+	 * </p>
+	 * 
+	 * @param propertyName
+	 *            the name of the property that has been set
+	 * @param propertyValue
+	 *            the value the property has been set
+	 * 
 	 * @see IDataModelProvider#propertySet(String, Object)
 	 */
 	public boolean propertySet(String propertyName, Object propertyValue) {
@@ -78,6 +99,13 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	}
 
 	/**
+	 * <p>
+	 * A default implemenation of getDefaultProperty(). Subclasses should override as necessary.
+	 * </p>
+	 * 
+	 * @param propertyName
+	 *            the specified property
+	 * 
 	 * @see IDataModelProvider#getDefaultProperty(String)
 	 */
 	public Object getDefaultProperty(String propertyName) {
@@ -85,6 +113,12 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	}
 
 	/**
+	 * <p>
+	 * A default implemenation of isPropertyEnabled(). Subclasses should override as necessary.
+	 * </p>
+	 * 
+	 * @param propertyName
+	 *            the specified property
 	 * @see IDataModelProvider#isPropertyEnabled(String)
 	 */
 	public boolean isPropertyEnabled(String propertyName) {
@@ -92,6 +126,13 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	}
 
 	/**
+	 * <p>
+	 * A default implemenation of validate(). Subclasses should override as necessary.
+	 * </p>
+	 * 
+	 * @param name
+	 *            the name of the property or nested IDataModel being validated.
+	 * 
 	 * @see IDataModelProvider#validate(String)
 	 */
 	public IStatus validate(String name) {
@@ -99,6 +140,12 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	}
 
 	/**
+	 * <p>
+	 * A default implemenation of getPropertyDescriptor(). Subclasses should override as necessary.
+	 * </p>
+	 * 
+	 * @param propertyName
+	 *            the specified property
 	 * @see IDataModelProvider#getPropertyDescriptor(String)
 	 */
 	public DataModelPropertyDescriptor getPropertyDescriptor(String propertyName) {
@@ -106,6 +153,13 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	}
 
 	/**
+	 * <p>
+	 * A default implemenation of getValidPropertyDescriptors(). Subclasses should override as
+	 * necessary.
+	 * </p>
+	 * 
+	 * @param propertyName
+	 *            the specified property
 	 * @see IDataModelProvider#getValidPropertyDescriptors(String)
 	 */
 	public DataModelPropertyDescriptor[] getValidPropertyDescriptors(String propertyName) {
@@ -113,6 +167,10 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	}
 
 	/**
+	 * <p>
+	 * A default implemenation of getExtendedContext(). Subclasses should override as necessary.
+	 * </p>
+	 * 
 	 * @see IDataModelProvider#getExtendedContext()
 	 */
 	public List getExtendedContext() {
@@ -120,6 +178,10 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	}
 
 	/**
+	 * <p>
+	 * A default implemenation of getDefaultOperation(). Subclasses should override as necessary.
+	 * </p>
+	 * 
 	 * @see IDataModelProvider#getDefaultOperation()
 	 */
 	public IDataModelOperation getDefaultOperation() {
@@ -127,6 +189,10 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	}
 
 	/**
+	 * <p>
+	 * A default implemenation of getName(). Subclasses should override as necessary.
+	 * </p>
+	 * 
 	 * @see IDataModelProvider#getID()
 	 */
 	public String getID() {
@@ -134,6 +200,10 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	}
 
 	/**
+	 * <p>
+	 * A default implemenation of dispose(). Subclasses should override as necessary.
+	 * </p>
+	 * 
 	 * @see IDataModelProvider#dispose()
 	 */
 	public void dispose() {

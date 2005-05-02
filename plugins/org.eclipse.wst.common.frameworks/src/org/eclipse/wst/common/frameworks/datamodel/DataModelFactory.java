@@ -13,6 +13,13 @@ package org.eclipse.wst.common.frameworks.datamodel;
 import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelExtensionReader;
 import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelImpl;
 
+/**
+ * <p>
+ * DataModelFactory is used to create IDataModel instances.
+ * </p>
+ * 
+ * @since 1.0
+ */
 public class DataModelFactory {
 
 	private static DataModelExtensionReader reader;
