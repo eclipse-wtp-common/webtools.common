@@ -185,6 +185,7 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
 			unsortedList.add(wbModules[i]);
 		}
 		WorkbenchComponent firstModule = wbModules[0];
+        if(firstModule == null) return null;
 		List sortedList = new ArrayList(wbModules.length);
 		try {
 			sortedList = computeModuleBuildOrder(firstModule, sortedList, unsortedList, new Stack());
@@ -209,7 +210,7 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
 		}
 
 		List sortedList = computeModuleBuildOrder(wbModules);
-
+        if(sortedList == null) return moduleBuilderDataModelList;
         IDataModel dataModel = null;
         IProject curProject = (IProject)model.getProperty(PROJECT);
 		
