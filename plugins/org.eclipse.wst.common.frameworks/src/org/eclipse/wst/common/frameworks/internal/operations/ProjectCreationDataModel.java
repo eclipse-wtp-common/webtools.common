@@ -136,7 +136,7 @@ public class ProjectCreationDataModel extends WTPOperationDataModel {
 		}
 		if (propertyName.equals(PROJECT_LOCATION) || propertyName.equals(PROJECT_NAME)) {
 			String projectName = getStringProperty(PROJECT_NAME);
-			String projectLoc = getStringProperty(PROJECT_LOCATION);
+			String projectLoc = (String) getProperty(PROJECT_LOCATION);
 			return validateExisting(projectName, projectLoc);
 		}
 		return super.doValidateProperty(propertyName);
@@ -200,7 +200,7 @@ public class ProjectCreationDataModel extends WTPOperationDataModel {
 	}
 
 	private IStatus validateLocation() {
-		if (isSet(PROJECT_LOCATION)) {
+		if (isSet(PROJECT_LOCATION) && isSet(PROJECT_NAME)) {
 			String loc = (String) getProperty(PROJECT_LOCATION);
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();
 			IPath path = new Path(loc);
