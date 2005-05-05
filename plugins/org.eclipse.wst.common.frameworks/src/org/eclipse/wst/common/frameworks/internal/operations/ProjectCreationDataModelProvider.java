@@ -37,15 +37,16 @@ public class ProjectCreationDataModelProvider extends AbstractDataModelProvider 
 	public IDataModelOperation getDefaultOperation() {
 		return new ProjectCreationOp(model);
 	}
-
+    public void init() {
+        super.init();
+        model.setProperty(PROJECT_LOCATION, getDefaultLocation());
+        model.setProperty(PROJECT_DESCRIPTION, getProjectDescription());    
+    }
 	public String[] getPropertyNames() {
-		return new String[]{PROJECT_NAME, PROJECT_LOCATION, PROJECT_NATURES, PROJECT_DESCRIPTION};
+		return new String[]{PROJECT, PROJECT_NAME, PROJECT_LOCATION, PROJECT_NATURES, PROJECT_DESCRIPTION};
 	}
 
 	public Object getDefaultProperty(String propertyName) {
-		if (PROJECT_LOCATION.equals(propertyName)) {
-			return getDefaultLocation();
-		}
 		return super.getDefaultProperty(propertyName);
 	}
 
@@ -60,6 +61,7 @@ public class ProjectCreationDataModelProvider extends AbstractDataModelProvider 
 		if (propertyName.equals(PROJECT_NAME) && !getDataModel().isPropertySet(PROJECT_LOCATION)) {
 			model.notifyPropertyChange(PROJECT_NAME, IDataModel.VALUE_CHG);
 			model.notifyPropertyChange(PROJECT_LOCATION, IDataModel.VALUE_CHG);
+            model.setProperty(PROJECT, getProject());
 			return false;
 		}
 		return true;

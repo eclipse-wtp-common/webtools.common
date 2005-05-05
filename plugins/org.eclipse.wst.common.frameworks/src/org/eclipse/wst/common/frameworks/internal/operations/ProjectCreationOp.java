@@ -36,15 +36,17 @@ public class ProjectCreationOp extends AbstractDataModelOperation {
 
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		try {
+            IProgressMonitor subMonitor = new SubProgressMonitor(monitor, IProgressMonitor.UNKNOWN);
 			IProjectDescription desc = (IProjectDescription) model.getProperty(IProjectCreationProperties.PROJECT_DESCRIPTION);
 			IProject project = (IProject) model.getProperty(IProjectCreationProperties.PROJECT);
 			if (!project.exists()) {
-				project.create(desc, new SubProgressMonitor(monitor, IProgressMonitor.UNKNOWN));
-			}
+                project.create(desc, subMonitor);
+            }   
+            if (monitor.isCanceled())
+                throw new OperationCanceledException();
+            subMonitor = new SubProgressMonitor(monitor, IProgressMonitor.UNKNOWN);
 
-			if (monitor.isCanceled())
-				throw new OperationCanceledException();
-			project.open(new SubProgressMonitor(monitor, IProgressMonitor.UNKNOWN));
+            project.open(subMonitor);
 
 			String[] natureIds = (String[]) model.getProperty(IProjectCreationProperties.PROJECT_NATURES);
 			if (null != natureIds) {
@@ -56,7 +58,7 @@ public class ProjectCreationOp extends AbstractDataModelOperation {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
-			monitor.done();
+           monitor.done();
 		}
 		if (monitor.isCanceled())
 			throw new OperationCanceledException();

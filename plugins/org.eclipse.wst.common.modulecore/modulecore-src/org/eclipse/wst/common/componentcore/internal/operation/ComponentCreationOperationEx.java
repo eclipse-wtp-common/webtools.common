@@ -11,11 +11,9 @@
 
 package org.eclipse.wst.common.componentcore.internal.operation;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -30,34 +28,24 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
-public abstract class ComponentCreationOperationEx extends AbstractDataModelOperation implements IComponentCreationDataModelProperties{
+public abstract class ComponentCreationOperationEx extends AbstractDataModelOperation implements IComponentCreationDataModelProperties {
 
-	public ComponentCreationOperationEx(IDataModel model) {
-		super(model);
-	}
+    public ComponentCreationOperationEx(IDataModel model) {
+        super(model);
+    }
 
-	public ComponentCreationOperationEx() {
-		super();
-	}
-	protected void execute(String componentType, IProgressMonitor monitor) throws CoreException, InvocationTargetException, InterruptedException {
+    public IStatus execute(String componentType, IProgressMonitor monitor, IAdaptable info) {
         createComponent();
-        setupComponentType(componentType);		
-    }	
-	
-	public IStatus execute(String componentType, IProgressMonitor monitor, IAdaptable info) {
-        createComponent();
-        setupComponentType(componentType);	
+        setupComponentType(componentType);
         return OK_STATUS;
-	}
+    }
 
-	
-	//to make it  abstract
-	protected void createComponent(){};
-	
+    // to make it abstract
+    protected void createComponent() {
+    };
+
     protected void setupComponentType(String typeID) {
-    	//ComponentCreationDataModel dataModel = (ComponentCreationDataModel)operationDataModel;
-
-		IVirtualComponent component = ComponentCore.createComponent(getProject(), model.getStringProperty(ComponentCreationDataModelProvider.COMPONENT_DEPLOY_NAME));    	
+        IVirtualComponent component = ComponentCore.createComponent(getProject(), model.getStringProperty(ComponentCreationDataModelProvider.COMPONENT_DEPLOY_NAME));
         ComponentType componentType = ComponentcoreFactory.eINSTANCE.createComponentType();
         componentType.setComponentTypeId(typeID);
         componentType.setVersion(getVersion());
@@ -66,24 +54,26 @@ public abstract class ComponentCreationOperationEx extends AbstractDataModelOper
             EList existingProps = componentType.getProperties();
             for (int i = 0; i < newProps.size(); i++) {
                 existingProps.add(newProps.get(i));
-		}
-		}
+            }
+        }
         StructureEdit.setComponentType(component, componentType);
-    }	
-    
-    protected IProject getProject(){
-    	String name = model.getStringProperty(PROJECT_NAME);
-    	return ProjectUtilities.getProject(name);
     }
-    
-    protected String getComponentName(){
-    	return model.getStringProperty(COMPONENT_NAME);
+
+    protected IProject getProject() {
+        String name = model.getStringProperty(PROJECT_NAME);
+        return ProjectUtilities.getProject(name);
     }
-    public String getComponentDeployName(){
-    	return model.getStringProperty(COMPONENT_DEPLOY_NAME);
-    }    
-    
+
+    protected String getComponentName() {
+        return model.getStringProperty(COMPONENT_NAME);
+    }
+
+    public String getComponentDeployName() {
+        return model.getStringProperty(COMPONENT_DEPLOY_NAME);
+    }
+
     protected abstract String getVersion();
-	protected abstract List getProperties();
-	
+
+    protected abstract List getProperties();
+
 }
