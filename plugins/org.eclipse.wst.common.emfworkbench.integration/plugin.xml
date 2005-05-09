@@ -16,7 +16,6 @@
    <requires>
       <import plugin="org.eclipse.wst.common.frameworks"/>
       <import plugin="org.eclipse.jem.util"/>
-      <import plugin="org.eclipse.jem.workbench"/>
       <import plugin="org.eclipse.emf.edit"/>
       <import plugin="org.eclipse.emf.ecore.xmi"/>
       <import plugin="org.eclipse.wst.common.emf"/>

@@ -19,7 +19,6 @@
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.emf.ecore"/>
       <import plugin="org.eclipse.wst.common.emfworkbench.integration"/>
-      <import plugin="org.eclipse.jem.workbench"/>
       <import plugin="org.eclipse.wst.common.emf"/>
       <import plugin="org.eclipse.emf.ecore.xmi"/>
       <import plugin="org.eclipse.wst.server.core"/>
