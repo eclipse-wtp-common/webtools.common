@@ -36,10 +36,11 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 
     public void init() {
         super.init();
+        initProjectCreationModel();
     }
     
 	public String[] getPropertyNames() {
-		return new String[]{PROJECT_NAME, COMPONENT_NAME, COMPONENT_DEPLOY_NAME, CREATE_DEFAULT_FILES};
+		return new String[]{PROJECT_NAME, NESTED_PROJECT_CREATION_DM, COMPONENT_NAME, LOCATION, COMPONENT_DEPLOY_NAME, CREATE_DEFAULT_FILES};
 	}
 
     public void propertyChanged(DataModelEvent event) {
@@ -49,9 +50,10 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
     }
 
     public boolean propertySet(String propertyName, Object propertyValue) {
-        if (COMPONENT_NAME.equals(propertyName))
+        if (COMPONENT_NAME.equals(propertyName)) {
 			model.setProperty(COMPONENT_DEPLOY_NAME, propertyValue);
-        else if (COMPONENT_DEPLOY_NAME.equals(propertyName))
+            model.setProperty(PROJECT_NAME, propertyValue);
+        } else if (COMPONENT_DEPLOY_NAME.equals(propertyName))
 			model.setProperty(COMPONENT_DEPLOY_NAME, propertyValue);        
          return true;
     }
@@ -130,6 +132,8 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
     protected String getComponentDeployName(){
         return model.getStringProperty(COMPONENT_DEPLOY_NAME);
     }
+    
+    protected abstract void initProjectCreationModel();
     
 	protected abstract EClass getComponentType();
 

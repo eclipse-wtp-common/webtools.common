@@ -13,12 +13,15 @@ package org.eclipse.wst.common.componentcore.internal.operation;
 
 import java.util.List;
 
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IComponentCreationDataModelProperties;
 import org.eclipse.wst.common.componentcore.internal.ComponentType;
@@ -27,6 +30,7 @@ import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 
 public abstract class ComponentCreationOperationEx extends AbstractDataModelOperation implements IComponentCreationDataModelProperties {
 
@@ -35,14 +39,30 @@ public abstract class ComponentCreationOperationEx extends AbstractDataModelOper
     }
 
     public IStatus execute(String componentType, IProgressMonitor monitor, IAdaptable info) {
-        createComponent();
+        createProjectIfNeeded(monitor, info);
+        try {
+            createAndLinkJ2EEComponents();
+        }
+        catch (CoreException e) {
+            Logger.getLogger().log(e);
+        }
         setupComponentType(componentType);
         return OK_STATUS;
     }
 
+    private void createProjectIfNeeded(IProgressMonitor monitor, IAdaptable info) {
+        Object dm = model.getProperty(NESTED_PROJECT_CREATION_DM);
+        if(dm == null) return;
+        IDataModelOperation op = ((IDataModel)dm).getDefaultOperation();
+        try {
+            op.execute(monitor, info);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
     // to make it abstract
-    protected void createComponent() {
-    };
+    protected abstract void createAndLinkJ2EEComponents() throws CoreException;
 
     protected void setupComponentType(String typeID) {
         IVirtualComponent component = ComponentCore.createComponent(getProject(), model.getStringProperty(ComponentCreationDataModelProvider.COMPONENT_DEPLOY_NAME));
