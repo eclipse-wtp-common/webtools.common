@@ -15,30 +15,65 @@ import java.util.List;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
+/**
+ * IDataModelProviders are used by the DataMdoelFactory to construct IDataModels.  
+ * 
+ * 
+ * @since 1.0
+ */
 public interface IDataModelProvider extends IDataModelProperties {
 
 	public static IStatus OK_STATUS = new Status(IStatus.OK, "org.eclipse.wst.common.frameworks.internal", 0, "OK", null); //$NON-NLS-1$ //$NON-NLS-2$
 
 	public void setDataModel(IDataModel dataModel);
 
+	/**
+	 * <p>
+	 * Returns the backing IDataModel for this provider.
+	 * </p>
+	 * 
+	 * @return the backing IDataModel
+	 */
 	public IDataModel getDataModel();
 
 	/**
+	 * <p>
 	 * Returns a list of property names for which this provider is responsible. This method is
 	 * called only once during initialization.
+	 * </p>
 	 * 
 	 * @return the array of valid property names.
 	 */
 	public String[] getPropertyNames();
 
 	/**
+	 * <p>
 	 * Providers should perform additional initialization here.
-	 * 
+	 * </p>
 	 */
 	public void init();
 
+	/**
+	 * <p>
+	 * This is where the provider should define how default properties should be computed.
+	 * </p>
+	 * 
+	 * @param propertyName
+	 *            the specified property
+	 * @return the default property value
+	 */
 	public Object getDefaultProperty(String propertyName);
 
+
+	/**
+	 * <p>
+	 * This is where the provider should define how property enablements are computed.
+	 * </p>
+	 * 
+	 * @param propertyName
+	 *            the specified property
+	 * @return <code>true</code> if the property is enabled, <code>false</code> otherwise.
+	 */
 	public boolean isPropertyEnabled(String propertyName);
 
 	/**
