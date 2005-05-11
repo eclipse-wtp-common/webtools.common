@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectUtilities.java,v $$
- *  $$Revision: 1.3 $$  $$Date: 2005/02/15 23:04:14 $$ 
+ *  $$Revision: 1.4 $$  $$Date: 2005/05/11 19:01:24 $$ 
  */
 
 package org.eclipse.jem.util.emf.workbench;
@@ -533,10 +533,15 @@ public class ProjectUtilities {
 	public static void ensureContainerNotReadOnly(IResource resource) {
 		if (resource != null && !resource.exists()) { //it must be new
 			IContainer container = resource.getParent();
-			while (container != null && !container.isReadOnly())
+			ResourceAttributes attr = container.getResourceAttributes();
+			while (attr != null && !attr.isReadOnly()) {
 				container = container.getParent();
-			if (container != null)
-				container.setReadOnly(false);
+				if (container == null)
+					break;
+				attr = container.getResourceAttributes();
+			}
+			if (container != null && attr != null)
+				attr.setReadOnly(false);
 		}
 	}
 
