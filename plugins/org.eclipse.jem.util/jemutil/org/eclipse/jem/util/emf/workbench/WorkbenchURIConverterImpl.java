@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: WorkbenchURIConverterImpl.java,v $$
- *  $$Revision: 1.3 $$  $$Date: 2005/02/15 23:04:14 $$ 
+ *  $$Revision: 1.4 $$  $$Date: 2005/05/11 16:11:09 $$ 
  */
 package org.eclipse.jem.util.emf.workbench;
 
@@ -504,10 +504,11 @@ public class WorkbenchURIConverterImpl extends URIConverterImpl implements Workb
 						throw ce;
 				}
 			}
-			return file.getContents();
+			// CHANGED from <no-args> to <true> [94015]
+			return file.getContents(true);
 		} catch (CoreException exception) {
 			throw new Resource.IOWrappedException(exception);
-		}
+		}		
 	}
 
 }
