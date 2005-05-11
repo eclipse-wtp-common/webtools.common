@@ -5,7 +5,7 @@
    name="Eclipse Base UI extensions"
    version="1.0.0"
    provider-name="Eclipse.org"
-   class="org.eclipse.wst.common.ui.UIPlugin">
+   class="org.eclipse.wst.common.ui.internal.UIPlugin">
 
    <runtime>
       <library name="ui.jar">
