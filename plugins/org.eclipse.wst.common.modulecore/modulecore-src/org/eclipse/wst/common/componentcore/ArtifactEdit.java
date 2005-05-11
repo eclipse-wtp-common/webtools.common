@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jem.internal.util.emf.workbench.nls.EMFWorkbenchResourceHandler;
 import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
 import org.eclipse.wst.common.componentcore.internal.ComponentType;
@@ -458,6 +459,10 @@ public class ArtifactEdit implements IEditModelHandler {
 	 */
 	public CommandStack getCommandStack() {
 		return artifactEditModel.getCommandStack();
+	}
+	
+	public void deleteResource(Resource aResource) {
+		artifactEditModel.deleteResource(aResource);
 	}
 	/**
 	 * @return The isDirty flag based the underlying editmodel's list of resources.
