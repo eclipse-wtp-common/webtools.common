@@ -13,7 +13,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.etools.common.test.apitools.ProjectUnzipUtil;
-import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.ModuleStructuralModel;
@@ -618,23 +617,6 @@ public class StructureEditAPITest extends TestCase {
 
 			}
 			assertNotNull(moduleCore);
-
-		}
-	}
-
-	public void testGetFirstArtifactEditForRead() {
-		StructureEdit moduleCore = null;
-		ArtifactEdit edit = null;
-		try {
-			edit = StructureEdit.getFirstArtifactEditForRead(project);
-
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-				edit.dispose();
-
-			}
-			assertNotNull(edit);
 
 		}
 	}
