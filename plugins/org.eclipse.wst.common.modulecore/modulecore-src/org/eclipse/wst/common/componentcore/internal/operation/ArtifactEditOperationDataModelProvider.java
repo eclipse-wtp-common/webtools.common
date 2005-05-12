@@ -13,10 +13,9 @@ import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
-import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
-import org.eclipse.wst.common.frameworks.internal.operations.ProjectCreationDataModel;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
@@ -82,19 +81,11 @@ public class ArtifactEditOperationDataModelProvider extends AbstractDataModelPro
         }
         return module;
     }
-	private IProject getProjectForGivenComponent(WorkbenchComponent wbComp) {
-	    IProject modProject = null;
-	    try {
-		    modProject = StructureEdit.getContainingProject(wbComp.getHandle());
-	    } catch (UnresolveableURIException ex) {
-			Logger.getLogger().logError(ex);
-	    }
-	    return modProject;
-	}
 	
 	public ArtifactEdit getArtifactEditForRead(){
 		WorkbenchComponent module = getWorkbenchModule(); 
-		return ArtifactEdit.getArtifactEditForRead(module);
+		ComponentHandle handle = ComponentHandle.create(StructureEdit.getContainingProject(module),module.getName());
+		return ArtifactEdit.getArtifactEditForRead(handle);
 	}
 	
 	public IStatus validate(String propertyName) {

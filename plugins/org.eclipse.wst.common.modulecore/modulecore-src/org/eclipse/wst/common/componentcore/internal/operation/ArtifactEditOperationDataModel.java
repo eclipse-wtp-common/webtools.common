@@ -16,6 +16,7 @@ import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.frameworks.internal.operations.ProjectCreationDataModel;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
@@ -70,8 +71,9 @@ public abstract class ArtifactEditOperationDataModel extends WTPOperationDataMod
     }
 	
 	public ArtifactEdit getArtifactEditForRead(){
-		WorkbenchComponent module = getWorkbenchModule(); 
-		return ArtifactEdit.getArtifactEditForRead(module);
+		WorkbenchComponent module = getWorkbenchModule();
+		ComponentHandle handle = ComponentHandle.create(getProjectForGivenComponent(module),module.getName());
+		return ArtifactEdit.getArtifactEditForRead(handle);
 	}
 	/* (non-Javadoc)
 	 * @see org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel#doSetProperty(java.lang.String, java.lang.Object)

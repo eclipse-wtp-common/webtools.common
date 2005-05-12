@@ -27,7 +27,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.IEditModelHandler;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
@@ -840,29 +839,6 @@ public class StructureEdit implements IEditModelHandler {
 		if (getWorkbenchModules().length > 0)
 			return getWorkbenchModules()[0];
 		return null;
-	}
-
-	/**
-	 * temporary method to return artifact edit for first module in project USERS MUST DISPOSE THE
-	 * ARTIFACT EDIT
-	 * 
-	 * @param project
-	 * @return the artifact edit for the first module
-	 * @deprecated
-	 */
-	public static ArtifactEdit getFirstArtifactEditForRead(IProject project) {
-		StructureEdit componentCore = null;
-		ArtifactEdit artEdit = null;
-		WorkbenchComponent module = null;
-		try {
-			componentCore = StructureEdit.getStructureEditForRead(project);
-			module = componentCore.getFirstModule();
-			artEdit = ArtifactEdit.getArtifactEditForRead(module);
-		} finally {
-			if (componentCore != null)
-				componentCore.dispose();
-		}
-		return artEdit;
 	}
 
 	public static URI createComponentURI(IProject aContainingProject, String aComponentName) {

@@ -12,6 +12,7 @@ import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
@@ -50,10 +51,12 @@ public abstract class ArtifactEditProviderOperation extends AbstractDataModelOpe
 	}
 	
 	private void doInitialize(IProgressMonitor monitor) {
+		//Default
 	}
 
 	private ArtifactEdit getArtifactEditForModule(WorkbenchComponent module) {
-		return ArtifactEdit.getArtifactEditForWrite(module);
+		ComponentHandle handle = ComponentHandle.create(StructureEdit.getContainingProject(module),module.getName());
+		return ArtifactEdit.getArtifactEditForWrite(handle);
 	}
 
 	/**
@@ -63,8 +66,8 @@ public abstract class ArtifactEditProviderOperation extends AbstractDataModelOpe
         StructureEdit moduleCore = null;
         WorkbenchComponent module = null;
         try {
-            moduleCore = StructureEdit.getStructureEditForRead((IProject)model.getProperty(ArtifactEditOperationDataModelProvider.PROJECT_NAME));
-            module = moduleCore.findComponentByName((String)model.getStringProperty(ArtifactEditOperationDataModelProvider.COMPONENT_NAME));
+            moduleCore = StructureEdit.getStructureEditForRead((IProject)model.getProperty(IArtifactEditOperationDataModelProperties.PROJECT_NAME));
+            module = moduleCore.findComponentByName(model.getStringProperty(IArtifactEditOperationDataModelProperties.COMPONENT_NAME));
         } finally {
             if (null != moduleCore) {
                 moduleCore.dispose();
