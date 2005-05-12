@@ -93,7 +93,7 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 		}else if(propertyName.equals(CREATE_DEFAULT_FILES)){
 			return OK_STATUS;
 		}
-        return super.validate(propertyName);
+        return OK_STATUS;
     }
     
     protected static String[] getServerVersions(String moduleID, IRuntimeType type) {
