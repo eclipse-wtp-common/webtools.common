@@ -13,7 +13,7 @@ package org.eclipse.wst.internet.cache.internal;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.wst.common.uriresolver.URIResolverExtension;
-import org.eclipse.wst.xml.uriresolver.util.URIHelper;
+import org.eclipse.wst.xml.uriresolver.internal.util.URIHelper;
 
 /**
  * A cache URI resolver. This resolver will cache remote resources and return
