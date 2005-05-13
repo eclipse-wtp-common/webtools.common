@@ -31,6 +31,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
+import org.eclipse.wst.common.frameworks.datamodel.properties.IFlexibleProjectCreationDataModelProperties;
 
 public abstract class ComponentCreationOperationEx extends AbstractDataModelOperation implements IComponentCreationDataModelProperties {
 
@@ -53,6 +54,9 @@ public abstract class ComponentCreationOperationEx extends AbstractDataModelOper
     private void createProjectIfNeeded(IProgressMonitor monitor, IAdaptable info) {
         Object dm = model.getProperty(NESTED_PROJECT_CREATION_DM);
         if(dm == null) return;
+        String projName = ((IDataModel)dm).getStringProperty(IFlexibleProjectCreationDataModelProperties.PROJECT_NAME);
+        IProject proj = ProjectUtilities.getProject(projName);
+        if(projName == null || projName.equals("") || proj.exists()) return;
         IDataModelOperation op = ((IDataModel)dm).getDefaultOperation();
         try {
             op.execute(monitor, info);
