@@ -14,7 +14,7 @@ package org.eclipse.wst.common.uriresolver.internal;
 
 import java.util.List;
 
-import org.eclipse.wst.common.uriresolver.URIResolverExtension;
+import org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverExtension;
 
 
 /**

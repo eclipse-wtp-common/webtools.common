@@ -20,9 +20,9 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.wst.common.uriresolver.URIResolver;
-import org.eclipse.wst.common.uriresolver.URIResolverExtension;
-import org.eclipse.wst.common.uriresolver.URIResolverPlugin;
+import org.eclipse.wst.common.uriresolver.internal.provisional.URIResolver;
+import org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverExtension;
+import org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverPlugin;
 
 
 /**

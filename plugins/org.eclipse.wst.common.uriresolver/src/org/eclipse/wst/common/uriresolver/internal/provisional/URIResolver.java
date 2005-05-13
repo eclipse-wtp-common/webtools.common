@@ -10,7 +10,7 @@
 *   Jens Lukowski/Innoopract - initial renaming/restructuring
 * 
 */
-package org.eclipse.wst.common.uriresolver;
+package org.eclipse.wst.common.uriresolver.internal.provisional;
 
 /**
  * A URIResolver is used to resolve URI references to resources.

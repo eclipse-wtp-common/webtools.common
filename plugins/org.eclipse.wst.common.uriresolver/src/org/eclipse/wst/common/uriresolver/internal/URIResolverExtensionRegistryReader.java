@@ -19,7 +19,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IPluginRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.wst.common.uriresolver.URIResolverPlugin;
+import org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverPlugin;
 
 /**
  * @author csalter

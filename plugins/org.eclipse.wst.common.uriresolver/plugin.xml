@@ -5,7 +5,7 @@
    name="org.eclipse.wst.common.uriresolver"
    version="1.0.0"
    provider-name="Eclipse.org"
-   class="org.eclipse.wst.common.uriresolver.URIResolverPlugin">
+   class="org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverPlugin">
 
    <runtime>
       <library name="uriresolver.jar">
