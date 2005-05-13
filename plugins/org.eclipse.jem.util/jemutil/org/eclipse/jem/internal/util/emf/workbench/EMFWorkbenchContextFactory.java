@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: EMFWorkbenchContextFactory.java,v $$
- *  $$Revision: 1.2 $$  $$Date: 2005/02/15 23:04:14 $$ 
+ *  $$Revision: 1.3 $$  $$Date: 2005/05/13 15:17:15 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -118,10 +118,15 @@ public class EMFWorkbenchContextFactory  {
 		if (aProject == null || emfContext == null)
 			return;
 		List runtimes = EMFNature.getRegisteredRuntimes(aProject);
+		boolean primary = true;
 		for (int i = 0; i < runtimes.size(); i++) {
 			IProjectNature nature = (IProjectNature) runtimes.get(i);
 			if (nature != null && CONTRIBUTOR_CLASS.isInstance(nature))
-				 ((IEMFContextContributor) nature).primaryContributeToContext(emfContext);
+				if (primary) {
+					primary = false;
+					((IEMFContextContributor) nature).primaryContributeToContext(emfContext);
+				} else
+					((IEMFContextContributor) nature).secondaryContributeToContext(emfContext);
 		}
 	}
 
