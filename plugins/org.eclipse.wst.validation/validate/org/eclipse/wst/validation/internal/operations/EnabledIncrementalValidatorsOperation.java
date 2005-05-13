@@ -197,5 +197,40 @@ public class EnabledIncrementalValidatorsOperation extends EnabledValidatorsOper
 		setFileDeltas(FilterUtil.getFileDeltas(getEnabledValidators(), changedResources, false));
 		setContext(aWorkbenchContext);
 	}
+	
+	/**
+	 * IProject must exist, be open, and contain all of the resources in changedResources. If some
+	 * of the resources in changedResources belong to different projects, the result is undefined.
+	 * 
+	 * If changedResources is null, a full validation of the project using only the incremental
+	 * validators is performed. If changedResources is not null, all enabled incremental validators
+	 * that validate resources in the changedResources array will validate those resources.
+	 * 
+	 * If async is true, all thread-safe validators will run in the background validation thread,
+	 * and all other validators will run in the main thread. If async is false, all validators will
+	 * run in the main thread.
+	 */
+	public EnabledIncrementalValidatorsOperation(IResource[] changedResources,IProject project, boolean async) {
+		super(project, RegistryConstants.ATT_RULE_GROUP_DEFAULT, shouldForce(changedResources), async);
+		try {
+			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
+			setEnabledValidators(InternalValidatorManager.wrapInSet(prjp.getEnabledIncrementalValidators(true)));
+		} catch (InvocationTargetException exc) {
+			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
+			if (logger.isLoggingLevel(Level.SEVERE)) {
+				LogEntry entry = ValidationPlugin.getLogEntry();
+				entry.setSourceID("EnabledIncrementalValidatorsOperation(IResource[], IProject<" + project.getName() + ">, boolean)"); //$NON-NLS-1$  //$NON-NLS-2$
+				entry.setTargetException(exc);
+				logger.write(Level.SEVERE, exc);
+
+				if (exc.getTargetException() != null) {
+					entry.setTargetException(exc);
+					logger.write(Level.SEVERE, entry);
+				}
+			}
+		}
+		//construct an array of IFileDelta[] to wrap the Object[]; one IFileDelta for each Object in the array
+		setFileDeltas(FilterUtil.getFileDeltas(getEnabledValidators(), changedResources, false));
+	}
 
 }

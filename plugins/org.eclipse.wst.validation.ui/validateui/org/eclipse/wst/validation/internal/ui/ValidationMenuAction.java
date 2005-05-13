@@ -62,7 +62,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	private Display _currentDisplay = null;
 	private IResourceVisitor _folderVisitor = null;
 	private Map _selectedResources = null;
-	protected IWorkbenchContext workbenchContext;
+	//protected IWorkbenchContext workbenchContext;
 
 	public ValidationMenuAction() {
 		super();
@@ -403,9 +403,9 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		// successfully?
 		EnabledValidatorsOperation validOp = null;
 		if (resources == null) {
-			validOp = new EnabledValidatorsOperation(project,getWorkbenchContext(), prjp.runAsync());
+			validOp = new EnabledValidatorsOperation(project,prjp.runAsync());
 		} else {
-			validOp = new EnabledIncrementalValidatorsOperation(resources,getWorkbenchContext(),project, prjp.runAsync());
+			validOp = new EnabledIncrementalValidatorsOperation(resources, project, prjp.runAsync());
 		}
 		if (validOp.isNecessary(monitor)) {
 			ResourcesPlugin.getWorkspace().run(validOp, monitor);
@@ -428,11 +428,11 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		}
 	}
 
-	public IWorkbenchContext getWorkbenchContext() {
+	/*public IWorkbenchContext getWorkbenchContext() {
 		if(workbenchContext == null)
 			workbenchContext = new WorkbenchContext();
 		return workbenchContext;
-	}
+	}*/
 
 	/**
 	 * @param dialog

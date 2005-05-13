@@ -205,7 +205,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 						executionMap |= 0x10;
 					return referenced;
 				}
-				EnabledIncrementalValidatorsOperation operation = new EnabledIncrementalValidatorsOperation(project,getWorkbenchContext(), delta, prjp.runAsync());
+				EnabledIncrementalValidatorsOperation operation = new EnabledIncrementalValidatorsOperation(project, delta, prjp.runAsync());
 				operation.run(monitor);
 			}
 			return referenced;
@@ -258,7 +258,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 		ValidatorMetaData[] enabledValidators = prjp.getEnabledFullBuildValidators(true, onlyDependentValidators);
 		if ((enabledValidators != null) && (enabledValidators.length > 0)) {
 			Set enabledValidatorsSet = InternalValidatorManager.wrapInSet(enabledValidators);
-			EnabledValidatorsOperation op = new EnabledValidatorsOperation(getProject(),getWorkbenchContext(),enabledValidatorsSet, prjp.runAsync());
+			EnabledValidatorsOperation op = new EnabledValidatorsOperation(getProject(), enabledValidatorsSet, prjp.runAsync());
 			op.run(monitor);
 		}
 	}

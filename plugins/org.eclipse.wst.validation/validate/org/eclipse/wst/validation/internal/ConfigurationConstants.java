@@ -29,7 +29,7 @@ public interface ConfigurationConstants {
 	// Defaults for the preference and project values
 	
 	/* package */static String CURRENT_VERSION = (String) ValidationPlugin.getPlugin().getBundle().getHeaders().get(org.osgi.framework.Constants.BUNDLE_VERSION); //$NON-NLS-1$ // this is a constant, so it should be intern
-	/* package */static final boolean DEFAULT_ASYNC = false;
+	/* package */static final boolean DEFAULT_ASYNC = true;
 	/* package */static final boolean DEFAULT_AUTO_SETTING = true;
 	/* package */static final boolean DEFAULT_BUILD_SETTING = true;
 	/* package */static ValidatorMetaData[] DEFAULT_ENABLED_VALIDATORS = ValidationRegistryReader.getReader().getValidatorMetaDataArrayEnabledByDefault(); //$NON-NLS-1$ // store a copy here so that we don't modify the original and don't create a copy every time we need this value

@@ -105,7 +105,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	// enabled?
 	private Set _launchedValidators = null; // A list of the validators that
 	
-	protected IValidationContext context;
+	protected IWorkbenchContext context;
 
 	// are enabled and were launched
 	// (i.e., that have input to
@@ -195,7 +195,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	/**
 	 * Internal.
 	 */
-	protected ValidationOperation(IProject project, IValidationContext aContext, IResourceDelta delta, Boolean isAutoBuild, int ruleGroup, boolean force, boolean fork) {
+	protected ValidationOperation(IProject project, IWorkbenchContext aContext, IResourceDelta delta, Boolean isAutoBuild, int ruleGroup, boolean force, boolean fork) {
 		super();
 		_project = project;
 		_delta = delta;
@@ -901,7 +901,8 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 					continue;
 				}
 				try {
-					//helper = vmd.getHelper(getProject());
+					context = vmd.getHelper(getProject());
+					initValidateContext(delta);
 					validator = vmd.getValidator();
 				} catch (InstantiationException exc) {
 					// Remove the vmd from the reader's list
@@ -915,7 +916,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 					}
 					continue;
 				}
-				initValidateContext(getProject(),delta);
+				
 				if (isFork() && vmd.isAsync()) {
 					// Don't appear to run in the foreground by sending
 					// progress to the IProgressMonitor in the
@@ -924,7 +925,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 					// NullProgressMonitor.
 					VThreadManager.getManager().queue(wrapInRunnable(nullReporter, validator, vmd,(WorkbenchContext)getContext(),delta, iterator));
 				} else {
-					internalValidate(reporter, validator, vmd,delta);
+					internalValidate(reporter, validator, vmd,context,delta);
 				}
 			}
 		} catch (OperationCanceledException exc) {
@@ -932,9 +933,8 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		}
 	}
 
-	private void initValidateContext(IProject project, IFileDelta[] delta) {
+	private void initValidateContext(IFileDelta[] delta) {
 		 if (context instanceof WorkbenchContext) {
-			 ((WorkbenchContext)context).setProject(project);
 			 ((WorkbenchContext)context).setValidationFileURIs(new ArrayList());
 			 for(int i = 0; i < delta.length; i++) {
 				 IFileDelta file = (IFileDelta)delta[i];
@@ -1003,7 +1003,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	}
 
 	/* package */
-	void internalValidate(final WorkbenchReporter reporter, final IValidator validator, final ValidatorMetaData vmd, final IFileDelta[] delta) throws OperationCanceledException {
+	void internalValidate(final WorkbenchReporter reporter, final IValidator validator, final ValidatorMetaData vmd,final IWorkbenchContext context, final IFileDelta[] delta) throws OperationCanceledException {
 		final Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 		try {
 			checkCanceled(reporter);
@@ -1019,7 +1019,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			// needs to, and if it tries to add a message when the limit is
 			// exceeded, let
 			// the WorkbenchReporter take care of it.
-			launchValidator(reporter, validator, vmd,(WorkbenchContext)getContext(),delta);
+			launchValidator(reporter, validator, vmd,context,delta);
 		} catch (OperationCanceledException exc) {
 			// This is handled in the validate(WorkbenchReporter) method.
 			throw exc;
@@ -1192,7 +1192,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				// tests.
 				getLaunchedValidators().add(vmd);
 			}
-			initValidateContext(reporter.getProject(),delta);
+			//initValidateContext(delta);
 			ValidatorLauncher.getLauncher().start(helper, validator, reporter);
 			long finish = System.currentTimeMillis();
 			if (logger.isLoggingLevel(Level.INFO)) {
@@ -1428,7 +1428,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 
 		public void run() {
 			try {
-				internalValidate(_reporter, _validator, _vmd,__delta);
+				internalValidate(_reporter, _validator, _vmd, context,__delta);
 			} catch (OperationCanceledException exc) {
 				// User can't cancel a job in a background thread, so ignore
 				// this exception.
@@ -1450,7 +1450,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	/**
 	 * @param context The context to set.
 	 */
-	public void setContext(IValidationContext context) {
+	public void setContext(IWorkbenchContext context) {
 		this.context = context;
 	}
 }
