@@ -8,34 +8,11 @@
     </head>
 
     <body>  
-        <p>The WTP Operation API allows clients to do...everything!</p>
+        <abstract>The WTP Operation API allows clients to do...everything!</abstract>
 
-		<table width="500">
-			<tr>
-				<td>
-					<p>Under Construction.</p>
-				</td>
-			</tr>
-		</table>
-		<table
-			cellspacing="10"
-			cellpadding="10">
-			<tr>
-				<td>
-					<p>
-						<img
-							src="escape_out_to_source_folder level/overview/your_image.jpg" />
-					</p>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<p>
-						<i>Figure #: Image description</i>
-					</p>
-				</td>
-			</tr>
-		</table>
+		<!-- formatting handled by XSLT Transformation -->
+		<p>Under Construction.</p>
+		<img src="escape_out_to_source_folder level/overview/your_image.jpg" caption ="Image description" />
     </body>
 </html>    
     

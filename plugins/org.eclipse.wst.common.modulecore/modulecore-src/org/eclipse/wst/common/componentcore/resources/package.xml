@@ -15,17 +15,36 @@
 		</abstract>
 
 		<a name="top"/>
+		<!--
 		<p>
 			The following document includes information on these topics:
 			<ul>
 				<li><a href="#virtual-path">Pointer 1</a> A description</li>  
 			</ul>
 		</p>
+		-->
 		<a name="virtual-path"/>
         <h2>Virtual Path API</h2>
         <BR /> 
-        <p>Test text</p>
+        <p>
+	        The Virtual Path API provides a facade to the flexible project model. 
+	        Each IVirtualResource represents a resource from the runtime component 
+	        under a virtual runtime path. Each IVirtualResource may represent one 
+	        or more Eclipse Platfrom resources located at the same runtime path.
+        </p>
+        <p>
+        	Each IVirtualResource is contained by exactly one IVirtualComponent. 
+        	However, the underlying resources that are represented by the 
+        	IVirtualResource may be contained by multiple IVirtualComponents. 
+        	IVirtualComponents are contained by IFlexibleProjects. Each
+        	IFlexibleProject may contain one or more IVirtualComponents. 
+        </p>
+        <img src="../../../../../../overview/mapping.jpg" 
+        	 caption="A visual representation of a possible mapping between a Virtual structure and a Platform Resource structure." 
+        	 width="600" height="466"
+        	 />
         <img src="../../../../../../overview/virtual_path_api.jpg" caption="Virtual Path Model" />
+        <!--
         <codesnippet caption="An example snippet.">
 ... 
 import org.eclipse.emf.common.util.URI; 
@@ -62,6 +81,7 @@ public static void makeFlexible(IProject aTargetProject) {
     }
 }        
         </codesnippet>
+        -->
 		<a href="#top">top</a>
     </body>
 </html>    

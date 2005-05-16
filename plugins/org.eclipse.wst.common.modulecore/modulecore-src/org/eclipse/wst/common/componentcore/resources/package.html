@@ -11,24 +11,7 @@
         logical collections of files within Eclipse projects using API 
         similar to the Eclipse IResource API. 
 		</p>
-<a name="top"></a>
-<table width="500">
-<tr>
-<td>
-<p>
-			The following document includes information on these topics:
-			<ul>
-				
-<li>
-<a href="#virtual-path">Pointer 1</a> A description</li>  
-			
-</ul>
-		
-</p>
-</td>
-</tr>
-</table>
-<a name="virtual-path"></a>
+<a name="top"></a><a name="virtual-path"></a>
 <table width="100%" cellspacing="5" cellpadding="2" border="0">
 <tbody>
 <tr>
@@ -40,7 +23,40 @@
 <table width="500">
 <tr>
 <td>
-<p>Test text</p>
+<p>
+	        The Virtual Path API provides a facade to the flexible project model. 
+	        Each IVirtualResource represents a resource from the runtime component 
+	        under a virtual runtime path. Each IVirtualResource may represent one 
+	        or more Eclipse Platfrom resources located at the same runtime path.
+        </p>
+</td>
+</tr>
+</table>
+<table width="500">
+<tr>
+<td>
+<p>
+        	Each IVirtualResource is contained by exactly one IVirtualComponent. 
+        	However, the underlying resources that are represented by the 
+        	IVirtualResource may be contained by multiple IVirtualComponents. 
+        	IVirtualComponents are contained by IFlexibleProjects. Each
+        	IFlexibleProject may contain one or more IVirtualComponents. 
+        </p>
+</td>
+</tr>
+</table>
+<table cellpadding="10" cellspacing="10">
+<tr>
+<td>
+<p>
+<img src="../../../../../../overview/mapping.jpg"></p>
+</td>
+</tr>
+<tr>
+<td>
+<p>
+<i>Figure 1: A visual representation of a possible mapping between a Virtual structure and a Platform Resource structure.</i>
+</p>
 </td>
 </tr>
 </table>
@@ -54,73 +70,7 @@
 <tr>
 <td>
 <p>
-<i>Figure 1: Virtual Path Model</i>
-</p>
-</td>
-</tr>
-</table>
-<table cellpadding="10" cellspacing="10">
-<tr>
-<td>
-<p>
-<pre>
-... 
-import org.eclipse.emf.common.util.URI; 
-...
-public static void makeFlexible(IProject aTargetProject) {
-    ModuleCore moduleCoreInstance = null;
-    try {
-        ModuleCoreNature.addModuleCoreNatureIfNecessary(aTargetProject);
-        moduleCoreInstance = ModuleCore.getModuleCoreForWrite(aTargetProject);
-        ... work with moduleCoreInstance and underlying model ...
-        moduleCoreInstance.saveIfNecessary(aProgressMonitor);
-    } finally {
-        if (moduleCoreInstance != null) {
-            moduleCoreInstance.dispose();
-        }
-    }
-}        
-        </pre>
-</p>
-</td>
-</tr>
-<tr>
-<td>
-<p>
-<i>Snippet 1: An example snippet.</i>
-</p>
-</td>
-</tr>
-</table>
-<table cellpadding="10" cellspacing="10">
-<tr>
-<td>
-<p>
-<pre>
-... 
-import org.eclipse.emf.common.util.URI; 
-...
-public static void makeFlexible(IProject aTargetProject) {
-    ModuleCore moduleCoreInstance = null;
-    try {
-        ModuleCoreNature.addModuleCoreNatureIfNecessary(aTargetProject);
-        moduleCoreInstance = ModuleCore.getModuleCoreForWrite(aTargetProject);
-        ... work with moduleCoreInstance and underlying model ...
-        moduleCoreInstance.saveIfNecessary(aProgressMonitor);
-    } finally {
-        if (moduleCoreInstance != null) {
-            moduleCoreInstance.dispose();
-        }
-    }
-}        
-        </pre>
-</p>
-</td>
-</tr>
-<tr>
-<td>
-<p>
-<i>Snippet 2: An example snippet.</i>
+<i>Figure 2: Virtual Path Model</i>
 </p>
 </td>
 </tr>
