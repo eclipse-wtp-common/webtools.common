@@ -1,6 +1,7 @@
 package org.eclipse.wst.common.frameworks.componentcore.tests;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.common.componentcore.internal.resources.FlexibleProject;
 import org.eclipse.wst.common.componentcore.resources.IFlexibleProject;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
@@ -24,6 +25,16 @@ public class IFlexibleProjectTest extends TestCase {
 
 		public IProject getProject() {
 			return null;
+		}
+
+		public boolean isFlexible() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		public void create(int theFlags, IProgressMonitor aMonitor) {
+			// TODO Auto-generated method stub
+			
 		}
 	}
 
