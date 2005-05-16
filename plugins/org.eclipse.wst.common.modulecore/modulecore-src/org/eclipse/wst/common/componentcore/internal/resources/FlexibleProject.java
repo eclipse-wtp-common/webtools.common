@@ -11,7 +11,9 @@
 package org.eclipse.wst.common.componentcore.internal.resources;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.common.componentcore.ComponentCore;
+import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.resources.IFlexibleProject;
@@ -52,6 +54,14 @@ public class FlexibleProject implements IFlexibleProject {
 
 	public IProject getProject() {
 		return project;
+	}
+
+	public boolean isFlexible() { 
+		return ModuleCoreNature.getModuleCoreNature(getProject()) != null;
+	}
+
+	public void create(int theFlags, IProgressMonitor aMonitor) { 
+		
 	}
 
 }

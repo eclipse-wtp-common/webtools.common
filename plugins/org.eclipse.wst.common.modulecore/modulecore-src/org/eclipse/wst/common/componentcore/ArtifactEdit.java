@@ -52,6 +52,7 @@ import org.eclipse.wst.common.internal.emfworkbench.integration.IEditModelFactor
  * 
  * @see ModuleCoreNature
  * @see ArtifactEditModel
+ * @since 1.0
  */
 public class ArtifactEdit implements IEditModelHandler {
 

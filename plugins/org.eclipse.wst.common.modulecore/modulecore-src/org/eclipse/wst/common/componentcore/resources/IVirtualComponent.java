@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.IPath;
  * <ul>
  * <li>{@link #getComponentTypeId()}
  * </p>
+ * @since 1.0
  */
 public interface IVirtualComponent extends IVirtualContainer {
 

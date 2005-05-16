@@ -18,12 +18,13 @@ import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 /**
  * Provides a handle to a component within a project.
  * <p>
- * This class provides a way to access ArtifactEdit instances. A ComponentHandle
- * does not have to point to an existing Component.
+ * This class provides a way to access ArtifactEdit instances. The component
+ * referenced by its handle may not exist. 
  * </p>
  * <p>
  * The following class is not intended to be extended.
  * </p>
+ * @since 1.0
  */
 public class ComponentHandle {
 
@@ -47,6 +48,7 @@ public class ComponentHandle {
 	}
 
 	/**
+	 * The name of the component.
 	 * @return The name of the component
 	 */
 	public String getName() {
@@ -54,6 +56,7 @@ public class ComponentHandle {
 	}
 
 	/**
+	 * A handle to a valid, accessible project.
 	 * @return The project that contains the component
 	 */
 	public IProject getProject() {

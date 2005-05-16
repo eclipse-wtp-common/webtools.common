@@ -121,16 +121,14 @@ import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelNature;
 * supply an object token referred to as an accessor key. The accessor key allows the framework to
 * better track which clients are using the EditModel, and to ensure that only a client which has
 * accessed the EditModel with an accessor key may invoke save*()s on that EditModel.
-* </p>
- * <p>
- * The following class is experimental until fully documented.
- * </p> 
+* </p> 
  * @see org.eclipse.wst.common.componentcore.internal.StructureEdit
  * @see org.eclipse.wst.common.componentcore.internal.StructureEdit#getStructureEditForRead(IProject)
  * @see org.eclipse.wst.common.componentcore.internal.StructureEdit#getStructureEditForWrite(IProject)
  * @see org.eclipse.wst.common.componentcore.ArtifactEdit
  * @see org.eclipse.wst.common.componentcore.ArtifactEdit#getArtifactEditForRead(WorkbenchComponent)
  * @see org.eclipse.wst.common.componentcore.ArtifactEdit#getArtifactEditForWrite(WorkbenchComponent)
+ * @since 1.0
  */
 public class ModuleCoreNature extends EditModelNature implements IProjectNature, IModuleConstants {
 

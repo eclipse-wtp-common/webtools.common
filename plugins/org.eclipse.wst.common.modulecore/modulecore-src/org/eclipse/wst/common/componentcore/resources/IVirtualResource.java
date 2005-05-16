@@ -54,6 +54,7 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
  * <p>
  * This interface is not intended to be implemented by clients.
  * </p>
+ * @since 1.0
  */
 public interface IVirtualResource extends ISchedulingRule, IAdaptable {
 

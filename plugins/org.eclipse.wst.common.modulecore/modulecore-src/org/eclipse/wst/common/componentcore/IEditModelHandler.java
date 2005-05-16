@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * </p>
  * @see org.eclipse.wst.common.componentcore.internal.StructureEdit
  * @see org.eclipse.wst.common.componentcore.ArtifactEdit
+ * @since 1.0
  */
 public interface IEditModelHandler {
 

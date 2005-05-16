@@ -248,9 +248,6 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 	 * @throws UnresolveableURIException
 	 *             could not WorkbenchResource with the corresponding URI.
 	 */
-
-
-
 	protected boolean processResourcesIfInterrested(List theResources) {
 		int size = theResources.size();
 		Resource resourceToProcess;
