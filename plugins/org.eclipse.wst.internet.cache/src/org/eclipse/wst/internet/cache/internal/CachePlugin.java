@@ -25,7 +25,7 @@ import org.osgi.framework.BundleContext;
  * The main plugin class to be used in the desktop.
  */
 public class CachePlugin extends AbstractUIPlugin {
-  
+	public static final String PLUGIN_ID = "org.eclipse.wst.internet.cache";
 	//The shared instance.
 	private static CachePlugin plugin;
 	//Resource bundle.

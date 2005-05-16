@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.internet.cache.internal.Cache;
 import org.eclipse.wst.internet.cache.internal.CachePlugin;
 
@@ -74,9 +75,9 @@ public class CachePreferencePage extends PreferencePage implements IWorkbenchPre
    * Constructor.
    */
   public CachePreferencePage() 
-	{
-		setPreferenceStore(CachePlugin.getDefault().getPreferenceStore());
-	}
+  {
+	setPreferenceStore(CachePlugin.getDefault().getPreferenceStore());
+  }
 	
 	/**
 	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
@@ -91,6 +92,7 @@ public class CachePreferencePage extends PreferencePage implements IWorkbenchPre
 	protected Control createContents(Composite parent) 
 	{
 		noDefaultAndApplyButton();
+		
 		composite = new Composite(parent, SWT.NULL);
 		composite.setLayout(new GridLayout());
 		GridData gd = new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL);
@@ -135,6 +137,7 @@ public class CachePreferencePage extends PreferencePage implements IWorkbenchPre
 	  entriesGroup.setLayoutData(gridData);
     
 		entries = new List(entriesGroup, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(entries, ContextIds.PREF_ENTRIES);
 		String[] cacheEntries = Cache.getInstance().getCachedURIs();
 		Arrays.sort(cacheEntries);
 		entries.setItems(cacheEntries);
@@ -250,6 +253,11 @@ public class CachePreferencePage extends PreferencePage implements IWorkbenchPre
       }
     }
   }
-	
-	
+  /*
+	 * @see PreferencePage#createControl(Composite)
+	 */
+	public void createControl(Composite parent) {
+		super.createControl(parent);
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(), ContextIds.PREF); //$NON-NLS-1$
+	}
 }
