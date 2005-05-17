@@ -176,13 +176,13 @@ public class ResourceTreeNode {
 						if(newResource == null) {
 							// flesh out the tree
 							newResource = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentResource();
-							if ((foundResource = eclipseContainer.findMember(aPath)) != null) {
+							//if ((foundResource = eclipseContainer.findMember(aPath)) != null) {
 								newResource.setComponent(moduleResource.getComponent());		
 								
 								newResource.setRuntimePath(runtimeURI);
-								newResource.setSourcePath(foundResource.getProjectRelativePath());
+								newResource.setSourcePath(eclipseContainer.getProjectRelativePath().append(aPath));
 								resultSet.add(newResource);
-							}
+							//}
 						}
 					}
 		

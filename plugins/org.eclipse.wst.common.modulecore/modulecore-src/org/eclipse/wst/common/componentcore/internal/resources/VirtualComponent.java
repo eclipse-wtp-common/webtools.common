@@ -213,6 +213,12 @@ public class VirtualComponent extends VirtualContainer implements IVirtualCompon
 		}	
 	}
 	
-	
+	public boolean equals(Object anOther) { 
+		if(anOther instanceof IVirtualComponent) {
+			IVirtualComponent otherComponent = (IVirtualComponent) anOther;
+			return getProject().equals(otherComponent.getProject()) && getName().equals(otherComponent.getName());
+		}
+		return false;
+	}
 
 }

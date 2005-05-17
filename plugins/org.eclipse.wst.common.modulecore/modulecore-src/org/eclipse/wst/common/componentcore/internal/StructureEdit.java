@@ -660,7 +660,7 @@ public class StructureEdit implements IEditModelHandler {
 			resources = module.findResourcesBySourcePath(aProjectRelativePath);
 			if (resources != null && resources.length != 0)
 				foundResources.addAll(Arrays.asList(resources));
-			else {
+			else if (aProjectRelativePath.segments().length > 1) { 
 				resources = module.findResourcesBySourcePath(aProjectRelativePath.removeFirstSegments(1));
 				if (resources != null && resources.length != 0)
 					foundResources.addAll(Arrays.asList(resources));

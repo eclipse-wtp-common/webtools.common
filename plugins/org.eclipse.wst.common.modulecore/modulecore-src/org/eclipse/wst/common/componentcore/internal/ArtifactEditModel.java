@@ -10,16 +10,21 @@ package org.eclipse.wst.common.componentcore.internal;
 
 import java.util.List;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.impl.PlatformURLModuleConnection;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
+import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
+import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 
 /**
@@ -49,8 +54,10 @@ import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 
 public class ArtifactEditModel extends EditModel implements IAdaptable {
 
-	private final URI moduleURI;
+	private final ComponentHandle componentHandle; 
 	private final IPath modulePath;
+	private final IVirtualComponent virtualComponent;
+	private final URI componentURI;
 
 	/**
 	 * <p>
@@ -114,9 +121,11 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 
 	public ArtifactEditModel(String anEditModelId, EMFWorkbenchContext aContext, boolean toMakeReadOnly, boolean toAccessUnknownResourcesAsReadOnly, URI aModuleURI) {
 		super(anEditModelId, aContext, toMakeReadOnly, toAccessUnknownResourcesAsReadOnly);
-		moduleURI = aModuleURI;
-		modulePath = new Path(moduleURI.path());
-		processLoadedResources(moduleURI);
+		componentHandle =  ComponentHandle.create(null, aModuleURI);
+		virtualComponent = ComponentCore.createComponent(componentHandle.getProject(), componentHandle.getName());
+		componentURI = aModuleURI;
+		modulePath = new Path(aModuleURI.path());
+		processLoadedResources(componentHandle);
 	}
 
 	/**
@@ -150,34 +159,14 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 
 
 	public String getModuleType() {
-		String type = null;
-		WorkbenchComponent wbModule;
-		StructureEdit moduleCore = null;
-		try {
-			moduleCore = StructureEdit.getStructureEditForRead(StructureEdit.getContainingProject(moduleURI));
-			wbModule = moduleCore.findComponentByURI(moduleURI);
-			type = wbModule.getComponentType().getComponentTypeId();
-		} catch (UnresolveableURIException e) {
-			e.printStackTrace();
-		} finally {
-			if (moduleCore != null)
-				moduleCore.dispose();
-		}
-		return type;
+		return virtualComponent.getComponentTypeId();
 	}
-	public ComponentHandle getComponentHandle() {
-		ComponentHandle handle = null;
-		try {
-			handle = ComponentHandle.create(StructureEdit.getContainingProject(moduleURI),moduleURI);
-		} catch (UnresolveableURIException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return handle;
+	public ComponentHandle getComponentHandle() { 
+		return componentHandle;
 	}
 
 	public URI getModuleURI() {
-		return moduleURI;
+		return componentURI;
 	}
 
 	/**
@@ -227,7 +216,7 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 	 */
 
 
-	protected void processLoadedResources(URI aModuleURI) {
+	protected void processLoadedResources(ComponentHandle aComponentHandle) {
 		List loadedResources = getResourceSet().getResources();
 		if (!loadedResources.isEmpty()) {
 			processResourcesIfInterrested(loadedResources);
@@ -251,33 +240,24 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 	protected boolean processResourcesIfInterrested(List theResources) {
 		int size = theResources.size();
 		Resource resourceToProcess;
-		boolean processed = false;
-		StructureEdit moduleCore = null;
-		try {
-			moduleCore = StructureEdit.getStructureEditForRead(StructureEdit.getContainingProject(moduleURI));
-
-			ComponentResource[] relevantModuleResources = null;
-			URI aResourceURI = null;
-			for (int i = 0; i < size; i++) {
-				try {
-					resourceToProcess = (Resource) theResources.get(i);
-					aResourceURI = resourceToProcess.getURI();
-					relevantModuleResources = moduleCore.findResourcesBySourcePath(aResourceURI);
-					for (int resourcesIndex = 0; resourcesIndex < relevantModuleResources.length; resourcesIndex++) {
-						if (moduleURI.equals(relevantModuleResources[resourcesIndex].getComponent().getHandle())) {
-							processResource(resourceToProcess);
-							processed = true;
-						}
-					}
-
-				} catch (UnresolveableURIException uurie) {
+		boolean processed = false; 
+ 
+		URI aResourceURI = null;
+		IResource resourceResource;
+		IVirtualResource[] resources;
+		for (int i = 0; i < size; i++) { 
+			resourceToProcess = (Resource) theResources.get(i);
+			aResourceURI = resourceToProcess.getURI();
+			resourceResource = WorkbenchResourceHelper.getFile(resourceToProcess);
+			resources = ComponentCore.createResources(resourceResource); 
+			for (int resourcesIndex = 0; resourcesIndex < resources.length; resourcesIndex++) {
+				if (virtualComponent.equals(resources[resourcesIndex].getComponent())) {
+					processResource(resourceToProcess);
+					processed = true;
 				}
-			}
-		} catch (UnresolveableURIException uurie) {
-		} finally {
-			if (moduleCore != null)
-				moduleCore.dispose();
-		}
+			} 
+ 
+		}  
 		return processed;
 	}
 
