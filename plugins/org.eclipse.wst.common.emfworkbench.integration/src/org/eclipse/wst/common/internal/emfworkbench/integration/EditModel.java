@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.common.command.BasicCommandStack;
+import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.common.command.CommandStackListener;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
@@ -37,6 +38,9 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.jem.internal.util.emf.workbench.nls.EMFWorkbenchResourceHandler;
+import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
+import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 import org.eclipse.wst.common.frameworks.internal.ISaveHandler;
 import org.eclipse.wst.common.frameworks.internal.SaveFailedException;
 import org.eclipse.wst.common.frameworks.internal.SaveHandlerHeadless;
@@ -60,10 +64,6 @@ import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateIn
 import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidator;
 import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidatorImpl;
 import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidatorPresenter;
-
-import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
-import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
-import org.eclipse.jem.internal.util.emf.workbench.nls.EMFWorkbenchResourceHandler;
 
 
 public class EditModel implements CommandStackListener, ResourceStateInputProvider, ResourceStateValidator, IEnablementIdentifierListener {
@@ -96,7 +96,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	protected IProject project = null;
 
 	private Reference reference;
-	private List resourcesTargetedForTermination;
+	private List resourcesTargetedForTermination; 
 
 	protected class ResourceAdapter extends AdapterImpl {
 		public void notifyChanged(Notification notification) {
@@ -142,23 +142,32 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	}
 
 	public void dispose() {
-		disposed = true;
-		disposing = true;
-		if (commandStack != null)
-			commandStack.removeCommandStackListener(this);
-		if (hasListeners())
-			notifyListeners(new EditModelEvent(EditModelEvent.PRE_DISPOSE, this));
-		if (getEmfContext() != null)
-			getEmfContext().removeEditModel(this, isReadOnly());
-		releasePreloadResources();
-		releaseIdentifiers();
-
-		emfContext = null;
-		listeners = null;
-		removedListeners = null;
-		resources = null;
-		disposing = false;
-		project = null;
+		synchronized (this) {
+			if(disposing || isDisposed())
+				return;
+			disposing = true;
+		}
+		try { 
+			if (commandStack != null)
+				commandStack.removeCommandStackListener(this);
+			if (hasListeners())
+				notifyListeners(new EditModelEvent(EditModelEvent.PRE_DISPOSE, this));
+			if (getEmfContext() != null)
+				getEmfContext().removeEditModel(this, isReadOnly());
+			releasePreloadResources();
+			releaseIdentifiers();
+	
+			emfContext = null;
+			listeners = null;
+			removedListeners = null;
+			resources = null;
+			project = null; 
+		} catch(RuntimeException re) {
+			re.printStackTrace();
+		}  finally {
+			disposing = false;
+			disposed = true;
+		}
 	}
 
 	protected void releaseIdentifiers() {
@@ -901,9 +910,8 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 		return emfContext;
 	}
 
-	private boolean isDisposed() {
-		// TODO Auto-generated method stub
-		return false;
+	private boolean isDisposed() { 
+		return disposed;
 	}
 
 
