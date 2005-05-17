@@ -41,6 +41,6 @@ public class WTPCommonMessages {
 	public static final String PROJECT_ClOSED = "31"; //$NON-NLS-1$
 	public static final String PROJECT_EXISTS_AT_LOCATION_ERROR = "32"; //$NON-NLS-1$
 	public static final String ERR_EMPTY_MODULE_NAME = "34"; //$NON-NLS-1$
-	public static final String ERR_INVALID_CHARS = "34"; //$NON-NLS-1$ 
+	public static final String ERR_INVALID_CHARS = "35"; //$NON-NLS-1$ 
 	public static final String DUPLICATE_COMPONENT_NAME="36";//$NON-NLS-1$ 
 }

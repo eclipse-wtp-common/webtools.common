@@ -13,8 +13,10 @@ package org.eclipse.wst.common.componentcore.internal.operation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IComponentCreationDataModelProperties;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
@@ -70,7 +72,7 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
             IStatus status = OK_STATUS;
             String moduleName = model.getStringProperty(COMPONENT_NAME);
             if (status.isOK()) {
-                if (moduleName.indexOf("#") != -1) { //$NON-NLS-1$
+                if (moduleName.indexOf("#") != -1 || moduleName.indexOf("/") != -1) { //$NON-NLS-1$
                     String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.ERR_INVALID_CHARS); //$NON-NLS-1$
                     return WTPCommonPlugin.createErrorStatus(errorMessage);
                 } else if (moduleName==null || moduleName.equals("")) { //$NON-NLS-1$
@@ -86,7 +88,14 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 			if (projectName == null || projectName.length()==0) {
 				String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_NAME_EMPTY);
 				status =  WTPCommonPlugin.createErrorStatus(errorMessage); 
-			}
+            }
+            if(status.isOK()){
+                IProject proj = ProjectUtilities.getProject(projectName);
+                if(proj.exists()) {
+                    String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_EXISTS_ERROR);
+                    status =  WTPCommonPlugin.createErrorStatus(errorMessage); 
+                }
+            }
 			return status;
 		}else if(propertyName.equals(COMPONENT_DEPLOY_NAME)){
 			return OK_STATUS;	
