@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
 
 
@@ -49,8 +50,16 @@ public abstract class OperationTestCase extends BaseTestCase {
     public static void runAndVerify(WTPOperationDataModel dataModel) throws Exception {
         OperationTestCase.runAndVerify(dataModel, true, true);
     }
+    
+    public static void runAndVerify(IDataModel dataModel) throws Exception {
+        OperationTestCase.runAndVerify(dataModel, true, true);
+    }
 
     public static void runAndVerify(WTPOperationDataModel dataModel, boolean checkTasks, boolean checkLog) throws Exception {
+        runAndVerify(dataModel,checkTasks,checkLog,null,true,false);
+    }
+    
+    public static void runAndVerify(IDataModel dataModel, boolean checkTasks, boolean checkLog) throws Exception {
         runAndVerify(dataModel,checkTasks,checkLog,null,true,false);
     }
     
@@ -58,11 +67,23 @@ public abstract class OperationTestCase extends BaseTestCase {
         runAndVerify(dataModel,checkTasks,checkLog,null,true,waitForBuildToComplete);
     }
     
+    public static void runAndVerify(IDataModel dataModel, boolean checkTasks, boolean checkLog, boolean waitForBuildToComplete) throws Exception {
+        runAndVerify(dataModel,checkTasks,checkLog,null,true,waitForBuildToComplete);
+    }
+    
     public static void runAndVerify(WTPOperationDataModel dataModel, boolean checkTasks, boolean checkLog,List errorOKList, boolean reportIfExpectedErrorNotFound) throws Exception {
         runAndVerify(dataModel,checkTasks,checkLog,errorOKList,reportIfExpectedErrorNotFound,false);
     }
     
+    public static void runAndVerify(IDataModel dataModel, boolean checkTasks, boolean checkLog,List errorOKList, boolean reportIfExpectedErrorNotFound) throws Exception {
+        runAndVerify(dataModel,checkTasks,checkLog,errorOKList,reportIfExpectedErrorNotFound,false);
+    }
+    
     public static void runAndVerify(WTPOperationDataModel dataModel, boolean checkTasks, boolean checkLog, List errorOKList, boolean reportIfExpectedErrorNotFound, boolean waitForBuildToComplete) throws Exception {
+        runAndVerify(dataModel,checkTasks,checkLog,errorOKList,reportIfExpectedErrorNotFound,false,false);
+    }
+    
+    public static void runAndVerify(IDataModel dataModel, boolean checkTasks, boolean checkLog, List errorOKList, boolean reportIfExpectedErrorNotFound, boolean waitForBuildToComplete) throws Exception {
         runAndVerify(dataModel,checkTasks,checkLog,errorOKList,reportIfExpectedErrorNotFound,false,false);
     }
     
@@ -108,6 +129,52 @@ public abstract class OperationTestCase extends BaseTestCase {
             dataModel.dispose();
         }
     }
+    
+/**
+     * Guaranteed to close the dataModel
+     * 
+     * @param dataModel
+     * @throws Exception
+     */
+    public static void runAndVerify(IDataModel dataModel, boolean checkTasks, boolean checkLog, List errorOKList, boolean reportIfExpectedErrorNotFound, boolean waitForBuildToComplete, boolean removeAllSameTypesOfErrors) throws Exception {
+        PostBuildListener listener = null;
+        IWorkspaceDescription desc = null;
+        try {
+            if (waitForBuildToComplete){
+                listener = new PostBuildListener();
+                desc = ResourcesPlugin.getWorkspace().getDescription();
+                desc.setAutoBuilding(false);
+                ResourcesPlugin.getWorkspace().addResourceChangeListener(listener,IResourceChangeEvent.POST_BUILD);
+            }
+        	if (checkLog)
+        		LogUtility.getInstance().resetLogging();
+        	//TODO Verification to be fixed to use IDataModel
+            //verifyValidDataModel(dataModel);
+            dataModel.getDefaultOperation().execute(null,null);
+//          TODO Verification to be fixed to use IDataModel
+            //verifyDataModel(dataModel);
+            if (waitForBuildToComplete){
+            	desc.setAutoBuilding(true);
+	            while (!listener.isBuildComplete()){
+	              Thread.sleep(3000);//do nothing till all the jobs are completeled  
+	            }
+            }
+            if (checkTasks && (errorOKList == null || errorOKList.isEmpty())) {
+                checkTasksList();
+            }
+            else if (checkTasks && errorOKList != null && !errorOKList.isEmpty()){
+                TaskViewUtility.verifyErrors(errorOKList,reportIfExpectedErrorNotFound,removeAllSameTypesOfErrors);
+            }
+            if (checkLog) {
+                checkLogUtility();
+            }
+        } finally {
+            if (listener != null)
+                ResourcesPlugin.getWorkspace().removeResourceChangeListener(listener);
+            dataModel.dispose();
+        }
+    }
+
 
     public static void verifyDataModel(WTPOperationDataModel dataModel) throws Exception{
         DataModelVerifier verifier = DataModelVerifierFactory.getInstance().createVerifier(dataModel);
