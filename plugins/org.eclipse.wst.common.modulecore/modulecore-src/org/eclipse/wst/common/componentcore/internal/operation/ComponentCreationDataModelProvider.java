@@ -20,6 +20,7 @@ import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IComponentCreationDataModelProperties;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
+import org.eclipse.wst.common.frameworks.internal.FlexibleJavaProjectPreferenceUtil;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 import org.eclipse.wst.server.core.IModuleType;
@@ -54,7 +55,8 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
     public boolean propertySet(String propertyName, Object propertyValue) {
         if (COMPONENT_NAME.equals(propertyName)) {
 			model.setProperty(COMPONENT_DEPLOY_NAME, propertyValue);
-            model.setProperty(PROJECT_NAME, propertyValue);
+            if(!FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp())
+                model.setProperty(PROJECT_NAME, propertyValue);
         } else if (COMPONENT_DEPLOY_NAME.equals(propertyName))
 			model.setProperty(COMPONENT_DEPLOY_NAME, propertyValue);        
          return true;
