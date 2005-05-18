@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $RCSfile: ILogRenderer2.java,v $
- *  $Revision: 1.2 $  $Date: 2005/02/15 23:05:54 $ 
+ *  $Revision: 1.3 $  $Date: 2005/05/18 21:58:34 $ 
  */
 package org.eclipse.jem.util.logger.proxy;
 
@@ -31,13 +31,13 @@ public interface ILogRenderer2 extends ILogRenderer {
 	 * When Logger.setLevel(DEFAULT): restore to what the default level was.
 	 * When log(...,DEFAULT): Log at the default level for the type of object.
 	 */
-	static final Level DEFAULT = new Logger.LocalLevel("DEFAULT", Integer.MAX_VALUE-1);
+	static final Level DEFAULT = new Logger.LocalLevel("DEFAULT", Integer.MAX_VALUE-1); //$NON-NLS-1$
 	
 	/**
 	 * When log(...,TRACE) : Log only when in trace mode.
 	 * Don't use in Logger.setLevel(). Has no meaning in that case.
 	 */
-	static final Level TRACE = new Logger.LocalLevel("TRACE", Integer.MAX_VALUE-2);	
+	static final Level TRACE = new Logger.LocalLevel("TRACE", Integer.MAX_VALUE-2);	 //$NON-NLS-1$
 
 	/**
 	 * Log the throwable at the given level (if DEFAULT, use default level for a throwable).

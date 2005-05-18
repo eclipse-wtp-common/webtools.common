@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $RCSfile: TimerTests.java,v $
- *  $Revision: 1.3 $  $Date: 2005/02/15 23:04:14 $ 
+ *  $Revision: 1.4 $  $Date: 2005/05/18 21:58:34 $ 
  */
 package org.eclipse.jem.util;
 
@@ -28,7 +28,7 @@ public class TimerTests {
 	 */
 	public static TimerTests basicTest = new TimerTests();
 
-	public static final String CURRENT_PARENT_ID = "current parent";
+	public static final String CURRENT_PARENT_ID = "current parent"; //$NON-NLS-1$
 	protected String currentParentId = null;
 
 
@@ -185,27 +185,27 @@ public class TimerTests {
 					}
 					strb.setLength(0);
 					strb.append(step.currentTime);
-					strb.append("\t");
+					strb.append("\t"); //$NON-NLS-1$
 					for (int j = 0; j < indent; j++) {
-						strb.append("     ");
+						strb.append("     "); //$NON-NLS-1$
 					}
 					switch (step.type) {
 						case TimerStep.START:
-							strb.append("Start");
+							strb.append("Start"); //$NON-NLS-1$
 							break;
 
 						case TimerStep.STOP:
-							strb.append("Stop ");
+							strb.append("Stop "); //$NON-NLS-1$
 							break;
 						default:
 							break;
 					}
 					;
-					strb.append(" \"");
+					strb.append(" \""); //$NON-NLS-1$
 					strb.append(step.id);
-					strb.append("\"   id(");
+					strb.append("\"   id("); //$NON-NLS-1$
 					strb.append(step.threadId);
-					strb.append(")");
+					strb.append(")"); //$NON-NLS-1$
 					Map startSteps = (Map) stepInfoByThreadId.get(threadId);
 					if (startSteps == null)
 						stepInfoByThreadId.put(threadId, startSteps = new HashMap());
@@ -221,18 +221,18 @@ public class TimerTests {
 							if (startStep != null) {
 								int addchars = 100 - strb.length();
 								for (int j = 0; j < addchars; j++) {
-									strb.append(" ");
+									strb.append(" "); //$NON-NLS-1$
 								}
 								long delta = step.currentTime - startStep.currentTime;
-								strb.append("    Total = " + delta + " ms");
+								strb.append("    Total = " + delta + " ms"); //$NON-NLS-1$ //$NON-NLS-2$
 								if (totalTime > 0)
-									strb.append("   " + percentFormatter.format(delta/totalTime));
+									strb.append("   " + percentFormatter.format(delta/totalTime)); //$NON-NLS-1$
 							}
 						} else
-							strb.append("    ---> Couldn't find Starting point for \"" + step.id + "\"");
+							strb.append("    ---> Couldn't find Starting point for \"" + step.id + "\""); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 					if (i > 0 && (step.currentTime - prevStep.currentTime) > 0)
-						System.out.println("-- " + (step.currentTime - prevStep.currentTime) + " ms --");
+						System.out.println("-- " + (step.currentTime - prevStep.currentTime) + " ms --"); //$NON-NLS-1$ //$NON-NLS-2$
 					prevStep = step;
 					System.out.println(strb);
 					break;
@@ -248,18 +248,18 @@ public class TimerTests {
 						indent = threadIndent.intValue();
 					strb.setLength(0);
 					strb.append(step.currentTime);
-					strb.append("\t");
+					strb.append("\t"); //$NON-NLS-1$
 					for (int j = 0; j < indent; j++) {
-						strb.append("     ");
+						strb.append("     "); //$NON-NLS-1$
 					}
-					strb.append("Start Accumulating");
-					strb.append(" \"");
+					strb.append("Start Accumulating"); //$NON-NLS-1$
+					strb.append(" \""); //$NON-NLS-1$
 					strb.append(step.id);
-					strb.append("\"   id(");
+					strb.append("\"   id("); //$NON-NLS-1$
 					strb.append(step.threadId);
-					strb.append(")");
+					strb.append(")"); //$NON-NLS-1$
 					if (i > 0 && (step.currentTime - prevStep.currentTime) > 0)
-						System.out.println("-- " + (step.currentTime - prevStep.currentTime) + " ms --");
+						System.out.println("-- " + (step.currentTime - prevStep.currentTime) + " ms --"); //$NON-NLS-1$ //$NON-NLS-2$
 					prevStep = step;
 					System.out.println(strb);
 					break;
@@ -304,45 +304,45 @@ public class TimerTests {
 						indent = threadIndent.intValue();
 					strb.setLength(0);
 					strb.append(step.currentTime);
-					strb.append("\t");
+					strb.append("\t"); //$NON-NLS-1$
 					for (int j = 0; j < indent; j++) {
-						strb.append("     ");
+						strb.append("     "); //$NON-NLS-1$
 					}
-					strb.append("Stop  Accumulating");
-					strb.append(" \"");
+					strb.append("Stop  Accumulating"); //$NON-NLS-1$
+					strb.append(" \""); //$NON-NLS-1$
 					strb.append(step.id);
-					strb.append("\"   id(");
+					strb.append("\"   id("); //$NON-NLS-1$
 					strb.append(step.threadId);
-					strb.append(")");
+					strb.append(")"); //$NON-NLS-1$
 					cumSteps = (Map) stepInfoByThreadId.get(threadId);
 					if (cumSteps != null) {
 						Object info = cumSteps.get(step.id);
 						if (info instanceof CumulativeInformation) {
 							CumulativeInformation cumInfo = (CumulativeInformation) info;
 							if (cumInfo.currentCumulativeStep != null) {
-								strb.append("   cumulative time=");
+								strb.append("   cumulative time="); //$NON-NLS-1$
 								strb.append(cumInfo.cumTime);
-								strb.append("   cumulative count=");
+								strb.append("   cumulative count="); //$NON-NLS-1$
 								strb.append(cumInfo.cumCount);
-								strb.append("   max time=");
+								strb.append("   max time="); //$NON-NLS-1$
 								strb.append(cumInfo.maxTime);
-								strb.append("   min time=");
+								strb.append("   min time="); //$NON-NLS-1$
 								strb.append(cumInfo.minTime);
-								strb.append("   avg time=");
+								strb.append("   avg time="); //$NON-NLS-1$
 								strb.append(((double) cumInfo.cumTime)/cumInfo.cumCount);
-								strb.append("   NonZero times: cumulative ~0 count=");
+								strb.append("   NonZero times: cumulative ~0 count="); //$NON-NLS-1$
 								strb.append(cumInfo.cumCountNonZero);
 								if (cumInfo.cumCountNonZero != 0) {
-									strb.append("   min ~0 time=");
+									strb.append("   min ~0 time="); //$NON-NLS-1$
 									strb.append(cumInfo.minTimeNonZero);
-									strb.append("   avg ~0 time=");
+									strb.append("   avg ~0 time="); //$NON-NLS-1$
 									strb.append(((double) cumInfo.cumTime) / cumInfo.cumCountNonZero);
 								}
 							}
 						}
 					}
 					if (i > 0 && (step.currentTime - prevStep.currentTime) > 0)
-						System.out.println("-- " + (step.currentTime - prevStep.currentTime) + " ms --");
+						System.out.println("-- " + (step.currentTime - prevStep.currentTime) + " ms --"); //$NON-NLS-1$ //$NON-NLS-2$
 					prevStep = step;
 					System.out.println(strb);
 					break;

@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $RCSfile: PerformanceMonitorUtil.java,v $
- *  $Revision: 1.4 $  $Date: 2005/02/15 23:04:14 $ 
+ *  $Revision: 1.5 $  $Date: 2005/05/18 21:58:34 $ 
  */
 package org.eclipse.jem.util;
 import java.util.EventObject;
@@ -125,9 +125,9 @@ public abstract class PerformanceMonitorUtil {
 	public static PerformanceMonitorUtil getMonitor() {
 		if (sharedMonitor == null) {
 			try {
-				Class.forName("org.eclipse.perfmsr.core.PerfMsrCorePlugin"); // This just tests if the performance plugin is available. Throws
+				Class.forName("org.eclipse.perfmsr.core.PerfMsrCorePlugin"); // This just tests if the performance plugin is available. Throws //$NON-NLS-1$
 																			 // exception otherwise.
-				Class presentClass = Class.forName("org.eclipse.jem.util.PresentPerformanceMonitor"); // Get the class we use wrapper it.
+				Class presentClass = Class.forName("org.eclipse.jem.util.PresentPerformanceMonitor"); // Get the class we use wrapper it. //$NON-NLS-1$
 				sharedMonitor = (PerformanceMonitorUtil) presentClass.newInstance();
 				if (!sharedMonitor.isValid())
 					sharedMonitor = null;

@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $RCSfile: AbstractWorkBenchRenderer.java,v $
- *  $Revision: 1.2 $  $Date: 2005/02/15 23:04:14 $ 
+ *  $Revision: 1.3 $  $Date: 2005/05/18 21:58:34 $ 
  */
 package org.eclipse.jem.util.logger.proxyrender;
 
@@ -79,7 +79,7 @@ public abstract class AbstractWorkBenchRenderer implements ILogRenderer2 {
 	 * Is the console log for eclipse turned on to sysout. If true, then we shouldn't log to console anything already logged because Eclipse would of
 	 * logged it for us. This comes from the -Declipse.consoleLog="true" which is the default when starting eclipse from PDE.
 	 */
-	protected static final boolean consoleLogOn = "true".equals(System.getProperty(EclipseStarter.PROP_CONSOLE_LOG));
+	protected static final boolean consoleLogOn = "true".equals(System.getProperty(EclipseStarter.PROP_CONSOLE_LOG)); //$NON-NLS-1$
 
 	/*
 	 * (non-Javadoc)
@@ -301,7 +301,7 @@ public abstract class AbstractWorkBenchRenderer implements ILogRenderer2 {
 		// Test again because we could be here simply due to trace mode, in which case we
 		// don't want to workbench log it.
 		if (fMyLogger.isLoggingLevel(level)) {
-			Platform.getLog(fMyBundle).log(new Status(getStatusSeverity(level), fMyBundle.getSymbolicName(), 0, "Exception thrown.", t));
+			Platform.getLog(fMyBundle).log(new Status(getStatusSeverity(level), fMyBundle.getSymbolicName(), 0, "Exception thrown.", t)); //$NON-NLS-1$
 			result = WORKBENCH_DESCRIPTION;
 			if (fTraceMode)
 				log(fMyLogger.getGenericMsg(fMyLogger.exceptionToString(t), level), level, true);

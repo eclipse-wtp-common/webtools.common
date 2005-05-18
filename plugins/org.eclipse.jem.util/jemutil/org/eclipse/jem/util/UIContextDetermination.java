@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: UIContextDetermination.java,v $$
- *  $$Revision: 1.2 $$  $$Date: 2005/02/15 23:04:14 $$ 
+ *  $$Revision: 1.3 $$  $$Date: 2005/05/18 21:58:34 $$ 
  */
 package org.eclipse.jem.util;
 import java.util.HashMap;
@@ -31,9 +31,9 @@ public class UIContextDetermination {
 
 	private static final int UNKNOWN = 100;
 
-	public static final String HEADLESS_CONTEXT_LITERAL = "Headless";
+	public static final String HEADLESS_CONTEXT_LITERAL = "Headless"; //$NON-NLS-1$
 
-	public static final String UI_CONTEXT_LITERAL = "UI";
+	public static final String UI_CONTEXT_LITERAL = "UI"; //$NON-NLS-1$
 
 	public static final int HEADLESS_CONTEXT = 102;
 
@@ -64,11 +64,11 @@ public class UIContextDetermination {
 				result = contextSensitiveClass
 						.createExecutableExtension(UIContextDeterminationRegistryReader.UI_CONTEXT_SENSTIVE_CLASS_CLASSNAME_ATTR);
 		} catch (CoreException e) {
-			Logger.getLogger().logError("Problem loading extension not found for key \"" + key + "\".");
+			Logger.getLogger().logError("Problem loading extension not found for key \"" + key + "\"."); //$NON-NLS-1$ //$NON-NLS-2$
 			Logger.getLogger().logError(e);
 		}
 		if (result == null)
-			Logger.getLogger().logError("Extension not found for key \"" + key + "\".");
+			Logger.getLogger().logError("Extension not found for key \"" + key + "\"."); //$NON-NLS-1$ //$NON-NLS-2$
 		return result;
 	}
 
@@ -114,13 +114,13 @@ public class UIContextDetermination {
 	 */
 	private static class UIContextDeterminationRegistryReader extends RegistryReader {
 
-		public static final String UI_CONTEXT_SENSTIVE_CLASS_ELEMENT = "uiContextSensitiveClass";
+		public static final String UI_CONTEXT_SENSTIVE_CLASS_ELEMENT = "uiContextSensitiveClass"; //$NON-NLS-1$
 
-		public static final String UI_CONTEXT_SENSTIVE_CLASS_KEY_ATTR = "key";
+		public static final String UI_CONTEXT_SENSTIVE_CLASS_KEY_ATTR = "key"; //$NON-NLS-1$
 
-		public static final String UI_CONTEXT_SENSTIVE_CLASS_CLASSNAME_ATTR = "className";
+		public static final String UI_CONTEXT_SENSTIVE_CLASS_CLASSNAME_ATTR = "className"; //$NON-NLS-1$
 
-		public static final String UI_CONTEXT_SENSTIVE_CLASS_CONTEXT_ATTR = "context";
+		public static final String UI_CONTEXT_SENSTIVE_CLASS_CONTEXT_ATTR = "context"; //$NON-NLS-1$
 
 		public UIContextDeterminationRegistryReader() {
 			super(JEMUtilPlugin.PLUGIN_ID, JEMUtilPlugin.UI_CONTEXT_EXTENSION_POINT);

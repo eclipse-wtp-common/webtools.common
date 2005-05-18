@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $RCSfile: Logger.java,v $
- *  $Revision: 1.2 $  $Date: 2005/02/15 23:05:54 $ 
+ *  $Revision: 1.3 $  $Date: 2005/05/18 21:58:34 $ 
  */
 package org.eclipse.jem.util.logger.proxy;
 
@@ -184,7 +184,7 @@ public class Logger {
 	private void init() {
 		if (System.getProperty("debug") != null) //$NON-NLS-1$
 			fTraceMode = true;
-		level = defaultLevel = Level.parse(System.getProperty("logLevel", Level.WARNING.getName()));
+		level = defaultLevel = Level.parse(System.getProperty("logLevel", Level.WARNING.getName())); //$NON-NLS-1$
 		
 		try {
 			fLineSeperator = System.getProperty("line.separator"); // Diff on Win/Unix/Mac //$NON-NLS-1$
@@ -221,7 +221,7 @@ public class Logger {
 		StringBuffer genMsg = new StringBuffer(msg.length()+16);
 		genMsg.append(fLineSeperator);
 		genMsg.append(getLevelHeader(aLevel));
-		genMsg.append(": ");
+		genMsg.append(": "); //$NON-NLS-1$
 		genMsg.append(new Date());
 		indentMsg(msg, genMsg);
 		return genMsg.toString();
@@ -235,10 +235,10 @@ public class Logger {
 	};
 	
 	private static final String[] LEVEL_MARK = new String[] {
-		"*** ERROR ***",
-		"+++ Warning +++",
-		"Info",
-		"[Trace]"
+		"*** ERROR ***", //$NON-NLS-1$
+		"+++ Warning +++", //$NON-NLS-1$
+		"Info", //$NON-NLS-1$
+		"[Trace]" //$NON-NLS-1$
 	};
 	
 	private String getLevelHeader(Level aLevel) {

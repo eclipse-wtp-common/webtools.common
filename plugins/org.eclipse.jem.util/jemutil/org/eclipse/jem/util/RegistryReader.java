@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: RegistryReader.java,v $$
- *  $$Revision: 1.2 $$  $$Date: 2005/02/15 23:04:14 $$ 
+ *  $$Revision: 1.3 $$  $$Date: 2005/05/18 21:58:34 $$ 
  */
 package org.eclipse.jem.util;
 import org.eclipse.core.runtime.*;
@@ -150,7 +150,7 @@ public abstract class RegistryReader {
 	 */
 	protected static Bundle getSystemBundle() {
 		if (systemBundle == null)
-			systemBundle = Platform.getBundle("org.eclipse.osgi");
+			systemBundle = Platform.getBundle("org.eclipse.osgi"); //$NON-NLS-1$
 		return systemBundle;
 	}
 }
