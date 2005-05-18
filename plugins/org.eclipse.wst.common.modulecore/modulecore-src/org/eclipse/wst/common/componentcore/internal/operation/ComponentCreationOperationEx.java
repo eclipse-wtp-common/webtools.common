@@ -52,7 +52,7 @@ public abstract class ComponentCreationOperationEx extends AbstractDataModelOper
     }
 
     private void createProjectIfNeeded(IProgressMonitor monitor, IAdaptable info) {
-        Object dm = model.getProperty(NESTED_PROJECT_CREATION_DM);
+        Object dm = model.getNestedModel(NESTED_PROJECT_CREATION_DM);
         if(dm == null) return;
         String projName = ((IDataModel)dm).getStringProperty(IFlexibleProjectCreationDataModelProperties.PROJECT_NAME);
         IProject proj = ProjectUtilities.getProject(projName);
