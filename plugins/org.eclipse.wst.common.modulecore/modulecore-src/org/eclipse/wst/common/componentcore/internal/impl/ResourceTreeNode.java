@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
@@ -31,6 +33,19 @@ import org.eclipse.wst.common.componentcore.internal.util.IPathProvider;
  * </p>
  */
 public class ResourceTreeNode {
+	
+	public static final int CREATE_NONE = 0x0;
+	/** 
+	 * Type constant (bit mask value 1) which identifies creating child nodes.
+	 *
+	 */
+	public static final int CREATE_TREENODE_IFNEC = 0x1;
+
+	/**
+	 * Type constant (bit mask value 2) which identifies always creating a virtual resource.
+	 *
+	 */
+	public static final int CREATE_RESOURCE_ALWAYS = 0x2;
 
 	private final Set moduleResources = Collections.synchronizedSet(new HashSet());	
 	private final Map children = Collections.synchronizedMap(new HashMap());
@@ -50,7 +65,7 @@ public class ResourceTreeNode {
 	}
 
 	public ResourceTreeNode addChild(ComponentResource aModuleResource) {
-		ResourceTreeNode newChild = findChild(getPathProvider().getPath(aModuleResource), true);
+		ResourceTreeNode newChild = findChild(getPathProvider().getPath(aModuleResource), CREATE_TREENODE_IFNEC);
 		if(newChild != null) {
 			newChild.addModuleResource(aModuleResource);
 			return newChild;
@@ -63,7 +78,7 @@ public class ResourceTreeNode {
 	}
 
 	public ResourceTreeNode removeChild(ComponentResource aModuleResource) { 
-		ResourceTreeNode containingChild = findChild(getPathProvider().getPath(aModuleResource), false);
+		ResourceTreeNode containingChild = findChild(getPathProvider().getPath(aModuleResource), CREATE_NONE);
 		if(containingChild != null) {
 			containingChild.removeResource(aModuleResource);
 			if(containingChild.hasModuleResources())
@@ -74,7 +89,7 @@ public class ResourceTreeNode {
 	}
 
 	public ResourceTreeNode removeChild(IPath targetPath, ComponentResource aModuleResource) { 
-		ResourceTreeNode containingChild = findChild(targetPath, false);
+		ResourceTreeNode containingChild = findChild(targetPath, CREATE_NONE);
 		if(containingChild != null) {
 			containingChild.removeResource(aModuleResource);
 			if(containingChild.hasModuleResources())
@@ -89,20 +104,20 @@ public class ResourceTreeNode {
 	}
 
 	public ResourceTreeNode findChild(IPath aPath) {
-		return findChild(aPath, true);
+		return findChild(aPath, CREATE_TREENODE_IFNEC);
 	}
 
-	public ResourceTreeNode findChild(IPath aPath, boolean toCreateChildIfNecessary) {
+	public ResourceTreeNode findChild(IPath aPath, int creationFlags) {
 		if(aPath == null)
 			return null;
 		ResourceTreeNode child = this;
 		if (aPath.segmentCount() > 0) {
-			child = findChild(aPath.segment(0), toCreateChildIfNecessary);
+			child = findChild(aPath.segment(0), creationFlags);
 			if (child == null)
 				return null;
 			if (aPath.segmentCount() == 1)
 				return child;
-			child = child.findChild(aPath.removeFirstSegments(1), toCreateChildIfNecessary);
+			child = child.findChild(aPath.removeFirstSegments(1), creationFlags);
 
 		}
 		return child;
@@ -111,19 +126,20 @@ public class ResourceTreeNode {
 	public ResourceTreeNode findChild(String aPathSegment) {
 		if (aPathSegment == null || aPathSegment.length() == 0)
 			return this;
-		return findChild(aPathSegment, false);
+		return findChild(aPathSegment, CREATE_NONE);
 	}
 
-	public ResourceTreeNode findChild(String aPathSegment, boolean toCreateChildIfNecessary) {
+	public ResourceTreeNode findChild(String aPathSegment, int creationFlags) {
+		boolean toCreateChildIfNecessary = (creationFlags & CREATE_TREENODE_IFNEC) == CREATE_TREENODE_IFNEC;
 		ResourceTreeNode childNode = (ResourceTreeNode) children.get(aPathSegment);
 		if (childNode == null && toCreateChildIfNecessary)
 			childNode = addChild(aPathSegment);
 		return childNode;
 	}
 
-	public ComponentResource[] findModuleResources(IPath aPath, boolean toCreateChildIfNecessary) {
+	public ComponentResource[] findModuleResources(IPath aPath, int creationFlags) {
 
-		Set foundModuleResources = findModuleResourcesSet(aPath, aPath, toCreateChildIfNecessary);
+		Set foundModuleResources = findModuleResourcesSet(aPath, aPath, creationFlags);
 		if (foundModuleResources.size() == 0)
 			return NO_MODULE_RESOURCES;
 		return (ComponentResource[]) foundModuleResources.toArray(new ComponentResource[foundModuleResources.size()]);
@@ -137,22 +153,23 @@ public class ResourceTreeNode {
 		return (ComponentResource[]) moduleResources.toArray(new ComponentResource[moduleResources.size()]);
 	}
 
-	private Set findModuleResourcesSet(IPath aFullPath, IPath aPath, boolean toCreateChildIfNecessary) {
+	private Set findModuleResourcesSet(IPath aFullPath, IPath aPath, int creationFlags) {
 
 		if (aPath.segmentCount() == 0) {
 			Set resources = aggregateResources(new HashSet());
 			return resources;
 		}
-		ResourceTreeNode child = findChild(aPath.segment(0), toCreateChildIfNecessary);
+		ResourceTreeNode child = findChild(aPath.segment(0), creationFlags);
 		if (child == null)
-			return findMatchingVirtualPathsSet(aFullPath, aPath);
+			return findMatchingVirtualPathsSet(aFullPath, aPath, creationFlags);
 		Set foundResources = new HashSet();
-		foundResources.addAll(child.findModuleResourcesSet(aFullPath, aPath.removeFirstSegments(1), toCreateChildIfNecessary));
-		foundResources.addAll(findMatchingVirtualPathsSet(aFullPath, aPath));
+		foundResources.addAll(child.findModuleResourcesSet(aFullPath, aPath.removeFirstSegments(1), creationFlags));
+		foundResources.addAll(findMatchingVirtualPathsSet(aFullPath, aPath, creationFlags));
 		return foundResources;
 	}
 
-	private Set findMatchingVirtualPathsSet(IPath aFullPath, IPath aPath) {
+	private Set findMatchingVirtualPathsSet(IPath aFullPath, IPath aPath, int creationFlags) {
+		boolean toCreateResourceAlways = (creationFlags & CREATE_RESOURCE_ALWAYS) == CREATE_RESOURCE_ALWAYS;
 		if (hasModuleResources()) {
 			ComponentResource moduleResource = null;
 			IResource eclipseResource = null;
@@ -176,13 +193,13 @@ public class ResourceTreeNode {
 						if(newResource == null) {
 							// flesh out the tree
 							newResource = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentResource();
-							//if ((foundResource = eclipseContainer.findMember(aPath)) != null) {
+							if ((toCreateResourceAlways) || (foundResource = eclipseContainer.findMember(aPath)) != null) {
 								newResource.setComponent(moduleResource.getComponent());		
 								
 								newResource.setRuntimePath(runtimeURI);
 								newResource.setSourcePath(eclipseContainer.getProjectRelativePath().append(aPath));
 								resultSet.add(newResource);
-							//}
+							}
 						}
 					}
 		

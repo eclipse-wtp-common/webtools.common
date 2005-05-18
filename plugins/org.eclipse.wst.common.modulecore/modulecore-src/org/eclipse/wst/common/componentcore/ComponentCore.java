@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
+import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
 import org.eclipse.wst.common.componentcore.internal.resources.FlexibleProject;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualComponent;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualFile;
@@ -141,7 +142,7 @@ public class ComponentCore {
 			se = StructureEdit.getStructureEditForRead(proj);
 			ComponentResource[] resources = se
 					.findResourcesBySourcePath(aResource
-							.getProjectRelativePath());
+							.getProjectRelativePath(),aResource.exists() ? ResourceTreeNode.CREATE_NONE:ResourceTreeNode.CREATE_RESOURCE_ALWAYS);
 			for (int i = 0; i < resources.length; i++) {
 				if (aResource.getType() == IResource.FILE)
 					foundResources.add(new VirtualFile(proj, resources[i]

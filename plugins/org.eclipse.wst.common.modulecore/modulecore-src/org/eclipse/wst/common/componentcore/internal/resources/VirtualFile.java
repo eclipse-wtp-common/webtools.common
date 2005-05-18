@@ -18,6 +18,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeRoot;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
@@ -47,7 +48,7 @@ public class VirtualFile extends VirtualResource implements IVirtualFile {
 			WorkbenchComponent component = moduleCore.findComponentByName(getComponent().getName());
 			
 			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
-			ComponentResource[] resources = root.findModuleResources(getRuntimePath(), false);
+			ComponentResource[] resources = root.findModuleResources(getRuntimePath(), ResourceTreeNode.CREATE_NONE);
 
 			if(resources.length == 0) {
 				ComponentResource componentResource = moduleCore.createWorkbenchModuleResource(resource);

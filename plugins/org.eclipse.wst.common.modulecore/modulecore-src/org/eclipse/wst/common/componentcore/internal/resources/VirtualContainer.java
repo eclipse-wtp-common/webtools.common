@@ -22,6 +22,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeRoot;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualContainer;
@@ -143,7 +144,7 @@ public class VirtualContainer extends VirtualResource implements IVirtualContain
 			moduleCore = StructureEdit.getStructureEditForRead(getComponentHandle().getProject());
 			WorkbenchComponent component = moduleCore.findComponentByName(getComponentHandle().getName());
 			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
-			ComponentResource[] componentResources = root.findModuleResources(getRuntimePath(), false);
+			ComponentResource[] componentResources = root.findModuleResources(getRuntimePath(), ResourceTreeNode.CREATE_NONE);
 
 			
 			IResource realResource = null;
@@ -226,7 +227,7 @@ public class VirtualContainer extends VirtualResource implements IVirtualContain
 			WorkbenchComponent component = moduleCore.findComponentByName(getComponent().getName());
 			
 			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
-			ComponentResource[] resources = root.findModuleResources(getRuntimePath(), false);
+			ComponentResource[] resources = root.findModuleResources(getRuntimePath(), ResourceTreeNode.CREATE_NONE);
 
 			if(resources.length == 0) {
 				ComponentResource componentResource = moduleCore.createWorkbenchModuleResource(resource);

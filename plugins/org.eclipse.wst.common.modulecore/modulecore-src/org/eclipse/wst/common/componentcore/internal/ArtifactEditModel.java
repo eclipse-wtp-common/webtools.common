@@ -17,7 +17,9 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.componentcore.ComponentCore;
+import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.impl.PlatformURLModuleConnection;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
@@ -241,21 +243,24 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 		Resource resourceToProcess;
 		boolean processed = false; 
  
+		URI aResourceURI = null;
 		IResource resourceResource;
-		IVirtualResource[] virtualResources;
+		IVirtualResource[] resources;
 		for (int i = 0; i < size; i++) { 
 			resourceToProcess = (Resource) theResources.get(i);
-			resourceToProcess.getURI();
+			aResourceURI = resourceToProcess.getURI();
 			resourceResource = WorkbenchResourceHelper.getFile(resourceToProcess);
 			if (resourceResource == null)
-				return processed;
-			virtualResources = ComponentCore.createResources(resourceResource); 
-			for (int resourcesIndex = 0; resourcesIndex < virtualResources.length; resourcesIndex++) {
-				if (virtualComponent.equals(virtualResources[resourcesIndex].getComponent())) {
-					processResource(resourceToProcess);
-					processed = true;
+				Logger.getLogger().logError("Error processing resource URI: " + resourceToProcess.getURI());
+			else {
+				resources = ComponentCore.createResources(resourceResource); 
+				for (int resourcesIndex = 0; resourcesIndex < resources.length; resourcesIndex++) {
+					if (virtualComponent.equals(resources[resourcesIndex].getComponent())) {
+						processResource(resourceToProcess);
+						processed = true;
+					}
 				}
-			} 
+			}
 		}  
 		return processed;
 	}

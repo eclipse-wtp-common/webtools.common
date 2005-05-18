@@ -32,6 +32,7 @@ import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.internal.impl.PlatformURLModuleConnection;
+import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
 import org.eclipse.wst.common.componentcore.internal.util.EclipseResourceAdapter;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualContainer;
@@ -602,7 +603,9 @@ public class StructureEdit implements IEditModelHandler {
 		WorkbenchComponent module = findComponentByName(aModuleName);
 		return module.findResourcesByRuntimePath(aModuleResourcePath);
 	}
-
+	public ComponentResource[] findResourcesBySourcePath(URI aWorkspaceRelativePath) throws UnresolveableURIException {
+		return findResourcesBySourcePath(aWorkspaceRelativePath,ResourceTreeNode.CREATE_NONE);
+	}
 	/**
 	 * <p>
 	 * Locates the {@see ComponentResource}s that contain the supplied resource in their source
@@ -624,10 +627,12 @@ public class StructureEdit implements IEditModelHandler {
 	 * @throws UnresolveableURIException
 	 *             If the supplied module URI is invalid or unresolveable.
 	 */
-	public ComponentResource[] findResourcesBySourcePath(URI aWorkspaceRelativePath) throws UnresolveableURIException {
-		return findResourcesBySourcePath(new Path(aWorkspaceRelativePath.path()));
+	public ComponentResource[] findResourcesBySourcePath(URI aWorkspaceRelativePath, int resourceFlag) throws UnresolveableURIException {
+		return findResourcesBySourcePath(new Path(aWorkspaceRelativePath.path()),resourceFlag);
 	}	
-	
+	public ComponentResource[] findResourcesBySourcePath(IPath aProjectRelativePath) throws UnresolveableURIException {
+		return findResourcesBySourcePath(aProjectRelativePath,ResourceTreeNode.CREATE_NONE);
+	}
 	/**
 	 * <p>
 	 * Locates the {@see ComponentResource}s that contain the supplied resource in their source
@@ -648,7 +653,7 @@ public class StructureEdit implements IEditModelHandler {
 	 * @throws UnresolveableURIException
 	 *             If the supplied module URI is invalid or unresolveable.
 	 */
-	public ComponentResource[] findResourcesBySourcePath(IPath aProjectRelativePath) throws UnresolveableURIException {
+	public ComponentResource[] findResourcesBySourcePath(IPath aProjectRelativePath, int resourceFlag) throws UnresolveableURIException {
 		ProjectComponents projectModules = getComponentModelRoot();
 		EList modules = projectModules.getComponents();
 
@@ -657,11 +662,11 @@ public class StructureEdit implements IEditModelHandler {
 		List foundResources = new ArrayList();
 		for (int i = 0; i < modules.size(); i++) {
 			module = (WorkbenchComponent) modules.get(i);
-			resources = module.findResourcesBySourcePath(aProjectRelativePath);
+			resources = module.findResourcesBySourcePath(aProjectRelativePath,resourceFlag);
 			if (resources != null && resources.length != 0)
 				foundResources.addAll(Arrays.asList(resources));
 			else if (aProjectRelativePath.segments().length > 1) { 
-				resources = module.findResourcesBySourcePath(aProjectRelativePath.removeFirstSegments(1));
+				resources = module.findResourcesBySourcePath(aProjectRelativePath.removeFirstSegments(1),resourceFlag);
 				if (resources != null && resources.length != 0)
 					foundResources.addAll(Arrays.asList(resources));
 			}

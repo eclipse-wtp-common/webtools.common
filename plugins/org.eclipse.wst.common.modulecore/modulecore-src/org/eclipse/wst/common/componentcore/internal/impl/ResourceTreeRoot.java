@@ -166,7 +166,7 @@ public class ResourceTreeRoot extends ResourceTreeNode {
 		} catch (UnresolveableURIException uurie) {
 
 		}
-		return findModuleResources(path, false);
+		return findModuleResources(path, ResourceTreeNode.CREATE_NONE);
 	}
 
 }

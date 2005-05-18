@@ -24,6 +24,7 @@ import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeRoot;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
@@ -117,7 +118,7 @@ public abstract class VirtualResource implements IVirtualResource {
 				IPath searchPath = null;
 				do{ 
 					searchPath = (searchPath == null) ? getRuntimePath(): searchPath.removeLastSegments(1);
-					componentResources = root.findModuleResources(searchPath, false);
+					componentResources = root.findModuleResources(searchPath, ResourceTreeNode.CREATE_NONE);
 					estimatedPath = findBestMatch(componentResources);					
 				} while(estimatedPath == null && canSearchContinue(componentResources, searchPath));
 				return estimatedPath;

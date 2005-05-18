@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchComponentImpl.java,v 1.2 2005/04/14 04:44:09 cbridgha Exp $
+ * $Id: WorkbenchComponentImpl.java,v 1.3 2005/05/18 03:02:06 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
@@ -369,12 +369,12 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 
 	public ComponentResource[] findResourcesByRuntimePath(IPath aDeployPath) { 
 		ResourceTreeRoot resourceTreeRoot = ResourceTreeRoot.getDeployResourceTreeRoot(this);
-		return resourceTreeRoot.findModuleResources(aDeployPath, false); 
+		return resourceTreeRoot.findModuleResources(aDeployPath, ResourceTreeNode.CREATE_NONE); 
 	}
 
-	public ComponentResource[] findResourcesBySourcePath(IPath aSourcePath) { 
+	public ComponentResource[] findResourcesBySourcePath(IPath aSourcePath, int resourceFlag) { 
 		ResourceTreeRoot resourceTreeRoot = ResourceTreeRoot.getSourceResourceTreeRoot(this);
-		return resourceTreeRoot.findModuleResources(aSourcePath, false); 
+		return resourceTreeRoot.findModuleResources(aSourcePath, resourceFlag); 
 	}
   
 
