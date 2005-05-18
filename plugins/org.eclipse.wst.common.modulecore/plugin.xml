@@ -93,5 +93,11 @@
       		providerType="dependent.builder"
       		providerID="org.eclipse.wst.common.componentcore.internal.builder.ReferencedComponentBuilderDataModelProvider"/>
 	</extension>
+	
+	<extension point="org.eclipse.core.runtime.contentTypes">
+ 			<file-association
+				content-type="org.eclipse.core.runtime.xml"
+				file-names=".wtpmodules"/>
+	</extension>
    
 </plugin>
