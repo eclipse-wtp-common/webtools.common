@@ -29,6 +29,7 @@ import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeRoot;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
@@ -256,7 +257,7 @@ public class ModuleCoreAPIFVTTest extends TestCase {
 			assertTrue("There should be at least one mapping for virtual path \"/images\".", componentResources.length > 0); //$NON-NLS-1$
 
 			ResourceTreeRoot resourceTreeRoot = ResourceTreeRoot.getSourceResourceTreeRoot(wbComponent);
-			componentResources = resourceTreeRoot.findModuleResources(realImages.getProjectRelativePath(), false);
+			componentResources = resourceTreeRoot.findModuleResources(realImages.getProjectRelativePath(), ResourceTreeNode.CREATE_NONE);
 
 			assertTrue("There should be exactly one Component resource with the source path \"" + realImages.getProjectRelativePath() + "\".", componentResources.length == 1); //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -266,7 +267,7 @@ public class ModuleCoreAPIFVTTest extends TestCase {
 
 			images.createLink(new Path("/WebModule2/images"), 0, null); //$NON-NLS-1$
 
-			componentResources = resourceTreeRoot.findModuleResources(realImages.getProjectRelativePath(), false);
+			componentResources = resourceTreeRoot.findModuleResources(realImages.getProjectRelativePath(), ResourceTreeNode.CREATE_NONE);
 
 			assertTrue("There should be exactly one Component resource with the source path \"" + realImages.getProjectRelativePath() + "\".", componentResources.length == 1); //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -323,7 +324,7 @@ public class ModuleCoreAPIFVTTest extends TestCase {
 			assertTrue("There should be at least one mapping for virtual path \"/" + TestWorkspace.META_INF + "\".", componentResources.length > 0); //$NON-NLS-1$ //$NON-NLS-2$
 
 			ResourceTreeRoot resourceTreeRoot = ResourceTreeRoot.getSourceResourceTreeRoot(wbComponent);
-			componentResources = resourceTreeRoot.findModuleResources(metaInfFolder.getProjectRelativePath(), false);
+			componentResources = resourceTreeRoot.findModuleResources(metaInfFolder.getProjectRelativePath(), ResourceTreeNode.CREATE_NONE);
 
 			assertTrue("There should be exactly one Component resource with the source path \"" + metaInfFolder.getProjectRelativePath() + "\".", componentResources.length == 1); //$NON-NLS-1$ //$NON-NLS-2$
 
