@@ -1,7 +1,5 @@
 package org.eclipse.wst.common.componentcore.internal.operation;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 
 public interface IArtifactEditOperationDataModelProperties {
 
@@ -23,7 +21,8 @@ public interface IArtifactEditOperationDataModelProperties {
 	 */
 	public static final String PROMPT_ON_SAVE = "IArtifactEditOperationDataModelProperties.PROMPT_ON_SAVE"; //$NON-NLS-1$
 	
-	public IProject getTargetProject();
+	public static final String TARGET_PROJECT = "IArtifactEditOperationDataModelProperties.TARGET_PROJECT"; //$NON-NLS-1$
 	
-	public IVirtualComponent getTargetComponent();
+	public static final String TARGET_COMPONENT = "IArtifactEditOperationDataModelProperties.TARGET_COMPONENT"; //$NON-NLS-1$
+	
 }

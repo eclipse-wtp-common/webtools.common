@@ -62,6 +62,10 @@ public class ArtifactEditOperationDataModelProvider extends AbstractDataModelPro
 	public Object getDefaultProperty(String propertyName) {
 		if (propertyName.equals(PROMPT_ON_SAVE))
 			return Boolean.FALSE;
+		if (propertyName.equals(TARGET_PROJECT))
+			return getTargetProject();
+		if (propertyName.equals(TARGET_COMPONENT))
+			return getTargetComponent();
 		return super.getDefaultProperty(propertyName);
 	}
 	
