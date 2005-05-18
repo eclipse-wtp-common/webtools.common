@@ -99,5 +99,10 @@
 				content-type="org.eclipse.core.runtime.xml"
 				file-names=".wtpmodules"/>
 	</extension>
-   
+
+	<extension point="org.eclipse.team.core.ignore">
+		<ignore
+        enabled="true"
+        pattern=".deployables"/>
+	</extension>
 </plugin>
