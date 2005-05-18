@@ -221,4 +221,14 @@ public class VirtualComponent extends VirtualContainer implements IVirtualCompon
 		return false;
 	}
 
+	public IVirtualReference getReference(String aComponentName) {
+		IVirtualReference[] refs = getReferences();
+		for (int i = 0; i < refs.length; i++) {
+			IVirtualReference reference = refs[i];
+			if (reference.getReferencedComponent().getName().equals(aComponentName))
+				return reference;
+		}
+		return null;
+	}
+
 }

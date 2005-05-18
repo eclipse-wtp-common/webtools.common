@@ -116,6 +116,16 @@ public interface IVirtualComponent extends IVirtualContainer {
 	 * @return A by-value copy of the virtual reference array
 	 */
 	IVirtualReference[] getReferences();
+	/**
+	 * Virtual components may reference other virtual components to build logical dependency trees. 
+	 * <p>
+	 * Each virtual reference will indicate how the content of the reference will be absorbed 
+	 * by this component. Each virtual reference will always specify an enclosing component that will
+	 * be this component.   
+	 * </p>
+	 * @return A by-value copy of the virtual reference with given name, or null if none exist matching this name
+	 */
+	IVirtualReference getReference(String aComponentName);
 	
 	/**
 	 * Virtual components may reference other virtual components to build logical dependency trees. 
