@@ -14,6 +14,7 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
@@ -150,7 +151,7 @@ public abstract class OperationTestCase extends BaseTestCase {
         		LogUtility.getInstance().resetLogging();
         	//TODO Verification to be fixed to use IDataModel
             //verifyValidDataModel(dataModel);
-            dataModel.getDefaultOperation().execute(null,null);
+            dataModel.getDefaultOperation().execute(new NullProgressMonitor(),null);
 //          TODO Verification to be fixed to use IDataModel
             //verifyDataModel(dataModel);
             if (waitForBuildToComplete){
