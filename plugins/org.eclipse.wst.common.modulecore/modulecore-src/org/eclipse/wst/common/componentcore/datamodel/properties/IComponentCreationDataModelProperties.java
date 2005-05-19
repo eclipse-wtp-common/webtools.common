@@ -40,22 +40,22 @@ public interface IComponentCreationDataModelProperties extends IDataModelPropert
 	 * Required, type String. The user defined name of the component to be created.
 	 */
 	public static final String COMPONENT_NAME = "IComponentCreationDataModelProperties.COMPONENT_NAME"; //$NON-NLS-1$
-    /**
-     * Required, type String. The user defined location on disk of the target project for the component to be created.
-     * Defaulted to default eclipse workspace location
-     */
-    public static final String LOCATION = "IFlexibleProjectCreationDataModelProperties.LOCATION"; //$NON-NLS-1$
- 
+	/**
+	 * Required, type String. The user defined location on disk of the target project for the
+	 * component to be created. Defaulted to default eclipse workspace location
+	 */
+	public static final String LOCATION = "IFlexibleProjectCreationDataModelProperties.LOCATION"; //$NON-NLS-1$
+
 
 	/**
 	 * Required, type String. The user defined deploy name of the component to be created. The
 	 * DataModelProvider will default the name to the COMPONENT_NAME.
 	 */
 	public static final String COMPONENT_DEPLOY_NAME = "IComponentCreationDataModelProperties.COMPONENT_DEPLOY_NAME"; //$NON-NLS-1$
-    /**
-     * Required, type String. Nested operation to create a new project.
-     */
-    public static final String NESTED_PROJECT_CREATION_DM = "IComponentCreationDataModelProperties.NESTED_PROJECT_CREATION_DM"; //$NON-NLS-1$
+	/**
+	 * Required, type String. Nested operation to create a new project.
+	 */
+	public static final String NESTED_PROJECT_CREATION_DM = "IComponentCreationDataModelProperties.NESTED_PROJECT_CREATION_DM"; //$NON-NLS-1$
 	// TODO delete this
 	/**
 	 * Optional, type Boolean The default value is <code>Boolean.TRUE</code>. If this property is
@@ -63,5 +63,11 @@ public interface IComponentCreationDataModelProperties extends IDataModelPropert
 	 * bindings files will be generated.
 	 */
 	public static final String CREATE_DEFAULT_FILES = "IComponentCreationDataModelProperties.CREATE_DEFAULT_FILES"; //$NON-NLS-1$
+
+	/**
+	 * An unsettable result property used to retreive the created virtual component after the
+	 * operation has executed.
+	 */
+	public static final String COMPONENT = "IComponentCreationDataModelProperties.COMPONENT"; //$NON-NLS-1$
 
 }

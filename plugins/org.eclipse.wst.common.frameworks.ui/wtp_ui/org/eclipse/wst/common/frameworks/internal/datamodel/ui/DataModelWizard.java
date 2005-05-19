@@ -63,12 +63,10 @@ public abstract class DataModelWizard extends Wizard {
 	}
 
 	/**
-	 * The <code>Wizard</code> implementation of this <code>IWizard</code>
-	 * method creates all the pages controls using
-	 * <code>IDialogPage.createControl</code>. Subclasses should reimplement
-	 * this method if they want to delay creating one or more of the pages
-	 * lazily. The framework ensures that the contents of a page will be created
-	 * before attempting to show it.
+	 * The <code>Wizard</code> implementation of this <code>IWizard</code> method creates all
+	 * the pages controls using <code>IDialogPage.createControl</code>. Subclasses should
+	 * reimplement this method if they want to delay creating one or more of the pages lazily. The
+	 * framework ensures that the contents of a page will be created before attempting to show it.
 	 */
 	public void createPageControls(Composite pageContainer) {
 		IWizardPage[] pages = getPages();
@@ -102,8 +100,8 @@ public abstract class DataModelWizard extends Wizard {
 
 
 	/**
-	 * This is finalized to handle the adding of extended pages. Clients should
-	 * override doAddPages() to add their pages.
+	 * This is finalized to handle the adding of extended pages. Clients should override
+	 * doAddPages() to add their pages.
 	 */
 	public final void addPages() {
 		doAddPages();
@@ -272,9 +270,8 @@ public abstract class DataModelWizard extends Wizard {
 	}
 
 	/**
-	 * Subclass can override to perform any tasks prior to running the
-	 * operation. Return true to have the operation run and false to stop the
-	 * execution of the operation.
+	 * Subclass can override to perform any tasks prior to running the operation. Return true to
+	 * have the operation run and false to stop the execution of the operation.
 	 * 
 	 * @return
 	 */
@@ -283,8 +280,7 @@ public abstract class DataModelWizard extends Wizard {
 	}
 
 	/**
-	 * Subclasses should override to perform any actions necessary after
-	 * performing Finish.
+	 * Subclasses should override to perform any actions necessary after performing Finish.
 	 */
 	protected void postPerformFinish() throws InvocationTargetException {
 	}
@@ -296,8 +292,8 @@ public abstract class DataModelWizard extends Wizard {
 	}
 
 	/**
-	 * Subclasses may override if they need to do something special when storing
-	 * the default settings for a particular page.
+	 * Subclasses may override if they need to do something special when storing the default
+	 * settings for a particular page.
 	 * 
 	 * @param page
 	 * @param pageIndex
@@ -308,8 +304,8 @@ public abstract class DataModelWizard extends Wizard {
 	}
 
 	/**
-	 * Subclasses should override if the running operation is allowed to be
-	 * cancelled. The default is false.
+	 * Subclasses should override if the running operation is allowed to be cancelled. The default
+	 * is false.
 	 * 
 	 * @return
 	 */
@@ -318,8 +314,7 @@ public abstract class DataModelWizard extends Wizard {
 	}
 
 	/**
-	 * Subclasses should override to return false if the running operation
-	 * cannot be run forked.
+	 * Subclasses should override to return false if the running operation cannot be run forked.
 	 * 
 	 * @return
 	 */

@@ -39,6 +39,9 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 
 	public ExtendableOperationImpl(IDataModelOperation rootOperation) {
 		this.rootOperation = rootOperation;
+		if (null == rootOperation) {
+			throw new NullPointerException();
+		}
 	}
 
 	private DMComposedExtendedOperationHolder initializeExtensionOperations() {

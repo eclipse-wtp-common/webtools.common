@@ -387,9 +387,9 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 
 	/**
 	 * This method only serves as a migration reminder. Clients migratating from
-	 * WTPOperationDataModel should rename this method.
+	 * WTPOperationDataModel should delete this method.
 	 * 
-	 * @deprecated replace with init
+	 * @deprecated replace by returning the property names in getPropertyNames
 	 * @param propertyName
 	 * @return
 	 */

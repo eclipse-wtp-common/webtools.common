@@ -17,6 +17,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
+import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IComponentCreationDataModelProperties;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
@@ -35,62 +36,69 @@ import org.eclipse.wst.server.core.IRuntimeType;
  * 
  * @since WTP 1.0
  */
-public abstract class ComponentCreationDataModelProvider extends AbstractDataModelProvider implements IComponentCreationDataModelProperties{
+public abstract class ComponentCreationDataModelProvider extends AbstractDataModelProvider implements IComponentCreationDataModelProperties {
 
-    public void init() {
-        super.init();
-        initProjectCreationModel();
-    }
-    
-	public String[] getPropertyNames() {
-		return new String[]{PROJECT_NAME, NESTED_PROJECT_CREATION_DM, COMPONENT_NAME, LOCATION, COMPONENT_DEPLOY_NAME, CREATE_DEFAULT_FILES};
+	public void init() {
+		super.init();
+		initProjectCreationModel();
 	}
 
-    public void propertyChanged(DataModelEvent event) {
-        if (event.getFlag() == DataModelEvent.VALUE_CHG) {
-            event.getDataModel();
-        }
-    }
+	public String[] getPropertyNames() {
+		return new String[]{PROJECT_NAME, NESTED_PROJECT_CREATION_DM, COMPONENT_NAME, LOCATION, COMPONENT_DEPLOY_NAME, CREATE_DEFAULT_FILES, COMPONENT};
+	}
 
-    public boolean propertySet(String propertyName, Object propertyValue) {
-        if (COMPONENT_NAME.equals(propertyName)) {
+	public void propertyChanged(DataModelEvent event) {
+		if (event.getFlag() == DataModelEvent.VALUE_CHG) {
+			event.getDataModel();
+		}
+	}
+
+	public boolean propertySet(String propertyName, Object propertyValue) {
+		if (COMPONENT_NAME.equals(propertyName)) {
 			model.setProperty(COMPONENT_DEPLOY_NAME, propertyValue);
             if(!FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp())
-                model.setProperty(PROJECT_NAME, propertyValue);
-        } else if (COMPONENT_DEPLOY_NAME.equals(propertyName))
-			model.setProperty(COMPONENT_DEPLOY_NAME, propertyValue);        
-         return true;
-    }
-    
-    public Object getDefaultProperty(String propertyName) {
-        if (propertyName.equals(CREATE_DEFAULT_FILES)) {
-            return Boolean.TRUE;
-        }
-        return super.getDefaultProperty(propertyName);
-    }
-    
-    public IStatus validate(String propertyName) {
-        if (propertyName.equals(COMPONENT_NAME)) {
-            IStatus status = OK_STATUS;
-            String moduleName = model.getStringProperty(COMPONENT_NAME);
-            if (status.isOK()) {
+			model.setProperty(PROJECT_NAME, propertyValue);
+        } else if (COMPONENT_DEPLOY_NAME.equals(propertyName)){
+			model.setProperty(COMPONENT_DEPLOY_NAME, propertyValue);
+		} else if (COMPONENT.equals(propertyName)) {
+			throw new RuntimeException(propertyName + " should not be set.");
+		}
+		return true;
+	}
+
+	public Object getDefaultProperty(String propertyName) {
+		if (propertyName.equals(CREATE_DEFAULT_FILES)) {
+			return Boolean.TRUE;
+		} else if (propertyName.equals(COMPONENT)) {
+			String projectName = getStringProperty(PROJECT_NAME);
+			IProject project = ProjectUtilities.getProject(projectName);
+			return ComponentCore.createComponent(project, getStringProperty(COMPONENT_NAME));
+		}
+		return super.getDefaultProperty(propertyName);
+	}
+
+	public IStatus validate(String propertyName) {
+		if (propertyName.equals(COMPONENT_NAME)) {
+			IStatus status = OK_STATUS;
+			String moduleName = model.getStringProperty(COMPONENT_NAME);
+			if (status.isOK()) {
                 if (moduleName.indexOf("#") != -1 || moduleName.indexOf("/") != -1) { //$NON-NLS-1$
-                    String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.ERR_INVALID_CHARS); //$NON-NLS-1$
-                    return WTPCommonPlugin.createErrorStatus(errorMessage);
-                } else if (moduleName==null || moduleName.equals("")) { //$NON-NLS-1$
+					String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.ERR_INVALID_CHARS); //$NON-NLS-1$
+					return WTPCommonPlugin.createErrorStatus(errorMessage);
+				} else if (moduleName == null || moduleName.equals("")) { //$NON-NLS-1$
 					String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.ERR_EMPTY_MODULE_NAME);
-					return WTPCommonPlugin.createErrorStatus(errorMessage); 
-                }else
-                	return OK_STATUS;
-            } else
-                return status;
-        } else if (propertyName.equals(PROJECT_NAME)) {
+					return WTPCommonPlugin.createErrorStatus(errorMessage);
+				} else
+					return OK_STATUS;
+			} else
+				return status;
+		} else if (propertyName.equals(PROJECT_NAME)) {
 			IStatus status = OK_STATUS;
 			String projectName = model.getStringProperty(PROJECT_NAME);
-			if (projectName == null || projectName.length()==0) {
+			if (projectName == null || projectName.length() == 0) {
 				String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_NAME_EMPTY);
-				status =  WTPCommonPlugin.createErrorStatus(errorMessage); 
-            }
+				status = WTPCommonPlugin.createErrorStatus(errorMessage);
+			}
             if(status.isOK() && !FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp()){
                 IProject proj = ProjectUtilities.getProject(projectName);
                 if(proj.exists()) {
@@ -99,60 +107,61 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
                 }
             }
 			return status;
-		}else if(propertyName.equals(COMPONENT_DEPLOY_NAME)){
-			return OK_STATUS;	
-		}else if(propertyName.equals(CREATE_DEFAULT_FILES)){
+		} else if (propertyName.equals(COMPONENT_DEPLOY_NAME)) {
+			return OK_STATUS;
+		} else if (propertyName.equals(CREATE_DEFAULT_FILES)) {
 			return OK_STATUS;
 		}
-        return OK_STATUS;
-    }
-    
-    protected static String[] getServerVersions(String moduleID, IRuntimeType type) {
-        List list = new ArrayList();
-        if (type == null)
-            return null;
-        IModuleType[] moduleTypes = type.getModuleTypes();
-        if (moduleTypes != null) {
-            int size = moduleTypes.length;
-            for (int i = 0; i < size; i++) {
-                IModuleType moduleType = moduleTypes[i];
-                if (matches(moduleType.getId(), moduleID)) {
-                    list.add(moduleType.getVersion());
-                }
+		return OK_STATUS;
+	}
 
-            }
-        }
-        String[] versions = null;
-        if (!list.isEmpty()) {
-            versions = new String[list.size()];
-            list.toArray(versions);
-        }
-        return versions;
-    }
-    private static boolean matches(String a, String b) {
-        if (a == null || b == null || "*".equals(a) || "*".equals(b) || a.startsWith(b) || b.startsWith(a)) //$NON-NLS-1$ //$NON-NLS-2$
-            return true;
-        return false;
-    }
-    
-    
-    protected String getComponentName(){
-        return model.getStringProperty(COMPONENT_NAME);
-    }
-    
-    protected String getComponentDeployName(){
-        return model.getStringProperty(COMPONENT_DEPLOY_NAME);
-    }
-    
-    protected abstract void initProjectCreationModel();
-    
+	protected static String[] getServerVersions(String moduleID, IRuntimeType type) {
+		List list = new ArrayList();
+		if (type == null)
+			return null;
+		IModuleType[] moduleTypes = type.getModuleTypes();
+		if (moduleTypes != null) {
+			int size = moduleTypes.length;
+			for (int i = 0; i < size; i++) {
+				IModuleType moduleType = moduleTypes[i];
+				if (matches(moduleType.getId(), moduleID)) {
+					list.add(moduleType.getVersion());
+				}
+
+			}
+		}
+		String[] versions = null;
+		if (!list.isEmpty()) {
+			versions = new String[list.size()];
+			list.toArray(versions);
+		}
+		return versions;
+	}
+
+	private static boolean matches(String a, String b) {
+		if (a == null || b == null || "*".equals(a) || "*".equals(b) || a.startsWith(b) || b.startsWith(a)) //$NON-NLS-1$ //$NON-NLS-2$
+			return true;
+		return false;
+	}
+
+
+	protected String getComponentName() {
+		return model.getStringProperty(COMPONENT_NAME);
+	}
+
+	protected String getComponentDeployName() {
+		return model.getStringProperty(COMPONENT_DEPLOY_NAME);
+	}
+
+	protected abstract void initProjectCreationModel();
+
 	protected abstract EClass getComponentType();
 
 	protected abstract String getComponentExtension();
 
 	protected abstract String getComponentID();
-    
+
 	protected abstract List getProperties();
 
-    protected abstract Integer getDefaultComponentVersion();
+	protected abstract Integer getDefaultComponentVersion();
 }
