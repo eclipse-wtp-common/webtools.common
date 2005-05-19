@@ -434,6 +434,14 @@ public class ArtifactEdit implements IEditModelHandler {
 		
 		return getArtifactEditModel().getComponentHandle();
 	}
+	/**
+	 * 
+	 * @return IVirtualComponent - returns the underlying workbench component.
+	 */
+	public IVirtualComponent getComponent() {
+		
+		return getArtifactEditModel().getVirtualComponent();
+	}
 
 	/**
 	 * @return The underlying managed edit model

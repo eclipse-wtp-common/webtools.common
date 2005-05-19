@@ -279,4 +279,8 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 	public Object getAdapter(Class adapterType) {
 		return Platform.getAdapterManager().getAdapter(this, adapterType);
 	}
+
+	public IVirtualComponent getVirtualComponent() {
+		return virtualComponent;
+	}
 }
