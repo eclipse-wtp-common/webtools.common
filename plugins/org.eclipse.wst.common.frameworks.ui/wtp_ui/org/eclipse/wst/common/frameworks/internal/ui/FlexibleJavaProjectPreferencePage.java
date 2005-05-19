@@ -51,6 +51,7 @@ public class FlexibleJavaProjectPreferencePage extends PreferencePage implements
 	}
     protected void performDefaults() {
 		FlexibleJavaProjectPreferenceUtil.setMultipleModulesPerProjectProp( false );
+		alloMultipleButton.setSelection( false );
     }	
 
 }
