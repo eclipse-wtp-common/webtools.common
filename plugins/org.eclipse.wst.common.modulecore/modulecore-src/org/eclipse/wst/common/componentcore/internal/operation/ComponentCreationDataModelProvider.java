@@ -91,7 +91,7 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 				String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_NAME_EMPTY);
 				status =  WTPCommonPlugin.createErrorStatus(errorMessage); 
             }
-            if(status.isOK()){
+            if(status.isOK() && !FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp()){
                 IProject proj = ProjectUtilities.getProject(projectName);
                 if(proj.exists()) {
                     String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_EXISTS_ERROR);
