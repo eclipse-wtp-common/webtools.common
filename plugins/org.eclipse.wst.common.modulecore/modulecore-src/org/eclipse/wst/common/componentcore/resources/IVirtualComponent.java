@@ -40,6 +40,13 @@ public interface IVirtualComponent extends IVirtualContainer {
 	 * @return The componentTypeId, a string based identifier that indicates the component
 	 */
 	String getComponentTypeId();
+	
+	/**
+	 * The componentHandle is a handy way to pass the identity of this component instance
+	 * 
+	 * @return The componentHandle, of ComponentHandle type
+	 */
+	ComponentHandle getComponentHandle();
 
 	/**
 	 * 

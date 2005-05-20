@@ -35,6 +35,7 @@ import org.eclipse.wst.common.componentcore.internal.impl.PlatformURLModuleConne
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
 import org.eclipse.wst.common.componentcore.internal.util.EclipseResourceAdapter;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
+import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualContainer;
 
 /**
@@ -264,6 +265,23 @@ public class StructureEdit implements IEditModelHandler {
 		if (project != null)
 			return project.getFolder(new Path(DEPLOYABLES_ROOT + aWorkbenchModule.getName()));
 		return null;
+	}
+	/**
+	 * <p>
+	 * Returns a URI for the supplied {@see WorkbenchComponent}. The URI will be relative to
+	 * project root of the flexible project that contains the {@see WorkbenchComponent}.
+	 * </p>
+	 * <p>
+	 * <b>This method may return null. </b>
+	 * </p>
+	 * 
+	 * @param aWorkbenchModule
+	 *            A valid WorkbenchComponent
+	 * @return A project-relative URI of the output folder for aWorkbenchModoule.
+	 */
+	public static IFolder getOutputContainerRoot(IVirtualComponent aComponent) {
+		
+		return aComponent.getProject().getFolder(new Path(DEPLOYABLES_ROOT + aComponent.getName()));
 	}
 
 	/**

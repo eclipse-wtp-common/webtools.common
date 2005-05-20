@@ -228,7 +228,7 @@ public abstract class VirtualResource implements IVirtualResource {
 		return resourceType;
 	}
 
-	protected ComponentHandle getComponentHandle() {
+	public ComponentHandle getComponentHandle() {
 		return componentHandle;
 	} 
 	

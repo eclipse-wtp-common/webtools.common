@@ -13,10 +13,13 @@ package org.eclipse.wst.common.componentcore.internal.operation;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.common.componentcore.ArtifactEdit;
+import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
+import org.eclipse.wst.common.componentcore.resources.IFlexibleProject;
+import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.internal.operations.ProjectCreationDataModel;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
@@ -45,6 +48,7 @@ public abstract class ArtifactEditOperationDataModel extends WTPOperationDataMod
 	 * Optional, should save with prompt...defaults to false
 	 */
 	public static final String PROMPT_ON_SAVE = "ArtifactEditOperationDataModel.PROMPT_ON_SAVE"; //$NON-NLS-1$
+	private IVirtualComponent comp = null;
 	
 	protected void initValidBaseProperties() {
 		super.initValidBaseProperties();
@@ -71,9 +75,7 @@ public abstract class ArtifactEditOperationDataModel extends WTPOperationDataMod
     }
 	
 	public ArtifactEdit getArtifactEditForRead(){
-		WorkbenchComponent module = getWorkbenchModule();
-		ComponentHandle handle = ComponentHandle.create(getProjectForGivenComponent(module),module.getName());
-		return ArtifactEdit.getArtifactEditForRead(handle);
+		return ArtifactEdit.getArtifactEditForRead(getComponent());
 	}
 	/* (non-Javadoc)
 	 * @see org.eclipse.wst.common.frameworks.operations.WTPOperationDataModel#doSetProperty(java.lang.String, java.lang.Object)
@@ -81,8 +83,8 @@ public abstract class ArtifactEditOperationDataModel extends WTPOperationDataMod
 	protected boolean doSetProperty(String propertyName, Object propertyValue) {
 	    boolean status = super.doSetProperty(propertyName, propertyValue);
 	    if(MODULE_NAME.equals(propertyName)){
-	        WorkbenchComponent module = getWorkbenchModule();
-	        IProject proj = getProjectForGivenComponent(module);
+	        IVirtualComponent comp = getComponent();
+	        IProject proj = comp.getProject();
 	        if(proj != null)
 	            setProperty(PROJECT_NAME, proj.getName());
 	    }
@@ -91,35 +93,17 @@ public abstract class ArtifactEditOperationDataModel extends WTPOperationDataMod
     /**
      * @return
      */
-    public WorkbenchComponent getWorkbenchModule() {
-        StructureEdit moduleCore = null;
-        WorkbenchComponent module = null;
-		IProject project = getTargetProject();
-		if (project.exists() && project.isAccessible()) {
-	        try {
-				
-	            moduleCore = StructureEdit.getStructureEditForRead(project);
-				if(moduleCore == null )
-					return null;
-	            module = moduleCore.findComponentByName(getStringProperty(MODULE_NAME));
-	        } finally {
-	            if (null != moduleCore) {
-	                moduleCore.dispose();
-	            }
-	        }
-		}
-        return module;
-    }
-	private IProject getProjectForGivenComponent(WorkbenchComponent wbComp) {
-	    IProject modProject = null;
-	    try {
-		    modProject = StructureEdit.getContainingProject(wbComp.getHandle());
-	    } catch (UnresolveableURIException ex) {
-			Logger.getLogger().logError(ex);
-	    }
-	    return modProject;
-	}
+    public IVirtualComponent getComponent() {
 
+		if (comp == null) {
+			IProject project = getTargetProject();
+			if (project.exists() && project.isAccessible()) {
+				IFlexibleProject flex = ComponentCore.createFlexibleProject(project);
+				comp  = flex.getComponent(getStringProperty(MODULE_NAME));
+			}
+		}
+        return comp;
+    }
 	protected IStatus doValidateProperty(String propertyName) {
 		IStatus result = super.doValidateProperty(propertyName);
 		if (!result.isOK())
