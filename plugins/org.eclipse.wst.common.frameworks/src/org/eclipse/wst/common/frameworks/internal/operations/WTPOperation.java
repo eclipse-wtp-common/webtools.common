@@ -9,6 +9,8 @@
 package org.eclipse.wst.common.frameworks.internal.operations;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
 
 import org.eclipse.core.internal.runtime.Assert;
@@ -30,7 +32,8 @@ import org.eclipse.wst.common.frameworks.internal.enablement.IEnablementManager;
 import org.eclipse.wst.common.frameworks.internal.enablement.nonui.WFTWrappedException;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
-//TODO perhaps this class should be subclassed from a new super class which more closely resembles org.eclipse.ui.actions.WorkspaceModifyOperation
+// TODO perhaps this class should be subclassed from a new super class which more closely resembles
+// org.eclipse.ui.actions.WorkspaceModifyOperation
 /**
  * An operation which potentially makes changes to the workspace. All resource modification should
  * be performed using this operation. The primary consequence of using this operation is that events
@@ -43,6 +46,22 @@ import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
  * This class is EXPERIMENTAL and is subject to substantial changes.
  */
 public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
+
+	private static Hashtable threadToExtendedOpControl;
+
+	private class ExtendedOpControl {
+		private boolean allowExtensions;
+		List restrictedExtensions;
+
+		public ExtendedOpControl(boolean allowExtensions, List restrictedExtensions) {
+			this.allowExtensions = allowExtensions;
+			this.restrictedExtensions = restrictedExtensions;
+		}
+
+		public boolean shouldExecute(String operationID) {
+			return allowExtensions && !restrictedExtensions.contains(operationID);
+		}
+	}
 
 	/**
 	 * The dataModel used to execute this operation
@@ -71,7 +90,7 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 	public WTPOperation() {
 	}
 
-	//TODO see if this can be made package visible only.
+	// TODO see if this can be made package visible only.
 	/**
 	 * Note: This method is for internal use only. Clients should not call this method.
 	 * 
@@ -86,7 +105,7 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 		this.id = value;
 	}
 
-	//TODO see if this can be removed
+	// TODO see if this can be removed
 	/**
 	 * Note: This method is for internal use only. Clients should not call this method.
 	 * 
@@ -98,7 +117,7 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 		return this.id;
 	}
 
-	//TODO see if this can be make package visible only.
+	// TODO see if this can be make package visible only.
 	/**
 	 * Note: This method is for internal use only. Clients should not call this method.
 	 * 
@@ -156,8 +175,8 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 	 *            the progress monitor
 	 */
 	protected void initilize(IProgressMonitor monitor) {
-		//Making sure the status objects are initialized
-		//		status = null;
+		// Making sure the status objects are initialized
+		// status = null;
 		opStatus = null;
 	}
 
@@ -183,7 +202,7 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 	protected void dispose(IProgressMonitor monitor) {
 	}
 
-	//TODO see if this can be removed
+	// TODO see if this can be removed
 	/**
 	 * Note: This method is for internal use only. Clients should not call this method.
 	 * 
@@ -193,7 +212,7 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 		return ResourcesPlugin.getWorkspace();
 	}
 
-	//TODO see if this can be removed
+	// TODO see if this can be removed
 	/**
 	 * Note: This method is for internal use only. Clients should not call this method.
 	 * 
@@ -229,7 +248,7 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 					try {
 						doRun(pm);
 						if (opStatus != null && !opStatus.isOK()) {
-							//TODO do something with the status
+							// TODO do something with the status
 							System.out.println(opStatus.getMessage());
 						}
 					} catch (InvocationTargetException e) {
@@ -280,9 +299,21 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 	 * @throws InterruptedException
 	 */
 	public final void doRun(IProgressMonitor monitor) throws CoreException, InvocationTargetException, InterruptedException {
+		if (null == threadToExtendedOpControl) {
+			threadToExtendedOpControl = new Hashtable();
+		}
+		final Thread currentThread = Thread.currentThread();
+		final boolean rootOperation = !threadToExtendedOpControl.containsKey(currentThread);
+
 		boolean alreadyLocked = operationDataModel == null ? true : operationDataModel.isLocked();
 		boolean operationValidationEnabled = operationDataModel == null ? false : operationDataModel.isOperationValidationEnabled();
 		try {
+			if (rootOperation) {
+				boolean allowExtensions = operationDataModel == null ? true : operationDataModel.getBooleanProperty(WTPOperationDataModel.ALLOW_EXTENSIONS);
+				List restrictedExtensions = operationDataModel == null ? Collections.EMPTY_LIST : (List) operationDataModel.getProperty(WTPOperationDataModel.RESTRICT_EXTENSIONS);
+				ExtendedOpControl extendedOpControl = new ExtendedOpControl(allowExtensions, restrictedExtensions);
+				threadToExtendedOpControl.put(currentThread, extendedOpControl);
+			}
 			if (!alreadyLocked) {
 				operationDataModel.setLocked(true);
 			}
@@ -290,7 +321,7 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 				operationDataModel.setOperationValidationEnabled(false);
 				IStatus status = operationDataModel.validateDataModel();
 				if (!status.isOK()) {
-					//TODO display something to user and remove System.out
+					// TODO display something to user and remove System.out
 					System.out.println(WTPResourceHandler.getString("24", new Object[]{status.getMessage()})); //$NON-NLS-1$
 					Thread.dumpStack();
 					return;
@@ -300,7 +331,7 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 
 			if (!validateEdit())
 				return;
-			//if (getStatus().isOK()) {
+			// if (getStatus().isOK()) {
 			ComposedExtendedOperationHolder extOpHolder = initializeExtensionOperations();
 			IStatus preOpStatus = runPreOps(monitor, extOpHolder);
 			execute(monitor);
@@ -309,10 +340,12 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 				addExtendedStatus(preOpStatus);
 			if (null != postOpStatus)
 				addExtendedStatus(postOpStatus);
-			//}
+			// }
 		} finally {
 			dispose(monitor);
-
+			if (rootOperation) {
+				threadToExtendedOpControl.remove(currentThread);
+			}
 			if (!alreadyLocked) {
 				operationDataModel.setLocked(false);
 			}
@@ -336,8 +369,8 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 		return true;
 	}
 
-	//TODO lock down addStatus so it throws runtime exceptions if not called during execute.
-	//TODO make this protected and create a package level accessor for WTPOperationJobAdapter
+	// TODO lock down addStatus so it throws runtime exceptions if not called during execute.
+	// TODO make this protected and create a package level accessor for WTPOperationJobAdapter
 	/**
 	 * <p>
 	 * Adds a status to this opererations status. If this operation currently has no status, then
@@ -397,45 +430,48 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 		OperationStatus returnStatus = null;
 		IStatus localStatus;
 		String opId = null;
+		ExtendedOpControl opControl = (ExtendedOpControl) threadToExtendedOpControl.get(Thread.currentThread());
 		for (int i = 0; i < opList.size(); i++) {
 			op = (WTPOperation) opList.get(i);
-			try {
-				opId = op.getID();
-				boolean shouldExtendedRun = true;
-				List extendedContext = (List) operationDataModel.getProperty(WTPOperationDataModel.EXTENDED_CONTEXT);
-				for (int contextCount = 0; shouldExtendedRun && contextCount < extendedContext.size(); contextCount++) {
-					IProject project = (IProject) AdaptabilityUtility.getAdapter(extendedContext.get(contextCount), IProject.class);
-					if (null != project && !IEnablementManager.INSTANCE.getIdentifier(opId, project).isEnabled()) {
-						shouldExtendedRun = false;
+			opId = op.getID();
+			if (opControl.shouldExecute(op.getClass().getName()) && opControl.shouldExecute(opId)) {
+				try {
+					boolean shouldExtendedRun = true;
+					List extendedContext = (List) operationDataModel.getProperty(WTPOperationDataModel.EXTENDED_CONTEXT);
+					for (int contextCount = 0; shouldExtendedRun && contextCount < extendedContext.size(); contextCount++) {
+						IProject project = (IProject) AdaptabilityUtility.getAdapter(extendedContext.get(contextCount), IProject.class);
+						if (null != project && !IEnablementManager.INSTANCE.getIdentifier(opId, project).isEnabled()) {
+							shouldExtendedRun = false;
+						}
 					}
+					if (shouldExtendedRun) {
+						op.setOperationDataModel(operationDataModel);
+						op.doRun(new SubProgressMonitor(pm, IProgressMonitor.UNKNOWN));
+						localStatus = op.getStatus();
+					} else
+						localStatus = null;
+				} catch (Exception e) {
+					localStatus = new Status(IStatus.ERROR, WTPCommonPlugin.PLUGIN_ID, 0, WTPResourceHandler.getString("25", new Object[]{op.getClass().getName()}), e); //$NON-NLS-1$
 				}
-				if (shouldExtendedRun) {
-					op.setOperationDataModel(operationDataModel);
-					op.doRun(new SubProgressMonitor(pm, IProgressMonitor.UNKNOWN));
-					localStatus = op.getStatus();
-				} else
-					localStatus = null;
-			} catch (Exception e) {
-				localStatus = new Status(IStatus.ERROR, WTPCommonPlugin.PLUGIN_ID, 0, WTPResourceHandler.getString("25", new Object[]{op.getClass().getName()}), e); //$NON-NLS-1$
-			}
-			if (localStatus != null) {
-				if (returnStatus == null) {
-					returnStatus = new OperationStatus(new IStatus[]{localStatus});
-				} else {
-					returnStatus.add(localStatus);
+				if (localStatus != null) {
+					if (returnStatus == null) {
+						returnStatus = new OperationStatus(new IStatus[]{localStatus});
+					} else {
+						returnStatus.add(localStatus);
+					}
 				}
 			}
 		}
 		return returnStatus;
 	}
 
-	//	protected WTPOperation getRootExtendedOperation() {
-	//		if (this.getRootExtendedOperation() == null)
-	//			return this;
-	//		return this.getRootExtendedOperation();
-	//	}
+	// protected WTPOperation getRootExtendedOperation() {
+	// if (this.getRootExtendedOperation() == null)
+	// return this;
+	// return this.getRootExtendedOperation();
+	// }
 
-	//TODO this should be deleted.
+	// TODO this should be deleted.
 	/**
 	 * Note: This method is for internal use only. Clients should not call this method.
 	 */

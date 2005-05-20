@@ -69,6 +69,20 @@ import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 public abstract class WTPOperationDataModel implements WTPOperationDataModelListener {
 
 	/**
+	 * A boolean property defaults to Boolean.TRUE. If this is set to Boolean.FALSE no extended
+	 * operations will be executed
+	 */
+	public static final String ALLOW_EXTENSIONS = "WTPOperationDataModel.ALLOW_EXTENSIONS";
+
+	/**
+	 * A List containing String objects, defautls to an empty List. If this list contains elements
+	 * and ALLOW_EXTENSIONS is set to Boolean.TRUE, then only extended operations not identified in
+	 * this list will be executed. These strings should either be the operation id or the fully
+	 * qualified oeration class name
+	 */
+	public static final String RESTRICT_EXTENSIONS = "WTPOperationDataModel.RESTRICT_EXTENSIONS";
+
+	/**
 	 * This property is used by the extended operation framework. Extended operations run within a
 	 * context; e.g. they run within the scope of a project, resource, file, etc. The default value
 	 * for this property is an empty List. Subclasses should configure themselves to return a list
@@ -151,6 +165,8 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		addValidBaseProperty(RUN_OPERATION);
 		addValidBaseProperty(CACHED_DELAYED_OPERATION);
 		addValidBaseProperty(UI_OPERATION_HANLDER);
+		addValidBaseProperty(ALLOW_EXTENSIONS);
+		addValidBaseProperty(RESTRICT_EXTENSIONS);
 		initValidBaseProperties();
 		initNestedModels();
 		init();
@@ -600,12 +616,12 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 				list.add(targetProject);
 				return list;
 			}
-		}
-		if (propertyName.equals(RUN_OPERATION)) {
+		} else if (propertyName.equals(RUN_OPERATION) || propertyName.equals(ALLOW_EXTENSIONS)) {
 			return Boolean.TRUE;
-		}
-		if (propertyName.equals(UI_OPERATION_HANLDER)) {
+		} else if (propertyName.equals(UI_OPERATION_HANLDER)) {
 			return new NullOperationHandler();
+		} else if (propertyName.equals(RESTRICT_EXTENSIONS)) {
+			return Collections.EMPTY_LIST;
 		}
 		return null;
 	}
