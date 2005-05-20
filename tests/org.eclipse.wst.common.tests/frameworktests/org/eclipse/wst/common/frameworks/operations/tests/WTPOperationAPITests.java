@@ -15,6 +15,8 @@ import junit.framework.TestSuite;
 
 import org.eclipse.wst.common.tests.SimpleTestSuite;
 
+import org.eclipse.wst.common.frameworks.operations.tests.extended.OpTests;
+
 /**
  * @author jsholl
  * 
@@ -33,5 +35,6 @@ public class WTPOperationAPITests extends TestSuite {
 		addTest(new SimpleTestSuite(NestingTest.class));
 		addTest(new SimpleTestSuite(NestedListeningTest.class));
 		addTest(new SimpleTestSuite(SimpleDataModelTest.class));
+		addTest(new SimpleTestSuite(OpTests.class));
 	}
 }

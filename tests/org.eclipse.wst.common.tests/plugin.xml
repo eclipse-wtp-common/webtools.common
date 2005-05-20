@@ -82,5 +82,33 @@
             name="Common Framework BVT Tests"/>
    </extension>
    
+   <extension
+         point="org.eclipse.wst.common.frameworks.OperationExtension"
+         id="org.eclipse.wst.common.frameworks.operations.tests.extended">
+      <operationExtension
+            id="org.eclipse.wst.common.frameworks.operations.tests.extended.R"
+            postOperationClass="org.eclipse.wst.common.frameworks.operations.tests.extended.B"
+            preOperationClass="org.eclipse.wst.common.frameworks.operations.tests.extended.A"/>
+      <operationExtension
+            id="org.eclipse.wst.common.frameworks.operations.tests.extended.A"
+            postOperationClass="org.eclipse.wst.common.frameworks.operations.tests.extended.D"
+            preOperationClass="org.eclipse.wst.common.frameworks.operations.tests.extended.C"/>
+      <operationExtension
+            id="org.eclipse.wst.common.frameworks.operations.tests.extended.B"
+            postOperationClass="org.eclipse.wst.common.frameworks.operations.tests.extended.F"
+            preOperationClass="org.eclipse.wst.common.frameworks.operations.tests.extended.E"/>
+   </extension>
+   <extension
+         point="org.eclipse.wst.common.frameworks.ExtendableOperation">
+      <extendableOperation
+            class="org.eclipse.wst.common.frameworks.operations.tests.extended.A"
+            id="org.eclipse.wst.common.frameworks.operations.tests.extended.A"/>
+      <extendableOperation
+            class="org.eclipse.wst.common.frameworks.operations.tests.extended.B"
+            id="org.eclipse.wst.common.frameworks.operations.tests.extended.B"/>
+      <extendableOperation
+            class="org.eclipse.wst.common.frameworks.operations.tests.extended.R"
+            id="org.eclipse.wst.common.frameworks.operations.tests.extended.R"/>
+   </extension>
   
 </plugin>
