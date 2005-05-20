@@ -27,6 +27,7 @@ import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.jem.util.emf.workbench.EMFWorkbenchContextBase;
 import org.eclipse.jem.util.emf.workbench.ProjectResourceSet;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
+import org.eclipse.jem.util.emf.workbench.nature.EMFNature;
 import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
 import org.eclipse.wst.common.componentcore.internal.ModuleStructuralModel;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
@@ -131,6 +132,8 @@ import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelNature;
  * @since 1.0
  */
 public class ModuleCoreNature extends EditModelNature implements IProjectNature, IModuleConstants {
+	
+    public static final String VALIDATION_BUILDER_ID = "org.eclipse.wst.validation.validationbuilder"; // plugin id of the validation builder//$NON-NLS-1$
 
 	/**
 	 * <p>
@@ -393,6 +396,16 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		// addAdapterFactories(set);
 		// set.getSynchronizer().addExtender(this); // added so we can be informed of closes to the
 		// new J2EEResourceDependencyRegister(set); // This must be done after the URIConverter is
+
+	}
+	
+	/**
+	 * @see EMFNature.primConfigure
+	 */
+	protected void primConfigure() throws CoreException {
+		super.primConfigure();
+		// add Validation Builder to all flex Project's builder list
+		ProjectUtilities.addToBuildSpec(VALIDATION_BUILDER_ID,project);
 
 	}
 	
