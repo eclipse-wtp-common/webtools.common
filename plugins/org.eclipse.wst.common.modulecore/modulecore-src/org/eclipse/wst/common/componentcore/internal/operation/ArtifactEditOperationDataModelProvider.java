@@ -119,7 +119,9 @@ public class ArtifactEditOperationDataModelProvider extends AbstractDataModelPro
 
 	public IVirtualComponent getTargetComponent() {
 		String moduleName = getStringProperty(COMPONENT_NAME);
-		return ComponentCore.createComponent(getTargetProject(),moduleName);
+		if(moduleName != null && moduleName.length() > 0)
+			return ComponentCore.createComponent(getTargetProject(),moduleName);
+		return null;
 			
 		
 	}
