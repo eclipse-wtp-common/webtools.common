@@ -1,9 +1,9 @@
 package org.eclipse.wst.common.frameworks.componentcore.tests;
 
+import junit.framework.TestCase;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.common.componentcore.IEditModelHandler;
-
-import junit.framework.TestCase;
 
 public class IEditModelHandlerTest extends TestCase {
 	public class EditModelHandlerTest implements IEditModelHandler {

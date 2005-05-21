@@ -13,9 +13,8 @@ package org.eclipse.wst.common.frameworks.operations.tests;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.eclipse.wst.common.tests.SimpleTestSuite;
-
 import org.eclipse.wst.common.frameworks.operations.tests.extended.OpTests;
+import org.eclipse.wst.common.tests.SimpleTestSuite;
 
 /**
  * @author jsholl

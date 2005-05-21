@@ -1,12 +1,11 @@
 package org.eclipse.wst.common.frameworks.componentcore.tests;
 
+import junit.framework.TestCase;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.wst.common.componentcore.internal.resources.FlexibleProject;
 import org.eclipse.wst.common.componentcore.resources.IFlexibleProject;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
-
-import junit.framework.TestCase;
 
 
 

@@ -3,6 +3,8 @@ package org.eclipse.wst.common.frameworks.componentcore.tests;
 import java.io.IOException;
 import java.net.URL;
 
+import junit.framework.TestCase;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -18,12 +20,8 @@ import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
-import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
-import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelListener;
 import org.eclipse.wst.common.tests.CommonTestsPlugin;
-
-import junit.framework.TestCase;
 
 public class ModuleCoreNatureAPITest extends TestCase {
 
