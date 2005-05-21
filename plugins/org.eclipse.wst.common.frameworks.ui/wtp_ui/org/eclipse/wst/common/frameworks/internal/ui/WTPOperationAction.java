@@ -21,6 +21,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -38,8 +39,6 @@ import org.eclipse.wst.common.frameworks.internal.operation.extensionui.UIOperat
 import org.eclipse.wst.common.frameworks.internal.operation.extensionui.WTPOptionalOperationDataModel;
 import org.eclipse.wst.common.frameworks.internal.operations.ComposedOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
-
-import org.eclipse.jem.util.logger.proxy.Logger;
 
 /**
  * @author mdelder

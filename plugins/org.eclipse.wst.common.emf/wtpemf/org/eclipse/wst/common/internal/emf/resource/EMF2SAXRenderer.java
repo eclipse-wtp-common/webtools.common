@@ -27,12 +27,11 @@ import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.emf.common.util.WrappedException;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.XMLReader;
-
-import org.eclipse.jem.util.logger.proxy.Logger;
 
 /**
  * @author mdelder

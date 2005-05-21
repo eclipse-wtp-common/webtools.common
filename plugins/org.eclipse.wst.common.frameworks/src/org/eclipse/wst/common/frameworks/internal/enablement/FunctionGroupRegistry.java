@@ -20,11 +20,10 @@ import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
-import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
-
 import org.eclipse.jem.util.RegistryReader;
 import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
+import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
 /**
  * The FunctionGroupRegistry will consume Configuration elements conforming to the FunctionGroup

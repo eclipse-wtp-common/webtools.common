@@ -24,6 +24,7 @@
       <import plugin="org.eclipse.emf.codegen"/>
       <import plugin="org.eclipse.emf.codegen.ecore"/>
       <import plugin="org.eclipse.xsd"/>
+      <import plugin="org.eclipse.emf.importer.java"/>
    </requires>
 
 

@@ -12,6 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.util.Assert;
 import org.eclipse.jface.wizard.IWizardPage;
@@ -23,8 +24,6 @@ import org.eclipse.wst.common.frameworks.internal.operation.extensionui.WizardPa
 import org.eclipse.wst.common.frameworks.internal.operations.FailSafeComposedOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
-
-import org.eclipse.jem.util.logger.proxy.Logger;
 
 
 /**

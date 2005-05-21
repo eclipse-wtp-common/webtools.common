@@ -12,7 +12,6 @@ package org.eclipse.wst.common.internal.emfworkbench.validateedit;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-
 import org.eclipse.jem.util.plugin.JEMUtilPlugin;
 
 public interface ResourceStateValidator {

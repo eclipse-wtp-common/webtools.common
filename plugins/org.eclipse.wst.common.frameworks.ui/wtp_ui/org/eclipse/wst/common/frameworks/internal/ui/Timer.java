@@ -12,6 +12,8 @@ package org.eclipse.wst.common.frameworks.internal.ui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.event.EventListenerList;
+
 public class Timer {
 	/**
 	 * DoPostEvent is a runnable class that fires actionEvents to the listeners on the

@@ -2,21 +2,18 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentcorePackageImpl.java,v 1.2 2005/04/05 03:35:37 cbridgha Exp $
+ * $Id: ComponentcorePackageImpl.java,v 1.3 2005/05/21 17:44:47 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
 import org.eclipse.core.runtime.IPath;
-
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
-
 import org.eclipse.emf.ecore.impl.EPackageImpl;
-
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.ComponentType;
 import org.eclipse.wst.common.componentcore.internal.ComponentcoreFactory;

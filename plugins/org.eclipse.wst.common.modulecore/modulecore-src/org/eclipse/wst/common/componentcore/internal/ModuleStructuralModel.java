@@ -9,7 +9,6 @@
 package org.eclipse.wst.common.componentcore.internal;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Platform;

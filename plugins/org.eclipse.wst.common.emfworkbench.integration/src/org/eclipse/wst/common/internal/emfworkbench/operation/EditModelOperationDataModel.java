@@ -17,12 +17,11 @@
 package org.eclipse.wst.common.internal.emfworkbench.operation;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 import org.eclipse.wst.common.frameworks.internal.operations.ProjectCreationDataModel;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
-
-import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 
 public abstract class EditModelOperationDataModel extends WTPOperationDataModel {
 

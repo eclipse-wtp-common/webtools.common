@@ -9,13 +9,12 @@
 package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
 
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.internal.AbstractRegistryDescriptor;
 import org.eclipse.wst.common.frameworks.internal.enablement.IdentifiableComparator;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
 import org.eclipse.wst.common.frameworks.internal.ui.IExtendedPageHandler;
 import org.eclipse.wst.common.frameworks.internal.ui.IExtendedWizardPage;
-
-import org.eclipse.jem.util.logger.proxy.Logger;
 
 public class WizardPageElement extends AbstractRegistryDescriptor implements Comparable {
 	/** Type designation for an {@link ExtendedEditorPage} */

@@ -18,11 +18,10 @@ import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.internal.ActionExpression;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPCommonUIResourceHandler;
-
-import org.eclipse.jem.util.logger.proxy.Logger;
 
 public class MasterDescriptor extends SlaveDescriptor {
 

@@ -19,11 +19,10 @@ import java.util.TreeSet;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.wst.common.frameworks.internal.enablement.EnablementManager;
-import org.eclipse.wst.common.frameworks.internal.ui.WTPCommonUIResourceHandler;
-
 import org.eclipse.jem.util.RegistryReader;
 import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.common.frameworks.internal.enablement.EnablementManager;
+import org.eclipse.wst.common.frameworks.internal.ui.WTPCommonUIResourceHandler;
 
 public class WizardPageExtensionManager {
 

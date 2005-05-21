@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal.provisional.core;
 
-import java.util.List;
 
 
 /**

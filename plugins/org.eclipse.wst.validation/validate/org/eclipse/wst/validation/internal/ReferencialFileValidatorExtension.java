@@ -18,9 +18,8 @@ package org.eclipse.wst.validation.internal;
 
 import org.eclipse.core.internal.runtime.Assert;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.wst.validation.internal.operations.ReferencialFileValidator;
-
 import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.validation.internal.operations.ReferencialFileValidator;
 
 /**
  * @author vijayb

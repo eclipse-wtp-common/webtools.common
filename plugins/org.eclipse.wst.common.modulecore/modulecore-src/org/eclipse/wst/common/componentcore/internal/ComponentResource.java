@@ -1,14 +1,12 @@
 /**
  * <copyright></copyright>
  * 
- * $Id: ComponentResource.java,v 1.2 2005/04/05 03:35:37 cbridgha Exp $
+ * $Id: ComponentResource.java,v 1.3 2005/05/21 17:44:47 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal;
 
 import org.eclipse.core.runtime.IPath;
-
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 
 /**

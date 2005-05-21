@@ -29,10 +29,10 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.emf.codegen.ecore.genmodel.GenModel;
 import org.eclipse.emf.codegen.ecore.genmodel.GenModelFactory;
 import org.eclipse.emf.codegen.ecore.genmodel.GenPackage;
-import org.eclipse.emf.codegen.ecore.java2ecore.JavaEcoreBuilder;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.importer.java.builder.JavaEcoreBuilder;
 import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
@@ -112,7 +112,8 @@ public class DataObjectGenerator extends WTPOperation {
 				return;
 			}
 		};
-		javaEcoreBuilder.run(new NullProgressMonitor(), false);
+		//TODO - Ecore builder api has changed....
+		//javaEcoreBuilder.run(new NullProgressMonitor(), false);
 		IStatus localStatus = javaEcoreBuilder.getStatus();
 		if (localStatus.getSeverity() != IStatus.ERROR) {
 			List genPackages = javaEcoreBuilder.getGenModel().getGenPackages();

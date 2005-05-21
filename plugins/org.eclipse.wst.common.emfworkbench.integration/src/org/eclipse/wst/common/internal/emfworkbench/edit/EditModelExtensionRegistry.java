@@ -18,9 +18,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEditPlugin;
-
 import org.eclipse.jem.util.RegistryReader;
+import org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEditPlugin;
 
 
 /**

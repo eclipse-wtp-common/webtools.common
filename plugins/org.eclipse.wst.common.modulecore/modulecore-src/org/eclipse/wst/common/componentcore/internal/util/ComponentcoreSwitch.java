@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentcoreSwitch.java,v 1.1 2005/04/04 07:04:58 cbridgha Exp $
+ * $Id: ComponentcoreSwitch.java,v 1.2 2005/05/21 17:44:47 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.util;
 
@@ -10,8 +10,13 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
-
-import org.eclipse.wst.common.componentcore.internal.*;
+import org.eclipse.wst.common.componentcore.internal.ComponentResource;
+import org.eclipse.wst.common.componentcore.internal.ComponentType;
+import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
+import org.eclipse.wst.common.componentcore.internal.ProjectComponents;
+import org.eclipse.wst.common.componentcore.internal.Property;
+import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
+import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 
 /**
  * <!-- begin-user-doc -->

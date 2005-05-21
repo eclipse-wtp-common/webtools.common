@@ -5,9 +5,8 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
-
 import org.eclipse.jem.util.RegistryReader;
+import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 
 /*
  * Licensed Material - Property of IBM (C) Copyright IBM Corp. 2001, 2002 - All

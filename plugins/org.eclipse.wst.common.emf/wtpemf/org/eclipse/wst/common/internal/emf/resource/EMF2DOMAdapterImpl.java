@@ -35,7 +35,6 @@ import org.eclipse.wst.common.internal.emf.utilities.Revisit;
 import org.eclipse.wst.common.internal.emf.utilities.StringUtil;
 import org.eclipse.wst.common.internal.emf.utilities.WFTUtilsResourceHandler;
 import org.w3c.dom.Attr;
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentType;
 import org.w3c.dom.Element;

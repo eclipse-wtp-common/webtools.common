@@ -23,10 +23,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 import org.eclipse.wst.common.internal.emf.resource.ReferencedResource;
 import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
-
-import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 
 public class ResourceStateValidatorImpl implements ResourceStateValidator {
 	protected ResourceStateInputProvider provider;

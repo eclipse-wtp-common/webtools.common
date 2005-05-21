@@ -11,8 +11,8 @@
 package org.eclipse.wst.validation.internal.core;
 
 
-import java.util.Locale;
 import java.util.List;
+import java.util.Locale;
 
 
 /**

@@ -40,6 +40,8 @@ import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.IDisposable;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
 import org.eclipse.emf.edit.provider.resource.ResourceItemProviderAdapterFactory;
+import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.internal.enablement.EnablementIdentifier;
 import org.eclipse.wst.common.frameworks.internal.enablement.EnablementIdentifierEvent;
 import org.eclipse.wst.common.frameworks.internal.enablement.EnablementManager;
@@ -50,9 +52,6 @@ import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchEditResourceHand
 import org.eclipse.wst.common.internal.emfworkbench.edit.AdapterFactoryDescriptor;
 import org.eclipse.wst.common.internal.emfworkbench.edit.AdapterFactoryRegistry;
 import org.eclipse.wst.common.internal.emfworkbench.edit.ExtendedComposedAdapterFactory;
-
-import org.eclipse.jem.util.logger.proxy.Logger;
-import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 
 /**
  * @author schacher

@@ -10,11 +10,7 @@
  *******************************************************************************/ 
 package org.eclipse.wst.common.componentcore.internal.impl;
 
-import java.util.Collection;
-
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipse.wst.common.componentcore.internal.util.WTPModulesTranslator;
 import org.eclipse.wst.common.internal.emf.resource.Renderer;
 import org.eclipse.wst.common.internal.emf.resource.Translator;

@@ -37,13 +37,12 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.wst.common.internal.emf.resource.ReferencedResource;
-import org.eclipse.wst.common.internal.emf.resource.ReferencedXMIFactoryImpl;
-import org.eclipse.wst.common.internal.emf.utilities.ExtendedEcoreUtil;
-
 import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 import org.eclipse.jem.util.emf.workbench.WorkbenchURIConverter;
 import org.eclipse.jem.util.plugin.JEMUtilPlugin;
+import org.eclipse.wst.common.internal.emf.resource.ReferencedResource;
+import org.eclipse.wst.common.internal.emf.resource.ReferencedXMIFactoryImpl;
+import org.eclipse.wst.common.internal.emf.utilities.ExtendedEcoreUtil;
 
 /**
  * @author schacher

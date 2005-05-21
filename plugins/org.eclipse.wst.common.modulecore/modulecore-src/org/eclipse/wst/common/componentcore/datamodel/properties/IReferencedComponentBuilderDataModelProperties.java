@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.datamodel.properties;
 
+import org.eclipse.wst.common.componentcore.internal.DependencyType;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties;
 
 /**

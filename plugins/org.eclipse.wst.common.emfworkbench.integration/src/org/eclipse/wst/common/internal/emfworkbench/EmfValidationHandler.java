@@ -14,9 +14,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.wst.common.frameworks.internal.IValidationSelectionHandler;
-
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
+import org.eclipse.wst.common.frameworks.internal.IValidationSelectionHandler;
 
 /**
  * Emf validation extension for valaditemenuaction

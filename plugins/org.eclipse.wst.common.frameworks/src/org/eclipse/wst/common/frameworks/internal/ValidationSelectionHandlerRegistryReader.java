@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IConfigurationElement;
-
 import org.eclipse.jem.util.RegistryReader;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 

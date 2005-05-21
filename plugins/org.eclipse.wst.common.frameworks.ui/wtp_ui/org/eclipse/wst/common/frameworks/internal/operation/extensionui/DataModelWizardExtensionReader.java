@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.CoreException;
