@@ -24,7 +24,7 @@ public class ArtifactEditOperationDataModelProvider extends AbstractDataModelPro
 	}
 
 	public String[] getPropertyNames() {
-		return new String[]{TYPE_ID,PROJECT_NAME, COMPONENT_NAME,PROMPT_ON_SAVE};
+		return new String[]{TYPE_ID,PROJECT_NAME, COMPONENT_NAME,PROMPT_ON_SAVE,TARGET_PROJECT,TARGET_COMPONENT};
 	}
 	
 	public IProject getTargetProject() {
