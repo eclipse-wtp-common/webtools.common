@@ -57,7 +57,7 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 		if (COMPONENT_NAME.equals(propertyName)) {
 			model.setProperty(COMPONENT_DEPLOY_NAME, propertyValue);
             if(!FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp())
-			model.setProperty(PROJECT_NAME, propertyValue);
+                model.setProperty(PROJECT_NAME, propertyValue);
         } else if (COMPONENT_DEPLOY_NAME.equals(propertyName)){
 			model.setProperty(COMPONENT_DEPLOY_NAME, propertyValue);
 		} else if (COMPONENT.equals(propertyName)) {
