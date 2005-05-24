@@ -24,6 +24,11 @@ import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 
+//TODO delete
+/**
+ * @deprecated
+ *
+ */
 public abstract class ComponentCreationOperation extends WTPOperation {
 
 	public ComponentCreationOperation(ComponentCreationDataModel dataModel) {

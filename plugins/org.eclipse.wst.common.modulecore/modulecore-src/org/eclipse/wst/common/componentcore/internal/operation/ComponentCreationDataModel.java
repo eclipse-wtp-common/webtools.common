@@ -31,13 +31,10 @@ import org.eclipse.wst.server.core.IProjectProperties;
 import org.eclipse.wst.server.core.IRuntimeType;
 import org.eclipse.wst.server.core.ServerCore;
 
+//TODO delete
 /**
- * This dataModel is a common super class used for creation of WTP Components.
- * 
- * This class (and all its fields and methods) is likely to change during the WTP 1.0 milestones as
- * the new project structures are adopted. Use at your own risk.
- * 
- * @since WTP 1.0
+ * @deprecated
+ *
  */
 public abstract class ComponentCreationDataModel extends WTPOperationDataModel {
 

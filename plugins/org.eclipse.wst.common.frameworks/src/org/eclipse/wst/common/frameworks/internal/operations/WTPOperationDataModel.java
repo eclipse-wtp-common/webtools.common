@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 
 /**
+ * @deprecated replace with {@link org.eclipse.wst.common.frameworks.datamodel.IDataModel} and {@link org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider}
  * WTPOperationDataModel is an essential piece of both the WTP Operation and WTP Wizard frameworks.
  * WTPOPerationDataModels (DataModels) act as smart property containers used to pass various
  * properties between components. DataModels are smart property containers because they can:

@@ -2,6 +2,7 @@ package org.eclipse.wst.common.frameworks.internal.operations;
 
 //TODO link to an example in the tutorial
 /**
+ * @deprecated replace with {@link org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor}
  * A WTPPropertyDescriptor provides a human readible description for a WTPDataModel propertyValue.
  *
  * This class is EXPERIMENTAL and is subject to substantial changes.
