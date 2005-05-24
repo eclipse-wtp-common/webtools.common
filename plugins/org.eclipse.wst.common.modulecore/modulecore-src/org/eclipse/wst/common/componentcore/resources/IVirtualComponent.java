@@ -149,5 +149,11 @@ public interface IVirtualComponent extends IVirtualContainer {
 	 */
 	void setReferences(IVirtualReference[] theReferences);
 
+	/**
+	 * The version associated with the component.
+	 * 
+	 * @return The version of the component.
+	 */	
+	String getVersion();	
 
 }
