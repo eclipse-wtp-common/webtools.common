@@ -432,7 +432,8 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 	}
 
 	public IDataModelOperation getDefaultOperation() {
-		return new ExtendableOperationImpl(provider.getDefaultOperation());
+		IDataModelOperation providerOp = provider.getDefaultOperation();
+		return null != providerOp ? new ExtendableOperationImpl(providerOp) : null;
 	}
 
 	public String toString() {
