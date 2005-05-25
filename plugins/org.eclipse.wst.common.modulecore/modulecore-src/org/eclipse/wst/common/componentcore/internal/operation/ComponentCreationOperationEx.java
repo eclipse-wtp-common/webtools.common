@@ -41,13 +41,23 @@ public abstract class ComponentCreationOperationEx extends AbstractDataModelOper
 
     public IStatus execute(String componentType, IProgressMonitor monitor, IAdaptable info) {
         createProjectIfNeeded(monitor, info);
+		StructureEdit edit = null;
         try {
+			edit = StructureEdit.getStructureEditForWrite(getProject());
             createAndLinkJ2EEComponents();
+			setupComponentType(componentType);
         }
         catch (CoreException e) {
             Logger.getLogger().log(e);
         }
-        setupComponentType(componentType);
+		finally {
+			if (edit != null) {
+				edit.saveIfNecessary(monitor);
+				edit.dispose();
+			}
+			
+		}
+        
         return OK_STATUS;
     }
 
@@ -84,11 +94,6 @@ public abstract class ComponentCreationOperationEx extends AbstractDataModelOper
         StructureEdit.setComponentType(component, componentType);
     }
 
-    protected IProject getProject() {
-        String name = model.getStringProperty(PROJECT_NAME);
-        return ProjectUtilities.getProject(name);
-    }
-
     protected String getComponentName() {
         return model.getStringProperty(COMPONENT_NAME);
     }
@@ -100,5 +105,10 @@ public abstract class ComponentCreationOperationEx extends AbstractDataModelOper
     protected abstract String getVersion();
 
     protected abstract List getProperties();
+
+	public IProject getProject() {
+	    String projName = model.getStringProperty(PROJECT_NAME);
+	    return ProjectUtilities.getProject(projName);
+	}
 
 }

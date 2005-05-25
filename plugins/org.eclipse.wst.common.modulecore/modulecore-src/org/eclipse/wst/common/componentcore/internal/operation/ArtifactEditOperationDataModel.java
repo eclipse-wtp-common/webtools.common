@@ -90,7 +90,8 @@ public abstract class ArtifactEditOperationDataModel extends WTPOperationDataMod
 			IProject project = getTargetProject();
 			if (project.exists() && project.isAccessible()) {
 				IFlexibleProject flex = ComponentCore.createFlexibleProject(project);
-				comp  = flex.getComponent(getStringProperty(MODULE_NAME));
+				if (getProperty(MODULE_NAME) != null)
+					comp  = flex.getComponent(getStringProperty(MODULE_NAME));
 			}
 		}
         return comp;
