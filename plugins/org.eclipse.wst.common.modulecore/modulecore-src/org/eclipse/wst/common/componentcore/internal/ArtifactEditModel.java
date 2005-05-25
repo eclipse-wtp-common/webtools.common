@@ -250,9 +250,7 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 			resourceToProcess = (Resource) theResources.get(i);
 			aResourceURI = resourceToProcess.getURI();
 			resourceResource = WorkbenchResourceHelper.getFile(resourceToProcess);
-			if (resourceResource == null)
-				Logger.getLogger().logError("Error processing resource URI: " + resourceToProcess.getURI());
-			else {
+			if (resourceResource != null) {
 				resources = ComponentCore.createResources(resourceResource); 
 				for (int resourcesIndex = 0; resourcesIndex < resources.length; resourcesIndex++) {
 					if (virtualComponent.equals(resources[resourcesIndex].getComponent())) {
