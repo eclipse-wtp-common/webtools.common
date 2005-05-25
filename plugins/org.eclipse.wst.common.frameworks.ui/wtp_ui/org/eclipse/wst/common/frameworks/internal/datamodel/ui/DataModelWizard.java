@@ -324,6 +324,9 @@ public abstract class DataModelWizard extends Wizard {
 
 	private IUndoableOperation createOperation() {
 		ExtendableOperationImpl baseOperation = (ExtendableOperationImpl) getDataModel().getDefaultOperation();
+		if(null == baseOperation){
+			return null;
+		}
 		for (int i = 0; null != extendedPages && i < extendedPages.length; i++) {
 			IDataModelOperation op = extendedPages[i].createOperation();
 			if (op != null) {
