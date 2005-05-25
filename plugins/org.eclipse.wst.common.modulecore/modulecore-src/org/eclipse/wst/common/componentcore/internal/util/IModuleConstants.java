@@ -50,5 +50,8 @@ public interface IModuleConstants {
 	public final static String SERVLET_VERSION_2_2 = "2.2"; //$NON-NLS-1$
 	public final static String SERVLET_VERSION_2_3 = "2.3"; //$NON-NLS-1$
 	public final static String SERVLET_VERSION_2_4 = "2.4"; //$NON-NLS-1$	
+    
+    //Property Constants
+    public final static String PROJ_REL_JAVA_OUTPUT_PATH = "java-output-path"; //$NON-NLS-1$ 
 	 
 }

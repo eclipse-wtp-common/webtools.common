@@ -25,6 +25,7 @@ import org.eclipse.wst.common.componentcore.internal.ComponentType;
 import org.eclipse.wst.common.componentcore.internal.ComponentcoreFactory;
 import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
 import org.eclipse.wst.common.componentcore.internal.DependencyType;
+import org.eclipse.wst.common.componentcore.internal.Property;
 import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
@@ -100,8 +101,25 @@ public class VirtualComponent extends VirtualContainer implements IVirtualCompon
 	}
 
 	public Properties getMetaProperties() {
-		// TODO Auto-generated method stub
-		return null;
+        StructureEdit core = null;
+        try {
+            core = StructureEdit.getStructureEditForRead(getProject());
+            WorkbenchComponent component = core.findComponentByName(getName()); 
+            ComponentType cType = component.getComponentType();
+            Properties props = new Properties();
+            if(cType != null) {
+                List propList = cType.getProperties();
+                if(propList != null) {
+                    for (int i = 0; i < propList.size(); i++) {
+                        props.setProperty(((Property)propList.get(i)).getName(), ((Property)propList.get(i)).getValue());
+                    }
+                }
+            }
+            return props; 
+        } finally {
+            if(core != null)
+                core.dispose();
+        }
 	}
 
 	public IPath[] getMetaResources() {
@@ -230,7 +248,7 @@ public class VirtualComponent extends VirtualContainer implements IVirtualCompon
 		}
 		return null;
 	}
-	
+
 	public String getVersion(){
 		StructureEdit core = null;
 		try {
@@ -242,8 +260,7 @@ public class VirtualComponent extends VirtualContainer implements IVirtualCompon
 		} finally {
 			if(core != null)
 				core.dispose();
-		}	
+}
 		return "";
 	}
-
 }
