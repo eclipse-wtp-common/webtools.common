@@ -437,10 +437,8 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 
 	public IDataModelOperation getDefaultOperation() {
 		IDataModelOperation providerOp = provider.getDefaultOperation();
-		if (null != providerOp) {
-			return new ExtendableOperationImpl(providerOp);
-		} else {
-			return new AbstractDataModelOperation(this) {
+		if (null == providerOp) {
+			providerOp = new AbstractDataModelOperation(this) {
 				public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 					return null;
 				}
@@ -454,6 +452,7 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 				}
 			};
 		}
+		return new ExtendableOperationImpl(providerOp);
 	}
 
 	public String toString() {
