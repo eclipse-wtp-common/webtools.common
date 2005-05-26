@@ -18,8 +18,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
@@ -433,7 +437,23 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 
 	public IDataModelOperation getDefaultOperation() {
 		IDataModelOperation providerOp = provider.getDefaultOperation();
-		return null != providerOp ? new ExtendableOperationImpl(providerOp) : null;
+		if (null != providerOp) {
+			return new ExtendableOperationImpl(providerOp);
+		} else {
+			return new AbstractDataModelOperation(this) {
+				public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+					return null;
+				}
+
+				public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+					return null;
+				}
+
+				public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+					return null;
+				}
+			};
+		}
 	}
 
 	public String toString() {
