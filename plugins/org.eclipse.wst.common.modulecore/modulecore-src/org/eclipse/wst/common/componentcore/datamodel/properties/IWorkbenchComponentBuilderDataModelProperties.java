@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.datamodel.properties;
 
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.wst.common.componentcore.internal.builder.ReferencedComponentBuilderDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties;
 
