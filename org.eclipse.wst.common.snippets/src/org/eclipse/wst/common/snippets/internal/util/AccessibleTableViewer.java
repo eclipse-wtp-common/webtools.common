@@ -42,7 +42,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Widget;
 
 /**
- * TAKEN FROM: com.ibm.etools.webtools.flatui.AccessibleTableViewer 1.1.2.8
+ * AccessibleTableViewer 
  * 
  * A concrete viewer based on a SWT <code>Table</code> control.
  * <p>

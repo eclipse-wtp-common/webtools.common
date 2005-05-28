@@ -111,12 +111,6 @@ public class ModelFactoryForUser extends AbstractModelFactory {
 	 */
 	public SnippetPaletteDrawer createCategory(Object source) {
 		SnippetPaletteDrawer drawer = super.createCategory(source);
-		/**
-		 * MIGRATION: V5 to V5.1, com.ibm.sed.jseditor.js0 categor was
-		 * removed.
-		 */
-		if (drawer.getId().equals("com.ibm.sed.jseditor.js0")) //$NON-NLS-1$
-			return null;
 		return drawer;
 	}
 

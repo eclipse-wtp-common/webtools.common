@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.PlatformUI;
 
 /**
- * TAKEN FROM: com.ibm.etools.webtools.flatui.TableViewerImpl 1.1.2.
+ * TAKEN FROM: TableViewerImpl 1.1.2.
  *  - added table field - implemented handleDownArrow and handleUpArrow -
  * added row-wrapping tab/shift-tab traversal
  * 

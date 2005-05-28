@@ -93,7 +93,7 @@ public class AddToSnippetsAction extends Action implements IExtendedEditorAction
 	/**
 	 * @inheritdoc
 	 * 
-	 * @see com.ibm.sse.editor.extension.IExtendedEditorAction#isVisible()
+	 * 
 	 */
 	public boolean isVisible() {
 		return true;
