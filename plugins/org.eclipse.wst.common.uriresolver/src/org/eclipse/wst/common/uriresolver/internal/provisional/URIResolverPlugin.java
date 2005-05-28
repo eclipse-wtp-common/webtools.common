@@ -13,12 +13,10 @@
 package org.eclipse.wst.common.uriresolver.internal.provisional;
 
 import java.util.Map;
-
 import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.wst.common.uriresolver.internal.ExtensibleURIResolver;
 import org.eclipse.wst.common.uriresolver.internal.URIResolverExtensionRegistry;
-import org.eclipse.wst.common.uriresolver.internal.URIResolverExtensionRegistryReader;
 
 
 public class URIResolverPlugin extends Plugin {
@@ -46,19 +44,4 @@ public class URIResolverPlugin extends Plugin {
 		// TODO... utilize properties
 		return new ExtensibleURIResolver();
 	}	
-	
-	//public static URIResolver createResolver(IProject project)
-	//{
-	//	return new ExtensibleURIResolver(project);
-	//}	
-	
-	public URIResolverExtensionRegistry getXMLResolverExtensionRegistry()
-	{
-		if (xmlResolverExtensionRegistry == null)
-		{
-			xmlResolverExtensionRegistry = new URIResolverExtensionRegistry();
-			new URIResolverExtensionRegistryReader(xmlResolverExtensionRegistry).readRegistry();	
-		}	
-		return xmlResolverExtensionRegistry; 
-	}
 }

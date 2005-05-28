@@ -30,9 +30,22 @@ public class URIResolverExtensionRegistry {
   public static final String PRIORITY_MEDIUM = "medium";
   public static final String PRIORITY_HIGH = "high";
 	protected final static String NULL_PROJECT_NATURE_ID = "";
+  
+  protected static URIResolverExtensionRegistry instance;
 	
-	public URIResolverExtensionRegistry() {
+	private URIResolverExtensionRegistry() {
 	}
+  
+  public synchronized static URIResolverExtensionRegistry getIntance()
+  {
+    if (instance == null)
+    {
+      instance = new URIResolverExtensionRegistry(); 
+      new URIResolverExtensionRegistryReader(instance).readRegistry();  
+    } 
+    return instance;
+  }
+  
 
 	public void put(String className, ClassLoader classLoader, List projectNatureIds, String resourceType, int stage, String priority) {
 		if(projectNatureIds == null)
