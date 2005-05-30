@@ -1,28 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-   id="org.eclipse.wst.common.frameworks.ui"
-   name="WTP UI Plug-in"
-   version="1.0.0"
-   provider-name=""
-   description="This is a holding place for common frameworks UI used by components used in WTP currently it includes the following frameworks: Entendable Wizards, Extendable Actions"
-   class="org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin">
+<plugin>
 
-   <runtime>
-      <library name="wtp_ui.jar">
-         <export name="*"/>
-      </library>
-   </runtime>
-   <requires>
-      <import plugin="org.eclipse.ui.ide"/>
-      <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.wst.common.frameworks" export="true"/>
-      <import plugin="org.eclipse.core.runtime"/>
-   </requires>
-
-
-   <extension-point id="wtpuiAction" name="WTP UI Action" schema="schema/wtpuiAction.exsd"/>
+     <extension-point id="wtpuiAction" name="WTP UI Action" schema="schema/wtpuiAction.exsd"/>
    <extension-point id="extendedViewer" name="Extended Viewers" schema="schema/extendedViewer.exsd"/>
    <extension-point id="extendableWizard" name="Extendable Wizard" schema="schema/extendableWizard.exsd"/>
    <extension-point id="wizardPageGroup" name="Extendable Wizard Page" schema="schema/extendableWizardPage.exsd"/>

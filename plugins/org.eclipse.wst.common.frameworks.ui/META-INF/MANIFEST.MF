@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: WTP UI Plug-in
+Bundle-SymbolicName: org.eclipse.wst.common.frameworks.ui; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-ClassPath: wtp_ui.jar
+Bundle-Activator: org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin
+Bundle-Localization: plugin
+Export-Package: .,
+ org.eclipse.wst.common.frameworks.internal.datamodel.ui,
+ org.eclipse.wst.common.frameworks.internal.operation.extensionui,
+ org.eclipse.wst.common.frameworks.internal.ui
+Require-Bundle: org.eclipse.ui.ide,
+ org.eclipse.core.resources,
+ org.eclipse.ui,
+ org.eclipse.wst.common.frameworks;visibility:=reexport,
+ org.eclipse.core.runtime
+Eclipse-AutoStart: true

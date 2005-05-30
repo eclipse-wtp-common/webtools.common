@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.eclipse.wst.common.frameworks
+Bundle-SymbolicName: org.eclipse.wst.common.frameworks; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-ClassPath: common.jar,
+ common_core.jar
+Bundle-Activator: org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin
+Bundle-Vendor: %provider
+Bundle-Localization: plugin
+Export-Package: .,
+ org.eclipse.wst.common.frameworks.datamodel,
+ org.eclipse.wst.common.frameworks.datamodel.properties,
+ org.eclipse.wst.common.frameworks.internal,
+ org.eclipse.wst.common.frameworks.internal.activities,
+ org.eclipse.wst.common.frameworks.internal.datamodel,
+ org.eclipse.wst.common.frameworks.internal.enablement,
+ org.eclipse.wst.common.frameworks.internal.enablement.nonui,
+ org.eclipse.wst.common.frameworks.internal.operations,
+ org.eclipse.wst.common.frameworks.internal.plugin
+Require-Bundle: org.eclipse.core.resources,
+ org.eclipse.core.runtime,
+ org.eclipse.core.commands;visibility:=reexport,
+ org.eclipse.jem.util;visibility:=reexport
+Eclipse-AutoStart: true

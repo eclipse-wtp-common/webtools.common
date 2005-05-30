@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: EMF Utilities
+Bundle-SymbolicName: org.eclipse.wst.common.emf; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-ClassPath: runtime/wtpemf.jar,
+ runtime/workbench.jar
+Bundle-Activator: org.eclipse.wst.common.internal.emf.plugin.EcoreUtilitiesPlugin
+Bundle-Vendor: Eclipse.org
+Bundle-Localization: plugin
+Export-Package: .,
+ org.eclipse.wst.common.internal.emf.plugin,
+ org.eclipse.wst.common.internal.emf.resource,
+ org.eclipse.wst.common.internal.emf.utilities
+Require-Bundle: org.eclipse.emf.ecore.xmi,
+ org.eclipse.wst.common.frameworks,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources
+Eclipse-AutoStart: true

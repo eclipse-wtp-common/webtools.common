@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Eclipse Base UI extensions
+Bundle-SymbolicName: org.eclipse.wst.common.ui; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-ClassPath: ui.jar
+Bundle-Activator: org.eclipse.core.internal.compatibility.PluginActivator
+Bundle-Vendor: Eclipse.org
+Bundle-Localization: plugin
+Export-Package: org.eclipse.wst.common.ui.internal,
+ org.eclipse.wst.common.ui.internal.dialogs,
+ org.eclipse.wst.common.ui.internal.dnd,
+ org.eclipse.wst.common.ui.internal.viewers
+Require-Bundle: org.eclipse.core.runtime.compatibility,
+ org.eclipse.ui.ide,
+ org.eclipse.ui.views,
+ org.eclipse.jface.text,
+ org.eclipse.ui.workbench.texteditor,
+ org.eclipse.ui.editors,
+ org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources
+Eclipse-AutoStart: true
+Plugin-Class: org.eclipse.wst.common.ui.internal.UIPlugin

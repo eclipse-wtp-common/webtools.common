@@ -1,30 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-   id="org.eclipse.wst.common.frameworks"
-   name="org.eclipse.wst.common.frameworks"
-   version="1.0.0"
-   description="This is a holding place for common frameworks used by components used in WTP currently it includes the following frameworks: operation/data model,function groups framework"
-   class="org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin"
-   provider-name="%provider">
+<plugin>
 
-   <runtime>
-      <library name="common.jar">
-         <export name="*"/>
-      </library>
-      <library name="common_core.jar">
-         <export name="*"/>
-      </library>
-   </runtime>
-   <requires>
-      <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.eclipse.core.commands" export="true"/>
-      <import plugin="org.eclipse.jem.util" export="true"/>
-   </requires>
-
-
-   <extension-point id="ExtendableOperation" name="Extendable Operation" schema="schema/ExtendableOperation.exsd"/>
+     <extension-point id="ExtendableOperation" name="Extendable Operation" schema="schema/ExtendableOperation.exsd"/>
    <extension-point id="OperationExtension" name="OperationExtension" schema="schema/OperationExtension.exsd"/>
    <extension-point id="functionGroup" name="Function Extension Group" schema="schema/functionGroup.exsd"/>
    <extension-point id="WTPActivityBridgeHelper" name="WTPActivityBridgeHelper" schema="schema/WTPActivityBridgeHelper.exsd"/>
