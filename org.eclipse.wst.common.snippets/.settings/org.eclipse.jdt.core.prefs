@@ -1,4 +1,4 @@
-#Tue Apr 05 10:02:43 EDT 2005
+#Mon May 30 17:57:10 EDT 2005
 eclipse.preferences.version=1
 org.eclipse.jdt.core.builder.cleanOutputFolder=clean
 org.eclipse.jdt.core.builder.duplicateResourceTask=warning
@@ -28,7 +28,7 @@ org.eclipse.jdt.core.compiler.problem.enumIdentifier=warning
 org.eclipse.jdt.core.compiler.problem.fieldHiding=warning
 org.eclipse.jdt.core.compiler.problem.finalParameterBound=ignore
 org.eclipse.jdt.core.compiler.problem.finallyBlockNotCompletingNormally=error
-org.eclipse.jdt.core.compiler.problem.forbiddenReference=warning
+org.eclipse.jdt.core.compiler.problem.forbiddenReference=error
 org.eclipse.jdt.core.compiler.problem.hiddenCatchBlock=warning
 org.eclipse.jdt.core.compiler.problem.incompatibleNonInheritedInterfaceMethod=warning
 org.eclipse.jdt.core.compiler.problem.incompleteEnumSwitch=ignore
