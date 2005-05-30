@@ -1,30 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-   id="org.eclipse.wst.common.snippets"
-   name="%Snippets_View.name"
-   version="1.0.0"
-   provider-name="Eclipse.org"
-   class="org.eclipse.wst.common.snippets.internal.SnippetsPlugin">
+<plugin>
 
-   <runtime>
-      <library name="snippets.jar">
-         <export name="*"/>
-      </library>
-   </runtime>
-   <requires>
-      <import plugin="org.eclipse.gef"/>
-      <import plugin="org.eclipse.wst.sse.ui"/>
-      <import plugin="org.eclipse.ui.ide"/>
-      <import plugin="org.eclipse.ui.workbench.texteditor"/>
-      <import plugin="org.eclipse.wst.sse.core"/>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.jface.text"/>
-      <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.core.runtime"/>
-   </requires>
-
-   <extension-point id="SnippetContributions" name="%Snippets_View_Contributions_Extension.name" schema="schema/SnippetContributions.exsd"/>
+     <extension-point id="SnippetContributions" name="%Snippets_View_Contributions_Extension.name" schema="schema/SnippetContributions.exsd"/>
 
 <!-- the view itself -->
    <extension
