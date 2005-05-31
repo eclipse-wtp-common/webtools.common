@@ -28,7 +28,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.wst.common.frameworks.internal.operations.ProjectCreationDataModel;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelSynchHelper;
+import org.eclipse.wst.common.frameworks.internal.operations.IProjectCreationProperties;
 
 /**
  * @author DABERG
@@ -36,8 +38,8 @@ import org.eclipse.wst.common.frameworks.internal.operations.ProjectCreationData
  * To change the template for this generated type comment go to Window>Preferences>Java>Code
  * Generation>Code and Comments
  */
-public class NewProjectGroup {
-	private ProjectCreationDataModel model;
+public class NewProjectGroup implements IProjectCreationProperties {
+	private IDataModel model;
 	public Text projectNameField = null;
 	protected Text locationPathField = null;
 	protected Button browseButton = null;
@@ -48,15 +50,15 @@ public class NewProjectGroup {
 	private String defBrowseButtonLabel = WTPCommonUIResourceHandler.getString("Browse_");//$NON-NLS-1$
 	private static final String defDirDialogLabel = "Directory"; //$NON-NLS-1$
 
-	private WTPDataModelSynchHelper synchHelper;
+	private DataModelSynchHelper synchHelper;
 
 	/**
 	 * @param parent
 	 * @param style
 	 */
-	public NewProjectGroup(Composite parent, int style, ProjectCreationDataModel model) {
-		this.model = model;
-		synchHelper = new WTPDataModelSynchHelper(model);
+	public NewProjectGroup(Composite parent, int style, IDataModel model, DataModelSynchHelper helper) {
+        this.model = model;
+		synchHelper = helper;
 		buildComposites(parent);
 	}
 
@@ -84,7 +86,7 @@ public class NewProjectGroup {
 		data.widthHint = SIZING_TEXT_FIELD_WIDTH;
 		projectNameField.setLayoutData(data);
 		new Label(parent, SWT.NONE); // pad
-		synchHelper.synchText(projectNameField, ProjectCreationDataModel.PROJECT_NAME, new Control[]{projectNameLabel});
+		synchHelper.synchText(projectNameField, PROJECT_NAME, new Control[]{projectNameLabel});
 	}
 
 	/**
@@ -111,7 +113,7 @@ public class NewProjectGroup {
 			}
 		});
 		browseButton.setEnabled(true);
-		synchHelper.synchText(locationPathField, ProjectCreationDataModel.PROJECT_LOCATION, null);
+		synchHelper.synchText(locationPathField, PROJECT_LOCATION, null);
 	}
 
 	/**
@@ -120,7 +122,7 @@ public class NewProjectGroup {
 	protected void handleLocationBrowseButtonPressed() {
 		DirectoryDialog dialog = new DirectoryDialog(locationPathField.getShell());
 		dialog.setMessage(defDirDialogLabel);
-		String dirName = model.getStringProperty(ProjectCreationDataModel.PROJECT_LOCATION);
+		String dirName = model.getStringProperty(PROJECT_LOCATION);
 		if ((dirName != null) && (dirName.length() != 0)) {
 			File path = new File(dirName);
 			if (path.exists()) {
@@ -129,7 +131,7 @@ public class NewProjectGroup {
 		}
 		String selectedDirectory = dialog.open();
 		if (selectedDirectory != null) {
-			model.setProperty(ProjectCreationDataModel.PROJECT_LOCATION, selectedDirectory);
+			model.setProperty(PROJECT_LOCATION, selectedDirectory);
 		}
 	}
 
