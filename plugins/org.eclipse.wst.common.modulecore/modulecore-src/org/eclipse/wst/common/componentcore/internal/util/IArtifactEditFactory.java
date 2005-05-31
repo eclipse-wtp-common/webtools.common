@@ -10,10 +10,7 @@
  *******************************************************************************/ 
 package org.eclipse.wst.common.componentcore.internal.util;
 
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.wst.common.componentcore.ArtifactEdit;
-import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 
 /**

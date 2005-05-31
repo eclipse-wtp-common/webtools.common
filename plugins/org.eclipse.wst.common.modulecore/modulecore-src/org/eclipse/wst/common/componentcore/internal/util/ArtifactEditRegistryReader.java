@@ -21,9 +21,7 @@ import java.util.Hashtable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jem.util.RegistryReader;
-import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
-import org.eclipse.wst.common.internal.emfworkbench.edit.AdapterFactoryRegistry;
 
 /**
  * @author cbridgha
