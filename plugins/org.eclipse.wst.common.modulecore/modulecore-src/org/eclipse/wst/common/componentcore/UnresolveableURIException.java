@@ -21,6 +21,11 @@ import org.eclipse.emf.common.util.URI;
  */
 public class UnresolveableURIException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public UnresolveableURIException(URI anUnresolveableURI) {
 		super("Could not resolve: " + anUnresolveableURI);
 	}

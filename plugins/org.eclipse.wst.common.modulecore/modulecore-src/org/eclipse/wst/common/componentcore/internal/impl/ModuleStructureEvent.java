@@ -13,7 +13,11 @@ import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 //in progress...
 
 public class ModuleStructureEvent extends EventObject {
-    private ComponentResource[] resources;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private ComponentResource[] resources;
 
     public ModuleStructureEvent(Object source) {
         super(source);
