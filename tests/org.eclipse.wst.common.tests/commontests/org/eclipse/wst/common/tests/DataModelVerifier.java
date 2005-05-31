@@ -7,6 +7,7 @@
 package org.eclipse.wst.common.tests;
 
 
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
 
 /**
@@ -21,10 +22,12 @@ public class DataModelVerifier {
 	 *
 	 * To change the template for this generated type comment go to
 	 * Window - Preferences - Java - Code Generation - Code and Comments
+     * @deprecated use verify(IDataModel model)
 	 */
 	
-	public void verify(WTPOperationDataModel model) throws Exception {
-		
+	public void verify(WTPOperationDataModel model) throws Exception {	
 	}
 
+    public void verify(IDataModel model) throws Exception {      
+    }
 }
