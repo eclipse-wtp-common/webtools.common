@@ -17,6 +17,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jem.internal.util.emf.workbench.nls.EMFWorkbenchResourceHandler;
 import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
+import org.eclipse.wst.common.componentcore.internal.util.IArtifactEditFactory;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.internal.operations.IOperationHandler;
@@ -60,6 +61,16 @@ public class ArtifactEdit implements IEditModelHandler {
 	private final ArtifactEditModel artifactEditModel;
 	private boolean isReadOnly;
 	private boolean isArtifactEditModelSelfManaged;
+
+
+	/**
+	 * 
+	 */
+	protected ArtifactEdit() {
+		super();
+		artifactEditModel = null;
+		// TODO Auto-generated constructor stub
+	}
 
 	/**
 	 * <p>

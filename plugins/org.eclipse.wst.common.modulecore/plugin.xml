@@ -80,4 +80,5 @@
         enabled="true"
         pattern=".deployables"/>
 	</extension>
+	<extension-point id="artifactedit" name="Component Artifact Edit" />
 </plugin>
