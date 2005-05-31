@@ -39,14 +39,16 @@ public class ProjectCreationDataModelProvider extends AbstractDataModelProvider 
 	}
     public void init() {
         super.init();
-        model.setProperty(PROJECT_LOCATION, getDefaultLocation());
-        model.setProperty(PROJECT_DESCRIPTION, getProjectDescription());    
     }
 	public String[] getPropertyNames() {
 		return new String[]{PROJECT, PROJECT_NAME, PROJECT_LOCATION, PROJECT_NATURES, PROJECT_DESCRIPTION};
 	}
 
 	public Object getDefaultProperty(String propertyName) {
+        if(propertyName.equals(PROJECT_LOCATION))
+            return getDefaultLocation();
+        else if(propertyName.equals(PROJECT_DESCRIPTION))
+            return getProjectDescription();
 		return super.getDefaultProperty(propertyName);
 	}
 
