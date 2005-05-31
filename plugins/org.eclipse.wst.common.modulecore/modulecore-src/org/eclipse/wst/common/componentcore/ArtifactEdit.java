@@ -8,6 +8,8 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.componentcore;
 
+import java.util.List;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.command.CommandStack;
@@ -483,5 +485,25 @@ public class ArtifactEdit implements IEditModelHandler {
 
 	public boolean isReadOnly() {
 		return isReadOnly;
+	}
+	
+/**
+	 * Force all of the known resource URIs to be loaded
+	 * if they are not already.
+	 */
+	public void forceLoadKnownResources() {
+		List uris = getArtifactEditModel().getKnownResourceUris();
+		URI uri = null;
+		for (int i = 0; i < uris.size(); i++) {
+			uri = (URI) uris.get(i);
+			getArtifactEditModel().getResource(uri);
+		}
+	}
+	
+	/**
+	 * Return a Resource for @aUri.
+	 */
+	public Resource getResource(URI aUri) {
+		return getArtifactEditModel().getResource(aUri);
 	}
 }
