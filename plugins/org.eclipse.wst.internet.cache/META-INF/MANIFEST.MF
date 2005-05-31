@@ -3,7 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %_PLUGIN_NAME
 Bundle-SymbolicName: org.eclipse.wst.internet.cache; singleton:=true
 Bundle-Version: 1.0.0
-Bundle-ClassPath: cache.jar
 Bundle-Activator: org.eclipse.wst.internet.cache.internal.CachePlugin
 Bundle-Vendor: %_PLUGIN_PROVIDER
 Bundle-Localization: plugin
