@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
@@ -34,37 +34,51 @@ import org.eclipse.wst.internet.cache.internal.Cache;
 import org.eclipse.wst.internet.cache.internal.CachePlugin;
 
 /**
- * This class represents a preference page that is contributed to the 
- * Preferences dialog. This page contains options for the cache. The cache
- * can be disabled, the list of entries in the cache can be viewed, and 
- * individual entries or the entire cache can be deleted.
+ * This class represents a preference page that is contributed to the
+ * Preferences dialog. This page contains options for the cache. The cache can
+ * be disabled, the list of entries in the cache can be viewed, and individual
+ * entries or the entire cache can be deleted.
  */
 
-public class CachePreferencePage extends PreferencePage implements IWorkbenchPreferencePage 
+public class CachePreferencePage extends PreferencePage implements
+    IWorkbenchPreferencePage
 {
-	private static final String _UI_CONFIRM_CLEAR_CACHE_DIALOG_TITLE = "_UI_CONFIRM_CLEAR_CACHE_DIALOG_TITLE";
-	private static final String _UI_CONFIRM_CLEAR_CACHE_DIALOG_MESSAGE = "_UI_CONFIRM_CLEAR_CACHE_DIALOG_MESSAGE";
-	private static final String _UI_BUTTON_CLEAR_CACHE = "_UI_BUTTON_CLEAR_CACHE";
-	private static final String _UI_BUTTON_DELETE_ENTRY = "_UI_BUTTON_DELETE_ENTRY";
-	private static final String _UI_PREF_CACHE_ENTRIES_TITLE = "_UI_PREF_CACHE_ENTRIES_TITLE";
-  private static final String _UI_PREF_CACHE_OPTIONS_TITLE = "_UI_PREF_CACHE_OPTIONS_TITLE";
-  private static final String _UI_PREF_CACHE_CACHE_OPTION = "_UI_PREF_CACHE_CACHE_OPTION";
-  private static final String _UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_TITLE = "_UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_TITLE";
-  private static final String _UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_MESSAGE = "_UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_MESSAGE";
-	
-	protected Button clearButton;
-	protected Button deleteButton;
-  protected Button enabledButton;
-	protected List entries;
-  protected Composite composite = null;
-  protected Group entriesGroup;
+  private static final String _UI_CONFIRM_CLEAR_CACHE_DIALOG_TITLE = "_UI_CONFIRM_CLEAR_CACHE_DIALOG_TITLE";
 
-	/**
-	 * @see org.eclipse.jface.dialogs.IDialogPage#dispose()
-	 */
-	public void dispose()
+  private static final String _UI_CONFIRM_CLEAR_CACHE_DIALOG_MESSAGE = "_UI_CONFIRM_CLEAR_CACHE_DIALOG_MESSAGE";
+
+  private static final String _UI_BUTTON_CLEAR_CACHE = "_UI_BUTTON_CLEAR_CACHE";
+
+  private static final String _UI_BUTTON_DELETE_ENTRY = "_UI_BUTTON_DELETE_ENTRY";
+
+  private static final String _UI_PREF_CACHE_ENTRIES_TITLE = "_UI_PREF_CACHE_ENTRIES_TITLE";
+
+  private static final String _UI_PREF_CACHE_OPTIONS_TITLE = "_UI_PREF_CACHE_OPTIONS_TITLE";
+
+  private static final String _UI_PREF_CACHE_CACHE_OPTION = "_UI_PREF_CACHE_CACHE_OPTION";
+
+  private static final String _UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_TITLE = "_UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_TITLE";
+
+  private static final String _UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_MESSAGE = "_UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_MESSAGE";
+  
+  private static final String _UI_PREF_CACHE_ABOUT = "_UI_PREF_CACHE_ABOUT";
+
+  protected Button clearButton;
+
+  protected Button deleteButton;
+
+  protected Button enabledButton;
+
+  protected List entries;
+
+  protected Composite composite = null;
+
+  /**
+   * @see org.eclipse.jface.dialogs.IDialogPage#dispose()
+   */
+  public void dispose()
   {
-    if(composite != null)
+    if (composite != null)
     {
       composite.dispose();
     }
@@ -74,190 +88,213 @@ public class CachePreferencePage extends PreferencePage implements IWorkbenchPre
   /**
    * Constructor.
    */
-  public CachePreferencePage() 
+  public CachePreferencePage()
   {
-	setPreferenceStore(CachePlugin.getDefault().getPreferenceStore());
+    setPreferenceStore(CachePlugin.getDefault().getPreferenceStore());
   }
-	
-	/**
-	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
-	 */
-	public void init(IWorkbench workbench) 
-	{
-	}
 
-	/**
-	 * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
-	 */
-	protected Control createContents(Composite parent) 
-	{
-		noDefaultAndApplyButton();
-		
-		composite = new Composite(parent, SWT.NULL);
-		composite.setLayout(new GridLayout());
-		GridData gd = new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL);
-		gd.grabExcessHorizontalSpace = true;
-		gd.grabExcessVerticalSpace = true;
-	    composite.setLayoutData(gd);
-      try
-      {
-		GridLayout gridLayout = new GridLayout();
-    
-    // Created the disable cache option.
-    enabledButton = new Button(composite, SWT.CHECK | SWT.LEFT);
-    enabledButton.setText(CachePlugin.getResourceString(_UI_PREF_CACHE_CACHE_OPTION));
-    enabledButton.setSelection(!CachePlugin.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.CACHE_ENABLED));
-    enabledButton.addSelectionListener(new SelectionListener(){
-
-      public void widgetDefaultSelected(SelectionEvent e)
-      {
-        widgetSelected(e);
-        
-      }
-
-      public void widgetSelected(SelectionEvent e)
-      {
-        boolean disabled = enabledButton.getSelection();
-        CachePlugin.getDefault().setCacheEnabled(!disabled);
-        setPreferenceWidgets();
-      }
-      
-      
-      
-    });
-		
-		// Create the entities group.
-		entriesGroup = new Group(composite, SWT.NONE);
-	  entriesGroup.setText(CachePlugin.getResourceString(_UI_PREF_CACHE_ENTRIES_TITLE));
-	  gridLayout = new GridLayout();
-	  entriesGroup.setLayout(gridLayout);
-	  GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL);
-		gridData.grabExcessHorizontalSpace = true;
-		gridData.grabExcessVerticalSpace = true;
-	  entriesGroup.setLayoutData(gridData);
-    
-		entries = new List(entriesGroup, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(entries, ContextIds.PREF_ENTRIES);
-		String[] cacheEntries = Cache.getInstance().getCachedURIs();
-		Arrays.sort(cacheEntries);
-		entries.setItems(cacheEntries);
-		gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL);
-		gridData.grabExcessHorizontalSpace = true;
-		gridData.grabExcessVerticalSpace = true;
-	    entries.setLayoutData(gridData);
-		entries.addSelectionListener(new SelectionAdapter() {
-	          public void widgetSelected(SelectionEvent event) {
-              setPreferenceWidgets();
-	          }
-	       });
-		
-		Composite buttonComposite = new Composite(composite, SWT.NULL);
-		gridLayout = new GridLayout();
-		gridLayout.numColumns = 2;
-		buttonComposite.setLayout(gridLayout);
-		gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL |GridData.HORIZONTAL_ALIGN_FILL | GridData.HORIZONTAL_ALIGN_END);
-	    composite.setLayoutData(gridData);
-		// Create the Delete button
-		deleteButton = new Button(buttonComposite, SWT.PUSH);
-	    deleteButton.setText(CachePlugin.getResourceString(_UI_BUTTON_DELETE_ENTRY));
-	    gridData = new GridData(GridData.HORIZONTAL_ALIGN_END | GridData.VERTICAL_ALIGN_END);
-	    deleteButton.setLayoutData(gridData);
-	    deleteButton.addSelectionListener(new SelectionAdapter() {
-	          public void widgetSelected(SelectionEvent event) {
-              if(MessageDialog.openConfirm(Display.getDefault().getActiveShell(), CachePlugin.getResourceString(_UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_TITLE), CachePlugin.getResourceString(_UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_MESSAGE)))
-              {
-	              String[] selectedEntries = entries.getSelection();
-				  int numSelectedEntries = selectedEntries.length;
-				  
-				  Cache cache = Cache.getInstance();
-				  for(int i = 0; i < numSelectedEntries; i++)
-				  {
-				    cache.deleteEntry(selectedEntries[i]);
-				  }
-				  String[] cacheEntries = cache.getCachedURIs();
-				  Arrays.sort(cacheEntries);
-				  entries.setItems(cacheEntries);
-          setPreferenceWidgets();
-	          }
-            }
-	       });
-		
-		// Create the Clear Cache button
-		clearButton = new Button(buttonComposite, SWT.PUSH);
-	    clearButton.setText(CachePlugin.getResourceString(_UI_BUTTON_CLEAR_CACHE));
-	    gridData = new GridData(GridData.HORIZONTAL_ALIGN_END | GridData.VERTICAL_ALIGN_END);
-	    clearButton.setLayoutData(gridData);
-	    clearButton.addSelectionListener(new SelectionAdapter() {
-	          public void widgetSelected(SelectionEvent event) {
-				  if(MessageDialog.openConfirm(Display.getDefault().getActiveShell(), CachePlugin.getResourceString(_UI_CONFIRM_CLEAR_CACHE_DIALOG_TITLE), CachePlugin.getResourceString(_UI_CONFIRM_CLEAR_CACHE_DIALOG_MESSAGE)))
-				  {
-					  Cache cache = Cache.getInstance();
-					  cache.clear();
-					  String[] cacheEntries = cache.getCachedURIs();
-					  Arrays.sort(cacheEntries);
-					  entries.setItems(cacheEntries);
-            setPreferenceWidgets();
-				  }
-	          }
-	       });
-      
-      }
-      catch(Throwable e)
-      {
-        System.out.println(e);
-      }
-      setPreferenceWidgets();
-      
-		return composite;
-	}
-  
   /**
-   * Set the preference page widgets. There are a few rules.
-   * 1. If disabled, all of the widgets are diabled except for the disabled check box.
-   * 2. If enabled, all widgets are enabled except
-   *  a. The delete button is enabled only if there is a selection in the list.
-   *  b. The clear button is enabled only if there are items in the list.
+   * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
+   */
+  public void init(IWorkbench workbench)
+  {
+  }
+
+  /**
+   * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
+   */
+  protected Control createContents(Composite parent)
+  {
+    noDefaultAndApplyButton();
+
+    composite = new Composite(parent, SWT.NULL);
+    GridLayout layout = new GridLayout();
+    layout.numColumns = 2;
+    layout.horizontalSpacing = convertHorizontalDLUsToPixels(4);
+    layout.verticalSpacing = convertVerticalDLUsToPixels(3);
+    layout.marginWidth = 0;
+    layout.marginHeight = 0;
+    composite.setLayout(layout);
+    GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
+    composite.setLayoutData(gd);
+    
+    Label aboutLabel = new Label(composite, SWT.WRAP);
+    aboutLabel.setText(CachePlugin.getResourceString(_UI_PREF_CACHE_ABOUT));
+    GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
+    gridData.horizontalSpan = 2;
+    aboutLabel.setLayoutData(gridData);
+    try
+    {
+      // Created the disable cache option.
+      enabledButton = new Button(composite, SWT.CHECK | SWT.LEFT);
+      enabledButton.setText(CachePlugin
+          .getResourceString(_UI_PREF_CACHE_CACHE_OPTION));
+      enabledButton.setSelection(!CachePlugin.getDefault().getPreferenceStore()
+          .getBoolean(PreferenceConstants.CACHE_ENABLED));
+      enabledButton.addSelectionListener(new SelectionListener()
+      {
+
+        public void widgetDefaultSelected(SelectionEvent e)
+        {
+          widgetSelected(e);
+
+        }
+
+        public void widgetSelected(SelectionEvent e)
+        {
+          boolean disabled = enabledButton.getSelection();
+          CachePlugin.getDefault().setCacheEnabled(!disabled);
+          setPreferenceWidgets();
+        }
+
+      });
+
+      // Create the entities group.
+      Label entriesLabel = new Label(composite, SWT.WRAP);
+      entriesLabel.setText(CachePlugin.getResourceString(_UI_PREF_CACHE_ENTRIES_TITLE));
+      gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
+      gridData.horizontalSpan = 2;
+      entriesLabel.setLayoutData(gridData);
+
+      entries = new List(composite, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
+      PlatformUI.getWorkbench().getHelpSystem().setHelp(entries,
+          ContextIds.PREF_ENTRIES);
+      String[] cacheEntries = Cache.getInstance().getCachedURIs();
+      Arrays.sort(cacheEntries);
+      entries.setItems(cacheEntries);
+      gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL
+          | GridData.VERTICAL_ALIGN_FILL);
+      gridData.grabExcessHorizontalSpace = true;
+      gridData.grabExcessVerticalSpace = true;
+      entries.setLayoutData(gridData);
+      entries.addSelectionListener(new SelectionAdapter()
+      {
+        public void widgetSelected(SelectionEvent event)
+        {
+          setPreferenceWidgets();
+        }
+      });
+
+      Composite buttonComposite = new Composite(composite, SWT.NULL);
+      GridLayout gridLayout = new GridLayout();
+      gridLayout.horizontalSpacing = 0;
+      gridLayout.verticalSpacing = convertVerticalDLUsToPixels(3);
+      gridLayout.marginWidth = 0;
+      gridLayout.marginHeight = 0;
+      gridLayout.numColumns = 1;
+      buttonComposite.setLayout(gridLayout);
+      gridData = new GridData(GridData.HORIZONTAL_ALIGN_END | GridData.VERTICAL_ALIGN_FILL | SWT.TOP);
+      buttonComposite.setLayoutData(gridData);
+      // Create the Delete button
+      deleteButton = new Button(buttonComposite, SWT.PUSH);
+      deleteButton.setText(CachePlugin
+          .getResourceString(_UI_BUTTON_DELETE_ENTRY));
+      gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_BEGINNING);
+      gridData.grabExcessHorizontalSpace = true;
+      deleteButton.setLayoutData(gridData);
+      deleteButton.addSelectionListener(new SelectionAdapter()
+      {
+        public void widgetSelected(SelectionEvent event)
+        {
+          if (MessageDialog
+              .openConfirm(
+                  Display.getDefault().getActiveShell(),
+                  CachePlugin.getResourceString(_UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_TITLE),
+                  CachePlugin.getResourceString(_UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_MESSAGE)))
+          {
+            String[] selectedEntries = entries.getSelection();
+            int numSelectedEntries = selectedEntries.length;
+
+            Cache cache = Cache.getInstance();
+            for (int i = 0; i < numSelectedEntries; i++)
+            {
+              cache.deleteEntry(selectedEntries[i]);
+            }
+            String[] cacheEntries = cache.getCachedURIs();
+            Arrays.sort(cacheEntries);
+            entries.setItems(cacheEntries);
+            setPreferenceWidgets();
+          }
+        }
+      });
+
+      // Create the Clear Cache button
+      clearButton = new Button(buttonComposite, SWT.PUSH);
+      clearButton.setText(CachePlugin.getResourceString(_UI_BUTTON_CLEAR_CACHE));
+      gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_BEGINNING);
+      gridData.grabExcessHorizontalSpace = true;
+      clearButton.setLayoutData(gridData);
+      clearButton.addSelectionListener(new SelectionAdapter()
+      {
+        public void widgetSelected(SelectionEvent event)
+        {
+          if (MessageDialog.openConfirm(Display.getDefault().getActiveShell(),
+              CachePlugin.getResourceString(_UI_CONFIRM_CLEAR_CACHE_DIALOG_TITLE),
+              CachePlugin.getResourceString(_UI_CONFIRM_CLEAR_CACHE_DIALOG_MESSAGE)))
+          {
+            Cache cache = Cache.getInstance();
+            cache.clear();
+            String[] cacheEntries = cache.getCachedURIs();
+            Arrays.sort(cacheEntries);
+            entries.setItems(cacheEntries);
+            setPreferenceWidgets();
+          }
+        }
+      });
+
+    } catch (Throwable e)
+    {
+      //TODO: Log error
+    }
+    setPreferenceWidgets();
+
+    return composite;
+  }
+
+  /**
+   * Set the preference page widgets. There are a few rules. 1. If disabled, all
+   * of the widgets are diabled except for the disabled check box. 2. If
+   * enabled, all widgets are enabled except a. The delete button is enabled
+   * only if there is a selection in the list. b. The clear button is enabled
+   * only if there are items in the list.
    */
   public void setPreferenceWidgets()
   {
-    if(composite != null && composite.getEnabled())
+    if (composite != null && composite.getEnabled())
     {
       // Cache is disabled.
-      if(enabledButton.getSelection())
+      if (enabledButton.getSelection())
       {
         deleteButton.setEnabled(false);
         clearButton.setEnabled(false);
-        entriesGroup.setEnabled(false);
         entries.setEnabled(false);
-      }
-      else
+      } else
       {
-        entriesGroup.setEnabled(true);
         entries.setEnabled(true);
-        if(entries.getSelectionCount() > 0)
+        if (entries.getSelectionCount() > 0)
         {
           deleteButton.setEnabled(true);
-        }
-        else
+        } else
         {
           deleteButton.setEnabled(false);
         }
-        if(entries.getItemCount() > 0)
+        if (entries.getItemCount() > 0)
         {
           clearButton.setEnabled(true);
-        }
-        else
+        } else
         {
           clearButton.setEnabled(false);
         }
       }
     }
   }
+
   /*
-	 * @see PreferencePage#createControl(Composite)
-	 */
-	public void createControl(Composite parent) {
-		super.createControl(parent);
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(), ContextIds.PREF); //$NON-NLS-1$
-	}
+   * @see PreferencePage#createControl(Composite)
+   */
+  public void createControl(Composite parent)
+  {
+    super.createControl(parent);
+    PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(), ContextIds.PREF); //$NON-NLS-1$
+  }
 }
