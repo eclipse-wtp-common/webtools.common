@@ -487,7 +487,7 @@ public class ArtifactEdit implements IEditModelHandler {
 		return isReadOnly;
 	}
 	
-/**
+	/**
 	 * Force all of the known resource URIs to be loaded
 	 * if they are not already.
 	 */
