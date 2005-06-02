@@ -66,29 +66,6 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 		// return false;
 	}
 
-	// TODO WTP:Implement this method
-	public IVirtualResource findMember(String name) {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		// return null;
-	}
-
-	// TODO WTP:Implement this method
-	public IVirtualResource findMember(String name, boolean includePhantoms) {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		// return null;
-	}
-
-	// TODO WTP:Implement this method
-	public IVirtualResource findMember(IPath path) {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		// return null;
-	}
-
-	// TODO WTP:Implement this method
-	public IVirtualResource findMember(IPath path, boolean includePhantoms) {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		// return null;
-	}
  
 	public int getType() {
 		return IVirtualResource.FOLDER;
