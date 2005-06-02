@@ -11,12 +11,12 @@
 package org.eclipse.wst.common.componentcore.internal.operation;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.resources.IFlexibleProject;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
-import org.eclipse.wst.common.frameworks.internal.operations.ProjectCreationDataModel;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
@@ -49,7 +49,7 @@ public abstract class ArtifactEditOperationDataModel extends WTPOperationDataMod
 	}
 
 	public IProject getTargetProject() {
-		return ProjectCreationDataModel.getProjectHandleFromProjectName(getStringProperty(PROJECT_NAME));
+		return ResourcesPlugin.getWorkspace().getRoot().getProject(getStringProperty(PROJECT_NAME));
 	}
 
 	protected Object getDefaultProperty(String propertyName) {
