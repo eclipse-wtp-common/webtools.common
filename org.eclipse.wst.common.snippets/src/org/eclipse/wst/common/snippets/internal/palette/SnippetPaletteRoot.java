@@ -24,7 +24,7 @@ import org.eclipse.wst.common.snippets.internal.model.SnippetManager;
 
 public class SnippetPaletteRoot extends PaletteRoot implements IEntryChangeListener {
 
-	protected SnippetDefinitions definitions = null;
+	protected SnippetDefinitions fDefinitions = null;
 
 	public SnippetPaletteRoot(SnippetDefinitions definitions) {
 		super();
@@ -47,7 +47,7 @@ public class SnippetPaletteRoot extends PaletteRoot implements IEntryChangeListe
 	 * @return Returns a SnippetDefinitions
 	 */
 	public SnippetDefinitions getDefinitions() {
-		return definitions;
+		return fDefinitions;
 	}
 
 
@@ -60,11 +60,11 @@ public class SnippetPaletteRoot extends PaletteRoot implements IEntryChangeListe
 	 */
 	public void setDefinitions(SnippetDefinitions newDefinitions) {
 		SnippetDefinitions oldDefinitions = getDefinitions();
-		this.definitions = newDefinitions;
+		this.fDefinitions = newDefinitions;
 		List oldChildren = null;
 		if (oldDefinitions != null)
 			oldChildren = oldDefinitions.getCategories();
-		this.children = definitions.getCategories();
+		this.children = fDefinitions.getCategories();
 		for (int i = 0; i < children.size(); i++) {
 			((PaletteEntry) children.get(i)).setParent(this);
 		}

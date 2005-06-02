@@ -27,18 +27,18 @@ import org.osgi.framework.Bundle;
 
 public class SnippetTemplateEntryPage extends DefaultEntryPage implements ModifyListener {
 	public static final Class DEFAULT_EDITOR_CLASS = VariableItemEditor.class;
-	protected SnippetsCustomizer customizer = null;
+	protected SnippetsCustomizer snippetsCustomizer = null;
 	protected ISnippetEditor editor = null;
 
 	public SnippetTemplateEntryPage(SnippetsCustomizer customizer) {
-		this.customizer = customizer;
+		this.snippetsCustomizer = customizer;
 	}
 
 	public void createControl(Composite parent, PaletteEntry entry) {
 		super.createControl(parent, entry);
 		editor = getEditor((ISnippetItem) entry);
 		if (editor != null) {
-			customizer.activeEditors.add(editor);
+			snippetsCustomizer.activeEditors.add(editor);
 			editor.addModifyListener(this);
 			editor.setItem((ISnippetItem) entry);
 			editor.createContents((Composite) getControl());
@@ -49,7 +49,7 @@ public class SnippetTemplateEntryPage extends DefaultEntryPage implements Modify
 	}
 
 	protected ISnippetEditor getEditor(ISnippetItem item) {
-		ISnippetEditor editor = null;
+		ISnippetEditor snippetEditor = null;
 
 		String editorClassName = item.getEditorClassName();
 
@@ -81,7 +81,7 @@ public class SnippetTemplateEntryPage extends DefaultEntryPage implements Modify
 			}
 			if (theClass != null) {
 				try {
-					editor = (ISnippetEditor) theClass.newInstance();
+					snippetEditor = (ISnippetEditor) theClass.newInstance();
 				}
 				catch (IllegalAccessException e) {
 					Logger.logException("Could not access ISnippetEditor class", e); //$NON-NLS-1$
@@ -92,16 +92,16 @@ public class SnippetTemplateEntryPage extends DefaultEntryPage implements Modify
 			}
 		}
 
-		if (editor == null && !editorSpecified) {
+		if (snippetEditor == null && !editorSpecified) {
 			try {
-				editor = (ISnippetEditor) DEFAULT_EDITOR_CLASS.newInstance();
+				snippetEditor = (ISnippetEditor) DEFAULT_EDITOR_CLASS.newInstance();
 			}
 			catch (IllegalAccessException e) {
 			}
 			catch (InstantiationException e) {
 			}
 		}
-		return editor;
+		return snippetEditor;
 	}
 
 	public void modifyText(ModifyEvent e) {
