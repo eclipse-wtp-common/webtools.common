@@ -25,7 +25,7 @@
       <uiContextSensitiveClass
             key="org.eclipse.wst.common.frameworks.internal.EnablementDetermination"
             context="Headless"
-            className="org.eclispe.wst.common.frameworks.internal.enablement.EnablementManager">
+            className="org.eclipse.wst.common.frameworks.internal.enablement.EnablementManager">
       </uiContextSensitiveClass>
    </extension>
 
