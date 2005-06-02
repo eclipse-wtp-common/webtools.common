@@ -768,8 +768,10 @@ public class WorkbenchContext implements IWorkbenchContext {
 	}
 
 	public String[] getURIs() {
-		// TODO Auto-generated method stub
-		return null;
+		String[] uris = new String[validationFileURIs.size()];
+		for(int i = 0; i < validationFileURIs.size(); i++) 
+			uris[i] = (String) validationFileURIs.get(i);
+		return uris;
 	}
 
 	/**
