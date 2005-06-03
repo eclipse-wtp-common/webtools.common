@@ -32,6 +32,7 @@ import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.properties.IFlexibleProjectCreationDataModelProperties;
+import org.eclipse.wst.common.frameworks.internal.FlexibleJavaProjectPreferenceUtil;
 
 public abstract class ComponentCreationOperation extends AbstractDataModelOperation implements IComponentCreationDataModelProperties {
 
@@ -44,8 +45,11 @@ public abstract class ComponentCreationOperation extends AbstractDataModelOperat
 		StructureEdit edit = null;
         try {
 			edit = StructureEdit.getStructureEditForWrite(getProject());
-            createAndLinkJ2EEComponents();
-			setupComponentType(componentType);
+			if(FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp())
+			    createAndLinkJ2EEComponentsForMultipleComponents();
+            else 
+                createAndLinkJ2EEComponentsForSingleComponent();
+            setupComponentType(componentType);
         }
         catch (CoreException e) {
             Logger.getLogger().log(e);
@@ -76,9 +80,12 @@ public abstract class ComponentCreationOperation extends AbstractDataModelOperat
         }
     }
 
-    // to make it abstract
-    protected abstract void createAndLinkJ2EEComponents() throws CoreException;
 
+    protected abstract void createAndLinkJ2EEComponentsForMultipleComponents() throws CoreException;
+    
+    protected abstract void createAndLinkJ2EEComponentsForSingleComponent() throws CoreException;
+    
+    
     protected void setupComponentType(String typeID) {
         IVirtualComponent component = ComponentCore.createComponent(getProject(), model.getStringProperty(ComponentCreationDataModelProvider.COMPONENT_DEPLOY_NAME));
         ComponentType componentType = ComponentcoreFactory.eINSTANCE.createComponentType();

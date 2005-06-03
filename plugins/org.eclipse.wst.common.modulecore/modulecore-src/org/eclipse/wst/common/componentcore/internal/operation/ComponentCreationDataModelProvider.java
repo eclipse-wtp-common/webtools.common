@@ -44,8 +44,11 @@ import org.eclipse.wst.server.core.IRuntimeType;
  */
 public abstract class ComponentCreationDataModelProvider extends AbstractDataModelProvider implements IComponentCreationDataModelProperties {
 
+    protected boolean isProjMultiComponents = false;
+    
 	public void init() {
 		super.init();
+        isProjMultiComponents = FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp();
 		initProjectCreationModel();
 	}
 
