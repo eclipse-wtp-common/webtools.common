@@ -118,11 +118,9 @@ public class ArtifactEditOperation extends WTPOperation {
 	 * @return Returns the commandStack.
 	 */
 	public CommandStack getCommandStack() {
-	    //TODO: reimplement for for artifact edit 
-//		if (commandStack == null && artifactEdit != null)
-//			commandStack = artifactEdit.getCommandStack();
-//		return commandStack;
-	    return null;
+		if (commandStack == null && artifactEdit != null)
+			commandStack = artifactEdit.getCommandStack();
+		return commandStack;
 	}
 
 	/**
