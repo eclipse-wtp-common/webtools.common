@@ -14,6 +14,7 @@ package org.eclipse.wst.common.snippets.internal.dnd;
 
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.wst.common.snippets.internal.VariableItemHelper;
 import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.ui.EntryDeserializer;
@@ -38,18 +39,18 @@ public class VariableTextDropAction extends AbstractDropAction {
 	/**
 	 * @see AbstractDropAction#run(DropTargetEvent, IExtendedSimpleEditor)
 	 */
-	public boolean run(DropTargetEvent event, IExtendedSimpleEditor targetEditor) {
+	public boolean run(DropTargetEvent event, IEditorPart targetEditor) {
 		boolean success = false;
 		if (event.data instanceof byte[]) {
 			final ISnippetItem item = getItemData(event);
 			final Shell shell = event.display.getActiveShell();
-			final IExtendedSimpleEditor editor = targetEditor;
+			final IEditorPart editor = targetEditor;
 			if (item != null) {
 				Runnable inserter = new Runnable() {
 					public void run() {
 						String insertion = getInsertString(shell, item);
 						insert(insertion, editor);
-						editor.getEditorPart().setFocus();
+						editor.setFocus();
 					}
 				};
 				shell.getDisplay().asyncExec(inserter);
