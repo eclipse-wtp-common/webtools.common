@@ -16,7 +16,6 @@ public interface IProjectCreationProperties {
 	 * A required dataModel propertyName for a <code>java.lang.String</code> type. This is used to
 	 * specify the project name.
 	 */
-	//public static final String PROJECT_NAME = "ProjectCreationDataModel.PROJECT_NAME"; //$NON-NLS-1$
 	public static final String PROJECT_NAME = "IProjectCreationProperties.PROJECT_NAME"; //$NON-NLS-1$
 
 	/**
@@ -25,7 +24,6 @@ public interface IProjectCreationProperties {
 	 * system path, or a relative path whose first segment is the name of a defined workspace path
 	 * variable. The default value is the workspace's default location.
 	 */
-	//public static final String PROJECT_LOCATION = "ProjectCreationDataModel.PROJECT_LOCATION"; //$NON-NLS-1$
 	public static final String PROJECT_LOCATION = "IProjectCreationProperties.PROJECT_LOCATION"; //$NON-NLS-1$
 
 
@@ -33,7 +31,7 @@ public interface IProjectCreationProperties {
 	 * An optional dataModel propertyName for a <code>java.lang.String[]</code> type. This is a
 	 * list of all natures to add to the project. There is no default value.
 	 */
-	public static final String PROJECT_NATURES = "ProjectCreationDataModel.PROJECT_NATURES"; //$NON-NLS-1$
+	public static final String PROJECT_NATURES = "IProjectCreationProperties.PROJECT_NATURES"; //$NON-NLS-1$
 
 	/**
 	 * IProject. An non settable property. This is a conveniece for constructiong getting the
