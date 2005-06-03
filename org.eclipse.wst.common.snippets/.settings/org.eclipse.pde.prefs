@@ -1,5 +1,5 @@
-#Fri May 27 23:56:32 EDT 2005
-compilers.p.deprecated=1
+#Thu Jun 02 01:08:36 EDT 2005
+compilers.p.deprecated=0
 compilers.p.illegal-att-value=0
 compilers.p.no-required-att=0
 compilers.p.not-externalized-att=1
