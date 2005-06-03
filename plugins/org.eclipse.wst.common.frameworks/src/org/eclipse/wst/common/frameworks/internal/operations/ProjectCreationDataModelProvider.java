@@ -35,7 +35,7 @@ import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 public class ProjectCreationDataModelProvider extends AbstractDataModelProvider implements IProjectCreationProperties {
 
 	public IDataModelOperation getDefaultOperation() {
-		return new ProjectCreationOp(model);
+		return new ProjectCreationOperation(model);
 	}
     public void init() {
         super.init();

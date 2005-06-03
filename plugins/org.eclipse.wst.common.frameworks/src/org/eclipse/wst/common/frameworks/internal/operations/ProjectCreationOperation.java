@@ -28,9 +28,9 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
-public class ProjectCreationOp extends AbstractDataModelOperation {
+public class ProjectCreationOperation extends AbstractDataModelOperation {
 
-	public ProjectCreationOp(IDataModel dataModel) {
+	public ProjectCreationOperation(IDataModel dataModel) {
 		super(dataModel);
 	}
 
