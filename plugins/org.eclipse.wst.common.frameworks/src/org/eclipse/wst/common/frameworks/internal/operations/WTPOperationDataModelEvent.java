@@ -11,7 +11,7 @@
 package org.eclipse.wst.common.frameworks.internal.operations;
 
 /**
- * @deprecated replace with {@link org.eclipse.wst.common.frameworks.datamodel.DataModelEvent}
+ * replace with {@link org.eclipse.wst.common.frameworks.datamodel.DataModelEvent}
  * This event is used to communicate property changes from WTPOperationDataModels to their
  * WTPOperationDataModelListeners.
  * 

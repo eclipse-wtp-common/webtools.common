@@ -9,7 +9,7 @@
 package org.eclipse.wst.common.frameworks.internal.operations;
 
 /**
- * @deprecated replace with {@link org.eclipse.wst.common.frameworks.datamodel.IDataModelListener}
+ * replace with {@link org.eclipse.wst.common.frameworks.datamodel.IDataModelListener}
  * Clients wishing to register with a WTPOperationData to receive WTPOperationDataModelEvents need
  * to implement this interface.
  * 

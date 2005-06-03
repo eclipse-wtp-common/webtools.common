@@ -32,10 +32,8 @@ import org.eclipse.wst.common.frameworks.internal.enablement.IEnablementManager;
 import org.eclipse.wst.common.frameworks.internal.enablement.nonui.WFTWrappedException;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
-// TODO perhaps this class should be subclassed from a new super class which more closely resembles
-// org.eclipse.ui.actions.WorkspaceModifyOperation
 /**
- * @deprecated replace with {@link org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation}
+ * replace with {@link org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation}
  * An operation which potentially makes changes to the workspace. All resource modification should
  * be performed using this operation. The primary consequence of using this operation is that events
  * which typically occur as a result of workspace changes (such as the firing of resource deltas,
