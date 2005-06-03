@@ -440,15 +440,15 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		if (null == providerOp) {
 			providerOp = new AbstractDataModelOperation(this) {
 				public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-					return null;
+					return OK_STATUS;
 				}
 
 				public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-					return null;
+					return OK_STATUS;
 				}
 
 				public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-					return null;
+					return OK_STATUS;
 				}
 			};
 		}
