@@ -9,9 +9,7 @@
 
 package org.eclipse.wst.common.frameworks.internal.ui;
 
-import java.lang.reflect.InvocationTargetException;
 
-import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.wst.common.frameworks.internal.operations.IHeadlessRunnableWithProgress;
 
 /**
