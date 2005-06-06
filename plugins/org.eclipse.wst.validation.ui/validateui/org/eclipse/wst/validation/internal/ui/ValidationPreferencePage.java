@@ -41,7 +41,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
-import org.eclipse.ui.help.WorkbenchHelp;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.GlobalConfiguration;
@@ -108,7 +108,7 @@ public class ValidationPreferencePage extends PreferencePage implements IWorkben
 			sc1.setContent(composite);
 			layout = new GridLayout();
 			composite.setLayout(layout);
-			WorkbenchHelp.setHelp(composite, ContextIds.VALIDATION_PROPERTIES_PAGE);
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(composite, ContextIds.VALIDATION_PROPERTIES_PAGE);
 
 			messageLabel = new Label(composite, SWT.NONE);
 			messageLabel.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INVALID_REGISTER));
@@ -406,13 +406,13 @@ public class ValidationPreferencePage extends PreferencePage implements IWorkben
 			composite = new Composite(sc1, SWT.NONE);
 			sc1.setContent(composite);
 			composite.setLayout(new GridLayout()); // use the layout's default preferences
-			WorkbenchHelp.setHelp(composite, ContextIds.VALIDATION_PREFERENCE_PAGE);
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(composite, ContextIds.VALIDATION_PREFERENCE_PAGE);
 
 			Composite validatorGroup = new Composite(composite, SWT.NONE);
 			GridLayout validatorGroupLayout = new GridLayout();
 			validatorGroupLayout.numColumns = 2;
 			validatorGroup.setLayout(validatorGroupLayout);
-			WorkbenchHelp.setHelp(validatorGroup, ContextIds.VALIDATION_PREFERENCE_PAGE);
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(validatorGroup, ContextIds.VALIDATION_PREFERENCE_PAGE);
 
 			GridData overrideData = new GridData(GridData.FILL_HORIZONTAL);
 			overrideData.horizontalSpan = 2;
@@ -430,7 +430,7 @@ public class ValidationPreferencePage extends PreferencePage implements IWorkben
 					}
 				}
 			});
-			WorkbenchHelp.setHelp(overrideButton, ContextIds.VALIDATION_PREFERENCE_PAGE_OVERRIDE);
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(overrideButton, ContextIds.VALIDATION_PREFERENCE_PAGE_OVERRIDE);
 
 			emptyRowPlaceholder = new Label(validatorGroup, SWT.NONE);
 			emptyRowPlaceholder.setLayoutData(new GridData());
@@ -504,7 +504,7 @@ public class ValidationPreferencePage extends PreferencePage implements IWorkben
 					}
 				}
 			});
-			WorkbenchHelp.setHelp(selectAllButton, ContextIds.VALIDATION_PREFERENCE_PAGE);
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(selectAllButton, ContextIds.VALIDATION_PREFERENCE_PAGE);
 
 			deselectAllButton = new Button(validatorGroup, SWT.PUSH);
 			deselectAllButton.setLayoutData(new GridData());
@@ -518,7 +518,7 @@ public class ValidationPreferencePage extends PreferencePage implements IWorkben
 					}
 				}
 			});
-			WorkbenchHelp.setHelp(deselectAllButton, ContextIds.VALIDATION_PREFERENCE_PAGE);
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(deselectAllButton, ContextIds.VALIDATION_PREFERENCE_PAGE);
 
 			Composite buttonGroup = new Composite(composite, SWT.NONE);
 			GridLayout buttonGroupLayout = new GridLayout();
@@ -557,7 +557,7 @@ public class ValidationPreferencePage extends PreferencePage implements IWorkben
 					}
 				}
 			});
-			WorkbenchHelp.setHelp(maxValProblemsField, ContextIds.VALIDATION_PREFERENCE_PAGE_MAX_MESSAGES);
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(maxValProblemsField, ContextIds.VALIDATION_PREFERENCE_PAGE_MAX_MESSAGES);
 
 			// Have to set the tab order or only the first checkbox in a Composite can
 			// be tab-ed to. (Seems to apply only to checkboxes. Have to use the arrow
@@ -662,11 +662,11 @@ public class ValidationPreferencePage extends PreferencePage implements IWorkben
 		protected void updateHelp() {
 			// never disable this widget because users don't expect the preference page to alter
 			// based on workbench contents
-			WorkbenchHelp.setHelp(valWhenBuildButton, ContextIds.VALIDATION_PREFERENCE_PAGE_REBUILD_ENABLED);
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(valWhenBuildButton, ContextIds.VALIDATION_PREFERENCE_PAGE_REBUILD_ENABLED);
 
 			// never disable this widget because users don't expect the preference page to alter
 			// based on workbench contents
-			WorkbenchHelp.setHelp(valWhenAutoBuildButton, ContextIds.VALIDATION_PREFERENCE_PAGE_AUTO_ENABLED);
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(valWhenAutoBuildButton, ContextIds.VALIDATION_PREFERENCE_PAGE_AUTO_ENABLED);
 		}
 
 		/*

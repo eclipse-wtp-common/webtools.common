@@ -23,7 +23,7 @@ import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 //TODO delete
 /**
- * @deprecated
+ * 
  *
  */
 public abstract class ArtifactEditOperationDataModel extends WTPOperationDataModel {

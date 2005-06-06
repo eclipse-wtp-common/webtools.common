@@ -39,8 +39,8 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PropertyPage;
-import org.eclipse.ui.help.WorkbenchHelp;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.GlobalConfiguration;
@@ -117,7 +117,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 			sc1.setContent(composite);
 			layout = new GridLayout();
 			composite.setLayout(layout);
-			WorkbenchHelp.setHelp(composite, ContextIds.VALIDATION_PROPERTIES_PAGE);
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(composite, ContextIds.VALIDATION_PROPERTIES_PAGE);
 
 			messageLabel = new Label(composite, SWT.NONE);
 			messageLabel.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INVALID_REGISTER));
@@ -178,7 +178,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 			composite.setLayout(layout);
 			data = new GridData(GridData.VERTICAL_ALIGN_FILL | GridData.HORIZONTAL_ALIGN_FILL);
 			composite.setLayoutData(data);
-			WorkbenchHelp.setHelp(composite, ContextIds.VALIDATION_PROPERTIES_PAGE);
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(composite, ContextIds.VALIDATION_PROPERTIES_PAGE);
 
 			messageLabel = new Label(composite, SWT.NONE);
 			String[] msgParm = {getProject().getName()};
@@ -492,7 +492,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 					}
 				}
 			});
-			WorkbenchHelp.setHelp(selectAllButton, ContextIds.VALIDATION_PROPERTIES_PAGE);
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(selectAllButton, ContextIds.VALIDATION_PROPERTIES_PAGE);
 
 
 			GridData deselectData = new GridData();
@@ -508,7 +508,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 					}
 				}
 			});
-			WorkbenchHelp.setHelp(deselectAllButton, ContextIds.VALIDATION_PROPERTIES_PAGE);
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(deselectAllButton, ContextIds.VALIDATION_PROPERTIES_PAGE);
 
 			Composite maxGroup = new Composite(page, SWT.NONE);
 			GridLayout maxGroupLayout = new GridLayout();
@@ -550,7 +550,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 					}
 				}
 			});
-			WorkbenchHelp.setHelp(maxValProblemsField, ContextIds.VALIDATION_PROPERTIES_PAGE_MAX_MESSAGES);
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(maxValProblemsField, ContextIds.VALIDATION_PROPERTIES_PAGE_MAX_MESSAGES);
 
 			// Have to set the tab order or only the first checkbox in a Composite can
 			// be tab-ed to. (Seems to apply only to checkboxes. Have to use the arrow
@@ -676,8 +676,8 @@ public class ValidationPropertiesPage extends PropertyPage {
 
 			if (autoButton.getEnabled()) {
 				// set the table's help back to what it was
-				WorkbenchHelp.setHelp(validatorList.getTable(), ContextIds.VALIDATION_PROPERTIES_PAGE);
-				WorkbenchHelp.setHelp(autoButton, ContextIds.VALIDATION_PROPERTIES_PAGE_AUTO_ENABLED);
+				PlatformUI.getWorkbench().getHelpSystem().setHelp(validatorList.getTable(), ContextIds.VALIDATION_PROPERTIES_PAGE);
+				PlatformUI.getWorkbench().getHelpSystem().setHelp(autoButton, ContextIds.VALIDATION_PROPERTIES_PAGE_AUTO_ENABLED);
 			} else {
 				// The order of the following if statement is important!
 				// If the user cannot enable automatic validation on the project, then the user
@@ -687,12 +687,12 @@ public class ValidationPropertiesPage extends PropertyPage {
 				// supports auto-validate, THEN check for the items which the user can change.
 				validatorList.getTable().setFocus();
 				if (pagePreferences.numberOfIncrementalValidators() == 0) {
-					WorkbenchHelp.setHelp(validatorList.getTable(), ContextIds.VALIDATION_PROPERTIES_PAGE_DISABLED_AUTO_NOINCVALCONFIG);
+					PlatformUI.getWorkbench().getHelpSystem().setHelp(validatorList.getTable(), ContextIds.VALIDATION_PROPERTIES_PAGE_DISABLED_AUTO_NOINCVALCONFIG);
 				} else if (!ValidatorManager.getManager().isGlobalAutoBuildEnabled()) {
-					WorkbenchHelp.setHelp(validatorList.getTable(), ContextIds.VALIDATION_PROPERTIES_PAGE_DISABLED_AUTO_AUTOBUILD);
+					PlatformUI.getWorkbench().getHelpSystem().setHelp(validatorList.getTable(), ContextIds.VALIDATION_PROPERTIES_PAGE_DISABLED_AUTO_AUTOBUILD);
 				} else {
 					// Incremental validators configured but not selected
-					WorkbenchHelp.setHelp(validatorList.getTable(), ContextIds.VALIDATION_PROPERTIES_PAGE_DISABLED_AUTO_NOINCVALSELECTED);
+					PlatformUI.getWorkbench().getHelpSystem().setHelp(validatorList.getTable(), ContextIds.VALIDATION_PROPERTIES_PAGE_DISABLED_AUTO_NOINCVALSELECTED);
 				}
 			}
 
@@ -700,11 +700,11 @@ public class ValidationPropertiesPage extends PropertyPage {
 			if (valWhenBuildButton.getEnabled()) {
 				// Do NOT set the table's help back to what it was.
 				// Only if auto-validate is enabled should the page go back.
-				WorkbenchHelp.setHelp(valWhenBuildButton, ContextIds.VALIDATION_PROPERTIES_PAGE_REBUILD_ENABLED);
+				PlatformUI.getWorkbench().getHelpSystem().setHelp(valWhenBuildButton, ContextIds.VALIDATION_PROPERTIES_PAGE_REBUILD_ENABLED);
 			} else {
 				//				page.getParent().setFocus();
 				validatorList.getTable().setFocus();
-				WorkbenchHelp.setHelp(validatorList.getTable(), ContextIds.VALIDATION_PROPERTIES_PAGE_DISABLED_BUILD_NOVALSELECTED);
+				PlatformUI.getWorkbench().getHelpSystem().setHelp(validatorList.getTable(), ContextIds.VALIDATION_PROPERTIES_PAGE_DISABLED_BUILD_NOVALSELECTED);
 			}
 
 			// if the override button is disabled, show its "to enable" text.
@@ -718,28 +718,28 @@ public class ValidationPropertiesPage extends PropertyPage {
 				if (doesProjectSupportBuildValidation) {
 					// Project supports build validation, so it doesn't matter what the preferences
 					// are
-					WorkbenchHelp.setHelp(overrideGlobalButton, ContextIds.VALIDATION_PROPERTIES_PAGE_OVERRIDE_ENABLED);
+					PlatformUI.getWorkbench().getHelpSystem().setHelp(overrideGlobalButton, ContextIds.VALIDATION_PROPERTIES_PAGE_OVERRIDE_ENABLED);
 				} else if (!doesProjectSupportBuildValidation && (isPrefAuto && isPrefManual)) {
 					// Project doesn't support build validation, and the user prefers both auto and
 					// manual build validation
-					WorkbenchHelp.setHelp(overrideGlobalButton, ContextIds.VALIDATION_PROPERTIES_PAGE_OVERRIDE_ENABLED_CANNOT_HONOUR_BOTH);
+					PlatformUI.getWorkbench().getHelpSystem().setHelp(overrideGlobalButton, ContextIds.VALIDATION_PROPERTIES_PAGE_OVERRIDE_ENABLED_CANNOT_HONOUR_BOTH);
 				} else if (!doesProjectSupportBuildValidation && isPrefAuto) {
 					// Project doesn't support build validation, and the user prefers auto build
 					// validation
-					WorkbenchHelp.setHelp(overrideGlobalButton, ContextIds.VALIDATION_PROPERTIES_PAGE_OVERRIDE_ENABLED_CANNOT_HONOUR_AUTO);
+					PlatformUI.getWorkbench().getHelpSystem().setHelp(overrideGlobalButton, ContextIds.VALIDATION_PROPERTIES_PAGE_OVERRIDE_ENABLED_CANNOT_HONOUR_AUTO);
 				} else if (!doesProjectSupportBuildValidation && isPrefManual) {
 					// Project doesn't support build validation, and the user prefers manual build
 					// validation
-					WorkbenchHelp.setHelp(overrideGlobalButton, ContextIds.VALIDATION_PROPERTIES_PAGE_OVERRIDE_ENABLED_CANNOT_HONOUR_MANUAL);
+					PlatformUI.getWorkbench().getHelpSystem().setHelp(overrideGlobalButton, ContextIds.VALIDATION_PROPERTIES_PAGE_OVERRIDE_ENABLED_CANNOT_HONOUR_MANUAL);
 				} else if (!doesProjectSupportBuildValidation && !isPrefAuto && !isPrefManual) {
 					// Project doesn't support build validation, but that doesn't matter because the
 					// user prefers no build validation.
-					WorkbenchHelp.setHelp(overrideGlobalButton, ContextIds.VALIDATION_PROPERTIES_PAGE_OVERRIDE_ENABLED);
+					PlatformUI.getWorkbench().getHelpSystem().setHelp(overrideGlobalButton, ContextIds.VALIDATION_PROPERTIES_PAGE_OVERRIDE_ENABLED);
 				}
 			} else {
 				validatorList.getTable().setFocus();
 				// Preference page doesn't allow projects to override
-				WorkbenchHelp.setHelp(validatorList.getTable(), ContextIds.VALIDATION_PROPERTIES_PAGE_DISABLED_OVERRIDE);
+				PlatformUI.getWorkbench().getHelpSystem().setHelp(validatorList.getTable(), ContextIds.VALIDATION_PROPERTIES_PAGE_DISABLED_OVERRIDE);
 			}
 		}
 

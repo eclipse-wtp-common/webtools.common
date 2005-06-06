@@ -16,7 +16,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.ui.help.WorkbenchHelp;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelListener;
@@ -125,7 +125,7 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 	 */
 	protected void setupInfopop(Control parent) {
 		if (getInfopopID() != null)
-			WorkbenchHelp.setHelp(parent, getInfopopID());
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, getInfopopID());
 	}
 
 	/**
