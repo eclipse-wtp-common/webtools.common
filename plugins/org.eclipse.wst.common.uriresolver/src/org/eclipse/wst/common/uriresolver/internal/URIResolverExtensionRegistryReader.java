@@ -17,16 +17,14 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IPluginRegistry;
+import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverPlugin;
 
 /**
  * @author csalter
  *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
+*/
 public class URIResolverExtensionRegistryReader {
 
 		protected static final String EXTENSION_POINT_ID = "resolverExtensions";
@@ -39,7 +37,7 @@ public class URIResolverExtensionRegistryReader {
 	    protected static final String VAL_STAGE_PRE = "prenormalization";
 	    protected static final String VAL_STAGE_POST = "postnormalization";
 	    protected static final String ATT_VALUE = "value";
-      protected static final String ATT_PRIORITY = "priority";
+       protected static final String ATT_PRIORITY = "priority";
 	   
 
 		protected URIResolverExtensionRegistry registry;
@@ -52,8 +50,8 @@ public class URIResolverExtensionRegistryReader {
 		 * read from plugin registry and parse it.
 		 */
 		public void readRegistry() {
-			IPluginRegistry pluginRegistry = Platform.getPluginRegistry();
-			IExtensionPoint point = pluginRegistry.getExtensionPoint(URIResolverPlugin.getInstance().getDescriptor().getUniqueIdentifier(), EXTENSION_POINT_ID);
+			IExtensionRegistry pluginRegistry = Platform.getExtensionRegistry();
+		    IExtensionPoint point = pluginRegistry.getExtensionPoint(URIResolverPlugin.getInstance().getBundle().getSymbolicName(), EXTENSION_POINT_ID);
 			if (point != null) {
 				IConfigurationElement[] elements = point.getConfigurationElements();
 				for (int i = 0; i < elements.length; i++) {

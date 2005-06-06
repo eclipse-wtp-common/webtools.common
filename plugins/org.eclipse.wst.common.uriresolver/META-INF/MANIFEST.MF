@@ -8,7 +8,8 @@ Bundle-Activator: org.eclipse.core.internal.compatibility.PluginActivator
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
 Export-Package: org.eclipse.wst.common.uriresolver.internal,
- org.eclipse.wst.common.uriresolver.internal.provisional
+ org.eclipse.wst.common.uriresolver.internal.provisional,
+  org.eclipse.wst.common.uriresolver.internal.util
 Require-Bundle: org.eclipse.core.runtime.compatibility,
  org.eclipse.core.runtime,
  org.eclipse.core.resources
