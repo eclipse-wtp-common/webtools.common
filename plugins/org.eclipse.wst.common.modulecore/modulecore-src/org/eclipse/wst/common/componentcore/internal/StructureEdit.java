@@ -95,18 +95,19 @@ public class StructureEdit implements IEditModelHandler {
 	/**
 	 * 
 	 * <p>
-	 * Each ModuleCore edit facade is tied to a specific project. A project may have multiple
-	 * ModuleCore edit facades live at any given time.
+	 * Each ModuleCore edit facade is tied to a specific project. A project
+	 * may have multiple ModuleCore edit facades live at any given time.
 	 * </p>
 	 * <p>
-	 * Use to acquire a ModuleCore facade for a specific project that will not be used for editing.
-	 * Invocations of any save*() API on an instance returned from This method will throw
-	 * exceptions.
+	 * Use to acquire a ModuleCore facade for a specific project that will not
+	 * be used for editing. Invocations of any save*() API on an instance
+	 * returned from This method will throw exceptions.
 	 * </p>
 	 * 
 	 * @param aProject
 	 *            The IProject that contains the WTP Modules model to load
-	 * @return A ModuleCore edit facade to access the WTP Modules Model
+	 * @return A ModuleCore edit facade to access the WTP Modules Model, null
+	 *         for non-flexible projects
 	 */
 	public static StructureEdit getStructureEditForRead(IProject aProject) {
 		ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(aProject);
