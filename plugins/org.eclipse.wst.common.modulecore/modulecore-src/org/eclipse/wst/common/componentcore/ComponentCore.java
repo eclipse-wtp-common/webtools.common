@@ -138,23 +138,27 @@ public class ComponentCore {
 		List foundResources = new ArrayList();
 		try {
 			se = StructureEdit.getStructureEditForRead(proj);
-			ComponentResource[] resources = se
-					.findResourcesBySourcePath(aResource
-							.getProjectRelativePath(),aResource.exists() ? ResourceTreeNode.CREATE_NONE:ResourceTreeNode.CREATE_RESOURCE_ALWAYS);
-			for (int i = 0; i < resources.length; i++) {
-				if (aResource.getType() == IResource.FILE)
-					foundResources.add(new VirtualFile(proj, resources[i]
-							.getComponent().getName(), resources[i]
-							.getRuntimePath()));
-				else
-					foundResources.add(new VirtualFolder(proj, resources[i]
-							.getComponent().getName(), resources[i]
-							.getRuntimePath()));
+			if(se != null) {
+				ComponentResource[] resources = se
+						.findResourcesBySourcePath(aResource
+								.getProjectRelativePath(),aResource.exists() ? ResourceTreeNode.CREATE_NONE:ResourceTreeNode.CREATE_RESOURCE_ALWAYS);
+				for (int i = 0; i < resources.length; i++) {
+					if (aResource.getType() == IResource.FILE)
+						foundResources.add(new VirtualFile(proj, resources[i]
+								.getComponent().getName(), resources[i]
+								.getRuntimePath()));
+					else
+						foundResources.add(new VirtualFolder(proj, resources[i]
+								.getComponent().getName(), resources[i]
+								.getRuntimePath()));
+				}
 			}
 		} catch (UnresolveableURIException e) {
 			e.printStackTrace();
 		} finally {
-			se.dispose();
+			if(se != null) {
+				se.dispose();
+			}
 		}
 		if (foundResources.size() > 0)
 			return (IVirtualResource[]) foundResources
