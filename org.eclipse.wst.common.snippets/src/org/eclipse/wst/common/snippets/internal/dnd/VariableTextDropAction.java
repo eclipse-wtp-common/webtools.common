@@ -19,7 +19,6 @@ import org.eclipse.wst.common.snippets.internal.VariableItemHelper;
 import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.ui.EntryDeserializer;
 import org.eclipse.wst.sse.ui.internal.AbstractDropAction;
-import org.eclipse.wst.sse.ui.internal.IExtendedSimpleEditor;
 
 public class VariableTextDropAction extends AbstractDropAction {
 
@@ -37,7 +36,7 @@ public class VariableTextDropAction extends AbstractDropAction {
 	}
 
 	/**
-	 * @see AbstractDropAction#run(DropTargetEvent, IExtendedSimpleEditor)
+	 * @see AbstractDropAction#run(DropTargetEvent, IEditorPart)
 	 */
 	public boolean run(DropTargetEvent event, IEditorPart targetEditor) {
 		boolean success = false;
