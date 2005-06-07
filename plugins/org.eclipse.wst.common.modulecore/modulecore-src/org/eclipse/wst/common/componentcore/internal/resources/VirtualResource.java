@@ -234,6 +234,8 @@ public abstract class VirtualResource implements IVirtualResource {
 	
 	protected void createResource(IContainer resource, int updateFlags, IProgressMonitor monitor) throws CoreException {
 
+		if( resource.exists() )
+			return;
 		if (!resource.getParent().exists())
 			createResource(resource.getParent(), updateFlags, monitor);
 		if (!resource.exists() && resource.getType() == IResource.FOLDER) { 
