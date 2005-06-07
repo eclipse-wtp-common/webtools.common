@@ -11,7 +11,7 @@
 
 package org.eclipse.wst.internet.cache.internal;
 
-import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverExtension;
 import org.eclipse.wst.common.uriresolver.internal.util.URIHelper;
 
@@ -25,7 +25,7 @@ public class CacheURIResolverExtension implements URIResolverExtension
 	/**
 	 * @see org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverExtension#resolve(org.eclipse.core.resources.IProject, java.lang.String, java.lang.String, java.lang.String)
 	 */
-	public String resolve(IProject project, String baseLocation, String publicId, String systemId)
+	public String resolve(IFile file, String baseLocation, String publicId, String systemId)
 	{ 
     if(CachePlugin.getDefault().isCacheEnabled())
     {

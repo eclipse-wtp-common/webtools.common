@@ -12,12 +12,12 @@
 */
 package org.eclipse.wst.common.uriresolver.internal.provisional;
 
-import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IFile;
 
 /**
  * An extension to augment the behaviour of a URIResolver.  Extensions are project aware
  * so that they can apply specialized project specific resolving rules. 
  */
 public interface URIResolverExtension {
-	public String resolve(IProject project, String baseLocation, String publicId, String systemId);
+	public String resolve(IFile file, String baseLocation, String publicId, String systemId);
 }

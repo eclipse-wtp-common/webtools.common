@@ -14,7 +14,6 @@ package org.eclipse.wst.common.uriresolver.internal;
 
 import java.util.Iterator;
 import java.util.List;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -51,7 +50,8 @@ public class ExtensibleURIResolver implements URIResolver
 
 		// compute the project that holds the resource
 		//
-		IProject project = computeProject(baseLocation);
+    IFile file = computeFile(baseLocation);
+		IProject project =  file != null ? file.getProject() : null;
 		String fileName = null; // todo.. get the file name for systemId
 
 		URIResolverExtensionRegistry resolverRegistry = URIResolverExtensionRegistry.getIntance();
@@ -63,7 +63,7 @@ public class ExtensibleURIResolver implements URIResolver
 		for (Iterator i = resolverRegistry.getMatchingURIResolvers(list, URIResolverExtensionRegistry.STAGE_PRENORMALIZATION).iterator(); i.hasNext();)
 		{
 			URIResolverExtension resolver = (URIResolverExtension) i.next();
-			String tempresult = resolver.resolve(project, baseLocation, publicId, result);
+			String tempresult = resolver.resolve(file, baseLocation, publicId, result);
 			if(tempresult != null)
 			{
 			  result = tempresult;
@@ -80,7 +80,7 @@ public class ExtensibleURIResolver implements URIResolver
 		for (Iterator i = resolverRegistry.getMatchingURIResolvers(list, URIResolverExtensionRegistry.STAGE_POSTNORMALIZATION).iterator(); i.hasNext();)
 		{
 			URIResolverExtension resolver = (URIResolverExtension) i.next();
-			String tempresult = resolver.resolve(project, baseLocation, publicId, result);
+			String tempresult = resolver.resolve(file, baseLocation, publicId, result);
 			if(tempresult != null)
 			{
 			  result = tempresult;
@@ -113,22 +113,19 @@ public class ExtensibleURIResolver implements URIResolver
 		return result;
 	}
 
-	protected IProject computeProject(String baseLocation)
-	{
-	  if(baseLocation != null)
-	  {
-		String pattern = "file:///";
-		if (baseLocation.startsWith(pattern))
-		{
-			baseLocation = baseLocation.substring(pattern.length());
-		}
-		IPath path = new Path(baseLocation);
-		//path = path.removeFirstSegments(1);
-		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
-		//IContainer c =
-		// ResourcesPlugin.getWorkspace().getRoot().getContainerForLocation(path);
-		return file != null ? file.getProject() : null;
-	  }
-	  return null;
-	}
+  protected IFile computeFile(String baseLocation)
+  {
+    IFile file = null;
+    if (baseLocation != null)
+    {
+      String pattern = "file:///";
+      if (baseLocation.startsWith(pattern))
+      {
+        baseLocation = baseLocation.substring(pattern.length());
+      }
+      IPath path = new Path(baseLocation);
+      file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
+    }
+    return file;    
+  }
 }
