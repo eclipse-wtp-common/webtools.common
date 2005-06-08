@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.datamodel.properties.ICreateReferenceComponentsDataModelProperties;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
@@ -24,9 +27,28 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 	
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		addReferencedComponents(monitor);
+		addProjectReferences();
 		return OK_STATUS;
 	}
-
+	private void addProjectReferences() {
+		
+		ComponentHandle handle = (ComponentHandle) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT_HANDLE);
+		IProject sourceProject = handle.getProject();
+		List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_HANDLE_LIST);
+		List targetprojectList = new ArrayList();
+		for( int i=0; i< modList.size(); i++){
+			ComponentHandle targethandle = (ComponentHandle) modList.get(i);
+			IProject targetProject = targethandle.getProject();
+			targetprojectList.add(targetProject);
+		}
+		try {
+			ProjectUtilities.addReferenceProjects(sourceProject,targetprojectList);
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	protected void addReferencedComponents(IProgressMonitor monitor) {
 		
 		ComponentHandle sourceHandle = (ComponentHandle) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT_HANDLE);
