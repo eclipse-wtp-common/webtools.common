@@ -13,10 +13,6 @@ Export-Package: org.eclipse.wst.common.ui.internal,
  org.eclipse.wst.common.ui.internal.viewers
 Require-Bundle: org.eclipse.core.runtime.compatibility,
  org.eclipse.ui.ide,
- org.eclipse.ui.views,
- org.eclipse.jface.text,
- org.eclipse.ui.workbench.texteditor,
- org.eclipse.ui.editors,
  org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources
