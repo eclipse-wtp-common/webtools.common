@@ -17,5 +17,6 @@ Export-Package: .,
  org.eclipse.wst.validation.internal.provisional.core
 Require-Bundle: org.eclipse.core.resources,
  org.eclipse.wst.common.frameworks,
+ org.eclipse.jem.util,
  org.eclipse.core.runtime
 Eclipse-AutoStart: true

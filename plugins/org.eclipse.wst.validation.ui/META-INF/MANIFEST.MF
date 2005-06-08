@@ -17,5 +17,6 @@ Require-Bundle: org.eclipse.ui.ide,
  org.eclipse.wst.common.frameworks.ui,
  org.eclipse.core.runtime,
  org.eclipse.wst.common.frameworks,
- org.eclipse.wst.validation
+ org.eclipse.wst.validation,
+ org.eclipse.jem.util
 Eclipse-AutoStart: true
