@@ -12,6 +12,7 @@ package org.eclipse.wst.common.componentcore.resources;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 
@@ -147,6 +148,10 @@ public class ComponentHandle {
 							.equals(other.getName()));
 		}
 		return false;
+	}
+
+	public IVirtualComponent createComponent() {
+		return ComponentCore.createComponent(getProject(),getName());
 	}
 
 }

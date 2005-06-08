@@ -893,7 +893,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 		boolean processed = false;
 		for (int i = 0; i < size; i++) {
 			res = (Resource) someResources.get(i);
-			if (isInterrestedInResource(res)) {
+			if ((res != null) && (isInterrestedInResource(res))) {
 				processResource(res);
 				processed = true;
 			}
