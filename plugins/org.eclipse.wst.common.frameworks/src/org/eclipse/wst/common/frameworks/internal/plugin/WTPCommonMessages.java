@@ -44,4 +44,6 @@ public class WTPCommonMessages {
 	public static final String ERR_INVALID_CHARS = "35"; //$NON-NLS-1$ 
 	public static final String DUPLICATE_COMPONENT_NAME="36";//$NON-NLS-1$ 
 	public static final String MODULE_NOT_SUPPORTED="37";//$NON-NLS-1$ 
+    
+    public static final String MODULE_EXISTS_ERROR = "38"; //$NON-NLS-1$
 }
