@@ -14,9 +14,7 @@
    </runtime>
    <requires>
       <import plugin="org.junit" export="true"/>
-      <import plugin="org.apache.ant" export="true"/>
       <import plugin="org.eclipse.core.resources" export="true"/>
-      <import plugin="org.eclipse.core.boot" export="true"/>
       <import plugin="org.eclipse.core.runtime.compatibility"/>
       <import plugin="org.eclipse.wst.common.frameworks" export="true"/>
       <import plugin="org.eclipse.wst.common.emfworkbench.integration"/>
