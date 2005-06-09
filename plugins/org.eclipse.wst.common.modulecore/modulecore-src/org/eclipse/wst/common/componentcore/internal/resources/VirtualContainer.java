@@ -79,8 +79,9 @@ public class VirtualContainer extends VirtualResource implements
 					.findComponentByName(getComponentHandle().getName());
 			ResourceTreeRoot root = ResourceTreeRoot
 					.getDeployResourceTreeRoot(component);
-			ComponentResource[] resources = root.findModuleResources(aPath,
-					ResourceTreeNode.CREATE_NONE);
+			ComponentResource[] resources = root.findModuleResources(getRuntimePath().append(aPath),
+					     ResourceTreeNode.CREATE_NONE);
+
 
 			if (resources.length != 0) {
 
