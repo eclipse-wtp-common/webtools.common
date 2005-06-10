@@ -122,6 +122,7 @@ public class CachePreferencePage extends PreferencePage implements
     aboutLabel.setText(CachePlugin.getResourceString(_UI_PREF_CACHE_ABOUT));
     GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
     gridData.horizontalSpan = 2;
+    gridData.heightHint = 20;
     aboutLabel.setLayoutData(gridData);
     try
     {
@@ -144,7 +145,6 @@ public class CachePreferencePage extends PreferencePage implements
         {
           boolean disabled = enabledButton.getSelection();
           CachePlugin.getDefault().setCacheEnabled(!disabled);
-          setPreferenceWidgets();
         }
 
       });
@@ -262,30 +262,23 @@ public class CachePreferencePage extends PreferencePage implements
   {
     if (composite != null && composite.getEnabled())
     {
-      // Cache is disabled.
-      if (enabledButton.getSelection())
+      if (entries.getSelectionCount() > 0)
+      {
+        deleteButton.setEnabled(true);
+      } 
+      else
       {
         deleteButton.setEnabled(false);
-        clearButton.setEnabled(false);
-        entries.setEnabled(false);
-      } else
-      {
-        entries.setEnabled(true);
-        if (entries.getSelectionCount() > 0)
-        {
-          deleteButton.setEnabled(true);
-        } else
-        {
-          deleteButton.setEnabled(false);
-        }
-        if (entries.getItemCount() > 0)
-        {
-          clearButton.setEnabled(true);
-        } else
-        {
-          clearButton.setEnabled(false);
-        }
       }
+      if (entries.getItemCount() > 0)
+      {
+        clearButton.setEnabled(true);
+      } 
+      else
+      {
+        clearButton.setEnabled(false);
+      }
+      
     }
   }
 
