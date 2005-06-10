@@ -14,6 +14,7 @@ import junit.framework.Test;
 import org.eclipse.wst.internet.cache.internal.CacheEntryTest;
 import org.eclipse.wst.internet.cache.internal.CacheTest;
 import org.eclipse.wst.internet.cache.internal.CacheURIResolverExtensionTest;
+import org.eclipse.wst.internet.cache.internal.LicenseRegistryTest;
 /**
  * The root test suite that contains all other Cache test suites.
  */
@@ -38,5 +39,6 @@ public class AllCacheTests extends junit.framework.TestSuite
 	addTest(CacheTest.suite());
 	addTest(CacheEntryTest.suite());
 	addTest(CacheURIResolverExtensionTest.suite());
+	addTest(LicenseRegistryTest.suite());
   }
 }
