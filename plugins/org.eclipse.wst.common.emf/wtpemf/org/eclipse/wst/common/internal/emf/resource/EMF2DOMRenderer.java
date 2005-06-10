@@ -25,6 +25,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.emf.common.util.WrappedException;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.internal.emf.utilities.DOMLoadOptions;
 import org.eclipse.wst.common.internal.emf.utilities.DOMUtilities;
@@ -117,7 +118,7 @@ public class EMF2DOMRenderer extends AbstractRendererImpl implements Renderer {
 	 * @see com.ibm.etools.emf2xml.Renderer#prepareToAddContents()
 	 */
 	public void prepareToAddContents() {
-		//createDOMTreeIfNecessary();
+		// createDOMTreeIfNecessary();
 	}
 
 	protected Node createDOMTree() {
@@ -165,7 +166,7 @@ public class EMF2DOMRenderer extends AbstractRendererImpl implements Renderer {
 		 * OutputFormat format = createOutputFormat(); Serializer serializer =
 		 * SerializerFactory.getSerializerFactory(Method.XML).makeSerializer(out, format);
 		 * serializer.asDOMSerializer().serialize(document);
-		 */ 
+		 */
 		try {
 			TransformerFactory factory = TransformerFactory.newInstance();
 			/*
@@ -186,14 +187,14 @@ public class EMF2DOMRenderer extends AbstractRendererImpl implements Renderer {
 			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4"); //$NON-NLS-1$ //$NON-NLS-2$
 			DOMSource source = new DOMSource(document.getDocumentElement());
 			/* source.setSystemId(getResource().getSystemId()); */
-			transformer.transform(source, new StreamResult(out)); 
+			transformer.transform(source, new StreamResult(out));
 		} catch (TransformerConfigurationException e) {
 			Logger.getLogger().logError(e);
 		} catch (TransformerFactoryConfigurationError e) {
 			Logger.getLogger().logError(e);
 		} catch (TransformerException e) {
 			Logger.getLogger().logError(e);
-		} finally {  
+		} finally {
 		}
 	}
 
@@ -207,7 +208,7 @@ public class EMF2DOMRenderer extends AbstractRendererImpl implements Renderer {
 	public void replaceDocumentType(String docTypeName, String publicId, String systemId) {
 		Revisit.revisit();
 		Document newDoc = null;
-		//Need be able to update the doctype directly on the existing document; right now can't
+		// Need be able to update the doctype directly on the existing document; right now can't
 		// because
 		// of limitations on parser neutral apis
 
@@ -238,12 +239,19 @@ public class EMF2DOMRenderer extends AbstractRendererImpl implements Renderer {
 		}
 	}
 
+	public void preUnload() {
+		EMF2DOMAdapter adapter = (EMF2DOMAdapter) EcoreUtil.getAdapter(resource.eAdapters(), EMF2DOMAdapter.ADAPTER_CLASS);
+		if (adapter != null) {
+			adapter.removeAdapters(adapter.getNode());
+		}
+	}
+
 	protected void readapt(Node oldChild, Node newChild) {
 		EMF2DOMAdapter adapter = getExistingDOMAdapter(oldChild);
 		if (adapter != null) {
 			registerDOMAdapter(newChild, adapter);
-			//Some nodes are managed by the parent and thus the
-			//node should not be set on the parent adapter
+			// Some nodes are managed by the parent and thus the
+			// node should not be set on the parent adapter
 			if (adapter.getNode() == oldChild)
 				adapter.setNode(newChild);
 		}
