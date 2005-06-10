@@ -27,19 +27,24 @@ public class CacheURIResolverExtension implements URIResolverExtension
 	 */
 	public String resolve(IFile file, String baseLocation, String publicId, String systemId)
 	{ 
-    if(CachePlugin.getDefault().isCacheEnabled())
-    {
+      if(CachePlugin.getDefault().isCacheEnabled())
+      {
 		  String resource = null;
 		  if(systemId != null)
 		  {
 		    resource = URIHelper.normalize(systemId, baseLocation, null);
 		  } 
-		
+		  
 		  if(resource != null && (resource.startsWith("http:") || resource.startsWith("ftp:")))
 		  {
-		    return Cache.getInstance().getResource(resource);
+		    // Handle resources prespecified to cache.
+		    ToCacheResource toCacheResource = ToCacheRegistryReader.getInstance().getResourceToCache(resource);
+		    if(toCacheResource == null || LicenseRegistry.getInstance().hasLicenseBeenAccepted(resource, toCacheResource.getLicense()))
+		    { 	
+		      return Cache.getInstance().getResource(resource);
+		    }
 		  }
-    }
-		return null;
-	  }
+      }
+	  return null;
+	}
 }

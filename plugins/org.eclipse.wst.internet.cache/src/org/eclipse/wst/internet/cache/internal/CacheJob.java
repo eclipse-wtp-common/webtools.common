@@ -38,7 +38,7 @@ public class CacheJob extends Job
   }
 
   /**
-   * @see org.eclipse.core.internal.jobs.InternalJob#run(org.eclipse.core.runtime.IProgressMonitor)
+   * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
    */
   protected IStatus run(IProgressMonitor monitor)
   {

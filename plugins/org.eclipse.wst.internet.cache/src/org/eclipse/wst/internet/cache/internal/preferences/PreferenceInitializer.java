@@ -21,12 +21,12 @@ import org.eclipse.wst.internet.cache.internal.CachePlugin;
  */
 public class PreferenceInitializer extends AbstractPreferenceInitializer 
 {
-	/**
-	 * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer#initializeDefaultPreferences()
-	 */
-	public void initializeDefaultPreferences() 
+  /**
+   * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer#initializeDefaultPreferences()
+   */
+  public void initializeDefaultPreferences() 
   {
-		IPreferenceStore store = CachePlugin.getDefault().getPreferenceStore();
-    store.setDefault(PreferenceConstants.CACHE_ENABLED, true);
-	}
+	IPreferenceStore store = CachePlugin.getDefault().getPreferenceStore();
+    store.setDefault(PreferenceConstants.CACHE_ENABLED, false);
+  }
 }

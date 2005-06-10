@@ -13,6 +13,7 @@
    <element name="extension">
       <complexType>
          <sequence>
+            <element ref="cacheresource" minOccurs="1" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -42,11 +43,23 @@
    </element>
 
    <element name="cacheresource">
+      <annotation>
+         <documentation>
+            A cacheresource is a resource that should be cached.
+         </documentation>
+      </annotation>
       <complexType>
-         <attribute name="uri" type="string" use="required">
+         <attribute name="url" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  The URL of the resource to cache.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="license" type="string">
+            <annotation>
+               <documentation>
+                  The optional license of the resource to cache. The license is specified as a URL.
                </documentation>
             </annotation>
          </attribute>
@@ -58,7 +71,7 @@
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         [Enter the first release in which this extension point appears.]
+         WTP 0.7
       </documentation>
    </annotation>
 
@@ -67,7 +80,19 @@
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         [Enter extension point usage example here.]
+         &lt;extension point=&quot;org.eclipse.wst.internet.cache.cacheresource&quot;&gt;
+
+  &lt;cacheresource url=&quot;URL_TO_CACHE&quot;/&gt;
+
+&lt;/extension&gt; 
+
+
+
+&lt;extension point=&quot;org.eclipse.wst.internet.cache.cacheresource&quot;&gt;
+
+  &lt;cacheresource url=&quot;URL_TO_CACHE&quot; license=&quot;URL_OF_LICENSE&quot;/&gt;
+
+&lt;/extension&gt; 
       </documentation>
    </annotation>
 
@@ -94,7 +119,21 @@
          <meta.section type="copyright"/>
       </appInfo>
       <documentation>
-         
+         Copyright (c) 2001, 2004 IBM Corporation and others.
+
+All rights reserved. This program and the accompanying materials
+
+are made available under the terms of the Eclipse Public License v1.0
+
+which accompanies this distribution, and is available at
+
+http://www.eclipse.org/legal/epl-v10.html
+
+
+
+Contributors:
+
+    IBM Corporation - initial API and implementation
       </documentation>
    </annotation>
 

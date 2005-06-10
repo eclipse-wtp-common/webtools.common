@@ -16,7 +16,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.core.runtime.Preferences;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.wst.internet.cache.internal.preferences.PreferenceConstants;
 import org.osgi.framework.BundleContext;
@@ -24,140 +24,194 @@ import org.osgi.framework.BundleContext;
 /**
  * The main plugin class to be used in the desktop.
  */
-public class CachePlugin extends AbstractUIPlugin {
-	public static final String PLUGIN_ID = "org.eclipse.wst.internet.cache";
-	//The shared instance.
-	private static CachePlugin plugin;
-	//Resource bundle.
-	private ResourceBundle resourceBundle;
-  
-  private CacheJob job = null;
-	
-	/**
-	 * The constructor.
-	 */
-	public CachePlugin() {
-		super();
-		plugin = this;
-	}
-
-	/**
-	 * This method is called upon plug-in activation
-	 */
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
-    ToCacheRegistryReader.getInstance().readRegistry();
-    Cache.open(Platform.getPluginStateLocation(this));
-    if(getPluginPreferences().contains(PreferenceConstants.CACHE_ENABLED))
-    {
-      setCacheEnabled(getPluginPreferences().getBoolean(PreferenceConstants.CACHE_ENABLED));
-    }
-    else
-    {
-      setCacheEnabled(true);
-    }
-	}
-
-	/**
-	 * This method is called when the plug-in is stopped
-	 */
-	public void stop(BundleContext context) throws Exception {
-		Cache.getInstance().close();
-    stopJob();
-		super.stop(context);
-		plugin = null;
-		resourceBundle = null;
-	}
-
-	/**
-	 * Returns the shared instance.
-	 */
-	public static CachePlugin getDefault() {
-		return plugin;
-	}
-
-	/**
-	 * Returns the string from the plugin's resource bundle,
-	 * or 'key' if not found.
-	 */
-	public static String getResourceString(String key) {
-		ResourceBundle bundle = ResourceBundle.getBundle("org.eclipse.wst.internet.cache.internal.CachePluginResources");
-		try {
-			return (bundle != null) ? bundle.getString(key) : key;
-		} catch (MissingResourceException e) {
-			return key;
-		}
-	}
-  
+public class CachePlugin extends AbstractUIPlugin 
+{
   /**
-   * Returns the string from the plugin's resource bundle using the specified object,
-   * or 'key' if not found.
+   * The ID of this plugin.
    */
-  public static String getResourceString(String key, Object s1)
+  public static final String PLUGIN_ID = "org.eclipse.wst.internet.cache";
+
+  /**
+   * The shared instance.
+   */
+  private static CachePlugin plugin;
+
+  /**
+   * The plugin's resource bundle.
+   */
+  private ResourceBundle resourceBundle;
+
+  /**
+   * The cache job caches resources that were not able to be downloaded when requested.
+   */
+  private CacheJob job = null;
+
+  /**
+   * The constructor.
+   */
+  public CachePlugin() 
   {
-    return MessageFormat.format(getResourceString(key), new Object[] { s1 });
+	super();
+	plugin = this;
   }
 
-	/**
-	 * Returns the plugin's resource bundle,
-	 */
-	public ResourceBundle getResourceBundle() {
-		try {
-			if (resourceBundle == null)
-				resourceBundle = ResourceBundle.getBundle("plugin");
-		} catch (MissingResourceException x) {
-			resourceBundle = null;
-		}
-		return resourceBundle;
+  /**
+   * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
+   */
+  public void start(BundleContext context) throws Exception 
+  {
+	super.start(context);
+	ToCacheRegistryReader.getInstance().readRegistry();
+	Cache.open(Platform.getPluginStateLocation(this));
+	if (getPluginPreferences().contains(PreferenceConstants.CACHE_ENABLED)) 
+	{
+	  setCacheEnabled(getPluginPreferences().getBoolean(PreferenceConstants.CACHE_ENABLED));
+	} 
+	else 
+	{
+	  // The cache is disabled by default.
+	  setCacheEnabled(false);
 	}
+	
+	// Restore license preferences
+	Preferences prefs = getPluginPreferences();
+	LicenseRegistry registry = LicenseRegistry.getInstance();
+	String[] licenses = registry.getLicenses();
+	int numLicenses = licenses.length;
+	for(int i = 0; i < numLicenses; i++)
+	{
+	  int state = prefs.getInt(licenses[i]);
+	  if(state == LicenseRegistry.LICENSE_AGREE.intValue())
+	  {
+		registry.agreeLicense(licenses[i]);
+	  }
+	  else if(state == LicenseRegistry.LICENSE_DISAGREE.intValue())
+	  {
+		registry.disagreeLicense(licenses[i]);
+	  }
+	}
+  }
 
-	/**
-	 * Returns an image descriptor for the image file at the given
-	 * plug-in relative path.
-	 *
-	 * @param path the path
-	 * @return the image descriptor
-	 */
-	public static ImageDescriptor getImageDescriptor(String path) {
-		return AbstractUIPlugin.imageDescriptorFromPlugin("org.eclipse.wst.internet.cache", path);
+  /**
+   * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
+   */
+  public void stop(BundleContext context) throws Exception 
+  {
+	// Save the license state information.
+	Preferences prefs = getPluginPreferences();
+	LicenseRegistry registry = LicenseRegistry.getInstance();
+	String[] licenses = registry.getLicenses();
+	int numLicenses = licenses.length;
+	for(int i = 0; i < numLicenses; i++)
+	{
+	  Integer state = registry.getLicenseState(licenses[i]);
+	  prefs.setValue(licenses[i], state.intValue());
 	}
-  
-  public void setCacheEnabled(boolean enabled)
-  {
-    getPluginPreferences().setValue(PreferenceConstants.CACHE_ENABLED, enabled);
-    if(enabled)
-    {
-      startJob();
-    }
-    else
-    {
-      stopJob();
-    }
+	
+	Cache.getInstance().close();
+	stopJob();
+	super.stop(context);
+	plugin = null;
+	resourceBundle = null;
   }
-  
-  public boolean isCacheEnabled()
+
+  /**
+   * Returns the shared instance.
+   * 
+   * @return The shared instance.
+   */
+  public static CachePlugin getDefault() 
   {
-    if(getPluginPreferences().contains(PreferenceConstants.CACHE_ENABLED))
-      return getPluginPreferences().getBoolean(PreferenceConstants.CACHE_ENABLED);
-    return true;
+	return plugin;
   }
-  
-  private void startJob()
+
+  /**
+   * Returns the string from the plugin's resource bundle, or 'key' if not found.
+   * 
+   * @param key The key for which the string is requested.
+   * @return The string from the plugin's resource bundle, or 'key' if not found.
+   */
+  public static String getResourceString(String key) 
   {
-    if(job == null)
-    {
-      job = new CacheJob();
-      job.setPriority(CacheJob.DECORATE);
-      job.schedule(); // start as soon as possible
-    }
+	ResourceBundle bundle = ResourceBundle
+			.getBundle("org.eclipse.wst.internet.cache.internal.CachePluginResources");
+	try 
+	{
+	  return (bundle != null) ? bundle.getString(key) : key;
+	} 
+	catch (MissingResourceException e) 
+	{
+	  return key;
+	}
   }
-  
-  private void stopJob()
+
+  /**
+   * Returns the string from the plugin's resource bundle using the specified
+   * object, or 'key' if not found.
+   * 
+   * @param key The key for which the string is requested.
+   * @param s1 The object to insert into the string.
+   * @return The formatted string.
+   */
+  public static String getResourceString(String key, Object s1) 
   {
-    if(job != null)
-    {
-      job.cancel();
-    }
-    job = null;
+	return MessageFormat.format(getResourceString(key), new Object[] { s1 });
+  }
+
+  /**
+   * Set whether or not the cache is enabled.
+   * 
+   * @param enabled If true the cache is enabled, if false it is not enabled.
+   */
+  public void setCacheEnabled(boolean enabled) 
+  {
+	getPluginPreferences().setValue(PreferenceConstants.CACHE_ENABLED, enabled);
+	if (enabled) 
+	{
+	  startJob();
+	} 
+	else 
+	{
+	  stopJob();
+	}
+  }
+
+  /**
+   * Returns true if the cache is enabled, false otherwise.
+   * 
+   * @return True if the cache is enabled, false otherwise.
+   */
+  public boolean isCacheEnabled() 
+  {
+	if (getPluginPreferences().contains(PreferenceConstants.CACHE_ENABLED))
+	  return getPluginPreferences().getBoolean(PreferenceConstants.CACHE_ENABLED);
+	return true;
+  }
+
+  /**
+   * Start the cache job. The cache job caches resources that were not able to be previously
+   * downloaded.
+   */
+  private void startJob() 
+  {
+	if (job == null) 
+	{
+	  job = new CacheJob();
+	  job.setPriority(CacheJob.DECORATE);
+	  job.schedule(); // start as soon as possible
+	}
+  }
+
+  /**
+   * Stop the cache job. The cache job caches resources that were not able to be previously
+   * downloaded.
+   */
+  private void stopJob() 
+  {
+	if (job != null) 
+	{
+	  job.cancel();
+	}
+	job = null;
   }
 }
