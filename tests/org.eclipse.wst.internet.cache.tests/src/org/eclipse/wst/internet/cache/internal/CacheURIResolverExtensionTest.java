@@ -35,6 +35,8 @@ public class CacheURIResolverExtensionTest extends TestCase
 	  {
 		super.setUp();
 		cacheResolver = new CacheURIResolverExtension();
+		// The cache is disabled by default. We need to enable it for the tests.
+		CachePlugin.getDefault().setCacheEnabled(true);
 	  }
 
 	  /**
