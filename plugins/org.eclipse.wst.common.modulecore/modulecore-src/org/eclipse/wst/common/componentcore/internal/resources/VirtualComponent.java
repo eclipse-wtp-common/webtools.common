@@ -55,9 +55,10 @@ public class VirtualComponent extends VirtualContainer implements IVirtualCompon
 
 	public boolean exists() {
 		StructureEdit core = null;
+		IProject project = getProject();
 		try {
-			if (getProject() != null && getName() != null) {
-				core = StructureEdit.getStructureEditForRead(getProject());
+			if (project != null && project.exists() && getName() != null) {
+				core = StructureEdit.getStructureEditForRead(project);
 				WorkbenchComponent component = core.findComponentByName(getName());
 				return component != null;
 			}

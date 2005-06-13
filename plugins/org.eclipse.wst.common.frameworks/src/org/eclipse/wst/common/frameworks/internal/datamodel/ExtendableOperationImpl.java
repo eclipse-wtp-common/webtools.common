@@ -88,8 +88,7 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 		try {
 			addStatus(rootOperation.execute(monitor, info));
 		} catch (ExecutionException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			addStatus(new Status(IStatus.ERROR, "org.eclipse.wst.common.frameworks.internal", 0, e1.getMessage(), e1));
 		}
 
 		IStatus postOpStatus = runPostOps(monitor, extOpHolder, info);

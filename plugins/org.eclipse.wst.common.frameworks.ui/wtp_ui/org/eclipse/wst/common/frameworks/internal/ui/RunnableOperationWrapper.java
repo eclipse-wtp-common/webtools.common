@@ -30,9 +30,11 @@ public class RunnableOperationWrapper implements IRunnableWithProgress {
 	public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 		try {
 			status = undoableOperation.execute(monitor, null);
+			if(status.getSeverity() == IStatus.ERROR){
+				throw new InvocationTargetException(status.getException());
+			}
 		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new InvocationTargetException(e);
 		}
 	}
 

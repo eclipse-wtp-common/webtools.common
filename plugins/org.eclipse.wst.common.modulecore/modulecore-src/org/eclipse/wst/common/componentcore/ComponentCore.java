@@ -123,6 +123,10 @@ public class ComponentCore {
 		return new VirtualReference(aComponent, aReferencedComponent);		
 	} 
 
+	public static IVirtualReference createReference(IVirtualComponent aComponent, IVirtualComponent aReferencedComponent, IPath runtimePath){
+		return new VirtualReference(aComponent, aReferencedComponent, runtimePath);
+	}
+	
 	/**
 	 * Return an array of IVirtualResources that represent the given IResource. Each IResource could 
 	 * be mapped to multiple components, and thus an array of each IVirtualResource that represents
