@@ -84,6 +84,6 @@ public class ComponentResolver implements URIResolverExtension {
 		if (_DEBUG) {
 			System.out.println(" -> \"" + resolvedPath + "\"");
 		}
-		return null;
+		return resolvedPath;
 	}
 }
