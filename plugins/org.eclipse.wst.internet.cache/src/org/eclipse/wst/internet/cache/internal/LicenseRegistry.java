@@ -114,7 +114,8 @@ public class LicenseRegistry
 	  }
 	  else if(agreed == LICENSE_DISAGREE)
 	  {
-		return false;
+		if(!CachePlugin.getDefault().shouldPrompt())
+		  return false;
 	  }
 	  
 	  // Prompt the user to accept the license.

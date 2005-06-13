@@ -28,5 +28,6 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer
   {
 	IPreferenceStore store = CachePlugin.getDefault().getPreferenceStore();
     store.setDefault(PreferenceConstants.CACHE_ENABLED, false);
+    store.setDefault(PreferenceConstants.PROMPT_DISAGREED_LICENSES, false);
   }
 }

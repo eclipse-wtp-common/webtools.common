@@ -62,12 +62,16 @@ public class CachePreferencePage extends PreferencePage implements
   private static final String _UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_MESSAGE = "_UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_MESSAGE";
   
   private static final String _UI_PREF_CACHE_ABOUT = "_UI_PREF_CACHE_ABOUT";
+  
+  private static final String _UI_PREF_PROMPT_FOR_DISAGREED_LICENSES = "_UI_PREF_PROMPT_FOR_DISAGREED_LICENSES";
 
   protected Button clearButton;
 
   protected Button deleteButton;
 
   protected Button enabledButton;
+  
+  protected Button disagreedLicensesButton;
 
   protected List entries;
 
@@ -122,12 +126,15 @@ public class CachePreferencePage extends PreferencePage implements
     aboutLabel.setText(CachePlugin.getResourceString(_UI_PREF_CACHE_ABOUT));
     GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
     gridData.horizontalSpan = 2;
-    gridData.heightHint = 20;
     aboutLabel.setLayoutData(gridData);
+    Label blankLabel = new Label(composite, SWT.None);
     try
     {
       // Created the disable cache option.
       enabledButton = new Button(composite, SWT.CHECK | SWT.LEFT);
+      gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
+      gridData.horizontalSpan = 2;
+      enabledButton.setLayoutData(gridData);
       enabledButton.setText(CachePlugin
           .getResourceString(_UI_PREF_CACHE_CACHE_OPTION));
       enabledButton.setSelection(!CachePlugin.getDefault().getPreferenceStore()
@@ -145,6 +152,31 @@ public class CachePreferencePage extends PreferencePage implements
         {
           boolean disabled = enabledButton.getSelection();
           CachePlugin.getDefault().setCacheEnabled(!disabled);
+        }
+
+      });
+      
+      disagreedLicensesButton = new Button(composite, SWT.CHECK | SWT.LEFT);
+      gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
+      gridData.horizontalSpan = 2;
+      disagreedLicensesButton.setLayoutData(gridData);
+      disagreedLicensesButton.setText(CachePlugin
+          .getResourceString(_UI_PREF_PROMPT_FOR_DISAGREED_LICENSES));
+      disagreedLicensesButton.setSelection(CachePlugin.getDefault().getPreferenceStore()
+          .getBoolean(PreferenceConstants.PROMPT_DISAGREED_LICENSES));
+      disagreedLicensesButton.addSelectionListener(new SelectionListener()
+      {
+
+        public void widgetDefaultSelected(SelectionEvent e)
+        {
+          widgetSelected(e);
+
+        }
+
+        public void widgetSelected(SelectionEvent e)
+        {
+          boolean prompt = disagreedLicensesButton.getSelection();
+          CachePlugin.getDefault().setPromptDisagreedLicenses(prompt);
         }
 
       });

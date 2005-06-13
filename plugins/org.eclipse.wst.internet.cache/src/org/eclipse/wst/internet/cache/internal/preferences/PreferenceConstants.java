@@ -17,5 +17,7 @@ package org.eclipse.wst.internet.cache.internal.preferences;
 public class PreferenceConstants 
 {
   public static final String CACHE_ENABLED = "cacheEnabled";
+  
+  public static final String PROMPT_DISAGREED_LICENSES = "promptDisagreedLicenses";
 	
 }

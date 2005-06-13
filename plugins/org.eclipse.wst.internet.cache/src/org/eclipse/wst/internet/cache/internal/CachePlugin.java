@@ -187,6 +187,30 @@ public class CachePlugin extends AbstractUIPlugin
 	  return getPluginPreferences().getBoolean(PreferenceConstants.CACHE_ENABLED);
 	return true;
   }
+  
+  /**
+   * Set whether or not the user should be prompted for licenses to which they 
+   * have previously disagreed.
+   * 
+   * @param prompt If true the the user should be prompted, if false the user should not be prompted.
+   */
+  public void setPromptDisagreedLicenses(boolean prompt) 
+  {
+	getPluginPreferences().setValue(PreferenceConstants.PROMPT_DISAGREED_LICENSES, prompt);
+  }
+
+  /**
+   * Returns true if the the user should be prompted for licenses to which they
+   * have previously disagreed, false otherwise.
+   * 
+   * @return True if the user should be prompted, false otherwise.
+   */
+  public boolean shouldPrompt() 
+  {
+	if (getPluginPreferences().contains(PreferenceConstants.PROMPT_DISAGREED_LICENSES))
+	  return getPluginPreferences().getBoolean(PreferenceConstants.PROMPT_DISAGREED_LICENSES);
+	return true;
+  }
 
   /**
    * Start the cache job. The cache job caches resources that were not able to be previously
