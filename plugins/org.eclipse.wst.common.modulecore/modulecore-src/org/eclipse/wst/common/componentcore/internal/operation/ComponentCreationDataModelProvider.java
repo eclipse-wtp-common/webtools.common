@@ -75,7 +75,7 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
             //if(!FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp()){
 				//model.notifyPropertyChange(PROJECT_NAME, IDataModel.VALUE_CHG);
 				//set the property in nested FlexibleJavaProjectCreationDataModelProvider
-				IDataModel dm = (IDataModel)model.getNestedModel(NESTED_PROJECT_CREATION_DM);
+				IDataModel dm = model.getNestedModel(NESTED_PROJECT_CREATION_DM);
 	            dm.setProperty(IFlexibleProjectCreationDataModelProperties.PROJECT_NAME, propertyValue);				
 				return true; 
             //}	

@@ -57,7 +57,7 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 		List vlist = new ArrayList();
 		IVirtualReference[] oldrefs = sourceComp.getReferences();
 		for (int i = 0; i < oldrefs.length; i++) {
-			IVirtualReference ref = (IVirtualReference) oldrefs[i];
+			IVirtualReference ref = oldrefs[i];
 			vlist.add(ref);
 		}		
 
