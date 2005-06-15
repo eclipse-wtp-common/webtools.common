@@ -19,5 +19,13 @@ import org.eclipse.core.resources.IFile;
  * so that they can apply specialized project specific resolving rules. 
  */
 public interface URIResolverExtension {
+	/**
+	 * @param file the in-workspace base resource, if one exists
+	 * @param baseLocation - the location of the resource that contains the uri
+	 * @param publicId - an optional public identifier (i.e. namespace name), or null if none
+	 * @param systemId - an absolute or relative URI, or null if none 
+	 * 
+	 * @return an absolute URI or null if this extension can not resolve this reference
+	 */
 	public String resolve(IFile file, String baseLocation, String publicId, String systemId);
 }
