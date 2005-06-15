@@ -55,9 +55,12 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 	public void create(int updateFlags, IProgressMonitor monitor) throws CoreException {
 
 		IVirtualComponent container = ComponentCore.createComponent(getProject(), getComponentHandle().getName()); 
-		IFolder realFolder = getProject().getFolder(container.getProjectRelativePath()); 
-		IFolder newFolder = realFolder.getFolder(getRuntimePath()); 
-		createResource(newFolder, updateFlags, monitor);  
+		
+		if( !container.getProjectRelativePath().isRoot()){	
+			IFolder realFolder = getProject().getFolder(container.getProjectRelativePath()); 
+			IFolder newFolder = realFolder.getFolder(getRuntimePath()); 
+			createResource(newFolder, updateFlags, monitor);			
+		}	
 	} 
 
 	// TODO WTP:Implement this method
