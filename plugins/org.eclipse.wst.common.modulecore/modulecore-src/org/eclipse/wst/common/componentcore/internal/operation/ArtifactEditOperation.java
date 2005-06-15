@@ -40,7 +40,7 @@ public class ArtifactEditOperation extends WTPOperation {
         // TODO Auto-generated method stub
 
     }
-	protected final void initilize(IProgressMonitor monitor) {
+	protected final void initialize(IProgressMonitor monitor) {
 		ArtifactEditOperationDataModel dataModel = (ArtifactEditOperationDataModel) operationDataModel;
 		emfWorkbenchContext = (EMFWorkbenchContext) WorkbenchResourceHelperBase.createEMFContext(dataModel.getTargetProject(), null);
 		WorkbenchComponent module = getWorkbenchModule(); 
