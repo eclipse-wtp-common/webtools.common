@@ -173,7 +173,7 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 	 * @param monitor
 	 *            the progress monitor
 	 */
-	protected void initilize(IProgressMonitor monitor) {
+	protected void initialize(IProgressMonitor monitor) {
 		// Making sure the status objects are initialized
 		// status = null;
 		opStatus = null;
@@ -326,7 +326,7 @@ public abstract class WTPOperation implements IHeadlessRunnableWithProgress {
 					return;
 				}
 			}
-			initilize(monitor);
+			initialize(monitor);
 
 			if (!validateEdit())
 				return;

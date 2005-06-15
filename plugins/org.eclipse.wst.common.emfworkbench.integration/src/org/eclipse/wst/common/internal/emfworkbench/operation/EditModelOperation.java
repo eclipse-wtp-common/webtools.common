@@ -40,7 +40,7 @@ public abstract class EditModelOperation extends WTPOperation {
 		//Default constructor
 	}
 
-	protected final void initilize(IProgressMonitor monitor) {
+	protected final void initialize(IProgressMonitor monitor) {
 		EditModelOperationDataModel dataModel = (EditModelOperationDataModel) operationDataModel;
 		emfWorkbenchContext = (EMFWorkbenchContext) WorkbenchResourceHelperBase.createEMFContext(dataModel.getTargetProject(), null);
 		editModel = emfWorkbenchContext.getEditModelForWrite(dataModel.getStringProperty(EditModelOperationDataModel.EDIT_MODEL_ID), this);
