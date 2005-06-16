@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $RCSfile: PerformanceMonitorUtil.java,v $
- *  $Revision: 1.5 $  $Date: 2005/05/18 21:58:34 $ 
+ *  $Revision: 1.6 $  $Date: 2005/06/16 17:46:08 $ 
  */
 package org.eclipse.jem.util;
 import java.util.EventObject;
@@ -34,6 +34,13 @@ public abstract class PerformanceMonitorUtil {
 	 */
 	public static class PerformanceEvent extends EventObject {
 		
+		/**
+		 * Comment for <code>serialVersionUID</code>
+		 * 
+		 * @since 1.1.0
+		 */
+		private static final long serialVersionUID = -4680071462750180339L;
+
 		PerformanceEvent(Object source, int step) {
 			super(source);
 			snapshowWithTypes = false;

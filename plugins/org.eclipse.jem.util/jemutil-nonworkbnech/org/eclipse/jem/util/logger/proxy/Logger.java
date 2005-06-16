@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $RCSfile: Logger.java,v $
- *  $Revision: 1.3 $  $Date: 2005/05/18 21:58:34 $ 
+ *  $Revision: 1.4 $  $Date: 2005/06/16 17:46:08 $ 
  */
 package org.eclipse.jem.util.logger.proxy;
 
@@ -40,6 +40,13 @@ public class Logger {
 	
 	// This is used by ILogRenderer2 to define the default level.
 	static class LocalLevel extends Level {
+		/**
+		 * Comment for <code>serialVersionUID</code>
+		 * 
+		 * @since 1.1.0
+		 */
+		private static final long serialVersionUID = -6273357074767854883L;
+
 		public LocalLevel(String name, int level) {
 			super(name, level);
 		}

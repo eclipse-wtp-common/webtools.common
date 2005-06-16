@@ -1,0 +1,25 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: org.eclipse.jem.util; singleton:=true
+Bundle-Version: 1.1.0
+Bundle-ClassPath: util.jar
+Bundle-Activator: org.eclipse.jem.util.plugin.JEMUtilPlugin
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
+Export-Package: org.eclipse.jem.internal.util.emf.workbench,
+ org.eclipse.jem.internal.util.emf.workbench.nature,
+ org.eclipse.jem.internal.util.emf.workbench.nls,
+ org.eclipse.jem.util,
+ org.eclipse.jem.util.emf.workbench,
+ org.eclipse.jem.util.emf.workbench.nature,
+ org.eclipse.jem.util.logger,
+ org.eclipse.jem.util.logger.proxy,
+ org.eclipse.jem.util.logger.proxyrender,
+ org.eclipse.jem.util.plugin
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.emf.ecore,
+ org.eclipse.emf.ecore.xmi,
+ org.eclipse.perfmsr.core;resolution:=optional
+Eclipse-AutoStart: true
