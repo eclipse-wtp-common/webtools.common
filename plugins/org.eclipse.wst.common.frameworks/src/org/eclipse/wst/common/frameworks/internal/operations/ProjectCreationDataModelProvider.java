@@ -58,7 +58,8 @@ public class ProjectCreationDataModelProvider extends AbstractDataModelProvider 
 			if (path.equals(new Path((String) propertyValue))) {
 				setProperty(propertyName, null);
 				return false;
-			}
+			} else
+                super.propertySet(propertyName, propertyValue);
 		}
 		if (propertyName.equals(PROJECT_NAME) && !getDataModel().isPropertySet(PROJECT_LOCATION)) {
 			model.notifyPropertyChange(PROJECT_NAME, IDataModel.VALUE_CHG);
