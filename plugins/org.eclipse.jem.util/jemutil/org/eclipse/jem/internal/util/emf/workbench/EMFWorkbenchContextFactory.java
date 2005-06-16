@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: EMFWorkbenchContextFactory.java,v $$
- *  $$Revision: 1.3 $$  $$Date: 2005/05/13 15:17:15 $$ 
+ *  $$Revision: 1.4 $$  $$Date: 2005/06/16 20:14:27 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -103,31 +103,31 @@ public class EMFWorkbenchContextFactory  {
 		if (!aProject.isAccessible())
 			throw new IllegalStateException("[EMFWorkbenchContextBase]" + EMFWorkbenchResourceHandler.getString("EMFWorkbenchContextFactory_UI_1", new Object[]{aProject.getName()})); //$NON-NLS-1$ //$NON-NLS-2$
 		EMFWorkbenchContextBase context = getCachedEMFContext(aProject);
+		boolean contributorFound = false;
 		if (context == null) {
 			context = primCreateEMFContext(aProject);
 			cacheEMFContext(aProject, context);
-			if (contributor == null)
-				initializeEMFContextFromContributors(aProject, context);
+			contributorFound = initializeEMFContextFromContributors(aProject, context, contributor);
 		}
-		if (contributor != null && context != null)
+		if (contributor != null && context != null && !contributorFound)
 			contributor.primaryContributeToContext(context);
 		return context;
 	}
-
-	protected void initializeEMFContextFromContributors(IProject aProject, EMFWorkbenchContextBase emfContext) {
+	
+	protected boolean initializeEMFContextFromContributors(IProject aProject, EMFWorkbenchContextBase emfContext, IEMFContextContributor contributor) {
+		boolean contributorFound = false;
 		if (aProject == null || emfContext == null)
-			return;
+			return contributorFound;
 		List runtimes = EMFNature.getRegisteredRuntimes(aProject);
-		boolean primary = true;
 		for (int i = 0; i < runtimes.size(); i++) {
 			IProjectNature nature = (IProjectNature) runtimes.get(i);
-			if (nature != null && CONTRIBUTOR_CLASS.isInstance(nature))
-				if (primary) {
-					primary = false;
-					((IEMFContextContributor) nature).primaryContributeToContext(emfContext);
-				} else
-					((IEMFContextContributor) nature).secondaryContributeToContext(emfContext);
+			if (nature != null && CONTRIBUTOR_CLASS.isInstance(nature)) {
+				if (nature == contributor)
+					contributorFound = true;
+				((IEMFContextContributor) nature).primaryContributeToContext(emfContext);
+			}
 		}
+		return contributorFound;
 	}
 
 	protected boolean isNatureEnabled(IProject aProject, String natureId) {
