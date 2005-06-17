@@ -83,9 +83,9 @@ public abstract class VirtualContainer extends VirtualResource implements
 					.findComponentByName(getComponentHandle().getName());
 			ResourceTreeRoot root = ResourceTreeRoot
 					.getDeployResourceTreeRoot(component);
-			ComponentResource[] resources = root.findModuleResources(getRuntimePath().append(aPath),
-					     ResourceTreeNode.CREATE_NONE);
-
+			ComponentResource[] resources = root.findModuleResources(
+					getRuntimePath().append(aPath),
+					ResourceTreeNode.CREATE_NONE);
 
 			if (resources.length != 0) {
 
@@ -167,58 +167,61 @@ public abstract class VirtualContainer extends VirtualResource implements
 
 			moduleCore = StructureEdit
 					.getStructureEditForRead(getComponentHandle().getProject());
-			WorkbenchComponent component = moduleCore
+			WorkbenchComponent wbComponent = moduleCore
 					.findComponentByName(getComponentHandle().getName());
-			ResourceTreeRoot root = ResourceTreeRoot
-					.getDeployResourceTreeRoot(component);
-			ComponentResource[] componentResources = root.findModuleResources(
-					getRuntimePath(), ResourceTreeNode.CREATE_NONE);
+			if (wbComponent != null) {
+				ResourceTreeRoot root = ResourceTreeRoot
+						.getDeployResourceTreeRoot(wbComponent);
+				ComponentResource[] componentResources = root
+						.findModuleResources(getRuntimePath(),
+								ResourceTreeNode.CREATE_NONE);
 
-			IResource realResource = null;
-			IPath fullRuntimePath = null;
-			IPath newRuntimePath = null;
+				IResource realResource = null;
+				IPath fullRuntimePath = null;
+				IPath newRuntimePath = null;
 
-			for (int componentResourceIndex = 0; componentResourceIndex < componentResources.length; componentResourceIndex++) {
-				fullRuntimePath = componentResources[componentResourceIndex]
-						.getRuntimePath();
+				for (int componentResourceIndex = 0; componentResourceIndex < componentResources.length; componentResourceIndex++) {
+					fullRuntimePath = componentResources[componentResourceIndex]
+							.getRuntimePath();
 
-				// exact match
-				if (fullRuntimePath.equals(getRuntimePath())) {
+					// exact match
+					if (fullRuntimePath.equals(getRuntimePath())) {
 
-					realResource = StructureEdit
-							.getEclipseResource(componentResources[componentResourceIndex]);
-					if (realResource.getType() == IResource.FOLDER) {
-						IFolder realFolder = (IFolder) realResource;
-						IResource[] realChildResources = realFolder
-								.members(memberFlags);
-						for (int realResourceIndex = 0; realResourceIndex < realChildResources.length; realResourceIndex++) {
-							newRuntimePath = getRuntimePath().append(
-									realChildResources[realResourceIndex]
-											.getName());
-							addVirtualResource(virtualResources,
-									realChildResources[realResourceIndex],
-									newRuntimePath);
-						}
-					} // An IResource.FILE would be an error condition (as
-					// this is a container)
-
-				} else { // fuzzy match
-					newRuntimePath = getRuntimePath().append(
-							fullRuntimePath.segment(getRuntimePath()
-									.segmentCount()));
-
-					if (fullRuntimePath.segmentCount() == 1) {
 						realResource = StructureEdit
 								.getEclipseResource(componentResources[componentResourceIndex]);
-						if (realResource != null)
-							addVirtualResource(virtualResources, realResource,
-									newRuntimePath);
-					} else if (fullRuntimePath.segmentCount() > 1) {
-						virtualResources.add(new VirtualFolder(
-								getComponentHandle(), newRuntimePath));
-					}
-				}
+						if (realResource.getType() == IResource.FOLDER) {
+							IFolder realFolder = (IFolder) realResource;
+							IResource[] realChildResources = realFolder
+									.members(memberFlags);
+							for (int realResourceIndex = 0; realResourceIndex < realChildResources.length; realResourceIndex++) {
+								newRuntimePath = getRuntimePath().append(
+										realChildResources[realResourceIndex]
+												.getName());
+								addVirtualResource(virtualResources,
+										realChildResources[realResourceIndex],
+										newRuntimePath);
+							}
+						} // An IResource.FILE would be an error condition (as
+						// this is a container)
 
+					} else { // fuzzy match
+						newRuntimePath = getRuntimePath().append(
+								fullRuntimePath.segment(getRuntimePath()
+										.segmentCount()));
+
+						if (fullRuntimePath.segmentCount() == 1) {
+							realResource = StructureEdit
+									.getEclipseResource(componentResources[componentResourceIndex]);
+							if (realResource != null)
+								addVirtualResource(virtualResources,
+										realResource, newRuntimePath);
+						} else if (fullRuntimePath.segmentCount() > 1) {
+							virtualResources.add(new VirtualFolder(
+									getComponentHandle(), newRuntimePath));
+						}
+					}
+
+				}
 			}
 
 		} catch (Exception e) {
@@ -238,8 +241,6 @@ public abstract class VirtualContainer extends VirtualResource implements
 		// return null;
 	}
 
-
-
 	/**
 	 * @see IFolder#createLink(org.eclipse.core.runtime.IPath, int,
 	 *      org.eclipse.core.runtime.IProgressMonitor)
@@ -251,9 +252,9 @@ public abstract class VirtualContainer extends VirtualResource implements
 		boolean isRootFolder = false;
 		try {
 			IContainer resource = null;
-			if( aProjectRelativeLocation.isRoot()){				
+			if (aProjectRelativeLocation.isRoot()) {
 				resource = getProject();
-			}else{
+			} else {
 				resource = getProject().getFolder(aProjectRelativeLocation);
 			}
 
@@ -355,8 +356,10 @@ public abstract class VirtualContainer extends VirtualResource implements
 			List foundResources = new ArrayList();
 
 			if (aResourceType != null) {
-				for (Iterator iter = currentResources.iterator(); iter.hasNext();) {
-					ComponentResource resource = (ComponentResource) iter.next();
+				for (Iterator iter = currentResources.iterator(); iter
+						.hasNext();) {
+					ComponentResource resource = (ComponentResource) iter
+							.next();
 					if (aResourceType.equals(resource.getResourceType())) {
 						IVirtualResource vres = createVirtualResource(resource);
 						if (vres != null)
@@ -364,21 +367,26 @@ public abstract class VirtualContainer extends VirtualResource implements
 					}
 				}
 			}
-			return (IVirtualResource[]) foundResources.toArray(new IVirtualResource[foundResources.size()]);
+			return (IVirtualResource[]) foundResources
+					.toArray(new IVirtualResource[foundResources.size()]);
 		} finally {
 			if (core != null)
 				core.dispose();
 		}
 	}
-	
-	private IVirtualResource createVirtualResource(ComponentResource aComponentResource) {
-		IResource resource = StructureEdit.getEclipseResource(aComponentResource);
+
+	private IVirtualResource createVirtualResource(
+			ComponentResource aComponentResource) {
+		IResource resource = StructureEdit
+				.getEclipseResource(aComponentResource);
 		switch (resource.getType()) {
-			case IResource.FILE :
-				return ComponentCore.createFile(getProject(), getName(), aComponentResource.getRuntimePath());
-			case IResource.FOLDER :
-				return ComponentCore.createFolder(getProject(), getName(), aComponentResource.getRuntimePath());
+		case IResource.FILE:
+			return ComponentCore.createFile(getProject(), getName(),
+					aComponentResource.getRuntimePath());
+		case IResource.FOLDER:
+			return ComponentCore.createFolder(getProject(), getName(),
+					aComponentResource.getRuntimePath());
 		}
 		return null;
-	}	
+	}
 }
