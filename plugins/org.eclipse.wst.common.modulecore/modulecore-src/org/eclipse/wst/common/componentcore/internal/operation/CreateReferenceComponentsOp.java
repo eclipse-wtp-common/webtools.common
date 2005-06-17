@@ -63,11 +63,13 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 
 		
         List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_HANDLE_LIST);
-		for( int i=0; i< modList.size(); i++){
+		for (int i = 0; i < modList.size(); i++) {
 			ComponentHandle handle = (ComponentHandle) modList.get(i);
 			IVirtualComponent comp = ComponentCore.createComponent(handle.getProject(), handle.getName());
-			IVirtualReference ref = ComponentCore.createReference( sourceComp, comp );
-			vlist.add(ref);
+			if (!srcComponentContainsReference(sourceComp, comp)) {
+				IVirtualReference ref = ComponentCore.createReference(sourceComp, comp);
+				vlist.add(ref);
+			}
 		}
 		
 		
@@ -78,6 +80,15 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 		}
 		
 		sourceComp.setReferences(refs);
+	}
+
+	private boolean srcComponentContainsReference(IVirtualComponent sourceComp, IVirtualComponent comp) {
+		IVirtualReference[] existingReferences = sourceComp.getReferences();
+		for (int i = 0; i < existingReferences.length; i++) {
+			if (existingReferences[i].getReferencedComponent().getName().equals(comp.getName()))
+				return true;
+		}
+		return false;
 	}
 
 	public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
