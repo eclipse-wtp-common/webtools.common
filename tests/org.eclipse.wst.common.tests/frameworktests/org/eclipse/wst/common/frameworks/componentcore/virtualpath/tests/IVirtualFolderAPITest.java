@@ -18,6 +18,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.common.componentcore.ComponentCore;
+import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 
@@ -50,7 +51,12 @@ public class IVirtualFolderAPITest extends IVirtualContainerAPITest {
 		
 		targetExistingPlatformResource = TestWorkspace.TEST_PROJECT.getFolder(WEBINF_FOLDER_REAL_PATH);
 		
-		virtualParent = ComponentCore.createComponent(TestWorkspace.TEST_PROJECT, TestWorkspace.WEB_MODULE_1_NAME);
+		//virtualParent = ComponentCore.createComponent(TestWorkspace.TEST_PROJECT, TestWorkspace.WEB_MODULE_1_NAME);
+		
+		IVirtualComponent component = ComponentCore.createComponent(TestWorkspace.TEST_PROJECT, TestWorkspace.WEB_MODULE_1_NAME);
+		IVirtualFolder rootFolder = component.getRootFolder();
+		virtualParent = rootFolder;
+		
 		targetExistingVirtualResource = virtualParent.getFolder(WEBINF_FOLDER_RUNTIME_PATH); 		
 
 		targetVirtualContainer = virtualParent.getFolder(TESTDATA_FOLDER_RUNTIME_PATH); 

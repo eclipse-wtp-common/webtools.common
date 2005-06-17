@@ -65,7 +65,9 @@ public abstract class IVirtualResourceAPITest extends TestCase {
 	public void testCreateLinkIPathintIProgressMonitor() throws Exception {
 		
 		IVirtualComponent component = ComponentCore.createComponent(TestWorkspace.getTargetProject(), TestWorkspace.WEB_MODULE_2_NAME);
-		IVirtualFolder images = component.getFolder(new Path("/images")); //$NON-NLS-1$		
+		IVirtualFolder rootFolder = component.getRootFolder();
+		
+		IVirtualFolder images = rootFolder.getFolder(new Path("/images")); //$NON-NLS-1$		
 		images.createLink(new Path("/WebModule2/images"), 0, null); //$NON-NLS-1$
 
 		IFolder realImages = TestWorkspace.getTargetProject().getFolder(new Path("/WebModule2/images")); //$NON-NLS-1$

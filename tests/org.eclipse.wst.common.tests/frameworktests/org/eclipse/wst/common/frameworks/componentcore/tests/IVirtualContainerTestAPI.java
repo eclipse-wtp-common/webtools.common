@@ -4,6 +4,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.common.componentcore.resources.IVirtualContainer;
+import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 
 public class IVirtualContainerTestAPI extends BaseVirtualTest {
@@ -18,7 +19,9 @@ public class IVirtualContainerTestAPI extends BaseVirtualTest {
 
 	public void test_create()
 			throws CoreException {
-		deletemeVirtualFolder2 = component.getFolder(DELETEME_PATH2);
+		
+		IVirtualFolder rootFolder = component.getRootFolder();
+		deletemeVirtualFolder2 = rootFolder.getFolder(DELETEME_PATH2);
 		deletemeVirtualFolder2.create(IVirtualResource.FORCE, null);
 		deletemeVirtualFolder2.delete(IVirtualResource.FORCE, null);
 	}

@@ -51,12 +51,15 @@ public class BaseVirtualTest extends TestCase {
 		realWebInfFolder = TEST_PROJECT.getFolder(WEBINF_FOLDER_REAL_PATH);
 		
 		component = ComponentCore.createComponent(TEST_PROJECT, TestWorkspace.WEB_MODULE_1_NAME);
-		webInfFolder = component.getFolder(WEBINF_FOLDER_RUNTIME_PATH); 		
+		
+		IVirtualFolder rootFolder = component.getRootFolder();
+		
+		webInfFolder = rootFolder.getFolder(WEBINF_FOLDER_RUNTIME_PATH); 		
 
-		testdataFolder = component.getFolder(TESTDATA_FOLDER_RUNTIME_PATH); 
+		testdataFolder = rootFolder.getFolder(TESTDATA_FOLDER_RUNTIME_PATH); 
 		realTestdataFolder = TEST_PROJECT.getFolder(TESTDATA_FOLDER_REAL_PATH);
 		
-		deletemeVirtualFolder = component.getFolder(DELETEME_PATH);
+		deletemeVirtualFolder = rootFolder.getFolder(DELETEME_PATH);
 		deletemeVirtualFolder.create(IVirtualResource.FORCE, null);
 		
 		deletemeFolder = deletemeVirtualFolder.getUnderlyingFolder();		

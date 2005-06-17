@@ -14,6 +14,7 @@ import java.util.Properties;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 
 public class IVirtualComponentAPITest extends BaseVirtualTest {
@@ -56,8 +57,25 @@ public class IVirtualComponentAPITest extends BaseVirtualTest {
 	
 	public void testGetResources() {
 		String resource = "/test";
-		IVirtualResource[] virtualResource = component.getResources(resource) ;
+		IVirtualFolder rootFolder = component.getRootFolder();		
+		IVirtualResource[] virtualResource = rootFolder.getResources(resource) ;
 
+	}
+	
+	public void  testExists(){
+		boolean exists = component.exists();
+	}
+	
+	public void testGetRootFolder(){
+		component.getRootFolder();
+	}
+	
+	public void testGetProject(){
+		component.getProject();
+	}
+	
+	public void testGetVersion(){
+		component.getVersion();
 	}
 
 }

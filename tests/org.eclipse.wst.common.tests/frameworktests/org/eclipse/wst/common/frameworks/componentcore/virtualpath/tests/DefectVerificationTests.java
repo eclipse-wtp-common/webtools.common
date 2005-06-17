@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 import org.eclipse.wst.common.tests.CommonTestsPlugin;
 
@@ -43,11 +44,11 @@ public class DefectVerificationTests extends TestCase {
 		
 		IVirtualComponent component = ComponentCore.createComponent(getProject(), "DefectVerificationProject");
 		
-		
-		IVirtualResource fileResource = component.findMember(filePath);		
+		IVirtualFolder rootFolder = component.getRootFolder();
+		IVirtualResource fileResource = rootFolder.findMember(filePath);		
 		assertEquals("The returned type should be a file.", IVirtualResource.FILE, fileResource.getType());
 
-		IVirtualResource folderResource = component.findMember(folderPath);		
+		IVirtualResource folderResource = rootFolder.findMember(folderPath);		
 		assertEquals("The returned type should be a folder.", IVirtualResource.FOLDER, folderResource.getType());
 
 	}

@@ -217,7 +217,8 @@ public class ModuleCoreAPIFVTTest extends TestCase {
 	public void testNavigateComponent() throws Exception {
 
 		IVirtualComponent component = ComponentCore.createComponent(TestWorkspace.getTargetProject(), TestWorkspace.WEB_MODULE_1_NAME);
-		IVirtualFolder root = component.getFolder(new Path("/")); //$NON-NLS-1$ 
+		IVirtualFolder rootFolder = component.getRootFolder();
+		IVirtualFolder root = rootFolder.getFolder(new Path("/")); //$NON-NLS-1$ 
 		// TODO
 		//assertTree(virtualResourceTree, root);
 
@@ -238,7 +239,8 @@ public class ModuleCoreAPIFVTTest extends TestCase {
 	public void testCreateLink() throws Exception {
 
 		IVirtualComponent component = ComponentCore.createComponent(TestWorkspace.getTargetProject(), TestWorkspace.WEB_MODULE_2_NAME);
-		IVirtualFolder images = component.getFolder(new Path("/images")); //$NON-NLS-1$		
+		IVirtualFolder rootFolder = component.getRootFolder();
+		IVirtualFolder images = rootFolder.getFolder(new Path("/images")); //$NON-NLS-1$		
 		((IVirtualResource)images).createLink(new Path("/WebModule2/images"), 0, null); //$NON-NLS-1$
 
 		IFolder realImages = TestWorkspace.getTargetProject().getFolder(new Path("/WebModule2/images")); //$NON-NLS-1$
@@ -292,7 +294,9 @@ public class ModuleCoreAPIFVTTest extends TestCase {
 		IVirtualComponent component = ComponentCore.createComponent(TestWorkspace.getTargetProject(), TestWorkspace.NEW_WEB_MODULE_NAME);
 		// if(!component.exists())
 		component.create(0, null);
-		IVirtualFolder root = component.getFolder(new Path("/")); //$NON-NLS-1$
+		
+		IVirtualFolder rootFolder = component.getRootFolder();
+		IVirtualFolder root = rootFolder.getFolder(new Path("/")); //$NON-NLS-1$
 		IPath realWebContentPath = new Path(TestWorkspace.NEW_WEB_MODULE_NAME + IPath.SEPARATOR + "WebContent"); //$NON-NLS-1$
 		root.createLink(realWebContentPath, 0, null); //$NON-NLS-1$
 

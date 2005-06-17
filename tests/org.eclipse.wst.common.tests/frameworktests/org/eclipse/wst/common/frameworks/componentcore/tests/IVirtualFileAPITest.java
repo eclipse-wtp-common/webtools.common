@@ -14,6 +14,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
+import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 
 
@@ -32,7 +33,8 @@ public class IVirtualFileAPITest extends BaseVirtualTest {
 	protected void setUp() throws Exception {
 		// TODO Auto-generated method stub
 		super.setUp();
-		testFile1 = component.getFile(TESTDATA_FOLDER_RUNTIME_PATH); 
+		IVirtualFolder rootFolder = component.getRootFolder();
+		testFile1 = rootFolder.getFile(TESTDATA_FOLDER_RUNTIME_PATH); 
 		realTestFile1 = TEST_PROJECT.getFile(TESTDATA_FOLDER_REAL_PATH);
 		
 	}

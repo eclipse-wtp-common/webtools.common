@@ -25,6 +25,7 @@ import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 
@@ -89,7 +90,8 @@ public class IVirtualComponentAPITest extends IVirtualContainerAPITest {
 	
 	public void testGetResources() {
 		String resource = "/test";
-		IVirtualResource[] virtualResource = virtualComponent.getResources(resource) ;
+		IVirtualFolder rootFolder = virtualComponent.getRootFolder();
+		IVirtualResource[] virtualResource = rootFolder.getResources(resource) ;
 
 	}
 	
