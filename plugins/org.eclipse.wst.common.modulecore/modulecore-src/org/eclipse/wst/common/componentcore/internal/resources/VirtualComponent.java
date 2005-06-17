@@ -195,9 +195,10 @@ public class VirtualComponent implements IVirtualComponent {
 					try { 
 						targetProject = StructureEdit.getContainingProject(referencedComponent.getHandle());
 					} catch(UnresolveableURIException uurie) { } 
-					// if the project cannot be resolved, assume it's local
+					// if the project cannot be resolved, assume it's local - really it probably deleted
 					if(targetProject == null)
-						targetProject = getProject();
+						continue;
+						//targetProject = getProject();
 					
 					try {
 						targetComponentName = StructureEdit.getDeployedName(referencedComponent.getHandle());
