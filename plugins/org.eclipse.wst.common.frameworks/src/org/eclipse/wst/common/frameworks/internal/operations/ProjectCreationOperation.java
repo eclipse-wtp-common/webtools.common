@@ -28,7 +28,7 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
-public class ProjectCreationOperation extends AbstractDataModelOperation {
+public class ProjectCreationOperation extends AbstractDataModelOperation implements IProjectCreationProperties{
 
 	public ProjectCreationOperation(IDataModel dataModel) {
 		super(dataModel);
@@ -37,8 +37,8 @@ public class ProjectCreationOperation extends AbstractDataModelOperation {
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		try {
             IProgressMonitor subMonitor = new SubProgressMonitor(monitor, IProgressMonitor.UNKNOWN);
-			IProjectDescription desc = (IProjectDescription) model.getProperty(IProjectCreationProperties.PROJECT_DESCRIPTION);
-			IProject project = (IProject) model.getProperty(IProjectCreationProperties.PROJECT);
+			IProjectDescription desc = (IProjectDescription) model.getProperty(PROJECT_DESCRIPTION);
+			IProject project = (IProject) model.getProperty(PROJECT);
 			if (!project.exists()) {
                 project.create(desc, subMonitor);
             }   
@@ -48,7 +48,7 @@ public class ProjectCreationOperation extends AbstractDataModelOperation {
 
             project.open(subMonitor);
 
-			String[] natureIds = (String[]) model.getProperty(IProjectCreationProperties.PROJECT_NATURES);
+			String[] natureIds = (String[]) model.getProperty(PROJECT_NATURES);
 			if (null != natureIds) {
 				desc = project.getDescription();
 				desc.setNatureIds(natureIds);

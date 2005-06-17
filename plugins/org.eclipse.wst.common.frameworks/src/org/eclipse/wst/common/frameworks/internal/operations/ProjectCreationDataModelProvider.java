@@ -27,7 +27,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
@@ -56,19 +55,15 @@ public class ProjectCreationDataModelProvider extends AbstractDataModelProvider 
 		if (propertyValue != null && propertyName.equals(PROJECT_LOCATION)) {
 			IPath path = getRootLocation();
 			if (path.equals(new Path((String) propertyValue))) {
-				setProperty(propertyName, null);
-				return false;
-			} else
-                super.propertySet(propertyName, propertyValue);
-		}
-		if (propertyName.equals(PROJECT_NAME) && !getDataModel().isPropertySet(PROJECT_LOCATION)) {
-			model.notifyPropertyChange(PROJECT_NAME, IDataModel.VALUE_CHG);
-			model.notifyPropertyChange(PROJECT_LOCATION, IDataModel.VALUE_CHG);
+				model.setProperty(propertyName, null);
+			}
+            model.setProperty(PROJECT_DESCRIPTION, getProjectDescription());
+		} else if (propertyName.equals(PROJECT_NAME)) {
 			IStatus stat = model.validateProperty(PROJECT_NAME);
 			if( stat != OK_STATUS )
 				return false;
             model.setProperty(PROJECT, getProject());
-			return false;
+            model.setProperty(PROJECT_DESCRIPTION, getProjectDescription());
 		}
 		return true;
 	}
@@ -90,7 +85,10 @@ public class ProjectCreationDataModelProvider extends AbstractDataModelProvider 
 		IProjectDescription desc = ResourcesPlugin.getWorkspace().newProjectDescription(projectName);
 		if (getDataModel().isPropertySet(PROJECT_LOCATION)) {
 			String projectLocation = (String) getProperty(ProjectCreationDataModelProvider.PROJECT_LOCATION);
-			desc.setLocation(new Path(projectLocation));
+            if(projectLocation != null)
+                desc.setLocation(new Path(projectLocation));
+            else
+                desc.setLocation(null);
 		}
 		return desc;
 	}
