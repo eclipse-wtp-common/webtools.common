@@ -214,6 +214,14 @@ public interface IVirtualComponent {
 	/**
 	 * Returns whether this component is backed by an accessible Component. 
 	 */
-	public boolean exists();	
+	public boolean exists();
+	
+	/**
+	 * Returns the components which reference this component.  This is only a one layer
+	 * deep search algorithm.
+	 * 
+	 * @return array of IVirtualComponents
+	 */
+	public IVirtualComponent[] getReferencingComponents();
 
 }

@@ -27,6 +27,7 @@ import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.jem.util.emf.workbench.EMFWorkbenchContextBase;
 import org.eclipse.jem.util.emf.workbench.ProjectResourceSet;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
+import org.eclipse.jem.util.emf.workbench.nature.EMFNature;
 import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
 import org.eclipse.wst.common.componentcore.internal.ModuleStructuralModel;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
@@ -449,6 +450,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		super.configure();
 		addDeployableProjectBuilder();
 		addDependencyResolver();
+		addDependencyGraphBuilder();
 	}
 
 	protected String getPluginID() {
@@ -473,6 +475,29 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 			ICommand[] updatedBuilderCommands = new ICommand[builderCommands.length + 1];
 			System.arraycopy(builderCommands, 0, updatedBuilderCommands, 1, builderCommands.length);
 			updatedBuilderCommands[0] = command;
+			description.setBuildSpec(updatedBuilderCommands);
+			project.setDescription(description, null);
+		}
+	}
+	
+	private void addDependencyGraphBuilder() throws CoreException {
+		IProjectDescription description = project.getDescription();
+		ICommand[] builderCommands = description.getBuildSpec();
+		boolean previouslyAdded = false;
+
+		for (int i = 0; i < builderCommands.length; i++) {
+			if (builderCommands[i].getBuilderName().equals(DEPENDENCY_GRAPH_BUILDER_ID))
+				// builder already added no need to add again
+				previouslyAdded = true;
+			break;
+		}
+		if (!previouslyAdded) {
+			// builder not found, must be added
+			ICommand command = description.newCommand();
+			command.setBuilderName(DEPENDENCY_GRAPH_BUILDER_ID);
+			ICommand[] updatedBuilderCommands = new ICommand[builderCommands.length + 1];
+			System.arraycopy(builderCommands, 0, updatedBuilderCommands, 0, builderCommands.length);
+			updatedBuilderCommands[updatedBuilderCommands.length-1] = command;
 			description.setBuildSpec(updatedBuilderCommands);
 			project.setDescription(description, null);
 		}

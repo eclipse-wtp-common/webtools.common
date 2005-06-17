@@ -47,4 +47,8 @@ public class DependencyGraph {
 			dependencies.put(target, (referencingComponents = new HashSet()));
 		return referencingComponents;
 	}
+	
+	public void clear() {
+		dependencies.clear();
+	}
 }

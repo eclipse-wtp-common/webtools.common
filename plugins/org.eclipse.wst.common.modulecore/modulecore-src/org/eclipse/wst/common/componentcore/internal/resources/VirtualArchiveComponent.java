@@ -34,12 +34,10 @@ public class VirtualArchiveComponent implements IVirtualComponent {
 	private IPath runtimePath;
 	private int flag = 1;
 
-	
 	public VirtualArchiveComponent(String aName, IPath aRuntimePath) {
 		name = aName;
 		runtimePath = aRuntimePath;
 	}
-	
 	
 	public IVirtualComponent getComponent() {
 		return this;
@@ -70,7 +68,6 @@ public class VirtualArchiveComponent implements IVirtualComponent {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 	}
 
-	
 	public IPath[] getMetaResources() {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 	}
@@ -78,7 +75,6 @@ public class VirtualArchiveComponent implements IVirtualComponent {
 	public void setMetaResources(IPath[] theMetaResourcePaths) {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 	}
-
 
 	public ComponentHandle getComponentHandle() {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
@@ -132,8 +128,6 @@ public class VirtualArchiveComponent implements IVirtualComponent {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 	}
 
-
-
 	public Properties getMetaProperties() {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 	}
@@ -159,8 +153,7 @@ public class VirtualArchiveComponent implements IVirtualComponent {
 	}
 
 	public void create(int updateFlags, IProgressMonitor aMonitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		
+		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$	
 	}
 
 	public IVirtualResource[] getResources() {
@@ -185,7 +178,6 @@ public class VirtualArchiveComponent implements IVirtualComponent {
 
 	public void createLink(IPath aProjectRelativeLocation, int updateFlags, IProgressMonitor monitor) throws CoreException {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		
 	}
 
 	public IResource getUnderlyingResource() {
@@ -202,7 +194,6 @@ public class VirtualArchiveComponent implements IVirtualComponent {
 
 	public void setReferences(IVirtualReference[] theReferences) {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		
 	}
 
 	public IVirtualReference getReference(String aComponentName) {
@@ -213,10 +204,11 @@ public class VirtualArchiveComponent implements IVirtualComponent {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 	}
 
-
 	public IVirtualFolder getRootFolder() {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 	}
-	
 
+	public IVirtualComponent[] getReferencingComponents() {
+		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
+	}
 }

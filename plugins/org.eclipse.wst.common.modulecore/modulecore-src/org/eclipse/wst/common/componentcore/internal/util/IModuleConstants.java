@@ -19,6 +19,8 @@ import org.eclipse.core.runtime.Path;
  */
 public interface IModuleConstants {
 	
+	public static String DEPENDENCY_GRAPH_BUILDER_ID = "org.eclipse.wst.common.modulecore.DependencyGraphBuilder"; //$NON-NLS-1$
+	
     public static String COMPONENT_STRUCTURAL_BUILDER_ID = "org.eclipse.wst.common.modulecore.ComponentStructuralBuilder"; //$NON-NLS-1$
     public static String COMPONENT_STRUCTURAL_DEPENDENCY_RESOLVER_ID = "org.eclipse.wst.common.modulecore.ComponentStructuralBuilderDependencyResolver"; //$NON-NLS-1$
      

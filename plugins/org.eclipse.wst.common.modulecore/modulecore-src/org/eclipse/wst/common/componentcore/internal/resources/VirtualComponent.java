@@ -30,6 +30,7 @@ import org.eclipse.wst.common.componentcore.internal.Property;
 import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.internal.builder.DependencyGraphManager;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
@@ -305,6 +306,20 @@ public class VirtualComponent implements IVirtualComponent {
 
 	public IProject getProject() {
 		return componentHandle.getProject();
+	}
+	
+	/**
+	 * Return all components which have a reference to the passed in target component.
+	 * 
+	 * @param target
+	 * @return array of components
+	 */
+	public IVirtualComponent[] getReferencingComponents() {
+		ComponentHandle[] handles =  DependencyGraphManager.getInstance().getDependencyGraph().getReferencingComponents(this.getComponentHandle());
+		IVirtualComponent[] result = new IVirtualComponent[handles.length];
+		for (int i=0; i<handles.length; i++)
+			result[i] = ComponentCore.createComponent(handles[i].getProject(),handles[i].getName());
+		return result;
 	}
 
 }

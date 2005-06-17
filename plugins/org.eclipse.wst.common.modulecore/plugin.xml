@@ -33,6 +33,21 @@
                URI=".wtpmodules"/>
       </editModel> 
    </extension>
+   
+   <!--======================================-->
+   <!-- Dependency Graph Builder contribution-->
+   <!--======================================-->
+   <extension
+         id="DependencyGraphBuilder"
+         name="Dependency Graph Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder>
+         <run
+               class="org.eclipse.wst.common.componentcore.internal.builder.DependencyGraphBuilder">
+         </run>
+      </builder>
+   </extension>
+   
    <!--============================-->
    <!-- Component Structural Builder Contribution-->
    <!--============================-->

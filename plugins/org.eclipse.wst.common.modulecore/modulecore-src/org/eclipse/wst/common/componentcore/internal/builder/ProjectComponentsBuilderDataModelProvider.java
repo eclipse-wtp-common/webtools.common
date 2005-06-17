@@ -96,13 +96,12 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
     
     private void createAdditionalBuildersForVResoures(IVirtualResource[] resources) {
         IVirtualComponent vReferencedComponent;
-        IProject project;
         ComponentHandle referencedComponentHandle;
         ComponentHandle[] referencingComponentHandles;
         for (int i = 0; i < resources.length; i++) {
             vReferencedComponent = resources[i].getComponent();
             referencedComponentHandle = ComponentHandle.create(vReferencedComponent.getProject(), vReferencedComponent.getName());
-            referencingComponentHandles = DependencyGraph.getInstance().getReferencingComponents(referencedComponentHandle);
+            referencingComponentHandles = DependencyGraphManager.getInstance().getDependencyGraph().getReferencingComponents(referencedComponentHandle);
             for (int j = 0; j < referencingComponentHandles.length; j++) {
                 StructureEdit sEdit = null;
                 try {

@@ -29,13 +29,9 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jem.util.logger.proxy.Logger;
-import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IProjectComponentsBuilderDataModelProperties;
-import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
-import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
-import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
@@ -151,40 +147,40 @@ public class ComponentStructuralBuilder extends IncrementalProjectBuilder implem
                     oldOutput[i].delete(true, monitor);
             }
         }
-        cleanDepGraph();
+        //cleanDepGraph();
         super.clean(monitor);
     }
-    private void cleanDepGraph() {
-            ComponentHandle componentHandle;
-            ComponentHandle referencingComponentHandle;
-            
-            IProject referencingProject = getProject();
-            StructureEdit sEdit = null;
-            IProject refedProject = null;
-            try {
-                sEdit = StructureEdit.getStructureEditForRead(getProject());
-                WorkbenchComponent[] wbComps = sEdit.getWorkbenchModules();
-                for(int i = 0; i<wbComps.length; i++){
-                    referencingComponentHandle = ComponentHandle.create(referencingProject, wbComps[i].getName());
-                    List refedComps = wbComps[i].getReferencedComponents();
-                    for(int j = 0; j<refedComps.size(); j++) {
-                        refedProject = StructureEdit.getContainingProject(((ReferencedComponent)refedComps.get(j)).getHandle());
-                        if(refedProject != null) {
-                            componentHandle = ComponentHandle.create(refedProject, ((ReferencedComponent)refedComps.get(j)).getHandle());
-                            DependencyGraph.getInstance().removeReference(componentHandle, referencingComponentHandle);
-                        }
-                    }
-                }
-
-            } catch (UnresolveableURIException e) {
-                Logger.getLogger().log(e.getMessage());
-            } finally {
-                if (null != sEdit) {
-                    sEdit.dispose();
-                }
-            }
-
-    }
+//    private void cleanDepGraph() {
+//            ComponentHandle componentHandle;
+//            ComponentHandle referencingComponentHandle;
+//            
+//            IProject referencingProject = getProject();
+//            StructureEdit sEdit = null;
+//            IProject refedProject = null;
+//            try {
+//                sEdit = StructureEdit.getStructureEditForRead(getProject());
+//                WorkbenchComponent[] wbComps = sEdit.getWorkbenchModules();
+//                for(int i = 0; i<wbComps.length; i++){
+//                    referencingComponentHandle = ComponentHandle.create(referencingProject, wbComps[i].getName());
+//                    List refedComps = wbComps[i].getReferencedComponents();
+//                    for(int j = 0; j<refedComps.size(); j++) {
+//                        refedProject = StructureEdit.getContainingProject(((ReferencedComponent)refedComps.get(j)).getHandle());
+//                        if(refedProject != null) {
+//                            componentHandle = ComponentHandle.create(refedProject, ((ReferencedComponent)refedComps.get(j)).getHandle());
+//                            DependencyGraph.getInstance().removeReference(componentHandle, referencingComponentHandle);
+//                        }
+//                    }
+//                }
+//
+//            } catch (UnresolveableURIException e) {
+//                Logger.getLogger().log(e.getMessage());
+//            } finally {
+//                if (null != sEdit) {
+//                    sEdit.dispose();
+//                }
+//            }
+//
+//    }
     /**
      * @param sourceResource
      * @param absoluteInputContainer
