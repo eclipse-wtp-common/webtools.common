@@ -277,5 +277,7 @@ public interface IVirtualContainer extends IVirtualResource {
 	 * @since 2.0
 	 */
 	public IVirtualResource[] members(int memberFlags) throws CoreException;
+	
+	public IVirtualResource[] getResources(String aResourceType);	
 }
  

@@ -21,6 +21,7 @@ import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
 import org.eclipse.wst.common.componentcore.internal.resources.FlexibleProject;
+import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualComponent;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualFile;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualFolder;
@@ -74,6 +75,19 @@ public class ComponentCore {
 		return new VirtualComponent(aProject, aComponentName, new Path("/")); //$NON-NLS-1$
 	}
 
+	/**
+	 * Return an IVirtualComponent with the given name (aComponentName)
+	 * 
+	 * @param aComponentName A name to identify the component, the name can be lib/&lt;Absolute path of a jar&gt;
+	 * or var/&lt;CLASSPATH_VARIABLE/library namer&gt;
+	 * @return A handle to an IVirtualComponent that may or may not exist.
+	 * @see IVirtualContainer#create(int, IProgressMonitor) 
+	 */
+	public static IVirtualComponent createArchiveComponent(String aComponentName){
+		return new VirtualArchiveComponent(aComponentName, new Path("/"));
+		
+	}
+	
 	/**
 	 * Return an IVirtualFolder with a runtime path specified by aRuntimePath 
 	 * contained by aProject, in a component named aComponentName. The resultant

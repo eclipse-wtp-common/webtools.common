@@ -56,7 +56,8 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
  * </p>
  * @since 1.0
  */
-public interface IVirtualResource extends ISchedulingRule, IAdaptable {
+public interface IVirtualResource extends ISchedulingRule, IAdaptable {  
+																	
 
 	/*
 	 * ==================================================================== 

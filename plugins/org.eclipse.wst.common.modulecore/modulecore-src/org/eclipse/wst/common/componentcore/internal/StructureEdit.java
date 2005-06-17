@@ -36,7 +36,6 @@ import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
 import org.eclipse.wst.common.componentcore.internal.util.EclipseResourceAdapter;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
-import org.eclipse.wst.common.componentcore.resources.IVirtualContainer;
 
 /**
  * <p>
@@ -326,7 +325,8 @@ public class StructureEdit implements IEditModelHandler {
 		return ModuleURIUtil.getDeployedName(aFullyQualifiedModuleURI);
 	}
 
-	public static ComponentType getComponentType(IVirtualContainer aComponent) {
+	//public static ComponentType getComponentType(IVirtualContainer aComponent) {
+	public static ComponentType getComponentType(IVirtualComponent aComponent) {
 		StructureEdit componentCore = null;
 		ComponentType componentType = null;
 		try {
@@ -340,7 +340,8 @@ public class StructureEdit implements IEditModelHandler {
 		return componentType;
 	}
 
-	public static void setComponentType(IVirtualContainer component, ComponentType aComponentType) {
+	//public static void setComponentType(IVirtualContainer component, ComponentType aComponentType) {
+	public static void setComponentType(IVirtualComponent component, ComponentType aComponentType) {		
 		StructureEdit componentCore = null;
 		try {
 			componentCore = StructureEdit.getStructureEditForWrite(component.getProject());

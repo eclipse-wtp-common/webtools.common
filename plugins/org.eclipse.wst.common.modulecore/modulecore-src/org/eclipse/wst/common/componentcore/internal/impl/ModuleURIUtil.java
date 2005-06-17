@@ -28,6 +28,8 @@ public class ModuleURIUtil {
 
 	protected static final String RESOURCE_URI_PROTOCOL = PlatformURLModuleConnection.MODULE_PROTOCOL+IPath.SEPARATOR+PlatformURLModuleConnection.RESOURCE_MODULE+IPath.SEPARATOR;
 
+	protected static final String ARCHIVE_URI_PROTOCOL = PlatformURLModuleConnection.MODULE_PROTOCOL+IPath.SEPARATOR+PlatformURLModuleConnection.CLASSPATH +IPath.SEPARATOR;
+	
 	public static interface ModuleURI {
 		public static final int SUB_PROTOCOL_INDX = 0;
 		public static final int PROJECT_NAME_INDX = 1;
@@ -153,7 +155,29 @@ public class ModuleURIUtil {
 		return URI.createURI(RESOURCE_URI_PROTOCOL + aProject.getName() + IPath.SEPARATOR + aComponentName);
 	}
 
+	public static URI archiveComponentfullyQualifyURI(String aComponentName) {
+		return URI.createURI(ARCHIVE_URI_PROTOCOL + aComponentName);
+	}
+	
 	public static URI fullyQualifyURI(ComponentHandle aHandle) {
 		return fullyQualifyURI(aHandle.getProject(), aHandle.getName());
+	}
+	
+	public static boolean isClassPathURI(URI uri){
+		if( PlatformURLModuleConnection.CLASSPATH.equals(uri.segment(0) )){
+			return true;
+		}
+		return false;
+	}
+	
+	public static String getArchiveType(URI aModuleURI)throws UnresolveableURIException {
+		ensureValidFullyQualifiedModuleURI(aModuleURI);
+		return aModuleURI.segment(ModuleURI.PROJECT_NAME_INDX);		
+	}
+	
+	public static String getArchiveName(URI aModuleURI)throws UnresolveableURIException {
+		ensureValidFullyQualifiedModuleURI(aModuleURI);
+		URI uri = trimToRelativePath(aModuleURI, ModuleURI.MODULE_NAME_INDX);
+		return uri.toString();
 	}
 }

@@ -10,7 +10,10 @@ package org.eclipse.wst.common.componentcore.resources;
 
 import java.util.Properties;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
  * Represents a component as defined by the .wtpmodules file.
@@ -22,8 +25,15 @@ import org.eclipse.core.runtime.IPath;
  * </p>
  * @since 1.0
  */
-public interface IVirtualComponent extends IVirtualContainer {
-
+public interface IVirtualComponent {
+	
+	
+	/**
+	 * Type constant (bit mask value 1) which identifies component binary status.
+	 */
+	public static final int BINARY = 0x1;
+	
+	
 	/**
 	 * The name of the component must be unique within its enclosing project.
 	 * 
@@ -47,6 +57,15 @@ public interface IVirtualComponent extends IVirtualContainer {
 	 * @return The componentHandle, of ComponentHandle type
 	 */
 	ComponentHandle getComponentHandle();
+	
+	/**
+	 * Returns reference to itself.
+	 * <p>
+	 *  
+	 * @return the name of the component that contains the virtual resource
+	 */
+	public IVirtualComponent getComponent();
+	
 
 	/**
 	 * 
@@ -97,21 +116,6 @@ public interface IVirtualComponent extends IVirtualContainer {
 	 */
 	void setMetaResources(IPath[] theMetaResourcePaths);
 
-	/**
-	 * Returns all virtual resources of a given type. 
-	 * <p>
-	 * Virtual Resources can have a
-	 * {@link org.eclipse.wst.common.componentcore.internal.ComponentResource#getResourceType() type}&nbsp;
-	 * associated with them. This method will find those resources
-	 * which are tagged with a given resource type The returned array
-	 * could be a mix of {@link IVirtualFile}s or {@link IVirtualFolder}s 
-	 * </p>
-	 * <p><b>null</b> may be supplied to this method, which will return all resources without a resourceType.</p> 
-	 * 
-	 * @param aResourceType A client-defined resource type that was used to create 0 or more resources within this component
-	 * @return An array of those resources which matched the resourceType
-	 */
-	IVirtualResource[] getResources(String aResourceType);
 
 	/**
 	 * Virtual components may reference other virtual components to build logical dependency trees. 
@@ -148,12 +152,68 @@ public interface IVirtualComponent extends IVirtualContainer {
 	 * @param theReferences A by-value copy of the virtual reference array
 	 */
 	void setReferences(IVirtualReference[] theReferences);
-
+	
 	/**
 	 * The version associated with the component.
 	 * 
 	 * @return The version of the component.
 	 */	
 	String getVersion();	
+	
+	/**
+	 * Returns true if this component is of binary type
+	 * 
+	 * @return The binary status.
+	 */
+	boolean isBinary();		
+	
+	
+	/**
+	 * Create the underlying model elements if they do not already exist. Resources
+	 * may be created as a result of this method if the mapped path does not exist. 
+	 * 
+	 * @param updateFlags Any of IVirtualResource or IResource update flags. If a 
+	 * 			resource must be created, the updateFlags will be supplied to the 
+	 * 			resource creation operation.
+	 * @param aMonitor
+	 * @throws CoreException
+	 */
+	public void create(int updateFlags, IProgressMonitor aMonitor) throws CoreException; 
+	
+	/**
+	 * Returns a handle to the root folder.
+	 * <p> 
+	 * This is a resource handle operation; neither the container
+	 * nor the result need exist in the workspace.
+	 * The validation check on the resource name/path is not done
+	 * when the resource handle is constructed; rather, it is done
+	 * automatically as the resource is created.
+	 * </p>
+	 *
+	 * @param name the string name of the member folder
+	 * @return the (handle of the) member folder
+	 * @see #getFile(String)
+	 */
+	public IVirtualFolder getRootFolder();
+	
+	/**
+	 * Returns the project which contains the component. 
+	 * <p>
+	 * The name of the project may not (and most likely will not) be referenced in the 
+	 * runtime path of this virtual path, but will be referenced by the workspace-relative path. 
+	 * </p>
+	 * <p>
+	 * This is a resource handle operation; neither the resource nor the resulting project need
+	 * exist.
+	 * </p>
+	 * 
+	 * @return the project handle
+	 */
+	public IProject getProject();
+	
+	/**
+	 * Returns whether this component is backed by an accessible Component. 
+	 */
+	public boolean exists();	
 
 }

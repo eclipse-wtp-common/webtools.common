@@ -22,6 +22,7 @@ import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
+import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.internal.emfworkbench.CompatibilityWorkbenchURIConverterImpl;
 import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
 
@@ -89,7 +90,10 @@ public class ComponentCoreURIConverter extends CompatibilityWorkbenchURIConverte
 			IVirtualComponent component = ComponentCore.createComponent(containingProject, componentName);
 
 			URI deployPathSegment = ModuleURIUtil.trimToDeployPathSegment(aNewURI);
-			IVirtualFile newFile = component.getFile(new Path(deployPathSegment.path()));
+			
+			//IVirtualFile newFile = component.getFile(new Path(deployPathSegment.path()));			
+			IVirtualFolder rootFolder = component.getRootFolder();
+			IVirtualFile newFile = rootFolder.getFile(new Path(deployPathSegment.path()));
 			
 			return URI.createPlatformResourceURI(newFile.getWorkspaceRelativePath().toString());
 			 

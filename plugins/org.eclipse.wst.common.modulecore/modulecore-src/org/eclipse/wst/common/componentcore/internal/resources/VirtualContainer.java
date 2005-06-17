@@ -8,7 +8,10 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.resources;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IContainer;
@@ -19,6 +22,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
@@ -30,7 +34,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 
-public class VirtualContainer extends VirtualResource implements
+public abstract class VirtualContainer extends VirtualResource implements
 		IVirtualContainer {
 
 	public VirtualContainer(IProject aProject, String aName, IPath aRuntimePath) {
@@ -44,7 +48,7 @@ public class VirtualContainer extends VirtualResource implements
 	// TODO WTP:Implement this method
 	public boolean exists(IPath path) {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-		// return false;
+
 	}
 
 	/**
@@ -234,24 +238,7 @@ public class VirtualContainer extends VirtualResource implements
 		// return null;
 	}
 
-	public void create(int updateFlags, IProgressMonitor aMonitor)
-			throws CoreException {
 
-		StructureEdit moduleCore = null;
-		try {
-			moduleCore = StructureEdit.getStructureEditForWrite(getProject());
-			WorkbenchComponent component = moduleCore
-					.findComponentByName(getComponentHandle().getName());
-			if (component == null)
-				moduleCore
-						.createWorkbenchModule(getComponentHandle().getName());
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.saveIfNecessary(null);
-				moduleCore.dispose();
-			}
-		}
-	}
 
 	/**
 	 * @see IFolder#createLink(org.eclipse.core.runtime.IPath, int,
@@ -358,4 +345,40 @@ public class VirtualContainer extends VirtualResource implements
 					newRuntimePath));
 	}
 
+	public IVirtualResource[] getResources(String aResourceType) {
+		StructureEdit core = null;
+		try {
+			core = StructureEdit.getStructureEditForRead(getProject());
+			String name = getComponentHandle().getName();
+			WorkbenchComponent component = core.findComponentByName(name);
+			List currentResources = component.getResources();
+			List foundResources = new ArrayList();
+
+			if (aResourceType != null) {
+				for (Iterator iter = currentResources.iterator(); iter.hasNext();) {
+					ComponentResource resource = (ComponentResource) iter.next();
+					if (aResourceType.equals(resource.getResourceType())) {
+						IVirtualResource vres = createVirtualResource(resource);
+						if (vres != null)
+							foundResources.add(vres);
+					}
+				}
+			}
+			return (IVirtualResource[]) foundResources.toArray(new IVirtualResource[foundResources.size()]);
+		} finally {
+			if (core != null)
+				core.dispose();
+		}
+	}
+	
+	private IVirtualResource createVirtualResource(ComponentResource aComponentResource) {
+		IResource resource = StructureEdit.getEclipseResource(aComponentResource);
+		switch (resource.getType()) {
+			case IResource.FILE :
+				return ComponentCore.createFile(getProject(), getName(), aComponentResource.getRuntimePath());
+			case IResource.FOLDER :
+				return ComponentCore.createFolder(getProject(), getName(), aComponentResource.getRuntimePath());
+		}
+		return null;
+	}	
 }

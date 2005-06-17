@@ -21,6 +21,7 @@ import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
+import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 
 /**
  * @author mdelder
@@ -50,7 +51,9 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
 			URI runtimeURI = ModuleURIUtil.trimToDeployPathSegment(aModuleResourceRuntimePath);
 			IPath runtimePath = new Path(runtimeURI.path());
 			IVirtualComponent component = ComponentCore.createComponent(componentProject, componentName);
-			IVirtualFile vFile = component.getFile(runtimePath);
+			//IVirtualFile vFile = component.getFile(runtimePath);
+			IVirtualFolder rootFolder = component.getRootFolder();
+			IVirtualFile vFile = rootFolder.getFile(runtimePath);
 			return URI.createPlatformResourceURI(vFile.getWorkspaceRelativePath().toString());
 		} catch (UnresolveableURIException e) {
 		}
