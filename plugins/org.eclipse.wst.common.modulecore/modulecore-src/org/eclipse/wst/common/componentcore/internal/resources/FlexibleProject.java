@@ -10,6 +10,9 @@
  *******************************************************************************/ 
 package org.eclipse.wst.common.componentcore.internal.resources;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.common.componentcore.ComponentCore;
@@ -62,6 +65,16 @@ public class FlexibleProject implements IFlexibleProject {
 
 	public void create(int theFlags, IProgressMonitor aMonitor) { 
 		
+	}
+	
+	public IVirtualComponent[] getComponentsOfType(String type) {
+		List result = new ArrayList();
+		IVirtualComponent[] components = getComponents();
+		for (int j = 0; j < components.length; j++) {
+			if (components[j].getComponentTypeId().equals(type))
+				result.add(components[j]);
+		}
+		return (IVirtualComponent[]) result.toArray(new IVirtualComponent[result.size()]);
 	}
 
 }

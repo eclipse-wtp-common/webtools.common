@@ -42,6 +42,15 @@ public interface IFlexibleProject {
 	 *         <code>null</code> if no such component exists
 	 */
 	IVirtualComponent getComponent(String aComponentName);
+	
+	/**
+	 * Finds and returns the components within this project of the specified
+	 * component type.
+	 * 
+	 * @param type
+	 * @return the array of components within this project for this componentType
+	 */
+	public IVirtualComponent[] getComponentsOfType(String type);
 
 	/**
 	 * Returns the underlying IProject
