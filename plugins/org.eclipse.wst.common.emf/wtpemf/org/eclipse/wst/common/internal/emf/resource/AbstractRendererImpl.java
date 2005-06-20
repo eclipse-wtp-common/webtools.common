@@ -145,4 +145,8 @@ public abstract class AbstractRendererImpl implements Renderer {
 	public boolean useStreamsForIO() {
 		return true;
 	}
+
+	public boolean isBatchMode() {
+		return false;
+	}
 }

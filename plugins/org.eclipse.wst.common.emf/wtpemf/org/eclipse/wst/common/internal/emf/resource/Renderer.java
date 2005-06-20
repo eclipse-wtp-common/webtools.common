@@ -57,4 +57,6 @@ public interface Renderer {
 	boolean isSharedForWrite();
 
 	void setBatchMode(boolean isBatch);
+	
+	boolean isBatchMode();
 }

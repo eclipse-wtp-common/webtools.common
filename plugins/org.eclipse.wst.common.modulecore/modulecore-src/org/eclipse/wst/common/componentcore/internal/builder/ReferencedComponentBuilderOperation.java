@@ -67,6 +67,8 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
         try {
             this.monitor = monitor;
 			IPath absoluteOutputContainer = getAbsoluteOutputContainer();
+			if (absoluteOutputContainer == null)  //Project not accessible
+				return OK_STATUS;
 			// create output container folder if it does not exist
 			IFolder outputContainerFolder = createFolder(absoluteOutputContainer);
 			IPath absoluteInputContainer = getAbsoluteInputContainer();
@@ -132,13 +134,15 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 	}
 
 	/**
-	 * @return
+	 * @return an IPath or null if not accessable
 	 */
 	private IPath getAbsoluteOutputContainer() {
 		WorkbenchComponent workbenchModule = (WorkbenchComponent) model.getProperty(CONTAINING_WB_COMPONENT);
 		IFolder localWorkbenchModuleOuptutContainer = null;
 		if (workbenchModule != null)
 			localWorkbenchModuleOuptutContainer = StructureEdit.getOutputContainerRoot(workbenchModule);
+		if (localWorkbenchModuleOuptutContainer == null) //Project not found or is not accessible
+			return null;
 
 		IPath localWorkbenchModuleOuptutContainerPath = localWorkbenchModuleOuptutContainer.getFullPath();
 		IPath deployPath = (IPath) model.getProperty(OUTPUT_CONTAINER);
