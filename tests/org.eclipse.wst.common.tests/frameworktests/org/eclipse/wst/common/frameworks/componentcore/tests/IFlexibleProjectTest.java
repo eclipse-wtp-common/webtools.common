@@ -33,7 +33,11 @@ public class IFlexibleProjectTest extends TestCase {
 
 		public void create(int theFlags, IProgressMonitor aMonitor) {
 			// TODO Auto-generated method stub
-			
+		}
+		
+		public IVirtualComponent[] getComponentsOfType(String type) {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 
