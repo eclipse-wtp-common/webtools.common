@@ -15,7 +15,6 @@ import java.util.List;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
@@ -60,8 +59,8 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 	/**
 	 * @return
 	 */
-	protected ISchedulingRule getSchedulingRule() {
-		return null;
+	public ISchedulingRule getSchedulingRule() {
+		return rootOperation.getSchedulingRule();
 	}
 
 	public IStatus undo(IProgressMonitor monitor, IAdaptable info) {
@@ -106,11 +105,8 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info) {
 		final InvocationTargetException[] iteHolder = new InvocationTargetException[1];
 		IWorkspaceRunnableWithStatus workspaceRunnable = new IWorkspaceRunnableWithStatus(info) {
-
 				public void run(IProgressMonitor pm) throws CoreException {
-				
 						setStatus(doExecute(pm,getInfo()));
-						
 				}
 			};
 			ISchedulingRule rule = getSchedulingRule();
@@ -202,7 +198,7 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 				if (shouldExtendedRun) {
 					nestedOp.setDataModel(rootDataModel);
 					ExtendableOperationImpl extendedOp = new ExtendableOperationImpl(nestedOp);
-					localStatus = extendedOp.execute(new SubProgressMonitor(pm, IProgressMonitor.UNKNOWN), info);
+					localStatus = extendedOp.doExecute(new SubProgressMonitor(pm, IProgressMonitor.UNKNOWN), info);
 				} else
 					localStatus = null;
 			} catch (Exception e) {
@@ -234,11 +230,8 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 	public boolean canUndo() {
 		return rootOperation.canUndo();
 	}
-	private int getOperationExecutionFlags() {
-		return shouldDelayDeltaNotification() ? IWorkspace.AVOID_UPDATE : 0;
-	}
-	protected boolean shouldDelayDeltaNotification() {
-		return true;
+	public int getOperationExecutionFlags() {
+		return rootOperation.getOperationExecutionFlags();
 	}
 
 	public String getLabel() {

@@ -11,7 +11,9 @@
 package org.eclipse.wst.common.frameworks.datamodel;
 
 import org.eclipse.core.commands.operations.AbstractOperation;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 
 /**
  * Abstract implementation for an IDataModelOperation.
@@ -88,4 +90,13 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	public IDataModel getDataModel() {
 		return model;
 	}
+	
+	public ISchedulingRule getSchedulingRule(){
+		return null;
+	}
+	
+	public int getOperationExecutionFlags() {
+		return IWorkspace.AVOID_UPDATE;
+	}
+
 }
