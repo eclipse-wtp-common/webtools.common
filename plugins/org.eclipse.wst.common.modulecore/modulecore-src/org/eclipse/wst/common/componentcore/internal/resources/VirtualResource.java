@@ -174,8 +174,7 @@ public abstract class VirtualResource implements IVirtualResource {
 	public IVirtualContainer getParent() {
 		if(getRuntimePath().segmentCount() > 1)
 			return new VirtualFolder(getComponentHandle(), getRuntimePath().removeLastSegments(1));
-		//return getComponent(); NA, to resolve the case of root folder
-		return null;
+		return getComponent().getRootFolder();
 	} 
 
 	public IProject getProject() {
