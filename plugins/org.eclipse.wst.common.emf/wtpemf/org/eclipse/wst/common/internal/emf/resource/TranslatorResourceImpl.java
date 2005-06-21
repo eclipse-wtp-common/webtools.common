@@ -41,20 +41,20 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	 */
 	protected String systemId;
 	protected String xmlVersion;
-	//	Default the resources to J2EE 1.4
+	// Default the resources to J2EE 1.4
 	protected int versionID;
 
 	/**
-	 * @deprecated since 4/29/2003 - used for compatibility Subclasses should be using the Renderers
-	 *             and translator framework
+	 * @deprecated since 4/29/2003 - used for compatibility Subclasses should
+	 *             be using the Renderers and translator framework
 	 */
 	public TranslatorResourceImpl() {
 		super();
 	}
 
 	/**
-	 * @deprecated since 4/29/2003 - used for compatibility Subclasses should be using the Renderers
-	 *             and translator framework
+	 * @deprecated since 4/29/2003 - used for compatibility Subclasses should
+	 *             be using the Renderers and translator framework
 	 */
 	public TranslatorResourceImpl(URI uri) {
 		super(uri);
@@ -133,45 +133,50 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	}
 
 	protected void basicDoLoad(InputStream inputStream, Map options) throws IOException {
-		//long start = System.currentTimeMillis();
+		// long start = System.currentTimeMillis();
 		boolean isTrackingMods = isTrackingModification();
 		try {
 			if (isTrackingMods)
 				setTrackingModification(false);
 			renderer.doLoad(inputStream, options);
-		} finally {
+		}
+		finally {
 			if (isTrackingMods)
 				setTrackingModification(true);
 		}
-		//long end = System.currentTimeMillis();
-		//recordTime("Load", start, end);
+		// long end = System.currentTimeMillis();
+		// recordTime("Load", start, end);
 	}
 
 	public void save(Map options) throws IOException {
 		if (renderer.useStreamsForIO()) {
 			super.save(options);
-		} else {
+		}
+		else {
 			doSave(null, options);
 			notifySaved();
 		}
 	}
 
 	/**
-	 * @see com.ibm.etools.xmi.helpers.CompatibilityXMIResourceImpl#doSave(OutputStream, Map)
+	 * @see com.ibm.etools.xmi.helpers.CompatibilityXMIResourceImpl#doSave(OutputStream,
+	 *      Map)
 	 */
 	public void doSave(OutputStream outputStream, Map options) throws IOException {
-		//long start = System.currentTimeMillis();
+		// long start = System.currentTimeMillis();
 		renderer.doSave(outputStream, options);
 		setModified(false);
-		//long end = System.currentTimeMillis();
-		//recordTime("Save", start, end);
+		// long end = System.currentTimeMillis();
+		// recordTime("Save", start, end);
 	}
 
-	//	private void recordTime(String type, long start, long end) {
-	//		System.out.println(renderer.getClass().getName() + "\t" + type + "\t" + (end - start) +
-	// "\t\t\tms" + "\t" + (( this.getVersionID()) / 10.0) + "\t" + this); //$NON-NLS-1$
+	// private void recordTime(String type, long start, long end) {
+	// System.out.println(renderer.getClass().getName() + "\t" + type + "\t" +
+	// (end - start) +
+	// "\t\t\tms" + "\t" + (( this.getVersionID()) / 10.0) + "\t" + this);
+	// //$NON-NLS-1$
 	// //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-	//	}
+	// }
 
 	/**
 	 * @see org.eclipse.emf.ecore.xmi.impl.XMLResourceImpl#doUnload()
@@ -207,7 +212,8 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	}
 
 	/**
-	 * For compatibility of old subtype resources, returns the super implementation
+	 * For compatibility of old subtype resources, returns the super
+	 * implementation
 	 * 
 	 * @return
 	 */
@@ -291,7 +297,8 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	}
 
 	/**
-	 * Overridden to notify when the ID gets set; need this to push it into the resource
+	 * Overridden to notify when the ID gets set; need this to push it into
+	 * the resource
 	 * 
 	 * @see org.eclipse.emf.ecore.xmi.XMLResource#setID(EObject, String)
 	 */
@@ -302,8 +309,8 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	}
 
 	/**
-	 * This method indicates whether or not the extent associated with the resource has been
-	 * modified since the last time it was loaded or saved.
+	 * This method indicates whether or not the extent associated with the
+	 * resource has been modified since the last time it was loaded or saved.
 	 * 
 	 * @return boolean
 	 */
@@ -358,21 +365,24 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	public boolean isSharedForWrite() {
 		return super.isSharedForWrite() || renderer.isSharedForWrite();
 	}
-	
+
 	public boolean isLoaded() {
-		synchronized(this) {
+		synchronized (this) {
 			return super.isLoaded();
 		}
 	}
 
 	public void load(Map options) throws IOException {
 		synchronized (this) {
-			if(isLoaded) return;
-			//System.out.println(Thread.currentThread() + " TranslatorResource.load(): " + this);
+			if (isLoaded)
+				return;
+			// System.out.println(Thread.currentThread() + "
+			// TranslatorResource.load(): " + this);
 			if (renderer.useStreamsForIO()) {
 				super.load(options);
-			} else if (!isLoaded) {
-				load(null, options);
+			}
+			else if (!isLoaded) {
+				load((InputStream) null, options);
 			}
 		}
 
