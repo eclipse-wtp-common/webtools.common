@@ -65,9 +65,13 @@ public class VirtualComponent implements IVirtualComponent {
 	
 	public boolean exists() { 
 		StructureEdit core = null;
+		IProject project = getProject();
 		try {
-			if (getProject() != null && getName() != null) {
-				core = StructureEdit.getStructureEditForRead(getProject());
+			if (project != null && getName() != null) {
+				core = StructureEdit.getStructureEditForRead(project);
+				if(core == null){
+					return false;
+				}
 				WorkbenchComponent component = core.findComponentByName(getName()); 
 				return component != null;
 			}
