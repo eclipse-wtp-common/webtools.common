@@ -142,12 +142,12 @@ public class IVirtualFolderAPITest extends TestCase {
 	}
 
 	public void testGetParent() {
-		assertEquals("The parent of the virtual resource must match the component.", component, ((IVirtualResource)webInfFolder).getParent()); //$NON-NLS-1$
+		assertEquals("The parent of the virtual resource must match the components root folder.", component.getRootFolder(), ((IVirtualResource)webInfFolder).getParent()); //$NON-NLS-1$
 	}
 	
 	public void testEquals() {
 		IVirtualResource resource = ((IVirtualResource)webInfFolder).getParent();
-		boolean bRetValue = resource.equals(component);
+		boolean bRetValue = resource.equals(component.getRootFolder());
 		assertTrue(bRetValue);
 	}
 
