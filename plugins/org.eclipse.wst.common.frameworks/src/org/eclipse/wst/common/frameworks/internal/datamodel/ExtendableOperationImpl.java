@@ -8,17 +8,22 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.datamodel;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
@@ -52,6 +57,12 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	/**
+	 * @return
+	 */
+	protected ISchedulingRule getSchedulingRule() {
+		return null;
+	}
 
 	public IStatus undo(IProgressMonitor monitor, IAdaptable info) {
 		// TODO Auto-generated method stub
@@ -81,8 +92,41 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 		}
 		appendedOperations.add(appendedOperation);
 	}
-
+	
+	/**
+	 * Initiates a batch of changes, by invoking the execute() method as a workspace runnable.
+	 * 
+	 * @param monitor
+	 *            the progress monitor to use to display progress
+	 * @exception InvocationTargetException
+	 *                wraps any CoreException, runtime exception or error thrown by the execute()
+	 *                method
+	 * @see WorkspaceModifyOperation - this class was directly copied from it
+	 */
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info) {
+		final InvocationTargetException[] iteHolder = new InvocationTargetException[1];
+		IWorkspaceRunnableWithStatus workspaceRunnable = new IWorkspaceRunnableWithStatus(info) {
+
+				public void run(IProgressMonitor pm) throws CoreException {
+				
+						setStatus(doExecute(pm,getInfo()));
+						
+				}
+			};
+			ISchedulingRule rule = getSchedulingRule();
+			try {
+				if (rule == null)
+					ResourcesPlugin.getWorkspace().run(workspaceRunnable, monitor);
+				else
+					ResourcesPlugin.getWorkspace().run(workspaceRunnable, rule, getOperationExecutionFlags(), monitor);
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return workspaceRunnable.getStatus();
+	}
+
+	public IStatus doExecute(IProgressMonitor monitor, IAdaptable info) {
 		DMComposedExtendedOperationHolder extOpHolder = initializeExtensionOperations();
 		IStatus preOpStatus = runPreOps(monitor, extOpHolder, info);
 		try {
@@ -189,6 +233,12 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 
 	public boolean canUndo() {
 		return rootOperation.canUndo();
+	}
+	private int getOperationExecutionFlags() {
+		return shouldDelayDeltaNotification() ? IWorkspace.AVOID_UPDATE : 0;
+	}
+	protected boolean shouldDelayDeltaNotification() {
+		return true;
 	}
 
 	public String getLabel() {
