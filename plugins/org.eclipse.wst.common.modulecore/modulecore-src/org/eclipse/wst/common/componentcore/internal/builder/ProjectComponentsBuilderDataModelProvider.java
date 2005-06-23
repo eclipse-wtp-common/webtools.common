@@ -130,7 +130,7 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
             dependentDataModel.setProperty(IReferencedComponentBuilderDataModelProperties.DEPENDENT_COMPONENT, depComponent);
             depModulesDataModels.add(dependentDataModel);
         }
-        model.setProperty(ADDITIONAL_REFERENCED_BUILDER_DM_LIST, dependentDataModel);
+        model.setProperty(ADDITIONAL_REFERENCED_BUILDER_DM_LIST, depModulesDataModels);
     }
 
     /**
