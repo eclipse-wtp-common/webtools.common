@@ -103,7 +103,7 @@ public class VirtualComponent implements IVirtualComponent {
 			core = StructureEdit.getStructureEditForWrite(getProject());
 			WorkbenchComponent component = core.findComponentByName(getName()); 
 			ComponentType cType = component.getComponentType();
-			if(cType != null) {
+			if(cType == null) {
 				cType = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentType();
 				component.setComponentType(cType);
 			}
