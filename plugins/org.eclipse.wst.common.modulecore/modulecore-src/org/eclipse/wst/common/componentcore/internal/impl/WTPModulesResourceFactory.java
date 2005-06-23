@@ -12,6 +12,7 @@ package org.eclipse.wst.common.componentcore.internal.impl;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.wst.common.internal.emf.resource.EMF2DOMRendererFactory;
 import org.eclipse.wst.common.internal.emf.resource.Renderer;
 import org.eclipse.wst.common.internal.emf.resource.RendererFactory;
 import org.eclipse.wst.common.internal.emf.resource.TranslatorResource;
@@ -61,7 +62,7 @@ public class WTPModulesResourceFactory extends TranslatorResourceFactory {
 	 * @see #registerWith(RendererFactory)
 	 */
 	public static void register() {
-		registerWith(RendererFactory.getDefaultRendererFactory());
+		registerWith(EMF2DOMRendererFactory.INSTANCE);
 	}
 
 	

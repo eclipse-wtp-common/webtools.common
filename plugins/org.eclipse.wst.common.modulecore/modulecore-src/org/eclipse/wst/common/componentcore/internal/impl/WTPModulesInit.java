@@ -12,7 +12,7 @@ package org.eclipse.wst.common.componentcore.internal.impl;
 
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
-import org.eclipse.wst.common.internal.emf.resource.RendererFactory;
+import org.eclipse.wst.common.internal.emf.resource.EMF2DOMRendererFactory;
 import org.eclipse.wst.common.internal.emf.utilities.DOMUtilities;
 import org.eclipse.wst.common.internal.emf.utilities.EncoderDecoderRegistry;
 import org.eclipse.wst.common.internal.emf.utilities.ExtendedEcoreUtil;
@@ -40,7 +40,7 @@ public class WTPModulesInit {
 			initResourceFactories();
 			
 			//TODO: Remove this line after SED Adapter is restored.
-			RendererFactory.getDefaultRendererFactory().setValidating(false);
+			EMF2DOMRendererFactory.INSTANCE.setValidating(false);
 		}
 		if(toPreregisterPackages) 
 			preregisterPackages();
