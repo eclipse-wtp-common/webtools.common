@@ -20,7 +20,6 @@ import org.eclipse.swt.dnd.DND;
 
 abstract public class DefaultDragAndDropCommand implements DragAndDropCommand
 {
-  public static final String copyright = "(c) Copyright IBM Corporation 2000, 2002.";
   /**
    * This keeps track of the owner that is the target of the drag and drop.
    */

@@ -18,8 +18,6 @@ import org.eclipse.swt.widgets.Table;
 
 public class NavigableTableViewer extends TableViewer
 {
-  public static final String copyright = "(c) Copyright IBM Corporation 2000, 2002.";
-
    TableNavigator navigator;
 
    public NavigableTableViewer(Table parent)

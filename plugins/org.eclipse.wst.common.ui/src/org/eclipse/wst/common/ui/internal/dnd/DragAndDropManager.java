@@ -16,6 +16,5 @@ import java.util.Collection;
 
 public interface DragAndDropManager
 {
-  public static final String copyright = "(c) Copyright IBM Corporation 2000, 2002.";
   public DragAndDropCommand createCommand(Object target, float location, int operations, int operation, Collection source);
 }

@@ -29,8 +29,6 @@ import org.eclipse.wst.common.ui.internal.UIPlugin;
 
 // Page to specify the source files
 public class SelectMultiFilePage extends WizardPage {
-  public static final String copyright =
-    "(c) Copyright IBM Corporation 2000, 2001, 2002.";
   IWorkbench workbench;
   IStructuredSelection selection;
   boolean isFileMandatory;

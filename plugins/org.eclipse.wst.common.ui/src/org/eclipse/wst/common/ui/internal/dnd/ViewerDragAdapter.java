@@ -36,7 +36,6 @@ import org.eclipse.swt.dnd.DragSourceListener;
  */
 public class ViewerDragAdapter implements DragSourceListener
 {
-  public static final String copyright = "(c) Copyright IBM Corporation 2000, 2002.";
   /**
    * This keeps track of the viewer to which we are listening.
    */

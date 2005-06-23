@@ -35,7 +35,6 @@ import org.eclipse.jface.viewers.*;
 
 public class TableNavigator extends TableCursor
 {
-  public static final String copyright = "(c) Copyright IBM Corporation 2000, 2002.";
   private static final String TABLETREEITEM_ID = "TableTreeItemID";
 
    final Table table;

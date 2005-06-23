@@ -23,7 +23,6 @@ import org.eclipse.jface.viewers.ViewerFilter;
 
 public class ResourceFilter extends ViewerFilter 
 {
-  public static final String copyright = "(c) Copyright IBM Corporation 2002.";
   protected String[] fExtensions;
   protected IFile[] fExcludedFiles;
   protected Collection fExcludes;

@@ -68,7 +68,6 @@ import org.eclipse.swt.widgets.Widget;
  */
 public class ViewerDropAdapter extends DropTargetAdapter
 {
-  public static final String copyright = "(c) Copyright IBM Corporation 2000, 2002.";
   /**
    * This is the viewer for which this is a drop target listener.
    */

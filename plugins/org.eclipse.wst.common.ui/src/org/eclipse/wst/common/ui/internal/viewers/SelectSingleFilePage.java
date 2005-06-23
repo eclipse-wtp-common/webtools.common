@@ -24,7 +24,6 @@ import org.eclipse.ui.IWorkbench;
 
 public class SelectSingleFilePage extends WizardPage
 {
-  public static final String copyright = "(c) Copyright IBM Corporation 2000, 2001, 2002.";
   protected IWorkbench workbench;
   protected SelectSingleFileView selectSingleFileView;
   

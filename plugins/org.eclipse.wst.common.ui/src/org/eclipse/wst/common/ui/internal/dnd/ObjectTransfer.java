@@ -30,7 +30,6 @@ import org.eclipse.swt.dnd.TransferData;
  */
 public class ObjectTransfer extends ByteArrayTransfer
 {
-  public static final String copyright = "(c) Copyright IBM Corporation 2000, 2002.";
   /**
    * This is the register transfer type name.
    */

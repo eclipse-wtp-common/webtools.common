@@ -53,7 +53,6 @@ import org.eclipse.wst.common.ui.internal.UIPlugin;
 
 public class SelectSingleFileView
 {                                
-  public static final String copyright = "(c) Copyright IBM Corporation 2000, 2001, 2002.";
   protected Composite            composite;
   protected IStructuredSelection selection;
   protected boolean              isFileMandatory;
@@ -344,7 +343,6 @@ public void setListener(Listener listener)
   
   class ImportAddResourceListener implements IResourceChangeListener, IResourceDeltaVisitor
   {
-	public static final String copyright = "(c) Copyright IBM Corporation 2002.";
 	Vector importedFiles;
 
 	ImportAddResourceListener()
