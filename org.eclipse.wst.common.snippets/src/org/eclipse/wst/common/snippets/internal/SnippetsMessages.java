@@ -14,7 +14,7 @@ import org.eclipse.osgi.util.NLS;
 /**
  * Strings used by Snippets
  * 
- * @since 1.0
+ * @plannedfor 1.0
  */
 public class SnippetsMessages extends NLS {
 	private static final String BUNDLE_NAME = "org.eclipse.wst.common.snippets.internal.SnippetsPluginResources";//$NON-NLS-1$
