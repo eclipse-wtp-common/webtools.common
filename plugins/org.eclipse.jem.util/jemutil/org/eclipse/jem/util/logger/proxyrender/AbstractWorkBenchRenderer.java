@@ -10,14 +10,14 @@
  *******************************************************************************/
 /*
  *  $RCSfile: AbstractWorkBenchRenderer.java,v $
- *  $Revision: 1.3 $  $Date: 2005/05/18 21:58:34 $ 
+ *  $Revision: 1.4 $  $Date: 2005/06/24 21:22:25 $ 
  */
 package org.eclipse.jem.util.logger.proxyrender;
 
+import java.lang.reflect.Field;
 import java.util.logging.Level;
 
 import org.eclipse.core.runtime.*;
-import org.eclipse.core.runtime.adaptor.EclipseStarter;
 import org.osgi.framework.Bundle;
 
 import org.eclipse.jem.util.logger.proxy.*;
@@ -79,7 +79,22 @@ public abstract class AbstractWorkBenchRenderer implements ILogRenderer2 {
 	 * Is the console log for eclipse turned on to sysout. If true, then we shouldn't log to console anything already logged because Eclipse would of
 	 * logged it for us. This comes from the -Declipse.consoleLog="true" which is the default when starting eclipse from PDE.
 	 */
-	protected static final boolean consoleLogOn = "true".equals(System.getProperty(EclipseStarter.PROP_CONSOLE_LOG)); //$NON-NLS-1$
+	protected static final boolean consoleLogOn;
+	static {
+		String consologPropertyName = null;
+		try {
+			// Accessing an internal field, so using reflection. This way if changes in future we won't crash.
+			Class eclipseStarter = Class.forName("org.eclipse.core.runtime.adaptor.EclipseStarter");	//$NON-NLS-1$
+			Field consolelog = eclipseStarter.getDeclaredField("PROP_CONSOLE_LOG");	//$NON-NLS-1$
+			consologPropertyName = (String) consolelog.get(null);
+		} catch (SecurityException e) {
+		} catch (IllegalArgumentException e) {
+		} catch (ClassNotFoundException e) {
+		} catch (NoSuchFieldException e) {
+		} catch (IllegalAccessException e) {
+		}
+		consoleLogOn = consologPropertyName != null && "true".equals(System.getProperty(consologPropertyName)) ; 
+	}
 
 	/*
 	 * (non-Javadoc)

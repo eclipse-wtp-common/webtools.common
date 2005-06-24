@@ -10,13 +10,12 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: WorkbenchResourceHelperBase.java,v $$
- *  $$Revision: 1.2 $$  $$Date: 2005/02/15 23:04:14 $$ 
+ *  $$Revision: 1.3 $$  $$Date: 2005/06/24 21:22:25 $$ 
  */
 package org.eclipse.jem.util.emf.workbench;
 
 import java.util.*;
 
-import org.eclipse.core.internal.resources.ResourceException;
 import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.emf.common.util.URI;
@@ -579,9 +578,9 @@ public class WorkbenchResourceHelperBase {
 	}
 
 	private static boolean primIsResourceNotFound(Exception excep) {
-		if (excep instanceof ResourceException) {
-			IStatus status = ((ResourceException) excep).getStatus();
-			return status.getCode() == IResourceStatus.RESOURCE_NOT_FOUND;
+		if (excep instanceof CoreException) {
+			IStatus status = ((CoreException) excep).getStatus();
+			return status.getCode() == IResourceStatus.RESOURCE_NOT_FOUND && ResourcesPlugin.PI_RESOURCES.equals(status.getPlugin());
 		}
 		return false;
 	}
