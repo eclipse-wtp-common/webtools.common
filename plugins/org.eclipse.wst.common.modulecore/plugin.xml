@@ -104,6 +104,7 @@
             stage="prenormalization"
             class="org.eclipse.wst.common.componentcore.internal.util.ComponentResolver">
             <projectNature value="org.eclipse.wst.common.modulecore.ModuleCoreNature" />
+			<projectNature value="org.eclipse.wst.web.StaticWebNature"/>
       </resolverExtension>
    </extension>
 </plugin>
