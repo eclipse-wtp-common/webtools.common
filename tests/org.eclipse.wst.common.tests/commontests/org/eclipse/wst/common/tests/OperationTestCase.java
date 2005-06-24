@@ -36,7 +36,11 @@ public abstract class OperationTestCase extends BaseTestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
+		try{ 
 		ProjectUtility.deleteAllProjects();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		// LogUtility.getInstance().resetLogging();
 	}
 
