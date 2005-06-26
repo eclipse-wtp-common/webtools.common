@@ -1,6 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: WTP UI Plug-in
+Bundle-Vendor: %providerName
 Bundle-SymbolicName: org.eclipse.wst.common.frameworks.ui; singleton:=true
 Bundle-Version: 0.7.0
 Bundle-ClassPath: wtp_ui.jar
