@@ -57,7 +57,6 @@ import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.help.WorkbenchHelp;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wst.common.snippets.internal.Debug;
@@ -85,7 +84,6 @@ import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsInsertion;
 import org.eclipse.wst.common.snippets.internal.provisional.insertions.VariableInsertion;
 import org.eclipse.wst.common.snippets.internal.util.UserDrawerSelector;
 import org.eclipse.wst.common.snippets.internal.util.VisibilityUtil;
-import org.eclipse.wst.sse.ui.internal.actions.ActiveEditorActionHandler;
 import org.osgi.framework.Bundle;
 
 public class SnippetsView extends ViewPart {
@@ -524,8 +522,6 @@ public class SnippetsView extends ViewPart {
 		fViewer.getControl().addMouseListener(insertListener);
 
 		WorkbenchHelp.setHelp(getViewer().getControl(), IHelpContextIds.MAIN_VIEW_GENERAL);
-		getViewSite().getActionBars().setGlobalActionHandler(ActionFactory.UNDO.getId(), new ActiveEditorActionHandler(getViewSite(), ActionFactory.UNDO.getId()));
-		getViewSite().getActionBars().setGlobalActionHandler(ActionFactory.REDO.getId(), new ActiveEditorActionHandler(getViewSite(), ActionFactory.REDO.getId()));
 
 		fPartActionUpdateListener = new PartActivationListener();
 		getViewSite().getPage().addPartListener(fPartActionUpdateListener);
