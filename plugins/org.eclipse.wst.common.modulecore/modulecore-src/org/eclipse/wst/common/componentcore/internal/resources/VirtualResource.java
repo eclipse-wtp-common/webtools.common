@@ -104,7 +104,6 @@ public abstract class VirtualResource implements IVirtualResource {
 	}
 
 	public IPath getProjectRelativePath() {
-
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(getProject());
@@ -170,11 +169,12 @@ public abstract class VirtualResource implements IVirtualResource {
 			component = ComponentCore.createComponent(getProject(), getComponentHandle().getName());
 		return component;
 	}
-
+    
+	//returns null if the folder is already the root folder
 	public IVirtualContainer getParent() {
 		if (getRuntimePath().segmentCount() > 1)
 			return new VirtualFolder(getComponentHandle(), getRuntimePath().removeLastSegments(1));
-		return getComponent().getRootFolder();
+		return null;
 	}
 
 	public IProject getProject() {
