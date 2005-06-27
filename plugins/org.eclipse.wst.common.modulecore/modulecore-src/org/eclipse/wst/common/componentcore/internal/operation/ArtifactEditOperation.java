@@ -12,14 +12,21 @@ package org.eclipse.wst.common.componentcore.internal.operation;
 
 import java.lang.reflect.InvocationTargetException;
 
+import javax.swing.plaf.ComponentUI;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 import org.eclipse.wst.common.componentcore.ArtifactEdit;
+import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.internal.util.ArtifactEditRegistryReader;
+import org.eclipse.wst.common.componentcore.internal.util.IArtifactEditFactory;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
+import org.eclipse.wst.common.componentcore.resources.IFlexibleProject;
+import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 
@@ -43,18 +50,18 @@ public class ArtifactEditOperation extends WTPOperation {
 	protected final void initialize(IProgressMonitor monitor) {
 		ArtifactEditOperationDataModel dataModel = (ArtifactEditOperationDataModel) operationDataModel;
 		emfWorkbenchContext = (EMFWorkbenchContext) WorkbenchResourceHelperBase.createEMFContext(dataModel.getTargetProject(), null);
-		WorkbenchComponent module = getWorkbenchModule(); 
-		artifactEdit = getArtifactEditForModule(module);
+		artifactEdit = getArtifactEditForComponent(getComponent());
 		doInitialize(monitor);
 	}
 
 	/**
      * @return
      */
-    protected ArtifactEdit getArtifactEditForModule(WorkbenchComponent module) {
-		ComponentHandle handle = ComponentHandle.create(StructureEdit.getContainingProject(module),module.getName());
-        return ArtifactEdit.getArtifactEditForWrite(handle);
-    }
+    protected ArtifactEdit getArtifactEditForComponent(IVirtualComponent comp) {
+    		ArtifactEditRegistryReader reader = ArtifactEditRegistryReader.instance();
+    		IArtifactEditFactory factory = reader.getArtifactEdit(comp.getComponentTypeId());
+    		return factory.createArtifactEditForWrite(comp);
+    	}
 
     /**
      * @return
@@ -74,6 +81,11 @@ public class ArtifactEditOperation extends WTPOperation {
         return module;
     }
 
+    public IVirtualComponent getComponent() {
+    	IFlexibleProject proj = ComponentCore.createFlexibleProject(((ArtifactEditOperationDataModel)operationDataModel).getTargetProject());
+    	return proj.getComponent(operationDataModel.getStringProperty(ArtifactEditOperationDataModel.MODULE_NAME));
+    	
+    }
     protected ArtifactEdit getArtifactEdit() {
         return artifactEdit;
     }
