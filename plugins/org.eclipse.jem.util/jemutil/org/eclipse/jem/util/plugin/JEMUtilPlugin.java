@@ -10,12 +10,14 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: JEMUtilPlugin.java,v $$
- *  $$Revision: 1.2 $$  $$Date: 2005/02/15 23:04:14 $$ 
+ *  $$Revision: 1.3 $$  $$Date: 2005/06/28 20:13:16 $$ 
  */
 package org.eclipse.jem.util.plugin;
 
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
+import java.io.File;
+import java.text.MessageFormat;
+
+import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -23,6 +25,7 @@ import org.osgi.framework.Bundle;
 
 import org.eclipse.jem.internal.util.emf.workbench.ProjectResourceSetImpl;
 import org.eclipse.jem.internal.util.emf.workbench.WorkspaceResourceNotifier;
+import org.eclipse.jem.internal.util.emf.workbench.nls.EMFWorkbenchResourceHandler;
 import org.eclipse.jem.util.emf.workbench.ProjectResourceSet;
 import org.eclipse.jem.util.emf.workbench.ResourceHandler;
 import org.eclipse.jem.util.logger.proxy.Logger;
@@ -229,6 +232,105 @@ public class JEMUtilPlugin extends Plugin {
 				}
 				if (handler != null)
 					aResourceSet.add(handler);
+			}
+		}
+	}
+
+	/**
+	 * Delete the contents of the directory (and the directory if deleteRoot is true).
+	 * @param root
+	 * @param deleteRoot <code>true</code> to delete the root directory too.
+	 * @param monitor 
+	 * @return <code>true</code> if there was an error deleting anything.
+	 * 
+	 * @since 1.1.0
+	 */
+	public static boolean deleteDirectoryContent(File root, boolean deleteRoot, IProgressMonitor monitor) {
+		boolean error = false;
+		if (root.canRead()) {
+			if (root.isDirectory()) {
+				File[] files = root.listFiles();
+				monitor.beginTask(MessageFormat.format(EMFWorkbenchResourceHandler.getString("ProjectUtil_Delete_1"), new Object[] {root.getName()}), files.length+(deleteRoot ? 1 : 0)); //$NON-NLS-1$
+				for (int i = 0; i < files.length; i++) {
+					if (files[i].isDirectory())
+						error |= deleteDirectoryContent(files[i], true, new SubProgressMonitor(monitor, 1));
+					else {
+						error |= !files[i].delete();
+					}
+					monitor.worked(1);
+				}
+			} else {
+				monitor.beginTask(MessageFormat.format(EMFWorkbenchResourceHandler.getString("ProjectUtil_Delete_1"), new Object[] {root.getName()}), 1);				 //$NON-NLS-1$
+			}
+			if (deleteRoot) {
+				error |= !root.delete();
+				monitor.worked(1);
+			}
+			monitor.done();
+		} else {
+			error = true;
+		}
+		return error;
+	}
+	
+	/**
+	 * Add a clean resource changelistener.
+	 * @param listener
+	 * @param eventMask mask of event types to listen for in addition to ones that are necessary for clean. Use 0 if no additional ones.
+	 * 
+	 * @since 1.1.0
+	 */
+	public static void addCleanResourceChangeListener(CleanResourceChangeListener listener, int eventMask) {
+		// PRE_BUILD: Handle Clean.
+		// TODO Until https://bugs.eclipse.org/bugs/show_bug.cgi?id=101942 is fixed, we must do POST_BUILD, that will probably be sent because a clean will cause a build to occur which should cause a delta.
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(listener, eventMask | IResourceChangeEvent.POST_BUILD);		
+	}
+	
+	/**
+	 * A resource listener that can be used in addition to listen for Clean requests and process them.
+	 * <p>
+	 * Use <code>{@link IResourceChangeEvent#PRE_BUILD}</code> when adding as listener to get the
+	 * clean events.
+	 * <p>
+	 * <b>Note</b> : TODO Until https://bugs.eclipse.org/bugs/show_bug.cgi?id=101942 is fixed, you must do POST_BUILD, that will probably be sent because a clean will cause a build to occur which should cause a delta.
+	 * @since 1.1.0
+	 */
+	public abstract static class CleanResourceChangeListener implements IResourceChangeListener {
+		
+		public void resourceChanged(IResourceChangeEvent event) {
+			// Subclasses can override this to handle more events than just clean.
+			if (event.getBuildKind() == IncrementalProjectBuilder.CLEAN_BUILD) {
+				if (event.getSource() instanceof IProject)
+					cleanProject((IProject) event.getSource());
+				else if (event.getSource() instanceof IWorkspace)
+					cleanAll();				
+			}
+		}
+
+		/**
+		 * Clear out the project.
+		 * @param project
+		 * 
+		 * @since 1.1.0
+		 */
+		protected abstract void cleanProject(IProject project);
+
+		/**
+		 * Clean all.
+		 * <p>
+		 * By default this will simply call a clean project on each open project. Subclasses should override and either
+		 * add more function to clear out non-project data and then call super. Or if they can handle all of the projects
+		 * in a faster way, then can completely handle this.
+		 * 
+		 * @since 1.1.0
+		 */
+		protected void cleanAll() {
+			IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+			for (int i = 0; i < projects.length; i++) {
+				IProject project = projects[i];
+				if (project.isOpen()) {
+					cleanProject(project);
+				}
 			}
 		}
 	}
