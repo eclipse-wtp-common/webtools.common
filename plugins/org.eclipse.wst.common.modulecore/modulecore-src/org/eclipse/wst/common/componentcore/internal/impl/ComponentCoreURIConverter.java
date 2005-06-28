@@ -11,15 +11,24 @@
 package org.eclipse.wst.common.componentcore.internal.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
 import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 import org.eclipse.wst.common.componentcore.ComponentCore;
+import org.eclipse.wst.common.componentcore.UnresolveableURIException;
+import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
+import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
@@ -34,7 +43,7 @@ import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
 public class ComponentCoreURIConverter extends CompatibilityWorkbenchURIConverterImpl {
 	
 	private IProject containingProject;
-	
+	private IFolder archiveRoot;
 	/**
 	 *  
 	 */
@@ -59,7 +68,26 @@ public class ComponentCoreURIConverter extends CompatibilityWorkbenchURIConverte
 		containingProject = aContainingProject;
 	} 
  
-	
+	public IVirtualComponent findComponent(IResource res) {
+
+		StructureEdit moduleCore = null;
+		WorkbenchComponent module = null;
+		try {
+			moduleCore = StructureEdit.getStructureEditForRead(containingProject);
+			ComponentResource[] resources = moduleCore.findResourcesBySourcePath(res.getFullPath(), ResourceTreeNode.CREATE_RESOURCE_ALWAYS);
+			for (int i = 0; i < resources.length; i++) {
+				module = resources[i].getComponent();
+				if (module != null)
+					break;
+			}
+		} catch (UnresolveableURIException e) {
+			// Ignore
+		} finally {
+			if (moduleCore != null)
+				moduleCore.dispose();
+		}
+		return ComponentCore.createComponent(containingProject, module.getName());
+	}
 	/* (non-Javadoc)
 	 * @see org.eclipse.jem.util.emf.workbench.WorkbenchURIConverterImpl#normalize(org.eclipse.emf.common.util.URI)
 	 */
@@ -109,14 +137,30 @@ public class ComponentCoreURIConverter extends CompatibilityWorkbenchURIConverte
 	public URI deNormalize(URI uri) {
 		if (WorkbenchResourceHelperBase.isPlatformResourceURI(uri)) {
 			IFile aFile = WorkbenchResourceHelper.getPlatformFile(uri);
+			
 			if (aFile != null) {
+				IVirtualComponent component = findComponent(aFile);
 				IProject fileProject = aFile.getProject();
 				//If it is not in the same project then just return the URI as is.
 				if (resourceSetSynchronizer.getProject() == fileProject)
-					return getContainerRelativeURI(aFile);
+					return getArchiveRelativeURI(aFile,component.getRootFolder().getUnderlyingFolder());
 			}
 		}
 		return uri;
 	}
+	
+	protected URI getContainerRelativeURI(IFile aFile) {
+		IPath path = WorkbenchResourceHelperBase.getPathFromContainers(inputContainers, aFile.getFullPath());
+		if (path != null)
+			return URI.createURI(path.toString());
+		return null;
+	}
+	protected URI getArchiveRelativeURI(IFile aFile, IContainer aContainer) {
+		IPath path = WorkbenchResourceHelperBase.getPathFromContainers(Collections.singletonList(aContainer), aFile.getFullPath());
+		if (path != null)
+			return URI.createURI(path.toString());
+		return null;
+	}
+
 
 }

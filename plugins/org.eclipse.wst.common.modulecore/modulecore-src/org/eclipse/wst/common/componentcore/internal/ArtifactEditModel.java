@@ -141,6 +141,7 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 	 * @return Resource (@see Resource)
 	 */
 	public Resource getResource(URI aUri) {
+		// First check if passed URI is already normalized...
 		IPath requestPath = modulePath.append(new Path(aUri.path()));
 		URI resourceURI = URI.createURI(PlatformURLModuleConnection.MODULE_PROTOCOL + requestPath.toString());
 		return super.getResource(resourceURI);
@@ -183,9 +184,7 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 
 	public Resource getOrCreateResource(URI aUri) {
 
-		IPath requestPath = modulePath.append(new Path(aUri.path()));
-		URI resourceURI = URI.createURI(requestPath.toString());
-		return super.getOrCreateResource(resourceURI);
+		return super.getOrCreateResource(aUri);
 	}
 
 	/**
