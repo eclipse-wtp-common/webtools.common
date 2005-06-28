@@ -1,15 +1,14 @@
-/*
-* Copyright (c) 2002 IBM Corporation and others.
-* All rights reserved.   This program and the accompanying materials
-* are made available under the terms of the Common Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/cpl-v10.html
-* 
-* Contributors:
-*   IBM - Initial API and implementation
-*   Jens Lukowski/Innoopract - initial renaming/restructuring
-* 
-*/
+/*******************************************************************************
+ * Copyright (c) 2001, 2004 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *     Jens Lukowski/Innoopract - initial renaming/restructuring
+ *******************************************************************************/
 package org.eclipse.wst.common.uriresolver.internal;
 
 import java.util.Iterator;
@@ -21,73 +20,84 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.common.uriresolver.internal.provisional.URIResolver;
 import org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverExtension;
+import org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverInput;
+import org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverResult;
 
 
-/**
- * @author csalter
- * 
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 public class ExtensibleURIResolver implements URIResolver
 {
-
-	//protected IProject project;
-
-	//TODO... consider ctor that takes a project arg
-	//public ExtensibleURIResolver(IProject project)
-	//{
-	//	this.project = project;
-	//}
-
 	public ExtensibleURIResolver()
 	{
 	}
+  
+  public URIResolverResult resolve(URIResolverInput input)
+  {
+
+    URIResolverResult result = new URIResolverResult();
+    result.setLogicalURI(input.getReferenceURI());
+    
+    // if the  input's baseURI exists outside of the workspace
+    // the baseFile will be null here
+    //
+    IFile file = input.getBaseFile();    
+    IProject project =  file != null ? file.getProject() : null;
+
+    URIResolverExtensionRegistry resolverRegistry = URIResolverExtensionRegistry.getIntance();
+    List list = resolverRegistry.getExtensionDescriptors(project, input.getReferenceType());
+
+    try
+    {    
+    // get the list of applicable pre-normalized resolvers from the extension registry
+    //
+    for (Iterator i = resolverRegistry.getMatchingURIResolvers(list, URIResolverExtensionRegistry.STAGE_PRENORMALIZATION).iterator(); i.hasNext();)
+    {
+      URIResolverExtension resolver = (URIResolverExtension) i.next();
+      resolver.resolve(input, result); 
+    }
+
+    // normalize the logical URI
+    //
+    if (result.getLogicalURI() != null)
+    {  
+      result.setLogicalURI(normalize(input.getBaseURI(), result.getLogicalURI()));
+    }  
+
+    // get the list of applicable post-normalized resolvers from the extension registry
+    //    
+    for (Iterator i = resolverRegistry.getMatchingURIResolvers(list, URIResolverExtensionRegistry.STAGE_POSTNORMALIZATION).iterator(); i.hasNext();)
+    {
+      URIResolverExtension resolver = (URIResolverExtension) i.next();
+      resolver.resolve(input, result); 
+    }
+    
+    // get the list of applicable physicalURI resolvers from the extension registry
+    //    
+    for (Iterator i = resolverRegistry.getMatchingURIResolvers(list, URIResolverExtensionRegistry.STAGE_PHYSICAL_RESOLUTION).iterator(); i.hasNext();)
+    {
+      URIResolverExtension resolver = (URIResolverExtension) i.next();
+      resolver.resolve(input, result); 
+    }
+
+    // if no physical URI has been set we assume the physical URI is the same as the logical URI
+    //
+    if (result.getPhysicalURI() == null)
+    {
+      result.setPhysicalURI(result.getLogicalURI());
+    }
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+    return result;
+  }
 
 	public String resolve(String baseLocation, String publicId, String systemId)
 	{
-		String result = systemId;
-
-		// compute the project that holds the resource
-		//
-    IFile file = computeFile(baseLocation);
-		IProject project =  file != null ? file.getProject() : null;
-		String fileName = null; // todo.. get the file name for systemId
-
-		URIResolverExtensionRegistry resolverRegistry = URIResolverExtensionRegistry.getIntance();
-		List list = resolverRegistry.getExtensionDescriptors(project);
-
-		// get the list of applicable pre-normalized resolvers from the
-		// extension registry
-		//
-		for (Iterator i = resolverRegistry.getMatchingURIResolvers(list, URIResolverExtensionRegistry.STAGE_PRENORMALIZATION).iterator(); i.hasNext();)
-		{
-			URIResolverExtension resolver = (URIResolverExtension) i.next();
-			String tempresult = resolver.resolve(file, baseLocation, publicId, result);
-			if(tempresult != null)
-			{
-			  result = tempresult;
-			}
-		}
-
-		// normalize the uri
-		//
-		result = normalize(baseLocation, result);
-
-		// get the list of applicable post-normalized resolvers from the
-		// extension registry
-		//		
-		for (Iterator i = resolverRegistry.getMatchingURIResolvers(list, URIResolverExtensionRegistry.STAGE_POSTNORMALIZATION).iterator(); i.hasNext();)
-		{
-			URIResolverExtension resolver = (URIResolverExtension) i.next();
-			String tempresult = resolver.resolve(file, baseLocation, publicId, result);
-			if(tempresult != null)
-			{
-			  result = tempresult;
-			}
-		}
-
-		return result;
+    URIResolverInput input = new URIResolverInput(baseLocation, systemId);
+    input.setPublicId(publicId);
+    URIResolverResult result = resolve(input);
+    return result.getPhysicalURI();	
 	}
 
 	protected String normalize(String baseLocation, String systemId)
