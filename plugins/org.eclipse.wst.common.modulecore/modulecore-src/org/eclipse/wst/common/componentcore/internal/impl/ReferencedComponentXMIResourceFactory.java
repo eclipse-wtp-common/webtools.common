@@ -3,7 +3,6 @@ package org.eclipse.wst.common.componentcore.internal.impl;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.wst.common.internal.emf.resource.ReferencedXMIFactoryImpl;
-import org.eclipse.wst.common.internal.emf.resource.ReferencedXMIResourceImpl;
 
 public class ReferencedComponentXMIResourceFactory extends
 		ReferencedXMIFactoryImpl {

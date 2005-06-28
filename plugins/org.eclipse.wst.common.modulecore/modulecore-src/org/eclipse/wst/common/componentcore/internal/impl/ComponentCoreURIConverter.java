@@ -11,7 +11,6 @@
 package org.eclipse.wst.common.componentcore.internal.impl;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 
 import org.eclipse.core.resources.IContainer;
