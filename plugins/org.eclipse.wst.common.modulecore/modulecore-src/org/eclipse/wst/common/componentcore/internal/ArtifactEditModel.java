@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.impl.PlatformURLModuleConnection;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
@@ -53,6 +54,7 @@ import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 
 public class ArtifactEditModel extends EditModel implements IAdaptable {
 
+	public static final Class ADAPTER_TYPE = ArtifactEditModel.class;
 	private final ComponentHandle componentHandle; 
 	private final IPath modulePath;
 	private final IVirtualComponent virtualComponent;

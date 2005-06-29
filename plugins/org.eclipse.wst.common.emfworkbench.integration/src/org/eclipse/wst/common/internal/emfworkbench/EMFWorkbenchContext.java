@@ -151,7 +151,7 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 
 
 
-	private EditModel getExistingEditModel(String editModelID, Map params, boolean isReadOnly) {
+	public EditModel getExistingEditModel(String editModelID, Map params, boolean isReadOnly) {
 		EditModel editModel = null;
 		if (isReadOnly) {
 			editModel = (EditModel) this.readOnlyModels.get(getCacheID(editModelID, params));

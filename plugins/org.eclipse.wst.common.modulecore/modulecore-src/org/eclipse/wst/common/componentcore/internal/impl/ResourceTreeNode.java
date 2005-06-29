@@ -24,6 +24,7 @@ import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.util.IPathProvider;
+import org.eclipse.wst.common.internal.emf.utilities.EtoolsCopyUtility;
 
 /**
  * <p>
@@ -190,10 +191,9 @@ public class ResourceTreeNode {
 						
 						if(newResource == null) {
 							// flesh out the tree
-							newResource = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentResource();
 							if ((toCreateResourceAlways) || (foundResource = eclipseContainer.findMember(aPath)) != null) {
+								newResource = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentResource();
 								newResource.setComponent(moduleResource.getComponent());		
-								
 								newResource.setRuntimePath(runtimeURI);
 								newResource.setSourcePath(eclipseContainer.getProjectRelativePath().append(aPath));
 								resultSet.add(newResource);

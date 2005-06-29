@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
+import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.internal.impl.PlatformURLModuleConnection;
 import org.eclipse.wst.common.componentcore.internal.impl.WTPModulesInit;
 import org.eclipse.wst.common.componentcore.internal.util.ArtifactEditAdapterFactory;
@@ -40,6 +41,7 @@ public class ModulecorePlugin extends Plugin {
 		
 		manager.registerAdapters(new ModuleCoreEclipseAdapterFactory(), ModuleStructuralModel.class);
 		manager.registerAdapters(new ArtifactEditAdapterFactory(), ArtifactEditModel.class);
+		manager.registerAdapters(new ArtifactEditAdapterFactory(), ArtifactEdit.class);
 		
 		PlatformURLModuleConnection.startup();
 		WTPModulesInit.init();

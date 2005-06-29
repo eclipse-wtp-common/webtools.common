@@ -38,6 +38,7 @@ import org.eclipse.wst.common.componentcore.internal.impl.ModuleStructuralModelF
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.internal.impl.WTPResourceFactoryRegistry;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
+import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelNature;
 
 /**
@@ -521,6 +522,10 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 				editUtility.dispose();
 		}
 		return null;
+	}
+
+	public EditModel getExistingEditModel(String artifactEditModelId,Map params, boolean isReadOnly) {
+		return getEmfContext().getExistingEditModel(artifactEditModelId,params,isReadOnly);
 	}
 
 

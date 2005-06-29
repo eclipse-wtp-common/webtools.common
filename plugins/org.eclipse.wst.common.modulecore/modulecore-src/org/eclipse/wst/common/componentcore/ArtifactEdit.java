@@ -11,7 +11,9 @@ package org.eclipse.wst.common.componentcore;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -56,7 +58,7 @@ import org.eclipse.wst.common.internal.emfworkbench.integration.IEditModelFactor
  * @see ArtifactEditModel
  * @since 1.0
  */
-public class ArtifactEdit implements IEditModelHandler {
+public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 
 	public static final Class ADAPTER_TYPE = ArtifactEdit.class;
 	private final ArtifactEditModel artifactEditModel;
@@ -505,5 +507,9 @@ public class ArtifactEdit implements IEditModelHandler {
 	 */
 	public Resource getResource(URI aUri) {
 		return getArtifactEditModel().getResource(aUri);
+	}
+
+	public Object getAdapter(Class adapterType) {
+		return Platform.getAdapterManager().getAdapter(this, adapterType);
 	}
 }
