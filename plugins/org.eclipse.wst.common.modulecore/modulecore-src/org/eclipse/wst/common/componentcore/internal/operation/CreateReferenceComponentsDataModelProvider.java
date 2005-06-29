@@ -15,7 +15,7 @@ public class CreateReferenceComponentsDataModelProvider extends AbstractDataMode
 	}
 
 	public String[] getPropertyNames() {
-		String[] props = new String[]{SOURCE_COMPONENT_HANDLE, TARGET_COMPONENTS_HANDLE_LIST};
+		String[] props = new String[]{SOURCE_COMPONENT_HANDLE, TARGET_COMPONENTS_HANDLE_LIST,TARGET_COMPONENTS_DEPLOY_PATH};
 		return props;
 	}
 
@@ -29,5 +29,6 @@ public class CreateReferenceComponentsDataModelProvider extends AbstractDataMode
 			return new ArrayList();
 	 return super.getDefaultProperty(propertyName);
 	}
+	
 	
 }

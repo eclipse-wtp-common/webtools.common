@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.datamodel.properties.ICreateReferenceComponentsDataModelProperties;
@@ -44,7 +45,6 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 		try {
 			ProjectUtilities.addReferenceProjects(sourceProject,targetprojectList);
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -68,6 +68,9 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 			IVirtualComponent comp = ComponentCore.createComponent(handle.getProject(), handle.getName());
 			if (!srcComponentContainsReference(sourceComp, comp)) {
 				IVirtualReference ref = ComponentCore.createReference(sourceComp, comp);
+				String deployPath = model.getStringProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH);
+				if(deployPath != null && deployPath.length() > 0)
+					ref.setRuntimePath(new Path(deployPath));
 				vlist.add(ref);
 			}
 		}
@@ -92,12 +95,10 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 	}
 
 	public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

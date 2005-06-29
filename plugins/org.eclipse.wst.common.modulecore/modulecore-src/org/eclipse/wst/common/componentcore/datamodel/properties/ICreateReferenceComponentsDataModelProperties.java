@@ -12,4 +12,11 @@ public interface ICreateReferenceComponentsDataModelProperties {
      */
 	public static final String TARGET_COMPONENTS_HANDLE_LIST = "ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_HANDLE_LIST"; //$NON-NLS-1$
 	
+	/**
+     * Optional, deploy path for the dependent component, default is "/"
+     */
+	public static final String TARGET_COMPONENTS_DEPLOY_PATH = "ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_DEPLOY_PATH"; //$NON-NLS-1$
+	
+	
+	
 }
