@@ -46,17 +46,6 @@ public class ArtifactEditOperationDataModelProvider extends AbstractDataModelPro
 		
 	}
 	
-	public boolean propertySet(String propertyName, Object propertyValue) {
-	    boolean status = super.propertySet(propertyName, propertyValue);
-//	    if(COMPONENT_NAME.equals(propertyName)){
-//	        WorkbenchComponent module = getWorkbenchModule();
-//	        IProject proj = getProjectForGivenComponent(module);
-//	        if(proj != null)
-//	            setProperty(PROJECT_NAME, proj.getName());
-//	    }
-	    return status;
-	}
-	
 	public Object getDefaultProperty(String propertyName) {
 		if (propertyName.equals(PROMPT_ON_SAVE))
 			return Boolean.FALSE;
@@ -94,18 +83,9 @@ public class ArtifactEditOperationDataModelProvider extends AbstractDataModelPro
 		IStatus result = super.validate(propertyName);
 		if (result != null && !result.isOK())
 			return result;
-		if (propertyName.equals(PROJECT_NAME))
-			return validateProjectName();
 		else if (propertyName.equals(COMPONENT_NAME))
 			return validateModuleName();
 		return result;
-	}
-	
-	protected IStatus validateProjectName() {
-		String projectName = getStringProperty(PROJECT_NAME);
-		if (projectName == null || projectName.length()==0)
-			return WTPCommonPlugin.createErrorStatus(WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_NAME_EMPTY));
-		return WTPCommonPlugin.OK_STATUS;
 	}
 	
 	protected IStatus validateModuleName() {
