@@ -74,6 +74,8 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 	} 
 	
 	public IResource getUnderlyingResource() {
+		if (getRuntimePath().segmentCount() == 0)
+			return getProject();
 		return getUnderlyingFolder();
 	}
 	
