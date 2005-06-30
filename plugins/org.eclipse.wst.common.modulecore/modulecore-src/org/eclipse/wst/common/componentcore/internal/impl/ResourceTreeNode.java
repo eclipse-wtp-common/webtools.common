@@ -24,7 +24,6 @@ import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.util.IPathProvider;
-import org.eclipse.wst.common.internal.emf.utilities.EtoolsCopyUtility;
 
 /**
  * <p>

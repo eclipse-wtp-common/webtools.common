@@ -20,12 +20,12 @@ import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
+import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.impl.ArtifactEditModelFactory;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
-import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelFactory;
 
 /**
  * <p>
