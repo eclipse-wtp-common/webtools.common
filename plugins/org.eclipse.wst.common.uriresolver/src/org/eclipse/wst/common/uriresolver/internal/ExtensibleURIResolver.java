@@ -18,9 +18,14 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.uriresolver.internal.provisional.URIResolver;
 import org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverExtension;
+import org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverPlugin;
+import org.osgi.framework.Bundle;
 
 
 /**
@@ -106,9 +111,18 @@ public class ExtensibleURIResolver implements URIResolver
 			{
 			  result = systemURI.resolve(baseURI).toString();
 			}
-			catch(IllegalArgumentException e)
-			{}
-			
+			catch (IllegalArgumentException e) {
+				Bundle bundle = URIResolverPlugin.getInstance().getBundle();
+				IStatus statusObj = new Status(IStatus.ERROR, bundle.getSymbolicName(), IStatus.ERROR, "Problem in ExtensibleURIResolver", e);
+				// Platform.getLog(bundle).log(statusObj);
+				try {
+					result = java.net.URI.create(baseLocation).resolve(systemId).toString();
+				}
+				catch (IllegalArgumentException e2) {
+					statusObj = new Status(IStatus.ERROR, bundle.getSymbolicName(), IStatus.ERROR, "Problem in ExtensibleURIResolver", e2);
+					Platform.getLog(bundle).log(statusObj);
+				}
+			}
 		}
 		return result;
 	}
