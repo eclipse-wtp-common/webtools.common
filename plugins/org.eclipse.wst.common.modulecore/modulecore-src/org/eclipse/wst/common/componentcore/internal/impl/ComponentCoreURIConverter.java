@@ -85,7 +85,9 @@ public class ComponentCoreURIConverter extends CompatibilityWorkbenchURIConverte
 			if (moduleCore != null)
 				moduleCore.dispose();
 		}
-		return ComponentCore.createComponent(containingProject, module.getName());
+		if( module != null )
+			return ComponentCore.createComponent(containingProject, module.getName());
+		return null;
 	}
 	/* (non-Javadoc)
 	 * @see org.eclipse.jem.util.emf.workbench.WorkbenchURIConverterImpl#normalize(org.eclipse.emf.common.util.URI)
@@ -139,10 +141,13 @@ public class ComponentCoreURIConverter extends CompatibilityWorkbenchURIConverte
 			
 			if (aFile != null) {
 				IVirtualComponent component = findComponent(aFile);
-				IProject fileProject = aFile.getProject();
-				//If it is not in the same project then just return the URI as is.
-				if (resourceSetSynchronizer.getProject() == fileProject)
-					return getArchiveRelativeURI(aFile,component.getRootFolder().getUnderlyingFolder());
+				if (component != null) {
+					IProject fileProject = aFile.getProject();
+					//If it is not in the same project then just return the URI as is.
+					if (resourceSetSynchronizer.getProject() == fileProject)
+						return getArchiveRelativeURI(aFile,component.getRootFolder().getUnderlyingFolder());
+				} else
+					return super.deNormalize(uri);
 			}
 		}
 		return uri;
