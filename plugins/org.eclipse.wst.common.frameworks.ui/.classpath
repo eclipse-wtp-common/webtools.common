@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="wtp_ui/"/>
 	<classpathentry kind="src" path="property_files"/>
-	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
