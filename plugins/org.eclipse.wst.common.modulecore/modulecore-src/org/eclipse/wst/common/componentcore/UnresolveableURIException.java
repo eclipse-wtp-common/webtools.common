@@ -17,7 +17,7 @@ import org.eclipse.emf.common.util.URI;
  * Thrown whenever a URI cannot be appropriately resolved.
  * </p>
  *  
- * @since 1.0
+ * @plannedfor 1.0
  */
 public class UnresolveableURIException extends Exception {
 

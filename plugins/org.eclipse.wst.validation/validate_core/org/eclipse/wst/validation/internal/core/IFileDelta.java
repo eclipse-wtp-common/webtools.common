@@ -16,7 +16,7 @@ package org.eclipse.wst.validation.internal.core;
  * status of a resource. IFileDelta contains the name of the file which has 
  * changed, and a flag which indicates the type of change which has occurred.
  * 
- * @since 1.0
+ * @plannedfor 1.0
  * </p>
  * [issue: LM - From speaking with Vijay the name IFileDelta doesn't really capture
  *  what this interface is for. Validation may occur of files, it may occur on resources,
@@ -36,7 +36,7 @@ public interface IFileDelta {
 	 * IFileDelta.ADDED, IFileDelta.CHANGED, or IFileDelta.DELETED.
 	 * </p>
 	 * @return returns the delta type.
-	 * @since WTP 1.0
+	 * @plannedfor WTP 1.0
 	 * 
 	 * [issue: LM - From my experience a validator simply needs to know what artifact needs
 	 *  to be validated. Can you provide a use case where the type of change is needed for
@@ -50,7 +50,7 @@ public interface IFileDelta {
 	 * null or the empty string ("").
 	 * </p>
 	 * @return returns the file name.
-	 * @since WTP 1.0
+	 * @plannedfor WTP 1.0
 	 * 
 	 * [issue: LM - Following my comments above this method should be renamed to getArtifactName or
 	 *  something that follows along with the interface rename. ]

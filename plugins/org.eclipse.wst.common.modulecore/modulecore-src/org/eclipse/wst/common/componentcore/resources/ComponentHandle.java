@@ -25,7 +25,7 @@ import org.eclipse.wst.common.componentcore.internal.StructureEdit;
  * <p>
  * The following class is not intended to be extended.
  * </p>
- * @since 1.0
+ * @plannedfor 1.0
  */
 public class ComponentHandle {
 

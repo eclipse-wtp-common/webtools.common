@@ -43,7 +43,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
  * structure that varies from their actual source location structures. 
  * </p>
  * 
- * @since 1.0
+ * @plannedfor 1.0
  */
 public class ComponentCore {
 

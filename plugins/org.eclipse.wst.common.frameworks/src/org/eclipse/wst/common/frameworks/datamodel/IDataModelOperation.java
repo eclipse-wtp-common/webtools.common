@@ -21,7 +21,7 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
  * 
  * @see org.eclipse.wst.common.frameworks.datamodel.IDataModel
  * 
- * @since 1.0
+ * @plannedfor 1.0
  */
 public interface IDataModelOperation extends IUndoableOperation {
 

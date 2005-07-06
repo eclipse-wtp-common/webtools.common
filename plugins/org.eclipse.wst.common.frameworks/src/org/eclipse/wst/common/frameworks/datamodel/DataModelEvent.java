@@ -21,7 +21,7 @@ package org.eclipse.wst.common.frameworks.datamodel;
  * @see org.eclipse.wst.common.frameworks.datamodel.IDataModel#addListener(IDataModelListener)
  * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelListener
  * 
- * @since 1.0
+ * @plannedfor 1.0
  */
 public final class DataModelEvent {
 

@@ -47,7 +47,7 @@ public interface IValidationContext {
 	 * @see <code>WorkbenchContext</code>
 	 * 
 	 * </p>
-	 * @since 1.0
+	 * @plannedfor 1.0
 	 */
 	public Object loadModel(String symbolicName);
 

@@ -130,7 +130,7 @@ import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelNature;
  * @see org.eclipse.wst.common.componentcore.ArtifactEdit
  * @see org.eclipse.wst.common.componentcore.ArtifactEdit#getArtifactEditForRead(WorkbenchComponent)
  * @see org.eclipse.wst.common.componentcore.ArtifactEdit#getArtifactEditForWrite(WorkbenchComponent)
- * @since 1.0
+ * @plannedfor 1.0
  */
 public class ModuleCoreNature extends EditModelNature implements IProjectNature, IModuleConstants {
 	

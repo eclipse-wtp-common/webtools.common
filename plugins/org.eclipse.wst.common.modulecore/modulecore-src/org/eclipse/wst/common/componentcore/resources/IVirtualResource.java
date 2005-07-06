@@ -54,7 +54,7 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
  * <p>
  * This interface is not intended to be implemented by clients.
  * </p>
- * @since 1.0
+ * @plannedfor 1.0
  */
 public interface IVirtualResource extends ISchedulingRule, IAdaptable {  
 																	
@@ -102,7 +102,7 @@ public interface IVirtualResource extends ISchedulingRule, IAdaptable {
 	 * </code>
 	 * </p>
 	 * 
-	 * @since 2.0
+	 * @plannedfor 2.0
 	 */
 	public static final int NONE = 0;
 
@@ -116,7 +116,7 @@ public interface IVirtualResource extends ISchedulingRule, IAdaptable {
 	 * Update flag constant (bit mask value 256) indicating that the operation should proceed even if
 	 * the resource is out of sync with the local file system.
 	 * 
-	 * @since 2.0
+	 * @plannedfor 2.0
 	 */
 	public static final int FORCE = 0x100; 
 

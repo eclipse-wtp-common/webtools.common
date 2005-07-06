@@ -23,7 +23,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * <ul>
  * <li>{@link #getComponentTypeId()}
  * </p>
- * @since 1.0
+ * @plannedfor 1.0
  */
 public interface IVirtualComponent {
 	

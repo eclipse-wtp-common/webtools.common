@@ -19,7 +19,7 @@ package org.eclipse.wst.common.frameworks.datamodel;
  * @see org.eclipse.wst.common.frameworks.datamodel.IDataModel#getPropertyDescriptor(String)
  * @see org.eclipse.wst.common.frameworks.datamodel.IDataModel#getValidPropertyDescriptors(String)
  * 
- * @since 1.0
+ * @plannedfor 1.0
  */
 public final class DataModelPropertyDescriptor {
 

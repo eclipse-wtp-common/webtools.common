@@ -40,7 +40,7 @@ import org.eclipse.wst.server.core.IRuntimeType;
  * WTP 1.0 milestones as the new project structures are adopted. Use at your own
  * risk.
  * 
- * @since WTP 1.0
+ * @plannedfor WTP 1.0
  */
 public abstract class ComponentCreationDataModelProvider extends AbstractDataModelProvider implements IComponentCreationDataModelProperties {
 

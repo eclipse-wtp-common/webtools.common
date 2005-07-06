@@ -21,7 +21,7 @@ import org.eclipse.wst.validation.internal.provisional.core.IMessage;
  * exception must be suitable for showing to the user. All ValidationExceptions will have their
  * message extracted when they're caught, and the message will be shown to the user.
  * 
- * @since 1.0
+ * @plannedfor 1.0
  * </p>
  */
 public class ValidationException extends Exception {

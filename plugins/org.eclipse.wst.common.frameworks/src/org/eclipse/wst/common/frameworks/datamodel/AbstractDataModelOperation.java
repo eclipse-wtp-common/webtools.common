@@ -20,7 +20,7 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
  * 
  * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation
  * 
- * @since 1.0
+ * @plannedfor 1.0
  */
 public abstract class AbstractDataModelOperation extends AbstractOperation implements IDataModelOperation {
 

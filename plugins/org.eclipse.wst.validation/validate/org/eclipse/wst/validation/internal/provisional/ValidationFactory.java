@@ -8,7 +8,7 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidator;
  * instance, an internal implementation that provides access to some of the internal state
  * of validators.
  * 
- * @since 1.0
+ * @plannedfor 1.0
  * 
  * [issue: LM - 2 issues.
  *  1. I don't think the name 'factory' provides a good description of 
@@ -29,7 +29,7 @@ public interface ValidationFactory {
 	 * plugin extension of the validator.
 	 * @param validatorUniqueId
 	 * @return IValidator
-	 * @since WTP 1.0
+	 * @plannedfor WTP 1.0
 	 */
 	public IValidator getValidator(String validatorUniqueId) throws InstantiationException;
 

@@ -20,7 +20,7 @@ import org.eclipse.wst.common.componentcore.internal.DependencyType;
  * The ReferencedComponent may exist in another project or as a binary form on the classpath 
  * of the project.
  * </p>
- * @since 1.0
+ * @plannedfor 1.0
  */
 public interface IVirtualReference {
 	

@@ -35,7 +35,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * <p>
  * This interface is not intended to be implemented by clients.
  * </p>
- * @since 1.0
+ * @plannedfor 1.0
  */
 public interface IVirtualContainer extends IVirtualResource {  
 
@@ -274,7 +274,7 @@ public interface IVirtualContainer extends IVirtualResource {
 	 *     this resource is a project that is not open.</li>
 	 * </ul>
 	 * @see IVirtualResource#exists()
-	 * @since 2.0
+	 * @plannedfor 2.0
 	 */
 	public IVirtualResource[] members(int memberFlags) throws CoreException;
 	

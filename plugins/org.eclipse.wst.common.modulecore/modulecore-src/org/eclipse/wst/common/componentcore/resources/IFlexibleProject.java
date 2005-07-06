@@ -20,7 +20,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * to group project resources to satisfy certain expected structures.
  * </p>
  * 
- * @since 1.0
+ * @plannedfor 1.0
  */
 public interface IFlexibleProject {
 	/**

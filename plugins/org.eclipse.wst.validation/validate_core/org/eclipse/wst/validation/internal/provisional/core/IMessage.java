@@ -22,7 +22,7 @@ import java.util.Locale;
  * (i.e., the message with the parameters already substituted in.) Either the default Locale can be
  * used, or the caller can specify a Locale.
  * 
- * @since 1.0
+ * @plannedfor 1.0
  * </p>
  * 
  * [issue: CS - The 'IMessage' interface would be simpler without the bundle related details.  I'd like to understand

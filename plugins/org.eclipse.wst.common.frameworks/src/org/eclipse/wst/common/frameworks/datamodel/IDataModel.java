@@ -60,7 +60,7 @@ import org.eclipse.core.runtime.IStatus;
  * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider
  * @see org.eclipse.wst.common.frameworks.datamodel.DataModelFactory
  * 
- * @since 1.0
+ * @plannedfor 1.0
  */
 public interface IDataModel {
 
