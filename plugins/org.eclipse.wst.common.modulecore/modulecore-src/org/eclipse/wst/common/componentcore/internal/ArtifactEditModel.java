@@ -242,19 +242,19 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 		Resource resourceToProcess;
 		boolean processed = false; 
  
-		URI aResourceURI = null;
 		IResource resourceResource;
-		IVirtualResource[] resources;
+		IVirtualResource[] virtualResources;
 		for (int i = 0; i < size; i++) { 
 			resourceToProcess = (Resource) theResources.get(i);
-			aResourceURI = resourceToProcess.getURI();
 			resourceResource = WorkbenchResourceHelper.getFile(resourceToProcess);
 			if (resourceResource != null) {
-				resources = ComponentCore.createResources(resourceResource); 
-				for (int resourcesIndex = 0; resourcesIndex < resources.length; resourcesIndex++) {
-					if (virtualComponent.equals(resources[resourcesIndex].getComponent())) {
-						processResource(resourceToProcess);
-						processed = true;
+				virtualResources = ComponentCore.createResources(resourceResource); 
+				for (int resourcesIndex = 0; resourcesIndex < virtualResources.length; resourcesIndex++) {
+					if (virtualComponent.equals(virtualResources[resourcesIndex].getComponent())) {
+						if (resourceToProcess !=null && isInterrestedInResource(resourceToProcess)) {
+							processResource(resourceToProcess);
+							processed = true;
+						}
 					}
 				}
 			}
