@@ -26,7 +26,7 @@ import org.eclipse.wst.common.snippets.internal.PluginRecord;
 import org.eclipse.wst.common.snippets.internal.SnippetDefinitions;
 import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
 import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry;
-import org.eclipse.wst.sse.core.internal.util.StringUtils;
+import org.eclipse.wst.common.snippets.internal.util.StringUtils;
 import org.osgi.framework.Bundle;
 
 public class ModelFactoryForPlugins extends AbstractModelFactory {

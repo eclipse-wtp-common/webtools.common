@@ -15,7 +15,6 @@ package org.eclipse.wst.common.snippets.internal.provisional.insertions;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
@@ -24,15 +23,15 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.eclipse.wst.common.snippets.internal.ISnippetVariable;
 import org.eclipse.wst.common.snippets.internal.Logger;
+import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
 import org.eclipse.wst.common.snippets.internal.VariableItemHelper;
 import org.eclipse.wst.common.snippets.internal.dnd.VariableTextTransfer;
 import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.ui.EntrySerializer;
-import org.eclipse.wst.sse.core.internal.util.StringUtils;
-import org.eclipse.wst.sse.ui.internal.IExtendedSimpleEditor;
+import org.eclipse.wst.common.snippets.internal.util.StringUtils;
 
 /**
  * An insertion implementation that supports ISnippetVariables. The content
@@ -52,30 +51,22 @@ public class VariableInsertion extends AbstractInsertion {
 		return new Transfer[]{VariableTextTransfer.getTransferInstance(), TextTransfer.getInstance()};
 	}
 
-	/**
-	 * Performs the insertion
-	 * @param part the part into which to insert
-	 * @param editor an implementor of IExtendedSimpleEditor to facilitate
-	 *            manipulation of the document
-	 * @throws BadLocationException if the editor's selected range is invalid
-	 *             in the simple editor's document
-	 */
-	protected void doInsert(IEditorPart part, IExtendedSimpleEditor editor) throws BadLocationException {
-		String replacement = getInsertString(part.getEditorSite().getShell());
-		if (replacement != null) {
-			editor.getDocument().replace(editor.getSelectionRange().x, editor.getSelectionRange().y, replacement);
-		}
-	}
-
 	public void dragSetData(DragSourceEvent event, ISnippetItem item) {
 		boolean isSimpleText = TextTransfer.getInstance().isSupportedType(event.dataType);
 		if (isSimpleText) {
 			// set variable values to ""
-			String content = item.getContentString();
-			ISnippetVariable[] variables = item.getVariables();
-			for (int i = 0; i < variables.length; i++) {
-				content = StringUtils.replace(content, "${" + variables[i].getName() + '}', ""); //$NON-NLS-1$ //$NON-NLS-2$
+			IWorkbenchWindow window = SnippetsPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow();
+			Shell shell = null;
+			if (window != null) {
+				shell = window.getShell();
 			}
+			String content = VariableItemHelper.getInsertString(shell, item);
+			// String content = item.getContentString();
+			// ISnippetVariable[] variables = item.getVariables();
+			// for (int i = 0; i < variables.length; i++) {
+			// content = StringUtils.replace(content, "${" +
+			// variables[i].getName() + '}', ""); //$NON-NLS-1$ //$NON-NLS-2$
+			// }
 			event.data = content;
 		}
 		else {
@@ -108,26 +99,6 @@ public class VariableInsertion extends AbstractInsertion {
 			return;
 		if (anEditorPart instanceof ITextEditor) {
 			super.insert(editorPart);
-		}
-		else if (anEditorPart instanceof IExtendedSimpleEditor) {
-			/*
-			 * The editor itself influences the insertion's actions, so we
-			 * can't allow the active editor to be changed. Disabling the
-			 * parent shell achieves psuedo-modal behavior without locking the
-			 * whole UI under Linux
-			 */
-			editorPart.getSite().getShell().setEnabled(false);
-			try {
-				IExtendedSimpleEditor editor = (IExtendedSimpleEditor) anEditorPart;
-				doInsert(anEditorPart, editor);
-			}
-			catch (Exception t) {
-				Logger.logException("Could not insert " + getItem().getId(), t); //$NON-NLS-1$
-				anEditorPart.getSite().getShell().getDisplay().beep();
-			}
-			finally {
-				editorPart.getSite().getShell().setEnabled(true);
-			}
 		}
 		else {
 			// MultiPageEditorPart has no accessors for the source EditorPart

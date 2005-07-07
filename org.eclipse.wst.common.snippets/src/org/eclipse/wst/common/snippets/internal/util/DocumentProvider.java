@@ -28,8 +28,6 @@ import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.wst.common.snippets.internal.Logger;
-import org.eclipse.wst.sse.core.internal.provisional.exceptions.SourceEditingRuntimeException;
-import org.eclipse.wst.sse.core.internal.util.JarUtilities;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
@@ -70,7 +68,6 @@ public class DocumentProvider {
 	protected String fileName = null;
 	protected boolean fValidating = true;
 	protected InputStream inputStream = null;
-	protected String jarFileName = null;
 	protected EntityResolver resolver = null;
 
 	protected Node rootElement = null;
@@ -190,20 +187,9 @@ public class DocumentProvider {
 	public InputStream getInputStream() throws FileNotFoundException {
 		if (inputStream != null)
 			return inputStream;
-		else if (isJAR()) {
-			return JarUtilities.getInputStream(getJarFileName(), getFileName());
-		}
 		else {
 			return new FileInputStream(getFileName());
 		}
-	}
-
-	/**
-	 * 
-	 * @return java.lang.String
-	 */
-	public java.lang.String getJarFileName() {
-		return jarFileName;
 	}
 
 	protected Node getNamedChild(Node parent, String childName) {
@@ -295,11 +281,7 @@ public class DocumentProvider {
 	protected Document getParsedDocument() {
 		Document result = null;
 		if (inputStream == null) {
-			File existenceTester = null;
-			if (isJAR())
-				existenceTester = new File(getJarFileName());
-			else
-				existenceTester = new File(getFileName());
+			File existenceTester = new File(getFileName());
 			if (!existenceTester.exists())
 				return null;
 		}
@@ -346,10 +328,6 @@ public class DocumentProvider {
 	 */
 	public String getRootElementName() {
 		return rootElementName;
-	}
-
-	protected boolean isJAR() {
-		return getJarFileName() != null;
 	}
 
 	/**
@@ -412,15 +390,6 @@ public class DocumentProvider {
 
 	/**
 	 * 
-	 * @param newJarFileName
-	 *            java.lang.String
-	 */
-	public void setJarFileName(String newJarFileName) {
-		jarFileName = newJarFileName;
-	}
-
-	/**
-	 * 
 	 * @param newRootElementName
 	 *            java.lang.String
 	 */
@@ -436,9 +405,6 @@ public class DocumentProvider {
 	}
 
 	public void store() {
-		if (isJAR())
-			return;
-
 		if (rootElement == null) {
 			document = getNewDocument();
 			rootElement = document.getDocumentElement();
@@ -454,7 +420,6 @@ public class DocumentProvider {
 		}
 		catch (IOException e) {
 			Logger.logException("Exception saving document " + getFileName(), e); //$NON-NLS-1$
-			throw new SourceEditingRuntimeException(e);
 		}
 	}
 

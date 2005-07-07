@@ -12,15 +12,22 @@ package org.eclipse.wst.common.snippets.internal.dnd;
 
 
 
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.wst.common.snippets.internal.VariableItemHelper;
 import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.ui.EntryDeserializer;
-import org.eclipse.wst.sse.ui.internal.AbstractDropAction;
 
-public class VariableTextDropAction extends AbstractDropAction {
+public class VariableTextDropAction {
 
 	protected String getInsertString(Shell host, ISnippetItem item) {
 		return VariableItemHelper.getInsertString(host, item, false);
@@ -63,6 +70,51 @@ public class VariableTextDropAction extends AbstractDropAction {
 			success = insert((String) event.data, targetEditor);
 		}
 		return success;
+	}
+	/*
+	 * Replaces targetEditor's current selection by "text"
+	 */
+	protected boolean insert(String text, IEditorPart targetEditor) {
+		if (text == null || text.length() == 0) {
+			return true;
+		}
+
+		ITextSelection textSelection = null;
+		IDocument doc = null;
+		ISelection selection = null;
+
+		ITextEditor textEditor = null;
+		if (targetEditor instanceof ITextEditor) {
+			textEditor = (ITextEditor) targetEditor;
+		}
+		if (textEditor == null) {
+			textEditor = (ITextEditor) ((IAdaptable) targetEditor).getAdapter(ITextEditor.class);
+		}
+
+		if (selection == null && textEditor != null) {
+			selection = textEditor.getSelectionProvider().getSelection();
+		}
+		if (doc == null && textEditor != null) {
+			doc = textEditor.getDocumentProvider().getDocument(textEditor.getEditorInput());
+		}
+
+		if (selection instanceof ITextSelection) {
+			textSelection = (ITextSelection) selection;
+			try {
+				doc.replace(textSelection.getOffset(), textSelection.getLength(), text);
+			}
+			catch (BadLocationException e) {
+				return false;
+			}
+		}
+		if (textEditor != null && textSelection != null) {
+			ISelectionProvider sp = textEditor.getSelectionProvider();
+			ITextSelection sel = new TextSelection(textSelection.getOffset(), text.length());
+			sp.setSelection(sel);
+			textEditor.selectAndReveal(sel.getOffset(), sel.getLength());
+		}
+
+		return true;
 	}
 
 }

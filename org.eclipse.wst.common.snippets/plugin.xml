@@ -18,37 +18,6 @@
 		</view>
 	</extension>
 
-	<!-- register transfer types and drop actions -->
-	<extension point="org.eclipse.wst.sse.ui.dropTargetTransfers">
-		<!-- Structured Source Editors (and those with compatible configuration points) -->
-		<dropTargetContribution
-			targetID="org.eclipse.wst.sse.ui.internal.StructuredTextEditor"
-			id="org.eclipse.wst.sse.ui.ExtendedTransfers">
-			<transfer
-				singleton="true"
-				class="org.eclipse.wst.common.snippets.internal.dnd.PrependTextTransfer"
-				method="getTransferInstance"
-				id="org.eclipse.wst.common.snippets.internal.dnd.PrependTextTransfer">
-			</transfer>
-			<dropAction
-				class="org.eclipse.wst.common.snippets.internal.dnd.ExtendedMarkupPrependTextDropAction"
-				transferID="org.eclipse.wst.common.snippets.internal.dnd.PrependTextTransfer"
-				id="org.eclipse.wst.common.snippets.internal.dnd.ExtendedMarkupPrependTextDropAction">
-			</dropAction>
-			<transfer
-				singleton="true"
-				class="org.eclipse.wst.common.snippets.internal.dnd.VariableTextTransfer"
-				method="getTransferInstance"
-				id="org.eclipse.wst.common.snippets.internal.dnd.VariableTextTransfer">
-			</transfer>
-			<dropAction
-				class="org.eclipse.wst.common.snippets.internal.dnd.VariableTextDropAction"
-				transferID="org.eclipse.wst.common.snippets.internal.dnd.VariableTextTransfer"
-				id="org.eclipse.wst.common.snippets.internal.dnd.VariableDropAction">
-			</dropAction>
-		</dropTargetContribution>
-	</extension>
-
 	<extension point="org.eclipse.ui.popupMenus">
 		<!-- Default Text Editor -->
 		<viewerContribution
@@ -146,5 +115,4 @@
 			</action>
 		</viewerContribution>
 	</extension>
-
 </plugin>

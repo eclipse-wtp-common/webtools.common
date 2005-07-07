@@ -30,8 +30,8 @@ import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
 import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteItem;
 import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteItemFactory;
 import org.eclipse.wst.common.snippets.internal.ui.SnippetsView;
+import org.eclipse.wst.common.snippets.internal.util.StringUtils;
 import org.eclipse.wst.common.snippets.internal.util.UserDrawerSelector;
-import org.eclipse.wst.sse.core.internal.util.StringUtils;
 
 
 public class AddToSnippetsEditorActionDelegate implements IEditorActionDelegate, IViewActionDelegate {
