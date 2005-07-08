@@ -49,6 +49,8 @@ import org.eclipse.wst.common.frameworks.internal.ui.TimedModifyListener;
  * This class is EXPERIMENTAL and is subject to substantial changes.
  */
 public class DataModelSynchHelper implements IDataModelListener {
+	protected static final boolean isLinux = System.getProperty ("os.name").equals("Linux");
+	
 	protected IDataModel dataModel;
 	protected Map widgetToPropertyHash;
 	protected Map propertyToWidgetHash;
@@ -76,17 +78,25 @@ public class DataModelSynchHelper implements IDataModelListener {
 	private TimedModifyListener timedModifyListener;
 
 	private class ComboListener implements SelectionListener, ModifyListener {
+		
 		public void modifyText(ModifyEvent e) {
 			if (ignoreModifyEvent)
 				return;
 			Combo combo = (Combo) e.getSource();
 			if (currentWidget == combo)
 				return;
+			
 			try {
 				currentWidgetFromEvent = combo;
 				String propertyName = (String) widgetToPropertyHash.get(combo);
 				DataModelPropertyDescriptor[] descriptors = dataModel.getValidPropertyDescriptors(propertyName);
 				String description = combo.getText();
+				//On a combo selection linux fires 2 events;
+				//the first clears the value which needs to be ignored when the type is not String
+				//the second sets the new value
+				if(isLinux && description.length()==0 && descriptors.length != 0 && !(descriptors[0].getPropertyValue() instanceof String)){
+					return;
+				}
 				for (int i = 0; i < descriptors.length; i++) {
 					if (description.equals(descriptors[i].getPropertyDescription())) {
 						setProperty(propertyName, descriptors[i].getPropertyValue());
