@@ -123,6 +123,8 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	private static final String PROPERTY_NOT_LOCATED_ = WTPResourceHandler.getString("20"); //$NON-NLS-1$
 	private static final String NESTED_MODEL_NOT_LOCATED = WTPResourceHandler.getString("21"); //$NON-NLS-1$
 	private static final String NESTED_MODEL_DUPLICATE = WTPResourceHandler.getString("33"); //$NON-NLS-1$
+	
+	private static final WTPPropertyDescriptor[] NO_DESCRIPTORS = new WTPPropertyDescriptor[0];
 
 	private Set validProperties = new HashSet();
 	private Set validBaseProperties = new HashSet();
@@ -418,7 +420,11 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	public final WTPPropertyDescriptor[] getValidPropertyDescriptors(String propertyName) {
 		checkValidPropertyName(propertyName);
 		if (isBaseProperty(propertyName)) {
-			return doGetValidPropertyDescriptors(propertyName);
+			WTPPropertyDescriptor[] descriptors = doGetValidPropertyDescriptors(propertyName);
+			if(null == descriptors){
+				descriptors = NO_DESCRIPTORS; 
+			}
+			return descriptors;
 		} else if (nestedModels != null) {
 			WTPOperationDataModel dataModel = null;
 			Object[] keys = nestedModels.keySet().toArray();
@@ -442,7 +448,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 * @see #getValidPropertyDescriptors(String)
 	 */
 	protected WTPPropertyDescriptor[] doGetValidPropertyDescriptors(String propertyName) {
-		return new WTPPropertyDescriptor[0];
+		return NO_DESCRIPTORS;
 	}
 
 	/**
