@@ -25,8 +25,8 @@ import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchEditResourceHand
  */
 public class ClientAccessRegistry {
 
-	private final WeakHashMap registry = new WeakHashMap();
-	private final Set baseSet = new HashSet();
+	protected final WeakHashMap registry = new WeakHashMap();
+	protected final Set baseSet = new HashSet();
 
 	public void access(Object accessorKey) {
 		if (isStable()) {

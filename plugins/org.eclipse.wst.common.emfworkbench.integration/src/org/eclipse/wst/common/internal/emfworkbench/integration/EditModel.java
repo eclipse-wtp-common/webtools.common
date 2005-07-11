@@ -59,10 +59,13 @@ import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
 import org.eclipse.wst.common.internal.emfworkbench.edit.ClientAccessRegistry;
 import org.eclipse.wst.common.internal.emfworkbench.edit.EditModelRegistry;
 import org.eclipse.wst.common.internal.emfworkbench.edit.EditModelResource;
+import org.eclipse.wst.common.internal.emfworkbench.edit.ReadOnlyClientAccessRegistry;
 import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateInputProvider;
 import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidator;
 import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidatorImpl;
 import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidatorPresenter;
+
+import sun.misc.Cleaner;
 
 
 public class EditModel implements CommandStackListener, ResourceStateInputProvider, ResourceStateValidator, IEnablementIdentifierListener {
@@ -90,7 +93,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	protected ResourceAdapter resourceAdapter = new ResourceAdapter();
 	protected boolean isReverting = false;
 	protected List resources;
-	private final ClientAccessRegistry registry = new ClientAccessRegistry();
+	private ClientAccessRegistry registry;
 	protected EMFWorkbenchContext emfContext = null;
 	protected IProject project = null;
 
@@ -110,6 +113,10 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 			throw new IllegalStateException("EMF context can't be null");
 		this.editModelID = editModelID;
 		this.readOnly = readOnly;
+		if (readOnly)
+			this.registry = new ReadOnlyClientAccessRegistry();
+		else
+			this.registry = new ClientAccessRegistry();
 		this.emfContext = context;
 		this.project = context.getProject();
 		initializeKnownResourceUris();
@@ -117,6 +124,10 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 		processPreloadResources();
 	}
 
+private ClientAccessRegistry initializeRegistry(Object read) {
+		
+		return null;
+	}
 
 
 	public EditModel(String editModelID, EMFWorkbenchContext context, boolean readOnly, boolean accessUnknownResourcesAsReadOnly) {
