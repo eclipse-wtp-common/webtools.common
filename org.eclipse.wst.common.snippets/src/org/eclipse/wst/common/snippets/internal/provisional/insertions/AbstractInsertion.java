@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.wst.common.snippets.internal.provisional.insertions;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentExtension4;
@@ -66,15 +69,39 @@ public abstract class AbstractInsertion implements ISnippetsInsertion {
 			// Update EOLs (bug 80231)
 			replacement = StringUtils.replace(replacement, "\r\n", "\n");
 			replacement = StringUtils.replace(replacement, "\r", "\n");
-			
-			String preferredEOL = System.getProperty("line.separator");
+
+			String preferredEOL = null;
 			if (document instanceof IDocumentExtension4) {
 				preferredEOL = ((IDocumentExtension4) document).getDefaultLineDelimiter();
+			}
+			else {
+				Method getLineDelimiter = null;
+				try {
+					getLineDelimiter = document.getClass().getMethod("getLineDelimiter", new Class[0]); //$NON-NLS-1$
+				}
+				catch (NoSuchMethodException e) {
+					// nothing, not unusual
+				}
+				if (getLineDelimiter != null) {
+					try {
+						preferredEOL = (String) getLineDelimiter.invoke(document, new Object[0]);
+					}
+					catch (IllegalAccessException e) {
+						// nothing, not unusual for a non-visible method
+					}
+					catch (InvocationTargetException e) {
+						// nothing, not unusual for a protected implementation
+					}
+				}
+
+			}
+			if (preferredEOL == null) {
+				preferredEOL = System.getProperty("line.separator");
 			}
 			if (!"\n".equals(preferredEOL) && preferredEOL != null) {
 				replacement = StringUtils.replace(replacement, "\n", preferredEOL);
 			}
-			
+
 			document.replace(textSelection.getOffset(), textSelection.getLength(), replacement);
 		}
 	}
