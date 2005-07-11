@@ -115,7 +115,17 @@ public class ModelFactoryForUser extends AbstractModelFactory {
 	}
 
 	protected String createContent(Node item) {
-		return readCDATAofChild(item, SnippetsPlugin.NAMES.CONTENT);
+		String content = readCDATAofChild(item, SnippetsPlugin.NAMES.CONTENT);
+		/*
+		 * EOL translation
+		 * (https://bugs.eclipse.org/bugs/show_bug.cgi?id=102941). Convert
+		 * '\n' to native EOL.
+		 */
+		String systemEOL = System.getProperty("line.separator");
+		if (!"\n".equals(systemEOL)) {
+			content = StringUtils.replace(content, "\n", systemEOL);
+		}
+		return content;
 	}
 
 	protected String createDescription(Node entryElement) {

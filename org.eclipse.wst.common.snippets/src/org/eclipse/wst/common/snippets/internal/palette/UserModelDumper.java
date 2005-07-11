@@ -28,6 +28,7 @@ import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
 import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.util.CommonXML;
+import org.eclipse.wst.common.snippets.internal.util.StringUtils;
 import org.osgi.framework.Bundle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -121,8 +122,17 @@ public class UserModelDumper {
 	 */
 	protected Element createContent(Document doc, ISnippetItem item) {
 		Element element = doc.createElement(SnippetsPlugin.NAMES.CONTENT);
-		if (item.getContentString() != null && item.getContentString().length() > 0)
-			element.appendChild(doc.createCDATASection(item.getContentString()));
+		String contents = item.getContentString();
+		if (contents != null && contents.length() > 0) {
+			/*
+			 * EOL translation
+			 * (https://bugs.eclipse.org/bugs/show_bug.cgi?id=102941).
+			 * Normalize to '\n'.
+			 */
+			contents = StringUtils.replace(contents, "\r\n", "\n");
+			contents = StringUtils.replace(contents, "\r", "\n");
+			element.appendChild(doc.createCDATASection(contents));
+		}
 		return element;
 	}
 
