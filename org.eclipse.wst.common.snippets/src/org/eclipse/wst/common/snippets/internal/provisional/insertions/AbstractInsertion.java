@@ -12,6 +12,7 @@ package org.eclipse.wst.common.snippets.internal.provisional.insertions;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IDocumentExtension4;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -24,6 +25,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.wst.common.snippets.internal.Logger;
 import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsInsertion;
+import org.eclipse.wst.common.snippets.internal.util.StringUtils;
 
 
 /**
@@ -61,6 +63,18 @@ public abstract class AbstractInsertion implements ISnippetsInsertion {
 	protected void doInsert(IEditorPart part, ITextEditor textEditor, IDocument document, ITextSelection textSelection) throws BadLocationException {
 		String replacement = getInsertString(part.getEditorSite().getShell());
 		if (replacement != null && (replacement.length() > 0 || textSelection.getLength() > 0)) {
+			// Update EOLs (bug 80231)
+			replacement = StringUtils.replace(replacement, "\r\n", "\n");
+			replacement = StringUtils.replace(replacement, "\r", "\n");
+			
+			String preferredEOL = System.getProperty("line.separator");
+			if (document instanceof IDocumentExtension4) {
+				preferredEOL = ((IDocumentExtension4) document).getDefaultLineDelimiter();
+			}
+			if (!"\n".equals(preferredEOL) && preferredEOL != null) {
+				replacement = StringUtils.replace(replacement, "\n", preferredEOL);
+			}
+			
 			document.replace(textSelection.getOffset(), textSelection.getLength(), replacement);
 		}
 	}
@@ -78,7 +92,8 @@ public abstract class AbstractInsertion implements ISnippetsInsertion {
 	 * Return the string intended to be inserted; used by double-click
 	 * behavior
 	 * 
-	 * @param host a shell from which UI elements may be opened to help
+	 * @param host
+	 *            a shell from which UI elements may be opened to help
 	 *            determine what String to return
 	 * 
 	 * @return the String to be inserted
@@ -136,7 +151,8 @@ public abstract class AbstractInsertion implements ISnippetsInsertion {
 	/**
 	 * Sets the activeEditorPart.
 	 * 
-	 * @param activeEditorPart The activeEditorPart to set
+	 * @param activeEditorPart
+	 *            The activeEditorPart to set
 	 */
 	public void setActiveEditorPart(IEditorPart newActiveEditorPart) {
 		this.activeEditorPart = newActiveEditorPart;
@@ -145,7 +161,8 @@ public abstract class AbstractInsertion implements ISnippetsInsertion {
 	/**
 	 * Sets the fItem.
 	 * 
-	 * @param fItem The ISnippetItem to use
+	 * @param fItem
+	 *            The ISnippetItem to use
 	 */
 	public void setItem(ISnippetItem item) {
 		this.fItem = item;

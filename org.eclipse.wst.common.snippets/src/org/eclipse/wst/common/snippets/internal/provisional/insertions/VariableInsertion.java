@@ -61,12 +61,13 @@ public class VariableInsertion extends AbstractInsertion {
 				shell = window.getShell();
 			}
 			String content = VariableItemHelper.getInsertString(shell, item);
-			// String content = item.getContentString();
-			// ISnippetVariable[] variables = item.getVariables();
-			// for (int i = 0; i < variables.length; i++) {
-			// content = StringUtils.replace(content, "${" +
-			// variables[i].getName() + '}', ""); //$NON-NLS-1$ //$NON-NLS-2$
-			// }
+			// Update EOLs (bug 80231)
+			String systemEOL = System.getProperty("line.separator");
+			content = StringUtils.replace(content, "\r\n", "\n");
+			content = StringUtils.replace(content, "\r", "\n");
+			if (!"\n".equals(systemEOL) && systemEOL != null) {
+				content = StringUtils.replace(content, "\n", systemEOL);
+			}
 			event.data = content;
 		}
 		else {
