@@ -25,9 +25,19 @@ public class LicenseRegistry
   protected static Integer LICENSE_DISAGREE = new Integer(2);
   
   /**
+   * The WTP system quiet property, used to prevent user prompting in automated testing.
+   */
+  private final static String WTP_QUIET_SYSTEM_PROP = "wtp.quiet";
+  
+  /**
    * There is only one instance of the license registry.
    */
   protected static LicenseRegistry instance = null;
+  
+  /**
+   * If set to true, the do not prompt flag will prevent user prompting. Used for automated testing.
+   */
+  private boolean DO_NOT_PROMPT = false;
   
   /**
    * The licenses hashtable contains licenses and whether or not they've been accepted.
@@ -37,6 +47,13 @@ public class LicenseRegistry
   protected LicenseRegistry()
   {
 	licenses = new Hashtable();
+	
+	// If the wtp quiet system property is set the DO_NOT_PROMPT flag is set to true.
+	// This is used for automated testing.
+	if(System.getProperty(WTP_QUIET_SYSTEM_PROP, "false").equals("true"))
+	{
+	  DO_NOT_PROMPT = true;
+	}
   }
   
   /**
@@ -105,6 +122,11 @@ public class LicenseRegistry
    */
   public boolean hasLicenseBeenAccepted(String url, String licenseURL)
   {
+	if(DO_NOT_PROMPT)
+	{
+	  return true;
+	}
+	
 	if(licenses.containsKey(licenseURL))
 	{
 	  Integer agreed = (Integer)licenses.get(licenseURL);
