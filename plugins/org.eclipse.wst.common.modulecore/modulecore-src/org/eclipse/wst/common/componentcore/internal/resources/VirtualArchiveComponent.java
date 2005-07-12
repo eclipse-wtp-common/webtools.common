@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
@@ -29,6 +30,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 
 public class VirtualArchiveComponent implements IVirtualComponent {
 
+	
 	private static final IVirtualReference[] NO_REFERENCES = new VirtualReference[0];
 	private static final IVirtualComponent[] NO_COMPONENTS = new VirtualComponent[0];
 	private static final IResource[] NO_RESOURCES = null;
@@ -36,44 +38,37 @@ public class VirtualArchiveComponent implements IVirtualComponent {
 	private static final Properties NO_PROPERTIES = new Properties();
 	private static final IPath[] NO_PATHS = new Path[0];
 	
-	
-	private String name;
+	private IPath runtimePath;
+	private ComponentHandle	componentHandle;
+	private IVirtualFolder	rootFolder;
 	private int flag = 1;
-	private ComponentHandle handle;
+
+
 	private IPath archivePath;
-	private IProject project;
 	private String archiveType;
 	
-	/**
-	 * 
-	 * @param aProject The containing project
-	 * @param aName A project relative path or a string of the form 
-	 */
-	public VirtualArchiveComponent(String aName) {
-		name = aName;
-		handle = ComponentHandle.create(project, aName);
-		IPath namePath = new Path(aName);
+
+
+	
+	public VirtualArchiveComponent(ComponentHandle aComponentHandle, IPath aRuntimePath) {
+		componentHandle = aComponentHandle;
+		runtimePath = aRuntimePath;
+		
+		IPath namePath = new Path(componentHandle.getName());
 		archiveType = namePath.segment(0);
-		archivePath = namePath.removeFirstSegments(1).makeRelative();
-	}
-	/**
-	 * 
-	 * @param aProject The containing project
-	 * @param aName A project relative path or a string of the form 
-	 */
-	public VirtualArchiveComponent(IProject aProject, String aName) {
-		name = aName;
-		project = aProject;
-		handle = ComponentHandle.create(project, aName);
-		archivePath = new Path(aName);
+		archivePath = namePath.removeFirstSegments(1).makeRelative();		
 	}
 	
+	public VirtualArchiveComponent(IProject aProject, String aName, IPath aRuntimePath) {
+		this(ComponentHandle.create(aProject, aName), aRuntimePath);		
+	}
+		
 	public IVirtualComponent getComponent() {
 		return this;
 	}
 	
 	public String getName() {
-		return name;
+		return componentHandle.getName();
 	}
 	
 	public String getComponentTypeId() {
@@ -89,11 +84,8 @@ public class VirtualArchiveComponent implements IVirtualComponent {
 	}
 	
 	public boolean isBinary(){
-		return (flag & BINARY) == 1  ? true :false;		
-	}
-	
-	public IPath getRuntimePath() {
-		return ROOT;
+		boolean ret =  (flag & BINARY) == 1  ? true :false;
+		return ret;
 	}
 
 	public IPath[] getMetaResources() {
@@ -103,9 +95,9 @@ public class VirtualArchiveComponent implements IVirtualComponent {
 	public void setMetaResources(IPath[] theMetaResourcePaths) {
 		
 	}
-
+	
 	public ComponentHandle getComponentHandle() {
-		return handle;
+		return componentHandle;
 	}
 
 	public void delete(int updateFlags, IProgressMonitor monitor) throws CoreException {
@@ -125,11 +117,15 @@ public class VirtualArchiveComponent implements IVirtualComponent {
 	public IPath getProjectRelativePath() {
 		return archivePath;
 	} 
-
+	
 	public IProject getProject() {
-		return project;
+		 return componentHandle.getProject();
 	}
 
+	public IPath getRuntimePath() {
+		return ROOT;
+	}
+	
 	public boolean isAccessible() {
 		return true;
 	} 
@@ -174,6 +170,6 @@ public class VirtualArchiveComponent implements IVirtualComponent {
 		return NO_COMPONENTS;
 	}
 	public String getVersion() {
-		return null;
+		return "";
 	}
 }

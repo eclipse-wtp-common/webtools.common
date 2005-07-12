@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.builder;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
@@ -32,9 +35,12 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IReferencedComponentBuilderDataModelProperties;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
+import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.componentcore.internal.util.ZipFileExporter;
@@ -94,12 +100,20 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 				return OK_STATUS;
 			} else if (absoluteInputContainer == null || !referencedComponent.getProject().getFolder(absoluteInputContainer).exists()) {
 				if (vReference.getReferencedComponent().isBinary()) {
-					IFile archive = referencedComponent.getProject().getFile(((VirtualArchiveComponent) referencedComponent).getProjectRelativePath());
-					expandZipFile(archive, outputContainerFolder);
-					return OK_STATUS;
-
+					try {
+						String fileString = ModuleURIUtil.getArchiveName(URI.createURI(referencedComponent.getComponentHandle().toString()));
+						IPath path = new Path(fileString);
+						String osPath = path.toOSString();
+						if (vReference.getDependencyType() == IVirtualReference.DEPENDENCY_TYPE_CONSUMES) {
+							expandZipFile(osPath, outputContainerFolder);
+						} else {
+							copyFile(osPath, outputContainerFolder);
+						}
+						return OK_STATUS;
+					} catch (UnresolveableURIException e) {
+						Logger.getLogger().logError(e);
+					}
 				}
-
 			}
 
 			if (vReference.getDependencyType() == IVirtualReference.DEPENDENCY_TYPE_CONSUMES) {
@@ -127,10 +141,38 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 		return OK_STATUS;
 	}
 
-	private void expandZipFile(IResource resource, IFolder absoluteOutputContainer) {
+	private void copyFile(String osPath, IFolder outputContainerFolder) {
+		File diskFile = new File(osPath);
+		FileInputStream inputStream = null;
+		try {
+			IFile iFile = outputContainerFolder.getFile(new Path(diskFile.getName()));
+			if (!iFile.exists()) {
+				inputStream = new FileInputStream(diskFile);
+				createFolder(iFile.getParent().getFullPath());
+				iFile.create(inputStream, true, null);
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (null != inputStream) {
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	private void expandZipFile(String filePath, IFolder absoluteOutputContainer) {
 		ZipFile zipFile;
 		try {
-			zipFile = new ZipFile(resource.getRawLocation().toOSString());
+			zipFile = new ZipFile(filePath);
 			Enumeration entries = zipFile.entries();
 			ZipEntry entry = null;
 			InputStream inputStream = null;

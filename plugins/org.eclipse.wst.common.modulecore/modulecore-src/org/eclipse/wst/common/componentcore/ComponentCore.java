@@ -83,20 +83,9 @@ public class ComponentCore {
 	 * @return A handle to an IVirtualComponent that may or may not exist.
 	 * @see IVirtualContainer#create(int, IProgressMonitor) 
 	 */
-	public static IVirtualComponent createArchiveComponent(String aComponentName){
-		return new VirtualArchiveComponent(aComponentName); 
-	}
-	
-	/**
-	 * Return an IVirtualComponent with the given name (aComponentName)
-	 * 
-	 * @param aComponentName A name to identify the component, the name can be lib/&lt;Absolute path of a jar&gt;
-	 * or var/&lt;CLASSPATH_VARIABLE/library namer&gt;
-	 * @return A handle to an IVirtualComponent that may or may not exist.
-	 * @see IVirtualContainer#create(int, IProgressMonitor) 
-	 */
 	public static IVirtualComponent createArchiveComponent(IProject aProject, String aComponentName){
-		return new VirtualArchiveComponent(aProject, aComponentName); 
+		return new VirtualArchiveComponent(aProject, aComponentName, new Path("/"));
+		
 	}
 	
 	/**
