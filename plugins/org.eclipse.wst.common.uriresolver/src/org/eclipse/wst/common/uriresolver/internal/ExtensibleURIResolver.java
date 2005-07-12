@@ -113,13 +113,23 @@ public class ExtensibleURIResolver implements URIResolver
 			}
 			catch (IllegalArgumentException e) {
 				Bundle bundle = URIResolverPlugin.getInstance().getBundle();
-				IStatus statusObj = new Status(IStatus.ERROR, bundle.getSymbolicName(), IStatus.ERROR, "Problem in ExtensibleURIResolver", e);
-				// Platform.getLog(bundle).log(statusObj);
+				IStatus statusObj = null;
+				java.net.URI baseURI2 = null;
 				try {
-					result = java.net.URI.create(baseLocation).resolve(systemId).toString();
+					baseURI2 = java.net.URI.create(baseLocation);
 				}
 				catch (IllegalArgumentException e2) {
-					statusObj = new Status(IStatus.ERROR, bundle.getSymbolicName(), IStatus.ERROR, "Problem in ExtensibleURIResolver", e2);
+					statusObj = new Status(IStatus.ERROR, bundle.getSymbolicName(), IStatus.ERROR, "Problem in creating java.net.URI in ExtensibleURIResolver:" + e2.getMessage(), e2); //$NON-NLS-1$
+					Platform.getLog(bundle).log(statusObj);
+				}
+				try {
+					if(baseURI2 != null) {
+						java.net.URI resultURI = baseURI2.resolve(systemId);
+						result = resultURI.toString();
+					}
+				}
+				catch (IllegalArgumentException e2) {
+					statusObj = new Status(IStatus.ERROR, bundle.getSymbolicName(), IStatus.ERROR, "Problem in resolving with java.net.URI in ExtensibleURIResolver:" + e2.getMessage(), null); //$NON-NLS-1$
 					Platform.getLog(bundle).log(statusObj);
 				}
 			}
@@ -132,7 +142,7 @@ public class ExtensibleURIResolver implements URIResolver
     IFile file = null;
     if (baseLocation != null)
     {
-      String pattern = "file:///";
+      String pattern = "file:///"; //$NON-NLS-1$
       if (baseLocation.startsWith(pattern))
       {
         baseLocation = baseLocation.substring(pattern.length());
