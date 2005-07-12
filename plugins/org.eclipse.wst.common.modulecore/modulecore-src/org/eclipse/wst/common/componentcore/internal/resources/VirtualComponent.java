@@ -21,7 +21,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.common.componentcore.ComponentCore;
-import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.ComponentType;
 import org.eclipse.wst.common.componentcore.internal.ComponentcoreFactory;
 import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
@@ -187,43 +186,11 @@ public class VirtualComponent implements IVirtualComponent {
 			ReferencedComponent referencedComponent = null;
 			
 			List references = new ArrayList();
-			IVirtualComponent targetComponent = null;
-			IProject targetProject = null;
-			String targetComponentName = null;
 			for (Iterator iter = referencedComponents.iterator(); iter.hasNext();) {
 				referencedComponent = (ReferencedComponent) iter.next();
-				
-				boolean isClassPathURI = ModuleURIUtil.isClassPathURI(referencedComponent.getHandle());
-				
-				if( !isClassPathURI ){
-					try { 
-						targetProject = StructureEdit.getContainingProject(referencedComponent.getHandle());
-					} catch(UnresolveableURIException uurie) { } 
-					// if the project cannot be resolved, assume it's local - really it probably deleted
-					if(targetProject == null)
-						continue;
-						//targetProject = getProject();
-					
-					try {
-						targetComponentName = StructureEdit.getDeployedName(referencedComponent.getHandle());
-						targetComponent = ComponentCore.createComponent(targetProject, targetComponentName); 
-						references.add(new VirtualReference(this, targetComponent, referencedComponent.getRuntimePath(), referencedComponent.getDependencyType().getValue()));
-						
-					} catch (UnresolveableURIException e) { 
-					}
-				}else{
-					String archiveType = "";
-					String archiveName = "";
-					try {
-						archiveType = ModuleURIUtil.getArchiveType(referencedComponent.getHandle());
-						archiveName = ModuleURIUtil.getArchiveName(referencedComponent.getHandle());
-						
-					} catch (UnresolveableURIException e) {
-
-					}
-					targetComponent = ComponentCore.createArchiveComponent( archiveType + IPath.SEPARATOR + archiveName );
-					references.add(new VirtualReference(this, targetComponent, referencedComponent.getRuntimePath(), referencedComponent.getDependencyType().getValue()));
-				}
+				IVirtualReference vReference = StructureEdit.createVirtualReference(this, referencedComponent);
+				if(vReference != null)
+					references.add(vReference);
 				 
 			}
 			

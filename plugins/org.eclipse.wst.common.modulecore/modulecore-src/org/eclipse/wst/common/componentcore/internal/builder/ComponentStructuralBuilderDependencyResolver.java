@@ -18,56 +18,46 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jem.util.logger.proxy.Logger;
-import org.eclipse.wst.common.componentcore.datamodel.properties.IReferencedComponentBuilderDataModelProperties;
-import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
 public class ComponentStructuralBuilderDependencyResolver extends IncrementalProjectBuilder implements IModuleConstants {
-    /**
-     * Builder id of this incremental project builder.
-     */
-    public static final String BUILDER_ID = COMPONENT_STRUCTURAL_DEPENDENCY_RESOLVER_ID;
+	/**
+	 * Builder id of this incremental project builder.
+	 */
+	public static final String BUILDER_ID = COMPONENT_STRUCTURAL_DEPENDENCY_RESOLVER_ID;
 
-    /**
-     *  
-     */
-    public ComponentStructuralBuilderDependencyResolver() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+	/**
+	 * 
+	 */
+	public ComponentStructuralBuilderDependencyResolver() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.core.internal.events.InternalBuilder#build(int,
-     *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
-     */
-    protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
-        StructureEdit moduleCore = null;
-        try {
-            List delayedOperationDMs = ReferencedComponentBuilderDelayedDataModelCache.getInstance().getCacheList();
-            if (delayedOperationDMs.size() > 0) {
-                moduleCore = StructureEdit.getStructureEditForRead(getProject());
-            }
-            IDataModel dataModel = null;
-            IUndoableOperation op = null;
-            for (int i = 0; i < delayedOperationDMs.size(); i++) {
-                dataModel = (IDataModel) delayedOperationDMs.get(i);
-                dataModel.setProperty(IReferencedComponentBuilderDataModelProperties.COMPONENT_CORE, moduleCore);
-                op = dataModel.getDefaultOperation();
-                if (op != null) {
-                    op.execute(monitor, null);
-                }
-            }
-        } catch (ExecutionException e) {
-            Logger.getLogger().log(e.getMessage());
-        } finally {
-            if (moduleCore != null) {
-                moduleCore.dispose();
-            }
-            ReferencedComponentBuilderDelayedDataModelCache.getInstance().clearCache();
-        }
-        return null;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.core.internal.events.InternalBuilder#build(int, java.util.Map,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
+	 */
+	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
+		try {
+			List delayedOperationDMs = ReferencedComponentBuilderDelayedDataModelCache.getInstance().getCacheList();
+			IDataModel dataModel = null;
+			IUndoableOperation op = null;
+			for (int i = 0; i < delayedOperationDMs.size(); i++) {
+				dataModel = (IDataModel) delayedOperationDMs.get(i);
+				op = dataModel.getDefaultOperation();
+				if (op != null) {
+					op.execute(monitor, null);
+				}
+			}
+		} catch (ExecutionException e) {
+			Logger.getLogger().log(e.getMessage());
+		} finally {
+			ReferencedComponentBuilderDelayedDataModelCache.getInstance().clearCache();
+		}
+		return null;
+	}
 }

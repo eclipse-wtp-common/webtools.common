@@ -24,104 +24,118 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 
 /**
- *	Exports resources to a .zip file
+ * Exports resources to a .zip file
  */
 public class ZipFileExporter {
-	private ZipOutputStream		outputStream;
-	private StringBuffer		manifestContents;
+	private ZipOutputStream outputStream;
+	private StringBuffer manifestContents;
 
-	private boolean				useCompression = true;
+	private boolean useCompression = true;
 
-/**
- *	Create an instance of this class.
- *
- *	@param filename java.lang.String
- *	@param compress boolean
- *	@param includeManifestFile boolean
- *	@exception java.io.IOException
- */
-public ZipFileExporter(String filename,boolean compress) throws IOException {
-	Path directoryPath = new Path(filename);
-	directoryPath = (Path)directoryPath.removeLastSegments(1);
-	File newZipFile = new File(directoryPath.toString());
-	newZipFile.mkdirs(); 
-	outputStream = new ZipOutputStream(new FileOutputStream(filename));
-	useCompression = compress;
-}
-
-/**
- *	Do all required cleanup now that we're finished with the
- *	currently-open .zip
- *
- *	@exception java.io.IOException
- */
-public void finished() throws IOException {
-	outputStream.close();
-}
-/**
- *	Create a new ZipEntry with the passed pathname and contents, and write it
- *	to the current archive
- *
- *	@param pathname java.lang.String
- *	@param contents byte[]
- *	@exception java.io.IOException
- */
-protected void write(String pathname, byte[] contents) throws IOException {
-	ZipEntry newEntry = new ZipEntry(pathname);
-
-	// if the contents are being compressed then we get the below for free.
-	if (!useCompression) {
-		newEntry.setMethod(ZipEntry.STORED);
-		newEntry.setSize(contents.length);
-		CRC32 checksumCalculator = new CRC32();
-		checksumCalculator.update(contents);
-		newEntry.setCrc(checksumCalculator.getValue());
+	/**
+	 * Create an instance of this class.
+	 * 
+	 * @param filename
+	 *            java.lang.String
+	 * @param compress
+	 *            boolean
+	 * @param includeManifestFile
+	 *            boolean
+	 * @exception java.io.IOException
+	 */
+	public ZipFileExporter(String filename, boolean compress) throws IOException {
+		Path directoryPath = new Path(filename);
+		directoryPath = (Path) directoryPath.removeLastSegments(1);
+		File newZipFile = new File(directoryPath.toString());
+		newZipFile.mkdirs();
+		outputStream = new ZipOutputStream(new FileOutputStream(filename));
+		useCompression = compress;
 	}
 
-	outputStream.putNextEntry(newEntry);
-	outputStream.write(contents);
-	outputStream.closeEntry();
-}
+	/**
+	 * Do all required cleanup now that we're finished with the currently-open .zip
+	 * 
+	 * @exception java.io.IOException
+	 */
+	public void finished() throws IOException {
+		outputStream.close();
+	}
 
-public void writeFolder(String destinationPath) throws IOException {
-	if (!destinationPath.endsWith("/"))
-		destinationPath = destinationPath+'/';
-	ZipEntry newEntry = new ZipEntry(destinationPath);
-	outputStream.putNextEntry(newEntry);
-	outputStream.closeEntry();
-} 
+	/**
+	 * Create a new ZipEntry with the passed pathname and contents, and write it to the current
+	 * archive
+	 * 
+	 * @param pathname
+	 *            java.lang.String
+	 * @param contents
+	 *            byte[]
+	 * @exception java.io.IOException
+	 */
+	protected void write(String pathname, byte[] contents) throws IOException {
+		ZipEntry newEntry = new ZipEntry(pathname);
 
-/**
- *  Write the passed resource to the current archive
- *
- *  @param resource org.eclipse.core.resources.IFile
- *  @param destinationPath java.lang.String
- *  @exception java.io.IOException
- *  @exception org.eclipse.core.runtime.CoreException
- */
-public void write(IFile resource, String destinationPath) throws IOException, CoreException {
-	ByteArrayOutputStream output = null;
-	InputStream contentStream = null;
-
-	try {
-		output = new ByteArrayOutputStream();
-		contentStream = resource.getContents(false);
-		int chunkSize = contentStream.available();
-		byte[] readBuffer = new byte[chunkSize];
-		int n = contentStream.read(readBuffer);
-		
-		while (n > 0) {
-			output.write(readBuffer);
-			n = contentStream.read(readBuffer);
+		// if the contents are being compressed then we get the below for free.
+		if (!useCompression) {
+			newEntry.setMethod(ZipEntry.STORED);
+			newEntry.setSize(contents.length);
+			CRC32 checksumCalculator = new CRC32();
+			checksumCalculator.update(contents);
+			newEntry.setCrc(checksumCalculator.getValue());
 		}
-	} finally {
-		if (output != null)
-			output.close();
-		if (contentStream != null)
-			contentStream.close();
+
+		outputStream.putNextEntry(newEntry);
+		outputStream.write(contents);
+		outputStream.closeEntry();
 	}
-	
-	write(destinationPath,output.toByteArray());
-}
+
+	public void writeFolder(String destinationPath) throws IOException {
+		if (!destinationPath.endsWith("/"))
+			destinationPath = destinationPath + '/';
+		ZipEntry newEntry = new ZipEntry(destinationPath);
+		outputStream.putNextEntry(newEntry);
+		outputStream.closeEntry();
+	}
+
+	/**
+	 * Write the passed resource to the current archive
+	 * 
+	 * @param resource
+	 *            org.eclipse.core.resources.IFile
+	 * @param destinationPath
+	 *            java.lang.String
+	 * @exception java.io.IOException
+	 * @exception org.eclipse.core.runtime.CoreException
+	 */
+	public void write(IFile resource, String destinationPath) throws IOException, CoreException {
+		InputStream contentStream = null;
+		try {
+			contentStream = resource.getContents(false);
+			write(contentStream, destinationPath);
+		} finally {
+			if (contentStream != null)
+				contentStream.close();
+		}
+	}
+
+	public void write(InputStream contentStream, String destinationPath) throws IOException, CoreException {
+		ByteArrayOutputStream output = null;
+
+		try {
+			output = new ByteArrayOutputStream();
+			int chunkSize = contentStream.available();
+			byte[] readBuffer = new byte[chunkSize];
+			int n = contentStream.read(readBuffer);
+
+			while (n > 0) {
+				output.write(readBuffer);
+				n = contentStream.read(readBuffer);
+			}
+		} finally {
+			if (output != null)
+				output.close();
+		}
+
+		write(destinationPath, output.toByteArray());
+	}
 
 }

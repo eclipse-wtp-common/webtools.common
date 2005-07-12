@@ -14,6 +14,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 
 /**
  * Represents a component as defined by the .wtpmodules file.
@@ -27,6 +28,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
  */
 public interface IVirtualComponent {
 	
+	IPath ROOT = new Path("/");
 	
 	/**
 	 * Type constant (bit mask value 1) which identifies component binary status.

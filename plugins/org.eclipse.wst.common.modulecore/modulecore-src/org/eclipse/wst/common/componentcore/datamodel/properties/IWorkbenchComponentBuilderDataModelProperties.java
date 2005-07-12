@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.datamodel.properties;
 
+import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.wst.common.componentcore.internal.builder.ReferencedComponentBuilderDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties;
 
 /**
@@ -31,20 +33,15 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties;
  */
 public interface IWorkbenchComponentBuilderDataModelProperties extends IDataModelProperties{
     /**
-     * Required, type String. The initializing builder will set this field to the name value of the 
-     * project which is currently being built.
-     */
-	public static final String PROJECT = "IWorkbenchComponentBuilderDataModelProperties.PROJECT"; //$NON-NLS-1$
-    /**
      * Required, type project relative IFolder.  This represents the Folder output container defined for the given 
      * WORKBENCH_COMPONENT.
      */
 	public static final String OUTPUT_CONTAINER = "IWorkbenchComponentBuilderDataModelProperties.OUTPUT_CONTAINER"; //$NON-NLS-1$
     /**
-     * Required, type WorkbenchComponent. The initializing builder will set this field to the WorkbenchComponent value of the 
+     * Required, type IVirtualComponent. The initializing builder will set this field to the WorkbenchComponent value of the 
      * Component to be built.
      */
-	public static final String WORKBENCH_COMPONENT = "IWorkbenchComponentBuilderDataModelProperties.WORKBENCH_MODULE_RESOURCES"; //$NON-NLS-1$
+	public static final String VIRTUAL_COMPONENT = "IWorkbenchComponentBuilderDataModelProperties.VIRTUAL_COMPONENT"; //$NON-NLS-1$
 	/**
 	 * Required, type List of DependentDeployableModuleDataModel  The initializing builder will set this field to a List of initialized DataModels for 
      * the ReferencedComponentBuilderDataModelProvider.  
@@ -54,14 +51,6 @@ public interface IWorkbenchComponentBuilderDataModelProperties extends IDataMode
      * @see ReferencedComponentBuilderDataModelProvider
      */
 	public static final String DEPENDENT_COMPONENT_DM_LIST = "IWorkbenchComponentBuilderDataModelProperties.DEPENDENT_COMPONENT_DM_LIST"; //$NON-NLS-1$
-    /**
-     * Required, type ComponentCore. The initializing builder will set this field to the ModuleCore associated
-     * with the project which is currently being built.  This field can be used to retrieve information about components and their associated 
-     * dependent components present in the current project.
-     * 
-     * @see org.eclipse.wst.common.componentcore.ComponentCore
-     */
-	public static final String COMPONENT_CORE = "IWorkbenchComponentBuilderDataModelProperties.COMPONENT_CORE";
     /**
      * Required, type Integer. The initializing builder will set this field to the int value based on the build
      * kind passed to the IncrementalProjectBuilder

@@ -11,9 +11,13 @@
 package org.eclipse.wst.common.componentcore.internal.builder;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -26,16 +30,20 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IReferencedComponentBuilderDataModelProperties;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
-import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.componentcore.internal.util.ZipFileExporter;
+import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEditPlugin;
+
 
 public class ReferencedComponentBuilderOperation extends AbstractDataModelOperation implements IReferencedComponentBuilderDataModelProperties {
 	private static String ERROR_EXPORTING_MSG = "Zip Error Message"; //$NON-NLS-1$
@@ -52,68 +60,127 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 	private IProgressMonitor monitor;
 
 	private int inputContainerSegmentCount;
-    /**
-     * @param model
-     */
-    public ReferencedComponentBuilderOperation(IDataModel model) {
-        super(model);
-        
-    }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.core.commands.operations.IUndoableOperation#execute(org.eclipse.core.runtime.IProgressMonitor, org.eclipse.core.runtime.IAdaptable)
-     */
-    public IStatus execute(IProgressMonitor monitor, IAdaptable info) {
-        try {
-            this.monitor = monitor;
-			IPath absoluteOutputContainer = getAbsoluteOutputContainer();
-			if (absoluteOutputContainer == null)  //Project not accessible
+	/**
+	 * @param model
+	 */
+	public ReferencedComponentBuilderOperation(IDataModel model) {
+		super(model);
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.core.commands.operations.IUndoableOperation#execute(org.eclipse.core.runtime.IProgressMonitor,
+	 *      org.eclipse.core.runtime.IAdaptable)
+	 */
+	public IStatus execute(IProgressMonitor monitor, IAdaptable info) {
+		try {
+			this.monitor = monitor;
+			IVirtualReference vReference = (IVirtualReference) model.getProperty(VIRTUAL_REFERENCE);
+			IVirtualComponent enclosingComponent = vReference.getEnclosingComponent();
+
+			IPath absoluteOutputContainer = getAbsoluteOutputContainer(vReference);
+			if (absoluteOutputContainer == null) // Project not accessible
 				return OK_STATUS;
 			// create output container folder if it does not exist
 			IFolder outputContainerFolder = createFolder(absoluteOutputContainer);
-			IPath absoluteInputContainer = getAbsoluteInputContainer();
-	
-			if (absoluteOutputContainer == null || absoluteInputContainer == null)
+
+			IVirtualComponent referencedComponent = vReference.getReferencedComponent();
+			IPath absoluteInputContainer = getAbsoluteInputContainer(referencedComponent);
+
+			if (absoluteOutputContainer == null) {
 				return OK_STATUS;
-	
-			if (model.getBooleanProperty(DOES_CONSUME)) {
+			} else if (absoluteInputContainer == null || !referencedComponent.getProject().getFolder(absoluteInputContainer).exists()) {
+				if (vReference.getReferencedComponent().isBinary()) {
+					IFile archive = referencedComponent.getProject().getFile(((VirtualArchiveComponent) referencedComponent).getProjectRelativePath());
+					expandZipFile(archive, outputContainerFolder);
+					return OK_STATUS;
+
+				}
+
+			}
+
+			if (vReference.getDependencyType() == IVirtualReference.DEPENDENCY_TYPE_CONSUMES) {
 				// if consumes simply copy resources to output directory
 				IResource sourceResource = getResource(absoluteInputContainer);
 				if (sourceResource == null)
 					return OK_STATUS;
 				ComponentStructuralBuilder.smartCopy(sourceResource, absoluteOutputContainer, new NullProgressMonitor());
 			} else {
-				String zipName = getZipFileName();
+				String zipName = getZipFileName(referencedComponent);
 				IPath zipNameDestination = absoluteOutputContainer.append(zipName);
 				IResource dependentZip = getResource(zipNameDestination);
-				//TODO: this is needed to stop the copying of large dependent module.  Incremental build in M4 should allow for this
-				//code to be removed.
-				if(dependentZip == null || dependentZip.exists()) return OK_STATUS;
+				// TODO: this is needed to stop the copying of large dependent module. Incremental
+				// build in M4 should allow for this
+				// code to be removed.
+				if (dependentZip == null || dependentZip.exists())
+					return OK_STATUS;
 				zipAndCopyResource(getResource(absoluteInputContainer), dependentZip);
 				getResource(absoluteOutputContainer).refreshLocal(IResource.DEPTH_INFINITE, monitor);
 			}
-		
-        } catch (CoreException ex) {
-            Logger.getLogger().log(ex.getMessage());
-        }
-        return OK_STATUS;
-    }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.core.commands.operations.IUndoableOperation#redo(org.eclipse.core.runtime.IProgressMonitor, org.eclipse.core.runtime.IAdaptable)
-     */
-    public IStatus redo(IProgressMonitor monitor, IAdaptable info) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+		} catch (CoreException ex) {
+			Logger.getLogger().log(ex.getMessage());
+		}
+		return OK_STATUS;
+	}
 
-    /* (non-Javadoc)
-     * @see org.eclipse.core.commands.operations.IUndoableOperation#undo(org.eclipse.core.runtime.IProgressMonitor, org.eclipse.core.runtime.IAdaptable)
-     */
-    public IStatus undo(IProgressMonitor monitor, IAdaptable info) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	private void expandZipFile(IResource resource, IFolder absoluteOutputContainer) {
+		ZipFile zipFile;
+		try {
+			zipFile = new ZipFile(resource.getRawLocation().toOSString());
+			Enumeration entries = zipFile.entries();
+			ZipEntry entry = null;
+			InputStream inputStream = null;
+			IFile file = null;
+			while (entries.hasMoreElements()) {
+				entry = (ZipEntry) entries.nextElement();
+				entry.getName();
+				try {
+					file = absoluteOutputContainer.getFile(new Path(entry.getName()));
+					if (!file.exists()) {
+						inputStream = zipFile.getInputStream(entry);
+						createFolder(file.getParent().getFullPath());
+						file.create(inputStream, true, null);
+					}
+				} catch (CoreException e) {
+					Logger.getLogger().logError(e);
+				} finally {
+					if (null != inputStream) {
+						inputStream.close();
+						inputStream = null;
+					}
+				}
+			}
+		} catch (IOException e) {
+			Logger.getLogger().logError(e);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.core.commands.operations.IUndoableOperation#redo(org.eclipse.core.runtime.IProgressMonitor,
+	 *      org.eclipse.core.runtime.IAdaptable)
+	 */
+	public IStatus redo(IProgressMonitor monitor, IAdaptable info) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.core.commands.operations.IUndoableOperation#undo(org.eclipse.core.runtime.IProgressMonitor,
+	 *      org.eclipse.core.runtime.IAdaptable)
+	 */
+	public IStatus undo(IProgressMonitor monitor, IAdaptable info) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	/**
 	 * @param inputResource
 	 * @param zipName
@@ -127,52 +194,48 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 			exportResource(inputResource);
 			exporter.finished();
 		} catch (IOException ioEx) {
-            ioEx.printStackTrace();
-		} catch (InterruptedException iEx){		 
-            iEx.printStackTrace();
+			ioEx.printStackTrace();
+		} catch (InterruptedException iEx) {
+			iEx.printStackTrace();
 		}
 	}
 
 	/**
 	 * @return an IPath or null if not accessable
 	 */
-	private IPath getAbsoluteOutputContainer() {
-		WorkbenchComponent workbenchModule = (WorkbenchComponent) model.getProperty(CONTAINING_WB_COMPONENT);
+	private IPath getAbsoluteOutputContainer(IVirtualReference vReference) {
+		IVirtualComponent vComponent = vReference.getEnclosingComponent();
 		IFolder localWorkbenchModuleOuptutContainer = null;
-		if (workbenchModule != null)
-			localWorkbenchModuleOuptutContainer = StructureEdit.getOutputContainerRoot(workbenchModule);
-		if (localWorkbenchModuleOuptutContainer == null) //Project not found or is not accessible
+		localWorkbenchModuleOuptutContainer = StructureEdit.getOutputContainerRoot(vComponent);
+		if (localWorkbenchModuleOuptutContainer == null) // Project not found or is not
+			// accessible
 			return null;
 
 		IPath localWorkbenchModuleOuptutContainerPath = localWorkbenchModuleOuptutContainer.getFullPath();
-		IPath deployPath = (IPath) model.getProperty(OUTPUT_CONTAINER);
-		return localWorkbenchModuleOuptutContainerPath.append(deployPath.toString()); 
+		return localWorkbenchModuleOuptutContainerPath.append(vReference.getRuntimePath().toString());
 	}
 
 	/**
 	 * @return
 	 */
-	private IPath getAbsoluteInputContainer() {
-		WorkbenchComponent depWBModule = (WorkbenchComponent) model.getProperty(DEPENDENT_WB_COMPONENT);
-		if (depWBModule != null)
-			return StructureEdit.getOutputContainerRoot(depWBModule).getFullPath();
-		return null;
+	private IPath getAbsoluteInputContainer(IVirtualComponent virtualComponent) {
+		return StructureEdit.getOutputContainerRoot(virtualComponent).getFullPath();
 	}
 
-	private String getZipFileName() {
-		WorkbenchComponent depWBModule = (WorkbenchComponent) model.getProperty(DEPENDENT_WB_COMPONENT);
-		String typeID = depWBModule.getComponentType().getComponentTypeId();
-		String zipFileName = depWBModule.getName();
+	private String getZipFileName(IVirtualComponent vComponent) {
+		String typeID = vComponent.getComponentTypeId();
+		String zipFileName = vComponent.getName();
 		zipFileName = zipFileName.replace('.', '_');
-		if(typeID == null) return zipFileName;
-		if(typeID.equals(IModuleConstants.JST_APPCLIENT_MODULE) || typeID.equals(IModuleConstants.JST_EJB_MODULE) || typeID.equals(IModuleConstants.JST_UTILITY_MODULE))
-		    return zipFileName + ".jar";
-		else if(typeID.equals(IModuleConstants.JST_WEB_MODULE))
-		    return zipFileName + ".war";
-		else if(typeID.equals(IModuleConstants.JST_CONNECTOR_MODULE))
-		    return zipFileName + ".rar";
-		else if(typeID.equals(IModuleConstants.JST_EAR_MODULE))
-		    return zipFileName + ".ear";
+		if (typeID == null)
+			return zipFileName;
+		if (typeID.equals(IModuleConstants.JST_APPCLIENT_MODULE) || typeID.equals(IModuleConstants.JST_EJB_MODULE) || typeID.equals(IModuleConstants.JST_UTILITY_MODULE))
+			return zipFileName + ".jar";
+		else if (typeID.equals(IModuleConstants.JST_WEB_MODULE))
+			return zipFileName + ".war";
+		else if (typeID.equals(IModuleConstants.JST_CONNECTOR_MODULE))
+			return zipFileName + ".rar";
+		else if (typeID.equals(IModuleConstants.JST_EAR_MODULE))
+			return zipFileName + ".ear";
 		return zipFileName;
 	}
 

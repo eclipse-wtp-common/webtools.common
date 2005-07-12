@@ -18,11 +18,10 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
-import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
@@ -30,13 +29,43 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 
 public class VirtualArchiveComponent implements IVirtualComponent {
 
+	private static final IVirtualReference[] NO_REFERENCES = new VirtualReference[0];
+	private static final IVirtualComponent[] NO_COMPONENTS = new VirtualComponent[0];
+	private static final IResource[] NO_RESOURCES = null;
+	private static final IVirtualResource[] NO_VIRTUAL_RESOURCES = null;
+	private static final Properties NO_PROPERTIES = new Properties();
+	private static final IPath[] NO_PATHS = new Path[0];
+	
+	
 	private String name;
-	private IPath runtimePath;
 	private int flag = 1;
-
-	public VirtualArchiveComponent(String aName, IPath aRuntimePath) {
+	private ComponentHandle handle;
+	private IPath archivePath;
+	private IProject project;
+	private String archiveType;
+	
+	/**
+	 * 
+	 * @param aProject The containing project
+	 * @param aName A project relative path or a string of the form 
+	 */
+	public VirtualArchiveComponent(String aName) {
 		name = aName;
-		runtimePath = aRuntimePath;
+		handle = ComponentHandle.create(project, aName);
+		IPath namePath = new Path(aName);
+		archiveType = namePath.segment(0);
+		archivePath = namePath.removeFirstSegments(1).makeRelative();
+	}
+	/**
+	 * 
+	 * @param aProject The containing project
+	 * @param aName A project relative path or a string of the form 
+	 */
+	public VirtualArchiveComponent(IProject aProject, String aName) {
+		name = aName;
+		project = aProject;
+		handle = ComponentHandle.create(project, aName);
+		archivePath = new Path(aName);
 	}
 	
 	public IVirtualComponent getComponent() {
@@ -60,155 +89,91 @@ public class VirtualArchiveComponent implements IVirtualComponent {
 	}
 	
 	public boolean isBinary(){
-		boolean ret =  (flag & BINARY) == 1  ? true :false;
-		return ret;
+		return (flag & BINARY) == 1  ? true :false;		
 	}
 	
 	public IPath getRuntimePath() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
+		return ROOT;
 	}
 
 	public IPath[] getMetaResources() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
+		return NO_PATHS;
 	}
 
 	public void setMetaResources(IPath[] theMetaResourcePaths) {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
+		
 	}
 
 	public ComponentHandle getComponentHandle() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
+		return handle;
 	}
 
 	public void delete(int updateFlags, IProgressMonitor monitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
+		
 	}
 
 	public String getFileExtension() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
+		return archivePath.getFileExtension();
 	}
 
 	public IPath getWorkspaceRelativePath() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
+		if(getProject() != null)
+			return getProject().getFile(archivePath).getFullPath();
+		return archivePath;
 	}
 
 	public IPath getProjectRelativePath() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-	}
-
-	public IVirtualResource getParent() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-	}
+		return archivePath;
+	} 
 
 	public IProject getProject() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
+		return project;
 	}
 
 	public boolean isAccessible() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-	}
-
-	public String getResourceType() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-	}
-
-	public void setResourceType(String aResourceType) {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-	}
-
-	public boolean contains(ISchedulingRule rule) {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-	}
-
-	public boolean isConflicting(ISchedulingRule rule) {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-	}
+		return true;
+	} 
 
 	public Object getAdapter(Class adapter) {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
+		return null;
 	}
 
 	public Properties getMetaProperties() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
+		return NO_PROPERTIES;
 	}
 
 	public IVirtualResource[] getResources(String aResourceType) {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-	}
-
-	public String getVersion() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-	}
-
-	public IVirtualFolder getFolder(String name) {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-	}
-
-	public IVirtualFolder getFolder(IPath path) {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-	}
-
-	public IVirtualFile getFile(IPath path) {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
+		return NO_VIRTUAL_RESOURCES;
 	}
 
 	public void create(int updateFlags, IProgressMonitor aMonitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$	
-	}
-
-	public IVirtualResource[] getResources() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-	}
-
-	public IVirtualResource getResource(IPath path) {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-	}
-
-	public IVirtualResource getResource(IPath path, int searchFlags) {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-	}
-
-	public IVirtualResource getResource(String name) {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-	}
-
-	public IVirtualResource getResource(String name, int searchFlags) {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-	}
-
-	public void createLink(IPath aProjectRelativeLocation, int updateFlags, IProgressMonitor monitor) throws CoreException {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-	}
-
-	public IResource getUnderlyingResource() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
-	}
-
-	public IResource[] getUnderlyingResources() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
+			
 	}
 
 	public IVirtualReference[] getReferences() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
+		return NO_REFERENCES;
 	}
 
 	public void setReferences(IVirtualReference[] theReferences) {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
+		// no op
 	}
 
 	public IVirtualReference getReference(String aComponentName) {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$l;
+		return null;
 	}
 
 	public boolean exists() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
+		return false;
 	}
 
 	public IVirtualFolder getRootFolder() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
+		return null; 
 	}
 
 	public IVirtualComponent[] getReferencingComponents() {
-		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
+		return NO_COMPONENTS;
+	}
+	public String getVersion() {
+		return null;
 	}
 }

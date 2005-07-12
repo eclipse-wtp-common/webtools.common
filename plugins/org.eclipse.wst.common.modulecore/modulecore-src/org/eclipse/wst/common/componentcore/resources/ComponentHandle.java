@@ -120,8 +120,13 @@ public class ComponentHandle {
 	 * @return A string representation of the form [projectpath]:componentName
 	 */
 	public String toString() {
-		if (toString == null)
-			toString = "[" + project.getFullPath() + "]:" + name; //$NON-NLS-1$ //$NON-NLS-2$   
+		if (toString == null) {
+			if(project != null)
+				toString = "[" + project.getFullPath() + "]:" + name; //$NON-NLS-1$ //$NON-NLS-2$
+			else
+				toString = "[NONE]:" + name; //$NON-NLS-1$ //$NON-NLS-2$
+		}
+			   
 		return toString;
 	}
 

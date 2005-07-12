@@ -33,8 +33,7 @@ public class VirtualReference implements IVirtualReference {
 
 	public VirtualReference() {
 		
-	}
-	
+	} 
 	
 	public VirtualReference(IVirtualComponent anEnclosingComponent, IVirtualComponent aReferencedComponent) {
 		this(anEnclosingComponent, aReferencedComponent, new Path(String.valueOf(IPath.SEPARATOR)), DEPENDENCY_TYPE_USES); 
@@ -58,7 +57,10 @@ public class VirtualReference implements IVirtualReference {
 			WorkbenchComponent component = core.findComponentByName(enclosingComponent.getName());
 			List referencedComponents = component.getReferencedComponents();
 			ReferencedComponent refComp = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createReferencedComponent();
-			refComp.setHandle(ModuleURIUtil.fullyQualifyURI(referencedComponent.getComponentHandle()));
+			if( !referencedComponent.isBinary())
+				refComp.setHandle(ModuleURIUtil.fullyQualifyURI(referencedComponent.getProject(), referencedComponent.getName()));
+			else
+				refComp.setHandle(ModuleURIUtil.archiveComponentfullyQualifyURI(referencedComponent.getName())); 
 			refComp.setRuntimePath(runtimePath);
 			refComp.setDependencyType(DependencyType.get(dependencyType));
 			if(!referencedComponents.contains(refComp)){

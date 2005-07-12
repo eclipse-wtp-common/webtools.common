@@ -27,15 +27,18 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.IEditModelHandler;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.internal.impl.PlatformURLModuleConnection;
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
+import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
 import org.eclipse.wst.common.componentcore.internal.util.EclipseResourceAdapter;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
 /**
  * <p>
@@ -353,6 +356,39 @@ public class StructureEdit implements IEditModelHandler {
 				componentCore.dispose();
 			}
 		}
+	}
+	
+	public static IVirtualReference createVirtualReference(IVirtualComponent context, ReferencedComponent referencedComponent) {
+
+		IVirtualComponent targetComponent = null;
+		IProject targetProject = null;
+		String targetComponentName = null;
+		boolean isClassPathURI = ModuleURIUtil.isClassPathURI(referencedComponent.getHandle());
+		if( !isClassPathURI ){
+			try { 
+				targetProject = StructureEdit.getContainingProject(referencedComponent.getHandle());
+			} catch(UnresolveableURIException uurie) { } 
+			// if the project cannot be resolved, assume it's local - really it probably deleted 
+			
+			try {
+				targetComponentName = StructureEdit.getDeployedName(referencedComponent.getHandle());
+				targetComponent = ComponentCore.createComponent(targetProject, targetComponentName);  
+				
+			} catch (UnresolveableURIException e) { 
+			}
+		}else{
+			String archiveType = "";
+			String archiveName = "";
+			try {
+				archiveType = ModuleURIUtil.getArchiveType(referencedComponent.getHandle());
+				archiveName = ModuleURIUtil.getArchiveName(referencedComponent.getHandle());
+				
+			} catch (UnresolveableURIException e) {
+
+			}
+			targetComponent = ComponentCore.createArchiveComponent(context.getProject(), archiveType + IPath.SEPARATOR + archiveName ); 
+		}
+		return new VirtualReference(context, targetComponent, referencedComponent.getRuntimePath(), referencedComponent.getDependencyType().getValue());
 	}
 
 	protected StructureEdit(ModuleCoreNature aNature, boolean toAccessAsReadOnly) {
