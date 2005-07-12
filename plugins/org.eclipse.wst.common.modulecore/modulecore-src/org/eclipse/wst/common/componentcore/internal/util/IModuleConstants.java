@@ -32,7 +32,6 @@ public interface IModuleConstants {
 	public final static String JST_WEB_MODULE = "jst.web"; //$NON-NLS-1$
 	public final static String JST_EJB_MODULE = "jst.ejb"; //$NON-NLS-1$
 	public final static String JST_UTILITY_MODULE = "jst.utility"; //$NON-NLS-1$
-	public final static String JST_UTILITY_IMPORTED_CLASSES_MODULE = "jst.utility.imported.classes"; //$NON-NLS-1$
 	public final static String WST_WEB_MODULE = "wst.web"; //$NON-NLS-1$
 	public final static String JST_EAR_MODULE = "jst.ear"; //$NON-NLS-1$
 	public final static String JST_APPCLIENT_MODULE = "jst.appclient"; //$NON-NLS-1$
