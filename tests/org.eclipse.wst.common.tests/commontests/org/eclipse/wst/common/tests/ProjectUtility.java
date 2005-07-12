@@ -142,7 +142,7 @@ public class ProjectUtility {
             }
             List files = Arrays.asList(folder.list());
             if (!files.isEmpty()) {
-                String folderPath = folder.getAbsolutePath() + "\\";
+                String folderPath = folder.getAbsolutePath() + File.separator;
                 result = new ArrayList();
                 for (int i = 0; i < files.size(); i++) {
                     String fileName = (String) files.get(i);
@@ -175,7 +175,8 @@ public class ProjectUtility {
         URL url = plugin.getBundle().getEntry(pluginRelativeFileName);
         if (url != null) {
             url = Platform.asLocalURL(url);
-            return url.getPath().substring(1);
+            IPath iPath = new Path(url.getPath());
+            return iPath.toOSString();
         }
         return null;
     }
