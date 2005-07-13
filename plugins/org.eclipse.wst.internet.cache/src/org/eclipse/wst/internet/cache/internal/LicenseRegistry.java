@@ -12,6 +12,8 @@ package org.eclipse.wst.internet.cache.internal;
 
 import java.util.Hashtable;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Display;
 
 /**
@@ -24,10 +26,9 @@ public class LicenseRegistry
   protected static Integer LICENSE_AGREE = new Integer(1);
   protected static Integer LICENSE_DISAGREE = new Integer(2);
   
-  /**
-   * The WTP system quiet property, used to prevent user prompting in automated testing.
-   */
-  private final static String WTP_QUIET_SYSTEM_PROP = "wtp.quiet";
+  protected final static String _LOG_INFO_WTP_NO_USER_INTERACTION = "_LOG_INFO_WTP_NO_USER_INTERACTION";
+  
+  protected final static String WTP_NO_USER_INTERACTION_SYSTEM_PROP = CachePlugin.getResourceString("WTP_NO_USER_INTERACTION_SYSTEM_PROP");
   
   /**
    * There is only one instance of the license registry.
@@ -50,8 +51,9 @@ public class LicenseRegistry
 	
 	// If the wtp quiet system property is set the DO_NOT_PROMPT flag is set to true.
 	// This is used for automated testing.
-	if(System.getProperty(WTP_QUIET_SYSTEM_PROP, "false").equals("true"))
+	if(System.getProperty(WTP_NO_USER_INTERACTION_SYSTEM_PROP, "false").equals("true"))
 	{
+	  CachePlugin.getDefault().getLog().log(new Status(IStatus.INFO, CachePlugin.PLUGIN_ID, IStatus.OK, CachePlugin.getResourceString(_LOG_INFO_WTP_NO_USER_INTERACTION, WTP_NO_USER_INTERACTION_SYSTEM_PROP), null));
 	  DO_NOT_PROMPT = true;
 	}
   }
