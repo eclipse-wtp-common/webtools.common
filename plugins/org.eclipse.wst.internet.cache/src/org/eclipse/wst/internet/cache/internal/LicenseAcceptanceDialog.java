@@ -20,7 +20,6 @@ import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -56,11 +55,6 @@ public class LicenseAcceptanceDialog extends IconAndMessageDialog
   private String licenseURL;
   
   /**
-   * The URL of the license.
-   */
-  private boolean createExternalBrowser = false;
-  
-  /**
    * Constructor.
    * 
    * @param parent The parent of this dialog.
@@ -71,7 +65,6 @@ public class LicenseAcceptanceDialog extends IconAndMessageDialog
     super(parent);
 	this.url = url;
 	this.licenseURL = licenseURL;
-	message = "License agreement";
   }
   
   /**
@@ -89,7 +82,7 @@ public class LicenseAcceptanceDialog extends IconAndMessageDialog
    */
   protected Control createButtonBar(Composite parent) 
   {
-	Composite buttonBar = new Composite(parent, SWT.CENTER);
+	Composite buttonBar = new Composite(parent, SWT.NONE);
 	GridLayout layout = new GridLayout();
 	layout.numColumns = 0;
 	layout.makeColumnsEqualWidth = true;
@@ -97,10 +90,12 @@ public class LicenseAcceptanceDialog extends IconAndMessageDialog
 	GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_CENTER);
 	buttonBar.setLayoutData(gd);
 	
-	Button agreeButton = createButton(buttonBar, LicenseAcceptanceDialog.OK, 
+	// Create the agree button.
+	createButton(buttonBar, LicenseAcceptanceDialog.OK, 
 			CachePlugin.getResourceString(_UI_CACHE_DIALOG_AGREE_BUTTON), false);
 
-	Button disagreeButton = createButton(buttonBar, LicenseAcceptanceDialog.CANCEL, 
+	// Create the disagree button.
+	createButton(buttonBar, LicenseAcceptanceDialog.CANCEL, 
 			CachePlugin.getResourceString(_UI_CACHE_DIALOG_DISAGREE_BUTTON), false);
 	
 	return buttonBar;
@@ -111,7 +106,7 @@ public class LicenseAcceptanceDialog extends IconAndMessageDialog
    */
   protected Control createContents(Composite parent) 
   {
-	Composite composite = new Composite(parent, SWT.NULL);
+	Composite composite = new Composite(parent, SWT.NONE);
 	GridLayout layout = new GridLayout();
 	composite.setLayout(layout);
 	GridData gd = new GridData(SWT.FILL);
@@ -123,7 +118,7 @@ public class LicenseAcceptanceDialog extends IconAndMessageDialog
 	licenseText1.setText(CachePlugin.getResourceString(_UI_CACHE_DIALOG_LICENSE_STATEMENT1));
 	Label urlText = new Label(composite, SWT.WRAP);
 	urlText.setText(url);
-	Label blankText = new Label(composite, SWT.NONE);
+	new Label(composite, SWT.NONE); // Spacing label.
 	Label licenseText2 = new Label(composite, SWT.NONE);
 	licenseText2.setText(CachePlugin.getResourceString(_UI_CACHE_DIALOG_LICENSE_STATEMENT2));
 	
