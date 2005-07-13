@@ -229,11 +229,26 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 	 */
 	private void zipAndCopyResource(IResource inputResource, IResource outputResource) {
 		try {
+			IResource[] children;
+			if (inputResource.exists()) {
+				children = ((IContainer) inputResource).members();
+				if(children.length == 0) {
+					Logger.getLogger().log("Warning: Unable to zip empty archive from directory: " + inputResource.getName());
+					return;
+				}
+			}
+			else {
+				Logger.getLogger().log("Warning: Unable to zip empty archive from directory: " + inputResource.getName());
+				return;
+			}
+				
 			String osPath = outputResource.getLocation().toOSString();
 			exporter = new ZipFileExporter(osPath, true);
 			inputContainerSegmentCount = inputResource.getFullPath().segmentCount();
 			exportResource(inputResource);
 			exporter.finished();
+		} catch (CoreException e) {
+				e.printStackTrace();
 		} catch (IOException ioEx) {
 			ioEx.printStackTrace();
 		} catch (InterruptedException iEx) {
