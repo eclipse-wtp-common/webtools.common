@@ -38,6 +38,15 @@ public class ArtifactEditOperation extends WTPOperation {
     public ArtifactEditOperation(ArtifactEditOperationDataModel operationDataModel) {
         super(operationDataModel);
     }
+    
+    /**
+	 * This no argument constructor should not be used by clients. This is for extended operations.
+	 * 
+	 * ExtendedOperations
+	 */
+    public ArtifactEditOperation() {
+    	super();
+    }
 
     //TODO: move functionality from edit model operation to artifact edit operation
     protected void execute(IProgressMonitor monitor) throws CoreException, InvocationTargetException, InterruptedException {

@@ -42,6 +42,15 @@ public abstract class ModelModifierOperation extends ArtifactEditOperation {
 	public ModelModifierOperation(ModelModifierOperationDataModel dataModel) {
 		super(dataModel);
 	}
+	
+	 /**
+	 * This no argument constructor should not be used by clients. This is for extended operations.
+	 * 
+	 * ExtendedOperations
+	 */
+	public ModelModifierOperation() {
+		super();
+	}
 
 	/*
 	 * (non-Javadoc)
