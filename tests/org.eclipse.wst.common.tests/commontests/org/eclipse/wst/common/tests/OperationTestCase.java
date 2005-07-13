@@ -40,6 +40,8 @@ public abstract class OperationTestCase extends BaseTestCase {
 		ProjectUtility.deleteAllProjects();
 		} catch (Exception e) {
 			// TODO: handle exception
+		} catch (Throwable th) {
+			// TODO: handle error in a better way
 		}
 		// LogUtility.getInstance().resetLogging();
 	}
