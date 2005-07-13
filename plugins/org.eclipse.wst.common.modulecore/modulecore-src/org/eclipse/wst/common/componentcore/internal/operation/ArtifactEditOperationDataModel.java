@@ -74,8 +74,8 @@ public abstract class ArtifactEditOperationDataModel extends WTPOperationDataMod
 	protected boolean doSetProperty(String propertyName, Object propertyValue) {
 	    boolean status = super.doSetProperty(propertyName, propertyValue);
 	    if(MODULE_NAME.equals(propertyName)){
-	        IVirtualComponent comp = getComponent();
-	        IProject proj = comp.getProject();
+	    	comp = null;
+	        IProject proj = getComponent().getProject();
 	        if(proj != null)
 	            setProperty(PROJECT_NAME, proj.getName());
 	    }
