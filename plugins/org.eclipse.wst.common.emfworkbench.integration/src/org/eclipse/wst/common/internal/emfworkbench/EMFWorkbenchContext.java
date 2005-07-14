@@ -98,12 +98,20 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 	 */
 	public final EditModel getEditModelForWrite(String editModelID, Object accessorKey, Map params) {
 		EditModel editModel = getExistingEditModel(editModelID, params, false);
+		if(null == editModel){
+			editModel = createEditModelForWrite(editModelID, params);
+			synchronized(editModel){
+			cacheEditModel(editModel, params);
+			editModel.access(accessorKey);
+			}
+		} else {
 		synchronized (editModel) {
-			if (editModel == null || editModel.isDisposed() || editModel.isDisposing()) {
+			if (editModel.isDisposed() || editModel.isDisposing()) {
 				editModel = createEditModelForWrite(editModelID, params);
 				cacheEditModel(editModel, params);
 			}
 			editModel.access(accessorKey);
+		}
 		}
 		return editModel;
 	}
@@ -119,12 +127,20 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 	 */
 	public final EditModel getEditModelForRead(String editModelID, Object accessorKey, Map params) {
 		EditModel editModel = getExistingEditModel(editModelID, params, true);
+		if(null == editModel){
+			editModel = createEditModelForRead(editModelID, params);
+			synchronized(editModel){
+			cacheEditModel(editModel, params);
+			editModel.access(accessorKey);
+			}
+		} else {
 		synchronized (editModel) {
-			if (editModel == null || editModel.isDisposed() || editModel.isDisposing() ) {
+			if (editModel.isDisposed() || editModel.isDisposing() ) {
 				editModel = createEditModelForRead(editModelID, params);
 				cacheEditModel(editModel, params);
 			}
 			editModel.access(accessorKey);
+		}
 		}
 		return editModel;
 	}
