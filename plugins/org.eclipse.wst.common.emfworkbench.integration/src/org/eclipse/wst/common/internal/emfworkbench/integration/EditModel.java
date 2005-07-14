@@ -146,7 +146,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	 * 
 	 * @return boolean
 	 */
-	protected boolean isDisposing() {
+	public boolean isDisposing() {
 		return disposing;
 	}
 
@@ -919,7 +919,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 		return emfContext;
 	}
 
-	private boolean isDisposed() { 
+	public boolean isDisposed() { 
 		return disposed;
 	}
 
@@ -959,8 +959,12 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 
 		registry.release(accessorKey);
 
-		if (!isDisposing() && registry.size() == 0) {
-			dispose();
+		if (!isDisposing()) {
+			synchronized (this) {
+				if (registry.size() == 0) {
+					dispose();
+				}
+			}
 		}
 	}
 

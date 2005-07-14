@@ -80,7 +80,7 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 		// add xmi because other plugins are registering it globally
 		reg.getExtensionToFactoryMap().put("xmi", factory); //$NON-NLS-1$
 		aResourceSet.setResourceFactoryRegistry(reg);
-		aResourceSet.getSynchronizer().addExtender(this); //added so we can be informed of closes
+		aResourceSet.getSynchronizer().addExtender(this); // added so we can be informed of closes
 		// to the project.
 		startListeningToResourceSet();
 	}
@@ -98,11 +98,13 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 	 */
 	public final EditModel getEditModelForWrite(String editModelID, Object accessorKey, Map params) {
 		EditModel editModel = getExistingEditModel(editModelID, params, false);
-		if (editModel == null) {
-			editModel = createEditModelForWrite(editModelID, params);
-			cacheEditModel(editModel, params);
+		synchronized (editModel) {
+			if (editModel == null || editModel.isDisposed() || editModel.isDisposing()) {
+				editModel = createEditModelForWrite(editModelID, params);
+				cacheEditModel(editModel, params);
+			}
+			editModel.access(accessorKey);
 		}
-		editModel.access(accessorKey);
 		return editModel;
 	}
 
@@ -117,11 +119,13 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 	 */
 	public final EditModel getEditModelForRead(String editModelID, Object accessorKey, Map params) {
 		EditModel editModel = getExistingEditModel(editModelID, params, true);
-		if (editModel == null) {
-			editModel = createEditModelForRead(editModelID, params);
-			cacheEditModel(editModel, params);
+		synchronized (editModel) {
+			if (editModel == null || editModel.isDisposed() || editModel.isDisposing() ) {
+				editModel = createEditModelForRead(editModelID, params);
+				cacheEditModel(editModel, params);
+			}
+			editModel.access(accessorKey);
 		}
-		editModel.access(accessorKey);
 		return editModel;
 	}
 
@@ -195,7 +199,7 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 
 	private void discardModels(Collection editModels) {
 		if (editModels != null && !editModels.isEmpty()) {
-			//Make a copy for safety against concurrent modification
+			// Make a copy for safety against concurrent modification
 			Iterator it = new ArrayList(editModels).iterator();
 			while (it.hasNext()) {
 				((EditModel) it.next()).dispose();
@@ -204,8 +208,8 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 	}
 
 	public void removeEditModel(EditModel editModel, boolean readOnly) {
-		//The best way would be to recompute the cache id, but we don't care
-		//because the edit model should only be cached once anyway
+		// The best way would be to recompute the cache id, but we don't care
+		// because the edit model should only be cached once anyway
 		if (readOnly)
 			readOnlyModels.values().remove(editModel);
 		else
@@ -310,7 +314,7 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 	 * @see org.eclipse.wst.common.internal.emfworkbench.ISynchronizerExtender#projectChanged(org.eclipse.core.resources.IResourceDelta)
 	 */
 	public void projectChanged(IResourceDelta delta) {
-		//default nothing
+		// default nothing
 	}
 
 	/*
