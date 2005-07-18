@@ -15,7 +15,6 @@ import java.util.Hashtable;
 
 import org.eclipse.jface.dialogs.IconAndMessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTException;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -35,6 +34,8 @@ public class LicenseAcceptanceDialog extends IconAndMessageDialog
    */
   private static final String _UI_CACHE_DIALOG_LICENSE_STATEMENT1 = "_UI_CACHE_DIALOG_LICENSE_STATEMENT1";
   private static final String _UI_CACHE_DIALOG_LICENSE_STATEMENT2 = "_UI_CACHE_DIALOG_LICENSE_STATEMENT2";
+  private static final String _UI_CACHE_DIALOG_LICENSE_STATEMENT2_NO_INTERNAL = "_UI_CACHE_DIALOG_LICENSE_STATEMENT2_NO_INTERNAL";
+  private static final String _UI_CACHE_DIALOG_LICENSE_STATEMENT2_NO_BROWSER = "_UI_CACHE_DIALOG_LICENSE_STATEMENT2_NO_BROWSER";
   private static final String _UI_CACHE_DIALOG_AGREE_BUTTON = "_UI_CACHE_DIALOG_AGREE_BUTTON";
   private static final String _UI_CACHE_DIALOG_DISAGREE_BUTTON = "_UI_CACHE_DIALOG_DISAGREE_BUTTON";
   private static final String _UI_CACHE_DIALOG_TITLE = "_UI_CACHE_DIALOG_TITLE";
@@ -117,10 +118,13 @@ public class LicenseAcceptanceDialog extends IconAndMessageDialog
 	Label licenseText1 = new Label(composite, SWT.NONE);
 	licenseText1.setText(CachePlugin.getResourceString(_UI_CACHE_DIALOG_LICENSE_STATEMENT1));
 	Label urlText = new Label(composite, SWT.WRAP);
+	gd = new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1);
+	urlText.setLayoutData(gd);
 	urlText.setText(url);
 	new Label(composite, SWT.NONE); // Spacing label.
-	Label licenseText2 = new Label(composite, SWT.NONE);
-	licenseText2.setText(CachePlugin.getResourceString(_UI_CACHE_DIALOG_LICENSE_STATEMENT2));
+	Label licenseText2 = new Label(composite, SWT.WRAP);
+	gd = new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1);
+	licenseText2.setLayoutData(gd);
 	
 	// Display the license in a browser.
 	try
@@ -130,18 +134,21 @@ public class LicenseAcceptanceDialog extends IconAndMessageDialog
 	  gd.heightHint = 400;
 	  browser.setUrl(licenseURL);
 	  browser.setLayoutData(gd);
+	  licenseText2.setText(CachePlugin.getResourceString(_UI_CACHE_DIALOG_LICENSE_STATEMENT2));
 	}
-	catch(SWTException e)
+	catch(Throwable e)
 	{
-	  // The browser throws this exception on platforms that do not support it. 
+	  // The browser throws an exception on platforms that do not support it. 
 	  // In this case we need to create an external browser.
 	  try
 	  {
 	    CachePlugin.getDefault().getWorkbench().getBrowserSupport().getExternalBrowser().openURL(new URL(licenseURL));
+	    licenseText2.setText(CachePlugin.getResourceString(_UI_CACHE_DIALOG_LICENSE_STATEMENT2_NO_INTERNAL));
 	  }
 	  catch(Exception ex)
 	  {
-		// Do nothing. The license will not be displayed if this occurs.
+		// In this case the license cannot be display. Inform the user of this and give them the license location.
+		licenseText2.setText(CachePlugin.getResourceString(_UI_CACHE_DIALOG_LICENSE_STATEMENT2_NO_BROWSER, licenseURL));
 	  }
 	}
 

@@ -60,7 +60,6 @@ public class Cache
   private static final String FILE_PROTOCOL = "file:///";
   private static final String CACHE_FILE = "cache.xml";
   private static final String CACHE_EXTENSION = ".cache";
-  private static final String TEMP = "temp";
   private static final String CACHE_PREFIX = "wtpcache";
   private static final String CACHE_SUFFIX = null;
   /**
@@ -133,10 +132,10 @@ public class Cache
 	  if(result == null)
 	  {
       
-      if(!uncached.contains(result))
-		  {
-        result = cacheResource(uri); 
-      }
+        if(!uncached.contains(uri))
+	    {
+          result = cacheResource(uri); 
+        }
 	  }
 	  // Retreive a fresh copy of the result if it has timed out.
 	  else if(result.hasExpired())
