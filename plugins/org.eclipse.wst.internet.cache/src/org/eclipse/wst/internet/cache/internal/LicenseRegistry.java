@@ -25,6 +25,8 @@ public class LicenseRegistry
   protected static Integer LICENSE_UNSPECIFIED = new Integer(0); // This needs to be 0 for the plugin prefs.
   protected static Integer LICENSE_AGREE = new Integer(1);
   protected static Integer LICENSE_DISAGREE = new Integer(2);
+  // Signifies a license that has been disagreed to this session.
+  protected static Integer LICENSE_DISAGREE_THIS_SESSION = new Integer(3);
   
   protected final static String _LOG_INFO_WTP_NO_USER_INTERACTION = "_LOG_INFO_WTP_NO_USER_INTERACTION";
   
@@ -115,6 +117,20 @@ public class LicenseRegistry
   }
   
   /**
+   * Disagree to the specified license for this session. The license is disagreed to only if it has already
+   * been registered with the registry. 
+   * 
+   * @param url The URL of the license to accept.
+   */
+  private void disagreeLicenseThisSession(String url)
+  {
+	if(licenses.containsKey(url))
+	{
+	  licenses.put(url, LICENSE_DISAGREE_THIS_SESSION);
+	}
+  }
+  
+  /**
    * Determine if the license has been accepted. This method will return true if the license
    * has been accepted or is not registered with the registry and false if it has not been accepted. 
    * 
@@ -140,7 +156,14 @@ public class LicenseRegistry
 	  {
 		if(!CachePlugin.getDefault().shouldPrompt())
 		  return false;
+		licenses.put(licenseURL, LICENSE_DISAGREE_THIS_SESSION);
 	  }
+	  // The license has already been disagreed to this session. Do not prompt.
+	  else if(agreed == LICENSE_DISAGREE_THIS_SESSION)
+	  {
+		return false;
+	  }
+		  
 	  
 	  // Prompt the user to accept the license.
 	  if(promptToAcceptLicense(url, licenseURL))
@@ -148,7 +171,7 @@ public class LicenseRegistry
 		agreeLicense(licenseURL);
 		return true;
 	  }
-	  disagreeLicense(licenseURL);
+	  disagreeLicenseThisSession(licenseURL);
 	  return false;
 	}
 	
