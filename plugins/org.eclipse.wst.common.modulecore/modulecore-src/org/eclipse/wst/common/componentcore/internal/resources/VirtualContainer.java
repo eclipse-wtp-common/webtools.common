@@ -34,8 +34,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 
-public abstract class VirtualContainer extends VirtualResource implements
-		IVirtualContainer {
+public abstract class VirtualContainer extends VirtualResource implements IVirtualContainer {
 
 	public VirtualContainer(IProject aProject, String aName, IPath aRuntimePath) {
 		super(aProject, aName, aRuntimePath);
@@ -75,30 +74,22 @@ public abstract class VirtualContainer extends VirtualResource implements
 	public IVirtualResource findMember(IPath aPath, int theSearchFlags) {
 
 		StructureEdit structureEdit = null;
-		Set virtualResources = null;
 		try {
 
 			structureEdit = StructureEdit.getStructureEditForRead(getProject());
-			WorkbenchComponent component = structureEdit
-					.findComponentByName(getComponentHandle().getName());
-			ResourceTreeRoot root = ResourceTreeRoot
-					.getDeployResourceTreeRoot(component);
-			ComponentResource[] resources = root.findModuleResources(
-					getRuntimePath().append(aPath),
-					ResourceTreeNode.CREATE_NONE);
+			WorkbenchComponent component = structureEdit.findComponentByName(getComponentHandle().getName());
+			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
+			ComponentResource[] resources = root.findModuleResources(getRuntimePath().append(aPath), ResourceTreeNode.CREATE_NONE);
 
 			if (resources.length != 0) {
 
-				IResource platformResource = StructureEdit
-						.getEclipseResource(resources[0]);
+				IResource platformResource = StructureEdit.getEclipseResource(resources[0]);
 				if (platformResource != null) {
 					switch (platformResource.getType()) {
-					case IResource.FOLDER:
-						return new VirtualFolder(getComponentHandle(),
-								getRuntimePath().append(aPath));
-					case IResource.FILE:
-						return new VirtualFile(getComponentHandle(),
-								getRuntimePath().append(aPath));
+						case IResource.FOLDER :
+							return new VirtualFolder(getComponentHandle(), getRuntimePath().append(aPath));
+						case IResource.FILE :
+							return new VirtualFile(getComponentHandle(), getRuntimePath().append(aPath));
 					}
 				}
 			}
@@ -113,32 +104,28 @@ public abstract class VirtualContainer extends VirtualResource implements
 	 * @see IContainer#getFile(org.eclipse.core.runtime.IPath)
 	 */
 	public IVirtualFile getFile(IPath aPath) {
-		return new VirtualFile(getComponentHandle(), getRuntimePath().append(
-				aPath));
+		return new VirtualFile(getComponentHandle(), getRuntimePath().append(aPath));
 	}
 
 	/**
 	 * @see IContainer#getFolder(org.eclipse.core.runtime.IPath)
 	 */
 	public IVirtualFolder getFolder(IPath aPath) {
-		return new VirtualFolder(getComponentHandle(), getRuntimePath().append(
-				aPath));
+		return new VirtualFolder(getComponentHandle(), getRuntimePath().append(aPath));
 	}
 
 	/**
 	 * @see IFolder#getFile(java.lang.String)
 	 */
 	public IVirtualFile getFile(String name) {
-		return new VirtualFile(getComponentHandle(), getRuntimePath().append(
-				name));
+		return new VirtualFile(getComponentHandle(), getRuntimePath().append(name));
 	}
 
 	/**
 	 * @see IFolder#getFolder(java.lang.String)
 	 */
 	public IVirtualFolder getFolder(String name) {
-		return new VirtualFolder(getComponentHandle(), getRuntimePath().append(
-				name));
+		return new VirtualFolder(getComponentHandle(), getRuntimePath().append(name));
 	}
 
 	/**
@@ -151,8 +138,7 @@ public abstract class VirtualContainer extends VirtualResource implements
 	/**
 	 * @see IContainer#members(boolean)
 	 */
-	public IVirtualResource[] members(boolean includePhantoms)
-			throws CoreException {
+	public IVirtualResource[] members(boolean includePhantoms) throws CoreException {
 		return members(includePhantoms ? IGNORE_EXCLUSIONS : IResource.NONE);
 	}
 
@@ -160,70 +146,44 @@ public abstract class VirtualContainer extends VirtualResource implements
 	 * @see IContainer#members(int)
 	 */
 	public IVirtualResource[] members(int memberFlags) throws CoreException {
-
 		StructureEdit moduleCore = null;
 		Set virtualResources = new HashSet();
 		try {
-
-			moduleCore = StructureEdit
-					.getStructureEditForRead(getComponentHandle().getProject());
-			WorkbenchComponent wbComponent = moduleCore
-					.findComponentByName(getComponentHandle().getName());
+			moduleCore = StructureEdit.getStructureEditForRead(getComponentHandle().getProject());
+			WorkbenchComponent wbComponent = moduleCore.findComponentByName(getComponentHandle().getName());
 			if (wbComponent != null) {
-				ResourceTreeRoot root = ResourceTreeRoot
-						.getDeployResourceTreeRoot(wbComponent);
-				ComponentResource[] componentResources = root
-						.findModuleResources(getRuntimePath(),
-								ResourceTreeNode.CREATE_NONE);
-
+				ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(wbComponent);
+				ComponentResource[] componentResources = root.findModuleResources(getRuntimePath(), ResourceTreeNode.CREATE_NONE);
 				IResource realResource = null;
 				IPath fullRuntimePath = null;
 				IPath newRuntimePath = null;
 
 				for (int componentResourceIndex = 0; componentResourceIndex < componentResources.length; componentResourceIndex++) {
-					fullRuntimePath = componentResources[componentResourceIndex]
-							.getRuntimePath();
-
+					fullRuntimePath = componentResources[componentResourceIndex].getRuntimePath();
 					// exact match
 					if (fullRuntimePath.equals(getRuntimePath())) {
-
-						realResource = StructureEdit
-								.getEclipseResource(componentResources[componentResourceIndex]);
+						realResource = StructureEdit.getEclipseResource(componentResources[componentResourceIndex]);
 						if (realResource.getType() == IResource.FOLDER) {
 							IFolder realFolder = (IFolder) realResource;
-							IResource[] realChildResources = realFolder
-									.members(memberFlags);
+							IResource[] realChildResources = realFolder.members(memberFlags);
 							for (int realResourceIndex = 0; realResourceIndex < realChildResources.length; realResourceIndex++) {
-								newRuntimePath = getRuntimePath().append(
-										realChildResources[realResourceIndex]
-												.getName());
-								addVirtualResource(virtualResources,
-										realChildResources[realResourceIndex],
-										newRuntimePath);
+								newRuntimePath = getRuntimePath().append(realChildResources[realResourceIndex].getName());
+								addVirtualResource(virtualResources, realChildResources[realResourceIndex], newRuntimePath);
 							}
-						} // An IResource.FILE would be an error condition (as
-						// this is a container)
+						} // An IResource.FILE would be an error condition (as this is a container)
 
 					} else { // fuzzy match
-						newRuntimePath = getRuntimePath().append(
-								fullRuntimePath.segment(getRuntimePath()
-										.segmentCount()));
-
+						newRuntimePath = getRuntimePath().append(fullRuntimePath.segment(getRuntimePath().segmentCount()));
+						realResource = StructureEdit.getEclipseResource(componentResources[componentResourceIndex]);
 						if (fullRuntimePath.segmentCount() == 1) {
-							realResource = StructureEdit
-									.getEclipseResource(componentResources[componentResourceIndex]);
 							if (realResource != null)
-								addVirtualResource(virtualResources,
-										realResource, newRuntimePath);
-						} else if (fullRuntimePath.segmentCount() > 1) {
-							virtualResources.add(new VirtualFolder(
-									getComponentHandle(), newRuntimePath));
+								addVirtualResource(virtualResources, realResource, newRuntimePath);
+						} else if (fullRuntimePath.segmentCount() > 1 && realResource!=null && realResource.getType() == IResource.FOLDER) {
+							virtualResources.add(new VirtualFolder(getComponentHandle(), newRuntimePath));
 						}
 					}
-
 				}
 			}
-
 		} catch (Exception e) {
 			if (virtualResources == null)
 				return new IVirtualResource[0];
@@ -231,12 +191,10 @@ public abstract class VirtualContainer extends VirtualResource implements
 			if (moduleCore != null)
 				moduleCore.dispose();
 		}
-		return (IVirtualResource[]) virtualResources
-				.toArray(new IVirtualResource[virtualResources.size()]);
+		return (IVirtualResource[]) virtualResources.toArray(new IVirtualResource[virtualResources.size()]);
 	}
 
-	public IVirtualFile[] findDeletedMembersWithHistory(int depth,
-			IProgressMonitor monitor) throws CoreException {
+	public IVirtualFile[] findDeletedMembersWithHistory(int depth, IProgressMonitor monitor) throws CoreException {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 		// return null;
 	}
@@ -245,11 +203,9 @@ public abstract class VirtualContainer extends VirtualResource implements
 	 * @see IFolder#createLink(org.eclipse.core.runtime.IPath, int,
 	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void createLink(IPath aProjectRelativeLocation, int updateFlags,
-			IProgressMonitor monitor) throws CoreException {
+	public void createLink(IPath aProjectRelativeLocation, int updateFlags, IProgressMonitor monitor) throws CoreException {
 
 		StructureEdit moduleCore = null;
-		boolean isRootFolder = false;
 		try {
 			IContainer resource = null;
 			if (aProjectRelativeLocation.isRoot()) {
@@ -259,30 +215,23 @@ public abstract class VirtualContainer extends VirtualResource implements
 			}
 
 			moduleCore = StructureEdit.getStructureEditForWrite(getProject());
-			WorkbenchComponent component = moduleCore
-					.findComponentByName(getComponent().getName());
+			WorkbenchComponent component = moduleCore.findComponentByName(getComponent().getName());
 
-			ResourceTreeRoot root = ResourceTreeRoot
-					.getDeployResourceTreeRoot(component);
-			ComponentResource[] resources = root.findModuleResources(
-					getRuntimePath(), ResourceTreeNode.CREATE_NONE);
+			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
+			ComponentResource[] resources = root.findModuleResources(getRuntimePath(), ResourceTreeNode.CREATE_NONE);
 
 			if (resources.length == 0) {
-				ComponentResource componentResource = moduleCore
-						.createWorkbenchModuleResource(resource);
+				ComponentResource componentResource = moduleCore.createWorkbenchModuleResource(resource);
 				componentResource.setRuntimePath(getRuntimePath());
 				component.getResources().add(componentResource);
 			} else {
 				boolean foundMapping = false;
-				for (int resourceIndx = 0; resourceIndx < resources.length
-						&& !foundMapping; resourceIndx++) {
-					if (aProjectRelativeLocation.equals(resources[resourceIndx]
-							.getSourcePath()))
+				for (int resourceIndx = 0; resourceIndx < resources.length && !foundMapping; resourceIndx++) {
+					if (aProjectRelativeLocation.equals(resources[resourceIndx].getSourcePath()))
 						foundMapping = true;
 				}
 				if (!foundMapping) {
-					ComponentResource componentResource = moduleCore
-							.createWorkbenchModuleResource(resource);
+					ComponentResource componentResource = moduleCore.createWorkbenchModuleResource(resource);
 					componentResource.setRuntimePath(getRuntimePath());
 					component.getResources().add(componentResource);
 				}
@@ -312,12 +261,9 @@ public abstract class VirtualContainer extends VirtualResource implements
 	protected void doDeleteMetaModel(int updateFlags, IProgressMonitor monitor) {
 		StructureEdit moduleCore = null;
 		try {
-			moduleCore = StructureEdit
-					.getStructureEditForWrite(getComponentHandle().getProject());
-			WorkbenchComponent component = moduleCore
-					.findComponentByName(getComponentHandle().getName());
-			moduleCore.getComponentModelRoot().getComponents()
-					.remove(component);
+			moduleCore = StructureEdit.getStructureEditForWrite(getComponentHandle().getProject());
+			WorkbenchComponent component = moduleCore.findComponentByName(getComponentHandle().getName());
+			moduleCore.getComponentModelRoot().getComponents().remove(component);
 		} finally {
 			if (moduleCore != null) {
 				moduleCore.saveIfNecessary(monitor);
@@ -326,8 +272,7 @@ public abstract class VirtualContainer extends VirtualResource implements
 		}
 	}
 
-	protected void doDeleteRealResources(int updateFlags,
-			IProgressMonitor monitor) throws CoreException {
+	protected void doDeleteRealResources(int updateFlags, IProgressMonitor monitor) throws CoreException {
 		throw new UnsupportedOperationException("Method not supported"); //$NON-NLS-1$
 	}
 
@@ -336,14 +281,11 @@ public abstract class VirtualContainer extends VirtualResource implements
 	 * @param realResource
 	 * @param newRuntimePath
 	 */
-	private void addVirtualResource(Set virtualResources,
-			IResource realResource, IPath newRuntimePath) {
+	private void addVirtualResource(Set virtualResources, IResource realResource, IPath newRuntimePath) {
 		if (realResource.getType() == IResource.FOLDER)
-			virtualResources.add(new VirtualFolder(getComponentHandle(),
-					newRuntimePath));
+			virtualResources.add(new VirtualFolder(getComponentHandle(), newRuntimePath));
 		else
-			virtualResources.add(new VirtualFile(getComponentHandle(),
-					newRuntimePath));
+			virtualResources.add(new VirtualFile(getComponentHandle(), newRuntimePath));
 	}
 
 	public IVirtualResource[] getResources(String aResourceType) {
@@ -356,10 +298,8 @@ public abstract class VirtualContainer extends VirtualResource implements
 			List foundResources = new ArrayList();
 
 			if (aResourceType != null) {
-				for (Iterator iter = currentResources.iterator(); iter
-						.hasNext();) {
-					ComponentResource resource = (ComponentResource) iter
-							.next();
+				for (Iterator iter = currentResources.iterator(); iter.hasNext();) {
+					ComponentResource resource = (ComponentResource) iter.next();
 					if (aResourceType.equals(resource.getResourceType())) {
 						IVirtualResource vres = createVirtualResource(resource);
 						if (vres != null)
@@ -367,25 +307,20 @@ public abstract class VirtualContainer extends VirtualResource implements
 					}
 				}
 			}
-			return (IVirtualResource[]) foundResources
-					.toArray(new IVirtualResource[foundResources.size()]);
+			return (IVirtualResource[]) foundResources.toArray(new IVirtualResource[foundResources.size()]);
 		} finally {
 			if (core != null)
 				core.dispose();
 		}
 	}
 
-	private IVirtualResource createVirtualResource(
-			ComponentResource aComponentResource) {
-		IResource resource = StructureEdit
-				.getEclipseResource(aComponentResource);
+	private IVirtualResource createVirtualResource(ComponentResource aComponentResource) {
+		IResource resource = StructureEdit.getEclipseResource(aComponentResource);
 		switch (resource.getType()) {
-		case IResource.FILE:
-			return ComponentCore.createFile(getProject(), getName(),
-					aComponentResource.getRuntimePath());
-		case IResource.FOLDER:
-			return ComponentCore.createFolder(getProject(), getName(),
-					aComponentResource.getRuntimePath());
+			case IResource.FILE :
+				return ComponentCore.createFile(getProject(), getName(), aComponentResource.getRuntimePath());
+			case IResource.FOLDER :
+				return ComponentCore.createFolder(getProject(), getName(), aComponentResource.getRuntimePath());
 		}
 		return null;
 	}
