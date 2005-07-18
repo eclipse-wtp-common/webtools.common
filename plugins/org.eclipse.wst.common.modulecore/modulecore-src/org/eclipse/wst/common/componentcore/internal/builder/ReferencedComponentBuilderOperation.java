@@ -41,6 +41,7 @@ import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IReferencedComponentBuilderDataModelProperties;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
+import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.componentcore.internal.util.ZipFileExporter;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
@@ -100,9 +101,17 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 			} else if (absoluteInputContainer == null || !referencedComponent.getProject().getFolder(absoluteInputContainer).exists()) {
 				if (vReference.getReferencedComponent().isBinary()) {
 					try {
-						String fileString = ModuleURIUtil.getArchiveName(URI.createURI(referencedComponent.getComponentHandle().toString()));
-						IPath path = new Path(fileString);
-						String osPath = path.toOSString();
+						String osPath = "";
+						VirtualArchiveComponent archiveComp = (VirtualArchiveComponent)referencedComponent;
+						if( archiveComp.getArchiveType().equals(VirtualArchiveComponent.VARARCHIVETYPE)){
+							IPath resolvedpath = (IPath)archiveComp.getAdapter(VirtualArchiveComponent.ADAPTER_TYPE);
+							osPath = resolvedpath.toOSString();
+						}	
+						else{
+							String fileString = ModuleURIUtil.getArchiveName(URI.createURI(referencedComponent.getComponentHandle().toString()));
+							IPath path = new Path(fileString);
+							osPath = path.toOSString();
+						}
 						if (vReference.getDependencyType() == IVirtualReference.DEPENDENCY_TYPE_CONSUMES) {
 							expandZipFile(osPath, outputContainerFolder);
 						} else {
@@ -151,18 +160,15 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 				iFile.create(inputStream, true, null);
 			}
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getLogger().logError(e);
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getLogger().logError(e);
 		} finally {
 			if (null != inputStream) {
 				try {
 					inputStream.close();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					Logger.getLogger().logError(e);
 				}
 			}
 		}

@@ -16,9 +16,11 @@ import java.util.Properties;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
@@ -27,8 +29,11 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 
 
-public class VirtualArchiveComponent implements IVirtualComponent {
+public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable{
 
+	public static final Class ADAPTER_TYPE = VirtualArchiveComponent.class;
+	public static final String LIBARCHIVETYPE= "lib";
+	public static final String VARARCHIVETYPE= "var";
 	
 	private static final IVirtualReference[] NO_REFERENCES = new VirtualReference[0];
 	private static final IVirtualComponent[] NO_COMPONENTS = new VirtualComponent[0];
@@ -129,10 +134,6 @@ public class VirtualArchiveComponent implements IVirtualComponent {
 		return true;
 	} 
 
-	public Object getAdapter(Class adapter) {
-		return null;
-	}
-
 	public Properties getMetaProperties() {
 		return NO_PROPERTIES;
 	}
@@ -170,5 +171,13 @@ public class VirtualArchiveComponent implements IVirtualComponent {
 	}
 	public String getVersion() {
 		return "";
+	}
+	
+	public Object getAdapter(Class adapterType) {
+		return Platform.getAdapterManager().getAdapter(this, adapterType);
+	}	
+	
+	public String getArchiveType(){
+		return archiveType;
 	}
 }
