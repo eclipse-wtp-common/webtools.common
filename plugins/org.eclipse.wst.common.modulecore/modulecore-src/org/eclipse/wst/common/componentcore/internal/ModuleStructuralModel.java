@@ -17,6 +17,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.wst.common.componentcore.internal.impl.WTPModulesResource;
 import org.eclipse.wst.common.componentcore.internal.impl.WTPModulesResourceFactory;
+import org.eclipse.wst.common.internal.emf.resource.ReferencedResource;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 /**
@@ -55,6 +56,16 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
     public ModuleStructuralModel(String editModelID, EMFWorkbenchContext context, boolean readOnly) {
         super(editModelID, context, readOnly);
     }
+    /**
+	 * Release each of the referenced resources.
+	 */
+	protected void release(ReferencedResource aResource) {
+		if (isReadOnly() && aResource.getReadCount() != 0)
+			aResource.releaseFromRead();
+		else
+			aResource.releaseFromWrite();
+
+	}
     
     /* (non-Javadoc)
 	 * @see org.eclipse.wst.common.internal.emfworkbench.integration.EditModel#getPrimaryRootObject()
