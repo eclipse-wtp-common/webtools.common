@@ -62,9 +62,14 @@ public class RemoveReferenceComponentOperation extends AbstractDataModelOperatio
     
 		for (int i = 0; i < modList.size(); i++) {
 			ComponentHandle handle = (ComponentHandle) modList.get(i);
-			IVirtualComponent comp = ComponentCore.createComponent(handle.getProject(), handle.getName());
-			if (Arrays.asList(comp.getReferencingComponents()).contains(sourceComp)) {
-				removeRefereneceInComponent(sourceComp,sourceComp.getReference(comp.getName()));
+			IVirtualReference ref = sourceComp.getReference(handle.getName());
+			if( ref != null && ref.getReferencedComponent() != null && ref.getReferencedComponent().isBinary()){
+				removeRefereneceInComponent(sourceComp, ref);
+			}else{
+				IVirtualComponent comp = ComponentCore.createComponent(handle.getProject(), handle.getName());
+				if (Arrays.asList(comp.getReferencingComponents()).contains(sourceComp)) {
+					removeRefereneceInComponent(sourceComp,sourceComp.getReference(comp.getName()));
+				}					
 			}
 		}
 		

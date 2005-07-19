@@ -180,4 +180,11 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable{
 	public String getArchiveType(){
 		return archiveType;
 	}
+	public boolean equals(Object anOther) { 
+		if(anOther instanceof VirtualArchiveComponent) {
+			VirtualArchiveComponent otherComponent = (VirtualArchiveComponent) anOther;
+			return getProject().equals(otherComponent.getProject()) && getName().equals(otherComponent.getName());
+		}
+		return false;
+	}	
 }

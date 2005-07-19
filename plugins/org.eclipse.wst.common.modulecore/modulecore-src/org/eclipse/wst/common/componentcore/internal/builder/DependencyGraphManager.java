@@ -123,6 +123,7 @@ public class DependencyGraphManager {
 	 * singleton manager method.
 	 */ 
 	public DependencyGraph getDependencyGraph() {
+		constructIfNecessary();
 		return DependencyGraph.getInstance();
 	}
 }
