@@ -311,11 +311,17 @@ public class ValidatorMetaData {
 		// Are any of the filters satisfied? (i.e., OR them, not AND them.)
 		for (int i = 0; i < filters.length; i++) {
 			ValidatorFilter filter = filters[i];
-			if (filter.isApplicableType(resource) && filter.isApplicableName(resource) && filter.isApplicableAction(resourceDelta)) {
+			if (checkIfValidSourceFile(resource) && filter.isApplicableType(resource) && filter.isApplicableName(resource) && filter.isApplicableAction(resourceDelta)) {
 				return true;
 			}
 		}
 		return false;
+	}
+	
+	private boolean checkIfValidSourceFile(IResource file) {
+		if (file.getType() == IResource.FILE) 
+			return file.getFullPath().toOSString().indexOf(ConfigurationConstants.DEPLOYABLES_FOLDER) == -1;
+		return true;
 	}
 
 	/**

@@ -75,4 +75,5 @@ public interface ConfigurationConstants {
 	/* package */static final String VERSION5_0 = "5.0"; //$NON-NLS-1$
 	/* package */static final String VERSION5_01 = "5.0.1"; //$NON-NLS-1$
 	// end preference and project defaults
+	public  final String DEPLOYABLES_FOLDER = ".deployables";
 }
