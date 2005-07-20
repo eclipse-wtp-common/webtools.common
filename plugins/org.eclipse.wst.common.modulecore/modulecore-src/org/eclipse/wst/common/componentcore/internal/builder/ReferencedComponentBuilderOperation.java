@@ -175,7 +175,7 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 	}
 
 	private void expandZipFile(String filePath, IFolder absoluteOutputContainer) {
-		ZipFile zipFile;
+		ZipFile zipFile = null;
 		try {
 			zipFile = new ZipFile(filePath);
 			Enumeration entries = zipFile.entries();
@@ -203,6 +203,14 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 			}
 		} catch (IOException e) {
 			Logger.getLogger().logError(e);
+		} finally{
+			if(null != zipFile){
+				try {
+					zipFile.close();
+				} catch (IOException e) {
+					Logger.getLogger().logError(e);
+				}
+			}
 		}
 	}
 
