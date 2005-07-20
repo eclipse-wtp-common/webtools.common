@@ -36,6 +36,7 @@ public class URIResolverExtensionRegistryReader {
 	    protected static final String ATT_STAGE = "stage";		
 	    protected static final String VAL_STAGE_PRE = "prenormalization";
 	    protected static final String VAL_STAGE_POST = "postnormalization";
+        protected static final String VAL_STAGE_PHYSICAL = "physical";
 	    protected static final String ATT_VALUE = "value";
        protected static final String ATT_PRIORITY = "priority";
 	   
@@ -99,6 +100,10 @@ public class URIResolverExtensionRegistryReader {
 						{
 						  stageint = URIResolverExtensionRegistry.STAGE_PRENORMALIZATION;
 						}
+                        else if (stage.equalsIgnoreCase(VAL_STAGE_PHYSICAL))
+                        {
+                          stageint = URIResolverExtensionRegistry.STAGE_PHYSICAL;  
+                        }  
 						registry.put(className, classLoader, projectNatureIds, resourceType, stageint, priority);
 					} catch (Exception e) {
 					}

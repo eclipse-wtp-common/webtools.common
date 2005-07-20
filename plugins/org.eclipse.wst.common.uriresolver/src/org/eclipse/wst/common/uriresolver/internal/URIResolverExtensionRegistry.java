@@ -26,6 +26,7 @@ public class URIResolverExtensionRegistry {
 	protected HashMap map = new HashMap();
 	public static final int STAGE_PRENORMALIZATION = 1;
 	public static final int STAGE_POSTNORMALIZATION = 2;	
+    public static final int STAGE_PHYSICAL = 3;    
   public static final String PRIORITY_LOW = "low";
   public static final String PRIORITY_MEDIUM = "medium";
   public static final String PRIORITY_HIGH = "high";

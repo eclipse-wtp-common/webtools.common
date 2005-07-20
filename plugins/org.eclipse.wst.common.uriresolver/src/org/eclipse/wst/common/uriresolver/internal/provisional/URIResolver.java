@@ -14,7 +14,6 @@ package org.eclipse.wst.common.uriresolver.internal.provisional;
 
 /**
  * A URIResolver is used to resolve URI references to resources.
- *  
  */
 public interface URIResolver {
 	
@@ -22,7 +21,15 @@ public interface URIResolver {
 	 * @param baseLocation - the location of the resource that contains the uri 
 	 * @param publicId - an optional public identifier (i.e. namespace name), or null if none
 	 * @param systemId - an absolute or relative URI, or null if none 
-	 * @return an absolute URI
+	 * @return an absolute URI represention the 'logical' location of the resource
 	 */
 	public String resolve(String baseLocation, String publicId, String systemId);
+    
+    /**
+     * @param baseLocation - the location of the resource that contains the uri 
+     * @param publicId - an optional public identifier (i.e. namespace name), or null if none
+     * @param systemId - an absolute or relative URI, or null if none 
+     * @return an absolute URI represention the 'physical' location of the resource
+     */
+    public String resolvePhysicalLocation(String baseLocation, String publicId, String logicalLocation);    
 }

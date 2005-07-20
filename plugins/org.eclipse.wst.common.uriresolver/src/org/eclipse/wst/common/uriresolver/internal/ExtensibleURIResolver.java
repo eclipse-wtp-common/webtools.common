@@ -94,6 +94,34 @@ public class ExtensibleURIResolver implements URIResolver
 
 		return result;
 	}
+    
+    public String resolvePhysicalLocation(String baseLocation, String publicId, String logicalLocation)
+    {
+      String result = logicalLocation;
+      URIResolverExtensionRegistry resolverRegistry = URIResolverExtensionRegistry.getIntance();
+      IFile file = computeFile(baseLocation);
+      
+      // compute the project that holds the resource
+      //      
+      IProject project =  file != null ? file.getProject() : null;            
+      List list = resolverRegistry.getExtensionDescriptors(project);      
+      for (Iterator i = resolverRegistry.getMatchingURIResolvers(list, URIResolverExtensionRegistry.STAGE_PHYSICAL).iterator(); i.hasNext(); )
+      {        
+        // get the list of applicable physical resolvers from the extension registry
+        //
+        while (i.hasNext())
+        {
+          URIResolverExtension resolver = (URIResolverExtension) i.next();
+          String tempresult = resolver.resolve(file, baseLocation, publicId, result);
+          if(tempresult != null)
+          {
+            result = tempresult;
+          }
+        }
+      }        
+      return result;
+    }
+    
 
 	protected String normalize(String baseLocation, String systemId)
 	{
