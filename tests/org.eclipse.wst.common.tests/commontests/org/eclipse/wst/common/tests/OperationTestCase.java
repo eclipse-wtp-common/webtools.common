@@ -13,10 +13,13 @@ import junit.framework.Assert;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.eclipse.wst.common.frameworks.internal.datamodel.IWorkspaceRunnableWithStatus;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
 
 
@@ -37,13 +40,28 @@ public abstract class OperationTestCase extends BaseTestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		try{ 
-		ProjectUtility.deleteAllProjects();
+			deleteAllProjects();
 		} catch (Exception e) {
 			// TODO: handle exception
 		} catch (Throwable th) {
 			// TODO: handle error in a better way
 		}
 		// LogUtility.getInstance().resetLogging();
+	}
+	public static void deleteAllProjects() {
+		IWorkspaceRunnableWithStatus workspaceRunnable = new IWorkspaceRunnableWithStatus(null) {
+			public void run(IProgressMonitor pm) throws CoreException {
+				try {
+					ProjectUtility.deleteAllProjects();
+				} catch (Exception e) {
+				}
+			}
+		};
+		try {
+			ResourcesPlugin.getWorkspace().run(workspaceRunnable, null);
+		} catch (CoreException e) {
+			
+		}
 	}
 
 	public OperationTestCase() {
