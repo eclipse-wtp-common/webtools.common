@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
+import org.eclipse.jem.util.logger.proxy.Logger;
 /**
  * @author jsholl
  * 
@@ -104,8 +105,8 @@ public class ProjectUtility {
                     lastException = e;
                     if (project.exists()) {
                     	try{
-	                        project.open(null);
 	                        project.close(null);
+	                        project.open(null);
                     	} catch(Exception e2){
                     	}
                     }
@@ -113,7 +114,7 @@ public class ProjectUtility {
                 }
             }
             if (!success && lastException != null) {
-                lastException.printStackTrace();
+                Logger.getLogger().log("Problem while deleting: " + lastException.getMessage());
                 //Assert.fail("Caught Exception=" + lastException.getMessage() + " when deleting project=" + project.getName());
             }
         }
