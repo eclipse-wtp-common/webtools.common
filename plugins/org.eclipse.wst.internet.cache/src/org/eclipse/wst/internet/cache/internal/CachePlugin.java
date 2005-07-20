@@ -37,6 +37,11 @@ public class CachePlugin extends AbstractUIPlugin
   private static CachePlugin plugin;
 
   /**
+   * The plugin's resource bundle.
+   */
+  private ResourceBundle resourceBundle;
+
+  /**
    * The cache job caches resources that were not able to be downloaded when requested.
    */
   private CacheJob job = null;
@@ -100,12 +105,6 @@ public class CachePlugin extends AbstractUIPlugin
 	for(int i = 0; i < numLicenses; i++)
 	{
 	  Integer state = registry.getLicenseState(licenses[i]);
-      // For states that have been disagreed to this session store
-	  // them as disagree.
-	  if(state == LicenseRegistry.LICENSE_DISAGREE_THIS_SESSION)
-	  {
-		state = LicenseRegistry.LICENSE_DISAGREE;
-	  }
 	  prefs.setValue(licenses[i], state.intValue());
 	}
 	
@@ -113,6 +112,7 @@ public class CachePlugin extends AbstractUIPlugin
 	stopJob();
 	super.stop(context);
 	plugin = null;
+	resourceBundle = null;
   }
 
   /**
