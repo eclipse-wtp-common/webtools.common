@@ -83,7 +83,7 @@ public class ExtensibleURIResolver implements URIResolver
 		// extension registry
 		//		
 		for (Iterator i = resolverRegistry.getMatchingURIResolvers(list, URIResolverExtensionRegistry.STAGE_POSTNORMALIZATION).iterator(); i.hasNext();)
-		{
+		{ 
 			URIResolverExtension resolver = (URIResolverExtension) i.next();
 			String tempresult = resolver.resolve(file, baseLocation, publicId, result);
 			if(tempresult != null)
@@ -134,6 +134,7 @@ public class ExtensibleURIResolver implements URIResolver
 		URI systemURI = URI.createURI(systemId);
 		if (systemURI.isRelative())
 		{
+			baseLocation = baseLocation.replace('\\','/');
 			URI baseURI = URI.createURI(baseLocation);
 			try
 			{
