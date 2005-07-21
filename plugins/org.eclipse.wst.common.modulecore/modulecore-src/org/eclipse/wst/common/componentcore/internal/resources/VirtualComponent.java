@@ -42,6 +42,7 @@ public class VirtualComponent implements IVirtualComponent {
 	IPath			runtimePath;
 	ComponentHandle	componentHandle;
 	IVirtualFolder	rootFolder;
+	String componentTypeId;
 	private int flag = 0;
 	
 	public VirtualComponent(IProject aProject, String aName, IPath aRuntimePath) {
@@ -81,18 +82,20 @@ public class VirtualComponent implements IVirtualComponent {
 		return false;
 	}
 	
-	public String getComponentTypeId() { 
-
-		StructureEdit core = null;
-		try {
-			core = StructureEdit.getStructureEditForRead(getProject());
-			WorkbenchComponent component = core.findComponentByName(getName()); 
-			ComponentType cType = component == null ? null : component.getComponentType();
-			return cType != null ? cType.getComponentTypeId() : ""; 
-		} finally {
-			if(core != null)
-				core.dispose();
+	public String getComponentTypeId() {
+		if (null == componentTypeId) {
+			StructureEdit core = null;
+			try {
+				core = StructureEdit.getStructureEditForRead(getProject());
+				WorkbenchComponent component = core.findComponentByName(getName());
+				ComponentType cType = component == null ? null : component.getComponentType();
+				componentTypeId = cType == null ? null : cType.getComponentTypeId();
+			} finally {
+				if (core != null)
+					core.dispose();
+			}
 		}
+		return componentTypeId;
 	}
 
 	public void setComponentTypeId(String aComponentTypeId) {
