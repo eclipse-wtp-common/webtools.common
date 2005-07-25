@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<?eclipse version="3.0"?>
+<!-- ================================================= -->
+<!-- This is the plugin for declaring the help         -->
+<!-- contributions for using the tool.                 -->
+<!-- ================================================= -->
+
+<plugin
+   id="org.eclipse.wst.common.infopop"
+   name="Common WST infopops"
+   version="0.7.0"
+   provider-name="Eclipse.org">
+
+<extension point="org.eclipse.help.contexts">
+       <contexts file="SnippetsContexts.xml" plugin ="org.eclipse.wst.common.snippets"/>
+</extension>
+
+
+</plugin>
