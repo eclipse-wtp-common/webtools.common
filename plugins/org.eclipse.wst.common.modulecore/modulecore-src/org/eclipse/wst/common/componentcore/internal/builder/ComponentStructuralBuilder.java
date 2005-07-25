@@ -195,7 +195,7 @@ public class ComponentStructuralBuilder extends IncrementalProjectBuilder implem
         } else if (resourceHasChanged(sourceResource)){
             if(targetResource.exists())
                 targetResource.delete(IResource.FORCE, monitor);
-            sourceResource.copy(absoluteOutputContainer, true, monitor);            
+            sourceResource.copy(absoluteOutputContainer, true, monitor);  
         }  else if (sourceResource.getType() == Resource.FOLDER) {
             IFolder folder = (IFolder) sourceResource;
             IResource[] members = folder.members();
@@ -205,6 +205,21 @@ public class ComponentStructuralBuilder extends IncrementalProjectBuilder implem
         } else {
             //TODO present a warning to the user about duplicate resources
         }
+    }
+
+    public static void markBuilderResourcesDerived(IResource targetResource) throws CoreException{
+        if(targetResource == null)
+            return;
+        targetResource.setDerived(true);
+        if (targetResource.getType() == Resource.FOLDER){
+            IFolder folder = (IFolder) targetResource;
+            IResource[] members = folder.members();
+            if(members != null) {
+                for (int i = 0; i < members.length; i++) {
+                    markBuilderResourcesDerived(members[i]);
+                }
+            }
+        } 
     }
 
     private static boolean resourceHasChanged(IResource targetResource) {

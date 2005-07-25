@@ -13,11 +13,13 @@ import java.util.Map;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
@@ -42,7 +44,9 @@ public class ComponentStructuralBuilderDependencyResolver extends IncrementalPro
 	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
+        IFolder[] outputFolders = null;
 		try {
+            outputFolders = StructureEdit.getOutputContainersForProject(getProject());
 			List delayedOperationDMs = ReferencedComponentBuilderDelayedDataModelCache.getInstance().getCacheList();
 			IDataModel dataModel = null;
 			IUndoableOperation op = null;
@@ -53,11 +57,16 @@ public class ComponentStructuralBuilderDependencyResolver extends IncrementalPro
 					op.execute(monitor, null);
 				}
 			}
+            if(outputFolders != null) {
+                for(int i = 0; i<outputFolders.length; i++){
+                    ComponentStructuralBuilder.markBuilderResourcesDerived(outputFolders[i]);
+                }
+            }
 		} catch (ExecutionException e) {
 			Logger.getLogger().log(e.getMessage());
 		} finally {
 			ReferencedComponentBuilderDelayedDataModelCache.getInstance().clearCache();
-		}
+        }
 		return null;
 	}
 }
