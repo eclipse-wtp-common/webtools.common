@@ -26,7 +26,8 @@ import org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverExtens
 
 public class ComponentResolver implements URIResolverExtension {
 	private static boolean _DEBUG = "true".equals(Platform.getDebugOption("org.eclipse.wst.common.modulecore/ComponentResolver")); //$NON-NLS-1$ //$NON-NLS-2$ 
-	private static final String FILE_PROTOCOL = "file://"; //$NON-NLS-1$
+	private static final String FILE_PROTOCOL = "file:///"; //$NON-NLS-1$
+	private static final String FILE_PROTOCOL2 = "file://"; //$NON-NLS-1$
 	private static final String ROOT_PATH_STRING = Path.ROOT.toString(); //$NON-NLS-1$
 
 	/**
@@ -46,6 +47,9 @@ public class ComponentResolver implements URIResolverExtension {
 			if (uri.startsWith(FILE_PROTOCOL)) {
 				location = uri.substring(FILE_PROTOCOL.length());
 			}
+			else if (uri.startsWith(FILE_PROTOCOL2)) {
+				location = uri.substring(FILE_PROTOCOL2.length());
+			}
 			else {
 				location = uri;
 			}
@@ -62,7 +66,7 @@ public class ComponentResolver implements URIResolverExtension {
 
 	public String resolve(IFile file, String baseLocation, String publicId, String systemId) {
 		if (_DEBUG) {
-			System.out.print("ComponentResolver: resolve \"[" + publicId + "/" + systemId + "]\" from \"" + baseLocation + "\""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			System.out.print("ComponentResolver: resolve \"[{" + publicId + "}{" + systemId + "}]\" from \"" + baseLocation + "\""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		}
 		/*
 		 * Check for a system reference; without one, there's no point in
@@ -113,6 +117,7 @@ public class ComponentResolver implements URIResolverExtension {
 		}
 
 		boolean prependFilePrefix = baseLocation.startsWith(FILE_PROTOCOL) && baseLocation.length() > 7;
+		boolean prependFilePrefix2 = baseLocation.startsWith(FILE_PROTOCOL2) && baseLocation.length() > 8;
 
 		String resolvedPath = null;
 		IVirtualResource[] virtualResources = ComponentCore.createResources(file);
@@ -131,6 +136,9 @@ public class ComponentResolver implements URIResolverExtension {
 				if (resolvedFile != null && resolvedFile.getLocation() != null) {
 					if (prependFilePrefix) {
 						resolvedPath = FILE_PROTOCOL + resolvedFile.getLocation().toString();
+					}
+					else if (prependFilePrefix2) {
+						resolvedPath = FILE_PROTOCOL2 + resolvedFile.getLocation().toString();
 					}
 					else {
 						resolvedPath = resolvedFile.getLocation().toString();
