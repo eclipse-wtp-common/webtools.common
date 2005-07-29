@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html>
+    <head>
+        <meta
+            name="root"
+            content="../../../../../../" />
+        <title>Component creation and Referenced Component api overview</title>
+    </head>
+
+    <body>  
+		<abstract>
+        This package includes API  for Data Model Provider framework for builing executable
+        and undoable operations using data models, their providers and provider interfaces that
+        contain the properties used by the providers to set and retrieve these propertiese. 
+		</abstract>
+
+	<a href="#top">top</a>
+    </body>
+</html>    
+    
