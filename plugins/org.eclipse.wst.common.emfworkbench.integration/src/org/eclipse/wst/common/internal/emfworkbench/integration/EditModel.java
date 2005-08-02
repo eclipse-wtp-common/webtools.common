@@ -75,12 +75,12 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	private Map params;
 	private final String editModelID;
 	private final boolean readOnly;
-	//These are the current resource uris we need to track
+	// These are the current resource uris we need to track
 	protected List knownResourceUris;
-	//This is a subset of the known resource uris, which we have requested be autoloaded
+	// This is a subset of the known resource uris, which we have requested be autoloaded
 	protected List preloadResourceUris;
-	//This is a map of identifiers to resources that we need to listen to in order to listen for
-	//updates to the edit model resources
+	// This is a map of identifiers to resources that we need to listen to in order to listen for
+	// updates to the edit model resources
 	protected Map resourceIdentifiers;
 
 	protected EditModelEvent dirtyModelEvent;
@@ -97,7 +97,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	protected IProject project = null;
 
 	private Reference reference;
-	private List resourcesTargetedForTermination; 
+	private List resourcesTargetedForTermination;
 
 	protected class ResourceAdapter extends AdapterImpl {
 		public void notifyChanged(Notification notification) {
@@ -123,8 +123,9 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 		processPreloadResources();
 	}
 
-private ClientAccessRegistry initializeRegistry(Object read) {
-		
+
+	private ClientAccessRegistry initializeRegistry(Object read) {
+
 		return null;
 	}
 
@@ -152,11 +153,13 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 
 	public void dispose() {
 		synchronized (this) {
-			if(disposing || isDisposed())
+			if (disposing || isDisposed())
 				return;
 			disposing = true;
 		}
-		try { 
+		try {
+			releaseResources();
+
 			if (commandStack != null)
 				commandStack.removeCommandStackListener(this);
 			if (hasListeners())
@@ -165,17 +168,17 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 				getEmfContext().removeEditModel(this, isReadOnly());
 			releasePreloadResources();
 			releaseIdentifiers();
-	
+
 			emfContext = null;
 			listeners = null;
 			removedListeners = null;
 			resources = null;
-			project = null; 
-		} catch(RuntimeException re) {
+			project = null;
+		} catch (RuntimeException re) {
 			re.printStackTrace();
-		}  finally {
-			disposing = false;
+		} finally {
 			disposed = true;
+			disposing = false;
 		}
 	}
 
@@ -357,7 +360,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	 * opportunity to do some other action.
 	 */
 	protected void handleSaveIfNecessaryDidNotSave(IProgressMonitor monitor) {
-		//do nothing
+		// do nothing
 	}
 
 	/**
@@ -371,7 +374,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	 * This will force all of the referenced Resources to be saved.
 	 */
 	public void save(IProgressMonitor monitor) throws PleaseMigrateYourCodeError {
-		//save
+		// save
 	}
 
 	/**
@@ -577,7 +580,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	 * @see ResourceStateInputProvider#cacheNonResourceValidateState(List)
 	 */
 	public void cacheNonResourceValidateState(List roNonResourceFiles) {
-		//do nothing
+		// do nothing
 	}
 
 	/**
@@ -683,8 +686,8 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 		if (aResource != null && !getResources().contains(aResource)) {
 			if (aResource instanceof ReferencedResource) {
 				access((ReferencedResource) aResource);
-				//We need a better way to pass this through the save options instead.
-				//We also need to make this dynamic based on the project target
+				// We need a better way to pass this through the save options instead.
+				// We also need to make this dynamic based on the project target
 				((ReferencedResource) aResource).setFormat(CompatibilityXMIResource.FORMAT_MOF5);
 			} else if (aResource instanceof CompatibilityXMIResource) {
 				((CompatibilityXMIResource) aResource).setFormat(CompatibilityXMIResource.FORMAT_MOF5);
@@ -703,7 +706,8 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	 * Return a Resource for
 	 * 
 	 * @aUri.
-	 */ // TODO The following method will only use the last segment when looking for a resource. 
+	 */
+	// TODO The following method will only use the last segment when looking for a resource.
 	protected Resource getResource(List tResources, URI aUri) {
 		Resource resource;
 		for (int i = 0; i < tResources.size(); i++) {
@@ -740,9 +744,9 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 		Resource resource = getLocalResource(aUri);
 		if (null != resource && !resource.isLoaded()) {
 			try {
-				resource.load(Collections.EMPTY_MAP); //reload it
+				resource.load(Collections.EMPTY_MAP); // reload it
 			} catch (IOException e) {
-				//Ignore
+				// Ignore
 			}
 		}
 		return resource;
@@ -919,7 +923,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 		return emfContext;
 	}
 
-	public boolean isDisposed() { 
+	public boolean isDisposed() {
 		return disposed;
 	}
 
@@ -953,9 +957,6 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	 * EditModel.
 	 */
 	public void releaseAccess(Object accessorKey) {
-
-		if (!isShared())
-			releaseResources();
 
 		registry.release(accessorKey);
 
@@ -1030,7 +1031,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 			try {
 				getEmfContext().deleteResource(aResource);
 			} catch (CoreException e) {
-				//what should we do here?
+				// what should we do here?
 			}
 			if (hasListeners()) {
 				EditModelEvent event = new EditModelEvent(EditModelEvent.REMOVED_RESOURCE, this);
@@ -1248,11 +1249,11 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	 */
 	public void primSave(IProgressMonitor monitor) {
 		if (isReadOnly())
-			return; //do nothing
+			return; // do nothing
 		deleteResourcesIfNecessary();
 		Resource resource;
 		if (getResources().isEmpty())
-			return; //nothing to save
+			return; // nothing to save
 		List localResources = getSortedResources();
 		for (int i = 0; i < localResources.size(); i++) {
 			resource = (Resource) localResources.get(i);
@@ -1266,7 +1267,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	}
 
 	/**
-	 *  
+	 * 
 	 */
 	protected void deleteResourcesIfNecessary() {
 		if (resourcesTargetedForTermination == null || resourcesTargetedForTermination.size() == 0)
@@ -1370,13 +1371,13 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 			URI uri = URI.createURI(aRelativeURI);
 			if (!isInterrestedInResourceUri(uri)) {
 				getKnownResourceUris().add(uri);
-				//Process the resource if it is already loaded.
+				// Process the resource if it is already loaded.
 				try {
 					Resource res = getEmfContext().getResource(uri);
 					if (res != null)
 						processResource(res);
 				} catch (Exception e) {
-					//Ignore
+					// Ignore
 				}
 			}
 		}

@@ -98,20 +98,20 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 	 */
 	public final EditModel getEditModelForWrite(String editModelID, Object accessorKey, Map params) {
 		EditModel editModel = getExistingEditModel(editModelID, params, false);
-		if(null == editModel){
+		if (null == editModel) {
 			editModel = createEditModelForWrite(editModelID, params);
-			synchronized(editModel){
-			cacheEditModel(editModel, params);
-			editModel.access(accessorKey);
+			synchronized (editModel) {
+				cacheEditModel(editModel, params);
+				editModel.access(accessorKey);
 			}
 		} else {
-		synchronized (editModel) {
-			if (editModel.isDisposed() || editModel.isDisposing()) {
-				editModel = createEditModelForWrite(editModelID, params);
-				cacheEditModel(editModel, params);
+			synchronized (editModel) {
+				if (editModel.isDisposed() || editModel.isDisposing()) {
+					editModel = createEditModelForWrite(editModelID, params);
+					cacheEditModel(editModel, params);
+				}
+				editModel.access(accessorKey);
 			}
-			editModel.access(accessorKey);
-		}
 		}
 		return editModel;
 	}
@@ -127,20 +127,20 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 	 */
 	public final EditModel getEditModelForRead(String editModelID, Object accessorKey, Map params) {
 		EditModel editModel = getExistingEditModel(editModelID, params, true);
-		if(null == editModel){
+		if (null == editModel) {
 			editModel = createEditModelForRead(editModelID, params);
-			synchronized(editModel){
-			cacheEditModel(editModel, params);
-			editModel.access(accessorKey);
+			synchronized (editModel) {
+				cacheEditModel(editModel, params);
+				editModel.access(accessorKey);
 			}
 		} else {
-		synchronized (editModel) {
-			if (editModel.isDisposed() || editModel.isDisposing() ) {
-				editModel = createEditModelForRead(editModelID, params);
-				cacheEditModel(editModel, params);
+			synchronized (editModel) {
+				if (editModel.isDisposed() || editModel.isDisposing()) {
+					editModel = createEditModelForRead(editModelID, params);
+					cacheEditModel(editModel, params);
+				}
+				editModel.access(accessorKey);
 			}
-			editModel.access(accessorKey);
-		}
 		}
 		return editModel;
 	}
@@ -173,10 +173,14 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 
 	public EditModel getExistingEditModel(String editModelID, Map params, boolean isReadOnly) {
 		EditModel editModel = null;
-		if (isReadOnly) {
-			editModel = (EditModel) this.readOnlyModels.get(getCacheID(editModelID, params));
-		} else {
-			editModel = (EditModel) this.editableModels.get(getCacheID(editModelID, params));
+		synchronized (readOnlyModels) {
+			if (isReadOnly) {
+				editModel = (EditModel) readOnlyModels.get(getCacheID(editModelID, params));
+			} else {
+				synchronized (editableModels) {
+					editModel = (EditModel) editableModels.get(getCacheID(editModelID, params));
+				}
+			}
 		}
 		return editModel;
 	}
@@ -202,15 +206,24 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 	 */
 	public void cacheEditModel(EditModel editModel, Map params) {
 		editModel.setParams(params);
-		if (editModel.isReadOnly())
-			this.readOnlyModels.put(getCacheID(editModel.getEditModelID(), params), editModel);
-		else
-			this.editableModels.put(getCacheID(editModel.getEditModelID(), params), editModel);
+		synchronized (readOnlyModels) {
+			if (editModel.isReadOnly())
+				readOnlyModels.put(getCacheID(editModel.getEditModelID(), params), editModel);
+			else
+				synchronized (editableModels) {
+					editableModels.put(getCacheID(editModel.getEditModelID(), params), editModel);
+				}
+		}
 	}
 
 	protected void discardAllEditModels() {
-		discardModels(readOnlyModels.values());
-		discardModels(editableModels.values());
+		synchronized (readOnlyModels) {
+			synchronized (editableModels) {
+				discardModels(readOnlyModels.values());
+				discardModels(editableModels.values());
+			}
+		}
+
 	}
 
 	private void discardModels(Collection editModels) {
@@ -226,10 +239,14 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 	public void removeEditModel(EditModel editModel, boolean readOnly) {
 		// The best way would be to recompute the cache id, but we don't care
 		// because the edit model should only be cached once anyway
-		if (readOnly)
-			readOnlyModels.values().remove(editModel);
-		else
-			editableModels.values().remove(editModel);
+		synchronized (readOnlyModels) {
+			if (readOnly)
+				readOnlyModels.values().remove(editModel);
+			else
+				synchronized (editableModels) {
+					editableModels.values().remove(editModel);
+				}
+		}
 	}
 
 	/**
@@ -239,8 +256,12 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 		if (anEvent == null)
 			return;
 		List aList = new ArrayList();
-		aList.addAll(readOnlyModels.values());
-		aList.addAll(editableModels.values());
+		synchronized (readOnlyModels) {
+			synchronized (editableModels) {
+				aList.addAll(readOnlyModels.values());
+				aList.addAll(editableModels.values());
+			}
+		}
 		EditModel editModel;
 		for (int i = 0; i < aList.size(); i++) {
 			editModel = (EditModel) aList.get(i);
@@ -253,7 +274,11 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 	}
 
 	protected boolean shouldNotifyEditModels() {
-		return !this.readOnlyModels.isEmpty() || !this.editableModels.isEmpty();
+		synchronized (readOnlyModels) {
+			synchronized (editableModels) {
+				return !this.readOnlyModels.isEmpty() || !this.editableModels.isEmpty();
+			}
+		}
 	}
 
 	protected Adapter getResourceSetListener() {

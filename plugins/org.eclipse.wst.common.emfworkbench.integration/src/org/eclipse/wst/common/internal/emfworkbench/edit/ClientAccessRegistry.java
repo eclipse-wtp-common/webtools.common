@@ -28,7 +28,7 @@ public class ClientAccessRegistry {
 	protected final WeakHashMap registry = new WeakHashMap();
 	protected final Set baseSet = new HashSet();
 
-	public void access(Object accessorKey) {
+	public synchronized void access(Object accessorKey) {
 		if (isStable()) {
 			if (!registry.containsKey(accessorKey)) {
 				Snapshot snapshot = new Snapshot();
@@ -42,7 +42,7 @@ public class ClientAccessRegistry {
 			complain();
 	}
 
-	public void release(Object accessorKey) {
+	public synchronized void release(Object accessorKey) {
 
 		/*
 		 * Error condition: Some one has been naughty and not released the resource
@@ -54,26 +54,26 @@ public class ClientAccessRegistry {
 			complain(accessorKey);
 	}
 
-	public void assertAccess(Object accessorKey) {
+	public synchronized void assertAccess(Object accessorKey) {
 		if (!isClientAccessing(accessorKey))
 			throw new ClientAccessRegistryException(EMFWorkbenchResourceHandler.getString("ClientAccessRegistry_ERROR_1"), accessorKey); //$NON-NLS-1$
 	}
 
-	public boolean isClientAccessing(Object client) {
+	public synchronized boolean isClientAccessing(Object client) {
 		boolean result = this.registry.containsKey(client);
 		if (!isStable())
 			complain();
 		return result;
 	}
 
-	public boolean isAnyClientAccessing() {
+	public synchronized boolean isAnyClientAccessing() {
 		boolean result = this.registry.size() > 0;
 		if (!isStable())
 			complain();
 		return result;
 	}
 
-	public boolean isStable() {
+	public synchronized boolean isStable() {
 		return this.baseSet.size() == this.registry.size();
 	}
 
@@ -95,7 +95,7 @@ public class ClientAccessRegistry {
 		return result.toString();
 	}
 
-	public int size() {
+	public synchronized int size() {
 		return this.registry.size();
 	}
 
