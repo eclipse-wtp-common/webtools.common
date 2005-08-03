@@ -207,13 +207,13 @@ public class DocumentProvider {
 	protected Document getNewDocument() {
 		Document result = null;
 		try {
-			result = getDomImplementation().createDocument("", getRootElementName(), null); //$NON-NLS-1$
+			result = getDomImplementation().createDocument("http://www.w3.org/XML/1998/namespace", getRootElementName(), null); //$NON-NLS-1$
 			NodeList children = result.getChildNodes();
 			for (int i = 0; i < children.getLength(); i++) {
 				result.removeChild(children.item(i));
 			}
 			// we're going through this effort to avoid a NS element
-			Element settings = result.createElement(getRootElementName());
+			Element settings = result.createElementNS("http://www.w3.org/XML/1998/namespace", getRootElementName());
 			result.appendChild(settings);
 			return result;
 		}
