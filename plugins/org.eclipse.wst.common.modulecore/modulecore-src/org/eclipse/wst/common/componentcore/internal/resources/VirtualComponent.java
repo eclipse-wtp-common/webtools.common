@@ -140,6 +140,53 @@ public class VirtualComponent implements IVirtualComponent {
         }
 	}
 
+	public void setMetaProperties(List properties) {
+        StructureEdit core = null;
+        try {
+            core = StructureEdit.getStructureEditForWrite(getProject());
+            WorkbenchComponent component = core.findComponentByName(getName()); 
+            ComponentType cType = component.getComponentType();
+			if(cType == null) {
+				cType = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentType();
+				component.setComponentType(cType);
+			}            
+            if(cType != null) {
+                List propList = cType.getProperties();
+                if (properties != null && !properties.isEmpty()) {  
+                    for (int i = 0; i < properties.size(); i++) {
+                    	propList.add(properties.get(i));
+                    }
+                }
+            }
+        } finally {
+            if(core != null){
+            	core.saveIfNecessary(null);
+                core.dispose();
+            }
+        }
+	}	
+	
+	public void addMetaProperty(Property property) {
+        StructureEdit core = null;
+        try {
+            core = StructureEdit.getStructureEditForWrite(getProject());
+            WorkbenchComponent component = core.findComponentByName(getName()); 
+            ComponentType cType = component.getComponentType();
+			if(cType == null) {
+				cType = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentType();
+				component.setComponentType(cType);
+			}              
+            if(cType != null) {
+                List propList = cType.getProperties();
+                propList.add(property);
+            }
+        } finally {
+            if(core != null){
+            	core.saveIfNecessary(null);
+                core.dispose();
+            }
+        }
+	}	
 	public IPath[] getMetaResources() {
 		// TODO Auto-generated method stub
 		return null;

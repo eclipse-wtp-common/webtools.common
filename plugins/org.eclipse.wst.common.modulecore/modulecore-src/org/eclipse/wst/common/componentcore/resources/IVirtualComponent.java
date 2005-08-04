@@ -8,6 +8,7 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.componentcore.resources;
 
+import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.core.resources.IProject;
@@ -15,6 +16,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.wst.common.componentcore.internal.Property;
 
 /**
  * Represents a component as defined by the .wtpmodules file.
@@ -89,6 +91,21 @@ public interface IVirtualComponent {
 	 * @return A by-reference instance of the properties for this component.
 	 */
 	Properties getMetaProperties();
+	
+	/**
+	 * Adds a single property
+	 * @param property
+	 * 		A value whiich is name, value pair, see ComponentcoreFactory.eINSTANCE.createProperty()
+	 * 		
+	 */
+	void addMetaProperty(Property property);
+	
+	/**
+	 * Adds the properties provided as a list
+	 * @param properties
+	 * 			A list of properties
+	 */
+	void setMetaProperties(List properties);
 
 	/**
 	 * MetaResources provide a loose mechanism for components that would like to list off the

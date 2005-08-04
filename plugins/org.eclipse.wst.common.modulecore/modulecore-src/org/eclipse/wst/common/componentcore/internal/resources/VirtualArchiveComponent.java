@@ -11,6 +11,7 @@
 package org.eclipse.wst.common.componentcore.internal.resources;
 
 
+import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.core.resources.IProject;
@@ -21,6 +22,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.wst.common.componentcore.internal.Property;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
@@ -186,5 +188,12 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable{
 			return getProject().equals(otherComponent.getProject()) && getName().equals(otherComponent.getName());
 		}
 		return false;
+	}
+
+	public void addMetaProperty(Property property) {
+		
 	}	
+	public void setMetaProperties(List properties) {
+		
+	}
 }
