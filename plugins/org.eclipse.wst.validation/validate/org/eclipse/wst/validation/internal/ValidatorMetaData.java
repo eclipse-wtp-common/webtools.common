@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchContext;
+import org.eclipse.wst.validation.internal.operations.WorkbenchContext;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 import org.osgi.framework.Bundle;
@@ -169,8 +170,9 @@ public class ValidatorMetaData {
 		if (isAsync()) {
 			IWorkbenchContext helper = ValidationRegistryReader.createHelper(_helperClassElement, _helperClassName);
 			if (helper == null) {
-				setCannotLoad();
-				throw new InstantiationException(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_DISABLEH, new String[]{_helperClassName, getValidatorUniqueName()}));
+				helper = new WorkbenchContext();
+				//setCannotLoad();
+				//throw new InstantiationException(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_DISABLEH, new String[]{_helperClassName, getValidatorUniqueName()}));
 			}
 			helper.setProject(project);
 			return helper;
@@ -178,8 +180,9 @@ public class ValidatorMetaData {
 		if (_helper == null) {
 			_helper = ValidationRegistryReader.createHelper(_helperClassElement, _helperClassName);
 			if (_helper == null) {
-				setCannotLoad();
-				throw new InstantiationException(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_DISABLEH, new String[]{_helperClassName, getValidatorUniqueName()}));
+				_helper = new WorkbenchContext();
+				//setCannotLoad();
+				//throw new InstantiationException(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_DISABLEH, new String[]{_helperClassName, getValidatorUniqueName()}));
 			}
 			// Won't be using the element & name again, so clear them.
 			_helperClassElement = null;
