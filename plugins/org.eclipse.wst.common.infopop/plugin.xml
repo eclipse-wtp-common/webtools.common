@@ -5,11 +5,7 @@
 <!-- contributions for using the tool.                 -->
 <!-- ================================================= -->
 
-<plugin
-   id="org.eclipse.wst.common.infopop"
-   name="Common WST infopops"
-   version="0.7.0"
-   provider-name="Eclipse.org">
+<plugin>
 
 <extension point="org.eclipse.help.contexts">
        <contexts file="SnippetsContexts.xml" plugin ="org.eclipse.wst.common.snippets"/>
