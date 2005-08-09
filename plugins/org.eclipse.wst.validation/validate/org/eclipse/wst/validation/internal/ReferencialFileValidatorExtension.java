@@ -16,7 +16,6 @@
  */
 package org.eclipse.wst.validation.internal;
 
-import org.eclipse.core.internal.runtime.Assert;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.operations.ReferencialFileValidator;
@@ -56,7 +55,8 @@ public class ReferencialFileValidatorExtension {
 	}
 
 	public ReferencialFileValidatorExtension(IConfigurationElement element) {
-		Assert.isLegal(REF_FILE_VALIDATOR_EXTENSION.equals(element.getName()), "Extensions must be of the type \"" + REF_FILE_VALIDATOR_EXTENSION + "\"."); //$NON-NLS-1$ //$NON-NLS-2$
+		if(!REF_FILE_VALIDATOR_EXTENSION.equals(element.getName()))
+			throw new IllegalArgumentException("Extensions must be of the type \"" + REF_FILE_VALIDATOR_EXTENSION + "\"."); //$NON-NLS-1$ //$NON-NLS-2$
 		this.element = element;
 		init();
 	}
