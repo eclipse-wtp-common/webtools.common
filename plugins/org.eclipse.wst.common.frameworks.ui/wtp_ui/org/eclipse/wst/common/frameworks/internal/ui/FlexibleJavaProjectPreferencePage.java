@@ -28,7 +28,7 @@ public class FlexibleJavaProjectPreferencePage extends PreferencePage implements
 		composite.setLayout(rowLayout);
 
 		alloMultipleButton = new Button(composite, SWT.CHECK);
-		alloMultipleButton.setText("Allow Multiple modules per project");
+		alloMultipleButton.setText(WTPCommonUIResourceHandler.getString("MULTIPLE_MODULE_PREF_TEXT")); //$NON-NLS-1$
 		alloMultipleButton.setEnabled(true);
 		
 		boolean val = FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp();
