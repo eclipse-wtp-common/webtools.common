@@ -139,7 +139,7 @@ public class ValidationPlugin extends WTPPlugin {
 	}
 
 	/**
-	 * @see org.eclipse.core.runtime.Plugin#shutdown()
+	 * @see org.eclipse.core.runtime.Plugin#stop(BundleContext context)
 	 */
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
