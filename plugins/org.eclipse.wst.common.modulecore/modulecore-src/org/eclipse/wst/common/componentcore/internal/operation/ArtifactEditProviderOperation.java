@@ -66,7 +66,7 @@ public abstract class ArtifactEditProviderOperation extends AbstractDataModelOpe
         StructureEdit moduleCore = null;
         WorkbenchComponent module = null;
         try {
-            moduleCore = StructureEdit.getStructureEditForRead((IProject)model.getProperty(IArtifactEditOperationDataModelProperties.PROJECT_NAME));
+            moduleCore = StructureEdit.getStructureEditForRead(getTargetProject());
             module = moduleCore.findComponentByName(model.getStringProperty(IArtifactEditOperationDataModelProperties.COMPONENT_NAME));
         } finally {
             if (null != moduleCore) {
@@ -83,5 +83,23 @@ public abstract class ArtifactEditProviderOperation extends AbstractDataModelOpe
 	public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		return null;
 	}
+
+	public void dispose() {
+		if (artifactEdit!=null)
+			artifactEdit.dispose();
+		super.dispose();
+		
+	}
+
+	public final IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+		try {
+			initialize(monitor);
+			return doExecute(monitor, info);
+		} finally {
+			dispose();
+		}
+	}
+	
+	public abstract IStatus doExecute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException;
 
 }
