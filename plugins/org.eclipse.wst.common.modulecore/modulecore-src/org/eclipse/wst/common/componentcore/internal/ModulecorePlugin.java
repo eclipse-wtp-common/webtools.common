@@ -3,6 +3,7 @@ package org.eclipse.wst.common.componentcore.internal;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
@@ -42,6 +43,7 @@ public class ModulecorePlugin extends Plugin {
 		manager.registerAdapters(new ModuleCoreEclipseAdapterFactory(), ModuleStructuralModel.class);
 		manager.registerAdapters(new ArtifactEditAdapterFactory(), ArtifactEditModel.class);
 		manager.registerAdapters(new ArtifactEditAdapterFactory(), ArtifactEdit.class);
+		manager.registerAdapters(new ModuleCoreEclipseAdapterFactory(), IResource.class);
 		
 		PlatformURLModuleConnection.startup();
 		WTPModulesInit.init();
