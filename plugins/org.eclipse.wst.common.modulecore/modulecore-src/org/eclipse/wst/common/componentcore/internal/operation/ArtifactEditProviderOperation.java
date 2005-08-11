@@ -13,6 +13,8 @@ import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.internal.util.ArtifactEditRegistryReader;
+import org.eclipse.wst.common.componentcore.internal.util.IArtifactEditFactory;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
@@ -57,7 +59,10 @@ public abstract class ArtifactEditProviderOperation extends AbstractDataModelOpe
 
 	private ArtifactEdit getArtifactEditForModule(WorkbenchComponent module) {
 		ComponentHandle handle = ComponentHandle.create(StructureEdit.getContainingProject(module),module.getName());
-		return ArtifactEdit.getArtifactEditForWrite(handle);
+		IVirtualComponent comp = handle.createComponent();
+		ArtifactEditRegistryReader reader = ArtifactEditRegistryReader.instance();
+		IArtifactEditFactory factory = reader.getArtifactEdit(comp.getComponentTypeId());
+		return factory.createArtifactEditForWrite(comp);
 	}
 
 	/**
