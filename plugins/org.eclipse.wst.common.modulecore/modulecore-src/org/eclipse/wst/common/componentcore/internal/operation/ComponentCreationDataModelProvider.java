@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.operation;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
@@ -30,8 +29,6 @@ import org.eclipse.wst.common.frameworks.datamodel.properties.IFlexibleProjectCr
 import org.eclipse.wst.common.frameworks.internal.FlexibleJavaProjectPreferenceUtil;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
-import org.eclipse.wst.server.core.IModuleType;
-import org.eclipse.wst.server.core.IRuntimeType;
 
 /**
  * This dataModel is a common super class used for creation of WTP Components.
@@ -156,28 +153,28 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 		return OK_STATUS;
 	}
 	
-	protected static String[] getServerVersions(String moduleID, IRuntimeType type) {
-		List list = new ArrayList();
-		if (type == null)
-			return null;
-		IModuleType[] moduleTypes = type.getModuleTypes();
-		if (moduleTypes != null) {
-			int size = moduleTypes.length;
-			for (int i = 0; i < size; i++) {
-				IModuleType moduleType = moduleTypes[i];
-				if (matches(moduleType.getId(), moduleID)) {
-					list.add(moduleType.getVersion());
-				}
-
-			}
-		}
-		String[] versions = null;
-		if (!list.isEmpty()) {
-			versions = new String[list.size()];
-			list.toArray(versions);
-		}
-		return versions;
-	}
+//	protected static String[] getServerVersions(String moduleID, IRuntimeType type) {
+//		List list = new ArrayList();
+//		if (type == null)
+//			return null;
+//		IModuleType[] moduleTypes = type.getModuleTypes();
+//		if (moduleTypes != null) {
+//			int size = moduleTypes.length;
+//			for (int i = 0; i < size; i++) {
+//				IModuleType moduleType = moduleTypes[i];
+//				if (matches(moduleType.getId(), moduleID)) {
+//					list.add(moduleType.getVersion());
+//				}
+//
+//			}
+//		}
+//		String[] versions = null;
+//		if (!list.isEmpty()) {
+//			versions = new String[list.size()];
+//			list.toArray(versions);
+//		}
+//		return versions;
+//	}
 
 	protected static boolean matches(String serverTypeID, String j2eeModuleID) {
 
