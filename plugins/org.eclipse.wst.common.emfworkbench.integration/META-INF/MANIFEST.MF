@@ -8,6 +8,7 @@ Bundle-Activator: org.eclipse.wst.common.internal.emfworkbench.integration.EMFWo
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
 Export-Package: .,
+ org.eclipse.wst.common.emfworkbench.internal.emf2xml.sse,
  org.eclipse.wst.common.internal.emfworkbench,
  org.eclipse.wst.common.internal.emfworkbench.edit,
  org.eclipse.wst.common.internal.emfworkbench.integration,
@@ -23,5 +24,7 @@ Require-Bundle: org.eclipse.wst.common.frameworks,
  org.eclipse.emf.codegen,
  org.eclipse.emf.codegen.ecore,
  org.eclipse.xsd,
- org.eclipse.emf.importer.java
+ org.eclipse.emf.importer.java,
+ org.eclipse.wst.xml.core,
+ org.eclipse.wst.sse.core
 Eclipse-AutoStart: true

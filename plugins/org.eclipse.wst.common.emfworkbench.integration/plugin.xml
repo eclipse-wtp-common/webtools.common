@@ -17,9 +17,15 @@
    <extension 
        point="org.eclipse.jem.util.uiContextSensitiveClass">
        <uiContextSensitiveClass
+            context="UI"
+            key="rendererFactory"
+            className="org.eclipse.wst.common.emfworkbench.internal.emf2xml.sse.EMF2DOMSSERendererFactory">
+       </uiContextSensitiveClass>
+       <uiContextSensitiveClass
           key="ValidateEditContext"
           className="org.eclipse.wst.common.internal.emfworkbench.validateedit.ValidateEditHeadlessContext"
-          context="Headless"/>
+          context="Headless">
+      </uiContextSensitiveClass>
   </extension>
   <extension
          id="Generator"
