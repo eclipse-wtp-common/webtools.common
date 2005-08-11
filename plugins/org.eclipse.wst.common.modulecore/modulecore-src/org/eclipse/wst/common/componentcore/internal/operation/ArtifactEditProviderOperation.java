@@ -5,6 +5,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
@@ -85,8 +86,11 @@ public abstract class ArtifactEditProviderOperation extends AbstractDataModelOpe
 	}
 
 	public void dispose() {
-		if (artifactEdit!=null)
+		if (artifactEdit!=null) {
+			artifactEdit.saveIfNecessary(new NullProgressMonitor());
 			artifactEdit.dispose();
+		}
+			
 		super.dispose();
 		
 	}
