@@ -24,10 +24,11 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 
 /**
- * replace with {@link org.eclipse.wst.common.frameworks.datamodel.IDataModel} and {@link org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider}
- * WTPOperationDataModel is an essential piece of both the WTP Operation and WTP Wizard frameworks.
- * WTPOPerationDataModels (DataModels) act as smart property containers used to pass various
- * properties between components. DataModels are smart property containers because they can:
+ * replace with {@link org.eclipse.wst.common.frameworks.datamodel.IDataModel} and
+ * {@link org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider} WTPOperationDataModel is
+ * an essential piece of both the WTP Operation and WTP Wizard frameworks. WTPOPerationDataModels
+ * (DataModels) act as smart property containers used to pass various properties between components.
+ * DataModels are smart property containers because they can:
  * <UL>
  * <LI>Compute default values for their properties thus saving clients from needing to populate (or
  * understand) all available properties.</LI>
@@ -123,7 +124,7 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	private static final String PROPERTY_NOT_LOCATED_ = WTPResourceHandler.getString("20"); //$NON-NLS-1$
 	private static final String NESTED_MODEL_NOT_LOCATED = WTPResourceHandler.getString("21"); //$NON-NLS-1$
 	private static final String NESTED_MODEL_DUPLICATE = WTPResourceHandler.getString("33"); //$NON-NLS-1$
-	
+
 	private static final WTPPropertyDescriptor[] NO_DESCRIPTORS = new WTPPropertyDescriptor[0];
 
 	private Set validProperties = new HashSet();
@@ -421,8 +422,8 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 		checkValidPropertyName(propertyName);
 		if (isBaseProperty(propertyName)) {
 			WTPPropertyDescriptor[] descriptors = doGetValidPropertyDescriptors(propertyName);
-			if(null == descriptors){
-				descriptors = NO_DESCRIPTORS; 
+			if (null == descriptors) {
+				descriptors = NO_DESCRIPTORS;
 			}
 			return descriptors;
 		} else if (nestedModels != null) {
@@ -1144,5 +1145,9 @@ public abstract class WTPOperationDataModel implements WTPOperationDataModelList
 	 */
 	public IProject getTargetProject() {
 		return null;
+	}
+
+	public Set getValidProperties() {
+		return Collections.unmodifiableSet(validProperties);
 	}
 }
