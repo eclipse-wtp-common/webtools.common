@@ -10,6 +10,11 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.operations.tests;
 
+import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPDataModelBridgeProvider;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
+
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
@@ -293,6 +298,23 @@ public class NestingTest extends TestCase {
 		assertEquals("ccc", a.getProperty(C.P));
 		assertEquals("ccc", b.getProperty(C.P));
 		assertEquals("ccc", c.getProperty(C.P));
+	}
+	
+	public void testNestingOlderUnderNew() throws Exception{
+		IDataModel aDM = DataModelFactory.createDataModel(new org.eclipse.wst.common.frameworks.datamodel.tests.A());
+		IDataModel bDM = DataModelFactory.createDataModel(new WTPDataModelBridgeProvider(){
+			protected WTPOperationDataModel initWTPDataModel() {
+				B b = new B();
+				b.addNestedModel("c", new C());
+				return b;
+			}
+		});
+		aDM.addNestedModel("b", bDM);
+		aDM.setProperty(org.eclipse.wst.common.frameworks.datamodel.tests.A.P, "aaa");
+		aDM.setProperty(B.P, "bbb");
+		aDM.setProperty(C.P, "ccc");
+		
+		
 	}
 
 

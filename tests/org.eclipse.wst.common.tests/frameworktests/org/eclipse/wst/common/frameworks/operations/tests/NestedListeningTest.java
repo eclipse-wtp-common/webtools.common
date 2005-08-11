@@ -20,9 +20,9 @@ import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataMod
 public class NestedListeningTest extends TestCase {
 
 	public void testListeners1() {
-		TestListener aL = new TestListener();
-		TestListener bL = new TestListener();
-		TestListener cL = new TestListener();
+		WTPTestListener aL = new WTPTestListener();
+		WTPTestListener bL = new WTPTestListener();
+		WTPTestListener cL = new WTPTestListener();
 
 		A a = new A();
 		B b = new B();

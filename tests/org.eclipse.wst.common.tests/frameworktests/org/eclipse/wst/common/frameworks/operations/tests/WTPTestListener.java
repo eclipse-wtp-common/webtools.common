@@ -13,10 +13,11 @@ package org.eclipse.wst.common.frameworks.operations.tests;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModelListener;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModelEvent;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModelListener;
 
-public class TestListener implements IDataModelListener {
+public class WTPTestListener implements WTPOperationDataModelListener {
+
 	private ArrayList events = new ArrayList();
 
 	public void clearEvents() {
@@ -27,8 +28,7 @@ public class TestListener implements IDataModelListener {
 		return events;
 	}
 
-	public void propertyChanged(DataModelEvent event) {
+	public void propertyChanged(WTPOperationDataModelEvent event) {
 		events.add(event);
 	}
-
 }

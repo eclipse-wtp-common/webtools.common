@@ -12,8 +12,14 @@ package org.eclipse.wst.common.frameworks.operations.tests;
 
 import java.util.List;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
 
+import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
+import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
+import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.eclipse.wst.common.frameworks.internal.operations.WTPDataModelBridgeProvider;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
 import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModelEvent;
@@ -109,33 +115,53 @@ public class SimpleDataModelTest extends TestCase {
 		}
 	};
 
-	private DM dm;
+	private class DM_Provider extends WTPDataModelBridgeProvider {
+		protected WTPOperationDataModel initWTPDataModel() {
+			return wtpDM;
+		}
+	}
+
+	private DM wtpDM;
+	private IDataModel dm;
+	private WTPTestListener wtpDML;
 	private TestListener dmL;
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		dm = new DM();
+		wtpDM = new DM();
+		wtpDML = new WTPTestListener();
+		wtpDM.addListener(wtpDML);
+		dm = DataModelFactory.createDataModel(new DM_Provider());
 		dmL = new TestListener();
 		dm.addListener(dmL);
 	}
 
 	public void testPropertyDescriptors() {
-		WTPPropertyDescriptor[] descriptors = dm.getValidPropertyDescriptors(DM.INT_PROP2);
-		for (int i = 0; i < descriptors.length; i++) {
+		WTPPropertyDescriptor[] wtpDescriptors = wtpDM.getValidPropertyDescriptors(DM.INT_PROP2);
+		DataModelPropertyDescriptor[] descriptors = dm.getValidPropertyDescriptors(DM.INT_PROP2);
+		for (int i = 0; i < wtpDescriptors.length; i++) {
 			int value = i + 1;
+			assertEquals(value, ((Integer) wtpDescriptors[i].getPropertyValue()).intValue());
+			assertEquals("" + value, wtpDescriptors[i].getPropertyDescription());
 			assertEquals(value, ((Integer) descriptors[i].getPropertyValue()).intValue());
 			assertEquals("" + value, descriptors[i].getPropertyDescription());
 		}
+		wtpDescriptors = wtpDM.getValidPropertyDescriptors(DM.INT_PROP3);
 		descriptors = dm.getValidPropertyDescriptors(DM.INT_PROP3);
 		String[] descriptions = new String[]{"one", "two", "three"};
-		for (int i = 0; i < descriptors.length; i++) {
+		for (int i = 0; i < wtpDescriptors.length; i++) {
 			int value = i + 1;
+			assertEquals(value, ((Integer) wtpDescriptors[i].getPropertyValue()).intValue());
+			assertEquals(descriptions[i], wtpDescriptors[i].getPropertyDescription());
 			assertEquals(value, ((Integer) descriptors[i].getPropertyValue()).intValue());
 			assertEquals(descriptions[i], descriptors[i].getPropertyDescription());
 		}
+		wtpDescriptors = wtpDM.getValidPropertyDescriptors(DM.INT_PROP4);
 		descriptors = dm.getValidPropertyDescriptors(DM.INT_PROP4);
-		for (int i = 0; i < descriptors.length; i++) {
+		for (int i = 0; i < wtpDescriptors.length; i++) {
 			int value = i + 1;
+			assertEquals(value, ((Integer) wtpDescriptors[i].getPropertyValue()).intValue());
+			assertEquals(descriptions[i], wtpDescriptors[i].getPropertyDescription());
 			assertEquals(value, ((Integer) descriptors[i].getPropertyValue()).intValue());
 			assertEquals(descriptions[i], descriptors[i].getPropertyDescription());
 		}
@@ -143,136 +169,199 @@ public class SimpleDataModelTest extends TestCase {
 
 
 	public void testDefaults() {
+		assertEquals(true, wtpDM.getBooleanProperty(DM.BOOLEAN_PROP));
 		assertEquals(true, dm.getBooleanProperty(DM.BOOLEAN_PROP));
+		assertEquals(true, ((Boolean) wtpDM.getProperty(DM.BOOLEAN_PROP)).booleanValue());
 		assertEquals(true, ((Boolean) dm.getProperty(DM.BOOLEAN_PROP)).booleanValue());
+		assertEquals(10, wtpDM.getIntProperty(DM.INT_PROP));
 		assertEquals(10, dm.getIntProperty(DM.INT_PROP));
+		assertEquals(10, ((Integer) wtpDM.getProperty(DM.INT_PROP)).intValue());
 		assertEquals(10, ((Integer) dm.getProperty(DM.INT_PROP)).intValue());
+		assertEquals("foo10true", (String) wtpDM.getProperty(DM.STRING_PROP));
 		assertEquals("foo10true", (String) dm.getProperty(DM.STRING_PROP));
+		assertEquals("foo10true", wtpDM.getStringProperty(DM.STRING_PROP));
 		assertEquals("foo10true", dm.getStringProperty(DM.STRING_PROP));
 	}
 
-	public void testFiringEvents() {
-		dmL.clearEvents();
-		dm.notifyDefaultChange(DM.INT_PROP2);
-		List events = dmL.getEvents();
-		assertEquals(1, events.size());
-		WTPOperationDataModelEvent event = (WTPOperationDataModelEvent) events.get(0);
-		assertEquals(DM.INT_PROP2, event.getPropertyName());
-		assertEquals(WTPOperationDataModelEvent.PROPERTY_CHG, event.getFlag());
-
-		dmL.clearEvents();
-		dm.notifyValidValuesChange(DM.INT_PROP2);
-		events = dmL.getEvents();
-		assertEquals(1, events.size());
-		event = (WTPOperationDataModelEvent) events.get(0);
-		assertEquals(DM.INT_PROP2, event.getPropertyName());
-		assertEquals(WTPOperationDataModelEvent.VALID_VALUES_CHG, event.getFlag());
+	private Object verifyEventOccurred(String propertyName, int type, Object value, List eventList) {
+		for (int i = 0; i < eventList.size(); i++) {
+			Object obj = eventList.get(i);
+			if (obj instanceof WTPOperationDataModelEvent) {
+				WTPOperationDataModelEvent eventWTP = (WTPOperationDataModelEvent) obj;
+				if (eventWTP.getPropertyName().equals(propertyName) && eventWTP.getFlag() == (type)) {
+					if (null == value || value.equals(eventWTP.getProperty())) {
+						eventList.remove(obj);
+						return obj;
+					}
+				}
+			} else {
+				DataModelEvent event = (DataModelEvent) obj;
+				if (event.getPropertyName().equals(propertyName) && event.getFlag() == (type)) {
+					if (null == value || value.equals(event.getProperty())) {
+						eventList.remove(obj);
+						return obj;
+					}
+				}
+			}
+		}
+		Assert.fail("Event not found");
+		return null;
 	}
 
-	public void testSimpleSetEvents() {
+	public void testFiringEvents() {
+		wtpDML.clearEvents();
 		dmL.clearEvents();
-		dm.setIntProperty(DM.INT_PROP2, 100);
+		wtpDM.notifyDefaultChange(DM.INT_PROP2);
+		List eventsWTP = wtpDML.getEvents();
 		List events = dmL.getEvents();
-		assertEquals(1, events.size());
-		WTPOperationDataModelEvent event = (WTPOperationDataModelEvent) events.get(0);
-		assertEquals(DM.INT_PROP2, event.getPropertyName());
-		assertEquals(WTPOperationDataModelEvent.PROPERTY_CHG, event.getFlag());
-		assertEquals(100, dm.getIntProperty(DM.INT_PROP2));
+		verifyEventOccurred(DM.INT_PROP2, WTPOperationDataModelEvent.PROPERTY_CHG, null, eventsWTP);
+		verifyEventOccurred(DM.INT_PROP2, DataModelEvent.VALUE_CHG, null, events);
 
+		wtpDML.clearEvents();
 		dmL.clearEvents();
-		dm.setIntProperty(DM.INT_PROP2, 100);
+		wtpDM.notifyValidValuesChange(DM.INT_PROP2);
+		eventsWTP = wtpDML.getEvents();
 		events = dmL.getEvents();
-		assertEquals(0, events.size());
-
-		dmL.clearEvents();
-		dm.setIntProperty(DM.INT_PROP2, 101);
-		events = dmL.getEvents();
+		assertEquals(1, eventsWTP.size());
 		assertEquals(1, events.size());
-		event = (WTPOperationDataModelEvent) events.get(0);
-		assertEquals(DM.INT_PROP2, event.getPropertyName());
+
+		verifyEventOccurred(DM.INT_PROP2, WTPOperationDataModelEvent.VALID_VALUES_CHG, null, eventsWTP);
+		verifyEventOccurred(DM.INT_PROP2, DataModelEvent.VALID_VALUES_CHG, null, events);
+	}
+
+	public void testSimpleSetEvents() throws Exception {
+		for (int i = 0; i < 2; i++) {
+			if (i != 0) {
+				setUp();
+			}
+
+			wtpDML.clearEvents();
+			dmL.clearEvents();
+			if (i == 0) {
+				wtpDM.setIntProperty(DM.INT_PROP2, 100);
+			} else {
+				dm.setIntProperty(DM.INT_PROP2, 100);
+			}
+			List eventsWTP = wtpDML.getEvents();
+			List events = dmL.getEvents();
+
+			verifyEventOccurred(DM.INT_PROP2, WTPOperationDataModelEvent.PROPERTY_CHG, new Integer(100), eventsWTP);
+			verifyEventOccurred(DM.INT_PROP2, DataModelEvent.VALUE_CHG, new Integer(100), events);
+
+			wtpDML.clearEvents();
+			dmL.clearEvents();
+
+			if (i == 0) {
+				wtpDM.setIntProperty(DM.INT_PROP2, 100);
+			} else {
+				dm.setIntProperty(DM.INT_PROP2, 100);
+			}
+			eventsWTP = wtpDML.getEvents();
+			events = dmL.getEvents();
+			assertEquals(0, eventsWTP.size());
+			assertEquals(0, events.size());
+
+			wtpDML.clearEvents();
+			dmL.clearEvents();
+			if (i == 0) {
+				wtpDM.setIntProperty(DM.INT_PROP2, 101);
+			} else {
+				dm.setIntProperty(DM.INT_PROP2, 101);
+			}
+			eventsWTP = wtpDML.getEvents();
+			events = dmL.getEvents();
+			assertEquals(1, eventsWTP.size());
+
+			verifyEventOccurred(DM.INT_PROP2, WTPOperationDataModelEvent.PROPERTY_CHG, new Integer(101), eventsWTP);
+			verifyEventOccurred(DM.INT_PROP2, DataModelEvent.VALUE_CHG, new Integer(101), events);
+		}
 	}
 
 	public void testComplexEvents() {
-		dmL.clearEvents();
-		dm.setIntProperty(DM.INT_PROP, 11);
+		wtpDML.clearEvents();
+		wtpDM.setIntProperty(DM.INT_PROP, 11);
+		List eventsWTP = wtpDML.getEvents();
 		List events = dmL.getEvents();
-		assertEquals(4, events.size());
 
-		WTPOperationDataModelEvent event = (WTPOperationDataModelEvent) events.get(0);
-		assertEquals(DM.INT_PROP2, event.getPropertyName());
-		assertEquals(WTPOperationDataModelEvent.PROPERTY_CHG, event.getFlag());
-		assertEquals(11, ((Integer) dm.getProperty(DM.INT_PROP2)).intValue());
+		verifyEventOccurred(DM.INT_PROP2, WTPOperationDataModelEvent.PROPERTY_CHG, new Integer(11), eventsWTP);
+		verifyEventOccurred(DM.INT_PROP2, DataModelEvent.VALUE_CHG, new Integer(11), events);
 
-		event = (WTPOperationDataModelEvent) events.get(1);
-		assertEquals(DM.INT_PROP2, event.getPropertyName());
-		assertEquals(WTPOperationDataModelEvent.VALID_VALUES_CHG, event.getFlag());
-		WTPPropertyDescriptor[] descriptors = event.getValidPropertyDescriptors();
-		WTPPropertyDescriptor[] descriptors2 = dm.getValidPropertyDescriptors(DM.INT_PROP2);
+		WTPOperationDataModelEvent eventWTP = (WTPOperationDataModelEvent) verifyEventOccurred(DM.INT_PROP2, WTPOperationDataModelEvent.VALID_VALUES_CHG, null, eventsWTP);
+		DataModelEvent event = (DataModelEvent) verifyEventOccurred(DM.INT_PROP2, DataModelEvent.VALID_VALUES_CHG, null, events);
+
+		WTPPropertyDescriptor[] descriptorsWTP = eventWTP.getValidPropertyDescriptors();
+		DataModelPropertyDescriptor[] descriptors = event.getValidPropertyDescriptors();
+		WTPPropertyDescriptor[] descriptorsWTP2 = wtpDM.getValidPropertyDescriptors(DM.INT_PROP2);
+		DataModelPropertyDescriptor[] descriptors2 = dm.getValidPropertyDescriptors(DM.INT_PROP2);
+		assertEquals(11, descriptorsWTP.length);
 		assertEquals(11, descriptors.length);
+		assertEquals(11, descriptorsWTP2.length);
 		assertEquals(11, descriptors2.length);
 
-		event = (WTPOperationDataModelEvent) events.get(2);
-		assertEquals(DM.STRING_PROP, event.getPropertyName());
-		assertEquals(WTPOperationDataModelEvent.PROPERTY_CHG, event.getFlag());
-		assertEquals("foo11true", event.getProperty());
+		verifyEventOccurred(DM.STRING_PROP, WTPOperationDataModelEvent.PROPERTY_CHG, "foo11true", eventsWTP);
+		verifyEventOccurred(DM.STRING_PROP, DataModelEvent.VALUE_CHG, "foo11true", events);
 
-		event = (WTPOperationDataModelEvent) events.get(3);
-		assertEquals(DM.INT_PROP, event.getPropertyName());
-		assertEquals(WTPOperationDataModelEvent.PROPERTY_CHG, event.getFlag());
-		assertEquals(11, ((Integer) dm.getProperty(DM.INT_PROP)).intValue());
+		verifyEventOccurred(DM.INT_PROP, WTPOperationDataModelEvent.PROPERTY_CHG, new Integer(11), eventsWTP);
+		verifyEventOccurred(DM.INT_PROP, DataModelEvent.VALUE_CHG, new Integer(11), events);
 
+		wtpDML.clearEvents();
 		dmL.clearEvents();
-		dm.setBooleanProperty(DM.BOOLEAN_PROP, false);
+		wtpDM.setBooleanProperty(DM.BOOLEAN_PROP, false);
+		eventsWTP = wtpDML.getEvents();
 		events = dmL.getEvents();
-		assertEquals(3, events.size());
-		event = (WTPOperationDataModelEvent) events.get(0);
-		assertEquals(DM.BOOLEAN_PROP2, event.getPropertyName());
-		assertEquals(WTPOperationDataModelEvent.ENABLE_CHG, event.getFlag());
-		assertFalse(dm.isEnabled(DM.BOOLEAN_PROP2).booleanValue());
 
-		event = (WTPOperationDataModelEvent) events.get(1);
-		assertEquals(DM.STRING_PROP, event.getPropertyName());
-		assertEquals(WTPOperationDataModelEvent.PROPERTY_CHG, event.getFlag());
-		assertEquals("foo11false", event.getProperty());
+		verifyEventOccurred(DM.BOOLEAN_PROP2, WTPOperationDataModelEvent.ENABLE_CHG, null, eventsWTP);
+		verifyEventOccurred(DM.BOOLEAN_PROP2, DataModelEvent.ENABLE_CHG, null, events);
+		assertFalse(wtpDM.isEnabled(DM.BOOLEAN_PROP2).booleanValue());
+		assertFalse(dm.isPropertyEnabled(DM.BOOLEAN_PROP2));
 
-		event = (WTPOperationDataModelEvent) events.get(2);
-		assertEquals(DM.BOOLEAN_PROP, event.getPropertyName());
-		assertEquals(WTPOperationDataModelEvent.PROPERTY_CHG, event.getFlag());
-		assertEquals(false, dm.getBooleanProperty(DM.BOOLEAN_PROP));
 
-		dm.setProperty(DM.STRING_PROP, "bar");
+		verifyEventOccurred(DM.STRING_PROP, WTPOperationDataModelEvent.PROPERTY_CHG, "foo11false", eventsWTP);
+		verifyEventOccurred(DM.STRING_PROP, DataModelEvent.VALUE_CHG, "foo11false", events);
+
+		verifyEventOccurred(DM.BOOLEAN_PROP, WTPOperationDataModelEvent.PROPERTY_CHG, new Boolean(false), eventsWTP);
+		verifyEventOccurred(DM.BOOLEAN_PROP, DataModelEvent.VALUE_CHG, new Boolean(false), events);
+
+
+		wtpDM.setProperty(DM.STRING_PROP, "bar");
+		assertEquals("bar", wtpDM.getStringProperty(DM.STRING_PROP));
 		assertEquals("bar", dm.getStringProperty(DM.STRING_PROP));
+
+		wtpDML.clearEvents();
 		dmL.clearEvents();
-		dm.setBooleanProperty(DM.BOOLEAN_PROP, true);
+		wtpDM.setBooleanProperty(DM.BOOLEAN_PROP, true);
+		eventsWTP = wtpDML.getEvents();
 		events = dmL.getEvents();
-		assertEquals(2, events.size());
-		event = (WTPOperationDataModelEvent) events.get(0);
-		assertEquals(DM.BOOLEAN_PROP2, event.getPropertyName());
-		event = (WTPOperationDataModelEvent) events.get(1);
-		assertEquals(DM.BOOLEAN_PROP, event.getPropertyName());
 
+		verifyEventOccurred(DM.BOOLEAN_PROP, WTPOperationDataModelEvent.PROPERTY_CHG, null, eventsWTP);
+		verifyEventOccurred(DM.BOOLEAN_PROP, DataModelEvent.VALUE_CHG, null, events);
+
+		verifyEventOccurred(DM.BOOLEAN_PROP2, WTPOperationDataModelEvent.ENABLE_CHG, null, eventsWTP);
+		verifyEventOccurred(DM.BOOLEAN_PROP2, DataModelEvent.ENABLE_CHG, null, events);
+
+		assertEquals("bar", wtpDM.getStringProperty(DM.STRING_PROP));
 		assertEquals("bar", dm.getStringProperty(DM.STRING_PROP));
-		dm.setProperty(DM.STRING_PROP, null);
+
+		wtpDM.setProperty(DM.STRING_PROP, null);
+		assertEquals("foo11true", wtpDM.getStringProperty(DM.STRING_PROP));
 		assertEquals("foo11true", dm.getStringProperty(DM.STRING_PROP));
+
+		wtpDML.clearEvents();
 		dmL.clearEvents();
-		dm.setBooleanProperty(DM.BOOLEAN_PROP, false);
+		wtpDM.setBooleanProperty(DM.BOOLEAN_PROP, false);
+		eventsWTP = wtpDML.getEvents();
 		events = dmL.getEvents();
-		assertEquals(3, events.size());
-		event = (WTPOperationDataModelEvent) events.get(0);
-		assertEquals(DM.BOOLEAN_PROP2, event.getPropertyName());
-		assertEquals(WTPOperationDataModelEvent.ENABLE_CHG, event.getFlag());
-		assertFalse(dm.isEnabled(DM.BOOLEAN_PROP2).booleanValue());
 
-		event = (WTPOperationDataModelEvent) events.get(1);
-		assertEquals(DM.STRING_PROP, event.getPropertyName());
-		assertEquals(WTPOperationDataModelEvent.PROPERTY_CHG, event.getFlag());
-		assertEquals("foo11false", event.getProperty());
+		verifyEventOccurred(DM.BOOLEAN_PROP2, WTPOperationDataModelEvent.ENABLE_CHG, null, eventsWTP);
+		verifyEventOccurred(DM.BOOLEAN_PROP2, DataModelEvent.ENABLE_CHG, null, events);
+		assertFalse(wtpDM.isEnabled(DM.BOOLEAN_PROP2).booleanValue());
+		assertFalse(dm.isPropertyEnabled(DM.BOOLEAN_PROP2));
 
-		event = (WTPOperationDataModelEvent) events.get(2);
-		assertEquals(DM.BOOLEAN_PROP, event.getPropertyName());
-		assertEquals(WTPOperationDataModelEvent.PROPERTY_CHG, event.getFlag());
-		assertEquals(false, dm.getBooleanProperty(DM.BOOLEAN_PROP));
+		verifyEventOccurred(DM.STRING_PROP, WTPOperationDataModelEvent.PROPERTY_CHG, "foo11false", eventsWTP);
+		verifyEventOccurred(DM.STRING_PROP, DataModelEvent.VALUE_CHG, "foo11false", events);
 
+		verifyEventOccurred(DM.BOOLEAN_PROP, WTPOperationDataModelEvent.PROPERTY_CHG, new Boolean(false), eventsWTP);
+		verifyEventOccurred(DM.BOOLEAN_PROP, DataModelEvent.VALUE_CHG, new Boolean(false), events);
 
 	}
 
