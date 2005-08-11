@@ -152,6 +152,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 			if (aProject.isAccessible())
 				return (ModuleCoreNature) aProject.getNature(IModuleConstants.MODULE_NATURE_ID);
 		} catch (CoreException e) {
+			//Ignore
 		}
 		return null;
 	}
@@ -178,7 +179,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 			IJobManager manager = Platform.getJobManager();
 			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();	
 			if (aMonitor != null)
-				aMonitor.beginTask("Add ModuleCore Nature", 5);
+				aMonitor.beginTask("Add ModuleCore Nature", 5); //$NON-NLS-1$
 			manager.beginRule(root, aMonitor);
 			try {
 				IProjectDescription description = aProject.getDescription();
@@ -438,6 +439,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	 * @see org.eclipse.jem.util.emf.workbench.IEMFContextContributor#secondaryContributeToContext(org.eclipse.jem.util.emf.workbench.EMFWorkbenchContextBase)
 	 */
 	public void secondaryContributeToContext(EMFWorkbenchContextBase aNature) {
+		//Default
 	}
 
 	/**
@@ -451,7 +453,6 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		super.configure();
 		addDeployableProjectBuilder();
 		addDependencyResolver();
-		addDependencyGraphBuilder();
 	}
 
 	protected String getPluginID() {
@@ -481,29 +482,6 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		}
 	}
 	
-	private void addDependencyGraphBuilder() throws CoreException {
-		IProjectDescription description = project.getDescription();
-		ICommand[] builderCommands = description.getBuildSpec();
-		boolean previouslyAdded = false;
-
-		for (int i = 0; i < builderCommands.length; i++) {
-			if (builderCommands[i].getBuilderName().equals(DEPENDENCY_GRAPH_BUILDER_ID))
-				// builder already added no need to add again
-				previouslyAdded = true;
-			break;
-		}
-		if (!previouslyAdded) {
-			// builder not found, must be added
-			ICommand command = description.newCommand();
-			command.setBuilderName(DEPENDENCY_GRAPH_BUILDER_ID);
-			ICommand[] updatedBuilderCommands = new ICommand[builderCommands.length + 1];
-			System.arraycopy(builderCommands, 0, updatedBuilderCommands, 0, builderCommands.length);
-			updatedBuilderCommands[updatedBuilderCommands.length-1] = command;
-			description.setBuildSpec(updatedBuilderCommands);
-			project.setDescription(description, null);
-		}
-	}
-
 	private void addDependencyResolver() throws CoreException {
 		ProjectUtilities.addToBuildSpec(COMPONENT_STRUCTURAL_DEPENDENCY_RESOLVER_ID, getProject());
 	}
@@ -511,8 +489,8 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	private String getArtifactEditModelId(URI aModuleURI) { 
 		StructureEdit editUtility = null;
 		try {
-			IProject project = StructureEdit.getContainingProject(aModuleURI);
-			editUtility = StructureEdit.getStructureEditForRead(project);
+			IProject aProject = StructureEdit.getContainingProject(aModuleURI);
+			editUtility = StructureEdit.getStructureEditForRead(aProject);
 			WorkbenchComponent module = editUtility.findComponentByName(ModuleURIUtil.getDeployedName(aModuleURI));
 			return module.getComponentType().getComponentTypeId();
 		} catch (UnresolveableURIException uurie) {
