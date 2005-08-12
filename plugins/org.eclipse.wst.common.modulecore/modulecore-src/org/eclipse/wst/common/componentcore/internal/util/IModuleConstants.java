@@ -21,8 +21,8 @@ public interface IModuleConstants {
 	
     public static String COMPONENT_STRUCTURAL_BUILDER_ID = "org.eclipse.wst.common.modulecore.ComponentStructuralBuilder"; //$NON-NLS-1$
     public static String COMPONENT_STRUCTURAL_DEPENDENCY_RESOLVER_ID = "org.eclipse.wst.common.modulecore.ComponentStructuralBuilderDependencyResolver"; //$NON-NLS-1$
-     
-	public final static Path WTPMODULE_FILE_PATH = new Path(".wtpmodules"); //$NON-NLS-1$
+    public final static String WTPMODULE_FILE_NAME = ".wtpmodules"; //$NON-NLS-1$
+	public final static Path WTPMODULE_FILE_PATH = new Path(WTPMODULE_FILE_NAME); //$NON-NLS-1$
 	public final static String MODULE_PLUG_IN_ID = "org.eclipse.wst.common.modulecore"; //$NON-NLS-1$
 	public final static String MODULE_NATURE_ID = "org.eclipse.wst.common.modulecore.ModuleCoreNature"; //$NON-NLS-1$
 

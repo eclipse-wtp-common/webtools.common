@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.wst.common.componentcore.ComponentCore;
+import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.impl.PlatformURLModuleConnection;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
@@ -246,6 +247,7 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 		IVirtualResource[] virtualResources;
 		for (int i = 0; i < size; i++) { 
 			resourceToProcess = (Resource) theResources.get(i);
+			if (resourceToProcess.getURI().lastSegment().equals(ModuleCoreNature.WTPMODULE_FILE_NAME)) continue;
 			resourceResource = WorkbenchResourceHelper.getFile(resourceToProcess);
 			if (resourceResource != null) {
 				virtualResources = ComponentCore.createResources(resourceResource); 
