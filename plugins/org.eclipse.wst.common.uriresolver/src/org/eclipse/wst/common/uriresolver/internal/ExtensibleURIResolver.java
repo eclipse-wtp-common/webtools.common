@@ -31,11 +31,10 @@ import org.osgi.framework.Bundle;
 /**
  * @author csalter
  * 
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class ExtensibleURIResolver implements URIResolver
 {
+	private static final boolean logExceptions = false;
 
 	//protected IProject project;
 
@@ -148,8 +147,10 @@ public class ExtensibleURIResolver implements URIResolver
 					baseURI2 = java.net.URI.create(baseLocation);
 				}
 				catch (IllegalArgumentException e2) {
-					statusObj = new Status(IStatus.ERROR, bundle.getSymbolicName(), IStatus.ERROR, "Problem in creating java.net.URI in ExtensibleURIResolver:" + e2.getMessage(), e2); //$NON-NLS-1$
-					Platform.getLog(bundle).log(statusObj);
+					if(logExceptions) {
+					    statusObj = new Status(IStatus.ERROR, bundle.getSymbolicName(), IStatus.ERROR, "Problem in creating java.net.URI in ExtensibleURIResolver:" + e2.getMessage(), e2); //$NON-NLS-1$
+					    Platform.getLog(bundle).log(statusObj);
+					}
 				}
 				try {
 					if(baseURI2 != null) {
@@ -158,8 +159,10 @@ public class ExtensibleURIResolver implements URIResolver
 					}
 				}
 				catch (IllegalArgumentException e2) {
-					statusObj = new Status(IStatus.ERROR, bundle.getSymbolicName(), IStatus.ERROR, "Problem in resolving with java.net.URI in ExtensibleURIResolver:" + e2.getMessage(), null); //$NON-NLS-1$
-					Platform.getLog(bundle).log(statusObj);
+					if(logExceptions) {
+					    statusObj = new Status(IStatus.ERROR, bundle.getSymbolicName(), IStatus.ERROR, "Problem in resolving with java.net.URI in ExtensibleURIResolver:" + e2.getMessage(), null); //$NON-NLS-1$
+					    Platform.getLog(bundle).log(statusObj);
+					}
 				}
 			}
 		}
