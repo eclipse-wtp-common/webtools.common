@@ -26,5 +26,6 @@ Require-Bundle: org.eclipse.wst.common.frameworks,
  org.eclipse.xsd,
  org.eclipse.emf.importer.java,
  org.eclipse.wst.xml.core,
- org.eclipse.wst.sse.core
+ org.eclipse.wst.sse.core,
+ org.eclipse.wst.validation
 Eclipse-AutoStart: true

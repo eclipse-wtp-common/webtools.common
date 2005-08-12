@@ -6,7 +6,6 @@
    <extension-point id="OperationExtension" name="OperationExtension" schema="schema/OperationExtension.exsd"/>
    <extension-point id="functionGroup" name="Function Extension Group" schema="schema/functionGroup.exsd"/>
    <extension-point id="WTPActivityBridgeHelper" name="WTPActivityBridgeHelper" schema="schema/WTPActivityBridgeHelper.exsd"/>
-   <extension-point id="validationSelectionHandler" name="validationSelectionHandler" schema="schema/validationSelectionHandler.exsd"/>
    <extension-point id="DataModelProviderExtension" name="DataModelProvider" schema="schema/DataModelProviderExtension.exsd"/>
    
    <extension

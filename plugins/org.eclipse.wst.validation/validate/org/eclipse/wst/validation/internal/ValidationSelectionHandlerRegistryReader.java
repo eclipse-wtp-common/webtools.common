@@ -4,18 +4,18 @@
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package org.eclipse.wst.common.frameworks.internal;
+package org.eclipse.wst.validation.internal;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jem.util.RegistryReader;
-import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
+import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 /**
  * @author jlanuti
- *
+ *ValidationPlugin
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
@@ -32,7 +32,7 @@ public class ValidationSelectionHandlerRegistryReader extends RegistryReader {
 	 * Default constructor
 	 */
 	public ValidationSelectionHandlerRegistryReader() {
-		super(WTPCommonPlugin.PLUGIN_ID, VALIDATION_SELECTION_HANDLER);
+		super(ValidationPlugin.PLUGIN_ID, VALIDATION_SELECTION_HANDLER);
 	}
 	
 	public static ValidationSelectionHandlerRegistryReader getInstance() {

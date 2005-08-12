@@ -40,7 +40,7 @@
    <extension
         id="emfValidationHandler"
         name="emfValidationHandler"
-        point="org.eclipse.wst.common.frameworks.validationSelectionHandler">
+        point="org.eclipse.wst.validation.validationSelectionHandler">
       <validationSelectionHandler
         id="emfValidationHandler"
         handlerClass="org.eclipse.wst.common.internal.emfworkbench.EmfValidationHandler"

@@ -1,7 +1,7 @@
 /*
  * Created on Nov 23, 2004
  */
-package org.eclipse.wst.common.frameworks.internal;
+package org.eclipse.wst.validation.internal;
 
 import org.eclipse.core.resources.IResource;
 

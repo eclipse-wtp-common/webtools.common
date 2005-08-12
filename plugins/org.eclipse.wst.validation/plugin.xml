@@ -6,6 +6,7 @@
 <!-- Validation extension points -->
    <extension-point id="validator" name="Validator" schema="xsds/validatorExtSchema.exsd"/>
    <extension-point id="referencialFileValidator" name="ReferencialFileValidator" schema="xsds/referencialFileExtSchema.exsd"/>
+   <extension-point id="validationSelectionHandler" name="validationSelectionHandler" schema="xsds/validationSelectionHandler.exsd"/>   
    
 <!--============================-->
 <!-- Validation Contributions   -->
