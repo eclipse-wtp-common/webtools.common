@@ -283,7 +283,8 @@ public class StructureEdit implements IEditModelHandler {
 	 * @return A project-relative URI of the output folder for aWorkbenchModoule.
 	 */
 	public static IFolder getOutputContainerRoot(IVirtualComponent aComponent) {
-		
+		if (aComponent == null || aComponent.getProject()==null)
+			return null;
 		return aComponent.getProject().getFolder(new Path(DEPLOYABLES_ROOT + aComponent.getName()));
 	}
 
@@ -367,24 +368,27 @@ public class StructureEdit implements IEditModelHandler {
 		if( !isClassPathURI ){
 			try { 
 				targetProject = StructureEdit.getContainingProject(referencedComponent.getHandle());
-			} catch(UnresolveableURIException uurie) { } 
+			} catch(UnresolveableURIException uurie) {
+				//Ignore
+			} 
 			// if the project cannot be resolved, assume it's local - really it probably deleted 
 			
 			try {
 				targetComponentName = StructureEdit.getDeployedName(referencedComponent.getHandle());
 				targetComponent = ComponentCore.createComponent(targetProject, targetComponentName);  
 				
-			} catch (UnresolveableURIException e) { 
+			} catch (UnresolveableURIException e) {
+				//Ignore
 			}
 		}else{
-			String archiveType = "";
-			String archiveName = "";
+			String archiveType = ""; //$NON-NLS-1$
+			String archiveName = ""; //$NON-NLS-1$
 			try {
 				archiveType = ModuleURIUtil.getArchiveType(referencedComponent.getHandle());
 				archiveName = ModuleURIUtil.getArchiveName(referencedComponent.getHandle());
 				
 			} catch (UnresolveableURIException e) {
-
+				//Ignore
 			}
 			targetComponent = ComponentCore.createArchiveComponent(context.getProject(), archiveType + IPath.SEPARATOR + archiveName ); 
 		}

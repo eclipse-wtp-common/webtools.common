@@ -96,7 +96,7 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 			IVirtualComponent referencedComponent = vReference.getReferencedComponent();
 			IPath absoluteInputContainer = getAbsoluteInputContainer(referencedComponent);
 
-			if (absoluteOutputContainer == null) {
+			if (absoluteOutputContainer == null || referencedComponent==null) {
 				return OK_STATUS;
 			} else if (absoluteInputContainer == null || !referencedComponent.getProject().getFolder(absoluteInputContainer).exists()) {
 				if (vReference.getReferencedComponent().isBinary()) {
@@ -289,7 +289,10 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 	 * @return
 	 */
 	private IPath getAbsoluteInputContainer(IVirtualComponent virtualComponent) {
-		return StructureEdit.getOutputContainerRoot(virtualComponent).getFullPath();
+		IFolder folder = StructureEdit.getOutputContainerRoot(virtualComponent);
+		if (folder !=null)
+			return folder.getFullPath();
+		return null;
 	}
 
 	private String getZipFileName(IVirtualComponent vComponent) {
