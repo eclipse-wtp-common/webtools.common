@@ -13,10 +13,13 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.internal.Workbench;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelListener;
@@ -240,8 +243,14 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 
 	public void setVisible(boolean visible) {
 		super.setVisible(visible);
-		if (visible)
+		if (visible) {
+			Rectangle workbenchBounds = Workbench.getInstance().getActiveWorkbenchWindow().getShell().getBounds();
+			int newX = workbenchBounds.x + workbenchBounds.width/2;
+			int newY = workbenchBounds.y + workbenchBounds.height/2;
+			Point p = getShell().computeSize(SWT.DEFAULT,SWT.DEFAULT);
+			getShell().setBounds(newX - p.x/2, newY - p.y/2,p.x,p.y);
 			enter();
+		}
 		else
 			exit();
 	}
