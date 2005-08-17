@@ -161,7 +161,9 @@ public abstract class VirtualResource implements IVirtualResource {
 	}
 
 	public String getName() {
-		return getRuntimePath().lastSegment();
+		if (getRuntimePath().segmentCount()>0)
+			return getRuntimePath().lastSegment();
+		return getRuntimePath().toString();
 	}
 
 	public IVirtualComponent getComponent() {
