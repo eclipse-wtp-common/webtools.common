@@ -200,7 +200,7 @@ public abstract class OperationTestCase extends BaseTestCase {
 			}
 			if (checkLog)
 				LogUtility.getInstance().resetLogging();
-			verifyValidDataModel(dataModel);
+			//verifyValidDataModel(dataModel);
 			dataModel.getDefaultOperation().execute(new NullProgressMonitor(), null);
 			// TODO Verification to be fixed to use IDataModel
 			// verifyDataModel(dataModel);
