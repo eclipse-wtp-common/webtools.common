@@ -36,20 +36,6 @@ public interface IModuleConstants {
 	public final static String JST_CONNECTOR_MODULE = "jst.connector"; //$NON-NLS-1$
 	
 	public final static String DEPENDENT_MODULE = "dependent"; //$NON-NLS-1$
-	
-	public final static String J2EE_VERSION_1_2 = "1.2"; //$NON-NLS-1$
-	public final static String J2EE_VERSION_1_3 = "1.3"; //$NON-NLS-1$
-	public final static String J2EE_VERSION_1_4 = "1.4"; //$NON-NLS-1$
-	
-	
-	public final static String JSP_VERSION_1_1 = "1.1"; //$NON-NLS-1$
-	public final static String JSP_VERSION_1_2 = "1.2"; //$NON-NLS-1$
-	public final static String JSP_VERSION_2_0 = "2.0";	//$NON-NLS-1$	
-	
-	
-	public final static String SERVLET_VERSION_2_2 = "2.2"; //$NON-NLS-1$
-	public final static String SERVLET_VERSION_2_3 = "2.3"; //$NON-NLS-1$
-	public final static String SERVLET_VERSION_2_4 = "2.4"; //$NON-NLS-1$	
     
     //Property Constants
     public final static String PROJ_REL_JAVA_OUTPUT_PATH = "java-output-path"; //$NON-NLS-1$ 
