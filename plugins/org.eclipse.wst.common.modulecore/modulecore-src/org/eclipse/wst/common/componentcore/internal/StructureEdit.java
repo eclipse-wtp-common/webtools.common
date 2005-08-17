@@ -848,6 +848,8 @@ public class StructureEdit implements IEditModelHandler {
 	 *         directly by the current ModuleCore
 	 */
 	public boolean isLocalDependency(ReferencedComponent aDependentModule) {
+		if (aDependentModule == null || aDependentModule.getHandle()==null)
+			return false;
 		URI dependentHandle = aDependentModule.getHandle();
 		// with no scheme and a simple name, the referenced component must be local
 		if(dependentHandle.scheme() == null && dependentHandle.segmentCount() == 1)  
