@@ -16,6 +16,8 @@ import junit.framework.TestSuite;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -23,6 +25,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 
 /**
  * @author jsholl
@@ -31,11 +34,15 @@ import org.eclipse.swt.widgets.Composite;
  */
 public class TestCollectorGUI extends Composite implements ModifyListener {
 
-	private TestCollectorInnerPanes innerPanes = null;
+	private static final String PLUGIN_ID = "org.eclipse.wst.common.tests.collector";
+	private static final String SUITES_EXT_PT = "suites";
+	private static final String NAME = "name";
+	private static final String CLASS = "class";
+
+	private Composite innerPanes = null;
 	private Combo combo = null;
 
 	private Hashtable testSuites = new Hashtable();
-	private Hashtable classLoaders = new Hashtable();
 
 	/**
 	 * @param parent
@@ -50,8 +57,8 @@ public class TestCollectorGUI extends Composite implements ModifyListener {
 	}
 
 	private void loadConfiguration() {
-		TestCollectorPlugin plugin = TestCollectorPlugin.instance;
-		IExtension[] suitesExtensions = plugin.suitesExtensionPoint.getExtensions();
+		IExtensionPoint suiteExtPt = Platform.getExtensionRegistry().getExtensionPoint(PLUGIN_ID, SUITES_EXT_PT);
+		IExtension[] suitesExtensions = suiteExtPt.getExtensions();
 
 		for (int i = 0; i < suitesExtensions.length; i++) {
 			IExtension extension = suitesExtensions[i];
@@ -60,9 +67,7 @@ public class TestCollectorGUI extends Composite implements ModifyListener {
 				try {
 					IConfigurationElement element = tests[j];
 					String suiteName = element.getAttribute("name");
-					String suiteClass = element.getAttribute("class");
-					testSuites.put(suiteName, suiteClass);
-					classLoaders.put(suiteName, extension.getDeclaringPluginDescriptor().getPluginClassLoader());
+					testSuites.put(suiteName, element);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -101,11 +106,6 @@ public class TestCollectorGUI extends Composite implements ModifyListener {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.swt.events.ModifyListener#modifyText(org.eclipse.swt.events.ModifyEvent)
-	 */
 	public void modifyText(ModifyEvent e) {
 		if (e.getSource() == combo) {
 			updateCombo(e);
@@ -117,19 +117,25 @@ public class TestCollectorGUI extends Composite implements ModifyListener {
 			innerPanes.dispose();
 		}
 		try {
-			String className = (String) testSuites.get(combo.getText());
-			ClassLoader classLoader = (ClassLoader) classLoaders.get(combo.getText());
-			TestSuite suite = (TestSuite) classLoader.loadClass(className).newInstance();
-
+			String testName = combo.getText();
+			IConfigurationElement element = (IConfigurationElement) testSuites.get(testName);
+			TestSuite suite = (TestSuite) element.createExecutableExtension("class");
 			innerPanes = new TestCollectorInnerPanes(this, SWT.NULL, new SuiteHelper(suite));
-
+		} catch (Exception ex) {
+			innerPanes = new Composite(this, SWT.NULL);
+			innerPanes.setLayout(new GridLayout());
+			innerPanes.setBackground(getBackground());
+			Label errorLabel = new Label(innerPanes, SWT.NONE);
+			errorLabel.setText(ex.getMessage());
 			GridData gridData = new GridData(GridData.FILL_BOTH);
 			gridData.horizontalSpan = 1;
-			innerPanes.setLayoutData(gridData);
-			layout();
-		} catch (Exception ex) {
-			ex.printStackTrace();
+			errorLabel.setLayoutData(gridData);
 		}
+		GridData gridData = new GridData(GridData.FILL_BOTH);
+		gridData.horizontalSpan = 1;
+		innerPanes.setLayoutData(gridData);
+		layout();
+
 	}
 
 }
