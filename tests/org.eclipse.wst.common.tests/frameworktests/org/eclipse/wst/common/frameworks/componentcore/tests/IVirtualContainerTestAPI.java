@@ -27,14 +27,14 @@ public class IVirtualContainerTestAPI extends BaseVirtualTest {
 	}
 
 	public void test_exists() {
-		IVirtualContainer container = (IVirtualContainer)webInfFolder;
+		IVirtualContainer container = webInfFolder;
 		IPath path = new Path("/deleteme");
 		boolean bRetValue = container.exists(path);
 	}
 
 	public void test_findMember() {
 		String name = "lib";
-		IVirtualContainer container = (IVirtualContainer)webInfFolder;
+		IVirtualContainer container = webInfFolder;
 		IVirtualResource resource= container.findMember(name);
 		
 	}
@@ -42,13 +42,13 @@ public class IVirtualContainerTestAPI extends BaseVirtualTest {
 	public void test_findMember2() {
 		String name = "lib";
 		int searchFlags = 0;
-		IVirtualContainer container = (IVirtualContainer)webInfFolder;
+		IVirtualContainer container = webInfFolder;
 		IVirtualResource resource= container.findMember(name,searchFlags);
 	}
 	
 	public void test_findMember3() {
 		IPath path = new Path("/lib");
-		IVirtualContainer container = (IVirtualContainer)webInfFolder;
+		IVirtualContainer container = webInfFolder;
 		IVirtualResource resource= container.findMember(path);
 		
 	}
@@ -56,7 +56,7 @@ public class IVirtualContainerTestAPI extends BaseVirtualTest {
 	public void test_findMember4() {
 		IPath path = new Path("/lib");
 		int searchFlags = 0;
-		IVirtualContainer container = (IVirtualContainer)webInfFolder;
+		IVirtualContainer container = webInfFolder;
 		IVirtualResource resource= container.findMember(path,searchFlags);
 	}
 
@@ -64,35 +64,35 @@ public class IVirtualContainerTestAPI extends BaseVirtualTest {
 
 	public void test_getFile() {
 		IPath path = new Path("/deleteme");
-		IVirtualContainer container = (IVirtualContainer)webInfFolder;
+		IVirtualContainer container = webInfFolder;
 		IVirtualResource resource= container.getFile(path);
 	}
 
 	public void test_getFolder() {
 		IPath path = new Path("/deleteme");
-		IVirtualContainer container = (IVirtualContainer)webInfFolder;
+		IVirtualContainer container = webInfFolder;
 		IVirtualResource resource= container.getFolder(path);
 	}
 
 	public void test_getFile2() {
 		String name = "/deleteme";
-		IVirtualContainer container = (IVirtualContainer)webInfFolder;
+		IVirtualContainer container = webInfFolder;
 		IVirtualResource resource= container.getFile(name);
 	}
 
 	public void test_getFolder2() {
 		String name = "/deleteme";
-		IVirtualContainer container = (IVirtualContainer)webInfFolder;
+		IVirtualContainer container = webInfFolder;
 		IVirtualResource resource= container.getFolder(name);
 	}
 
 	public  void test_members() throws CoreException {
-		IVirtualContainer container = (IVirtualContainer)webInfFolder;
+		IVirtualContainer container = webInfFolder;
 		IVirtualResource[] resource= container.members();
 	}
 
 	public void members() throws CoreException {
-		IVirtualContainer container = (IVirtualContainer)webInfFolder;
+		IVirtualContainer container = webInfFolder;
 		int memberFlags = 0;
 		IVirtualResource[] resource= container.members(memberFlags);
 		

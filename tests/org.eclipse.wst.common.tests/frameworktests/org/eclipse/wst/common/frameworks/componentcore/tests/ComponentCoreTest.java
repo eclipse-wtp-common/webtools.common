@@ -64,7 +64,7 @@ public class ComponentCoreTest extends TestCase {
 			ComponentCore.createFlexibleProject(project);
 		} catch (Exception e) {
 			fail(e.toString());
-		};
+		}
 
 	}
 
@@ -75,7 +75,7 @@ public class ComponentCoreTest extends TestCase {
 		
 		} catch (Exception e) {
 			fail(e.toString());
-		};
+		}
 	}
 
 	public void testCreateFolder() {
@@ -83,7 +83,7 @@ public class ComponentCoreTest extends TestCase {
 			ComponentCore.createFolder(project, "test", new Path("test/runtimePath"));
 		} catch (Exception e) {
 			fail(e.toString());
-		};
+		}
 	}
 
 	public void testCreateFile() {
@@ -91,7 +91,7 @@ public class ComponentCoreTest extends TestCase {
 			ComponentCore.createFile(project, "test", new Path("test/runtimePath/file"));
 		} catch (Exception e) {
 			fail(e.toString());
-		};
+		}
 	}
 
 	public void testCreateReference() {
@@ -101,7 +101,7 @@ public class ComponentCoreTest extends TestCase {
 			ComponentCore.createReference(container,container);
 		} catch (Exception e) {
 			fail(e.toString());
-		};
+		}
 	}
 	public void testCreateResources() {
 		IResource res = project.getFile(new Path("WebModule1/WebContent/WEB-INF/web.xml"));
@@ -110,7 +110,7 @@ public class ComponentCoreTest extends TestCase {
 			ComponentCore.createResources(res);
 		} catch (Exception e) {
 			fail(e.toString());
-		};
+		}
 	}
 
 }

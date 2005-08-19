@@ -35,8 +35,6 @@ public class IVirtualFolderAPITest extends IVirtualContainerAPITest {
 	
 	private static final IPath DELETEME_PATH = new Path("/deleteme"); //$NON-NLS-1$ 
 
-	;
-
 	public IVirtualFolderAPITest(String name) {
 		super(name);
 	} 
