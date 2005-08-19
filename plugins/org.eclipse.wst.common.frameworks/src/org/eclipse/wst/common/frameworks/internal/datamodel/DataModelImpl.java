@@ -29,6 +29,7 @@ import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelListener;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 
@@ -61,6 +62,8 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		for (int i = 0; null != propertyNames && i < propertyNames.length; i++) {
 			properties.add(propertyNames[i]);
 		}
+		properties.add(IDataModelProperties.ALLOW_EXTENSIONS);
+		properties.add(IDataModelProperties.RESTRICT_EXTENSIONS);
 		basePropertyNames = Collections.unmodifiableCollection(properties);
 		allPropertyNames = new HashSet();
 		allPropertyNames.addAll(basePropertyNames);

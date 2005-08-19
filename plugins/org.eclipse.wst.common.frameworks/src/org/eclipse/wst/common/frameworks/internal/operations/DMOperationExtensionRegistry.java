@@ -25,36 +25,32 @@ import org.eclipse.wst.common.frameworks.internal.enablement.EnablementManager;
 
 public class DMOperationExtensionRegistry {
 
-	protected static boolean canExtHasRead = false;
-
 	protected static boolean extPointHasRead = false;
 
 	protected static DMOperationExtensionRegistry instance = null;
 
-	protected static HashMap extensibleOperations = null;
+//	protected static HashMap extensibleOperations = null;
 
 	protected static HashMap opExtensions = null;
 
-	protected static OperationExtensibilityReader opExtensibilityReader = null;
-
 	protected static OperationExtensionReader opExtensionReader = null;
 
-	public static String[] getRegisteredOperations(String className) {
-		extensibleOperations = getExtensibility();
-		if (extensibleOperations != null) {
-			String id = (String) extensibleOperations.get(className);
-			if (id == null)
-				return null;
-			if (opExtensions == null)
-				opExtensions = getExtensionPoints();
-			if (opExtensions != null) {
-				Collection ext = (Collection) opExtensions.get(id);
-				if (ext != null)
-					return getClassNames(ext.toArray());
-			}
-		}
-		return null;
-	}
+//	public static String[] getRegisteredOperations(String className) {
+//		extensibleOperations = getExtensibility();
+//		if (extensibleOperations != null) {
+//			String id = (String) extensibleOperations.get(className);
+//			if (id == null)
+//				return null;
+//			if (opExtensions == null)
+//				opExtensions = getExtensionPoints();
+//			if (opExtensions != null) {
+//				Collection ext = (Collection) opExtensions.get(id);
+//				if (ext != null)
+//					return getClassNames(ext.toArray());
+//			}
+//		}
+//		return null;
+//	}
 
 	private static String[] getClassNames(Object[] opExt) {
 		ArrayList classNames = new ArrayList();
@@ -78,35 +74,47 @@ public class DMOperationExtensionRegistry {
 		return array;
 	}
 
-	public static DMComposedExtendedOperationHolder getExtensions(String className) {
-		extensibleOperations = getExtensibility();
-		if (extensibleOperations != null) {
-			String id = (String) extensibleOperations.get(className);
-			if (id == null)
-				return null;
-			if (opExtensions == null)
-				opExtensions = getExtensionPoints();
-			if (opExtensions != null) {
-				Collection ext = (Collection) opExtensions.get(id);
-				if (ext != null) {
-					try {
-						return calculateOperationHolder(ext);
-					} catch (CoreException ex) {
-						Logger.getLogger().logError(ex);
-					}
+//	public static DMComposedExtendedOperationHolder getExtensions(String className) {
+//		extensibleOperations = getExtensibility();
+//		if (extensibleOperations != null) {
+//			String id = (String) extensibleOperations.get(className);
+//			if (id == null)
+//				return null;
+//			if (opExtensions == null)
+//				opExtensions = getExtensionPoints();
+//			if (opExtensions != null) {
+//				Collection ext = (Collection) opExtensions.get(id);
+//				if (ext != null) {
+//					try {
+//						return calculateOperationHolder(ext);
+//					} catch (CoreException ex) {
+//						Logger.getLogger().logError(ex);
+//					}
+//				}
+//			}
+//		}
+//		return null;
+//	}
+
+	public static DMComposedExtendedOperationHolder getExtensions(IDataModelOperation op) {
+		if (opExtensions == null)
+			opExtensions = getExtensionPoints();
+		if (opExtensions != null) {
+			Collection ext = (Collection) opExtensions.get(op.getID());
+			if (ext != null) {
+				try {
+					return calculateOperationHolder(ext);
+				} catch (CoreException ex) {
+					Logger.getLogger().logError(ex);
 				}
 			}
 		}
 		return null;
 	}
 
-	public static DMComposedExtendedOperationHolder getExtensions(IDataModelOperation op) {
-		return getExtensions(op.getClass().getName());
-	}
-
-	protected String getExtendableOperationId(IDataModelOperation op) {
-		return (String) extensibleOperations.get(op.getClass().getName());
-	}
+//	protected String getExtendableOperationId(IDataModelOperation op) {
+//		return (String) extensibleOperations.get(op.getClass().getName());
+//	}
 
 	private static DMComposedExtendedOperationHolder calculateOperationHolder(Collection ext) throws CoreException {
 		Object[] opExt = ext.toArray();
@@ -129,17 +137,6 @@ public class DMOperationExtensionRegistry {
 			}
 		}
 		return extOperationHolder;
-	}
-
-	private static HashMap getExtensibility() {
-		if (!canExtHasRead) {
-			opExtensibilityReader = new OperationExtensibilityReader();
-			opExtensibilityReader.readRegistry();
-			canExtHasRead = true;
-		}
-		if (opExtensibilityReader == null)
-			return null;
-		return OperationExtensibilityReader.getExtendableOperations();
 	}
 
 	private static HashMap getExtensionPoints() {

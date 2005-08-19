@@ -59,8 +59,6 @@ public class OperationExtension {
 		if (postOperationClass == null)
 			return null;
 		WTPOperation op = (WTPOperation) baseElement.createExecutableExtension(OperationExtensionReader.ATT_POST_OP);
-		if (op != null)
-			op.setID(getExtensionId());
 		return op;
 	}
 
@@ -68,8 +66,6 @@ public class OperationExtension {
 		if (preOperationClass == null)
 			return null;
 		WTPOperation op = (WTPOperation) baseElement.createExecutableExtension(OperationExtensionReader.ATT_PRE_OP);
-		if (op != null)
-			op.setID(getExtensionId());
 		return op;
 	}
 
@@ -77,8 +73,6 @@ public class OperationExtension {
 		if (postOperationClass == null)
 			return null;
 		IDataModelOperation op = (IDataModelOperation) baseElement.createExecutableExtension(OperationExtensionReader.ATT_POST_OP);
-		if (op != null)
-			op.setID(getExtensionId());
 		return op;
 	}
 
@@ -86,8 +80,6 @@ public class OperationExtension {
 		if (preOperationClass == null)
 			return null;
 		IDataModelOperation op = (IDataModelOperation) baseElement.createExecutableExtension(OperationExtensionReader.ATT_PRE_OP);
-		if (op != null)
-			op.setID(getExtensionId());
 		return op;
 	}
 

@@ -10,6 +10,8 @@ package org.eclipse.wst.common.frameworks.internal.datamodel;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Hashtable;
 import java.util.List;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -26,6 +28,7 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties;
 import org.eclipse.wst.common.frameworks.internal.AdaptabilityUtility;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 import org.eclipse.wst.common.frameworks.internal.enablement.IEnablementManager;
@@ -41,6 +44,22 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 
 	private OperationStatus opStatus;
 
+	private static Hashtable threadToExtendedOpControl;
+
+	private class ExtendedOpControl {
+		private boolean allowExtensions;
+		List restrictedExtensions;
+
+		public ExtendedOpControl(boolean allowExtensions, List restrictedExtensions) {
+			this.allowExtensions = allowExtensions;
+			this.restrictedExtensions = restrictedExtensions;
+		}
+
+		public boolean shouldExecute(String operationID) {
+			return allowExtensions && !restrictedExtensions.contains(operationID);
+		}
+	}
+
 	public ExtendableOperationImpl(IDataModelOperation rootOperation) {
 		this.rootOperation = rootOperation;
 		if (null == rootOperation) {
@@ -53,9 +72,9 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 	}
 
 	public IStatus redo(IProgressMonitor monitor, IAdaptable info) {
-		// TODO Auto-generated method stub
 		return null;
 	}
+
 	/**
 	 * @return
 	 */
@@ -64,7 +83,6 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 	}
 
 	public IStatus undo(IProgressMonitor monitor, IAdaptable info) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -91,7 +109,7 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 		}
 		appendedOperations.add(appendedOperation);
 	}
-	
+
 	/**
 	 * Initiates a batch of changes, by invoking the execute() method as a workspace runnable.
 	 * 
@@ -105,57 +123,75 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info) {
 		final InvocationTargetException[] iteHolder = new InvocationTargetException[1];
 		IWorkspaceRunnableWithStatus workspaceRunnable = new IWorkspaceRunnableWithStatus(info) {
-				public void run(IProgressMonitor pm) throws CoreException {
-						setStatus(doExecute(pm,getInfo()));
-				}
-			};
-			ISchedulingRule rule = getSchedulingRule();
-			try {
-				if (rule == null)
-					ResourcesPlugin.getWorkspace().run(workspaceRunnable, monitor);
-				else
-					ResourcesPlugin.getWorkspace().run(workspaceRunnable, rule, getOperationExecutionFlags(), monitor);
-			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			public void run(IProgressMonitor pm) throws CoreException {
+				setStatus(doExecute(pm, getInfo()));
 			}
-			return workspaceRunnable.getStatus();
+		};
+		ISchedulingRule rule = getSchedulingRule();
+		try {
+			if (rule == null)
+				ResourcesPlugin.getWorkspace().run(workspaceRunnable, monitor);
+			else
+				ResourcesPlugin.getWorkspace().run(workspaceRunnable, rule, getOperationExecutionFlags(), monitor);
+		} catch (CoreException e) {
+			Logger.getLogger().logError(e);
+		}
+		return workspaceRunnable.getStatus();
 	}
 
 	public IStatus doExecute(IProgressMonitor monitor, IAdaptable info) {
-		DMComposedExtendedOperationHolder extOpHolder = initializeExtensionOperations();
-		IStatus preOpStatus = runPreOps(monitor, extOpHolder, info);
+		if (null == threadToExtendedOpControl) {
+			threadToExtendedOpControl = new Hashtable();
+		}
+		final Thread currentThread = Thread.currentThread();
+		final boolean isTopLevelOperation = !threadToExtendedOpControl.containsKey(currentThread);
 		try {
-			addStatus(rootOperation.execute(monitor, info));
-		} catch (ExecutionException e1) {
-			addStatus(new Status(IStatus.ERROR, "org.eclipse.wst.common.frameworks.internal", 0, e1.getMessage(), e1));
-		}
+			if (isTopLevelOperation) {
+				boolean allowExtensions = getDataModel() == null ? true : getDataModel().getBooleanProperty(IDataModelProperties.ALLOW_EXTENSIONS);
+				List restrictedExtensions = getDataModel() == null ? Collections.EMPTY_LIST : (List) getDataModel().getProperty(IDataModelProperties.RESTRICT_EXTENSIONS);
+				ExtendedOpControl extendedOpControl = new ExtendedOpControl(allowExtensions, restrictedExtensions);
+				threadToExtendedOpControl.put(currentThread, extendedOpControl);
+			}
 
-		IStatus postOpStatus = runPostOps(monitor, extOpHolder, info);
-		if (null != preOpStatus) {
-			addExtendedStatus(preOpStatus);
-		}
-		if (null != postOpStatus) {
-			addExtendedStatus(postOpStatus);
-		}
-		if (appendedOperations != null) {
-			OperationStatus composedStatus = null;
-			for (int i = 0; i < appendedOperations.size(); i++) {
-				try {
-					ExtendableOperationImpl op = new ExtendableOperationImpl((IDataModelOperation) appendedOperations.get(i));
-					IStatus status = op.execute(new SubProgressMonitor(monitor, 1, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK), info);
-					if (composedStatus == null)
-						composedStatus = new OperationStatus(new IStatus[]{status});
-					else
-						composedStatus.add(status);
-				} catch (Exception e) {
-					Logger.getLogger().logError(e);
+			DMComposedExtendedOperationHolder extOpHolder = initializeExtensionOperations();
+			IStatus preOpStatus = runPreOps(monitor, extOpHolder, info);
+			try {
+				addStatus(rootOperation.execute(monitor, info));
+			} catch (ExecutionException e1) {
+				addStatus(new Status(IStatus.ERROR, "org.eclipse.wst.common.frameworks.internal", 0, e1.getMessage(), e1));
+			}
+
+			IStatus postOpStatus = runPostOps(monitor, extOpHolder, info);
+			if (null != preOpStatus) {
+				addExtendedStatus(preOpStatus);
+			}
+			if (null != postOpStatus) {
+				addExtendedStatus(postOpStatus);
+			}
+			if (appendedOperations != null) {
+				OperationStatus composedStatus = null;
+				for (int i = 0; i < appendedOperations.size(); i++) {
+					try {
+						ExtendableOperationImpl op = new ExtendableOperationImpl((IDataModelOperation) appendedOperations.get(i));
+						IStatus status = op.execute(new SubProgressMonitor(monitor, 1, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK), info);
+						if (composedStatus == null)
+							composedStatus = new OperationStatus(new IStatus[]{status});
+						else
+							composedStatus.add(status);
+					} catch (Exception e) {
+						Logger.getLogger().logError(e);
+					}
+				}
+				if (null != composedStatus) {
+					addStatus(composedStatus);
 				}
 			}
-			if (null != composedStatus) {
-				addStatus(composedStatus);
+		} finally {
+			if (isTopLevelOperation) {
+				threadToExtendedOpControl.remove(currentThread);
 			}
 		}
+
 		return opStatus;
 	}
 
@@ -182,33 +218,36 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 		OperationStatus returnStatus = null;
 		IStatus localStatus;
 		String opId = null;
+		ExtendedOpControl opControl = (ExtendedOpControl) threadToExtendedOpControl.get(Thread.currentThread());
 		for (int i = 0; i < opList.size(); i++) {
 			nestedOp = (IDataModelOperation) opList.get(i);
-			try {
-				opId = nestedOp.getID();
-				boolean shouldExtendedRun = true;
+			opId = nestedOp.getID();
+			if (opControl.shouldExecute(nestedOp.getClass().getName()) && opControl.shouldExecute(opId)) {
+				try {
+					boolean shouldExtendedRun = true;
 
-				List extendedContext = rootDataModel.getExtendedContext();
-				for (int contextCount = 0; shouldExtendedRun && contextCount < extendedContext.size(); contextCount++) {
-					IProject project = (IProject) AdaptabilityUtility.getAdapter(extendedContext.get(contextCount), IProject.class);
-					if (null != project && !IEnablementManager.INSTANCE.getIdentifier(opId, project).isEnabled()) {
-						shouldExtendedRun = false;
+					List extendedContext = rootDataModel.getExtendedContext();
+					for (int contextCount = 0; shouldExtendedRun && contextCount < extendedContext.size(); contextCount++) {
+						IProject project = (IProject) AdaptabilityUtility.getAdapter(extendedContext.get(contextCount), IProject.class);
+						if (null != project && !IEnablementManager.INSTANCE.getIdentifier(opId, project).isEnabled()) {
+							shouldExtendedRun = false;
+						}
 					}
+					if (shouldExtendedRun) {
+						nestedOp.setDataModel(rootDataModel);
+						ExtendableOperationImpl extendedOp = new ExtendableOperationImpl(nestedOp);
+						localStatus = extendedOp.doExecute(new SubProgressMonitor(pm, IProgressMonitor.UNKNOWN), info);
+					} else
+						localStatus = null;
+				} catch (Exception e) {
+					localStatus = new Status(IStatus.ERROR, WTPCommonPlugin.PLUGIN_ID, 0, WTPResourceHandler.getString("25", new Object[]{nestedOp.getClass().getName()}), e); //$NON-NLS-1$
 				}
-				if (shouldExtendedRun) {
-					nestedOp.setDataModel(rootDataModel);
-					ExtendableOperationImpl extendedOp = new ExtendableOperationImpl(nestedOp);
-					localStatus = extendedOp.doExecute(new SubProgressMonitor(pm, IProgressMonitor.UNKNOWN), info);
-				} else
-					localStatus = null;
-			} catch (Exception e) {
-				localStatus = new Status(IStatus.ERROR, WTPCommonPlugin.PLUGIN_ID, 0, WTPResourceHandler.getString("25", new Object[]{nestedOp.getClass().getName()}), e); //$NON-NLS-1$
-			}
-			if (localStatus != null) {
-				if (returnStatus == null) {
-					returnStatus = new OperationStatus(new IStatus[]{localStatus});
-				} else {
-					returnStatus.add(localStatus);
+				if (localStatus != null) {
+					if (returnStatus == null) {
+						returnStatus = new OperationStatus(new IStatus[]{localStatus});
+					} else {
+						returnStatus.add(localStatus);
+					}
 				}
 			}
 		}
@@ -216,7 +255,6 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 	}
 
 	public void dispose() {
-		// TODO Auto-generated method stub
 	}
 
 	public boolean canExecute() {
@@ -230,6 +268,7 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 	public boolean canUndo() {
 		return rootOperation.canUndo();
 	}
+
 	public int getOperationExecutionFlags() {
 		return rootOperation.getOperationExecutionFlags();
 	}
