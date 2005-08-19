@@ -33,8 +33,6 @@ import org.eclipse.wst.common.frameworks.internal.ui.ErrorDialog;
 import org.eclipse.wst.common.frameworks.internal.ui.RunnableOperationWrapper;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPCommonUIResourceHandler;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
-import org.eclipse.wst.common.frameworks.internal.ui.WTPWizardSkipPageDataModel;
-
 
 /**
  * This class is EXPERIMENTAL and is subject to substantial changes.
@@ -358,12 +356,13 @@ public abstract class DataModelWizard extends Wizard {
 	}
 
 	public void addPage(IWizardPage page) {
-		if (getDataModel().isProperty(WTPWizardSkipPageDataModel.SKIP_PAGES) && null != page.getName()) {
-			List pagesToSkip = (List) getDataModel().getProperty(WTPWizardSkipPageDataModel.SKIP_PAGES);
-			if (null != pagesToSkip && pagesToSkip.contains(page.getName())) {
-				return;
-			}
-		}
+		//TODO add skip pages fw to data model provider wizard
+//		if (getDataModel().isProperty(WTPWizardSkipPageDataModel.SKIP_PAGES) && null != page.getName()) {
+//			List pagesToSkip = (List) getDataModel().getProperty(WTPWizardSkipPageDataModel.SKIP_PAGES);
+//			if (null != pagesToSkip && pagesToSkip.contains(page.getName())) {
+//				return;
+//			}
+//		}
 		super.addPage(page);
 	}
 }

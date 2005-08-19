@@ -20,11 +20,7 @@ public class OperationExtension {
 
 	String preOperationClass = null;
 
-	WTPOperation preOperation = null;
-
 	String postOperationClass = null;
-
-	WTPOperation postOperation = null;
 
 	private String extensionId;
 
@@ -55,32 +51,14 @@ public class OperationExtension {
 		return preOperationClass;
 	}
 
-	public WTPOperation getPostOperation() throws CoreException {
-		if (postOperationClass == null)
-			return null;
-		WTPOperation op = (WTPOperation) baseElement.createExecutableExtension(OperationExtensionReader.ATT_POST_OP);
-		if (op != null)
-			op.setID(getExtensionId());
-		return op;
-	}
-
-	public WTPOperation getPreOperation() throws CoreException {
-		if (preOperationClass == null)
-			return null;
-		WTPOperation op = (WTPOperation) baseElement.createExecutableExtension(OperationExtensionReader.ATT_PRE_OP);
-		if (op != null)
-			op.setID(getExtensionId());
-		return op;
-	}
-
-	public IDataModelOperation getDMPostOperation() throws CoreException {
+	public IDataModelOperation getPostOperation() throws CoreException {
 		if (postOperationClass == null)
 			return null;
 		IDataModelOperation op = (IDataModelOperation) baseElement.createExecutableExtension(OperationExtensionReader.ATT_POST_OP);
 		return op;
 	}
 
-	public IDataModelOperation getDMPreOperation() throws CoreException {
+	public IDataModelOperation getPreOperation() throws CoreException {
 		if (preOperationClass == null)
 			return null;
 		IDataModelOperation op = (IDataModelOperation) baseElement.createExecutableExtension(OperationExtensionReader.ATT_PRE_OP);
@@ -92,5 +70,9 @@ public class OperationExtension {
 	 */
 	public String getExtensionId() {
 		return extensionId;
+	}
+
+	public IConfigurationElement getBaseElement() {
+		return baseElement;
 	}
 }

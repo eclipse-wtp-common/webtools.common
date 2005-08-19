@@ -12,7 +12,6 @@ Export-Package: .,
  org.eclipse.wst.common.internal.emfworkbench,
  org.eclipse.wst.common.internal.emfworkbench.edit,
  org.eclipse.wst.common.internal.emfworkbench.integration,
- org.eclipse.wst.common.internal.emfworkbench.operation,
  org.eclipse.wst.common.internal.emfworkbench.validateedit
 Require-Bundle: org.eclipse.wst.common.frameworks,
  org.eclipse.jem.util,

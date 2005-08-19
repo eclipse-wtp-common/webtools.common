@@ -126,11 +126,11 @@ public class DMOperationExtensionRegistry {
 			currentExt = (OperationExtension) opExt[i];
 			/* Only allow extensions which enabled (null project indicates enabled by activity only) */
 			if (EnablementManager.INSTANCE.getIdentifier(currentExt.getExtensionId(), null).isEnabled()) {
-				preOp = currentExt.getDMPreOperation();
+				preOp = currentExt.getPreOperation();
 				if (preOp != null) {
 					extOperationHolder.addPreOperation(preOp);
 				}
-				postOp = currentExt.getDMPostOperation();
+				postOp = currentExt.getPostOperation();
 				if (postOp != null) {
 					extOperationHolder.addPostOperation(postOp);
 				}

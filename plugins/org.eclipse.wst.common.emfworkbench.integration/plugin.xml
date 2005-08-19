@@ -27,15 +27,6 @@
           context="Headless">
       </uiContextSensitiveClass>
   </extension>
-  <extension
-         id="Generator"
-         point="org.eclipse.core.runtime.applications">
-      <application>
-         <run
-               class="org.eclipse.wst.common.internal.emfworkbench.operation.DataObjectGeneratorModel">
-         </run>
-      </application>
-   </extension>
    
    <extension
         id="emfValidationHandler"

@@ -25,11 +25,11 @@ import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 public class OperationExtensionReader extends RegistryReader {
 	protected static HashMap opExtensions = null;
 
-	static final String ELEMENT_J2EEOPEXT = "operationExtension"; //$NON-NLS-1$
-	static final String ATT_ID = "id"; //$NON-NLS-1$ 
+	public static final String ELEMENT_J2EEOPEXT = "operationExtension"; //$NON-NLS-1$
+	public static final String ATT_ID = "id"; //$NON-NLS-1$ 
 	//static final String ATT_OP_TYPE = "operationType"; //$NON-NLS-1$
-	static final String ATT_PRE_OP = "preOperationClass"; //$NON-NLS-1$
-	static final String ATT_POST_OP = "postOperationClass"; //$NON-NLS-1$
+	public static final String ATT_PRE_OP = "preOperationClass"; //$NON-NLS-1$
+	public static final String ATT_POST_OP = "postOperationClass"; //$NON-NLS-1$
 
 	public OperationExtensionReader() {
 		super(WTPCommonPlugin.PLUGIN_ID, "OperationExtension"); //$NON-NLS-1$
@@ -74,8 +74,7 @@ public class OperationExtensionReader extends RegistryReader {
 		}
 	}
 
-	protected static HashMap getExtensionPoints() {
+	public static HashMap getExtensionPoints() {
 		return opExtensions;
 	}
-
 }
