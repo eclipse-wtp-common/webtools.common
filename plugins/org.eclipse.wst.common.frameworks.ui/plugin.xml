@@ -49,13 +49,7 @@
             id="org.eclipse.wst.common.frameworks.internal.operation.extension.ui.PasteActionOperation"/>
    </extension>
    -->
-   <extension
-   		id="PasteActionOperationExtendibleOperation"
-         point="org.eclipse.wst.common.frameworks.ExtendableOperation">
-      <extendableOperation
-            class="org.eclipse.wst.common.frameworks.internal.operation.extension.ui.PasteActionOperation"
-            id="org.eclipse.wst.common.frameworks.internal.operation.extension.ui.PasteActionOperation"/>
-   </extension> 
+    
    
 <!-- ====================================================== -->
 <!--           Flexible Java Project preference page                   -->
