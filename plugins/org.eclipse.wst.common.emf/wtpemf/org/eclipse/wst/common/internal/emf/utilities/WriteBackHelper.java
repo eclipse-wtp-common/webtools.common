@@ -48,7 +48,7 @@ public class WriteBackHelper {
 	static {
 		//Deprecated class
 		Revisit.deleteMe();
-	};
+	}
 
 	/**
 	 * Private constructor ensures proper usage through singleton.
