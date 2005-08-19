@@ -211,13 +211,13 @@ public class NestingTest extends TestCase {
 		Assert.assertEquals(1, nestedModelNames.size());
 		Assert.assertTrue(nestedModelNames.contains("b"));
 		Collection baseProperties = a.getBaseProperties();
-		Assert.assertEquals(1, baseProperties.size());
+		Assert.assertEquals(3, baseProperties.size());
 		Assert.assertTrue(baseProperties.contains(A.P));
 		Collection nestedProperties = a.getNestedProperties();
-		Assert.assertEquals(1, nestedProperties.size());
+		Assert.assertEquals(3, nestedProperties.size());
 		Assert.assertTrue(nestedProperties.contains(B.P));
 		Collection allProperties = a.getAllProperties();
-		Assert.assertEquals(2, allProperties.size());
+		Assert.assertEquals(4, allProperties.size());
 		Assert.assertTrue(allProperties.contains(A.P));
 		Assert.assertTrue(allProperties.contains(B.P));
 
@@ -235,14 +235,14 @@ public class NestingTest extends TestCase {
 		Assert.assertEquals(1, nestedModelNames.size());
 		Assert.assertTrue(nestedModelNames.contains("b"));
 		baseProperties = a.getBaseProperties();
-		Assert.assertEquals(1, baseProperties.size());
+		Assert.assertEquals(3, baseProperties.size());
 		Assert.assertTrue(baseProperties.contains(A.P));
 		nestedProperties = a.getNestedProperties();
-		Assert.assertEquals(2, nestedProperties.size());
+		Assert.assertEquals(4, nestedProperties.size());
 		Assert.assertTrue(nestedProperties.contains(B.P));
 		Assert.assertTrue(nestedProperties.contains(C.P));
 		allProperties = a.getAllProperties();
-		Assert.assertEquals(3, allProperties.size());
+		Assert.assertEquals(5, allProperties.size());
 		Assert.assertTrue(allProperties.contains(A.P));
 		Assert.assertTrue(allProperties.contains(B.P));
 		Assert.assertTrue(allProperties.contains(C.P));
@@ -252,13 +252,13 @@ public class NestingTest extends TestCase {
 		Assert.assertEquals(1, nestedModelNames.size());
 		Assert.assertTrue(nestedModelNames.contains("c"));
 		baseProperties = b.getBaseProperties();
-		Assert.assertEquals(1, baseProperties.size());
+		Assert.assertEquals(3, baseProperties.size());
 		Assert.assertTrue(baseProperties.contains(B.P));
 		nestedProperties = b.getNestedProperties();
-		Assert.assertEquals(1, nestedProperties.size());
+		Assert.assertEquals(3, nestedProperties.size());
 		Assert.assertTrue(nestedProperties.contains(C.P));
 		allProperties = b.getAllProperties();
-		Assert.assertEquals(2, allProperties.size());
+		Assert.assertEquals(4, allProperties.size());
 		Assert.assertTrue(allProperties.contains(B.P));
 		Assert.assertTrue(allProperties.contains(C.P));
 
@@ -275,25 +275,25 @@ public class NestingTest extends TestCase {
 		Assert.assertEquals(1, nestedModelNames.size());
 		Assert.assertTrue(nestedModelNames.contains("b"));
 		baseProperties = a.getBaseProperties();
-		Assert.assertEquals(1, baseProperties.size());
+		Assert.assertEquals(3, baseProperties.size());
 		Assert.assertTrue(baseProperties.contains(A.P));
 		nestedProperties = a.getNestedProperties();
-		Assert.assertEquals(1, nestedProperties.size());
+		Assert.assertEquals(3, nestedProperties.size());
 		Assert.assertTrue(nestedProperties.contains(B.P));
 		allProperties = a.getAllProperties();
-		Assert.assertEquals(2, allProperties.size());
+		Assert.assertEquals(4, allProperties.size());
 		Assert.assertTrue(allProperties.contains(A.P));
 		Assert.assertTrue(allProperties.contains(B.P));
 		// check b's nested
 		nestedModelNames = b.getNestedModelNames();
 		Assert.assertEquals(0, nestedModelNames.size());
 		baseProperties = b.getBaseProperties();
-		Assert.assertEquals(1, baseProperties.size());
+		Assert.assertEquals(3, baseProperties.size());
 		Assert.assertTrue(baseProperties.contains(B.P));
 		nestedProperties = b.getNestedProperties();
-		Assert.assertEquals(0, nestedProperties.size());
+		Assert.assertEquals(2, nestedProperties.size());
 		allProperties = b.getAllProperties();
-		Assert.assertEquals(1, allProperties.size());
+		Assert.assertEquals(3, allProperties.size());
 		Assert.assertTrue(allProperties.contains(B.P));
 
 		a.removeNestedModel("b"); // 4
@@ -304,12 +304,12 @@ public class NestingTest extends TestCase {
 		nestedModelNames = a.getNestedModelNames();
 		Assert.assertEquals(0, nestedModelNames.size());
 		baseProperties = a.getBaseProperties();
-		Assert.assertEquals(1, baseProperties.size());
+		Assert.assertEquals(3, baseProperties.size());
 		Assert.assertTrue(baseProperties.contains(A.P));
 		nestedProperties = a.getNestedProperties();
-		Assert.assertEquals(0, nestedProperties.size());
+		Assert.assertEquals(2, nestedProperties.size());
 		allProperties = a.getAllProperties();
-		Assert.assertEquals(1, allProperties.size());
+		Assert.assertEquals(3, allProperties.size());
 		Assert.assertTrue(allProperties.contains(A.P));
 	}
 

@@ -13,6 +13,7 @@ package org.eclipse.wst.common.frameworks.datamodel.tests;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.wst.common.frameworks.datamodel.tests.extended.ExtendedOperationTests;
 import org.eclipse.wst.common.tests.SimpleTestSuite;
 
 /**
@@ -37,5 +38,6 @@ public class DataModelAPITests extends TestSuite {
         addTest(new SimpleTestSuite(DataModelEnablementTest.class));
 		addTest(new SimpleTestSuite(TestAbstractDMProvider.class));
 		addTest(new SimpleTestSuite(ValidationTest.class));
+		addTest(new SimpleTestSuite(ExtendedOperationTests.class));
 	}
 }

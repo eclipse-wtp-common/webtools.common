@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.eclipse.wst.common.tests.CommonTestsPlugin;
 
@@ -68,8 +69,8 @@ public class ValidationTest extends TestCase {
 
 			validationList.clear();
 			assertTrue(dm.isValid() == ok);
-			assertEquals(ok ? 3 : 1, validationList.size());
-			assertTrue(validationList.contains(A));
+			assertEquals(ok ? 5 : 1, validationList.size());
+			assertTrue(validationList.contains(A) || validationList.contains(IDataModelProperties.ALLOW_EXTENSIONS) || validationList.contains(IDataModelProperties.RESTRICT_EXTENSIONS));
 			if (ok) {
 				assertTrue(validationList.contains(B));
 				assertTrue(validationList.contains(C));
@@ -79,7 +80,7 @@ public class ValidationTest extends TestCase {
 			assertTrue(dm.validate().isOK() == ok);
 			// TODO
 			//assertEquals(ok ? 3 : 1, validationList.size());
-			assertTrue(validationList.contains(A));
+			assertTrue(validationList.contains(A) || validationList.contains(IDataModelProperties.ALLOW_EXTENSIONS) || validationList.contains(IDataModelProperties.RESTRICT_EXTENSIONS));
 			if (ok) {
 				assertTrue(validationList.contains(B));
 				assertTrue(validationList.contains(C));
@@ -87,11 +88,11 @@ public class ValidationTest extends TestCase {
 			validationList.clear();
 
 			assertTrue(dm.validate(true).isOK() == ok);
-			assertEquals(ok ? 3 : 1, validationList.size());
+			assertEquals(ok ? 5 : 1, validationList.size());
 			validationList.clear();
 
 			assertTrue(dm.validate(false).isOK() == ok);
-			assertEquals(3, validationList.size());
+			assertEquals(5, validationList.size());
 			assertTrue(validationList.contains(A));
 			assertTrue(validationList.contains(B));
 			assertTrue(validationList.contains(C));
@@ -131,7 +132,7 @@ public class ValidationTest extends TestCase {
 					assertTrue(dm.validate(false).isOK());
 					break;
 			}
-			assertEquals(6, validationList.size());
+			assertEquals(8, validationList.size());
 			assertTrue(validationList.contains(A));
 			assertTrue(validationList.contains(B));
 			assertTrue(validationList.contains(C));
@@ -163,7 +164,7 @@ public class ValidationTest extends TestCase {
 		}
 
 		assertTrue(!dm.validate(false).isOK());
-		assertEquals(6, validationList.size());
+		assertEquals(8, validationList.size());
 		assertTrue(validationList.contains(A));
 		assertTrue(validationList.contains(B));
 		assertTrue(validationList.contains(C));
