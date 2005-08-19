@@ -98,18 +98,7 @@
             postOperationClass="org.eclipse.wst.common.frameworks.operations.tests.extended.F"
             preOperationClass="org.eclipse.wst.common.frameworks.operations.tests.extended.E"/>
    </extension>
-   <extension
-         point="org.eclipse.wst.common.frameworks.ExtendableOperation">
-      <extendableOperation
-            class="org.eclipse.wst.common.frameworks.operations.tests.extended.A"
-            id="org.eclipse.wst.common.frameworks.operations.tests.extended.A"/>
-      <extendableOperation
-            class="org.eclipse.wst.common.frameworks.operations.tests.extended.B"
-            id="org.eclipse.wst.common.frameworks.operations.tests.extended.B"/>
-      <extendableOperation
-            class="org.eclipse.wst.common.frameworks.operations.tests.extended.R"
-            id="org.eclipse.wst.common.frameworks.operations.tests.extended.R"/>
-   </extension>
+   
   
   <extension
          point="org.eclipse.wst.common.frameworks.OperationExtension"
