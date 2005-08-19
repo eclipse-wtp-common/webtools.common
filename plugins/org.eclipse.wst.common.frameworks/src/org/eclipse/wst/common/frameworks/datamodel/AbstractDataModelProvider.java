@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
@@ -109,6 +110,11 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	 * @see IDataModelProvider#getDefaultProperty(String)
 	 */
 	public Object getDefaultProperty(String propertyName) {
+		if(ALLOW_EXTENSIONS.equals(propertyName)){
+			return Boolean.TRUE;
+		} else if(RESTRICT_EXTENSIONS.equals(propertyName)){
+			return Collections.EMPTY_LIST;
+		}
 		return null;
 	}
 

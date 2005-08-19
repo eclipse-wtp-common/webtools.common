@@ -41,6 +41,7 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	 */
 	public AbstractDataModelOperation() {
 		super("");
+		this.id = getClass().getName();
 	}
 
 	/**
@@ -52,7 +53,7 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	public AbstractDataModelOperation(IDataModel model) {
 		super(""); // TODO add a label property to IDataModel???
 		this.model = model;
-		this.id = model.getID();
+		this.id = getClass().getName();
 	}
 
 	/**

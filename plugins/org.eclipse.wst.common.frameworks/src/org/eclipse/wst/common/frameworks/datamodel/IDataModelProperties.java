@@ -28,4 +28,18 @@ package org.eclipse.wst.common.frameworks.datamodel;
  */
 public interface IDataModelProperties {
 
+	/**
+	 * A boolean property defaults to Boolean.TRUE. If this is set to Boolean.FALSE no extended
+	 * operations will be executed.
+	 */
+	public static final String ALLOW_EXTENSIONS = "IDataModelProperties.ALLOW_EXTENSIONS";
+	
+	/**
+	 * A List containing String objects, defautls to an empty List. If this list contains elements
+	 * and ALLOW_EXTENSIONS is set to Boolean.TRUE, then only extended operations not identified in
+	 * this list will be executed. These strings should either be the operation id or the fully
+	 * qualified operation class name.
+	 */
+	public static final String RESTRICT_EXTENSIONS = "IDataModelProperties.RESTRICT_EXTENSIONS";
+	
 }
