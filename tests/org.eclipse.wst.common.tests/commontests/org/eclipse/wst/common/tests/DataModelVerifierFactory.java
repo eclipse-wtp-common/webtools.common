@@ -11,7 +11,7 @@ import java.util.Map;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jem.util.RegistryReader;
-import org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
 /**
  * @author Administrator
@@ -52,23 +52,6 @@ public class DataModelVerifierFactory extends RegistryReader{
 		}
 		return true;
 
-	}
-
-	public DataModelVerifier createVerifier(WTPOperationDataModel model)  {
-		DataModelVerifier verifier = getDefaultDataModelVerifier();
-		String verifierClassName = null;
-		if (model != null) {
-			verifierClassName = (String) getDataModelVerifiersMap().get(model.getClass().getName());
-			if (verifierClassName != null) {
-				try {
-					Class verifierClass = Class.forName(verifierClassName);
-					verifier = (DataModelVerifier) verifierClass.newInstance();
-				} catch (Exception e) { 
-					verifier = getDefaultDataModelVerifier();
-				}
-			}
-		}  
-		return verifier;
 	}
 	
 	protected void addToDataModelVerifiersMap(Map dataModelVerifiers){
@@ -119,5 +102,23 @@ public class DataModelVerifierFactory extends RegistryReader{
             }
         }
     }*/
+	
+	public DataModelVerifier createVerifier(IDataModel model)  {
+		DataModelVerifier verifier = getDefaultDataModelVerifier();
+		String verifierClassName = null;
+		if (model != null) {
+			verifierClassName = (String) getDataModelVerifiersMap().get(model.getClass().getName());
+			if (verifierClassName != null) {
+				try {
+					Class verifierClass = Class.forName(verifierClassName);
+					verifier = (DataModelVerifier) verifierClass.newInstance();
+				} catch (Exception e) { 
+					verifier = getDefaultDataModelVerifier();
+				}
+			}
+		}
+		return verifier;
+	}
+
 
 }
