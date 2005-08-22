@@ -38,7 +38,7 @@ public class SuiteTestRunner extends TestRunner {
     }
 
     public void start() {
-        String name = "dynamic test";
+        String name = "dynamic test"; //$NON-NLS-1$
         fFrame = createUI(name);
         fFrame.pack();
         fFrame.setVisible(true);

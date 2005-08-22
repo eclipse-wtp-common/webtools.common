@@ -66,7 +66,7 @@ public class UiPlugin extends AbstractUIPlugin {
 	public ResourceBundle getResourceBundle() {
 		try {
 			if (resourceBundle == null)
-				resourceBundle = ResourceBundle.getBundle("org.eclipse.wst.common.tests.ui.UiPluginResources");
+				resourceBundle = ResourceBundle.getBundle("org.eclipse.wst.common.tests.ui.UiPluginResources"); //$NON-NLS-1$
 		} catch (MissingResourceException x) {
 			resourceBundle = null;
 		}
@@ -81,6 +81,6 @@ public class UiPlugin extends AbstractUIPlugin {
 	 * @return the image descriptor
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
-		return AbstractUIPlugin.imageDescriptorFromPlugin("org.eclipse.wst.common.tests.ui", path);
+		return AbstractUIPlugin.imageDescriptorFromPlugin("org.eclipse.wst.common.tests.ui", path); //$NON-NLS-1$
 	}
 }

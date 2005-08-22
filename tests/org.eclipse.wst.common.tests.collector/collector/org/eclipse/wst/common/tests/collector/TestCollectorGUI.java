@@ -34,10 +34,10 @@ import org.eclipse.swt.widgets.Label;
  */
 public class TestCollectorGUI extends Composite implements ModifyListener {
 
-	private static final String PLUGIN_ID = "org.eclipse.wst.common.tests.collector";
-	private static final String SUITES_EXT_PT = "suites";
-	private static final String NAME = "name";
-	private static final String CLASS = "class";
+	private static final String PLUGIN_ID = "org.eclipse.wst.common.tests.collector"; //$NON-NLS-1$
+	private static final String SUITES_EXT_PT = "suites"; //$NON-NLS-1$
+//	private static final String NAME = "name"; //$NON-NLS-1$
+//	private static final String CLASS = "class"; //$NON-NLS-1$
 
 	private Composite innerPanes = null;
 	private Combo combo = null;
@@ -66,7 +66,7 @@ public class TestCollectorGUI extends Composite implements ModifyListener {
 			for (int j = 0; j < tests.length; j++) {
 				try {
 					IConfigurationElement element = tests[j];
-					String suiteName = element.getAttribute("name");
+					String suiteName = element.getAttribute("name"); //$NON-NLS-1$
 					testSuites.put(suiteName, element);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -119,7 +119,7 @@ public class TestCollectorGUI extends Composite implements ModifyListener {
 		try {
 			String testName = combo.getText();
 			IConfigurationElement element = (IConfigurationElement) testSuites.get(testName);
-			TestSuite suite = (TestSuite) element.createExecutableExtension("class");
+			TestSuite suite = (TestSuite) element.createExecutableExtension("class"); //$NON-NLS-1$
 			innerPanes = new TestCollectorInnerPanes(this, SWT.NULL, new SuiteHelper(suite));
 		} catch (Exception ex) {
 			innerPanes = new Composite(this, SWT.NULL);

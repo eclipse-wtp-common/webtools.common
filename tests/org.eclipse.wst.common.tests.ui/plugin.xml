@@ -2,9 +2,9 @@
 <?eclipse version="3.0"?>
 <plugin
    id="org.eclipse.wst.common.tests.ui"
-   name="Ui Plug-in"
+   name="%Ui_Plug-in"
    version="0.7.0"
-   provider-name=""
+   provider-name="%Eclipse"
    class="org.eclipse.wst.common.tests.ui.UiPlugin">
 
    <runtime>

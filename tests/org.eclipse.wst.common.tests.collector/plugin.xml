@@ -2,7 +2,7 @@
 <?eclipse version="3.0"?>
 <plugin
    id="org.eclipse.wst.common.tests.collector"
-   name="org.eclipse.wst.common.tests.collector"
+   name="%org.eclipse.wst.common.tests.collector"
    version="0.7.0">
 
    <runtime>
@@ -13,18 +13,18 @@
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.runtime.compatibility"/>
    </requires>
-   <extension-point id="suites" name="suites" schema="schema/suites.exsd"/>
+   <extension-point id="suites" name="%suites" schema="schema/suites.exsd"/>
 
 
 
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
-            label="Test Collector"
+            label="%Test_Collector"
             visible="true"
             id="testCollector">
          <menu
-               label="WTP Tests"
+               label="%WTP_Tests"
                path="additions"
                id="org.eclipse.wst.common.tests.collector.testsMenu">
             <separator
@@ -32,8 +32,8 @@
             </separator>
          </menu>
          <action
-               label="Open"
-               tooltip="Test Collector"
+               label="%Open"
+               tooltip="%Test_Collector"
                class="org.eclipse.wst.common.tests.collector.TestCollectorActionDelegate"
                menubarPath="org.eclipse.wst.common.tests.collector.testsMenu/group1"
                id="org.eclipse.wst.common.tests.collector.testsAction">

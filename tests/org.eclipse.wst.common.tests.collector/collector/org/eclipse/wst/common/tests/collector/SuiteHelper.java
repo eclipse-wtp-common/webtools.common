@@ -109,7 +109,7 @@ public class SuiteHelper {
      * Returns a TestSuite to run
      */
     private Test getTest(String testName) {
-        int firstIndex = testName.indexOf(".");
+        int firstIndex = testName.indexOf("."); //$NON-NLS-1$
         String suiteName = testName.substring(0, firstIndex);
         String subTestName = testName.substring(firstIndex + 1);
 

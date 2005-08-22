@@ -79,7 +79,7 @@ public class TestCollectorInnerPanes extends Composite {
         gridData = new GridData();
         gridData.horizontalAlignment = GridData.CENTER;
         label2.setLayoutData(gridData);
-        label2.setText("Test Suites");
+        label2.setText("Test Suites"); //$NON-NLS-1$
 
         Composite rightComposite = new Composite(splitView, SWT.NONE);
         GridLayout rightLayout = new GridLayout();
@@ -89,7 +89,7 @@ public class TestCollectorInnerPanes extends Composite {
         gridData = new GridData();
         gridData.horizontalAlignment = GridData.CENTER;
         label3.setLayoutData(gridData);
-        label3.setText("Tests");
+        label3.setText("Tests"); //$NON-NLS-1$
 
         testClassTable = new Table(leftComposite, SWT.CHECK);
         testClassTable.setBackground(getBackground());
@@ -117,7 +117,7 @@ public class TestCollectorInnerPanes extends Composite {
         
         final Button selectAllCheckbox = new Button(leftComposite, SWT.CHECK);
         selectAllCheckbox.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        selectAllCheckbox.setText("Select All");
+        selectAllCheckbox.setText("Select All"); //$NON-NLS-1$
         selectAllCheckbox.addSelectionListener(new SelectionAdapter(){
         	public void widgetSelected(SelectionEvent e) {
         		boolean checked = selectAllCheckbox.getSelection();
@@ -138,7 +138,7 @@ public class TestCollectorInnerPanes extends Composite {
         gridData.horizontalAlignment = GridData.CENTER;
         gridData.horizontalSpan = 2;
         launchTestButton.setLayoutData(gridData);
-        launchTestButton.setText("Run Tests");
+        launchTestButton.setText("Run Tests"); //$NON-NLS-1$
         launchTestButton.addSelectionListener(new SelectionListener() {
             public void widgetSelected(SelectionEvent e) {
                 SuiteTestRunner runner = new SuiteTestRunner(buildSuite());
@@ -168,7 +168,7 @@ public class TestCollectorInnerPanes extends Composite {
 		fullToShortHashtable.clear();
 
         for (int i = 0; null != methodArray && i < methodArray.length; i++) {
-            String partialTestName = testName + "." + methodArray[i];
+            String partialTestName = testName + "." + methodArray[i]; //$NON-NLS-1$
             int endIndex = methodArray[i].indexOf('(');
             String methodName = endIndex > 0 ? methodArray[i].substring(0, endIndex) : methodArray[i];
             shortToFullHashtable.put(methodName, partialTestName);

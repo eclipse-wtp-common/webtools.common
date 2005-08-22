@@ -37,7 +37,7 @@ public class TestCollectorActionDelegate implements IWorkbenchWindowActionDelega
 		Shell shell = new Shell();
 		GridLayout gridLayout = new GridLayout();
 		shell.setLayout(gridLayout);
-		shell.setText("Test Collector");
+		shell.setText("Test Collector"); //$NON-NLS-1$
 		TestCollectorGUI testCollectorGUI = new TestCollectorGUI(shell, SWT.NULL);
 		GridData gridData = new GridData(GridData.FILL_BOTH);
 		gridData.horizontalSpan = 1;

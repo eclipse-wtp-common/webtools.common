@@ -22,9 +22,9 @@ import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizardFa
 public class DataModelUIFactoryTest extends TestCase {
 
 	public void testValidExtensionID() {
-		IDataModel dataModel = DataModelFactory.createDataModel("org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel");
+		IDataModel dataModel = DataModelFactory.createDataModel("org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel"); //$NON-NLS-1$
 		assertTrue(dataModel.isProperty(ITestDataModel.FOO));
-		DataModelWizard wizard = DataModelWizardFactory.createWizard("org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel");
+		DataModelWizard wizard = DataModelWizardFactory.createWizard("org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel"); //$NON-NLS-1$
 		assertNotNull(wizard);
 		assertNotNull(wizard.getDataModel());
 	}
