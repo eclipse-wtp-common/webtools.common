@@ -42,11 +42,11 @@ public class WorkbenchContext implements IWorkbenchContext {
 //	private static final IContainer[] NO_CONTAINERS = new IContainer[0];
 	private int _ruleGroup = RegistryConstants.ATT_RULE_GROUP_DEFAULT;
 	public List validationFileURIs = null; 
-	public static final String GET_PROJECT_FILES = "getAllFiles";
-	public static final String GET_FILE = "getFile";
-	private static final IContainer[] NO_CONTAINERS = new IContainer[0];
-	public static final String VALIDATION_MARKER = "com.ibm.etools.validation.problemmarker";
-	public static final String VALIDATION_MARKER_OWNER = "owner";  
+	public static final String GET_PROJECT_FILES = "getAllFiles"; //$NON-NLS-1$
+	public static final String GET_FILE = "getFile"; //$NON-NLS-1$
+//	private static final IContainer[] NO_CONTAINERS = new IContainer[0];
+	public static final String VALIDATION_MARKER = "com.ibm.etools.validation.problemmarker"; //$NON-NLS-1$
+	public static final String VALIDATION_MARKER_OWNER = "owner";  //$NON-NLS-1$
 
 	public WorkbenchContext() {
 		super();

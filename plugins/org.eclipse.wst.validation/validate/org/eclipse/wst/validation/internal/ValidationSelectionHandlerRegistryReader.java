@@ -52,7 +52,7 @@ public class ValidationSelectionHandlerRegistryReader extends RegistryReader {
 		if (!element.getName().equals(VALIDATION_SELECTION_HANDLER))
 			return false;
 		
-		String handlerClass = element.getAttribute(ATT_HANDLER_CLASS);
+//		String handlerClass = element.getAttribute(ATT_HANDLER_CLASS);
 		String selectionType = element.getAttribute(ATT_SELECTION_TYPE); 
 		
 		IValidationSelectionHandler handler = null;

@@ -15,7 +15,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.wst.common.frameworks.internal.operations.IHeadlessRunnableWithProgress;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 import org.eclipse.wst.validation.internal.operations.ValidationOperation;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
@@ -81,9 +80,9 @@ public class ValidationUIPlugin extends WTPUIPlugin {
 		return new RunnableWithProgressWrapper(aWorkspaceRunnable);
 	}
 
-	public static IRunnableWithProgress getRunnableWithProgress(IHeadlessRunnableWithProgress aHeadlessRunnableWithProgress) {
-		return new RunnableWithProgressWrapper(aHeadlessRunnableWithProgress);
-	}
+//	public static IRunnableWithProgress getRunnableWithProgress(IHeadlessRunnableWithProgress aHeadlessRunnableWithProgress) {
+//		return new RunnableWithProgressWrapper(aHeadlessRunnableWithProgress);
+//	}
 
 	// Need a third, ValidationOperation version of this method, because ValidationOperation
 	// is both an IWorkspaceRunnable and an IHeadlessRunnableWithProgress. This method will
