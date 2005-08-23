@@ -2,11 +2,11 @@
 <?eclipse version="3.0"?>
 <plugin>
 
-     <extension-point id="wtpuiAction" name="WTP UI Action" schema="schema/wtpuiAction.exsd"/>
-   <extension-point id="extendedViewer" name="Extended Viewers" schema="schema/extendedViewer.exsd"/>
-   <extension-point id="extendableWizard" name="Extendable Wizard" schema="schema/extendableWizard.exsd"/>
-   <extension-point id="wizardPageGroup" name="Extendable Wizard Page" schema="schema/extendableWizardPage.exsd"/>
-   <extension-point id="DataModelWizardExtension" name="DataModelWizard" schema="schema/DataModelWizardExtension.exsd"/>
+     <extension-point id="wtpuiAction" name="%WTP_UI_Action" schema="schema/wtpuiAction.exsd"/>
+   <extension-point id="extendedViewer" name="%Extended_Viewers" schema="schema/extendedViewer.exsd"/>
+   <extension-point id="extendableWizard" name="%Extendable_Wizard" schema="schema/extendableWizard.exsd"/>
+   <extension-point id="wizardPageGroup" name="%Extendable_Wizard_Page" schema="schema/extendableWizardPage.exsd"/>
+   <extension-point id="DataModelWizardExtension" name="%DataModelWizard" schema="schema/DataModelWizardExtension.exsd"/>
 
    <extension
          id="UITester"

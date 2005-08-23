@@ -49,7 +49,7 @@ import org.eclipse.wst.common.frameworks.internal.ui.TimedModifyListener;
  * This class is EXPERIMENTAL and is subject to substantial changes.
  */
 public class DataModelSynchHelper implements IDataModelListener {
-	protected static final boolean isLinux = System.getProperty ("os.name").equals("Linux");
+	protected static final boolean isLinux = System.getProperty ("os.name").equals("Linux"); //$NON-NLS-1$ //$NON-NLS-2$
 	
 	protected IDataModel dataModel;
 	protected Map widgetToPropertyHash;

@@ -118,8 +118,7 @@ public class SaveHandlerUI implements ISaveHandler {
 	public boolean shouldContinueAndMakeFileEditable(IFile aFile) {
 		boolean yes = isYesToAll || promptUserToSaveReadOnly(aFile);
 		if (yes)
-			aFile.setReadOnly(false);
-
+			aFile.getResourceAttributes().setReadOnly(false);
 		return yes;
 	}
 }

@@ -22,10 +22,10 @@ import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 
 public class DataModelWizardExtensionReader extends RegistryReader {
 
-	private static final String EXTENSION = "DataModelWizardExtension";
-	private static final String ELEMENT = "DataModelWizard";
-	private static final String ATTRIBUTE_ID = "id";
-	private static final String ATTRIBUTE_CLASS = "class";
+	private static final String EXTENSION = "DataModelWizardExtension"; //$NON-NLS-1$
+	private static final String ELEMENT = "DataModelWizard"; //$NON-NLS-1$
+	private static final String ATTRIBUTE_ID = "id"; //$NON-NLS-1$
+	private static final String ATTRIBUTE_CLASS = "class"; //$NON-NLS-1$
 
 	private HashMap extensions;
 
@@ -38,11 +38,11 @@ public class DataModelWizardExtensionReader extends RegistryReader {
 			return false;
 		String id = element.getAttribute(ATTRIBUTE_ID);
 		if (null == id || id.trim().length() == 0) {
-			Logger.getLogger().logError(new RuntimeException("Extension:" + EXTENSION + " Element:" + ELEMENT + " is missing " + ATTRIBUTE_ID));
+			Logger.getLogger().logError(new RuntimeException("Extension:" + EXTENSION + " Element:" + ELEMENT + " is missing " + ATTRIBUTE_ID)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		String className = element.getAttribute(ATTRIBUTE_CLASS);
 		if (null == className || className.trim().length() == 0) {
-			Logger.getLogger().logError(new RuntimeException("Extension:" + EXTENSION + " Element:" + ELEMENT + " is missing " + ATTRIBUTE_CLASS));
+			Logger.getLogger().logError(new RuntimeException("Extension:" + EXTENSION + " Element:" + ELEMENT + " is missing " + ATTRIBUTE_CLASS)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		addExtension(id, element);
 		return true;
@@ -50,7 +50,7 @@ public class DataModelWizardExtensionReader extends RegistryReader {
 
 	private void addExtension(String id, IConfigurationElement element) {
 		if (extensions.containsKey(id)) {
-			Logger.getLogger().logError(new RuntimeException("Duplicate " + ELEMENT + " " + ATTRIBUTE_ID + " " + id));
+			Logger.getLogger().logError(new RuntimeException("Duplicate " + ELEMENT + " " + ATTRIBUTE_ID + " " + id)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		extensions.put(id, element);
 	}
@@ -62,7 +62,7 @@ public class DataModelWizardExtensionReader extends RegistryReader {
 		}
 		IConfigurationElement element = (IConfigurationElement) extensions.get(id);
 		if (null == element) {
-			throw new RuntimeException("Extension:" + EXTENSION + " Element:" + ELEMENT + " not found for " + ATTRIBUTE_ID + ": " + id);
+			throw new RuntimeException("Extension:" + EXTENSION + " Element:" + ELEMENT + " not found for " + ATTRIBUTE_ID + ": " + id); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		}
 		return element;
 	}

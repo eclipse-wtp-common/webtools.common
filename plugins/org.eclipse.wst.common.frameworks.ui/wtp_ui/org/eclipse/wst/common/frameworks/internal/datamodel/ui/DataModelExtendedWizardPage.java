@@ -8,7 +8,6 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.datamodel.ui;
 
-import org.eclipse.core.internal.runtime.Assert;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPCommonUIResourceHandler;
 
@@ -37,8 +36,14 @@ public abstract class DataModelExtendedWizardPage extends DataModelWizardPage im
 	 *            The id to set.
 	 */
 	public final void setGroupID(String id) {
-		Assert.isTrue(this.id == null, WTPCommonUIResourceHandler.getString("ExtendedWizardPage_ERROR_0")); //$NON-NLS-1$
-		Assert.isNotNull(id, WTPCommonUIResourceHandler.getString("ExtendedWizardPage_ERROR_1")); //$NON-NLS-1$
+		if (this.id != null) {
+			new Exception(WTPCommonUIResourceHandler.getString("ExtendedWizardPage_ERROR_0")).printStackTrace(); //$NON-NLS-1$
+			return;
+		}
+		else if (id == null) {
+			new Exception(WTPCommonUIResourceHandler.getString("ExtendedWizardPage_ERROR_1")).printStackTrace(); //$NON-NLS-1$
+			return;
+		}
 		this.id = id;
 	}
 }

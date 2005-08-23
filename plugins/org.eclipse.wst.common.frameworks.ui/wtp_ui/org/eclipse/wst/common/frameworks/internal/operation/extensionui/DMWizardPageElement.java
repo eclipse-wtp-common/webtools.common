@@ -45,7 +45,7 @@ public class DMWizardPageElement extends AbstractRegistryDescriptor implements C
 
 	public DMWizardPageElement(IConfigurationElement element1) {
 		super(element1);
-		pluginID = element1.getDeclaringExtension().getDeclaringPluginDescriptor().getUniqueIdentifier();
+		pluginID = element1.getDeclaringExtension().getNamespace();
 		wizardID = element1.getAttribute(ATT_WIZARD_ID);
 		pageGroupID = element1.getAttribute(ATT_PAGE_ID);
 		readAllowsExtendedPageAfter(element1);

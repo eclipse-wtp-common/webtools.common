@@ -50,16 +50,16 @@ public class DMWizardPageExtensionManager {
 		// get editor plugin and save it to a hash map
 		// Note: editors extension id is different from editor id
 
-		IExtensionPoint[] point = new IExtensionPoint[]{Platform.getPluginRegistry().getExtensionPoint(ORG_ECLIPSE_UI, "exportWizards"), //$NON-NLS-1$
-					Platform.getPluginRegistry().getExtensionPoint(ORG_ECLIPSE_UI, "importWizards"), //$NON-NLS-1$
-					Platform.getPluginRegistry().getExtensionPoint(ORG_ECLIPSE_UI, "newWizards"), //$NON-NLS-1$
-					Platform.getPluginRegistry().getExtensionPoint("org.eclipse.wst.common.frameworks.ui", "extendableWizard")}; //$NON-NLS-1$ //$NON-NLS-2$
+		IExtensionPoint[] point = new IExtensionPoint[]{Platform.getExtensionRegistry().getExtensionPoint(ORG_ECLIPSE_UI, "exportWizards"), //$NON-NLS-1$
+					Platform.getExtensionRegistry().getExtensionPoint(ORG_ECLIPSE_UI, "importWizards"), //$NON-NLS-1$
+					Platform.getExtensionRegistry().getExtensionPoint(ORG_ECLIPSE_UI, "newWizards"), //$NON-NLS-1$
+					Platform.getExtensionRegistry().getExtensionPoint("org.eclipse.wst.common.frameworks.ui", "extendableWizard")}; //$NON-NLS-1$ //$NON-NLS-2$
 
 		for (int x = 0; x < point.length; x++) {
 			IConfigurationElement[] elements = point[x].getConfigurationElements();
 			for (int i = 0; i < elements.length; i++) {
 				String wizardID = elements[i].getAttribute("id"); //$NON-NLS-1$
-				String pluginID = elements[i].getDeclaringExtension().getDeclaringPluginDescriptor().getUniqueIdentifier();
+				String pluginID = elements[i].getDeclaringExtension().getNamespace();
 				wizardPluginIDMap.put(wizardID, pluginID);
 			}
 		}

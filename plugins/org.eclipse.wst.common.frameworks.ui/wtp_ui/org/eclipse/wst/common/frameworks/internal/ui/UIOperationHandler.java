@@ -30,15 +30,9 @@ import org.eclipse.wst.common.frameworks.internal.operations.IOperationHandler;
  */
 public class UIOperationHandler implements IOperationHandler {
 	protected Shell parentShell;
-	final public static String DEFAULT_INFORMATION = "Information";//EMFWorkbenchUIResourceHandler.getString("Information_UI__UI_");
-																   // //$NON-NLS-1$
-	// //$NON-NLS-1$ = "Information"
-	final public static String DEFAULT_ERROR = "Error";// EMFWorkbenchUIResourceHandler.getString("Error_UI_");
-													   // //$NON-NLS-1$
-	// //$NON-NLS-1$ = "Error"
-	final public static String DEFAULT_CONFIRM = "Confirm";//EMFWorkbenchUIResourceHandler.getString("Confirm_UI_");
-														   // //$NON-NLS-1$
-	// //$NON-NLS-1$ = "Confirm"
+	final public static String DEFAULT_INFORMATION = "Information"; //$NON-NLS-1$
+	final public static String DEFAULT_ERROR = "Error"; //$NON-NLS-1$
+	final public static String DEFAULT_CONFIRM = "Confirm"; //$NON-NLS-1$
 	protected String informationTitle = DEFAULT_INFORMATION;
 	protected String confirmTitle = DEFAULT_CONFIRM;
 	protected String errorTitle = DEFAULT_ERROR;

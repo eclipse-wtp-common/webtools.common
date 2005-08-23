@@ -18,7 +18,6 @@ package org.eclipse.wst.common.frameworks.internal.ui;
 
 import org.eclipse.jem.util.UITester;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.internal.Workbench;
 
 
 /**
@@ -43,7 +42,7 @@ public class UITesterImpl implements UITester {
 	 */
 	public boolean isCurrentContextUI() {
 		try {
-			return PlatformUI.isWorkbenchRunning() || ((Workbench) PlatformUI.getWorkbench()).isClosing();
+			return PlatformUI.isWorkbenchRunning() || PlatformUI.getWorkbench().isClosing();
 		} catch (RuntimeException e) {
 			return false;
 		}
