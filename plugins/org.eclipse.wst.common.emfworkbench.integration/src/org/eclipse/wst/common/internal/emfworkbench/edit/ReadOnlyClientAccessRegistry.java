@@ -28,7 +28,7 @@ public class ReadOnlyClientAccessRegistry extends ClientAccessRegistry {
 		 * Error condition: Some one has been naughty and not released the resource
 		 */
 		if (this.registry.containsKey(accessorKey)) {
-			Snapshot snapshot = (Snapshot) this.registry.remove(accessorKey);
+			this.registry.remove(accessorKey);
 		} else
 			complain(accessorKey);
 	}

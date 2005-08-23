@@ -109,7 +109,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 
 	public EditModel(String editModelID, EMFWorkbenchContext context, boolean readOnly) {
 		if (context == null)
-			throw new IllegalStateException("EMF context can't be null");
+			throw new IllegalStateException("EMF context can't be null"); //$NON-NLS-1$
 		this.editModelID = editModelID;
 		this.readOnly = readOnly;
 		if (readOnly)
@@ -124,10 +124,10 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	}
 
 
-	private ClientAccessRegistry initializeRegistry(Object read) {
-
-		return null;
-	}
+//	private ClientAccessRegistry initializeRegistry(Object read) {
+//
+//		return null;
+//	}
 
 
 	public EditModel(String editModelID, EMFWorkbenchContext context, boolean readOnly, boolean accessUnknownResourcesAsReadOnly) {
@@ -330,7 +330,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	protected void makeFileEditable(IFile aFile) {
 		if (aFile == null)
 			return;
-		aFile.setReadOnly(false);
+		aFile.getResourceAttributes().setReadOnly(false);
 	}
 
 	/**
@@ -917,9 +917,9 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 
 	public EMFWorkbenchContext getEmfContext() {
 		if (isDisposed())
-			throw new IllegalStateException("Edit Model already disposed");
+			throw new IllegalStateException("Edit Model already disposed"); //$NON-NLS-1$
 		if (emfContext == null)
-			throw new IllegalStateException("EMF context is null");
+			throw new IllegalStateException("EMF context is null"); //$NON-NLS-1$
 		return emfContext;
 	}
 

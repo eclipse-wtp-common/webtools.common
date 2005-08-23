@@ -18,12 +18,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.eclipse.core.internal.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.jem.util.plugin.JEMUtilPlugin;
 import org.eclipse.wst.common.frameworks.internal.AbstractRegistryDescriptor;
+import org.eclipse.wst.common.internal.emf.utilities.Assert;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchEditResourceHandler;
 
 
@@ -41,7 +41,7 @@ public class AdapterFactoryDescriptor extends AbstractRegistryDescriptor impleme
 		packageURI = element.getAttribute(AdapterFactoryRegistry.PACKAGE_URI);
 		id = element.getAttribute(AdapterFactoryRegistry.ID);
 		Assert.isNotNull(packageURI, EMFWorkbenchEditResourceHandler.getString("AdapterFactoryDescriptor_ERROR_0")); //$NON-NLS-1$
-		Assert.isNotNull(id, EMFWorkbenchEditResourceHandler.getString("AdapterFactoryDescriptor_ERROR_1", new Object[]{element.getDeclaringExtension().getDeclaringPluginDescriptor().getUniqueIdentifier()})); //$NON-NLS-1$
+		Assert.isNotNull(id, EMFWorkbenchEditResourceHandler.getString("AdapterFactoryDescriptor_ERROR_1", new Object[]{element.getDeclaringExtension().getNamespace()})); //$NON-NLS-1$
 
 		readViewIDs();
 		this.loadOrder = loadOrderCounter++;
