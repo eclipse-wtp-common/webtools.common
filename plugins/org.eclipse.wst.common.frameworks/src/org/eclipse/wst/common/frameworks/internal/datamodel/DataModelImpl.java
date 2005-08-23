@@ -330,8 +330,8 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		if (flag == DEFAULT_CHG) {
 			if (isPropertySet(propertyName)) {
 				return;
-			} else
-				flag = VALUE_CHG;
+			}
+			flag = VALUE_CHG;
 		}
 		notifyListeners(new DataModelEvent(this, propertyName, flag));
 	}
@@ -461,11 +461,11 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 	}
 
 	public String toString() {
-		return "IDataModel, provider=" + provider.toString();
+		return "IDataModel, provider=" + provider.toString(); //$NON-NLS-1$
 	}
 
 	public String getID() {
 		String id = provider.getID();
-		return null != id ? id : "";
+		return null != id ? id : ""; //$NON-NLS-1$
 	}
 }

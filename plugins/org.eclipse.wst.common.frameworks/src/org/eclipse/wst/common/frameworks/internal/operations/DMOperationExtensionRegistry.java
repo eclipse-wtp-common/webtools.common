@@ -14,7 +14,6 @@
  */
 package org.eclipse.wst.common.frameworks.internal.operations;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -52,27 +51,27 @@ public class DMOperationExtensionRegistry {
 //		return null;
 //	}
 
-	private static String[] getClassNames(Object[] opExt) {
-		ArrayList classNames = new ArrayList();
-		OperationExtension currentExt = null;
-		for (int i = 0; i < opExt.length; i++) {
-			currentExt = (OperationExtension) opExt[i];
-			/* Only allow extensions which enabled (null project indicates enabled by activity only) */
-			if (EnablementManager.INSTANCE.getIdentifier(currentExt.getExtensionId(), null).isEnabled()) {
-				String className = currentExt.getPreOperationClass();
-				if (null != className) {
-					classNames.add(className);
-				}
-				className = currentExt.getPostOperationClass();
-				if (null != className) {
-					classNames.add(className);
-				}
-			}
-		}
-		String[] array = new String[classNames.size()];
-		classNames.toArray(array);
-		return array;
-	}
+//	private static String[] getClassNames(Object[] opExt) {
+//		ArrayList classNames = new ArrayList();
+//		OperationExtension currentExt = null;
+//		for (int i = 0; i < opExt.length; i++) {
+//			currentExt = (OperationExtension) opExt[i];
+//			/* Only allow extensions which enabled (null project indicates enabled by activity only) */
+//			if (EnablementManager.INSTANCE.getIdentifier(currentExt.getExtensionId(), null).isEnabled()) {
+//				String className = currentExt.getPreOperationClass();
+//				if (null != className) {
+//					classNames.add(className);
+//				}
+//				className = currentExt.getPostOperationClass();
+//				if (null != className) {
+//					classNames.add(className);
+//				}
+//			}
+//		}
+//		String[] array = new String[classNames.size()];
+//		classNames.toArray(array);
+//		return array;
+//	}
 
 //	public static DMComposedExtendedOperationHolder getExtensions(String className) {
 //		extensibleOperations = getExtensibility();

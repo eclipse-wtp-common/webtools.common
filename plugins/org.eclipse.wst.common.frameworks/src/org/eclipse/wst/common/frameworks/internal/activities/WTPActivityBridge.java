@@ -23,7 +23,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jem.util.logger.proxy.Logger;
 
@@ -79,7 +78,7 @@ public class WTPActivityBridge {
 	}
 
 	private void loadExtensionPoints() {
-		IExtensionPoint point = Platform.getPluginRegistry().getExtensionPoint(PLUGIN_ID, EXTENSION_POINT);
+		IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(PLUGIN_ID, EXTENSION_POINT);
 		if (point == null)
 			return;
 		IConfigurationElement[] elements = point.getConfigurationElements();
@@ -99,9 +98,8 @@ public class WTPActivityBridge {
 
 	public static void logError(IConfigurationElement element, String text) {
 		IExtension extension = element.getDeclaringExtension();
-		IPluginDescriptor descriptor = extension.getDeclaringPluginDescriptor();
 		StringBuffer buf = new StringBuffer();
-		buf.append("Plugin " + descriptor.getUniqueIdentifier() + ", extension " + extension.getExtensionPointUniqueIdentifier()); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("Plugin " + extension.getNamespace() + ", extension " + extension.getExtensionPointUniqueIdentifier()); //$NON-NLS-1$ //$NON-NLS-2$
 		buf.append("\n" + text); //$NON-NLS-1$
 		Logger.getLogger().logError(buf.toString());
 	}

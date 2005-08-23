@@ -37,12 +37,12 @@ public interface IProjectCreationProperties {
 	 * IProject. An non settable property. This is a conveniece for constructiong getting the
 	 * IProject
 	 */
-	public static final String PROJECT = IProjectCreationProperties.class.getName() + "PROJECT";
+	public static final String PROJECT = IProjectCreationProperties.class.getName() + "PROJECT"; //$NON-NLS-1$
 
 	/**
 	 * IProjectDescription. An non settable property. This is a conveniece for constructiong a
 	 * project description.
 	 */
-	public static final String PROJECT_DESCRIPTION = IProjectCreationProperties.class.getName() + "PROJECT_DESCRIPTION";
+	public static final String PROJECT_DESCRIPTION = IProjectCreationProperties.class.getName() + "PROJECT_DESCRIPTION"; //$NON-NLS-1$
 
 }

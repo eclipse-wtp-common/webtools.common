@@ -36,7 +36,7 @@ public class OperationExtension {
 		postOperationClass = postOp;
 		this.extensionId = baseElement.getDeclaringExtension().getUniqueIdentifier();
 		if (this.extensionId == null)
-			this.extensionId = baseElement.getDeclaringExtension().getDeclaringPluginDescriptor().getUniqueIdentifier();
+			this.extensionId = baseElement.getDeclaringExtension().getNamespace();
 	}
 
 	public String getOpID() {

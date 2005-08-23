@@ -121,7 +121,7 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 	 * @see WorkspaceModifyOperation - this class was directly copied from it
 	 */
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info) {
-		final InvocationTargetException[] iteHolder = new InvocationTargetException[1];
+//		final InvocationTargetException[] iteHolder = new InvocationTargetException[1];
 		IWorkspaceRunnableWithStatus workspaceRunnable = new IWorkspaceRunnableWithStatus(info) {
 			public void run(IProgressMonitor pm) throws CoreException {
 				setStatus(doExecute(pm, getInfo()));
@@ -158,7 +158,7 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 			try {
 				addStatus(rootOperation.execute(monitor, info));
 			} catch (ExecutionException e1) {
-				addStatus(new Status(IStatus.ERROR, "org.eclipse.wst.common.frameworks.internal", 0, e1.getMessage(), e1));
+				addStatus(new Status(IStatus.ERROR, "org.eclipse.wst.common.frameworks.internal", 0, e1.getMessage(), e1)); //$NON-NLS-1$
 			}
 
 			IStatus postOpStatus = runPostOps(monitor, extOpHolder, info);

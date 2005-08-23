@@ -27,7 +27,7 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	/**
 	 * Convenience IStatus.OK.
 	 */
-	protected static final IStatus OK_STATUS = AbstractDataModelProvider.OK_STATUS;
+	protected static final IStatus OK_STATUS = IDataModelProvider.OK_STATUS;
 
 	private String id;
 
@@ -40,7 +40,7 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	 * Default constructor.
 	 */
 	public AbstractDataModelOperation() {
-		super("");
+		super(""); //$NON-NLS-1$
 		this.id = getClass().getName();
 	}
 
@@ -51,7 +51,7 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	 *            the IDataModel used to drive this operation
 	 */
 	public AbstractDataModelOperation(IDataModel model) {
-		super(""); // TODO add a label property to IDataModel???
+		super(""); //$NON-NLS-1$ // TODO add a label property to IDataModel???
 		this.model = model;
 		this.id = getClass().getName();
 	}

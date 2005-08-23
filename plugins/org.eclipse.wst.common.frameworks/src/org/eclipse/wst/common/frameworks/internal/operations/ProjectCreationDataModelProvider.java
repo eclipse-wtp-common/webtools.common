@@ -17,7 +17,7 @@ package org.eclipse.wst.common.frameworks.internal.operations;
 import java.io.File;
 
 import org.eclipse.core.internal.localstore.CoreFileSystemLibrary;
-import org.eclipse.core.internal.resources.Project;
+import org.eclipse.core.internal.resources.Resource;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
@@ -84,7 +84,7 @@ public class ProjectCreationDataModelProvider extends AbstractDataModelProvider 
 		String projectName = (String) getProperty(PROJECT_NAME);
 		IProjectDescription desc = ResourcesPlugin.getWorkspace().newProjectDescription(projectName);
 		if (getDataModel().isPropertySet(PROJECT_LOCATION)) {
-			String projectLocation = (String) getProperty(ProjectCreationDataModelProvider.PROJECT_LOCATION);
+			String projectLocation = (String) getProperty(IProjectCreationProperties.PROJECT_LOCATION);
             if(projectLocation != null)
                 desc.setLocation(new Path(projectLocation));
             else
@@ -161,10 +161,10 @@ public class ProjectCreationDataModelProvider extends AbstractDataModelProvider 
 
 		if (!CoreFileSystemLibrary.isCaseSensitive()) {
 			// now look for a matching case variant in the tree
-			IResource variant = ((Project) getProject()).findExistingResourceVariant(getProject().getFullPath());
+			IResource variant = ((Resource) getProject()).findExistingResourceVariant(getProject().getFullPath());
 			if (variant != null) {
 				// TODO Fix this string
-				return WTPCommonPlugin.createErrorStatus("Resource already exists with a different case.");
+				return WTPCommonPlugin.createErrorStatus("Resource already exists with a different case."); //$NON-NLS-1$
 			}
 		}
 		return OK_STATUS;

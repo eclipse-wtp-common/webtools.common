@@ -36,7 +36,7 @@ public class FunctionGroup implements Comparable {
 	private IConfigurationElement element;
 	private IGroupInitializer groupInterface;
 	private Set functionGroupPatternBindings;
-	private transient FunctionGroupPatternBinding[] functionGroupPatternBindingsAsArray;
+//	private transient FunctionGroupPatternBinding[] functionGroupPatternBindingsAsArray;
 	private boolean errorReported = false;
 
 	public FunctionGroup(String groupID, IConfigurationElement element) {
@@ -146,7 +146,7 @@ public class FunctionGroup implements Comparable {
 
 		if (!Util.equals(functionGroupPatternBindings, this.functionGroupPatternBindings)) {
 			this.functionGroupPatternBindings = functionGroupPatternBindings;
-			this.functionGroupPatternBindingsAsArray = (FunctionGroupPatternBinding[]) this.functionGroupPatternBindings.toArray(new FunctionGroupPatternBinding[this.functionGroupPatternBindings.size()]);
+//			this.functionGroupPatternBindingsAsArray = (FunctionGroupPatternBinding[]) this.functionGroupPatternBindings.toArray(new FunctionGroupPatternBinding[this.functionGroupPatternBindings.size()]);
 
 			return true;
 		}

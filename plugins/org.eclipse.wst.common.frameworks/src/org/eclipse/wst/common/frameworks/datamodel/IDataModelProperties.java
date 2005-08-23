@@ -32,7 +32,7 @@ public interface IDataModelProperties {
 	 * A boolean property defaults to Boolean.TRUE. If this is set to Boolean.FALSE no extended
 	 * operations will be executed.
 	 */
-	public static final String ALLOW_EXTENSIONS = "IDataModelProperties.ALLOW_EXTENSIONS";
+	public static final String ALLOW_EXTENSIONS = "IDataModelProperties.ALLOW_EXTENSIONS"; //$NON-NLS-1$
 	
 	/**
 	 * A List containing String objects, defautls to an empty List. If this list contains elements
@@ -40,6 +40,6 @@ public interface IDataModelProperties {
 	 * this list will be executed. These strings should either be the operation id or the fully
 	 * qualified operation class name.
 	 */
-	public static final String RESTRICT_EXTENSIONS = "IDataModelProperties.RESTRICT_EXTENSIONS";
+	public static final String RESTRICT_EXTENSIONS = "IDataModelProperties.RESTRICT_EXTENSIONS"; //$NON-NLS-1$
 	
 }
