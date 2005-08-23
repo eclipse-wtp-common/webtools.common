@@ -276,7 +276,4 @@ public class DomComparitor {
         return message;
     }
 
-    public static void main(String[] args) {
-    }
-
 }

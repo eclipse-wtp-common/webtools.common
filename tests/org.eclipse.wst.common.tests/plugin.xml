@@ -116,19 +116,17 @@
             postOperationClass="org.eclipse.wst.common.frameworks.datamodel.tests.extended.F"
             preOperationClass="org.eclipse.wst.common.frameworks.datamodel.tests.extended.E"/>
    </extension>
+   
+   <!-- Uncomment the below hook to test specific operation extension ids when needed -->
    <!--
    <extension
-         point="org.eclipse.wst.common.frameworks.ExtendableOperation">
-      <extendableOperation
-            class="org.eclipse.wst.common.frameworks.datamodel.tests.extended.A"
-            id="org.eclipse.wst.common.frameworks.datamodel.tests.extended.A"/>
-      <extendableOperation
-            class="org.eclipse.wst.common.frameworks.datamodel.tests.extended.B"
-            id="org.eclipse.wst.common.frameworks.datamodel.tests.extended.B"/>
-      <extendableOperation
-            class="org.eclipse.wst.common.frameworks.datamodel.tests.extended.R"
-            id="org.eclipse.wst.common.frameworks.datamodel.tests.extended.R"/>
-   </extension>
-  -->
+         point="org.eclipse.wst.common.frameworks.OperationExtension"
+         id="org.eclipse.wst.common.frameworks.datamodel.tests.extended">
+      <operationExtension
+            id="org.eclipse.jst.j2ee.application.internal.operations.EARComponentCreationOperation"
+            postOperationClass="org.eclipse.wst.common.frameworks.datamodel.tests.HelloOperationExtension"
+            preOperationClass="org.eclipse.wst.common.frameworks.datamodel.tests.HelloOperationExtension"/>
+  </extension>
+   -->
   
 </plugin>
