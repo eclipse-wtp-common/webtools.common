@@ -13,7 +13,6 @@ package org.eclipse.wst.common.internal.emf.plugin;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IPluginRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.common.internal.emf.resource.CompatibilityPackageMappingRegistry;
 
@@ -39,8 +38,7 @@ public class PackageURIMapReader {
 	}
 
 	private IExtensionPoint getExtensionPoint() {
-		IPluginRegistry reg = Platform.getPluginRegistry();
-		return reg.getExtensionPoint(EcoreUtilitiesPlugin.ID, EXTENSION_POINT_NAME);
+		return Platform.getExtensionRegistry().getExtensionPoint(EcoreUtilitiesPlugin.ID, EXTENSION_POINT_NAME);
 	}
 
 	/**

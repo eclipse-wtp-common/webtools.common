@@ -8,8 +8,6 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.internal.emf.utilities;
 
-import java.util.Map;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -57,8 +55,7 @@ public class IDUtil {
 		//support team development.
 		long currentTime = System.currentTimeMillis();
 		String id = baseIDName + currentTime;
-		Map idMap = aResource.getIDToEObjectMap();
-		while (idMap.get(id) != null) {
+		while (aResource.getEObject(id) != null) {
 			++currentTime;
 			id = baseIDName + currentTime;
 		}

@@ -2,7 +2,7 @@
 <?eclipse version="3.0"?>
 <plugin>
 
-     <extension-point id="packageURIMap" name="PackageURIMap"/>
+     <extension-point id="packageURIMap" name="%PackageURIMap"/>
 
 <!-- Need to register the Ecore specific package mappings -->
    <extension

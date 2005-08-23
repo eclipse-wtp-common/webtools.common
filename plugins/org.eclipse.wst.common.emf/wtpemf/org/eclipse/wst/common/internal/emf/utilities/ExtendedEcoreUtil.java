@@ -195,8 +195,7 @@ public class ExtendedEcoreUtil extends EcoreUtil {
 		String id = res.getURIFragment(p);
 		p.eSetProxyURI(res.getURI().appendFragment(id));
 		if (res instanceof XMLResource) {
-			((XMLResource) res).getIDToEObjectMap().remove(id);
-			((XMLResource) res).getEObjectToIDMap().remove(p);
+			((XMLResource) res).setID(p,null);
 		}
 		p.eAdapters().clear();
 	}

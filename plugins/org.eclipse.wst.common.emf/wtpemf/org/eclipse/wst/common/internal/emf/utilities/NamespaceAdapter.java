@@ -141,7 +141,7 @@ public class NamespaceAdapter extends AdapterImpl implements CloneablePublic {
 
 		prefixesToNS.put(prefix, ns);
 		namespaces.add(ns);
-		fireNotification(Notification.ADD, null, ns);
+		fireNotification(org.eclipse.emf.common.notify.Notification.ADD, null, ns);
 
 	}
 
@@ -152,7 +152,7 @@ public class NamespaceAdapter extends AdapterImpl implements CloneablePublic {
 
 		if (ns != null)
 			namespaces.remove(ns);
-		fireNotification(Notification.REMOVE, ns, null);
+		fireNotification(org.eclipse.emf.common.notify.Notification.REMOVE, ns, null);
 	}
 
 	protected String getNamespaceURI(String prefix) {

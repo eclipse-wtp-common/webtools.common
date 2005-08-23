@@ -45,7 +45,7 @@ public class IDTranslator extends Translator {
 		XMIResource res = (XMIResource) emfObject.eResource();
 		if (res == null)
 			throw new NoResourceException();
-		String id = (String) res.getEObjectToIDMap().get(emfObject);
+		String id = res.getID(emfObject);
 		if (id == null && value == null)
 			return;
 		if ((id != null && !id.equals(value)) || (value != null && !value.equals(id)))
