@@ -32,7 +32,7 @@ import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.properties.IFlexibleProjectCreationDataModelProperties;
-import org.eclipse.wst.common.frameworks.internal.FlexibleJavaProjectPreferenceUtil;
+
 
 public abstract class ComponentCreationOperation extends AbstractDataModelOperation implements IComponentCreationDataModelProperties {
 
@@ -45,7 +45,8 @@ public abstract class ComponentCreationOperation extends AbstractDataModelOperat
 		StructureEdit edit = null;
         try {
 			edit = StructureEdit.getStructureEditForWrite(getProject());
-			if(FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp())
+			//if(FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp())
+			if(model.getBooleanProperty(SUPPORT_MULTIPLE_MODULES))
 			    createAndLinkJ2EEComponentsForMultipleComponents();
             else 
                 createAndLinkJ2EEComponentsForSingleComponent();

@@ -49,19 +49,5 @@
             id="org.eclipse.wst.common.frameworks.internal.operation.extension.ui.PasteActionOperation"/>
    </extension>
    -->
-    
-   
-<!-- ====================================================== -->
-<!--           Flexible Java Project preference page                   -->
-<!-- ====================================================== -->
-   <extension
-         point="org.eclipse.ui.preferencePages">
-      <page
-            name="%FLEXIBLE_PROJECT_PREFERENCE"
-            class="org.eclipse.wst.common.frameworks.internal.ui.FlexibleJavaProjectPreferencePage"
-            id="FlexibleJavaProjectPreferencePage">
-      </page>
-   </extension>
-      
    
 </plugin>

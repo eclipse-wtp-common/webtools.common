@@ -26,7 +26,6 @@ import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.properties.IFlexibleProjectCreationDataModelProperties;
-import org.eclipse.wst.common.frameworks.internal.FlexibleJavaProjectPreferenceUtil;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
@@ -41,16 +40,17 @@ import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
  */
 public abstract class ComponentCreationDataModelProvider extends AbstractDataModelProvider implements IComponentCreationDataModelProperties {
 
-    protected boolean isProjMultiComponents = false;
+    //protected boolean isProjMultiComponents = false;
     
 	public void init() {
 		super.init();
-        isProjMultiComponents = FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp();
+        //isProjMultiComponents = FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp();
+		//model.getBooleanProperty(SUPPORT_MULTIPLE_MODULES) = model.getBooleanProperty(SUPPORT_MULTIPLE_MODULES);
 		initProjectCreationModel();
 	}
 
 	public String[] getPropertyNames() {
-		return new String[]{PROJECT_NAME, NESTED_PROJECT_CREATION_DM, COMPONENT_NAME, LOCATION, COMPONENT_DEPLOY_NAME, CREATE_DEFAULT_FILES, COMPONENT};
+		return new String[]{PROJECT_NAME, NESTED_PROJECT_CREATION_DM, COMPONENT_NAME, LOCATION, COMPONENT_DEPLOY_NAME, CREATE_DEFAULT_FILES, COMPONENT,  SUPPORT_MULTIPLE_MODULES};
 	}
 
 	public void propertyChanged(DataModelEvent event) {
@@ -62,7 +62,7 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 	public boolean propertySet(String propertyName, Object propertyValue) {
 		if (COMPONENT_NAME.equals(propertyName)) {
 			model.setProperty(COMPONENT_DEPLOY_NAME, propertyValue);
-            if(!FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp())
+            if(!model.getBooleanProperty(SUPPORT_MULTIPLE_MODULES))
                 model.setProperty(PROJECT_NAME, propertyValue);
         } else if (COMPONENT_DEPLOY_NAME.equals(propertyName)){
 			model.setProperty(COMPONENT_DEPLOY_NAME, propertyValue);
@@ -109,7 +109,8 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 		} 
 		else if (propertyName.equals(PROJECT_NAME)) {
 			IStatus status = OK_STATUS;
-			if(!FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp()){
+			//if(!FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp()){
+			if(!model.getBooleanProperty(SUPPORT_MULTIPLE_MODULES)){
 				String projectName = model.getStringProperty(PROJECT_NAME);
 				if (projectName == null || projectName.length() == 0) {
 					String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_NAME_EMPTY);
@@ -118,7 +119,7 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 				if( status.isOK()){
 					status = validateProjectName(projectName);	
 				}
-	            if(status.isOK() && !FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp()){
+	            if(status.isOK() && (!model.getBooleanProperty(SUPPORT_MULTIPLE_MODULES))){
 	                IProject proj = ProjectUtilities.getProject(projectName);
 	                if(proj.exists()) {
 	                    String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_EXISTS_ERROR);

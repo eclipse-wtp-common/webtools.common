@@ -69,5 +69,10 @@ public interface IComponentCreationDataModelProperties extends IDataModelPropert
 	 * operation has executed.
 	 */
 	public static final String COMPONENT = "IComponentCreationDataModelProperties.COMPONENT"; //$NON-NLS-1$
+	
+	/**
+	 * Required, type Boolean, the default value is <code>Boolean.FALSE</code>.
+	 */
+	public static final String SUPPORT_MULTIPLE_MODULES = "IComponentCreationDataModelProperties.SUPPORT_MULTIPLE_MODULES"; //$NON-NLS-1$	
 
 }
