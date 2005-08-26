@@ -5,14 +5,14 @@
 <context id="libv1000">
 <description>Use this view to catalog and organize reusable programming objects, such as HTML tagging, JavaScript, and JSP markup, along with custom tags, that can be embedded in existing files.
 </description>
-<topic label="Snippets view" href="../com.ibm.sse.doc/topics/csrcedt001.html"/>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
 </context>
 
 <context id="libv1100">
 <description>Supply values in this dialog to define the Snippets view object to be inserted in the current file at the cursor position. Assign a value to the variables being inserted.
 </description>
-<topic label="Inserting and editing items in the active editor" href="../com.ibm.sse.doc/topics/tsrcedt015.html"/>
-<topic label="Snippets view" href="../com.ibm.sse.doc/topics/csrcedt001.html"/>
+<topic label="Inserting and editing items in the active editor" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt015.html"/>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
 </context>
 
 <context id="libv1200">
@@ -24,8 +24,8 @@ To add a new variable, click the <b>New</b> push button, and type values in the 
 
 Insert the variables that you define into the <b>Template Pattern</b> field using the <b>Insert Variable Placeholder</b> push button.
 </description>
-<topic label="Deleting or hiding snippet items or drawers" href="../com.ibm.sse.doc/topics/tsrcedt016.html"/>
-<topic label="Snippets view" href="../com.ibm.sse.doc/topics/csrcedt001.html"/>
+<topic label="Deleting or hiding snippet items or drawers" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt016.html"/>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
 </context>
 
 <context id="libv1300">
@@ -35,57 +35,57 @@ Select <b>Open drawer at start-up</b> to have the category drawer opened in the 
 
 You can specify how you want the category drawer displayed in the Snippets view by selecting a radio button for the <b>Show/Hide Drawer</b> field.
 </description>
-<topic label="Snippets view" href="../com.ibm.sse.doc/topics/csrcedt001.html"/>
-<topic label="Deleting or hiding snippet items or drawers" href="../com.ibm.sse.doc/topics/tsrcedt016.html"/>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
+<topic label="Deleting or hiding snippet items or drawers" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt016.html"/>
 </context>
 
 <context id="snip0010">
 <description>Select this option to open the <b>Import</b> dialog, which lets you import snippet categories from the file system.
 </description>
-<topic label="Snippets view" href="../com.ibm.sse.doc/topics/csrcedt001.html"/>
-<topic label="Adding items to snippets drawers" href="../com.ibm.sse.doc/topics/tsrcedt015.html"/>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
+<topic label="Adding items to snippets drawers" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt015.html"/>
 </context>
 
 <context id="snip0020">
 <description>Select this option to open the <b>Export</b> dialog, which lets you export snippet categories to the file system.
 </description>
-<topic label="Snippets view" href="../com.ibm.sse.doc/topics/csrcedt001.html"/>
-<topic label="Adding items to snippets drawers" href="../com.ibm.sse.doc/topics/tsrcedt015.html"/>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
+<topic label="Adding items to snippets drawers" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt015.html"/>
 </context>
 
 <context id="snip0030">
 <description>Select the content types that should be visible in this drawer for in the Snippets view.
 </description>
-<topic label="Snippets view" href="../com.ibm.sse.doc/topics/csrcedt001.html"/>
-<topic label="Deleting or hiding snippet items or drawers" href="../com.ibm.sse.doc/topics/tsrcedt016.html"/>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
+<topic label="Deleting or hiding snippet items or drawers" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt016.html"/>
 </context>
 
 <context id="snip0040">
 <description>This menu item adds the selected text to the Snippets view as a new item.
 </description>
-<topic label="Snippets view" href="../com.ibm.sse.doc/topics/csrcedt001.html"/>
-<topic label="Adding items to snippets drawers" href="../com.ibm.sse.doc/topics/tsrcedt015.html"/>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
+<topic label="Adding items to snippets drawers" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt015.html"/>
 </context>
 
 <context id="snip0050">
 <description>This menu item cuts the selected Snippet item to the clipboard.
 </description>
-<topic label="Snippets view" href="../com.ibm.sse.doc/topics/csrcedt001.html"/>
-<topic label="Editing snippet items" href="../com.ibm.sse.doc/topics/tsrcedt022.html"/>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
+<topic label="Editing snippet items" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt022.html"/>
 </context>
 
 <context id="snip0060">
 <description>This menu item copies the selected Snippet item to the clipboard.
 </description>
-<topic label="Snippets view" href="../com.ibm.sse.doc/topics/csrcedt001.html"/>
-<topic label="Editing snippet items" href="../com.ibm.sse.doc/topics/tsrcedt022.html"/>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
+<topic label="Editing snippet items" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt022.html"/>
 </context>
 
 <context id="snip0070">
 <description>This menu item creates a new Snippets view item containing the current contents of the clipboard.
 </description>
-<topic label="Snippets view" href="../com.ibm.sse.doc/topics/csrcedt001.html"/>
-<topic label="Adding items to snippets drawers" href="../com.ibm.sse.doc/topics/tsrcedt015.html"/>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
+<topic label="Adding items to snippets drawers" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt015.html"/>
 </context>
 
 </contexts>
