@@ -8,18 +8,18 @@ import junit.framework.TestCase;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.etools.common.test.apitools.ProjectUnzipUtil;
+import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
-import org.eclipse.wst.common.componentcore.internal.ComponentResource;
-import org.eclipse.wst.common.componentcore.internal.ModuleStructuralModel;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
-import org.eclipse.wst.common.componentcore.internal.resources.VirtualComponent;
-import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.tests.CommonTestsPlugin;
 
 public class StructureEditAPITest extends TestCase {
@@ -161,62 +161,74 @@ public class StructureEditAPITest extends TestCase {
 		}
 	}
 
-	public void testGetEclipseResource() {
-		StructureEdit moduleCore = null;
+	/**
+	 * 
+	 */
+//	public void testGetEclipseResource() {
+//		StructureEdit moduleCore = null;
+//
+//		try {
+//			moduleCore = StructureEdit.getStructureEditForRead(project);
+//			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
+//			ComponentResource componentResource = wbComponent.findResourcesByRuntimePath(new Path("/TestArtifactEdit/WebModule1"))[0];
+//			moduleCore.getEclipseResource(componentResource);
+//		} finally {
+//			if (moduleCore != null) {
+//				moduleCore.dispose();
+//
+//			}
+//			assertNotNull(moduleCore);
+//
+//		}
+//	}
 
-		try {
-			moduleCore = StructureEdit.getStructureEditForRead(project);
-			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
-			ComponentResource componentResource = wbComponent.findResourcesByRuntimePath(new Path("/TestArtifactEdit/WebModule1"))[0];
-			moduleCore.getEclipseResource(componentResource);
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
+	/**
+	 * 
+	 */
+//	public void testGetOutputContainerRoot() {
+//		StructureEdit moduleCore = null;
+//		try {
+//			moduleCore = StructureEdit.getStructureEditForRead(project);
+//			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
+//			ComponentResource componentResource = wbComponent.findResourcesByRuntimePath(new Path("/TestArtifactEdit/WebModule1"))[0];
+//			StructureEdit.getOutputContainerRoot(wbComponent);
+//		} finally {
+//			if (moduleCore != null) {
+//				moduleCore.dispose();
+//
+//			}
+//			assertNotNull(moduleCore);
+//		}
+//	}
 
-			}
-			assertNotNull(moduleCore);
+	/**
+	 * 
+	 */
+//	public void testGetOutputContainersForProject() {
+//		StructureEdit moduleCore = null;
+//		try {
+//			moduleCore = StructureEdit.getStructureEditForRead(project);
+//			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
+//			ComponentResource componentResource = wbComponent.findResourcesByRuntimePath(new Path("/TestArtifactEdit/WebModule1"))[0];
+//			StructureEdit.getOutputContainersForProject(project);
+//		} finally {
+//			if (moduleCore != null) {
+//				moduleCore.dispose();
+//
+//			}
+//			assertNotNull(moduleCore);
+//		}
+//	}
 
-		}
-	}
-
-	public void testGetOutputContainerRoot() {
-		StructureEdit moduleCore = null;
-		try {
-			moduleCore = StructureEdit.getStructureEditForRead(project);
-			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
-			ComponentResource componentResource = wbComponent.findResourcesByRuntimePath(new Path("/TestArtifactEdit/WebModule1"))[0];
-			StructureEdit.getOutputContainerRoot(wbComponent);
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
-			assertNotNull(moduleCore);
-		}
-	}
-
-	public void testGetOutputContainersForProject() {
-		StructureEdit moduleCore = null;
-		try {
-			moduleCore = StructureEdit.getStructureEditForRead(project);
-			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
-			ComponentResource componentResource = wbComponent.findResourcesByRuntimePath(new Path("/TestArtifactEdit/WebModule1"))[0];
-			StructureEdit.getOutputContainersForProject(project);
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
-			assertNotNull(moduleCore);
-		}
-	}
-
+	/**
+	 * 
+	 */
 	public void testGetDeployedName() {
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(project);
 			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
-			ComponentResource componentResource = wbComponent.findResourcesByRuntimePath(new Path("/TestArtifactEdit/WebModule1"))[0];
+			
 			try {
 				StructureEdit.getDeployedName(moduleURI);
 			} catch (UnresolveableURIException e) {
@@ -232,13 +244,16 @@ public class StructureEditAPITest extends TestCase {
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public void testGetComponentType() {
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(project);
 			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
-			ComponentResource componentResource = wbComponent.findResourcesByRuntimePath(new Path("/TestArtifactEdit/WebModule1"))[0];
-			StructureEdit.getComponentType(new VirtualComponent(project, "", new Path("")));
+			
+			StructureEdit.getComponentType(ComponentCore.createComponent(project,wbComponent.getName()));
 		} finally {
 			if (moduleCore != null) {
 				moduleCore.dispose();
@@ -248,60 +263,6 @@ public class StructureEditAPITest extends TestCase {
 		}
 	}
 
-	public void testSetComponentType() {
-		StructureEdit moduleCore = null;
-		try {
-			moduleCore = StructureEdit.getStructureEditForRead(project);
-			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
-			ComponentResource componentResource = wbComponent.findResourcesByRuntimePath(new Path("/TestArtifactEdit/WebModule1"))[0];
-			VirtualComponent vc = new VirtualComponent(project, "", new Path(""));
-			StructureEdit.setComponentType(vc, wbComponent.getComponentType());
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
-			assertNotNull(moduleCore);
-		}
-	}
-
-	/*
-	 * Class under test for void StructureEdit(ModuleCoreNature, boolean)
-	 */
-	public void testStructureEditModuleCoreNatureboolean() {
-		StructureEdit moduleCore = null;
-		try {
-			// protected
-			// StructureEdit edit = new StructureEdit(ModuleCoreNature.getModuleCoreNature(project),
-			// true);
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
-			assertNotNull(moduleCore);
-		}
-	}
-
-	/*
-	 * Class under test for void StructureEdit(ModuleStructuralModel)
-	 */
-	public void testStructureEditModuleStructuralModel() {
-		StructureEdit moduleCore = null;
-		EMFWorkbenchContext context = new EMFWorkbenchContext(project);
-		ModuleStructuralModel msm = new ModuleStructuralModel(EDIT_MODEL_ID, context, false);
-		try {
-			// protected
-			StructureEdit edit = new StructureEdit(msm);
-			assertNotNull(edit);
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
-			assertNotNull(moduleCore);
-		}
-	}
 
 	public void testSave() {
 
@@ -339,8 +300,36 @@ public class StructureEditAPITest extends TestCase {
 		}
 	}
 
-	public void testDispose() {
-		// disposed everywhere
+	public void testMultiThreadAccess() {
+		
+		Thread[] testJobs = new Thread[200];
+		for (int i = 0; i < testJobs.length; i++) {
+			Thread job = new Thread("Job " + i)
+		      {
+		        
+		        protected IStatus run(IProgressMonitor monitor)
+		        {
+		          try
+		          {
+		        	StructureEdit moduleCore = StructureEdit.getStructureEditForRead(project);
+		      		System.out.println(moduleCore.getWorkbenchModules());
+		      		moduleCore.dispose();
+		          }
+		          catch (Exception e)
+		          {
+		        	  e.printStackTrace();
+		        	  return Status.CANCEL_STATUS;
+		          }
+		          return Status.OK_STATUS;
+		        }
+		      };
+			testJobs[i] = job;	
+			}
+		for (int j = 0; j < testJobs.length; j++) {
+			Thread job = testJobs[j];
+			job.run();
+		}
+		
 	}
 
 	public void testPrepareProjectComponentsIfNecessary() {
@@ -439,7 +428,7 @@ public class StructureEditAPITest extends TestCase {
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
 			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
-			moduleCore.createWorkbenchModuleResource(null);
+			moduleCore.createWorkbenchModuleResource(project.getFile("WebModule1/NewFolder"));
 
 		} finally {
 			if (moduleCore != null) {
