@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchComponentImpl.java,v 1.3 2005/05/18 03:02:06 cbridgha Exp $
+ * $Id: WorkbenchComponentImpl.java,v 1.4 2005/08/29 21:10:14 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
@@ -375,6 +375,10 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	public ComponentResource[] findResourcesBySourcePath(IPath aSourcePath, int resourceFlag) { 
 		ResourceTreeRoot resourceTreeRoot = ResourceTreeRoot.getSourceResourceTreeRoot(this);
 		return resourceTreeRoot.findModuleResources(aSourcePath, resourceFlag); 
+	}
+	public boolean exists(IPath aSourcePath, int resourceFlag) { 
+		ResourceTreeRoot resourceTreeRoot = ResourceTreeRoot.getSourceResourceTreeRoot(this);
+		return resourceTreeRoot.exists(aSourcePath, resourceFlag); 
 	}
   
 

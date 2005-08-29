@@ -9,9 +9,11 @@
 package org.eclipse.wst.common.componentcore.internal;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xmi.XMIResource;
@@ -66,6 +68,15 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 			aResource.releaseFromWrite();
 
 	}
+	protected boolean removeResource(Resource aResource) {
+		if (aResource != null) {
+			synchronized (aResource) {
+				aResource.eAdapters().remove(resourceAdapter);
+				return getResources().remove(aResource);
+			}
+		}
+		return false;
+	}
     
     /* (non-Javadoc)
 	 * @see org.eclipse.wst.common.internal.emfworkbench.integration.EditModel#getPrimaryRootObject()
@@ -111,5 +122,21 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 				aResource.setID(projectModules, MODULE_CORE_ID);
 			}
 		}
+	}
+	protected Resource getAndLoadLocalResource(URI aUri) {
+		
+			Resource resource = getLocalResource(aUri);
+			if (null != resource) {
+				synchronized (resource) {
+					if (!resource.isLoaded()) {
+						try {
+							resource.load(Collections.EMPTY_MAP); // reload it
+						} catch (IOException e) {
+							// Ignore
+						}
+					}
+				}
+			}
+			return resource;
 	}
 }

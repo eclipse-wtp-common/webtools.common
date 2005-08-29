@@ -14,10 +14,10 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
-import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.ModuleStructuralModel;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 
 /**
@@ -49,23 +49,14 @@ public class ModuleCoreEclipseAdapterFactory implements IAdapterFactory {
 		if (!resource.exists()) return null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(resource.getProject());
-			if (moduleCore.getWorkbenchModules().length == 1)
-				module = moduleCore.getWorkbenchModules()[0];
-			else {
-				ComponentResource[] resources = moduleCore.findResourcesBySourcePath(resource.getFullPath());
-				for (int i = 0; i < resources.length; i++) {
-					module = resources[i].getComponent();
-					if (module != null)
-						break;
-				}
-			}
+			module = moduleCore.findComponent(resource.getFullPath(),ResourceTreeNode.CREATE_NONE);	
 		} catch (UnresolveableURIException e) {
 			// Ignore
 		} finally {
 			if (moduleCore != null)
 				moduleCore.dispose();
 		}
-		return ComponentCore.createComponent(resource.getProject(), module.getName());
+		return module == null ? null : ComponentCore.createComponent(resource.getProject(), module.getName());
 	}
 
 	/* (non-Javadoc)

@@ -142,6 +142,19 @@ public class ResourceTreeNode {
 			return NO_MODULE_RESOURCES;
 		return (ComponentResource[]) foundModuleResources.toArray(new ComponentResource[foundModuleResources.size()]);
 	}
+	public boolean exists(IPath aPath, int creationFlags) {
+
+		Set foundModuleResources = findModuleResourcesSet(aPath, aPath, creationFlags);
+		if (foundModuleResources.size() == 0) {
+			if (true) {
+				ResourceTreeNode child = findChild(aPath.segment(0), creationFlags);
+				if (child != null)
+					return true;
+			}
+			return false;
+		}
+		return true;
+	}
 
 	public boolean hasModuleResources() {
 		return moduleResources.size() > 0;

@@ -522,7 +522,7 @@ public class StructureEdit implements IEditModelHandler {
 	public WorkbenchComponent[] getWorkbenchModules() {
 		ProjectComponents pc = getComponentModelRoot();
 		if(pc != null) {
-			List wbModules = getComponentModelRoot().getComponents();
+			List wbModules = pc.getComponents();
 			return (WorkbenchComponent[]) wbModules.toArray(new WorkbenchComponent[wbModules.size()]);
 		}
 		return NO_COMPONENTS;
@@ -695,6 +695,48 @@ public class StructureEdit implements IEditModelHandler {
 	}
 	/**
 	 * <p>
+	 * Locates the {@see WorkbenchComponent}s that contains the resource with the given source
+	 * path. There are no representations about the containment of the {@see ComponentResource}s
+	 * which are returned. The only guarantee is that the returned elements are contained within the
+	 * same project.
+	 * </p>
+	 * <p>
+	 * The sourcePath of each {@see ComponentResource}&nbsp;will be mapped to either an IFile or an
+	 * IFolder. As a result, if the {@see ComponentResource}&nbsp;is a container mapping, the path
+	 * of the supplied resource may not be identical the sourcePath of the {@see ComponentResource}.
+	 * </p> 
+	 * 
+	 * @param aProjectRelativePath
+	 *            A valid project-relative path of a given resource
+	 *        resourceFlag
+	 *        	  A bit flag that determines if Resources should be created during the search
+	 *        		CREATE_NONE 
+	 * 				CREATE_RESOURCE_ALWAYS
+	 * 				CREATE_TREENODE_IFNEC
+	 * @return An array of WorkbenchModuleResources which have sourcePaths that contain the given
+	 *         resource
+	 * @throws UnresolveableURIException
+	 *             If the supplied module URI is invalid or unresolveable.
+	 */
+	public WorkbenchComponent findComponent(IPath aProjectRelativeResourcePath, int resourceFlag) throws UnresolveableURIException {
+		ProjectComponents projectModules = getComponentModelRoot();
+		EList modules = projectModules.getComponents();
+
+		WorkbenchComponent module = null;
+		boolean resourceExists = false;
+		for (int i = 0; i < modules.size(); i++) {
+			module = (WorkbenchComponent) modules.get(i);
+			resourceExists = module.exists(aProjectRelativeResourcePath,resourceFlag);
+			if (!resourceExists && aProjectRelativeResourcePath.segments().length > 1) { 
+				resourceExists = module.exists(aProjectRelativeResourcePath.removeFirstSegments(1),resourceFlag);
+			}
+		if (resourceExists)
+			return module;
+		}
+		return null;
+	}
+	/**
+	 * <p>
 	 * Locates the {@see ComponentResource}s that contain the supplied resource in their source
 	 * path. There are no representations about the containment of the {@see ComponentResource}s
 	 * which are returned. The only guarantee is that the returned elements are contained within the
@@ -708,6 +750,11 @@ public class StructureEdit implements IEditModelHandler {
 	 * 
 	 * @param aProjectRelativePath
 	 *            A valid project-relative path of a given resource
+	 *         resourceFlag
+	 *        	  A bit flag that determines if Resources should be created during the search
+	 *        		CREATE_NONE 
+	 * 				CREATE_RESOURCE_ALWAYS
+	 * 				CREATE_TREENODE_IFNEC
 	 * @return An array of WorkbenchModuleResources which have sourcePaths that contain the given
 	 *         resource
 	 * @throws UnresolveableURIException

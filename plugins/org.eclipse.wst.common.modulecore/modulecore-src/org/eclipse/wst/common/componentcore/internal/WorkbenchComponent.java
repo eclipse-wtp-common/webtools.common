@@ -128,5 +128,7 @@ public interface WorkbenchComponent extends EObject{
 	ComponentResource[] findResourcesByRuntimePath(IPath aDeployPath);
 	
 	ComponentResource[] findResourcesBySourcePath(IPath aSourcePath, int resourceFlag);
+	
+	boolean exists(IPath aSourcePath, int resourceFlag);
 
 } // WorkbenchComponent
