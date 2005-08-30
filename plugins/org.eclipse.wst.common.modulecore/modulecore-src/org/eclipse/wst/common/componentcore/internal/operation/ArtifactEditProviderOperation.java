@@ -110,5 +110,9 @@ public abstract class ArtifactEditProviderOperation extends AbstractDataModelOpe
 	}
 	
 	public abstract IStatus doExecute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException;
+	
+	public ArtifactEdit getArtifactEdit(){
+		return artifactEdit;
+	}
 
 }
