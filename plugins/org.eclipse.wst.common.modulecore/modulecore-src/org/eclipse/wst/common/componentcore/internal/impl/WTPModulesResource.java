@@ -62,20 +62,4 @@ public class WTPModulesResource extends TranslatorResourceImpl implements Transl
 	public Translator getRootTranslator() {
 		return WTPModulesTranslator.INSTANCE;
 	}
-//	 
-//	 
-//	// temporary for debugging not to be released. 
-//	protected void initializeContents() {
-//		contents = new ResourceImpl.ContentsEList() {
-//			public boolean add(Object object) {
-//				renderer.prepareToAddContents();
-//				return super.add(object);
-//			}
-//
-//			public boolean addAll(Collection collection) {
-//				renderer.prepareToAddContents();
-//				return super.addAll(collection);
-//			}
-//		};
-//	}
 }

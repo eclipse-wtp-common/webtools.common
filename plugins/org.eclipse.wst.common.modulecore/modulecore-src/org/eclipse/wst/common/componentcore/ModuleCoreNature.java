@@ -15,6 +15,7 @@ import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
+import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -25,6 +26,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.jem.util.emf.workbench.EMFWorkbenchContextBase;
+import org.eclipse.jem.util.emf.workbench.ISynchronizerExtender;
 import org.eclipse.jem.util.emf.workbench.ProjectResourceSet;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.jem.util.emf.workbench.nature.EMFNature;
@@ -132,10 +134,10 @@ import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelNature;
  * @see org.eclipse.wst.common.componentcore.ArtifactEdit#getArtifactEditForWrite(WorkbenchComponent)
  * @plannedfor 1.0
  */
-public class ModuleCoreNature extends EditModelNature implements IProjectNature, IModuleConstants {
+public class ModuleCoreNature extends EditModelNature implements IProjectNature, IModuleConstants, ISynchronizerExtender {
 	
     public static final String VALIDATION_BUILDER_ID = "org.eclipse.wst.validation.validationbuilder"; // plugin id of the validation builder//$NON-NLS-1$
-
+    private ModuleStructuralModel cachedModel;
 	/**
 	 * <p>
 	 * Find and return the ModuleCoreNature of aProject, if available.
@@ -453,6 +455,12 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		super.configure();
 		addDeployableProjectBuilder();
 		addDependencyResolver();
+		cacheModuleStructuralModel();
+	}
+
+	private void cacheModuleStructuralModel() {
+		if (cachedModel == null)
+			cachedModel = getModuleStructuralModelForRead(this);
 	}
 
 	protected String getPluginID() {
@@ -504,6 +512,39 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 
 	public EditModel getExistingEditModel(String artifactEditModelId,Map params, boolean isReadOnly) {
 		return getEmfContext().getExistingEditModel(artifactEditModelId,params,isReadOnly);
+	}
+
+	public void shutdown() {
+		super.shutdown();
+		if (cachedModel != null) {
+			cachedModel.dispose();
+			cachedModel = null;
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.wst.common.internal.emfworkbench.ISynchronizerExtender#projectChanged(org.eclipse.core.resources.IResourceDelta)
+	 */
+	public void projectChanged(IResourceDelta delta) {
+		if (delta.getKind() == delta.OPEN)
+			if (cachedModel == null)
+				cachedModel = getModuleStructuralModelForRead(this);
+	
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.wst.common.internal.emfworkbench.ISynchronizerExtender#projectClosed()
+	 */
+	public void projectClosed() {
+		this.emfContext = null;
+		if (cachedModel != null) {
+			cachedModel.dispose();
+			cachedModel = null;
+		}
 	}
 
 
