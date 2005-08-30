@@ -1,27 +1,20 @@
 package org.eclipse.wst.common.frameworks.componentcore.tests;
 
-import java.io.IOException;
-import java.net.URL;
-
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.etools.common.test.apitools.ProjectUnzipUtil;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.frameworks.componentcore.virtualpath.tests.TestWorkspace;
-import org.eclipse.wst.common.tests.CommonTestsPlugin;
 
 public class StructureEditAPITest extends TestCase {
 	public static String fileSep = System.getProperty("file.separator");
@@ -44,12 +37,6 @@ public class StructureEditAPITest extends TestCase {
 
 	public IProject getTargetProject() {
 		return ResourcesPlugin.getWorkspace().getRoot().getProject(PROJECT_NAME);
-	}
-
-	public boolean createProject() {
-		IPath localZipPath = getLocalPath();
-		ProjectUnzipUtil util = new ProjectUnzipUtil(localZipPath, new String[]{PROJECT_NAME});
-		return util.createProjects();
 	}
 
 
