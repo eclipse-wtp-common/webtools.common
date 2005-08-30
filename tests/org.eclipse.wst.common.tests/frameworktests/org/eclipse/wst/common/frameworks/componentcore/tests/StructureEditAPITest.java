@@ -20,6 +20,7 @@ import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.frameworks.componentcore.virtualpath.tests.TestWorkspace;
 import org.eclipse.wst.common.tests.CommonTestsPlugin;
 
 public class StructureEditAPITest extends TestCase {
@@ -36,10 +37,8 @@ public class StructureEditAPITest extends TestCase {
 	// for m4 integration....
 
 	protected void setUp() throws Exception {
-		if (!getTargetProject().exists())
-			if (!createProject())
-				fail();
-		project = getTargetProject();
+		TestWorkspace.init();
+		project = TestWorkspace.getTargetProject();
 	}
 
 
@@ -53,15 +52,6 @@ public class StructureEditAPITest extends TestCase {
 		return util.createProjects();
 	}
 
-	private IPath getLocalPath() {
-		URL url = CommonTestsPlugin.instance.find(zipFilePath);
-		try {
-			url = Platform.asLocalURL(url);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return new Path(url.getPath());
-	}
 
 
 	public void testGetStructureEditForRead() {
