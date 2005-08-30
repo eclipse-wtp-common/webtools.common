@@ -682,7 +682,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 		return res;
 	}
 
-	protected synchronized void processResource(Resource aResource) {
+	protected void processResource(Resource aResource) {
 		if (aResource != null && !getResources().contains(aResource)) {
 			if (aResource instanceof ReferencedResource) {
 				access((ReferencedResource) aResource);
