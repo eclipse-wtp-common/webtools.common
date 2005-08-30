@@ -132,7 +132,10 @@ public class ComponentResolver implements URIResolverExtension {
 					resolvedRuntimePath = new Path(virtualResources[i].getRuntimePath().removeLastSegments(1).append(systemId).toString());
 				}
 				IVirtualFile virtualFile = ComponentCore.createFile(file.getProject(), virtualResources[i].getComponent().getName(), resolvedRuntimePath);
-				IFile resolvedFile = virtualFile.getUnderlyingFile();
+				IFile resolvedFile = null;
+				if (virtualFile.getWorkspaceRelativePath().segmentCount() > 1) {
+					resolvedFile = virtualFile.getUnderlyingFile();
+				}
 				if (resolvedFile != null && resolvedFile.getLocation() != null) {
 					if (prependFilePrefix) {
 						resolvedPath = FILE_PROTOCOL + resolvedFile.getLocation().toString();
