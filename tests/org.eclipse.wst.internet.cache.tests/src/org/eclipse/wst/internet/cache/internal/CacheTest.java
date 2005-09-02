@@ -44,11 +44,26 @@ public class CacheTest extends TestCase
 	
 	
 	/**
-	 * Test trying to cache a resource that doesn't exist.
+	 * Test trying to cache a resource that doesn't exist
+	 * on a server that does exist.
+	 * TODO: Uncomment once eclipse.org fixes the code returned
+	 * for 404 pages.
 	 */
-	public void testGetNonExistantResource()
+//	public void testGetNonExistantResource()
+//	{
+//		String resource = "http://www.eclipse.org/webtools/nonexistantfile";
+//		String result = cache.getResource(resource);
+//		cache.clear();
+//		assertNull("The result returned for resource " + resource + " is not null.", result);
+//	}
+	
+	/**
+	 * Test trying to cache a resource that doesn't exist
+	 * because the server doesn't exist.
+	 */
+	public void testGetNonExistantServer()
 	{
-		String resource = "http://www.eclipse.org/webtools/nonexistantfile";
+		String resource = "http://www.eclipse.bad/webtools/nonexistantfile";
 		String result = cache.getResource(resource);
 		cache.clear();
 		assertNull("The result returned for resource " + resource + " is not null.", result);
@@ -174,7 +189,7 @@ public class CacheTest extends TestCase
 	{
 		String resource1 = "http://www.eclipse.org/webtools";
 		String resource2 = "http://www.eclipse.org";
-		String resource3 = "http://www.eclipse.org/webtools/nonexistantfile";
+		String resource3 = "http://www.eclipse.bad/webtools/nonexistantfile";
 		cache.getResource(resource1);
 		cache.getResource(resource2);
 		cache.getResource(resource3);
