@@ -283,7 +283,7 @@ public class StructureEdit implements IEditModelHandler {
 	 * @return A project-relative URI of the output folder for aWorkbenchModoule.
 	 */
 	public static IFolder getOutputContainerRoot(IVirtualComponent aComponent) {
-		if (aComponent == null || aComponent.getProject()==null)
+		if (aComponent == null || aComponent.getProject()==null || aComponent.getName() == null)
 			return null;
 		return aComponent.getProject().getFolder(new Path(DEPLOYABLES_ROOT + aComponent.getName()));
 	}
