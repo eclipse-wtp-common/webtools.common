@@ -58,10 +58,10 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 
 	private List errorTable = new ArrayList(1); // IStatus
 
-	private boolean useCompression = true;
+//	private boolean useCompression = true;
 
 	// private boolean createLeadupStructure = false;
-	private boolean generateManifestFile = false;
+//	private boolean generateManifestFile = false;
 
 	private IProgressMonitor monitor;
 
@@ -81,11 +81,11 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 	 * @see org.eclipse.core.commands.operations.IUndoableOperation#execute(org.eclipse.core.runtime.IProgressMonitor,
 	 *      org.eclipse.core.runtime.IAdaptable)
 	 */
-	public IStatus execute(IProgressMonitor monitor, IAdaptable info) {
+	public IStatus execute(IProgressMonitor aMonitor, IAdaptable info) {
 		try {
-			this.monitor = monitor;
+			this.monitor = aMonitor;
 			IVirtualReference vReference = (IVirtualReference) model.getProperty(VIRTUAL_REFERENCE);
-			IVirtualComponent enclosingComponent = vReference.getEnclosingComponent();
+//			IVirtualComponent enclosingComponent = vReference.getEnclosingComponent();
 
 			IPath absoluteOutputContainer = getAbsoluteOutputContainer(vReference);
 			if (absoluteOutputContainer == null) // Project not accessible
@@ -101,7 +101,7 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 			} else if (absoluteInputContainer == null || !referencedComponent.getProject().getFolder(absoluteInputContainer).exists()) {
 				if (vReference.getReferencedComponent().isBinary()) {
 					try {
-						String osPath = "";
+						String osPath = ""; //$NON-NLS-1$
 						VirtualArchiveComponent archiveComp = (VirtualArchiveComponent)referencedComponent;
 						if( archiveComp.getArchiveType().equals(VirtualArchiveComponent.VARARCHIVETYPE)){
 							IPath resolvedpath = (IPath)archiveComp.getAdapter(VirtualArchiveComponent.ADAPTER_TYPE);
@@ -140,7 +140,7 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 				if (dependentZip == null || dependentZip.exists())
 					return OK_STATUS;
 				zipAndCopyResource(getResource(absoluteInputContainer), dependentZip);
-				getResource(absoluteOutputContainer).refreshLocal(IResource.DEPTH_INFINITE, monitor);
+				getResource(absoluteOutputContainer).refreshLocal(IResource.DEPTH_INFINITE, aMonitor);
 			}
 
 		} catch (CoreException ex) {
@@ -220,7 +220,7 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 	 * @see org.eclipse.core.commands.operations.IUndoableOperation#redo(org.eclipse.core.runtime.IProgressMonitor,
 	 *      org.eclipse.core.runtime.IAdaptable)
 	 */
-	public IStatus redo(IProgressMonitor monitor, IAdaptable info) {
+	public IStatus redo(IProgressMonitor aMonitor, IAdaptable info) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -231,7 +231,7 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 	 * @see org.eclipse.core.commands.operations.IUndoableOperation#undo(org.eclipse.core.runtime.IProgressMonitor,
 	 *      org.eclipse.core.runtime.IAdaptable)
 	 */
-	public IStatus undo(IProgressMonitor monitor, IAdaptable info) {
+	public IStatus undo(IProgressMonitor aMonitor, IAdaptable info) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -244,7 +244,7 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 	private void zipAndCopyResource(IResource inputResource, IResource outputResource) {
 		try {
 			IResource[] children;
-			if (inputResource.exists()) {
+			if (inputResource!=null && inputResource.exists()) {
 				children = ((IContainer) inputResource).members();
 				if(children.length == 0) {
 					Logger.getLogger().log("Warning: Unable to zip empty archive from directory: " + inputResource.getName());
@@ -252,10 +252,14 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 				}
 			}
 			else {
-				Logger.getLogger().log("Warning: Unable to zip empty archive from directory: " + inputResource.getName());
+				String inputResourceName = ""; //$NON-NLS-1$
+				if (inputResource !=null)
+					inputResourceName = inputResource.getName();
+				Logger.getLogger().log("Warning: Unable to zip empty archive from directory: " + inputResourceName);
 				return;
 			}
-				
+			if (outputResource == null)	
+				Logger.getLogger().log("Warning: Unable to zip to target location.");
 			String osPath = outputResource.getLocation().toOSString();
 			exporter = new ZipFileExporter(osPath, true);
 			inputContainerSegmentCount = inputResource.getFullPath().segmentCount();
@@ -302,13 +306,13 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 		if (typeID == null)
 			return zipFileName;
 		if (typeID.equals(IModuleConstants.JST_APPCLIENT_MODULE) || typeID.equals(IModuleConstants.JST_EJB_MODULE) || typeID.equals(IModuleConstants.JST_UTILITY_MODULE))
-			return zipFileName + ".jar";
+			return zipFileName + ".jar"; //$NON-NLS-1$
 		else if (typeID.equals(IModuleConstants.JST_WEB_MODULE))
-			return zipFileName + ".war";
+			return zipFileName + ".war"; //$NON-NLS-1$
 		else if (typeID.equals(IModuleConstants.JST_CONNECTOR_MODULE))
-			return zipFileName + ".rar";
+			return zipFileName + ".rar"; //$NON-NLS-1$
 		else if (typeID.equals(IModuleConstants.JST_EAR_MODULE))
-			return zipFileName + ".ear";
+			return zipFileName + ".ear"; //$NON-NLS-1$
 		return zipFileName;
 	}
 
@@ -361,27 +365,25 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 
 		if (resource.getType() == IResource.FILE) {
 			return writeResource(resource);
-		} else {
-			IResource[] children = null;
+		} 
+		IResource[] children = null;
 
-			try {
-				children = ((IContainer) resource).members();
-			} catch (CoreException e) {
-				// this should never happen because an #isAccessible check is
-				// done before #members is invoked
-				addError(format(ERROR_EXPORTING_MSG, new Object[]{resource.getFullPath()}), e); //$NON-NLS-1$
-			}
-
-			boolean writeFolder = true;
-			for (int i = 0; i < children.length; i++) {
-				writeFolder = !exportResource(children[i]) && writeFolder;
-			}
-			if (writeFolder) {
-				writeResource(resource);
-			}
-			return true;
-
+		try {
+			children = ((IContainer) resource).members();
+		} catch (CoreException e) {
+			// this should never happen because an #isAccessible check is
+			// done before #members is invoked
+			addError(format(ERROR_EXPORTING_MSG, new Object[]{resource.getFullPath()}), e); //$NON-NLS-1$
 		}
+
+		boolean writeFolder = true;
+		for (int i = 0; i < children.length; i++) {
+			writeFolder = !exportResource(children[i]) && writeFolder;
+		}
+		if (writeFolder) {
+			writeResource(resource);
+		}
+		return true;
 	}
 
 	private boolean writeResource(IResource resource) throws InterruptedException {
