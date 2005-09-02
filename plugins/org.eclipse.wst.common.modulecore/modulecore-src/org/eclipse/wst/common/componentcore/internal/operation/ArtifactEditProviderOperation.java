@@ -6,16 +6,12 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.ComponentCore;
-import org.eclipse.wst.common.componentcore.internal.StructureEdit;
-import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.util.ArtifactEditRegistryReader;
 import org.eclipse.wst.common.componentcore.internal.util.IArtifactEditFactory;
-import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
@@ -25,7 +21,7 @@ public abstract class ArtifactEditProviderOperation extends AbstractDataModelOpe
 	
 	protected ArtifactEdit artifactEdit;
 	protected EMFWorkbenchContext emfWorkbenchContext;
-	private CommandStack commandStack;
+//	private CommandStack commandStack;
 
 	public ArtifactEditProviderOperation() {
 		super();
@@ -38,8 +34,8 @@ public abstract class ArtifactEditProviderOperation extends AbstractDataModelOpe
 	
 	protected final void initialize(IProgressMonitor monitor) {
 		emfWorkbenchContext = (EMFWorkbenchContext) WorkbenchResourceHelperBase.createEMFContext(getTargetProject(), null);
-		WorkbenchComponent module = getWorkbenchModule(); 
-		artifactEdit = getArtifactEditForModule(module);
+		IVirtualComponent component = getTargetComponent(); 
+		artifactEdit = getArtifactEditForModule(component);
 		doInitialize(monitor);
 	}
 	
@@ -57,30 +53,11 @@ public abstract class ArtifactEditProviderOperation extends AbstractDataModelOpe
 		//Default
 	}
 
-	private ArtifactEdit getArtifactEditForModule(WorkbenchComponent module) {
-		ComponentHandle handle = ComponentHandle.create(StructureEdit.getContainingProject(module),module.getName());
-		IVirtualComponent comp = handle.createComponent();
+	private ArtifactEdit getArtifactEditForModule(IVirtualComponent comp) {
 		ArtifactEditRegistryReader reader = ArtifactEditRegistryReader.instance();
 		IArtifactEditFactory factory = reader.getArtifactEdit(comp.getComponentTypeId());
 		return factory.createArtifactEditForWrite(comp);
 	}
-
-	/**
-     * @return
-     */
-    public WorkbenchComponent getWorkbenchModule() {
-        StructureEdit moduleCore = null;
-        WorkbenchComponent module = null;
-        try {
-            moduleCore = StructureEdit.getStructureEditForRead(getTargetProject());
-            module = moduleCore.findComponentByName(model.getStringProperty(IArtifactEditOperationDataModelProperties.COMPONENT_NAME));
-        } finally {
-            if (null != moduleCore) {
-                moduleCore.dispose();
-            }
-        }
-        return module;
-    }
 	
 	public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		return null;
