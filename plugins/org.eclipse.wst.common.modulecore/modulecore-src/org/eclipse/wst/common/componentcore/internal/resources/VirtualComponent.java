@@ -86,9 +86,11 @@ public class VirtualComponent implements IVirtualComponent {
 		if (null == componentTypeId) {
 			StructureEdit core = null;
 			try {
-				if (getProject() == null)
+				if (getProject() == null || getName() == null)
 					return null;
 				core = StructureEdit.getStructureEditForRead(getProject());
+				if (core == null)
+					return null;
 				WorkbenchComponent component = core.findComponentByName(getName());
 				ComponentType cType = component == null ? null : component.getComponentType();
 				componentTypeId = cType == null ? null : cType.getComponentTypeId();
