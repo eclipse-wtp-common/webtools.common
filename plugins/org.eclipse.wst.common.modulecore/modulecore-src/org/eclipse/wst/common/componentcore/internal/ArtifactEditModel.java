@@ -247,6 +247,7 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 		IVirtualResource[] virtualResources;
 		for (int i = 0; i < size; i++) { 
 			resourceToProcess = (Resource) theResources.get(i);
+			if (resourceToProcess == null) continue;
 			String lastSegment = resourceToProcess.getURI().lastSegment();
 			if (null != lastSegment && lastSegment.equals(ModuleCoreNature.WTPMODULE_FILE_NAME)) continue;
 			resourceResource = WorkbenchResourceHelper.getFile(resourceToProcess);
