@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel.tests;
 
-import java.util.Collection;
+import java.util.Set;
 
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 
@@ -28,8 +28,8 @@ public class TestDataModelProvider extends AbstractDataModelProvider implements 
 		instanceCount++;
 	}
 
-	public Collection getPropertyNames() {
-		Collection propertyNames = super.getPropertyNames();
+	public Set getPropertyNames() {
+		Set propertyNames = super.getPropertyNames();
 		propertyNames.add(ITestDataModel.FOO);
 		return propertyNames;
 	}

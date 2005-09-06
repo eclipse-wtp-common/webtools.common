@@ -11,8 +11,8 @@
 package org.eclipse.wst.common.frameworks.datamodel.tests;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -37,8 +37,8 @@ public class ValidationTest extends TestCase {
 	private class P extends AbstractDataModelProvider {
 
 
-		public Collection getPropertyNames(){
-			Collection propertyNames = super.getPropertyNames();
+		public Set getPropertyNames(){
+			Set propertyNames = super.getPropertyNames();
 			propertyNames.add(A);
 			propertyNames.add(B);
 			propertyNames.add(C);

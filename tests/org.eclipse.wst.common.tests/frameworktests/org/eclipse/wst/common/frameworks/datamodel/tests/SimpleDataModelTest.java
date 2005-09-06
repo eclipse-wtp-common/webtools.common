@@ -11,8 +11,8 @@
 package org.eclipse.wst.common.frameworks.datamodel.tests;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
@@ -37,8 +37,8 @@ public class SimpleDataModelTest extends TestCase {
 		public static final String BOOLEAN_PROP2 = "BOOLEAN_PROP2";
 		public static final String STRING_PROP = "STRING_PROP";
 
-		public Collection getPropertyNames() {
-			Collection propertyNames = super.getPropertyNames();
+		public Set getPropertyNames() {
+			Set propertyNames = super.getPropertyNames();
 			propertyNames.add(INT_PROP);
 			propertyNames.add(INT_PROP2);
 			propertyNames.add(INT_PROP3);
