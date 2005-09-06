@@ -11,8 +11,8 @@
 package org.eclipse.wst.common.componentcore.internal.builder;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -29,8 +29,8 @@ import org.eclipse.wst.common.frameworks.internal.enablement.DataModelEnablement
 
 public abstract class WorkbenchComponentBuilderDataModelProvider extends AbstractDataModelProvider implements IWorkbenchComponentBuilderDataModelProperties {
 
-	public Collection getPropertyNames() {
-		Collection propertyNames = super.getPropertyNames();
+	public Set getPropertyNames() {
+		Set propertyNames = super.getPropertyNames();
 		propertyNames.add(OUTPUT_CONTAINER);
 		propertyNames.add(VIRTUAL_COMPONENT);
 		propertyNames.add(DEPENDENT_COMPONENT_DM_LIST);

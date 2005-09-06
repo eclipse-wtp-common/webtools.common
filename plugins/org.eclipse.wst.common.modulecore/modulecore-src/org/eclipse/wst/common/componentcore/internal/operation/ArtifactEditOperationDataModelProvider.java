@@ -1,6 +1,6 @@
 package org.eclipse.wst.common.componentcore.internal.operation;
 
-import java.util.Collection;
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IStatus;
@@ -21,8 +21,8 @@ public class ArtifactEditOperationDataModelProvider extends AbstractDataModelPro
 		super();
 	}
 
-	public Collection getPropertyNames() {
-		Collection propertyNames = super.getPropertyNames();
+	public Set getPropertyNames() {
+		Set propertyNames = super.getPropertyNames();
 		propertyNames.add(TYPE_ID);
 		propertyNames.add(PROJECT_NAME);
 		propertyNames.add(COMPONENT_NAME);

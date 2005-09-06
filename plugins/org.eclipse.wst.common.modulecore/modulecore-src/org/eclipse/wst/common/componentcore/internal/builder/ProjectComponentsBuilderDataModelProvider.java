@@ -11,8 +11,8 @@
 package org.eclipse.wst.common.componentcore.internal.builder;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 import org.eclipse.core.internal.events.ResourceDelta;
@@ -41,8 +41,8 @@ import org.eclipse.wst.common.frameworks.internal.enablement.DataModelEnablement
 
 public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModelProvider implements IProjectComponentsBuilderDataModelProperties {
 
-	public Collection getPropertyNames() {
-		Collection propertyNames = super.getPropertyNames();
+	public Set getPropertyNames() {
+		Set propertyNames = super.getPropertyNames();
 		propertyNames.add(PROJECT);
 		propertyNames.add(BUILD_KIND);
 		propertyNames.add(PROJECT_DETLA);

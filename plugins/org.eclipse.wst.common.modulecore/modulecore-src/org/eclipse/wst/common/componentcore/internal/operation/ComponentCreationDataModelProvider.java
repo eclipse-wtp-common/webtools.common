@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.operation;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -51,8 +51,8 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 		initProjectCreationModel();
 	}
 
-	public Collection getPropertyNames() {
-		Collection propertyNames = super.getPropertyNames();
+	public Set getPropertyNames() {
+		Set propertyNames = super.getPropertyNames();
 		propertyNames.add(PROJECT_NAME);
 		propertyNames.add(NESTED_PROJECT_CREATION_DM);
 		propertyNames.add(COMPONENT_NAME);

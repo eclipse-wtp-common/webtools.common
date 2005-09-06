@@ -1,7 +1,7 @@
 package org.eclipse.wst.common.componentcore.internal.operation;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Set;
 
 import org.eclipse.wst.common.componentcore.datamodel.properties.ICreateReferenceComponentsDataModelProperties;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
@@ -14,8 +14,8 @@ public class CreateReferenceComponentsDataModelProvider extends AbstractDataMode
 
 	}
 
-	public Collection getPropertyNames() {
-		Collection propertyNames = super.getPropertyNames();
+	public Set getPropertyNames() {
+		Set propertyNames = super.getPropertyNames();
 		propertyNames.add(SOURCE_COMPONENT_HANDLE);
 		propertyNames.add(TARGET_COMPONENTS_HANDLE_LIST);
 		propertyNames.add(TARGET_COMPONENTS_DEPLOY_PATH);

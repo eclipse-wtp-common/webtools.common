@@ -10,10 +10,10 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IStatus;
 
@@ -34,8 +34,8 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	 */
 	protected IDataModel model = null;
 
-	public Collection getPropertyNames() {
-		return new ArrayList();
+	public Set getPropertyNames() {
+		return new HashSet();
 	}
 	
 	/**
