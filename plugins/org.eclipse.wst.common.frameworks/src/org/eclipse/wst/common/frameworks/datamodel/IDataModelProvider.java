@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
@@ -44,7 +45,7 @@ public interface IDataModelProvider extends IDataModelProperties {
 	 * 
 	 * @return the array of valid property names.
 	 */
-	public String[] getPropertyNames();
+	public Collection getPropertyNames();
 
 	/**
 	 * <p>

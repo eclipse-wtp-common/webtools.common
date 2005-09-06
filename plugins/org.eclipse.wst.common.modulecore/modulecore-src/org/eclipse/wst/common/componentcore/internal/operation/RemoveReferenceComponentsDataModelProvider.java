@@ -9,10 +9,6 @@ public class RemoveReferenceComponentsDataModelProvider extends CreateReferenceC
 		super();
 	}
 
-	public String[] getPropertyNames() {
-		return super.getPropertyNames();
-	}
-	
 	public IDataModelOperation getDefaultOperation() {
 		return new RemoveReferenceComponentOperation(model);
 	}

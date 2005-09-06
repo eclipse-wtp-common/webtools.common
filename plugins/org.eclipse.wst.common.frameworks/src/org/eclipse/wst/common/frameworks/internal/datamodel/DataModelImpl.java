@@ -37,8 +37,8 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 
 	private static final String PROPERTY_NOT_LOCATED_ = WTPResourceHandler.getString("20"); //$NON-NLS-1$
 	private static final String NESTED_MODEL_NOT_LOCATED = WTPResourceHandler.getString("21"); //$NON-NLS-1$
-	
-	private static final DataModelPropertyDescriptor [] NO_DESCRIPTORS = new DataModelPropertyDescriptor[0];
+
+	private static final DataModelPropertyDescriptor[] NO_DESCRIPTORS = new DataModelPropertyDescriptor[0];
 
 	private Collection basePropertyNames;
 	private Collection allPropertyNames;
@@ -57,11 +57,10 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 	private void init(IDataModelProvider dataModelProvider) {
 		this.provider = dataModelProvider;
 		dataModelProvider.setDataModel(this);
-		String[] propertyNames = dataModelProvider.getPropertyNames();
+		Collection propertyNames = dataModelProvider.getPropertyNames();
 		HashSet properties = new HashSet();
-		for (int i = 0; null != propertyNames && i < propertyNames.length; i++) {
-			properties.add(propertyNames[i]);
-		}
+		properties.addAll(propertyNames);
+
 		properties.add(IDataModelProperties.ALLOW_EXTENSIONS);
 		properties.add(IDataModelProperties.RESTRICT_EXTENSIONS);
 		basePropertyNames = Collections.unmodifiableCollection(properties);

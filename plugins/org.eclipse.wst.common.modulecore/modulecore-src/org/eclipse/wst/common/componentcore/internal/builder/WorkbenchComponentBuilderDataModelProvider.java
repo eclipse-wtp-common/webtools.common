@@ -11,6 +11,7 @@
 package org.eclipse.wst.common.componentcore.internal.builder;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.core.resources.IFolder;
@@ -26,90 +27,95 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.internal.enablement.DataModelEnablementFactory;
 
-public abstract class WorkbenchComponentBuilderDataModelProvider extends AbstractDataModelProvider implements IWorkbenchComponentBuilderDataModelProperties{
-    
-     /* (non-Javadoc)
-     * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider#getPropertyNames()
-     */
-    public String[] getPropertyNames() {
-        return new String[]{OUTPUT_CONTAINER, VIRTUAL_COMPONENT, DEPENDENT_COMPONENT_DM_LIST, BUILD_KIND_FOR_DEP};
-    }
-    /* (non-Javadoc)
-     * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#doSetProperty(java.lang.String, java.lang.Object)
-     */
-    public boolean propertySet(String propertyName, Object propertyValue) {
-        if(propertyName.equals(VIRTUAL_COMPONENT)) {
-        	model.setProperty(OUTPUT_CONTAINER, populateOutputContainer());
-        	model.setProperty(DEPENDENT_COMPONENT_DM_LIST, populateDependentModulesDM());
-//            if(model.isPropertySet(BUILD_KIND_FOR_DEP))
-//                updateDepGraphIfNecessary();
-        } 
-//        else if(propertyName.equals(BUILD_KIND_FOR_DEP) && model.isPropertySet(WORKBENCH_COMPONENT)) {
-//            updateDepGraphIfNecessary();
-//        } 
-        return true;
-    }
+public abstract class WorkbenchComponentBuilderDataModelProvider extends AbstractDataModelProvider implements IWorkbenchComponentBuilderDataModelProperties {
 
-//    private void updateDepGraphIfNecessary() {
-//        if(model.getIntProperty(BUILD_KIND_FOR_DEP) != IncrementalProjectBuilder.INCREMENTAL_BUILD) {
-//            ComponentHandle componentHandle;
-//            ComponentHandle refComponentHandle;
-//            IProject project = null;
-//            
-//            IProject refProject = (IProject)model.getProperty(PROJECT);
-//            WorkbenchComponent wbModule = (WorkbenchComponent)model.getProperty(WORKBENCH_COMPONENT);
-//            List depModules = wbModule.getReferencedComponents();
-//            
-//            for(int i = 0; i<depModules.size(); i++){
-//                project = null;
-//                refComponentHandle = ComponentHandle.create(refProject, wbModule.getName());
-//                
-//                try {
-//                    project = StructureEdit.getContainingProject(((ReferencedComponent)depModules.get(i)).getHandle());
-//                } catch (UnresolveableURIException e) {
-//                    Logger.getLogger().log(e.getMessage());
-//                }
-//                
-//                if(project != null) {
-//                    componentHandle = ComponentHandle.create(project, ((ReferencedComponent)depModules.get(i)).getHandle());
-//                    DependencyGraph.getInstance().addReference(componentHandle, refComponentHandle);
-//                }
-//            }
-//        }
-//    }
+	public Collection getPropertyNames() {
+		Collection propertyNames = super.getPropertyNames();
+		propertyNames.add(OUTPUT_CONTAINER);
+		propertyNames.add(VIRTUAL_COMPONENT);
+		propertyNames.add(DEPENDENT_COMPONENT_DM_LIST);
+		propertyNames.add(BUILD_KIND_FOR_DEP);
+		return propertyNames;
+	}
 
-    private Object populateDependentModulesDM() {
-    	IVirtualComponent vComponent = (IVirtualComponent)model.getProperty(VIRTUAL_COMPONENT);
-        IVirtualReference [] vReferences = vComponent.getReferences();
-        List depModulesDataModels = new ArrayList(vReferences.length);
-        IDataModel dependentDataModel = null;
-        IProject project = vComponent.getProject();
-        IVirtualReference vReference = null;
-        Object outputContainer = model.getProperty(OUTPUT_CONTAINER);
-        for(int i = 0; i<vReferences.length; i++){
-            dependentDataModel = DataModelEnablementFactory.createDataModel(IModuleConstants.DEPENDENT_MODULE + ".builder", project);
-            if(dependentDataModel != null) {
-            	dependentDataModel.setProperty(IReferencedComponentBuilderDataModelProperties.VIRTUAL_REFERENCE, vReferences[i]);
-            	depModulesDataModels.add(dependentDataModel);
-            }
-        }
-        return depModulesDataModels;
-    }
+	public boolean propertySet(String propertyName, Object propertyValue) {
+		if (propertyName.equals(VIRTUAL_COMPONENT)) {
+			model.setProperty(OUTPUT_CONTAINER, populateOutputContainer());
+			model.setProperty(DEPENDENT_COMPONENT_DM_LIST, populateDependentModulesDM());
+			// if(model.isPropertySet(BUILD_KIND_FOR_DEP))
+			// updateDepGraphIfNecessary();
+		}
+		// else if(propertyName.equals(BUILD_KIND_FOR_DEP) &&
+		// model.isPropertySet(WORKBENCH_COMPONENT)) {
+		// updateDepGraphIfNecessary();
+		// }
+		return true;
+	}
 
-    /**
-     * @return
-     */
-    private Object populateOutputContainer() {
-        IVirtualComponent vComponent = (IVirtualComponent)model.getProperty(VIRTUAL_COMPONENT);
-        IFolder outputContainer = null;
-        if(vComponent != null)
-        	outputContainer = StructureEdit.getOutputContainerRoot(vComponent);
-        return outputContainer;
-    }
+	// private void updateDepGraphIfNecessary() {
+	// if(model.getIntProperty(BUILD_KIND_FOR_DEP) != IncrementalProjectBuilder.INCREMENTAL_BUILD) {
+	// ComponentHandle componentHandle;
+	// ComponentHandle refComponentHandle;
+	// IProject project = null;
+	//            
+	// IProject refProject = (IProject)model.getProperty(PROJECT);
+	// WorkbenchComponent wbModule = (WorkbenchComponent)model.getProperty(WORKBENCH_COMPONENT);
+	// List depModules = wbModule.getReferencedComponents();
+	//            
+	// for(int i = 0; i<depModules.size(); i++){
+	// project = null;
+	// refComponentHandle = ComponentHandle.create(refProject, wbModule.getName());
+	//                
+	// try {
+	// project =
+	// StructureEdit.getContainingProject(((ReferencedComponent)depModules.get(i)).getHandle());
+	// } catch (UnresolveableURIException e) {
+	// Logger.getLogger().log(e.getMessage());
+	// }
+	//                
+	// if(project != null) {
+	// componentHandle = ComponentHandle.create(project,
+	// ((ReferencedComponent)depModules.get(i)).getHandle());
+	// DependencyGraph.getInstance().addReference(componentHandle, refComponentHandle);
+	// }
+	// }
+	// }
+	// }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#getDefaultOperation()
-     */
-    public abstract IDataModelOperation getDefaultOperation();
+	private Object populateDependentModulesDM() {
+		IVirtualComponent vComponent = (IVirtualComponent) model.getProperty(VIRTUAL_COMPONENT);
+		IVirtualReference[] vReferences = vComponent.getReferences();
+		List depModulesDataModels = new ArrayList(vReferences.length);
+		IDataModel dependentDataModel = null;
+		IProject project = vComponent.getProject();
+		IVirtualReference vReference = null;
+		Object outputContainer = model.getProperty(OUTPUT_CONTAINER);
+		for (int i = 0; i < vReferences.length; i++) {
+			dependentDataModel = DataModelEnablementFactory.createDataModel(IModuleConstants.DEPENDENT_MODULE + ".builder", project);
+			if (dependentDataModel != null) {
+				dependentDataModel.setProperty(IReferencedComponentBuilderDataModelProperties.VIRTUAL_REFERENCE, vReferences[i]);
+				depModulesDataModels.add(dependentDataModel);
+			}
+		}
+		return depModulesDataModels;
+	}
+
+	/**
+	 * @return
+	 */
+	private Object populateOutputContainer() {
+		IVirtualComponent vComponent = (IVirtualComponent) model.getProperty(VIRTUAL_COMPONENT);
+		IFolder outputContainer = null;
+		if (vComponent != null)
+			outputContainer = StructureEdit.getOutputContainerRoot(vComponent);
+		return outputContainer;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#getDefaultOperation()
+	 */
+	public abstract IDataModelOperation getDefaultOperation();
 
 }

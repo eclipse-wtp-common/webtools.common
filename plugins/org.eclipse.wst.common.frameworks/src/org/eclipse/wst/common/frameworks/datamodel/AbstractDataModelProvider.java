@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,24 +34,10 @@ public abstract class AbstractDataModelProvider implements IDataModelProvider {
 	 */
 	protected IDataModel model = null;
 
-	/**
-	 * <p>
-	 * A utility method for combining property arrays.
-	 * </p>
-	 * 
-	 * @param props1
-	 *            a first property array
-	 * @param props2
-	 *            a second property array
-	 * @return a new property array containing the contents of the first and second property arrays.
-	 */
-	protected static String[] combineProperties(String[] props1, String[] props2) {
-		String[] properties = new String[props1.length + props2.length];
-		System.arraycopy(props1, 0, properties, 0, props1.length);
-		System.arraycopy(props2, 0, properties, props1.length, props2.length);
-		return properties;
+	public Collection getPropertyNames() {
+		return new ArrayList();
 	}
-
+	
 	/**
 	 * <p>
 	 * A default implementation of init(). Subclasses should override as necessary.

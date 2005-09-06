@@ -10,14 +10,18 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.builder;
 
+import java.util.Collection;
+
 import org.eclipse.wst.common.componentcore.datamodel.properties.IReferencedComponentBuilderDataModelProperties;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 
 public class ReferencedComponentBuilderDataModelProvider extends AbstractDataModelProvider implements IReferencedComponentBuilderDataModelProperties {
 
-	public String[] getPropertyNames() {
-		return new String[]{VIRTUAL_REFERENCE};
+	public Collection getPropertyNames() {
+		Collection propertyNames = super.getPropertyNames();
+		propertyNames.add(VIRTUAL_REFERENCE);
+		return propertyNames;
 	}
 
 	public IDataModelOperation getDefaultOperation() {

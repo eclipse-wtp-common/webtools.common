@@ -15,6 +15,7 @@
 package org.eclipse.wst.common.frameworks.internal.operations;
 
 import java.io.File;
+import java.util.Collection;
 
 import org.eclipse.core.internal.localstore.CoreFileSystemLibrary;
 import org.eclipse.core.internal.resources.Resource;
@@ -39,8 +40,14 @@ public class ProjectCreationDataModelProvider extends AbstractDataModelProvider 
     public void init() {
         super.init();
     }
-	public String[] getPropertyNames() {
-		return new String[]{PROJECT, PROJECT_NAME, PROJECT_LOCATION, PROJECT_NATURES, PROJECT_DESCRIPTION};
+	public Collection getPropertyNames() {
+		Collection propertyNames = super.getPropertyNames();
+		propertyNames.add(PROJECT);
+		propertyNames.add(PROJECT_NAME);
+		propertyNames.add(PROJECT_LOCATION);
+		propertyNames.add(PROJECT_NATURES);
+		propertyNames.add(PROJECT_DESCRIPTION);
+		return propertyNames;
 	}
 
 	public Object getDefaultProperty(String propertyName) {

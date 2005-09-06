@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.operation;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
@@ -32,25 +33,36 @@ import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 /**
  * This dataModel is a common super class used for creation of WTP Components.
  * 
- * This class (and all its fields and methods) is likely to change during the
- * WTP 1.0 milestones as the new project structures are adopted. Use at your own
- * risk.
+ * This class (and all its fields and methods) is likely to change during the WTP 1.0 milestones as
+ * the new project structures are adopted. Use at your own risk.
  * 
  * @plannedfor WTP 1.0
  */
 public abstract class ComponentCreationDataModelProvider extends AbstractDataModelProvider implements IComponentCreationDataModelProperties {
 
-    //protected boolean isProjMultiComponents = false;
-    
+	// protected boolean isProjMultiComponents = false;
+
 	public void init() {
 		super.init();
-        //isProjMultiComponents = FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp();
-		//model.getBooleanProperty(SUPPORT_MULTIPLE_MODULES) = model.getBooleanProperty(SUPPORT_MULTIPLE_MODULES);
+		// isProjMultiComponents =
+		// FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp();
+		// model.getBooleanProperty(SUPPORT_MULTIPLE_MODULES) =
+		// model.getBooleanProperty(SUPPORT_MULTIPLE_MODULES);
 		initProjectCreationModel();
 	}
 
-	public String[] getPropertyNames() {
-		return new String[]{PROJECT_NAME, NESTED_PROJECT_CREATION_DM, COMPONENT_NAME, LOCATION, COMPONENT_DEPLOY_NAME, CREATE_DEFAULT_FILES, COMPONENT,  SUPPORT_MULTIPLE_MODULES};
+	public Collection getPropertyNames() {
+		Collection propertyNames = super.getPropertyNames();
+		propertyNames.add(PROJECT_NAME);
+		propertyNames.add(NESTED_PROJECT_CREATION_DM);
+		propertyNames.add(COMPONENT_NAME);
+		propertyNames.add(COMPONENT_NAME);
+		propertyNames.add(LOCATION);
+		propertyNames.add(COMPONENT_DEPLOY_NAME);
+		propertyNames.add(CREATE_DEFAULT_FILES);
+		propertyNames.add(COMPONENT);
+		propertyNames.add(SUPPORT_MULTIPLE_MODULES);
+		return propertyNames;
 	}
 
 	public void propertyChanged(DataModelEvent event) {
@@ -62,21 +74,21 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 	public boolean propertySet(String propertyName, Object propertyValue) {
 		if (COMPONENT_NAME.equals(propertyName)) {
 			model.setProperty(COMPONENT_DEPLOY_NAME, propertyValue);
-            if(!model.getBooleanProperty(SUPPORT_MULTIPLE_MODULES))
-                model.setProperty(PROJECT_NAME, propertyValue);
-        } else if (COMPONENT_DEPLOY_NAME.equals(propertyName)){
+			if (!model.getBooleanProperty(SUPPORT_MULTIPLE_MODULES))
+				model.setProperty(PROJECT_NAME, propertyValue);
+		} else if (COMPONENT_DEPLOY_NAME.equals(propertyName)) {
 			model.setProperty(COMPONENT_DEPLOY_NAME, propertyValue);
 		} else if (COMPONENT.equals(propertyName)) {
 			throw new RuntimeException(propertyName + " should not be set.");
-		}else if (PROJECT_NAME.equals(propertyName)) {
-            //if(!FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp()){
-				//model.notifyPropertyChange(PROJECT_NAME, IDataModel.VALUE_CHG);
-				//set the property in nested FlexibleJavaProjectCreationDataModelProvider
-				IDataModel dm = model.getNestedModel(NESTED_PROJECT_CREATION_DM);
-	            dm.setProperty(IFlexibleProjectCreationDataModelProperties.PROJECT_NAME, propertyValue);				
-				return true; 
-            //}	
-        }
+		} else if (PROJECT_NAME.equals(propertyName)) {
+			// if(!FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp()){
+			// model.notifyPropertyChange(PROJECT_NAME, IDataModel.VALUE_CHG);
+			// set the property in nested FlexibleJavaProjectCreationDataModelProvider
+			IDataModel dm = model.getNestedModel(NESTED_PROJECT_CREATION_DM);
+			dm.setProperty(IFlexibleProjectCreationDataModelProperties.PROJECT_NAME, propertyValue);
+			return true;
+			// }
+		}
 		return true;
 	}
 
@@ -96,7 +108,7 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 			IStatus status = OK_STATUS;
 			String moduleName = model.getStringProperty(COMPONENT_NAME);
 			if (status.isOK()) {
-                if (moduleName.indexOf("#") != -1 || moduleName.indexOf("/") != -1) { //$NON-NLS-1$
+				if (moduleName.indexOf("#") != -1 || moduleName.indexOf("/") != -1) { //$NON-NLS-1$
 					String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.ERR_INVALID_CHARS); //$NON-NLS-1$
 					return WTPCommonPlugin.createErrorStatus(errorMessage);
 				} else if (moduleName == null || moduleName.equals("")) { //$NON-NLS-1$
@@ -106,76 +118,75 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 					return OK_STATUS;
 			} else
 				return status;
-		} 
-		else if (propertyName.equals(PROJECT_NAME)) {
+		} else if (propertyName.equals(PROJECT_NAME)) {
 			IStatus status = OK_STATUS;
-			//if(!FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp()){
-			if(!model.getBooleanProperty(SUPPORT_MULTIPLE_MODULES)){
+			// if(!FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp()){
+			if (!model.getBooleanProperty(SUPPORT_MULTIPLE_MODULES)) {
 				String projectName = model.getStringProperty(PROJECT_NAME);
 				if (projectName == null || projectName.length() == 0) {
 					String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_NAME_EMPTY);
 					status = WTPCommonPlugin.createErrorStatus(errorMessage);
 				}
-				if( status.isOK()){
-					status = validateProjectName(projectName);	
+				if (status.isOK()) {
+					status = validateProjectName(projectName);
 				}
-	            if(status.isOK() && (!model.getBooleanProperty(SUPPORT_MULTIPLE_MODULES))){
-	                IProject proj = ProjectUtilities.getProject(projectName);
-	                if(proj.exists()) {
-	                    String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_EXISTS_ERROR);
-	                    status =  WTPCommonPlugin.createErrorStatus(errorMessage); 
-	                }
-	            }
+				if (status.isOK() && (!model.getBooleanProperty(SUPPORT_MULTIPLE_MODULES))) {
+					IProject proj = ProjectUtilities.getProject(projectName);
+					if (proj.exists()) {
+						String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_EXISTS_ERROR);
+						status = WTPCommonPlugin.createErrorStatus(errorMessage);
+					}
+				}
 			}
 			return status;
-		}
-		else if (propertyName.equals(COMPONENT_DEPLOY_NAME)) {
+		} else if (propertyName.equals(COMPONENT_DEPLOY_NAME)) {
 			return OK_STATUS;
 		} else if (propertyName.equals(CREATE_DEFAULT_FILES)) {
 			return OK_STATUS;
 		}
 		return OK_STATUS;
 	}
-	
-	protected  IStatus validateProjectName(String projectName) {
+
+	protected IStatus validateProjectName(String projectName) {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IStatus status = workspace.validateName(projectName, IResource.PROJECT);
 		if (!status.isOK())
 			return status;
 
 		if (ProjectUtilities.getProject(projectName).exists())
-			return WTPCommonPlugin.createErrorStatus(WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_EXISTS_ERROR, new Object[] { projectName }));
-		
-		if ( projectName.indexOf("#") != -1 ){ //$NON-NLS-1$
-			//String errorMessage = J2EECreationResourceHandler.getString("InvalidCharsError"); //$NON-NLS-1$
+			return WTPCommonPlugin.createErrorStatus(WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_EXISTS_ERROR, new Object[]{projectName}));
+
+		if (projectName.indexOf("#") != -1) { //$NON-NLS-1$
+			// String errorMessage = J2EECreationResourceHandler.getString("InvalidCharsError");
+			// //$NON-NLS-1$
 			String errorMessage = "InvalidCharsError"; //$NON-NLS-1$
 			return WTPCommonPlugin.createErrorStatus(errorMessage);
-		}	
+		}
 		return OK_STATUS;
 	}
-	
-//	protected static String[] getServerVersions(String moduleID, IRuntimeType type) {
-//		List list = new ArrayList();
-//		if (type == null)
-//			return null;
-//		IModuleType[] moduleTypes = type.getModuleTypes();
-//		if (moduleTypes != null) {
-//			int size = moduleTypes.length;
-//			for (int i = 0; i < size; i++) {
-//				IModuleType moduleType = moduleTypes[i];
-//				if (matches(moduleType.getId(), moduleID)) {
-//					list.add(moduleType.getVersion());
-//				}
-//
-//			}
-//		}
-//		String[] versions = null;
-//		if (!list.isEmpty()) {
-//			versions = new String[list.size()];
-//			list.toArray(versions);
-//		}
-//		return versions;
-//	}
+
+	// protected static String[] getServerVersions(String moduleID, IRuntimeType type) {
+	// List list = new ArrayList();
+	// if (type == null)
+	// return null;
+	// IModuleType[] moduleTypes = type.getModuleTypes();
+	// if (moduleTypes != null) {
+	// int size = moduleTypes.length;
+	// for (int i = 0; i < size; i++) {
+	// IModuleType moduleType = moduleTypes[i];
+	// if (matches(moduleType.getId(), moduleID)) {
+	// list.add(moduleType.getVersion());
+	// }
+	//
+	// }
+	// }
+	// String[] versions = null;
+	// if (!list.isEmpty()) {
+	// versions = new String[list.size()];
+	// list.toArray(versions);
+	// }
+	// return versions;
+	// }
 
 	protected static boolean matches(String serverTypeID, String j2eeModuleID) {
 
@@ -183,7 +194,7 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 			if (j2eeModuleID.equals(IModuleConstants.JST_WEB_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_EJB_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_EAR_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_APPCLIENT_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_CONNECTOR_MODULE)) {
 				return true;
 			}
-		}else if (serverTypeID.equals("j2ee.*")) {
+		} else if (serverTypeID.equals("j2ee.*")) {
 			if (j2eeModuleID.equals(IModuleConstants.JST_WEB_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_EJB_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_EAR_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_APPCLIENT_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_CONNECTOR_MODULE)) {
 				return true;
 			}
@@ -202,12 +213,13 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 		}
 		return false;
 	}
-	
-//	private static boolean matches(String a, String b) {
-//		if (a == null || b == null || "*".equals(a) || "*".equals(b) || a.startsWith(b) || b.startsWith(a)) //$NON-NLS-1$ //$NON-NLS-2$
-//			return true;
-//		return false;
-//	}
+
+	// private static boolean matches(String a, String b) {
+	// if (a == null || b == null || "*".equals(a) || "*".equals(b) || a.startsWith(b) ||
+	// b.startsWith(a)) //$NON-NLS-1$ //$NON-NLS-2$
+	// return true;
+	// return false;
+	// }
 
 
 	protected String getComponentName() {
