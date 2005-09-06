@@ -53,6 +53,8 @@ public class IDTranslator extends Translator {
 	}
 
 	public Object getMOFValue(EObject emfObject) {
+		if (emfObject == null)
+			throw new NoResourceException();
 		XMIResource res = (XMIResource) emfObject.eResource();
 		if (res == null)
 			throw new NoResourceException();
