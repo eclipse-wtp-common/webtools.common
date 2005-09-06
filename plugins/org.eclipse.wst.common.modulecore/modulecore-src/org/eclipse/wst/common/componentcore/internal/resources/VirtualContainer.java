@@ -87,6 +87,7 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 				if (platformResource != null) {
 					switch (platformResource.getType()) {
 						case IResource.FOLDER :
+						case IResource.PROJECT :
 							return new VirtualFolder(getComponentHandle(), getRuntimePath().append(aPath));
 						case IResource.FILE :
 							return new VirtualFile(getComponentHandle(), getRuntimePath().append(aPath));
@@ -163,14 +164,15 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 					// exact match
 					if (fullRuntimePath.equals(getRuntimePath())) {
 						realResource = StructureEdit.getEclipseResource(componentResources[componentResourceIndex]);
-						if (realResource.getType() == IResource.FOLDER) {
-							IFolder realFolder = (IFolder) realResource;
-							IResource[] realChildResources = realFolder.members(memberFlags);
+						if (realResource.getType() == IResource.FOLDER || realResource.getType() == IResource.PROJECT) {
+							IContainer realContainer = (IContainer) realResource;
+							IResource[] realChildResources = realContainer.members(memberFlags);
 							for (int realResourceIndex = 0; realResourceIndex < realChildResources.length; realResourceIndex++) {
 								newRuntimePath = getRuntimePath().append(realChildResources[realResourceIndex].getName());
 								addVirtualResource(virtualResources, realChildResources[realResourceIndex], newRuntimePath);
 							}
-						} // An IResource.FILE would be an error condition (as this is a container)
+						}
+						// An IResource.FILE would be an error condition (as this is a container)
 
 					} else { // fuzzy match
 						newRuntimePath = getRuntimePath().append(fullRuntimePath.segment(getRuntimePath().segmentCount()));
