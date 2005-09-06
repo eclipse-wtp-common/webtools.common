@@ -96,7 +96,7 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 			IVirtualComponent referencedComponent = vReference.getReferencedComponent();
 			IPath absoluteInputContainer = getAbsoluteInputContainer(referencedComponent);
 
-			if (absoluteOutputContainer == null || referencedComponent==null) {
+			if (outputContainerFolder == null || !outputContainerFolder.exists() || absoluteOutputContainer == null || referencedComponent==null) {
 				return OK_STATUS;
 			} else if (absoluteInputContainer == null || !referencedComponent.getProject().getFolder(absoluteInputContainer).exists()) {
 				if (vReference.getReferencedComponent().isBinary()) {
