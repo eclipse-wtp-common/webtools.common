@@ -10,13 +10,17 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel.tests;
 
+import java.util.Collection;
+
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 
 public class B extends AbstractDataModelProvider {
 	public static final String P = "B.P";
 
-	public String[] getPropertyNames() {
-		return new String[]{P};
+	public Collection getPropertyNames() {
+		Collection propertyNames = super.getPropertyNames();
+		propertyNames.add(P);
+		return propertyNames;
 	}
 
 	public String getID() {

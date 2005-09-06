@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel.tests;
 
+import java.util.Collection;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -74,8 +75,13 @@ public class TestAbstractDMProvider extends TestCase {
 
 	private class DMProvider extends AbstractDataModelProvider {
 
-		public String[] getPropertyNames() {
-			return combineProperties(new String[]{INTEGER, BOOLEAN}, new String[]{STRING, OBJECT});
+		public Collection getPropertyNames(){
+			Collection propertyNames = super.getPropertyNames();
+			propertyNames.add(INTEGER);
+			propertyNames.add(BOOLEAN);
+			propertyNames.add(STRING);
+			propertyNames.add(OBJECT);
+			return propertyNames;
 		}
 
 		public void init() {

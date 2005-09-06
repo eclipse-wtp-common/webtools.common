@@ -25,9 +25,4 @@ public class RootDMProvider extends AbstractDataModelProvider {
 		return ResourcesPlugin.getWorkspace().getRoot().getProject("foo");
 	}
 
-	public String[] getPropertyNames() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }
