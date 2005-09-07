@@ -1,3 +1,14 @@
+/*******************************************************************************
+ * Copyright (c) 2001, 2005 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ * IBM Corporation - initial API and implementation
+ *******************************************************************************/
+
 package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
 
 import java.util.HashMap;
@@ -7,12 +18,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jem.util.RegistryReader;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
-
-/*
- * Licensed Material - Property of IBM (C) Copyright IBM Corp. 2001, 2002 - All
- * Rights Reserved. US Government Users Restricted Rights - Use, duplication or
- * disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
- */
 
 /**
  * @author mdelder
