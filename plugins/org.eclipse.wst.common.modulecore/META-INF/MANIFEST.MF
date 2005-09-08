@@ -4,7 +4,6 @@ Bundle-Name: Modulecore Plug-in
 Bundle-Vendor: %provider
 Bundle-SymbolicName: org.eclipse.wst.common.modulecore; singleton:=true
 Bundle-Version: 0.7.0
-Bundle-ClassPath: modulecore.jar
 Bundle-Activator: org.eclipse.wst.common.componentcore.internal.ModulecorePlugin
 Bundle-Localization: plugin
 Export-Package: org.eclipse.wst.common.componentcore,

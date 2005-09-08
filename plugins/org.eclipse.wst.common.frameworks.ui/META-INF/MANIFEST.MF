@@ -4,7 +4,6 @@ Bundle-Name: WTP UI Plug-in
 Bundle-Vendor: %providerName
 Bundle-SymbolicName: org.eclipse.wst.common.frameworks.ui; singleton:=true
 Bundle-Version: 0.7.0
-Bundle-ClassPath: wtp_ui.jar
 Bundle-Activator: org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin
 Bundle-Localization: plugin
 Export-Package: .,
