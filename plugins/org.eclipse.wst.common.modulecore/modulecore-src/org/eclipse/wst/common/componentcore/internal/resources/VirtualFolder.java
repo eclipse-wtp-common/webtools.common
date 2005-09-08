@@ -8,6 +8,9 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.resources;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -86,7 +89,14 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 	}
 	
 	public IFolder[] getUnderlyingFolders() {
-		return new IFolder[] {getUnderlyingFolder()};
+		IPath[] paths = getProjectRelativePaths();
+		List result = new ArrayList();
+		for (int i=0; i<paths.length; i++) {
+			IFolder folder = getProject().getFolder(paths[i]);
+			if (folder!=null && folder.exists() && !result.contains(folder))
+				result.add(folder);
+		}
+		return (IFolder[]) result.toArray(new IFolder[result.size()]);
 	}
 
 	protected void doDeleteMetaModel(int updateFlags, IProgressMonitor monitor) {

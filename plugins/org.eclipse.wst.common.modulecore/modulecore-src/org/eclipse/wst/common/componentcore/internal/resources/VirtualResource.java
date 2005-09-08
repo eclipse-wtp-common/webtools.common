@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.resources;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
@@ -66,9 +68,9 @@ public abstract class VirtualResource implements IVirtualResource {
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(getComponentHandle().getProject());
-			WorkbenchComponent component = moduleCore.findComponentByName(getComponentHandle().getName());
-			ComponentResource[] resources = component.findResourcesByRuntimePath(getRuntimePath());
-			component.getResources().removeAll(Arrays.asList(resources));
+			WorkbenchComponent aComponent = moduleCore.findComponentByName(getComponentHandle().getName());
+			ComponentResource[] resources = aComponent.findResourcesByRuntimePath(getRuntimePath());
+			aComponent.getResources().removeAll(Arrays.asList(resources));
 		} finally {
 			if (moduleCore != null) {
 				moduleCore.saveIfNecessary(monitor);
@@ -81,8 +83,13 @@ public abstract class VirtualResource implements IVirtualResource {
 	protected abstract void doDeleteRealResources(int updateFlags, IProgressMonitor monitor) throws CoreException;
 
 	public boolean exists() {
-		IResource resource = getUnderlyingResource();
-		return resource != null && resource.exists();
+		// verify all underlying resources exist for the virtual resource to exist
+		IResource[] resources = getUnderlyingResources();
+		for (int i=0; i<resources.length; i++) {
+			if (resources[i]==null || !resources[i].exists())
+				return false;
+		}
+		return true;
 	}
 
 	public String getFileExtension() {
@@ -103,61 +110,67 @@ public abstract class VirtualResource implements IVirtualResource {
 		return runtimePath;
 	}
 
-	public IPath getProjectRelativePath() {
+	public IPath[] getProjectRelativePaths() {
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(getProject());
-			WorkbenchComponent component = moduleCore.findComponentByName(getComponentHandle().getName());
-			if (component != null) {
-				ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
+			WorkbenchComponent aComponent = moduleCore.findComponentByName(getComponentHandle().getName());
+			if (aComponent != null) {
+				ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(aComponent);
 				// still need some sort of loop here to search subpieces of the runtime path.
 				ComponentResource[] componentResources = null;
 
-				IPath estimatedPath = null;
+				IPath[] estimatedPaths = null;
 				IPath searchPath = null;
 				do {
 					searchPath = (searchPath == null) ? getRuntimePath() : searchPath.removeLastSegments(1);
 					componentResources = root.findModuleResources(searchPath, ResourceTreeNode.CREATE_NONE);
-					estimatedPath = findBestMatch(componentResources);
-				} while (estimatedPath == null && canSearchContinue(componentResources, searchPath));
-				return estimatedPath;
+					estimatedPaths = findBestMatches(componentResources);
+				} while (estimatedPaths == null && canSearchContinue(componentResources, searchPath));
+				return estimatedPaths;
 			}
 		} finally {
 			if (moduleCore != null) {
 				moduleCore.dispose();
 			}
 		}
-		return getRuntimePath();
+		return new IPath[] {getRuntimePath()};
 	}
 
+	public IPath getProjectRelativePath() {
+		return getProjectRelativePaths()[0];
+	}
+	
 	private boolean canSearchContinue(ComponentResource[] componentResources, IPath searchPath) {
 		return (searchPath.segmentCount() > 0);
 	}
 
-	private IPath findBestMatch(ComponentResource[] theComponentResources) {
-
+	private IPath[] findBestMatches(ComponentResource[] theComponentResources) {
+		List result = new ArrayList();
 		int currentMatchLength = 0;
 		int bestMatchLength = -1;
 		IPath estimatedPath = null;
 		IPath currentPath = null;
-		final IPath runtimePath = getRuntimePath();
+		final IPath aRuntimePath = getRuntimePath();
 		for (int i = 0; i < theComponentResources.length; i++) {
 			currentPath = theComponentResources[i].getRuntimePath();
-
-			if (currentPath.isPrefixOf(runtimePath)) {
-				if (currentPath.segmentCount() == runtimePath.segmentCount())
-					return theComponentResources[i].getSourcePath();
-
-				currentMatchLength = currentPath.matchingFirstSegments(runtimePath);
+			if (currentPath.isPrefixOf(aRuntimePath)) {
+				if (currentPath.segmentCount() == aRuntimePath.segmentCount()) {
+					result.add(theComponentResources[i].getSourcePath());
+					continue;
+				}	
+				currentMatchLength = currentPath.matchingFirstSegments(aRuntimePath);
 				if (currentMatchLength == currentPath.segmentCount() && currentMatchLength > bestMatchLength) {
 					bestMatchLength = currentMatchLength;
 					IPath sourcePath = theComponentResources[i].getSourcePath();
-					IPath subpath = runtimePath.removeFirstSegments(currentMatchLength);
+					IPath subpath = aRuntimePath.removeFirstSegments(currentMatchLength);
 					estimatedPath = sourcePath.append(subpath);
 				}
 			}
 		}
-		return estimatedPath;
+		if (result.size()>0)
+			return (IPath[]) result.toArray(new IPath[result.size()]);
+		return new IPath[] {estimatedPath};
 	}
 
 	public String getName() {
@@ -224,8 +237,8 @@ public abstract class VirtualResource implements IVirtualResource {
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(getProject());
-			WorkbenchComponent component = moduleCore.findComponentByName(getComponentHandle().getName());
-			ComponentResource[] resources = component.findResourcesByRuntimePath(getRuntimePath());
+			WorkbenchComponent aComponent = moduleCore.findComponentByName(getComponentHandle().getName());
+			ComponentResource[] resources = aComponent.findResourcesByRuntimePath(getRuntimePath());
 			for (int i = 0; i < resources.length; i++) {
 				resources[i].setResourceType(aResourceType);
 			}
@@ -242,8 +255,8 @@ public abstract class VirtualResource implements IVirtualResource {
 			StructureEdit moduleCore = null;
 			try {
 				moduleCore = StructureEdit.getStructureEditForRead(getProject());
-				WorkbenchComponent component = moduleCore.findComponentByName(getComponentHandle().getName());
-				ComponentResource[] resources = component.findResourcesByRuntimePath(getRuntimePath());
+				WorkbenchComponent aComponent = moduleCore.findComponentByName(getComponentHandle().getName());
+				ComponentResource[] resources = aComponent.findResourcesByRuntimePath(getRuntimePath());
 				for (int i = 0; i < resources.length; i++) {
 					resourceType = resources[i].getResourceType();
 					return resourceType;
@@ -254,7 +267,7 @@ public abstract class VirtualResource implements IVirtualResource {
 				}
 			}
 		}
-		resourceType = "";
+		resourceType = ""; //$NON-NLS-1$
 		return resourceType;
 	}
 

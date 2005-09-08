@@ -49,7 +49,7 @@ public class ResourceTreeNode {
 	private final Map children = Collections.synchronizedMap(new HashMap());
 	private static final ComponentResource[] NO_MODULE_RESOURCES = new ComponentResource[]{};
 	private IPathProvider pathProvider;
-	private ResourceTreeNode parent;
+//	private ResourceTreeNode parent;
 	private String pathSegment;
 
 	public ResourceTreeNode(String aPathSegment, ResourceTreeNode parent, IPathProvider aPathProvider) {
@@ -184,7 +184,6 @@ public class ResourceTreeNode {
 		if (hasModuleResources()) {
 			ComponentResource moduleResource = null;
 			IResource eclipseResource = null;
-			IResource foundResource = null;
 			IContainer eclipseContainer = null;
 			Set resultSet = new HashSet();
 			for (Iterator resourceIter = moduleResources.iterator(); resourceIter.hasNext();) {
@@ -198,16 +197,17 @@ public class ResourceTreeNode {
 						IPath runtimeURI = moduleResource.getRuntimePath().append(aPath);
 						
 						// check for existing subpath in tree
-						ComponentResource newResource = 
-							findExistingComponentResource(moduleResource.getComponent(), runtimeURI);
+						ComponentResource newResource = findExistingComponentResource(moduleResource.getComponent(), runtimeURI);
 						
-						if(newResource == null) {
+						// add new resource if null or found resource does not have the same source path
+						IPath srcPath = eclipseContainer.getProjectRelativePath().append(aPath);
+						if(newResource == null || !newResource.getSourcePath().equals(srcPath)) {
 							// flesh out the tree
-							if ((toCreateResourceAlways) || (foundResource = eclipseContainer.findMember(aPath)) != null) {
+							if ((toCreateResourceAlways) || (eclipseContainer.findMember(aPath)) != null) {
 								newResource = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentResource();
 								newResource.setComponent(moduleResource.getComponent());		
 								newResource.setRuntimePath(runtimeURI);
-								newResource.setSourcePath(eclipseContainer.getProjectRelativePath().append(aPath));
+								newResource.setSourcePath(srcPath);
 								resultSet.add(newResource);
 							}
 						}

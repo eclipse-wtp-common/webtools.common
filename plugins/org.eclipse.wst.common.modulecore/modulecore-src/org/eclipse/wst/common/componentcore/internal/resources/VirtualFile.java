@@ -8,7 +8,11 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.resources;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -91,7 +95,14 @@ public class VirtualFile extends VirtualResource implements IVirtualFile {
 	}
 	
 	public IFile[] getUnderlyingFiles() {
-		return new IFile[] {getUnderlyingFile()};
+		IPath[] paths = getProjectRelativePaths();
+		List result = new ArrayList();
+		for (int i=0; i<paths.length; i++) {
+			IFile file = getProject().getFile(paths[i]);
+			if (file!=null && file.exists() && !result.contains(file))
+				result.add(file);
+		}
+		return (IFile[]) result.toArray(new IFile[result.size()]);
 	}
 
 	protected void doDeleteMetaModel(int updateFlags,IProgressMonitor monitor) {
