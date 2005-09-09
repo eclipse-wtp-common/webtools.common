@@ -127,6 +127,8 @@ public abstract class VirtualResource implements IVirtualResource {
 					componentResources = root.findModuleResources(searchPath, ResourceTreeNode.CREATE_NONE);
 					estimatedPaths = findBestMatches(componentResources);
 				} while (estimatedPaths == null && canSearchContinue(componentResources, searchPath));
+				if (estimatedPaths==null || estimatedPaths.length==0)
+					return new IPath[] {getRuntimePath()};
 				return estimatedPaths;
 			}
 		} finally {
@@ -170,6 +172,8 @@ public abstract class VirtualResource implements IVirtualResource {
 		}
 		if (result.size()>0)
 			return (IPath[]) result.toArray(new IPath[result.size()]);
+		if (estimatedPath == null)
+			return new IPath[] {};
 		return new IPath[] {estimatedPath};
 	}
 
