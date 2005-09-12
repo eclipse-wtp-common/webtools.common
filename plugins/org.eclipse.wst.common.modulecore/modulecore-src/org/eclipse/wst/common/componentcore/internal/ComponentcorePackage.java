@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentcorePackage.java,v 1.2 2005/04/05 03:35:37 cbridgha Exp $
+ * $Id: ComponentcorePackage.java,v 1.3 2005/09/12 02:48:31 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal;
 
@@ -25,6 +25,7 @@ import org.eclipse.emf.ecore.EReference;
  * </ul>
  * <!-- end-user-doc -->
  * @see org.eclipse.wst.common.componentcore.internal.ComponentcoreFactory
+ * @model kind="package"
  * @generated
  */
 public interface ComponentcorePackage extends EPackage{
@@ -309,13 +310,22 @@ public interface ComponentcorePackage extends EPackage{
 	int REFERENCED_COMPONENT__DEPENDENCY_TYPE = 2;
 
 	/**
+	 * The feature id for the '<em><b>Dependent Object</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REFERENCED_COMPONENT__DEPENDENT_OBJECT = 3;
+
+	/**
 	 * The number of structural features of the the '<em>Referenced Component</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int REFERENCED_COMPONENT_FEATURE_COUNT = 3;
+	int REFERENCED_COMPONENT_FEATURE_COUNT = 4;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.wst.common.componentcore.internal.impl.ProjectComponentsImpl <em>Project Components</em>}' class.
@@ -632,6 +642,17 @@ public interface ComponentcorePackage extends EPackage{
 	 * @generated
 	 */
 	EAttribute getReferencedComponent_DependencyType();
+
+	/**
+	 * Returns the meta object for the reference '{@link org.eclipse.wst.common.componentcore.internal.ReferencedComponent#getDependentObject <em>Dependent Object</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Dependent Object</em>'.
+	 * @see org.eclipse.wst.common.componentcore.internal.ReferencedComponent#getDependentObject()
+	 * @see #getReferencedComponent()
+	 * @generated
+	 */
+	EReference getReferencedComponent_DependentObject();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.wst.common.componentcore.internal.ProjectComponents <em>Project Components</em>}'.

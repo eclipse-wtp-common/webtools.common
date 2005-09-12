@@ -1,5 +1,6 @@
 package org.eclipse.wst.common.componentcore.internal.util;
 
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
 import org.eclipse.wst.common.internal.emf.resource.GenericTranslator;
@@ -86,7 +87,16 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 		result.setChildren(new Translator[] { 
 			new IPathTranslator(RUNTIME_PATH, MODULE_CORE_PKG.getReferencedComponent_RuntimePath(), DOM_ATTRIBUTE),
 			new URITranslator(HANDLE, MODULE_CORE_PKG.getReferencedComponent_Handle(), DOM_ATTRIBUTE),
+			new HRefTranslator(DEP_OBJECT,MODULE_CORE_PKG.getReferencedComponent_DependentObject()),
 			new DependencyTypeTranslator()
+		});
+		return result;
+	}
+
+	private static Translator createDepObjectTranslator(EReference afeature) {
+		GenericTranslator result = new GenericTranslator(DEP_OBJECT, afeature);
+		result.setChildren(new Translator[] { 
+				IDTranslator.INSTANCE
 		});
 		return result;
 	}

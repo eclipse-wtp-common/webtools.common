@@ -9,6 +9,8 @@ public interface WTPModulesXmlMapperI {
 	String META_RESOURCES = "meta-resources";//$NON-NLS-1$ 
 	String COMPONENT_TYPE_VERSION = "version";//$NON-NLS-1$ 
 	String HANDLE = "handle";//$NON-NLS-1$
+	String DEP_OBJECT = "dependent-object";//$NON-NLS-1$ 
+	String OBJECTREF = "href";//$NON-NLS-1$
 	String DEPENDENCY_TYPE = "dependency-type";//$NON-NLS-1$
 	String SOURCE_PATH = "source-path"; //$NON-NLS-1$
 	String RUNTIME_PATH = "deploy-path"; //$NON-NLS-1$
@@ -19,4 +21,5 @@ public interface WTPModulesXmlMapperI {
 	String PROPERTY_NAME = "name";//$NON-NLS-1$
 	String PROPERTY_VALUE = "value";//$NON-NLS-1$
 	String RESOURCE_TYPE = "resource-type";//$NON-NLS-1$
+	
 }

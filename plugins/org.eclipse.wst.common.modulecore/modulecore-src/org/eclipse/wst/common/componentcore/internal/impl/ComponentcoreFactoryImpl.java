@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentcoreFactoryImpl.java,v 1.2 2005/05/21 17:44:47 cbridgha Exp $
+ * $Id: ComponentcoreFactoryImpl.java,v 1.3 2005/09/12 02:48:31 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
@@ -30,7 +30,7 @@ import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
  */
 public class ComponentcoreFactoryImpl extends EFactoryImpl implements ComponentcoreFactory {
 	/**
-	 * Creates and instance of the factory.
+	 * Creates an instance of the factory.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated

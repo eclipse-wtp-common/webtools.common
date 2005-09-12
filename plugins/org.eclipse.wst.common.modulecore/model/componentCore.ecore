@@ -53,6 +53,7 @@
         eType="#//IPath"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="dependencyType" lowerBound="1"
         eType="#//DependencyType"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="dependentObject" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EDataType" name="URI" instanceClassName="org.eclipse.emf.common.util.URI">
     <eAnnotations source="keywords">

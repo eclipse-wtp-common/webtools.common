@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -392,7 +393,10 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 			runSaveOperation(runnable, monitor);
 		} catch (SaveFailedException ex) {
 			getSaveHandler().handleSaveFailed(ex, monitor);
-		} finally {
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		finally {
 			getSaveHandler().release();
 		}
 	}
@@ -471,9 +475,9 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 			registry.assertAccess(accessorKey);
 	}
 
-	private void runSaveOperation(IWorkspaceRunnable runnable, IProgressMonitor monitor) throws SaveFailedException {
+	protected void runSaveOperation(IWorkspaceRunnable runnable, IProgressMonitor monitor) throws SaveFailedException {
 		try {
-			ResourcesPlugin.getWorkspace().run(runnable, monitor);
+			ResourcesPlugin.getWorkspace().run(runnable, getProject(),IWorkspace.AVOID_UPDATE,monitor);
 		} catch (CoreException e) {
 			throw new SaveFailedException(e);
 		}

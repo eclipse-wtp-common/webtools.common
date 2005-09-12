@@ -36,6 +36,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.ReferencedComponent#getHandle <em>Handle</em>}</li>
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.ReferencedComponent#getRuntimePath <em>Runtime Path</em>}</li>
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.ReferencedComponent#getDependencyType <em>Dependency Type</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.componentcore.internal.ReferencedComponent#getDependentObject <em>Dependent Object</em>}</li>
  * </ul>
  * </p>
  *
@@ -123,5 +124,31 @@ public interface ReferencedComponent extends EObject{
 	 * @generated
 	 */
 	void setDependencyType(DependencyType value);
+
+	/**
+	 * Returns the value of the '<em><b>Dependent Object</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Dependent Object</em>' reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Dependent Object</em>' reference.
+	 * @see #setDependentObject(EObject)
+	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getReferencedComponent_DependentObject()
+	 * @model
+	 * @generated
+	 */
+	EObject getDependentObject();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.wst.common.componentcore.internal.ReferencedComponent#getDependentObject <em>Dependent Object</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Dependent Object</em>' reference.
+	 * @see #getDependentObject()
+	 * @generated
+	 */
+	void setDependentObject(EObject value);
 
 } // ReferencedComponent

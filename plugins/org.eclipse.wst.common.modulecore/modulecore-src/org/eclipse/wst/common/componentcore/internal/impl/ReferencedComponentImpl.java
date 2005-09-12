@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ReferencedComponentImpl.java,v 1.1 2005/04/04 07:04:59 cbridgha Exp $
+ * $Id: ReferencedComponentImpl.java,v 1.2 2005/09/12 02:48:31 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
@@ -10,7 +10,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.InternalEObject;
+
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
@@ -27,6 +30,7 @@ import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.ReferencedComponentImpl#getHandle <em>Handle</em>}</li>
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.ReferencedComponentImpl#getRuntimePath <em>Runtime Path</em>}</li>
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.ReferencedComponentImpl#getDependencyType <em>Dependency Type</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.ReferencedComponentImpl#getDependentObject <em>Dependent Object</em>}</li>
  * </ul>
  * </p>
  *
@@ -92,6 +96,16 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 	 * @ordered
 	 */
 	protected DependencyType dependencyType = DEPENDENCY_TYPE_EDEFAULT;
+
+	/**
+	 * The cached value of the '{@link #getDependentObject() <em>Dependent Object</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getDependentObject()
+	 * @generated
+	 * @ordered
+	 */
+	protected EObject dependentObject = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -179,6 +193,44 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EObject getDependentObject() {
+		if (dependentObject != null && dependentObject.eIsProxy()) {
+			EObject oldDependentObject = dependentObject;
+			dependentObject = (EObject)eResolveProxy((InternalEObject)dependentObject);
+			if (dependentObject != oldDependentObject) {
+				if (eNotificationRequired())
+					eNotify(new ENotificationImpl(this, Notification.RESOLVE, ComponentcorePackage.REFERENCED_COMPONENT__DEPENDENT_OBJECT, oldDependentObject, dependentObject));
+			}
+		}
+		return dependentObject;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EObject basicGetDependentObject() {
+		return dependentObject;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setDependentObject(EObject newDependentObject) {
+		EObject oldDependentObject = dependentObject;
+		dependentObject = newDependentObject;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ComponentcorePackage.REFERENCED_COMPONENT__DEPENDENT_OBJECT, oldDependentObject, dependentObject));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public Object eGet(EStructuralFeature eFeature, boolean resolve) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
 			case ComponentcorePackage.REFERENCED_COMPONENT__HANDLE:
@@ -187,6 +239,9 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 				return getRuntimePath();
 			case ComponentcorePackage.REFERENCED_COMPONENT__DEPENDENCY_TYPE:
 				return getDependencyType();
+			case ComponentcorePackage.REFERENCED_COMPONENT__DEPENDENT_OBJECT:
+				if (resolve) return getDependentObject();
+				return basicGetDependentObject();
 		}
 		return eDynamicGet(eFeature, resolve);
 	}
@@ -206,6 +261,9 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 				return;
 			case ComponentcorePackage.REFERENCED_COMPONENT__DEPENDENCY_TYPE:
 				setDependencyType((DependencyType)newValue);
+				return;
+			case ComponentcorePackage.REFERENCED_COMPONENT__DEPENDENT_OBJECT:
+				setDependentObject((EObject)newValue);
 				return;
 		}
 		eDynamicSet(eFeature, newValue);
@@ -227,6 +285,9 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 			case ComponentcorePackage.REFERENCED_COMPONENT__DEPENDENCY_TYPE:
 				setDependencyType(DEPENDENCY_TYPE_EDEFAULT);
 				return;
+			case ComponentcorePackage.REFERENCED_COMPONENT__DEPENDENT_OBJECT:
+				setDependentObject((EObject)null);
+				return;
 		}
 		eDynamicUnset(eFeature);
 	}
@@ -244,6 +305,8 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 				return RUNTIME_PATH_EDEFAULT == null ? runtimePath != null : !RUNTIME_PATH_EDEFAULT.equals(runtimePath);
 			case ComponentcorePackage.REFERENCED_COMPONENT__DEPENDENCY_TYPE:
 				return dependencyType != DEPENDENCY_TYPE_EDEFAULT;
+			case ComponentcorePackage.REFERENCED_COMPONENT__DEPENDENT_OBJECT:
+				return dependentObject != null;
 		}
 		return eDynamicIsSet(eFeature);
 	}

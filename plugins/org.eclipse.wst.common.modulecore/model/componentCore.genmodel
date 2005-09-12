@@ -4,11 +4,11 @@
     xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.eclipse.wst.common.modulecore/modulecore-src"
     editDirectory="/org.eclipse.wst.common.modulecore.edit/src" editorDirectory="/org.eclipse.wst.common.modulecore.editor/src"
     modelPluginID="org.eclipse.wst.common.modulecore" runtimeJar="true" modelName="ComponentCore"
-    editPluginClass="componentcore.provider.ComponentCoreEditPlugin" editorPluginClass="componentcore.presentation.ComponentCoreEditorPlugin"
-    runtimeCompatibility="false">
+    editPluginClass="componentcore.provider.ComponentCoreEditPlugin" editorPluginClass="componentcore.presentation.ComponentCoreEditorPlugin">
   <foreignModel>componentCore.ecore</foreignModel>
-  <genPackages prefix="Componentcore" basePackage="org.eclipse.wst.common.componentcore.internal"
-      disposableProviderFactory="true" ecorePackage="componentCore.ecore#/">
+  <genPackages prefix="Componentcore" basePackage="org.eclipse.wst.common" disposableProviderFactory="true"
+      interfacePackageSuffix="internal" classPackageSuffix="internal.impl" utilityPackageSuffix="internal.util"
+      ecorePackage="componentCore.ecore#/">
     <genEnums ecoreEnum="componentCore.ecore#//DependencyType">
       <genEnumLiterals ecoreEnumLiteral="componentCore.ecore#//DependencyType/uses"/>
       <genEnumLiterals ecoreEnumLiteral="componentCore.ecore#//DependencyType/consumes"/>
@@ -42,6 +42,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute componentCore.ecore#//ReferencedComponent/handle"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute componentCore.ecore#//ReferencedComponent/runtimePath"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute componentCore.ecore#//ReferencedComponent/dependencyType"/>
+      <genFeatures notify="false" createChild="false" ecoreFeature="ecore:EReference componentCore.ecore#//ReferencedComponent/dependentObject"/>
     </genClasses>
     <genClasses ecoreClass="componentCore.ecore#//ProjectComponents">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute componentCore.ecore#//ProjectComponents/projectName"/>

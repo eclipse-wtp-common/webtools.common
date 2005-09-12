@@ -43,6 +43,14 @@ public class WTPModulesResourceFactory extends TranslatorResourceFactory {
 	public WTPModulesResourceFactory(RendererFactory aRendererFactory) {
 		super(aRendererFactory);
 	}
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.ibm.etools.emf2xml.RendererFactory.Listener#updateRendererFactory(com.ibm.etools.emf2xml.RendererFactory)
+	 */
+	public void updateRendererFactory(RendererFactory newRendererFactory) {
+		//Do Nothing...   not allowed to switch
+	}
 
 	/**
 	 * @see com.ibm.etools.emf2xml.impl.TranslatorResourceFactory#createResource(URI, Renderer)
