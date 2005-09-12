@@ -26,6 +26,7 @@ import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.impl.ArtifactEditModelFactory;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
+import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 
 /**
  * <p>
@@ -65,6 +66,11 @@ public class ArtifactEditAdapterFactory implements IAdapterFactory {
 		if (anAdapterType == ArtifactEdit.ADAPTER_TYPE) {
 			if (anAdaptableObject instanceof ArtifactEditModel)
 				return new ArtifactEdit((ArtifactEditModel) anAdaptableObject);
+			if (anAdaptableObject instanceof IVirtualComponent) {
+				ArtifactEditRegistryReader reader = ArtifactEditRegistryReader.instance();
+	    		IArtifactEditFactory factory = reader.getArtifactEdit(((IVirtualComponent)anAdaptableObject).getComponentTypeId());
+	    		return factory.createArtifactEditForRead((IVirtualComponent)anAdaptableObject);
+			}
 		}
 		return null;
 	}

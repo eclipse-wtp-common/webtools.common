@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchComponentImpl.java,v 1.5 2005/09/12 19:06:15 cbridgha Exp $
+ * $Id: WorkbenchComponentImpl.java,v 1.6 2005/09/12 20:56:54 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
@@ -21,8 +21,8 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
+import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
-import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
@@ -87,7 +87,7 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	protected ComponentType componentType = null;
 
 	/**
-	 * The cached value of the '{@link #getReferencedComponents() <em>Referenced Components</em>}' reference list.
+	 * The cached value of the '{@link #getReferencedComponents() <em>Referenced Components</em>}' containment reference list.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getReferencedComponents()
@@ -236,7 +236,7 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	 */
 	public EList getReferencedComponents() {
 		if (referencedComponents == null) {
-			referencedComponents = new EObjectResolvingEList(ReferencedComponent.class, this, ComponentcorePackage.WORKBENCH_COMPONENT__REFERENCED_COMPONENTS);
+			referencedComponents = new EObjectContainmentEList(ReferencedComponent.class, this, ComponentcorePackage.WORKBENCH_COMPONENT__REFERENCED_COMPONENTS);
 		}
 		return referencedComponents;
 	}
@@ -270,6 +270,8 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 					return ((InternalEList)getResources()).basicRemove(otherEnd, msgs);
 				case ComponentcorePackage.WORKBENCH_COMPONENT__COMPONENT_TYPE:
 					return basicSetComponentType(null, msgs);
+				case ComponentcorePackage.WORKBENCH_COMPONENT__REFERENCED_COMPONENTS:
+					return ((InternalEList)getReferencedComponents()).basicRemove(otherEnd, msgs);
 				default:
 					return eDynamicInverseRemove(otherEnd, featureID, baseClass, msgs);
 			}

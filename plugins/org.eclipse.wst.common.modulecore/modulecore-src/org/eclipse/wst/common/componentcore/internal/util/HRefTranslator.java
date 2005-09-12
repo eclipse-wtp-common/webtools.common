@@ -3,7 +3,13 @@ package org.eclipse.wst.common.componentcore.internal.util;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.wst.common.componentcore.ArtifactEdit;
+import org.eclipse.wst.common.componentcore.ComponentCore;
+import org.eclipse.wst.common.componentcore.internal.StructureEdit;
+import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.internal.emf.resource.Translator;
 import org.eclipse.wst.common.internal.emf.resource.TranslatorPath;
 
@@ -49,9 +55,11 @@ public class HRefTranslator extends Translator {
 	 *      org.eclipse.emf.ecore.EObject)
 	 */
 	public Object convertStringToValue(String aValue, EObject anOwner) { 
-		//Resource res = getApplicationResource()
-		//getModuleFromID(res,aValue);
-		return aValue;
+		WorkbenchComponent earComp = (WorkbenchComponent)anOwner.eContainer();
+		IVirtualComponent virtualComp = ComponentCore.createComponent(StructureEdit.getContainingProject(earComp),earComp.getName());
+		ArtifactEdit edit = (ArtifactEdit)virtualComp.getAdapter(ArtifactEdit.class);
+		Resource res = edit.getContentModelRoot().eResource();
+		return res.getEObject(aValue);
 	}
 
 	/*

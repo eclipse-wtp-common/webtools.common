@@ -12,6 +12,7 @@ import org.eclipse.wst.common.componentcore.internal.impl.PlatformURLModuleConne
 import org.eclipse.wst.common.componentcore.internal.impl.WTPModulesInit;
 import org.eclipse.wst.common.componentcore.internal.util.ArtifactEditAdapterFactory;
 import org.eclipse.wst.common.componentcore.internal.util.ModuleCoreEclipseAdapterFactory;
+import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -43,6 +44,7 @@ public class ModulecorePlugin extends Plugin {
 		manager.registerAdapters(new ModuleCoreEclipseAdapterFactory(), ModuleStructuralModel.class);
 		manager.registerAdapters(new ArtifactEditAdapterFactory(), ArtifactEditModel.class);
 		manager.registerAdapters(new ArtifactEditAdapterFactory(), ArtifactEdit.class);
+		manager.registerAdapters(new ArtifactEditAdapterFactory(), IVirtualComponent.class);
 		manager.registerAdapters(new ModuleCoreEclipseAdapterFactory(), IResource.class);
 		
 		PlatformURLModuleConnection.startup();

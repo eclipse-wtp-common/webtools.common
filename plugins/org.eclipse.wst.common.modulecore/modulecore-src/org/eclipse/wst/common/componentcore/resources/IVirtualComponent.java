@@ -13,6 +13,7 @@ import java.util.Properties;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -28,7 +29,7 @@ import org.eclipse.wst.common.componentcore.internal.Property;
  * </p>
  * @plannedfor 1.0
  */
-public interface IVirtualComponent {
+public interface IVirtualComponent extends IAdaptable {
 	
 	IPath ROOT = new Path("/");
 	

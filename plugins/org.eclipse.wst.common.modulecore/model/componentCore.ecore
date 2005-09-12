@@ -11,7 +11,7 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="componentType" unique="false"
         lowerBound="1" eType="#//ComponentType" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="referencedComponents" unique="false"
-        upperBound="-1" eType="#//ReferencedComponent"/>
+        upperBound="-1" eType="#//ReferencedComponent" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ComponentResource">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="sourcePath" lowerBound="1"

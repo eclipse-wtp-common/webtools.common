@@ -108,7 +108,7 @@ public interface WorkbenchComponent extends EObject{
 	void setComponentType(ComponentType value);
 
 	/**
-	 * Returns the value of the '<em><b>Referenced Components</b></em>' reference list.
+	 * Returns the value of the '<em><b>Referenced Components</b></em>' containment reference list.
 	 * The list contents are of type {@link org.eclipse.wst.common.componentcore.internal.ReferencedComponent}.
 	 * <!-- begin-user-doc -->
 	 * <p>
@@ -116,9 +116,9 @@ public interface WorkbenchComponent extends EObject{
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Referenced Components</em>' reference list.
+	 * @return the value of the '<em>Referenced Components</em>' containment reference list.
 	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getWorkbenchComponent_ReferencedComponents()
-	 * @model type="org.eclipse.wst.common.componentcore.internal.ReferencedComponent"
+	 * @model type="org.eclipse.wst.common.componentcore.internal.ReferencedComponent" containment="true"
 	 * @generated
 	 */
 	EList getReferencedComponents();
