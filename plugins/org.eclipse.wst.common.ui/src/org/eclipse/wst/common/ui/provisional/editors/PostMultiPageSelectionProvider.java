@@ -19,7 +19,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.MultiPageSelectionProvider;
 
-class PostMultiPageSelectionProvider extends MultiPageSelectionProvider implements IPostSelectionProvider {
+public class PostMultiPageSelectionProvider extends MultiPageSelectionProvider implements IPostSelectionProvider {
 	private ListenerList postListeners;
 
 	public PostMultiPageSelectionProvider(MultiPageEditorPart multiPageEditor) {
