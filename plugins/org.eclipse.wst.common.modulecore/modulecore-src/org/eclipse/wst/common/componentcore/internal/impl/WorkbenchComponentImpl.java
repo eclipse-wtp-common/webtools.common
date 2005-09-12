@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchComponentImpl.java,v 1.4 2005/08/29 21:10:14 cbridgha Exp $
+ * $Id: WorkbenchComponentImpl.java,v 1.5 2005/09/12 19:06:15 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
@@ -77,7 +77,7 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	protected EList resources = null;
 
 	/**
-	 * The cached value of the '{@link #getComponentType() <em>Component Type</em>}' reference.
+	 * The cached value of the '{@link #getComponentType() <em>Component Type</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see #getComponentType()
@@ -192,14 +192,6 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	 * @generated
 	 */
 	public ComponentType getComponentType() {
-		if (componentType != null && componentType.eIsProxy()) {
-			ComponentType oldComponentType = componentType;
-			componentType = (ComponentType)eResolveProxy((InternalEObject)componentType);
-			if (componentType != oldComponentType) {
-				if (eNotificationRequired())
-					eNotify(new ENotificationImpl(this, Notification.RESOLVE, ComponentcorePackage.WORKBENCH_COMPONENT__COMPONENT_TYPE, oldComponentType, componentType));
-			}
-		}
 		return componentType;
 	}
 
@@ -208,8 +200,14 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ComponentType basicGetComponentType() {
-		return componentType;
+	public NotificationChain basicSetComponentType(ComponentType newComponentType, NotificationChain msgs) {
+		ComponentType oldComponentType = componentType;
+		componentType = newComponentType;
+		if (eNotificationRequired()) {
+			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, ComponentcorePackage.WORKBENCH_COMPONENT__COMPONENT_TYPE, oldComponentType, newComponentType);
+			if (msgs == null) msgs = notification; else msgs.add(notification);
+		}
+		return msgs;
 	}
 
 	/**
@@ -218,10 +216,17 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	 * @generated
 	 */
 	public void setComponentType(ComponentType newComponentType) {
-		ComponentType oldComponentType = componentType;
-		componentType = newComponentType;
-		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, ComponentcorePackage.WORKBENCH_COMPONENT__COMPONENT_TYPE, oldComponentType, componentType));
+		if (newComponentType != componentType) {
+			NotificationChain msgs = null;
+			if (componentType != null)
+				msgs = ((InternalEObject)componentType).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - ComponentcorePackage.WORKBENCH_COMPONENT__COMPONENT_TYPE, null, msgs);
+			if (newComponentType != null)
+				msgs = ((InternalEObject)newComponentType).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - ComponentcorePackage.WORKBENCH_COMPONENT__COMPONENT_TYPE, null, msgs);
+			msgs = basicSetComponentType(newComponentType, msgs);
+			if (msgs != null) msgs.dispatch();
+		}
+		else if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ComponentcorePackage.WORKBENCH_COMPONENT__COMPONENT_TYPE, newComponentType, newComponentType));
 	}
 
 	/**
@@ -263,6 +268,8 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 			switch (eDerivedStructuralFeatureID(featureID, baseClass)) {
 				case ComponentcorePackage.WORKBENCH_COMPONENT__RESOURCES:
 					return ((InternalEList)getResources()).basicRemove(otherEnd, msgs);
+				case ComponentcorePackage.WORKBENCH_COMPONENT__COMPONENT_TYPE:
+					return basicSetComponentType(null, msgs);
 				default:
 					return eDynamicInverseRemove(otherEnd, featureID, baseClass, msgs);
 			}
@@ -281,8 +288,7 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 			case ComponentcorePackage.WORKBENCH_COMPONENT__RESOURCES:
 				return getResources();
 			case ComponentcorePackage.WORKBENCH_COMPONENT__COMPONENT_TYPE:
-				if (resolve) return getComponentType();
-				return basicGetComponentType();
+				return getComponentType();
 			case ComponentcorePackage.WORKBENCH_COMPONENT__REFERENCED_COMPONENTS:
 				return getReferencedComponents();
 		}

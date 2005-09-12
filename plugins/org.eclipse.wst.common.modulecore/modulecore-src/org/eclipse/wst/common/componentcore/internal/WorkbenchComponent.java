@@ -82,26 +82,26 @@ public interface WorkbenchComponent extends EObject{
 	EList getResources();
 
 	/**
-	 * Returns the value of the '<em><b>Component Type</b></em>' reference.
+	 * Returns the value of the '<em><b>Component Type</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>Component Type</em>' reference isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Component Type</em>' reference.
+	 * @return the value of the '<em>Component Type</em>' containment reference.
 	 * @see #setComponentType(ComponentType)
 	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getWorkbenchComponent_ComponentType()
-	 * @model required="true"
+	 * @model containment="true" required="true"
 	 * @generated
 	 */
 	ComponentType getComponentType();
 
 	/**
-	 * Sets the value of the '{@link org.eclipse.wst.common.componentcore.internal.WorkbenchComponent#getComponentType <em>Component Type</em>}' reference.
+	 * Sets the value of the '{@link org.eclipse.wst.common.componentcore.internal.WorkbenchComponent#getComponentType <em>Component Type</em>}' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Component Type</em>' reference.
+	 * @param value the new value of the '<em>Component Type</em>' containment reference.
 	 * @see #getComponentType()
 	 * @generated
 	 */

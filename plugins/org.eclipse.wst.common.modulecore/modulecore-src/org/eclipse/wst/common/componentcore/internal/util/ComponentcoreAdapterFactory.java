@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentcoreAdapterFactory.java,v 1.2 2005/05/21 17:44:47 cbridgha Exp $
+ * $Id: ComponentcoreAdapterFactory.java,v 1.3 2005/09/12 19:06:15 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.util;
 
@@ -10,6 +10,8 @@ import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.wst.common.componentcore.internal.*;
+
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.ComponentType;
 import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;

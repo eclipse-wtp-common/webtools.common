@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentcorePackage.java,v 1.3 2005/09/12 02:48:31 cbridgha Exp $
+ * $Id: ComponentcorePackage.java,v 1.4 2005/09/12 19:06:15 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal;
 
@@ -90,7 +90,7 @@ public interface ComponentcorePackage extends EPackage{
 	int WORKBENCH_COMPONENT__RESOURCES = 1;
 
 	/**
-	 * The feature id for the '<em><b>Component Type</b></em>' reference.
+	 * The feature id for the '<em><b>Component Type</b></em>' containment reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -428,10 +428,10 @@ public interface ComponentcorePackage extends EPackage{
 	EReference getWorkbenchComponent_Resources();
 
 	/**
-	 * Returns the meta object for the reference '{@link org.eclipse.wst.common.componentcore.internal.WorkbenchComponent#getComponentType <em>Component Type</em>}'.
+	 * Returns the meta object for the containment reference '{@link org.eclipse.wst.common.componentcore.internal.WorkbenchComponent#getComponentType <em>Component Type</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @return the meta object for the reference '<em>Component Type</em>'.
+	 * @return the meta object for the containment reference '<em>Component Type</em>'.
 	 * @see org.eclipse.wst.common.componentcore.internal.WorkbenchComponent#getComponentType()
 	 * @see #getWorkbenchComponent()
 	 * @generated
