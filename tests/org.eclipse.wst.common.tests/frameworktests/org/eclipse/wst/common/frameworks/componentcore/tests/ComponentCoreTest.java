@@ -9,8 +9,12 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.etools.common.test.apitools.ProjectUnzipUtil;
 import org.eclipse.wst.common.componentcore.ComponentCore;
@@ -26,10 +30,7 @@ public class ComponentCoreTest extends TestCase {
 	public static final String EDIT_MODEL_ID = "jst.web";
 	private Path zipFilePath = new Path("TestData" + fileSep + "TestArtifactEdit.zip");
 	private IProject project;
-
-
-	// /This should be extracted out, dont have time, just trying to get coverage
-	// for m4 integration....
+	private int i, seed = 0;
 
 	protected void setUp() throws Exception {
 		if (!getTargetProject().exists())
@@ -77,6 +78,38 @@ public class ComponentCoreTest extends TestCase {
 			fail(e.toString());
 		}
 	}
+	public void testCreateComponentUsingCreate() {
+		
+		Job[] createComponentJob = new Job[500];
+		for (  i = 0; i < 500; i++) {
+			
+		 createComponentJob[i] = new Job("CreateComponent Test") {
+		        protected IStatus run(IProgressMonitor monitor) {
+		        	try {
+		    			IVirtualComponent c
+		                = ComponentCore.createComponent( project, project.getName() + getNextSeed() );
+		    			c.create( 0, null );
+		    		
+		    		} catch (Exception e) {
+		    			fail(e.toString());
+		    			return Status.CANCEL_STATUS;
+		    		}
+		            return Status.OK_STATUS;
+		        }
+		    };
+		}
+		for (int n = 0; n < createComponentJob.length; n++) {
+			createComponentJob[n].setRule(project);
+			createComponentJob[n].schedule();
+		}
+		
+	}
+
+	protected int getNextSeed() {
+		// TODO Auto-generated method stub
+		return seed++;
+	}
+
 
 	public void testCreateFolder() {
 		try {
