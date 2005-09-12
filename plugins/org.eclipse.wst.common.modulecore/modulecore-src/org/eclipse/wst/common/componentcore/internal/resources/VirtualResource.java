@@ -126,7 +126,7 @@ public abstract class VirtualResource implements IVirtualResource {
 					searchPath = (searchPath == null) ? getRuntimePath() : searchPath.removeLastSegments(1);
 					componentResources = root.findModuleResources(searchPath, ResourceTreeNode.CREATE_NONE);
 					estimatedPaths = findBestMatches(componentResources);
-				} while (estimatedPaths == null && canSearchContinue(componentResources, searchPath));
+				} while (estimatedPaths.length==0 && canSearchContinue(componentResources, searchPath));
 				if (estimatedPaths==null || estimatedPaths.length==0)
 					return new IPath[] {getRuntimePath()};
 				return estimatedPaths;
