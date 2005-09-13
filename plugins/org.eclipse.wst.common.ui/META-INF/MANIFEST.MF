@@ -10,7 +10,8 @@ Bundle-Localization: plugin
 Export-Package: org.eclipse.wst.common.ui.internal,
  org.eclipse.wst.common.ui.internal.dialogs,
  org.eclipse.wst.common.ui.internal.dnd,
- org.eclipse.wst.common.ui.internal.viewers
+ org.eclipse.wst.common.ui.internal.viewers,
+ org.eclipse.wst.common.ui.provisional.editors
 Require-Bundle: org.eclipse.core.runtime.compatibility,
  org.eclipse.ui.ide,
  org.eclipse.ui,
