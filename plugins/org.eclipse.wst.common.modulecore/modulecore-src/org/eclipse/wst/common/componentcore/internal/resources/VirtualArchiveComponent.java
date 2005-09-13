@@ -12,7 +12,6 @@ package org.eclipse.wst.common.componentcore.internal.resources;
 
 
 import java.io.File;
-import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.core.resources.IProject;
@@ -26,7 +25,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
-import org.eclipse.wst.common.componentcore.internal.Property;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
@@ -196,11 +194,11 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 		return false;
 	}
 
-	public void addMetaProperty(Property property) {
+	public void setMetaProperty(String name, String value) {
 
 	}
 
-	public void setMetaProperties(List properties) {
+	public void setMetaProperties(Properties properties) {
 
 	}
 
@@ -221,5 +219,9 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 		}
 		File diskFile = new File(osPath);
 		return diskFile;
+	}
+
+	public void setVersion(String aVersion) {
+		
 	}
 }

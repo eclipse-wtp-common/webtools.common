@@ -11,6 +11,7 @@
 package org.eclipse.wst.common.componentcore.internal.resources;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -145,7 +146,7 @@ public class VirtualComponent implements IVirtualComponent {
         }
 	}
 
-	public void setMetaProperties(List properties) {
+	public void setMetaProperties(Properties properties) {
         StructureEdit core = null;
         try {
             core = StructureEdit.getStructureEditForWrite(getProject());
@@ -157,11 +158,16 @@ public class VirtualComponent implements IVirtualComponent {
 			}            
             if(cType != null) {
                 List propList = cType.getProperties();
-                if (properties != null && !properties.isEmpty()) {  
-                    for (int i = 0; i < properties.size(); i++) {
-                    	propList.add(properties.get(i));
-                    }
-                }
+				if (properties != null && !properties.isEmpty()) {
+				        for(Enumeration itr = properties.keys(); itr.hasMoreElements();) {
+				            final String key = (String) itr.nextElement();
+				            final Property prop = ComponentcoreFactory.eINSTANCE.createProperty();
+				            prop.setName(key);
+				            prop.setValue(properties.getProperty(key));
+				            propList.add(prop);
+				         }
+				}
+                
             }
         } finally {
             if(core != null){
@@ -170,8 +176,7 @@ public class VirtualComponent implements IVirtualComponent {
             }
         }
 	}	
-	
-	public void addMetaProperty(Property property) {
+	public void setMetaProperty(String key, String value) {
         StructureEdit core = null;
         try {
             core = StructureEdit.getStructureEditForWrite(getProject());
@@ -182,8 +187,10 @@ public class VirtualComponent implements IVirtualComponent {
 				component.setComponentType(cType);
 			}              
             if(cType != null) {
-                List propList = cType.getProperties();
-                propList.add(property);
+                final Property prop = ComponentcoreFactory.eINSTANCE.createProperty();
+				prop.setName(key);
+				prop.setValue(value);
+				cType.getProperties().add(prop);
             }
         } finally {
             if(core != null){
@@ -323,6 +330,26 @@ public class VirtualComponent implements IVirtualComponent {
 		return "";
 	}
 
+	public void setVersion(String aVersion) {
+
+		StructureEdit core = null;
+		try {
+			core = StructureEdit.getStructureEditForWrite(getProject());
+			WorkbenchComponent component = core.findComponentByName(getName()); 
+			ComponentType cType = component.getComponentType();
+			if(cType == null) {
+				cType = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentType();
+				component.setComponentType(cType);
+			}
+			cType.setVersion(aVersion);
+		} finally {
+			if(core != null) {
+				core.saveIfNecessary(null);
+				core.dispose();
+			}
+		}
+	}
+	
 	public ComponentHandle getComponentHandle() {
 		return componentHandle;
 	}
@@ -351,5 +378,4 @@ public class VirtualComponent implements IVirtualComponent {
 			result[i] = ComponentCore.createComponent(handles[i].getProject(),handles[i].getName());
 		return result;
 	}
-
 }

@@ -8,7 +8,6 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.componentcore.resources;
 
-import java.util.List;
 import java.util.Properties;
 
 import org.eclipse.core.resources.IProject;
@@ -17,7 +16,6 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.wst.common.componentcore.internal.Property;
 
 /**
  * Represents a component as defined by the .wtpmodules file.
@@ -96,17 +94,17 @@ public interface IVirtualComponent extends IAdaptable {
 	/**
 	 * Adds a single property
 	 * @param property
-	 * 		A value whiich is name, value pair, see ComponentcoreFactory.eINSTANCE.createProperty()
+	 * 		A value which is name, value pair, see ComponentcoreFactory.eINSTANCE.createProperty()
 	 * 		
 	 */
-	void addMetaProperty(Property property);
+	void setMetaProperty(String name, String value);
 	
 	/**
 	 * Adds the properties provided as a list
 	 * @param properties
 	 * 			A list of properties
 	 */
-	void setMetaProperties(List properties);
+	void setMetaProperties(Properties properties);
 
 	/**
 	 * MetaResources provide a loose mechanism for components that would like to list off the
@@ -179,6 +177,12 @@ public interface IVirtualComponent extends IAdaptable {
 	 * @return The version of the component.
 	 */	
 	String getVersion();	
+	
+	/**
+	 * sets the version associated on the component.
+	 * 
+	 */	
+	void setVersion(String aVersion);	
 	
 	/**
 	 * Returns true if this component is of binary type
