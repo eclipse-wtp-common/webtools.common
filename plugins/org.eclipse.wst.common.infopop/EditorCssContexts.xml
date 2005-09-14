@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS type="org.eclipse.help.contexts"?>
+<!-- /*******************************************************************************
+ * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/ -->
+<contexts>
+<context id="ecss0000">
+<description>The CSS source page editor lets you edit a cascading style sheet. The editor provides many text editing features, such as content assist, syntax highlighting, unlimited undo and redo, element selection and formatting, and document formatting.
+</description>
+<topic label="Structured text editors for markup languages" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt004.html"/>
+<topic label="Editing text coded in markup languages - overview" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt000.html"/>
+</context>
+
+<context id="misc0180">
+<description>Use this dialog to edit the CSS content settings for a CSS file. You can specify CSS profile or restore the default by clicking <b>Restore Defaults</b>.
+</description>
+<topic label="Structured text editors for markup languages" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt004.html"/>
+<topic label="Editing text coded in markup languages - overview" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt000.html"/>
+</context>
+
+<context id="xmlm1050">
+<description>Select this option to open the <b>Cleanup</b> dialog, which contains settings to update a document so that it is well-formed and formatted. Cleanup includes such activities as inserting missing tags, adding quotation marks around attribute values, node capitalization, and formatting a document.
+</description>
+<topic label="Structured text editors for markup languages" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt004.html"/>
+<topic label="Editing text coded in markup languages - overview" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt000.html"/>
+</context>
+
+<context id="xmlm1300">
+<description>Cleanup options enable you to update CSS-style specifications, so that the CSS file is well-formed and formatted.
+
+The <b>case</b> options for <b>Identifier</b>, <b>Property name</b>, <b>Property value</b>, and <b>Selector tag name</b>, if not set to <b>As-is</b>, change the case of the specified tag nodes in a file for easier visual parsing and consistency.
+
+The following cleanup options can be set to on or off, so that you can limit the type of cleanup performed:
+- <b>Quote values</b>: Appropriately adds double- or single-quotes before and after attribute values if they are missing.
+- <b>Format source</b>: Formats the document just as the <b>Format Document</b> context menu option does, immediately after performing any other specified <b>Cleanup</b> options.
+</description>
+<topic label="Structured text editors for markup languages" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt004.html"/>
+<topic label="Editing text coded in markup languages - overview" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt000.html"/>
+</context>
+
+<context id="webx0010">
+<description>This page lets you specify the line delimiter and the text encoding that will be used when you create or save a cascading style sheet (CSS) file.
+
+Various development platforms use different line delimiters to indicate the start of a new line. Select the operating system that corresponds to your development or deployment platform.
+<b>Note:</b> This delimiter will not automatically be added to any documents that currently exist. It will be added only to documents that you create after you select the line delimiter type and click <b>Apply</b>, or to existing files that you open and then resave after you select the line delimiter type and click <b>Apply</b>.
+
+The encoding attribute is used to specify the default character encoding set that is used when loading your CSS files into the editor.
+</description>
+<topic label="Setting preferences for structured text editors" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt025.html"/>
+</context>
+
+<context id="webx0011">
+<description>This page lets you specify the formatting and capitalization style that will be used when editing a cascading style sheet (CSS) file.
+
+Enter a maximum width in the <b>Line width</b> field to specify the line width to break a line to fit onto more than one line when the document is formatted.
+
+Select <b>Insert line break between properties</b> to start every property on a new line when the document is formatted. Properties will return to the same margin as the previous line.
+
+Select <b>Indent using tabs</b> if you want to use tab characters (\t) as the standard formatting indentation.
+
+If you prefer to use spaces, select <b>Indent using spaces</b>.
+
+You can also specify the <b>Indentation size</b> which is the number of tabs or space characters used for formatting indentation.
+
+Select <b>Disable wrapping in style attribute of HTML</b> to prohibit line wrapping in the style attribute on individual tags when formatting the document.
+
+To apply these formatting styles, select the <b>Format Document</b> menu item.
+
+Select the Uppercase or Lowercase radio button to set the capitalization styles for CSS identifiers (tokens such as <b>@import</b>), properties, and property values that are inserted into the document when using content assist or code generation.
+</description>
+<topic label="Structured text editors for markup languages" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt004.html"/>
+<topic label="Editing text coded in markup languages - overview" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt000.html"/>
+</context>
+
+<context id="webx0012">
+<description>This page lets you customize the syntax highlighting that the cascading style sheet (CSS) editor does when you are editing a file.
+
+The <b>Content type</b> field contains a list of all the source types that you can select a highlighting style for. You can either select the content type that you want to work with from the drop-down list, or click text in the text sample window that corresponds to the content type for which you want to change the text highlighting.
+
+The <b>Foreground</b> and <b>Background</b> push buttons open <b>Color</b> dialog boxes that allow you to specify text foreground and background colors, respectively. Select the <b>Bold</b> check box to make the specified content type appear in bold.
+
+Click the <b>Restore Default</b> push button to set the highlighting styles back to their default values.
+</description>
+<topic label="Setting preferences for structured text editors" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt025.html"/>
+<topic label="Editing text coded in markup languages - overview" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt000.html"/>
+</context>
+
+<context id="webx0013">
+<description>This page lets you create new and edit existing templates that will be used when you edit a CSS file.
+</description>
+</context>
+
+</contexts>
