@@ -46,7 +46,11 @@ public class BaseVirtualTest extends TestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
-		TestWorkspace.init();		
+		
+		if (!TestWorkspace.getTargetProject().exists())
+			if (!TestWorkspace.createProject())
+				fail();
+
 		
 		realWebInfFolder = TEST_PROJECT.getFolder(WEBINF_FOLDER_REAL_PATH);
 		
@@ -74,7 +78,4 @@ public class BaseVirtualTest extends TestCase {
 			deletemeFolder.delete(IVirtualResource.FORCE, null);
 		
 	}
-	
-
-
 }
