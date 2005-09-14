@@ -31,6 +31,7 @@ public abstract class PostSelectionMultiPageEditorPart extends MultiPageEditorPa
 	}
 
 	protected void pageChange(int newPageIndex) {
+		super.pageChange(newPageIndex);
 		IEditorPart activeEditor = getEditor(newPageIndex);
 		if (activeEditor != null) {
 			ISelectionProvider selectionProvider = activeEditor.getSite().getSelectionProvider();
