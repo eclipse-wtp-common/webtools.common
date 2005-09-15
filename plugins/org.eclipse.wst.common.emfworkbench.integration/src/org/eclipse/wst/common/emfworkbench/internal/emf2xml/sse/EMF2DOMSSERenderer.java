@@ -353,7 +353,6 @@ public class EMF2DOMSSERenderer extends EMF2DOMRenderer implements IModelStateLi
 	private IDOMModel initializeXMLModel(IFile file, boolean forWrite) throws UnsupportedEncodingException, IOException {
 		if (file == null || !file.exists())
 			throw new FileNotFoundException((file == null) ? "null" : file.getFullPath().toOSString()); //$NON-NLS-1$
-		String id = getModelManagerId();
 		try {
 			if (forWrite)
 				setXMLModel((IDOMModel) getModelManager().getModelForEdit(file));
@@ -364,11 +363,8 @@ public class EMF2DOMSSERenderer extends EMF2DOMRenderer implements IModelStateLi
 			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError(e);
 			return null;
 		}
+		String id = getModelManager().calculateId(file);
 		syncReferenceCounts(id, forWrite);
-		if (xmlModel != null) {
-			xmlModel.setModelManager(getModelManager());
-			xmlModel.setBaseLocation(id);
-		}
 		if (xmlModel != null)
 			document = xmlModel.getDocument();
 		return xmlModel;
