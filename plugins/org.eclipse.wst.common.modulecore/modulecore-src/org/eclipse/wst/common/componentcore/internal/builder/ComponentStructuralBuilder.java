@@ -208,7 +208,7 @@ public class ComponentStructuralBuilder extends IncrementalProjectBuilder implem
     }
 
     public static void markBuilderResourcesDerived(IResource targetResource) throws CoreException{
-        if(targetResource == null)
+        if(targetResource == null || !targetResource.exists())
             return;
         targetResource.setDerived(true);
         if (targetResource.getType() == Resource.FOLDER){
