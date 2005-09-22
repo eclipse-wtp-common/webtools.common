@@ -85,6 +85,8 @@ public abstract class VirtualResource implements IVirtualResource {
 	public boolean exists() {
 		// verify all underlying resources exist for the virtual resource to exist
 		IResource[] resources = getUnderlyingResources();
+		if (resources==null || resources.length==0)
+			return false;
 		for (int i=0; i<resources.length; i++) {
 			if (resources[i]==null || !resources[i].exists())
 				return false;
