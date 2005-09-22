@@ -2,6 +2,7 @@ package org.eclipse.wst.common.componentcore.internal.impl;
 
 import java.util.Map;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
@@ -58,9 +59,18 @@ public class MappedComponentXMIHelper extends MappedXMIHelper {
 	}
 	
 	private IVirtualComponent getComponent(URI base) {
-		IVirtualResource[] virtualResources = ComponentCore.createResources(WorkbenchResourceHelper.getFile(WorkbenchResourceHelperBase.getResource(base)));
-		if (virtualResources.length>0)
-			return virtualResources[0].getComponent();
+		ResourceSet set = getResource().getResourceSet();
+		if (set == null || set.getURIConverter()==null)
+			return null;
+		URI normalized = set.getURIConverter().normalize(base);
+		if (WorkbenchResourceHelperBase.isPlatformResourceURI(normalized)) {
+			IFile file = WorkbenchResourceHelper.getPlatformFile(normalized);
+			if (file !=null) {
+				IVirtualResource[] virtualResources = ComponentCore.createResources(file);
+				if (virtualResources.length>0)
+					return virtualResources[0].getComponent();
+			}
+		}
 		return null;
 	}
 }
