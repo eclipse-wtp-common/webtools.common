@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+  id="org.eclipse.wst.common.project.facet.ui"
+  name="Project Facet UI"
+  version="1.0"
+  class="org.eclipse.wst.common.project.facet.ui.internal.FacetUiPlugin">
+
+  <runtime>
+    <library name="facet-ui.jar">
+      <export name="*"/>
+    </library>
+  </runtime>
+  
+  <requires>
+    <import plugin="org.eclipse.ui"/>
+    <import plugin="org.eclipse.ui.ide"/>
+    <import plugin="org.eclipse.core.runtime"/>
+    <import plugin="org.eclipse.core.resources"/>
+    <import plugin="org.eclipse.jdt.core"/>
+    <import plugin="org.eclipse.jst.server.core"/>
+    <import plugin="org.eclipse.wst.server.core"/>
+    <import plugin="org.eclipse.jdt.launching"/>
+    <import plugin="org.eclipse.wst.common.project.facet.core"/>
+  </requires>
+  
+  <extension-point 
+    id="wizard"
+    name="Feature Wizard Pages Extension Point"
+    schema="schemas/wizard-pages.exsd"/>
+    
+  <extension
+    point="org.eclipse.ui.popupMenus">
+    <objectContribution
+      adaptable="true"
+      objectClass="org.eclipse.core.resources.IProject"
+      nameFilter="*"
+      id="org.eclipse.wst.common.project.facet.ui.AddRemoveProjectFacetsMenuItem">
+      <filter name="nature" value="org.eclipse.wst.common.project.facet.core.nature"/>
+      <action
+        label="%add.remove.facets"
+        class="org.eclipse.wst.common.project.facet.ui.internal.AddRemoveFacetsAction"
+        menubarPath="additions"
+        enablesFor="+"
+        id="org.eclipse.wst.common.project.facet.ui.AddRemoveProjectFacetsMenuAction"/>
+    </objectContribution>
+  </extension>
+   
+</plugin>
