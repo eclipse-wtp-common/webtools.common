@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<plugin
+  id="org.eclipse.wst.common.project.facet.core"
+  name="Project Facet Core"
+  version="1.0"
+  class="org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin">
+
+  <runtime>
+    <library name="facet-core.jar">
+      <export name="*"/>
+    </library>    
+  </runtime>
+
+  <requires>
+    <import plugin="org.eclipse.core.runtime"/>
+    <import plugin="org.eclipse.core.resources"/>
+    <import plugin="org.eclipse.jdt.core"/>
+  </requires>
+   
+  <extension-point 
+    id="facets"
+    name="Project Facets Extension Point"
+    schema="schemas/facets.exsd"/>
+
+  <extension-point 
+    id="runtimes"
+    name="Runtimes Extension Point"/>
+  
+  <extension
+    id="nature"
+    point="org.eclipse.core.resources.natures">
+    <runtime>
+      <run class="org.eclipse.wst.common.project.facet.core.internal.FacetedProjectNature"/>
+    </runtime>
+  </extension>
+
+  <extension point="org.eclipse.core.runtime.adapters">
+    <factory 
+      class="org.eclipse.wst.common.project.facet.core.runtime.classpath.RuntimeClasspathProvider$Factory" 
+      adaptableType="org.eclipse.wst.common.project.facet.core.runtime.IRuntime">
+      <adapter type="org.eclipse.wst.common.project.facet.core.runtime.classpath.IClasspathProvider"/>
+    </factory>
+  </extension>
+
+
+</plugin>
