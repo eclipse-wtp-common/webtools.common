@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
-import org.eclipse.wst.common.project.facet.ui.internal.FacetUiPlugin;
 import org.osgi.framework.Bundle;
 
 /**

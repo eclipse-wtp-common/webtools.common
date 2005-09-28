@@ -38,6 +38,8 @@ public final class ProjectFacetVersion
     private String plugin;
     private final HashMap delegates = new HashMap();
     
+    ProjectFacetVersion() {}
+    
     public IProjectFacet getProjectFacet() 
     {
         return this.facet;

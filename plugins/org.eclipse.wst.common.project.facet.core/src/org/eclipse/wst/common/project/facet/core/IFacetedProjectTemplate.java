@@ -9,23 +9,25 @@
  *    Konstantin Komissarchik - initial API and implementation
  ******************************************************************************/
 
-package org.eclipse.wst.common.project.facet.core.runtime;
+package org.eclipse.wst.common.project.facet.core;
 
-import java.util.Comparator;
 import java.util.Set;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
-public interface IRuntimeComponentType
+public interface IFacetedProjectTemplate
 {
     String getId();
-    String getPluginId();
-    Set getVersions();
-    boolean hasVersion( String version );
-    IRuntimeComponentVersion getVersion( String version );
-    IRuntimeComponentVersion getLatestVersion();
-    Comparator getVersionComparator();
-    String getIconPath();
+    String getLabel();
+    
+    /**
+     * 
+     * @return the set of fixed project facets (element type: 
+     *   {@see IProjectFacet})
+     */
+    
+    Set getFixedProjectFacets();
+    IPreset getInitialPreset();
 }

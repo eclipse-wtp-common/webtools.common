@@ -46,6 +46,8 @@ public final class ProjectFacet
     private String iconPath;
     private ICategory category;
     
+    ProjectFacet() {}
+    
     public String getId() 
     {
         return this.id;

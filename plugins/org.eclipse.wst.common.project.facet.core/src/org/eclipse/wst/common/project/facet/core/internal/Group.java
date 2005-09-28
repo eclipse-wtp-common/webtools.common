@@ -36,6 +36,8 @@ public final class Group
     private final Set membersReadOnly 
         = Collections.unmodifiableSet( this.members );
     
+    Group() {}
+    
     public String getId() 
     {
         return this.id;

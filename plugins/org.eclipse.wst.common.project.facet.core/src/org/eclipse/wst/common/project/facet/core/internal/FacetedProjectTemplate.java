@@ -15,31 +15,26 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.wst.common.project.facet.core.IFacetedProjectTemplate;
 import org.eclipse.wst.common.project.facet.core.IPreset;
-import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 
 /**
- * The implementation of the {@see IPreset} interface.
- * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
-public final class Preset
+public final class FacetedProjectTemplate
 
-    implements IPreset
+    implements IFacetedProjectTemplate
     
 {
     private String id;
     private String label;
+    private final Set fixed = new HashSet();
+    private final Set fixedReadOnly = Collections.unmodifiableSet( this.fixed );
+    private IPreset preset;
     
-    private final Set facets = new HashSet();
-    
-    private final Set facetsReadOnly 
-        = Collections.unmodifiableSet( this.facets );
-    
-    private boolean isUserDefined = false;
-    
-    Preset() {}
+    FacetedProjectTemplate() {}
     
     public String getId()
     {
@@ -60,30 +55,25 @@ public final class Preset
     {
         this.label = label;
     }
-    
-    public Set getProjectFacets()
+
+    public Set getFixedProjectFacets()
     {
-        return this.facetsReadOnly;
+        return this.fixedReadOnly;
     }
     
-    void addProjectFacet( final IProjectFacetVersion fv )
+    void addFixedProjectFacet( final IProjectFacet facet )
     {
-        this.facets.add( fv );
+        this.fixed.add( facet );
+    }
+
+    public IPreset getInitialPreset()
+    {
+        return this.preset;
     }
     
-    void addProjectFacet( final Set facets )
+    void setInitialPreset( final IPreset preset )
     {
-        this.facets.addAll( facets );
+        this.preset = preset;
     }
-    
-    public boolean isUserDefined()
-    {
-        return this.isUserDefined;
-    }
-    
-    void setUserDefined( final boolean isUserDefined )
-    {
-        this.isUserDefined = isUserDefined;
-    }
-    
+
 }

@@ -22,7 +22,7 @@ import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
-import org.eclipse.wst.common.project.facet.core.IPreset;
+import org.eclipse.wst.common.project.facet.core.IFacetedProjectTemplate;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.ui.internal.ConflictingFacetsFilter;
 import org.eclipse.wst.common.project.facet.ui.internal.FacetsSelectionPanel;
@@ -37,6 +37,7 @@ public abstract class FacetedProjectWizard
     implements INewWizard
     
 {
+    private final IFacetedProjectTemplate template;
     private WizardNewProjectCreationPage firstPage;
     private String projectName;
     private IPath customPath;
@@ -45,7 +46,9 @@ public abstract class FacetedProjectWizard
     {
         super( null );
         
-        this.setWindowTitle( getWindowTitleText() );
+        this.template = getTemplate();
+        
+        this.setWindowTitle( "New " + this.template.getLabel() );
         this.setDefaultPageImageDescriptor( getDefaultPageImageDescriptor() );
     }
     
@@ -58,16 +61,16 @@ public abstract class FacetedProjectWizard
     public void addPages()
     {
         this.firstPage = new WizardNewProjectCreationPage( "first.page" );
-        this.firstPage.setTitle( getPageTitle() );
+        this.firstPage.setTitle( this.template.getLabel() );
         this.firstPage.setDescription( getPageDescription() );
     
         addPage( this.firstPage );
         
         super.addPages();
         
-        this.facetsSelectionPage.setInitialPreset( getInitialPreset() );
+        this.facetsSelectionPage.setInitialPreset( this.template.getInitialPreset() );
         
-        final Set fixed = getFixedProjectFacets();
+        final Set fixed = this.template.getFixedProjectFacets();
         
         this.facetsSelectionPage.setFixedProjectFacets( fixed );
         
@@ -115,7 +118,8 @@ public abstract class FacetedProjectWizard
         
         super.performFinish( monitor );
         
-        this.fproj.setFixedProjectFacets( getFixedProjectFacets() );
+        final Set fixed = this.template.getFixedProjectFacets();
+        this.fproj.setFixedProjectFacets( fixed );
     }
     
     public synchronized String getProjectName()
@@ -130,11 +134,8 @@ public abstract class FacetedProjectWizard
         }
     }
     
-    protected abstract String getWindowTitleText();
-    protected abstract String getPageTitle();
+    protected abstract IFacetedProjectTemplate getTemplate();
     protected abstract String getPageDescription();
     protected abstract ImageDescriptor getDefaultPageImageDescriptor();
-    protected abstract IPreset getInitialPreset();
-    protected abstract Set getFixedProjectFacets();
 
 }

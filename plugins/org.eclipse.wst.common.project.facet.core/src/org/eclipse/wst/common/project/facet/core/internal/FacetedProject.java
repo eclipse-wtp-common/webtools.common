@@ -59,7 +59,7 @@ public final class FacetedProject
     private IRuntime runtime;
     private final File f;
     
-    public FacetedProject( final IProject project )
+    FacetedProject( final IProject project )
     {
         this.project = project;
         this.facets = new HashSet();

@@ -35,6 +35,8 @@ public final class Category
     private HashSet facets = new HashSet();
     private Set facetsReadOnly = Collections.unmodifiableSet( this.facets );
     
+    Category() {}
+    
     public String getId() 
     {
         return this.id;

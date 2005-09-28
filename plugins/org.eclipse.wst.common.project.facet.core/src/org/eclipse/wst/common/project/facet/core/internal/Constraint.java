@@ -40,9 +40,9 @@ public final class Constraint
     private final Type type;
     private final List operands;
     
-    public Constraint( final IProjectFacetVersion fv,
-                       final Type type,
-                       final Object[] operands )
+    Constraint( final IProjectFacetVersion fv,
+                final Type type,
+                final Object[] operands )
     {
         this.fv = fv;
         this.type = type;

@@ -117,7 +117,8 @@ public final class ProjectFacetsManager
     /**
      * Returns all of the presets.
      * 
-     * @return a set conaining all of the presets (element type: {@link IPreset})
+     * @return a set conaining all of the presets (element type: 
+     *   {@link IPreset})
      */
     
     public static Set getPresets()
@@ -177,6 +178,44 @@ public final class ProjectFacetsManager
     public static boolean deletePreset( final IPreset preset )
     {
         return impl.deletePreset( preset );
+    }
+    
+    /**
+     * Returns all of the faceted project templates.
+     * 
+     * @return a set conaining all of the faceted project templates (element 
+     *   type: {@link IFacetedProjectTemplate})
+     */
+    
+    public static Set getTemplates()
+    {
+        return impl.getTemplates();
+    }
+    
+    /**
+     * Determines whether a given template id is recognized.
+     * 
+     * @param id the template id
+     * @return <code>true</code> if the template id is recognized,
+     *   <code>false</code> otherwise
+     */
+    
+    public static boolean isTemplateDefined( final String id )
+    {
+        return impl.isTemplateDefined( id );
+    }
+    
+    /**
+     * Returns the faceted project template corresponding to the specified id.
+     * 
+     * @param id the template id
+     * @return the faceted project templte
+     * @throws IllegalArgumentException if the template is not found
+     */
+    
+    public static IFacetedProjectTemplate getTemplate( final String id )
+    {
+        return impl.getTemplate( id );
     }
     
     /**

@@ -41,6 +41,7 @@ import org.eclipse.wst.common.project.facet.core.ICategory;
 import org.eclipse.wst.common.project.facet.core.IConstraint;
 import org.eclipse.wst.common.project.facet.core.IDelegate;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IFacetedProjectTemplate;
 import org.eclipse.wst.common.project.facet.core.IGroup;
 import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
@@ -63,6 +64,7 @@ public final class ProjectFacetsManagerImpl
     private final IndexedSet facets;
     private final IndexedSet categories;
     private final IndexedSet presets;
+    private final IndexedSet templates;
     private final IndexedSet groups;
     
     public ProjectFacetsManagerImpl()
@@ -70,6 +72,7 @@ public final class ProjectFacetsManagerImpl
         this.facets = new IndexedSet();
         this.categories = new IndexedSet();
         this.presets = new IndexedSet();
+        this.templates = new IndexedSet();
         this.groups = new IndexedSet();
         
         readMetadata();
@@ -205,6 +208,30 @@ public final class ProjectFacetsManagerImpl
             
             return res;
         }
+    }
+    
+    public Set getTemplates()
+    {
+        return this.templates.getUnmodifiable();
+    }
+    
+    public boolean isTemplateDefined( final String id )
+    {
+        return this.templates.containsKey( id );
+    }
+    
+    public IFacetedProjectTemplate getTemplate( final String id )
+    {
+        final IFacetedProjectTemplate template 
+            = (IFacetedProjectTemplate) this.templates.get( id );
+        
+        if( template == null )
+        {
+            final String msg = "Could not find template " + id + ".";
+            throw new IllegalArgumentException( msg );
+        }
+        
+        return template;
     }
     
     public Set getGroups()
@@ -762,6 +789,17 @@ public final class ProjectFacetsManagerImpl
                 readPreset( config );
             }
         }
+        
+        for( int i = 0, n = cfgels.size(); i < n; i++ )
+        {
+            final IConfigurationElement config
+                = (IConfigurationElement) cfgels.get( i );
+            
+            if( config.getName().equals( "template" ) )
+            {
+                readTemplate( config );
+            }
+        }
     }
     
     private void readCategory( final IConfigurationElement config )
@@ -1062,6 +1100,67 @@ public final class ProjectFacetsManagerImpl
         }
         
         return new Constraint( desc, type, operands );
+    }
+    
+    private void readTemplate( final IConfigurationElement config )
+    {
+        final FacetedProjectTemplate template = new FacetedProjectTemplate();
+        
+        final String id = config.getAttribute( "id" );
+
+        if( id == null )
+        {
+            // TODO: error
+        }
+
+        template.setId( id );
+
+        final IConfigurationElement[] children = config.getChildren();
+        
+        for( int i = 0; i < children.length; i++ )
+        {
+            final IConfigurationElement child = children[ i ];
+            final String childName = child.getName();
+            
+            if( childName.equals( "label" ) )
+            {
+                template.setLabel( child.getValue().trim() );
+            }
+            else if( childName.equals( "fixed" ) )
+            {
+                final String fid = child.getAttribute( "facet" );
+                
+                if( fid == null )
+                {
+                    // TODO: error
+                }
+                
+                if( ! isProjectFacetDefined( fid ) )
+                {
+                    // TODO: error
+                }
+                
+                template.addFixedProjectFacet( getProjectFacet( fid ) );
+            }
+            else if( childName.equals( "preset" ) )
+            {
+                final String pid = child.getAttribute( "id" );
+                
+                if( pid == null )
+                {
+                    // TODO: error
+                }
+                
+                if( ! isPresetDefined( pid ) )
+                {
+                    // TODO: error
+                }
+                
+                template.setInitialPreset( getPreset( pid ) );
+            }
+        }
+        
+        this.templates.add( id, template );
     }
     
     private void readPreset( final IConfigurationElement config )
