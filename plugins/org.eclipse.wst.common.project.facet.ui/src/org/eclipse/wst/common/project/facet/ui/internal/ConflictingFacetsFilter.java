@@ -80,14 +80,14 @@ public final class ConflictingFacetsFilter
         }
         else if( op.getType() == IConstraint.Type.CONFLICTS )
         {
-            final String set = (String) op.getOperand( 0 );
-            final IGroup fset = ProjectFacetsManager.get().getGroup( set );
+            final String gid = (String) op.getOperand( 0 );
+            final IGroup group = ProjectFacetsManager.getGroup( gid );
             
             for( Iterator itr = this.fixed.iterator(); itr.hasNext(); )
             {
                 final IProjectFacet f = (IProjectFacet) itr.next();
                 
-                if( fset.getMembers().containsAll( f.getVersions() ) )
+                if( group.getMembers().containsAll( f.getVersions() ) )
                 {
                     return false;
                 }
@@ -113,7 +113,7 @@ public final class ConflictingFacetsFilter
             else
             {
                 final IProjectFacet rf 
-                    = ProjectFacetsManager.get().getProjectFacet( name );
+                    = ProjectFacetsManager.getProjectFacet( name );
                 
                 final Set versions = rf.getVersions();
                 final Comparator comp = rf.getVersionComparator();

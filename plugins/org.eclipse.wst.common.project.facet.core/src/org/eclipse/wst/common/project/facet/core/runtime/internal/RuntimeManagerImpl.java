@@ -476,12 +476,12 @@ public final class RuntimeManagerImpl
                     // TODO: error
                 }
                 
-                if( ! ProjectFacetsManager.get().isProjectFacetDefined( id ) )
+                if( ! ProjectFacetsManager.isProjectFacetDefined( id ) )
                 {
                     // TODO: error
                 }
                 
-                m.facet = ProjectFacetsManager.get().getProjectFacet( id );
+                m.facet = ProjectFacetsManager.getProjectFacet( id );
                 
                 final String version = child.getAttribute( "version" );
                 

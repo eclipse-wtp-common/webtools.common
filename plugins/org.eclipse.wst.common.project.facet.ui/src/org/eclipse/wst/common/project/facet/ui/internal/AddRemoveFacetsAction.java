@@ -12,6 +12,7 @@
 package org.eclipse.wst.common.project.facet.ui.internal;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -20,6 +21,8 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.ui.AddRemoveFacetsWizard;
 
 /**
@@ -48,8 +51,19 @@ public final class AddRemoveFacetsAction
                 = (IStructuredSelection) this.selection;
             
             final IProject project = (IProject) ssel.getFirstElement();
+            final IFacetedProject fproj;
             
-            final IWizard wizard = new AddRemoveFacetsWizard( project );
+            try
+            {
+                fproj = ProjectFacetsManager.create( project );
+            }
+            catch( CoreException e )
+            {
+                // TODO: Handle this better.
+                throw new RuntimeException( e );
+            }
+            
+            final IWizard wizard = new AddRemoveFacetsWizard( fproj );
             final WizardDialog dialog = new WizardDialog( this.shell, wizard );
             
             dialog.open();

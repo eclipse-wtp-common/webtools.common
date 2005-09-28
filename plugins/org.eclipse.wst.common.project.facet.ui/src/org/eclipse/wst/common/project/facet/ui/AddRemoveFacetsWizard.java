@@ -18,7 +18,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -35,10 +34,9 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.ui.internal.ConflictingFacetsFilter;
+import org.eclipse.wst.common.project.facet.ui.internal.FacetUiPlugin;
 import org.eclipse.wst.common.project.facet.ui.internal.FacetsSelectionPage;
 import org.eclipse.wst.common.project.facet.ui.internal.FacetsSelectionPanel;
-import org.eclipse.wst.common.project.facet.ui.internal.FacetUiPlugin;
-import org.eclipse.wst.common.project.facet.ui.internal.RuntimeBridge;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -49,20 +47,16 @@ public class AddRemoveFacetsWizard
     extends Wizard 
     
 {
-    protected IProject project;
+    protected IFacetedProject fproj;
     
     private final WizardContext context = new WizardContext(); 
     protected FacetsSelectionPage facetsSelectionPage;
     private FacetPages[] facetPages = new FacetPages[ 0 ];
     private Composite pageContainer;
     
-    public AddRemoveFacetsWizard( final IProject project )
+    public AddRemoveFacetsWizard( final IFacetedProject fproj )
     {
-        // Temporary bridge.
-        
-        RuntimeBridge.port();
-
-        this.project = project;
+        this.fproj = fproj;
         
         setNeedsProgressMonitor( true );
         setForcePreviousAndNextButtons( true );
@@ -73,15 +67,12 @@ public class AddRemoveFacetsWizard
     {
         this.facetsSelectionPage = new FacetsSelectionPage();
         
-        if( this.project != null )
+        if( this.fproj != null )
         {
-            final IFacetedProject fproj
-                = ProjectFacetsManager.get().create( this.project );
-            
-            this.facetsSelectionPage.setInitialSelection( fproj.getProjectFacets() );
-            this.facetsSelectionPage.setFixedProjectFacets( fproj.getFixedProjectFacets());
-            this.facetsSelectionPage.setFilters( new FacetsSelectionPanel.IFilter[] { new ConflictingFacetsFilter( fproj.getFixedProjectFacets() ) } );
-            this.facetsSelectionPage.setRuntime( fproj.getRuntime() );
+            this.facetsSelectionPage.setInitialSelection( this.fproj.getProjectFacets() );
+            this.facetsSelectionPage.setFixedProjectFacets( this.fproj.getFixedProjectFacets());
+            this.facetsSelectionPage.setFilters( new FacetsSelectionPanel.IFilter[] { new ConflictingFacetsFilter( this.fproj.getFixedProjectFacets() ) } );
+            this.facetsSelectionPage.setRuntime( this.fproj.getRuntime() );
         }
         
         this.facetsSelectionPage.addSelectedFacetsChangedListener
@@ -287,14 +278,11 @@ public class AddRemoveFacetsWizard
         
         try
         {
-            final IFacetedProject fopj 
-                = ProjectFacetsManager.get().create( AddRemoveFacetsWizard.this.project );
+            this.fproj.setRuntime( this.facetsSelectionPage.getSelectedRuntime(),
+                                   new SubProgressMonitor( monitor, 1 ) );
             
-            fopj.setRuntime( this.facetsSelectionPage.getSelectedRuntime(),
-                             new SubProgressMonitor( monitor, 1 ) );
-            
-            fopj.modify( this.facetsSelectionPage.getActions(), 
-                         new SubProgressMonitor( monitor, 1 ) );
+            this.fproj.modify( this.facetsSelectionPage.getActions(), 
+                               new SubProgressMonitor( monitor, 1 ) );
         }
         finally
         {
@@ -304,7 +292,7 @@ public class AddRemoveFacetsWizard
     
     public String getProjectName()
     {
-        return this.project.getName();
+        return this.fproj.getProject().getName();
     }
     
     private static final class FacetPages
@@ -319,21 +307,18 @@ public class AddRemoveFacetsWizard
         
         final Set base;
         
-        if( this.project == null )
+        if( this.fproj == null )
         {
             base = Collections.EMPTY_SET;
         }
         else
         {
-            final IFacetedProject fproj
-                = ProjectFacetsManager.get().create( this.project );
-            
-            base = fproj.getProjectFacets();
+            base = this.fproj.getProjectFacets();
         }
         
         final Set actions = this.facetsSelectionPage.getActions();
         final ArrayList sortedActions = new ArrayList( actions );
-        ProjectFacetsManager.get().sort( base, sortedActions );
+        ProjectFacetsManager.sort( base, sortedActions );
         
         // Recalculate the sequence of wizard pages.
         
@@ -350,7 +335,7 @@ public class AddRemoveFacetsWizard
             {
                 fp = new FacetPages();
                 fp.action = action;
-                fp.pages = ProjectFacetsUiManager.get().getWizardPages( action.getType(), f );
+                fp.pages = ProjectFacetsUiManager.getWizardPages( action.getType(), f );
                 
                 for( Iterator itr2 = fp.pages.iterator(); itr2.hasNext(); )
                 {

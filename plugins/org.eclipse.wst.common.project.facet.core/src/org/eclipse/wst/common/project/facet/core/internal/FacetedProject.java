@@ -72,6 +72,11 @@ public final class FacetedProject
         open();
     }
     
+    public IProject getProject()
+    {
+        return this.project;
+    }
+    
     public Set getProjectFacets()
     {
         return this.facetsReadOnly;
@@ -154,7 +159,7 @@ public final class FacetedProject
         try
         {
             final IStatus st 
-                = ProjectFacetsManager.get().check( this.facets, actions );
+                = ProjectFacetsManager.check( this.facets, actions );
             
             if( ! st.isOK() )
             {
@@ -162,7 +167,7 @@ public final class FacetedProject
             }
             
             final List copy = new ArrayList( actions );
-            ProjectFacetsManager.get().sort( this.facets, copy );
+            ProjectFacetsManager.sort( this.facets, copy );
             
             for( Iterator itr = copy.iterator(); itr.hasNext(); )
             {
@@ -411,7 +416,7 @@ public final class FacetedProject
                 else if( line.startsWith( "f:" ) )
                 {
                     final IProjectFacet f
-                        = ProjectFacetsManager.get().getProjectFacet( line.substring( 2 ) );
+                        = ProjectFacetsManager.getProjectFacet( line.substring( 2 ) );
                     
                     this.fixed.add( f );
                 }
@@ -431,7 +436,7 @@ public final class FacetedProject
                     // TODO: Handle the case where the facet is not available.
                     
                     final IProjectFacetVersion fv
-                        = ProjectFacetsManager.get().getProjectFacet( name ).getVersion( version );
+                        = ProjectFacetsManager.getProjectFacet( name ).getVersion( version );
     
                     this.facets.add( fv );
                 }

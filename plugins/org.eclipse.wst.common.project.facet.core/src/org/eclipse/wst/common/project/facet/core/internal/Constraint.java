@@ -136,7 +136,7 @@ public final class Constraint
             if( ! soft || validateSoftDeps )
             {
                 final IProjectFacet rf 
-                    = ProjectFacetsManager.get().getProjectFacet( name );
+                    = ProjectFacetsManager.getProjectFacet( name );
                 
                 final Comparator comp = rf.getVersionComparator();
                 
@@ -177,10 +177,10 @@ public final class Constraint
         }
         else if( this.type == Type.CONFLICTS )
         {
-            final String set = (String) this.operands.get( 0 );
-            final IGroup fset = ProjectFacetsManager.get().getGroup( set );
+            final String gid = (String) this.operands.get( 0 );
+            final IGroup group = ProjectFacetsManager.getGroup( gid );
             
-            for( Iterator itr = fset.getMembers().iterator(); itr.hasNext(); )
+            for( Iterator itr = group.getMembers().iterator(); itr.hasNext(); )
             {
                 final IProjectFacetVersion member
                     = (IProjectFacetVersion) itr.next();

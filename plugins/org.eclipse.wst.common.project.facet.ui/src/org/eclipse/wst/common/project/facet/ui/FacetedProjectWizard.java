@@ -13,21 +13,15 @@ package org.eclipse.wst.common.project.facet.ui;
 
 import java.util.Set;
 
-import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.ui.internal.ConflictingFacetsFilter;
@@ -43,10 +37,8 @@ public abstract class FacetedProjectWizard
     implements INewWizard
     
 {
-    private static final String FACETED_PROJECT_NATURE
-        = "org.eclipse.wst.common.project.facet.core.nature";
-    
     private WizardNewProjectCreationPage firstPage;
+    private String projectName;
     private IPath customPath;
     
     public FacetedProjectWizard()
@@ -103,7 +95,7 @@ public abstract class FacetedProjectWizard
     
     public synchronized boolean performFinish() 
     {
-        this.project = this.firstPage.getProjectHandle();
+        this.projectName = this.firstPage.getProjectName();
 
         this.customPath
             = this.firstPage.useDefaults() 
@@ -117,36 +109,24 @@ public abstract class FacetedProjectWizard
         throws CoreException
         
     {
-        final IWorkspace ws = ResourcesPlugin.getWorkspace();
-        
-        final IProjectDescription desc
-            = ws.newProjectDescription( this.project.getName() );
-
-        desc.setLocation( this.customPath );
-        desc.setNatureIds( new String[] { FACETED_PROJECT_NATURE } );
-                
-        this.project.create( desc, new SubProgressMonitor( monitor, 1 ) );
-                    
-        this.project.open( IResource.BACKGROUND_REFRESH,
-                           new SubProgressMonitor( monitor, 1 ) );
+        this.fproj 
+            = ProjectFacetsManager.create( this.projectName,
+                                           this.customPath, monitor );
         
         super.performFinish( monitor );
         
-        final IFacetedProject fproj
-            = ProjectFacetsManager.get().create( this.project );
-        
-        fproj.setFixedProjectFacets( getFixedProjectFacets() );
+        this.fproj.setFixedProjectFacets( getFixedProjectFacets() );
     }
     
     public synchronized String getProjectName()
     {
-        if( this.project == null )
+        if( this.fproj == null )
         {
             return this.firstPage.getProjectName();
         }
         else
         {
-            return this.project.getName();
+            return this.fproj.getProject().getName();
         }
     }
     

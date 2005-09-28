@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.internal.ProjectFacetsManagerImpl;
@@ -27,20 +30,13 @@ import org.eclipse.wst.common.project.facet.core.internal.ProjectFacetsManagerIm
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
-public abstract class ProjectFacetsManager 
+public final class ProjectFacetsManager 
 {
-    private static ProjectFacetsManager instance = new ProjectFacetsManagerImpl();
     
-    /**
-     * Returns the singleton instance of the <code>ProjectFacetsManager</code>
-     * 
-     * @return the singleton instance of the <code>ProjectFacetsManager</code>
-     */
+    private static ProjectFacetsManagerImpl impl 
+        = new ProjectFacetsManagerImpl();
     
-    public static ProjectFacetsManager get()
-    {
-        return instance;
-    }
+    private ProjectFacetsManager() {}
     
     /**
      * Returns all of the available project facets.
@@ -49,7 +45,10 @@ public abstract class ProjectFacetsManager
      *   type: {@link IProjectFacet})
      */
     
-    public abstract Set getProjectFacets();
+    public static Set getProjectFacets()
+    {
+        return impl.getProjectFacets();
+    }
 
     /**
      * Determines whether a given project facet id is recognized.
@@ -59,7 +58,10 @@ public abstract class ProjectFacetsManager
      *   <code>false</code> otherwise 
      */
     
-    public abstract boolean isProjectFacetDefined( String id );
+    public static boolean isProjectFacetDefined( final String id )
+    {
+        return impl.isProjectFacetDefined( id );
+    }
     
     /**
      * Returns the project facet descriptor corresponding to the specified id.
@@ -69,7 +71,10 @@ public abstract class ProjectFacetsManager
      * @throws IllegalArgumentException if id is not found
      */
     
-    public abstract IProjectFacet getProjectFacet( String id );
+    public static IProjectFacet getProjectFacet( final String id )
+    {
+        return impl.getProjectFacet( id );
+    }
     
     /**
      * Returns all of the categories.
@@ -78,7 +83,10 @@ public abstract class ProjectFacetsManager
      *   ICategory})
      */
     
-    public abstract Set getCategories();
+    public static Set getCategories()
+    {
+        return impl.getCategories();
+    }
 
     /**
      * Determines whether a given category id is recognized.
@@ -88,7 +96,10 @@ public abstract class ProjectFacetsManager
      *   <code>false</code> otherwise
      */
     
-    public abstract boolean isCategoryDefined( String id );
+    public static boolean isCategoryDefined( final String id )
+    {
+        return impl.isCategoryDefined( id );
+    }
     
     /**
      * Returns the category corresponding to the specified id.
@@ -98,7 +109,10 @@ public abstract class ProjectFacetsManager
      * @throws IllegalArgumentException if id is not found
      */
     
-    public abstract ICategory getCategory( String id );
+    public static ICategory getCategory( final String id )
+    {
+        return impl.getCategory( id );
+    }
     
     /**
      * Returns all of the presets.
@@ -106,7 +120,10 @@ public abstract class ProjectFacetsManager
      * @return a set conaining all of the presets (element type: {@link IPreset})
      */
     
-    public abstract Set getPresets();
+    public static Set getPresets()
+    {
+        return impl.getPresets();
+    }
     
     /**
      * Determines whether a given preset id is recognized.
@@ -116,7 +133,10 @@ public abstract class ProjectFacetsManager
      *   <code>false</code> otherwise
      */
     
-    public abstract boolean isPresetDefined( String id );
+    public static boolean isPresetDefined( final String id )
+    {
+        return impl.isPresetDefined( id );
+    }
     
     /**
      * Returns the preset corresponding to the specified id.
@@ -126,7 +146,10 @@ public abstract class ProjectFacetsManager
      * @throws IllegalArgumentException if the preset is not found
      */
     
-    public abstract IPreset getPreset( final String id );
+    public static IPreset getPreset( final String id )
+    {
+        return impl.getPreset( id );
+    }
     
     /**
      * Defines a new preset. User-defined presets are stored in the workspace. 
@@ -137,8 +160,11 @@ public abstract class ProjectFacetsManager
      * @return the preset
      */
     
-    public abstract IPreset definePreset( final String name,
-                                          final Set facets );
+    public static IPreset definePreset( final String name,
+                                        final Set facets )
+    {
+        return impl.definePreset( name, facets );
+    }
     
     /**
      * Deletes a preset. Note that only user-defined presets can be deleted.
@@ -148,7 +174,10 @@ public abstract class ProjectFacetsManager
      *   <code>false</code> if the preset was not found or was not user-defined 
      */
     
-    public abstract boolean deletePreset( final IPreset preset );
+    public static boolean deletePreset( final IPreset preset )
+    {
+        return impl.deletePreset( preset );
+    }
     
     /**
      * Returns all of the groups.
@@ -156,7 +185,10 @@ public abstract class ProjectFacetsManager
      * @return a set containing all of the groups (element type: {@link IGroup})
      */
     
-    public abstract Set getGroups();
+    public static Set getGroups()
+    {
+        return impl.getGroups();
+    }
 
     /**
      * Determines whether a given group id is recognized.
@@ -166,7 +198,10 @@ public abstract class ProjectFacetsManager
      *   <code>false</code> otherwise
      */
     
-    public abstract boolean isGroupDefined( String id );
+    public static boolean isGroupDefined( final String id )
+    {
+        return impl.isGroupDefined( id );
+    }
     
     /**
      * Returns the group corresponding to the specified id.
@@ -176,7 +211,10 @@ public abstract class ProjectFacetsManager
      * @throws IllegalArgumentException if the group id is not found 
      */
     
-    public abstract IGroup getGroup( String id );
+    public static IGroup getGroup( final String id )
+    {
+        return impl.getGroup( id );
+    }
     
     /**
      * Creates a wrapper around an <code>IProject</code> that exposes API for
@@ -184,9 +222,26 @@ public abstract class ProjectFacetsManager
      *  
      * @param project an Eclipse project
      * @return an instance of {@link IFacetedProject}
+     * @throws CoreException
      */
 
-    public abstract IFacetedProject create( IProject project );
+    public static IFacetedProject create( final IProject project )
+    
+        throws CoreException
+        
+    {
+        return impl.create( project );
+    }
+    
+    public static IFacetedProject create( final String name,
+                                          final IPath location,
+                                          final IProgressMonitor monitor )
+    
+        throws CoreException
+        
+    {
+        return impl.create( name, location, monitor );
+    }
     
     /**
      * Checks the validity of applying the specified set of actions to the
@@ -202,8 +257,11 @@ public abstract class ProjectFacetsManager
      *   of {@see ValidationProblem} status objects
      */
     
-    public abstract IStatus check( Set base,
-                                   Set actions);
+    public static IStatus check( final Set base,
+                                 final Set actions )
+    {
+        return impl.check( base, actions );
+    }
     
     /**
      * Sorts actions in the order that they should be applied to a project such
@@ -215,7 +273,10 @@ public abstract class ProjectFacetsManager
      *   Action}); this list will be modified
      */
     
-    public abstract void sort( Set base,
-                               List actions );
+    public static void sort( final Set base,
+                             final List actions )
+    {
+        impl.sort( base, actions );
+    }
     
 }

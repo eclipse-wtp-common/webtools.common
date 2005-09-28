@@ -38,7 +38,7 @@ public final class ClasspathHelper
         
     {
         final IFacetedProject fproj 
-            = ProjectFacetsManager.get().create( project );
+            = ProjectFacetsManager.create( project );
     
         final IRuntime runtime = fproj.getRuntime();
         
@@ -316,7 +316,7 @@ public final class ClasspathHelper
         final String id = str.substring( 0, colon );
         final String ver = str.substring( colon + 1 );
         
-        return ProjectFacetsManager.get().getProjectFacet( id ).getVersion( ver );
+        return ProjectFacetsManager.getProjectFacet( id ).getVersion( ver );
     }
     
     private static String encode( final IPath path )

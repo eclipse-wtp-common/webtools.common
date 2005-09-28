@@ -156,7 +156,7 @@ public final class FacetsSelectionPanel
         this.listeners = new ArrayList();
         this.selectionListeners = new ArrayList();
 
-        for( Iterator itr = ProjectFacetsManager.get().getProjectFacets().iterator();
+        for( Iterator itr = ProjectFacetsManager.getProjectFacets().iterator();
              itr.hasNext(); )
         {
             this.data.add( new TableRowData( (IProjectFacet) itr.next() ) );
@@ -452,7 +452,7 @@ public final class FacetsSelectionPanel
         
         if( action == null )
         {
-            final Object config = ProjectFacetsUiManager.get().getConfig( type, f );
+            final Object config = ProjectFacetsUiManager.getConfig( type, f );
             action = new Action( type, f, config );
         }
         
@@ -802,7 +802,7 @@ public final class FacetsSelectionPanel
         this.actions.removeAll( toremove );
         this.actions.addAll( toadd );
         
-        this.problems = ProjectFacetsManager.get().check( this.base, this.actions );
+        this.problems = ProjectFacetsManager.check( this.base, this.actions );
         this.problemsView.refresh();
 
         if( this.problems.isOK() )
@@ -822,7 +822,7 @@ public final class FacetsSelectionPanel
         this.presetsCombo.removeAll();
         this.presets.clear();
         
-        for( Iterator itr1 = ProjectFacetsManager.get().getPresets().iterator(); 
+        for( Iterator itr1 = ProjectFacetsManager.getPresets().iterator(); 
              itr1.hasNext(); )
         {
             final IPreset preset = (IPreset) itr1.next();
@@ -1044,7 +1044,7 @@ public final class FacetsSelectionPanel
             final Set facets = getSelectedProjectFacets();
             
             final IPreset preset
-                = ProjectFacetsManager.get().definePreset( name, facets );
+                = ProjectFacetsManager.definePreset( name, facets );
             
             refreshPresetsCombo();
             
@@ -1059,7 +1059,7 @@ public final class FacetsSelectionPanel
         final int selection = this.presetsCombo.getSelectionIndex();
         final IPreset preset = (IPreset) this.presets.get( selection - 1 );
         
-        ProjectFacetsManager.get().deletePreset( preset );
+        ProjectFacetsManager.deletePreset( preset );
         
         refreshPresetsCombo();
     }
@@ -1180,7 +1180,7 @@ public final class FacetsSelectionPanel
         public Object[] getElements( final Object element )
         {
             final ArrayList list = new ArrayList();
-            final Set categories = ProjectFacetsManager.get().getCategories();
+            final Set categories = ProjectFacetsManager.getCategories();
 
             for( Iterator itr1 = categories.iterator(); itr1.hasNext(); )
             {

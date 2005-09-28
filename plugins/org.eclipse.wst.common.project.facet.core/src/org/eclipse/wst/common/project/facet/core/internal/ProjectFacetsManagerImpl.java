@@ -20,14 +20,21 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.wst.common.project.facet.core.ICategory;
@@ -38,7 +45,6 @@ import org.eclipse.wst.common.project.facet.core.IGroup;
 import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
-import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
@@ -50,9 +56,6 @@ import org.osgi.service.prefs.Preferences;
  */
 
 public final class ProjectFacetsManagerImpl
-
-    extends ProjectFacetsManager
-    
 {
     static final String NOOP = "#noop#";
     private static final String EXTENSION_ID = "facets";
@@ -228,17 +231,40 @@ public final class ProjectFacetsManagerImpl
     }
 
     public IFacetedProject create( final IProject project )
+    
+        throws CoreException
+        
     {
-        try
+        if( project.isNatureEnabled( FacetedProjectNature.NATURE_ID ) )
         {
-            if( project.isNatureEnabled( FacetedProjectNature.NATURE_ID ) )
-            {
-                return new FacetedProject( project );
-            }
+            return new FacetedProject( project );
         }
-        catch( CoreException e ) {}
 
         return null;
+    }
+    
+    public IFacetedProject create( final String name,
+                                   final IPath location,
+                                   final IProgressMonitor monitor )
+    
+        throws CoreException
+        
+    {
+        final IWorkspace ws = ResourcesPlugin.getWorkspace();
+        final IProject project = ws.getRoot().getProject( name );
+        
+        final IProjectDescription desc
+            = ws.newProjectDescription( name );
+
+        desc.setLocation( location );
+        desc.setNatureIds( new String[] { FacetedProjectNature.NATURE_ID } );
+                
+        project.create( desc, new SubProgressMonitor( monitor, 1 ) );
+                    
+        project.open( IResource.BACKGROUND_REFRESH,
+                      new SubProgressMonitor( monitor, 1 ) );
+
+        return create( project );
     }
     
     public IStatus check( final Set base,
