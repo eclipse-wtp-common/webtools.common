@@ -85,16 +85,22 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 	}
 
 	public IFolder getUnderlyingFolder() { 
-		return getProject().getFolder(getProjectRelativePath());
+		IPath path = getProjectRelativePath();
+		if( !path.isRoot() )
+			return getProject().getFolder(getProjectRelativePath());
+		else
+			return null;
 	}
 	
 	public IFolder[] getUnderlyingFolders() {
 		IPath[] paths = getProjectRelativePaths();
 		List result = new ArrayList();
 		for (int i=0; i<paths.length; i++) {
-			IFolder folder = getProject().getFolder(paths[i]);
-			if (folder!=null && folder.exists() && !result.contains(folder))
-				result.add(folder);
+			if( !paths[i].isRoot() ){
+				IFolder folder = getProject().getFolder(paths[i]);
+				if (folder!=null && folder.exists() && !result.contains(folder))
+					result.add(folder);
+			}
 		}
 		return (IFolder[]) result.toArray(new IFolder[result.size()]);
 	}
