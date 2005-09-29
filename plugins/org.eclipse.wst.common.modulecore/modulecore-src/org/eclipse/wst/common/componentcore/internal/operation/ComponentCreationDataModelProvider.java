@@ -61,7 +61,6 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 		propertyNames.add(COMPONENT_DEPLOY_NAME);
 		propertyNames.add(CREATE_DEFAULT_FILES);
 		propertyNames.add(COMPONENT);
-		propertyNames.add(SUPPORT_MULTIPLE_MODULES);
 		return propertyNames;
 	}
 
@@ -74,8 +73,7 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 	public boolean propertySet(String propertyName, Object propertyValue) {
 		if (COMPONENT_NAME.equals(propertyName)) {
 			model.setProperty(COMPONENT_DEPLOY_NAME, propertyValue);
-			if (!model.getBooleanProperty(SUPPORT_MULTIPLE_MODULES))
-				model.setProperty(PROJECT_NAME, propertyValue);
+			model.setProperty(PROJECT_NAME, propertyValue);
 		} else if (COMPONENT_DEPLOY_NAME.equals(propertyName)) {
 			model.setProperty(COMPONENT_DEPLOY_NAME, propertyValue);
 		} else if (COMPONENT.equals(propertyName)) {
@@ -120,8 +118,7 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 				return status;
 		} else if (propertyName.equals(PROJECT_NAME)) {
 			IStatus status = OK_STATUS;
-			// if(!FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp()){
-			if (!model.getBooleanProperty(SUPPORT_MULTIPLE_MODULES)) {
+
 				String projectName = model.getStringProperty(PROJECT_NAME);
 				if (projectName == null || projectName.length() == 0) {
 					String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_NAME_EMPTY);
@@ -129,15 +126,15 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 				}
 				if (status.isOK()) {
 					status = validateProjectName(projectName);
+					if (status.isOK()) {
+						IProject proj = ProjectUtilities.getProject(projectName);
+						if (proj.exists()) {
+							String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_EXISTS_ERROR);
+							status = WTPCommonPlugin.createErrorStatus(errorMessage);
+						}
+					}					
 				}
-				if (status.isOK() && (!model.getBooleanProperty(SUPPORT_MULTIPLE_MODULES))) {
-					IProject proj = ProjectUtilities.getProject(projectName);
-					if (proj.exists()) {
-						String errorMessage = WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_EXISTS_ERROR);
-						status = WTPCommonPlugin.createErrorStatus(errorMessage);
-					}
-				}
-			}
+
 			return status;
 		} else if (propertyName.equals(COMPONENT_DEPLOY_NAME)) {
 			return OK_STATUS;

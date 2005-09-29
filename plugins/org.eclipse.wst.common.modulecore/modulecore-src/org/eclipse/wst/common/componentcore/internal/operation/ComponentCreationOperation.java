@@ -45,11 +45,8 @@ public abstract class ComponentCreationOperation extends AbstractDataModelOperat
 		StructureEdit edit = null;
         try {
 			edit = StructureEdit.getStructureEditForWrite(getProject());
-			//if(FlexibleJavaProjectPreferenceUtil.getMultipleModulesPerProjectProp())
-			if(model.getBooleanProperty(SUPPORT_MULTIPLE_MODULES))
-			    createAndLinkJ2EEComponentsForMultipleComponents();
-            else 
-                createAndLinkJ2EEComponentsForSingleComponent();
+
+            createAndLinkJ2EEComponentsForSingleComponent();
             setupComponentType(componentType);
         }
         catch (CoreException e) {
