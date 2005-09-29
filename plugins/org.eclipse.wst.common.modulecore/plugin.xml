@@ -65,6 +65,9 @@
       <DataModelProvider
             class="org.eclipse.wst.common.componentcore.internal.builder.ReferencedComponentBuilderDataModelProvider"
             id="org.eclipse.wst.common.componentcore.internal.builder.ReferencedComponentBuilderDataModelProvider"/>
+      <DataModelProvider
+            class="org.eclipse.wst.common.componentcore.internal.builder.WorkbenchComponentBuilderDataModelProvider"
+            id="org.eclipse.wst.common.componentcore.internal.builder.WorkbenchComponentBuilderDataModelProvider"/>
       <ProviderDefinesType
       		providerType="dependent.builder"
       		providerID="org.eclipse.wst.common.componentcore.internal.builder.ReferencedComponentBuilderDataModelProvider"/>

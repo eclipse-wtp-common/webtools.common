@@ -27,7 +27,7 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.internal.enablement.DataModelEnablementFactory;
 
-public abstract class WorkbenchComponentBuilderDataModelProvider extends AbstractDataModelProvider implements IWorkbenchComponentBuilderDataModelProperties {
+public class WorkbenchComponentBuilderDataModelProvider extends AbstractDataModelProvider implements IWorkbenchComponentBuilderDataModelProperties {
 
 	public Set getPropertyNames() {
 		Set propertyNames = super.getPropertyNames();
@@ -116,6 +116,8 @@ public abstract class WorkbenchComponentBuilderDataModelProvider extends Abstrac
 	 * 
 	 * @see org.eclipse.wst.common.frameworks.internal.operations.WTPOperationDataModel#getDefaultOperation()
 	 */
-	public abstract IDataModelOperation getDefaultOperation();
+	public IDataModelOperation getDefaultOperation() {
+		return new WorkbenchComponentBuilderOperation(model);
+	}
 
 }

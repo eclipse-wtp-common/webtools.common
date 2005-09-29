@@ -7,6 +7,7 @@ Bundle-Version: 0.7.0
 Bundle-Activator: org.eclipse.wst.common.componentcore.internal.ModulecorePlugin
 Bundle-Localization: plugin
 Export-Package: org.eclipse.wst.common.componentcore,
+ org.eclipse.wst.common.componentcore.datamodel,
  org.eclipse.wst.common.componentcore.datamodel.properties,
  org.eclipse.wst.common.componentcore.internal,
  org.eclipse.wst.common.componentcore.internal.builder,

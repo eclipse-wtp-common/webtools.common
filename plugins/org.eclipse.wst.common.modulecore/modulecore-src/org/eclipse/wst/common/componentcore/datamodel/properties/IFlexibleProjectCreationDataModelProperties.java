@@ -1,6 +1,6 @@
-package org.eclipse.wst.common.frameworks.datamodel.properties;
+package org.eclipse.wst.common.componentcore.datamodel.properties;
 
-import org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties;
+import org.eclipse.wst.common.frameworks.internal.operations.IProjectCreationProperties;
 /**
  * <p>
  * IFlexibleProjectCreationDataModelProperties provides properties to the DataModel associated with the 
@@ -19,16 +19,8 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties;
  * 
  * @plannedfor 1.0
  */
-public interface IFlexibleProjectCreationDataModelProperties extends IDataModelProperties {
-    /**
-     * Required, type String. The user defined name of the target project for the component to be created.
-     */
-    public static final String PROJECT_NAME = "IFlexibleProjectCreationDataModelProperties.PROJECT_NAME"; //$NON-NLS-1$
-    /**
-     * Required, type String. The user defined location on disk of the target project for the component to be created.
-     * Defaulted to default eclipse workspace location
-     */
-    public static final String PROJECT_LOCATION = "IFlexibleProjectCreationDataModelProperties.PROJECT_LOCATION"; //$NON-NLS-1$
+public interface IFlexibleProjectCreationDataModelProperties extends IProjectCreationProperties {
+   
     /**
      * Required, type IDataModel. The user set IDataModel used to create the initial project.  Providers which currently exist for
      * this IDataModel include IProjectCreationProperties.
