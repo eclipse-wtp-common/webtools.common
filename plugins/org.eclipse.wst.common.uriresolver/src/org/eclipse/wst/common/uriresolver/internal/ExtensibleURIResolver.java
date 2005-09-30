@@ -56,7 +56,6 @@ public class ExtensibleURIResolver implements URIResolver
 		//
     IFile file = computeFile(baseLocation);
 		IProject project =  file != null ? file.getProject() : null;
-		String fileName = null; // todo.. get the file name for systemId
 
 		URIResolverExtensionRegistry resolverRegistry = URIResolverExtensionRegistry.getIntance();
 		List list = resolverRegistry.getExtensionDescriptors(project);
