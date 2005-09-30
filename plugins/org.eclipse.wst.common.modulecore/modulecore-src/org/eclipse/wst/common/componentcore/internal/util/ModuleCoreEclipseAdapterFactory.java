@@ -52,8 +52,9 @@ public class ModuleCoreEclipseAdapterFactory implements IAdapterFactory {
 			moduleCore = StructureEdit.getStructureEditForRead(resource.getProject());
 			if (resource.getType() == IResource.PROJECT) {
 				WorkbenchComponent[] comps = moduleCore.getWorkbenchModules();
-				if (comps.length == 1)
-					return comps[0];
+				if (comps.length > 0){
+					return ComponentCore.createComponent(resource.getProject(), comps[0].getName());
+				}
 				else
 					return null;
 			}
