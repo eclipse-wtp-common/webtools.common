@@ -14,6 +14,7 @@ package org.eclipse.wst.common.uriresolver.internal.util;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URL;
 
@@ -482,7 +483,14 @@ public class URIHelper
     String result = addImpliedFileProtocol(filePath);
     if (!isValidURI(result))
     {
-      result = URIEncoder.encode(result);
+    	try
+    	{
+        result = URIEncoder.encode(result, "UTF8");
+    	}
+    	catch(UnsupportedEncodingException e)
+    	{
+    		// Do nothing as long as UTF8 is used. This is supported.
+    	}
     }
     return result;
   }
