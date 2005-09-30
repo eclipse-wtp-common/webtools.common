@@ -30,7 +30,8 @@ public interface IDataModelOperation extends IUndoableOperation {
 	 * Sets the unique operation id. Typically, clients should not invoke this method.
 	 * </p>
 	 * 
-	 * @param id the unique operation id
+	 * @param id
+	 *            the unique operation id
 	 */
 	public void setID(String id);
 
@@ -61,9 +62,11 @@ public interface IDataModelOperation extends IUndoableOperation {
 	 * @return this operation's IDataModel.
 	 */
 	public IDataModel getDataModel();
-	
+
+	public String getDataModelID();
+
 	public ISchedulingRule getSchedulingRule();
-	
+
 	public int getOperationExecutionFlags();
 
 }

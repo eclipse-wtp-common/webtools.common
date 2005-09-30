@@ -91,11 +91,15 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	public IDataModel getDataModel() {
 		return model;
 	}
-	
-	public ISchedulingRule getSchedulingRule(){
+
+	public String getDataModelID() {
 		return null;
 	}
-	
+
+	public ISchedulingRule getSchedulingRule() {
+		return null;
+	}
+
 	public int getOperationExecutionFlags() {
 		return IWorkspace.AVOID_UPDATE;
 	}
