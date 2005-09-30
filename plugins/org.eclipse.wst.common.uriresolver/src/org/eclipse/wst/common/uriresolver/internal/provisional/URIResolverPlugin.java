@@ -13,7 +13,7 @@
 package org.eclipse.wst.common.uriresolver.internal.provisional;
 
 import java.util.Map;
-import org.eclipse.core.runtime.IPluginDescriptor;
+
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.wst.common.uriresolver.internal.ExtensibleURIResolver;
 import org.eclipse.wst.common.uriresolver.internal.URIResolverExtensionRegistry;
@@ -28,8 +28,8 @@ public class URIResolverPlugin extends Plugin {
 		return instance;
 	}
 	
-	public URIResolverPlugin(IPluginDescriptor descriptor) {
-		super(descriptor);
+	public URIResolverPlugin() {
+		super();
 		instance = this;
 	}	
 	
