@@ -75,22 +75,23 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 
 		StructureEdit structureEdit = null;
 		try {
-
 			structureEdit = StructureEdit.getStructureEditForRead(getProject());
 			WorkbenchComponent component = structureEdit.findComponentByName(getComponentHandle().getName());
 			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
 			ComponentResource[] resources = root.findModuleResources(getRuntimePath().append(aPath), ResourceTreeNode.CREATE_NONE);
 
-			if (resources.length != 0) {
-
-				IResource platformResource = StructureEdit.getEclipseResource(resources[0]);
-				if (platformResource != null) {
-					switch (platformResource.getType()) {
-						case IResource.FOLDER :
-						case IResource.PROJECT :
-							return new VirtualFolder(getComponentHandle(), getRuntimePath().append(aPath));
-						case IResource.FILE :
-							return new VirtualFile(getComponentHandle(), getRuntimePath().append(aPath));
+			for (int i=0; i<resources.length; i++) {
+				// return the resources corresponding to the root, not any of the children if its a folder
+				if (resources[i].getRuntimePath().equals(getRuntimePath().append(aPath))) {
+					IResource platformResource = StructureEdit.getEclipseResource(resources[i]);
+					if (platformResource != null) {
+						switch (platformResource.getType()) {
+							case IResource.FOLDER :
+							case IResource.PROJECT :
+								return new VirtualFolder(getComponentHandle(), getRuntimePath().append(aPath));
+							case IResource.FILE :
+								return new VirtualFile(getComponentHandle(), getRuntimePath().append(aPath));
+						}
 					}
 				}
 			}
