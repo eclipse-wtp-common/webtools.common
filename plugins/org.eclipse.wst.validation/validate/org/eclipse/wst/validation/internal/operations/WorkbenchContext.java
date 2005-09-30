@@ -47,7 +47,6 @@ public class WorkbenchContext implements IWorkbenchContext {
 //	private static final IContainer[] NO_CONTAINERS = new IContainer[0];
 	public static final String VALIDATION_MARKER = "com.ibm.etools.validation.problemmarker"; //$NON-NLS-1$
 	public static final String VALIDATION_MARKER_OWNER = "owner";  //$NON-NLS-1$
-	public int buildKind = 0;
 
 	public WorkbenchContext() {
 		super();
@@ -787,13 +786,5 @@ public class WorkbenchContext implements IWorkbenchContext {
 	 */
 	public void setValidationFileURIs(List validationFileURIs) {
 		this.validationFileURIs = validationFileURIs;
-	}
-
-	public int getBuildKind() {
-		return buildKind;
-	}
-	
-	public void setBuildKind(int kind) {
-		buildKind = kind;
 	}
 }

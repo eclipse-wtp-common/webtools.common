@@ -80,13 +80,5 @@ public interface IValidationContext {
 	 */
 	
 	public String[] getURIs();
-	
-	/**
-	 * @return - The int value of the build kind that is being performed currently by the
-	 * workbench so validators can react accordingly. Validator do have the requirement
-	 * to know the build kind to perform actions specific to the validator. Default value
-	 * returned is 0.
-	 */
-	
-	public int getBuildKind();
+
 }

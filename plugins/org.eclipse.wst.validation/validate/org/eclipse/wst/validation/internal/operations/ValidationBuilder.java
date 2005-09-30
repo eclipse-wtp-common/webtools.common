@@ -177,7 +177,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 			// and a null delta, and validation should run in that case.
 			if (!doFullBuild && delta == null) {
 				if (isReferencedProjectInDelta(referenced)) {
-					performFullBuildForReferencedProjectChanged(monitor, prjp,kind);
+					performFullBuildForReferencedProjectChanged(monitor, prjp);
 				} else {
 					String[] msgParms = new String[]{project.getName()};
 					monitor.subTask(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_NULL_DELTA, msgParms));
@@ -192,7 +192,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 				return referenced;
 			}
 			if (doFullBuild) {
-				performFullBuild(monitor, prjp, kind);
+				performFullBuild(monitor, prjp);
 			} else {
 				if (doAutoBuild && !prjp.isAutoValidate()) {
 					executionMap |= 0x8;
@@ -200,12 +200,12 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 				}
 				if (delta.getAffectedChildren().length == 0) {
 					if (isReferencedProjectInDelta(referenced))
-						performFullBuildForReferencedProjectChanged(monitor, prjp,kind);
+						performFullBuildForReferencedProjectChanged(monitor, prjp);
 					else
 						executionMap |= 0x10;
 					return referenced;
 				}
-				EnabledIncrementalValidatorsOperation operation = new EnabledIncrementalValidatorsOperation(project, delta, prjp.runAsync(),kind);
+				EnabledIncrementalValidatorsOperation operation = new EnabledIncrementalValidatorsOperation(project, delta, prjp.runAsync());
 				operation.run(monitor);
 			}
 			return referenced;
@@ -246,28 +246,14 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 	 * @param monitor
 	 * @param prjp
 	 */
-	private void performFullBuildForReferencedProjectChanged(IProgressMonitor monitor, ProjectConfiguration prjp, int buildKind) throws InvocationTargetException {
-		performFullBuild(monitor, prjp, true,buildKind);
+	private void performFullBuildForReferencedProjectChanged(IProgressMonitor monitor, ProjectConfiguration prjp) throws InvocationTargetException {
+		performFullBuild(monitor, prjp, true);
 	}
 
 	private void performFullBuild(IProgressMonitor monitor, ProjectConfiguration prjp) throws InvocationTargetException {
 		performFullBuild(monitor, prjp, false);
 	}
-	
-	private void performFullBuild(IProgressMonitor monitor, ProjectConfiguration prjp, int buildKind) throws InvocationTargetException {
-		performFullBuild(monitor, prjp, false, buildKind);
-	}
 
-	private void performFullBuild(IProgressMonitor monitor, ProjectConfiguration prjp, boolean onlyDependentValidators, int buildKind) throws InvocationTargetException {
-		ValidatorMetaData[] enabledValidators = prjp.getEnabledFullBuildValidators(true, onlyDependentValidators);
-		if ((enabledValidators != null) && (enabledValidators.length > 0)) {
-			Set enabledValidatorsSet = InternalValidatorManager.wrapInSet(enabledValidators);
-			EnabledValidatorsOperation op = new EnabledValidatorsOperation(getProject(), enabledValidatorsSet, prjp.runAsync());
-			op.setBuildKind(buildKind);
-			op.run(monitor);
-		}
-	}
-	
 	private void performFullBuild(IProgressMonitor monitor, ProjectConfiguration prjp, boolean onlyDependentValidators) throws InvocationTargetException {
 		ValidatorMetaData[] enabledValidators = prjp.getEnabledFullBuildValidators(true, onlyDependentValidators);
 		if ((enabledValidators != null) && (enabledValidators.length > 0)) {

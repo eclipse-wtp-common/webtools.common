@@ -95,7 +95,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	// option was triggered. This value is cached so that validation can be run
 	// either from a builder, or from a menu item. (The Operation interface
 	// doesn't allow any parameter on execute except the IProgressMonitor.)
-	protected int buildKind = 0;
 	private Set _enabledValidators = null;
 	private boolean _force = DEFAULT_FORCE; // force this operation to run even
 	// if it doesn't need to?
@@ -903,7 +902,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				try {
 					context = vmd.getHelper(getProject());
 					initValidateContext(delta);
-					
 					validator = vmd.getValidator();
 				} catch (InstantiationException exc) {
 					// Remove the vmd from the reader's list
@@ -936,15 +934,13 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 
 	private void initValidateContext(IFileDelta[] delta) {
 		 if (context instanceof WorkbenchContext) {
-			 ((WorkbenchContext)context).setBuildKind(getBuildKind());
 			 ((WorkbenchContext)context).setValidationFileURIs(new ArrayList());
 			 for(int i = 0; i < delta.length; i++) {
 				 IFileDelta file = delta[i];
 				 if(file.getDeltaType() != IFileDelta.DELETED ) {
 					 ((WorkbenchContext)context).getValidationFileURIs().add(file.getFileName());
 				 }
-			 }
-			 
+			 } 
 		}
 	}
 
@@ -1455,13 +1451,5 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 */
 	public void setContext(IWorkbenchContext context) {
 		this.context = context;
-	}
-
-	public int getBuildKind() {
-		return buildKind;
-	}
-
-	public void setBuildKind(int buildKind) {
-		this.buildKind = buildKind;
 	}
 }
