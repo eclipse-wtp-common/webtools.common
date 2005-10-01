@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: org.eclipse.wst.common.uriresolver
+Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.wst.common.uriresolver; singleton:=true
 Bundle-Version: 0.7.0
 Bundle-Activator: org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverPlugin
-Bundle-Vendor: Eclipse.org
+Bundle-Vendor: %pluginProvider
 Bundle-Localization: plugin
 Export-Package: org.eclipse.wst.common.uriresolver.internal,
  org.eclipse.wst.common.uriresolver.internal.provisional,
@@ -12,3 +12,4 @@ Export-Package: org.eclipse.wst.common.uriresolver.internal,
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources
 Eclipse-AutoStart: true
+Bundle-ClassPath: .
