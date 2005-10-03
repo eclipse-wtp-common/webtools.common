@@ -16,19 +16,19 @@ import java.util.List;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
-import org.eclipse.wst.common.componentcore.internal.resources.FlexibleProject;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualComponent;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualFile;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualFolder;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualResource;
-import org.eclipse.wst.common.componentcore.resources.IFlexibleProject;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualContainer;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
@@ -50,29 +50,27 @@ public class ComponentCore {
 	private static final IVirtualResource[] NO_RESOURCES = new VirtualResource[0];
 
 	/**
-	 * Return an IFlexibleProject that provides an entry-point to the components
-	 * stored within the given project. The returned IFlexibleProject may not contain
-	 * any components, which could mean that the supplied IProject is either not 
-	 * flexible or empty.  
+	 * Return an IVirtualComponent with the given name (aComponentName) contained by 
+	 * the given project (aProject). Component names should be unique across a project.
 	 * 
-	 * @param aProject A valid, accessible IProject
-	 * @return A valid IFlexibleProject 
+	 * @param aProject A  valid, accessible project to contain the component
+	 * @return A handle to an IVirtualComponent that may or may not exist.
+	 * @see IVirtualContainer#create(int, IProgressMonitor) 
 	 */
-	public static IFlexibleProject createFlexibleProject(IProject aProject) {
-		return new FlexibleProject(aProject);
+	public static IVirtualComponent createComponent(IProject aProject) {
+		return new VirtualComponent(aProject, new Path("/")); //$NON-NLS-1$
 	}
-
 	/**
 	 * Return an IVirtualComponent with the given name (aComponentName) contained by 
 	 * the given project (aProject). Component names should be unique across a project.
 	 * 
 	 * @param aProject A  valid, accessible project to contain the component
-	 * @param aComponentName A name to identify the component within the project. 
 	 * @return A handle to an IVirtualComponent that may or may not exist.
+	 * @deprecated
 	 * @see IVirtualContainer#create(int, IProgressMonitor) 
 	 */
-	public static IVirtualComponent createComponent(IProject aProject, String aComponentName) {
-		return new VirtualComponent(aProject, aComponentName, new Path("/")); //$NON-NLS-1$
+	public static IVirtualComponent createComponent(IProject aProject,String aName) {
+		return createComponent(aProject);
 	}
 
 	/**
@@ -94,7 +92,6 @@ public class ComponentCore {
 	 * IVirtualFolder may or may not exist. 
 	 *   
 	 * @param aProject A  valid, accessible project to contain the component
-	 * @param aComponentName A name to identify the component within the project. 
 	 * @param aRuntimePath The runtime path of the IVirtualFolder to return.
 	 * @return An IVirtualFolder contained by the specified component with the given runtime path
 	 *  
@@ -102,8 +99,8 @@ public class ComponentCore {
 	 * @see IVirtualResource#createLink(IPath, int, IProgressMonitor)
 	 *  
 	 */
-	public static IVirtualFolder createFolder(IProject aProject, String aComponentName, IPath aRuntimePath) {
-		return new VirtualFolder(aProject, aComponentName, aRuntimePath);
+	public static IVirtualFolder createFolder(IProject aProject, IPath aRuntimePath) {
+		return new VirtualFolder(aProject, aRuntimePath);
 	}
 	
 	/**
@@ -113,15 +110,14 @@ public class ComponentCore {
 	 * {@link IVirtualFile#getUnderlyingFile()} to create a resource with real contents.
 	 *   
 	 * @param aProject A  valid, accessible project to contain the component
-	 * @param aComponentName A name to identify the component within the project. 
 	 * @param aRuntimePath The runtime path of the IVirtualFolder to return.
 	 * @return An IVirtualFile contained by the specified component with the given runtime path
 	 *   
 	 * @see IVirtualResource#createLink(IPath, int, IProgressMonitor)
 	 *  
 	 */
-	public static IVirtualFile createFile(IProject aProject, String aComponentName, IPath aRuntimePath) {
-		return new VirtualFile(aProject, aComponentName, aRuntimePath);
+	public static IVirtualFile createFile(IProject aProject, IPath aRuntimePath) {
+		return new VirtualFile(aProject, aRuntimePath);
 	}
 
 	/**
@@ -163,11 +159,9 @@ public class ComponentCore {
 				for (int i = 0; i < resources.length; i++) {
 					if (aResource.getType() == IResource.FILE)
 						foundResources.add(new VirtualFile(proj, resources[i]
-								.getComponent().getName(), resources[i]
 								.getRuntimePath()));
 					else
 						foundResources.add(new VirtualFolder(proj, resources[i]
-								.getComponent().getName(), resources[i]
 								.getRuntimePath()));
 				}
 			}

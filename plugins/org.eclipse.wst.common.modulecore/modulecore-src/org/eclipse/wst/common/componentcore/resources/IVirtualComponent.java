@@ -54,12 +54,6 @@ public interface IVirtualComponent extends IAdaptable {
 	 */
 	String getComponentTypeId();
 	
-	/**
-	 * The componentHandle is a handy way to pass the identity of this component instance
-	 * 
-	 * @return The componentHandle, of ComponentHandle type
-	 */
-	ComponentHandle getComponentHandle();
 	
 	/**
 	 * Returns reference to itself.

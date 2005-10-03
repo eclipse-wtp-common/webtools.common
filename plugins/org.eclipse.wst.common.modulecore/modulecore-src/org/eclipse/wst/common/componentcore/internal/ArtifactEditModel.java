@@ -10,6 +10,7 @@ package org.eclipse.wst.common.componentcore.internal;
 
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
@@ -21,7 +22,6 @@ import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.impl.PlatformURLModuleConnection;
-import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
@@ -56,7 +56,7 @@ import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 public class ArtifactEditModel extends EditModel implements IAdaptable {
 
 	public static final Class ADAPTER_TYPE = ArtifactEditModel.class;
-	private final ComponentHandle componentHandle; 
+	private final IProject componentProject; 
 	private final IPath modulePath;
 	private final IVirtualComponent virtualComponent;
 	private final URI componentURI;
@@ -123,11 +123,20 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 
 	public ArtifactEditModel(String anEditModelId, EMFWorkbenchContext aContext, boolean toMakeReadOnly, boolean toAccessUnknownResourcesAsReadOnly, URI aModuleURI) {
 		super(anEditModelId, aContext, toMakeReadOnly, toAccessUnknownResourcesAsReadOnly);
-		componentHandle =  ComponentHandle.create(null, aModuleURI);
-		virtualComponent = ComponentCore.createComponent(componentHandle.getProject(), componentHandle.getName());
+		IProject aProject = null;
+		try {
+			aProject = StructureEdit.getContainingProject(aModuleURI);
+		} catch (UnresolveableURIException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			componentProject = aProject;
+		}
+		
+		virtualComponent = ComponentCore.createComponent(componentProject);
 		componentURI = aModuleURI;
 		modulePath = new Path(aModuleURI.path());
-		processLoadedResources(componentHandle);
+		processLoadedResources(componentProject);
 	}
 
 	/**
@@ -164,8 +173,8 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 	public String getModuleType() {
 		return virtualComponent.getComponentTypeId();
 	}
-	public ComponentHandle getComponentHandle() { 
-		return componentHandle;
+	public IProject getComponentProject() { 
+		return componentProject;
 	}
 
 	public URI getModuleURI() {
@@ -217,7 +226,7 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 	 */
 
 
-	protected void processLoadedResources(ComponentHandle aComponentHandle) {
+	protected void processLoadedResources(IProject aComponentProject) {
 		List loadedResources = getResourceSet().getResources();
 		if (!loadedResources.isEmpty()) {
 			processResourcesIfInterrested(loadedResources);

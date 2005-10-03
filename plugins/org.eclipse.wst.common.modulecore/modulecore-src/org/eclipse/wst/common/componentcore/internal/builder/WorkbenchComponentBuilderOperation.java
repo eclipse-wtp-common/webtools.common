@@ -36,7 +36,7 @@ public class WorkbenchComponentBuilderOperation extends AbstractDataModelOperati
 		try {
             IVirtualComponent vComponent = (IVirtualComponent)model.getProperty(IWorkbenchComponentBuilderDataModelProperties.VIRTUAL_COMPONENT);
             sEdit = StructureEdit.getStructureEditForRead(vComponent.getProject());
-            WorkbenchComponent wbComponent = sEdit.findComponentByName(vComponent.getName());
+            WorkbenchComponent wbComponent = sEdit.getComponent();
             
             // create output container folder if it does not exist
             IFolder outputContainer = (IFolder)model.getProperty(IWorkbenchComponentBuilderDataModelProperties.OUTPUT_CONTAINER);

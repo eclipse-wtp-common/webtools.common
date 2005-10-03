@@ -6,8 +6,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.ComponentCore;
-import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
-import org.eclipse.wst.common.componentcore.resources.IFlexibleProject;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
@@ -68,24 +66,22 @@ public class DependencyGraphManager {
 	private void buildDependencyGraph() {
 		IProject[] projects = ProjectUtilities.getAllProjects();
 		for (int k=0; k<projects.length; k++) {
-			IFlexibleProject refProject = ComponentCore.createFlexibleProject(projects[k]);
-			if (!projects[k].isAccessible() || refProject == null || !addTimeStamp(projects[k])) 
+			
+			if (!projects[k].isAccessible() || !addTimeStamp(projects[k])) 
 				continue;
-			IVirtualComponent[] components = refProject.getComponents();
-			for (int j=0; j<components.length; j++) {
-				addDependencyReference(components[j]);
-			}
+			IVirtualComponent component= ComponentCore.createComponent(projects[k]);
+			addDependencyReference(component);
 		}
 	}
 	
 	private void addDependencyReference(IVirtualComponent component) {
-		ComponentHandle componentHandle = component.getComponentHandle();
+		IProject componentProject = component.getProject();
 		IVirtualReference[] depRefs = component.getReferences();
 		for(int i = 0; i<depRefs.length; i++){
 			IVirtualComponent targetComponent = depRefs[i].getReferencedComponent();
 			if (targetComponent!=null) {
-				ComponentHandle targetHandle = targetComponent.getComponentHandle();
-				DependencyGraph.getInstance().addReference(targetHandle,componentHandle);
+				IProject targetProject = targetComponent.getProject();
+				DependencyGraph.getInstance().addReference(targetProject,componentProject);
 			}	
 		}
 		

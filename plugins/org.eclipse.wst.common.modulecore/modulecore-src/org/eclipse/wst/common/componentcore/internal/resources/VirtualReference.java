@@ -54,11 +54,11 @@ public class VirtualReference implements IVirtualReference {
 		StructureEdit core = null;
 		try {
 			core = StructureEdit.getStructureEditForWrite(enclosingComponent.getProject());
-			WorkbenchComponent component = core.findComponentByName(enclosingComponent.getName());
+			WorkbenchComponent component = core.getComponent();
 			List referencedComponents = component.getReferencedComponents();
 			ReferencedComponent refComp = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createReferencedComponent();
 			if( !referencedComponent.isBinary())
-				refComp.setHandle(ModuleURIUtil.fullyQualifyURI(referencedComponent.getProject(), referencedComponent.getName()));
+				refComp.setHandle(ModuleURIUtil.fullyQualifyURI(referencedComponent.getProject()));
 			else
 				refComp.setHandle(ModuleURIUtil.archiveComponentfullyQualifyURI(referencedComponent.getName())); 
 			refComp.setRuntimePath(runtimePath);

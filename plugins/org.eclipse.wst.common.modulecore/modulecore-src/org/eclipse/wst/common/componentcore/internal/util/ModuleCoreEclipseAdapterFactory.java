@@ -53,7 +53,7 @@ public class ModuleCoreEclipseAdapterFactory implements IAdapterFactory {
 			if (resource.getType() == IResource.PROJECT) {
 				WorkbenchComponent[] comps = moduleCore.getWorkbenchModules();
 				if (comps.length > 0){
-					return ComponentCore.createComponent(resource.getProject(), comps[0].getName());
+					return ComponentCore.createComponent(resource.getProject());
 				}
 				else
 					return null;
@@ -65,7 +65,7 @@ public class ModuleCoreEclipseAdapterFactory implements IAdapterFactory {
 			if (moduleCore != null)
 				moduleCore.dispose();
 		}
-		return module == null ? null : ComponentCore.createComponent(resource.getProject(), module.getName());
+		return module == null ? null : ComponentCore.createComponent(resource.getProject());
 	}
 
 	/* (non-Javadoc)

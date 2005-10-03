@@ -23,18 +23,13 @@ import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeRoot;
-import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 
 public class VirtualFile extends VirtualResource implements IVirtualFile {
 
-	protected VirtualFile(ComponentHandle aComponentHandle, IPath aRuntimePath) {
-		super(aComponentHandle, aRuntimePath); 
-	}
-
- 	public VirtualFile(IProject aProject, String aComponentName, IPath aRuntimePath) {
-		super(ComponentHandle.create(aProject, aComponentName), aRuntimePath);  
+	public VirtualFile(IProject aComponentProject, IPath aRuntimePath) {
+		super(aComponentProject, aRuntimePath); 
 	}
 
 	/**
@@ -48,7 +43,7 @@ public class VirtualFile extends VirtualResource implements IVirtualFile {
 			IFile resource = getProject().getFile(aProjectRelativeLocation);
 
 			moduleCore = StructureEdit.getStructureEditForWrite(getProject());
-			WorkbenchComponent component = moduleCore.findComponentByName(getComponent().getName());
+			WorkbenchComponent component = moduleCore.getComponent();
 			
 			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
 			ComponentResource[] resources = root.findModuleResources(getRuntimePath(), ResourceTreeNode.CREATE_NONE);

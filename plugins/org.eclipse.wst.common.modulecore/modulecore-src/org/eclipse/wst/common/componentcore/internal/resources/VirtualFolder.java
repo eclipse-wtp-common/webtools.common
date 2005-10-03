@@ -21,26 +21,12 @@ import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
-import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 
 public class VirtualFolder extends VirtualContainer implements IVirtualFolder { 
 
-	/**
-	 * <p>
-	 * Creates an unassigned mapping contained by the component identified by <aContainingProject,
-	 * aComponentName> with a runtime path of aRuntimePath.
-	 * </p>
-	 * 
-	 * @param aContainingProject
-	 * @param aComponentName
-	 * @param aRuntimePath
-	 */
-	public VirtualFolder(IProject aContainingProject, String aComponentName, IPath aRuntimePath) {
-		super(aContainingProject, aComponentName, aRuntimePath);
-	}
 
 	/**
 	 * p> Creates an unassigned mapping contained by the component identified by aComponentHandle
@@ -50,14 +36,14 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 	 * @param aComponentHandle
 	 * @param aRuntimePath
 	 */
-	protected VirtualFolder(ComponentHandle aComponentHandle, IPath aRuntimePath) {
-		super(aComponentHandle, aRuntimePath);
+	public VirtualFolder(IProject aComponentProject, IPath aRuntimePath) {
+		super(aComponentProject, aRuntimePath);
 	}
  
 	// TODO WTP:Implement this method
 	public void create(int updateFlags, IProgressMonitor monitor) throws CoreException {
 
-		IVirtualComponent container = ComponentCore.createComponent(getProject(), getComponentHandle().getName()); 
+		IVirtualComponent container = ComponentCore.createComponent(getProject()); 
 		if( !container.getRootFolder().getProjectRelativePath().isRoot()){
 			IFolder realFolder = getProject().getFolder(container.getRootFolder().getProjectRelativePath()); 
 			IFolder newFolder = realFolder.getFolder(getRuntimePath()); 
@@ -112,7 +98,7 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 		try { 
 			IPath runtimePath = getRuntimePath();
 			moduleCore = StructureEdit.getStructureEditForWrite(getProject());
-			WorkbenchComponent component = moduleCore.findComponentByName(getComponent().getName());
+			WorkbenchComponent component = moduleCore.getComponent();
 			ComponentResource[] resources = component.findResourcesByRuntimePath(runtimePath);
 			for (int i = 0; i < resources.length; i++) {
 				if(runtimePath.equals(resources[i].getRuntimePath())) 
@@ -134,7 +120,7 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 		try {
 			IPath runtimePath = getRuntimePath();
 			moduleCore = StructureEdit.getStructureEditForWrite(getProject());
-			WorkbenchComponent component = moduleCore.findComponentByName(getComponent().getName());
+			WorkbenchComponent component = moduleCore.getComponent();
 			ComponentResource[] resources = component.findResourcesByRuntimePath(runtimePath);
 			IResource realResource;
 			for (int i = 0; i < resources.length; i++) {

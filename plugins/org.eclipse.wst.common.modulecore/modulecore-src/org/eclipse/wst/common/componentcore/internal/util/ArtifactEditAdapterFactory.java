@@ -25,7 +25,6 @@ import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.impl.ArtifactEditModelFactory;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
-import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 
 /**
@@ -55,8 +54,8 @@ public class ArtifactEditAdapterFactory implements IAdapterFactory {
 		if (anAdapterType == ArtifactEditModel.ADAPTER_TYPE) {
 			if (anAdaptableObject instanceof ArtifactEdit) {
 				ArtifactEdit edit = (ArtifactEdit)anAdaptableObject;
-				ComponentHandle aHandle = edit.getComponentHandle();
-				URI componentURI = ModuleURIUtil.fullyQualifyURI(aHandle);
+				IProject aProject = edit.getProject();
+				URI componentURI = ModuleURIUtil.fullyQualifyURI(aProject);
 				ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(edit.getComponent().getProject());
 				Map params = new HashMap();
 				params.put(ArtifactEditModelFactory.PARAM_MODULE_URI, componentURI);
@@ -79,7 +78,7 @@ public class ArtifactEditAdapterFactory implements IAdapterFactory {
 		try {
 			IProject project = StructureEdit.getContainingProject(aModuleURI);
 			editUtility = StructureEdit.getStructureEditForRead(project);
-			WorkbenchComponent module = editUtility.findComponentByName(ModuleURIUtil.getDeployedName(aModuleURI));
+			WorkbenchComponent module = editUtility.getComponent();
 			return module.getComponentType().getComponentTypeId();
 		} catch (UnresolveableURIException uurie) {
 			// Ignore

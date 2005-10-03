@@ -50,7 +50,7 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
 			String componentName = ModuleURIUtil.getDeployedName(aModuleResourceRuntimePath);
 			URI runtimeURI = ModuleURIUtil.trimToDeployPathSegment(aModuleResourceRuntimePath);
 			IPath runtimePath = new Path(runtimeURI.path());
-			IVirtualComponent component = ComponentCore.createComponent(componentProject, componentName);
+			IVirtualComponent component = ComponentCore.createComponent(componentProject);
 			//IVirtualFile vFile = component.getFile(runtimePath);
 			IVirtualFolder rootFolder = component.getRootFolder();
 			IVirtualFile vFile = rootFolder.getFile(runtimePath);

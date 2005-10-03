@@ -16,8 +16,8 @@ public class CreateReferenceComponentsDataModelProvider extends AbstractDataMode
 
 	public Set getPropertyNames() {
 		Set propertyNames = super.getPropertyNames();
-		propertyNames.add(SOURCE_COMPONENT_HANDLE);
-		propertyNames.add(TARGET_COMPONENTS_HANDLE_LIST);
+		propertyNames.add(SOURCE_COMPONENT_PROJECT);
+		propertyNames.add(TARGET_COMPONENT_PROJECT_LIST);
 		propertyNames.add(TARGET_COMPONENTS_DEPLOY_PATH);
 		return propertyNames;
 	}
@@ -28,7 +28,7 @@ public class CreateReferenceComponentsDataModelProvider extends AbstractDataMode
 	}
 
 	public Object getDefaultProperty(String propertyName) {
-		if (propertyName.equals(TARGET_COMPONENTS_HANDLE_LIST))
+		if (propertyName.equals(TARGET_COMPONENT_PROJECT_LIST))
 			return new ArrayList();
 		return super.getDefaultProperty(propertyName);
 	}

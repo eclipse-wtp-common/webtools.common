@@ -27,7 +27,6 @@ import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
-import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
@@ -48,7 +47,7 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 	private static final IPath[] NO_PATHS = new Path[0];
 
 	private IPath runtimePath;
-	private ComponentHandle componentHandle;
+	private IProject componentProject;
 	private IVirtualFolder rootFolder;
 	private int flag = 1;
 
@@ -58,17 +57,17 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 
 
 
-	public VirtualArchiveComponent(ComponentHandle aComponentHandle, IPath aRuntimePath) {
-		componentHandle = aComponentHandle;
+	public VirtualArchiveComponent(IProject aComponentProject, IPath aRuntimePath) {
+		componentProject = aComponentProject;
 		runtimePath = aRuntimePath;
 
-		IPath namePath = new Path(componentHandle.getName());
+		IPath namePath = new Path(componentProject.getName());
 		archiveType = namePath.segment(0);
 		archivePath = namePath.removeFirstSegments(1).makeRelative();
 	}
 
 	public VirtualArchiveComponent(IProject aProject, String aName, IPath aRuntimePath) {
-		this(ComponentHandle.create(aProject, aName), aRuntimePath);
+		this(aProject, aRuntimePath);
 	}
 
 	public IVirtualComponent getComponent() {
@@ -76,7 +75,7 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 	}
 
 	public String getName() {
-		return componentHandle.getName();
+		return componentProject.getName();
 	}
 
 	public String getComponentTypeId() {
@@ -104,10 +103,6 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 
 	}
 
-	public ComponentHandle getComponentHandle() {
-		return componentHandle;
-	}
-
 	public void delete(int updateFlags, IProgressMonitor monitor) throws CoreException {
 
 	}
@@ -127,7 +122,7 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 	}
 
 	public IProject getProject() {
-		return componentHandle.getProject();
+		return componentProject;
 	}
 
 	public IPath getRuntimePath() {
@@ -210,7 +205,8 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 		} else {
 			String fileString = null;
 			try {
-				fileString = ModuleURIUtil.getArchiveName(URI.createURI(getComponentHandle().toString()));
+				String name = "[" + getProject().getFullPath() + "]:" + getProject().getName();
+				fileString = ModuleURIUtil.getArchiveName(URI.createURI(name));
 			} catch (UnresolveableURIException e) {
 				Logger.getLogger().logError(e);
 			}

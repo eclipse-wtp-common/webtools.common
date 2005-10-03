@@ -9,7 +9,6 @@ import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
-import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
@@ -57,7 +56,7 @@ public class ArtifactEditOperationDataModelProvider extends AbstractDataModelPro
 		WorkbenchComponent module = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(getTargetProject());
-			module = moduleCore.findComponentByName(getStringProperty(COMPONENT_NAME));
+			module = moduleCore.getComponent();
 		} finally {
 			if (null != moduleCore) {
 				moduleCore.dispose();
@@ -68,8 +67,8 @@ public class ArtifactEditOperationDataModelProvider extends AbstractDataModelPro
 
 	public ArtifactEdit getArtifactEditForRead() {
 		WorkbenchComponent module = getWorkbenchModule();
-		ComponentHandle handle = ComponentHandle.create(StructureEdit.getContainingProject(module), module.getName());
-		return ArtifactEdit.getArtifactEditForRead(handle);
+		IProject proj = StructureEdit.getContainingProject(module);
+		return ArtifactEdit.getArtifactEditForRead(proj);
 	}
 
 	public IStatus validate(String propertyName) {
@@ -91,7 +90,7 @@ public class ArtifactEditOperationDataModelProvider extends AbstractDataModelPro
 	public IVirtualComponent getTargetComponent() {
 		String moduleName = getStringProperty(COMPONENT_NAME);
 		if (moduleName != null && moduleName.length() > 0)
-			return ComponentCore.createComponent(getTargetProject(), moduleName);
+			return ComponentCore.createComponent(getTargetProject());
 		return null;
 
 

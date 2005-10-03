@@ -37,7 +37,6 @@ import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.impl.ArtifactEditModelFactory;
 import org.eclipse.wst.common.componentcore.internal.impl.ComponentCoreURIConverter;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleStructuralModelFactory;
-import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.internal.impl.WTPResourceFactoryRegistry;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
@@ -157,6 +156,9 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 			//Ignore
 		}
 		return null;
+	}
+	public static boolean isFlexibleProject(IProject project) {
+		return ModuleCoreNature.getModuleCoreNature(project) != null;
 	}
 
 	/**
@@ -499,7 +501,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		try {
 			IProject aProject = StructureEdit.getContainingProject(aModuleURI);
 			editUtility = StructureEdit.getStructureEditForRead(aProject);
-			WorkbenchComponent module = editUtility.findComponentByName(ModuleURIUtil.getDeployedName(aModuleURI));
+			WorkbenchComponent module = editUtility.getComponent();
 			return module.getComponentType().getComponentTypeId();
 		} catch (UnresolveableURIException uurie) {
 			// Ignore

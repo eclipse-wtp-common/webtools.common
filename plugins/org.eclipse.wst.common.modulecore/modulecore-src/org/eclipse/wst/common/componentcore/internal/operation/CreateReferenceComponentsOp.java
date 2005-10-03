@@ -13,7 +13,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.datamodel.properties.ICreateReferenceComponentsDataModelProperties;
-import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
@@ -33,13 +32,11 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 	}
 	private void addProjectReferences() {
 		
-		ComponentHandle handle = (ComponentHandle) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT_HANDLE);
-		IProject sourceProject = handle.getProject();
-		List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_HANDLE_LIST);
+		IProject sourceProject = (IProject) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT_PROJECT);
+		List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_PROJECT_LIST);
 		List targetprojectList = new ArrayList();
 		for( int i=0; i< modList.size(); i++){
-			ComponentHandle targethandle = (ComponentHandle) modList.get(i);
-			IProject targetProject = targethandle.getProject();
+			IProject targetProject = (IProject) modList.get(i);
 			targetprojectList.add(targetProject);
 		}
 		try {
@@ -51,8 +48,8 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 	}
 	protected void addReferencedComponents(IProgressMonitor monitor) {
 		
-		ComponentHandle sourceHandle = (ComponentHandle) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT_HANDLE);
-		IVirtualComponent sourceComp = ComponentCore.createComponent(sourceHandle.getProject(), sourceHandle.getName());
+		IProject sourceProject = (IProject) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT_PROJECT);
+		IVirtualComponent sourceComp = ComponentCore.createComponent(sourceProject);
 		
 		List vlist = new ArrayList();
 		IVirtualReference[] oldrefs = sourceComp.getReferences();
@@ -62,10 +59,10 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 		}		
 
 		
-        List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_HANDLE_LIST);
+        List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_PROJECT_LIST);
 		for (int i = 0; i < modList.size(); i++) {
-			ComponentHandle handle = (ComponentHandle) modList.get(i);
-			IVirtualComponent comp = ComponentCore.createComponent(handle.getProject(), handle.getName());
+			IProject handle = (IProject) modList.get(i);
+			IVirtualComponent comp = ComponentCore.createComponent(handle);
 			if (!srcComponentContainsReference(sourceComp, comp)) {
 				IVirtualReference ref = ComponentCore.createReference(sourceComp, comp);
 				String deployPath = model.getStringProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH);
@@ -88,7 +85,7 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 	private boolean srcComponentContainsReference(IVirtualComponent sourceComp, IVirtualComponent comp) {
 		IVirtualReference[] existingReferences = sourceComp.getReferences();
 		for (int i = 0; i < existingReferences.length; i++) {
-			if(existingReferences[i].getReferencedComponent().getComponentHandle().equals(comp.getComponentHandle())){
+			if(existingReferences[i].getReferencedComponent().getProject().equals(comp.getProject())){
 				return true;
 			}
 		}

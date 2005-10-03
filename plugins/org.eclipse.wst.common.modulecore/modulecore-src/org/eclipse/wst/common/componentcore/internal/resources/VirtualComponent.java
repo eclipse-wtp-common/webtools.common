@@ -33,7 +33,6 @@ import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.builder.DependencyGraphManager;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
-import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
@@ -42,19 +41,16 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 
 public class VirtualComponent implements IVirtualComponent {
 	IPath			runtimePath;
-	ComponentHandle	componentHandle;
+	IProject	componentProject;
 	IVirtualFolder	rootFolder;
 	String componentTypeId;
 	private int flag = 0;
 	
-	public VirtualComponent(IProject aProject, String aName, IPath aRuntimePath) {
-		this(ComponentHandle.create(aProject, aName), aRuntimePath);
-	}
 
-	public VirtualComponent(ComponentHandle aComponentHandle, IPath aRuntimePath) {
-		componentHandle = aComponentHandle;
+	public VirtualComponent(IProject aProject, IPath aRuntimePath) {
+		componentProject = aProject;
 		runtimePath = aRuntimePath;
-		rootFolder = ComponentCore.createFolder(componentHandle.getProject(), componentHandle.getName(), new Path("/"));
+		rootFolder = ComponentCore.createFolder(componentProject, new Path("/"));
 	}
 	
 	public IVirtualComponent getComponent() {
@@ -62,7 +58,7 @@ public class VirtualComponent implements IVirtualComponent {
 	}
 	
 	public String getName() {
-		return getComponentHandle().getName();
+		return getProject().getName();
 	}
 	
 	public boolean exists() { 
@@ -74,7 +70,7 @@ public class VirtualComponent implements IVirtualComponent {
 				if(core == null){
 					return false;
 				}
-				WorkbenchComponent component = core.findComponentByName(getName()); 
+				WorkbenchComponent component = core.getComponent(); 
 				return component != null;
 			}
 		} finally {
@@ -93,7 +89,7 @@ public class VirtualComponent implements IVirtualComponent {
 				core = StructureEdit.getStructureEditForRead(getProject());
 				if (core == null)
 					return null;
-				WorkbenchComponent component = core.findComponentByName(getName());
+				WorkbenchComponent component = core.getComponent();
 				ComponentType cType = component == null ? null : component.getComponentType();
 				componentTypeId = cType == null ? null : cType.getComponentTypeId();
 			} finally {
@@ -109,7 +105,7 @@ public class VirtualComponent implements IVirtualComponent {
 		StructureEdit core = null;
 		try {
 			core = StructureEdit.getStructureEditForWrite(getProject());
-			WorkbenchComponent component = core.findComponentByName(getName()); 
+			WorkbenchComponent component = core.getComponent(); 
 			ComponentType cType = component.getComponentType();
 			if(cType == null) {
 				cType = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentType();
@@ -128,7 +124,7 @@ public class VirtualComponent implements IVirtualComponent {
         StructureEdit core = null;
         try {
             core = StructureEdit.getStructureEditForRead(getProject());
-            WorkbenchComponent component = core.findComponentByName(getName()); 
+            WorkbenchComponent component = core.getComponent(); 
             ComponentType cType = component.getComponentType();
             Properties props = new Properties();
             if(cType != null) {
@@ -150,7 +146,7 @@ public class VirtualComponent implements IVirtualComponent {
         StructureEdit core = null;
         try {
             core = StructureEdit.getStructureEditForWrite(getProject());
-            WorkbenchComponent component = core.findComponentByName(getName()); 
+            WorkbenchComponent component = core.getComponent(); 
             ComponentType cType = component.getComponentType();
 			if(cType == null) {
 				cType = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentType();
@@ -180,7 +176,7 @@ public class VirtualComponent implements IVirtualComponent {
         StructureEdit core = null;
         try {
             core = StructureEdit.getStructureEditForWrite(getProject());
-            WorkbenchComponent component = core.findComponentByName(getName()); 
+            WorkbenchComponent component = core.getComponent(); 
             ComponentType cType = component.getComponentType();
 			if(cType == null) {
 				cType = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentType();
@@ -226,10 +222,10 @@ public class VirtualComponent implements IVirtualComponent {
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(getProject());
 			WorkbenchComponent component = moduleCore
-					.findComponentByName(getComponentHandle().getName());
+					.getComponent();
 			if (component == null)
 				component = moduleCore
-						.createWorkbenchModule(getComponentHandle().getName());
+						.createWorkbenchModule(getProject().getName());
 				
 		} finally {
 			if (moduleCore != null) {
@@ -243,7 +239,7 @@ public class VirtualComponent implements IVirtualComponent {
 		StructureEdit core = null;
 		try {
 			core = StructureEdit.getStructureEditForRead(getProject());
-			WorkbenchComponent component = core.findComponentByName(getName());
+			WorkbenchComponent component = core.getComponent();
 			List referencedComponents = component.getReferencedComponents();
 			ReferencedComponent referencedComponent = null;
 			
@@ -268,7 +264,7 @@ public class VirtualComponent implements IVirtualComponent {
 		StructureEdit core = null;
 		try {
 			core = StructureEdit.getStructureEditForWrite(getProject());
-			WorkbenchComponent component = core.findComponentByName(getName());
+			WorkbenchComponent component = core.getComponent();
 			List referencedComponents = component.getReferencedComponents();
 			ReferencedComponent referencedComponent = null;
 			  
@@ -281,7 +277,7 @@ public class VirtualComponent implements IVirtualComponent {
 
 				IVirtualComponent comp = references[i].getReferencedComponent();
 				if( !comp.isBinary())
-					referencedComponent.setHandle(ModuleURIUtil.fullyQualifyURI(references[i].getReferencedComponent().getProject(), references[i].getReferencedComponent().getName()));
+					referencedComponent.setHandle(ModuleURIUtil.fullyQualifyURI(references[i].getReferencedComponent().getProject()));
 				else
 					referencedComponent.setHandle(ModuleURIUtil.archiveComponentfullyQualifyURI(references[i].getReferencedComponent().getName()));
 				
@@ -319,7 +315,7 @@ public class VirtualComponent implements IVirtualComponent {
 		StructureEdit core = null;
 		try {
 			core = StructureEdit.getStructureEditForRead(getProject());
-			WorkbenchComponent component = core.findComponentByName(getName()); 
+			WorkbenchComponent component = core.getComponent(); 
 			ComponentType compType = component.getComponentType();
 			if( compType != null)
 				return compType.getVersion();
@@ -335,7 +331,7 @@ public class VirtualComponent implements IVirtualComponent {
 		StructureEdit core = null;
 		try {
 			core = StructureEdit.getStructureEditForWrite(getProject());
-			WorkbenchComponent component = core.findComponentByName(getName()); 
+			WorkbenchComponent component = core.getComponent(); 
 			ComponentType cType = component.getComponentType();
 			if(cType == null) {
 				cType = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentType();
@@ -350,9 +346,6 @@ public class VirtualComponent implements IVirtualComponent {
 		}
 	}
 	
-	public ComponentHandle getComponentHandle() {
-		return componentHandle;
-	}
 	public Object getAdapter(Class adapterType) {
 		return Platform.getAdapterManager().getAdapter(this, adapterType);
 	}
@@ -362,7 +355,7 @@ public class VirtualComponent implements IVirtualComponent {
 	}
 
 	public IProject getProject() {
-		return componentHandle.getProject();
+		return componentProject;
 	}
 	
 	/**
@@ -372,10 +365,10 @@ public class VirtualComponent implements IVirtualComponent {
 	 * @return array of components
 	 */
 	public IVirtualComponent[] getReferencingComponents() {
-		ComponentHandle[] handles =  DependencyGraphManager.getInstance().getDependencyGraph().getReferencingComponents(this.getComponentHandle());
+		IProject[] handles =  DependencyGraphManager.getInstance().getDependencyGraph().getReferencingComponents(getProject());
 		IVirtualComponent[] result = new IVirtualComponent[handles.length];
 		for (int i=0; i<handles.length; i++)
-			result[i] = ComponentCore.createComponent(handles[i].getProject(),handles[i].getName());
+			result[i] = ComponentCore.createComponent(handles[i]);
 		return result;
 	}
 }

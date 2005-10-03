@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
+import org.eclipse.core.resources.IProject;
 
 public class DependencyGraph {
 	
@@ -27,21 +27,21 @@ public class DependencyGraph {
 		return INSTANCE;
 	}
 
-	public ComponentHandle[] getReferencingComponents(ComponentHandle target) {
+	public IProject[] getReferencingComponents(IProject target) {
 		Set referencingComponents = internalGetReferencingComponents(target);
-		return (ComponentHandle[]) referencingComponents.toArray(new ComponentHandle[referencingComponents.size()]);
+		return (IProject[]) referencingComponents.toArray(new IProject[referencingComponents.size()]);
 	}
 	
-	public void addReference(ComponentHandle target, ComponentHandle referencingComponent) {
+	public void addReference(IProject target, IProject referencingComponent) {
 		internalGetReferencingComponents(target).add(referencingComponent);
 	}
 	
-	public void removeReference(ComponentHandle target, ComponentHandle referencingComponent) {
+	public void removeReference(IProject target, IProject referencingComponent) {
 		internalGetReferencingComponents(target).remove(referencingComponent);
 		
 	}
 	
-	protected Set internalGetReferencingComponents(ComponentHandle target) {
+	protected Set internalGetReferencingComponents(IProject target) {
 		Set referencingComponents = (Set) dependencies.get(target);
 		if(referencingComponents == null) 
 			dependencies.put(target, (referencingComponents = new HashSet()));

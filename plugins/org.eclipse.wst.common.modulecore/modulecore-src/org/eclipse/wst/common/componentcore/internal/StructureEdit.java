@@ -36,7 +36,6 @@ import org.eclipse.wst.common.componentcore.internal.impl.PlatformURLModuleConne
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
 import org.eclipse.wst.common.componentcore.internal.util.EclipseResourceAdapter;
-import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
@@ -335,7 +334,7 @@ public class StructureEdit implements IEditModelHandler {
 		ComponentType componentType = null;
 		try {
 			componentCore = StructureEdit.getStructureEditForRead(aComponent.getProject());
-			WorkbenchComponent wbComponent = componentCore.findComponentByName(aComponent.getComponent().getName());
+			WorkbenchComponent wbComponent = componentCore.getComponent();
 			componentType = wbComponent.getComponentType();
 		} finally {
 			if (componentCore != null)
@@ -349,7 +348,7 @@ public class StructureEdit implements IEditModelHandler {
 		StructureEdit componentCore = null;
 		try {
 			componentCore = StructureEdit.getStructureEditForWrite(component.getProject());
-			WorkbenchComponent wbComponent = componentCore.findComponentByName(component.getComponent().getName());
+			WorkbenchComponent wbComponent = componentCore.getComponent();
 			wbComponent.setComponentType(aComponentType);
 		} finally {
 			if (componentCore != null) {
@@ -373,13 +372,9 @@ public class StructureEdit implements IEditModelHandler {
 			} 
 			// if the project cannot be resolved, assume it's local - really it probably deleted 
 			
-			try {
-				targetComponentName = StructureEdit.getDeployedName(referencedComponent.getHandle());
-				targetComponent = ComponentCore.createComponent(targetProject, targetComponentName);  
+			targetComponent = ComponentCore.createComponent(targetProject);  
 				
-			} catch (UnresolveableURIException e) {
-				//Ignore
-			}
+
 		}else{
 			String archiveType = ""; //$NON-NLS-1$
 			String archiveName = ""; //$NON-NLS-1$
@@ -617,7 +612,7 @@ public class StructureEdit implements IEditModelHandler {
 	 *             If the supplied module URI is invalid or unresolveable.
 	 */
 	public ComponentResource[] findResourcesByRuntimePath(URI aModuleURI, URI aDeployedResourcePath) throws UnresolveableURIException {
-		WorkbenchComponent module = findComponentByName(ModuleURIUtil.getDeployedName(aModuleURI));
+		WorkbenchComponent module = getComponent();
 		return module.findResourcesByRuntimePath(new Path(aDeployedResourcePath.path()));
 	} 
 
@@ -660,7 +655,7 @@ public class StructureEdit implements IEditModelHandler {
 	 *             If the supplied module URI is invalid or unresolveable.
 	 */
 	public ComponentResource[] findResourcesByRuntimePath(String aModuleName, IPath aModuleResourcePath) {   
-		WorkbenchComponent module = findComponentByName(aModuleName);
+		WorkbenchComponent module = getComponent();
 		return module.findResourcesByRuntimePath(aModuleResourcePath);
 	}
 	public ComponentResource[] findResourcesBySourcePath(URI aWorkspaceRelativePath) throws UnresolveableURIException {
@@ -796,6 +791,7 @@ public class StructureEdit implements IEditModelHandler {
 	 * @return The {@see WorkbenchComponent}contained by the current ModuleCore with the deploy
 	 *         name aModuleName
 	 * @see WorkbenchComponent#getDeployedName()
+	 * @deprecated - Use getComponent() - Only one component per project
 	 */
 	public WorkbenchComponent findComponentByName(String aModuleName) {
 		return getComponentModelRoot() != null ? getComponentModelRoot().findWorkbenchModule(aModuleName) : null;
@@ -817,15 +813,15 @@ public class StructureEdit implements IEditModelHandler {
 	 */
 	public WorkbenchComponent findComponentByURI(URI aModuleURI) throws UnresolveableURIException {
 		if(aModuleURI.scheme() == null && aModuleURI.segmentCount() == 1)
-			return findComponentByName(aModuleURI.segment(0));
+			return getComponent();
 		ModuleURIUtil.ensureValidFullyQualifiedModuleURI(aModuleURI);
 		String projectName = aModuleURI.segment(ModuleURIUtil.ModuleURI.PROJECT_NAME_INDX);
 		String moduleName = aModuleURI.segment(ModuleURIUtil.ModuleURI.MODULE_NAME_INDX);
 		/* Accessing a local module */
 		if (structuralModel.getProject().getName().equals(projectName)) {
-			return findComponentByName(moduleName);
+			return getComponent();
 		}
-		return getDependentModuleCore(aModuleURI).findComponentByName(moduleName);
+		return getDependentModuleCore(aModuleURI).getComponent();
 	}
 
 	/**
@@ -870,12 +866,11 @@ public class StructureEdit implements IEditModelHandler {
 		IProject referencedProject = getContainingProject(aReferencedComponent);
 		
 		EList referencedComponents = aComponent.getReferencedComponents();
-		 
+		String dependentProjectName = null;
 		for (Iterator iter = referencedComponents.iterator(); iter.hasNext();) {
 			ReferencedComponent referencedComponent = (ReferencedComponent) iter.next();
-			ComponentHandle referencedHandle = ComponentHandle.create(containingProject, referencedComponent.getHandle());
-			if(referencedProject.equals(referencedHandle.getProject()) && 
-				aReferencedComponent.getName().equals(referencedHandle.getName())) 
+			dependentProjectName = referencedComponent.getHandle().segment(ModuleURIUtil.ModuleURI.PROJECT_NAME_INDX);
+			if(referencedProject.getName().equals(dependentProjectName)) 
 				return referencedComponent;			
 			
 		}
@@ -950,6 +945,15 @@ public class StructureEdit implements IEditModelHandler {
 	 * @deprecated
 	 */
 	public WorkbenchComponent getFirstModule() {
+		return getComponent();
+	}
+	/**
+	 * returns the one and only component in the project
+	 * 
+	 * @return the component in the project if exists or null
+	 * 
+	 */
+	public WorkbenchComponent getComponent() {
 		if (getWorkbenchModules().length > 0)
 			return getWorkbenchModules()[0];
 		return null;

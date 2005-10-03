@@ -30,7 +30,6 @@ import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
-import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
@@ -108,14 +107,14 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
 		IVirtualComponent vReferencingComponent;
 		IVirtualComponent vReferencedComponent;
 
-		ComponentHandle referencedComponentHandle;
-		ComponentHandle[] referencingComponentHandles;
+		IProject referencedComponentProject;
+		IProject[] referencingComponentProjects;
 		for (int i = 0; i < resources.length; i++) {
 			vReferencedComponent = resources[i].getComponent();
-			referencedComponentHandle = ComponentHandle.create(vReferencedComponent.getProject(), vReferencedComponent.getName());
-			referencingComponentHandles = DependencyGraphManager.getInstance().getDependencyGraph().getReferencingComponents(referencedComponentHandle);
-			for (int j = 0; j < referencingComponentHandles.length; j++) {
-				vReferencingComponent = ComponentCore.createComponent(referencingComponentHandles[j].getProject(), referencingComponentHandles[j].getName());
+			referencedComponentProject = vReferencedComponent.getProject();
+			referencingComponentProjects = DependencyGraphManager.getInstance().getDependencyGraph().getReferencingComponents(referencedComponentProject);
+			for (int j = 0; j < referencingComponentProjects.length; j++) {
+				vReferencingComponent = ComponentCore.createComponent(referencingComponentProjects[j]);
 				createAdditionalReferencedBuilders(vReferencingComponent, vReferencedComponent);
 			}
 		}
@@ -229,7 +228,7 @@ public class ProjectComponentsBuilderDataModelProvider extends AbstractDataModel
 			builderType = typeId + ".builder";
 			dataModel = DataModelEnablementFactory.createDataModel(builderType, curProject);
 			if (dataModel != null) {
-				IVirtualComponent vComponent = ComponentCore.createComponent(curProject, wbComponent.getName());
+				IVirtualComponent vComponent = ComponentCore.createComponent(curProject);
 				dataModel.setProperty(IWorkbenchComponentBuilderDataModelProperties.BUILD_KIND_FOR_DEP, model.getProperty(BUILD_KIND));
 				dataModel.setProperty(IWorkbenchComponentBuilderDataModelProperties.VIRTUAL_COMPONENT, vComponent);
 				moduleBuilderDataModelList.add(dataModel);

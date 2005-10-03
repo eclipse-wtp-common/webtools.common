@@ -46,7 +46,7 @@ public abstract class ArtifactEditProviderOperation extends AbstractDataModelOpe
 	
 	public IVirtualComponent getTargetComponent() {
 		String moduleName = model.getStringProperty(IArtifactEditOperationDataModelProperties.COMPONENT_NAME);
-		return ComponentCore.createComponent(getTargetProject(),moduleName);
+		return ComponentCore.createComponent(getTargetProject());
 	}
 	
 	private void doInitialize(IProgressMonitor monitor) {

@@ -85,7 +85,7 @@ public abstract class ComponentCreationOperation extends AbstractDataModelOperat
     
     
     protected void setupComponentType(String typeID) {
-        IVirtualComponent component = ComponentCore.createComponent(getProject(), model.getStringProperty(ComponentCreationDataModelProvider.COMPONENT_DEPLOY_NAME));
+        IVirtualComponent component = ComponentCore.createComponent(getProject());
         ComponentType componentType = ComponentcoreFactory.eINSTANCE.createComponentType();
         componentType.setComponentTypeId(typeID);
         componentType.setVersion(getVersion());

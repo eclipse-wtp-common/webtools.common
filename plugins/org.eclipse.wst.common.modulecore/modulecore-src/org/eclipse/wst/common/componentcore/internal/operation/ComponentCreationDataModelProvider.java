@@ -96,7 +96,7 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 		} else if (propertyName.equals(COMPONENT)) {
 			String projectName = getStringProperty(PROJECT_NAME);
 			IProject project = ProjectUtilities.getProject(projectName);
-			return ComponentCore.createComponent(project, getStringProperty(COMPONENT_NAME));
+			return ComponentCore.createComponent(project);
 		}
 		return super.getDefaultProperty(propertyName);
 	}

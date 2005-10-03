@@ -56,7 +56,7 @@ public class HRefTranslator extends Translator {
 	 */
 	public Object convertStringToValue(String aValue, EObject anOwner) { 
 		WorkbenchComponent earComp = (WorkbenchComponent)anOwner.eContainer();
-		IVirtualComponent virtualComp = ComponentCore.createComponent(StructureEdit.getContainingProject(earComp),earComp.getName());
+		IVirtualComponent virtualComp = ComponentCore.createComponent(StructureEdit.getContainingProject(earComp));
 		ArtifactEdit edit = (ArtifactEdit)virtualComp.getAdapter(ArtifactEdit.class);
 		Resource res = edit.getContentModelRoot().eResource();
 		return res.getEObject(aValue);

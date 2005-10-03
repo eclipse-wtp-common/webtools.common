@@ -21,7 +21,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jem.internal.util.emf.workbench.nls.EMFWorkbenchResourceHandler;
 import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
-import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.internal.operations.IOperationHandler;
 import org.eclipse.wst.common.internal.emfworkbench.edit.EditModelRegistry;
@@ -155,10 +154,10 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 * @return An instance of ArtifactEdit that may only be used to read the underlying content
 	 *         model
 	 */
-	public static ArtifactEdit getArtifactEditForRead(ComponentHandle aHandle) {
+	public static ArtifactEdit getArtifactEditForRead(IProject aProject) {
 		ArtifactEdit artifactEdit = null;
 		try {
-			artifactEdit = new ArtifactEdit(aHandle, true);
+			artifactEdit = new ArtifactEdit(aProject, true);
 		} catch (IllegalArgumentException iae) {
 			artifactEdit = null;
 		}
@@ -185,10 +184,10 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 * @return An instance of ArtifactEdit that may be used to modify and persist changes to the
 	 *         underlying content model
 	 */
-	public static ArtifactEdit getArtifactEditForWrite(ComponentHandle aHandle) {
+	public static ArtifactEdit getArtifactEditForWrite(IProject aProject) {
 		ArtifactEdit artifactEdit = null;
 		try {
-			artifactEdit = new ArtifactEdit(aHandle, false);
+			artifactEdit = new ArtifactEdit(aProject, false);
 		} catch (IllegalArgumentException iae) {
 			artifactEdit = null;
 		}
@@ -206,7 +205,7 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 		/* The ComponentType must be non-null, and the moduleTypeId must be non-null */
 		if (aModule.getComponentTypeId() == null)
 			return false;
-		if (ModuleURIUtil.fullyQualifyURI(aModule.getProject(), aModule.getName()) == null)
+		if (ModuleURIUtil.fullyQualifyURI(aModule.getProject()) == null)
 			return false;
 		/* and the containing project must be resolveable and accessible */
 		IProject project = aModule.getProject();
@@ -246,9 +245,9 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 */
 	public ArtifactEdit(ModuleCoreNature aNature, IVirtualComponent aModule, boolean toAccessAsReadOnly) {
 		if (toAccessAsReadOnly)
-			artifactEditModel = aNature.getArtifactEditModelForRead(ModuleURIUtil.fullyQualifyURI(aModule.getProject(), aModule.getName()), this);
+			artifactEditModel = aNature.getArtifactEditModelForRead(ModuleURIUtil.fullyQualifyURI(aModule.getProject()), this);
 		else
-			artifactEditModel = aNature.getArtifactEditModelForWrite(ModuleURIUtil.fullyQualifyURI(aModule.getProject(), aModule.getName()), this);
+			artifactEditModel = aNature.getArtifactEditModelForWrite(ModuleURIUtil.fullyQualifyURI(aModule.getProject()), this);
 		isReadOnly = toAccessAsReadOnly;
 		isArtifactEditModelSelfManaged = true;
 	}
@@ -264,22 +263,22 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 *            A non-null {@see WorkbenchComponent}&nbsp;pointing to a module from the given
 	 *            {@see ModuleCoreNature}
 	 */
-	public ArtifactEdit(ComponentHandle aHandle, boolean toAccessAsReadOnly) throws IllegalArgumentException {
+	public ArtifactEdit(IProject aProject, boolean toAccessAsReadOnly) throws IllegalArgumentException {
 
-		if (aHandle.getProject() == null || !aHandle.getProject().isAccessible())
-			throw new IllegalArgumentException("Invalid project specified by handle: " + aHandle.getProject());
+		if (aProject == null || !aProject.isAccessible())
+			throw new IllegalArgumentException("Invalid project: " + aProject);
 
-		ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(aHandle.getProject());
+		ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(aProject);
 
 		if (nature == null)
-			throw new IllegalArgumentException("Project does not have ModuleCoreNature." + aHandle.getProject());
+			throw new IllegalArgumentException("Project does not have ModuleCoreNature: " + aProject);
 
-		IVirtualComponent component = ComponentCore.createComponent(aHandle.getProject(),aHandle.getName());
+		IVirtualComponent component = ComponentCore.createComponent(aProject);
 		if (component == null)
-			throw new IllegalArgumentException("Invalid component handle: " + aHandle);
+			throw new IllegalArgumentException("Invalid component handle: " + aProject);
 		if (!isValidEditableModule(component))
-			throw new IllegalArgumentException("Invalid component handle: " + aHandle);
-		URI componentURI = ModuleURIUtil.fullyQualifyURI(aHandle);
+			throw new IllegalArgumentException("Invalid component handle: " + aProject);
+		URI componentURI = ModuleURIUtil.fullyQualifyURI(aProject);
 
 		if (toAccessAsReadOnly)
 			artifactEditModel = nature.getArtifactEditModelForRead(componentURI, this);
@@ -443,11 +442,11 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	}
 	/**
 	 * 
-	 * @return ComponentHandle - returns the handle of the underlying workbench component.
+	 * @return IProject - returns the project of the underlying workbench component.
 	 */
-	public ComponentHandle getComponentHandle() {
+	public IProject getProject() {
 		
-		return getArtifactEditModel().getComponentHandle();
+		return getArtifactEditModel().getProject();
 	}
 	/**
 	 * 

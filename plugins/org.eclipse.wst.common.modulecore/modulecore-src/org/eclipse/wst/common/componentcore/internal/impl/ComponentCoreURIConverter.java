@@ -86,7 +86,7 @@ public class ComponentCoreURIConverter extends CompatibilityWorkbenchURIConverte
 				moduleCore.dispose();
 		}
 		if( module != null )
-			return ComponentCore.createComponent(containingProject, module.getName());
+			return ComponentCore.createComponent(containingProject);
 		return null;
 	}
 	/* (non-Javadoc)
@@ -116,7 +116,7 @@ public class ComponentCoreURIConverter extends CompatibilityWorkbenchURIConverte
 		
 		try {
 			String componentName = StructureEdit.getDeployedName(aNewURI);
-			IVirtualComponent component = ComponentCore.createComponent(containingProject, componentName);
+			IVirtualComponent component = ComponentCore.createComponent(containingProject);
 
 			URI deployPathSegment = ModuleURIUtil.trimToDeployPathSegment(aNewURI);
 			

@@ -26,9 +26,9 @@ import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeRoot;
-import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualContainer;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
@@ -36,7 +36,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 public abstract class VirtualResource implements IVirtualResource {
 
 	protected static final IResource[] NO_RESOURCES = null;
-	private ComponentHandle componentHandle;
+	private IProject componentProject;
 	private IPath runtimePath;
 	private int hashCode;
 	private String toString;
@@ -45,14 +45,9 @@ public abstract class VirtualResource implements IVirtualResource {
 	private String resourceType;
 
 
-	protected VirtualResource(ComponentHandle aComponentHandle, IPath aRuntimePath) {
-		componentHandle = aComponentHandle;
+	protected VirtualResource(IProject aComponentProject, IPath aRuntimePath) {
+		componentProject = aComponentProject;
 		runtimePath = aRuntimePath;
-	}
-
-
-	protected VirtualResource(IProject aProject, String aComponentName, IPath aRuntimePath) {
-		this(ComponentHandle.create(aProject, aComponentName), aRuntimePath);
 	}
 
 	public void delete(int updateFlags, IProgressMonitor monitor) throws CoreException {
@@ -67,8 +62,8 @@ public abstract class VirtualResource implements IVirtualResource {
 	protected void doDeleteMetaModel(int updateFlags, IProgressMonitor monitor) {
 		StructureEdit moduleCore = null;
 		try {
-			moduleCore = StructureEdit.getStructureEditForWrite(getComponentHandle().getProject());
-			WorkbenchComponent aComponent = moduleCore.findComponentByName(getComponentHandle().getName());
+			moduleCore = StructureEdit.getStructureEditForWrite(getProject());
+			WorkbenchComponent aComponent = moduleCore.getComponent();
 			ComponentResource[] resources = aComponent.findResourcesByRuntimePath(getRuntimePath());
 			aComponent.getResources().removeAll(Arrays.asList(resources));
 		} finally {
@@ -116,7 +111,7 @@ public abstract class VirtualResource implements IVirtualResource {
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(getProject());
-			WorkbenchComponent aComponent = moduleCore.findComponentByName(getComponentHandle().getName());
+			WorkbenchComponent aComponent = moduleCore.getComponent();
 			if (aComponent != null) {
 				ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(aComponent);
 				// still need some sort of loop here to search subpieces of the runtime path.
@@ -187,19 +182,19 @@ public abstract class VirtualResource implements IVirtualResource {
 
 	public IVirtualComponent getComponent() {
 		if (component == null)
-			component = ComponentCore.createComponent(getProject(), getComponentHandle().getName());
+			component = ComponentCore.createComponent(getProject());
 		return component;
 	}
     
 	//returns null if the folder is already the root folder
 	public IVirtualContainer getParent() {
 		if (getRuntimePath().segmentCount() >= 1)
-			return new VirtualFolder(getComponentHandle(), getRuntimePath().removeLastSegments(1));
+			return new VirtualFolder(getProject(), getRuntimePath().removeLastSegments(1));
 		return null;
 	}
 
 	public IProject getProject() {
-		return getComponentHandle().getProject();
+		return componentProject;
 	}
 
 	public boolean isAccessible() {
@@ -224,7 +219,7 @@ public abstract class VirtualResource implements IVirtualResource {
 
 	public String toString() {
 		if (toString == null)
-			toString = "[" + getComponentHandle() + ":" + getRuntimePath() + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			toString = "[" + ModuleURIUtil.getHandleString(getProject()) + ":" + getRuntimePath() + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		return toString;
 	}
 
@@ -243,7 +238,7 @@ public abstract class VirtualResource implements IVirtualResource {
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(getProject());
-			WorkbenchComponent aComponent = moduleCore.findComponentByName(getComponentHandle().getName());
+			WorkbenchComponent aComponent = moduleCore.getComponent();
 			ComponentResource[] resources = aComponent.findResourcesByRuntimePath(getRuntimePath());
 			for (int i = 0; i < resources.length; i++) {
 				resources[i].setResourceType(aResourceType);
@@ -261,7 +256,7 @@ public abstract class VirtualResource implements IVirtualResource {
 			StructureEdit moduleCore = null;
 			try {
 				moduleCore = StructureEdit.getStructureEditForRead(getProject());
-				WorkbenchComponent aComponent = moduleCore.findComponentByName(getComponentHandle().getName());
+				WorkbenchComponent aComponent = moduleCore.getComponent();
 				ComponentResource[] resources = aComponent.findResourcesByRuntimePath(getRuntimePath());
 				for (int i = 0; i < resources.length; i++) {
 					resourceType = resources[i].getResourceType();
@@ -277,9 +272,6 @@ public abstract class VirtualResource implements IVirtualResource {
 		return resourceType;
 	}
 
-	public ComponentHandle getComponentHandle() {
-		return componentHandle;
-	}
 
 	protected void createResource(IContainer resource, int updateFlags, IProgressMonitor monitor) throws CoreException {
 
