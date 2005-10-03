@@ -28,7 +28,6 @@ import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeRoot;
-import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.componentcore.resources.IVirtualContainer;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
@@ -36,12 +35,9 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 
 public abstract class VirtualContainer extends VirtualResource implements IVirtualContainer {
 
-	public VirtualContainer(IProject aProject, String aName, IPath aRuntimePath) {
-		super(aProject, aName, aRuntimePath);
-	}
 
-	public VirtualContainer(ComponentHandle aComponentHandle, IPath aRuntimePath) {
-		super(aComponentHandle, aRuntimePath);
+	public VirtualContainer(IProject aComponentProject, IPath aRuntimePath) {
+		super(aComponentProject, aRuntimePath);
 	}
 
 	// TODO WTP:Implement this method
@@ -75,8 +71,9 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 
 		StructureEdit structureEdit = null;
 		try {
+
 			structureEdit = StructureEdit.getStructureEditForRead(getProject());
-			WorkbenchComponent component = structureEdit.findComponentByName(getComponentHandle().getName());
+			WorkbenchComponent component = structureEdit.getComponent();
 			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
 			ComponentResource[] resources = root.findModuleResources(getRuntimePath().append(aPath), ResourceTreeNode.CREATE_NONE);
 
@@ -84,16 +81,16 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 				// return the resources corresponding to the root, not any of the children if its a folder
 				if (resources[i].getRuntimePath().equals(getRuntimePath().append(aPath))) {
 					IResource platformResource = StructureEdit.getEclipseResource(resources[i]);
-					if (platformResource != null) {
-						switch (platformResource.getType()) {
-							case IResource.FOLDER :
-							case IResource.PROJECT :
-								return new VirtualFolder(getComponentHandle(), getRuntimePath().append(aPath));
-							case IResource.FILE :
-								return new VirtualFile(getComponentHandle(), getRuntimePath().append(aPath));
-						}
+				if (platformResource != null) {
+					switch (platformResource.getType()) {
+						case IResource.FOLDER :
+						case IResource.PROJECT :
+							return new VirtualFolder(getProject(), getRuntimePath().append(aPath));
+						case IResource.FILE :
+							return new VirtualFile(getProject(), getRuntimePath().append(aPath));
 					}
 				}
+			}
 			}
 		} finally {
 			if (structureEdit != null)
@@ -106,28 +103,28 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 	 * @see IContainer#getFile(org.eclipse.core.runtime.IPath)
 	 */
 	public IVirtualFile getFile(IPath aPath) {
-		return new VirtualFile(getComponentHandle(), getRuntimePath().append(aPath));
+		return new VirtualFile(getProject(), getRuntimePath().append(aPath));
 	}
 
 	/**
 	 * @see IContainer#getFolder(org.eclipse.core.runtime.IPath)
 	 */
 	public IVirtualFolder getFolder(IPath aPath) {
-		return new VirtualFolder(getComponentHandle(), getRuntimePath().append(aPath));
+		return new VirtualFolder(getProject(), getRuntimePath().append(aPath));
 	}
 
 	/**
 	 * @see IFolder#getFile(java.lang.String)
 	 */
 	public IVirtualFile getFile(String name) {
-		return new VirtualFile(getComponentHandle(), getRuntimePath().append(name));
+		return new VirtualFile(getProject(), getRuntimePath().append(name));
 	}
 
 	/**
 	 * @see IFolder#getFolder(java.lang.String)
 	 */
 	public IVirtualFolder getFolder(String name) {
-		return new VirtualFolder(getComponentHandle(), getRuntimePath().append(name));
+		return new VirtualFolder(getProject(), getRuntimePath().append(name));
 	}
 
 	/**
@@ -151,8 +148,8 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 		StructureEdit moduleCore = null;
 		Set virtualResources = new HashSet();
 		try {
-			moduleCore = StructureEdit.getStructureEditForRead(getComponentHandle().getProject());
-			WorkbenchComponent wbComponent = moduleCore.findComponentByName(getComponentHandle().getName());
+			moduleCore = StructureEdit.getStructureEditForRead(getProject());
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
 			if (wbComponent != null) {
 				ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(wbComponent);
 				ComponentResource[] componentResources = root.findModuleResources(getRuntimePath(), ResourceTreeNode.CREATE_NONE);
@@ -182,7 +179,7 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 							if (realResource != null)
 								addVirtualResource(virtualResources, realResource, newRuntimePath);
 						} else if (fullRuntimePath.segmentCount() > 1 && realResource!=null && realResource.getType() == IResource.FOLDER) {
-							virtualResources.add(new VirtualFolder(getComponentHandle(), newRuntimePath));
+							virtualResources.add(new VirtualFolder(getProject(), newRuntimePath));
 						}
 					}
 				}
@@ -218,7 +215,7 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 			}
 
 			moduleCore = StructureEdit.getStructureEditForWrite(getProject());
-			WorkbenchComponent component = moduleCore.findComponentByName(getComponent().getName());
+			WorkbenchComponent component = moduleCore.getComponent();
 
 			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
 			ComponentResource[] resources = root.findModuleResources(getRuntimePath(), ResourceTreeNode.CREATE_NONE);
@@ -264,8 +261,8 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 	protected void doDeleteMetaModel(int updateFlags, IProgressMonitor monitor) {
 		StructureEdit moduleCore = null;
 		try {
-			moduleCore = StructureEdit.getStructureEditForWrite(getComponentHandle().getProject());
-			WorkbenchComponent component = moduleCore.findComponentByName(getComponentHandle().getName());
+			moduleCore = StructureEdit.getStructureEditForWrite(getProject());
+			WorkbenchComponent component = moduleCore.getComponent();
 			moduleCore.getComponentModelRoot().getComponents().remove(component);
 		} finally {
 			if (moduleCore != null) {
@@ -286,17 +283,17 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 	 */
 	private void addVirtualResource(Set virtualResources, IResource realResource, IPath newRuntimePath) {
 		if (realResource.getType() == IResource.FOLDER)
-			virtualResources.add(new VirtualFolder(getComponentHandle(), newRuntimePath));
+			virtualResources.add(new VirtualFolder(getProject(), newRuntimePath));
 		else
-			virtualResources.add(new VirtualFile(getComponentHandle(), newRuntimePath));
+			virtualResources.add(new VirtualFile(getProject(), newRuntimePath));
 	}
 
 	public IVirtualResource[] getResources(String aResourceType) {
 		StructureEdit core = null;
 		try {
 			core = StructureEdit.getStructureEditForRead(getProject());
-			String name = getComponentHandle().getName();
-			WorkbenchComponent component = core.findComponentByName(name);
+			String name = getProject().getName();
+			WorkbenchComponent component = core.getComponent();
 			List currentResources = component.getResources();
 			List foundResources = new ArrayList();
 
@@ -321,9 +318,9 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 		IResource resource = StructureEdit.getEclipseResource(aComponentResource);
 		switch (resource.getType()) {
 			case IResource.FILE :
-				return ComponentCore.createFile(getProject(), getName(), aComponentResource.getRuntimePath());
+				return ComponentCore.createFile(getProject(), aComponentResource.getRuntimePath());
 			case IResource.FOLDER :
-				return ComponentCore.createFolder(getProject(), getName(), aComponentResource.getRuntimePath());
+				return ComponentCore.createFolder(getProject(), aComponentResource.getRuntimePath());
 		}
 		return null;
 	}
