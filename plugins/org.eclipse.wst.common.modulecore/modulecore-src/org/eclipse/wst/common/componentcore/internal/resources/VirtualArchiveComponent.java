@@ -50,6 +50,7 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 	private IProject componentProject;
 	private IVirtualFolder rootFolder;
 	private int flag = 1;
+	private String archiveLocation;
 
 
 	private IPath archivePath;
@@ -57,17 +58,13 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 
 
 
-	public VirtualArchiveComponent(IProject aComponentProject, IPath aRuntimePath) {
+	public VirtualArchiveComponent(IProject aComponentProject,String archiveLocation, IPath aRuntimePath) {
 		componentProject = aComponentProject;
 		runtimePath = aRuntimePath;
 
-		IPath namePath = new Path(componentProject.getName());
+		IPath namePath = new Path(archiveLocation);
 		archiveType = namePath.segment(0);
 		archivePath = namePath.removeFirstSegments(1).makeRelative();
-	}
-
-	public VirtualArchiveComponent(IProject aProject, String aName, IPath aRuntimePath) {
-		this(aProject, aRuntimePath);
 	}
 
 	public IVirtualComponent getComponent() {

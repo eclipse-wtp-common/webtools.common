@@ -219,7 +219,7 @@ public abstract class VirtualResource implements IVirtualResource {
 
 	public String toString() {
 		if (toString == null)
-			toString = "[" + ModuleURIUtil.getHandleString(getProject()) + ":" + getRuntimePath() + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			toString = "[" + ModuleURIUtil.getHandleString(getComponent()) + ":" + getRuntimePath() + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		return toString;
 	}
 

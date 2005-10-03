@@ -108,7 +108,7 @@ public class ReferencedComponentBuilderOperation extends AbstractDataModelOperat
 							osPath = resolvedpath.toOSString();
 						}	
 						else{
-							String fileString = ModuleURIUtil.getArchiveName(URI.createURI(ModuleURIUtil.getHandleString(referencedComponent.getProject())));
+							String fileString = ModuleURIUtil.getArchiveName(URI.createURI(ModuleURIUtil.getHandleString(referencedComponent)));
 							IPath path = new Path(fileString);
 							osPath = path.toOSString();
 						}

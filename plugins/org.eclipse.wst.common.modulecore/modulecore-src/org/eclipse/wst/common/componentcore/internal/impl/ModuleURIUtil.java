@@ -16,6 +16,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 
 /**
  * 
@@ -175,7 +176,10 @@ public class ModuleURIUtil {
 		URI uri = trimToRelativePath(aModuleURI, ModuleURI.MODULE_NAME_INDX);
 		return uri.toString();
 	}
-	public static String getHandleString(IProject aProject){
-		return "[" + aProject.getFullPath() + "]:" + aProject.getName();
+	public static String getHandleString(IVirtualComponent aComponent){
+		if (aComponent.isBinary())
+			return ModuleURIUtil.archiveComponentfullyQualifyURI(aComponent.getName()).toString();
+		else
+			return "[" + aComponent.getProject().getFullPath() + "]:" + aComponent.getProject().getName();
 	}
 }
