@@ -76,7 +76,7 @@ public abstract class IVirtualResourceAPITest extends TestCase {
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(TestWorkspace.getTargetProject());
-			WorkbenchComponent wbComponent = moduleCore.findComponentByName(TestWorkspace.WEB_MODULE_2_NAME);
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
 
 			ComponentResource[] componentResources = wbComponent.findResourcesByRuntimePath(new Path("/images")); //$NON-NLS-1$
 
@@ -189,7 +189,7 @@ public abstract class IVirtualResourceAPITest extends TestCase {
 		StructureEdit moduleCore = null;
 		try { 
 			moduleCore = StructureEdit.getStructureEditForWrite(expectedProject);
-			WorkbenchComponent wbComponent = moduleCore.findComponentByName(TestWorkspace.WEB_MODULE_1_NAME);
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
 			ComponentResource[] resources = wbComponent.findResourcesByRuntimePath(targetVirtualResourceToDelete.getRuntimePath());
 			assertTrue("There should be no matching resources found in the model.", resources.length == 0); //$NON-NLS-1$
 			

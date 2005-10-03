@@ -84,7 +84,7 @@ public class ModuleCoreAPIFVTTest extends TestCase {
 
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(TestWorkspace.getTargetProject());
-			WorkbenchComponent wbComponent = moduleCore.findComponentByName(TestWorkspace.NEW_WEB_MODULE_NAME);
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
 
 			if (wbComponent != null) {
 				ComponentResource[] componentResources = wbComponent.findResourcesByRuntimePath(new Path("/")); //$NON-NLS-1$				
@@ -142,7 +142,7 @@ public class ModuleCoreAPIFVTTest extends TestCase {
 
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(TestWorkspace.getTargetProject());
-			WorkbenchComponent wbComponent = moduleCore.findComponentByName(TestWorkspace.WEB_MODULE_2_NAME);
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
 
 			ComponentResource[] componentResources = wbComponent.findResourcesByRuntimePath(new Path("/images")); //$NON-NLS-1$
 
@@ -249,7 +249,7 @@ public class ModuleCoreAPIFVTTest extends TestCase {
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(TestWorkspace.getTargetProject());
-			WorkbenchComponent wbComponent = moduleCore.findComponentByName(TestWorkspace.WEB_MODULE_2_NAME);
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
 
 			ComponentResource[] componentResources = wbComponent.findResourcesByRuntimePath(new Path("/images")); //$NON-NLS-1$
 
@@ -318,7 +318,7 @@ public class ModuleCoreAPIFVTTest extends TestCase {
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(TestWorkspace.getTargetProject());
-			WorkbenchComponent wbComponent = moduleCore.findComponentByName(TestWorkspace.NEW_WEB_MODULE_NAME);
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
 
 			ComponentResource[] componentResources = wbComponent.findResourcesByRuntimePath(new Path("/" + TestWorkspace.META_INF)); //$NON-NLS-1$
 

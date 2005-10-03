@@ -26,7 +26,6 @@ import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
-import org.eclipse.wst.common.componentcore.resources.ComponentHandle;
 import org.eclipse.wst.common.frameworks.internal.operations.IOperationHandler;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelEvent;
@@ -180,8 +179,7 @@ public class ArtifactEditTest extends TestCase {
 	public void testGetArtifactEditForReadWorkbenchComponent() {
 		ArtifactEdit edit = null;
 		try {
-			ComponentHandle handle = ComponentHandle.create(project,WEB_MODULE_NAME);
-			edit = ArtifactEdit.getArtifactEditForRead(handle);
+			edit = ArtifactEdit.getArtifactEditForRead(project);
 		} finally {
 			if (edit != null) {
 				edit.dispose();
@@ -193,8 +191,7 @@ public class ArtifactEditTest extends TestCase {
 	public void testGetArtifactEditForWriteWorkbenchComponent() {
 		ArtifactEdit edit = null;
 		try {
-			ComponentHandle handle = ComponentHandle.create(project,WEB_MODULE_NAME);
-			edit = ArtifactEdit.getArtifactEditForWrite(handle);
+			edit = ArtifactEdit.getArtifactEditForWrite(project);
 
 		} finally {
 			if (edit != null) {
@@ -210,9 +207,8 @@ public class ArtifactEditTest extends TestCase {
 		ArtifactEdit edit = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(project);
-			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
-			ComponentHandle handle = ComponentHandle.create(project, wbComponent.getName());
-			edit = ArtifactEdit.getArtifactEditForRead(handle);
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
+			edit = ArtifactEdit.getArtifactEditForRead(project);
 
 		} finally {
 			if (moduleCore != null) {
@@ -227,8 +223,7 @@ public class ArtifactEditTest extends TestCase {
 	public void testGetArtifactEditForWriteComponentHandle() {
 		ArtifactEdit edit = null;
 		try {
-			ComponentHandle handle = ComponentHandle.create(project, WEB_MODULE_NAME);
-			edit = ArtifactEdit.getArtifactEditForWrite(handle);
+			edit = ArtifactEdit.getArtifactEditForWrite(project);
 		} finally {
 			if (edit != null) {
 				edit.dispose();
@@ -238,7 +233,7 @@ public class ArtifactEditTest extends TestCase {
 	}
 
 	public void testIsValidEditableModule() {
-		assertTrue(ArtifactEdit.isValidEditableModule(ComponentCore.createComponent(project,WEB_MODULE_NAME)));
+		assertTrue(ArtifactEdit.isValidEditableModule(ComponentCore.createComponent(project)));
 	}
 
 	public void testArtifactEditArtifactEditModel() {
@@ -255,9 +250,8 @@ public class ArtifactEditTest extends TestCase {
 			fail();
 		}
 		ArtifactEdit edit = null;
-		ComponentHandle handle = ComponentHandle.create(project, WEB_MODULE_NAME);
 		try {
-			edit = new ArtifactEdit(handle, true);
+			edit = new ArtifactEdit(project, true);
 			assertNotNull(edit);
 		} finally {
 			if (edit != null)
@@ -265,31 +259,10 @@ public class ArtifactEditTest extends TestCase {
 		}
 	}
 
-	public void testArtifactEditComponentHandleboolean() {
-		StructureEdit moduleCore = null;
-		WorkbenchComponent wbComponent = null;
-		ComponentHandle handle = null;
-		try {
-			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
-			handle = ComponentHandle.create(project, wbComponent.getName());
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-			}
-		}
-
-		ArtifactEdit edit = new ArtifactEdit(handle, true);
-		assertNotNull(edit);
-		edit.dispose();
-
-	}
-
 	public void testSave() {
 		ArtifactEdit edit = null;
 		try {
-			ComponentHandle handle = ComponentHandle.create(project,WEB_MODULE_NAME);
-			edit = ArtifactEdit.getArtifactEditForWrite(handle);
+			edit = ArtifactEdit.getArtifactEditForWrite(project);
 			try {
 				edit.save(new NullProgressMonitor());
 			} catch (Exception e) {
@@ -307,8 +280,7 @@ public class ArtifactEditTest extends TestCase {
 	public void testSaveIfNecessary() {
 		ArtifactEdit edit = null;
 		try {
-			ComponentHandle handle = ComponentHandle.create(project,WEB_MODULE_NAME);
-			edit = ArtifactEdit.getArtifactEditForWrite(handle);
+			edit = ArtifactEdit.getArtifactEditForWrite(project);
 			try {
 				edit.saveIfNecessary(new NullProgressMonitor());
 			} catch (Exception e) {
@@ -326,8 +298,7 @@ public class ArtifactEditTest extends TestCase {
 	public void testSaveIfNecessaryWithPrompt() {
 		ArtifactEdit edit = null;
 		try {
-			ComponentHandle handle = ComponentHandle.create(project,WEB_MODULE_NAME);
-			edit = ArtifactEdit.getArtifactEditForWrite(handle);
+			edit = ArtifactEdit.getArtifactEditForWrite(project);
 			try {
 				edit.saveIfNecessaryWithPrompt(new NullProgressMonitor(), handler, true);
 			} catch (Exception e) {
@@ -355,8 +326,7 @@ public class ArtifactEditTest extends TestCase {
 	public void testGetContentModelRoot() {
 		ArtifactEdit edit = null;
 		try {
-			ComponentHandle handle = ComponentHandle.create(project,WEB_MODULE_NAME);
-			edit = ArtifactEdit.getArtifactEditForRead(handle);
+			edit = ArtifactEdit.getArtifactEditForRead(project);
 			Object object = edit.getContentModelRoot();
 			// assertNotNull(object);
 		} catch (Exception e) {
@@ -393,12 +363,6 @@ public class ArtifactEditTest extends TestCase {
 
 		ArtifactEdit edit = getArtifactEditForRead();
 		assertTrue(edit.hasEditModel(artifactEditModelForRead));
-		edit.dispose();
-	}
-	public void testGetComponentHandle() {
-
-		ArtifactEdit edit = getArtifactEditForRead();
-		assertTrue(edit.getComponentHandle() != null);
 		edit.dispose();
 	}
 

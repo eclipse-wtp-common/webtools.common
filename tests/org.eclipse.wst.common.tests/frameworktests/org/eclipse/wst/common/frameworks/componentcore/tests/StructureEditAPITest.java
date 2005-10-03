@@ -100,7 +100,7 @@ public class StructureEditAPITest extends TestCase {
 
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(project);
-			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
 			moduleCore.getContainingProject(wbComponent);
 
 		} finally {
@@ -204,7 +204,7 @@ public class StructureEditAPITest extends TestCase {
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(project);
-			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
 			
 			try {
 				StructureEdit.getDeployedName(moduleURI);
@@ -228,7 +228,7 @@ public class StructureEditAPITest extends TestCase {
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(project);
-			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
 			
 			StructureEdit.getComponentType(ComponentCore.createComponent(project,wbComponent.getName()));
 		} finally {
@@ -348,7 +348,7 @@ public class StructureEditAPITest extends TestCase {
 
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
 			moduleCore.getSourceContainers(wbComponent);
 
 		} finally {
@@ -366,7 +366,7 @@ public class StructureEditAPITest extends TestCase {
 
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
 			moduleCore.getWorkbenchModules();
 
 		} finally {
@@ -385,7 +385,7 @@ public class StructureEditAPITest extends TestCase {
 
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
 			moduleCore.createWorkbenchModule("test");
 
 		} finally {
@@ -404,7 +404,7 @@ public class StructureEditAPITest extends TestCase {
 
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
 			moduleCore.createWorkbenchModuleResource(project.getFile("WebModule1/NewFolder"));
 
 		} finally {
@@ -422,7 +422,7 @@ public class StructureEditAPITest extends TestCase {
 
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
 			moduleCore.createModuleType(EDIT_MODEL_ID);
 
 		} finally {
@@ -443,7 +443,7 @@ public class StructureEditAPITest extends TestCase {
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
 			try {
 				moduleCore.findResourcesByRuntimePath(moduleURI);
 			} catch (UnresolveableURIException e) {
@@ -467,7 +467,7 @@ public class StructureEditAPITest extends TestCase {
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			WorkbenchComponent wbComponent = moduleCore.findComponentByName(WEB_MODULE_NAME);
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
 			try {
 				moduleCore.findResourcesByRuntimePath(moduleURI, moduleURI);
 			} catch (UnresolveableURIException e) {
@@ -508,7 +508,7 @@ public class StructureEditAPITest extends TestCase {
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			moduleCore.findComponentByName(WEB_MODULE_NAME);
+			moduleCore.getComponent();
 		} finally {
 			if (moduleCore != null) {
 				moduleCore.dispose();

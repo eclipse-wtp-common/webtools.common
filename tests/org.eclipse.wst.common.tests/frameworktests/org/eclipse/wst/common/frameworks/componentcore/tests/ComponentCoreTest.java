@@ -60,14 +60,6 @@ public class ComponentCoreTest extends TestCase {
 		return new Path(url.getPath());
 	}
 
-	public void testCreateFlexibleProject() {
-		try {
-			ComponentCore.createFlexibleProject(project);
-		} catch (Exception e) {
-			fail(e.toString());
-		}
-
-	}
 
 	public void testCreateComponent() {
 		try {
@@ -113,7 +105,7 @@ public class ComponentCoreTest extends TestCase {
 
 	public void testCreateFolder() {
 		try {
-			ComponentCore.createFolder(project, "test", new Path("test/runtimePath"));
+			ComponentCore.createFolder(project, new Path("test/runtimePath"));
 		} catch (Exception e) {
 			fail(e.toString());
 		}
@@ -121,14 +113,14 @@ public class ComponentCoreTest extends TestCase {
 
 	public void testCreateFile() {
 		try {
-			ComponentCore.createFile(project, "test", new Path("test/runtimePath/file"));
+			ComponentCore.createFile(project, new Path("test/runtimePath/file"));
 		} catch (Exception e) {
 			fail(e.toString());
 		}
 	}
 
 	public void testCreateReference() {
-		IVirtualComponent container = new VirtualComponent(project, "test", new Path("test/runtimePath/file"));
+		IVirtualComponent container = new VirtualComponent(project, new Path("test/runtimePath/file"));
 		
 		try {
 			ComponentCore.createReference(container,container);

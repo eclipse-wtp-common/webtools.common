@@ -48,7 +48,7 @@ public class IVirtualComponentAPITest extends IVirtualContainerAPITest {
 	protected void doSetup() throws Exception { 
 		virtualComponent = ComponentCore.createComponent(TestWorkspace.TEST_PROJECT, TestWorkspace.WEB_MODULE_1_NAME);
 		structureEdit = StructureEdit.getStructureEditForRead(TestWorkspace.TEST_PROJECT);
-		workbenchComponent = structureEdit.findComponentByName(TestWorkspace.WEB_MODULE_1_NAME);
+		workbenchComponent = structureEdit.getComponent();
 	}
 	
 	protected void tearDown() throws Exception { 
@@ -116,7 +116,7 @@ public class IVirtualComponentAPITest extends IVirtualContainerAPITest {
 				assertEquals("The runtime paths must match.", referencedComponent.getRuntimePath(), reference.getRuntimePath());
 				assertEquals("The workbench component should match the enclosing component.", virtualComponent, reference.getEnclosingComponent());
 				assertEquals("The dependencyTypes should match.", referencedComponent.getDependencyType().getValue(), reference.getDependencyType());
-				URI actualHandle = ModuleURIUtil.fullyQualifyURI(reference.getReferencedComponent().getProject(), reference.getReferencedComponent().getName());
+				URI actualHandle = ModuleURIUtil.fullyQualifyURI(reference.getReferencedComponent().getProject());
 				assertEquals("The handles should match.", referencedComponent.getHandle(), actualHandle); 
 				return;
 			}
