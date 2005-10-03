@@ -62,9 +62,9 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 		componentProject = aComponentProject;
 		runtimePath = aRuntimePath;
 
-		IPath namePath = new Path(archiveLocation);
-		archiveType = namePath.segment(0);
-		archivePath = namePath.removeFirstSegments(1).makeRelative();
+		String archivePathString = archiveLocation.substring(4, archiveLocation.length());
+		archiveType	= archiveLocation.substring(0, archiveLocation.length() - archivePathString.length() -1);
+		archivePath = new  Path(archivePathString);
 	}
 
 	public IVirtualComponent getComponent() {
@@ -72,7 +72,7 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 	}
 
 	public String getName() {
-		return componentProject.getName();
+		return this.archiveType + IPath.SEPARATOR + this.archivePath.toString();
 	}
 
 	public String getComponentTypeId() {
