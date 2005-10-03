@@ -3,14 +3,14 @@ package org.eclipse.wst.common.componentcore.datamodel.properties;
 public interface ICreateReferenceComponentsDataModelProperties {
 	
     /**
-     * Required, type ComponentHandle
+     * Required, type IVirtualComponent
      */	
-	public static final String SOURCE_COMPONENT_PROJECT = "ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT_PROJECT";
+	public static final String SOURCE_COMPONENT = "ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT";
 	
     /**
-     * Required, type ArrayList, ArrayList  should contain list of ComponentHandle
+     * Required, type ArrayList, ArrayList  should contain list of IVirtualComponent
      */
-	public static final String TARGET_COMPONENT_PROJECT_LIST = "ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_PROJECT_LIST"; //$NON-NLS-1$
+	public static final String TARGET_COMPONENT_LIST = "ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT"; //$NON-NLS-1$
 	
 	/**
      * Optional, deploy path for the dependent component, default is "/"
