@@ -22,8 +22,9 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.ConfigurationElementWrapper;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizardPage;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedPageGroupHandler;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedPageHandler;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedWizardPage;
 
 /**
  * @author schacher
@@ -59,20 +60,27 @@ public class DMWizardPageFactoryElement extends ConfigurationElementWrapper {
 		return handler;
 	}
 
-	public IDMExtendedWizardPage[] createPageGroup(IDataModel dataModel) {
+	public DataModelWizardPage[] createPageGroup(IDataModel dataModel) {
 		if (!isPageFactoryInitialized)
 			initPageFactory();
 
 		if (wizardPageFactory == null)
 			return null;
 
-		IDMExtendedWizardPage[] pages = wizardPageFactory.createPageGroup(dataModel, pageGroupID);
-		for (int i = 0; i < pages.length; i++) {
-			pages[i].setGroupID(pageGroupID);
-		}
+		DataModelWizardPage[] pages = wizardPageFactory.createPageGroup(dataModel, pageGroupID);
+		
 		return pages;
 	}
 
+	public IDMExtendedPageGroupHandler createPageGroupHandler( IDataModel dataModel )
+	{
+	  if (!isPageFactoryInitialized) initPageFactory();
+		
+	  if( wizardPageFactory == null ) return null;
+	  
+	  return wizardPageFactory.createPageGroupHandler( dataModel, pageGroupID );
+	}
+		
 	private void initPageFactory() {
 		try {
 			wizardPageFactory = (DMWizardExtensionFactory) element.createExecutableExtension(ATT_CLASS_NAME);

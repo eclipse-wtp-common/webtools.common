@@ -12,8 +12,9 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.AbstractRegistryDescriptor;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizardPage;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedPageGroupHandler;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedPageHandler;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedWizardPage;
 import org.eclipse.wst.common.frameworks.internal.enablement.IdentifiableComparator;
 
 public class DMWizardPageElement extends AbstractRegistryDescriptor implements Comparable {
@@ -25,7 +26,8 @@ public class DMWizardPageElement extends AbstractRegistryDescriptor implements C
 	static final String ELEMENT_PAGE_GROUP = "wizardPageGroup"; //$NON-NLS-1$
 	static final String ATT_PAGE_ID = "pageGroupID"; //$NON-NLS-1$
 	static final String ATT_WIZARD_ID = "wizardID"; //$NON-NLS-1$
-	static final String ATT_GROUP_ID = "groupID"; //$NON-NLS-1$
+	static final String ATT_REQUIRES_DATA_OPERATION_ID = "requiresDataOperationId"; //$NON-NLS-1$
+	static final String ATT_DATA_MODEL_ID = "dataModelId"; //$NON-NLS-1$
 	static final String ATT_ALLOWS_EXTENDED_PAGES_AFTER = "allowsExtendedPagesAfter"; //$NON-NLS-1$
 	static final String ATT_PAGE_INSERTION_ID = "pageGroupInsertionID"; //$NON-NLS-1$
 	static final String ELEMENT_FACTORY = "factory"; //$NON-NLS-1$
@@ -36,6 +38,8 @@ public class DMWizardPageElement extends AbstractRegistryDescriptor implements C
 	public String pageGroupID;
 	protected String wizardFactoryElement;
 	protected boolean allowsExtendedPagesAfter;
+	protected String requiresDataOperationId;
+	protected String dataModelID;
 	protected String pageInsertionID;
 	private int loadOrder;
 	private static int loadOrderCounter;
@@ -48,6 +52,8 @@ public class DMWizardPageElement extends AbstractRegistryDescriptor implements C
 		pluginID = element1.getDeclaringExtension().getNamespace();
 		wizardID = element1.getAttribute(ATT_WIZARD_ID);
 		pageGroupID = element1.getAttribute(ATT_PAGE_ID);
+		requiresDataOperationId = element1.getAttribute(ATT_REQUIRES_DATA_OPERATION_ID);
+		dataModelID = element1.getAttribute(ATT_DATA_MODEL_ID);
 		readAllowsExtendedPageAfter(element1);
 		pageInsertionID = element1.getAttribute(ATT_PAGE_INSERTION_ID);
 		readFactory(element1);
@@ -80,12 +86,15 @@ public class DMWizardPageElement extends AbstractRegistryDescriptor implements C
 		return null;
 	}
 
-	public IDMExtendedWizardPage[] createPageGroup(IDataModel dataModel) {
+	public DataModelWizardPage[] createPageGroup(IDataModel dataModel) {
 		if (wizardPageFactoryElement != null)
 			return wizardPageFactoryElement.createPageGroup(dataModel);
 		return null;
 	}
 
+	public IDMExtendedPageGroupHandler createPageGroupHandler(IDataModel dataModel) {
+		return wizardPageFactoryElement == null ? null : wizardPageFactoryElement.createPageGroupHandler(dataModel);
+	}
 
 	public int compareTo(Object o) {
 		return IdentifiableComparator.getInstance().compare(this, o);
@@ -159,6 +168,23 @@ public class DMWizardPageElement extends AbstractRegistryDescriptor implements C
 	 */
 	public void setAllowsExtendedPagesAfter(boolean allowsExtendedPagesAfter) {
 		this.allowsExtendedPagesAfter = allowsExtendedPagesAfter;
+	}
+
+	public String getRequiresDataOperationId() {
+		return requiresDataOperationId;
+	}
+
+
+	public void setRequiresDataOperationId(String dataOperationId) {
+		requiresDataOperationId = dataOperationId;
+	}
+
+	public String getDataModelID() {
+		return dataModelID;
+	}
+
+	public void setDataModelID(String newDataModelID) {
+		dataModelID = newDataModelID;
 	}
 
 	/**

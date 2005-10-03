@@ -8,9 +8,10 @@ package org.eclipse.wst.common.frameworks.internal.datamodel.ui;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.IMessageProvider;
+import org.eclipse.jface.wizard.IWizard;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -39,6 +40,8 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 	private String[] validationPropertyNames;
 	protected DataModelSynchHelper synchHelper;
 	private String infopopID;
+	private DataModelWizard wizard;
+	private IWizardPage previousPage;
 
 	/**
 	 * J2EEWizardPage constructor comment.
@@ -109,6 +112,27 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 		}
 	}
 
+	public boolean canFlipToNextPage() {
+		return isPageComplete() && wizard.getPageGroupManager().hasNextPage();
+	}
+
+	/*
+	 * (non-Javadoc) Method declared on IWizardPage.
+	 */
+	public void setWizard(IWizard newWizard) {
+		super.setWizard(newWizard);
+		wizard = (DataModelWizard) newWizard;
+	}
+
+	public IWizardPage getPreviousPage() {
+		return previousPage;
+	}
+
+	public void setPreviousPage(IWizardPage page) {
+		super.setPreviousPage(page);
+		previousPage = page;
+	}
+
 	/**
 	 * Subclass should return the model property names that need to be validated on this page in the
 	 * order that they should present their messages.
@@ -159,6 +183,11 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 	 */
 	protected void enter() {
 		try {
+			// Check to see if we are moving back one page.
+			if (wizard.getPreviousPage(wizard.getPageGroupManager().getCurrentPage()) == this) {
+				wizard.getPageGroupManager().moveBackOnePage();
+			}
+
 			validatePage(showValidationErrorsOnEnter());
 		} finally {
 			isFirstTimeToPage = false;
@@ -244,13 +273,12 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 		super.setVisible(visible);
 		if (visible) {
 			Rectangle workbenchBounds = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell().getBounds();
-			int newX = workbenchBounds.x + workbenchBounds.width/2;
-			int newY = workbenchBounds.y + workbenchBounds.height/2;
-			Point p = getShell().computeSize(SWT.DEFAULT,SWT.DEFAULT);
-			getShell().setBounds(newX - p.x/2, newY - p.y/2,p.x,p.y);
+			int newX = workbenchBounds.x + workbenchBounds.width / 2;
+			int newY = workbenchBounds.y + workbenchBounds.height / 2;
+			Point p = getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT);
+			getShell().setBounds(newX - p.x / 2, newY - p.y / 2, p.x, p.y);
 			enter();
-		}
-		else
+		} else
 			exit();
 	}
 
