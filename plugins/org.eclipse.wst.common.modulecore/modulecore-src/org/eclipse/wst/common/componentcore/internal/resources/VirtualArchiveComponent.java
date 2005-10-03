@@ -202,7 +202,7 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 		} else {
 			String fileString = null;
 			try {
-				String name = "[" + getProject().getFullPath() + "]:" + getProject().getName();
+				String name = "[" + getProject().getFullPath() + "]:" + getName();
 				fileString = ModuleURIUtil.getArchiveName(URI.createURI(name));
 			} catch (UnresolveableURIException e) {
 				Logger.getLogger().logError(e);
