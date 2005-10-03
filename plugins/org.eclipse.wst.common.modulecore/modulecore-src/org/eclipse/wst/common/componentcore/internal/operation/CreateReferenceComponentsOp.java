@@ -32,15 +32,16 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 	}
 	private void addProjectReferences() {
 		
-		IProject sourceProject = (IProject) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT_PROJECT);
-		List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_PROJECT_LIST);
+		IVirtualComponent sourceComp = (IVirtualComponent) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT);
+		List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST);
 		List targetprojectList = new ArrayList();
 		for( int i=0; i< modList.size(); i++){
-			IProject targetProject = (IProject) modList.get(i);
+			IVirtualComponent IVirtualComponent = (IVirtualComponent) modList.get(i);
+			IProject targetProject = (IProject) IVirtualComponent.getProject();
 			targetprojectList.add(targetProject);
 		}
 		try {
-			ProjectUtilities.addReferenceProjects(sourceProject,targetprojectList);
+			ProjectUtilities.addReferenceProjects(sourceComp.getProject(),targetprojectList);
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}
@@ -48,8 +49,8 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 	}
 	protected void addReferencedComponents(IProgressMonitor monitor) {
 		
-		IProject sourceProject = (IProject) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT_PROJECT);
-		IVirtualComponent sourceComp = ComponentCore.createComponent(sourceProject);
+		IVirtualComponent sourceComp = (IVirtualComponent) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT);
+		//IVirtualComponent sourceComp = ComponentCore.createComponent(sourceProject);
 		
 		List vlist = new ArrayList();
 		IVirtualReference[] oldrefs = sourceComp.getReferences();
@@ -59,10 +60,9 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 		}		
 
 		
-        List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_PROJECT_LIST);
+        List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST);
 		for (int i = 0; i < modList.size(); i++) {
-			IProject handle = (IProject) modList.get(i);
-			IVirtualComponent comp = ComponentCore.createComponent(handle);
+			IVirtualComponent comp = (IVirtualComponent) modList.get(i);
 			if (!srcComponentContainsReference(sourceComp, comp)) {
 				IVirtualReference ref = ComponentCore.createReference(sourceComp, comp);
 				String deployPath = model.getStringProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH);

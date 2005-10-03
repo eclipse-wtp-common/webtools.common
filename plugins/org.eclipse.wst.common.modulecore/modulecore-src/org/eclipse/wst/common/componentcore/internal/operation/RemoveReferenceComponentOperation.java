@@ -35,16 +35,16 @@ public class RemoveReferenceComponentOperation extends AbstractDataModelOperatio
 	}
 
 	private void removeProjectReferences() {
-		IProject sourceProject = (IProject) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT_PROJECT);
-		List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_PROJECT_LIST);
+		IVirtualComponent sourceComp = (IVirtualComponent) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT);
+		List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST);
 		List targetprojectList = new ArrayList();
 		for( int i=0; i< modList.size(); i++){
-			IProject targethandle = (IProject) modList.get(i);
+			IVirtualComponent targethandle = (IVirtualComponent) modList.get(i);
 			IProject targetProject = targethandle.getProject();
 			targetprojectList.add(targetProject);
 		}
 		try {
-			ProjectUtilities.removeReferenceProjects(sourceProject,targetprojectList);
+			ProjectUtilities.removeReferenceProjects(sourceComp.getProject(),targetprojectList);
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -53,10 +53,10 @@ public class RemoveReferenceComponentOperation extends AbstractDataModelOperatio
 
 	private void removeReferencedComponents(IProgressMonitor monitor) {
 		
-		IProject sourceProject = (IProject) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT_PROJECT);
-		IVirtualComponent sourceComp = ComponentCore.createComponent(sourceProject);
+		IVirtualComponent sourceComp = (IVirtualComponent) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT);
+		//IVirtualComponent sourceComp = ComponentCore.createComponent(sourceProject);
 		
-        List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_PROJECT_LIST);
+        List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST);
     
 		for (int i = 0; i < modList.size(); i++) {
 			IProject handle = (IProject) modList.get(i);
