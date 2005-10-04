@@ -9,6 +9,7 @@
 package org.eclipse.wst.common.frameworks.internal.datamodel.ui;
 
 import java.lang.reflect.InvocationTargetException;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -275,7 +276,7 @@ public abstract class DataModelWizard extends Wizard {
 			} catch (Throwable exc) {
 				Logger.getLogger().logError(exc);
 				ErrorDialog.openError(getShell(), WTPCommonUIResourceHandler.getString("WTPWizard_UI_0", new Object[]{getWindowTitle()}), WTPCommonUIResourceHandler.getString("WTPWizard_UI_1", new Object[]{getWindowTitle()}), exc, 0, false); //$NON-NLS-1$ //$NON-NLS-2$
-				status[0] = new Status(Status.ERROR, "id", 0, exc.getMessage(), exc);
+				status[0] = new Status(IStatus.ERROR, "id", 0, exc.getMessage(), exc); //$NON-NLS-1$
 			}
 
 			return status[0];
@@ -296,4 +297,9 @@ public abstract class DataModelWizard extends Wizard {
 			}
 		}
 	}
+	
+	 public boolean needsPreviousAndNextButtons() {
+		 return true;
+	 }
+
 }
