@@ -11,7 +11,6 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
-import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.datamodel.properties.ICreateReferenceComponentsDataModelProperties;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
@@ -59,12 +58,12 @@ public class RemoveReferenceComponentOperation extends AbstractDataModelOperatio
         List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST);
     
 		for (int i = 0; i < modList.size(); i++) {
-			IProject handle = (IProject) modList.get(i);
-			IVirtualReference ref = sourceComp.getReference(handle.getName());
+			IVirtualComponent comp = (IVirtualComponent) modList.get(i);
+			IVirtualReference ref = sourceComp.getReference(comp.getName());
 			if( ref != null && ref.getReferencedComponent() != null && ref.getReferencedComponent().isBinary()){
 				removeRefereneceInComponent(sourceComp, ref);
 			}else{
-				IVirtualComponent comp = ComponentCore.createComponent(handle);
+				//IVirtualComponent comp = ComponentCore.createComponent(handle);
 				if (Arrays.asList(comp.getReferencingComponents()).contains(sourceComp)) {
 					removeRefereneceInComponent(sourceComp,sourceComp.getReference(comp.getName()));
 				}					
