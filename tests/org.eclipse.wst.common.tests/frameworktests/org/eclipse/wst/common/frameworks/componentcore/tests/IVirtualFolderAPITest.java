@@ -105,7 +105,7 @@ public class IVirtualFolderAPITest extends TestCase {
 	public void testGetVirtualComponentFromResource() {
 		IResource deletemeFolder = ((IVirtualResource)deletemeVirtualFolder).getUnderlyingResources()[0];
 		IVirtualComponent comp = (IVirtualComponent)deletemeFolder.getAdapter(IVirtualComponent.class);
-		assertEquals(comp.getName(),TestWorkspace.WEB_MODULE_1_NAME);
+		assertEquals(comp.getName(),TestWorkspace.PROJECT_NAME);
 	}
 	
 	

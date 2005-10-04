@@ -25,10 +25,10 @@ import org.eclipse.wst.common.tests.CommonTestsPlugin;
 public class TestWorkspace {
 
 	public static final String PROJECT_NAME = "TestVirtualAPI"; //$NON-NLS-1$
-	public static final String WEB_MODULE_1_NAME = "WebModule1"; //$NON-NLS-1$
-	public static final String WEB_MODULE_2_NAME = "WebModule2"; //$NON-NLS-1$
+	public static final String WEB_MODULE_1_NAME = "TestVirtualAPI"; //$NON-NLS-1$
+	public static final String WEB_MODULE_2_NAME = "TestVirtualAPI"; //$NON-NLS-1$
 	
-	public static final String NEW_WEB_MODULE_NAME = "NewWebModule"; //$NON-NLS-1$
+	public static final String NEW_WEB_MODULE_NAME = "TestVirtualAPI"; //$NON-NLS-1$
 	
 
 	public static final String META_INF = "META-INF"; //$NON-NLS-1$
@@ -37,7 +37,7 @@ public class TestWorkspace {
 	
 	public static final IProject TEST_PROJECT = ResourcesPlugin.getWorkspace().getRoot().getProject(TestWorkspace.PROJECT_NAME);
 	  	
-	public static final String[] MODULE_NAMES = new String[]{WEB_MODULE_1_NAME, WEB_MODULE_2_NAME};  
+	public static final String[] MODULE_NAMES = new String[]{"TestVirtualAPI", "TestVirtualAPI"};  
 	
 	
 	public static IProject getTargetProject() {
