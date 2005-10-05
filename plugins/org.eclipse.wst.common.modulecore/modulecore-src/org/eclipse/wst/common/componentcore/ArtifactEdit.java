@@ -202,6 +202,8 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 *         {@see IEditModelFactory}&nbsp;and is contained by an accessible project
 	 */
 	public static boolean isValidEditableModule(IVirtualComponent aModule) {
+		if (aModule == null)
+			return false;
 		/* The ComponentType must be non-null, and the moduleTypeId must be non-null */
 		if (aModule.getComponentTypeId() == null)
 			return false;

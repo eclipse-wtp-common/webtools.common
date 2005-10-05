@@ -54,18 +54,21 @@ public class ComponentCore {
 	 * the given project (aProject). Component names should be unique across a project.
 	 * 
 	 * @param aProject A  valid, accessible project to contain the component
-	 * @return A handle to an IVirtualComponent that may or may not exist.
+	 * @return A handle to an IVirtualComponent that may or may not exist or null if passed project does not contain ModuleCoreNature.
 	 * @see IVirtualContainer#create(int, IProgressMonitor) 
 	 */
 	public static IVirtualComponent createComponent(IProject aProject) {
-		return new VirtualComponent(aProject, new Path("/")); //$NON-NLS-1$
+		if (!ModuleCoreNature.isFlexibleProject(aProject))
+			return null;
+		else
+			return new VirtualComponent(aProject, new Path("/")); //$NON-NLS-1$
 	}
 	/**
 	 * Return an IVirtualComponent with the given name (aComponentName) contained by 
 	 * the given project (aProject). Component names should be unique across a project.
 	 * 
 	 * @param aProject A  valid, accessible project to contain the component
-	 * @return A handle to an IVirtualComponent that may or may not exist.
+	 * @return A handle to an IVirtualComponent that may or may not exist or null if passed project does not contain ModuleCoreNature.
 	 * @deprecated
 	 * @see IVirtualContainer#create(int, IProgressMonitor) 
 	 */
@@ -83,7 +86,6 @@ public class ComponentCore {
 	 */
 	public static IVirtualComponent createArchiveComponent(IProject aProject, String aComponentName){
 		return new VirtualArchiveComponent(aProject, aComponentName, new Path("/"));
-		
 	}
 	
 	/**

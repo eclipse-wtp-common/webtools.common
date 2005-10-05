@@ -70,6 +70,7 @@ public class DependencyGraphManager {
 			if (!projects[k].isAccessible() || !addTimeStamp(projects[k])) 
 				continue;
 			IVirtualComponent component= ComponentCore.createComponent(projects[k]);
+			if (component == null) continue;
 			addDependencyReference(component);
 		}
 	}

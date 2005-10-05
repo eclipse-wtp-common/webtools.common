@@ -354,10 +354,13 @@ public class EMF2DOMSSERenderer extends EMF2DOMRenderer implements IModelStateLi
 		if (file == null || !file.exists())
 			throw new FileNotFoundException((file == null) ? "null" : file.getFullPath().toOSString()); //$NON-NLS-1$
 		try {
-			if (forWrite)
+			if (forWrite) {
 				setXMLModel((IDOMModel) getModelManager().getModelForEdit(file));
-			else
+			}
+			else {
 				setXMLModel((IDOMModel) getModelManager().getModelForRead(file));
+			}
+			setXMLModelId(getXMLModel().getId());
 			needsToCreateDOM = false;
 		} catch (CoreException e) {
 			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError(e);
