@@ -74,13 +74,14 @@ public final class RuntimeComponentVersion
                 return null;
             }
             
-            if( factory instanceof String )
+            if( factory instanceof PluginAndClass )
             {
-                final Bundle bundle = Platform.getBundle( this.plugin );
+                final PluginAndClass ref = (PluginAndClass) factory;
+                final Bundle bundle = Platform.getBundle( ref.plugin );
                 
                 try
                 {
-                    final Class cl = bundle.loadClass( (String) factory );
+                    final Class cl = bundle.loadClass( ref.clname );
                     factory = cl.newInstance();
                     this.adapterFactories.put( type.getName(), factory );
                 }
@@ -96,11 +97,25 @@ public final class RuntimeComponentVersion
     }
     
     void addAdapterFactory( final String type,
+                            final String plugin,
                             final String factory )
     {
         synchronized( this.adapterFactories )
         {
-            this.adapterFactories.put( type, factory );
+            this.adapterFactories.put( type, new PluginAndClass( plugin, factory ) );
+        }
+    }
+    
+    private static final class PluginAndClass
+    {
+        public final String plugin;
+        public final String clname;
+        
+        public PluginAndClass( final String plugin,
+                               final String clname )
+        {
+            this.plugin = plugin;
+            this.clname = clname;
         }
     }
     

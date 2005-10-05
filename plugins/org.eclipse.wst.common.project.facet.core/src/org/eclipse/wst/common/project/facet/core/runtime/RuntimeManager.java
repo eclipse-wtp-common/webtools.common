@@ -55,4 +55,6 @@ public abstract class RuntimeManager
     public abstract IRuntimeComponent createRuntimeComponent( IRuntimeComponentVersion rcv,
                                                               Map properties );
     
+    public abstract void bridge();
+    
 }

@@ -31,10 +31,12 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin;
 import org.eclipse.wst.common.project.facet.core.internal.IndexedSet;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
+import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeBridge;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentType;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentVersion;
 import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
+import org.osgi.framework.Bundle;
 
 /**
  * The implementation of the {@see RuntimeManager} abstract class.
@@ -221,6 +223,23 @@ public final class RuntimeManagerImpl
         }
         
         return result;
+    }
+    
+    public void bridge()
+    {
+        try
+        {
+            // This is just a hack that needs to be replaced as soon as possible.
+            
+            final Bundle bundle = Platform.getBundle( "org.eclipse.jst.server.core" );
+            
+            final Class cl = bundle.loadClass( "org.eclipse.jst.server.core.internal.RuntimeBridge" );
+            ( (IRuntimeBridge) cl.newInstance() ).port();
+        }
+        catch( Exception e )
+        {
+            FacetCorePlugin.log( e );
+        }
     }
     
     private void readMetadata()
@@ -445,6 +464,8 @@ public final class RuntimeManagerImpl
             versions = Collections.singleton( rcversion );
         }
         
+        final String plugin = config.getDeclaringExtension().getNamespace();
+        
         for( Iterator itr1 = versions.iterator(); itr1.hasNext(); )
         {
             final RuntimeComponentVersion rcv
@@ -452,7 +473,7 @@ public final class RuntimeManagerImpl
             
             for( Iterator itr2 = types.iterator(); itr2.hasNext(); )
             {
-                rcv.addAdapterFactory( (String) itr2.next(), factory );
+                rcv.addAdapterFactory( (String) itr2.next(), plugin, factory );
             }
         }
     }
