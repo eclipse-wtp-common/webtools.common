@@ -309,8 +309,8 @@ public class PageGroupManager {
 
 		for (int index = 0; index < length; index++) {
 			DMPageGroupElementImpl pageInsertGroup = new DMPageGroupElementImpl(elements[index]);
-
-			if (pageInsertGroup.getWizardID().equals(wizardId) && pageInsertGroup.getPageGroupInsertionID().equals(pageGroupId)) {
+			String pageInsertGroupId = pageInsertGroup.getPageGroupInsertionID();
+			if (pageInsertGroup.getWizardID().equals(wizardId) && (null == pageInsertGroupId || pageInsertGroupId.equals(pageGroupId))) {
 				addPageGroup(pageGroup, pageInsertGroup);
 
 				// If this page group has page then add them

@@ -18,11 +18,6 @@ import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedPageHa
 import org.eclipse.wst.common.frameworks.internal.enablement.IdentifiableComparator;
 
 public class DMWizardPageElement extends AbstractRegistryDescriptor implements Comparable {
-	/** Type designation for an {@link ExtendedEditorPage} */
-	public static final int EXTENDED_EDITOR_PAGE = 0;
-	/** Type designation for a nested editor */
-	public static final int NESTED_EDITOR = 1;
-	static final String[] EMPTY_STRING_ARRAY = new String[0];
 	static final String ELEMENT_PAGE_GROUP = "wizardPageGroup"; //$NON-NLS-1$
 	static final String ATT_PAGE_ID = "pageGroupID"; //$NON-NLS-1$
 	static final String ATT_WIZARD_ID = "wizardID"; //$NON-NLS-1$
