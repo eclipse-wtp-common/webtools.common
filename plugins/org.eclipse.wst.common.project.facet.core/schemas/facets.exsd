@@ -17,6 +17,7 @@
             <element ref="project-facet-version"/>
             <element ref="category"/>
             <element ref="preset"/>
+            <element ref="template"/>
          </choice>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -269,6 +270,43 @@
                      </annotation>
                   </attribute>
                   <attribute name="version" type="string" use="required">
+                     <annotation>
+                        <documentation>
+                           
+                        </documentation>
+                     </annotation>
+                  </attribute>
+               </complexType>
+            </element>
+         </sequence>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="template">
+      <complexType>
+         <sequence>
+            <element ref="label"/>
+            <element name="fixed" minOccurs="0" maxOccurs="unbounded">
+               <complexType>
+                  <attribute name="facet" type="string" use="required">
+                     <annotation>
+                        <documentation>
+                           
+                        </documentation>
+                     </annotation>
+                  </attribute>
+               </complexType>
+            </element>
+            <element name="preset" minOccurs="0" maxOccurs="1">
+               <complexType>
+                  <attribute name="id" type="string" use="required">
                      <annotation>
                         <documentation>
                            
