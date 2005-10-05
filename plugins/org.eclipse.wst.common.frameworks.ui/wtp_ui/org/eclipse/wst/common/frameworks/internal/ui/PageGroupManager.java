@@ -155,6 +155,21 @@ public class PageGroupManager {
 		return page;
 	}
 
+	private Boolean hasMulitplePages;
+
+	public boolean hasMultiplePages() {
+		if (null == hasMulitplePages) {
+			int pageCount = 0;
+			PageGroupEntry rootEntry = (PageGroupEntry) groupTable.get(rootPageGroup.getPageGroupID());
+			pageCount += rootEntry.getPages().length;
+			for (int i = 0; pageCount < 2 && i < rootEntry.groupsThatFollow.size(); i++) {
+				pageCount += ((PageGroupEntry) rootEntry.groupsThatFollow.get(i)).getPages().length;
+			}
+			hasMulitplePages = pageCount > 1 ? Boolean.TRUE : Boolean.FALSE;
+		}
+		return hasMulitplePages.booleanValue();
+	}
+
 	public boolean hasNextPage() {
 		boolean pageFound = false;
 

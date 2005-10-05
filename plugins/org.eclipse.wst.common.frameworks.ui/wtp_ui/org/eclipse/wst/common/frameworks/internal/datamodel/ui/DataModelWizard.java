@@ -299,7 +299,7 @@ public abstract class DataModelWizard extends Wizard {
 	}
 	
 	 public boolean needsPreviousAndNextButtons() {
-		 return true;
+		 return super.needsPreviousAndNextButtons() || getPageGroupManager().hasMultiplePages();
 	 }
 
 }
