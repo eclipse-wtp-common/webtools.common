@@ -60,7 +60,7 @@ public abstract class DataModelWizard extends Wizard {
 	 * @return returns the root operation for this wizard.
 	 */
 	protected IDataModelOperation getRootOperation() {
-		return getDefaultProvider().getDefaultOperation();
+		return getDataModel().getDefaultOperation();
 	}
 
 	/**
