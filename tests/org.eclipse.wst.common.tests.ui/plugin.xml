@@ -33,6 +33,24 @@
             class="org.eclipse.wst.common.tests.ui.TestDataModelWizard"
             id="org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel"/>
    </extension>
+   <extension
+         point="org.eclipse.wst.common.frameworks.ui.wizardPageGroup">
+      <wizardPageGroup
+            pageGroupID="foo"
+            wizardID="org.eclipse.wst.common.tests.ui.wizard.Test2DataModelProvider">
+         <factory className="org.eclipse.wst.common.tests.ui.wizard.Test2DataModelWizardFactory"/>
+      </wizardPageGroup>
+      <wizardPageGroup
+            pageGroupID="bar"
+            wizardID="org.eclipse.wst.common.tests.ui.wizard.Test2DataModelProvider">
+         <factory className="org.eclipse.wst.common.tests.ui.wizard.Test2DataModelWizardFactory2"/>
+      </wizardPageGroup>
+      <wizardPageGroup
+            pageGroupID="foobar"
+            wizardID="org.eclipse.wst.common.tests.ui.wizard.Test2DataModelProvider">
+         <factory className="org.eclipse.wst.common.tests.ui.wizard.Test2DataModelWizardFactory3"/>
+      </wizardPageGroup>
+   </extension>
   
 
 </plugin>

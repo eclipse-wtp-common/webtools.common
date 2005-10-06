@@ -14,6 +14,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.wst.common.tests.SimpleTestSuite;
+import org.eclipse.wst.common.tests.ui.wizard.TestWizardTestcase;
 
 /**
  * @author jsholl
@@ -30,5 +31,6 @@ public class DataModelUIAPITests extends TestSuite {
 	public DataModelUIAPITests() {
 		super();
 		addTest(new SimpleTestSuite(DataModelUIFactoryTest.class));
+		addTest(new SimpleTestSuite(TestWizardTestcase.class));
 	}
 }

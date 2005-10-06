@@ -9,6 +9,8 @@
 package org.eclipse.wst.common.tests.ui.wizard;
 
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.swt.widgets.Display;
+
 import junit.framework.TestCase;
 
 public class TestWizardTestcase extends TestCase {
@@ -24,5 +26,14 @@ public class TestWizardTestcase extends TestCase {
 		WizardDialog dialog = new WizardDialog(null, wizard_);
 
 		dialog.open();
+	}
+	
+	public void test2DataModelWizard() throws Exception {
+		Display.getDefault().syncExec( new Runnable(){
+			public void run() {
+				WizardDialog dialog = new WizardDialog(null, new Test2DataModelWizard());
+				dialog.open();
+			}
+		});
 	}
 }
