@@ -191,7 +191,7 @@ public class ResourceTreeNode {
 				if(moduleResource.getRuntimePath() != null) {
 					eclipseResource = StructureEdit.getEclipseResource(moduleResource);
 					
-					if (eclipseResource != null && eclipseResource.getType() == IResource.FOLDER) {
+					if (eclipseResource != null && (eclipseResource.getType() == IResource.FOLDER || eclipseResource.getType() == IResource.PROJECT)) {
 						eclipseContainer = (IContainer) eclipseResource;
 				 
 						IPath runtimeURI = moduleResource.getRuntimePath().append(aPath);
