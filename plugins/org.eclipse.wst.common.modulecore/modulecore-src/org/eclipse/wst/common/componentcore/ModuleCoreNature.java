@@ -11,7 +11,6 @@ package org.eclipse.wst.common.componentcore;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
@@ -150,7 +149,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	 */
 	public static ModuleCoreNature getModuleCoreNature(IProject aProject) {
 		try {
-			if (aProject.isAccessible())
+			if (aProject != null && aProject.isAccessible())
 				return (ModuleCoreNature) aProject.getNature(IModuleConstants.MODULE_NATURE_ID);
 		} catch (CoreException e) {
 			//Ignore
@@ -455,8 +454,6 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	 */
 	public void configure() throws CoreException {
 		super.configure();
-		addDeployableProjectBuilder();
-		addDependencyResolver();
 		cacheModuleStructuralModel();
 	}
 
@@ -467,33 +464,6 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 
 	protected String getPluginID() {
 		return MODULE_PLUG_IN_ID;
-	}
-
-	private void addDeployableProjectBuilder() throws CoreException {
-		IProjectDescription description = project.getDescription();
-		ICommand[] builderCommands = description.getBuildSpec();
-		boolean previouslyAdded = false;
-
-		for (int i = 0; i < builderCommands.length; i++) {
-			if (builderCommands[i].getBuilderName().equals(COMPONENT_STRUCTURAL_BUILDER_ID))
-				// builder already added no need to add again
-				previouslyAdded = true;
-			break;
-		}
-		if (!previouslyAdded) {
-			// builder not found, must be added
-			ICommand command = description.newCommand();
-			command.setBuilderName(COMPONENT_STRUCTURAL_BUILDER_ID);
-			ICommand[] updatedBuilderCommands = new ICommand[builderCommands.length + 1];
-			System.arraycopy(builderCommands, 0, updatedBuilderCommands, 1, builderCommands.length);
-			updatedBuilderCommands[0] = command;
-			description.setBuildSpec(updatedBuilderCommands);
-			project.setDescription(description, null);
-		}
-	}
-	
-	private void addDependencyResolver() throws CoreException {
-		ProjectUtilities.addToBuildSpec(COMPONENT_STRUCTURAL_DEPENDENCY_RESOLVER_ID, getProject());
 	}
 
 	private String getArtifactEditModelId(URI aModuleURI) { 
@@ -530,7 +500,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	 * @see org.eclipse.wst.common.internal.emfworkbench.ISynchronizerExtender#projectChanged(org.eclipse.core.resources.IResourceDelta)
 	 */
 	public void projectChanged(IResourceDelta delta) {
-		if (delta.getKind() == delta.OPEN)
+		if (delta.getKind() == IResourceDelta.OPEN)
 			if (cachedModel == null)
 				cachedModel = getModuleStructuralModelForRead(this);
 	

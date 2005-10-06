@@ -33,45 +33,6 @@
                URI=".wtpmodules"/>
       </editModel> 
    </extension>
-   
-   <!--============================-->
-   <!-- Component Structural Builder Contribution-->
-   <!--============================-->
-   <extension
-         id="ComponentStructuralBuilder"
-         name="Component Structural Builder"
-         point="org.eclipse.core.resources.builders">
-      <builder>
-         <run
-               class="org.eclipse.wst.common.componentcore.internal.builder.ComponentStructuralBuilder">
-         </run>
-      </builder>
-   </extension>
-   <extension
-         id="ComponentStructuralBuilderDependencyResolver"
-         name="Component Structural Dependency Resolver"
-         point="org.eclipse.core.resources.builders">
-      <builder>
-         <run
-               class="org.eclipse.wst.common.componentcore.internal.builder.ComponentStructuralBuilderDependencyResolver">
-         </run>
-      </builder>
-   </extension>
-   <!--============================-->
-   <!-- Builder Provider registrations-->
-   <!--============================-->
-   <extension
-         point="org.eclipse.wst.common.frameworks.DataModelProviderExtension">
-      <DataModelProvider
-            class="org.eclipse.wst.common.componentcore.internal.builder.ReferencedComponentBuilderDataModelProvider"
-            id="org.eclipse.wst.common.componentcore.internal.builder.ReferencedComponentBuilderDataModelProvider"/>
-      <DataModelProvider
-            class="org.eclipse.wst.common.componentcore.internal.builder.WorkbenchComponentBuilderDataModelProvider"
-            id="org.eclipse.wst.common.componentcore.internal.builder.WorkbenchComponentBuilderDataModelProvider"/>
-      <ProviderDefinesType
-      		providerType="dependent.builder"
-      		providerID="org.eclipse.wst.common.componentcore.internal.builder.ReferencedComponentBuilderDataModelProvider"/>
-	</extension>
 	
 	<extension point="org.eclipse.core.runtime.contentTypes">
  			<file-association

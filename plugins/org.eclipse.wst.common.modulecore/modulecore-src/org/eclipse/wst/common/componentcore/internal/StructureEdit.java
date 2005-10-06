@@ -77,7 +77,6 @@ public class StructureEdit implements IEditModelHandler {
 
 	public static final Class ADAPTER_TYPE = StructureEdit.class;
 
-	static final String DEPLOYABLES_ROOT = ".deployables/"; //$NON-NLS-1$
 	static String MODULE_META_FILE_NAME = ".wtpmodules"; //$NON-NLS-1$
 
 	private final static ComponentcoreFactory COMPONENT_FACTORY = ComponentcoreFactory.eINSTANCE;
@@ -251,69 +250,6 @@ public class StructureEdit implements IEditModelHandler {
 
 	/**
 	 * <p>
-	 * Returns a URI for the supplied {@see WorkbenchComponent}. The URI will be relative to
-	 * project root of the flexible project that contains the {@see WorkbenchComponent}.
-	 * </p>
-	 * <p>
-	 * <b>This method may return null. </b>
-	 * </p>
-	 * 
-	 * @param aWorkbenchModule
-	 *            A valid WorkbenchComponent
-	 * @return A project-relative URI of the output folder for aWorkbenchModoule.
-	 */
-	public static IFolder getOutputContainerRoot(WorkbenchComponent aWorkbenchModule) {
-		IProject project = getContainingProject(aWorkbenchModule); 
-		if (project != null)
-			return project.getFolder(new Path(DEPLOYABLES_ROOT + aWorkbenchModule.getName()));
-		return null;
-	}
-	/**
-	 * <p>
-	 * Returns a URI for the supplied {@see WorkbenchComponent}. The URI will be relative to
-	 * project root of the flexible project that contains the {@see WorkbenchComponent}.
-	 * </p>
-	 * <p>
-	 * <b>This method may return null. </b>
-	 * </p>
-	 * 
-	 * @param aWorkbenchModule
-	 *            A valid WorkbenchComponent
-	 * @return A project-relative URI of the output folder for aWorkbenchModoule.
-	 */
-	public static IFolder getOutputContainerRoot(IVirtualComponent aComponent) {
-		if (aComponent == null || aComponent.getProject()==null || aComponent.getName() == null)
-			return null;
-		return aComponent.getProject().getFolder(new Path(DEPLOYABLES_ROOT + aComponent.getName()));
-	}
-
-	/**
-	 * <p>
-	 * Returns a collection of the output containers for the supplied project. The collection may be
-	 * a single root output container or an array of output containers without a common root. For
-	 * clients that are looking for an output container for a specific {@see WorkbenchComponent},
-	 * see {@see #getOutputContainerRoot(WorkbenchComponent)}.
-	 * </p>
-	 * <p>
-	 * If the project is not a ModuleCore project, or has no ModuleCore output containers, an empty
-	 * array will be returned.
-	 * </p>
-	 * 
-	 * @param aProject
-	 *            A project with a {@see ModuleCoreNature}
-	 * @return An array of output containers or an empty array.
-	 */
-	public static IFolder[] getOutputContainersForProject(IProject aProject) {
-		ModuleCoreNature moduleCoreNature = ModuleCoreNature.getModuleCoreNature(aProject);
-		if (moduleCoreNature == null)
-			return NO_FOLDERS;
-		IFolder folder = aProject.getFolder(new Path(DEPLOYABLES_ROOT));
-		IFolder[] outputResources = {folder};
-		return outputResources;
-	}
-
-	/**
-	 * <p>
 	 * Parses the supplied URI for the deployed name name of the {@see WorkbenchComponent}&nbsp;referenced
 	 * by the URI.
 	 * </p>
@@ -362,7 +298,6 @@ public class StructureEdit implements IEditModelHandler {
 
 		IVirtualComponent targetComponent = null;
 		IProject targetProject = null;
-		String targetComponentName = null;
 		boolean isClassPathURI = ModuleURIUtil.isClassPathURI(referencedComponent.getHandle());
 		if( !isClassPathURI ){
 			try { 
@@ -816,7 +751,6 @@ public class StructureEdit implements IEditModelHandler {
 			return getComponent();
 		ModuleURIUtil.ensureValidFullyQualifiedModuleURI(aModuleURI);
 		String projectName = aModuleURI.segment(ModuleURIUtil.ModuleURI.PROJECT_NAME_INDX);
-		String moduleName = aModuleURI.segment(ModuleURIUtil.ModuleURI.MODULE_NAME_INDX);
 		/* Accessing a local module */
 		if (structuralModel.getProject().getName().equals(projectName)) {
 			return getComponent();
@@ -862,9 +796,7 @@ public class StructureEdit implements IEditModelHandler {
 		if(aComponent == null || aReferencedComponent == null)
 			return null;
 		
-		IProject containingProject = getContainingProject(aComponent);
 		IProject referencedProject = getContainingProject(aReferencedComponent);
-		
 		EList referencedComponents = aComponent.getReferencedComponents();
 		String dependentProjectName = null;
 		for (Iterator iter = referencedComponents.iterator(); iter.hasNext();) {
