@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.common.environment.Environment;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties;
@@ -41,6 +42,7 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 
 	private IDataModelOperation rootOperation;
 	private List appendedOperations;
+  private Environment environment;
 
 	private OperationStatus opStatus;
 
@@ -312,4 +314,14 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 	public IDataModel getDataModel() {
 		return rootOperation.getDataModel();
 	}
+  
+  public void setEnvironment( Environment env )
+  {
+    environment = env;
+  }
+  
+  public Environment getEnvironment()
+  {
+     return environment;   
+  }
 }

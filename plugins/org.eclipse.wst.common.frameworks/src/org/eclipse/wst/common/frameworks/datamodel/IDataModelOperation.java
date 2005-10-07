@@ -12,6 +12,7 @@ package org.eclipse.wst.common.frameworks.datamodel;
 
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.wst.common.environment.Environment;
 
 /**
  * <p>
@@ -69,4 +70,5 @@ public interface IDataModelOperation extends IUndoableOperation {
 
 	public int getOperationExecutionFlags();
 
+  public void setEnvironment( Environment environment );
 }
