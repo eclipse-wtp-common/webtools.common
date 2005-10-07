@@ -206,7 +206,7 @@ public class OperationManager {
 					continueRun = postExecuteListener.notify(operation);
 				}
 			} catch (Throwable exc) {
-				setStatus(new Status(IStatus.ERROR, "id", 0, exc.getMessage(), exc));
+				setStatus(new Status(IStatus.ERROR, "id", 0, exc.getMessage() == null ? exc.toString() : exc.getMessage(), exc));
 			}
 
 			if (status != null && status.getSeverity() == IStatus.ERROR) {
