@@ -17,12 +17,16 @@ import java.net.URL;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.componentcore.ComponentCore;
+import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 import org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverExtension;
+import org.osgi.framework.Bundle;
 
 public class ComponentResolver implements URIResolverExtension {
 	private static boolean _DEBUG = "true".equals(Platform.getDebugOption("org.eclipse.wst.common.modulecore/ComponentResolver")); //$NON-NLS-1$ //$NON-NLS-2$ 
@@ -120,7 +124,19 @@ public class ComponentResolver implements URIResolverExtension {
 		boolean prependFilePrefix2 = baseLocation.startsWith(FILE_PROTOCOL2) && baseLocation.length() > 8;
 
 		String resolvedPath = null;
-		IVirtualResource[] virtualResources = ComponentCore.createResources(file);
+		
+		IVirtualResource[] virtualResources = null;
+		try {
+			virtualResources = ComponentCore.createResources(file);
+		}
+		catch (Exception e) {
+			Status statusObj = new Status(IStatus.ERROR, ModulecorePlugin.PLUGIN_ID, IStatus.ERROR, "Exception calling ComponentCore.createResources()", e);
+			Bundle bundle = Platform.getBundle(ModulecorePlugin.PLUGIN_ID);
+			if (bundle != null) {
+				Platform.getLog(bundle).log(statusObj);
+			}
+		}
+
 		// Only return results for Flexible projects
 		if (virtualResources != null) {
 			for (int i = 0; i < virtualResources.length && resolvedPath == null; i++) {
