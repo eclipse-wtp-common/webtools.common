@@ -9,7 +9,6 @@
 package org.eclipse.wst.common.internal.environment.eclipse;
 
 import org.eclipse.osgi.util.NLS;
-import com.sun.corba.se.internal.iiop.messages.Message;
 
 public class Messages extends NLS
 {
@@ -34,6 +33,6 @@ public class Messages extends NLS
   
   static
   {
-    NLS.initializeMessages( BUNDLE_NAME, Message.class );
+    NLS.initializeMessages( BUNDLE_NAME, Messages.class );
   }
 }
