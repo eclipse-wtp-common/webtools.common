@@ -3,7 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Eclipse Base UI extensions
 Bundle-SymbolicName: org.eclipse.wst.common.ui; singleton:=true
 Bundle-Version: 0.7.0
-Bundle-ClassPath: ui.jar
 Bundle-Activator: org.eclipse.core.internal.compatibility.PluginActivator
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
