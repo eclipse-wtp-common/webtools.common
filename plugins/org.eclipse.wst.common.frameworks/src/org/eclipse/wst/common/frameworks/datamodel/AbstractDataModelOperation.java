@@ -10,9 +10,13 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel;
 
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.wst.common.environment.Environment;
 
@@ -30,8 +34,8 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	 */
 	protected static final IStatus OK_STATUS = IDataModelProvider.OK_STATUS;
 
-	private String      id;
-  private Environment environment;
+	private String id;
+	private Environment environment;
 
 	/**
 	 * The IDataModel used by this IDataModelOperation
@@ -106,13 +110,19 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 		return IWorkspace.AVOID_UPDATE;
 	}
 
-  public void setEnvironment( Environment env )
-  {
-   environment = env; 
-  }
-  
-  public Environment getEnvironment()
-  {
-    return environment;
-  }
+	public void setEnvironment(Environment env) {
+		environment = env;
+	}
+
+	public Environment getEnvironment() {
+		return environment;
+	}
+
+	public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+		return Status.OK_STATUS;
+	}
+
+	public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+		return Status.OK_STATUS;
+	}
 }
