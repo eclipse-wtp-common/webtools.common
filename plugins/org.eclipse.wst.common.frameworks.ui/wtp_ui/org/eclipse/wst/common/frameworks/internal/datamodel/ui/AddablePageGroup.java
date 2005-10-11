@@ -8,7 +8,7 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.datamodel.ui;
 
-public interface AddablePageGroup extends  IDMExtendedPageGroup
+public interface AddablePageGroup extends  IDMPageGroup
 {
   public void addPage( DataModelWizardPage page );
 }

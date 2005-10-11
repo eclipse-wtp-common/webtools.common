@@ -48,7 +48,7 @@ package org.eclipse.wst.common.frameworks.internal.datamodel.ui;
  *                 For this example, the T handler decided that no page group followed Y not even X or Z.
  *
  */
-public interface IDMExtendedPageGroupHandler 
+public interface IDMPageGroupHandler 
 {
   /**
    * 

@@ -13,8 +13,8 @@ import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.AbstractRegistryDescriptor;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizardPage;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedPageGroupHandler;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedPageHandler;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageGroupHandler;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageHandler;
 import org.eclipse.wst.common.frameworks.internal.enablement.IdentifiableComparator;
 
 public class DMWizardPageElement extends AbstractRegistryDescriptor implements Comparable {
@@ -75,7 +75,7 @@ public class DMWizardPageElement extends AbstractRegistryDescriptor implements C
 		}
 	}
 
-	public IDMExtendedPageHandler createPageHandler(IDataModel dataModel) {
+	public IDMPageHandler createPageHandler(IDataModel dataModel) {
 		if (wizardPageFactoryElement != null)
 			return wizardPageFactoryElement.createPageHandler(dataModel);
 		return null;
@@ -87,7 +87,7 @@ public class DMWizardPageElement extends AbstractRegistryDescriptor implements C
 		return null;
 	}
 
-	public IDMExtendedPageGroupHandler createPageGroupHandler(IDataModel dataModel) {
+	public IDMPageGroupHandler createPageGroupHandler(IDataModel dataModel) {
 		return wizardPageFactoryElement == null ? null : wizardPageFactoryElement.createPageGroupHandler(dataModel);
 	}
 

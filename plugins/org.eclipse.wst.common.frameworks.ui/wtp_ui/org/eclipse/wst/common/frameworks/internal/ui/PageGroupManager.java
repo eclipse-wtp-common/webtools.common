@@ -22,13 +22,13 @@ import org.eclipse.wst.common.frameworks.internal.DataModelManager;
 import org.eclipse.wst.common.frameworks.internal.OperationListener;
 import org.eclipse.wst.common.frameworks.internal.OperationManager;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizardPage;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedPageGroup;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedPageGroupHandler;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedPageHandler;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageGroup;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageGroupHandler;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageHandler;
 import org.eclipse.wst.common.frameworks.internal.operation.extensionui.CommonUIPluginConstants;
 
 public class PageGroupManager {
-	private IDMExtendedPageGroup rootPageGroup;
+	private IDMPageGroup rootPageGroup;
 	private OperationManager operationManager;
 	private DataModelManager dataModelManager;
 	private HashMap groupTable;
@@ -42,7 +42,7 @@ public class PageGroupManager {
 
 	private final String ELEMENT_PAGE_GROUP = "wizardPageGroup"; //$NON-NLS-1$
 
-	public PageGroupManager(OperationManager operationManager, DataModelManager dataModelManager, IDMExtendedPageGroup rootPageGroup) {
+	public PageGroupManager(OperationManager operationManager, DataModelManager dataModelManager, IDMPageGroup rootPageGroup) {
 		this.operationManager = operationManager;
 		this.dataModelManager = dataModelManager;
 		dataModel = this.dataModelManager.getDataModel();
@@ -72,7 +72,7 @@ public class PageGroupManager {
 
 	}
 
-	public void addGroupAfter(String pageGroupID, IDMExtendedPageGroup pageInsertGroup) {
+	public void addGroupAfter(String pageGroupID, IDMPageGroup pageInsertGroup) {
 		PageGroupEntry pageGroupEntry = (PageGroupEntry) groupTable.get(pageGroupID);
 
 		if (pageGroupEntry.pageGroup.getAllowsExtendedPages()) {
@@ -230,7 +230,7 @@ public class PageGroupManager {
 			StackEntry nextStackEntry = findNextPageGroup(pageGroupStack);
 
 			if (nextStackEntry != null) {
-				IDMExtendedPageGroup pageGroup = nextStackEntry.pageGroupEntry.pageGroup;
+				IDMPageGroup pageGroup = nextStackEntry.pageGroupEntry.pageGroup;
 				String requiresOperationsId = pageGroup.getRequiredDataOperationToRun();
 				String dataModelID = pageGroup.getDataModelID();
 
@@ -302,7 +302,7 @@ public class PageGroupManager {
 		}
 	}
 
-	private void loadExtendedPages(IDMExtendedPageGroup pageGroup) {
+	private void loadExtendedPages(IDMPageGroup pageGroup) {
 		String wizardId = rootPageGroup.getWizardID();
 		String pageGroupId = pageGroup.getPageGroupID();
 		int length = elements.length;
@@ -321,7 +321,7 @@ public class PageGroupManager {
 		}
 	}
 
-	private void addPageGroup(IDMExtendedPageGroup pageGroup, IDMExtendedPageGroup insertedPageGroup) {
+	private void addPageGroup(IDMPageGroup pageGroup, IDMPageGroup insertedPageGroup) {
 		PageGroupEntry pageGroupEntry = (PageGroupEntry) groupTable.get(pageGroup.getPageGroupID());
 		PageGroupEntry nextGroupEntry = (PageGroupEntry) groupTable.get(insertedPageGroup.getPageGroupID());
 
@@ -402,7 +402,7 @@ public class PageGroupManager {
 					// TODO Log an error here.
 				}
 
-				if (newPageId != null && newPageId.equals(IDMExtendedPageHandler.SKIP_PAGE) && pageIndex >= 0 && pageIndex < pages.length - 2) {
+				if (newPageId != null && newPageId.equals(IDMPageHandler.SKIP_PAGE) && pageIndex >= 0 && pageIndex < pages.length - 2) {
 					result = pageIndex + 2;
 				} else {
 					result = pageGroupEntry.checkForSpecialIds(newPageId);
@@ -454,27 +454,27 @@ public class PageGroupManager {
 	}
 
 	private class PageGroupEntry {
-		public IDMExtendedPageGroup pageGroup;
+		public IDMPageGroup pageGroup;
 		public Vector groupsThatFollow;
-		private IDMExtendedPageHandler pageHandler;
-		private IDMExtendedPageGroupHandler pageGroupHandler;
+		private IDMPageHandler pageHandler;
+		private IDMPageGroupHandler pageGroupHandler;
 		private DataModelWizardPage[] pages;
 		private boolean initialized;
 
-		public PageGroupEntry(IDMExtendedPageGroup newPageGroup) {
+		public PageGroupEntry(IDMPageGroup newPageGroup) {
 			pageGroup = newPageGroup;
 			groupsThatFollow = new Vector();
 			initialized = false;
 		}
 
-		public IDMExtendedPageHandler getPageHandler() {
+		public IDMPageHandler getPageHandler() {
 			if (!initialized)
 				init();
 
 			return pageHandler;
 		}
 
-		public IDMExtendedPageGroupHandler getPageGroupHandler() {
+		public IDMPageGroupHandler getPageGroupHandler() {
 			if (!initialized)
 				init();
 
@@ -498,8 +498,8 @@ public class PageGroupManager {
 
 		private void init() {
 			try {
-				pageHandler = pageGroup.getExtendedPageHandler(dataModel);
-				pageGroupHandler = pageGroup.getExtendedPageGroupHandler(dataModel);
+				pageHandler = pageGroup.getPageHandler(dataModel);
+				pageGroupHandler = pageGroup.getPageGroupHandler(dataModel);
 				pages = pageGroup.getExtendedPages(dataModel);
 			} catch (Throwable exc) {
 				// TODO need to log this exception.
@@ -523,12 +523,12 @@ public class PageGroupManager {
 			if (pages.length == 0 || pageId == null)
 				return -1;
 
-			if (pageId.startsWith(IDMExtendedPageHandler.PAGE_AFTER)) {
-				String afterID = pageId.substring(IDMExtendedPageHandler.PAGE_AFTER.length(), pageId.length());
+			if (pageId.startsWith(IDMPageHandler.PAGE_AFTER)) {
+				String afterID = pageId.substring(IDMPageHandler.PAGE_AFTER.length(), pageId.length());
 				result = getIndexOf(afterID);
 				result = result >= 0 && result < pages.length - 1 ? result + 1 : -1;
-			} else if (pageId.startsWith(IDMExtendedPageHandler.PAGE_BEFORE)) {
-				String beforeID = pageId.substring(IDMExtendedPageHandler.PAGE_BEFORE.length(), pageId.length());
+			} else if (pageId.startsWith(IDMPageHandler.PAGE_BEFORE)) {
+				String beforeID = pageId.substring(IDMPageHandler.PAGE_BEFORE.length(), pageId.length());
 				result = getIndexOf(beforeID);
 				result = result >= 1 && result < pages.length ? result - 1 : -1;
 			} else {

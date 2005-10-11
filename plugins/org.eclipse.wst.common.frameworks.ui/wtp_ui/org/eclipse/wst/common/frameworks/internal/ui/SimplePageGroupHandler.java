@@ -8,9 +8,9 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.ui;
 
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedPageGroupHandler;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageGroupHandler;
 
-public class SimplePageGroupHandler implements IDMExtendedPageGroupHandler {
+public class SimplePageGroupHandler implements IDMPageGroupHandler {
 	public String getNextPageGroup(String currentPageGroupID, String[] pageGroupIDs) {
 		if (pageGroupIDs == null || pageGroupIDs.length == 0)
 			return null;

@@ -3,12 +3,12 @@ package org.eclipse.wst.common.frameworks.internal.ui;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizardPage;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedPageGroup;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedPageGroupHandler;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedPageHandler;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageGroup;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageGroupHandler;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageHandler;
 import org.eclipse.wst.common.frameworks.internal.operation.extensionui.DMWizardPageElement;
 
-public class DMPageGroupElementImpl implements IDMExtendedPageGroup {
+public class DMPageGroupElementImpl implements IDMPageGroup {
 	private DMWizardPageElement pageElement;
 
 	public DMPageGroupElementImpl(IConfigurationElement element) {
@@ -27,7 +27,7 @@ public class DMPageGroupElementImpl implements IDMExtendedPageGroup {
 		return pageElement.getDataModelID();
 	}
 
-	public IDMExtendedPageGroupHandler getExtendedPageGroupHandler(IDataModel dataModel) {
+	public IDMPageGroupHandler getPageGroupHandler(IDataModel dataModel) {
 		return pageElement.createPageGroupHandler(dataModel);
 	}
 
@@ -35,7 +35,7 @@ public class DMPageGroupElementImpl implements IDMExtendedPageGroup {
 		return pageElement.createPageGroup(dataModel);
 	}
 
-	public IDMExtendedPageHandler getExtendedPageHandler(IDataModel dataModel) {
+	public IDMPageHandler getPageHandler(IDataModel dataModel) {
 		return pageElement.createPageHandler(dataModel);
 	}
 

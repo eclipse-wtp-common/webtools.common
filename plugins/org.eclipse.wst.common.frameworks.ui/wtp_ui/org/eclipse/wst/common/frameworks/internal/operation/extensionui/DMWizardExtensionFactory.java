@@ -10,8 +10,8 @@ package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
 
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizardPage;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedPageGroupHandler;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedPageHandler;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageGroupHandler;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageHandler;
 
 /**
  * This interface is EXPERIMENTAL and is subject to substantial changes.
@@ -27,7 +27,7 @@ public abstract class DMWizardExtensionFactory {
 	/*
 	 * this is optional
 	 */
-	public IDMExtendedPageHandler createPageHandler(IDataModel dataModel, String pageGroupID) 
+	public IDMPageHandler createPageHandler(IDataModel dataModel, String pageGroupID) 
 	{
 	  return null;
 	}
@@ -35,7 +35,7 @@ public abstract class DMWizardExtensionFactory {
 	/**
 	 * This page group handler can be optionally overriden.
 	 */
-	public IDMExtendedPageGroupHandler createPageGroupHandler( IDataModel dataModel, String pageGroupID )
+	public IDMPageGroupHandler createPageGroupHandler( IDataModel dataModel, String pageGroupID )
 	{
 	  return null;
 	}

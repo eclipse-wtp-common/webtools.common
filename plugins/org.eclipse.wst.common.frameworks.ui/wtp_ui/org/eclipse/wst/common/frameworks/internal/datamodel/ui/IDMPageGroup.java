@@ -10,7 +10,7 @@ package org.eclipse.wst.common.frameworks.internal.datamodel.ui;
 
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
-public interface IDMExtendedPageGroup 
+public interface IDMPageGroup 
 {
   public String getWizardID();
   
@@ -26,7 +26,7 @@ public interface IDMExtendedPageGroup
   
   public DataModelWizardPage[] getExtendedPages( IDataModel dataModel );
   
-  public IDMExtendedPageHandler getExtendedPageHandler( IDataModel dataModel );
+  public IDMPageHandler getPageHandler( IDataModel dataModel );
   
-  public IDMExtendedPageGroupHandler getExtendedPageGroupHandler( IDataModel dataModel );
+  public IDMPageGroupHandler getPageGroupHandler( IDataModel dataModel );
 }

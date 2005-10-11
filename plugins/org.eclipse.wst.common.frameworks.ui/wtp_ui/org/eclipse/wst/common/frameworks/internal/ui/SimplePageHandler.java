@@ -8,9 +8,9 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.ui;
 
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedPageHandler;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageHandler;
 
-public class SimplePageHandler implements IDMExtendedPageHandler
+public class SimplePageHandler implements IDMPageHandler
 {
   public String getNextPage(String currentPageName, String expectedNextPageName) 
   {

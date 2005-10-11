@@ -11,7 +11,7 @@ package org.eclipse.wst.common.frameworks.internal.datamodel.ui;
 /**
  * This interface is EXPERIMENTAL and is subject to substantial changes.
  */
-public interface IDMExtendedPageHandler {
+public interface IDMPageHandler {
 
 	/**
 	 * return this as the page name if the expectedNextPageName or expectedPreviousPageName should

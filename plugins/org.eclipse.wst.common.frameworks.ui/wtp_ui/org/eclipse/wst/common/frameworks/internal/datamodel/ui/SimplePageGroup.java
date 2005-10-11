@@ -18,8 +18,8 @@ public class SimplePageGroup implements AddablePageGroup {
 	private String requiredDataOperation;
 	private String dataModelID;
 
-	private IDMExtendedPageHandler pageHandler;
-	private IDMExtendedPageGroupHandler pageGroupHandler;
+	private IDMPageHandler pageHandler;
+	private IDMPageGroupHandler pageGroupHandler;
 	private Vector pages;
 
 	public SimplePageGroup(String groupID, String wizardID, boolean allowExtendedPages, String requireDataOperation) {
@@ -48,19 +48,19 @@ public class SimplePageGroup implements AddablePageGroup {
 		return allowExtendedPages;
 	}
 
-	public void setExtendedPageGroupHandler(IDMExtendedPageGroupHandler handler) {
+	public void setPageGroupHandler(IDMPageGroupHandler handler) {
 		pageGroupHandler = handler;
 	}
 
-	public IDMExtendedPageGroupHandler getExtendedPageGroupHandler(IDataModel dataModel) {
+	public IDMPageGroupHandler getPageGroupHandler(IDataModel dataModel) {
 		return pageGroupHandler;
 	}
 
-	public void setExtendedPageHandler(IDMExtendedPageHandler handler) {
+	public void setPageHandler(IDMPageHandler handler) {
 		pageHandler = handler;
 	}
 
-	public IDMExtendedPageHandler getExtendedPageHandler(IDataModel dataModel) {
+	public IDMPageHandler getPageHandler(IDataModel dataModel) {
 		return pageHandler;
 	}
 
