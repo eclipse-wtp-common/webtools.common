@@ -322,7 +322,7 @@ public class ValidatorMetaData {
 	}
 	
 	private boolean checkIfValidSourceFile(IResource file) {
-		IProject project = file.getProject();
+//		IProject project = file.getProject();
 		
 //		if (file.getType() == IResource.FILE) 
 //			return file.getFullPath().toOSString().indexOf(ConfigurationConstants.DEPLOYABLES_FOLDER) == -1;
