@@ -11,7 +11,9 @@ package org.eclipse.wst.common.tests.ui.manager;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
+
 import junit.framework.TestCase;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
@@ -20,8 +22,8 @@ import org.eclipse.wst.common.frameworks.internal.DataModelManager;
 import org.eclipse.wst.common.frameworks.internal.OperationManager;
 import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelImpl;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizardPage;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedPageGroupHandler;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMExtendedPageHandler;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageGroupHandler;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageHandler;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.SimplePageGroup;
 import org.eclipse.wst.common.frameworks.internal.ui.PageGroupManager;
 import org.eclipse.wst.common.frameworks.operations.tests.manager.BaseOperation;
@@ -176,13 +178,13 @@ public class TestGroupManager extends TestCase {
 		pgF.addPages(new WizardPage[]{f1, f2, f3, f4, f5, f6});
 		pgG.addPages(new WizardPage[]{g1});
 
-		pgF.setExtendedPageHandler(new FPageHandler());
+		pgF.setPageHandler(new FPageHandler());
 
 		aGroupHandler = new AGroupHandler();
 		fGroupHandler = new FGroupHandler();
 
-		pgA.setExtendedPageGroupHandler(aGroupHandler);
-		pgF.setExtendedPageGroupHandler(fGroupHandler);
+		pgA.setPageGroupHandler(aGroupHandler);
+		pgF.setPageGroupHandler(fGroupHandler);
 
 		pageGroupManager = new PageGroupManager(operationManager, dataModelManager, pgRoot);
 		pageGroupManager.addGroupAfter("Root", pgA); //$NON-NLS-1$
@@ -380,7 +382,7 @@ public class TestGroupManager extends TestCase {
 		expectedUndoOps.removeAllElements();
 	}
 
-	private class AGroupHandler implements IDMExtendedPageGroupHandler {
+	private class AGroupHandler implements IDMPageGroupHandler {
 		private String groupID_;
 
 		public String getNextPageGroup(String currentPageGroupID, String[] pageGroupIDs) {
@@ -402,7 +404,7 @@ public class TestGroupManager extends TestCase {
 		}
 	}
 
-	private class FGroupHandler implements IDMExtendedPageGroupHandler {
+	private class FGroupHandler implements IDMPageGroupHandler {
 		private String groupID_;
 
 		public String getNextPageGroup(String currentPageGroupID, String[] pageGroupIDs) {
@@ -430,20 +432,20 @@ public class TestGroupManager extends TestCase {
 	// This handle should cause the following pages to be used.
 	// f1, f3, f5, f6, f4, null
 	//
-	private class FPageHandler implements IDMExtendedPageHandler {
+	private class FPageHandler implements IDMPageHandler {
 		public String getNextPage(String currentPageName, String expectedNextPageName) {
 			String result = null;
 
 			if (currentPageName == null) {
 				result = "f1"; //$NON-NLS-1$
 			} else if (currentPageName.equals("f1")) { //$NON-NLS-1$
-				result = IDMExtendedPageHandler.SKIP_PAGE;
+				result = IDMPageHandler.SKIP_PAGE;
 			} else if (currentPageName.equals("f3")) { //$NON-NLS-1$
-				result = IDMExtendedPageHandler.PAGE_BEFORE + "f6"; //$NON-NLS-1$
+				result = IDMPageHandler.PAGE_BEFORE + "f6"; //$NON-NLS-1$
 			} else if (currentPageName.equals("f4")) { //$NON-NLS-1$
 				result = null;
 			} else if (currentPageName.equals("f5")) { //$NON-NLS-1$
-				result = IDMExtendedPageHandler.PAGE_AFTER + "f5"; //$NON-NLS-1$
+				result = IDMPageHandler.PAGE_AFTER + "f5"; //$NON-NLS-1$
 			} else if (currentPageName.equals("f6")) { //$NON-NLS-1$
 				result = "f4"; //$NON-NLS-1$
 			}

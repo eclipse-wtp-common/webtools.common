@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.tests.ui.wizard;
 
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.AddablePageGroup;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizard;
@@ -24,7 +25,7 @@ public class Test2DataModelWizard extends DataModelWizard {
 
 	protected AddablePageGroup createRootPageGroup() {
 		SimplePageGroup pg = (SimplePageGroup) super.createRootPageGroup();
-		pg.setExtendedPageGroupHandler(new SimplePageGroupHandler() {
+		pg.setPageGroupHandler(new SimplePageGroupHandler() {
 			public String getNextPageGroup(String currentPageGroupID, String[] pageGroupIDs) {
 				if (currentPageGroupID == null) {
 					for (int i = 0; i < pageGroupIDs.length; i++) {
@@ -37,6 +38,11 @@ public class Test2DataModelWizard extends DataModelWizard {
 			}
 		});
 		return pg;
+	}
+	
+	protected IDataModelOperation getRootOperation() {
+		// TODO Auto-generated method stub
+		return super.getRootOperation();
 	}
 
 }
