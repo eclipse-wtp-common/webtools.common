@@ -16,7 +16,7 @@ public class TestPageGroup2 extends SimplePageGroup {
 	private IDataModel dataModel;
 
 	public TestPageGroup2(IDataModel dataModel) {
-		super("group2", dataModel.getID(), true, "TestOperation");
+		super("group2", dataModel.getID(), true, "TestOperation"); //$NON-NLS-1$ //$NON-NLS-2$
 		this.dataModel = dataModel;
 
 		addPages(new DataModelWizardPage[]{new TestPage2(this.dataModel)});

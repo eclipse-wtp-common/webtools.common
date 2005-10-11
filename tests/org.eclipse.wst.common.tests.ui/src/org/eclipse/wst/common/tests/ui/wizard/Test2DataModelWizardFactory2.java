@@ -13,6 +13,6 @@ package org.eclipse.wst.common.tests.ui.wizard;
 public class Test2DataModelWizardFactory2 extends Test2DataModelWizardFactory {
 
 	protected String getPageName() {
-		return "A Better Page";
+		return "A Better Page"; //$NON-NLS-1$
 	}
 }

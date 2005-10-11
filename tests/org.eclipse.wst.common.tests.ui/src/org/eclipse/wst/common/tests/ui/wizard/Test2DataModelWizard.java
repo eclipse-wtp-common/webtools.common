@@ -28,8 +28,8 @@ public class Test2DataModelWizard extends DataModelWizard {
 			public String getNextPageGroup(String currentPageGroupID, String[] pageGroupIDs) {
 				if (currentPageGroupID == null) {
 					for (int i = 0; i < pageGroupIDs.length; i++) {
-						if (pageGroupIDs[i].equals("bar")) {
-							return "bar";
+						if (pageGroupIDs[i].equals("bar")) { //$NON-NLS-1$
+							return "bar"; //$NON-NLS-1$
 						}
 					}
 				}

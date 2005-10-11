@@ -19,9 +19,9 @@ import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizardPa
 
 public class TestPage2 extends DataModelWizardPage {
 	public TestPage2(IDataModel model) {
-		super(model, "Page2");
-		setTitle("Title for test page2");
-		setDescription("Description for test page 2");
+		super(model, "Page2"); //$NON-NLS-1$
+		setTitle("Title for test page2"); //$NON-NLS-1$
+		setDescription("Description for test page 2"); //$NON-NLS-1$
 	}
 
 	public boolean canPageFinish() {
@@ -37,8 +37,8 @@ public class TestPage2 extends DataModelWizardPage {
 		Button button1 = new Button(group, SWT.PUSH);
 		Button button2 = new Button(group, SWT.PUSH);
 
-		button1.setText("Page 2 button1");
-		button2.setText("Page 2 button2");
+		button1.setText("Page 2 button1"); //$NON-NLS-1$
+		button2.setText("Page 2 button2"); //$NON-NLS-1$
 		group.setLayout(new GridLayout());
 		group.setLayoutData(new GridData(GridData.FILL_BOTH));
 

@@ -80,13 +80,13 @@ public class TestGroupManager extends TestCase {
 
 		DataModelManager dataModelManager = new DataModelManager(dataModel);
 
-		opA = new BaseOperation("A", executedOps, executedUndoOps);
-		opB = new BaseOperation("B", executedOps, executedUndoOps);
-		opC = new BaseOperation("C", executedOps, executedUndoOps);
-		opD = new BaseOperation("D", executedOps, executedUndoOps);
-		opE = new BaseOperation("E", executedOps, executedUndoOps);
-		opF = new BaseOperation("F", executedOps, executedUndoOps);
-		opG = new BaseOperation("G", executedOps, executedUndoOps);
+		opA = new BaseOperation("A", executedOps, executedUndoOps); //$NON-NLS-1$
+		opB = new BaseOperation("B", executedOps, executedUndoOps); //$NON-NLS-1$
+		opC = new BaseOperation("C", executedOps, executedUndoOps); //$NON-NLS-1$
+		opD = new BaseOperation("D", executedOps, executedUndoOps); //$NON-NLS-1$
+		opE = new BaseOperation("E", executedOps, executedUndoOps); //$NON-NLS-1$
+		opF = new BaseOperation("F", executedOps, executedUndoOps); //$NON-NLS-1$
+		opG = new BaseOperation("G", executedOps, executedUndoOps); //$NON-NLS-1$
 
 		// Operations are organized as follows:
 		//
@@ -142,32 +142,32 @@ public class TestGroupManager extends TestCase {
 		// expected = f6 returns f4
 		// G has pages g1
 		// H has no pages.
-		r1 = new WizardPage("r1");
-		b1 = new WizardPage("b1");
-		b2 = new WizardPage("b2");
-		c1 = new WizardPage("c1");
-		d1 = new WizardPage("d1");
-		d2 = new WizardPage("d2");
-		d3 = new WizardPage("d3");
-		f1 = new WizardPage("f1");
-		f2 = new WizardPage("f2");
-		f3 = new WizardPage("f3");
-		f4 = new WizardPage("f4");
-		f5 = new WizardPage("f5");
-		f6 = new WizardPage("f6");
-		g1 = new WizardPage("g1");
+		r1 = new WizardPage("r1"); //$NON-NLS-1$
+		b1 = new WizardPage("b1"); //$NON-NLS-1$
+		b2 = new WizardPage("b2"); //$NON-NLS-1$
+		c1 = new WizardPage("c1"); //$NON-NLS-1$
+		d1 = new WizardPage("d1"); //$NON-NLS-1$
+		d2 = new WizardPage("d2"); //$NON-NLS-1$
+		d3 = new WizardPage("d3"); //$NON-NLS-1$
+		f1 = new WizardPage("f1"); //$NON-NLS-1$
+		f2 = new WizardPage("f2"); //$NON-NLS-1$
+		f3 = new WizardPage("f3"); //$NON-NLS-1$
+		f4 = new WizardPage("f4"); //$NON-NLS-1$
+		f5 = new WizardPage("f5"); //$NON-NLS-1$
+		f6 = new WizardPage("f6"); //$NON-NLS-1$
+		g1 = new WizardPage("g1"); //$NON-NLS-1$
 
-		String wizardID = "testWizard";
+		String wizardID = "testWizard"; //$NON-NLS-1$
 
-		pgRoot = new SimplePageGroup("Root", wizardID);
-		pgA = new SimplePageGroup("A", wizardID);
-		pgB = new SimplePageGroup("B", wizardID, true, "C");
-		pgC = new SimplePageGroup("C", wizardID);
-		pgD = new SimplePageGroup("D", wizardID, true, "C");
-		pgE = new SimplePageGroup("E", wizardID, true, "E");
-		pgF = new SimplePageGroup("F", wizardID, true, "C");
-		pgG = new SimplePageGroup("G", wizardID);
-		pgH = new SimplePageGroup("H", wizardID);
+		pgRoot = new SimplePageGroup("Root", wizardID); //$NON-NLS-1$
+		pgA = new SimplePageGroup("A", wizardID); //$NON-NLS-1$
+		pgB = new SimplePageGroup("B", wizardID, true, "C"); //$NON-NLS-1$ //$NON-NLS-2$
+		pgC = new SimplePageGroup("C", wizardID); //$NON-NLS-1$
+		pgD = new SimplePageGroup("D", wizardID, true, "C"); //$NON-NLS-1$ //$NON-NLS-2$
+		pgE = new SimplePageGroup("E", wizardID, true, "E"); //$NON-NLS-1$ //$NON-NLS-2$
+		pgF = new SimplePageGroup("F", wizardID, true, "C"); //$NON-NLS-1$ //$NON-NLS-2$
+		pgG = new SimplePageGroup("G", wizardID); //$NON-NLS-1$
+		pgH = new SimplePageGroup("H", wizardID); //$NON-NLS-1$
 
 		pgRoot.addPages(new WizardPage[]{r1});
 		pgB.addPages(new WizardPage[]{b1, b2});
@@ -185,125 +185,125 @@ public class TestGroupManager extends TestCase {
 		pgF.setExtendedPageGroupHandler(fGroupHandler);
 
 		pageGroupManager = new PageGroupManager(operationManager, dataModelManager, pgRoot);
-		pageGroupManager.addGroupAfter("Root", pgA);
-		pageGroupManager.addGroupAfter("A", pgB);
-		pageGroupManager.addGroupAfter("A", pgD);
-		pageGroupManager.addGroupAfter("A", pgE);
-		pageGroupManager.addGroupAfter("B", pgC);
-		pageGroupManager.addGroupAfter("E", pgF);
-		pageGroupManager.addGroupAfter("F", pgG);
-		pageGroupManager.addGroupAfter("F", pgH);
+		pageGroupManager.addGroupAfter("Root", pgA); //$NON-NLS-1$
+		pageGroupManager.addGroupAfter("A", pgB); //$NON-NLS-1$
+		pageGroupManager.addGroupAfter("A", pgD); //$NON-NLS-1$
+		pageGroupManager.addGroupAfter("A", pgE); //$NON-NLS-1$
+		pageGroupManager.addGroupAfter("B", pgC); //$NON-NLS-1$
+		pageGroupManager.addGroupAfter("E", pgF); //$NON-NLS-1$
+		pageGroupManager.addGroupAfter("F", pgG); //$NON-NLS-1$
+		pageGroupManager.addGroupAfter("F", pgH); //$NON-NLS-1$
 	}
 
 	public void testSimpleRun() throws Exception {
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The root page should be null", pageGroupManager.getCurrentPage() == null);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The root page should be null", pageGroupManager.getCurrentPage() == null); //$NON-NLS-1$
 		pageGroupManager.moveBackOnePage(); // Should do nothing.
 		checkResults();
 
 		pageGroupManager.moveForwardOnePage();
-		aGroupHandler.setGroupIDToSelect("B");
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be r1", pageGroupManager.getCurrentPage() == r1);
+		aGroupHandler.setGroupIDToSelect("B"); //$NON-NLS-1$
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be r1", pageGroupManager.getCurrentPage() == r1); //$NON-NLS-1$
 		checkResults();
 
 		pageGroupManager.moveForwardOnePage();
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be b1", pageGroupManager.getCurrentPage() == b1);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be b1", pageGroupManager.getCurrentPage() == b1); //$NON-NLS-1$
 		expectedOps.add(opA);
 		expectedOps.add(opB);
 		expectedOps.add(opC);
 		checkResults();
 
 		pageGroupManager.moveForwardOnePage();
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be b2", pageGroupManager.getCurrentPage() == b2);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be b2", pageGroupManager.getCurrentPage() == b2); //$NON-NLS-1$
 		checkResults();
 
 		pageGroupManager.moveForwardOnePage();
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be c1", pageGroupManager.getCurrentPage() == c1);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be c1", pageGroupManager.getCurrentPage() == c1); //$NON-NLS-1$
 		checkResults();
 
 		pageGroupManager.moveForwardOnePage();
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be f1", pageGroupManager.getCurrentPage() == f1);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be f1", pageGroupManager.getCurrentPage() == f1); //$NON-NLS-1$
 		expectedOps.add(opD);
 		expectedOps.add(opE);
 		checkResults();
 
 		pageGroupManager.moveForwardOnePage();
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be f3", pageGroupManager.getCurrentPage() == f3);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be f3", pageGroupManager.getCurrentPage() == f3); //$NON-NLS-1$
 		checkResults();
 
 		pageGroupManager.moveForwardOnePage();
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be f5", pageGroupManager.getCurrentPage() == f5);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be f5", pageGroupManager.getCurrentPage() == f5); //$NON-NLS-1$
 		checkResults();
 
 		pageGroupManager.moveForwardOnePage();
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be f6", pageGroupManager.getCurrentPage() == f6);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be f6", pageGroupManager.getCurrentPage() == f6); //$NON-NLS-1$
 		checkResults();
 
 		pageGroupManager.moveForwardOnePage();
-		fGroupHandler.setGroupIDToSelect("G");
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be f4", pageGroupManager.getCurrentPage() == f4);
+		fGroupHandler.setGroupIDToSelect("G"); //$NON-NLS-1$
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be f4", pageGroupManager.getCurrentPage() == f4); //$NON-NLS-1$
 		checkResults();
 
 		pageGroupManager.moveForwardOnePage();
-		assertFalse("There should not be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be g1", pageGroupManager.getCurrentPage() == g1);
+		assertFalse("There should not be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be g1", pageGroupManager.getCurrentPage() == g1); //$NON-NLS-1$
 		checkResults();
 
 		pageGroupManager.moveBackOnePage();
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be f4", pageGroupManager.getCurrentPage() == f4);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be f4", pageGroupManager.getCurrentPage() == f4); //$NON-NLS-1$
 		checkResults();
 
 		pageGroupManager.moveBackOnePage();
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be f4", pageGroupManager.getCurrentPage() == f6);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be f4", pageGroupManager.getCurrentPage() == f6); //$NON-NLS-1$
 		checkResults();
 
 		pageGroupManager.moveBackOnePage();
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be f4", pageGroupManager.getCurrentPage() == f5);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be f4", pageGroupManager.getCurrentPage() == f5); //$NON-NLS-1$
 		checkResults();
 
 		pageGroupManager.moveBackOnePage();
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be f4", pageGroupManager.getCurrentPage() == f3);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be f4", pageGroupManager.getCurrentPage() == f3); //$NON-NLS-1$
 		checkResults();
 
 		pageGroupManager.moveBackOnePage();
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be f4", pageGroupManager.getCurrentPage() == f1);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be f4", pageGroupManager.getCurrentPage() == f1); //$NON-NLS-1$
 		checkResults();
 
 		pageGroupManager.moveBackOnePage();
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be f4", pageGroupManager.getCurrentPage() == c1);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be f4", pageGroupManager.getCurrentPage() == c1); //$NON-NLS-1$
 		expectedOps.setSize(3);
 		expectedUndoOps.add(opE);
 		expectedUndoOps.add(opD);
 		checkResults();
 
 		pageGroupManager.moveBackOnePage();
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be b2", pageGroupManager.getCurrentPage() == b2);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be b2", pageGroupManager.getCurrentPage() == b2); //$NON-NLS-1$
 		checkResults();
 
 		pageGroupManager.moveBackOnePage();
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be b1", pageGroupManager.getCurrentPage() == b1);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be b1", pageGroupManager.getCurrentPage() == b1); //$NON-NLS-1$
 		checkResults();
 
 		pageGroupManager.moveBackOnePage();
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The root page should be r1", pageGroupManager.getCurrentPage() == r1);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The root page should be r1", pageGroupManager.getCurrentPage() == r1); //$NON-NLS-1$
 		expectedOps = new Vector();
 		expectedUndoOps.add(opC);
 		expectedUndoOps.add(opB);
@@ -311,62 +311,62 @@ public class TestGroupManager extends TestCase {
 		checkResults();
 
 		reset();
-		aGroupHandler.setGroupIDToSelect("D");
+		aGroupHandler.setGroupIDToSelect("D"); //$NON-NLS-1$
 		pageGroupManager.moveForwardOnePage();
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be d1", pageGroupManager.getCurrentPage() == d1);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be d1", pageGroupManager.getCurrentPage() == d1); //$NON-NLS-1$
 		expectedOps.add(opA);
 		expectedOps.add(opB);
 		expectedOps.add(opC);
 		checkResults();
 
 		pageGroupManager.moveForwardOnePage();
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be d2", pageGroupManager.getCurrentPage() == d2);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be d2", pageGroupManager.getCurrentPage() == d2); //$NON-NLS-1$
 		checkResults();
 
 		pageGroupManager.moveForwardOnePage();
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be d3", pageGroupManager.getCurrentPage() == d3);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be d3", pageGroupManager.getCurrentPage() == d3); //$NON-NLS-1$
 		checkResults();
 
 		pageGroupManager.moveForwardOnePage();
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be f1", pageGroupManager.getCurrentPage() == f1);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be f1", pageGroupManager.getCurrentPage() == f1); //$NON-NLS-1$
 		expectedOps.add(opD);
 		expectedOps.add(opE);
 		checkResults();
 
 		pageGroupManager.moveForwardOnePage();
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be f3", pageGroupManager.getCurrentPage() == f3);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be f3", pageGroupManager.getCurrentPage() == f3); //$NON-NLS-1$
 		checkResults();
 
 		pageGroupManager.moveForwardOnePage();
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be f5", pageGroupManager.getCurrentPage() == f5);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be f5", pageGroupManager.getCurrentPage() == f5); //$NON-NLS-1$
 		checkResults();
 
 		pageGroupManager.moveForwardOnePage();
-		assertTrue("There should be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be f6", pageGroupManager.getCurrentPage() == f6);
+		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be f6", pageGroupManager.getCurrentPage() == f6); //$NON-NLS-1$
 		checkResults();
 
 		pageGroupManager.moveForwardOnePage();
 		fGroupHandler.setGroupIDToSelect(null);
-		assertFalse("There should not be a next page", pageGroupManager.hasNextPage());
-		assertTrue("The page should be f4", pageGroupManager.getCurrentPage() == f4);
+		assertFalse("There should not be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
+		assertTrue("The page should be f4", pageGroupManager.getCurrentPage() == f4); //$NON-NLS-1$
 		checkResults();
 	}
 
 	private void checkResults() {
-		assertTrue("Expected=" + expectedOps.size() + " executed=" + executedOps.size(), executedOps.size() == expectedOps.size());
+		assertTrue("Expected=" + expectedOps.size() + " executed=" + executedOps.size(), executedOps.size() == expectedOps.size()); //$NON-NLS-1$ //$NON-NLS-2$
 
 		for (int index = 0; index < executedOps.size(); index++) {
 			assertEquals(((BaseOperation) expectedOps.elementAt(index)).getID(), ((BaseOperation) executedOps.elementAt(index)).getID());
 		}
 
-		assertTrue("Expected undo=" + expectedUndoOps.size() + " executed=" + executedUndoOps.size(), executedUndoOps.size() == expectedUndoOps.size());
+		assertTrue("Expected undo=" + expectedUndoOps.size() + " executed=" + executedUndoOps.size(), executedUndoOps.size() == expectedUndoOps.size()); //$NON-NLS-1$ //$NON-NLS-2$
 
 		for (int index = 0; index < executedUndoOps.size(); index++) {
 			assertEquals(((BaseOperation) expectedUndoOps.elementAt(index)).getID(), ((BaseOperation) executedUndoOps.elementAt(index)).getID());
@@ -388,10 +388,10 @@ public class TestGroupManager extends TestCase {
 
 			if (currentPageGroupID == null) {
 				result = groupID_;
-			} else if (currentPageGroupID.equals("E")) {
+			} else if (currentPageGroupID.equals("E")) { //$NON-NLS-1$
 				result = null;
 			} else {
-				result = "E";
+				result = "E"; //$NON-NLS-1$
 			}
 
 			return result;
@@ -435,17 +435,17 @@ public class TestGroupManager extends TestCase {
 			String result = null;
 
 			if (currentPageName == null) {
-				result = "f1";
-			} else if (currentPageName.equals("f1")) {
+				result = "f1"; //$NON-NLS-1$
+			} else if (currentPageName.equals("f1")) { //$NON-NLS-1$
 				result = IDMExtendedPageHandler.SKIP_PAGE;
-			} else if (currentPageName.equals("f3")) {
-				result = IDMExtendedPageHandler.PAGE_BEFORE + "f6";
-			} else if (currentPageName.equals("f4")) {
+			} else if (currentPageName.equals("f3")) { //$NON-NLS-1$
+				result = IDMExtendedPageHandler.PAGE_BEFORE + "f6"; //$NON-NLS-1$
+			} else if (currentPageName.equals("f4")) { //$NON-NLS-1$
 				result = null;
-			} else if (currentPageName.equals("f5")) {
-				result = IDMExtendedPageHandler.PAGE_AFTER + "f5";
-			} else if (currentPageName.equals("f6")) {
-				result = "f4";
+			} else if (currentPageName.equals("f5")) { //$NON-NLS-1$
+				result = IDMExtendedPageHandler.PAGE_AFTER + "f5"; //$NON-NLS-1$
+			} else if (currentPageName.equals("f6")) { //$NON-NLS-1$
+				result = "f4"; //$NON-NLS-1$
 			}
 
 			return result;

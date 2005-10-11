@@ -23,7 +23,7 @@ import org.eclipse.wst.common.frameworks.internal.operation.extensionui.DMWizard
 public class Test2DataModelWizardFactory extends DMWizardExtensionFactory {
 
 	protected String getPageName() {
-		return "A Page";
+		return "A Page"; //$NON-NLS-1$
 	}
 
 	public DataModelWizardPage[] createPageGroup(IDataModel dataModel, String pageGroupID) {

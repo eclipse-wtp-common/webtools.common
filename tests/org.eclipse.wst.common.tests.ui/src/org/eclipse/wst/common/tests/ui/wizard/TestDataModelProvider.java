@@ -15,14 +15,14 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 
 public class TestDataModelProvider extends AbstractDataModelProvider {
 	public String getID() {
-		return "TestWizardID";
+		return "TestWizardID"; //$NON-NLS-1$
 	}
 
 	public Set getPropertyNames() {
 		HashSet result = new HashSet();
 
-		result.add("prop1");
-		result.add("prop2");
+		result.add("prop1"); //$NON-NLS-1$
+		result.add("prop2"); //$NON-NLS-1$
 
 		return result;
 	}
