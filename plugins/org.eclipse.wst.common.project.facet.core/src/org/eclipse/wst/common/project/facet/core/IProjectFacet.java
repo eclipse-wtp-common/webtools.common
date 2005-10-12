@@ -133,7 +133,7 @@ public interface IProjectFacet
     /**
      * Returns the version comparator specified for this project facet. If no 
      * version comparator is specified, this method will return an instance of 
-     * the <code>DefaultVersionComparator</code>.
+     * the {@see DefaultVersionComparator}.
      * 
      * @return the version comparator specified for this project facet
      */

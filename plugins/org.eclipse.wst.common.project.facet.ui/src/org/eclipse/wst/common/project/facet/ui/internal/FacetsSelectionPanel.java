@@ -52,9 +52,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -64,6 +67,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.wst.common.project.facet.core.ICategory;
@@ -115,6 +120,7 @@ public final class FacetsSelectionPanel
     private final CheckboxTreeViewer tree;
     private final TreeColumn colFacet;
     private final TreeColumn colVersion;
+    private final Menu popupMenu;
     private final ComboBoxCellEditor ceditor;
     private final TableViewer problemsView;
     private final RuntimesPanel runtimesPanel;
@@ -155,7 +161,7 @@ public final class FacetsSelectionPanel
         this.filters = new HashSet();
         this.listeners = new ArrayList();
         this.selectionListeners = new ArrayList();
-
+        
         for( Iterator itr = ProjectFacetsManager.getProjectFacets().iterator();
              itr.hasNext(); )
         {
@@ -295,6 +301,21 @@ public final class FacetsSelectionPanel
                 public void handleEvent( final Event event )
                 {
                     settings.put( CW_VERSION, colVersion.getWidth() );
+                }
+            }
+        );
+
+        this.popupMenu = new Menu( getShell(), SWT.POP_UP );
+        final MenuItem item = new MenuItem( this.popupMenu, SWT.PUSH );
+        item.setText( "Show Constraints..." );
+        
+        item.addSelectionListener
+        (
+            new SelectionAdapter()
+            {
+                public void widgetSelected( SelectionEvent e )
+                {
+                    handleShowConstraints();
                 }
             }
         );
@@ -965,10 +986,18 @@ public final class FacetsSelectionPanel
     private void handleMouseDownEvent( final Event event )
     {
         final ArrayList items = getAllTreeItems();
+        
+        boolean onItem = false;
 
         for( int i = 0, n = items.size(); i < n; i++ )
         {
             final TreeItem item = (TreeItem) items.get( i );
+            
+            if( item.getBounds( 0 ).contains( event.x, event.y ) )
+            {
+                onItem = true;
+                break;
+            }
 
             if( item.getBounds( 1 ).contains( event.x, event.y ) )
             {
@@ -977,6 +1006,25 @@ public final class FacetsSelectionPanel
                 break;
             }
         }
+        
+        this.tree.getTree().setMenu( onItem ? this.popupMenu : null );
+    }
+    
+    private void handleShowConstraints()
+    {
+        final TreeItem[] items = this.tree.getTree().getSelection();
+        assert items.length == 1;
+        final TreeItem item = items[ 0 ];
+        
+        final Rectangle bounds = item.getBounds();
+        
+        Point location = new Point( bounds.x, bounds.y + bounds.height );
+        location = this.tree.getTree().toDisplay( location );
+        
+        final ConstraintDisplayDialog dialog 
+            = new ConstraintDisplayDialog( getShell(), location );
+
+        dialog.open();
     }
     
     private void handlePresetSelected()

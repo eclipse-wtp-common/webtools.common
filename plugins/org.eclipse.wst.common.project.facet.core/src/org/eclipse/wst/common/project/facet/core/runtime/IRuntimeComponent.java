@@ -16,6 +16,9 @@ import java.util.Map;
 import org.eclipse.core.runtime.IAdaptable;
 
 /**
+ * Represents a configured instance of a runtime component type and version. A
+ * runtime insance is composed of multiple runtime components.
+ * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
@@ -24,8 +27,41 @@ public interface IRuntimeComponent
     extends IAdaptable
     
 {
+    /**
+     * Returns the runtime component type that this is an instance of.
+     * 
+     * @return the runtime component type that this is an instance of
+     */
+    
     IRuntimeComponentType getRuntimeComponentType();
+    
+    /**
+     * Returns the runtime component version that this is an instance of.
+     * 
+     * @return the runtime component version that this is an instance of
+     */
+    
     IRuntimeComponentVersion getRuntimeComponentVersion();
+    
+    /**
+     * Returns the properties associated with this runtime component. The
+     * contents will vary dependending on the component type/version, but 
+     * usually this will at least contain the path to the location on disk where 
+     * the runtime is installed.
+     * 
+     * @return the properties associated with this runtime component (key
+     *   type: {@see String}, value type: {@see String})
+     */
+    
     Map getProperties();
-    String getProperty( String key );
+    
+    /**
+     * Returns the value of the specified property.
+     * 
+     * @param name the property name
+     * @return the property value, or <code>null</code>
+     */
+    
+    String getProperty( String name );
+    
 }

@@ -1,0 +1,295 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.wst.common.project.facet.core">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="org.eclipse.wst.common.project.facet.core" id="runtimes" name="Runtimes Extension Point"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <complexType>
+         <choice>
+            <element ref="runtime-component-type"/>
+            <element ref="runtime-component-version"/>
+            <element ref="adapter"/>
+            <element ref="supported"/>
+         </choice>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="runtime-component-type">
+      <annotation>
+         <documentation>
+            Defines a runtime component type.
+         </documentation>
+      </annotation>
+      <complexType>
+         <all>
+            <element ref="version-comparator" minOccurs="0" maxOccurs="1"/>
+            <element ref="icon" minOccurs="0" maxOccurs="1"/>
+         </all>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The id that will be used to reference this runtime component type.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="version-comparator">
+      <annotation>
+         <documentation>
+            Specifies the version comparator. If not specified, the default version comparator will be used. The default version comparator is capable of handing numerical versions that use decimal notation.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The class name.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="icon" type="string">
+      <annotation>
+         <documentation>
+            Specifies the location of the icon that should be used with this runtime component type.
+         </documentation>
+      </annotation>
+   </element>
+
+   <element name="runtime-component-version">
+      <annotation>
+         <documentation>
+            Defines a runtime component version.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="type" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The id of the runtime component type that this is a version of.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="version" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The version string.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="adapter">
+      <annotation>
+         <documentation>
+            Registers an adapter to be used with some set of runtime component types and versions.
+         </documentation>
+      </annotation>
+      <complexType>
+         <all>
+            <element ref="runtime-component"/>
+            <element ref="factory"/>
+            <element ref="type"/>
+         </all>
+      </complexType>
+   </element>
+
+   <element name="runtime-component">
+      <annotation>
+         <documentation>
+            Used to reference multiple runtime component types and versions.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  Specifies the runtime component type id. If this attribute is used, the &lt;code&gt;any&lt;/code&gt; attribute should not be used.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="version" type="string">
+            <annotation>
+               <documentation>
+                  Specifies the runtime component version. Requires the &lt;code&gt;id&lt;/code&gt; attribute to be present. If used in conjunction with the &lt;code&gt;allow-newer&lt;/code&gt; attribute, this specifies the lowest version that should be matched.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="allow-newer" type="boolean">
+            <annotation>
+               <documentation>
+                  If set to &lt;code&gt;true&lt;/code&gt;, this attribute specifies that versions that are newer than the specified version are also allowed. Requires the &lt;code&gt;id&lt;/code&gt; and the &lt;code&gt;version&lt;/code&gt; attributes to be present.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="any" type="string">
+            <annotation>
+               <documentation>
+                  Used to indicate that all runtime component types and versions should be matched. If this attribute is used, the &lt;code&gt;id&lt;/code&gt;, &lt;code&gt;version&lt;/code&gt;, and &lt;code&gt;allow-newer&lt;/code&gt; attributes should not be used.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="factory">
+      <annotation>
+         <documentation>
+            Specifies the adapter factory. The factory has to implement &lt;code&gt;org.eclipse.core.runtime.IAdapterFactory&lt;/code&gt; interface.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The class name.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="type">
+      <annotation>
+         <documentation>
+            Specifies the type that this adapter will be adapting to.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The class name.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="supported">
+      <annotation>
+         <documentation>
+            Specifies that these project facets are supported by these runtimes.
+         </documentation>
+      </annotation>
+      <complexType>
+         <all>
+            <element ref="facet"/>
+            <element ref="runtime-component"/>
+         </all>
+      </complexType>
+   </element>
+
+   <element name="facet">
+      <annotation>
+         <documentation>
+            Used to reference one or more version of a project facet.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Specifies the project facet id.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="version" type="string">
+            <annotation>
+               <documentation>
+                  Specifies the project facet version. Requires the &lt;code&gt;id&lt;/code&gt; attribute to be present. If used in conjunction with the &lt;code&gt;allow-newer&lt;/code&gt; attribute, this specifies the lowest version that should be matched.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="allow-newer" type="string">
+            <annotation>
+               <documentation>
+                  If set to &lt;code&gt;true&lt;/code&gt;, this attribute specifies that versions that are newer than the specified version are also allowed. Requires the &lt;code&gt;id&lt;/code&gt; and the &lt;code&gt;version&lt;/code&gt; attributes to be present.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         1.0
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiInfo"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="implementation"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="copyright"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+</schema>

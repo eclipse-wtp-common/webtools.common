@@ -35,49 +35,45 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeBridge;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentType;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentVersion;
-import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
 import org.osgi.framework.Bundle;
 
 /**
- * The implementation of the {@see RuntimeManager} abstract class.
- * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
 public final class RuntimeManagerImpl
-
-    extends RuntimeManager
-    
 {
     private static final String EXTENSION_ID = "runtimes";
     
-    private final IndexedSet runtimeComponentTypes;
-    private final IndexedSet runtimes;
-    private final List mappings;
+    private static final IndexedSet runtimeComponentTypes;
+    private static final IndexedSet runtimes;
+    private static final List mappings;
     
-    public RuntimeManagerImpl()
+    static
     {
-        this.runtimeComponentTypes = new IndexedSet();
-        this.runtimes = new IndexedSet();
-        this.mappings = new ArrayList();
+        runtimeComponentTypes = new IndexedSet();
+        runtimes = new IndexedSet();
+        mappings = new ArrayList();
         
         readMetadata();
     }
     
-    public Set getRuntimeComponentTypes()
+    private RuntimeManagerImpl() {}
+    
+    public static Set getRuntimeComponentTypes()
     {
-        return this.runtimeComponentTypes.getUnmodifiable();
+        return runtimeComponentTypes.getUnmodifiable();
     }
     
-    public boolean isRuntimeComponentTypeDefined( final String id )
+    public static boolean isRuntimeComponentTypeDefined( final String id )
     {
-        return this.runtimeComponentTypes.containsKey( id );
+        return runtimeComponentTypes.containsKey( id );
     }
     
-    public IRuntimeComponentType getRuntimeComponentType( final String id )
+    public static IRuntimeComponentType getRuntimeComponentType( final String id )
     {
         final IRuntimeComponentType rc 
-            = (IRuntimeComponentType) this.runtimeComponentTypes.get( id );
+            = (IRuntimeComponentType) runtimeComponentTypes.get( id );
         
         if( rc == null )
         {
@@ -88,8 +84,8 @@ public final class RuntimeManagerImpl
         return rc;
     }
     
-    public IRuntimeComponent createRuntimeComponent( final IRuntimeComponentVersion rcv,
-                                                     final Map properties )
+    public static IRuntimeComponent createRuntimeComponent( final IRuntimeComponentVersion rcv,
+                                                            final Map properties )
     {
         final RuntimeComponent rc = new RuntimeComponent();
         
@@ -110,19 +106,19 @@ public final class RuntimeManagerImpl
         return rc;
     }
     
-    public Set getRuntimes()
+    public static Set getRuntimes()
     {
-        return this.runtimes.getUnmodifiable();
+        return runtimes.getUnmodifiable();
     }
     
-    public boolean isRuntimeDefined( final String name )
+    public static boolean isRuntimeDefined( final String name )
     {
-        return this.runtimes.containsKey( name );
+        return runtimes.containsKey( name );
     }
     
-    public IRuntime getRuntime( final String name )
+    public static IRuntime getRuntime( final String name )
     {
-        final IRuntime runtime = (IRuntime) this.runtimes.get( name );
+        final IRuntime runtime = (IRuntime) runtimes.get( name );
         
         if( runtime == null )
         {
@@ -133,11 +129,11 @@ public final class RuntimeManagerImpl
         return runtime;
     }
     
-    public IRuntime defineRuntime( final String name,
-                                   final List components,
-                                   final Map properties )
+    public static IRuntime defineRuntime( final String name,
+                                          final List components,
+                                          final Map properties )
     {
-        synchronized( this.runtimes )
+        synchronized( runtimes )
         {
             final Runtime r = new Runtime();
             
@@ -160,21 +156,21 @@ public final class RuntimeManagerImpl
                 }
             }
             
-            this.runtimes.add( r.getName(), r );
+            runtimes.add( r.getName(), r );
             
             return r;
         }
     }
     
-    public void deleteRuntime( final IRuntime runtime )
+    public static void deleteRuntime( final IRuntime runtime )
     {
-        synchronized( this.runtimes )
+        synchronized( runtimes )
         {
-            this.runtimes.delete( runtime.getName() );
+            runtimes.delete( runtime.getName() );
         }
     }
     
-    Set getSupportedFacets( final IRuntime runtime )
+    static Set getSupportedFacets( final IRuntime runtime )
     {
         final HashSet result = new HashSet();
         
@@ -183,7 +179,7 @@ public final class RuntimeManagerImpl
         {
             final IRuntimeComponent comp = (IRuntimeComponent) itr1.next();
             
-            for( Iterator itr2 = this.mappings.iterator(); itr2.hasNext(); )
+            for( Iterator itr2 = mappings.iterator(); itr2.hasNext(); )
             {
                 final Mapping m = (Mapping) itr2.next();
                 
@@ -225,7 +221,7 @@ public final class RuntimeManagerImpl
         return result;
     }
     
-    public void bridge()
+    public static void bridge()
     {
         try
         {
@@ -242,7 +238,7 @@ public final class RuntimeManagerImpl
         }
     }
     
-    private void readMetadata()
+    private static void readMetadata()
     {
         final IExtensionRegistry registry = Platform.getExtensionRegistry();
         
@@ -314,7 +310,7 @@ public final class RuntimeManagerImpl
         }
     }
     
-    private void readRuntimeComponentType( final IConfigurationElement config )
+    private static void readRuntimeComponentType( final IConfigurationElement config )
     {
         final String id = config.getAttribute( "id" );
 
@@ -351,10 +347,10 @@ public final class RuntimeManagerImpl
             }
         }
         
-        this.runtimeComponentTypes.add( id, rct );
+        runtimeComponentTypes.add( id, rct );
     }
     
-    private void readRuntimeComponentVersion( final IConfigurationElement config )
+    private static void readRuntimeComponentVersion( final IConfigurationElement config )
     {
         final String type = config.getAttribute( "type" );
 
@@ -371,7 +367,7 @@ public final class RuntimeManagerImpl
         }
         
         final RuntimeComponentType rct 
-            = (RuntimeComponentType) this.runtimeComponentTypes.get( type );
+            = (RuntimeComponentType) runtimeComponentTypes.get( type );
         
         if( rct == null )
         {
@@ -387,7 +383,7 @@ public final class RuntimeManagerImpl
         rct.addVersion( rcv );
     }
     
-    private void readAdapter( final IConfigurationElement config )
+    private static void readAdapter( final IConfigurationElement config )
     {
         IRuntimeComponentType rctype = null;
         IRuntimeComponentVersion rcversion = null;
@@ -478,7 +474,7 @@ public final class RuntimeManagerImpl
         }
     }
     
-    private void readMapping( final IConfigurationElement config )
+    private static void readMapping( final IConfigurationElement config )
     {
         final Mapping m = new Mapping();
         final IConfigurationElement[] children = config.getChildren();
@@ -564,7 +560,7 @@ public final class RuntimeManagerImpl
             }
         }
         
-        this.mappings.add( m );
+        mappings.add( m );
     }
     
     private static final class Mapping

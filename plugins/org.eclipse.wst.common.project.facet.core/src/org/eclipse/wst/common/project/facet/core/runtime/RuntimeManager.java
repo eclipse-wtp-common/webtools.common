@@ -21,40 +21,140 @@ import org.eclipse.wst.common.project.facet.core.runtime.internal.RuntimeManager
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
-public abstract class RuntimeManager 
+public final class RuntimeManager 
 {
-    private static RuntimeManager instance = new RuntimeManagerImpl();
+    private RuntimeManager() {}
     
     /**
-     * Returns the singleton instance of the <code>RuntimeManager</code>
+     * Returns all of the available runtime component types.
      * 
-     * @return the singleton instance of the <code>RuntimeManager</code>
+     * @return all of the available runtime component types (element type: 
+     *   {@link IRuntimeComponentType})
      */
     
-    public static RuntimeManager get()
+    public static Set getRuntimeComponentTypes()
     {
-        return instance;
+        return RuntimeManagerImpl.getRuntimeComponentTypes();
     }
     
-    public abstract Set getRuntimeComponentTypes();
-    public abstract boolean isRuntimeComponentTypeDefined( String id );
-    public abstract IRuntimeComponentType getRuntimeComponentType( String id );
+    /**
+     * Determines whether the specified runtime component type exists.
+     * 
+     * @param id the runtime component type id
+     * @return <code>true</code> if the specified runtime component type exists,
+     *   <code>false</code> otherwise
+     */
     
-    public abstract Set getRuntimes();
+    public static boolean isRuntimeComponentTypeDefined( final String id )
+    {
+        return RuntimeManagerImpl.isRuntimeComponentTypeDefined( id );
+    }
     
-    public abstract boolean isRuntimeDefined( String name );
+    /**
+     * Returns the {@see IRuntimeComponentType} object corresponding to the
+     * specified runtime component type id.
+     * 
+     * @param id the runtime componenet type id
+     * @return the {@see IRuntimeComponentType} object corresponding to the
+     *   specified runtime componenet type id
+     * @throws IllegalArgumentException if the runtime component type id is not
+     *   recognized
+     */
     
-    public abstract IRuntime getRuntime( String name );
+    public static IRuntimeComponentType getRuntimeComponentType( final String id )
+    {
+        return RuntimeManagerImpl.getRuntimeComponentType( id );
+    }
     
-    public abstract IRuntime defineRuntime( String name,
-                                            List components,
-                                            Map properties );
+    /**
+     * Returns all of the defined runtimes.
+     * 
+     * @return all of the defined runtimes (element type: {@link IRuntime})
+     */
     
-    public abstract void deleteRuntime( IRuntime runtime );
+    public static Set getRuntimes()
+    {
+        return RuntimeManagerImpl.getRuntimes();
+    }
     
-    public abstract IRuntimeComponent createRuntimeComponent( IRuntimeComponentVersion rcv,
-                                                              Map properties );
+    /**
+     * Determines whether the specified runtime has been defined.
+     * 
+     * @param name the runtime name
+     * @return <code>true</code> if the specified runtime is defined, 
+     *   <code>false</code> otherwise
+     */
     
-    public abstract void bridge();
+    public static boolean isRuntimeDefined( final String name )
+    {
+        return RuntimeManagerImpl.isRuntimeDefined( name );
+    }
+    
+    /**
+     * Returns the runtime corresponding to the specified name.
+     * 
+     * @param name the runtime name
+     * @return the runtime corresponding to the specified name
+     * @throws IllegalArgumentException if the runtime name is not recognized
+     */
+    
+    public static IRuntime getRuntime( final String name )
+    {
+        return RuntimeManagerImpl.getRuntime( name );
+    }
+    
+    /**
+     * Defines a new runtime.
+     * 
+     * @param name the runtime name
+     * @param components the list of runtime componenets (element type: 
+     *   {@see IRuntimeComponent})
+     * @param properties the runtime properties (key type: {@see String}, value
+     *   type: {@see String})
+     * @return the new runtime
+     */
+    
+    public static IRuntime defineRuntime( final String name,
+                                          final List components,
+                                          final Map properties )
+    {
+        return RuntimeManagerImpl.defineRuntime( name, components, properties );
+    }
+    
+    /**
+     * Deletes the runtime from the registry.
+     * 
+     * @param runtime the runtime to delete
+     */
+    
+    public static void deleteRuntime( final IRuntime runtime )
+    {
+        RuntimeManagerImpl.deleteRuntime( runtime );
+    }
+    
+    /**
+     * Creates a new runtime componenet. This method is intended to be used in
+     * conjunction with the {@see defineRuntime(String,List,Map)} method.
+     * 
+     * @param rcv the runtime component version
+     * @param properties the runtime component properties (key type:
+     *   {@see String}, value type: {@see String})
+     * @return the new runtime component
+     */
+    
+    public static IRuntimeComponent createRuntimeComponent( final IRuntimeComponentVersion rcv,
+                                                            final Map properties )
+    {
+        return RuntimeManagerImpl.createRuntimeComponent( rcv, properties );
+    }
+    
+    /**
+     * Caution: experimental.
+     */
+    
+    public static void bridge()
+    {
+        RuntimeManagerImpl.bridge();
+    }
     
 }

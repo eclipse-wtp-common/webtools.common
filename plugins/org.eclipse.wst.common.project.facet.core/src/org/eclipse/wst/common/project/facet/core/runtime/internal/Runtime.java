@@ -23,7 +23,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
-import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -96,10 +95,7 @@ public final class Runtime
         {
             if( this.supported == null )
             {
-                final RuntimeManagerImpl rm
-                    = (RuntimeManagerImpl) RuntimeManager.get();
-                
-                this.supported = rm.getSupportedFacets( this );
+                this.supported = RuntimeManagerImpl.getSupportedFacets( this );
             }
             
             return this.supported.contains( fv );

@@ -411,7 +411,7 @@ public final class FacetedProject
                 if( line.startsWith( "r:" ) )
                 {
                     final String name = line.substring( 2 );
-                    this.runtime = RuntimeManager.get().getRuntime( name );
+                    this.runtime = RuntimeManager.getRuntime( name );
                 }
                 else if( line.startsWith( "f:" ) )
                 {

@@ -26,7 +26,8 @@
 
   <extension-point 
     id="runtimes"
-    name="Runtimes Extension Point"/>
+    name="Runtimes Extension Point"
+    schema="schemas/runtimes.exsd"/>
   
   <extension
     id="nature"
@@ -38,7 +39,7 @@
 
   <extension point="org.eclipse.core.runtime.adapters">
     <factory 
-      class="org.eclipse.wst.common.project.facet.core.runtime.classpath.RuntimeClasspathProvider$Factory" 
+      class="org.eclipse.wst.common.project.facet.core.runtime.classpath.internal.RuntimeClasspathProvider$Factory" 
       adaptableType="org.eclipse.wst.common.project.facet.core.runtime.IRuntime">
       <adapter type="org.eclipse.wst.common.project.facet.core.runtime.classpath.IClasspathProvider"/>
     </factory>

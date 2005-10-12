@@ -9,7 +9,7 @@
  *    Konstantin Komissarchik - initial API and implementation
  ******************************************************************************/
 
-package org.eclipse.wst.common.project.facet.core.runtime.classpath;
+package org.eclipse.wst.common.project.facet.core.runtime.classpath.internal;
 
 import java.util.Iterator;
 import java.util.List;
@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
+import org.eclipse.wst.common.project.facet.core.runtime.classpath.IClasspathProvider;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>

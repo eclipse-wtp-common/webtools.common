@@ -12,11 +12,28 @@
 package org.eclipse.wst.common.project.facet.core.runtime;
 
 /**
+ * Represents a version of a runtime component. A runtime instance is composed 
+ * of multiple runtime components, each of which has a type and a version.
+ * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
 public interface IRuntimeComponentVersion
 {
+    /**
+     * Returns the runtime component type that this is a version of.
+     * 
+     * @return returns the runtime component type that this is a version of
+     */
+    
     IRuntimeComponentType getRuntimeComponentType();
+    
+    /**
+     * Returns the version string.
+     * 
+     * @return the version string
+     */
+    
     String getVersionString();
+    
 }
