@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.wst.internet.cache.internal;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Hashtable;
 
@@ -174,11 +176,11 @@ public class LicenseAcceptanceDialog extends IconAndMessageDialog
    * @param licenseURL The license URL.
    * @return True if the license is accepted, false otherwise.
    */
-  public static boolean promptForLicense(Shell parent, String url, String licenseURL) 
+  public static boolean promptForLicense(Shell parent, String url, String licenseURL) throws IOException
   {
 	boolean agreedToLicense = false;
 	boolean newDialog = true;
-	LicenseAcceptanceDialog dialog;
+	LicenseAcceptanceDialog dialog = null;
 	// If the dialog is already displayed for this license use it instead of 
 	// displaying another dialog.
 	if(dialogsInUse.containsKey(licenseURL))
@@ -188,22 +190,68 @@ public class LicenseAcceptanceDialog extends IconAndMessageDialog
 	}
 	else
 	{
-	  dialog = new LicenseAcceptanceDialog(parent, url, licenseURL);
-	  dialogsInUse.put(licenseURL, dialog);
-	  dialog.setBlockOnOpen(true);
+	  //BufferedReader bufreader = null;
+	  InputStream is = null;
+//	  StringBuffer source = new StringBuffer();
+	  try
+	  {
+	    URL urlObj = new URL(licenseURL);
+	    is = urlObj.openStream();
+//        if (urlObj != null)
+//        {
+//          bufreader = new BufferedReader(new InputStreamReader(urlObj.openStream()));
+//
+//          if (bufreader != null)
+//          {
+//            while (bufreader.ready())
+//            {
+//              source.append(bufreader.readLine());
+//            }
+//          }
+//        } 
+	    dialog = new LicenseAcceptanceDialog(parent, url, licenseURL);
+	    dialogsInUse.put(licenseURL, dialog);
+	    dialog.setBlockOnOpen(true);
+	  }
+	  catch(Exception e)
+	  {
+		throw new IOException("The license cannot be opened.");
+	  }
+	  finally
+	  {
+//		if(bufreader != null)
+//		{
+//		  bufreader.close();
+//		}
+		if(is != null)
+		{
+		  try
+		  {
+			is.close();
+		  }
+		  catch(IOException e)
+		  {
+		    // Do nothing.
+		  }
+		}
+	  }
+	}
+	if(dialog != null)
+	{
+	  dialog.open();
 	  
+	  if (dialog.getReturnCode() == LicenseAcceptanceDialog.OK) 
+	  {
+		agreedToLicense = true;
+      }
+		
+	  if(newDialog)
+	  {
+       dialogsInUse.remove(licenseURL);
+	  }
 	}
-	dialog.open();
 	
-	if (dialog.getReturnCode() == LicenseAcceptanceDialog.OK) 
-	{
-	  agreedToLicense = true;
-	}
 	
-	if(newDialog)
-	{
-	  dialogsInUse.remove(licenseURL);
-	}
 	 
 	return agreedToLicense;
   }

@@ -166,12 +166,17 @@ public class LicenseRegistry
 		  
 	  
 	  // Prompt the user to accept the license.
-	  if(promptToAcceptLicense(url, licenseURL))
+	  int licenseAcceptance = promptToAcceptLicense(url, licenseURL);
+	  if(licenseAcceptance == Accepted.ACCEPTED)
 	  {
 		agreeLicense(licenseURL);
 		return true;
 	  }
-	  disagreeLicenseThisSession(licenseURL);
+	  else if(licenseAcceptance == Accepted.NOT_ACCEPTED)
+	  {
+	    disagreeLicenseThisSession(licenseURL);
+	    return false;
+	  }
 	  return false;
 	}
 	
@@ -184,14 +189,28 @@ public class LicenseRegistry
    * 
    * @param url The URL of the resource for which the license needs to be accepted.
    * @param licenseURL The URL of the license to be accepted. 
-   * @return True if the license is accepted, false otherwise.
+   * @return 0 if accepted, 1 if not accepted, 2 if not able to accept.
    */
-  protected boolean promptToAcceptLicense(final String url, final String licenseURL)
+  protected int promptToAcceptLicense(final String url, final String licenseURL) 
   {
 	final Accepted accepted = new Accepted();
 	  Display.getDefault().syncExec(new Runnable() {
 			public void run() {
-				accepted.accepted = LicenseAcceptanceDialog.promptForLicense(null, url, licenseURL);
+				try
+				{
+				  if(LicenseAcceptanceDialog.promptForLicense(null, url, licenseURL))
+				  {
+					accepted.accepted = Accepted.ACCEPTED;
+				  }
+				  else
+				  {
+					accepted.accepted = Accepted.NOT_ACCEPTED;
+				  }
+				}
+				catch(Exception e)
+				{
+				  accepted.accepted = Accepted.NOT_DETERMINED;
+				}
 			}
 		});
 	return accepted.accepted;
@@ -224,7 +243,10 @@ public class LicenseRegistry
    */
   private class Accepted
   {
-	public boolean accepted = false;
+	public static final int ACCEPTED = 0;
+	public static final int NOT_ACCEPTED = 1;
+	public static final int NOT_DETERMINED = 2;
+	public int accepted = NOT_ACCEPTED;
   }
 
 }

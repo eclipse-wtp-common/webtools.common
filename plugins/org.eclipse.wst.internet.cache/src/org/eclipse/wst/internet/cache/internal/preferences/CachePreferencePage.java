@@ -53,8 +53,6 @@ public class CachePreferencePage extends PreferencePage implements
 
   private static final String _UI_PREF_CACHE_ENTRIES_TITLE = "_UI_PREF_CACHE_ENTRIES_TITLE";
 
-  private static final String _UI_PREF_CACHE_OPTIONS_TITLE = "_UI_PREF_CACHE_OPTIONS_TITLE";
-
   private static final String _UI_PREF_CACHE_CACHE_OPTION = "_UI_PREF_CACHE_CACHE_OPTION";
 
   private static final String _UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_TITLE = "_UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_TITLE";
@@ -127,7 +125,7 @@ public class CachePreferencePage extends PreferencePage implements
     GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
     gridData.horizontalSpan = 2;
     aboutLabel.setLayoutData(gridData);
-    Label blankLabel = new Label(composite, SWT.None);
+    new Label(composite, SWT.None);
     try
     {
       // Created the disable cache option.
