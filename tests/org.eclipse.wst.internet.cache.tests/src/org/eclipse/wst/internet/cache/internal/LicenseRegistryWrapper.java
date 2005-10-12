@@ -41,7 +41,7 @@ public class LicenseRegistryWrapper extends LicenseRegistry
 	super.disagreeLicense(url);
   }
 
-  protected boolean promptToAcceptLicense(String url, String licenseURL) 
+  protected int promptToAcceptLicense(String url, String licenseURL) 
   {
 	return super.promptToAcceptLicense(url, licenseURL);
   }
