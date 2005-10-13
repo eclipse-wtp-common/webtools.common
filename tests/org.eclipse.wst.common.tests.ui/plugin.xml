@@ -18,6 +18,7 @@
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.wst.common.frameworks.ui"/>
       <import plugin="org.eclipse.wst.common.tests"/>
+      <import plugin="org.eclipse.wst.common.environment"/>
    </requires>
 
    <extension

@@ -15,6 +15,7 @@ import java.util.Vector;
 import junit.framework.TestCase;
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.wst.common.environment.EnvironmentService;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
@@ -92,12 +93,12 @@ public class TestGroupManager extends TestCase {
 
 		// Operations are organized as follows:
 		//
-		// D
-		// / \
-		// B F
-		// / \ / \
-		// A C E G
-		operationManager = new OperationManager(dataModelManager, opD);
+		//    D
+		//   /  \
+		//   B   F
+		//  / \ / \
+		// A  C E  G
+		operationManager = new OperationManager(dataModelManager, opD, EnvironmentService.getEclipseConsoleEnvironment() );
 		operationManager.addPreOperation(opD.getID(), opB);
 		operationManager.addPostOperation(opD.getID(), opF);
 		operationManager.addPreOperation(opB.getID(), opA);
@@ -107,12 +108,12 @@ public class TestGroupManager extends TestCase {
 
 		// Page groups are organized as follows:
 		//
-		// B - C
-		// / \
-		// Root - A - D \ G
-		// \ \ /
-		// ------ E - F - H
-		// \ null
+		//              B - C
+		//             /     \
+		// Root - A - D       \         G
+		//             \       \      /
+		//               ------ E - F - H
+		//                            \ null
 		//                     
 		// The page group handler for A will return either B and then E or D and
 		// then E. The group handler for F will return either G or H and then null or
@@ -198,6 +199,10 @@ public class TestGroupManager extends TestCase {
 	}
 
 	public void testSimpleRun() throws Exception {
+    HashSet ids = new HashSet();
+    ids.add( "testprovider1" );
+    ids.add( "testprovider2" );
+    pgA.setDataModelIDs( ids );
 		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
 		assertTrue("The root page should be null", pageGroupManager.getCurrentPage() == null); //$NON-NLS-1$
 		pageGroupManager.moveBackOnePage(); // Should do nothing.
@@ -208,6 +213,7 @@ public class TestGroupManager extends TestCase {
 		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
 		assertTrue("The page should be r1", pageGroupManager.getCurrentPage() == r1); //$NON-NLS-1$
 		checkResults();
+    assertTrue("Data models not Ok for page group A", checkDataModels() ); //$NON-NLS-1$
 
 		pageGroupManager.moveForwardOnePage();
 		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
@@ -382,6 +388,34 @@ public class TestGroupManager extends TestCase {
 		expectedUndoOps.removeAllElements();
 	}
 
+  private boolean checkDataModels()
+  {
+    IDataModel model = dataModel;
+    
+    boolean containsModel1 = model.isNestedModel( "testprovider1" );
+    boolean containsModel2 = model.isNestedModel( "testprovider2" );
+    boolean prop1          = model.isPropertySet( "provider1Prop1" );
+    boolean prop2          = model.isPropertySet( "provider1Prop2" );
+    boolean prop3          = model.isPropertySet( "provider1Prop3" );
+    boolean prop4          = model.isPropertySet( "provider1Prop4" );
+    boolean prop5          = model.isPropertySet( "provider2Prop1" );
+    boolean prop6          = model.isPropertySet( "provider2Prop2" );
+    boolean prop7          = model.isPropertySet( "provider2Prop3" );
+    boolean prop8          = model.isPropertySet( "provider2Prop4" );
+    boolean value1         = model.getProperty( "provider1Prop1" ).equals( "11" );
+    boolean value2         = model.getProperty( "provider1Prop2" ).equals( "22" );
+    boolean value3         = model.getProperty( "provider1Prop3" ).equals( "33" );
+    boolean value4         = model.getProperty( "provider1Prop4" ).equals( "44" );
+    boolean value5         = model.getProperty( "provider2Prop1" ).equals( "1111" );
+    boolean value6         = model.getProperty( "provider2Prop2" ).equals( "2222" );
+    boolean value7         = model.getProperty( "provider2Prop3" ).equals( "3333" );
+    boolean value8         = model.getProperty( "provider2Prop4" ).equals( "4444" );
+    
+    return containsModel1 && containsModel2 &&
+           prop1 && prop2 && prop3 && prop4 && prop5 && prop6 && prop7 && prop8 &&
+           value1 && value2 && value3 && value4 && value5 && value6 && value7 && value8;
+  }
+  
 	private class AGroupHandler implements IDMPageGroupHandler {
 		private String groupID_;
 

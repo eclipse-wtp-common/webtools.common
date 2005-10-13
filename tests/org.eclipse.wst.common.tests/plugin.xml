@@ -24,6 +24,7 @@
       <import plugin="org.eclipse.wst.common.modulecore"/>
       <import plugin="org.eclipse.wst.common.tests.collector" export="true"/>
       <import plugin="org.eclipse.jem.util" />
+      <import plugin="org.eclipse.wst.common.environment"/>
    </requires>
    <extension-point id="DataModelVerifier" name="Data Model Verifier Factory Extension" schema="schema/dataModelVerifier.exsd"/>
 
@@ -39,6 +40,12 @@
       <DataModelProvider
             class="org.eclipse.wst.common.frameworks.datamodel.tests.TestDataModelProvider"
             id="org.eclipse.wst.common.frameworks.datamodel.tests.ITestDataModel"/>
+      <DataModelProvider
+            class="org.eclipse.wst.common.frameworks.operations.tests.manager.TestProvider1"
+            id="testprovider1"/>
+      <DataModelProvider
+            class="org.eclipse.wst.common.frameworks.operations.tests.manager.TestProvider2"
+            id="testprovider2"/>
       <DataModelProvider
             class="bogusClass"
             id="bogus"/>

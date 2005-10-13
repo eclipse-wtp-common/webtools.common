@@ -14,6 +14,7 @@ import java.util.Vector;
 import junit.framework.TestCase;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.wst.common.environment.EnvironmentService;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.internal.DataModelManager;
@@ -62,7 +63,7 @@ public class TestOperationManager extends TestCase {
 		//   B   F
 		//  / \ / \
 		// A  C E G
-		manager = new OperationManager(dataModelManager, opD);
+		manager = new OperationManager(dataModelManager, opD, EnvironmentService.getEclipseConsoleEnvironment() );
 		manager.addPreOperation(opD.getID(), opB);
 		manager.addPostOperation(opD.getID(), opF);
 		manager.addPreOperation(opB.getID(), opA);
@@ -83,6 +84,25 @@ public class TestOperationManager extends TestCase {
 		checkResults();
 	}
 
+  public void testDataModelsAreSet() throws Exception {
+    expectedOps.add(opA);
+    expectedOps.add(opB);
+    expectedOps.add(opC);
+    expectedOps.add(opD);
+    expectedOps.add(opE);
+    expectedOps.add(opF);
+    expectedOps.add(opG);
+    
+    opA.setCheckModels( true );
+    opG.setCheckModels( true );
+    manager.runOperations();
+    checkResults();
+    
+    assertTrue("Expected opA models to be OK", opA.getModelsOK() );
+    assertTrue("Expected opG models to be OK", opG.getModelsOK() );
+      
+  }
+  
 	public void testRunWithErrors() throws Exception {
 		BaseOperation[] operations = new BaseOperation[]{opA, opB, opC, opD, opE, opF, opG};
 
