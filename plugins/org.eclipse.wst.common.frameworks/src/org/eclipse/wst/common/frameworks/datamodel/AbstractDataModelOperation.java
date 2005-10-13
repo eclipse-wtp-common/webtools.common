@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
 import org.eclipse.core.resources.IWorkspace;
@@ -98,8 +100,8 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 		return model;
 	}
 
-	public String getDataModelID() {
-		return null;
+	public Set getDataModelIDs() {
+		return new HashSet();
 	}
 
 	public ISchedulingRule getSchedulingRule() {

@@ -37,7 +37,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.Log
 	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.Log#isEnabled(java.lang.String)
 	 */
 	public boolean isEnabled(String option) {
-		return "true".equals(Platform.getDebugOption("org.eclipse.wst.command.env/trace/"
+		return "true".equals(Platform.getDebugOption("org.eclipse.wst.common.environment/trace/"
 				+ option));
 	}
 	
@@ -98,7 +98,9 @@ public class EclipseLog implements org.eclipse.wst.common.environment.Log
 	public void log(int severity, int messageNum, Object caller,
 			String method, Throwable throwable) {
 		log( severity, messageNum, caller, method, (Object)null );
-		throwable.printStackTrace();
+    
+		if( throwable != null ) throwable.printStackTrace();
+    
 		/*
 		if (isEnabled()) {
 			switch (severity) {

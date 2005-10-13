@@ -9,7 +9,6 @@
 package org.eclipse.wst.common.frameworks.internal.datamodel.ui;
 
 import java.lang.reflect.InvocationTargetException;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -17,12 +16,14 @@ import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.wst.common.environment.Environment;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.eclipse.wst.common.frameworks.internal.DataModelManager;
 import org.eclipse.wst.common.frameworks.internal.OperationManager;
+import org.eclipse.wst.common.frameworks.internal.eclipse.ui.EclipseEnvironment;
 import org.eclipse.wst.common.frameworks.internal.ui.ErrorDialog;
 import org.eclipse.wst.common.frameworks.internal.ui.PageGroupManager;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPCommonUIResourceHandler;
@@ -247,6 +248,15 @@ public abstract class DataModelWizard extends Wizard {
 		return new SimplePageGroup(id, id);
 	}
 
+  /**
+   * Creates the default environment for this wizard.
+   * @return
+   */
+  protected Environment createEnvironment()
+  {
+    return new EclipseEnvironment();
+  }
+  
 	public void addPage(IWizardPage page) {
 		rootPageGroup.addPage((DataModelWizardPage) page);
 	}
@@ -260,7 +270,7 @@ public abstract class DataModelWizard extends Wizard {
 
 	private class WizardOperationManager extends OperationManager {
 		public WizardOperationManager(DataModelManager dataModelManager, IDataModelOperation rootOperation) {
-			super(dataModelManager, rootOperation);
+			super(dataModelManager, rootOperation, createEnvironment() );
 		}
 
 		public IStatus runOperations() {

@@ -11,9 +11,10 @@ package org.eclipse.wst.common.frameworks.internal.datamodel;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-
+import java.util.Set;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.resources.IProject;
@@ -77,8 +78,8 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 		return null;
 	}
 
-	public String getDataModelID() {
-		return null;
+	public Set getDataModelIDs() {
+		return new HashSet();
 	}
 
 	/**

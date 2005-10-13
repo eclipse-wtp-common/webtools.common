@@ -10,6 +10,8 @@ package org.eclipse.wst.common.frameworks.internal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 import org.eclipse.core.commands.ExecutionException;
@@ -20,6 +22,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.wst.common.environment.Environment;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
@@ -40,8 +43,9 @@ public class OperationManager {
 	private OperationListener preExecuteListener;
 	private OperationListener postExecuteListener;
 	private OperationListener undoExecuteListener;
+  private Environment       environment;
 
-	public OperationManager(DataModelManager aDataModelManager, IDataModelOperation aRootOperation) {
+	public OperationManager(DataModelManager aDataModelManager, IDataModelOperation aRootOperation, Environment aEnvironment) {
 		if (aRootOperation == null)
 			aRootOperation = new NullOperation();
 
@@ -53,6 +57,7 @@ public class OperationManager {
 		operationTable = new HashMap();
 		runStopList = new Stack();
 		operationTable.put(aRootOperation.getID(), entry);
+    environment = aEnvironment;
 		addExtendedOperations(aRootOperation);
 
 		OperationListener defaultListener = new OperationListener() {
@@ -137,10 +142,18 @@ public class OperationManager {
 
 			for (int index = runListEntry.executedOperations.size() - 1; index >= 0; index--) {
 				IDataModelOperation operation = (IDataModelOperation) runListEntry.executedOperations.elementAt(index);
-				String dataModelID = operation.getDataModelID();
+				Set dataModelIDs = operation.getDataModelIDs();
 
-				if (dataModelID != null)
-					dataModelManager.removeNestedDataModel(dataModelID);
+				if( dataModelIDs != null && dataModelIDs.size() > 0 )
+        {
+          Iterator ids = dataModelIDs.iterator();
+          
+          while( ids.hasNext() )
+          {
+            String dataModelID = (String)ids.next();
+					  dataModelManager.removeNestedDataModel(dataModelID);
+          }
+        }
 
 				try {
 					undoExecuteListener.notify(operation);
@@ -194,12 +207,21 @@ public class OperationManager {
 				continueRun = preExecuteListener.notify(operation);
 
 				if (continueRun) {
-					String dataModelID = operation.getDataModelID();
+					Set dataModelIDs = operation.getDataModelIDs();
 
-					if (dataModelID != null)
-						dataModelManager.addNestedDataModel(dataModelID);
-
+					if (dataModelIDs != null && dataModelIDs.size() > 0 )
+          {
+            Iterator ids = dataModelIDs.iterator();
+            
+            while( ids.hasNext() )
+            {
+              String dataModelID = (String)ids.next();
+						  dataModelManager.addNestedDataModel(dataModelID);
+            }
+          }
+          
 					operation.setDataModel(dataModel);
+          operation.setEnvironment( environment );
 					setStatus(runOperation(operation, false));
 					runListEntry.executedOperations.add(operation);
 					stackEntry.operationExecuted = true;

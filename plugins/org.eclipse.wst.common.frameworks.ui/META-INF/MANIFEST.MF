@@ -15,5 +15,6 @@ Require-Bundle: org.eclipse.ui.ide,
  org.eclipse.ui,
  org.eclipse.wst.common.frameworks;visibility:=reexport,
  org.eclipse.core.runtime,
- org.eclipse.jem.util
+ org.eclipse.jem.util,
+ org.eclipse.wst.common.environment
 Eclipse-AutoStart: true

@@ -8,6 +8,7 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.datamodel.ui;
 
+import java.util.Set;
 import java.util.Vector;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
@@ -16,7 +17,7 @@ public class SimplePageGroup implements AddablePageGroup {
 	private String wizardID;
 	private boolean allowExtendedPages;
 	private String requiredDataOperation;
-	private String dataModelID;
+	private Set    dataModelIDs;
 
 	private IDMPageHandler pageHandler;
 	private IDMPageGroupHandler pageGroupHandler;
@@ -84,11 +85,11 @@ public class SimplePageGroup implements AddablePageGroup {
 		return wizardID;
 	}
 
-	public String getDataModelID() {
-		return dataModelID;
+	public Set getDataModelIDs() {
+		return dataModelIDs;
 	}
 
-	public void setDataModelID(String dataModelID) {
-		this.dataModelID = dataModelID;
+	public void setDataModelIDs(Set dataModelIDs) {
+		this.dataModelIDs = dataModelIDs;
 	}
 }

@@ -8,6 +8,8 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
@@ -22,7 +24,7 @@ public class DMWizardPageElement extends AbstractRegistryDescriptor implements C
 	static final String ATT_PAGE_ID = "pageGroupID"; //$NON-NLS-1$
 	static final String ATT_WIZARD_ID = "wizardID"; //$NON-NLS-1$
 	static final String ATT_REQUIRES_DATA_OPERATION_ID = "requiresDataOperationId"; //$NON-NLS-1$
-	static final String ATT_DATA_MODEL_ID = "dataModelId"; //$NON-NLS-1$
+	static final String ATT_DATA_MODEL_IDS = "dataModelIds"; //$NON-NLS-1$
 	static final String ATT_ALLOWS_EXTENDED_PAGES_AFTER = "allowsExtendedPagesAfter"; //$NON-NLS-1$
 	static final String ATT_PAGE_INSERTION_ID = "pageGroupInsertionID"; //$NON-NLS-1$
 	static final String ELEMENT_FACTORY = "factory"; //$NON-NLS-1$
@@ -34,7 +36,7 @@ public class DMWizardPageElement extends AbstractRegistryDescriptor implements C
 	protected String wizardFactoryElement;
 	protected boolean allowsExtendedPagesAfter;
 	protected String requiresDataOperationId;
-	protected String dataModelID;
+	protected Set dataModelIDs;
 	protected String pageInsertionID;
 	private int loadOrder;
 	private static int loadOrderCounter;
@@ -48,7 +50,7 @@ public class DMWizardPageElement extends AbstractRegistryDescriptor implements C
 		wizardID = element1.getAttribute(ATT_WIZARD_ID);
 		pageGroupID = element1.getAttribute(ATT_PAGE_ID);
 		requiresDataOperationId = element1.getAttribute(ATT_REQUIRES_DATA_OPERATION_ID);
-		dataModelID = element1.getAttribute(ATT_DATA_MODEL_ID);
+		dataModelIDs = getDataModelIds( element1 );
 		readAllowsExtendedPageAfter(element1);
 		pageInsertionID = element1.getAttribute(ATT_PAGE_INSERTION_ID);
 		readFactory(element1);
@@ -56,6 +58,24 @@ public class DMWizardPageElement extends AbstractRegistryDescriptor implements C
 		loadOrder = loadOrderCounter++;
 	}
 
+  private Set getDataModelIds(IConfigurationElement element )
+  {
+    HashSet ids    = new HashSet();
+    String  idList = element.getAttribute(ATT_DATA_MODEL_IDS);
+    
+    if( idList != null )
+    {
+      String[] dataModelIDs = idList.split( " *");
+    
+      for( int index = 0; index < dataModelIDs.length; index++ )
+      {
+        ids.add( dataModelIDs[index] );  
+      }
+    }
+    
+    return ids;
+  }
+  
 	private void validateSettings() {
 		if (wizardID == null || wizardPageFactoryElement == null) {
 			Logger.getLogger().logError("Incomplete page extension specification."); //$NON-NLS-1$
@@ -174,12 +194,12 @@ public class DMWizardPageElement extends AbstractRegistryDescriptor implements C
 		requiresDataOperationId = dataOperationId;
 	}
 
-	public String getDataModelID() {
-		return dataModelID;
+	public Set getDataModelIDs() {
+		return dataModelIDs;
 	}
 
-	public void setDataModelID(String newDataModelID) {
-		dataModelID = newDataModelID;
+	public void setDataModelID(Set newDataModelIDs) {
+		dataModelIDs = newDataModelIDs;
 	}
 
 	/**

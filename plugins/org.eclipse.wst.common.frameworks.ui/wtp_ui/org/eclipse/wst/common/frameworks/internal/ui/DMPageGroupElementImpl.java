@@ -1,5 +1,6 @@
 package org.eclipse.wst.common.frameworks.internal.ui;
 
+import java.util.Set;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizardPage;
@@ -23,8 +24,8 @@ public class DMPageGroupElementImpl implements IDMPageGroup {
 		return pageElement.getRequiresDataOperationId();
 	}
 
-	public String getDataModelID() {
-		return pageElement.getDataModelID();
+	public Set getDataModelIDs() {
+		return pageElement.getDataModelIDs();
 	}
 
 	public IDMPageGroupHandler getPageGroupHandler(IDataModel dataModel) {

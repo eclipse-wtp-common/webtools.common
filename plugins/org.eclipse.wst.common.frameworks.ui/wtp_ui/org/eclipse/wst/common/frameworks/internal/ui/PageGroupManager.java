@@ -10,6 +10,8 @@ package org.eclipse.wst.common.frameworks.internal.ui;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -85,11 +87,19 @@ public class PageGroupManager {
 
 		if (pageGroupStack.empty()) {
 			PageGroupEntry rootEntry = (PageGroupEntry) groupTable.get(rootPageGroup.getPageGroupID());
-			String dataModelID = rootEntry.pageGroup.getDataModelID();
+			Set dataModelIDs = rootEntry.pageGroup.getDataModelIDs();
 			pageGroupStack.push(new StackEntry(rootEntry, -1));
 
-			if (dataModelID != null)
-				dataModelManager.addNestedDataModel(dataModelID);
+			if (dataModelIDs != null && dataModelIDs.size() > 0 )
+      {
+        Iterator ids = dataModelIDs.iterator();
+        
+        while( ids.hasNext() )
+        {
+          String dataModelID = (String)ids.next();
+				  dataModelManager.addNestedDataModel(dataModelID);
+        }
+      }
 		}
 
 		saveStackInfo();
@@ -128,11 +138,19 @@ public class PageGroupManager {
 				operationManager.undoLastRun();
 			}
 
-			String dataModelID = topEntry.pageGroupEntry.pageGroup.getDataModelID();
+			Set dataModelIDs = topEntry.pageGroupEntry.pageGroup.getDataModelIDs();
 
-			if (dataModelID != null)
-				dataModelManager.removeNestedDataModel(dataModelID);
-
+			if( dataModelIDs != null && dataModelIDs.size() > 0 )
+      {
+        Iterator ids = dataModelIDs.iterator();
+        
+        while( ids.hasNext() )
+        {
+          String dataModelID = (String)ids.next();
+				  dataModelManager.removeNestedDataModel(dataModelID);
+        }
+      }
+      
 			pageGroupStack.pop();
 
 			if (!pageGroupStack.empty()) {
@@ -177,12 +195,20 @@ public class PageGroupManager {
 
 		if (pageGroupStack.empty()) {
 			PageGroupEntry rootEntry = (PageGroupEntry) groupTable.get(rootPageGroup.getPageGroupID());
-			String dataModelID = rootEntry.pageGroup.getDataModelID();
+			Set dataModelIDs = rootEntry.pageGroup.getDataModelIDs();
 
 			pageGroupStack.push(new StackEntry(rootEntry, -1));
 
-			if (dataModelID != null)
-				dataModelManager.addNestedDataModel(dataModelID);
+			if( dataModelIDs != null && dataModelIDs.size() > 0 )
+      {
+        Iterator ids = dataModelIDs.iterator();  
+      
+        while( ids.hasNext() )
+        {
+          String dataModelID = (String)ids.next();
+				  dataModelManager.addNestedDataModel(dataModelID);
+        }
+      }
 		}
 
 		pageFound = findNextPage(false);
@@ -232,7 +258,7 @@ public class PageGroupManager {
 			if (nextStackEntry != null) {
 				IDMPageGroup pageGroup = nextStackEntry.pageGroupEntry.pageGroup;
 				String requiresOperationsId = pageGroup.getRequiredDataOperationToRun();
-				String dataModelID = pageGroup.getDataModelID();
+				Set dataModelIDs = pageGroup.getDataModelIDs();
 
 				// If this group requires an operation and it has not already been run
 				// then we need to run it.
@@ -247,9 +273,17 @@ public class PageGroupManager {
 					}
 				}
 
-				if (dataModelID != null)
-					dataModelManager.addNestedDataModel(dataModelID);
-
+				if( dataModelIDs != null && dataModelIDs.size() > 0 )
+        {
+          Iterator ids = dataModelIDs.iterator();
+          
+          while( ids.hasNext() )
+          {
+            String dataModelID = (String)ids.next();
+					  dataModelManager.addNestedDataModel(dataModelID);
+          }
+        }
+        
 				pageGroupStack.push(nextStackEntry);
 				pageFound = findNextPage(runOperations);
 			}
