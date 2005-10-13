@@ -147,7 +147,11 @@ public class VariableInsertionDialog extends Dialog {
 		fTableViewer.getControl().setLayoutData(data);
 		fTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
-				fDescriptionPane.setText(fTableViewer.getSelection() != null ? getVariable(fTableViewer.getSelection()).getDescription() : ""); //$NON-NLS-1$
+				ISnippetVariable variable = null;
+				if (fTableViewer.getSelection() != null) {
+					variable = getVariable(fTableViewer.getSelection());
+				}
+				fDescriptionPane.setText(variable != null ? variable.getDescription() : ""); //$NON-NLS-1$
 				fDescriptionPane.setHorizontalPixel(2);
 				fDescriptionPane.redraw();
 			}

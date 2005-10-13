@@ -143,30 +143,38 @@ public abstract class AbstractModelFactory {
 	}
 
 	protected void setProperty(SnippetPaletteItem item, String property, Object value) {
-		if (property == null || value == null)
+		if (property == null)
 			return;
-		else if (property.equals(SnippetsPlugin.NAMES.CATEGORY))
-			item.setCategoryName(value.toString());
+		Object propertyValue = value;
+		if(propertyValue == null) {
+			propertyValue = "";
+		}
+		if (property.equals(SnippetsPlugin.NAMES.CATEGORY))
+			item.setCategoryName(propertyValue.toString());
 		else if (property.equals(SnippetsPlugin.NAMES.CLASSNAME))
-			item.setClassName(value.toString());
+			item.setClassName(propertyValue.toString());
 		else if (property.equals(SnippetsPlugin.NAMES.CONTENT))
-			item.setContentString(value.toString());
+			item.setContentString(propertyValue.toString());
 		else if (property.equals(SnippetsPlugin.NAMES.EDITORCLASSNAME))
-			item.setEditorClassName(value.toString());
+			item.setEditorClassName(propertyValue.toString());
 		else
-			setEntryProperty(item, property, value);
+			setEntryProperty(item, property, propertyValue);
 	}
 
 	protected void setProperty(SnippetVariable variable, String property, Object value) {
-		if (property == null || value == null)
+		if (property == null)
 			return;
-		else if (property.equals(SnippetsPlugin.NAMES.DEFAULT))
-			variable.setDefaultValue(value.toString());
+		Object propertyValue = value;
+		if(propertyValue == null) {
+			propertyValue = "";
+		}
+		if (property.equals(SnippetsPlugin.NAMES.DEFAULT))
+			variable.setDefaultValue(propertyValue.toString());
 		else if (property.equals(SnippetsPlugin.NAMES.DESCRIPTION))
-			variable.setDescription(value.toString());
+			variable.setDescription(propertyValue.toString());
 		else if (property.equals(SnippetsPlugin.NAMES.NAME))
-			variable.setName(value.toString());
+			variable.setName(propertyValue.toString());
 		else if (property.equals(SnippetsPlugin.NAMES.ID))
-			variable.setId(value.toString());
+			variable.setId(propertyValue.toString());
 	}
 }
