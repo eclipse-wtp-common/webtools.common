@@ -22,7 +22,6 @@ Require-Bundle: org.eclipse.wst.common.frameworks,
  org.eclipse.emf.codegen,
  org.eclipse.emf.codegen.ecore,
  org.eclipse.xsd,
- org.eclipse.emf.importer.java,
  org.eclipse.wst.xml.core,
  org.eclipse.wst.sse.core,
  org.eclipse.wst.validation
