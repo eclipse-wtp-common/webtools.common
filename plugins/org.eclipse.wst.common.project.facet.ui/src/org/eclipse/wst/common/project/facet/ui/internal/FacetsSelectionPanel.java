@@ -52,7 +52,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
@@ -1013,7 +1012,7 @@ public final class FacetsSelectionPanel
     private void handleShowConstraints()
     {
         final TreeItem[] items = this.tree.getTree().getSelection();
-        assert items.length == 1;
+        if( items.length != 1 ) throw new IllegalStateException();
         final TreeItem item = items[ 0 ];
         
         final Rectangle bounds = item.getBounds();
