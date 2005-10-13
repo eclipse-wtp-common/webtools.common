@@ -21,6 +21,7 @@ import org.eclipse.core.resources.IResource;
  */
 public class ValidatorNameFilter {
 	private String _nameFilter = null;
+	private String nameFilterExtension = null;
 	private boolean _include = true; // by default, filter in the IFile specified
 	private final static String WILDCARD = "*"; //$NON-NLS-1$
 	private boolean _isCaseSensitive = true; // by default, the filter name is case-sensitive
@@ -53,6 +54,10 @@ public class ValidatorNameFilter {
 	/* package */boolean isApplicableTo(IResource resource) {
 		return (isApplicableName(resource) && isInclude());
 	}
+	
+	protected void setNameFilterExtension(String filterExt) {
+		nameFilterExtension = filterExt;
+	}
 
 	/**
 	 * Returns true if the name of the resource matches the filter, or if there is no filter
@@ -64,8 +69,21 @@ public class ValidatorNameFilter {
 		// the name filter.
 		if (_nameFilter == null)
 			return true;
-
+		
 		String name = resource.getName();
+//		return true if the file name is exact match of the _nameFilter
+		if (name.equalsIgnoreCase(_nameFilter))
+			return true;
+
+		int indexOfStarDot = _nameFilter.indexOf("*.");
+
+		//return value if the fileter name extension matches the extension
+		//of the resource 
+		if (indexOfStarDot != -1) {
+			String nameExtension = name.substring(name.indexOf(".") + 1);
+			return nameFilterExtension.equalsIgnoreCase(nameExtension);
+		}
+
 		if (!isCaseSensitive()) {
 			name = name.toLowerCase();
 		}

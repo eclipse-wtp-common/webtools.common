@@ -124,6 +124,7 @@ public final class WorkbenchReporter implements IReporter {
 		int severity = message.getSeverity();
 		try {
 			TaskListUtility.addTask(messageOwnerId, resource, location, message.getId(), message.getText(cl), severity,markerId,targetObjectName, message.getGroupName(), message.getOffset(), message.getLength());
+			increaseMessageCountForProject(resource.getProject());;
 		} catch (CoreException exc) {
 			// Couldn't add the task to the task list for some reason...
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
@@ -134,6 +135,13 @@ public final class WorkbenchReporter implements IReporter {
 				logger.write(Level.SEVERE, entry);
 			}
 		}
+	}
+	
+	private static void increaseMessageCountForProject(IProject project) {
+		ValidatorManager.initializeMessageLimitProjectMap(project);
+		Object integer = ValidatorManager.messageLimitProjectMap.get(project);
+		int newVal = ((Integer) integer).intValue() + 1;
+		ValidatorManager.messageLimitProjectMap.put(project,new Integer(newVal));
 	}
 
 	public static void removeAllMessages(IResource resource, IValidator validator) {
@@ -309,6 +317,7 @@ public final class WorkbenchReporter implements IReporter {
 			return;
 		}
 		ValidatorManager.getManager().addMessageLimitExceeded(project);
+		ValidatorManager.setMessageLimitMessageForProject(project);
 	}
 
 	// TODO This method was made protected for the SaberReporter. Make this method private again

@@ -71,8 +71,15 @@ public class ValidatorFilter {
 	 */
 	/* package */void setNameFilter(String filter, String isCaseSensitiveString) {
 		_nameFilter.setNameFilter(filter);
+		if(filter != null)
+			  _nameFilter.setNameFilterExtension(getFilterExt(filter));
 		_nameFilter.setCaseSensitive(isCaseSensitiveString);
 	}
+	
+	private String getFilterExt(String filter) {
+		return filter.substring(filter.indexOf(".") + 1);
+	}
+	
 
 	/**
 	 * Sets the type filter.

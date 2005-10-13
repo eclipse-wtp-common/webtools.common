@@ -71,6 +71,10 @@ public class ReferencialFileValidatorExtension {
 	public String getId() {
 		return id;
 	}
+	
+	public IConfigurationElement getElement() {
+		return element;
+	}
 
 	/**
 	 * @param id

@@ -64,6 +64,19 @@ public class ReferencialFileValidatorRegistryReader extends RegistryReader {
 	 *            The extensions to set
 	 */
 	protected void addExtension(IConfigurationElement newExtension) {
+
+    	//add to the list of post validator extesions only if the ext is not added yet
+    	boolean containsExt = true;
+    	List extensions = getReferencialFileValidationExtensions();
+    	Iterator it = extensions.iterator();
+    	while(it.hasNext()) {
+    		ReferencialFileValidatorExtension ext = (ReferencialFileValidatorExtension)it.next();
+    		if(!ext.getElement().getAttribute("id").equals(newExtension.getAttribute("id")))
+    			containsExt = false;
+    	}
+    	if(!containsExt ||getReferencialFileValidationExtensions().isEmpty())
+    		getReferencialFileValidationExtensions().add(new ReferencialFileValidatorExtension(newExtension));
+    
 		getReferencialFileValidationExtensions().add(new ReferencialFileValidatorExtension(newExtension));
 	}
 

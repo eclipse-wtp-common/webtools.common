@@ -13,6 +13,7 @@ package org.eclipse.wst.validation.internal.operations;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -62,6 +63,9 @@ public final class ValidatorManager {
 	private static Class _messageLimitOwner = null;
 	private String[] _internalOwners = null;
 
+	public static HashMap messageLimitProjectMap = null;
+	public static HashMap messageLimitMessageProjectMap = null;
+	
 	/**
 	 * ValidatorManager constructor comment.
 	 */
@@ -959,52 +963,77 @@ public final class ValidatorManager {
 	}
 
 	public boolean isMessageLimitExceeded(IResource resource) {
-		if (resource == null) {
+		if(resource == null) {
 			return false;
 		}
-
-		if (!resource.exists()) {
+		if(!resource.exists()) {
 			return false;
 		}
-
 		IProject project = resource.getProject();
-		if (isNoMessageLimit(project)) {
+		if(isNoMessageLimit(project)) {
 			return false;
 		}
-
 		try {
-			IMarker[] valTasks = getValidationTasks(project, IMessage.ALL_MESSAGES);
+			//IMarker[] valTasks = getValidationTasks(project,SeverityEnum.ALL_MESSAGES);
+			initializeMessageLimitProjectMap(project);
+			Object messagesAddedForProject = messageLimitProjectMap.get(project);
+			int valTasks = ((Integer) messagesAddedForProject).intValue();
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			int max = prjp.getMaximumNumberOfMessages();
-			IMarker[] exceededTasks = getLimitMessage(project);
-			int numExceeded = (exceededTasks == null) ? 0 : exceededTasks.length;
-			// Excluding the "max messages were reported" messages, do the number
-			// of validation messages exceed the limit?
-			int numValTasks = valTasks.length - numExceeded;
-			if (numValTasks > max) {
-				return true;
+			initializeMessageLimitMessageProjectMap();
+			Object messageLimitMessageAdded = messageLimitMessageProjectMap.get(project);
+			boolean isMessageLimitMessageAdded = false;
+			if(messageLimitMessageAdded != null) {
+				isMessageLimitMessageAdded = ((Boolean)messageLimitMessageAdded).booleanValue();
 			}
-
-			// If the "max were reported" exists, does the number of messages
-			// equal the limit?
-			if ((numExceeded > 0) && (numValTasks == max)) {
-				return true;
+			if (valTasks >= max || isMessageLimitMessageAdded) {
+				IMarker[] exceededTasks = getLimitMessage(project);
+				int numExceeded = (exceededTasks == null) ? 0 : exceededTasks.length;
+				// Excluding the "max messages were reported" messages, do the
+				// number of validation messages exceed the limit?
+				int numValTasks = valTasks - numExceeded;
+				if (numValTasks > max) {
+					return true;
+				}
+				// If the "max were reported" exists, does the number of
+				// messages equal the limit?
+				if ((numExceeded > 0) && (numValTasks == max)) {
+					return true;
+				}
 			}
-		} catch (InvocationTargetException exc) {
+		}
+		catch(InvocationTargetException exc) {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
 				entry.setSourceIdentifier("ValidatorManager.setEnabledValidators(" + project.getName() + ", Set, IProgressMonitor)"); //$NON-NLS-1$  //$NON-NLS-2$
 				entry.setTargetException(exc);
 				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
+				
+				if(exc.getTargetException() != null) {
 					entry.setTargetException(exc);
 					logger.write(Level.SEVERE, entry);
 				}
 			}
 		}
 		return false;
+	}
+	
+	public static void initializeMessageLimitProjectMap(IProject project) {
+		if(messageLimitProjectMap == null) 
+			messageLimitProjectMap = new HashMap();
+		if(messageLimitProjectMap.get(project) == null)
+			messageLimitProjectMap.put(project,new Integer(0));
+	}
+	
+	public static void setMessageLimitMessageForProject(IProject project) {
+		initializeMessageLimitMessageProjectMap();
+		messageLimitMessageProjectMap.put(project, Boolean.TRUE);
+	}
+
+	private static void initializeMessageLimitMessageProjectMap() {
+		if(messageLimitMessageProjectMap == null) 
+			messageLimitMessageProjectMap = new HashMap();
 	}
 
 	/**
