@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: WorkbenchResourceHelperBase.java,v $$
- *  $$Revision: 1.3 $$  $$Date: 2005/06/24 21:22:25 $$ 
+ *  $$Revision: 1.4 $$  $$Date: 2005/10/14 20:57:31 $$ 
  */
 package org.eclipse.jem.util.emf.workbench;
 
@@ -180,7 +180,9 @@ public class WorkbenchResourceHelperBase {
 	/**
 	 * Check for a cached Resource for the given URI, if none is found, create a new Resource for with the URI against the proper ResourceSet.
 	 * 
-	 * @param uri
+	 * @param uri The URI MUST be either a "<b>platform:/resource/</b>project-name/...." type URI or it
+	 * must be of type "project-name/...". This method will only return resources that are workbench project resources.
+	 * Any other type of URI will cause <code>null</code> to be returned.
 	 * @return resource or <code>null</code> if not a project uri.
 	 * 
 	 * @since 1.0.0
@@ -188,24 +190,49 @@ public class WorkbenchResourceHelperBase {
 	public static Resource getExistingOrCreateResource(URI uri) {
 		return getExistingOrCreateResource(uri, getResourceSet(uri));
 	}
+	
+	/**
+	 * Get the IFile for the URI. The URI must be a workbench project style URI. 
+	 * @param uri The URI MUST be either a "<b>platform:/resource/</b>project-name/...." type URI or it
+	 * must be of type "project-name/...". This method will only return resources that are workbench project resources.
+	 * Any other type of URI will cause <code>null</code> to be returned.
+	 * @return the IFile if the URI is a project form, <code>null</code> if not a project form, OR the project doesn't exist. The IFile returned doesn't necessarily exist. Use {@link IFile#exists()} to test that.
+	 * 
+	 * @since 1.2.0
+	 */
+	public static IFile getIFile(URI uri) {
+		IProject project = getProject(uri);
+		if (project != null) {
+			IPath path;
+			if (isPlatformResourceURI(uri)) {
+				// Need to get the path and remove the first two segments (/resource/project name/).
+				path = new Path(URI.decode(uri.path())).removeFirstSegments(2);
+			} else {
+				// Need to get the path and remove the first segment (/project name/).
+				path = new Path(URI.decode(uri.path())).removeFirstSegments(1);
+			}
+			return project.getFile(path);
+		} else
+			return null;
+	}
 
 	/**
 	 * Check for a cached Resource for the given URI, if none is found, create a new Resource for with the URI against the given ResourceSet.
 	 * 
-	 * @param uri
+	 * @param uri 
 	 * @param set
 	 * @return resource or <code>null</code> if set was <code>null</code>.
 	 * 
 	 * @since 1.0.0
 	 */
 	public static Resource getExistingOrCreateResource(URI uri, ResourceSet set) {
-		Resource res = null;
 		if (set != null) {
-			res = set.getResource(uri, false);
+			Resource res = set.getResource(uri, false);
 			if (res == null)
 				res = set.createResource(uri);
-		}
-		return res;
+			return res;
+		} else
+			return null;
 	}
 
 	/**
@@ -379,15 +406,19 @@ public class WorkbenchResourceHelperBase {
 	}
 
 	/**
-	 * Get the resource for the uri.
+	 * Get the resource for the uri. The URI MUST be either a "<b>platform:/resource/</b>project-name/...." type URI or it
+	 * must be of type "project-name/...". This method will only return resources that are workbench project resources.
+	 * Any other type of URI will cause <code>null</code> to be returned. It will be loaded if not already loaded. If it is not to
+	 * be loaded if not loaded use {@link #getResource(URI, boolean)} instead.
 	 * 
-	 * @param uri
-	 * @return
+	 * @param uri must be either a "<b>platform:/resource/</b>project-name/..." form or it must be "project-name/...". Any other form will be invalid.
+	 * @return resource if uri is for a valid workbench project resource or <code>null</code> if project not found or not a valid project resource.
 	 * 
+	 * @throws WrappedException if valid project format URI but file not found or some other error on load.
 	 * @since 1.0.0
 	 */
 	public static Resource getResource(URI uri) {
-		return workspaceURILoader.getResource(null, uri);
+		return getResource(uri, true);
 	}
 
 	/**
@@ -431,13 +462,16 @@ public class WorkbenchResourceHelperBase {
 	}
 
 	/**
-	 * This method will direct the getResource(URI, boolean) call to the correct ProjectResourceSet based on the project name in the URI.
+	 * Get the resource for the uri. The URI MUST be either a "<b>platform:/resource/</b>project-name/...." type URI or it
+	 * must be of type "project-name/...". This method will only return resources that are workbench project resources.
+	 * Any other type of URI will cause <code>null</code> to be returned.
 	 * 
-	 * @param uri
-	 *            This must be an absolute URI of the form platform:/resource/...
-	 * @param loadOnDemand
-	 *            <code>true</code> will force the resource to be loaded if not already loaded.
-	 * @return Resource
+	 * @param uri must be either a "<b>platform:/resource/</b>project-name/..." form or it must be "project-name/...". Any other form will be invalid.
+	 * @param loadOnDemand <code>true</code> will cause resource to be loaded if not already loaded.
+	 * @return resource if uri is for a valid workbench project resource, or <code>null</code> if project not found, or not a valid project resource uri.
+	 * 
+	 * @throws WrappedException if valid project format URI but file not found or some other error on load if loadOnDemand is true.
+	 * @since 1.0.0
 	 */
 	public static Resource getResource(URI uri, boolean loadOnDemand) {
 		ResourceSet set = getResourceSet(uri);
@@ -456,16 +490,29 @@ public class WorkbenchResourceHelperBase {
 	 * @since 1.0.0
 	 */
 	public static ResourceSet getResourceSet(URI uri) {
-		String projectName = null;
-		if (isPlatformResourceURI(uri))
-			projectName = uri.segment(1);
-		else {
-			projectName = new org.eclipse.core.runtime.Path(uri.path()).segment(0);
-		} //assume project name is first in the URI
-		IProject project = getWorkspace().getRoot().getProject(projectName);
+		IProject project = getProject(uri);
 		if (project != null && project.isAccessible())
 			return getResourceSet(project);
-		return null;
+		else
+			return null;
+	}
+	
+	/*
+	 * Get the project for the uri if the uri is a valid workbench project format uri. null otherwise.
+	 */
+	private static IProject getProject(URI uri) {
+		String projectName;
+		if (isPlatformResourceURI(uri))
+			projectName = uri.segment(1);
+		else if (uri.scheme() == null) {
+			projectName = new Path(uri.path()).segment(0); //assume project name is first in the URI
+		} else
+			return null;
+		IProject project = getWorkspace().getRoot().getProject(URI.decode(projectName));
+		if (project != null && project.isAccessible())
+			return project;
+		else
+			return null;
 	}
 
 	/**
