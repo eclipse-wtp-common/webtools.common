@@ -470,7 +470,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				entry.setSourceID("ValidationRegistryReader.createHelper(IConfigurationElement, String)"); //$NON-NLS-1$
 				entry.setMessageTypeIdentifier(ResourceConstants.VBF_EXC_SYNTAX_NO_HELPER_THROWABLE);
 				entry.setTargetException(exc);
-				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NULL_NAME), new String[]{helperClassName});
+				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NO_HELPER_THROWABLE), new String[]{helperClassName});
 				entry.setText(result);				
 				//entry.setTokens(new String[]{helperClassName});
 				logger.write(Level.SEVERE, entry);
@@ -490,7 +490,9 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				LogEntry entry = ValidationPlugin.getLogEntry();
 				entry.setSourceID("ValidationRegistryReader.createValidator(IConfigurationElement, String, String)"); //$NON-NLS-1$
 				entry.setMessageTypeID(ResourceConstants.VBF_EXC_SYNTAX_NO_VAL_THROWABLE);
-				entry.setTokens(new String[]{validatorClassName});
+				//entry.setTokens(new String[]{validatorClassName});
+				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NO_VAL_THROWABLE), new String[]{validatorClassName});
+				entry.setText(result);				
 				entry.setTargetException(exc);
 				logger.write(Level.SEVERE, entry);
 			}
@@ -753,7 +755,10 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				LogEntry entry = ValidationPlugin.getLogEntry();
 				entry.setSourceID("ValidationRegistryReader.getValidatorExtensionPoint()"); //$NON-NLS-1$
 				entry.setMessageTypeID(ResourceConstants.VBF_EXC_MISSING_VALIDATOR_EP);
-				entry.setTokens(new String[]{ValidationPlugin.PLUGIN_ID + "." + VALIDATOR_EXT_PT_ID}); //$NON-NLS-1$
+				//entry.setTokens(new String[]{ValidationPlugin.PLUGIN_ID + "." + VALIDATOR_EXT_PT_ID}); //$NON-NLS-1$
+				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_MISSING_VALIDATOR_EP),
+						new String[]{ValidationPlugin.PLUGIN_ID + "." + VALIDATOR_EXT_PT_ID});
+				entry.setText(result);		
 				logger.write(Level.FINE, entry);
 			}
 		}
@@ -867,7 +872,8 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				if (logger.isLoggingLevel(Level.FINEST)) {
 					LogEntry entry = ValidationPlugin.getLogEntry();
 					entry.setSourceID("ValidationRegistryReader.getValidatorMetaData(IProject)"); //$NON-NLS-1$
-					entry.setTokens(projectNatures);
+					//entry.setTokens(projectNatures);
+					entry.setText(projectNatures.toString());
 					logger.write(Level.FINEST, entry);
 				}
 
@@ -1195,7 +1201,11 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				LogEntry entry = ValidationPlugin.getLogEntry();
 				entry.setSourceID("ValidationRegistryReader.initializeValidator(IConfigurationElement, String, String)"); //$NON-NLS-1$
 				entry.setMessageTypeID(ResourceConstants.VBF_EXC_SYNTAX_NO_VAL_RUN);
-				entry.setTokens(new String[]{validatorName});
+				//entry.setTokens(new String[]{validatorName});
+				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NO_VAL_RUN),
+						new String[]{validatorName});
+				entry.setText(result);
+				
 				logger.write(Level.FINE, entry);
 			}
 			return null;
@@ -1324,7 +1334,10 @@ public final class ValidationRegistryReader implements RegistryConstants {
 					LogEntry entry = ValidationPlugin.getLogEntry();
 					entry.setSourceID("ValidationRegistryReader.readExtension(IExtension)"); //$NON-NLS-1$
 					entry.setMessageTypeID(ResourceConstants.VBF_EXC_VALIDATORNAME_IS_NULL);
-					entry.setTokens(msgParm);
+					//entry.setTokens(msgParm);
+					String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_VALIDATORNAME_IS_NULL),
+							msgParm);
+					entry.setText(result);					
 					logger.write(Level.FINE, entry);
 				}
 			} else {

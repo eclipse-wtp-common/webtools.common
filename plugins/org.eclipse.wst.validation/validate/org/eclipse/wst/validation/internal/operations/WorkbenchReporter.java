@@ -569,7 +569,7 @@ public final class WorkbenchReporter implements IReporter {
 				LogEntry entry = ValidationPlugin.getLogEntry();
 				entry.setSourceID("WorkbenchReporter.addMessage(IValidator, Message)"); //$NON-NLS-1$
 				entry.setMessageTypeIdentifier(ResourceConstants.VBF_EXC_INVALID_RESOURCE);
-				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NULL_NAME), new String[]{message.getText(), getTargetObjectName(helper, message)});
+				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INVALID_RESOURCE), new String[]{message.getText(), getTargetObjectName(helper, message)});
 				entry.setText(result);				
 				//entry.setTokens(new String[]{message.getText(), getTargetObjectName(helper, message)});
 				logger.write(Level.FINE, entry);

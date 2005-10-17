@@ -126,7 +126,7 @@ public class ValidatorTypeFilter {
 						LogEntry entry = ValidationPlugin.getLogEntry();
 						entry.setSourceID("ValidatorTypeFilter.setTypeFilter(String)"); //$NON-NLS-1$
 						entry.setMessageTypeID(ResourceConstants.VBF_EXC_INVALID_TYPE_FILTER);
-						String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NULL_NAME), new String[]{filter, getMustImplementClass()});
+						String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INVALID_TYPE_FILTER), new String[]{filter, getMustImplementClass()});
 						entry.setText(result);						
 						//entry.setTokens(new String[]{filter, getMustImplementClass()});
 						logger.write(Level.FINE, entry);
