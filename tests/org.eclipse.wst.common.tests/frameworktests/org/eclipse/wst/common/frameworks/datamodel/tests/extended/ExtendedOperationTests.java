@@ -31,8 +31,9 @@ public class ExtendedOperationTests extends TestCase {
 	public static final String d = D.class.getName();
 	public static final String e = E.class.getName();
 	public static final String f = F.class.getName();
+	public static final String g = G.class.getName();
+	public static final String h = H.class.getName();
 	public static final String r = R.class.getName();
-
 
 	private String[] expectedExecution;
 
@@ -49,7 +50,7 @@ public class ExtendedOperationTests extends TestCase {
 	public void testAllOn() throws Exception {
 		IDataModel dm = DataModelFactory.createDataModel(new RootDMProvider());
 		dm.getDefaultOperation().execute(null, null);
-		expectedExecution = new String[]{c, a, d, r, e, b, f};
+		expectedExecution = new String[]{c, a, d, r, e, b, f, g, h};
 		checkResults();
 	}
 
@@ -67,7 +68,7 @@ public class ExtendedOperationTests extends TestCase {
 		restrictedList.add(a);
 		dm.setProperty(IDataModelProperties.RESTRICT_EXTENSIONS, restrictedList);
 		dm.getDefaultOperation().execute(null, null);
-		expectedExecution = new String[]{r, e, b, f};
+		expectedExecution = new String[]{r, e, b, f, g, h};
 		checkResults();
 	}
 
@@ -87,7 +88,7 @@ public class ExtendedOperationTests extends TestCase {
 		restrictedList.add(c);
 		dm.setProperty(IDataModelProperties.RESTRICT_EXTENSIONS, restrictedList);
 		dm.getDefaultOperation().execute(null, null);
-		expectedExecution = new String[]{a, d, r, e, b, f};
+		expectedExecution = new String[]{a, d, r, e, b, f, g, h};
 		checkResults();
 	}
 

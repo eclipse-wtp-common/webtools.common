@@ -97,7 +97,16 @@
             id="org.eclipse.wst.common.frameworks.datamodel.tests.extended.B"
             postOperationClass="org.eclipse.wst.common.frameworks.datamodel.tests.extended.F"
             preOperationClass="org.eclipse.wst.common.frameworks.datamodel.tests.extended.E"/>
+      <operationExtension
+            id="org.eclipse.wst.common.frameworks.datamodel.tests.extended.F"
+            postOperationClass="org.eclipse.wst.common.frameworks.datamodel.tests.extended.H"/>
+      <operationExtension
+            id="org.eclipse.wst.common.frameworks.datamodel.tests.extended.H"
+            preOperationClass="org.eclipse.wst.common.frameworks.datamodel.tests.extended.G"/>
+      <operationExtension
+            id="org.eclipse.wst.common.frameworks.datamodel.tests.extended.H"/>
    </extension>
+   
    
    <!-- Uncomment the below hook to test specific operation extension ids when needed -->
    <!--
