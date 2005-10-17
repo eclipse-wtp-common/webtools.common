@@ -11,6 +11,7 @@
 package org.eclipse.wst.validation.internal;
 
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -469,7 +470,9 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				entry.setSourceID("ValidationRegistryReader.createHelper(IConfigurationElement, String)"); //$NON-NLS-1$
 				entry.setMessageTypeIdentifier(ResourceConstants.VBF_EXC_SYNTAX_NO_HELPER_THROWABLE);
 				entry.setTargetException(exc);
-				entry.setTokens(new String[]{helperClassName});
+				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NULL_NAME), new String[]{helperClassName});
+				entry.setText(result);				
+				//entry.setTokens(new String[]{helperClassName});
 				logger.write(Level.SEVERE, entry);
 			}
 			return null;

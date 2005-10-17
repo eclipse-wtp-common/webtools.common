@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal.operations;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -29,6 +30,7 @@ import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 import org.eclipse.wst.validation.internal.provisional.core.IReporter;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 import org.eclipse.wst.validation.internal.provisional.core.MessageLimitException;
+import org.eclipse.wst.validation.internal.ResourceHandler;
 
 /**
  * IValidator instances will interact with an instance of this class, but should never cast that
@@ -567,7 +569,9 @@ public final class WorkbenchReporter implements IReporter {
 				LogEntry entry = ValidationPlugin.getLogEntry();
 				entry.setSourceID("WorkbenchReporter.addMessage(IValidator, Message)"); //$NON-NLS-1$
 				entry.setMessageTypeIdentifier(ResourceConstants.VBF_EXC_INVALID_RESOURCE);
-				entry.setTokens(new String[]{message.getText(), getTargetObjectName(helper, message)});
+				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NULL_NAME), new String[]{message.getText(), getTargetObjectName(helper, message)});
+				entry.setText(result);				
+				//entry.setTokens(new String[]{message.getText(), getTargetObjectName(helper, message)});
 				logger.write(Level.FINE, entry);
 			}
 			return;

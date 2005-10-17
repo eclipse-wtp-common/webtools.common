@@ -11,6 +11,7 @@
 package org.eclipse.wst.validation.internal;
 
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -299,7 +300,9 @@ public final class FilterUtil {
 				LogEntry entry = ValidationPlugin.getLogEntry();
 				entry.setSourceID("FilterUtil::getFileDelta(IWorkbenchContext, ValidatorMetaData, IResource, int)"); //$NON-NLS-1$
 				entry.setMessageTypeID(ResourceConstants.VBF_EXC_SYNTAX_NULL_NAME);
-				entry.setTokens(new String[]{resource.getName(), vmd.getValidatorDisplayName()});
+				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NULL_NAME), new String[]{resource.getName(), vmd.getValidatorDisplayName()});
+				entry.setText(result);
+				//entry.setTokens(new String[]{resource.getName(), vmd.getValidatorDisplayName()});
 				logger.write(Level.SEVERE, entry);
 			}
 
