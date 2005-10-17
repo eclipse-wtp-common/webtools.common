@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
+
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -27,8 +28,7 @@ import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.internal.datamodel.IWorkspaceRunnableWithStatus;
-import org.eclipse.wst.common.frameworks.internal.operations.DMComposedExtendedOperationHolder;
-import org.eclipse.wst.common.frameworks.internal.operations.DMOperationExtensionRegistry;
+import org.eclipse.wst.common.frameworks.internal.operations.ComposedExtendedOperationHolder;
 import org.eclipse.wst.common.frameworks.internal.operations.OperationStatus;
 
 public class OperationManager {
@@ -298,7 +298,7 @@ public class OperationManager {
 	}
 
 	private void addExtendedOperations(IDataModelOperation operation) {
-		DMComposedExtendedOperationHolder extendedOps = DMOperationExtensionRegistry.getExtensions(operation);
+		ComposedExtendedOperationHolder extendedOps = ComposedExtendedOperationHolder.createExtendedOperationHolder(operation.getID());
 
 		ArrayList preOps = null;
 		ArrayList postOps = null;

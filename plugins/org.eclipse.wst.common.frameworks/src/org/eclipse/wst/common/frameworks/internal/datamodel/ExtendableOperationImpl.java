@@ -34,8 +34,7 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties;
 import org.eclipse.wst.common.frameworks.internal.AdaptabilityUtility;
 import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 import org.eclipse.wst.common.frameworks.internal.enablement.IEnablementManager;
-import org.eclipse.wst.common.frameworks.internal.operations.DMComposedExtendedOperationHolder;
-import org.eclipse.wst.common.frameworks.internal.operations.DMOperationExtensionRegistry;
+import org.eclipse.wst.common.frameworks.internal.operations.ComposedExtendedOperationHolder;
 import org.eclipse.wst.common.frameworks.internal.operations.OperationStatus;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
@@ -43,7 +42,7 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 
 	private IDataModelOperation rootOperation;
 	private List appendedOperations;
-  private Environment environment;
+	private Environment environment;
 
 	private OperationStatus opStatus;
 
@@ -68,10 +67,6 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 		if (null == rootOperation) {
 			throw new NullPointerException();
 		}
-	}
-
-	private DMComposedExtendedOperationHolder initializeExtensionOperations() {
-		return DMOperationExtensionRegistry.getExtensions(rootOperation);
 	}
 
 	public IStatus redo(IProgressMonitor monitor, IAdaptable info) {
@@ -160,7 +155,7 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 				threadToExtendedOpControl.put(currentThread, extendedOpControl);
 			}
 
-			DMComposedExtendedOperationHolder extOpHolder = initializeExtensionOperations();
+			ComposedExtendedOperationHolder extOpHolder = ComposedExtendedOperationHolder.createExtendedOperationHolder(rootOperation.getID());
 			IStatus preOpStatus = runPreOps(monitor, extOpHolder, info);
 			try {
 				addStatus(rootOperation.execute(monitor, info));
@@ -202,7 +197,7 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 		return opStatus;
 	}
 
-	private IStatus runPreOps(IProgressMonitor pm, DMComposedExtendedOperationHolder extOpHolder, IAdaptable info) {
+	private IStatus runPreOps(IProgressMonitor pm, ComposedExtendedOperationHolder extOpHolder, IAdaptable info) {
 		IStatus preOpStatus = null;
 		if ((extOpHolder != null) && extOpHolder.hasPreOps()) {
 			preOpStatus = runExtendedOps(extOpHolder.getPreOps(), pm, info);
@@ -210,7 +205,7 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 		return preOpStatus;
 	}
 
-	private IStatus runPostOps(IProgressMonitor pm, DMComposedExtendedOperationHolder extOpHolder, IAdaptable info) {
+	private IStatus runPostOps(IProgressMonitor pm, ComposedExtendedOperationHolder extOpHolder, IAdaptable info) {
 		IStatus postOpStatus = null;
 		if ((extOpHolder != null) && extOpHolder.hasPostOps()) {
 			postOpStatus = runExtendedOps(extOpHolder.getPostOps(), pm, info);
@@ -315,14 +310,12 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 	public IDataModel getDataModel() {
 		return rootOperation.getDataModel();
 	}
-  
-  public void setEnvironment( Environment env )
-  {
-    environment = env;
-  }
-  
-  public Environment getEnvironment()
-  {
-     return environment;   
-  }
+
+	public void setEnvironment(Environment env) {
+		environment = env;
+	}
+
+	public Environment getEnvironment() {
+		return environment;
+	}
 }

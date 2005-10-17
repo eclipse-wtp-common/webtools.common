@@ -10,19 +10,18 @@ package org.eclipse.wst.common.frameworks.internal.operations;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 
 public class OperationExtension {
 
-	String opID = null;
+	protected String opID = null;
 
-	IConfigurationElement baseElement = null;
+	protected IConfigurationElement baseElement = null;
 
-	String preOperationClass = null;
+	protected String preOperationClass = null;
 
-	String postOperationClass = null;
+	protected String postOperationClass = null;
 
-	private String extensionId;
+	protected String extensionId;
 
 	public OperationExtension(IConfigurationElement element, String id, String preOp, String postOp) {
 		super();
@@ -51,18 +50,16 @@ public class OperationExtension {
 		return preOperationClass;
 	}
 
-	public IDataModelOperation getPostOperation() throws CoreException {
+	public Object getPostOperation() throws CoreException {
 		if (postOperationClass == null)
 			return null;
-		IDataModelOperation op = (IDataModelOperation) baseElement.createExecutableExtension(OperationExtensionReader.ATT_POST_OP);
-		return op;
+		return baseElement.createExecutableExtension(OperationExtensionReader.ATT_POST_OP);
 	}
 
-	public IDataModelOperation getPreOperation() throws CoreException {
+	public Object getPreOperation() throws CoreException {
 		if (preOperationClass == null)
 			return null;
-		IDataModelOperation op = (IDataModelOperation) baseElement.createExecutableExtension(OperationExtensionReader.ATT_PRE_OP);
-		return op;
+		return baseElement.createExecutableExtension(OperationExtensionReader.ATT_PRE_OP);
 	}
 
 	/**

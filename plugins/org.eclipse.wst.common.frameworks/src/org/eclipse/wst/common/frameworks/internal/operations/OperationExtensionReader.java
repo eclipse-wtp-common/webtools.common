@@ -27,7 +27,6 @@ public class OperationExtensionReader extends RegistryReader {
 
 	public static final String ELEMENT_J2EEOPEXT = "operationExtension"; //$NON-NLS-1$
 	public static final String ATT_ID = "id"; //$NON-NLS-1$ 
-	//static final String ATT_OP_TYPE = "operationType"; //$NON-NLS-1$
 	public static final String ATT_PRE_OP = "preOperationClass"; //$NON-NLS-1$
 	public static final String ATT_POST_OP = "postOperationClass"; //$NON-NLS-1$
 
@@ -50,7 +49,6 @@ public class OperationExtensionReader extends RegistryReader {
 		OperationExtension extension = new OperationExtension(element, id, preOp, postOp);
 		addExtensionPoint(extension);
 		return true;
-
 	}
 
 	/**
@@ -60,8 +58,6 @@ public class OperationExtensionReader extends RegistryReader {
 	 *            The extensions to set
 	 */
 	private static void addExtensionPoint(OperationExtension newExtension) {
-		if (opExtensions == null)
-			opExtensions = new HashMap();
 		Collection temp = null;
 		Object holder = opExtensions.get(newExtension.getOpID());
 		if (holder == null) {
@@ -75,6 +71,11 @@ public class OperationExtensionReader extends RegistryReader {
 	}
 
 	public static HashMap getExtensionPoints() {
+		if(opExtensions == null){
+			opExtensions = new HashMap();
+			OperationExtensionReader opExtensionReader = new OperationExtensionReader();
+			opExtensionReader.readRegistry();
+		}
 		return opExtensions;
 	}
 }
