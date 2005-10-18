@@ -28,6 +28,8 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.WorkbenchComponent#getResources <em>Resources</em>}</li>
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.WorkbenchComponent#getComponentType <em>Component Type</em>}</li>
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.WorkbenchComponent#getReferencedComponents <em>Referenced Components</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.componentcore.internal.WorkbenchComponent#getProperties <em>Properties</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.componentcore.internal.WorkbenchComponent#getMetadataResources <em>Metadata Resources</em>}</li>
  * </ul>
  * </p>
  *
@@ -122,6 +124,38 @@ public interface WorkbenchComponent extends EObject{
 	 * @generated
 	 */
 	EList getReferencedComponents();
+
+	/**
+	 * Returns the value of the '<em><b>Properties</b></em>' reference list.
+	 * The list contents are of type {@link org.eclipse.wst.common.componentcore.internal.Property}.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Properties</em>' reference list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Properties</em>' reference list.
+	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getWorkbenchComponent_Properties()
+	 * @model type="org.eclipse.wst.common.componentcore.internal.Property"
+	 * @generated
+	 */
+	EList getProperties();
+
+	/**
+	 * Returns the value of the '<em><b>Metadata Resources</b></em>' attribute list.
+	 * The list contents are of type {@link org.eclipse.core.runtime.IPath}.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Metadata Resources</em>' attribute list isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Metadata Resources</em>' attribute list.
+	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getWorkbenchComponent_MetadataResources()
+	 * @model type="org.eclipse.core.runtime.IPath" dataType="org.eclipse.wst.common.componentcore.internal.IPath"
+	 * @generated
+	 */
+	EList getMetadataResources();
 
 	URI getHandle();
 

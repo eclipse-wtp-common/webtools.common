@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentcorePackage.java,v 1.5 2005/09/12 20:56:53 cbridgha Exp $
+ * $Id: ComponentcorePackage.java,v 1.6 2005/10/18 22:25:43 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal;
 
@@ -108,13 +108,31 @@ public interface ComponentcorePackage extends EPackage{
 	int WORKBENCH_COMPONENT__REFERENCED_COMPONENTS = 3;
 
 	/**
+	 * The feature id for the '<em><b>Properties</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int WORKBENCH_COMPONENT__PROPERTIES = 4;
+
+	/**
+	 * The feature id for the '<em><b>Metadata Resources</b></em>' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int WORKBENCH_COMPONENT__METADATA_RESOURCES = 5;
+
+	/**
 	 * The number of structural features of the the '<em>Workbench Component</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int WORKBENCH_COMPONENT_FEATURE_COUNT = 4;
+	int WORKBENCH_COMPONENT_FEATURE_COUNT = 6;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.wst.common.componentcore.internal.impl.ComponentResourceImpl <em>Component Resource</em>}' class.
@@ -448,6 +466,28 @@ public interface ComponentcorePackage extends EPackage{
 	 * @generated
 	 */
 	EReference getWorkbenchComponent_ReferencedComponents();
+
+	/**
+	 * Returns the meta object for the reference list '{@link org.eclipse.wst.common.componentcore.internal.WorkbenchComponent#getProperties <em>Properties</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Properties</em>'.
+	 * @see org.eclipse.wst.common.componentcore.internal.WorkbenchComponent#getProperties()
+	 * @see #getWorkbenchComponent()
+	 * @generated
+	 */
+	EReference getWorkbenchComponent_Properties();
+
+	/**
+	 * Returns the meta object for the attribute list '{@link org.eclipse.wst.common.componentcore.internal.WorkbenchComponent#getMetadataResources <em>Metadata Resources</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute list '<em>Metadata Resources</em>'.
+	 * @see org.eclipse.wst.common.componentcore.internal.WorkbenchComponent#getMetadataResources()
+	 * @see #getWorkbenchComponent()
+	 * @generated
+	 */
+	EAttribute getWorkbenchComponent_MetadataResources();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.wst.common.componentcore.internal.ComponentResource <em>Component Resource</em>}'.
