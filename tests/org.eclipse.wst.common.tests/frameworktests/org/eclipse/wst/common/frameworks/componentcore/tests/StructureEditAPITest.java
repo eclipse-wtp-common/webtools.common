@@ -540,23 +540,6 @@ public class StructureEditAPITest extends TestCase {
 
 	}
 
-	public void testFindComponentsByType() {
-		StructureEdit moduleCore = null;
-		try {
-			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			moduleCore.findComponentsByType(EDIT_MODEL_ID);
-
-
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
-			assertNotNull(moduleCore);
-
-		}
-	}
-
 	public void testIsLocalDependency() {
 		StructureEdit moduleCore = null;
 		try {

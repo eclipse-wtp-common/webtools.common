@@ -29,14 +29,14 @@ public class IVirtualComponentAPITest extends BaseVirtualTest {
 		String name = component.getName();
 	}
 
-	public void testGetComponentTypeId() {
-		String id = component.getComponentTypeId() ;
-	}
-
-	public void testSetComponentTypeId() {
-		String id = "jst.ejb";
-		component.setComponentTypeId(id) ;
-	}
+//	public void testGetComponentTypeId() {
+//		String id = component.getComponentTypeId() ;
+//	}
+//
+//	public void testSetComponentTypeId() {
+//		String id = "jst.ejb";
+//		component.setComponentTypeId(id) ;
+//	}
 
 	public void testGetMetaProperties() {
 		Properties properties = component.getMetaProperties() ;

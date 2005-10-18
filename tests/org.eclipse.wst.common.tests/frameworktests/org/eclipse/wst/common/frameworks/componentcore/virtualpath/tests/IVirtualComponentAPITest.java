@@ -62,15 +62,6 @@ public class IVirtualComponentAPITest extends IVirtualContainerAPITest {
 		String name = virtualComponent.getName();
 	}
 
-	public void testGetComponentTypeId() {
-		String id = virtualComponent.getComponentTypeId() ;
-	}
-
-	public void testSetComponentTypeId() {
-		String id = "jst.ejb";
-		virtualComponent.setComponentTypeId(id) ;
-	}
-
 	public void testGetMetaProperties() {
 		Properties properties = virtualComponent.getMetaProperties() ;
 	}
