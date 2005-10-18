@@ -50,7 +50,7 @@ public class VirtualComponent implements IVirtualComponent {
 	public VirtualComponent(IProject aProject, IPath aRuntimePath) {
 		componentProject = aProject;
 		runtimePath = aRuntimePath;
-		rootFolder = ComponentCore.createFolder(componentProject, new Path("/"));
+		rootFolder = ComponentCore.createFolder(componentProject, new Path("/")); //$NON-NLS-1$
 	}
 	
 	public IVirtualComponent getComponent() {
@@ -80,45 +80,45 @@ public class VirtualComponent implements IVirtualComponent {
 		return false;
 	}
 	
-	public String getComponentTypeId() {
-		if (null == componentTypeId) {
-			StructureEdit core = null;
-			try {
-				if (getProject() == null || getName() == null)
-					return null;
-				core = StructureEdit.getStructureEditForRead(getProject());
-				if (core == null)
-					return null;
-				WorkbenchComponent component = core.getComponent();
-				ComponentType cType = component == null ? null : component.getComponentType();
-				componentTypeId = cType == null ? null : cType.getComponentTypeId();
-			} finally {
-				if (core != null)
-					core.dispose();
-			}
-		}
-		return componentTypeId;
-	}
+//	public String getComponentTypeId() {
+//		if (null == componentTypeId) {
+//			StructureEdit core = null;
+//			try {
+//				if (getProject() == null || getName() == null)
+//					return null;
+//				core = StructureEdit.getStructureEditForRead(getProject());
+//				if (core == null)
+//					return null;
+//				WorkbenchComponent component = core.getComponent();
+//				ComponentType cType = component == null ? null : component.getComponentType();
+//				componentTypeId = cType == null ? null : cType.getComponentTypeId();
+//			} finally {
+//				if (core != null)
+//					core.dispose();
+//			}
+//		}
+//		return componentTypeId;
+//	}
 
-	public void setComponentTypeId(String aComponentTypeId) {
-
-		StructureEdit core = null;
-		try {
-			core = StructureEdit.getStructureEditForWrite(getProject());
-			WorkbenchComponent component = core.getComponent(); 
-			ComponentType cType = component.getComponentType();
-			if(cType == null) {
-				cType = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentType();
-				component.setComponentType(cType);
-			}
-			cType.setComponentTypeId(aComponentTypeId);
-		} finally {
-			if(core != null) {
-				core.saveIfNecessary(null);
-				core.dispose();
-			}
-		}
-	}
+//	public void setComponentTypeId(String aComponentTypeId) {
+//
+//		StructureEdit core = null;
+//		try {
+//			core = StructureEdit.getStructureEditForWrite(getProject());
+//			WorkbenchComponent component = core.getComponent(); 
+//			ComponentType cType = component.getComponentType();
+//			if(cType == null) {
+//				cType = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentType();
+//				component.setComponentType(cType);
+//			}
+//			cType.setComponentTypeId(aComponentTypeId);
+//		} finally {
+//			if(core != null) {
+//				core.saveIfNecessary(null);
+//				core.dispose();
+//			}
+//		}
+//	}
 
 	public Properties getMetaProperties() {
         StructureEdit core = null;
@@ -265,7 +265,6 @@ public class VirtualComponent implements IVirtualComponent {
 		try {
 			core = StructureEdit.getStructureEditForWrite(getProject());
 			WorkbenchComponent component = core.getComponent();
-			List referencedComponents = component.getReferencedComponents();
 			ReferencedComponent referencedComponent = null;
 			  
 			component.getReferencedComponents().clear();
@@ -323,7 +322,7 @@ public class VirtualComponent implements IVirtualComponent {
 			if(core != null)
 				core.dispose();
 }
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 
 	public void setVersion(String aVersion) {

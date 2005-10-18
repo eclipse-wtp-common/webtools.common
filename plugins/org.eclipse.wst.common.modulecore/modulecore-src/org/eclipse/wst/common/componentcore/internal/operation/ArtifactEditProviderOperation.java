@@ -45,7 +45,6 @@ public abstract class ArtifactEditProviderOperation extends AbstractDataModelOpe
 	}
 	
 	public IVirtualComponent getTargetComponent() {
-		String moduleName = model.getStringProperty(IArtifactEditOperationDataModelProperties.COMPONENT_NAME);
 		return ComponentCore.createComponent(getTargetProject());
 	}
 	
@@ -55,7 +54,7 @@ public abstract class ArtifactEditProviderOperation extends AbstractDataModelOpe
 
 	private ArtifactEdit getArtifactEditForModule(IVirtualComponent comp) {
 		ArtifactEditRegistryReader reader = ArtifactEditRegistryReader.instance();
-		IArtifactEditFactory factory = reader.getArtifactEdit(comp.getComponentTypeId());
+		IArtifactEditFactory factory = reader.getArtifactEdit(comp.getProject());
 		return factory.createArtifactEditForWrite(comp);
 	}
 	

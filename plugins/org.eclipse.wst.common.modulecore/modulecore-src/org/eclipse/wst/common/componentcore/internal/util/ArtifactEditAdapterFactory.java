@@ -18,14 +18,16 @@ import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
-import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
 import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
-import org.eclipse.wst.common.componentcore.internal.StructureEdit;
-import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.impl.ArtifactEditModelFactory;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.internal.emfworkbench.edit.EditModelRegistry;
+import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IProjectFacet;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 /**
  * <p>
@@ -59,7 +61,26 @@ public class ArtifactEditAdapterFactory implements IAdapterFactory {
 				ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(edit.getComponent().getProject());
 				Map params = new HashMap();
 				params.put(ArtifactEditModelFactory.PARAM_MODULE_URI, componentURI);
-				return nature.getExistingEditModel(getArtifactEditModelId(componentURI),params,edit.isReadOnly());
+				try {
+					IFacetedProject facetedProject = ProjectFacetsManager.create(aProject);
+					String[] editModelIDs = EditModelRegistry.getInstance().getRegisteredEditModelIDs();
+					for (int i=0; i<editModelIDs.length; i++) {
+						try {
+							IProjectFacet facet = ProjectFacetsManager.getProjectFacet(editModelIDs[i]);
+							if (facet != null && facetedProject.hasProjectFacet(facet)) {
+								EditModel editModel = nature.getExistingEditModel(editModelIDs[i],params,edit.isReadOnly());
+								if (editModel !=null)
+									return editModel;
+							}
+						} catch (Exception e) {
+							continue;
+						}
+					}
+					
+				} catch (Exception e){
+					//Return null
+				}
+				return null;
 			}
 		}
 		if (anAdapterType == ArtifactEdit.ADAPTER_TYPE) {
@@ -67,24 +88,9 @@ public class ArtifactEditAdapterFactory implements IAdapterFactory {
 				return new ArtifactEdit((ArtifactEditModel) anAdaptableObject);
 			if (anAdaptableObject instanceof IVirtualComponent) {
 				ArtifactEditRegistryReader reader = ArtifactEditRegistryReader.instance();
-	    		IArtifactEditFactory factory = reader.getArtifactEdit(((IVirtualComponent)anAdaptableObject).getComponentTypeId());
+	    		IArtifactEditFactory factory = reader.getArtifactEdit(((IVirtualComponent)anAdaptableObject).getProject());
 	    		return factory.createArtifactEditForRead((IVirtualComponent)anAdaptableObject);
 			}
-		}
-		return null;
-	}
-	private String getArtifactEditModelId(URI aModuleURI) { 
-		StructureEdit editUtility = null;
-		try {
-			IProject project = StructureEdit.getContainingProject(aModuleURI);
-			editUtility = StructureEdit.getStructureEditForRead(project);
-			WorkbenchComponent module = editUtility.getComponent();
-			return module.getComponentType().getComponentTypeId();
-		} catch (UnresolveableURIException uurie) {
-			// Ignore
-		} finally {
-			if (editUtility != null)
-				editUtility.dispose();
 		}
 		return null;
 	}

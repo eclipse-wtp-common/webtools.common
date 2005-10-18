@@ -23,7 +23,6 @@ import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IComponentCreationDataModelProperties;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IFlexibleProjectCreationDataModelProperties;
-import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
@@ -185,31 +184,31 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 	// return versions;
 	// }
 
-	protected static boolean matches(String serverTypeID, String j2eeModuleID) {
-
-		if (serverTypeID.equals("j2ee")) {
-			if (j2eeModuleID.equals(IModuleConstants.JST_WEB_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_EJB_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_EAR_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_APPCLIENT_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_CONNECTOR_MODULE)) {
-				return true;
-			}
-		} else if (serverTypeID.equals("j2ee.*")) {
-			if (j2eeModuleID.equals(IModuleConstants.JST_WEB_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_EJB_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_EAR_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_APPCLIENT_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_CONNECTOR_MODULE)) {
-				return true;
-			}
-		} else if (serverTypeID.equals("j2ee.web")) {//$NON-NLS-1$
-			if (j2eeModuleID.equals(IModuleConstants.JST_WEB_MODULE)) {
-				return true;
-			}
-		} else if (serverTypeID.equals("j2ee.ejb")) {//$NON-NLS-1$
-			if (j2eeModuleID.equals(IModuleConstants.JST_EJB_MODULE)) {
-				return true;
-			}
-		} else if (serverTypeID.equals("j2ee.ear")) {//$NON-NLS-1$
-			if (j2eeModuleID.equals(IModuleConstants.JST_EAR_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_APPCLIENT_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_CONNECTOR_MODULE)) {
-				return true;
-			}
-		}
-		return false;
-	}
+//	protected static boolean matches(String serverTypeID, String j2eeModuleID) {
+//
+//		if (serverTypeID.equals("j2ee")) {
+//			if (j2eeModuleID.equals(IModuleConstants.JST_WEB_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_EJB_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_EAR_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_APPCLIENT_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_CONNECTOR_MODULE)) {
+//				return true;
+//			}
+//		} else if (serverTypeID.equals("j2ee.*")) {
+//			if (j2eeModuleID.equals(IModuleConstants.JST_WEB_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_EJB_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_EAR_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_APPCLIENT_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_CONNECTOR_MODULE)) {
+//				return true;
+//			}
+//		} else if (serverTypeID.equals("j2ee.web")) {//$NON-NLS-1$
+//			if (j2eeModuleID.equals(IModuleConstants.JST_WEB_MODULE)) {
+//				return true;
+//			}
+//		} else if (serverTypeID.equals("j2ee.ejb")) {//$NON-NLS-1$
+//			if (j2eeModuleID.equals(IModuleConstants.JST_EJB_MODULE)) {
+//				return true;
+//			}
+//		} else if (serverTypeID.equals("j2ee.ear")) {//$NON-NLS-1$
+//			if (j2eeModuleID.equals(IModuleConstants.JST_EAR_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_APPCLIENT_MODULE) || j2eeModuleID.equals(IModuleConstants.JST_CONNECTOR_MODULE)) {
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
 
 	// private static boolean matches(String a, String b) {
 	// if (a == null || b == null || "*".equals(a) || "*".equals(b) || a.startsWith(b) ||
@@ -232,8 +231,6 @@ public abstract class ComponentCreationDataModelProvider extends AbstractDataMod
 	protected abstract EClass getComponentType();
 
 	protected abstract String getComponentExtension();
-
-	protected abstract String getComponentID();
 
 	protected abstract List getProperties();
 

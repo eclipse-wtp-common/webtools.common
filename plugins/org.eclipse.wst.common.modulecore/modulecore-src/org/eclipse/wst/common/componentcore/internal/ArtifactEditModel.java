@@ -19,9 +19,9 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.wst.common.componentcore.ComponentCore;
-import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.impl.PlatformURLModuleConnection;
+import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
@@ -159,20 +159,6 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 		return super.getResource(resourceURI);
 	}
 
-	/**
-	 * <p>
-	 * Uses the cached moduleURI to query ModuleCore (@see ModuleCore) for the module type this
-	 * ArtifactEditModel represents. Module types can be found in IModuleConstants (@see
-	 * IModuleConstants).
-	 * </p>
-	 * 
-	 * <@return string reprentation of a module type i.e. "wst.web">
-	 */
-
-
-	public String getModuleType() {
-		return virtualComponent.getComponentTypeId();
-	}
 	public IProject getComponentProject() { 
 		return componentProject;
 	}
@@ -258,7 +244,7 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 			resourceToProcess = (Resource) theResources.get(i);
 			if (resourceToProcess == null) continue;
 			String lastSegment = resourceToProcess.getURI().lastSegment();
-			if (null != lastSegment && lastSegment.equals(ModuleCoreNature.WTPMODULE_FILE_NAME)) continue;
+			if (null != lastSegment && lastSegment.equals(IModuleConstants.WTPMODULE_FILE_NAME)) continue;
 			resourceResource = WorkbenchResourceHelper.getFile(resourceToProcess);
 			if (resourceResource != null) {
 				virtualResources = ComponentCore.createResources(resourceResource); 

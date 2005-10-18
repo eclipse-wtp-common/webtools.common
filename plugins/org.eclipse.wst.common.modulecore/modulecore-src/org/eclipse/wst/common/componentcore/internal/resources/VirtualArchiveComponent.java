@@ -26,7 +26,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
-import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
@@ -73,10 +72,6 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 
 	public String getName() {
 		return this.archiveType + IPath.SEPARATOR + this.archivePath.toString();
-	}
-
-	public String getComponentTypeId() {
-		return IModuleConstants.JST_UTILITY_MODULE;
 	}
 
 	public void setComponentTypeId(String aComponentTypeId) {

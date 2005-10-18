@@ -204,9 +204,6 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	public static boolean isValidEditableModule(IVirtualComponent aModule) {
 		if (aModule == null)
 			return false;
-		/* The ComponentType must be non-null, and the moduleTypeId must be non-null */
-		if (aModule.getComponentTypeId() == null)
-			return false;
 		if (ModuleURIUtil.fullyQualifyURI(aModule.getProject()) == null)
 			return false;
 		/* and the containing project must be resolveable and accessible */
@@ -214,7 +211,7 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 		if (project == null || !project.isAccessible())
 			return false;
 		/* and an edit model factory must be defined for the module type */
-		IEditModelFactory factory = EditModelRegistry.getInstance().findEditModelFactoryByKey(aModule.getComponentTypeId());
+		IEditModelFactory factory = EditModelRegistry.getInstance().findEditModelFactoryByProject(aModule.getProject());
 		if (factory == null)
 			return false;
 		return true;
@@ -245,7 +242,7 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 *            A non-null {@see WorkbenchComponent}&nbsp;pointing to a module from the given
 	 *            {@see ModuleCoreNature}
 	 */
-	public ArtifactEdit(ModuleCoreNature aNature, IVirtualComponent aModule, boolean toAccessAsReadOnly) {
+	protected ArtifactEdit(ModuleCoreNature aNature, IVirtualComponent aModule, boolean toAccessAsReadOnly) {
 		if (toAccessAsReadOnly)
 			artifactEditModel = aNature.getArtifactEditModelForRead(ModuleURIUtil.fullyQualifyURI(aModule.getProject()), this);
 		else
@@ -266,6 +263,21 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 *            {@see ModuleCoreNature}
 	 */
 	public ArtifactEdit(IProject aProject, boolean toAccessAsReadOnly) throws IllegalArgumentException {
+		this(aProject,toAccessAsReadOnly,false,null);
+	}
+	
+	/**
+	 * <p>
+	 * Creates an instance facade for the given {@see WorkbenchComponent}.
+	 * </p>
+	 * 
+	 * @param aNature
+	 *            A non-null {@see ModuleCoreNature}&nbsp;for an accessible project
+	 * @param aModule
+	 *            A non-null {@see WorkbenchComponent}&nbsp;pointing to a module from the given
+	 *            {@see ModuleCoreNature}
+	 */
+	protected ArtifactEdit(IProject aProject, boolean toAccessAsReadOnly, boolean forCreate, String projectType) throws IllegalArgumentException {
 
 		if (aProject == null || !aProject.isAccessible())
 			throw new IllegalArgumentException("Invalid project: " + aProject);
@@ -278,14 +290,14 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 		IVirtualComponent component = ComponentCore.createComponent(aProject);
 		if (component == null)
 			throw new IllegalArgumentException("Invalid component handle: " + aProject);
-		if (!isValidEditableModule(component))
+		if (!forCreate && !isValidEditableModule(component))
 			throw new IllegalArgumentException("Invalid component handle: " + aProject);
 		URI componentURI = ModuleURIUtil.fullyQualifyURI(aProject);
 
 		if (toAccessAsReadOnly)
-			artifactEditModel = nature.getArtifactEditModelForRead(componentURI, this);
+			artifactEditModel = nature.getArtifactEditModelForRead(componentURI, this, projectType);
 		else
-			artifactEditModel = nature.getArtifactEditModelForWrite(componentURI, this);
+			artifactEditModel = nature.getArtifactEditModelForWrite(componentURI, this, projectType);
 		isReadOnly = toAccessAsReadOnly;
 		isArtifactEditModelSelfManaged = true;
 	}
@@ -388,7 +400,7 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 * @see org.eclipse.wst.common.componentcore.IEditModelHandler#dispose()
 	 */
 	public void dispose() {
-		if (isArtifactEditModelSelfManaged)
+		if (isArtifactEditModelSelfManaged && artifactEditModel != null)
 			artifactEditModel.releaseAccess(this);
 	}
 

@@ -17,11 +17,16 @@
 package org.eclipse.wst.common.componentcore.internal.util;
 
 import java.util.Hashtable;
+import java.util.Iterator;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jem.util.RegistryReader;
 import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IProjectFacet;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 /**
  * @author cbridgha
@@ -84,8 +89,29 @@ public class ArtifactEditRegistryReader extends RegistryReader {
 	private void addArtifactEdit(String typeID, IArtifactEditFactory staticCaller) {
 		typeRegistry.put(typeID,staticCaller);
 	}
+	
 	public IArtifactEditFactory getArtifactEdit(String typeID) {
 		return (IArtifactEditFactory)typeRegistry.get(typeID);
+	}
+	
+	public IArtifactEditFactory getArtifactEdit(IProject project) {
+		try {
+			IFacetedProject facetedProject = ProjectFacetsManager.create(project);
+			Iterator keys = typeRegistry.keySet().iterator();
+			while (keys.hasNext()) {
+				String typeID = (String) keys.next();
+				try {
+					IProjectFacet projectFacet = ProjectFacetsManager.getProjectFacet(typeID);
+					if (projectFacet != null && facetedProject.hasProjectFacet(projectFacet))
+						return getArtifactEdit(typeID);
+				} catch (Exception e) {
+					continue;
+				}
+			}
+		} catch (Exception e) {
+			//Just return null
+		}
+		return null;
 	}
 
 }

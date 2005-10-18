@@ -771,19 +771,19 @@ public class StructureEdit implements IEditModelHandler {
 	 * @return A non-null array of the {@see WorkbenchComponent}s that match the given module type
 	 *         id
 	 */
-	public WorkbenchComponent[] findComponentsByType(String aModuleTypeId) {
-		WorkbenchComponent[] availableModules = getWorkbenchModules();
-		ComponentType moduleType;
-		List results = new ArrayList();
-		for (int i = 0; i < availableModules.length; i++) {
-			moduleType = availableModules[i].getComponentType();
-			if (moduleType != null && aModuleTypeId.equals(moduleType.getComponentTypeId()))
-				results.add(availableModules[i]);
-		}
-		if (results.size() == 0)
-			return NO_MODULES;
-		return (WorkbenchComponent[]) results.toArray(new WorkbenchComponent[results.size()]);
-	}
+//	public WorkbenchComponent[] findComponentsByType(String aModuleTypeId) {
+//		WorkbenchComponent[] availableModules = getWorkbenchModules();
+//		ComponentType moduleType;
+//		List results = new ArrayList();
+//		for (int i = 0; i < availableModules.length; i++) {
+//			moduleType = availableModules[i].getComponentType();
+//			if (moduleType != null && aModuleTypeId.equals(moduleType.getComponentTypeId()))
+//				results.add(availableModules[i]);
+//		}
+//		if (results.size() == 0)
+//			return NO_MODULES;
+//		return (WorkbenchComponent[]) results.toArray(new WorkbenchComponent[results.size()]);
+//	}
 	
 	/**
 	 * Find and return the ReferencedComponent that represents the depedency from aComponent to aReferencedComponent.

@@ -32,6 +32,7 @@ public interface IModuleConstants {
 	public final static String JST_EAR_MODULE = "jst.ear"; //$NON-NLS-1$
 	public final static String JST_APPCLIENT_MODULE = "jst.appclient"; //$NON-NLS-1$
 	public final static String JST_CONNECTOR_MODULE = "jst.connector"; //$NON-NLS-1$
+	public final static String JST_JAVA = "jst.java"; //$NON-NLS-1$
 	
 	public final static String DEPENDENT_MODULE = "dependent"; //$NON-NLS-1$
     

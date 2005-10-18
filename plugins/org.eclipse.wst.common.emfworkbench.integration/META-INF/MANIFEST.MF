@@ -24,5 +24,6 @@ Require-Bundle: org.eclipse.wst.common.frameworks,
  org.eclipse.xsd,
  org.eclipse.wst.xml.core,
  org.eclipse.wst.sse.core,
- org.eclipse.wst.validation
+ org.eclipse.wst.validation,
+ org.eclipse.wst.common.project.facet.core
 Eclipse-AutoStart: true

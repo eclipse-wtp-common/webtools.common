@@ -19,16 +19,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.jem.util.logger.proxy.Logger;
-import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IComponentCreationDataModelProperties;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IFlexibleProjectCreationDataModelProperties;
-import org.eclipse.wst.common.componentcore.internal.ComponentType;
-import org.eclipse.wst.common.componentcore.internal.ComponentcoreFactory;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
-import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
@@ -40,14 +35,13 @@ public abstract class ComponentCreationOperation extends AbstractDataModelOperat
         super(model);
     }
 
-    public IStatus execute(String componentType, IProgressMonitor monitor, IAdaptable info) {
+    public IStatus execute(IProgressMonitor monitor, IAdaptable info) {
         createProjectIfNeeded(monitor, info);
 		StructureEdit edit = null;
         try {
 			edit = StructureEdit.getStructureEditForWrite(getProject());
 
             createAndLinkJ2EEComponentsForSingleComponent();
-            setupComponentType(componentType);
         }
         catch (CoreException e) {
             Logger.getLogger().log(e);
@@ -82,22 +76,6 @@ public abstract class ComponentCreationOperation extends AbstractDataModelOperat
     protected abstract void createAndLinkJ2EEComponentsForMultipleComponents() throws CoreException;
     
     protected abstract void createAndLinkJ2EEComponentsForSingleComponent() throws CoreException;
-    
-    
-    protected void setupComponentType(String typeID) {
-        IVirtualComponent component = ComponentCore.createComponent(getProject());
-        ComponentType componentType = ComponentcoreFactory.eINSTANCE.createComponentType();
-        componentType.setComponentTypeId(typeID);
-        componentType.setVersion(getVersion());
-        List newProps = getProperties();
-        if (newProps != null && !newProps.isEmpty()) {
-            EList existingProps = componentType.getProperties();
-            for (int i = 0; i < newProps.size(); i++) {
-                existingProps.add(newProps.get(i));
-            }
-        }
-        StructureEdit.setComponentType(component, componentType);
-    }
 
     protected String getComponentName() {
         return model.getStringProperty(COMPONENT_NAME);

@@ -22,14 +22,12 @@ import org.eclipse.core.runtime.Path;
  * <p>
  * A component is a container of virtual resources which has other features that describe the
  * component including:
- * <ul>
- * <li>{@link #getComponentTypeId()}
- * </p>
+ * 
  * @plannedfor 1.0
  */
 public interface IVirtualComponent extends IAdaptable {
 	
-	IPath ROOT = new Path("/");
+	IPath ROOT = new Path("/"); //$NON-NLS-1$
 	
 	/**
 	 * Type constant (bit mask value 1) which identifies component binary status.
@@ -52,7 +50,7 @@ public interface IVirtualComponent extends IAdaptable {
 	 * 
 	 * @return The componentTypeId, a string based identifier that indicates the component
 	 */
-	String getComponentTypeId();
+//	String getComponentTypeId();
 	
 	
 	/**
@@ -75,7 +73,7 @@ public interface IVirtualComponent extends IAdaptable {
 	 *            A value which is either standard for a common component type or client-defined for
 	 *            a custom component type
 	 */
-	void setComponentTypeId(String aComponentTypeId);
+//	void setComponentTypeId(String aComponentTypeId);
 
 	/**
 	 * MetaProperties are String-based name-value pairs that include information about this

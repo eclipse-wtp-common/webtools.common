@@ -15,10 +15,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jem.util.RegistryReader;
@@ -28,6 +30,9 @@ import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchEditResourceHand
 import org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEditPlugin;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import org.eclipse.wst.common.internal.emfworkbench.integration.IEditModelFactory;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IProjectFacet;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 /**
  * @author mdelder
@@ -127,6 +132,31 @@ public class EditModelRegistry extends RegistryReader {
 		if (editMdlInfo != null)
 			factory = editMdlInfo.getEditModelFactory();
 		return factory; 
+	}
+	
+	public IEditModelFactory findEditModelFactoryByProject(IProject project) {
+		IFacetedProject facetedProject = null;
+		try {
+			facetedProject = ProjectFacetsManager.create(project);
+		} catch (Exception e) {
+			return null;
+		}
+		Iterator keys = factoryConfigurations.keySet().iterator();
+		while (keys.hasNext()) {
+			Object key = keys.next();
+			if (key instanceof String) {
+				try {
+					IProjectFacet projectFacet = ProjectFacetsManager.getProjectFacet((String)key);
+					if (projectFacet != null && facetedProject.hasProjectFacet(projectFacet))
+						return findEditModelFactoryByKey(key);
+				} catch (Exception e) {
+					continue;
+				}
+				
+			}
+		}
+		
+		return null;
 	}
 
 	protected Collection getAllEditModelResources(String editModelID) {
@@ -252,5 +282,9 @@ public class EditModelRegistry extends RegistryReader {
 	 */
 	protected static boolean isInitialized() {
 		return initialized;
+	}
+	
+	public String[] getRegisteredEditModelIDs() {
+		return (String[]) factoryConfigurations.keySet().toArray(new String[factoryConfigurations.keySet().size()]);
 	}
 }
