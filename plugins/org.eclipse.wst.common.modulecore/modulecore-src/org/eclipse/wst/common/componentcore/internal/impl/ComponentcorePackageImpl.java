@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentcorePackageImpl.java,v 1.6 2005/09/12 20:56:54 cbridgha Exp $
+ * $Id: ComponentcorePackageImpl.java,v 1.7 2005/10/18 22:25:44 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
@@ -205,6 +205,24 @@ public class ComponentcorePackageImpl extends EPackageImpl implements Componentc
 	 */
 	public EReference getWorkbenchComponent_ReferencedComponents() {
 		return (EReference)workbenchComponentEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getWorkbenchComponent_Properties() {
+		return (EReference)workbenchComponentEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getWorkbenchComponent_MetadataResources() {
+		return (EAttribute)workbenchComponentEClass.getEStructuralFeatures().get(5);
 	}
 
 	/**
@@ -465,6 +483,8 @@ public class ComponentcorePackageImpl extends EPackageImpl implements Componentc
 		createEReference(workbenchComponentEClass, WORKBENCH_COMPONENT__RESOURCES);
 		createEReference(workbenchComponentEClass, WORKBENCH_COMPONENT__COMPONENT_TYPE);
 		createEReference(workbenchComponentEClass, WORKBENCH_COMPONENT__REFERENCED_COMPONENTS);
+		createEReference(workbenchComponentEClass, WORKBENCH_COMPONENT__PROPERTIES);
+		createEAttribute(workbenchComponentEClass, WORKBENCH_COMPONENT__METADATA_RESOURCES);
 
 		componentResourceEClass = createEClass(COMPONENT_RESOURCE);
 		createEAttribute(componentResourceEClass, COMPONENT_RESOURCE__SOURCE_PATH);
@@ -532,6 +552,8 @@ public class ComponentcorePackageImpl extends EPackageImpl implements Componentc
 		initEReference(getWorkbenchComponent_Resources(), this.getComponentResource(), this.getComponentResource_Component(), "resources", null, 0, -1, WorkbenchComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getWorkbenchComponent_ComponentType(), this.getComponentType(), null, "componentType", null, 1, 1, WorkbenchComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getWorkbenchComponent_ReferencedComponents(), this.getReferencedComponent(), null, "referencedComponents", null, 0, -1, WorkbenchComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getWorkbenchComponent_Properties(), this.getProperty(), null, "properties", null, 0, -1, WorkbenchComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getWorkbenchComponent_MetadataResources(), this.getIPath(), "metadataResources", null, 0, -1, WorkbenchComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(componentResourceEClass, ComponentResource.class, "ComponentResource", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getComponentResource_SourcePath(), this.getIPath(), "sourcePath", null, 1, 1, ComponentResource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchComponentImpl.java,v 1.6 2005/09/12 20:56:54 cbridgha Exp $
+ * $Id: WorkbenchComponentImpl.java,v 1.7 2005/10/18 22:25:44 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
@@ -21,13 +21,16 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
+import org.eclipse.emf.ecore.util.EDataTypeUniqueEList;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectContainmentWithInverseEList;
+import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.ComponentType;
 import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
+import org.eclipse.wst.common.componentcore.internal.Property;
 import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 
@@ -41,6 +44,8 @@ import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.WorkbenchComponentImpl#getResources <em>Resources</em>}</li>
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.WorkbenchComponentImpl#getComponentType <em>Component Type</em>}</li>
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.WorkbenchComponentImpl#getReferencedComponents <em>Referenced Components</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.WorkbenchComponentImpl#getProperties <em>Properties</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.WorkbenchComponentImpl#getMetadataResources <em>Metadata Resources</em>}</li>
  * </ul>
  * </p>
  *
@@ -95,6 +100,26 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	 * @ordered
 	 */
 	protected EList referencedComponents = null;
+
+	/**
+	 * The cached value of the '{@link #getProperties() <em>Properties</em>}' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getProperties()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList properties = null;
+
+	/**
+	 * The cached value of the '{@link #getMetadataResources() <em>Metadata Resources</em>}' attribute list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getMetadataResources()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList metadataResources = null;
 
 	private final Map resourceIndexByDeployPath = new HashMap();
 	private final Map resourceIndexBySourcePath = new HashMap();
@@ -242,6 +267,30 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	}
 
 	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EList getProperties() {
+		if (properties == null) {
+			properties = new EObjectResolvingEList(Property.class, this, ComponentcorePackage.WORKBENCH_COMPONENT__PROPERTIES);
+		}
+		return properties;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EList getMetadataResources() {
+		if (metadataResources == null) {
+			metadataResources = new EDataTypeUniqueEList(IPath.class, this, ComponentcorePackage.WORKBENCH_COMPONENT__METADATA_RESOURCES);
+		}
+		return metadataResources;
+	}
+
+	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
@@ -293,6 +342,10 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 				return getComponentType();
 			case ComponentcorePackage.WORKBENCH_COMPONENT__REFERENCED_COMPONENTS:
 				return getReferencedComponents();
+			case ComponentcorePackage.WORKBENCH_COMPONENT__PROPERTIES:
+				return getProperties();
+			case ComponentcorePackage.WORKBENCH_COMPONENT__METADATA_RESOURCES:
+				return getMetadataResources();
 		}
 		return eDynamicGet(eFeature, resolve);
 	}
@@ -317,6 +370,14 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 				getReferencedComponents().clear();
 				getReferencedComponents().addAll((Collection)newValue);
 				return;
+			case ComponentcorePackage.WORKBENCH_COMPONENT__PROPERTIES:
+				getProperties().clear();
+				getProperties().addAll((Collection)newValue);
+				return;
+			case ComponentcorePackage.WORKBENCH_COMPONENT__METADATA_RESOURCES:
+				getMetadataResources().clear();
+				getMetadataResources().addAll((Collection)newValue);
+				return;
 		}
 		eDynamicSet(eFeature, newValue);
 	}
@@ -339,6 +400,12 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 			case ComponentcorePackage.WORKBENCH_COMPONENT__REFERENCED_COMPONENTS:
 				getReferencedComponents().clear();
 				return;
+			case ComponentcorePackage.WORKBENCH_COMPONENT__PROPERTIES:
+				getProperties().clear();
+				return;
+			case ComponentcorePackage.WORKBENCH_COMPONENT__METADATA_RESOURCES:
+				getMetadataResources().clear();
+				return;
 		}
 		eDynamicUnset(eFeature);
 	}
@@ -357,6 +424,10 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 				return componentType != null;
 			case ComponentcorePackage.WORKBENCH_COMPONENT__REFERENCED_COMPONENTS:
 				return referencedComponents != null && !referencedComponents.isEmpty();
+			case ComponentcorePackage.WORKBENCH_COMPONENT__PROPERTIES:
+				return properties != null && !properties.isEmpty();
+			case ComponentcorePackage.WORKBENCH_COMPONENT__METADATA_RESOURCES:
+				return metadataResources != null && !metadataResources.isEmpty();
 		}
 		return eDynamicIsSet(eFeature);
 	}
@@ -371,6 +442,8 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (name: ");
 		result.append(name);
+		result.append(", metadataResources: ");
+		result.append(metadataResources);
 		result.append(')');
 		return result.toString();
 	}
