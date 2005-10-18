@@ -125,16 +125,14 @@ public class VirtualComponent implements IVirtualComponent {
         try {
             core = StructureEdit.getStructureEditForRead(getProject());
             WorkbenchComponent component = core.getComponent(); 
-            ComponentType cType = component.getComponentType();
             Properties props = new Properties();
-            if(cType != null) {
-                List propList = cType.getProperties();
+            
+                List propList = component.getProperties();
                 if(propList != null) {
                     for (int i = 0; i < propList.size(); i++) {
                         props.setProperty(((Property)propList.get(i)).getName(), ((Property)propList.get(i)).getValue());
                     }
                 }
-            }
             return props; 
         } finally {
             if(core != null)
@@ -147,13 +145,8 @@ public class VirtualComponent implements IVirtualComponent {
         try {
             core = StructureEdit.getStructureEditForWrite(getProject());
             WorkbenchComponent component = core.getComponent(); 
-            ComponentType cType = component.getComponentType();
-			if(cType == null) {
-				cType = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentType();
-				component.setComponentType(cType);
-			}            
-            if(cType != null) {
-                List propList = cType.getProperties();
+            
+                List propList = component.getProperties();
 				if (properties != null && !properties.isEmpty()) {
 				        for(Enumeration itr = properties.keys(); itr.hasMoreElements();) {
 				            final String key = (String) itr.nextElement();
@@ -164,7 +157,7 @@ public class VirtualComponent implements IVirtualComponent {
 				         }
 				}
                 
-            }
+            
         } finally {
             if(core != null){
             	core.saveIfNecessary(null);
@@ -177,17 +170,12 @@ public class VirtualComponent implements IVirtualComponent {
         try {
             core = StructureEdit.getStructureEditForWrite(getProject());
             WorkbenchComponent component = core.getComponent(); 
-            ComponentType cType = component.getComponentType();
-			if(cType == null) {
-				cType = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentType();
-				component.setComponentType(cType);
-			}              
-            if(cType != null) {
+            
                 final Property prop = ComponentcoreFactory.eINSTANCE.createProperty();
 				prop.setName(key);
 				prop.setValue(value);
-				cType.getProperties().add(prop);
-            }
+				component.getProperties().add(prop);
+            
         } finally {
             if(core != null){
             	core.saveIfNecessary(null);
