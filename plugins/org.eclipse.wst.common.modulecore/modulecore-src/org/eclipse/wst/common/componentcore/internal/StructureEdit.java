@@ -17,7 +17,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -80,11 +79,8 @@ public class StructureEdit implements IEditModelHandler {
 	static String MODULE_META_FILE_NAME = ".wtpmodules"; //$NON-NLS-1$
 
 	private final static ComponentcoreFactory COMPONENT_FACTORY = ComponentcoreFactory.eINSTANCE;
-	private static final WorkbenchComponent[] NO_MODULES = new WorkbenchComponent[0];
 	private static final ComponentResource[] NO_RESOURCES = new ComponentResource[0];
-	private static final IFolder[] NO_FOLDERS = new IFolder[0];
-
-
+	
 	private final ModuleStructuralModel structuralModel;
 	private final Map dependentCores = new HashMap();
 	private boolean isStructuralModelSelfManaged;
@@ -279,21 +275,6 @@ public class StructureEdit implements IEditModelHandler {
 		return componentType;
 	}
 
-	//public static void setComponentType(IVirtualContainer component, ComponentType aComponentType) {
-	public static void setComponentType(IVirtualComponent component, ComponentType aComponentType) {		
-		StructureEdit componentCore = null;
-		try {
-			componentCore = StructureEdit.getStructureEditForWrite(component.getProject());
-			WorkbenchComponent wbComponent = componentCore.getComponent();
-			wbComponent.setComponentType(aComponentType);
-		} finally {
-			if (componentCore != null) {
-				componentCore.saveIfNecessary(null);
-				componentCore.dispose();
-			}
-		}
-	}
-	
 	public static IVirtualReference createVirtualReference(IVirtualComponent context, ReferencedComponent referencedComponent) {
 
 		IVirtualComponent targetComponent = null;
