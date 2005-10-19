@@ -673,6 +673,8 @@ public class StructureEdit implements IEditModelHandler {
 	 */
 	public ComponentResource[] findResourcesBySourcePath(IPath aProjectRelativePath, int resourceFlag) throws UnresolveableURIException {
 		ProjectComponents projectModules = getComponentModelRoot();
+		if (projectModules==null)
+			return NO_RESOURCES;
 		EList modules = projectModules.getComponents();
 
 		WorkbenchComponent module = null;
