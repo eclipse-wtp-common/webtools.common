@@ -74,9 +74,6 @@ public class IVirtualComponentAPITest extends BaseVirtualTest {
 		component.getProject();
 	}
 	
-	public void testGetVersion(){
-		component.getVersion();
-	}
 	
 	public void testAddMetaProperty(){
 		component.setMetaProperty("Test1", "test1Value");
@@ -86,10 +83,6 @@ public class IVirtualComponentAPITest extends BaseVirtualTest {
 		Properties props = new Properties();
 		props.setProperty("Test2", "Value2");
 		component.setMetaProperties(props);
-	}
-	
-	public void testSetVersion(){
-		component.setVersion("30");
 	}	
 
 }
