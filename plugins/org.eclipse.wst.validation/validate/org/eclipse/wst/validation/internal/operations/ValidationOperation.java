@@ -930,14 +930,25 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		} catch (OperationCanceledException exc) {
 			handleOperationCancelledValidateException(reporter, validator, vmd, iterator, logger, exc);
 		} finally {
-			if(ValidatorManager.messageLimitProjectMap != null) {
-				ValidatorManager.messageLimitProjectMap.clear();
-				ValidatorManager.messageLimitProjectMap = null;
-			}
-			if(ValidatorManager.messageLimitMessageProjectMap != null) {
-				ValidatorManager.messageLimitMessageProjectMap.clear();
-				ValidatorManager.messageLimitMessageProjectMap = null;
-			}
+			releaseCachedMaps();
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void releaseCachedMaps() {
+		if(ValidatorManager.messageLimitProjectMap != null) {
+			ValidatorManager.messageLimitProjectMap.clear();
+			ValidatorManager.messageLimitProjectMap = null;
+		}
+		if(ValidatorManager.messageLimitMessageProjectMap != null) {
+			ValidatorManager.messageLimitMessageProjectMap.clear();
+			ValidatorManager.messageLimitMessageProjectMap = null;
+		}
+		if (ValidationRegistryReader.getReader().projectValidationMetaData != null) {
+			ValidationRegistryReader.getReader().projectValidationMetaData.clear();
+			ValidationRegistryReader.getReader().projectValidationMetaData = null;
 		}
 	}
 

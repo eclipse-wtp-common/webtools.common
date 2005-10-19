@@ -81,8 +81,8 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	private static final String EXCLUDED_PROJECT = "EXCLUDED"; //$NON-NLS-1$ // This 'project nature id' is used as a key to get the validators which are excluded on certain projects.
 
 	private List _tempList = null; // list for temporary values. Retrieve and use via the
-
-	// getTempList() method.
+	
+	public HashMap projectValidationMetaData = null;
 
 	/**
 	 * The registry is read once - when this class is instantiated.
@@ -1057,16 +1057,25 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	}
 
 	public boolean isConfiguredOnProject(ValidatorMetaData vmd, IProject project) {
-		Set prjVmds = getValidatorMetaData(project);
-		if (prjVmds == null) {
-			return false;
-		}
+		if (projectValidationMetaData == null)
+			projectValidationMetaData = new HashMap();
 
-		if (prjVmds.size() == 0) {
-			return false;
-		}
+		Object vmds = projectValidationMetaData.get(project);
+		if (vmds != null) {
+			Set pvmds = (Set) vmds;
+			return pvmds.contains(vmd);
+		} else {
+			Set prjVmds = getValidatorMetaData(project);
+			if (prjVmds == null) {
+				return false;
+			}
 
-		return prjVmds.contains(vmd);
+			if (prjVmds.size() == 0) {
+				return false;
+			}
+			projectValidationMetaData.put(project, prjVmds);
+			return prjVmds.contains(vmd);
+		}
 	}
 
 	/**
