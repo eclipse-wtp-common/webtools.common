@@ -24,10 +24,6 @@
       <import feature="org.eclipse.wst.common_ui.feature" version="1.0.0"/>
    </requires>
 
-   <plugin
-         id="org.eclipse.wst.common.source"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
+
 
 </feature>
