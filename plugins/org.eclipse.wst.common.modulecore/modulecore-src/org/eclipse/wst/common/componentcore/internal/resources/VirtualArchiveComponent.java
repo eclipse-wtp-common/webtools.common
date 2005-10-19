@@ -161,9 +161,6 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 		return NO_COMPONENTS;
 	}
 
-	public String getVersion() {
-		return "";
-	}
 
 	public Object getAdapter(Class adapterType) {
 		return Platform.getAdapterManager().getAdapter(this, adapterType);
@@ -209,7 +206,4 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 		return diskFile;
 	}
 
-	public void setVersion(String aVersion) {
-		
-	}
 }

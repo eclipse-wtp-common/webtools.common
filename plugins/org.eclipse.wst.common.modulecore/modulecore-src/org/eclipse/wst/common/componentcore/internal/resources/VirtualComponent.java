@@ -23,7 +23,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.common.componentcore.ComponentCore;
-import org.eclipse.wst.common.componentcore.internal.ComponentType;
 import org.eclipse.wst.common.componentcore.internal.ComponentcoreFactory;
 import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
 import org.eclipse.wst.common.componentcore.internal.DependencyType;
@@ -296,41 +295,6 @@ public class VirtualComponent implements IVirtualComponent {
 				return reference;
 		}
 		return null;
-	}
-
-	public String getVersion(){
-		StructureEdit core = null;
-		try {
-			core = StructureEdit.getStructureEditForRead(getProject());
-			WorkbenchComponent component = core.getComponent(); 
-			ComponentType compType = component.getComponentType();
-			if( compType != null)
-				return compType.getVersion();
-		} finally {
-			if(core != null)
-				core.dispose();
-}
-		return ""; //$NON-NLS-1$
-	}
-
-	public void setVersion(String aVersion) {
-
-		StructureEdit core = null;
-		try {
-			core = StructureEdit.getStructureEditForWrite(getProject());
-			WorkbenchComponent component = core.getComponent(); 
-			ComponentType cType = component.getComponentType();
-			if(cType == null) {
-				cType = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentType();
-				component.setComponentType(cType);
-			}
-			cType.setVersion(aVersion);
-		} finally {
-			if(core != null) {
-				core.saveIfNecessary(null);
-				core.dispose();
-			}
-		}
 	}
 	
 	public Object getAdapter(Class adapterType) {

@@ -162,19 +162,7 @@ public interface IVirtualComponent extends IAdaptable {
 	 * @param theReferences A by-value copy of the virtual reference array
 	 */
 	void setReferences(IVirtualReference[] theReferences);
-	
-	/**
-	 * The version associated with the component.
-	 * 
-	 * @return The version of the component.
-	 */	
-	String getVersion();	
-	
-	/**
-	 * sets the version associated on the component.
-	 * 
-	 */	
-	void setVersion(String aVersion);	
+		
 	
 	/**
 	 * Returns true if this component is of binary type
