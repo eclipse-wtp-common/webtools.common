@@ -246,6 +246,35 @@ public class VirtualComponent implements IVirtualComponent {
 		}		
 	}
 
+	public void addReferences(IVirtualReference[] references) {
+		if (references==null || references.length==0)
+			return;
+		StructureEdit core = null;
+		try {
+			core = StructureEdit.getStructureEditForWrite(getProject());
+			WorkbenchComponent component = core.getComponent();
+			ReferencedComponent referencedComponent = null;
+			ComponentcoreFactory factory = ComponentcorePackage.eINSTANCE.getComponentcoreFactory();
+			for (int i=0; i<references.length; i++) {
+				referencedComponent = factory.createReferencedComponent();				
+				referencedComponent.setDependencyType(DependencyType.get(references[i].getDependencyType()));
+				referencedComponent.setRuntimePath(references[i].getRuntimePath());
+
+				IVirtualComponent comp = references[i].getReferencedComponent();
+				if( !comp.isBinary())
+					referencedComponent.setHandle(ModuleURIUtil.fullyQualifyURI(references[i].getReferencedComponent().getProject()));
+				else
+					referencedComponent.setHandle(ModuleURIUtil.archiveComponentfullyQualifyURI(references[i].getReferencedComponent().getName()));
+				
+				component.getReferencedComponents().add(referencedComponent);
+			}
+		} finally {
+			if(core != null) {
+				core.saveIfNecessary(null);
+				core.dispose();
+			}
+		}	
+	}
 	
 	public void setReferences(IVirtualReference[] references) { 
 		StructureEdit core = null;

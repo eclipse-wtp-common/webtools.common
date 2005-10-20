@@ -144,6 +144,10 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 	public void setReferences(IVirtualReference[] theReferences) {
 		// no op
 	}
+	
+	public void addReferences(IVirtualReference[] references) {
+		// no op
+	}
 
 	public IVirtualReference getReference(String aComponentName) {
 		return null;

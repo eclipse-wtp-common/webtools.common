@@ -162,7 +162,8 @@ public interface IVirtualComponent extends IAdaptable {
 	 * @param theReferences A by-value copy of the virtual reference array
 	 */
 	void setReferences(IVirtualReference[] theReferences);
-		
+	
+	public void addReferences(IVirtualReference[] references);
 	
 	/**
 	 * Returns true if this component is of binary type

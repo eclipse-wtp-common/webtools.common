@@ -37,7 +37,7 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 		List targetprojectList = new ArrayList();
 		for( int i=0; i< modList.size(); i++){
 			IVirtualComponent IVirtualComponent = (IVirtualComponent) modList.get(i);
-			IProject targetProject = (IProject) IVirtualComponent.getProject();
+			IProject targetProject = IVirtualComponent.getProject();
 			targetprojectList.add(targetProject);
 		}
 		try {
@@ -50,16 +50,7 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 	protected void addReferencedComponents(IProgressMonitor monitor) {
 		
 		IVirtualComponent sourceComp = (IVirtualComponent) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT);
-		//IVirtualComponent sourceComp = ComponentCore.createComponent(sourceProject);
-		
-		List vlist = new ArrayList();
-		IVirtualReference[] oldrefs = sourceComp.getReferences();
-		for (int i = 0; i < oldrefs.length; i++) {
-			IVirtualReference ref = oldrefs[i];
-			vlist.add(ref);
-		}		
-
-		
+		List vlist = new ArrayList();		
         List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST);
 		for (int i = 0; i < modList.size(); i++) {
 			IVirtualComponent comp = (IVirtualComponent) modList.get(i);
@@ -72,14 +63,8 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 			}
 		}
 		
-		
-		IVirtualReference[] refs = new IVirtualReference[vlist.size()];
-		for (int i = 0; i < vlist.size(); i++) {
-			IVirtualReference ref = (IVirtualReference) vlist.get(i);
-			refs[i] = ref;
-		}
-		
-		sourceComp.setReferences(refs);
+		IVirtualReference[] refs = (IVirtualReference[]) vlist.toArray(new IVirtualReference[vlist.size()]);
+		sourceComp.addReferences(refs);
 	}
 
 	private boolean srcComponentContainsReference(IVirtualComponent sourceComp, IVirtualComponent comp) {
