@@ -698,7 +698,7 @@ public final class ProjectFacetsManagerImpl
     {
         final Action action = (Action) actions.get( index );
         
-        for( int i = index - 1; i > 0; i-- )
+        for( int i = index; i > 0; i-- )
         {
             actions.set( i, actions.get( i - 1 ) );
         }

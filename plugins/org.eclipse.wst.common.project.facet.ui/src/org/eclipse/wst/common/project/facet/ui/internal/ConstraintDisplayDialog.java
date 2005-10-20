@@ -2,15 +2,18 @@ package org.eclipse.wst.common.project.facet.ui.internal;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.draw2d.AbsoluteBendpoint;
 import org.eclipse.draw2d.AbstractBorder;
 import org.eclipse.draw2d.AbstractLayout;
 import org.eclipse.draw2d.ChopboxAnchor;
-import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.CompoundBorder;
+import org.eclipse.draw2d.Ellipse;
+import org.eclipse.draw2d.EllipseAnchor;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
@@ -19,6 +22,7 @@ import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.PolylineConnection;
+import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Insets;
@@ -30,29 +34,51 @@ import org.eclipse.draw2d.graph.Node;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.wst.common.project.facet.core.IConstraint;
+import org.eclipse.wst.common.project.facet.core.IProjectFacet;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 public final class ConstraintDisplayDialog
 
     extends Dialog
     
 {
+    private static final Font BOLD_FONT;
+    
+    static
+    {
+        final FontData sys 
+            = Display.getCurrent().getSystemFont().getFontData()[ 0 ];
+        
+        final FontData bold
+            = new FontData( sys.getName(), sys.getHeight(), SWT.BOLD );
+        
+        BOLD_FONT = new Font( Display.getCurrent(), bold );
+    }
+    
+    private final IConstraint constraint;
     private final Point location;
     private int width;
     private int height;
     
     protected ConstraintDisplayDialog( final Shell parentShell,
-                                       final Point location )
+                                       final Point location,
+                                       final IConstraint constraint )
     {
         super( parentShell );
         
         setShellStyle( SWT.APPLICATION_MODAL | getDefaultOrientation() );
         
+        this.constraint = constraint;
         this.location = location;
     }
 
@@ -70,173 +96,17 @@ public final class ConstraintDisplayDialog
         contents.setBorder( new MarginBorder( 10 ) );
         outer.add( contents );
         
-        final DirectedGraph graph = new DirectedGraph();
-        
-        final Figure box1 = new Figure();
-        box1.setLayoutManager( new ToolbarLayout() );
-        box1.setBorder( new LineBorder( ColorConstants.black, 1 ) );
-        box1.setOpaque( false );
-        box1.add( new Label( "box1\nlabel" ) );
-        final Node box1node = new Node( box1 );
-        graph.nodes.add( box1node );
-
-        final Figure box2 = new Figure();
-        box2.setLayoutManager( new ToolbarLayout() );
-        box2.setBorder( new LineBorder( ColorConstants.black, 1 ) );
-        box2.setOpaque( false );
-        box2.add( new Label( "box2\nlabel" ) );
-        final Node box2node = new Node( box2 );
-        graph.nodes.add( box2node );
-        
-        final Figure box3 = new Figure();
-        box3.setLayoutManager( new ToolbarLayout() );
-        box3.setBorder( new LineBorder( ColorConstants.black, 1 ) );
-        box3.setOpaque( false );
-        box3.add( new Label( "box3\nlabel" ) );
-        final Node box3node = new Node( box3 );
-        graph.nodes.add( box3node );
-        
-        final Figure box4 = new Figure();
-        box4.setLayoutManager( new ToolbarLayout() );
-        box4.setBorder( new LineBorder( ColorConstants.black, 1 ) );
-        box4.setOpaque( false );
-        box4.add( new Label( "box4\nlabel" ) );
-        final Node box4node = new Node( box4 );
-        box4node.sortValue = -99.0;
-        graph.nodes.add( box4node );
-
-        final Figure box5 = new Figure();
-        box5.setLayoutManager( new ToolbarLayout() );
-        box5.setBorder( new LineBorder( ColorConstants.black, 1 ) );
-        box5.setOpaque( false );
-        box5.add( new Label( "box5\nlabel" ) );
-        final Node box5node = new Node( box5 );
-        graph.nodes.add( box5node );
-        
-        final Figure box6 = new Figure();
-        box6.setLayoutManager( new ToolbarLayout() );
-        box6.setBorder( new LineBorder( ColorConstants.black, 1 ) );
-        box6.setOpaque( false );
-        box6.add( new Label( "box6\nlabel" ) );
-        final Node box6node = new Node( box6 );
-        graph.nodes.add( box6node );
-
-        final Figure box7 = new Figure();
-        box7.setLayoutManager( new ToolbarLayout() );
-        box7.setBorder( new LineBorder( ColorConstants.black, 1 ) );
-        box7.setOpaque( false );
-        box7.add( new Label( "box7\nlabel" ) );
-        final Node box7node = new Node( box7 );
-        graph.nodes.add( box7node );
-        
-        final Figure box8 = new Figure();
-        box8.setLayoutManager( new ToolbarLayout() );
-        box8.setBorder( new LineBorder( ColorConstants.black, 1 ) );
-        box8.setOpaque( false );
-        box8.add( new Label( "box8\nlabel" ) );
-        final Node box8node = new Node( box8 );
-        graph.nodes.add( box8node );
-        
-        final Figure box9 = new Figure();
-        box9.setLayoutManager( new ToolbarLayout() );
-        box9.setBorder( new LineBorder( ColorConstants.black, 1 ) );
-        box9.setOpaque( false );
-        box9.add( new Label( "box9\nlabel" ) );
-        final Node box9node = new Node( box9 );
-        graph.nodes.add( box9node );
-
-        final Figure box10 = new Figure();
-        box10.setLayoutManager( new ToolbarLayout() );
-        box10.setBorder( new LineBorder( ColorConstants.black, 1 ) );
-        box10.setOpaque( false );
-        box10.add( new Label( "box10\nlabel" ) );
-        final Node box10node = new Node( box10 );
-        graph.nodes.add( box10node );
-        
-        final PolylineConnection cn1 = new PolylineConnection();
-        cn1.setSourceAnchor( new ChopboxAnchor( box4 ) );
-        cn1.setTargetAnchor( new ChopboxAnchor( box1 ) );
-        final Edge cn1edge = new Edge( cn1, box4node, box1node );
-        graph.edges.add( cn1edge );
-        
-        final PolylineConnection cn2 = new PolylineConnection();
-        cn2.setSourceAnchor( new ChopboxAnchor( box4 ) );
-        cn2.setTargetAnchor( new ChopboxAnchor( box2 ) );
-        final Edge cn2edge = new Edge( cn2, box4node, box2node );
-        graph.edges.add( cn2edge );
-        
-        final PolylineConnection cn3 = new PolylineConnection();
-        cn3.setSourceAnchor( new ChopboxAnchor( box4 ) );
-        cn3.setTargetAnchor( new ChopboxAnchor( box3 ) );
-        final Edge cn3edge = new Edge( cn3, box4node, box3node );
-        graph.edges.add( cn3edge );
-
-        final PolylineConnection cn4 = new PolylineConnection();
-        cn4.setSourceAnchor( new ChopboxAnchor( box3 ) );
-        cn4.setTargetAnchor( new ChopboxAnchor( box5 ) );
-        final Edge cn4edge = new Edge( cn4, box3node, box5node );
-        graph.edges.add( cn4edge );
-
-        final PolylineConnection cn5 = new PolylineConnection();
-        cn5.setSourceAnchor( new ChopboxAnchor( box3 ) );
-        cn5.setTargetAnchor( new ChopboxAnchor( box6 ) );
-        final Edge cn5edge = new Edge( cn5, box3node, box6node );
-        graph.edges.add( cn5edge );
-
-        final PolylineConnection cn6 = new PolylineConnection();
-        cn6.setSourceAnchor( new ChopboxAnchor( box3 ) );
-        cn6.setTargetAnchor( new ChopboxAnchor( box7 ) );
-        final Edge cn6edge = new Edge( cn6, box3node, box7node );
-        graph.edges.add( cn6edge );
-
-        final PolylineConnection cn7 = new PolylineConnection();
-        cn7.setSourceAnchor( new ChopboxAnchor( box2 ) );
-        cn7.setTargetAnchor( new ChopboxAnchor( box8 ) );
-        final Edge cn7edge = new Edge( cn7, box2node, box8node );
-        graph.edges.add( cn7edge );
-
-        final PolylineConnection cn8 = new PolylineConnection();
-        cn8.setSourceAnchor( new ChopboxAnchor( box2 ) );
-        cn8.setTargetAnchor( new ChopboxAnchor( box9 ) );
-        final Edge cn8edge = new Edge( cn2, box2node, box9node );
-        graph.edges.add( cn8edge );
-
-        final PolylineConnection cn9 = new PolylineConnection();
-        cn9.setSourceAnchor( new ChopboxAnchor( box9 ) );
-        cn9.setTargetAnchor( new ChopboxAnchor( box10 ) );
-        final Edge cn9edge = new Edge( cn9, box9node, box10node );
-        graph.edges.add( cn9edge );
-
-        contents.setLayoutManager( new GraphLayoutManager( graph ) );
-        
-        contents.add( box1 );
-        contents.add( box2 );
-        contents.add( box3 );
-        contents.add( box4 );
-        contents.add( box5 );
-        contents.add( box6 );
-        contents.add( box7 );
-        contents.add( box8 );
-        contents.add( box9 );
-        contents.add( box10 );
-        contents.add( cn1 );
-        contents.add( cn2 );
-        contents.add( cn3 );
-        contents.add( cn4 );
-        contents.add( cn5 );
-        contents.add( cn6 );
-        contents.add( cn7 );
-        contents.add( cn8 );
-        contents.add( cn9 );
+        createConstraintGraph( contents, null, this.constraint );
+        contents.setLayoutManager( new GraphLayoutManager() );
         
         final Label escLabel = new Label( "Press 'Esc' to close." );
         escLabel.setLabelAlignment( Label.RIGHT );
-        escLabel.setBorder( new CompoundBorder( new DoubleLineBorder(), new MarginBorder( 2 ) ) );
+        escLabel.setBorder( new CompoundBorder( new DividerBorder( 2 ), new MarginBorder( 2 ) ) );
         
         outer.add( escLabel );
 
         final Dimension size = outer.getPreferredSize();
-        this.width = size.width;
+        this.width = ( size.width < 200 ? 200 : size.width );
         this.height = size.height;
         
         return canvas;
@@ -257,31 +127,70 @@ public final class ConstraintDisplayDialog
         return new Point( this.width, this.height );
     }
     
-    public class DoubleLineBorder 
-        
-        extends AbstractBorder 
-        
+    private void createConstraintGraph( final IFigure container,
+                                        final PolylineConnection parentCon,
+                                        final IConstraint constraint )
     {
-        private Insets insets = new Insets( 3, 0, 0, 0 );
-        
-        public Insets getInsets( final IFigure figure ) 
+        if( constraint.getType() == IConstraint.Type.AND ||
+            constraint.getType() == IConstraint.Type.OR )
         {
-            return this.insets;
+            if( constraint.getOperands().size() == 1 )
+            {
+                final IConstraint child
+                    = (IConstraint) constraint.getOperand( 0 );
+                
+                createConstraintGraph( container, parentCon, child ); 
+            }
+            else
+            {
+                final AndOrConstraintFigure node 
+                    = new AndOrConstraintFigure( constraint );
+                
+                container.add( node );
+                
+                if( parentCon != null )
+                {
+                    parentCon.setTargetAnchor( new EllipseAnchor( node ) );
+                }
+                
+                for( Iterator itr = constraint.getOperands().iterator(); 
+                     itr.hasNext(); )
+                {
+                    final IConstraint child = (IConstraint) itr.next();
+                    final PolylineConnection childEdge = new PolylineConnection();
+                    container.add( childEdge );
+                    childEdge.setSourceAnchor( new EllipseAnchor( node ) );
+                    createConstraintGraph( container, childEdge, child );
+                }
+            }
         }
-        
-        public void paint( final IFigure figure, 
-                           final Graphics graphics, 
-                           final Insets insets ) 
+        else if( constraint.getType() == IConstraint.Type.REQUIRES )
         {
-            final Rectangle paintRectangle 
-                = getPaintRectangle( figure, insets );
+            final RequiresConstraintFigure node 
+                = new RequiresConstraintFigure( constraint );
             
-            final int y = paintRectangle.getTopLeft().y;
-            final int xLeft = paintRectangle.getTopLeft().x;
-            final int xRight = paintRectangle.getTopRight().x;
-            
-            graphics.drawLine( xLeft, y, xRight, y );
-            graphics.drawLine( xLeft, y + 2, xRight, y + 2 );
+            container.add( node );
+
+            if( parentCon != null )
+            {
+                parentCon.setTargetAnchor( new ChopboxAnchor( node ) );
+            }
+        }
+        else if( constraint.getType() == IConstraint.Type.CONFLICTS )
+        {
+            final ConflictsConstraintFigure node 
+                = new ConflictsConstraintFigure( constraint );
+        
+            container.add( node );
+
+            if( parentCon != null )
+            {
+                parentCon.setTargetAnchor( new ChopboxAnchor( node ) );
+            }
+        }
+        else
+        {
+            throw new IllegalStateException();
         }
     }
     
@@ -290,13 +199,7 @@ public final class ConstraintDisplayDialog
         extends AbstractLayout
         
     {
-        private final DirectedGraph graph;
         private int laidout = 0;
-        
-        public GraphLayoutManager( final DirectedGraph graph )
-        {
-            this.graph = graph;
-        }
         
         protected Dimension calculatePreferredSize( final IFigure container, 
                                                     final int wHint, 
@@ -311,16 +214,61 @@ public final class ConstraintDisplayDialog
             return result.getSize();        
         }
 
-        public void layout( IFigure container )
+        public void layout( final IFigure container )
         {
             if( this.laidout > 5 )
             {
                 return;
             }
             
-            ( new DirectedGraphLayout() ).visit( this.graph );
+            // Create the graph.
+            
+            final DirectedGraph graph = new DirectedGraph();
+            final Map nodes = new HashMap();
+            
+            for( Iterator itr = container.getChildren().iterator(); 
+                 itr.hasNext(); )
+            {
+                final IFigure child = (IFigure) itr.next();
+                
+                if( ! ( child instanceof PolylineConnection ) )
+                {
+                    final Node node = new Node( child );
+                    final Dimension size = child.getPreferredSize();
+                    node.height = size.height;
+                    node.width = size.width;
+                    graph.nodes.add( node );
+                    nodes.put( child, node );
+                }
+            }
+            
+            for( Iterator itr = container.getChildren().iterator(); 
+                 itr.hasNext(); )
+            {
+                final Object child = itr.next();
+                
+                if( child instanceof PolylineConnection )
+                {
+                    final PolylineConnection cn = (PolylineConnection) child;
+                    
+                    final IFigure source = cn.getSourceAnchor().getOwner();
+                    final Node sourceNode = (Node) nodes.get( source );
+                    
+                    final IFigure target = cn.getTargetAnchor().getOwner();
+                    final Node targetNode = (Node) nodes.get( target );
+                    
+                    final Edge edge = new Edge( cn, sourceNode, targetNode );
+                    graph.edges.add( edge );
+                }
+            }
+            
+            // Call the graph layout algorith to determine node positions.
+            
+            ( new DirectedGraphLayout() ).visit( graph );
+            
+            // Layout nodes based on the results of the graph layout.
 
-            for( Iterator itr = this.graph.nodes.iterator(); itr.hasNext(); )
+            for( Iterator itr = graph.nodes.iterator(); itr.hasNext(); )
             {
                 final Node node = (Node) itr.next();
                 final IFigure figure = (IFigure) node.data;
@@ -333,7 +281,7 @@ public final class ConstraintDisplayDialog
                 figure.setBounds( bounds );
             }
 
-            for( Iterator itr = this.graph.edges.iterator(); itr.hasNext(); )
+            for( Iterator itr = graph.edges.iterator(); itr.hasNext(); )
             {
                 final Edge edge = (Edge) itr.next();
                 final PolylineConnection cn = (PolylineConnection) edge.data;
@@ -371,5 +319,179 @@ public final class ConstraintDisplayDialog
         }
     }
     
+    private static final class DividerBorder
+        
+        extends AbstractBorder 
+        
+    {
+        private final int lines;
+        private final Insets insets;
+        
+        public DividerBorder( final int lines )
+        {
+            this.lines = lines;
+            this.insets = new Insets( 1 + ( this.lines - 1 ) * 2 );
+        }
+        
+        public Insets getInsets( final IFigure figure ) 
+        {
+            return this.insets;
+        }
+        
+        public void paint( final IFigure figure, 
+                           final Graphics graphics, 
+                           final Insets insets ) 
+        {
+            final Rectangle paintRectangle 
+                = getPaintRectangle( figure, insets );
+            
+            final int xLeft = paintRectangle.getTopLeft().x;
+            final int xRight = paintRectangle.getTopRight().x;
+            
+            int y = paintRectangle.getTopLeft().y;
+            
+            for( int i = 0; i < this.lines; i++, y += 2 )
+            {
+                graphics.drawLine( xLeft, y, xRight, y );
+            }
+        }
+    }
+    
+    private static final class DashedLineBorder
+    
+        extends LineBorder
+        
+    {
+        public DashedLineBorder()
+        {
+            super( 1 );
+        }
+        
+        public void paint(IFigure figure, Graphics graphics, Insets insets) 
+        {
+            graphics.setLineStyle( SWT.LINE_DASH );
+            super.paint( figure, graphics, insets );
+            graphics.setLineStyle( SWT.LINE_SOLID );
+        }
+    }
+    
+    private static final class AndOrConstraintFigure
+    
+        extends Figure
+        
+    {
+        public AndOrConstraintFigure( final IConstraint constraint )
+        {
+            setLayoutManager( new StackLayout() );
+            
+            final String labelText;
+            final Color background;
+            
+            if( constraint.getType() == IConstraint.Type.AND )
+            {
+                labelText = "AND";
+                background = new Color( null, 0, 175, 0 );
+            }
+            else if( constraint.getType() == IConstraint.Type.OR )
+            {
+                labelText = "OR";
+                background = new Color( null, 255, 128, 0 ); 
+            }
+            else
+            {
+                throw new IllegalStateException();
+            }
+            
+            final Ellipse circle = new Ellipse();
+            circle.setOpaque( true );
+            circle.setBackgroundColor( background );
+            add( circle );
+            
+            final Label label = new Label();
+            label.setFont( BOLD_FONT );
+            label.setText( labelText );
+            add( label );
+        }
+        
+        public Dimension getPreferredSize( final int wHint, 
+                                           final int hHint )
+        {
+            return new Dimension( 35, 35 );
+        }
+    }
+    
+    private static final class RequiresConstraintFigure
+    
+        extends Figure
+        
+    {
+        public RequiresConstraintFigure( final IConstraint constraint )
+        {
+            final String fid = (String) constraint.getOperand( 0 );
+            final String vstr = (String) constraint.getOperand( 1 );
+            final Boolean allowNewer = (Boolean) constraint.getOperand( 2 );
+            final Boolean soft = (Boolean) constraint.getOperand( 3 );
+            
+            setLayoutManager( new ToolbarLayout() );
+            setBackgroundColor( new Color( null, 255, 255, 255 ) );
+            setOpaque( true );
+            
+            setBorder( soft.booleanValue() 
+                       ? new DashedLineBorder() : new LineBorder( 1 )  );
+            
+            final Label headerLabel = new Label();
+            headerLabel.setFont( BOLD_FONT );
+            headerLabel.setText( "requires" );
+            headerLabel.setBorder( new MarginBorder( 2 ) );
+            add( headerLabel );
+            
+            final IProjectFacet f = ProjectFacetsManager.getProjectFacet( fid );
+            
+            final StringBuffer bodyLabelText = new StringBuffer();
+            
+            bodyLabelText.append( f.getLabel() );
+            bodyLabelText.append( ' ' );
+            bodyLabelText.append( vstr );
+            
+            if( allowNewer.booleanValue() )
+            {
+                bodyLabelText.append( " or newer" );
+            }
+            
+            final Label bodyLabel = new Label();
+            bodyLabel.setText( bodyLabelText.toString() );
+            bodyLabel.setBorder( new CompoundBorder( new DividerBorder( 1 ), new MarginBorder( 2 ) ) );
+            add( bodyLabel );
+        }
+    }
+
+    private static final class ConflictsConstraintFigure
+    
+        extends Figure
+        
+    {
+        public ConflictsConstraintFigure( final IConstraint constraint )
+        {
+            setLayoutManager( new ToolbarLayout() );
+            setBorder( new LineBorder( 1 ) );
+            setOpaque( true );
+            setBackgroundColor( new Color( null, 255, 255, 255 ) );
+            
+            final Label headerLabel = new Label();
+            headerLabel.setFont( BOLD_FONT );
+            headerLabel.setText( "conflicts (group)" );
+            headerLabel.setBorder( new MarginBorder( 2 ) );
+            add( headerLabel );
+            
+            final StringBuffer bodyLabelText = new StringBuffer();
+            
+            bodyLabelText.append( (String) constraint.getOperand( 0 ) );
+
+            final Label bodyLabel = new Label();
+            bodyLabel.setText( bodyLabelText.toString() );
+            bodyLabel.setBorder( new CompoundBorder( new DividerBorder( 1 ), new MarginBorder( 2 ) ) );
+            add( bodyLabel );
+        }
+    }
     
 }

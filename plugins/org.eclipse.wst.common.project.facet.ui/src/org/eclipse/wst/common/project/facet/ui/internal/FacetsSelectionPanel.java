@@ -71,6 +71,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.wst.common.project.facet.core.ICategory;
+import org.eclipse.wst.common.project.facet.core.IConstraint;
 import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
@@ -120,6 +121,7 @@ public final class FacetsSelectionPanel
     private final TreeColumn colFacet;
     private final TreeColumn colVersion;
     private final Menu popupMenu;
+    private final MenuItem popupMenuConstraints;
     private final ComboBoxCellEditor ceditor;
     private final TableViewer problemsView;
     private final RuntimesPanel runtimesPanel;
@@ -305,10 +307,10 @@ public final class FacetsSelectionPanel
         );
 
         this.popupMenu = new Menu( getShell(), SWT.POP_UP );
-        final MenuItem item = new MenuItem( this.popupMenu, SWT.PUSH );
-        item.setText( "Show Constraints..." );
+        this.popupMenuConstraints = new MenuItem( this.popupMenu, SWT.PUSH );
+        this.popupMenuConstraints.setText( "Show Constraints..." );
         
-        item.addSelectionListener
+        this.popupMenuConstraints.addSelectionListener
         (
             new SelectionAdapter()
             {
@@ -986,7 +988,7 @@ public final class FacetsSelectionPanel
     {
         final ArrayList items = getAllTreeItems();
         
-        boolean onItem = false;
+        TreeItem onItem = null;
 
         for( int i = 0, n = items.size(); i < n; i++ )
         {
@@ -994,7 +996,7 @@ public final class FacetsSelectionPanel
             
             if( item.getBounds( 0 ).contains( event.x, event.y ) )
             {
-                onItem = true;
+                onItem = item;
                 break;
             }
 
@@ -1006,7 +1008,28 @@ public final class FacetsSelectionPanel
             }
         }
         
-        this.tree.getTree().setMenu( onItem ? this.popupMenu : null );
+        if( onItem != null && onItem.getData() instanceof TableRowData )
+        {
+            final TableRowData trd = (TableRowData) onItem.getData();
+            final IProjectFacetVersion fv = trd.getCurrentVersion();
+            final IConstraint c = fv.getConstraint();
+            
+            if( c.getType() == IConstraint.Type.AND && 
+                c.getOperands().size() == 0 )
+            {
+                this.popupMenuConstraints.setEnabled( false );
+            }
+            else
+            {
+                this.popupMenuConstraints.setEnabled( true );
+            }
+            
+            this.tree.getTree().setMenu( this.popupMenu );
+        }
+        else
+        {
+            this.tree.getTree().setMenu( null );
+        }
     }
     
     private void handleShowConstraints()
@@ -1014,6 +1037,8 @@ public final class FacetsSelectionPanel
         final TreeItem[] items = this.tree.getTree().getSelection();
         if( items.length != 1 ) throw new IllegalStateException();
         final TreeItem item = items[ 0 ];
+        final TableRowData trd = (TableRowData) item.getData();
+        final IProjectFacetVersion fv = trd.getCurrentVersion();
         
         final Rectangle bounds = item.getBounds();
         
@@ -1021,7 +1046,8 @@ public final class FacetsSelectionPanel
         location = this.tree.getTree().toDisplay( location );
         
         final ConstraintDisplayDialog dialog 
-            = new ConstraintDisplayDialog( getShell(), location );
+            = new ConstraintDisplayDialog( getShell(), location,
+                                           fv.getConstraint() );
 
         dialog.open();
     }
