@@ -111,22 +111,26 @@ public abstract class VirtualResource implements IVirtualResource {
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(getProject());
-			WorkbenchComponent aComponent = moduleCore.getComponent();
-			if (aComponent != null) {
-				ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(aComponent);
-				// still need some sort of loop here to search subpieces of the runtime path.
-				ComponentResource[] componentResources = null;
-
-				IPath[] estimatedPaths = null;
-				IPath searchPath = null;
-				do {
-					searchPath = (searchPath == null) ? getRuntimePath() : searchPath.removeLastSegments(1);
-					componentResources = root.findModuleResources(searchPath, ResourceTreeNode.CREATE_NONE);
-					estimatedPaths = findBestMatches(componentResources);
-				} while (estimatedPaths.length==0 && canSearchContinue(componentResources, searchPath));
-				if (estimatedPaths==null || estimatedPaths.length==0)
-					return new IPath[] {getRuntimePath()};
-				return estimatedPaths;
+			if (moduleCore !=null) {
+				WorkbenchComponent aComponent = moduleCore.getComponent();
+				if (aComponent != null) {
+					ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(aComponent);
+					// still need some sort of loop here to search subpieces of the runtime path.
+					ComponentResource[] componentResources = null;
+	
+					if (root != null) {
+						IPath[] estimatedPaths = null;
+						IPath searchPath = null;
+						do {
+							searchPath = (searchPath == null) ? getRuntimePath() : searchPath.removeLastSegments(1);
+							componentResources = root.findModuleResources(searchPath, ResourceTreeNode.CREATE_NONE);
+							estimatedPaths = findBestMatches(componentResources);
+						} while (estimatedPaths.length==0 && canSearchContinue(componentResources, searchPath));
+						if (estimatedPaths==null || estimatedPaths.length==0)
+							return new IPath[] {getRuntimePath()};
+						return estimatedPaths;
+					}
+				}
 			}
 		} finally {
 			if (moduleCore != null) {
