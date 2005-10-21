@@ -50,13 +50,13 @@ public class ModuleCoreEclipseAdapterFactory implements IAdapterFactory {
 			
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(resource.getProject());
+			if (moduleCore == null)
+				return null;
 			if (resource.getType() == IResource.PROJECT) {
 				WorkbenchComponent[] comps = moduleCore.getWorkbenchModules();
-				if (comps.length > 0){
+				if (comps.length > 0)
 					return ComponentCore.createComponent(resource.getProject());
-				}
-				else
-					return null;
+				return null;
 			}
 			module = moduleCore.findComponent(resource.getFullPath(),ResourceTreeNode.CREATE_NONE);	
 		} catch (UnresolveableURIException e) {
