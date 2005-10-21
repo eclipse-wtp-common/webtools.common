@@ -87,7 +87,7 @@ public class Message implements IMessage {
 	 * @param aBundleName 
 	 * 			Must not be null or the empty string (""). 
 	 * @param aSeverity 
-	 * 			Must be one of the constants specified in SeverityEnum. 
+	 * 			Must be one of the severities specified in IMessage. 
 	 * @param anId 
 	 * 			Must not be null or the empty string ("").
 	 */
@@ -104,7 +104,7 @@ public class Message implements IMessage {
 	 * @param aBundleName 
 	 * 			Must not be null or the empty string (""). 
 	 * @param aSeverity 
-	 * 			Must be one of the constants specified in SeverityEnum. 
+	 * 			Must be one of the severities specified in IMessage.
 	 * @param anId 
 	 * 			Must not be null or the empty string ("").
 	 * @param aParams 
@@ -123,7 +123,7 @@ public class Message implements IMessage {
 	 * @param aBundleName 
 	 * 			Must not be null or the empty string (""). 
 	 * @param aSeverity 
-	 * 			Must be one of the constants specified in SeverityEnum. 
+	 * 			Must be one of the severities specified in IMessage.
 	 * @param anId 
 	 * 			Must not be null or the empty string ("").
 	 * @param aParams 
