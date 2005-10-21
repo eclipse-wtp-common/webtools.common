@@ -227,7 +227,7 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 			} else {
 				boolean foundMapping = false;
 				for (int resourceIndx = 0; resourceIndx < resources.length && !foundMapping; resourceIndx++) {
-					if (aProjectRelativeLocation.equals(resources[resourceIndx].getSourcePath()))
+					if (aProjectRelativeLocation.makeAbsolute().equals(resources[resourceIndx].getSourcePath()))
 						foundMapping = true;
 				}
 				if (!foundMapping) {
@@ -292,7 +292,6 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 		StructureEdit core = null;
 		try {
 			core = StructureEdit.getStructureEditForRead(getProject());
-			String name = getProject().getName();
 			WorkbenchComponent component = core.getComponent();
 			List currentResources = component.getResources();
 			List foundResources = new ArrayList();
