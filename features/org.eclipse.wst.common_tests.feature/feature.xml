@@ -18,6 +18,7 @@
 
    <requires>
       <import feature="org.eclipse.wst.common_ui.feature" version="1.0.0"/>
+      <import feature="org.eclipse.test" version="3.1.0"/>
    </requires>
 
    <plugin
