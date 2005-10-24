@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -23,6 +24,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchContext;
 import org.eclipse.wst.validation.internal.operations.WorkbenchContext;
+import org.eclipse.wst.validation.internal.plugin.ValidationHelperRegistryReader;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 import org.osgi.framework.Bundle;
@@ -322,10 +324,25 @@ public class ValidatorMetaData {
 	}
 	
 	private boolean checkIfValidSourceFile(IResource file) {
-//		IProject project = file.getProject();
-		
-//		if (file.getType() == IResource.FILE) 
-//			return file.getFullPath().toOSString().indexOf(ConfigurationConstants.DEPLOYABLES_FOLDER) == -1;
+		if (file.getType() == IResource.FILE) {
+			IProjectValidationHelper helper = ValidationHelperRegistryReader.getInstance().getValidationHelper();
+			IProject project = file.getProject();
+			if (helper == null || project == null)
+				return true;
+			IContainer[] outputContainers = helper.getOutputContainers(project);
+			IContainer[] sourceContainers = helper.getSourceContainers(project);
+			for (int i=0; i<outputContainers.length; i++) {
+				String outputPath = outputContainers[i].getProjectRelativePath().makeAbsolute().toString();
+				for (int j=0; j<sourceContainers.length; j++) {
+					String sourceContainerPath = sourceContainers[j].getProjectRelativePath().makeAbsolute().toString();
+					if (outputPath.equals(sourceContainerPath))
+						continue;
+				}
+				String filePath = file.getProjectRelativePath().makeAbsolute().toString();
+				if (filePath.startsWith(outputPath))
+					return false;
+			}
+		}
 		return true;
 	}
 
