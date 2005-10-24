@@ -28,5 +28,7 @@ public interface IFacetDataModelProperties extends IDataModelProperties {
 	public static final String FACET_VERSION_STR = "IFacetDataModelPropeties.FACET_VERSION_STR"; //$NON-NLS-1$
 
 	public static final String FACET_VERSION = "IFacetDataModelPropeties.FACET_VERSION"; //$NON-NLS-1$
+	
+	public static final String FACET_ACTION = "IFacetDataModelProperties.FACET_ACTION"; //$NON-NLS-1$
 
 }

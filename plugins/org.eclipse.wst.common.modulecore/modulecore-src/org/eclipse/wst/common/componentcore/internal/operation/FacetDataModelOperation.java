@@ -11,8 +11,6 @@
 package org.eclipse.wst.common.componentcore.internal.operation;
 
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -25,33 +23,27 @@ import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetProjectCr
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action.Type;
 
-public class FacetProjectCreationOperation extends AbstractDataModelOperation {
+public class FacetDataModelOperation extends AbstractDataModelOperation {
 
-	public FacetProjectCreationOperation() {
-		super();
-	}
-
-	public FacetProjectCreationOperation(IDataModel model) {
+	public FacetDataModelOperation(IDataModel model) {
 		super(model);
 	}
-
+	
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+		IFacetedProject facetProj;
 		try {
-			IFacetedProject facetProj = ProjectFacetsManager.create(model.getStringProperty(IFacetProjectCreationDataModelProperties.FACET_PROJECT_NAME), null, monitor);
-			List dmList = (List) model.getProperty(IFacetProjectCreationDataModelProperties.FACET_DM_LIST);
+			facetProj = ProjectFacetsManager.create(model.getStringProperty(IFacetProjectCreationDataModelProperties.FACET_PROJECT_NAME), null, monitor);
 			Set actions = new HashSet();
-			IDataModel facetDM = null;
-			for (Iterator iterator = dmList.iterator(); iterator.hasNext();) {
-				facetDM = (IDataModel) iterator.next();
-				actions.add(facetDM.getProperty(IFacetDataModelProperties.FACET_ACTION));
-			}
+			actions.add(new IFacetedProject.Action((Type) model.getProperty(IFacetDataModelProperties.FACET_TYPE), (IProjectFacetVersion) model.getProperty(IFacetDataModelProperties.FACET_VERSION), model));
 			facetProj.modify(actions, monitor);
-
 		} catch (CoreException e) {
 			throw new ExecutionException(e.getMessage(), e);
 		}
 		return OK_STATUS;
 	}
+
 }

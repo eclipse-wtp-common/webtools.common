@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.datamodel;
 
-public abstract class FacetInstallDataModelProvider extends FacetDataModelProvider {
+public class FacetInstallDataModelProvider extends FacetDataModelProvider {
 
 	public FacetInstallDataModelProvider() {
 		super();
