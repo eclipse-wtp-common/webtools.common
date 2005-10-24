@@ -19,7 +19,7 @@ public interface IFacetDataModelProperties extends IDataModelProperties {
 	public static final Object FACET_TYPE_UNINSTALL = Action.Type.UNINSTALL;
 	public static final Object FACET_TYPE_VERSION_CHANGE = Action.Type.VERSION_CHANGE;
 
-	public static final String FACET_PROJECT_NAME = "IWebFacetInstallDataModelProperties.FACET_PROJECT_NAME"; //$NON-NLS-1$
+	public static final String FACET_PROJECT_NAME = "IFacetDataModelPropeties.FACET_PROJECT_NAME"; //$NON-NLS-1$
 
 	public static final String FACET_TYPE = "IFacetDataModelPropeties.FACET_TYPE"; //$NON-NLS-1$
 
