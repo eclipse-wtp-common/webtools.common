@@ -19,7 +19,7 @@
        <uiContextSensitiveClass
             context="UI"
             key="rendererFactory"
-            className="org.eclipse.wst.common.emfworkbench.internal.emf2xml.sse.EMF2DOMSSERendererFactory">
+            className="org.eclipse.wst.xml.core.internal.emf2xml.EMF2DOMSSERendererFactory">
        </uiContextSensitiveClass>
        <uiContextSensitiveClass
           key="ValidateEditContext"
