@@ -19,7 +19,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.wst.common.environment.Log;
+import org.eclipse.wst.common.environment.ILog;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
@@ -47,7 +47,7 @@ public class BaseOperation extends AbstractDataModelOperation {
     
     if( checkModels ) modelsOK = checkModels();
     
-    getEnvironment().getLog().log( Log.OK, 1234, this, "BaseOperation", (Throwable)null );
+    getEnvironment().getLog().log( ILog.OK, 1234, this, "BaseOperation", (Throwable)null );
     
 		return status;
 	}
