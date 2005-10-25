@@ -141,6 +141,17 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 		return members(includePhantoms ? IGNORE_EXCLUSIONS : IResource.NONE);
 	}
 
+	private ComponentResource[] orderResourcesByFolder(ComponentResource[] resources) {
+		List result = new ArrayList();
+		for (int i=0; i<resources.length; i++ ) {
+			IResource realResource = StructureEdit.getEclipseResource(resources[i]);
+			if (realResource!=null && (realResource.getType() == IResource.FOLDER || realResource.getType() == IResource.PROJECT))
+				result.add(0,resources[i]);
+			else
+				result.add(resources[i]);
+		}
+		return (ComponentResource[]) result.toArray(new ComponentResource[result.size()]);
+	}
 	/**
 	 * @see IContainer#members(int)
 	 */
@@ -153,6 +164,7 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 			if (wbComponent != null) {
 				ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(wbComponent);
 				ComponentResource[] componentResources = root.findModuleResources(getRuntimePath(), ResourceTreeNode.CREATE_NONE);
+				componentResources = orderResourcesByFolder(componentResources);
 				IResource realResource = null;
 				IPath fullRuntimePath = null;
 				IPath newRuntimePath = null;
@@ -176,7 +188,7 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 						newRuntimePath = getRuntimePath().append(fullRuntimePath.segment(getRuntimePath().segmentCount()));
 						realResource = StructureEdit.getEclipseResource(componentResources[componentResourceIndex]);
 						if (realResource != null)
-							addVirtualResource(virtualResources, realResource, newRuntimePath);
+							addVirtualResource(virtualResources, realResource, fullRuntimePath);
 					}
 				}
 			}
@@ -282,6 +294,13 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 		IPath[] metaPaths = getComponent().getMetaResources();
 		for (int i=0; i<metaPaths.length; i++) {
 			if (newRuntimePath.equals(metaPaths[i]))
+				return;
+		}
+		// If the parent path is in the resources set already, ignore the child
+		Iterator iter = virtualResources.iterator();
+		while (iter.hasNext()) {
+			IVirtualResource resource = (IVirtualResource)iter.next();
+			if (newRuntimePath.toString().startsWith(resource.getRuntimePath().toString()))
 				return;
 		}
 		if (realResource.getType() == IResource.FOLDER)
