@@ -111,6 +111,33 @@ public final class RuntimeManagerImpl
         return runtimes.getUnmodifiable();
     }
     
+    public static Set getRuntimes( final Set facets )
+    {
+        final HashSet result = new HashSet();
+        
+        for( Iterator itr1 = runtimes.iterator(); itr1.hasNext(); )
+        {
+            final IRuntime r = (IRuntime) itr1.next();
+            boolean supports = true;
+            
+            for( Iterator itr2 = facets.iterator(); itr2.hasNext(); )
+            {
+                if( ! r.supports( (IProjectFacetVersion) itr2.next() ) )
+                {
+                    supports = false;
+                    break;
+                }
+            }
+            
+            if( supports )
+            {
+                result.add( r );
+            }
+        }
+        
+        return result;
+    }
+    
     public static boolean isRuntimeDefined( final String name )
     {
         return runtimes.containsKey( name );

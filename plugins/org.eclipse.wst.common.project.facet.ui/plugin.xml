@@ -1,28 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-  id="org.eclipse.wst.common.project.facet.ui"
-  name="Project Facet UI"
-  version="1.0"
-  class="org.eclipse.wst.common.project.facet.ui.internal.FacetUiPlugin">
+<plugin>
 
-  <runtime>
-    <library name="facet-ui.jar">
-      <export name="*"/>
-    </library>
-  </runtime>
-  
-  <requires>
-    <import plugin="org.eclipse.ui"/>
-    <import plugin="org.eclipse.ui.ide"/>
-    <import plugin="org.eclipse.core.runtime"/>
-    <import plugin="org.eclipse.core.resources"/>
-    <import plugin="org.eclipse.wst.common.project.facet.core"/>
-    <import plugin="org.eclipse.draw2d"/>
-    <import plugin="org.eclipse.gef"/>
-  </requires>
-  
-  <extension-point 
+    <extension-point 
     id="wizard"
     name="Feature Wizard Pages Extension Point"
     schema="schemas/wizard-pages.exsd"/>

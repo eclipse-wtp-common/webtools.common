@@ -78,6 +78,21 @@ public final class RuntimeManager
     }
     
     /**
+     * Returns the runtimes that support all of the specified facets.
+     * 
+     * @param facets the facets that need to be supported (element type: 
+     *   {@link IProjectFacetVersion})
+     * @return the runtimes that support all of the specified facets (element 
+     *   type: {@link IRuntime})
+     */
+    
+    public static Set getRuntimes( final Set facets )
+    {
+        return RuntimeManagerImpl.getRuntimes( facets );
+    }
+    
+    
+    /**
      * Determines whether the specified runtime has been defined.
      * 
      * @param name the runtime name
