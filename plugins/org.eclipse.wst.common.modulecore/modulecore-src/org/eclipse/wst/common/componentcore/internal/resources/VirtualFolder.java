@@ -11,6 +11,7 @@ package org.eclipse.wst.common.componentcore.internal.resources;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -70,25 +71,25 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 		return getUnderlyingFolders();
 	}
 
-	public IFolder getUnderlyingFolder() { 
+	public IContainer getUnderlyingFolder() { 
 		IPath path = getProjectRelativePath();
 		if( !path.isRoot() )
 			return getProject().getFolder(getProjectRelativePath());
-		else
-			return null;
+		return getProject();
 	}
 	
-	public IFolder[] getUnderlyingFolders() {
+	public IContainer[] getUnderlyingFolders() {
 		IPath[] paths = getProjectRelativePaths();
 		List result = new ArrayList();
 		for (int i=0; i<paths.length; i++) {
 			if( !paths[i].isRoot() ){
-				IFolder folder = getProject().getFolder(paths[i]);
+				IContainer folder = getProject().getFolder(paths[i]);
 				if (folder!=null && folder.exists() && !result.contains(folder))
 					result.add(folder);
-			}
+			} else 
+				result.add(getProject());
 		}
-		return (IFolder[]) result.toArray(new IFolder[result.size()]);
+		return (IContainer[]) result.toArray(new IContainer[result.size()]);
 	}
 
 	protected void doDeleteMetaModel(int updateFlags, IProgressMonitor monitor) {

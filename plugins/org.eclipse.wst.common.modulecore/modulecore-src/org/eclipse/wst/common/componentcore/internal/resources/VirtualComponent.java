@@ -181,15 +181,41 @@ public class VirtualComponent implements IVirtualComponent {
                 core.dispose();
             }
         }
-	}	
+	}
+	
 	public IPath[] getMetaResources() {
-		// TODO Auto-generated method stub
-		return null;
+		StructureEdit moduleCore = null;
+		List metaResources = new ArrayList();
+		try {
+			moduleCore = StructureEdit.getStructureEditForRead(getProject());
+			WorkbenchComponent component = moduleCore.getComponent();
+			if (component != null)
+				metaResources.addAll(component.getMetadataResources());
+		} finally {
+			if (moduleCore != null) {
+				moduleCore.dispose();
+			}
+		}
+		return (IPath[]) metaResources.toArray(new IPath[metaResources.size()]);
 	}
 
 	public void setMetaResources(IPath[] theMetaResourcePaths) {
-		// TODO Auto-generated method stub
-
+		StructureEdit moduleCore = null;
+		try {
+			moduleCore = StructureEdit.getStructureEditForWrite(getProject());
+			WorkbenchComponent component = moduleCore.getComponent();
+			if (component != null) {
+				for (int i=0; i<theMetaResourcePaths.length; i++) {
+					if (!component.getMetadataResources().contains(theMetaResourcePaths[i]))
+						component.getMetadataResources().add(theMetaResourcePaths[i]);
+				}
+			}
+		} finally {
+			if (moduleCore != null) {
+				moduleCore.saveIfNecessary(null);
+				moduleCore.dispose();
+			}
+		}
 	}
 	
 	public int getType() {

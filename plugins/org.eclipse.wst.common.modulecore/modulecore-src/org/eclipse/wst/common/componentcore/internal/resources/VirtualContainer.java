@@ -175,12 +175,8 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 					} else { // fuzzy match
 						newRuntimePath = getRuntimePath().append(fullRuntimePath.segment(getRuntimePath().segmentCount()));
 						realResource = StructureEdit.getEclipseResource(componentResources[componentResourceIndex]);
-						if (fullRuntimePath.segmentCount() == 1) {
-							if (realResource != null)
-								addVirtualResource(virtualResources, realResource, newRuntimePath);
-						} else if (fullRuntimePath.segmentCount() > 1 && realResource!=null && realResource.getType() == IResource.FOLDER) {
-							virtualResources.add(new VirtualFolder(getProject(), newRuntimePath));
-						}
+						if (realResource != null)
+							addVirtualResource(virtualResources, realResource, newRuntimePath);
 					}
 				}
 			}
@@ -282,6 +278,12 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 	 * @param newRuntimePath
 	 */
 	private void addVirtualResource(Set virtualResources, IResource realResource, IPath newRuntimePath) {
+		// Ignore all meta data paths in the virtual container resource set
+		IPath[] metaPaths = getComponent().getMetaResources();
+		for (int i=0; i<metaPaths.length; i++) {
+			if (newRuntimePath.equals(metaPaths[i]))
+				return;
+		}
 		if (realResource.getType() == IResource.FOLDER)
 			virtualResources.add(new VirtualFolder(getProject(), newRuntimePath));
 		else

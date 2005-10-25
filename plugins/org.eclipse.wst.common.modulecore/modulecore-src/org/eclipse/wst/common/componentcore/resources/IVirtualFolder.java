@@ -10,7 +10,7 @@
  *******************************************************************************/ 
 package org.eclipse.wst.common.componentcore.resources;
 
-import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IContainer;
 /**
  * Represents a folder that can be navigated through 
  * an abstract ("virtual") path.
@@ -26,12 +26,12 @@ public interface IVirtualFolder extends IVirtualContainer {
 	 * 
 	 * @return the underlying IFolder
 	 */
-	public IFolder getUnderlyingFolder();
+	public IContainer getUnderlyingFolder();
 	/**
 	 * returns the underlying IFolders mapped to the runtime path. 
 	 * Multiple IFolders can be mapped to the same runtime path.
 	 * 
 	 * @return the array of underlying IFolders
 	 */
-	public IFolder[] getUnderlyingFolders();
+	public IContainer[] getUnderlyingFolders();
 }
