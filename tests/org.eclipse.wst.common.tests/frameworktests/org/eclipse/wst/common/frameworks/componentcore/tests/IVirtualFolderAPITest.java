@@ -12,7 +12,7 @@ package org.eclipse.wst.common.frameworks.componentcore.tests;
 
 import junit.framework.TestCase;
 
-import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -41,13 +41,10 @@ public class IVirtualFolderAPITest extends TestCase {
 	private IVirtualComponent component;
 	
 	private IVirtualFolder webInfFolder;
-	private IFolder realWebInfFolder;
+	private IContainer realWebInfFolder;
 	
 	private IVirtualFolder deletemeVirtualFolder;
-	private IFolder deletemeFolder;	
-
-	private IVirtualFolder testdataFolder;
-	private IFolder realTestdataFolder;
+	private IContainer deletemeFolder;	
 
 	public IVirtualFolderAPITest(String name) {
 		super(name);
@@ -59,13 +56,13 @@ public class IVirtualFolderAPITest extends TestCase {
 		
 		realWebInfFolder = TEST_PROJECT.getFolder(WEBINF_FOLDER_REAL_PATH);
 		
-		component = ComponentCore.createComponent(TEST_PROJECT, TestWorkspace.WEB_MODULE_1_NAME);
+		component = ComponentCore.createComponent(TEST_PROJECT);
 		IVirtualFolder rootFolder = component.getRootFolder();
 		
 		webInfFolder = rootFolder.getFolder(WEBINF_FOLDER_RUNTIME_PATH); 		
 
-		testdataFolder = rootFolder.getFolder(TESTDATA_FOLDER_RUNTIME_PATH); 
-		realTestdataFolder = TEST_PROJECT.getFolder(TESTDATA_FOLDER_REAL_PATH);
+		rootFolder.getFolder(TESTDATA_FOLDER_RUNTIME_PATH); 
+		TEST_PROJECT.getFolder(TESTDATA_FOLDER_REAL_PATH);
 		
 		deletemeVirtualFolder = rootFolder.getFolder(DELETEME_PATH);
 		deletemeVirtualFolder.create(IVirtualResource.FORCE, null);
@@ -94,29 +91,29 @@ public class IVirtualFolderAPITest extends TestCase {
 	}
 	
 	public void testGetUnderlyingFolders() {
-		IFolder[] deletemeFolder = deletemeVirtualFolder.getUnderlyingFolders();
-		assertEquals(deletemeFolder.length==1,true);
+		IContainer[] aDeletemeFolder = deletemeVirtualFolder.getUnderlyingFolders();
+		assertEquals(aDeletemeFolder.length==1,true);
 	}
 	
 	public void testGetUnderlyingResources() {
-		IResource[] deletemeFolder = ((IVirtualResource)deletemeVirtualFolder).getUnderlyingResources();
-		assertEquals(deletemeFolder.length==1,true);
+		IResource[] aDeletemeFolder = ((IVirtualResource)deletemeVirtualFolder).getUnderlyingResources();
+		assertEquals(aDeletemeFolder.length==1,true);
 	}
 	public void testGetVirtualComponentFromResource() {
-		IResource deletemeFolder = ((IVirtualResource)deletemeVirtualFolder).getUnderlyingResources()[0];
-		IVirtualComponent comp = (IVirtualComponent)deletemeFolder.getAdapter(IVirtualComponent.class);
+		IResource aDeletemeFolder = ((IVirtualResource)deletemeVirtualFolder).getUnderlyingResources()[0];
+		IVirtualComponent comp = (IVirtualComponent)aDeletemeFolder.getAdapter(IVirtualComponent.class);
 		assertEquals(comp.getName(),TestWorkspace.PROJECT_NAME);
 	}
 	
 	
 	public void testGetUnderlyingFolder() {
-		IFolder deletemeFolder = deletemeVirtualFolder.getUnderlyingFolder();
-		assertNotNull(deletemeFolder);
+		IContainer aDeletemeFolder = deletemeVirtualFolder.getUnderlyingFolder();
+		assertNotNull(aDeletemeFolder);
 	}
 
 	public void testGetUnderlyingResource() {
-		IResource deletemeFolder = ((IVirtualResource)deletemeVirtualFolder).getUnderlyingResource();
-		assertNotNull(deletemeFolder);
+		IResource aDeletemeFolder = ((IVirtualResource)deletemeVirtualFolder).getUnderlyingResource();
+		assertNotNull(aDeletemeFolder);
 	}
 	
 	public void testGetWorkspaceRelativePath() {

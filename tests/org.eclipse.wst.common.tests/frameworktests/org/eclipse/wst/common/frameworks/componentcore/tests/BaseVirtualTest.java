@@ -2,7 +2,7 @@ package org.eclipse.wst.common.frameworks.componentcore.tests;
 
 import junit.framework.TestCase;
 
-import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
@@ -30,13 +30,13 @@ public class BaseVirtualTest extends TestCase {
 	protected IVirtualComponent component;
 	
 	protected IVirtualFolder webInfFolder;
-	protected IFolder realWebInfFolder;
+	protected IContainer realWebInfFolder;
 	
 	protected IVirtualFolder deletemeVirtualFolder;
-	protected IFolder deletemeFolder;	
+	protected IContainer deletemeFolder;	
 
 	protected IVirtualFolder testdataFolder;
-	protected IFolder realTestdataFolder;
+	protected IContainer realTestdataFolder;
 	
 	
 
@@ -54,7 +54,7 @@ public class BaseVirtualTest extends TestCase {
 		
 		realWebInfFolder = TEST_PROJECT.getFolder(WEBINF_FOLDER_REAL_PATH);
 		
-		component = ComponentCore.createComponent(TEST_PROJECT, TestWorkspace.WEB_MODULE_1_NAME);
+		component = ComponentCore.createComponent(TEST_PROJECT);
 		
 		IVirtualFolder rootFolder = component.getRootFolder();
 		
