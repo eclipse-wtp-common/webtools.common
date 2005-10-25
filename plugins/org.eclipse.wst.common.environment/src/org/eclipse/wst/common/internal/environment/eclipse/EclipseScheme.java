@@ -16,18 +16,18 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.wst.common.environment.Environment;
+import org.eclipse.wst.common.environment.IEnvironment;
 import org.eclipse.wst.common.environment.uri.RelativeURI;
-import org.eclipse.wst.common.environment.uri.URI;
+import org.eclipse.wst.common.environment.uri.IURI;
 import org.eclipse.wst.common.environment.uri.URIException;
-import org.eclipse.wst.common.environment.uri.URIScheme;
+import org.eclipse.wst.common.environment.uri.IURIScheme;
 
 
-public class EclipseScheme implements URIScheme
+public class EclipseScheme implements IURIScheme
 {
-  private Environment      environment_;
+  private IEnvironment      environment_;
   
-  public EclipseScheme( Environment environment )
+  public EclipseScheme( IEnvironment environment )
   {
     environment_ = environment;
   }
@@ -41,7 +41,7 @@ public class EclipseScheme implements URIScheme
 
   /**
    */
-  public boolean isValid(URI uri)
+  public boolean isValid(IURI uri)
   {
     boolean result = true;
     
@@ -61,7 +61,7 @@ public class EclipseScheme implements URIScheme
 
   /**
    */
-  public URI newURI(String uri) throws URIException
+  public IURI newURI(String uri) throws URIException
   {
     String newURI = null;
     
@@ -96,21 +96,21 @@ public class EclipseScheme implements URIScheme
 
   /**
    */
-  public URI newURI(URI uri) throws URIException
+  public IURI newURI(IURI uri) throws URIException
   {
     return newURI( uri.toString() );
   }
 
   /**
    */
-  public URI newURI(URL url) throws URIException
+  public IURI newURI(URL url) throws URIException
   {
     return newURI( url.toString() );
   }
 
   /**
    */
-  public IStatus validate(URI uri)
+  public IStatus validate(IURI uri)
   {
     IStatus status = null;
     
@@ -172,7 +172,7 @@ public class EclipseScheme implements URIScheme
   /**
    * 
    * @param absolutePath an absolute IPath
-   * @return returns the platform URI for this path.
+   * @return returns the platform IURI for this path.
    */
   public String getURLFromPath( IPath absolutePath )
   {

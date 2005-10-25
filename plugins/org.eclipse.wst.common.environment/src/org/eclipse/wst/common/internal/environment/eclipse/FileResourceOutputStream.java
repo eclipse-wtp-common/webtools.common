@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.wst.common.environment.StatusHandler;
+import org.eclipse.wst.common.environment.IStatusHandler;
 
 
 
@@ -28,7 +28,7 @@ public class FileResourceOutputStream extends OutputStream
 {
 
   IPath                 fFilePath;
-  StatusHandler         fStatusHandler;
+  IStatusHandler         fStatusHandler;
   ByteArrayOutputStream fByteArrayOutputStream;
   boolean               fOpen;
 
@@ -51,7 +51,7 @@ public class FileResourceOutputStream extends OutputStream
   */
   public FileResourceOutputStream ( 
   			IPath           filePath, 
-  			StatusHandler   statusHandler
+  			IStatusHandler   statusHandler
   			)
   {
     fFilePath = filePath;

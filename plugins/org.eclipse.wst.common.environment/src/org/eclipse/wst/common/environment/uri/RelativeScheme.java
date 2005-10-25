@@ -15,7 +15,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 
-public class RelativeScheme implements URIScheme
+public class RelativeScheme implements IURIScheme
 {
 
   /* (non-Javadoc)
@@ -29,7 +29,7 @@ public class RelativeScheme implements URIScheme
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URIScheme#isValid(org.eclipse.env.uri.URI)
    */
-  public boolean isValid(URI uri)
+  public boolean isValid(IURI uri)
   {
     return !uri.toString().startsWith( "/" );
   }
@@ -37,7 +37,7 @@ public class RelativeScheme implements URIScheme
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URIScheme#newURI(java.lang.String)
    */
-  public URI newURI(String uri) 
+  public IURI newURI(String uri) 
   {
     return new RelativeURI( uri );
   }
@@ -45,7 +45,7 @@ public class RelativeScheme implements URIScheme
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URIScheme#newURI(org.eclipse.env.uri.URI)
    */
-  public URI newURI(URI uri) 
+  public IURI newURI(IURI uri) 
   {
     return new RelativeURI( uri.toString() );
   }
@@ -53,7 +53,7 @@ public class RelativeScheme implements URIScheme
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URIScheme#newURI(java.net.URL)
    */
-  public URI newURI(URL url) 
+  public IURI newURI(URL url) 
   {
     return new RelativeURI( url.toString() );
   }
@@ -61,7 +61,7 @@ public class RelativeScheme implements URIScheme
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URIScheme#validate(org.eclipse.env.uri.URI)
    */
-  public IStatus validate(URI uri)
+  public IStatus validate(IURI uri)
   {
     IStatus result = null;
     

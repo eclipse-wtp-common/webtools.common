@@ -13,9 +13,9 @@ package org.eclipse.wst.common.environment;
 import org.eclipse.core.runtime.IStatus;
 
 /**
- * Log objects provide a means for logging information for FFDC etc.
+ * ILog objects provide a means for logging information for FFDC etc.
  */
-public interface Log
+public interface ILog
 {
   public static final int OK = 0;
   public static final int INFO = 1;

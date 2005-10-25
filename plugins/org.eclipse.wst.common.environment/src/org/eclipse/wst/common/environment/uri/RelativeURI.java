@@ -21,7 +21,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.internal.environment.eclipse.Messages;
 
 
-public class RelativeURI implements URI
+public class RelativeURI implements IURI
 {
   protected String uri_;
   
@@ -33,7 +33,7 @@ public class RelativeURI implements URI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#append(org.eclipse.env.uri.URI)
    */
-  public URI append(URI relativeURI) throws URIException
+  public IURI append(IURI relativeURI) throws URIException
   {
     if( !relativeURI.isRelative()) 
      {      
@@ -117,7 +117,7 @@ public class RelativeURI implements URI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#getURIScheme()
    */
-  public URIScheme getURIScheme()
+  public IURIScheme getURIScheme()
   {
     return new RelativeScheme();
   }
@@ -189,23 +189,23 @@ public class RelativeURI implements URI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#list()
    */
-  public URI[] list() throws URIException
+  public IURI[] list() throws URIException
   {
-    return new URI[0];
+    return new IURI[0];
   }
 
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#list(org.eclipse.env.uri.URIFilter)
    */
-  public URI[] list(URIFilter uriFilter) throws URIException
+  public IURI[] list(IURIFilter uriFilter) throws URIException
   {
-    return new URI[0];
+    return new IURI[0];
   }
 
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#parent()
    */
-  public URI parent() throws URIException
+  public IURI parent() throws URIException
   {
     int lastSlash  = uri_.lastIndexOf( '/' );
     int firstSlash = uri_.indexOf( '/' );
@@ -220,7 +220,7 @@ public class RelativeURI implements URI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#rename(org.eclipse.env.uri.URI)
    */
-  public void rename(URI newURI) throws URIException
+  public void rename(IURI newURI) throws URIException
   {
     uri_ = newURI.toString();
   }
@@ -242,7 +242,7 @@ public class RelativeURI implements URI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#visit(org.eclipse.env.uri.URIVisitor, org.eclipse.env.uri.URIFilter)
    */
-  public void visit(URIVisitor uriVisitor, URIFilter uriFilter)
+  public void visit(IURIVisitor uriVisitor, IURIFilter uriFilter)
     throws URIException
   {
     boolean continueVisit = true;
@@ -253,7 +253,7 @@ public class RelativeURI implements URI
       continueVisit = uriVisitor.visit( this );  
     }
        
-    URI[] children  = list();
+    IURI[] children  = list();
     
     for( int index = 0; index < children.length && continueVisit; index++ )
     {
@@ -264,11 +264,11 @@ public class RelativeURI implements URI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#visit(org.eclipse.env.uri.URIVisitor)
    */
-  public void visit(URIVisitor uriVisitor) throws URIException
+  public void visit(IURIVisitor uriVisitor) throws URIException
   {
     boolean continueVisit = uriVisitor.visit( this );  
     
-    URI[] children  = list();
+    IURI[] children  = list();
     
     for( int index = 0; index < children.length && continueVisit; index++ )
      {

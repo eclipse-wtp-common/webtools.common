@@ -16,7 +16,7 @@ import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.wst.common.environment.Environment;
+import org.eclipse.wst.common.environment.IEnvironment;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
@@ -252,7 +252,7 @@ public abstract class DataModelWizard extends Wizard {
    * Creates the default environment for this wizard.
    * @return
    */
-  protected Environment createEnvironment()
+  protected IEnvironment createEnvironment()
   {
     return new EclipseEnvironment();
   }

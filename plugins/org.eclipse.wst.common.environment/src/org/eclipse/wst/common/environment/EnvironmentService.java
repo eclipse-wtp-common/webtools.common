@@ -8,7 +8,7 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.environment;
 
-import org.eclipse.wst.common.environment.uri.URIScheme;
+import org.eclipse.wst.common.environment.uri.IURIScheme;
 import org.eclipse.wst.common.internal.environment.eclipse.ConsoleEclipseEnvironment;
 import org.eclipse.wst.common.internal.environment.eclipse.EclipseLog;
 import org.eclipse.wst.common.internal.environment.eclipse.EclipseScheme;
@@ -16,22 +16,22 @@ import org.eclipse.wst.common.internal.environment.uri.file.FileScheme;
 
 public class EnvironmentService
 {
-  public static Environment getEclipseConsoleEnvironment()
+  public static IEnvironment getEclipseConsoleEnvironment()
   {
     return new ConsoleEclipseEnvironment(); 
   }  
   
-  public static Log getEclipseLog()
+  public static ILog getEclipseLog()
   {
     return new EclipseLog();
   }
   
-  public static URIScheme getEclipseScheme( Environment environment )
+  public static IURIScheme getEclipseScheme( IEnvironment environment )
   {
     return new EclipseScheme( environment );
   }  
   
-  public static URIScheme getFileScheme()
+  public static IURIScheme getFileScheme()
   {
     return new FileScheme();   
   }

@@ -20,7 +20,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.wst.common.environment.Environment;
+import org.eclipse.wst.common.environment.IEnvironment;
 
 /**
  * Abstract implementation for an IDataModelOperation.
@@ -37,7 +37,7 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	protected static final IStatus OK_STATUS = IDataModelProvider.OK_STATUS;
 
 	private String id;
-	private Environment environment;
+	private IEnvironment environment;
 
 	/**
 	 * The IDataModel used by this IDataModelOperation
@@ -112,11 +112,11 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 		return IWorkspace.AVOID_UPDATE;
 	}
 
-	public void setEnvironment(Environment env) {
+	public void setEnvironment(IEnvironment env) {
 		environment = env;
 	}
 
-	public Environment getEnvironment() {
+	public IEnvironment getEnvironment() {
 		return environment;
 	}
 

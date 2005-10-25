@@ -13,8 +13,8 @@ package org.eclipse.wst.common.environment.uri;
 import org.eclipse.core.runtime.IStatus;
 
 /**
- * This is the base class for most exceptions thrown by URI classes.
- * Every URIException carries a URI and a Status, each of which may
+ * This is the base class for most exceptions thrown by IURI classes.
+ * Every URIException carries a IURI and a Status, each of which may
  * be null. The getMessage() method as inherited from Exception will
  * return the message from the URIExceptin's Status object, if any.
  */
@@ -32,10 +32,10 @@ public class URIException extends Exception
   protected IStatus status;
 
   /**
-   * The URI for which the exception occured,
+   * The IURI for which the exception occured,
    * if applicable.
    */
-  protected URI uri;
+  protected IURI uri;
 
   /**
    * Creates a new URIException with the given Status.
@@ -48,10 +48,10 @@ public class URIException extends Exception
   }
 
   /**
-   * Creates a new URIException for the given Status and URI,
+   * Creates a new URIException for the given Status and IURI,
    * each of which may be null.
    */
-  public URIException ( IStatus status, URI uri )
+  public URIException ( IStatus status, IURI uri )
   {
     super(status != null ? status.getMessage() : null);
     this.status = status;
@@ -67,9 +67,9 @@ public class URIException extends Exception
   }
 
   /**
-   * Returns the URI inside this exception.
+   * Returns the IURI inside this exception.
    */
-  public URI getURI ()
+  public IURI getURI ()
   {
     return uri;
   }

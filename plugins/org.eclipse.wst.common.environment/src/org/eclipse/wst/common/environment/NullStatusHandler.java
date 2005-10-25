@@ -12,11 +12,11 @@ package org.eclipse.wst.common.environment;
 
 import org.eclipse.core.runtime.IStatus;
 
-public class NullStatusHandler implements StatusHandler
+public class NullStatusHandler implements IStatusHandler
 {
   
   /**
-   * @see org.eclipse.env.common.StatusHandler#report(org.eclipse.env.common.Status, org.eclipse.env.common.Choice[])
+   * @see org.eclipse.env.common.IStatusHandler#report(org.eclipse.env.common.Status, org.eclipse.env.common.Choice[])
    */
   public Choice report(IStatus status, Choice[] choices) 
   {
@@ -32,7 +32,7 @@ public class NullStatusHandler implements StatusHandler
   }
 
   /**
-   * @see org.eclipse.env.common.StatusHandler#report(org.eclipse.env.common.Status)
+   * @see org.eclipse.env.common.IStatusHandler#report(org.eclipse.env.common.Status)
    */
   public void report(IStatus status) throws StatusException
   {
@@ -47,7 +47,7 @@ public class NullStatusHandler implements StatusHandler
   }
   
   /**
-   * @see org.eclipse.wst.common.environment.StatusHandler#reportError(org.eclipse.wst.command.internal.provisional.env.core.common.Status)
+   * @see org.eclipse.wst.common.environment.IStatusHandler#reportError(org.eclipse.wst.command.internal.provisional.env.core.common.Status)
    */
   public void reportError(IStatus status)
   {
@@ -55,7 +55,7 @@ public class NullStatusHandler implements StatusHandler
   }
   
   /**
-   * @see org.eclipse.wst.common.environment.StatusHandler#reportInfo(org.eclipse.wst.command.internal.provisional.env.core.common.Status)
+   * @see org.eclipse.wst.common.environment.IStatusHandler#reportInfo(org.eclipse.wst.command.internal.provisional.env.core.common.Status)
    */
   public void reportInfo(IStatus status)
   {

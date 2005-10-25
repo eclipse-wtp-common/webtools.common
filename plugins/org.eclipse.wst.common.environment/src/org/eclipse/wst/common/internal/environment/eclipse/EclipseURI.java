@@ -25,21 +25,21 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.wst.common.environment.Environment;
+import org.eclipse.wst.common.environment.IEnvironment;
 import org.eclipse.wst.common.environment.uri.RelativeURI;
-import org.eclipse.wst.common.environment.uri.URI;
+import org.eclipse.wst.common.environment.uri.IURI;
 import org.eclipse.wst.common.environment.uri.URIException;
-import org.eclipse.wst.common.environment.uri.URIFilter;
-import org.eclipse.wst.common.environment.uri.URIScheme;
+import org.eclipse.wst.common.environment.uri.IURIFilter;
+import org.eclipse.wst.common.environment.uri.IURIScheme;
 
 
 public class EclipseURI extends RelativeURI
 {
-  private Environment      environment_;
+  private IEnvironment      environment_;
   private EclipseScheme    scheme_;
   private File             file_;
   
-  public EclipseURI( String uri, Environment environment )
+  public EclipseURI( String uri, IEnvironment environment )
   {
     super( uri );
     
@@ -49,7 +49,7 @@ public class EclipseURI extends RelativeURI
   }
     
   /**
-   * @see org.eclipse.env.uri.URI#erase()
+   * @see org.eclipse.env.uri.IURI#erase()
    */
   public void erase() throws URIException
   {
@@ -79,7 +79,7 @@ public class EclipseURI extends RelativeURI
   }
 
   /**
-   * @see org.eclipse.env.uri.URI#getInputStream()
+   * @see org.eclipse.env.uri.IURI#getInputStream()
    */
   public InputStream getInputStream() throws URIException
   {
@@ -104,12 +104,12 @@ public class EclipseURI extends RelativeURI
   }
 
   /**
-   * @see org.eclipse.env.uri.URI#getOutputStream()
+   * @see org.eclipse.env.uri.IURI#getOutputStream()
    */
   public OutputStream getOutputStream() throws URIException
   {
     // Ensure that the parent folder exists.
-    URI parent = parent();
+    IURI parent = parent();
     
     if( !parent.isPresent() )
     {
@@ -120,15 +120,15 @@ public class EclipseURI extends RelativeURI
   }
 
   /**
-   * @see org.eclipse.env.uri.URI#getURIScheme()
+   * @see org.eclipse.env.uri.IURI#getURIScheme()
    */
-  public URIScheme getURIScheme()
+  public IURIScheme getURIScheme()
   {
     return scheme_;
   }
 
   /**
-   * @see org.eclipse.env.uri.URI#isLeaf()
+   * @see org.eclipse.env.uri.IURI#isLeaf()
    */
   public boolean isLeaf()
   {
@@ -147,7 +147,7 @@ public class EclipseURI extends RelativeURI
     }
     catch( URIException exc )
     {
-      // This URI does not exist.
+      // This IURI does not exist.
       result = false;
     }
    
@@ -155,7 +155,7 @@ public class EclipseURI extends RelativeURI
   }
 
   /**
-   * @see org.eclipse.env.uri.URI#isPresent()
+   * @see org.eclipse.env.uri.IURI#isPresent()
    */
   public boolean isPresent()
   {
@@ -172,7 +172,7 @@ public class EclipseURI extends RelativeURI
     }
     catch( URIException exc )
     {
-      // This URI does not exist.
+      // This IURI does not exist.
       result = false;
     }
     
@@ -180,7 +180,7 @@ public class EclipseURI extends RelativeURI
   }
 
   /**
-   * @see org.eclipse.env.uri.URI#isReadable()
+   * @see org.eclipse.env.uri.IURI#isReadable()
    */
   public boolean isReadable()
   {
@@ -197,7 +197,7 @@ public class EclipseURI extends RelativeURI
     }
     catch( URIException exc )
     {
-      // This URI does not exist.
+      // This IURI does not exist.
       result = false;
     }
     
@@ -205,7 +205,7 @@ public class EclipseURI extends RelativeURI
    }
 
   /**
-   * @see org.eclipse.env.uri.URI#isRelative()
+   * @see org.eclipse.env.uri.IURI#isRelative()
    */
   public boolean isRelative()
   { 
@@ -213,7 +213,7 @@ public class EclipseURI extends RelativeURI
   }
 
   /**
-   * @see org.eclipse.env.uri.URI#isWritable()
+   * @see org.eclipse.env.uri.IURI#isWritable()
    */
   public boolean isWritable()
   {
@@ -232,7 +232,7 @@ public class EclipseURI extends RelativeURI
     }
     catch( URIException exc )
     {
-      // This URI does not exist.
+      // This IURI does not exist.
       result = false;
     }
     
@@ -240,12 +240,12 @@ public class EclipseURI extends RelativeURI
   }
 
   /**
-   * @see org.eclipse.env.uri.URI#list()
+   * @see org.eclipse.env.uri.IURI#list()
    */
-  public URI[] list() throws URIException
+  public IURI[] list() throws URIException
   {
     IResource resource    = getResource();
-    URI[]     uriChildren = new URI[0];
+    IURI[]     uriChildren = new IURI[0];
     
     if( resource.getType() == IResource.FOLDER )
     {
@@ -255,7 +255,7 @@ public class EclipseURI extends RelativeURI
       {
         IResource[] children    = folder.members();  
   
-        uriChildren = new URI[children.length];
+        uriChildren = new IURI[children.length];
         
         for( int index = 0; index < children.length; index++ )
         {
@@ -272,12 +272,12 @@ public class EclipseURI extends RelativeURI
   }
 
   /**
-   * @see org.eclipse.env.uri.URI#list(org.eclipse.env.uri.URIFilter)
+   * @see org.eclipse.env.uri.IURI#list(org.eclipse.env.uri.IURIFilter)
    */
-  public URI[] list(URIFilter uriFilter) throws URIException
+  public IURI[] list(IURIFilter uriFilter) throws URIException
   {
     IResource resource = getResource();
-    URI[]     result   = new URI[0];
+    IURI[]     result   = new IURI[0];
     
     if( resource.getType() == IResource.FOLDER )
      {
@@ -291,7 +291,7 @@ public class EclipseURI extends RelativeURI
         for( int index = 0; index < children.length; index++ )
          {
           IPath path = children[index].getFullPath();
-          URI   uri  = new EclipseURI( scheme_.getURLFromPath(path), environment_ );
+          IURI   uri  = new EclipseURI( scheme_.getURLFromPath(path), environment_ );
           
           if( uriFilter.accepts( uri ) )
           {
@@ -299,7 +299,7 @@ public class EclipseURI extends RelativeURI
           }
         }
         
-        result = (URI[])uriChildren.toArray( new URI[0] );
+        result = (IURI[])uriChildren.toArray( new IURI[0] );
       }
       catch( CoreException exc )
       {
@@ -310,16 +310,16 @@ public class EclipseURI extends RelativeURI
   }
    
   /**
-   * @see org.eclipse.env.uri.URI#rename(org.eclipse.env.uri.URI)
+   * @see org.eclipse.env.uri.IURI#rename(org.eclipse.env.uri.IURI)
    */
-  public void rename(URI newURI )
+  public void rename(IURI newURI )
   {
     // TODO Auto-generated method stub
 
   }
 
   /**
-   * @see org.eclipse.env.uri.URI#touchFolder()
+   * @see org.eclipse.env.uri.IURI#touchFolder()
    */
   public void touchFolder() throws URIException
   {
@@ -349,7 +349,7 @@ public class EclipseURI extends RelativeURI
       }
       else
       {
-         //??? Not sure what to do if touching a folder and the URI exists and it is not a folder.
+         //??? Not sure what to do if touching a folder and the IURI exists and it is not a folder.
       }
     }
     else
@@ -369,7 +369,7 @@ public class EclipseURI extends RelativeURI
   }
 
   /**
-   * @see org.eclipse.env.uri.URI#touchLeaf()
+   * @see org.eclipse.env.uri.IURI#touchLeaf()
    */
   public void touchLeaf() throws URIException
   {
@@ -382,7 +382,7 @@ public class EclipseURI extends RelativeURI
     else
     {
       // Get the parent for this leaf and create it if required.
-      URI parent = parent();
+      IURI parent = parent();
       
       if( !parent.isPresent() )
       {  
@@ -412,7 +412,7 @@ public class EclipseURI extends RelativeURI
   }
   
   /**
-   * @see org.eclipse.env.uri.URI#getOutputStream()
+   * @see org.eclipse.env.uri.IURI#getOutputStream()
    */
   private OutputStream getOutStream() throws URIException
   {
@@ -425,7 +425,7 @@ public class EclipseURI extends RelativeURI
   }
   
   /**
-   * Returns a File object for the resource under this URI.
+   * Returns a File object for the resource under this IURI.
    * There are many URIs and URISchemes for which this method
    * will fail and throw an exception. It should be used only
    * in cases where URIs are known to be backed by physical files.

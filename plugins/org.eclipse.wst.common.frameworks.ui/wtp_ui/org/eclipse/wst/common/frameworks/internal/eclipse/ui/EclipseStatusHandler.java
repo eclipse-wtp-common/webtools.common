@@ -15,15 +15,15 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.common.environment.Choice;
 import org.eclipse.wst.common.environment.StatusException;
-import org.eclipse.wst.common.environment.StatusHandler;
+import org.eclipse.wst.common.environment.IStatusHandler;
 import org.eclipse.wst.common.frameworks.internal.dialog.ui.MessageDialog;
 import org.eclipse.wst.common.frameworks.internal.dialog.ui.StatusDialogConstants;
 
 
 /**
- * This is the Eclipse UI version of the StatusHandler
+ * This is the Eclipse UI version of the IStatusHandler
  */
-public class EclipseStatusHandler implements StatusHandler
+public class EclipseStatusHandler implements IStatusHandler
 {
   private Shell        shell_;
   
@@ -38,7 +38,7 @@ public class EclipseStatusHandler implements StatusHandler
   }
   
   /**
-   * @see org.eclipse.env.common.StatusHandler#report(org.eclipse.env.common.Status, org.eclipse.env.common.Choice[])
+   * @see org.eclipse.env.common.IStatusHandler#report(org.eclipse.env.common.Status, org.eclipse.env.common.Choice[])
    */
   public Choice report(IStatus status, Choice[] choices) 
   {
@@ -59,7 +59,7 @@ public class EclipseStatusHandler implements StatusHandler
   }
 
   /**
-   * @see org.eclipse.env.common.StatusHandler#report(org.eclipse.env.common.Status)
+   * @see org.eclipse.env.common.IStatusHandler#report(org.eclipse.env.common.Status)
    */
   public void report(IStatus status) throws StatusException
   {
@@ -112,7 +112,7 @@ public class EclipseStatusHandler implements StatusHandler
   }
   
   /**
-   * @see org.eclipse.wst.command.internal.provisional.env.core.common.StatusHandler#reportError(org.eclipse.wst.command.internal.provisional.env.core.common.Status)
+   * @see org.eclipse.wst.command.internal.provisional.env.core.common.IStatusHandler#reportError(org.eclipse.wst.command.internal.provisional.env.core.common.Status)
    */
   public void reportError(IStatus status)
   {
@@ -120,7 +120,7 @@ public class EclipseStatusHandler implements StatusHandler
   }
   
   /**
-   * @see org.eclipse.wst.command.internal.provisional.env.core.common.StatusHandler#reportInfo(org.eclipse.wst.command.internal.provisional.env.core.common.Status)
+   * @see org.eclipse.wst.command.internal.provisional.env.core.common.IStatusHandler#reportInfo(org.eclipse.wst.command.internal.provisional.env.core.common.Status)
    */
   public void reportInfo(IStatus status)
   {

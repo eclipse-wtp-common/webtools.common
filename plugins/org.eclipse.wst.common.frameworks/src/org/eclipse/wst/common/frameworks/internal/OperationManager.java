@@ -23,7 +23,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.wst.common.environment.Environment;
+import org.eclipse.wst.common.environment.IEnvironment;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
@@ -43,9 +43,9 @@ public class OperationManager {
 	private OperationListener preExecuteListener;
 	private OperationListener postExecuteListener;
 	private OperationListener undoExecuteListener;
-  private Environment       environment;
+  private IEnvironment       environment;
 
-	public OperationManager(DataModelManager aDataModelManager, IDataModelOperation aRootOperation, Environment aEnvironment) {
+	public OperationManager(DataModelManager aDataModelManager, IDataModelOperation aRootOperation, IEnvironment aEnvironment) {
 		if (aRootOperation == null)
 			aRootOperation = new NullOperation();
 

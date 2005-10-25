@@ -10,36 +10,36 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.eclipse.ui;
 
-import org.eclipse.wst.common.environment.Environment;
+import org.eclipse.wst.common.environment.IEnvironment;
 import org.eclipse.wst.common.environment.EnvironmentService;
-import org.eclipse.wst.common.environment.Log;
-import org.eclipse.wst.common.environment.StatusHandler;
+import org.eclipse.wst.common.environment.ILog;
+import org.eclipse.wst.common.environment.IStatusHandler;
 import org.eclipse.wst.common.environment.uri.SimpleURIFactory;
-import org.eclipse.wst.common.environment.uri.URIFactory;
-import org.eclipse.wst.common.environment.uri.URIScheme;
+import org.eclipse.wst.common.environment.uri.IURIFactory;
+import org.eclipse.wst.common.environment.uri.IURIScheme;
 
 
 /**
- * This class implements an Environment class for the Eclipse Environment.
- * This Environment currently supports the "platform" protocol and the "file"
+ * This class implements an IEnvironment class for the Eclipse IEnvironment.
+ * This IEnvironment currently supports the "platform" protocol and the "file"
  * protocol.
  *
  */
-public class EclipseEnvironment implements Environment
+public class EclipseEnvironment implements IEnvironment
 {
   private SimpleURIFactory uriFactory_      = null;
-  private StatusHandler    statusHandler_   = null;
-  private Log              logger_          = null;
+  private IStatusHandler    statusHandler_   = null;
+  private ILog              logger_          = null;
   
   public EclipseEnvironment()
   {
     this( new EclipseStatusHandler() );  
   }
   
-  public EclipseEnvironment( StatusHandler   statusHandler )
+  public EclipseEnvironment( IStatusHandler   statusHandler )
   {
-    URIScheme eclipseScheme = EnvironmentService.getEclipseScheme( this );
-    URIScheme fileScheme    = EnvironmentService.getFileScheme();
+    IURIScheme eclipseScheme = EnvironmentService.getEclipseScheme( this );
+    IURIScheme fileScheme    = EnvironmentService.getFileScheme();
     
     uriFactory_      = new SimpleURIFactory();
     statusHandler_   = statusHandler;
@@ -49,9 +49,9 @@ public class EclipseEnvironment implements Environment
   }
   
   /**
-   * @see org.eclipse.wst.command.internal.provisional.env.core.common.Environment#getLog()
+   * @see org.eclipse.wst.command.internal.provisional.env.core.common.IEnvironment#getLog()
    */
-  public Log getLog()
+  public ILog getLog()
   {
 	  if( logger_ == null )
     {  
@@ -62,17 +62,17 @@ public class EclipseEnvironment implements Environment
   }
    
   /**
-   * @see org.eclipse.wst.command.internal.provisional.env.core.common.Environment#getStatusHandler()
+   * @see org.eclipse.wst.command.internal.provisional.env.core.common.IEnvironment#getStatusHandler()
    */
-  public StatusHandler getStatusHandler()
+  public IStatusHandler getStatusHandler()
   {
     return statusHandler_;
   }
 
   /** (non-Javadoc)
-   * @see org.eclipse.wst.command.internal.provisional.env.core.common.Environment#getURIFactory()
+   * @see org.eclipse.wst.command.internal.provisional.env.core.common.IEnvironment#getURIFactory()
    */
-  public URIFactory getURIFactory()
+  public IURIFactory getURIFactory()
   {
     return uriFactory_;
   }

@@ -12,16 +12,16 @@ package org.eclipse.wst.common.environment.uri;
 
 /**
  * This interface is implemented by classes that visit or list URIs.
- * Refer to {@link URI#getChildren}.
+ * Refer to {@link IURI#getChildren}.
  */
-public interface URIFilter
+public interface IURIFilter
 {
   /**
-   * Filters the given URI.
+   * Filters the given IURI.
    * @param uri The resource to filter.
    * @return True if the resource matches the filter,
    * false if it does not.
    * @throws URIException If the filter fails to analyze the resource.
    */
-  public boolean accepts ( URI uri ) throws URIException;
+  public boolean accepts ( IURI uri ) throws URIException;
 }

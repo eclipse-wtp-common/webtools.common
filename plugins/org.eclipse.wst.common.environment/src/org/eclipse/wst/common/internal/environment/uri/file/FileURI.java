@@ -20,10 +20,10 @@ import java.util.Vector;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.environment.uri.RelativeURI;
-import org.eclipse.wst.common.environment.uri.URI;
+import org.eclipse.wst.common.environment.uri.IURI;
 import org.eclipse.wst.common.environment.uri.URIException;
-import org.eclipse.wst.common.environment.uri.URIFilter;
-import org.eclipse.wst.common.environment.uri.URIScheme;
+import org.eclipse.wst.common.environment.uri.IURIFilter;
+import org.eclipse.wst.common.environment.uri.IURIScheme;
 
 
 public class FileURI extends RelativeURI 
@@ -127,7 +127,7 @@ public class FileURI extends RelativeURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#getURIScheme()
    */
-  public URIScheme getURIScheme()
+  public IURIScheme getURIScheme()
   {
     return new FileScheme();
   }
@@ -183,16 +183,16 @@ public class FileURI extends RelativeURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#list()
    */
-  public URI[] list() throws URIException
+  public IURI[] list() throws URIException
   {
     File[] children = file_.listFiles();
-    URI[]  URIs     = new URI[0];
+    IURI[]  URIs     = new IURI[0];
     
     if( children != null )
     {
       int   length   = children.length;
       
-      URIs = new URI[length];
+      URIs = new IURI[length];
     
       for( int index = 0; index < length; index++ )
       {
@@ -206,7 +206,7 @@ public class FileURI extends RelativeURI
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#list(org.eclipse.env.uri.URIFilter)
    */
-  public URI[] list(URIFilter uriFilter) throws URIException
+  public IURI[] list(IURIFilter uriFilter) throws URIException
   {
     File[]   children = file_.listFiles();
     int      length   = children == null ? 0 : children.length;
@@ -214,7 +214,7 @@ public class FileURI extends RelativeURI
     
     for( int index = 0; index < length; index++ )
     {
-      URI newURI = new FileURI( "file:" + children[index].getAbsolutePath() );
+      IURI newURI = new FileURI( "file:" + children[index].getAbsolutePath() );
       
       if( uriFilter.accepts( newURI) )
       {
@@ -222,13 +222,13 @@ public class FileURI extends RelativeURI
       } 
     }
     
-    return (URI[])URIs.toArray( new URI[0] );
+    return (IURI[])URIs.toArray( new IURI[0] );
   }
 
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URI#rename(org.eclipse.env.uri.URI)
    */
-  public void rename(URI newURI) throws URIException
+  public void rename(IURI newURI) throws URIException
   {
     uri_ = newURI.toString();
     file_.renameTo( new File( uri_ ) );

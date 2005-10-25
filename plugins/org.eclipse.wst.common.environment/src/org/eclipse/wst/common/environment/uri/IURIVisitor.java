@@ -12,16 +12,16 @@ package org.eclipse.wst.common.environment.uri;
 
 /**
  * This interface is implemented by classes that visit URIs.
- * Refer to {@link URI#visit}.
+ * Refer to {@link IURI#visit}.
  */
-public interface URIVisitor
+public interface IURIVisitor
 {
   /**
-   * Visits the given URI.
+   * Visits the given IURI.
    * @param uri The resource to visit.
    * @return True if the resource's descendants should be visited,
    * or false if they should not be visited.
    * @throws URIException If the visit method fails.
    */
-  public boolean visit ( URI uri ) throws URIException;
+  public boolean visit ( IURI uri ) throws URIException;
 }

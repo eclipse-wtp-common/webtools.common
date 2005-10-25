@@ -18,7 +18,7 @@ import org.eclipse.core.runtime.IStatus;
  * may raise an exception against the caller to have them abort
  * procesing.
  */
-public interface StatusHandler
+public interface IStatusHandler
 {
   /**
    * Reports the given Status and set of possible responses.

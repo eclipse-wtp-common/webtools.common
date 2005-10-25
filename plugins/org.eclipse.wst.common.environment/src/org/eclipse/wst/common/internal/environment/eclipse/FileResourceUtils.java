@@ -32,7 +32,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.environment.Choice;
 import org.eclipse.wst.common.environment.StatusException;
-import org.eclipse.wst.common.environment.StatusHandler;
+import org.eclipse.wst.common.environment.IStatusHandler;
 
 
 
@@ -183,7 +183,7 @@ public final class FileResourceUtils
                                 IPath sourcePath,
                                 IPath pathname,
                                 IPath targetPath,
-                                StatusHandler statusMonitor )
+                                IStatusHandler statusMonitor )
      throws CoreException
    {
      try
@@ -211,7 +211,7 @@ public final class FileResourceUtils
    * @return True if the file does not exist or if it exists and is successfully deleted. False otherwise.
    */
   public static boolean deleteFile( IFile file,
-                                    StatusHandler statusMonitor)
+                                    IStatusHandler statusMonitor)
     throws CoreException
   {
     if (file.exists())
@@ -245,7 +245,7 @@ public final class FileResourceUtils
    * @return True if the folder does not exist or if it exists and is successfully deleted along with its members. False otherwise.
    */
    public static boolean deleteFolder( IFolder folder,
-                                       StatusHandler statusMonitor )
+                                       IStatusHandler statusMonitor )
      throws CoreException
    {
      if (!folder.exists()) return true;
@@ -297,7 +297,7 @@ public final class FileResourceUtils
   public static IFile createFile (
     IPath           absolutePath,
     InputStream     inputStream,
-    StatusHandler   statusHandler )
+    IStatusHandler   statusHandler )
 
     throws CoreException 
   {    
@@ -367,7 +367,7 @@ public final class FileResourceUtils
     IProject        project,
     IPath           relativePath,
     InputStream     inputStream,
-    StatusHandler   statusMonitor )
+    IStatusHandler   statusMonitor )
  
     throws CoreException 
   {
@@ -410,7 +410,7 @@ public final class FileResourceUtils
 
   public static OutputStream newFileOutputStream (
        IPath            file,
-       StatusHandler    statusHandler )
+       IStatusHandler    statusHandler )
  
   {
     return new FileResourceOutputStream(file, statusHandler);
@@ -435,7 +435,7 @@ public final class FileResourceUtils
    */
   public static IContainer makeFolderPath (
     IPath            absolutePath,
-    StatusHandler    statusHandler )
+    IStatusHandler    statusHandler )
   
     throws CoreException
   {
@@ -458,7 +458,7 @@ public final class FileResourceUtils
  private static IFolder makeFolder (
     IContainer       parent,
     String           folderName,
-    StatusHandler    statusHandler )
+    IStatusHandler    statusHandler )
   
   throws CoreException
   {
@@ -493,7 +493,7 @@ public final class FileResourceUtils
     IContainer       parent,
     String           fileName,
     InputStream      inputStream,
-    StatusHandler    statusHandler )
+    IStatusHandler    statusHandler )
  
     throws CoreException
   {

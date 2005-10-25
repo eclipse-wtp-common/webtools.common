@@ -10,11 +10,11 @@
  *******************************************************************************/
 package org.eclipse.wst.common.environment;
 
-import org.eclipse.wst.common.environment.uri.URIFactory;
+import org.eclipse.wst.common.environment.uri.IURIFactory;
 
 
 /**
- * An Environment provides the means for a 
+ * An IEnvironment provides the means for a 
  * <ol>
  * <li>A log for writing messages to a logging facility,</li>
  * <li>A progress monitor for receiving progress information,</li>
@@ -22,23 +22,23 @@ import org.eclipse.wst.common.environment.uri.URIFactory;
  * <li>A factory for the handling of URIs (resources).</li>
  * </ol>
  */
-public interface Environment
+public interface IEnvironment
 {
   /**
    * Returns a logging facility.
    */
-  public Log getLog ();
+  public ILog getLog ();
 
   /**
    * Returns a status handler.
    */
-  public StatusHandler getStatusHandler ();
+  public IStatusHandler getStatusHandler ();
 
   /**
-   * Returns a URI factory.
+   * Returns a IURI factory.
    * Hint: Implementers should insure that the Factory they return
-   * has a reference to this Environment so that URI objects can
+   * has a reference to this IEnvironment so that IURI objects can
    * report progress and announce status.
    */
-  public URIFactory getURIFactory ();
+  public IURIFactory getURIFactory ();
 }

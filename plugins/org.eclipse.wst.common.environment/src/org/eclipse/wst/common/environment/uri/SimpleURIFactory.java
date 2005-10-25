@@ -18,33 +18,33 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.internal.environment.eclipse.Messages;
 
 
-public class SimpleURIFactory implements URIFactory
+public class SimpleURIFactory implements IURIFactory
 {
   private Hashtable    schemes_ = new Hashtable();  
   
   /* (non-Javadoc)
    */
-  public URI newURI(String uri) throws URIException
+  public IURI newURI(String uri) throws URIException
   {
-    URIScheme scheme = newURIScheme( uri );
+    IURIScheme scheme = newURIScheme( uri );
     
     return scheme.newURI( uri );
   }
 
   /* (non-Javadoc)
    */
-  public URI newURI(URL url) throws URIException
+  public IURI newURI(URL url) throws URIException
   {
-    URIScheme scheme = newURIScheme( url.toString() );
+    IURIScheme scheme = newURIScheme( url.toString() );
     
     return scheme.newURI( url );
   }
 
   /* (non-Javadoc)
    */
-  public URIScheme newURIScheme(String schemeOrURI) throws URIException
+  public IURIScheme newURIScheme(String schemeOrURI) throws URIException
   {
-    URIScheme newScheme = null;
+    IURIScheme newScheme = null;
     
     if( schemeOrURI == null )
     {
@@ -57,11 +57,11 @@ public class SimpleURIFactory implements URIFactory
     int slash    = schemeOrURI.indexOf('/');
     
     // A protocol was specified.  Note: a colon appearing after a path is not
-    // considered part of the protocol for this URI.
+    // considered part of the protocol for this IURI.
     if( (colon != -1 && slash == -1) || ( colon != -1 && colon < slash ) )
     {
       String protocol = schemeOrURI.substring(0, colon );
-      newScheme       = (URIScheme)schemes_.get( protocol );
+      newScheme       = (IURIScheme)schemes_.get( protocol );
       
       if( newScheme == null )
       {
@@ -86,7 +86,7 @@ public class SimpleURIFactory implements URIFactory
     return newScheme;
   }
   
-  public void registerScheme( String protocol, URIScheme scheme )
+  public void registerScheme( String protocol, IURIScheme scheme )
   {
     schemes_.put( protocol, scheme );
   }

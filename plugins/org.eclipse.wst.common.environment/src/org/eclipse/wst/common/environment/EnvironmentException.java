@@ -13,7 +13,7 @@ package org.eclipse.wst.common.environment;
 import org.eclipse.core.runtime.IStatus;
 
 /**
- * This is the exception class for conditions raised by the Environment.
+ * This is the exception class for conditions raised by the IEnvironment.
  */
 public class EnvironmentException extends Exception
 {

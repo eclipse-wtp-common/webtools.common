@@ -14,7 +14,7 @@ import java.net.URL;
 
 import org.eclipse.wst.common.environment.uri.RelativeScheme;
 import org.eclipse.wst.common.environment.uri.RelativeURI;
-import org.eclipse.wst.common.environment.uri.URI;
+import org.eclipse.wst.common.environment.uri.IURI;
 
 
 public class FileScheme extends RelativeScheme 
@@ -22,7 +22,7 @@ public class FileScheme extends RelativeScheme
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URIScheme#isValid(org.eclipse.env.uri.URI)
    */
-  public boolean isValid(URI uri)
+  public boolean isValid(IURI uri)
   {
     return uri.toString().startsWith( "file:" );
   }
@@ -30,7 +30,7 @@ public class FileScheme extends RelativeScheme
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URIScheme#newURI(java.lang.String)
    */
-  public URI newURI(String uri) 
+  public IURI newURI(String uri) 
   {
     String newURI = null;
     
@@ -58,7 +58,7 @@ public class FileScheme extends RelativeScheme
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URIScheme#newURI(org.eclipse.env.uri.URI)
    */
-  public URI newURI(URI uri) 
+  public IURI newURI(IURI uri) 
   {
     return new FileURI( uri.toString() );
   }
@@ -66,7 +66,7 @@ public class FileScheme extends RelativeScheme
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URIScheme#newURI(java.net.URL)
    */
-  public URI newURI(URL url) 
+  public IURI newURI(URL url) 
   {
     return new FileURI( url.toString() );
   }

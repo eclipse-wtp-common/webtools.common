@@ -14,26 +14,26 @@ import java.net.URL;
 import org.eclipse.core.runtime.IStatus;
 
 /**
- * A URIScheme represents a single scheme for some a family of
+ * A IURIScheme represents a single scheme for some a family of
  * Univeral Resource Identifiers. Examples include "file", "http"
  * and "platform" (Eclipse).
  */
-public interface URIScheme
+public interface IURIScheme
 {
   /**
-   * Returns a new URI.
+   * Returns a new IURI.
    */
-  public URI newURI ( String uri ) throws URIException;
+  public IURI newURI ( String uri ) throws URIException;
 
   /**
-   * Returns a new URI.
+   * Returns a new IURI.
    */
-  public URI newURI ( URL url ) throws URIException;
+  public IURI newURI ( URL url ) throws URIException;
 
   /**
-   * Returns a new URI.
+   * Returns a new IURI.
    */
-  public URI newURI ( URI uri ) throws URIException;
+  public IURI newURI ( IURI uri ) throws URIException;
 
   /**
    * Returns the proper name of the scheme.
@@ -46,17 +46,17 @@ public interface URIScheme
   public boolean isHierarchical ();
 
   /**
-   * Returns true if and only if the given URI satisfies the
+   * Returns true if and only if the given IURI satisfies the
    * grammatical requirements of the scheme. Absolute URIs must
    * begin with "<scheme>:". Relative URIs must either not contain
    * a colon, ":", or it must begin with "./".
    */
-  public boolean isValid ( URI uri );
+  public boolean isValid ( IURI uri );
 
   /**
    * Returns a Status object indicating whether or not the given
-   * URI is valid. The severity and message of the Status object
+   * IURI is valid. The severity and message of the Status object
    * will describe this.
    */
-  public IStatus validate ( URI uri );
+  public IStatus validate ( IURI uri );
 }

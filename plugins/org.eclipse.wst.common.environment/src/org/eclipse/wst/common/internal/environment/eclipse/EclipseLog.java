@@ -12,9 +12,9 @@ package org.eclipse.wst.common.internal.environment.eclipse;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.wst.common.environment.Log;
+import org.eclipse.wst.common.environment.ILog;
 
-public class EclipseLog implements org.eclipse.wst.common.environment.Log 
+public class EclipseLog implements org.eclipse.wst.common.environment.ILog 
 {
 //	private Logger logger;
 	public EclipseLog() {
@@ -26,7 +26,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.Log
 	}
 	
 	/**
-	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.Log#isEnabled()
+	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.ILog#isEnabled()
 	 */
 	public boolean isEnabled() 
   {
@@ -34,7 +34,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.Log
 	}
 	
 	/**
-	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.Log#isEnabled(java.lang.String)
+	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.ILog#isEnabled(java.lang.String)
 	 */
 	public boolean isEnabled(String option) {
 		return "true".equals(Platform.getDebugOption("org.eclipse.wst.common.environment/trace/"
@@ -42,14 +42,14 @@ public class EclipseLog implements org.eclipse.wst.common.environment.Log
 	}
 	
 	/**
-	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.Log#log(int, int, java.lang.Object, java.lang.String, java.lang.Object)
+	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.ILog#log(int, int, java.lang.Object, java.lang.String, java.lang.Object)
 	 */
 	public void log(int severity, int messageNum, Object caller,
 			String method, Object object) {
 		
 		if (isEnabled()) {
 			switch (severity) {
-				case Log.ERROR :
+				case ILog.ERROR :
 					if (isEnabled("error"))
 //						logger
 //								.logError(getMessageNumString(messageNum) + "E "
@@ -59,7 +59,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.Log
 							+ caller + "::" + method + ": object="
 							+ object);
 					break;
-				case Log.WARNING :
+				case ILog.WARNING :
 					if (isEnabled("warning"))
 //						logger
 //								.logWarning(getMessageNumString(messageNum)
@@ -69,7 +69,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.Log
 								+ "W " + caller + "::" + method
 								+ ": object=" + object);
 					break;
-				case Log.INFO :
+				case ILog.INFO :
 					if (isEnabled("info"))
 //						logger
 //								.logInfo(getMessageNumString(messageNum) + "I "
@@ -85,7 +85,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.Log
 	}
 	
 	/**
-	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.Log#log(int, int, java.lang.Object, java.lang.String, org.eclipse.wst.command.internal.provisional.env.core.common.Status)
+	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.ILog#log(int, int, java.lang.Object, java.lang.String, org.eclipse.wst.command.internal.provisional.env.core.common.Status)
 	 */
 	public void log(int severity, int messageNum, Object caller,
 			String method, IStatus status) {
@@ -93,7 +93,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.Log
 	}
 	
 	/**
-	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.Log#log(int, int, java.lang.Object, java.lang.String, java.lang.Throwable)
+	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.ILog#log(int, int, java.lang.Object, java.lang.String, java.lang.Throwable)
 	 */
 	public void log(int severity, int messageNum, Object caller,
 			String method, Throwable throwable) {
@@ -104,19 +104,19 @@ public class EclipseLog implements org.eclipse.wst.common.environment.Log
 		/*
 		if (isEnabled()) {
 			switch (severity) {
-				case Log.ERROR :
+				case ILog.ERROR :
 					if (isEnabled("error"))
 						logger.logError(getMessageNumString(messageNum) + "E "
 								+ caller + "::" + method);
 					logger.logError(throwable);
 					break;
-				case Log.WARNING :
+				case ILog.WARNING :
 					if (isEnabled("warning"))
 						logger.logWarning(getMessageNumString(messageNum) + "W "
 								+ caller + "::" + method);
 					logger.logWarning(throwable);
 					break;
-				case Log.INFO :
+				case ILog.INFO :
 					if (isEnabled("info"))
 						logger.logInfo(getMessageNumString(messageNum) + "I "
 								+ caller + "::" + method);
@@ -128,7 +128,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.Log
 	}
 	
 	/**
-	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.Log#log(int, java.lang.String, int, java.lang.Object, java.lang.String, java.lang.Object)
+	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.ILog#log(int, java.lang.String, int, java.lang.Object, java.lang.String, java.lang.Object)
 	 */
 	public void log(int severity, String option, int messageNum,
 			Object caller, String method, Object object) {
@@ -143,7 +143,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.Log
 	}
 	
 	/**
-	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.Log#log(int, java.lang.String, int, java.lang.Object, java.lang.String, java.lang.Throwable)
+	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.ILog#log(int, java.lang.String, int, java.lang.Object, java.lang.String, java.lang.Throwable)
 	 */
 	public void log(int severity, String option, int messageNum,
 			Object caller, String method, Throwable throwable) {
@@ -162,7 +162,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.Log
 	}
 	
 	/**
-	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.Log#log(int, java.lang.String, int, java.lang.Object, java.lang.String, org.eclipse.wst.command.internal.provisional.env.core.common.Status)
+	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.ILog#log(int, java.lang.String, int, java.lang.Object, java.lang.String, org.eclipse.wst.command.internal.provisional.env.core.common.Status)
 	 */
 	public void log(int severity, String option, int messageNum,
 			Object caller, String method, IStatus status) {
