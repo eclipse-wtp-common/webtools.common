@@ -26,7 +26,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	}
 	
 	/**
-	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.ILog#isEnabled()
+	 * @see org.eclipse.wst.common.environment.ILog#isEnabled()
 	 */
 	public boolean isEnabled() 
   {
@@ -34,7 +34,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	}
 	
 	/**
-	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.ILog#isEnabled(java.lang.String)
+	 * @see org.eclipse.wst.common.Environment.ILog#isEnabled(java.lang.String)
 	 */
 	public boolean isEnabled(String option) {
 		return "true".equals(Platform.getDebugOption("org.eclipse.wst.common.environment/trace/"
@@ -42,7 +42,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	}
 	
 	/**
-	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.ILog#log(int, int, java.lang.Object, java.lang.String, java.lang.Object)
+	 * @see org.eclipse.wst.common.environment.ILog#log(int, int, java.lang.Object, java.lang.String, java.lang.Object)
 	 */
 	public void log(int severity, int messageNum, Object caller,
 			String method, Object object) {
@@ -85,7 +85,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	}
 	
 	/**
-	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.ILog#log(int, int, java.lang.Object, java.lang.String, org.eclipse.wst.command.internal.provisional.env.core.common.Status)
+	 * @see org.eclipse.wst.common.environment.ILog#log(int, int, java.lang.Object, java.lang.String, org.eclipse.core.runtime.IStatus)
 	 */
 	public void log(int severity, int messageNum, Object caller,
 			String method, IStatus status) {
@@ -93,7 +93,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	}
 	
 	/**
-	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.ILog#log(int, int, java.lang.Object, java.lang.String, java.lang.Throwable)
+	 * @see org.eclipse.wst.common.environment.ILog#log(int, int, java.lang.Object, java.lang.String, java.lang.Throwable)
 	 */
 	public void log(int severity, int messageNum, Object caller,
 			String method, Throwable throwable) {
@@ -128,7 +128,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	}
 	
 	/**
-	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.ILog#log(int, java.lang.String, int, java.lang.Object, java.lang.String, java.lang.Object)
+	 * @see org.eclipse.wst.common.environment.ILog#log(int, java.lang.String, int, java.lang.Object, java.lang.String, java.lang.Object)
 	 */
 	public void log(int severity, String option, int messageNum,
 			Object caller, String method, Object object) {
@@ -143,7 +143,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	}
 	
 	/**
-	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.ILog#log(int, java.lang.String, int, java.lang.Object, java.lang.String, java.lang.Throwable)
+	 * @see org.eclipse.wst.common.environment.ILog#log(int, java.lang.String, int, java.lang.Object, java.lang.String, java.lang.Throwable)
 	 */
 	public void log(int severity, String option, int messageNum,
 			Object caller, String method, Throwable throwable) {
@@ -162,7 +162,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	}
 	
 	/**
-	 * @see org.eclipse.wst.command.internal.provisional.env.core.common.ILog#log(int, java.lang.String, int, java.lang.Object, java.lang.String, org.eclipse.wst.command.internal.provisional.env.core.common.Status)
+	 * @see org.eclipse.wst.common.environment.ILog#log(int, java.lang.String, int, java.lang.Object, java.lang.String, org.eclipse.core.runtime.IStatus)
 	 */
 	public void log(int severity, String option, int messageNum,
 			Object caller, String method, IStatus status) {

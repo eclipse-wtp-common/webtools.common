@@ -436,7 +436,7 @@ public class EclipseURI extends RelativeURI
   }
   
   /* (non-Javadoc)
-   * @see org.eclipse.wst.command.internal.provisional.env.core.uri.URI#isAvailableAsFile()
+   * @see org.eclipse.wst.common.environment.uri.IURI#isAvailableAsFile()
    */
   public boolean isAvailableAsFile() 
   {
