@@ -26,8 +26,8 @@ import org.eclipse.wst.common.internal.emf.resource.TranslatorResourceFactory;
 public class WTPModulesResourceFactory extends TranslatorResourceFactory {
 	
 	
-	public static final String WTP_MODULES_SHORT_NAME = ".wtpmodules"; //$NON-NLS-1$
-	public static final URI WTP_MODULES_URI_OBJ = URI.createURI(WTP_MODULES_SHORT_NAME);
+	public static final String WTP_MODULES_SHORT_NAME = ".component"; //$NON-NLS-1$
+	public static final URI WTP_MODULES_URI_OBJ = URI.createURI(".settings/" + WTP_MODULES_SHORT_NAME);
 
 	/**
 	 * Method registerDtds.

@@ -30,14 +30,14 @@
             factoryClass="org.eclipse.wst.common.componentcore.internal.impl.ModuleStructuralModelFactory">
          <editModelResource
                autoload="false"
-               URI=".wtpmodules"/>
+               URI=".settings/.component"/>
       </editModel> 
    </extension>
 	
 	<extension point="org.eclipse.core.runtime.contentTypes">
  			<file-association
 				content-type="org.eclipse.core.runtime.xml"
-				file-names=".wtpmodules"/>
+				file-names=".component"/>
 	</extension>
 
 	<extension point="org.eclipse.team.core.ignore">

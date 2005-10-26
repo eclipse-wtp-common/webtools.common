@@ -76,7 +76,7 @@ public class StructureEdit implements IEditModelHandler {
 
 	public static final Class ADAPTER_TYPE = StructureEdit.class;
 
-	static String MODULE_META_FILE_NAME = ".wtpmodules"; //$NON-NLS-1$
+	static String MODULE_META_FILE_NAME = ".settings/.component"; //$NON-NLS-1$
 
 	private final static ComponentcoreFactory COMPONENT_FACTORY = ComponentcoreFactory.eINSTANCE;
 	private static final ComponentResource[] NO_RESOURCES = new ComponentResource[0];
