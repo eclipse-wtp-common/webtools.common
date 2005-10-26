@@ -49,7 +49,7 @@ public class EclipseEnvironment implements IEnvironment
   }
   
   /**
-   * @see org.eclipse.wst.command.internal.provisional.env.core.common.IEnvironment#getLog()
+   * @see org.eclipse.wst.common.environment.IEnvironment#getLog()
    */
   public ILog getLog()
   {
@@ -62,7 +62,7 @@ public class EclipseEnvironment implements IEnvironment
   }
    
   /**
-   * @see org.eclipse.wst.command.internal.provisional.env.core.common.IEnvironment#getStatusHandler()
+   * @see org.eclipse.wst.common.environment.IEnvironment#getStatusHandler()
    */
   public IStatusHandler getStatusHandler()
   {
@@ -70,7 +70,7 @@ public class EclipseEnvironment implements IEnvironment
   }
 
   /** (non-Javadoc)
-   * @see org.eclipse.wst.command.internal.provisional.env.core.common.IEnvironment#getURIFactory()
+   * @see org.eclipse.wst.common.environment.IEnvironment#getURIFactory()
    */
   public IURIFactory getURIFactory()
   {

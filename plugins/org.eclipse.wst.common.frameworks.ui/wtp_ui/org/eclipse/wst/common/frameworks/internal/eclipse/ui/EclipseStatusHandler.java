@@ -112,7 +112,7 @@ public class EclipseStatusHandler implements IStatusHandler
   }
   
   /**
-   * @see org.eclipse.wst.command.internal.provisional.env.core.common.IStatusHandler#reportError(org.eclipse.wst.command.internal.provisional.env.core.common.Status)
+   * @see org.eclipse.wst.common.environment.IStatusHandler#reportError(org.eclipse.core.runtime.IStatus)
    */
   public void reportError(IStatus status)
   {
@@ -120,7 +120,7 @@ public class EclipseStatusHandler implements IStatusHandler
   }
   
   /**
-   * @see org.eclipse.wst.command.internal.provisional.env.core.common.IStatusHandler#reportInfo(org.eclipse.wst.command.internal.provisional.env.core.common.Status)
+   * @see org.eclipse.wst.common.environment.IStatusHandler#reportInfo(org.eclipse.core.runtime.IStatus)
    */
   public void reportInfo(IStatus status)
   {
