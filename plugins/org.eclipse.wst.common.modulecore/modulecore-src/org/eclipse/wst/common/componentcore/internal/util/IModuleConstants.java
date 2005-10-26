@@ -19,6 +19,8 @@ import org.eclipse.core.runtime.Path;
  */
 public interface IModuleConstants {
 	
+	public final static String COMPONENT_FILE_NAME = ".component"; //$NON-NLS-1$
+	public final static Path COMPONENT_FILE_PATH = new Path(".settings/"+COMPONENT_FILE_NAME); //$NON-NLS-1$
     public final static String WTPMODULE_FILE_NAME = ".wtpmodules"; //$NON-NLS-1$
 	public final static Path WTPMODULE_FILE_PATH = new Path(WTPMODULE_FILE_NAME); //$NON-NLS-1$
 	public final static String MODULE_PLUG_IN_ID = "org.eclipse.wst.common.modulecore"; //$NON-NLS-1$

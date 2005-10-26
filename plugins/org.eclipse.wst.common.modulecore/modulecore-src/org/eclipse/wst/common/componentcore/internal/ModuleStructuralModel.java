@@ -32,7 +32,7 @@ import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 * {@see org.eclipse.wst.common.internal.emfworkbench.integration.EditModel}&nbsp;that manages
 * resources associated with the Module Structural Metamodel. As an EditModel, the
 * {@see org.eclipse.wst.common.modulecore.ModuleStructuralModel}&nbsp; references EMF resources,
-* that contain EMF models -- in this case, the EMF model of <i>.wtpmodules </i> file.
+* that contain EMF models -- in this case, the EMF model of <i>.component </i> file.
 * </p>
 * <p>
 * Clients are encouraged to use the Edit Facade pattern (via

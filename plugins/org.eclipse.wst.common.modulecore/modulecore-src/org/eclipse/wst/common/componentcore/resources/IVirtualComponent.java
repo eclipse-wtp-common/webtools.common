@@ -18,7 +18,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 
 /**
- * Represents a component as defined by the .wtpmodules file.
+ * Represents a component as defined by the .component file.
  * <p>
  * A component is a container of virtual resources which has other features that describe the
  * component including:

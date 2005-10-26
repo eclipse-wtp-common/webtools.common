@@ -6,6 +6,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.ComponentCore;
+import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
@@ -27,7 +28,7 @@ public class DependencyGraphManager {
 	}
 	
 	public void construct(IProject project) {
-		if (project!=null && project.isAccessible() && project.findMember(".wtpmodules") !=null) //$NON-NLS-1$
+		if (project!=null && project.isAccessible() && project.findMember(IModuleConstants.COMPONENT_FILE_PATH) !=null) //$NON-NLS-1$
 			constructIfNecessary();
 	}
 	
@@ -54,7 +55,7 @@ public class DependencyGraphManager {
 		for (int i=0; i<projects.length; i++) {
 			if (projects[i]==null || !projects[i].isAccessible())
 				continue;
-			IResource wtpModulesFile = projects[i].findMember(".wtpmodules"); //$NON-NLS-1$
+			IResource wtpModulesFile = projects[i].findMember(IModuleConstants.COMPONENT_FILE_PATH); //$NON-NLS-1$
 			if (wtpModulesFile != null) {
 				Long currentTimeStamp = new Long(wtpModulesFile.getLocalTimeStamp());
 				timeStamps.put(projects[i],currentTimeStamp);
@@ -89,8 +90,8 @@ public class DependencyGraphManager {
 	}
 	
 	private boolean addTimeStamp(IProject project) {
-		// Get the .wtpmodules file for the given project
-		IResource wtpModulesFile = project.findMember(".wtpmodules"); //$NON-NLS-1$
+		// Get the .component file for the given project
+		IResource wtpModulesFile = project.findMember(IModuleConstants.COMPONENT_FILE_PATH); //$NON-NLS-1$
 		if (wtpModulesFile==null)
 			return false;
 		Long currentTimeStamp = new Long(wtpModulesFile.getLocalTimeStamp());
@@ -107,7 +108,7 @@ public class DependencyGraphManager {
 	 * Lazy initialization and return of the key valued pair of projects and wtp modules file
 	 * timestamps.
 	 * 
-	 * @return HashMap of projects to wtpmodules file stamps
+	 * @return HashMap of projects to .component file stamps
 	 */
 	private HashMap getWtpModuleTimeStamps() {
 		if (wtpModuleTimeStamps == null)
