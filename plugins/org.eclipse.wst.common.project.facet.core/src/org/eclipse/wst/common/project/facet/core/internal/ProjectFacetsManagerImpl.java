@@ -280,13 +280,22 @@ public final class ProjectFacetsManagerImpl
         final IWorkspace ws = ResourcesPlugin.getWorkspace();
         final IProject project = ws.getRoot().getProject( name );
         
-        final IProjectDescription desc
-            = ws.newProjectDescription( name );
-
-        desc.setLocation( location );
-        desc.setNatureIds( new String[] { FacetedProjectNature.NATURE_ID } );
-                
-        project.create( desc, new SubProgressMonitor( monitor, 1 ) );
+        
+        if( !project.exists()){
+            final IProjectDescription desc
+            = ws.newProjectDescription( name );        	
+            desc.setLocation( location );
+            desc.setNatureIds( new String[] { FacetedProjectNature.NATURE_ID } );        	
+        	project.create( desc, new SubProgressMonitor( monitor, 1 ) );
+        }else{
+    		IProjectDescription description = project.getDescription();
+    		String[] prevNatures = description.getNatureIds();
+    		String[] newNatures = new String[prevNatures.length + 1];
+    		System.arraycopy(prevNatures, 0, newNatures, 0, prevNatures.length);
+    		newNatures[prevNatures.length] = FacetedProjectNature.NATURE_ID;
+    		description.setNatureIds(newNatures);
+    		project.setDescription( description, monitor );
+        }        
                     
         project.open( IResource.BACKGROUND_REFRESH,
                       new SubProgressMonitor( monitor, 1 ) );
