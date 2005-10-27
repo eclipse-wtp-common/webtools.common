@@ -48,6 +48,8 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 				actions.add(facetDM.getProperty(IFacetDataModelProperties.FACET_ACTION));
 			}
 			facetProj.modify(actions, monitor);
+			Set newFacets = facetProj.getProjectFacets();
+			facetProj.setFixedProjectFacets(newFacets);
 
 		} catch (CoreException e) {
 			throw new ExecutionException(e.getMessage(), e);
