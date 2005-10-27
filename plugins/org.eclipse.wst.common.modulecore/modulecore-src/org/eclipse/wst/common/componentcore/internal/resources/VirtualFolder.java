@@ -50,6 +50,10 @@ public class VirtualFolder extends VirtualContainer implements IVirtualFolder {
 			IFolder newFolder = realFolder.getFolder(getRuntimePath()); 
 			createResource(newFolder, updateFlags, monitor);  
 		}
+		else {
+			IFolder newFolder = getProject().getFolder(getRuntimePath()); 
+			createResource(newFolder, updateFlags, monitor); 
+		}
 	} 
 
 	// TODO WTP:Implement this method
