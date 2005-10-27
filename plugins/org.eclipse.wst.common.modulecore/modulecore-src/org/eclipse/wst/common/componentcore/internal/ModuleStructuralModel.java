@@ -11,7 +11,11 @@ package org.eclipse.wst.common.componentcore.internal;
 import java.io.IOException;
 import java.util.Collections;
 
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -98,6 +102,10 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	public Resource prepareProjectModulesIfNecessary() {
 
 		XMIResource res = (XMIResource) getPrimaryResource();
+		if (!res.isLoaded()) {
+			moveOldMetaDataFile();
+			res = (XMIResource) getPrimaryResource();
+		}
 		if(res == null)
 			res = makeWTPModulesResource();		
 		try {
@@ -108,6 +116,22 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 		return res;
 	}
 	
+	private void moveOldMetaDataFile() {
+		IResource oldfile = getProject().findMember(".wtpmodules");
+		if (oldfile != null && oldfile.exists()) {
+			
+			try {
+				IFolder settingsFolder = getProject().getFolder(".settings");
+				if (!settingsFolder.exists())
+					settingsFolder.create(true,true,null);
+				oldfile.move(new Path(".settings/.component"),true,null);
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	}
 	public Object getAdapter(Class anAdapter) {
 		return Platform.getAdapterManager().getAdapter(this, anAdapter); 
 	}
