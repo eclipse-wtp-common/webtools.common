@@ -28,6 +28,7 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 		Set names = super.getPropertyNames();
 		names.add(FACET_PROJECT_NAME);
 		names.add(FACET_DM_LIST);
+		names.add(FACET_RUNTIME);
 		return names;
 	}
 

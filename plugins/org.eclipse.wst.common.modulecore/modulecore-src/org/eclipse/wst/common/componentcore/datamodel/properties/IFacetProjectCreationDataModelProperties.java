@@ -18,4 +18,6 @@ public interface IFacetProjectCreationDataModelProperties extends IDataModelProp
 	
 	public static final String FACET_DM_LIST = "IFacetProjectCreationDataModelProperties.FACET_DM_LIST"; //$NON-NLS-1$
 	
+	public static final String FACET_RUNTIME = "IFacetProjectCreationDataModelProperties.FACET_RUNTIME"; //$NON-NLS-1$
+	
 }
