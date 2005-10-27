@@ -25,6 +25,7 @@ import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetProjectCr
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 public class FacetProjectCreationOperation extends AbstractDataModelOperation {
@@ -48,8 +49,12 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 				actions.add(facetDM.getProperty(IFacetDataModelProperties.FACET_ACTION));
 			}
 			facetProj.modify(actions, monitor);
-			Set newFacets = facetProj.getProjectFacets();
-			facetProj.setFixedProjectFacets(newFacets);
+			Set fixedFacets = new HashSet(), newFacetVersions = facetProj.getProjectFacets();
+			for (Iterator iter = newFacetVersions.iterator(); iter.hasNext();) {
+				IProjectFacetVersion facetVersion = (IProjectFacetVersion) iter.next();
+				fixedFacets.add(facetVersion.getProjectFacet());
+			}
+			facetProj.setFixedProjectFacets(fixedFacets);
 
 		} catch (CoreException e) {
 			throw new ExecutionException(e.getMessage(), e);
