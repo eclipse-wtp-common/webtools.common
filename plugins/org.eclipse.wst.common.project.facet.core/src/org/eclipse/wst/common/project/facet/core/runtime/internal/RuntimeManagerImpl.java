@@ -108,11 +108,14 @@ public final class RuntimeManagerImpl
     
     public static Set getRuntimes()
     {
+        bridge();
         return runtimes.getUnmodifiable();
     }
     
     public static Set getRuntimes( final Set facets )
     {
+        bridge();
+        
         final HashSet result = new HashSet();
         
         for( Iterator itr1 = runtimes.iterator(); itr1.hasNext(); )
@@ -140,11 +143,13 @@ public final class RuntimeManagerImpl
     
     public static boolean isRuntimeDefined( final String name )
     {
+        bridge();
         return runtimes.containsKey( name );
     }
     
     public static IRuntime getRuntime( final String name )
     {
+        bridge();
         final IRuntime runtime = (IRuntime) runtimes.get( name );
         
         if( runtime == null )
@@ -248,20 +253,31 @@ public final class RuntimeManagerImpl
         return result;
     }
     
-    public static void bridge()
+    private static boolean bridging = false;
+    
+    private static void bridge()
     {
-        try
+        if( ! bridging )
         {
-            // This is just a hack that needs to be replaced as soon as possible.
+            bridging = true;
             
-            final Bundle bundle = Platform.getBundle( "org.eclipse.jst.server.core" );
-            
-            final Class cl = bundle.loadClass( "org.eclipse.jst.server.core.internal.RuntimeBridge" );
-            ( (IRuntimeBridge) cl.newInstance() ).port();
-        }
-        catch( Exception e )
-        {
-            FacetCorePlugin.log( e );
+            try
+            {
+                // This is just a hack that needs to be replaced as soon as possible.
+                
+                final Bundle bundle = Platform.getBundle( "org.eclipse.jst.server.core" );
+                
+                final Class cl = bundle.loadClass( "org.eclipse.jst.server.core.internal.RuntimeBridge" );
+                ( (IRuntimeBridge) cl.newInstance() ).port();
+            }
+            catch( Exception e )
+            {
+                FacetCorePlugin.log( e );
+            }
+            finally
+            {
+                bridging = false;
+            }
         }
     }
     

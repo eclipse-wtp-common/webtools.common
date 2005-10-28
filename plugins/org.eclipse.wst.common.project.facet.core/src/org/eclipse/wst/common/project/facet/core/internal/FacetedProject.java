@@ -11,14 +11,15 @@
 
 package org.eclipse.wst.common.project.facet.core.internal;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
-import java.io.Writer;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -26,6 +27,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -41,6 +47,11 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -57,7 +68,7 @@ public final class FacetedProject
     private final HashSet fixed;
     private final Set fixedReadOnly;
     private IRuntime runtime;
-    private final File f;
+    private final IFile f;
     
     FacetedProject( final IProject project )
     {
@@ -67,7 +78,9 @@ public final class FacetedProject
         this.fixed = new HashSet();
         this.fixedReadOnly = Collections.unmodifiableSet( this.fixed );
         this.runtime = null;
-        this.f = new File( project.getLocation().toFile(), ".facets" );
+        
+        this.f = project.getFile( ".settings/" + FacetCorePlugin.PLUGIN_ID 
+                                  + ".xml" );
         
         open();
     }
@@ -392,6 +405,66 @@ public final class FacetedProject
         }
     }
     
+    private void save()
+    
+        throws CoreException
+        
+    {
+        final StringWriter w = new StringWriter();
+        final PrintWriter out = new PrintWriter( w );
+        
+        final String nl = System.getProperty( "line.separator" );
+        
+        out.print( "<faceted-project>" );
+        out.print( nl );
+        
+        if( this.runtime != null )
+        {
+            out.print( "  <runtime name=\"" );
+            out.print( this.runtime.getName() );
+            out.print( "\"/>" );
+            out.print( nl );
+        }
+        
+        for( Iterator itr = this.fixed.iterator(); itr.hasNext(); )
+        {
+            final IProjectFacet f = (IProjectFacet) itr.next();
+            
+            out.print( "  <fixed facet=\"" );
+            out.print( f.getId() );
+            out.print( "\"/>" );
+            out.print( nl );
+        }
+        
+        for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
+        {
+            final IProjectFacetVersion fv
+                = (IProjectFacetVersion) itr.next();
+            
+            out.print( "  <installed facet=\"" );
+            out.print( fv.getProjectFacet().getId() );
+            out.print( "\" version=\"" );
+            out.print( fv.getVersionString() );
+            out.print( "\"/>" );
+            out.print( nl );
+        }
+        
+        out.print( "</faceted-project>" );
+        out.print( nl );
+        
+        final InputStream in 
+            = new ByteArrayInputStream( w.getBuffer().toString().getBytes() );
+        
+        if( this.f.exists() )
+        {
+            this.f.setContents( in, true, false, null );
+        }
+        else
+        {
+            this.f.create( in, true, null );
+        }
+    }
+
     private void open()
     {
         if( ! this.f.exists() )
@@ -399,52 +472,86 @@ public final class FacetedProject
             return;
         }
         
-        BufferedReader in = null;
+        final Element root = parse( this.f.getLocation().toFile() );
+        final Element[] elements = children( root );
+        
+        for( int i = 0; i < elements.length; i++ )
+        {
+            final Element e = elements[ i ];
+            final String name = e.getNodeName();
+            
+            if( name.equals( "runtime" ) )
+            {
+                final String rn = e.getAttribute( "name" );
+                this.runtime = RuntimeManager.getRuntime( rn );
+            }
+            else if( name.equals( "fixed" ) )
+            {
+                // TODO: Handle the case where facet is not defined.
+                
+                final String fid = e.getAttribute( "facet" );
+                
+                final IProjectFacet f
+                    = ProjectFacetsManager.getProjectFacet( fid );
+                
+                this.fixed.add( f );
+            }
+            else if( name.equals( "installed" ) )
+            {
+                // TODO: Handle the case where facet or version is not defined.
+                
+                final String id = e.getAttribute( "facet" );
+                final String version = e.getAttribute( "version" );
+                
+                final IProjectFacet f
+                    = ProjectFacetsManager.getProjectFacet( id );
+                
+                final IProjectFacetVersion fv = f.getVersion( version );
+                
+                this.facets.add( fv );
+            }
+        }
+    }
+    
+    private static Element parse( final File f )
+    {
+        final DocumentBuilder docbuilder;
         
         try
         {
-            in = new BufferedReader( new FileReader( this.f ) );
+            final DocumentBuilderFactory factory 
+                = DocumentBuilderFactory.newInstance();
             
-            for( String line = in.readLine(); line != null; 
-                 line = in.readLine() )
-            {
-                if( line.startsWith( "r:" ) )
+            factory.setValidating( false );
+            
+            docbuilder = factory.newDocumentBuilder();
+            
+            docbuilder.setEntityResolver
+            (
+                new EntityResolver()
                 {
-                    final String name = line.substring( 2 );
-                    this.runtime = RuntimeManager.getRuntime( name );
-                }
-                else if( line.startsWith( "f:" ) )
-                {
-                    final IProjectFacet f
-                        = ProjectFacetsManager.getProjectFacet( line.substring( 2 ) );
-                    
-                    this.fixed.add( f );
-                }
-                else
-                {
-                    final int colon = line.indexOf( ':' );
-                    
-                    if( colon == -1 )
+                    public InputSource resolveEntity( final String publicID, 
+                                                      final String systemID )
                     {
-                        // TODO: Handle this.
-                        continue;
+                        return new InputSource( new StringReader( "" ) );
                     }
-                    
-                    final String name = line.substring( 0, colon );
-                    final String version = line.substring( colon + 1 );
-                    
-                    // TODO: Handle the case where the facet is not available.
-                    
-                    final IProjectFacetVersion fv
-                        = ProjectFacetsManager.getProjectFacet( name ).getVersion( version );
-    
-                    this.facets.add( fv );
                 }
-            }
+            );
         }
-        catch( IOException e )
+        catch( ParserConfigurationException e )
         {
-            // TODO: Handle this better.
+            throw new RuntimeException( e );
+        }
+
+        InputStream in = null;
+
+        try
+        {
+            in = new BufferedInputStream( new FileInputStream( f ) );
+            return docbuilder.parse( in ).getDocumentElement();
+        }
+        catch( Exception e )
+        {
             throw new RuntimeException( e );
         }
         finally
@@ -460,60 +567,22 @@ public final class FacetedProject
         }
     }
     
-    private void save()
+    private Element[] children( final Element element )
     {
-        PrintWriter out = null;
+        final List list = new ArrayList();
+        final NodeList nl = element.getChildNodes();
         
-        try
+        for( int i = 0, n = nl.getLength(); i < n; i++ )
         {
-            final Writer w = new BufferedWriter( new FileWriter( this.f ) );
-            out = new PrintWriter( w );
+            final Node node = nl.item( i );
             
-            if( this.runtime != null )
+            if( node.getNodeType() == Node.ELEMENT_NODE )
             {
-                out.print( "r:" );
-                out.println( this.runtime.getName() );
-            }
-            
-            for( Iterator itr = this.fixed.iterator(); itr.hasNext(); )
-            {
-                final IProjectFacet f = (IProjectFacet) itr.next();
-                
-                out.print( "f:" );
-                out.println( f.getId() );
-            }
-            
-            for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
-            {
-                final IProjectFacetVersion fv
-                    = (IProjectFacetVersion) itr.next();
-                
-                out.print( fv.getProjectFacet().getId() );
-                out.print( ':' );
-                out.println( fv.getVersionString() );
-            }
-        }
-        catch( IOException e )
-        {
-            // TODO: Handle this better.
-            throw new RuntimeException( e );
-        }
-        finally
-        {
-            if( out != null )
-            {
-                out.close();
+                list.add( node );
             }
         }
         
-        try
-        {
-            this.project.refreshLocal( 1, null );
-        }
-        catch( CoreException e )
-        {
-            // TODO: Report this.
-        }
+        return (Element[]) list.toArray( new Element[ list.size() ] );
     }
     
     private static final class Resources

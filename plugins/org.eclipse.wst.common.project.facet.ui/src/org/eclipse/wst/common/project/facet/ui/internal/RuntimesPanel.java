@@ -304,8 +304,6 @@ public final class RuntimesPanel
         {
             final Set res = new HashSet();
             
-            RuntimeManager.bridge();
-            
             for( Iterator itr1 = RuntimeManager.getRuntimes().iterator();
                  itr1.hasNext(); )
             {

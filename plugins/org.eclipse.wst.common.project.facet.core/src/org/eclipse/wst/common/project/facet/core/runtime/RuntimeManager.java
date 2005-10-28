@@ -163,13 +163,4 @@ public final class RuntimeManager
         return RuntimeManagerImpl.createRuntimeComponent( rcv, properties );
     }
     
-    /**
-     * Caution: experimental.
-     */
-    
-    public static void bridge()
-    {
-        RuntimeManagerImpl.bridge();
-    }
-    
 }
