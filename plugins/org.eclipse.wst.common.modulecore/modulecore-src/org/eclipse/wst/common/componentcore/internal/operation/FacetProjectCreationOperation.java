@@ -16,10 +16,14 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetDataModelProperties;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetProjectCreationDataModelProperties;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
@@ -41,7 +45,16 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		try {
-			IFacetedProject facetProj = ProjectFacetsManager.create(model.getStringProperty(IFacetProjectCreationDataModelProperties.FACET_PROJECT_NAME), null, monitor);
+
+			IPath location = new Path((String) model.getProperty(IFacetProjectCreationDataModelProperties.FACET_PROJECT_LOCATION));
+			IPath path = getRootLocation();
+			if (path.equals(location)) {
+				location = null;
+			}
+			
+			IFacetedProject facetProj = ProjectFacetsManager.create(model.getStringProperty(IFacetProjectCreationDataModelProperties.FACET_PROJECT_NAME),
+					location, monitor);
+					
 			List dmList = (List) model.getProperty(IFacetProjectCreationDataModelProperties.FACET_DM_LIST);
 			Set actions = new HashSet();
 			IDataModel facetDM = null;
@@ -61,8 +74,13 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 				facetProj.setRuntime(runtime,null);
 
 		} catch (CoreException e) {
+			Logger.getLogger().logError(e);
 			throw new ExecutionException(e.getMessage(), e);
 		}
 		return OK_STATUS;
 	}
+	
+	private IPath getRootLocation() {
+		return ResourcesPlugin.getWorkspace().getRoot().getLocation();
+	}	
 }
