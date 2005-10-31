@@ -76,6 +76,8 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 		} catch (CoreException e) {
 			Logger.getLogger().logError(e);
 			throw new ExecutionException(e.getMessage(), e);
+		}catch(Exception e){
+			Logger.getLogger().logError(e);
 		}
 		return OK_STATUS;
 	}
