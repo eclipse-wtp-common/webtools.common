@@ -3,3 +3,4 @@ build.xml
 facet-ui.jar
 temp.folder
 @dot
+src.zip
