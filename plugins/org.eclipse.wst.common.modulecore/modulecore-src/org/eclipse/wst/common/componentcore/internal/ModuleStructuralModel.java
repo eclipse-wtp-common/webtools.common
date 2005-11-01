@@ -15,8 +15,10 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -26,6 +28,7 @@ import org.eclipse.wst.common.componentcore.internal.impl.WTPModulesResourceFact
 import org.eclipse.wst.common.internal.emf.resource.ReferencedResource;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
+import org.osgi.framework.Bundle;
 /**
  * Manages the underlying Module Structural Metamodel.
 * <a name="module-structural-model"/>
@@ -111,7 +114,7 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 		try {
 			addProjectModulesIfNecessary(res);
 		} catch (IOException e) {		
-			e.printStackTrace();
+			Platform.getLog(ModulecorePlugin.getDefault().getBundle()).log(new Status(IStatus.ERROR, ModulecorePlugin.PLUGIN_ID, IStatus.ERROR, e.getMessage(), e));
 		}
 		return res;
 	}
@@ -126,8 +129,7 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 					settingsFolder.create(true,true,null);
 				oldfile.move(new Path(".settings/.component"),true,null);
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Platform.getLog(ModulecorePlugin.getDefault().getBundle()).log(new Status(IStatus.ERROR, ModulecorePlugin.PLUGIN_ID, IStatus.ERROR, e.getMessage(), e));
 			}
 		}
 		
