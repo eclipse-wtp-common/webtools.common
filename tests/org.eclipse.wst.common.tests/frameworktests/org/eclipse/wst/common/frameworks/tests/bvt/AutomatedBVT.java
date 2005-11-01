@@ -18,7 +18,6 @@ import org.eclipse.wst.common.environment.tests.EnvironmentTests;
 import org.eclipse.wst.common.frameworks.artifactedit.tests.ArtifactEditAPITests;
 import org.eclipse.wst.common.frameworks.componentcore.tests.AllTests;
 import org.eclipse.wst.common.frameworks.datamodel.tests.DataModelAPITests;
-import org.eclipse.wst.common.frameworks.operations.tests.manager.TestOperationManager;
 
 
 /**
