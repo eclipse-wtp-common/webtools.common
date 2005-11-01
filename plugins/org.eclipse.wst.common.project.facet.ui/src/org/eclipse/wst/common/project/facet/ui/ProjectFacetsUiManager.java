@@ -28,12 +28,6 @@ public final class ProjectFacetsUiManager
     
     private ProjectFacetsUiManager() {}
     
-    public static Object getConfig( final Action.Type actionType,
-                                    final IProjectFacetVersion f )
-    {
-        return impl.getConfig( actionType, f );
-    }
-    
     /**
      * @return (element type: {@see IFacetWizardPage})
      */

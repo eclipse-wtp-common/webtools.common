@@ -35,4 +35,9 @@ public abstract class AbstractFacetWizardPage
         this.context = context;
     }
     
+    public void transferStateToConfig()
+    {
+        
+    }
+    
 }

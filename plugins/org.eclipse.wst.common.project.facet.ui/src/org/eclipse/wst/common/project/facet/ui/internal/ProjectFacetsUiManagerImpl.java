@@ -44,24 +44,6 @@ public final class ProjectFacetsUiManagerImpl
         readExtensions();
     }
     
-    public Object getConfig( final Action.Type actionType,
-                             final IProjectFacetVersion f )
-    {
-        final WizardPagesInfo info = (WizardPagesInfo) this.metadata.get( f );
-        
-        if( info != null )
-        {
-            final String clname = (String) info.configs.get( actionType );
-            
-            if( clname != null )
-            {
-                return create( info.plugin, clname );
-            }
-        }
-        
-        return null;
-    }
-    
     /**
      * @return (element type: {@see IFacetWizardPage})
      */
@@ -201,40 +183,12 @@ public final class ProjectFacetsUiManagerImpl
                 throw new IllegalStateException();
             }
             
-            info.configs.put( actionType, readConfigClass( child ) );
             info.pagesets.put( actionType, readPageList( child ) );
         }
         
         this.metadata.put( fv, info );
     }
 
-    private String readConfigClass( final IConfigurationElement config )
-    {
-        final IConfigurationElement[] children = config.getChildren();
-        
-        for( int i = 0; i < children.length; i++ )
-        {
-            final IConfigurationElement child = children[ i ];
-            final String childName = child.getName();
-            
-            if( childName.equals( "config" ) )
-            {
-                final String clname = child.getAttribute( "class" );
-                
-                if( clname == null )
-                {
-                    // TODO: handle this better.
-                    throw new IllegalStateException();
-                }
-                
-                return clname;
-            }
-        }
-
-        // TODO: handle this better.
-        throw new IllegalStateException();
-    }
-    
     private List readPageList( final IConfigurationElement config )
     {
         final ArrayList list = new ArrayList();
@@ -265,7 +219,6 @@ public final class ProjectFacetsUiManagerImpl
     private static class WizardPagesInfo
     {
         public String plugin;
-        public HashMap configs = new HashMap();
         public HashMap pagesets = new HashMap();
     }
     

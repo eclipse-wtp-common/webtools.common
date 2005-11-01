@@ -23,5 +23,5 @@
         id="org.eclipse.wst.common.project.facet.ui.AddRemoveProjectFacetsMenuAction"/>
     </objectContribution>
   </extension>
-   
+  
 </plugin>

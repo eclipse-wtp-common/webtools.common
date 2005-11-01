@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
@@ -48,6 +49,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -78,7 +80,6 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
-import org.eclipse.wst.common.project.facet.ui.ProjectFacetsUiManager;
 import org.osgi.framework.Bundle;
 
 /**
@@ -468,14 +469,27 @@ public final class FacetsSelectionPanel
     
     private Action createAction( final Set actions,
                                  final Action.Type type,
-                                 final IProjectFacetVersion f )
+                                 final IProjectFacetVersion fv )
     {
-        Action action = getAction( actions, type, f );
+        Action action = getAction( actions, type, fv );
         
         if( action == null )
         {
-            final Object config = ProjectFacetsUiManager.getConfig( type, f );
-            action = new Action( type, f, config );
+            Object config = null;
+            
+            if( fv.supports( type ) )
+            {
+                try
+                {
+                    config = fv.createActionConfig( type );
+                }
+                catch( CoreException e )
+                {
+                    FacetUiPlugin.log( e );
+                }
+            }
+
+            action = new Action( type, fv, config );
         }
         
         return action;
@@ -1434,22 +1448,70 @@ public final class FacetsSelectionPanel
 
             if( iconPath == null )
             {
-                plugin = FacetUiPlugin.PLUGIN_ID;
-                iconPath = "images/unknown.gif";
+                return getDefaultImage();
             }
-
+            else
+            {
+                return getImage( plugin, iconPath );
+            }
+        }
+        
+        private Image getImage( final String plugin,
+                                final String iconPath )
+        {
             final String key = plugin + ":" + iconPath;
             Image image = this.imageRegistry.get( key );
 
             if( image == null )
             {
-                final Bundle bundle = Platform.getBundle( plugin );
-                final URL url = bundle.getEntry( iconPath );
-
-                this.imageRegistry.put( key, ImageDescriptor.createFromURL( url ) );
-                image = this.imageRegistry.get( key );
+                Bundle bundle = Platform.getBundle( plugin );
+                URL url = bundle.getEntry( iconPath );
+                
+                if( url == null )
+                {
+                    final String msg 
+                        = Resources.bind( Resources.iconNotFound, plugin,
+                                          iconPath );
+                    
+                    final IStatus status
+                        = new Status( IStatus.ERROR, FacetUiPlugin.PLUGIN_ID,
+                                      0, msg, null );
+                    
+                    FacetUiPlugin.getInstance().getLog().log( status );
+                    
+                    image = getDefaultImage();
+                    this.imageRegistry.put( key, image );
+                }
+                else
+                {
+                    this.imageRegistry.put( key, ImageDescriptor.createFromURL( url ) );
+                    image = this.imageRegistry.get( key );
+                }
             }
+            
+            return image;
+        }
+        
+        private static final String DEFAULT_IMG_KEY = "#DEFAULT#";
+        private static final String DEFAULT_IMG_LOCATION = "images/unknown.gif";
+        
+        private Image getDefaultImage()
+        {
+            Image image = this.imageRegistry.get( DEFAULT_IMG_KEY );
 
+            if( image == null )
+            {
+                final Bundle bundle 
+                    = Platform.getBundle( FacetUiPlugin.PLUGIN_ID );
+                
+                final URL url = bundle.getEntry( DEFAULT_IMG_LOCATION );
+                
+                this.imageRegistry.put( DEFAULT_IMG_KEY, 
+                                        ImageDescriptor.createFromURL( url ) );
+                
+                image = this.imageRegistry.get( DEFAULT_IMG_KEY );
+            }
+            
             return image;
         }
 
@@ -1667,6 +1729,20 @@ public final class FacetsSelectionPanel
 
         public void addListener( final ILabelProviderListener listener ) {}
         public void removeListener( ILabelProviderListener listener ) {}
+    }
+    
+    private static final class Resources
+    
+        extends NLS
+        
+    {
+        public static String iconNotFound;
+        
+        static
+        {
+            initializeMessages( FacetsSelectionPanel.class.getName(), 
+                                Resources.class );
+        }
     }
     
     private static final GridData gdfill()
