@@ -28,7 +28,6 @@ import org.eclipse.wst.common.componentcore.internal.impl.WTPModulesResourceFact
 import org.eclipse.wst.common.internal.emf.resource.ReferencedResource;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
-import org.osgi.framework.Bundle;
 /**
  * Manages the underlying Module Structural Metamodel.
 * <a name="module-structural-model"/>
