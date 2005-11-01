@@ -41,10 +41,12 @@ public class ArtifactEditOperationDataModelProvider extends AbstractDataModelPro
 	public Object getDefaultProperty(String propertyName) {
 		if (propertyName.equals(PROMPT_ON_SAVE))
 			return Boolean.FALSE;
-		if (propertyName.equals(TARGET_PROJECT))
+		else if (propertyName.equals(TARGET_PROJECT))
 			return getTargetProject();
-		if (propertyName.equals(TARGET_COMPONENT))
+		else if (propertyName.equals(TARGET_COMPONENT))
 			return getTargetComponent();
+		else if (propertyName.equals(COMPONENT_NAME))
+			return getStringProperty(PROJECT_NAME);
 		return super.getDefaultProperty(propertyName);
 	}
 
@@ -75,15 +77,15 @@ public class ArtifactEditOperationDataModelProvider extends AbstractDataModelPro
 		IStatus result = super.validate(propertyName);
 		if (result != null && !result.isOK())
 			return result;
-		else if (propertyName.equals(COMPONENT_NAME))
+		else if (propertyName.equals(PROJECT_NAME))
 			return validateModuleName();
 		return result;
 	}
 
 	protected IStatus validateModuleName() {
-		String moduleName = getStringProperty(COMPONENT_NAME);
+		String moduleName = getStringProperty(PROJECT_NAME);
 		if (moduleName == null || moduleName.length() == 0)
-			return WTPCommonPlugin.createErrorStatus(WTPCommonPlugin.getResourceString(WTPCommonMessages.ERR_EMPTY_MODULE_NAME));
+			return WTPCommonPlugin.createErrorStatus(WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_NAME_EMPTY));
 		return WTPCommonPlugin.OK_STATUS;
 	}
 
