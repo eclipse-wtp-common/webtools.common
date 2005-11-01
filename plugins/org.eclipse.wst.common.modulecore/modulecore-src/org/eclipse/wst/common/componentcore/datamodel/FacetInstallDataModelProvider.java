@@ -10,7 +10,13 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.datamodel;
 
-public class FacetInstallDataModelProvider extends FacetDataModelProvider {
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
+import org.eclipse.wst.common.project.facet.core.IActionConfigFactory;
+
+public class FacetInstallDataModelProvider 
+    extends FacetDataModelProvider
+    implements IActionConfigFactory {
 
 	public FacetInstallDataModelProvider() {
 		super();
@@ -29,5 +35,10 @@ public class FacetInstallDataModelProvider extends FacetDataModelProvider {
 		}
 		return super.propertySet(propertyName, propertyValue);
 	}
+
+    public Object create()
+    {
+        return DataModelFactory.createDataModel( this );
+    }
 
 }
