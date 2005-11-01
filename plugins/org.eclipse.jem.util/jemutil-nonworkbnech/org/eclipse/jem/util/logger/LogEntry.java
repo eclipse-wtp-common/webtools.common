@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $RCSfile: LogEntry.java,v $
- *  $Revision: 1.2 $  $Date: 2005/02/15 23:05:54 $ 
+ *  $Revision: 1.3 $  $Date: 2005/11/01 21:09:03 $ 
  */
 package org.eclipse.jem.util.logger;
 
@@ -20,7 +20,8 @@ import java.io.PrintWriter;
 /**
  * This class should be used when logging information which should be grouped together. Instead of creating a new instance of this class every time it
  * is needed, for performance reasons, create an instance and reuse it.
- * 
+ * <p>
+ * Currently the only fields that are logged are the {@link #getText()} and {@link #getTargetException()}.
  * 
  * @since 1.0.0
  */
@@ -280,6 +281,7 @@ public class LogEntry {
 	 * @param string
 	 * 
 	 * @since 1.0.0
+	 * @deprecated Use {@link #setText(String)} instead and calling it with the result of {@link java.text.MessageFormat#format(java.lang.String, java.lang.Object[])}
 	 */
 	public void setMessageTypeIdentifier(String string) {
 		messageTypeIdentifier = string;
@@ -290,6 +292,7 @@ public class LogEntry {
 	 * @param string
 	 * 
 	 * @since 1.0.0
+	 * @deprecated Use {@link #setText(String)} instead and calling it with the result of {@link java.text.MessageFormat#format(java.lang.String, java.lang.Object[])}
 	 */
 	public void setMessageTypeID(String string) {
 		setMessageTypeIdentifier(string);
@@ -301,6 +304,7 @@ public class LogEntry {
 	 * @param strings
 	 * 
 	 * @since 1.0.0
+	 * @deprecated Use {@link #setText(String)} instead and calling it with the result of {@link java.text.MessageFormat#format(java.lang.String, java.lang.Object[])}
 	 */
 	public void setTokens(String[] strings) {
 	}
