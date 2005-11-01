@@ -48,4 +48,10 @@ public final class FacetCorePlugin
         log.log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, e ) );
     }
     
+    public static IStatus createErrorStatus( final String msg )
+    {
+        return new Status( IStatus.ERROR, FacetCorePlugin.PLUGIN_ID, 0, msg, 
+                           null );
+    }
+    
 }

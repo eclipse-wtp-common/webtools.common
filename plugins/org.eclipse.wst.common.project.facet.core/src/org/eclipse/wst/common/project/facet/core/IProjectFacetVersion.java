@@ -11,6 +11,7 @@
 
 package org.eclipse.wst.common.project.facet.core;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 
 /**
@@ -58,6 +59,22 @@ public interface IProjectFacetVersion
      *   action type, <code>false</code> otherwise
      */
     
-    boolean supports( Action.Type action );
+    boolean supports( Action.Type type );
+    
+    /**
+     * Creates a new instance of the config object associated with the specified
+     * action on this facet. Will return <code>null</code> if the action 
+     * requires no config.
+     * 
+     * @param type the type of the action.
+     * @return the action config object, or <code>null</code>
+     * @throws CoreException if this project facet version does not support the
+     *   specified action type or if failed while creating the action config
+     *   object
+     */
+    
+    Object createActionConfig( Action.Type type )
+    
+        throws CoreException;
     
 }

@@ -170,7 +170,7 @@
          <sequence>
             <element ref="constraint" minOccurs="0" maxOccurs="1"/>
             <element ref="group-member" minOccurs="0" maxOccurs="unbounded"/>
-            <element ref="delegate" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="action" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="facet" type="string" use="required">
             <annotation>
@@ -192,44 +192,6 @@
    <element name="version-comparator">
       <complexType>
          <attribute name="class" type="string" use="required">
-            <annotation>
-               <documentation>
-                  
-               </documentation>
-            </annotation>
-         </attribute>
-      </complexType>
-   </element>
-
-   <element name="delegate">
-      <complexType>
-         <attribute name="type" use="required">
-            <annotation>
-               <documentation>
-                  
-               </documentation>
-            </annotation>
-            <simpleType>
-               <restriction base="string">
-                  <enumeration value="install">
-                  </enumeration>
-                  <enumeration value="uninstall">
-                  </enumeration>
-                  <enumeration value="version-change">
-                  </enumeration>
-                  <enumeration value="runtime-changed">
-                  </enumeration>
-               </restriction>
-            </simpleType>
-         </attribute>
-         <attribute name="class" type="string">
-            <annotation>
-               <documentation>
-                  
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="noop" type="boolean">
             <annotation>
                <documentation>
                   
@@ -293,7 +255,7 @@
       <complexType>
          <sequence>
             <element ref="label"/>
-            <element name="fixed" minOccurs="0" maxOccurs="unbounded">
+            <element name="fixed">
                <complexType>
                   <attribute name="facet" type="string" use="required">
                      <annotation>
@@ -304,7 +266,7 @@
                   </attribute>
                </complexType>
             </element>
-            <element name="preset" minOccurs="0" maxOccurs="1">
+            <element name="preset">
                <complexType>
                   <attribute name="id" type="string" use="required">
                      <annotation>
@@ -317,6 +279,58 @@
             </element>
          </sequence>
          <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="action">
+      <complexType>
+         <all>
+            <element ref="config-factory" minOccurs="0" maxOccurs="1"/>
+            <element ref="delegate"/>
+         </all>
+         <attribute name="type" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+            <simpleType>
+               <restriction base="string">
+                  <enumeration value="install">
+                  </enumeration>
+                  <enumeration value="uninstall">
+                  </enumeration>
+                  <enumeration value="version-change">
+                  </enumeration>
+                  <enumeration value="runtime-changed">
+                  </enumeration>
+               </restriction>
+            </simpleType>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="config-factory">
+      <complexType>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="delegate">
+      <complexType>
+         <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
                   

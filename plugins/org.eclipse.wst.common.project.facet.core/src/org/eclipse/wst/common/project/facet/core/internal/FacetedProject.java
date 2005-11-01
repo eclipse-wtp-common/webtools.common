@@ -32,6 +32,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -212,9 +213,16 @@ public final class FacetedProject
                         = monitor == null 
                           ? null : new SubProgressMonitor( monitor, 1 );
                     
-                    callDelegate( this.project, fv, action.getConfig(),
-                                  IDelegate.Type.get( action.getType() ),
-                                  delegate, submonitor );
+                    Object config = action.getConfig();
+                    
+                    if( config == null )
+                    {
+                        config = fv.createActionConfig( type );
+                    }
+                    
+                    callDelegate( this.project, fv, config,
+                                  IDelegate.Type.get( type ), delegate,
+                                  submonitor );
                 }
 
                 apply( this.facets, action );
@@ -461,6 +469,13 @@ public final class FacetedProject
         }
         else
         {
+            final IFolder parent = (IFolder) this.f.getParent();
+            
+            if( ! parent.exists() )
+            {
+                parent.create( true, true, null );
+            }
+            
             this.f.create( in, true, null );
         }
     }
@@ -597,7 +612,7 @@ public final class FacetedProject
         
         static
         {
-            initializeMessages( Constraint.class.getName(), 
+            initializeMessages( FacetedProject.class.getName(), 
                                 Resources.class );
         }
     }

@@ -13,7 +13,10 @@ package org.eclipse.wst.common.project.facet.core.internal;
 
 import java.util.HashMap;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.common.project.facet.core.IActionConfigFactory;
 import org.eclipse.wst.common.project.facet.core.IConstraint;
 import org.eclipse.wst.common.project.facet.core.IDelegate;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
@@ -37,6 +40,7 @@ public final class ProjectFacetVersion
     private IConstraint constraint;
     private String plugin;
     private final HashMap delegates = new HashMap();
+    private final HashMap configFactories = new HashMap();    
     
     ProjectFacetVersion() {}
     
@@ -80,11 +84,60 @@ public final class ProjectFacetVersion
         this.plugin = plugin;
     }
     
+    public boolean supports( final Action.Type type )
+    {
+        return this.delegates.containsKey( IDelegate.Type.get( type ) );
+    }
+    
+    public Object createActionConfig( final Action.Type type )
+    
+        throws CoreException
+        
+    {
+        if( ! supports( type ) )
+        {
+            final String msg 
+                = NLS.bind( Resources.actionNotSupported, toString(), 
+                            type.toString() );
+            
+            throw new CoreException( FacetCorePlugin.createErrorStatus( msg ) );
+        }
+        
+        final String clname 
+            = (String) this.configFactories.get( IDelegate.Type.get( type ) );
+        
+        if( clname == null )
+        {
+            return null;
+        }
+        else
+        {
+            final Object temp = create( clname );
+            
+            if( ! ( temp instanceof IActionConfigFactory ) )
+            {
+                final String msg
+                    = NLS.bind( Resources.notInstanceOf, clname,
+                                IActionConfigFactory.class.getName() );
+                
+                throw new CoreException( FacetCorePlugin.createErrorStatus( msg ) );
+            }
+            
+            return ( (IActionConfigFactory) temp ).create();
+        }
+    }
+    
+    void setActionConfigFactory( final IDelegate.Type type,
+                                 final String configFactoryClassName )
+    {
+        this.configFactories.put( type, configFactoryClassName );
+    }
+    
     IDelegate getDelegate( final IDelegate.Type type )
     {
         Object delegate = this.delegates.get( type );
         
-        if( delegate == null || delegate == ProjectFacetsManagerImpl.NOOP )
+        if( delegate == null )
         {
             return null;
         }
@@ -111,11 +164,6 @@ public final class ProjectFacetVersion
         this.delegates.put( type, delegateClassName );
     }
     
-    public boolean supports( final Action.Type type )
-    {
-        return this.delegates.containsKey( IDelegate.Type.get( type ) );
-    }
-    
     private Object create( final String clname )
     {
         final Bundle bundle = Platform.getBundle( this.plugin );
@@ -135,6 +183,21 @@ public final class ProjectFacetVersion
     public String toString()
     {
         return this.facet.getLabel() + " " + this.version;
+    }
+    
+    private static final class Resources
+    
+        extends NLS
+        
+    {
+        public static String actionNotSupported;
+        public static String notInstanceOf;
+        
+        static
+        {
+            initializeMessages( ProjectFacetVersion.class.getName(), 
+                                Resources.class );
+        }
     }
 
 }

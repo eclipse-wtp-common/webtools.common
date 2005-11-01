@@ -58,7 +58,6 @@ import org.osgi.service.prefs.Preferences;
 
 public final class ProjectFacetsManagerImpl
 {
-    static final String NOOP = "#noop#";
     private static final String EXTENSION_ID = "facets";
     
     private final IndexedSet facets;
@@ -280,22 +279,13 @@ public final class ProjectFacetsManagerImpl
         final IWorkspace ws = ResourcesPlugin.getWorkspace();
         final IProject project = ws.getRoot().getProject( name );
         
-        
-        if( !project.exists()){
-            final IProjectDescription desc
-            = ws.newProjectDescription( name );        	
-            desc.setLocation( location );
-            desc.setNatureIds( new String[] { FacetedProjectNature.NATURE_ID } );        	
-        	project.create( desc, new SubProgressMonitor( monitor, 1 ) );
-        }else{
-    		IProjectDescription description = project.getDescription();
-    		String[] prevNatures = description.getNatureIds();
-    		String[] newNatures = new String[prevNatures.length + 1];
-    		System.arraycopy(prevNatures, 0, newNatures, 0, prevNatures.length);
-    		newNatures[prevNatures.length] = FacetedProjectNature.NATURE_ID;
-    		description.setNatureIds(newNatures);
-    		project.setDescription( description, monitor );
-        }        
+        final IProjectDescription desc
+            = ws.newProjectDescription( name );
+
+        desc.setLocation( location );
+        desc.setNatureIds( new String[] { FacetedProjectNature.NATURE_ID } );
+                
+        project.create( desc, new SubProgressMonitor( monitor, 1 ) );
                     
         project.open( IResource.BACKGROUND_REFRESH,
                       new SubProgressMonitor( monitor, 1 ) );
@@ -986,61 +976,84 @@ public final class ProjectFacetsManagerImpl
                 
                 group.addMember( fv );
             }
-            else if( childName.equals( "delegate" ) )
+            else if( childName.equals( "action" ) )
             {
-                final String type = child.getAttribute( "type" );
-                IDelegate.Type t = null;
-                
-                if( type == null )
-                {
-                    // TODO: error
-                }
-                else if( type.equals( "install" ) )
-                {
-                    t = IDelegate.Type.INSTALL;
-                }
-                else if( type.equals( "uninstall" ) )
-                {
-                    t = IDelegate.Type.UNINSTALL;
-                }
-                else if( type.equals( "version-change" ) )
-                {
-                    t = IDelegate.Type.VERSION_CHANGE; 
-                }
-                else if( type.equals( "runtime-changed" ) )
-                {
-                    t = IDelegate.Type.RUNTIME_CHANGED;
-                }
-                else
-                {
-                    // TODO: error
-                }
-
-                final String noop = child.getAttribute( "noop" );
-                
-                if( noop != null && noop.equalsIgnoreCase( "true" ) )
-                {
-                    fv.setDelegate( t, NOOP );
-                }
-                else
-                {
-                    final String clname = child.getAttribute( "class" );
-
-                    if( clname == null )
-                    {
-                        // TODO: error
-                    }
-                    
-                    fv.setDelegate( t, clname );
-                }
+                readAction( child, fv );
             }
         }
         
         f.addVersion( fv );
     }
+
+    private void readAction( final IConfigurationElement config,
+                             final ProjectFacetVersion fv )
+    {
+        final String type = config.getAttribute( "type" );
+        IDelegate.Type t = null;
+        
+        if( type == null )
+        {
+            // TODO: error
+        }
+        else if( type.equals( "install" ) )
+        {
+            t = IDelegate.Type.INSTALL;
+        }
+        else if( type.equals( "uninstall" ) )
+        {
+            t = IDelegate.Type.UNINSTALL;
+        }
+        else if( type.equals( "version-change" ) )
+        {
+            t = IDelegate.Type.VERSION_CHANGE; 
+        }
+        else if( type.equals( "runtime-changed" ) )
+        {
+            t = IDelegate.Type.RUNTIME_CHANGED;
+        }
+        else
+        {
+            // TODO: error
+        }
+
+        final IConfigurationElement[] children = config.getChildren();
+        
+        for( int i = 0; i < children.length; i++ )
+        {
+            final IConfigurationElement child = children[ i ];
+            final String childName = child.getName();
+            
+            if( childName.equals( "config-factory" ) )
+            {
+                final String clname = child.getAttribute( "class" );
+                
+                if( clname == null )
+                {
+                    // TODO: error
+                }
+                
+                fv.setActionConfigFactory( t, clname );
+            }
+            else if( childName.equals( "delegate" ) )
+            {
+                final String clname = child.getAttribute( "class" );
+                
+                if( clname == null )
+                {
+                    // TODO: error
+                }
+                
+                fv.setDelegate( t, clname );
+            }
+            else
+            {
+                // TODO: error
+            }
+        }
+    }
     
     private IConstraint readConstraint( final IConfigurationElement root,
-                                                      final ProjectFacetVersion desc )
+                                        final ProjectFacetVersion fv )
     {
         final IConstraint.Type type
             = IConstraint.Type.get( root.getName() );
@@ -1055,7 +1068,7 @@ public final class ProjectFacetsManagerImpl
             
             for( int i = 0; i < children.length; i++ )
             {
-                operands[ i ] = readConstraint( children[ i ], desc );
+                operands[ i ] = readConstraint( children[ i ], fv );
             }
         }
         else if( type == IConstraint.Type.REQUIRES )
@@ -1108,7 +1121,7 @@ public final class ProjectFacetsManagerImpl
             throw new IllegalStateException();
         }
         
-        return new Constraint( desc, type, operands );
+        return new Constraint( fv, type, operands );
     }
     
     private void readTemplate( final IConfigurationElement config )
