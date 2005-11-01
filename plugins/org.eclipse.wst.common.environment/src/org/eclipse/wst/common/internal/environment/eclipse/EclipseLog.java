@@ -51,30 +51,18 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 			switch (severity) {
 				case ILog.ERROR :
 					if (isEnabled("error"))
-//						logger
-//								.logError(getMessageNumString(messageNum) + "E "
-//										+ caller + "::" + method + ": object="
-//										+ object);
 						System.out.println(getMessageNumString(messageNum) + "E "
 							+ caller + "::" + method + ": object="
 							+ object);
 					break;
 				case ILog.WARNING :
 					if (isEnabled("warning"))
-//						logger
-//								.logWarning(getMessageNumString(messageNum)
-//										+ "W " + caller + "::" + method
-//										+ ": object=" + object);
 						System.out.println(getMessageNumString(messageNum)
 								+ "W " + caller + "::" + method
 								+ ": object=" + object);
 					break;
 				case ILog.INFO :
 					if (isEnabled("info"))
-//						logger
-//								.logInfo(getMessageNumString(messageNum) + "I "
-//										+ caller + "::" + method + ": object="
-//										+ object);
 						System.out.println(getMessageNumString(messageNum) + "I "
 								+ caller + "::" + method + ": object="
 								+ object);
@@ -99,32 +87,7 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 			String method, Throwable throwable) {
 		log( severity, messageNum, caller, method, (Object)null );
     
-		if( throwable != null ) throwable.printStackTrace();
-    
-		/*
-		if (isEnabled()) {
-			switch (severity) {
-				case ILog.ERROR :
-					if (isEnabled("error"))
-						logger.logError(getMessageNumString(messageNum) + "E "
-								+ caller + "::" + method);
-					logger.logError(throwable);
-					break;
-				case ILog.WARNING :
-					if (isEnabled("warning"))
-						logger.logWarning(getMessageNumString(messageNum) + "W "
-								+ caller + "::" + method);
-					logger.logWarning(throwable);
-					break;
-				case ILog.INFO :
-					if (isEnabled("info"))
-						logger.logInfo(getMessageNumString(messageNum) + "I "
-								+ caller + "::" + method);
-					logger.logInfo(throwable);
-					break;
-			}
-		}
-		*/
+		if( throwable != null ) throwable.printStackTrace(); 
 	}
 	
 	/**
@@ -132,11 +95,6 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	 */
 	public void log(int severity, String option, int messageNum,
 			Object caller, String method, Object object) {
-		/*
-		if (isEnabled(option))
-			logger.logInfo(getMessageNumString(messageNum) + "I " + caller
-					+ "::" + method + ": object=" + object);
-		*/
 		if (isEnabled(option))
 			System.out.println(getMessageNumString(messageNum) + "I " + caller
 					+ "::" + method + ": object=" + object);
@@ -147,13 +105,6 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	 */
 	public void log(int severity, String option, int messageNum,
 			Object caller, String method, Throwable throwable) {
-		/*
-		if (isEnabled(option)) {
-			logger.logInfo(getMessageNumString(messageNum) + "I " + caller
-					+ "::" + method);
-			logger.logInfo(throwable);
-		}
-		*/
 		if (isEnabled(option)) {
 			System.out.println(getMessageNumString(messageNum) + "I " + caller
 					+ "::" + method);

@@ -8,16 +8,20 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.environment.uri;
+package org.eclipse.wst.common.internal.environment.relative;
 
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.common.environment.uri.IURI;
+import org.eclipse.wst.common.environment.uri.IURIFilter;
+import org.eclipse.wst.common.environment.uri.IURIScheme;
+import org.eclipse.wst.common.environment.uri.IURIVisitor;
+import org.eclipse.wst.common.environment.uri.URIException;
 import org.eclipse.wst.common.internal.environment.eclipse.Messages;
 
 
@@ -77,18 +81,7 @@ public class RelativeURI implements IURI
    */
   public URL asURL() throws URIException
   {
-    URL url = null;
-    
-    try
-    {
-      url = new URL( uri_ );
-    }
-    catch( MalformedURLException exc )
-    {
-      throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this ); 
-    }
-    
-    return url;
+    return null;
   }
 
   /* (non-Javadoc)
@@ -135,7 +128,7 @@ public class RelativeURI implements IURI
    */
   public boolean isAvailableAsURL()
   {
-    return true;
+    return false;
   }
 
   /* (non-Javadoc)

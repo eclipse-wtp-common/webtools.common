@@ -14,7 +14,7 @@ import org.eclipse.wst.common.environment.uri.IURIFactory;
 
 
 /**
- * An IEnvironment provides the means for a 
+ * An IEnvironment provides the means for getting a 
  * <ol>
  * <li>A log for writing messages to a logging facility,</li>
  * <li>A progress monitor for receiving progress information,</li>

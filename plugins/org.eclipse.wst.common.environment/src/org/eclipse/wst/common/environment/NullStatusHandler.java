@@ -12,6 +12,11 @@ package org.eclipse.wst.common.environment;
 
 import org.eclipse.core.runtime.IStatus;
 
+/**
+ * 
+ * This class provides a default implementation of the IStatusHandler interface.
+ *
+ */
 public class NullStatusHandler implements IStatusHandler
 {
   

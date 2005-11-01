@@ -8,16 +8,24 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.environment.uri;
+package org.eclipse.wst.common.internal.environment.relative;
 
 import java.net.URL;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.wst.common.environment.uri.IURI;
+import org.eclipse.wst.common.environment.uri.IURIScheme;
+import org.eclipse.wst.common.environment.uri.URIException;
 
 
 public class RelativeScheme implements IURIScheme
 {
 
+  public String toString()
+  {
+    return "relative";  
+  }
+  
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URIScheme#isHierarchical()
    */
@@ -37,7 +45,7 @@ public class RelativeScheme implements IURIScheme
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URIScheme#newURI(java.lang.String)
    */
-  public IURI newURI(String uri) 
+  public IURI newURI(String uri) throws URIException
   {
     return new RelativeURI( uri );
   }
@@ -45,7 +53,7 @@ public class RelativeScheme implements IURIScheme
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URIScheme#newURI(org.eclipse.env.uri.URI)
    */
-  public IURI newURI(IURI uri) 
+  public IURI newURI(IURI uri) throws URIException
   {
     return new RelativeURI( uri.toString() );
   }
@@ -53,7 +61,7 @@ public class RelativeScheme implements IURIScheme
   /* (non-Javadoc)
    * @see org.eclipse.env.uri.URIScheme#newURI(java.net.URL)
    */
-  public IURI newURI(URL url) 
+  public IURI newURI(URL url) throws URIException
   {
     return new RelativeURI( url.toString() );
   }

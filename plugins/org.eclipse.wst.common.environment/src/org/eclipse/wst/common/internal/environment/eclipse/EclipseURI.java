@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Vector;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -26,18 +28,18 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.environment.IEnvironment;
-import org.eclipse.wst.common.environment.uri.RelativeURI;
 import org.eclipse.wst.common.environment.uri.IURI;
-import org.eclipse.wst.common.environment.uri.URIException;
 import org.eclipse.wst.common.environment.uri.IURIFilter;
 import org.eclipse.wst.common.environment.uri.IURIScheme;
+import org.eclipse.wst.common.environment.uri.URIException;
+import org.eclipse.wst.common.internal.environment.relative.RelativeURI;
 
 
 public class EclipseURI extends RelativeURI
 {
-  private IEnvironment      environment_;
-  private EclipseScheme    scheme_;
-  private File             file_;
+  private IEnvironment   environment_;
+  private EclipseScheme  scheme_;
+  private File           file_;
   
   public EclipseURI( String uri, IEnvironment environment )
   {
@@ -47,7 +49,12 @@ public class EclipseURI extends RelativeURI
     scheme_       = new EclipseScheme( environment );
     file_         = getFile();
   }
-    
+  
+  public String toString()
+  {
+    return uri_;
+  }
+  
   /**
    * @see org.eclipse.env.uri.IURI#erase()
    */
@@ -312,10 +319,26 @@ public class EclipseURI extends RelativeURI
   /**
    * @see org.eclipse.env.uri.IURI#rename(org.eclipse.env.uri.IURI)
    */
-  public void rename(IURI newURI )
+  public void rename(IURI newURI ) throws URIException
   {
-    // TODO Auto-generated method stub
-
+    if( newURI == null || !(newURI instanceof EclipseURI) ) return;
+    
+    try
+    {
+      EclipseURI newEclipseURI = (EclipseURI)newURI;
+      IPath      newPath       = new Path( scheme_.getPathFromPlatformURI( newEclipseURI.uri_ ) ).makeAbsolute();
+      IResource  resource      = getResource();
+      
+      if( resource != null )
+      {
+        resource.move( newPath, true, null );
+      }
+    }
+    catch( CoreException exc )
+    {
+      exc.printStackTrace();
+      throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ) );
+    }
   }
 
   /**
@@ -443,6 +466,43 @@ public class EclipseURI extends RelativeURI
   	return file_ != null;
   }
   
+  /* (non-Javadoc)
+   * @see org.eclipse.env.uri.URI#asURL()
+   */
+  public URL asURL() throws URIException
+  {
+    URL url = null;
+    
+    try
+    {
+      url = new URL( uri_ );
+    }
+    catch( MalformedURLException exc )
+    {
+      throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this ); 
+    }
+    
+    return url;
+  }
+  
+  /* (non-Javadoc)
+   * @see org.eclipse.env.uri.URI#isAvailableAsURL()
+   */
+  public boolean isAvailableAsURL()
+  {
+    URL theURL = null;
+    
+    try
+    {
+      theURL = asURL();  
+    }
+    catch( URIException exc )
+    {  
+    }
+    
+    return theURL != null ;
+  }
+
   private File getFile()
   {
     String platformRes = "platform:/resource";

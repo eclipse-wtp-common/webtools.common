@@ -10,13 +10,13 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.eclipse.ui;
 
-import org.eclipse.wst.common.environment.IEnvironment;
 import org.eclipse.wst.common.environment.EnvironmentService;
+import org.eclipse.wst.common.environment.IEnvironment;
 import org.eclipse.wst.common.environment.ILog;
 import org.eclipse.wst.common.environment.IStatusHandler;
-import org.eclipse.wst.common.environment.uri.SimpleURIFactory;
 import org.eclipse.wst.common.environment.uri.IURIFactory;
 import org.eclipse.wst.common.environment.uri.IURIScheme;
+import org.eclipse.wst.common.environment.uri.SimpleURIFactory;
 
 
 /**
@@ -38,7 +38,7 @@ public class EclipseEnvironment implements IEnvironment
   
   public EclipseEnvironment( IStatusHandler   statusHandler )
   {
-    IURIScheme eclipseScheme = EnvironmentService.getEclipseScheme( this );
+    IURIScheme eclipseScheme = EnvironmentService.getEclipseScheme();
     IURIScheme fileScheme    = EnvironmentService.getFileScheme();
     
     uriFactory_      = new SimpleURIFactory();

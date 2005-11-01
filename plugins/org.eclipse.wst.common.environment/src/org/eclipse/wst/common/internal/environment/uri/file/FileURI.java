@@ -16,14 +16,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Vector;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.wst.common.environment.uri.RelativeURI;
 import org.eclipse.wst.common.environment.uri.IURI;
 import org.eclipse.wst.common.environment.uri.URIException;
 import org.eclipse.wst.common.environment.uri.IURIFilter;
 import org.eclipse.wst.common.environment.uri.IURIScheme;
+import org.eclipse.wst.common.internal.environment.relative.RelativeURI;
 
 
 public class FileURI extends RelativeURI 
@@ -145,7 +147,26 @@ public class FileURI extends RelativeURI
    */
   public boolean isAvailableAsURL()
   {
-    return true;
+    return file_ != null;
+  }
+  
+  /* (non-Javadoc)
+   * @see org.eclipse.env.uri.URI#asURL()
+   */
+  public URL asURL() throws URIException
+  {
+    URL url = null;
+    
+    try
+    {
+      url = file_ == null ? null : file_.toURL();
+    }
+    catch( MalformedURLException exc )
+    {
+      throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this );      
+    }
+    
+    return url;
   }
 
   /* (non-Javadoc)
@@ -230,8 +251,16 @@ public class FileURI extends RelativeURI
    */
   public void rename(IURI newURI) throws URIException
   {
-    uri_ = newURI.toString();
-    file_.renameTo( new File( uri_ ) );
+    try
+    {
+      uri_ = newURI.toString();
+      URL newURL = new URL( uri_ );
+      file_.renameTo( new File( newURL.getPath() ) );
+    }
+    catch( MalformedURLException exc )
+    {
+      throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this );      
+    }
   }
 
   /* (non-Javadoc)
@@ -259,5 +288,10 @@ public class FileURI extends RelativeURI
     {
       throw new URIException( new Status( IStatus.ERROR, "id", 0, exc.getMessage(), exc ), this );      
     }
+  }
+
+  public boolean isRelative()
+  {
+    return false;
   }    
 }

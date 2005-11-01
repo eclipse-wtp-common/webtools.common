@@ -17,10 +17,10 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.environment.IEnvironment;
-import org.eclipse.wst.common.environment.uri.RelativeURI;
 import org.eclipse.wst.common.environment.uri.IURI;
-import org.eclipse.wst.common.environment.uri.URIException;
 import org.eclipse.wst.common.environment.uri.IURIScheme;
+import org.eclipse.wst.common.environment.uri.URIException;
+import org.eclipse.wst.common.internal.environment.relative.RelativeURI;
 
 
 public class EclipseScheme implements IURIScheme
@@ -30,6 +30,11 @@ public class EclipseScheme implements IURIScheme
   public EclipseScheme( IEnvironment environment )
   {
     environment_ = environment;
+  }
+  
+  public String toString()
+  {
+    return "platform";  
   }
   
   /**
@@ -49,6 +54,10 @@ public class EclipseScheme implements IURIScheme
     
     try
     {
+      IURIScheme scheme = uri.getURIScheme();
+      
+      if( scheme.toString().equals( "relative") ) return scheme.isValid( uri );
+        
       getPathFromPlatformURI( uri.toString() );
     }
     catch( URIException exc )
@@ -65,19 +74,19 @@ public class EclipseScheme implements IURIScheme
   {
     String newURI = null;
     
-    if( uri.startsWith( "platform:/resource") )
+    if( uri != null && uri.startsWith( "platform:") )
     {
       // The platform has been specified so keep it as is.
       newURI = uri;
     }
-    else if( uri.indexOf( ":") != -1 )
+    else if( uri == null || uri.indexOf( ":") != -1 )
     {
       // The platform uri is not allowed to contain some other protocol. 
       throw new URIException(
           new Status( IStatus.ERROR, "id", 0,
               NLS.bind( Messages.MSG_INVALID_PLATFORM_URL,uri), null ) );
               
-     }
+    }
     else if( uri.startsWith( "/") )
     {
       // The platform scheme has not been specified so we will add it.
@@ -98,14 +107,14 @@ public class EclipseScheme implements IURIScheme
    */
   public IURI newURI(IURI uri) throws URIException
   {
-    return newURI( uri.toString() );
+    return newURI( uri == null ? null : uri.toString() );
   }
 
   /**
    */
   public IURI newURI(URL url) throws URIException
   {
-    return newURI( url.toString() );
+    return newURI( url == null ? null : url.toString() );
   }
 
   /**
@@ -116,6 +125,10 @@ public class EclipseScheme implements IURIScheme
     
     try
     {
+      IURIScheme scheme = uri.getURIScheme();
+      
+      if( scheme.toString().equals( "relative") ) return scheme.validate( uri );
+      
       getPathFromPlatformURI( uri.toString() );
       status = Status.OK_STATUS;
     }
@@ -142,6 +155,9 @@ public class EclipseScheme implements IURIScheme
     }
     catch( MalformedURLException exc )
     { 
+      throw new URIException(
+          new Status( IStatus.ERROR, "id", 0,
+              NLS.bind( Messages.MSG_INVALID_PLATFORM_URL, uri ), exc ) );
     }
     
     if( url == null )

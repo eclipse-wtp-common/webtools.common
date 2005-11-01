@@ -10,6 +10,13 @@
  *******************************************************************************/
 package org.eclipse.wst.common.environment;
 
+/**
+ * 
+ * This class is used by the IStatusHandler interface.
+ * It allows code that is reporting status to specify choices to the user
+ * which this reporting code can react to. 
+ *
+ */
 public class Choice {
 
   	protected char shortcut = ' '; 

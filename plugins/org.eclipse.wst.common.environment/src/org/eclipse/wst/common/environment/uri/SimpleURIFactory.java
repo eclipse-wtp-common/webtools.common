@@ -16,33 +16,56 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.internal.environment.eclipse.Messages;
+import org.eclipse.wst.common.internal.environment.relative.RelativeScheme;
 
-
+/**
+ * 
+ * This class provides a default implementation of the IURIFactory interface.
+ *
+ */
 public class SimpleURIFactory implements IURIFactory
 {
   private Hashtable    schemes_ = new Hashtable();  
   
-  /* (non-Javadoc)
+  /**
+   * Creates and returns a new IURI for the given string.
    */
   public IURI newURI(String uri) throws URIException
   {
-    IURIScheme scheme = newURIScheme( uri );
+    IURIScheme scheme = newURIScheme( uri, false );
     
     return scheme.newURI( uri );
   }
 
-  /* (non-Javadoc)
+  /**
+   * Creates and returns a new IURI for the given URL.
    */
   public IURI newURI(URL url) throws URIException
   {
-    IURIScheme scheme = newURIScheme( url.toString() );
+    IURIScheme scheme = newURIScheme( url.toString(), false );
     
     return scheme.newURI( url );
   }
 
-  /* (non-Javadoc)
+  /**
+   * Creates and returns a new IURIScheme for the given scheme string.
+   * If the string contains no colons, the entire string is interpretted
+   * as the name of the scheme. If the string contains a colon, then the
+   * substring up to but excluding the first colon is interpretted as the
+   * name of the scheme, meaning the caller can pass in any IURI string in
+   * order to get a IURIScheme object.
    */
   public IURIScheme newURIScheme(String schemeOrURI) throws URIException
+  {
+    return newURIScheme( schemeOrURI, true );
+  }
+  
+  public void registerScheme( String protocol, IURIScheme scheme )
+  {
+    schemes_.put( protocol, scheme );
+  }
+  
+  private IURIScheme newURIScheme(String schemeOrURI, boolean checkForScheme ) throws URIException
   {
     IURIScheme newScheme = null;
     
@@ -58,8 +81,13 @@ public class SimpleURIFactory implements IURIFactory
     
     // A protocol was specified.  Note: a colon appearing after a path is not
     // considered part of the protocol for this IURI.
-    if( (colon != -1 && slash == -1) || ( colon != -1 && colon < slash ) )
+    if( ( checkForScheme && colon == -1 ) ||
+        ( colon != -1 && slash == -1) || 
+        ( colon != -1 && colon < slash ) )
     {
+      // If colon is -1 then we will treat the entire input parameter as the protocol.
+      if( colon == -1 ) colon = schemeOrURI.length();
+      
       String protocol = schemeOrURI.substring(0, colon );
       newScheme       = (IURIScheme)schemes_.get( protocol );
       
@@ -84,10 +112,5 @@ public class SimpleURIFactory implements IURIFactory
     }
     
     return newScheme;
-  }
-  
-  public void registerScheme( String protocol, IURIScheme scheme )
-  {
-    schemes_.put( protocol, scheme );
   }
 }

@@ -9,30 +9,79 @@
 package org.eclipse.wst.common.environment;
 
 import org.eclipse.wst.common.environment.uri.IURIScheme;
+import org.eclipse.wst.common.environment.uri.URIException;
 import org.eclipse.wst.common.internal.environment.eclipse.ConsoleEclipseEnvironment;
-import org.eclipse.wst.common.internal.environment.eclipse.EclipseLog;
-import org.eclipse.wst.common.internal.environment.eclipse.EclipseScheme;
-import org.eclipse.wst.common.internal.environment.uri.file.FileScheme;
 
+/**
+ * 
+ * This class creates a console environment.  It also contains static
+ * conviences methods for creating an ILog object as well as an Eclipse and
+ * File Scheme.
+ *
+ */
 public class EnvironmentService
 {
+  static private IEnvironment environment;
+  
+  /**
+   * 
+   * @return returns an Eclipse console environment.
+   */
   public static IEnvironment getEclipseConsoleEnvironment()
   {
-    return new ConsoleEclipseEnvironment(); 
+    if( environment == null ) environment = new ConsoleEclipseEnvironment();
+    
+    return environment; 
   }  
   
+  /**
+   * 
+   * @return returns an Eclipse logger.
+   */
   public static ILog getEclipseLog()
   {
-    return new EclipseLog();
+    IEnvironment environment = getEclipseConsoleEnvironment();
+    
+    return environment.getLog();
   }
   
-  public static IURIScheme getEclipseScheme( IEnvironment environment )
+  /**
+   * 
+   * @return returns an Eclipse scheme.
+   */
+  public static IURIScheme getEclipseScheme()
   {
-    return new EclipseScheme( environment );
+    IEnvironment environment = getEclipseConsoleEnvironment();
+    IURIScheme   scheme      = null;
+    
+    try
+    {
+      scheme = environment.getURIFactory().newURIScheme( "platform" );
+    }
+    catch( URIException exc )
+    {    
+    }
+    
+    return scheme;
   }  
   
+  /**
+   * 
+   * @return returns a File scheme.
+   */
   public static IURIScheme getFileScheme()
   {
-    return new FileScheme();   
+    IEnvironment environment = getEclipseConsoleEnvironment();
+    IURIScheme   scheme      = null;
+    
+    try
+    {
+      scheme = environment.getURIFactory().newURIScheme( "file" );
+    }
+    catch( URIException exc )
+    {    
+    }
+    
+    return scheme;
   }
 }

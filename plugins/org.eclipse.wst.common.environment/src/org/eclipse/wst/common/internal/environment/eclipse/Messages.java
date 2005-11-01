@@ -20,6 +20,7 @@ public class Messages extends NLS
   public static String MSG_URI_NOT_RELATIVE; 
   public static String MSG_ERROR_UNEXPECTED_ERROR; 
   public static String MSG_INVALID_PLATFORM_URL; 
+  public static String MSG_INVALID_FILE_URL;
   public static String MSG_ERROR_PATH_NOT_ABSOLUTE; 
   public static String MSG_ERROR_PATH_EMPTY; 
   public static String MSG_ERROR_PATH_NOT_FOLDER; 
