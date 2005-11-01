@@ -18,8 +18,6 @@ Require-Bundle: org.eclipse.wst.common.frameworks,
  org.eclipse.wst.common.emf,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
- org.eclipse.emf.codegen,
- org.eclipse.emf.codegen.ecore,
  org.eclipse.xsd,
  org.eclipse.wst.validation,
  org.eclipse.wst.common.project.facet.core
