@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.datamodel;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.project.facet.core.IActionConfigFactory;
 
