@@ -109,7 +109,7 @@ public final class RuntimeManagerImpl
     public static Set getRuntimes()
     {
         bridge();
-        return runtimes.getUnmodifiable();
+        return (Set) runtimes.clone();
     }
     
     public static Set getRuntimes( final Set facets )
