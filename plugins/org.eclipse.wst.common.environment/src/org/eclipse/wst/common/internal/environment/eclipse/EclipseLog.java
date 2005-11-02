@@ -86,8 +86,6 @@ public class EclipseLog implements org.eclipse.wst.common.environment.ILog
 	public void log(int severity, int messageNum, Object caller,
 			String method, Throwable throwable) {
 		log( severity, messageNum, caller, method, (Object)null );
-    
-		if( throwable != null ) throwable.printStackTrace(); 
 	}
 	
 	/**
