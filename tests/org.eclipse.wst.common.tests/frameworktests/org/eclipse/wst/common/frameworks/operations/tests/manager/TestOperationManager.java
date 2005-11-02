@@ -11,7 +11,9 @@ package org.eclipse.wst.common.frameworks.operations.tests.manager;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
+import junit.framework.Test;
 import junit.framework.TestCase;
+import junit.framework.TestSuite;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.environment.EnvironmentService;
@@ -37,6 +39,11 @@ public class TestOperationManager extends TestCase {
 	private BaseOperation opF;
 	private BaseOperation opG;
 	private Status error = new Status(IStatus.ERROR, "id", 0, "mess", null);
+  
+  public static Test suite()
+  {
+    return new TestSuite( TestOperationManager.class );
+  }
 
 	protected void setUp() throws Exception {
 		super.setUp();

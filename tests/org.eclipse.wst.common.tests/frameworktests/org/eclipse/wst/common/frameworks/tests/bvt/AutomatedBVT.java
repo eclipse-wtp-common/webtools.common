@@ -7,17 +7,16 @@
 package org.eclipse.wst.common.frameworks.tests.bvt;
 
 import java.net.URL;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
-
 import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.common.environment.tests.EnvironmentTests;
 import org.eclipse.wst.common.frameworks.artifactedit.tests.ArtifactEditAPITests;
 import org.eclipse.wst.common.frameworks.componentcore.tests.AllTests;
 import org.eclipse.wst.common.frameworks.datamodel.tests.DataModelAPITests;
+import org.eclipse.wst.common.frameworks.operations.tests.manager.TestOperationManager;
 
 
 /**
@@ -63,7 +62,8 @@ public class AutomatedBVT extends TestSuite {
         suite.addTest(AllTests.suite());
 		    suite.addTest(DataModelAPITests.suite());
 		    suite.addTest(ArtifactEditAPITests.suite());
-        suite.addTest( new EnvironmentTests() );   
+        suite.addTest( TestOperationManager.suite() );
+        suite.addTest( EnvironmentTests.suite() );   
         return suite;
     }
 }
