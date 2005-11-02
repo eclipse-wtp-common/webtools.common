@@ -7,7 +7,7 @@
     <factory 
       class="org.eclipse.jst.common.project.facet.core.internal.RuntimeClasspathProvider$Factory" 
       adaptableType="org.eclipse.wst.common.project.facet.core.runtime.IRuntime">
-      <adapter type="org.eclipse.jst.common.project.facet.core.ClasspathProvider"/>
+      <adapter type="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
     </factory>
   </extension>
 

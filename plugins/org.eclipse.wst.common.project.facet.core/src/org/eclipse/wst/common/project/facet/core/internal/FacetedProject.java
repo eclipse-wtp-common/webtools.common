@@ -344,7 +344,7 @@ public final class FacetedProject
             else
             {
                 cause = new Status( IStatus.ERROR, FacetCorePlugin.PLUGIN_ID,
-                                    0, e.getMessage(), e );
+                                    0, e.getMessage() + "", e );
             }
             
             final String msg;
