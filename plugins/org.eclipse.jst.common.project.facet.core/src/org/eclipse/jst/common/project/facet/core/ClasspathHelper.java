@@ -9,7 +9,7 @@
  *    Konstantin Komissarchik - initial API and implementation
  ******************************************************************************/
 
-package org.eclipse.wst.common.project.facet.core.runtime.classpath;
+package org.eclipse.jst.common.project.facet.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,7 +31,6 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
-import org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
@@ -418,7 +417,7 @@ public final class ClasspathHelper
         final ProjectScope scope = new ProjectScope( project );
         
         final IEclipsePreferences pluginRoot 
-            = scope.getNode( FacetCorePlugin.PLUGIN_ID );
+            = scope.getNode( "org.eclipse.jst.common.project.facet.core" );
         
         return pluginRoot.node( "classpath.helper" );
     }

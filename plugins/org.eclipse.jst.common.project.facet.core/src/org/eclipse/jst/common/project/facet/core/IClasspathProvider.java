@@ -9,7 +9,7 @@
  *    Konstantin Komissarchik - initial API and implementation
  ******************************************************************************/
 
-package org.eclipse.wst.common.project.facet.core.runtime.classpath;
+package org.eclipse.jst.common.project.facet.core;
 
 import java.util.List;
 
