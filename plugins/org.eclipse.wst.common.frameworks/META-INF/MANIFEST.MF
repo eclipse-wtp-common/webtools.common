@@ -3,8 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: org.eclipse.wst.common.frameworks
 Bundle-SymbolicName: org.eclipse.wst.common.frameworks; singleton:=true
 Bundle-Version: 0.7.0
-Bundle-ClassPath: common.jar,
- common_core.jar
 Bundle-Activator: org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin
 Bundle-Vendor: %provider
 Bundle-Localization: plugin
