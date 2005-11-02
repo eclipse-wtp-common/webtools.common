@@ -20,7 +20,6 @@
          id="org.eclipse.wst.common_core.feature"
          version="0.0.0"/>
 
-
    <requires>
       <import feature="org.eclipse.wst.common_core.feature" version="0.0.0"/>
    </requires>
@@ -50,13 +49,15 @@
          id="org.eclipse.wst.common.navigator.views"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.wst.common.navigator.workbench"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.wst.common.project.facet.ui"
