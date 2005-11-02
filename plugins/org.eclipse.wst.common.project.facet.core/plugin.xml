@@ -21,12 +21,4 @@
     </runtime>
   </extension>
 
-  <extension point="org.eclipse.core.runtime.adapters">
-    <factory 
-      class="org.eclipse.wst.common.project.facet.core.runtime.classpath.internal.RuntimeClasspathProvider$Factory" 
-      adaptableType="org.eclipse.wst.common.project.facet.core.runtime.IRuntime">
-      <adapter type="org.eclipse.wst.common.project.facet.core.runtime.classpath.IClasspathProvider"/>
-    </factory>
-  </extension>
-
 </plugin>
