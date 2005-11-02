@@ -25,7 +25,7 @@
          version="0.0.0"/>
 
    <requires>
-      <import feature="org.eclipse.wst.common_core.feature" version="0.0.0"/>
+      <import feature="org.eclipse.wst.common_core.feature" version="1.0.0"/>
    </requires>
 
    <plugin
