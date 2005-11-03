@@ -6,7 +6,6 @@
 	<plugin id="org.eclipse.wst.common.ui.properties" fragment="false" />
 	<plugin id="org.eclipse.wst.common.uriresolver" fragment="false" />
 	<plugin id="org.eclipse.wst.common.dependencychecker" fragment="false" />
-	<plugin id="org.eclipse.wst.common.snippets" />
 	
 <!--	<description url="http://eclipse.org/webtools/wst/components/common/overview.html" /> -->
 
