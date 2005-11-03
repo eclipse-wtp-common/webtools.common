@@ -6,6 +6,9 @@
 	<plugin id="org.eclipse.wst.common.ui.properties" fragment="false" />
 	<plugin id="org.eclipse.wst.common.uriresolver" fragment="false" />
 	<plugin id="org.eclipse.wst.common.dependencychecker" fragment="false" />
+	<plugin id="org.eclipse.wst.common.snippets" />
+	
+<!--	<description url="http://eclipse.org/webtools/wst/components/common/overview.html" /> -->
 
 <!--	<package name="org.eclipse.wst.common.ui.viewers"> -->
 <!--		<type name="SelectSingleFileView" />  -->  <!-- ?, does eclipse provide better support? -->
@@ -53,9 +56,9 @@
 <!-- provisional APIs -->
 <!--
 	<package name="org.eclipse.wst.common.uriresolver">
-		<type name="URIResolverPlugin" />
-		<type name="URIResolver" />
-		<type name="URIResolverExtension" />
+		<type name="URIResolverPlugin"  subclass="false" instantiate="false"/>
+		<type name="URIResolver" implement="false"/>
+		<type name="URIResolverExtension" implement="true"/>
 	</package>
 -->
 </component>
