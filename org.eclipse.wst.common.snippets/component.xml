@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component xmlns="http://eclipse.org/wtp/releng/tools/component-model"
+	name="org.eclipse.wst.common.snippets">
+	<component-depends unrestricted="true"/>
+	<plugin id="org.eclipse.wst.common.snippets" />
+	<description url="http://eclipse.org/webtools/wst/components/common/overview/snippets/overview.html" />
+</component>
