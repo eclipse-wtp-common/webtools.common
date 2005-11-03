@@ -2,6 +2,6 @@
 <component xmlns="http://eclipse.org/wtp/releng/tools/component-model"
 	name="org.eclipse.wst.common.snippets">
 	<component-depends unrestricted="true"/>
-	<plugin id="org.eclipse.wst.common.snippets" />
+	<plugin id="org.eclipse.wst.common.snippets"  fragment="false" />
 	<description url="http://eclipse.org/webtools/wst/components/common/overview/snippets/overview.html" />
 </component>
