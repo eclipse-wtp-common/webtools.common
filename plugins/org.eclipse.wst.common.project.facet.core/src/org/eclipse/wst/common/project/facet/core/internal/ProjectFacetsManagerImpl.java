@@ -293,6 +293,26 @@ public final class ProjectFacetsManagerImpl
         return create( project );
     }
     
+    public IFacetedProject create( final IProject project,
+    								final boolean convertIfNecessary,
+    								final IProgressMonitor monitor)
+    
+    throws CoreException
+    {
+    	if( project.exists() && convertIfNecessary ){
+	  		IProjectDescription description = project.getDescription();
+			String[] prevNatures = description.getNatureIds();
+			String[] newNatures = new String[ prevNatures.length + 1 ];
+			System.arraycopy( prevNatures, 0, newNatures, 0, prevNatures.length );
+			newNatures[ prevNatures.length ] = FacetedProjectNature.NATURE_ID;
+			description.setNatureIds( newNatures );
+			project.setDescription( description, monitor ); 
+    	}
+        project.open( IResource.BACKGROUND_REFRESH,
+                new SubProgressMonitor( monitor, 1 ) );  
+        return create( project );
+    }
+    
     public IStatus check( final Set base,
                           final Set actions )
     {

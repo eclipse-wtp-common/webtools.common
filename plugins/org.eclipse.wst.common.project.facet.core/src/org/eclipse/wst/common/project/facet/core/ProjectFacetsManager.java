@@ -281,6 +281,17 @@ public final class ProjectFacetsManager
         return impl.create( name, location, monitor );
     }
     
+    public static IFacetedProject create( final IProject project,
+    								final boolean convertIfNecessary,
+									final IProgressMonitor monitor )
+    
+    	throws CoreException
+    	
+    	{
+    		return impl.create( project, convertIfNecessary, monitor );
+    	}
+    
+    
     /**
      * Checks the validity of applying the specified set of actions to the
      * specified set of base project facets. Returns the union of all validation
