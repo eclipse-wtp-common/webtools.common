@@ -78,7 +78,7 @@ public class FileURITests extends TestCase
   {
     super.setUp();  
     
-    tempDir = new File( "/temp/uritests" );
+    tempDir = new File( "/tmp/uritests" );
     tempDir.mkdir();
   }
   
@@ -122,7 +122,7 @@ public class FileURITests extends TestCase
     
     try
     {      
-      IURI uri2 = factory.newURI( "file:/c:/temp/somedirectory/somefile" );
+      IURI uri2 = factory.newURI( "file:/tmp/somedirectory/somefile" );
       IURI uri3 = factory.newURI( "relativedirectory/relativefile" );
       
       assertTrue( "Not available as URL", uri2.isAvailableAsURL() );

@@ -126,7 +126,7 @@ public class EclipseURITests extends TestCase
     try
     {      
       IURI uri1 = factory.newURI( "platform:/resource/" + projectName_ +  "/myfile" );
-      IURI uri2 = factory.newURI( "file:/c:/temp/somedirectory/somefile" );
+      IURI uri2 = factory.newURI( "file:/tmp/somedirectory/somefile" );
       IURI uri3 = factory.newURI( "relativedirectory/relativefile" );
       
       assertTrue( "Not available as URL", uri1.isAvailableAsURL() );
@@ -198,7 +198,7 @@ public class EclipseURITests extends TestCase
     try
     {
       IURIScheme scheme1 = factory.newURIScheme( "platform:/resource/myproj/myfile" );
-      IURIScheme scheme2 = factory.newURIScheme( "file:/somedirectory/somefile" );
+      IURIScheme scheme2 = factory.newURIScheme( "file:/tmp/somedirectory/somefile" );
       IURIScheme scheme3 = factory.newURIScheme( "platform" );
       IURIScheme scheme4 = factory.newURIScheme( "file" );
       IURIScheme scheme5 = factory.newURI( "rel1/rel2" ).getURIScheme();
@@ -208,7 +208,7 @@ public class EclipseURITests extends TestCase
       IURI uri3 = factory.newURI( "relativedirectory/relativefile" );
       
       IURI uri4 = factory.newURI( new URL( "platform:/resource/myproj/myfile" ));
-      IURI uri5 = factory.newURI( new URL( "file:/somedirectory/somefile" ) );
+      IURI uri5 = factory.newURI( new URL( "file:/tmp/somedirectory/somefile" ) );
   
       
       assertTrue( "Scheme not platform protocol", scheme1.toString().equals("platform") );

@@ -175,7 +175,7 @@ public class FileSchemeTests extends TestCase
     
     try
     {      
-      IURI uri1 = scheme.newURI( "file:/c:/temp/myfile" );
+      IURI uri1 = scheme.newURI( "file:/tmp/myfile" );
       IURI uri2 = scheme.newURI( "relativedirectory/relativefile" );
       IURI uri3 = scheme.newURI( uri1 );
       IURI uri4 = scheme.newURI( uri2 );
@@ -219,8 +219,8 @@ public class FileSchemeTests extends TestCase
     try
     {
       IURIScheme scheme = EnvironmentService.getFileScheme();
-      IURI       uri1   = scheme.newURI( "file:/temp/somedir/somefile" );
-      IURI       uri2   = scheme.newURI( "file:/somedir" );
+      IURI       uri1   = scheme.newURI( "file:/tmp/somedir/somefile" );
+      IURI       uri2   = scheme.newURI( "file:/tmp" );
       IURI       uri3   = scheme.newURI( "somerel" );
       IURI       uri4   = scheme.newURI( "somerel/somemorerel" );
       IURI       uri5   = scheme.newURI( "./somerel/somemore" );
