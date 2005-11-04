@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
@@ -23,6 +24,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetDataModelProperties;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetProjectCreationDataModelProperties;
@@ -52,8 +54,14 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 				location = null;
 			}
 			
-			IFacetedProject facetProj = ProjectFacetsManager.create(model.getStringProperty(IFacetProjectCreationDataModelProperties.FACET_PROJECT_NAME),
-					location, monitor);
+			IProject project = ProjectUtilities.getProject( ( String )model.getProperty( IFacetProjectCreationDataModelProperties.FACET_PROJECT_NAME ) );
+			IFacetedProject facetProj = null;
+			if( project.exists() ){
+				facetProj = ProjectFacetsManager.create( project, true, monitor );
+			}else{
+				facetProj = ProjectFacetsManager.create(model.getStringProperty(IFacetProjectCreationDataModelProperties.FACET_PROJECT_NAME),
+						location, monitor);
+			}
 					
 			List dmList = (List) model.getProperty(IFacetProjectCreationDataModelProperties.FACET_DM_LIST);
 			Set actions = new HashSet();
