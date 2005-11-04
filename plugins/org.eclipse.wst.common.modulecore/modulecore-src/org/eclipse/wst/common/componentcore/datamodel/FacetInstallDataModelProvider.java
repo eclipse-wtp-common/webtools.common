@@ -11,6 +11,7 @@
 package org.eclipse.wst.common.componentcore.datamodel;
 
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.project.facet.core.IActionConfigFactory;
 
 public class FacetInstallDataModelProvider 
@@ -37,7 +38,9 @@ public class FacetInstallDataModelProvider
 
     public Object create()
     {
-        return DataModelFactory.createDataModel( this );
+        IDataModel dm =DataModelFactory.createDataModel( this );
+        //dm.setProperty(FACET_PROJECT_NAME,aProject.getName());
+        return dm;
     }
 
 }
