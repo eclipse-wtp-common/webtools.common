@@ -2,3 +2,5 @@ bin
 runtime
 temp.folder
 build.xml
+org.eclipse.wst.common.emf_1.0.0.zip
+src.zip
