@@ -20,9 +20,12 @@
          id="org.eclipse.wst.common_sdk.feature.source"
          version="0.0.0"/>
 
+   <includes
+         id="org.eclipse.wst.common_ui.feature"
+         version="0.0.0"/>
+
    <requires>
       <import feature="org.eclipse.wst.common_ui.feature" version="1.0.0"/>
-      <import feature="org.eclipse.wst.common_core.feature" version="1.0.0"/>
    </requires>
 
    <plugin
