@@ -1,0 +1,18 @@
+# Debugging options for the org.eclipse.wst.env plugin.
+
+# Turn on debugging master switch for the org.eclipse.wst.common.environment plugin.
+org.eclipse.wst.common.environment/debug=true
+
+# Turn on different tracing level
+org.eclipse.wst.common.environment/trace/info=true
+org.eclipse.wst.common.environment/trace/warning=true
+org.eclipse.wst.common.environment/trace/error=true
+
+# Turn on data flow tracing
+org.eclipse.wst.common.environment/trace/data=true
+
+# Turn on command tracing
+org.eclipse.wst.common.environment/trace/command=true
+
+# Turn on emitter tracing
+org.eclipse.wst.common.environment/trace/emitter=true
