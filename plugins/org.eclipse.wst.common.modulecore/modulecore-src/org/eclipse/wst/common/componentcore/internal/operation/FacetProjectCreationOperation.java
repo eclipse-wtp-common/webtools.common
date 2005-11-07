@@ -12,12 +12,11 @@ package org.eclipse.wst.common.componentcore.internal.operation;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
@@ -30,6 +29,7 @@ import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetDataModel
 import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetProjectCreationDataModelProperties;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.eclipse.wst.common.frameworks.internal.operations.IProjectCreationPropertiesNew;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
@@ -47,26 +47,20 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		try {
-
-			IPath location = new Path((String) model.getProperty(IFacetProjectCreationDataModelProperties.FACET_PROJECT_LOCATION));
-			IPath path = getRootLocation();
-			if (path.equals(location)) {
-				location = null;
-			}
-			
-			IProject project = ProjectUtilities.getProject( ( String )model.getProperty( IFacetProjectCreationDataModelProperties.FACET_PROJECT_NAME ) );
+			IProject project = ProjectUtilities.getProject((String) model.getProperty(IFacetProjectCreationDataModelProperties.FACET_PROJECT_NAME));
 			IFacetedProject facetProj = null;
-			if( project.exists() ){
-				facetProj = ProjectFacetsManager.create( project, true, monitor );
-			}else{
-				facetProj = ProjectFacetsManager.create(model.getStringProperty(IFacetProjectCreationDataModelProperties.FACET_PROJECT_NAME),
-						location, monitor);
+			if (project.exists()) {
+				facetProj = ProjectFacetsManager.create(project, true, monitor);
+			} else {
+				String location = (String) model.getProperty(IProjectCreationPropertiesNew.PROJECT_LOCATION);
+				IPath locationPath = null == location ? null : new Path(location);
+				facetProj = ProjectFacetsManager.create(model.getStringProperty(IFacetProjectCreationDataModelProperties.FACET_PROJECT_NAME), locationPath, monitor);
 			}
-					
-			List dmList = (List) model.getProperty(IFacetProjectCreationDataModelProperties.FACET_DM_LIST);
+
+			Map dmMap = (Map) model.getProperty(IFacetProjectCreationDataModelProperties.FACET_DM_MAP);
 			Set actions = new HashSet();
 			IDataModel facetDM = null;
-			for (Iterator iterator = dmList.iterator(); iterator.hasNext();) {
+			for (Iterator iterator = dmMap.values().iterator(); iterator.hasNext();) {
 				facetDM = (IDataModel) iterator.next();
 				actions.add(facetDM.getProperty(IFacetDataModelProperties.FACET_ACTION));
 			}
@@ -77,20 +71,17 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 				fixedFacets.add(facetVersion.getProjectFacet());
 			}
 			facetProj.setFixedProjectFacets(fixedFacets);
-			IRuntime runtime = (IRuntime)model.getProperty(IFacetProjectCreationDataModelProperties.FACET_RUNTIME);
+			IRuntime runtime = (IRuntime) model.getProperty(IFacetProjectCreationDataModelProperties.FACET_RUNTIME);
 			if (runtime != null)
-				facetProj.setRuntime(runtime,null);
+				facetProj.setRuntime(runtime, null);
 
 		} catch (CoreException e) {
 			Logger.getLogger().logError(e);
 			throw new ExecutionException(e.getMessage(), e);
-		}catch(Exception e){
+		} catch (Exception e) {
 			Logger.getLogger().logError(e);
 		}
 		return OK_STATUS;
 	}
-	
-	private IPath getRootLocation() {
-		return ResourcesPlugin.getWorkspace().getRoot().getLocation();
-	}	
+
 }

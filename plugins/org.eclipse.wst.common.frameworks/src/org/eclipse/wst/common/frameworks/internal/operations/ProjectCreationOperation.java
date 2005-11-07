@@ -29,7 +29,7 @@ import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
-public class ProjectCreationOperation extends AbstractDataModelOperation implements IProjectCreationPropertiesNew {
+public class ProjectCreationOperation extends AbstractDataModelOperation implements IProjectCreationProperties {
 
 	public ProjectCreationOperation(IDataModel dataModel) {
 		super(dataModel);

@@ -10,13 +10,16 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.datamodel;
 
-import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-import org.eclipse.wst.common.project.facet.core.IActionConfigFactory;
+import java.util.Iterator;
+import java.util.Set;
 
-public class FacetInstallDataModelProvider 
-    extends FacetDataModelProvider
-    implements IActionConfigFactory {
+import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
+import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
+import org.eclipse.wst.common.project.facet.core.IActionConfigFactory;
+import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+
+public class FacetInstallDataModelProvider extends FacetDataModelProvider implements IActionConfigFactory {
 
 	public FacetInstallDataModelProvider() {
 		super();
@@ -25,6 +28,12 @@ public class FacetInstallDataModelProvider
 	public Object getDefaultProperty(String propertyName) {
 		if (FACET_TYPE.equals(propertyName)) {
 			return FACET_TYPE_INSTALL;
+		} else if (FACET_VERSION_STR.equals(propertyName)) {
+			IProjectFacetVersion version = (IProjectFacetVersion) getProperty(FACET_VERSION);
+			return version.getVersionString();
+		} else if (FACET_VERSION.equals(propertyName)) {
+			DataModelPropertyDescriptor[] validVersions = getValidPropertyDescriptors(FACET_VERSION);
+			return validVersions[validVersions.length - 1].getPropertyValue();
 		}
 		return super.getDefaultProperty(propertyName);
 	}
@@ -32,15 +41,52 @@ public class FacetInstallDataModelProvider
 	public boolean propertySet(String propertyName, Object propertyValue) {
 		if (FACET_TYPE.equals(propertyName)) {
 			throw new RuntimeException();
+		} else if (FACET_VERSION_STR.equals(propertyName)) {
+			DataModelPropertyDescriptor[] descriptors = getValidPropertyDescriptors(FACET_VERSION);
+			for (int i = 0; i < descriptors.length; i++) {
+				if (descriptors[i].getPropertyDescription().equals(propertyValue)) {
+					setProperty(FACET_VERSION, descriptors[i].getPropertyValue());
+					break;
+				}
+			}
+		} else if (FACET_VERSION.equals(propertyName)) {
+			IProjectFacetVersion version = (IProjectFacetVersion) propertyValue;
+			setProperty(FACET_VERSION_STR, version.getVersionString());
 		}
 		return super.propertySet(propertyName, propertyValue);
 	}
 
-    public Object create()
-    {
-        IDataModel dm =DataModelFactory.createDataModel( this );
-        //dm.setProperty(FACET_PROJECT_NAME,aProject.getName());
-        return dm;
-    }
+	protected DataModelPropertyDescriptor[] cachedVersionDescriptors;
+	protected DataModelPropertyDescriptor[] cachedVersionStringDescriptors;
+
+	public DataModelPropertyDescriptor[] getValidPropertyDescriptors(String propertyName) {
+		if (FACET_VERSION.equals(propertyName)) {
+			if (null == cachedVersionDescriptors) {
+				Set versions = ProjectFacetsManager.getProjectFacet(getStringProperty(FACET_ID)).getVersions();
+				cachedVersionDescriptors = new DataModelPropertyDescriptor[versions.size()];
+				Iterator iterator = versions.iterator();
+				for (int i = 0; i < cachedVersionDescriptors.length; i++) {
+					IProjectFacetVersion version = (IProjectFacetVersion) iterator.next();
+					cachedVersionDescriptors[i] = new DataModelPropertyDescriptor(version, version.getVersionString());
+				}
+			}
+			return cachedVersionDescriptors;
+		}
+		if (FACET_VERSION_STR.equals(propertyName)) {
+			if (null == cachedVersionStringDescriptors) {
+				DataModelPropertyDescriptor[] versionDescriptors = getValidPropertyDescriptors(FACET_VERSION);
+				cachedVersionStringDescriptors = new DataModelPropertyDescriptor[versionDescriptors.length];
+				for (int i = 0; i < cachedVersionStringDescriptors.length; i++) {
+					cachedVersionStringDescriptors[i] = new DataModelPropertyDescriptor(versionDescriptors[i].getPropertyDescription());
+				}
+			}
+			return cachedVersionStringDescriptors;
+		}
+		return super.getValidPropertyDescriptors(propertyName);
+	}
+
+	public Object create() {
+		return DataModelFactory.createDataModel(this);
+	}
 
 }
