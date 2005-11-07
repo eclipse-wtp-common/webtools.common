@@ -133,4 +133,8 @@ public final class DataModelPropertyDescriptor {
 		String str = (null != propertyValue) ? propertyValue.toString() : null;
 		return (null != str) ? str : ""; //$NON-NLS-1$
 	}
+	
+	public String toString(){
+		return getPropertyDescription();
+	}
 }
