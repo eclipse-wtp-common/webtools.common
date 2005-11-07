@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.internal.DataModelManager;
@@ -90,16 +91,14 @@ public class PageGroupManager {
 			Set dataModelIDs = rootEntry.pageGroup.getDataModelIDs();
 			pageGroupStack.push(new StackEntry(rootEntry, -1));
 
-			if (dataModelIDs != null && dataModelIDs.size() > 0 )
-      {
-        Iterator ids = dataModelIDs.iterator();
-        
-        while( ids.hasNext() )
-        {
-          String dataModelID = (String)ids.next();
-				  dataModelManager.addNestedDataModel(dataModelID);
-        }
-      }
+			if (dataModelIDs != null && dataModelIDs.size() > 0) {
+				Iterator ids = dataModelIDs.iterator();
+
+				while (ids.hasNext()) {
+					String dataModelID = (String) ids.next();
+					dataModelManager.addNestedDataModel(dataModelID);
+				}
+			}
 		}
 
 		saveStackInfo();
@@ -107,7 +106,7 @@ public class PageGroupManager {
 		try {
 			pageFound = findNextPage(true);
 		} catch (Throwable exc) {
-			// TODO display some error.
+			Logger.getLogger().logError(exc);
 			operationManager.undoLastRun();
 			pageFound = false;
 		}
@@ -140,17 +139,15 @@ public class PageGroupManager {
 
 			Set dataModelIDs = topEntry.pageGroupEntry.pageGroup.getDataModelIDs();
 
-			if( dataModelIDs != null && dataModelIDs.size() > 0 )
-      {
-        Iterator ids = dataModelIDs.iterator();
-        
-        while( ids.hasNext() )
-        {
-          String dataModelID = (String)ids.next();
-				  dataModelManager.removeNestedDataModel(dataModelID);
-        }
-      }
-      
+			if (dataModelIDs != null && dataModelIDs.size() > 0) {
+				Iterator ids = dataModelIDs.iterator();
+
+				while (ids.hasNext()) {
+					String dataModelID = (String) ids.next();
+					dataModelManager.removeNestedDataModel(dataModelID);
+				}
+			}
+
 			pageGroupStack.pop();
 
 			if (!pageGroupStack.empty()) {
@@ -199,16 +196,14 @@ public class PageGroupManager {
 
 			pageGroupStack.push(new StackEntry(rootEntry, -1));
 
-			if( dataModelIDs != null && dataModelIDs.size() > 0 )
-      {
-        Iterator ids = dataModelIDs.iterator();  
-      
-        while( ids.hasNext() )
-        {
-          String dataModelID = (String)ids.next();
-				  dataModelManager.addNestedDataModel(dataModelID);
-        }
-      }
+			if (dataModelIDs != null && dataModelIDs.size() > 0) {
+				Iterator ids = dataModelIDs.iterator();
+
+				while (ids.hasNext()) {
+					String dataModelID = (String) ids.next();
+					dataModelManager.addNestedDataModel(dataModelID);
+				}
+			}
 		}
 
 		pageFound = findNextPage(false);
@@ -273,17 +268,15 @@ public class PageGroupManager {
 					}
 				}
 
-				if( dataModelIDs != null && dataModelIDs.size() > 0 )
-        {
-          Iterator ids = dataModelIDs.iterator();
-          
-          while( ids.hasNext() )
-          {
-            String dataModelID = (String)ids.next();
-					  dataModelManager.addNestedDataModel(dataModelID);
-          }
-        }
-        
+				if (dataModelIDs != null && dataModelIDs.size() > 0) {
+					Iterator ids = dataModelIDs.iterator();
+
+					while (ids.hasNext()) {
+						String dataModelID = (String) ids.next();
+						dataModelManager.addNestedDataModel(dataModelID);
+					}
+				}
+
 				pageGroupStack.push(nextStackEntry);
 				pageFound = findNextPage(runOperations);
 			}
@@ -433,7 +426,7 @@ public class PageGroupManager {
 				try {
 					newPageId = pageGroupEntry.getPageHandler().getNextPage(pageId, expectedId);
 				} catch (Throwable exc) {
-					// TODO Log an error here.
+					Logger.getLogger().logError(exc);
 				}
 
 				if (newPageId != null && newPageId.equals(IDMPageHandler.SKIP_PAGE) && pageIndex >= 0 && pageIndex < pages.length - 2) {
@@ -454,7 +447,7 @@ public class PageGroupManager {
 			try {
 				nextGroupID = pageGroupEntry.getPageGroupHandler().getNextPageGroup(afterId, groupIDList);
 			} catch (Throwable exc) {
-				// TODO log error here.
+				Logger.getLogger().logError(exc);
 			}
 
 			if (nextGroupID != null) {
@@ -536,7 +529,7 @@ public class PageGroupManager {
 				pageGroupHandler = pageGroup.getPageGroupHandler(dataModel);
 				pages = pageGroup.getExtendedPages(dataModel);
 			} catch (Throwable exc) {
-				// TODO need to log this exception.
+				Logger.getLogger().logError(exc);
 			}
 
 			if (pageHandler == null)
