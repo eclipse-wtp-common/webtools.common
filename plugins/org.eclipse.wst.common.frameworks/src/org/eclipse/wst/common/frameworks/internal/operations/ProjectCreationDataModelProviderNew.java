@@ -6,12 +6,6 @@
  * 
  * Contributors: IBM Corporation - initial API and implementation
  **************************************************************************************************/
-/*
- * Created on Oct 27, 2003
- * 
- * To change the template for this generated file go to Window&gt;Preferences&gt;Java&gt;Code
- * Generation&gt;Code and Comments
- */
 package org.eclipse.wst.common.frameworks.internal.operations;
 
 import java.io.File;
@@ -28,14 +22,12 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
-/**
- * @deprecated use ProjectCreationDataModelProviderNew instead.
- */
-public class ProjectCreationDataModelProvider extends AbstractDataModelProvider implements IProjectCreationProperties {
+public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvider implements IProjectCreationPropertiesNew {
 
 	public IDataModelOperation getDefaultOperation() {
 		return new ProjectCreationOperation(model);
@@ -50,58 +42,61 @@ public class ProjectCreationDataModelProvider extends AbstractDataModelProvider 
 		propertyNames.add(PROJECT);
 		propertyNames.add(PROJECT_NAME);
 		propertyNames.add(PROJECT_LOCATION);
+		propertyNames.add(USE_DEFAULT_LOCATION);
+		propertyNames.add(DEFAULT_LOCATION);
+		propertyNames.add(USER_DEFINED_LOCATION);
 		propertyNames.add(PROJECT_NATURES);
 		propertyNames.add(PROJECT_DESCRIPTION);
 		return propertyNames;
 	}
 
 	public Object getDefaultProperty(String propertyName) {
-		if (propertyName.equals(PROJECT_LOCATION))
-			return getDefaultLocation();
-		else if (propertyName.equals(PROJECT_DESCRIPTION))
+		if (propertyName.equals(PROJECT_LOCATION)) {
+			if (getBooleanProperty(USE_DEFAULT_LOCATION)) {
+				return null;
+			}
+			return getProperty(USER_DEFINED_LOCATION);
+		} else if (DEFAULT_LOCATION.equals(propertyName)) {
+			IPath path = ResourcesPlugin.getWorkspace().getRoot().getLocation();
+			path = path.append(getStringProperty(PROJECT_NAME));
+			return path.toOSString();
+		} else if (USE_DEFAULT_LOCATION.equals(propertyName)) {
+			return Boolean.TRUE;
+		} else if (USER_DEFINED_LOCATION.equals(propertyName)) {
+			return "";
+		} else if (propertyName.equals(PROJECT_DESCRIPTION))
 			return getProjectDescription();
 		return super.getDefaultProperty(propertyName);
 	}
 
 	public boolean propertySet(String propertyName, Object propertyValue) {
-		if (propertyValue != null && propertyName.equals(PROJECT_LOCATION)) {
-			IPath path = getRootLocation();
-			if (path.equals(new Path((String) propertyValue))) {
-				model.setProperty(propertyName, null);
-			}
-			model.setProperty(PROJECT_DESCRIPTION, getProjectDescription());
+		if (propertyName.equals(PROJECT_LOCATION) || propertyName.equals(DEFAULT_LOCATION) || propertyName.equals(PROJECT_DESCRIPTION)) {
+			throw new RuntimeException();
 		} else if (propertyName.equals(PROJECT_NAME)) {
 			IStatus stat = model.validateProperty(PROJECT_NAME);
 			if (stat != OK_STATUS)
 				return false;
 			model.setProperty(PROJECT, getProject());
-			model.setProperty(PROJECT_DESCRIPTION, getProjectDescription());
+			model.notifyPropertyChange(DEFAULT_LOCATION, IDataModel.VALUE_CHG);
+			if (getBooleanProperty(USE_DEFAULT_LOCATION)) {
+				model.notifyPropertyChange(PROJECT_LOCATION, IDataModel.VALUE_CHG);
+			}
+		} else if (propertyName.equals(USE_DEFAULT_LOCATION)) {
+			model.notifyPropertyChange(PROJECT_LOCATION, IDataModel.VALUE_CHG);
+		} else if (propertyName.equals(USER_DEFINED_LOCATION) && !getBooleanProperty(USE_DEFAULT_LOCATION)) {
+			model.notifyPropertyChange(PROJECT_LOCATION, IDataModel.VALUE_CHG);
 		}
 		return true;
-	}
-
-	private String getDefaultLocation() {
-		IPath path = getRootLocation();
-		String projectName = (String) getProperty(PROJECT_NAME);
-		if (projectName != null)
-			path = path.append(projectName);
-		return path.toOSString();
-	}
-
-	private IPath getRootLocation() {
-		return ResourcesPlugin.getWorkspace().getRoot().getLocation();
 	}
 
 	private IProjectDescription getProjectDescription() {
 		String projectName = (String) getProperty(PROJECT_NAME);
 		IProjectDescription desc = ResourcesPlugin.getWorkspace().newProjectDescription(projectName);
-		if (getDataModel().isPropertySet(PROJECT_LOCATION)) {
-			String projectLocation = (String) getProperty(IProjectCreationProperties.PROJECT_LOCATION);
-			if (projectLocation != null)
-				desc.setLocation(new Path(projectLocation));
-			else
-				desc.setLocation(null);
-		}
+		String projectLocation = (String) getProperty(PROJECT_LOCATION);
+		if (projectLocation != null)
+			desc.setLocation(new Path(projectLocation));
+		else
+			desc.setLocation(null);
 		return desc;
 	}
 
@@ -183,8 +178,8 @@ public class ProjectCreationDataModelProvider extends AbstractDataModelProvider 
 	}
 
 	private IStatus validateLocation() {
-		if (getDataModel().isPropertySet(PROJECT_LOCATION)) {
-			String loc = (String) getProperty(PROJECT_LOCATION);
+		String loc = (String) getProperty(PROJECT_LOCATION);
+		if (null != loc) {
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();
 			IPath path = new Path(loc);
 			return workspace.validateProjectLocation(getProject(), path);

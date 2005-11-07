@@ -25,10 +25,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
-public class ProjectCreationOperation extends AbstractDataModelOperation implements IProjectCreationProperties{
+public class ProjectCreationOperation extends AbstractDataModelOperation implements IProjectCreationPropertiesNew {
 
 	public ProjectCreationOperation(IDataModel dataModel) {
 		super(dataModel);
@@ -36,17 +37,17 @@ public class ProjectCreationOperation extends AbstractDataModelOperation impleme
 
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		try {
-            IProgressMonitor subMonitor = new SubProgressMonitor(monitor, IProgressMonitor.UNKNOWN);
+			IProgressMonitor subMonitor = new SubProgressMonitor(monitor, IProgressMonitor.UNKNOWN);
 			IProjectDescription desc = (IProjectDescription) model.getProperty(PROJECT_DESCRIPTION);
 			IProject project = (IProject) model.getProperty(PROJECT);
 			if (!project.exists()) {
-                project.create(desc, subMonitor);
-            }   
-            if (monitor.isCanceled())
-                throw new OperationCanceledException();
-            subMonitor = new SubProgressMonitor(monitor, IProgressMonitor.UNKNOWN);
+				project.create(desc, subMonitor);
+			}
+			if (monitor.isCanceled())
+				throw new OperationCanceledException();
+			subMonitor = new SubProgressMonitor(monitor, IProgressMonitor.UNKNOWN);
 
-            project.open(subMonitor);
+			project.open(subMonitor);
 
 			String[] natureIds = (String[]) model.getProperty(PROJECT_NATURES);
 			if (null != natureIds) {
@@ -55,10 +56,9 @@ public class ProjectCreationOperation extends AbstractDataModelOperation impleme
 				project.setDescription(desc, monitor);
 			}
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getLogger().logError(e);
 		} finally {
-           monitor.done();
+			monitor.done();
 		}
 		if (monitor.isCanceled())
 			throw new OperationCanceledException();
@@ -73,13 +73,4 @@ public class ProjectCreationOperation extends AbstractDataModelOperation impleme
 		return false;
 	}
 
-	public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

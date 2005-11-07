@@ -10,11 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.operations;
 
-
-/**
- * @deprecated use IProjectCreationPropertiesNew
- */
-public interface IProjectCreationProperties {
+public interface IProjectCreationPropertiesNew {
 
 	/**
 	 * A required dataModel propertyName for a <code>java.lang.String</code> type. This is used to
@@ -23,13 +19,29 @@ public interface IProjectCreationProperties {
 	public static final String PROJECT_NAME = "IProjectCreationProperties.PROJECT_NAME"; //$NON-NLS-1$
 
 	/**
-	 * An optonal dataModel propertyName for a <code>java.lang.String</code> type. Sets the local
-	 * file system location for the described project. The path must be either an absolute file
-	 * system path, or a relative path whose first segment is the name of a defined workspace path
-	 * variable. The default value is the workspace's default location.
+	 * A Boolean property used for determining how the PROJECT_LOCATION is computed. If this
+	 * property is true then the PROJECT_LOCATION is null. Otherwise the PROJECT_LOCATION is the
+	 * value of USER_DEFINED_LOCATION.
+	 */
+	public static final String USE_DEFAULT_LOCATION = "IProjectCreationProperties.USE_DEFAULT_LOCATION"; //$NON-NLS-1$
+
+	/**
+	 * A String property used in conjuction with USE_DEFAULT_LOCATION to override the
+	 * DEFAULT_LOCATION.
+	 */
+	public static final String USER_DEFINED_LOCATION = "IProjectCreationProperties.USER_DEFINED_LOCATION"; //$NON-NLS-1$
+
+	/**
+	 * An unsettable property which specified the default location for a newly created project. The
+	 * value is computed by appending the project name to the workspace location.
+	 */
+	public static final String DEFAULT_LOCATION = "IProjectCreationProperties.DEFAULT_LOCATION"; //$NON-NLS-1$
+
+	/**
+	 * An unsettable property used to specify the project location. If USE_DEFAULT_LOCATION this
+	 * property evaluates to USER_DEFINED_LOCATION; otherwise it i <code>null</code>.
 	 */
 	public static final String PROJECT_LOCATION = "IProjectCreationProperties.PROJECT_LOCATION"; //$NON-NLS-1$
-
 
 	/**
 	 * An optional dataModel propertyName for a <code>java.lang.String[]</code> type. This is a
