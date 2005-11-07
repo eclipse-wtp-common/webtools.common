@@ -61,6 +61,8 @@ public class ValidationHelperRegistryReader extends RegistryReader {
 	}
 	
 	public IProjectValidationHelper getValidationHelper() {
+		if (getValidationHelpers().isEmpty())
+			return null;
 		return (IProjectValidationHelper) getValidationHelpers().get(0);
 	}
 
