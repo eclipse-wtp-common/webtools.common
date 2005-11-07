@@ -145,8 +145,20 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 		List result = new ArrayList();
 		for (int i=0; i<resources.length; i++ ) {
 			IResource realResource = StructureEdit.getEclipseResource(resources[i]);
-			if (realResource!=null && (realResource.getType() == IResource.FOLDER || realResource.getType() == IResource.PROJECT))
+			if (realResource!=null && realResource.getType() == IResource.PROJECT)
 				result.add(0,resources[i]);
+			else if (realResource!=null && realResource.getType() == IResource.FOLDER) {
+				int newResourceSegments = resources[i].getRuntimePath().segmentCount();
+				for (int j=0; j<result.size(); j++) {
+					int segmentCount = ((ComponentResource)result.get(j)).getRuntimePath().segmentCount();
+					if (newResourceSegments<=segmentCount) {
+						result.add(j,resources[i]);
+						break;
+					}
+				}
+				if (!result.contains(resources[i]))
+					result.add(resources[i]);
+			}
 			else
 				result.add(resources[i]);
 		}
