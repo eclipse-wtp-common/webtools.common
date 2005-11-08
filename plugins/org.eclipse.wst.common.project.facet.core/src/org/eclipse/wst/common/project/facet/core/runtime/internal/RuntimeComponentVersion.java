@@ -13,8 +13,14 @@ package org.eclipse.wst.common.project.facet.core.runtime.internal;
 
 import java.util.HashMap;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdapterFactory;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin;
+import org.eclipse.wst.common.project.facet.core.internal.IVersion;
+import org.eclipse.wst.common.project.facet.core.internal.Versionable;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentType;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentVersion;
 import org.osgi.framework.Bundle;
@@ -25,7 +31,7 @@ import org.osgi.framework.Bundle;
 
 public final class RuntimeComponentVersion
 
-    implements IRuntimeComponentVersion
+    implements IRuntimeComponentVersion, IVersion
     
 {
     private String plugin;
@@ -63,7 +69,15 @@ public final class RuntimeComponentVersion
         this.version = version;
     }
     
+    public Versionable getVersionable()
+    {
+        return (Versionable) this.type;
+    }
+
     IAdapterFactory getAdapterFactory( final Class type )
+    
+        throws CoreException
+        
     {
         synchronized( this.adapterFactories )
         {
@@ -83,13 +97,19 @@ public final class RuntimeComponentVersion
                 {
                     final Class cl = bundle.loadClass( ref.clname );
                     factory = cl.newInstance();
-                    this.adapterFactories.put( type.getName(), factory );
                 }
                 catch( Exception e )
                 {
-                    // TODO: handle this better
-                    throw new RuntimeException( e );
+                    final String msg
+                        = NLS.bind( Resources.failedToCreate, ref.clname );
+                    
+                    final IStatus st
+                        = FacetCorePlugin.createErrorStatus( msg );
+                    
+                    throw new CoreException( st );
                 }
+
+                this.adapterFactories.put( type.getName(), factory );
             }
             
             return (IAdapterFactory) factory;
@@ -118,5 +138,20 @@ public final class RuntimeComponentVersion
             this.clname = clname;
         }
     }
+    
+    private static final class Resources
+    
+        extends NLS
+        
+    {
+        public static String failedToCreate;
+        
+        static
+        {
+            initializeMessages( RuntimeComponentVersion.class.getName(), 
+                                Resources.class );
+        }
+    }
+    
     
 }

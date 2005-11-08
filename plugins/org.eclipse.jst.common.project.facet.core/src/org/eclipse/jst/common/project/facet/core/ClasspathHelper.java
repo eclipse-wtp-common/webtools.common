@@ -23,11 +23,14 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
@@ -105,6 +108,9 @@ import org.osgi.service.prefs.Preferences;
 
 public final class ClasspathHelper
 {
+    private static final String PLUGIN_ID
+        = "org.eclipse.jst.common.project.facet.core";
+    
     private static final Object SYSTEM_OWNER = new Object();
     
     private ClasspathHelper() {}
@@ -216,8 +222,11 @@ public final class ClasspathHelper
         }
         catch( BackingStoreException e )
         {
-            // TODO: throw CoreException here
-            throw new RuntimeException( e );
+            final IStatus st
+                = new Status( IStatus.ERROR, PLUGIN_ID, 0, 
+                              Resources.failedWritingPreferences, e );
+            
+            throw new CoreException( st );
         }
     }
     
@@ -283,8 +292,11 @@ public final class ClasspathHelper
         }
         catch( BackingStoreException e )
         {
-            // TODO: throw CoreException here
-            throw new RuntimeException( e );
+            final IStatus st
+                = new Status( IStatus.ERROR, PLUGIN_ID, 0, 
+                              Resources.failedWritingPreferences, e );
+            
+            throw new CoreException( st );
         }
     }
     
@@ -415,10 +427,7 @@ public final class ClasspathHelper
     private static Preferences getPreferencesNode( final IProject project )
     {
         final ProjectScope scope = new ProjectScope( project );
-        
-        final IEclipsePreferences pluginRoot 
-            = scope.getNode( "org.eclipse.jst.common.project.facet.core" );
-        
+        final IEclipsePreferences pluginRoot = scope.getNode( PLUGIN_ID );
         return pluginRoot.node( "classpath.helper" );
     }
     
@@ -441,5 +450,18 @@ public final class ClasspathHelper
         return new Path( path.replaceAll( "::", "/" ) );
     }
     
+    private static final class Resources
+    
+        extends NLS
+        
+    {
+        public static String failedWritingPreferences;
+        
+        static
+        {
+            initializeMessages( ClasspathHelper.class.getName(), 
+                                Resources.class );
+        }
+    }
 
 }

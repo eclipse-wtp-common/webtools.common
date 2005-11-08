@@ -65,7 +65,7 @@ public class AddRemoveFacetsWizard
     
     public void addPages()
     {
-        this.facetsSelectionPage = new FacetsSelectionPage();
+        this.facetsSelectionPage = new FacetsSelectionPage( context );
         
         if( this.fproj != null )
         {

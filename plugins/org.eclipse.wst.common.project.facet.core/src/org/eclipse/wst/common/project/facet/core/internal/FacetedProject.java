@@ -35,12 +35,15 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.common.project.facet.core.IActionConfig;
 import org.eclipse.wst.common.project.facet.core.IDelegate;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
@@ -72,6 +75,9 @@ public final class FacetedProject
     private final IFile f;
     
     FacetedProject( final IProject project )
+    
+        throws CoreException
+        
     {
         this.project = project;
         this.facets = new HashSet();
@@ -180,8 +186,61 @@ public final class FacetedProject
                 throw new CoreException( st );
             }
             
+            // Sort the actions into the order of execution.
+            
             final List copy = new ArrayList( actions );
             ProjectFacetsManager.sort( this.facets, copy );
+            
+            // Update and check the action configs.
+            
+            for( int i = 0, n = copy.size(); i < n; i++ )
+            {
+                Action action = (Action) copy.get( i );
+                final IProjectFacetVersion fv = action.getProjectFacetVersion();
+                Object config = action.getConfig();
+                
+                if( config == null )
+                {
+                    config = fv.createActionConfig( action.getType(), 
+                                                    this.project.getName() );
+                    
+                    if( config != null )
+                    {
+                        action = new Action( action.getType(), fv, config );
+                        copy.set( i, action );
+                    }
+                }
+                
+                if( config != null )
+                {
+                    IActionConfig cfg = null;
+                    
+                    if( config instanceof IActionConfig )
+                    {
+                        cfg = (IActionConfig) config;
+                    }
+                    else
+                    {
+                        final IAdapterManager m = Platform.getAdapterManager();
+                        cfg = (IActionConfig) m.loadAdapter( config, IActionConfig.class.getName() );
+                    }
+                    
+                    if( cfg != null )
+                    {
+                        cfg.setProjectName( this.project.getName() );
+                        cfg.setVersion( fv );
+                        
+                        final IStatus status = cfg.validate();
+                        
+                        if( status.getSeverity() != IStatus.OK )
+                        {
+                            throw new CoreException( status );
+                        }
+                    }
+                }
+            }
+            
+            // Execute the actions.
             
             for( Iterator itr = copy.iterator(); itr.hasNext(); )
             {
@@ -213,14 +272,7 @@ public final class FacetedProject
                         = monitor == null 
                           ? null : new SubProgressMonitor( monitor, 1 );
                     
-                    Object config = action.getConfig();
-                    
-                    if( config == null )
-                    {
-                        config = fv.createActionConfig( type );
-                    }
-                    
-                    callDelegate( this.project, fv, config,
+                    callDelegate( this.project, fv, action.getConfig(),
                                   IDelegate.Type.get( type ), delegate,
                                   submonitor );
                 }
@@ -481,6 +533,9 @@ public final class FacetedProject
     }
 
     private void open()
+    
+        throws CoreException
+        
     {
         if( ! this.f.exists() )
         {
@@ -502,24 +557,51 @@ public final class FacetedProject
             }
             else if( name.equals( "fixed" ) )
             {
-                // TODO: Handle the case where facet is not defined.
+                final String id = e.getAttribute( "facet" );
                 
-                final String fid = e.getAttribute( "facet" );
+                if( ! ProjectFacetsManager.isProjectFacetDefined( id ) )
+                {
+                    final String msg
+                        = NLS.bind( Resources.facetNotDefined, id );
+                    
+                    final IStatus st = FacetCorePlugin.createErrorStatus( msg );
+                    
+                    throw new CoreException( st );
+                }
                 
                 final IProjectFacet f
-                    = ProjectFacetsManager.getProjectFacet( fid );
+                    = ProjectFacetsManager.getProjectFacet( id );
                 
                 this.fixed.add( f );
             }
             else if( name.equals( "installed" ) )
             {
-                // TODO: Handle the case where facet or version is not defined.
-                
                 final String id = e.getAttribute( "facet" );
                 final String version = e.getAttribute( "version" );
                 
+                if( ! ProjectFacetsManager.isProjectFacetDefined( id ) )
+                {
+                    final String msg
+                        = NLS.bind( Resources.facetNotDefined, id );
+                    
+                    final IStatus st = FacetCorePlugin.createErrorStatus( msg );
+                    
+                    throw new CoreException( st );
+                }
+                
                 final IProjectFacet f
                     = ProjectFacetsManager.getProjectFacet( id );
+                
+                if( ! f.hasVersion( version ) )
+                {
+                    final String msg
+                        = NLS.bind( Resources.facetVersionNotDefined, id,
+                                    version );
+                    
+                    final IStatus st = FacetCorePlugin.createErrorStatus( msg );
+                    
+                    throw new CoreException( st );
+                }
                 
                 final IProjectFacetVersion fv = f.getVersion( version );
                 
@@ -609,6 +691,8 @@ public final class FacetedProject
         public static String failedOnUninstall;
         public static String failedOnVersionChange;
         public static String failedOnRuntimeChanged;
+        public static String facetNotDefined;
+        public static String facetVersionNotDefined;
         
         static
         {

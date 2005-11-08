@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.common.project.facet.core.IConstraint;
 import org.eclipse.wst.common.project.facet.core.IGroup;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
@@ -116,7 +117,17 @@ public final class ConflictingFacetsFilter
                     = ProjectFacetsManager.getProjectFacet( name );
                 
                 final Set versions = rf.getVersions();
-                final Comparator comp = rf.getVersionComparator();
+                final Comparator comp;
+                
+                try
+                {
+                    comp = rf.getVersionComparator();
+                }
+                catch( CoreException e )
+                {
+                    FacetUiPlugin.log( e );
+                    return false;
+                }
                 
                 for( Iterator itr = versions.iterator(); itr.hasNext(); )
                 {

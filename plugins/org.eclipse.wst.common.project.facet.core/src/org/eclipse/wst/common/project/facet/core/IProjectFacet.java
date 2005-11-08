@@ -15,6 +15,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
+
 /**
  * Contains metadata that describes a project facet. This interface is not 
  * intended to be implemented by clients.
@@ -113,7 +115,7 @@ public interface IProjectFacet
     
     IProjectFacetVersion getLatestVersion()
     
-        throws VersionFormatException;
+        throws VersionFormatException, CoreException;
 
     /**
      * Returns a sorted list containing the descriptors of all versions of this 
@@ -128,7 +130,7 @@ public interface IProjectFacet
     
     List getSortedVersions( boolean ascending )
     
-        throws VersionFormatException;
+        throws VersionFormatException, CoreException;
     
     /**
      * Returns the version comparator specified for this project facet. If no 
@@ -138,6 +140,8 @@ public interface IProjectFacet
      * @return the version comparator specified for this project facet
      */
     
-    Comparator getVersionComparator();
+    Comparator getVersionComparator()
+    
+        throws CoreException;
     
 }

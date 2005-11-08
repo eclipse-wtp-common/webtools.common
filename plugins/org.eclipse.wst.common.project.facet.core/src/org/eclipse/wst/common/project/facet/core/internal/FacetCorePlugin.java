@@ -47,11 +47,23 @@ public final class FacetCorePlugin
         
         log.log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, e ) );
     }
+
+    public static void log( final String msg )
+    {
+        final ILog log = getInstance().getLog();
+        
+        log.log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, null ) );
+    }
     
     public static IStatus createErrorStatus( final String msg )
     {
-        return new Status( IStatus.ERROR, FacetCorePlugin.PLUGIN_ID, 0, msg, 
-                           null );
+        return createErrorStatus( msg, null );
+    }
+
+    public static IStatus createErrorStatus( final String msg,
+                                             final Exception e )
+    {
+        return new Status( IStatus.ERROR, FacetCorePlugin.PLUGIN_ID, 0, msg, e );
     }
     
 }

@@ -17,11 +17,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
@@ -73,7 +77,14 @@ public final class ProjectFacetsUiManagerImpl
         
         for( Iterator itr = clnames.iterator(); itr.hasNext(); )
         {
-            pages.add( create( plugin, (String) itr.next() ) );
+            try
+            {
+                pages.add( create( plugin, (String) itr.next() ) );
+            }
+            catch( CoreException e )
+            {
+                FacetUiPlugin.log( e );
+            }
         }
         
         return pages;
@@ -81,6 +92,9 @@ public final class ProjectFacetsUiManagerImpl
     
     private Object create( final String plugin,
                            final String clname )
+    
+        throws CoreException
+        
     {
         final Bundle bundle = Platform.getBundle( plugin );
         
@@ -91,8 +105,12 @@ public final class ProjectFacetsUiManagerImpl
         }
         catch( Exception e )
         {
-            // TODO: handle this better.
-            throw new RuntimeException( e );
+            final String msg
+                = NLS.bind( Resources.failedToCreate, clname );
+            
+            final IStatus st = FacetUiPlugin.createErrorStatus( msg, e );
+            
+            throw new CoreException( st );
         }
     }
     
@@ -125,37 +143,57 @@ public final class ProjectFacetsUiManagerImpl
                 {
                     readWizardPagesInfo( config );
                 }
-                else
-                {
-                    // TODO: handle this better.
-                    throw new IllegalStateException();
-                }
             }
         }
     }
     
     private void readWizardPagesInfo( final IConfigurationElement config )
     {
-        final String name = config.getAttribute( "facet" );
+        final String id = config.getAttribute( "facet" );
 
-        if( name == null )
+        if( id == null )
         {
-            // TODO: handle this better.
-            throw new IllegalStateException();
+            reportMissingAttribute( config, "facet" );
+            return;
         }
+        
+        if( ! ProjectFacetsManager.isProjectFacetDefined( id ) )
+        {
+            final String msg
+                = NLS.bind( Resources.facetNotDefined, 
+                            config.getNamespace(), id );
+            
+            FacetUiPlugin.log( msg );
+            
+            return;
+        }
+        
+        final IProjectFacet f = ProjectFacetsManager.getProjectFacet( id );
 
         final String version = config.getAttribute( "version" );
 
         if( version == null )
         {
-            // TODO: handle this better.
-            throw new IllegalStateException();
+            reportMissingAttribute( config, "version" );
+            return;
         }
         
-        //TODO: Handle the case where the facet is not available.
+        if( ! f.hasVersion( version ) )
+        {
+            final String[] params
+                = new String[] { config.getNamespace(), id, 
+                                 version };
+            
+            final String msg
+                = NLS.bind( Resources.facetVersionNotDefined, 
+                            params ); 
+            
+            FacetUiPlugin.log( msg );
+            
+            return;
+        }
         
-        final IProjectFacetVersion fv
-            = ProjectFacetsManager.getProjectFacet( name ).getVersion( version );
+        final IProjectFacetVersion fv = f.getVersion( version );
         
         final WizardPagesInfo info = new WizardPagesInfo();
         info.plugin = config.getDeclaringExtension().getNamespace();
@@ -177,10 +215,19 @@ public final class ProjectFacetsUiManagerImpl
             {
                 actionType = Action.Type.UNINSTALL;
             }
+            else if( childName.equals( "version-change" ) )
+            {
+                actionType = Action.Type.UNINSTALL;
+            }
             else
             {
-                // TODO: handle this better.
-                throw new IllegalStateException();
+                final String msg
+                    = NLS.bind( Resources.invalidActionType, 
+                                config.getNamespace(), childName );
+                
+                FacetUiPlugin.log( msg );
+                
+                return;
             }
             
             info.pagesets.put( actionType, readPageList( child ) );
@@ -205,8 +252,8 @@ public final class ProjectFacetsUiManagerImpl
                 
                 if( clname == null )
                 {
-                    // TODO: handle this better.
-                    throw new IllegalStateException();
+                    reportMissingAttribute( config, "class" );
+                    continue;
                 }
                 
                 list.add( clname );
@@ -216,10 +263,39 @@ public final class ProjectFacetsUiManagerImpl
         return list;
     }
     
+    private static void reportMissingAttribute( final IConfigurationElement el,
+                                                final String attribute )
+    {
+        final String[] params 
+            = new String[] { el.getNamespace(), el.getName(), attribute };
+        
+        final String msg = NLS.bind( Resources.missingAttribute, params ); 
+    
+        FacetUiPlugin.log( msg );
+    }
+    
     private static class WizardPagesInfo
     {
         public String plugin;
         public HashMap pagesets = new HashMap();
+    }
+    
+    private static final class Resources
+    
+        extends NLS
+        
+    {
+        public static String missingAttribute;
+        public static String facetNotDefined;
+        public static String facetVersionNotDefined;
+        public static String failedToCreate;
+        public static String invalidActionType;
+        
+        static
+        {
+            initializeMessages( ProjectFacetsUiManagerImpl.class.getName(), 
+                                Resources.class );
+        }
     }
     
 }

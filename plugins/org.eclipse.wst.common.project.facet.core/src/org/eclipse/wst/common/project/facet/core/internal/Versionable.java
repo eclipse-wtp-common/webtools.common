@@ -14,10 +14,15 @@ package org.eclipse.wst.common.project.facet.core.internal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.DefaultVersionComparator;
 import org.eclipse.wst.common.project.facet.core.VersionFormatException;
 import org.osgi.framework.Bundle;
@@ -42,6 +47,32 @@ public abstract class Versionable
         return this.versions.getUnmodifiable();
     }
     
+    public Set getVersions( final String expr )
+    
+        throws CoreException
+        
+    {
+        final VersionMatchExpr prepared = new VersionMatchExpr( this, expr );
+        final Set result = new HashSet();
+            
+        for( Iterator itr = this.versions.iterator(); itr.hasNext(); )
+        {
+            final IVersion ver = (IVersion) itr.next();
+            
+            if( prepared.evaluate( ver ) )
+            {
+                result.add( ver );
+            }
+        }
+        
+        return result;
+    }
+    
+    public IVersion getVersionInternal( final String version )
+    {
+        return (IVersion) this.versions.get( version );
+    }
+    
     public boolean hasVersion( final String version )
     {
         return this.versions.containsKey( version );
@@ -49,7 +80,7 @@ public abstract class Versionable
 
     public List getSortedVersions( final boolean ascending )
     
-        throws VersionFormatException
+        throws VersionFormatException, CoreException
         
     {
         final ArrayList list = new ArrayList( this.versions );
@@ -61,12 +92,18 @@ public abstract class Versionable
     }
     
     public Comparator getVersionComparator()
+    
+        throws CoreException
+        
     {
         return getVersionComparator( true, null );
     }
     
     protected Comparator getVersionComparator( final boolean ascending,
                                                final IVersionAdapter adapter )
+    
+        throws CoreException
+        
     {
         Comparator comp;
         
@@ -89,8 +126,14 @@ public abstract class Versionable
                 }
                 catch( Exception e )
                 {
-                    // TODO: handle this.
-                    return null;
+                    final String msg
+                        = NLS.bind( Resources.failedToCreate, 
+                                    this.versionComparatorClass );
+                    
+                    final IStatus st 
+                        = FacetCorePlugin.createErrorStatus( msg, e );
+                    
+                    throw new CoreException( st );
                 }
             }
             
@@ -135,11 +178,27 @@ public abstract class Versionable
         this.versionComparatorClass = clname;
     }
     
+    public abstract String createVersionNotFoundErrMsg( String verstr );
+    
     protected abstract IVersionAdapter getVersionAdapter();
     
     protected static interface IVersionAdapter
     {
         String adapt( Object obj );
+    }
+
+    private static final class Resources
+    
+        extends NLS
+        
+    {
+        public static String failedToCreate;
+        
+        static
+        {
+            initializeMessages( Versionable.class.getName(), 
+                                Resources.class );
+        }
     }
 
 }

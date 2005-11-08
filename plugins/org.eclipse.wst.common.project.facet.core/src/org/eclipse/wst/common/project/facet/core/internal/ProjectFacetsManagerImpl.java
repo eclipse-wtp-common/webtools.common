@@ -25,6 +25,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -37,6 +38,8 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.common.project.facet.core.IActionConfig;
 import org.eclipse.wst.common.project.facet.core.ICategory;
 import org.eclipse.wst.common.project.facet.core.IConstraint;
 import org.eclipse.wst.common.project.facet.core.IDelegate;
@@ -47,6 +50,7 @@ import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
+import org.eclipse.wst.common.project.facet.core.internal.ProjectFacet.ActionDefinition;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
@@ -797,6 +801,17 @@ public final class ProjectFacetsManagerImpl
                 readProjectFacetVersion( config );
             }
         }
+
+        for( int i = 0, n = cfgels.size(); i < n; i++ )
+        {
+            final IConfigurationElement config
+                = (IConfigurationElement) cfgels.get( i );
+            
+            if( config.getName().equals( "action" ) )
+            {
+                readAction( config );
+            }
+        }
         
         for( int i = 0, n = cfgels.size(); i < n; i++ )
         {
@@ -830,7 +845,8 @@ public final class ProjectFacetsManagerImpl
 
         if( id == null )
         {
-            // TODO: error
+            reportMissingAttribute( config, "id" );
+            return;
         }
 
         category.setId( id );
@@ -865,7 +881,8 @@ public final class ProjectFacetsManagerImpl
 
         if( id == null )
         {
-            // TODO: error
+            reportMissingAttribute( config, "id" );
+            return;
         }
         
         final ProjectFacet descriptor = new ProjectFacet();
@@ -897,7 +914,8 @@ public final class ProjectFacetsManagerImpl
                 
                 if( clname == null )
                 {
-                    // TODO: error
+                    reportMissingAttribute( child, "class" );
+                    return;
                 }
                 
                 descriptor.setVersionComparator( clname );
@@ -911,7 +929,13 @@ public final class ProjectFacetsManagerImpl
                 
                 if( category == null )
                 {
-                    // TODO: error
+                    final String msg
+                        = NLS.bind( Resources.categoryNotDefined, 
+                                    child.getNamespace(), catname );
+                    
+                    FacetCorePlugin.log( msg );
+                    
+                    return;
                 }
                 
                 descriptor.setCategory( category );
@@ -928,21 +952,29 @@ public final class ProjectFacetsManagerImpl
 
         if( fid == null )
         {
-            // TODO: error
+            reportMissingAttribute( config, "facet" );
+            return;
         }
         
         final String ver = config.getAttribute( "version" );
 
         if( ver == null )
         {
-            // TODO: error
+            reportMissingAttribute( config, "version" );
+            return;
         }
         
         final ProjectFacet f = (ProjectFacet) this.facets.get( fid );
         
         if( f == null )
         {
-            // TODO: error
+            final String msg
+                = NLS.bind( Resources.facetNotDefined, 
+                            config.getNamespace(), fid );
+            
+            FacetCorePlugin.log( msg );
+            
+            return;
         }
         
         final ProjectFacetVersion fv
@@ -962,17 +994,29 @@ public final class ProjectFacetsManagerImpl
             if( childName.equals( "constraint" ) )
             {
                 final IConfigurationElement[] ops = child.getChildren();
+                final ArrayList parsed = new ArrayList();
                 
-                if( ops.length == 1 )
+                for( int j = 0; j < ops.length; j++ )
                 {
-                    final IConstraint op
-                        = readConstraint( ops[ 0 ], fv );
+                    final IConstraint op = readConstraint( ops[ j ], fv );
                     
-                    fv.setConstraint( op );
+                    if( op != null )
+                    {
+                        parsed.add( op );
+                    }
                 }
-                else if( ops.length != 0 )  // No-op on empty constraints
+                
+                if( parsed.size() == 1 )
                 {
-                    // TODO: error.
+                    fv.setConstraint( (IConstraint) parsed.get( 0 ) );
+                }
+                else if( parsed.size() > 1 )
+                {
+                    final IConstraint and 
+                        = new Constraint( fv, IConstraint.Type.AND, 
+                                          parsed.toArray() );
+                    
+                    fv.setConstraint( and );
                 }
             }
             else if( childName.equals( "group-member" ) )
@@ -981,7 +1025,8 @@ public final class ProjectFacetsManagerImpl
                 
                 if( id == null )
                 {
-                    // TODO: error
+                    reportMissingAttribute( child, "id" );
+                    return;
                 }
                 
                 Group group = (Group) this.groups.get( id );
@@ -996,44 +1041,106 @@ public final class ProjectFacetsManagerImpl
                 
                 group.addMember( fv );
             }
-            else if( childName.equals( "action" ) )
-            {
-                readAction( child, fv );
-            }
         }
         
         f.addVersion( fv );
+
+        // This has to happen after facet version is registered.
+        
+        for( int i = 0; i < children.length; i++ )
+        {
+            final IConfigurationElement child = children[ i ];
+            final String childName = child.getName();
+            
+            if( childName.equals( "action" ) )
+            {
+                readAction( child, f, ver );
+            }
+        }
+    }
+    
+    private void readAction( final IConfigurationElement config )
+    {
+        final String fid = config.getAttribute( "facet" );
+
+        if( fid == null )
+        {
+            reportMissingAttribute( config, "facet" );
+            return;
+        }
+        
+        final ProjectFacet f = (ProjectFacet) this.facets.get( fid );
+        
+        if( f == null )
+        {
+            final String msg
+                = NLS.bind( Resources.facetNotDefined, 
+                            config.getNamespace(), fid );
+            
+            FacetCorePlugin.log( msg );
+            
+            return;
+        }
+        
+        final String ver = config.getAttribute( "version" );
+
+        if( ver == null )
+        {
+            reportMissingAttribute( config, "version" );
+            return;
+        }
+        
+        readAction( config, f, ver );
     }
 
     private void readAction( final IConfigurationElement config,
-                             final ProjectFacetVersion fv )
+                             final ProjectFacet f,
+                             final String version )
     {
+        final ActionDefinition def = new ActionDefinition();
+        
         final String type = config.getAttribute( "type" );
-        IDelegate.Type t = null;
         
         if( type == null )
         {
-            // TODO: error
+            reportMissingAttribute( config, "type" );
+            return;
         }
         else if( type.equals( "install" ) )
         {
-            t = IDelegate.Type.INSTALL;
+            def.type = IDelegate.Type.INSTALL;
         }
         else if( type.equals( "uninstall" ) )
         {
-            t = IDelegate.Type.UNINSTALL;
+            def.type = IDelegate.Type.UNINSTALL;
         }
         else if( type.equals( "version-change" ) )
         {
-            t = IDelegate.Type.VERSION_CHANGE; 
+            def.type = IDelegate.Type.VERSION_CHANGE; 
         }
         else if( type.equals( "runtime-changed" ) )
         {
-            t = IDelegate.Type.RUNTIME_CHANGED;
+            def.type = IDelegate.Type.RUNTIME_CHANGED;
         }
         else
         {
-            // TODO: error
+            final String msg
+                = NLS.bind( Resources.invalidActionType, config.getNamespace(),
+                            type );
+            
+            FacetCorePlugin.log( msg );
+            
+            return;
+        }
+        
+        try
+        {
+            def.versionMatchExpr = new VersionMatchExpr( f, version );
+        }
+        catch( CoreException e )
+        {
+            FacetCorePlugin.log( e );
+            return;
         }
 
         final IConfigurationElement[] children = config.getChildren();
@@ -1049,10 +1156,11 @@ public final class ProjectFacetsManagerImpl
                 
                 if( clname == null )
                 {
-                    // TODO: error
+                    reportMissingAttribute( child, "class" );
+                    return;
                 }
                 
-                fv.setActionConfigFactory( t, clname );
+                def.configFactoryClassName = clname;
             }
             else if( childName.equals( "delegate" ) )
             {
@@ -1060,16 +1168,15 @@ public final class ProjectFacetsManagerImpl
                 
                 if( clname == null )
                 {
-                    // TODO: error
+                    reportMissingAttribute( config, "class" );
+                    return;
                 }
                 
-                fv.setDelegate( t, clname );
-            }
-            else
-            {
-                // TODO: error
+                def.delegateClassName = clname;
             }
         }
+        
+        f.addActionDefinition( def );
     }
     
     private IConstraint readConstraint( final IConfigurationElement root,
@@ -1097,14 +1204,16 @@ public final class ProjectFacetsManagerImpl
             
             if( fid == null )
             {
-                // TODO: error
+                reportMissingAttribute( root, "facet" );
+                return null;
             }
 
             final String version = root.getAttribute( "version" );
             
             if( version == null )
             {
-                // TODO: error
+                reportMissingAttribute( root, "version" );
+                return null;
             }
             
             final String allowNewerStr = root.getAttribute( "allow-newer" );
@@ -1127,14 +1236,15 @@ public final class ProjectFacetsManagerImpl
         }
         else if( type == IConstraint.Type.CONFLICTS )
         {
-            final String set = root.getAttribute( "group" );
+            final String group = root.getAttribute( "group" );
             
-            if( set == null )
+            if( group == null )
             {
-                // TODO: error
+                reportMissingAttribute( root, "group" );
+                return null;
             }
 
-            operands = new Object[] { set };
+            operands = new Object[] { group };
         }
         else
         {
@@ -1152,7 +1262,8 @@ public final class ProjectFacetsManagerImpl
 
         if( id == null )
         {
-            // TODO: error
+            reportMissingAttribute( config, "id" );
+            return;
         }
 
         template.setId( id );
@@ -1174,12 +1285,19 @@ public final class ProjectFacetsManagerImpl
                 
                 if( fid == null )
                 {
-                    // TODO: error
+                    reportMissingAttribute( child, "facet" );
+                    return;
                 }
                 
                 if( ! isProjectFacetDefined( fid ) )
                 {
-                    // TODO: error
+                    final String msg
+                        = NLS.bind( Resources.facetNotDefined, 
+                                    child.getNamespace(), fid );
+                    
+                    FacetCorePlugin.log( msg );
+                    
+                    return;
                 }
                 
                 template.addFixedProjectFacet( getProjectFacet( fid ) );
@@ -1190,12 +1308,19 @@ public final class ProjectFacetsManagerImpl
                 
                 if( pid == null )
                 {
-                    // TODO: error
+                    reportMissingAttribute( child, "id" );
+                    return;
                 }
                 
                 if( ! isPresetDefined( pid ) )
                 {
-                    // TODO: error
+                    final String msg
+                        = NLS.bind( Resources.presetNotDefined, 
+                                    child.getNamespace(), pid );
+                    
+                    FacetCorePlugin.log( msg );
+                    
+                    return;
                 }
                 
                 template.setInitialPreset( getPreset( pid ) );
@@ -1213,7 +1338,8 @@ public final class ProjectFacetsManagerImpl
 
         if( id == null )
         {
-            // TODO: error
+            reportMissingAttribute( config, "id" );
+            return;
         }
 
         preset.setId( id );
@@ -1235,14 +1361,16 @@ public final class ProjectFacetsManagerImpl
                 
                 if( fid == null )
                 {
-                    // TODO: error
+                    reportMissingAttribute( child, "id" );
+                    return;
                 }
                 
                 final String fver = child.getAttribute( "version" );
                 
                 if( fver == null )
                 {
-                    // TODO: error
+                    reportMissingAttribute( child, "version" );
+                    return;
                 }
                 
                 final IProjectFacetVersion fv
@@ -1253,6 +1381,17 @@ public final class ProjectFacetsManagerImpl
         }
         
         this.presets.add( id, preset );
+    }
+    
+    private static void reportMissingAttribute( final IConfigurationElement el,
+                                                final String attribute )
+    {
+        final String[] params 
+            = new String[] { el.getNamespace(), el.getName(), attribute };
+        
+        final String msg = NLS.bind( Resources.missingAttribute, params ); 
+    
+        FacetCorePlugin.log( msg );
     }
     
     private void saveUserPresets()
@@ -1379,4 +1518,24 @@ public final class ProjectFacetsManagerImpl
         return pluginRoot.node( "user.presets" );
     }
 
+    public static final class Resources
+    
+        extends NLS
+        
+    {
+        public static String missingAttribute;
+        public static String categoryNotDefined;
+        public static String facetNotDefined;
+        public static String facetVersionNotDefined;
+        public static String facetVersionNotDefinedNoPlugin;
+        public static String presetNotDefined;
+        public static String invalidActionType;
+        
+        static
+        {
+            initializeMessages( ProjectFacetsManagerImpl.class.getName(), 
+                                Resources.class );
+        }
+    }
+    
 }

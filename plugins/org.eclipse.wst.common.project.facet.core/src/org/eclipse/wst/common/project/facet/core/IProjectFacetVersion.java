@@ -67,13 +67,21 @@ public interface IProjectFacetVersion
      * requires no config.
      * 
      * @param type the type of the action.
+     * @param pjname the name of the project that this action will be executed
+     *   on
      * @return the action config object, or <code>null</code>
      * @throws CoreException if this project facet version does not support the
      *   specified action type or if failed while creating the action config
      *   object
      */
     
-    Object createActionConfig( Action.Type type )
+    Object createActionConfig( Action.Type type,
+                               String pjname )
+    
+        throws CoreException;
+    
+    boolean isSameActionConfig( Action.Type type,
+                                IProjectFacetVersion fv )
     
         throws CoreException;
     

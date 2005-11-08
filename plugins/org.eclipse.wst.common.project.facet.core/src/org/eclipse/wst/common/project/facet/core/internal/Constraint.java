@@ -18,6 +18,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.osgi.util.NLS;
@@ -138,7 +139,17 @@ public final class Constraint
                 final IProjectFacet rf 
                     = ProjectFacetsManager.getProjectFacet( name );
                 
-                final Comparator comp = rf.getVersionComparator();
+                final Comparator comp;
+                
+                try
+                {
+                    comp = rf.getVersionComparator();
+                }
+                catch( CoreException e )
+                {
+                    FacetCorePlugin.log( e );
+                    return result;
+                }
                 
                 boolean found = false;
                 

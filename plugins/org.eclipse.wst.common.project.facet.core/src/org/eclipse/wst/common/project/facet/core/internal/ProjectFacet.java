@@ -11,10 +11,16 @@
 
 package org.eclipse.wst.common.project.facet.core.internal;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.ICategory;
+import org.eclipse.wst.common.project.facet.core.IDelegate;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.VersionFormatException;
@@ -45,6 +51,7 @@ public final class ProjectFacet
     private String description;
     private String iconPath;
     private ICategory category;
+    private final List actionDefinitions = new ArrayList();
     
     ProjectFacet() {}
     
@@ -132,7 +139,7 @@ public final class ProjectFacet
 
     public IProjectFacetVersion getLatestVersion()
     
-        throws VersionFormatException
+        throws VersionFormatException, CoreException
         
     {
         final Comparator comp = getVersionComparator( true, VERSION_ADAPTER );
@@ -146,9 +153,58 @@ public final class ProjectFacet
         return VERSION_ADAPTER;
     }
     
+    ActionDefinition getActionDefinition( final IProjectFacetVersion fv,
+                                          final IDelegate.Type type )
+    
+        throws CoreException
+        
+    {
+        ActionDefinition result = null;
+        
+        for( Iterator itr = this.actionDefinitions.iterator(); itr.hasNext(); )
+        {
+            final ActionDefinition def = (ActionDefinition) itr.next();
+            
+            if( def.type == type && 
+                def.versionMatchExpr.evaluate( (IVersion) fv ) )
+            {
+                if( result == null )
+                {
+                    result = def;
+                }
+                else
+                {
+                    // TODO: Throw better error.
+                    throw new RuntimeException();
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    void addActionDefinition( final ActionDefinition actionDefinition )
+    {
+        this.actionDefinitions.add( actionDefinition );
+    }
+    
+    public String createVersionNotFoundErrMsg( final String verstr )
+    {
+        return NLS.bind( ProjectFacetsManagerImpl.Resources.facetVersionNotDefinedNoPlugin,
+                         this.id, verstr );
+    }
+    
     public String toString()
     {
         return this.label;
+    }
+    
+    static final class ActionDefinition
+    {
+        public IDelegate.Type type;
+        public VersionMatchExpr versionMatchExpr;
+        public String delegateClassName;
+        public String configFactoryClassName;
     }
 
 }

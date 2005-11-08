@@ -20,16 +20,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin;
 import org.eclipse.wst.common.project.facet.core.internal.IndexedSet;
+import org.eclipse.wst.common.project.facet.core.internal.ProjectFacetsManagerImpl;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeBridge;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
@@ -227,10 +230,22 @@ public final class RuntimeManagerImpl
                         
                         if( m.facetAllowNewer )
                         {
-                            final List sorted = m.facet.getSortedVersions( true );
+                            final List sorted; 
+                            
+                            try
+                            {
+                                sorted = m.facet.getSortedVersions( true );
+                            }
+                            catch( CoreException e )
+                            {
+                                FacetCorePlugin.log( e );
+                                continue;
+                            }
+                            
                             boolean found = false;
                             
-                            for( Iterator itr3 = sorted.iterator(); itr3.hasNext(); )
+                            for( Iterator itr3 = sorted.iterator(); 
+                                 itr3.hasNext(); )
                             {
                                 if( found )
                                 {
@@ -359,7 +374,8 @@ public final class RuntimeManagerImpl
 
         if( id == null )
         {
-            // TODO: error
+            reportMissingAttribute( config, "id" );
+            return;
         }
         
         final RuntimeComponentType rct = new RuntimeComponentType();
@@ -379,7 +395,8 @@ public final class RuntimeManagerImpl
                 
                 if( clname == null )
                 {
-                    // TODO: error
+                    reportMissingAttribute( child, "class" );
+                    return;
                 }
                 
                 rct.setVersionComparator( clname );
@@ -399,14 +416,16 @@ public final class RuntimeManagerImpl
 
         if( type == null )
         {
-            // TODO: error
+            reportMissingAttribute( config, "type" );
+            return;
         }
         
         final String ver = config.getAttribute( "version" );
 
         if( ver == null )
         {
-            // TODO: error
+            reportMissingAttribute( config, "version" );
+            return;
         }
         
         final RuntimeComponentType rct 
@@ -414,7 +433,13 @@ public final class RuntimeManagerImpl
         
         if( rct == null )
         {
-            // TODO: error
+            final String msg
+                = NLS.bind( Resources.runtimeComponentTypeNotDefined, 
+                            config.getNamespace(), type );
+            
+            FacetCorePlugin.log( msg );
+            
+            return;
         }
         
         final RuntimeComponentVersion rcv = new RuntimeComponentVersion();
@@ -446,12 +471,19 @@ public final class RuntimeManagerImpl
 
                 if( id == null )
                 {
-                    // TODO: error
+                    reportMissingAttribute( child, "id" );
+                    return;
                 }
                 
                 if( ! isRuntimeComponentTypeDefined( id ) )
                 {
-                    // TODO: error
+                    final String msg
+                        = NLS.bind( Resources.runtimeComponentTypeNotDefined, 
+                                    child.getNamespace(), id );
+                    
+                    FacetCorePlugin.log( msg );
+                    
+                    return;
                 }
                 
                 rctype = getRuntimeComponentType( id );
@@ -462,7 +494,17 @@ public final class RuntimeManagerImpl
                 {
                     if( ! rctype.hasVersion( version ) )
                     {
-                        // TODO: error
+                        final String[] params
+                            = new String[] { config.getNamespace(), id, 
+                                             version };
+                        
+                        final String msg
+                            = NLS.bind( Resources.runtimeComponentVersionNotDefined, 
+                                        params ); 
+                        
+                        FacetCorePlugin.log( msg );
+                        
+                        return;
                     }
                     
                     rcversion = rctype.getVersion( version );
@@ -474,7 +516,8 @@ public final class RuntimeManagerImpl
 
                 if( factory == null )
                 {
-                    // TODO: error
+                    reportMissingAttribute( child, "class" );
+                    return;
                 }
             }
             else if( childName.equals( "type" ) )
@@ -483,7 +526,8 @@ public final class RuntimeManagerImpl
 
                 if( type == null )
                 {
-                    // TODO: error
+                    reportMissingAttribute( child, "class" );
+                    return;
                 }
                 else
                 {
@@ -533,12 +577,19 @@ public final class RuntimeManagerImpl
 
                 if( id == null )
                 {
-                    // TODO: error
+                    reportMissingAttribute( child, "id" );
+                    return;
                 }
                 
                 if( ! ProjectFacetsManager.isProjectFacetDefined( id ) )
                 {
-                    // TODO: error
+                    final String msg
+                        = NLS.bind( ProjectFacetsManagerImpl.Resources.facetNotDefined, 
+                                    child.getNamespace(), id );
+                    
+                    FacetCorePlugin.log( msg );
+                    
+                    return;
                 }
                 
                 m.facet = ProjectFacetsManager.getProjectFacet( id );
@@ -549,7 +600,17 @@ public final class RuntimeManagerImpl
                 {
                     if( ! m.facet.hasVersion( version ) )
                     {
-                        // TODO: error
+                        final String[] params
+                            = new String[] { config.getNamespace(), id, 
+                                             version };
+                        
+                        final String msg
+                            = NLS.bind( ProjectFacetsManagerImpl.Resources.facetVersionNotDefined, 
+                                        params ); 
+                        
+                        FacetCorePlugin.log( msg );
+                        
+                        return;
                     }
                     
                     m.facetVersion = m.facet.getVersion( version );
@@ -570,12 +631,19 @@ public final class RuntimeManagerImpl
     
                     if( id == null )
                     {
-                        // TODO: error
+                        reportMissingAttribute( child, "id" );
+                        return;
                     }
                     
                     if( ! isRuntimeComponentTypeDefined( id ) )
                     {
-                        // TODO: error
+                        final String msg
+                            = NLS.bind( Resources.runtimeComponentTypeNotDefined, 
+                                        config.getNamespace(), id );
+                        
+                        FacetCorePlugin.log( msg );
+                        
+                        return;
                     }
                     
                     m.runtimeCompType = getRuntimeComponentType( id );
@@ -586,7 +654,17 @@ public final class RuntimeManagerImpl
                     {
                         if( ! m.runtimeCompType.hasVersion( version ) )
                         {
-                            // TODO: error
+                            final String[] params
+                                = new String[] { config.getNamespace(), id, 
+                                                 version };
+                            
+                            final String msg
+                                = NLS.bind( Resources.runtimeComponentVersionNotDefined, 
+                                            params ); 
+                            
+                            FacetCorePlugin.log( msg );
+                            
+                            return;
                         }
                         
                         m.runtimeCompVersion 
@@ -604,6 +682,17 @@ public final class RuntimeManagerImpl
         }
         
         mappings.add( m );
+    }
+    
+    private static void reportMissingAttribute( final IConfigurationElement el,
+                                                final String attribute )
+    {
+        final String[] params 
+            = new String[] { el.getNamespace(), el.getName(), attribute };
+        
+        final String msg = NLS.bind( Resources.missingAttribute, params ); 
+    
+        FacetCorePlugin.log( msg );
     }
     
     private static final class Mapping
@@ -633,13 +722,22 @@ public final class RuntimeManagerImpl
                 }
                 else if( this.runtimeCompAllowNewer )
                 {
-                    final Comparator comparator 
-                        = this.runtimeCompType.getVersionComparator();
+                    final Comparator comp;
+                    
+                    try
+                    {
+                        comp = this.runtimeCompType.getVersionComparator();
+                    }
+                    catch( CoreException e )
+                    {
+                        FacetCorePlugin.log( e );
+                        return false;
+                    }
                     
                     final String v1 = version.getVersionString();
                     final String v2 = this.runtimeCompVersion.getVersionString();
                     
-                    if( comparator.compare( v1, v2 ) > 0 )
+                    if( comp.compare( v1, v2 ) > 0 )
                     {
                         return true;
                     }
@@ -650,4 +748,21 @@ public final class RuntimeManagerImpl
         }
     }
 
+    public static final class Resources
+    
+        extends NLS
+        
+    {
+        public static String missingAttribute;
+        public static String runtimeComponentTypeNotDefined;
+        public static String runtimeComponentVersionNotDefined;
+        public static String runtimeComponentVersionNotDefinedNoPlugin;
+        
+        static
+        {
+            initializeMessages( RuntimeManagerImpl.class.getName(), 
+                                Resources.class );
+        }
+    }
+    
 }

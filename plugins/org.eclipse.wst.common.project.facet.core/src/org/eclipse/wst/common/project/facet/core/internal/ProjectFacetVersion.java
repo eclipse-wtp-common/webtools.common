@@ -14,14 +14,18 @@ package org.eclipse.wst.common.project.facet.core.internal;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdapterManager;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.common.project.facet.core.IActionConfig;
 import org.eclipse.wst.common.project.facet.core.IActionConfigFactory;
 import org.eclipse.wst.common.project.facet.core.IConstraint;
 import org.eclipse.wst.common.project.facet.core.IDelegate;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
+import org.eclipse.wst.common.project.facet.core.internal.ProjectFacet.ActionDefinition;
 import org.osgi.framework.Bundle;
 
 /**
@@ -32,15 +36,14 @@ import org.osgi.framework.Bundle;
 
 public final class ProjectFacetVersion 
 
-    implements IProjectFacetVersion 
+    implements IProjectFacetVersion, IVersion 
     
 {
-    private IProjectFacet facet;
+    private ProjectFacet facet;
     private String version;
     private IConstraint constraint;
     private String plugin;
     private final HashMap delegates = new HashMap();
-    private final HashMap configFactories = new HashMap();    
     
     ProjectFacetVersion() {}
     
@@ -49,7 +52,7 @@ public final class ProjectFacetVersion
         return this.facet;
     }
     
-    void setProjectFacet( final IProjectFacet facet )
+    void setProjectFacet( final ProjectFacet facet )
     {
         this.facet = facet;
     }
@@ -62,6 +65,11 @@ public final class ProjectFacetVersion
     void setVersionString( final String version )
     {
         this.version = version;
+    }
+    
+    public Versionable getVersionable()
+    {
+        return (Versionable) this.facet;
     }
 
     public IConstraint getConstraint()
@@ -86,10 +94,19 @@ public final class ProjectFacetVersion
     
     public boolean supports( final Action.Type type )
     {
-        return this.delegates.containsKey( IDelegate.Type.get( type ) );
+        try
+        {
+            return this.facet.getActionDefinition( this, IDelegate.Type.get( type ) ) != null;
+        }
+        catch( CoreException e )
+        {
+            FacetCorePlugin.log( e );
+            return false;
+        }
     }
     
-    public Object createActionConfig( final Action.Type type )
+    public Object createActionConfig( final Action.Type type,
+                                      final String pjname )
     
         throws CoreException
         
@@ -103,15 +120,16 @@ public final class ProjectFacetVersion
             throw new CoreException( FacetCorePlugin.createErrorStatus( msg ) );
         }
         
-        final String clname 
-            = (String) this.configFactories.get( IDelegate.Type.get( type ) );
+        final ActionDefinition def
+            = this.facet.getActionDefinition( this, IDelegate.Type.get( type ) );
         
-        if( clname == null )
+        if( def == null || def.configFactoryClassName == null )
         {
             return null;
         }
         else
         {
+            final String clname = def.configFactoryClassName;
             final Object temp = create( clname );
             
             if( ! ( temp instanceof IActionConfigFactory ) )
@@ -123,33 +141,69 @@ public final class ProjectFacetVersion
                 throw new CoreException( FacetCorePlugin.createErrorStatus( msg ) );
             }
             
-            return ( (IActionConfigFactory) temp ).create();
+            final Object config = ( (IActionConfigFactory) temp ).create();
+            
+            IActionConfig cfg = null;
+            
+            if( config instanceof IActionConfig )
+            {
+                cfg = (IActionConfig) config;
+            }
+            else
+            {
+                final IAdapterManager m = Platform.getAdapterManager();
+                cfg = (IActionConfig) m.loadAdapter( config, IActionConfig.class.getName() );
+            }
+            
+            if( cfg != null )
+            {
+                cfg.setProjectName( pjname );
+                cfg.setVersion( this );
+            }
+            
+            return config;
         }
     }
     
-    void setActionConfigFactory( final IDelegate.Type type,
-                                 final String configFactoryClassName )
+    public boolean isSameActionConfig( final Action.Type type,
+                                       final IProjectFacetVersion fv )
+    
+        throws CoreException
+        
     {
-        this.configFactories.put( type, configFactoryClassName );
+        final IDelegate.Type t = IDelegate.Type.get( type );
+        
+        return this.facet.getActionDefinition( fv, t )
+               == this.facet.getActionDefinition( this, t );
     }
     
     IDelegate getDelegate( final IDelegate.Type type )
+    
+        throws CoreException
+        
     {
         Object delegate = this.delegates.get( type );
         
         if( delegate == null )
         {
-            return null;
-        }
-        else if( delegate instanceof String )
-        {
-            final String clname = (String) delegate;
+            final ActionDefinition def
+                = this.facet.getActionDefinition( this, type );
+            
+            if( def == null )
+            {
+                return null;
+            }
+            
+            final String clname = def.delegateClassName;
             delegate = create( clname );
             
             if( ! ( delegate instanceof IDelegate ) )
             {
-                // TODO: Handle this better.
-                throw new RuntimeException();
+                final String msg
+                    = NLS.bind( Resources.notInstanceOf, clname,
+                                IDelegate.class.getName() );
+                
+                throw new CoreException( FacetCorePlugin.createErrorStatus( msg ) );
             }
             
             this.delegates.put( type, delegate );
@@ -158,13 +212,10 @@ public final class ProjectFacetVersion
         return (IDelegate) delegate;
     }
     
-    void setDelegate( final IDelegate.Type type,
-                      final String delegateClassName )
-    {
-        this.delegates.put( type, delegateClassName );
-    }
-    
     private Object create( final String clname )
+    
+        throws CoreException
+        
     {
         final Bundle bundle = Platform.getBundle( this.plugin );
         
@@ -175,8 +226,12 @@ public final class ProjectFacetVersion
         }
         catch( Exception e )
         {
-            // TODO: handle this.
-            return null;
+            final String msg
+                = NLS.bind( Resources.failedToCreate, clname );
+            
+            final IStatus st = FacetCorePlugin.createErrorStatus( msg, e );
+            
+            throw new CoreException( st );
         }
     }
     
@@ -192,6 +247,7 @@ public final class ProjectFacetVersion
     {
         public static String actionNotSupported;
         public static String notInstanceOf;
+        public static String failedToCreate;
         
         static
         {

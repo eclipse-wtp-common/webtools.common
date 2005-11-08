@@ -14,6 +14,8 @@ package org.eclipse.wst.common.project.facet.core.runtime.internal;
 import java.util.Collections;
 import java.util.Comparator;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.VersionFormatException;
 import org.eclipse.wst.common.project.facet.core.internal.Versionable;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentType;
@@ -85,7 +87,7 @@ public final class RuntimeComponentType
 
     public IRuntimeComponentVersion getLatestVersion()
     
-        throws VersionFormatException
+        throws VersionFormatException, CoreException
         
     {
         final Comparator comp = getVersionComparator( true, VERSION_ADAPTER );
@@ -108,5 +110,12 @@ public final class RuntimeComponentType
     {
         return VERSION_ADAPTER;
     }
+    
+    public String createVersionNotFoundErrMsg( final String verstr )
+    {
+        return NLS.bind( RuntimeManagerImpl.Resources.runtimeComponentVersionNotDefinedNoPlugin,
+                         this.id, verstr );
+    }
+
     
 }

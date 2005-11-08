@@ -48,5 +48,18 @@ public final class FacetUiPlugin
         
         log.log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, e ) );
     }
+
+    public static void log( final String msg )
+    {
+        final ILog log = getInstance().getLog();
+        
+        log.log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, null ) );
+    }
+    
+    public static IStatus createErrorStatus( final String msg,
+                                             final Exception e )
+    {
+        return new Status( IStatus.ERROR, FacetUiPlugin.PLUGIN_ID, 0, msg, e );
+    }
     
 }

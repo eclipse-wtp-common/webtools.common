@@ -15,9 +15,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentType;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentVersion;
@@ -82,7 +84,16 @@ public final class RuntimeComponent
         
         if( res == null )
         {
-            final IAdapterFactory factory = rcv.getAdapterFactory( type );
+            IAdapterFactory factory = null;
+            
+            try
+            {
+                factory = rcv.getAdapterFactory( type );
+            }
+            catch( CoreException e )
+            {
+                FacetCorePlugin.log( e );
+            }
             
             if( factory != null )
             {

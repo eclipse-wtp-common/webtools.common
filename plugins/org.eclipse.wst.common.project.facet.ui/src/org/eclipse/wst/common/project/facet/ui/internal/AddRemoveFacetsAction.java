@@ -14,10 +14,12 @@ package org.eclipse.wst.common.project.facet.ui.internal;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
@@ -59,8 +61,12 @@ public final class AddRemoveFacetsAction
             }
             catch( CoreException e )
             {
-                // TODO: Handle this better.
-                throw new RuntimeException( e );
+                ErrorDialog.openError( this.shell, Resources.errDlgTitle,
+                                       e.getMessage(), e.getStatus() );
+                
+                FacetUiPlugin.log( e );
+                
+                return;
             }
             
             final IWizard wizard = new AddRemoveFacetsWizard( fproj );
@@ -76,4 +82,18 @@ public final class AddRemoveFacetsAction
         this.selection = selection;
     }
 
+    private static final class Resources
+    
+        extends NLS
+        
+    {
+        public static String errDlgTitle;
+        
+        static
+        {
+            initializeMessages( AddRemoveFacetsAction.class.getName(), 
+                                Resources.class );
+        }
+    }
+    
 }

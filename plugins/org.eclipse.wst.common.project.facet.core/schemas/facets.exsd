@@ -18,6 +18,7 @@
             <element ref="category"/>
             <element ref="preset"/>
             <element ref="template"/>
+            <element ref="action"/>
          </choice>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -312,6 +313,20 @@
                   </enumeration>
                </restriction>
             </simpleType>
+         </attribute>
+         <attribute name="facet" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="version" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
          </attribute>
       </complexType>
    </element>

@@ -13,8 +13,11 @@ package org.eclipse.wst.common.project.facet.ui.internal;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IAdapterManager;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -23,10 +26,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.wst.common.project.facet.core.IActionConfig;
 import org.eclipse.wst.common.project.facet.core.ICategory;
 import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
+import org.eclipse.wst.common.project.facet.ui.IWizardContext;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -37,6 +43,7 @@ public final class FacetsSelectionPage
     extends WizardPage
 
 {
+    private IWizardContext context;
     private IPreset initialPreset;
     private Set initialSelection;
     private final Set fixed;
@@ -45,13 +52,14 @@ public final class FacetsSelectionPage
     private FacetsSelectionPanel panel;
     private ArrayList listeners;
 
-    public FacetsSelectionPage()
+    public FacetsSelectionPage( final IWizardContext context )
     {
         super( "facets.selection.page" );
 
         setTitle( "Select Project Facets" );
         setDescription( "Select facets for this project." );
 
+        this.context = context;
         this.initialPreset = null;
         this.initialSelection = null;
         this.fixed = new HashSet();
@@ -114,7 +122,8 @@ public final class FacetsSelectionPage
     public void createControl( final Composite parent )
     {
         this.panel 
-            = new FacetsSelectionPanel( parent, SWT.NONE, this.runtime );
+            = new FacetsSelectionPanel( parent, SWT.NONE, this.runtime, 
+                                        context );
 
         this.panel.setFixedProjectFacets( this.fixed );
         
@@ -189,10 +198,46 @@ public final class FacetsSelectionPage
             ( (Listener) this.listeners.get( i ) ).handleEvent( event );
         }
         
-        final boolean valid
-            = FacetsSelectionPage.this.panel.isSelectionValid();
-
-        setPageComplete( valid );
+        setPageComplete( this.panel.isSelectionValid() );
+    }
+    
+    public void setVisible( final boolean visible )
+    {
+        if( visible )
+        {
+            for( Iterator itr = this.panel.getActions().iterator(); 
+                 itr.hasNext(); )
+            {
+                final Object config = ( (Action) itr.next() ).getConfig();
+                
+                if( config != null )
+                {
+                    IActionConfig c = null;
+                    
+                    if( config instanceof IActionConfig )
+                    {
+                        c = (IActionConfig) config;
+                    }
+                    else
+                    {
+                        final IAdapterManager m 
+                            = Platform.getAdapterManager();
+                        
+                        final String t
+                            = IActionConfig.class.getName();
+                        
+                        c = (IActionConfig) m.loadAdapter( config, t );
+                    }
+                    
+                    if( c != null )
+                    {
+                        c.setProjectName( this.context.getProjectName() );
+                    }
+                }
+            }
+        }
+        
+        super.setVisible( visible );
     }
 
 }

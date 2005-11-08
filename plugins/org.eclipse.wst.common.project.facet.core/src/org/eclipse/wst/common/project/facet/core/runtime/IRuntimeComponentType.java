@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.common.project.facet.core.VersionFormatException;
 
 /**
@@ -81,7 +82,9 @@ public interface IRuntimeComponentType
      * @return returns the latest version of this runtime component
      */
 
-    IRuntimeComponentVersion getLatestVersion();
+    IRuntimeComponentVersion getLatestVersion()
+    
+        throws CoreException;
     
     /**
      * Returns a sorted list containing all of the versions of this runtime
@@ -93,7 +96,9 @@ public interface IRuntimeComponentType
      * @throws VersionFormatException if failed while parsing a version string
      */
     
-    List getSortedVersions( boolean ascending );
+    List getSortedVersions( boolean ascending )
+    
+        throws CoreException;
     
     /**
      * Returns the version comparator specified for this runtime component type.
@@ -103,7 +108,9 @@ public interface IRuntimeComponentType
      * @return the version comparator specified for this runtime component type
      */
     
-    Comparator getVersionComparator();
+    Comparator getVersionComparator()
+    
+        throws CoreException;
     
     /**
      * Returns the path that can be used to find the icon to be used with this

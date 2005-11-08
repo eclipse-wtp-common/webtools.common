@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
@@ -72,6 +73,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.wst.common.project.facet.core.IActionConfig;
 import org.eclipse.wst.common.project.facet.core.ICategory;
 import org.eclipse.wst.common.project.facet.core.IConstraint;
 import org.eclipse.wst.common.project.facet.core.IPreset;
@@ -80,6 +82,7 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
+import org.eclipse.wst.common.project.facet.ui.IWizardContext;
 import org.osgi.framework.Bundle;
 
 /**
@@ -126,6 +129,8 @@ public final class FacetsSelectionPanel
     private final ComboBoxCellEditor ceditor;
     private final TableViewer problemsView;
     private final RuntimesPanel runtimesPanel;
+    
+    private final IWizardContext context;
 
     /**
      * Contains the <code>TableRowData</code> objects representing all of the
@@ -149,11 +154,13 @@ public final class FacetsSelectionPanel
     }
 
     public FacetsSelectionPanel( final Composite parent,
-                                  final int style,
-                                  final IRuntime runtime )
+                                 final int style,
+                                 final IRuntime runtime,
+                                 final IWizardContext context )
     {
         super( parent, style );
 
+        this.context = context;
         this.data = new ArrayList();
         this.fixed = new HashSet();
         this.base = new HashSet();
@@ -167,7 +174,14 @@ public final class FacetsSelectionPanel
         for( Iterator itr = ProjectFacetsManager.getProjectFacets().iterator();
              itr.hasNext(); )
         {
-            this.data.add( new TableRowData( (IProjectFacet) itr.next() ) );
+            try
+            {
+                this.data.add( new TableRowData( (IProjectFacet) itr.next() ) );
+            }
+            catch( CoreException e )
+            {
+                FacetUiPlugin.log( e );
+            }
         }
 
         // Read the dialog settings.
@@ -452,13 +466,31 @@ public final class FacetsSelectionPanel
     
     private static Action getAction( final Set actions,
                                      final Action.Type type,
-                                     final IProjectFacetVersion f )
+                                     final IProjectFacetVersion fv )
     {
         for( Iterator itr = actions.iterator(); itr.hasNext(); )
         {
             final Action action = (Action) itr.next();
             
-            if( action.getType() == type && action.getProjectFacetVersion() == f )
+            if( action.getType() == type && action.getProjectFacetVersion() == fv )
+            {
+                return action;
+            }
+        }
+        
+        return null;
+    }
+    
+    private static Action getAction( final Set actions,
+                                     final Action.Type type,
+                                     final IProjectFacet f )
+    {
+        for( Iterator itr = actions.iterator(); itr.hasNext(); )
+        {
+            final Action action = (Action) itr.next();
+            
+            if( action.getType() == type && 
+                action.getProjectFacetVersion().getProjectFacet() == f )
             {
                 return action;
             }
@@ -481,7 +513,48 @@ public final class FacetsSelectionPanel
             {
                 try
                 {
-                    config = fv.createActionConfig( type );
+                    final IProjectFacet f = fv.getProjectFacet();
+                    
+                    action = getAction( actions, type, f );
+                    
+                    if( action != null )
+                    {
+                        final IProjectFacetVersion current
+                            = action.getProjectFacetVersion();
+                        
+                        if( fv.isSameActionConfig( type, current ) )
+                        {
+                            config = action.getConfig();
+                            
+                            IActionConfig c = null;
+                            
+                            if( config instanceof IActionConfig )
+                            {
+                                c = (IActionConfig) config;
+                            }
+                            else
+                            {
+                                final IAdapterManager m 
+                                    = Platform.getAdapterManager();
+                                
+                                final String t
+                                    = IActionConfig.class.getName();
+                                
+                                c = (IActionConfig) m.loadAdapter( config, t );
+                            }
+                            
+                            if( c != null )
+                            {
+                                c.setVersion( fv );
+                            }
+                        }
+                    }
+                    
+                    if( config == null )
+                    {
+                        final String pjname = this.context.getProjectName();
+                        config = fv.createActionConfig( type, pjname );
+                    }
                 }
                 catch( CoreException e )
                 {
@@ -1179,6 +1252,9 @@ public final class FacetsSelectionPanel
         private boolean isFixed;
 
         public TableRowData( final IProjectFacet f )
+        
+            throws CoreException
+            
         {
             this.f = f;
             this.versions = f.getSortedVersions( false );
