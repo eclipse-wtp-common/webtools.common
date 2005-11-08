@@ -38,7 +38,8 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	private PageGroupManager pageGroupManager;
 	private IDataModel dataModel;
 	private AddablePageGroup rootPageGroup;
-	private IWizardPage firstpage;
+
+	// private IWizardPage firstpage;
 
 	public DataModelWizard(IDataModel dataModel) {
 		this.dataModel = dataModel;
@@ -79,13 +80,10 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	protected void doAddPages() {
 	}
 
-	//TODO make this final
+	// TODO make this final
 	public IWizardPage getStartingPage() {
-		if (firstpage == null) {
-			firstpage = getNextPage(null);
-		}
-
-		return firstpage;
+		pageGroupManager.reset();
+		return getNextPage(null);
 	}
 
 	/**
@@ -95,7 +93,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	 * @link #getNextPage(String, String)
 	 * @link #getPreviousPage(String, String)
 	 */
- 	//TODO make this final
+	// TODO make this final
 	public IWizardPage getNextPage(IWizardPage page) {
 
 		IWizardPage currentPage = pageGroupManager.getCurrentPage();
@@ -116,7 +114,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	public String getNextPage(String currentPageName, String expectedNextPageName) {
 		return expectedNextPageName;
 	}
-	
+
 	/**
 	 * Subclasses wishing to control the page ordering should do so by overriding
 	 * getNextPage(String, String) and getPreviousPage(String, String)
@@ -124,7 +122,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	 * @link #getNextPage(String, String)
 	 * @link #getPreviousPage(String, String)
 	 */
-	//TODO make this final
+	// TODO make this final
 	public IWizardPage getPreviousPage(IWizardPage page) {
 		return page != null ? page.getPreviousPage() : null;
 	}

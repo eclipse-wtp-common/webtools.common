@@ -157,6 +157,10 @@ public class PageGroupManager {
 		}
 	}
 
+	public void reset(){
+		pageGroupStack.clear();
+	}
+	
 	public DataModelWizardPage getCurrentPage() {
 		DataModelWizardPage page = null;
 
