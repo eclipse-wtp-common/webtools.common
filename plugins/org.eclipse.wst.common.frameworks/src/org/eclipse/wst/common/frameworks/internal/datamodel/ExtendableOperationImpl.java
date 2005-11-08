@@ -318,4 +318,14 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 	public IEnvironment getEnvironment() {
 		return environment;
 	}
+
+  public List getPreOperations()
+  {
+    return null;
+  }
+
+  public List getPostOperations()
+  {
+    return null;
+  }
 }

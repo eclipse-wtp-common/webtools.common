@@ -11,7 +11,9 @@
 package org.eclipse.wst.common.frameworks.datamodel;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
 import org.eclipse.core.resources.IWorkspace;
@@ -112,14 +114,51 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 		return IWorkspace.AVOID_UPDATE;
 	}
 
-	public void setEnvironment(IEnvironment env) {
+  /**
+   * The framework will set the environment on this operation 
+   * before it is executed.  The operation can then use the
+   * environment to report status, log information, and access
+   * resources in an environment neutral way.
+   */
+	public final void setEnvironment(IEnvironment env) {
 		environment = env;
 	}
 
-	public IEnvironment getEnvironment() {
+  /**
+   * An operation can call this method to get the environment
+   * that has been set by the operations framework.
+   * @return returns an environment.
+   */
+	public final IEnvironment getEnvironment() {
 		return environment;
 	}
 
+  /**
+   * An operation can specify a list of operations that should run
+   * before this operation.  Subclasses can override this method to 
+   * provide these operations.  The operations provided will be
+   * executed in the order specified in the list.
+   * @return returns a list of data model operations or null.  
+   * Null indicates that there are no pre operations.
+   */
+  public List getPreOperations()
+  {
+    return null; 
+  }
+  
+  /**
+   * An operation can specify a list of operations that should run
+   * after this operation.  Subclasses can override this method to 
+   * provide these operations.  The operations provided will be
+   * executed in the order specified in the list.
+   * @return returns a list of data model operations or null.
+   * Null indicates that there are no post operations.
+   */
+  public List getPostOperations()
+  {
+    return null; 
+  }
+  
 	public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		return Status.OK_STATUS;
 	}
