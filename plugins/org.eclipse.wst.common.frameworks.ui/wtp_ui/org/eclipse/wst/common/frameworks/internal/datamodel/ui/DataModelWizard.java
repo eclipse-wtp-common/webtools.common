@@ -32,7 +32,7 @@ import org.eclipse.wst.common.frameworks.internal.ui.WTPCommonUIResourceHandler;
 /**
  * This class is EXPERIMENTAL and is subject to substantial changes.
  */
-public abstract class DataModelWizard extends Wizard {
+public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	private DataModelManager dataModelManager;
 	private OperationManager operationManager;
 	private PageGroupManager pageGroupManager;
@@ -79,7 +79,7 @@ public abstract class DataModelWizard extends Wizard {
 	protected void doAddPages() {
 	}
 
-
+	//TODO make this final
 	public IWizardPage getStartingPage() {
 		if (firstpage == null) {
 			firstpage = getNextPage(null);
@@ -88,6 +88,14 @@ public abstract class DataModelWizard extends Wizard {
 		return firstpage;
 	}
 
+	/**
+	 * Subclasses wishing to control the page ordering should do so by overriding
+	 * getNextPage(String, String) and getPreviousPage(String, String)
+	 * 
+	 * @link #getNextPage(String, String)
+	 * @link #getPreviousPage(String, String)
+	 */
+ 	//TODO make this final
 	public IWizardPage getNextPage(IWizardPage page) {
 
 		IWizardPage currentPage = pageGroupManager.getCurrentPage();
@@ -105,8 +113,24 @@ public abstract class DataModelWizard extends Wizard {
 		return nextPage;
 	}
 
+	public String getNextPage(String currentPageName, String expectedNextPageName) {
+		return expectedNextPageName;
+	}
+	
+	/**
+	 * Subclasses wishing to control the page ordering should do so by overriding
+	 * getNextPage(String, String) and getPreviousPage(String, String)
+	 * 
+	 * @link #getNextPage(String, String)
+	 * @link #getPreviousPage(String, String)
+	 */
+	//TODO make this final
 	public IWizardPage getPreviousPage(IWizardPage page) {
 		return page != null ? page.getPreviousPage() : null;
+	}
+
+	public String getPreviousPage(String currentPageName, String expectedPreviousPageName) {
+		return expectedPreviousPageName;
 	}
 
 	public boolean canFinish() {
@@ -243,20 +267,21 @@ public abstract class DataModelWizard extends Wizard {
 	 */
 	protected AddablePageGroup createRootPageGroup() {
 		String id = getWizardID();
-
 		// For the root page group the wizard id and the group id are the same.
-		return new SimplePageGroup(id, id);
+		SimplePageGroup pageGroup = new SimplePageGroup(id, id);
+		pageGroup.setPageHandler(this);
+		return pageGroup;
 	}
 
-  /**
-   * Creates the default environment for this wizard.
-   * @return
-   */
-  protected IEnvironment createEnvironment()
-  {
-    return new EclipseEnvironment();
-  }
-  
+	/**
+	 * Creates the default environment for this wizard.
+	 * 
+	 * @return
+	 */
+	protected IEnvironment createEnvironment() {
+		return new EclipseEnvironment();
+	}
+
 	public void addPage(IWizardPage page) {
 		rootPageGroup.addPage((DataModelWizardPage) page);
 	}
@@ -270,7 +295,7 @@ public abstract class DataModelWizard extends Wizard {
 
 	private class WizardOperationManager extends OperationManager {
 		public WizardOperationManager(DataModelManager dataModelManager, IDataModelOperation rootOperation) {
-			super(dataModelManager, rootOperation, createEnvironment() );
+			super(dataModelManager, rootOperation, createEnvironment());
 		}
 
 		public IStatus runOperations() {
@@ -307,9 +332,9 @@ public abstract class DataModelWizard extends Wizard {
 			}
 		}
 	}
-	
-	 public boolean needsPreviousAndNextButtons() {
-		 return super.needsPreviousAndNextButtons() || getPageGroupManager().hasMultiplePages();
-	 }
+
+	public boolean needsPreviousAndNextButtons() {
+		return super.needsPreviousAndNextButtons() || getPageGroupManager().hasMultiplePages();
+	}
 
 }

@@ -365,15 +365,15 @@ public class PageGroupManager {
 		pageGroupEntry.groupsThatFollow.add(nextGroupEntry);
 	}
 
-	public StackEntry findNextPageGroup(Stack pageGroupStack) {
-		StackEntry topEntry = (StackEntry) pageGroupStack.peek();
+	public StackEntry findNextPageGroup(Stack stack) {
+		StackEntry topEntry = (StackEntry) stack.peek();
 		PageGroupEntry nextPageGroup = topEntry.getNextPageGroup(null);
 		int parentIndex = topEntry.parentGroupIndex;
-		int prevParentIndex = pageGroupStack.size() - 1;
+		int prevParentIndex = stack.size() - 1;
 
 		// Recurse up through the parents to find the next group if needed.
 		while (parentIndex != -1 && nextPageGroup == null) {
-			StackEntry parentStackEntry = (StackEntry) pageGroupStack.elementAt(parentIndex);
+			StackEntry parentStackEntry = (StackEntry) stack.elementAt(parentIndex);
 
 			nextPageGroup = parentStackEntry.getNextPageGroup(topEntry.getId());
 			prevParentIndex = parentIndex;
