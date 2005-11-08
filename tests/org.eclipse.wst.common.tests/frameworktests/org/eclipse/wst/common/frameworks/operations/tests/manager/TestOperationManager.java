@@ -71,12 +71,12 @@ public class TestOperationManager extends TestCase {
 		//  / \ / \
 		// A  C E G
 		manager = new OperationManager(dataModelManager, opD, EnvironmentService.getEclipseConsoleEnvironment() );
-		manager.addPreOperation(opD.getID(), opB);
-		manager.addPostOperation(opD.getID(), opF);
-		manager.addPreOperation(opB.getID(), opA);
-		manager.addPostOperation(opB.getID(), opC);
-		manager.addPreOperation(opF.getID(), opE);
-		manager.addPostOperation(opF.getID(), opG);
+		manager.addExtendedPreOperation(opD.getID(), opB);
+		manager.addExtendedPostOperation(opD.getID(), opF);
+		manager.addExtendedPreOperation(opB.getID(), opA);
+		manager.addExtendedPostOperation(opB.getID(), opC);
+		manager.addExtendedPreOperation(opF.getID(), opE);
+		manager.addExtendedPostOperation(opF.getID(), opG);
 	}
 
 	public void testRunAll() throws Exception {
@@ -343,7 +343,71 @@ public class TestOperationManager extends TestCase {
 		manager.undoLastRun();
 		checkResults();
 	}
+  
+  public void testRunWithChildOperations() throws Exception 
+  {
+    StopListener stopListener1 = new StopListener(new String[]{"B"});
+    StopListener stopListener2 = new StopListener( new String[]{ "APre1Pre1", "APost1", "B" } );
+    
+    BaseOperation opAPre1 = new BaseOperation("APre1", executedOps, executedUndoOps);
+    BaseOperation opAPre2 = new BaseOperation("APre2", executedOps, executedUndoOps);
+    BaseOperation opAPost1 = new BaseOperation("APost1", executedOps, executedUndoOps);
+    BaseOperation opAPre1Pre1 = new BaseOperation("APre1Pre1", executedOps, executedUndoOps);
+    BaseOperation opAPre2Post1 = new BaseOperation("APre2Post2", executedOps, executedUndoOps);
+    
+    opA.addPreOp( opAPre1 );
+    opA.addPreOp( opAPre2 );
+    opA.addPostOp( opAPost1 );
+    opAPre1.addPreOp( opAPre1Pre1 );
+    opAPre2.addPostOp( opAPre2Post1 );
+    
+    manager.setPostExecuteListener(stopListener1);
+    
+    expectedOps.add(opAPre1Pre1);
+    expectedOps.add(opAPre1);
+    expectedOps.add( new TestExtendedOperation() );
+    expectedOps.add(opAPre2);
+    expectedOps.add(opAPre2Post1);
+    expectedOps.add(opA);
+    expectedOps.add(opAPost1);
+    expectedOps.add(opB);
+    manager.runOperations();
+    checkResults();
 
+    expectedOps.removeAllElements();
+    expectedUndoOps.add(opB);
+    expectedUndoOps.add(opAPost1);
+    expectedUndoOps.add(opA);
+    expectedUndoOps.add(opAPre2Post1);
+    expectedUndoOps.add(opAPre2);
+    expectedUndoOps.add( new TestExtendedOperation() );
+    expectedUndoOps.add(opAPre1);
+    expectedUndoOps.add(opAPre1Pre1);
+    manager.undoLastRun();
+    checkResults();
+    
+    reset();
+    manager.setPostExecuteListener(stopListener2);
+    
+    expectedOps.add(opAPre1Pre1);
+    manager.runOperations();
+    checkResults();
+    
+    expectedOps.add(opAPre1);
+    expectedOps.add( new TestExtendedOperation() );
+    expectedOps.add(opAPre2);
+    expectedOps.add(opAPre2Post1);
+    expectedOps.add(opA);
+    expectedOps.add(opAPost1);
+    manager.runOperations();
+    checkResults();
+    
+    expectedOps.add(opB);
+    manager.runOperations();
+    checkResults();
+    
+  }
+  
 	private void reset() {
 		executedOps.removeAllElements();
 		expectedOps.removeAllElements();

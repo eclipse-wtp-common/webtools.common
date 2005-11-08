@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.operations.tests.manager;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
@@ -22,13 +24,16 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.environment.ILog;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 
 public class BaseOperation extends AbstractDataModelOperation {
-	private Vector resultList;
-	private Vector undoList;
+	protected Vector resultList;
+	protected Vector undoList;
 	private IStatus status;
   private boolean checkModels;
   private boolean modelsOK = false;
+  private ArrayList preOps = new ArrayList();
+  private ArrayList postOps = new ArrayList();
 
 	public BaseOperation(String id, Vector resultList, Vector undoList) {
 		setID(id);
@@ -45,6 +50,8 @@ public class BaseOperation extends AbstractDataModelOperation {
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		resultList.add(this);
     
+    getDataModel().setProperty( "executedOps", resultList );
+    getDataModel().setProperty( "executedUndoOps", undoList );
     if( checkModels ) modelsOK = checkModels();
     
     getEnvironment().getLog().log( ILog.OK, 1234, this, "BaseOperation", (Throwable)null );
@@ -62,6 +69,26 @@ public class BaseOperation extends AbstractDataModelOperation {
 		return Status.OK_STATUS;
 	}
 
+  public void addPostOp( IDataModelOperation operation )
+  {
+    postOps.add( operation );  
+  }
+  
+  public void addPreOp( IDataModelOperation operation )
+  {
+    preOps.add( operation );  
+  }
+  
+  public List getPostOperations()
+  {
+    return postOps;
+  }
+
+  public List getPreOperations()
+  {
+    return preOps;
+  }
+
   public void setCheckModels( boolean checkModels )
   {
     this.checkModels = checkModels;  
@@ -78,6 +105,7 @@ public class BaseOperation extends AbstractDataModelOperation {
     
     ids.add( "testprovider1" );
     ids.add( "testprovider2" );
+    ids.add( "testExtendedProvider" );
     
     return ids;
   }

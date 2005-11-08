@@ -47,6 +47,9 @@
             class="org.eclipse.wst.common.frameworks.operations.tests.manager.TestProvider2"
             id="testprovider2"/>
       <DataModelProvider
+            class="org.eclipse.wst.common.frameworks.operations.tests.manager.TestExtendedProvider"
+            id="testExtendedProvider"/>
+      <DataModelProvider
             class="bogusClass"
             id="bogus"/>
       <ProviderDefinesType
@@ -103,6 +106,9 @@
       <operationExtension
             id="org.eclipse.wst.common.frameworks.datamodel.tests.extended.H"
             preOperationClass="org.eclipse.wst.common.frameworks.datamodel.tests.extended.G"/>
+      <operationExtension
+            id="APre2"
+            preOperationClass="org.eclipse.wst.common.frameworks.operations.tests.manager.TestExtendedOperation"/>
       <operationExtension
             id="org.eclipse.wst.common.frameworks.datamodel.tests.extended.H"/>
    </extension>

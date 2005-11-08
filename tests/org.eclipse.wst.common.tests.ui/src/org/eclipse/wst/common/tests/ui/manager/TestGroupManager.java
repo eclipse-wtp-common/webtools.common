@@ -99,12 +99,12 @@ public class TestGroupManager extends TestCase {
 		//  / \ / \
 		// A  C E  G
 		operationManager = new OperationManager(dataModelManager, opD, EnvironmentService.getEclipseConsoleEnvironment() );
-		operationManager.addPreOperation(opD.getID(), opB);
-		operationManager.addPostOperation(opD.getID(), opF);
-		operationManager.addPreOperation(opB.getID(), opA);
-		operationManager.addPostOperation(opB.getID(), opC);
-		operationManager.addPreOperation(opF.getID(), opE);
-		operationManager.addPostOperation(opF.getID(), opG);
+		operationManager.addExtendedPreOperation(opD.getID(), opB);
+		operationManager.addExtendedPostOperation(opD.getID(), opF);
+		operationManager.addExtendedPreOperation(opB.getID(), opA);
+		operationManager.addExtendedPostOperation(opB.getID(), opC);
+		operationManager.addExtendedPreOperation(opF.getID(), opE);
+		operationManager.addExtendedPostOperation(opF.getID(), opG);
 
 		// Page groups are organized as follows:
 		//
