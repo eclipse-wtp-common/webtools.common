@@ -2,3 +2,4 @@ bin
 @dot
 build.xml
 temp.folder
+src.zip
