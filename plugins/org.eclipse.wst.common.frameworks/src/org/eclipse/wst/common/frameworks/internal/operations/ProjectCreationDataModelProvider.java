@@ -17,7 +17,6 @@ package org.eclipse.wst.common.frameworks.internal.operations;
 import java.io.File;
 import java.util.Set;
 
-import org.eclipse.core.internal.localstore.CoreFileSystemLibrary;
 import org.eclipse.core.internal.resources.Resource;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -29,6 +28,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
+import org.eclipse.wst.common.frameworks.internal.WTPPlugin;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
@@ -171,7 +171,7 @@ public class ProjectCreationDataModelProvider extends AbstractDataModelProvider 
 		if (getProject().exists())
 			return WTPCommonPlugin.createErrorStatus(WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_EXISTS_ERROR, new Object[]{name}));
 
-		if (!CoreFileSystemLibrary.isCaseSensitive()) {
+		if (!WTPPlugin.isPlatformCaseSensitive()) {
 			// now look for a matching case variant in the tree
 			IResource variant = ((Resource) getProject()).findExistingResourceVariant(getProject().getFullPath());
 			if (variant != null) {

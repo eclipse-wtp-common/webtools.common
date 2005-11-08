@@ -16,6 +16,7 @@ package org.eclipse.wst.common.frameworks.internal;
 
 import java.util.ResourceBundle;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jem.util.logger.proxyrender.DefaultPluginTraceRenderer;
@@ -53,6 +54,10 @@ public abstract class WTPPlugin extends Plugin implements IMsgLogger {
 
 	public Logger getLogger() {
 		return getMsgLogger();
+	}
+	public static boolean isPlatformCaseSensitive() {
+		return Platform.OS_MACOSX.equals(Platform.getOS()) ? false : new
+				java.io.File("a").compareTo(new java.io.File("A")) != 0;
 	}
 
 	public abstract String getPluginID();
