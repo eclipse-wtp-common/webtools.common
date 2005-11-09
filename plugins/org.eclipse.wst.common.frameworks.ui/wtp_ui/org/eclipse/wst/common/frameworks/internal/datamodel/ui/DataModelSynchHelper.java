@@ -209,7 +209,6 @@ public class DataModelSynchHelper implements IDataModelListener {
 	public void synchUIWithModel(String propertyName, int flag) {
 		if (null != propertyToWidgetHash && propertyToWidgetHash.containsKey(propertyName)) {
 			try {
-				// dataModel.setIgnorePropertyChanges(true);
 				currentWidget = (Widget) propertyToWidgetHash.get(propertyName);
 				if (currentWidget != null && currentWidget != currentWidgetFromEvent) {
 					ignoreModifyEvent = true;
@@ -235,7 +234,6 @@ public class DataModelSynchHelper implements IDataModelListener {
 				}
 			} finally {
 				currentWidget = null;
-				// dataModel.setIgnorePropertyChanges(false);
 			}
 		}
 	}
