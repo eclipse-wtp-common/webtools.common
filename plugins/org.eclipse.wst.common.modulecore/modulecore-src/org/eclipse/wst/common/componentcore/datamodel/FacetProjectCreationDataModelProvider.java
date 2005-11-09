@@ -140,10 +140,11 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 			Object obj = new FacetDataModelMapImpl();
 			setProperty(FACET_DM_MAP, obj);
 			return obj;
-		} else if (FACET_RUNTIME.equals(propertyName)) {
-			DataModelPropertyDescriptor[] runtimes = getValidPropertyDescriptors(FACET_RUNTIME);
-			return runtimes.length > 0 ? runtimes[runtimes.length - 1].getPropertyValue() : null;
-		}
+		} 
+//		else if (FACET_RUNTIME.equals(propertyName)) {
+//			DataModelPropertyDescriptor[] runtimes = getValidPropertyDescriptors(FACET_RUNTIME);
+//			return runtimes.length > 0 ? runtimes[runtimes.length - 1].getPropertyValue() : null;
+//		}
 		return super.getDefaultProperty(propertyName);
 	}
 
