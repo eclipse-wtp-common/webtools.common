@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
 	primary="false"
-	label="org.eclipse.wst.common_sdk.feature"
-	id="org.eclipse.wst.common_sdk.feature.source"
+	label="org.eclipse.wst.common_ui.feature.source"
+	id="org.eclipse.wst.common_ui.feature.source"
 	version="1.0.0">
 	<description url="http://www.example.com/description">
 		%description
@@ -11,10 +11,9 @@
 		%copyright
 	</copyright>
 	<license url="http://www.example.com/license">%license</license>
-	<plugin
-		fragment="false"
-		download-size="0"
-		install-size="0"
-		id="org.eclipse.wst.common_sdk.feature.source"
-		version="0.0.0" />
+	
+	<includes
+         id="org.eclipse.wst.common_core.feature.source"
+         version="0.0.0"/>
+                         
 </feature>
