@@ -13,8 +13,10 @@ package org.eclipse.wst.common.project.facet.ui;
 
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action.Type;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -32,5 +34,7 @@ public interface IWizardContext
     
     Action getAction( Action.Type type,
                       IProjectFacetVersion f );
+    
+	Object getConfig(IProjectFacetVersion fv, Type type, String pjname) throws CoreException;
     
 }

@@ -33,6 +33,7 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action.Type;
 import org.eclipse.wst.common.project.facet.ui.internal.ConflictingFacetsFilter;
 import org.eclipse.wst.common.project.facet.ui.internal.FacetUiPlugin;
 import org.eclipse.wst.common.project.facet.ui.internal.FacetsSelectionPage;
@@ -295,6 +296,10 @@ public class AddRemoveFacetsWizard
         return this.fproj.getProject().getName();
     }
     
+	public Object getConfig(IProjectFacetVersion fv, Type type, String pjname) throws CoreException{
+		return null;
+	}
+    
     private static final class FacetPages
     {
         public Action action;
@@ -443,6 +448,14 @@ public class AddRemoveFacetsWizard
             
             return null;
         }
+        
+		public Object getConfig(IProjectFacetVersion fv, Type type, String pjname) throws CoreException {
+			Object config = AddRemoveFacetsWizard.this.getConfig(fv, type, pjname);
+			if (null == config) {
+				config = fv.createActionConfig(type, pjname);
+			}
+			return config;
+		}
     }
     
     private static final class Resources
@@ -458,5 +471,6 @@ public class AddRemoveFacetsWizard
                                 Resources.class );
         }
     }
+
     
 }

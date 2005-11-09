@@ -54,7 +54,7 @@ public final class FacetsSelectionPage
 
     public FacetsSelectionPage( final IWizardContext context )
     {
-        super( "facets.selection.page" );
+        super( "facets.selection.page" ); //$NON-NLS-1$
 
         setTitle( "Select Project Facets" );
         setDescription( "Select facets for this project." );

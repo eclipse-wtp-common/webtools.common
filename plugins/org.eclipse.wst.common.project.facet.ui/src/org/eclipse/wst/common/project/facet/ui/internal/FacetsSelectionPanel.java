@@ -95,12 +95,12 @@ public final class FacetsSelectionPanel
     implements ISelectionProvider
 
 {
-    private static final String CW_FACET = "cw.facet";
-    private static final String CW_VERSION = "cw.version";
-    private static final String SASH1W1 = "sash.1.weight.1";
-    private static final String SASH1W2 = "sash.1.weight.2";
-    private static final String SASH2W1 = "sash.2.weight.1";
-    private static final String SASH2W2 = "sash.2.weight.2";
+    private static final String CW_FACET = "cw.facet"; //$NON-NLS-1$
+    private static final String CW_VERSION = "cw.version"; //$NON-NLS-1$
+    private static final String SASH1W1 = "sash.1.weight.1"; //$NON-NLS-1$
+    private static final String SASH1W2 = "sash.1.weight.2"; //$NON-NLS-1$
+    private static final String SASH2W1 = "sash.2.weight.1"; //$NON-NLS-1$
+    private static final String SASH2W2 = "sash.2.weight.2"; //$NON-NLS-1$
     private static final Font FIXED_FONT;
     
     static
@@ -552,8 +552,8 @@ public final class FacetsSelectionPanel
                     
                     if( config == null )
                     {
-                        final String pjname = this.context.getProjectName();
-                        config = fv.createActionConfig( type, pjname );
+                    	final String pjname = this.context.getProjectName();
+                        config = this.context.getConfig(fv, type, pjname);
                     }
                 }
                 catch( CoreException e )
