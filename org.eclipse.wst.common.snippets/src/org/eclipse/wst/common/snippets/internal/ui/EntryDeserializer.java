@@ -15,14 +15,12 @@ package org.eclipse.wst.common.snippets.internal.ui;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import org.eclipse.wst.common.snippets.internal.Debug;
-import org.eclipse.wst.common.snippets.internal.ISnippetVariable;
-import org.eclipse.wst.common.snippets.internal.SnippetDefinitions;
+import org.eclipse.wst.common.snippets.core.ISnippetVariable;
+import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
+import org.eclipse.wst.common.snippets.internal.Logger;
 import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
 import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteItem;
 import org.eclipse.wst.common.snippets.internal.palette.SnippetVariable;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.util.CommonXML;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -33,8 +31,6 @@ import org.xml.sax.SAXException;
 
 
 public class EntryDeserializer {
-
-
 	private static EntryDeserializer reader = null;
 
 	public synchronized static EntryDeserializer getInstance() {
@@ -44,20 +40,13 @@ public class EntryDeserializer {
 		return reader;
 	}
 
-	protected EntryDeserializer() {
+	private EntryDeserializer() {
 		super();
 	}
 
-	protected void addItem(SnippetDefinitions definitions, Element element) {
-		SnippetPaletteItem item = createItem(element);
-		// item.setPluginRecord(getPluginRecord(definitions, element));
-		definitions.getItems().add(item);
-	}
-
-	protected void assignEntryProperties(Element element, ISnippetsEntry entry) {
+	private void assignEntryProperties(Element element, SnippetPaletteItem entry) {
 		entry.setId(element.getAttribute(SnippetsPlugin.NAMES.ID));
 		entry.setIconName(element.getAttribute(SnippetsPlugin.NAMES.ICON));
-		// new in V5.1
 		String description = createDescription(element);
 		String label = element.getAttribute(SnippetsPlugin.NAMES.LABEL);
 		if ((label == null || label.length() == 0) && description != null) {
@@ -68,15 +57,15 @@ public class EntryDeserializer {
 		entry.setLabel(label);
 	}
 
-	protected String createContent(Node item) {
+	private String createContent(Node item) {
 		return readCDATAofChild(item, SnippetsPlugin.NAMES.CONTENT);
 	}
 
-	protected String createDescription(Node entryElement) {
+	private String createDescription(Node entryElement) {
 		return readCDATAofChild(entryElement, SnippetsPlugin.NAMES.DESCRIPTION);
 	}
 
-	protected SnippetPaletteItem createItem(Element element) {
+	private SnippetPaletteItem createItem(Element element) {
 		SnippetPaletteItem item = new SnippetPaletteItem(element.getAttribute(SnippetsPlugin.NAMES.ID));
 		assignEntryProperties(element, item);
 		item.setContentString(createContent(element));
@@ -93,12 +82,12 @@ public class EntryDeserializer {
 					item.addVariable(var);
 			}
 		}
-		if (Debug.debugDefinitionPersistence)
+		if (Logger.DEBUG_DEFINITION_PERSISTENCE)
 			System.out.println("User item reader creating item " + item.getId()); //$NON-NLS-1$
 		return item;
 	}
 
-	protected ISnippetVariable createVariable(Element element) {
+	private ISnippetVariable createVariable(Element element) {
 		SnippetVariable var = new SnippetVariable();
 		var.setId(element.getAttribute(SnippetsPlugin.NAMES.ID));
 		var.setName(element.getAttribute(SnippetsPlugin.NAMES.NAME));
@@ -117,7 +106,7 @@ public class EntryDeserializer {
 				while (child.getNodeType() != Node.ELEMENT_NODE)
 					child = child.getNextSibling();
 				if (child.getNodeName().equals(SnippetsPlugin.NAMES.ITEM)) {
-					ISnippetItem item = createItem((Element) child);
+					SnippetPaletteItem item = createItem((Element) child);
 					item.setCategoryName(null);
 					item.setCategory(null);
 					item.setClassName(null);
@@ -142,7 +131,7 @@ public class EntryDeserializer {
 	 * <node><otherChild/><childName><wrong element/> <![CDATA[ RETURNED
 	 * TEXT]]> </childName> </node>
 	 */
-	protected String readCDATAofChild(Node node, String childName) {
+	private String readCDATAofChild(Node node, String childName) {
 		NodeList children = node.getChildNodes();
 		for (int i = 0; i < children.getLength(); i++) {
 			Node child = children.item(i);

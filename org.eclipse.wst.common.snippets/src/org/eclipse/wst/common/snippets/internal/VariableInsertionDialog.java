@@ -34,7 +34,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
+import org.eclipse.wst.common.snippets.core.ISnippetItem;
+import org.eclipse.wst.common.snippets.core.ISnippetVariable;
+import org.eclipse.wst.common.snippets.internal.palette.SnippetVariable;
 import org.eclipse.wst.common.snippets.internal.ui.StringPropertyTableViewer;
 import org.eclipse.wst.common.snippets.internal.ui.ValueChangedListener;
 import org.eclipse.wst.common.snippets.internal.util.StringUtils;
@@ -262,7 +264,7 @@ public class VariableInsertionDialog extends Dialog {
 			return null;
 		ISnippetVariable[] variables = fItem.getVariables();
 		for (int i = 0; i < variables.length; i++) {
-			if (variables[i].getId().equals(id))
+			if (((SnippetVariable) variables[i]).getId().equals(id))
 				return variables[i];
 		}
 		return null;
@@ -280,8 +282,8 @@ public class VariableInsertionDialog extends Dialog {
 	protected void populateTableViewer() {
 		ISnippetVariable[] variables = fItem.getVariables();
 		for (int i = 0; i < variables.length; i++) {
-			fTableViewer.getColumnData()[0].put(variables[i].getId(), variables[i].getName());
-			fTableViewer.getColumnData()[1].put(variables[i].getId(), variables[i].getDefaultValue());
+			fTableViewer.getColumnData()[0].put(((SnippetVariable) variables[i]).getId(), ((SnippetVariable) variables[i]).getName());
+			fTableViewer.getColumnData()[1].put(((SnippetVariable) variables[i]).getId(), ((SnippetVariable) variables[i]).getDefaultValue());
 		}
 	}
 
@@ -290,7 +292,7 @@ public class VariableInsertionDialog extends Dialog {
 		String text = fItem.getContentString();
 		ISnippetVariable[] variables = fItem.getVariables();
 		for (int i = 0; i < variables.length; i++) {
-			String value = (String) fTableViewer.getColumnData()[1].get(variables[i].getId());
+			String value = (String) fTableViewer.getColumnData()[1].get(((SnippetVariable) variables[i]).getId());
 			text = StringUtils.replace(text, "${" + variables[i].getName() + "}", value); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 

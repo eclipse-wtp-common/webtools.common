@@ -21,18 +21,16 @@ import java.io.UnsupportedEncodingException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.wst.common.snippets.internal.Debug;
-import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
-import org.eclipse.wst.common.snippets.internal.ISnippetVariable;
+import org.eclipse.wst.common.snippets.core.ISnippetCategory;
+import org.eclipse.wst.common.snippets.core.ISnippetItem;
+import org.eclipse.wst.common.snippets.core.ISnippetVariable;
+import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.Logger;
 import org.eclipse.wst.common.snippets.internal.PluginRecord;
 import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.util.CommonXML;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
 
 public class WorkspaceModelDumper {
 
@@ -53,12 +51,21 @@ public class WorkspaceModelDumper {
 	 * Save the properties known for ISnippetsEntry
 	 */
 	protected void assignEntryProperties(ISnippetsEntry entry, Element owningElement) {
-		owningElement.setAttribute(SnippetsPlugin.NAMES.ID, entry.getId());
-		owningElement.setAttribute(SnippetsPlugin.NAMES.ICON, entry.getIconName());
+		if (entry instanceof SnippetPaletteDrawer) {
+			SnippetPaletteDrawer drawer = (SnippetPaletteDrawer) entry;
+			owningElement.setAttribute(SnippetsPlugin.NAMES.ID, drawer.getId());
+			owningElement.setAttribute(SnippetsPlugin.NAMES.ICON, drawer.getSmallIconName());
+			owningElement.setAttribute(SnippetsPlugin.NAMES.LABEL, drawer.getLabel());
+			owningElement.setAttribute(SnippetsPlugin.NAMES.LARGEICON, drawer.getLargeIconName());
+		}
+		if (entry instanceof SnippetPaletteItem) {
+			SnippetPaletteItem item = (SnippetPaletteItem) entry;
+			owningElement.setAttribute(SnippetsPlugin.NAMES.ID, item.getId());
+			owningElement.setAttribute(SnippetsPlugin.NAMES.ICON, item.getSmallIconName());
+			owningElement.setAttribute(SnippetsPlugin.NAMES.LABEL, item.getLabel());
+			owningElement.setAttribute(SnippetsPlugin.NAMES.LARGEICON, item.getLargeIconName());
+		}
 		owningElement.appendChild(createDescription(owningElement.getOwnerDocument(), entry.getDescription()));
-		// new in V5.1
-		owningElement.setAttribute(SnippetsPlugin.NAMES.LABEL, entry.getLabel());
-		owningElement.setAttribute(SnippetsPlugin.NAMES.LARGEICON, entry.getLargeIconName());
 	}
 
 	/**
@@ -79,7 +86,7 @@ public class WorkspaceModelDumper {
 		// if the category came from a plugin, only store a placeholder
 		// to maintain the ordering [it will be reloaded in subsequent
 		// sessions directly from the plugin definitions]
-		element.setAttribute(SnippetsPlugin.NAMES.ID, category.getId());
+		element.setAttribute(SnippetsPlugin.NAMES.ID, ((SnippetPaletteDrawer) category).getId());
 		String[] filters = category.getFilters();
 		if (filters.length > 0) {
 			String filtersAttr = filters[0];
@@ -93,15 +100,15 @@ public class WorkspaceModelDumper {
 		if (category.getSourceType() == ISnippetsEntry.SNIPPET_SOURCE_WORKSPACE) {
 			assignEntryProperties(category, element);
 
-			for (int i = 0; i < category.getChildren().size(); i++) {
-				ISnippetItem item = (ISnippetItem) category.getChildren().get(i);
+			for (int i = 0; i < category.getItems().length; i++) {
+				ISnippetItem item = category.getItems()[i];
 				Element child = createItem(doc, item);
 				element.appendChild(child);
 			}
 		}
 
-		if (Debug.debugDefinitionPersistence)
-			System.out.println("User item writer saving category " + category.getId()); //$NON-NLS-1$
+		if (Logger.DEBUG_DEFINITION_PERSISTENCE)
+			System.out.println("User item writer saving category " + ((SnippetPaletteDrawer) category).getId()); //$NON-NLS-1$
 		return element;
 	}
 
@@ -143,17 +150,17 @@ public class WorkspaceModelDumper {
 		Element element = doc.createElement(SnippetsPlugin.NAMES.ITEM);
 		assignEntryProperties(item, element);
 		assignSourceFor(item, element);
-		element.setAttribute(SnippetsPlugin.NAMES.CATEGORY, item.getCategory().getId());
-		element.setAttribute(SnippetsPlugin.NAMES.CLASSNAME, item.getClassName());
-		element.setAttribute(SnippetsPlugin.NAMES.EDITORCLASSNAME, item.getEditorClassName());
+		element.setAttribute(SnippetsPlugin.NAMES.CATEGORY, ((SnippetPaletteDrawer) item.getCategory()).getId());
+		element.setAttribute(SnippetsPlugin.NAMES.CLASSNAME, ((SnippetPaletteItem) item).getClassName());
+		element.setAttribute(SnippetsPlugin.NAMES.EDITORCLASSNAME, ((SnippetPaletteItem) item).getEditorClassName());
 		element.appendChild(createContent(doc, item));
 		ISnippetVariable[] variables = item.getVariables();
 		for (int i = 0; i < variables.length; i++) {
 			Element variable = createVariable(doc, variables[i]);
 			element.appendChild(variable);
 		}
-		if (Debug.debugDefinitionPersistence)
-			System.out.println("User item writer saving item " + item.getCategory().getId() + ":" + item.getId()); //$NON-NLS-1$ //$NON-NLS-2$
+		if (Logger.DEBUG_DEFINITION_PERSISTENCE)
+			System.out.println("User item writer saving item " + ((SnippetPaletteDrawer) item.getCategory()).getId() + ":" + ((SnippetPaletteItem) item).getId()); //$NON-NLS-1$ //$NON-NLS-2$
 		return element;
 	}
 
@@ -165,7 +172,7 @@ public class WorkspaceModelDumper {
 		Element element = doc.createElement(SnippetsPlugin.NAMES.PLUGIN);
 		element.setAttribute(SnippetsPlugin.NAMES.NAME, record.getPluginName());
 		element.setAttribute(SnippetsPlugin.NAMES.VERSION, record.getPluginVersion());
-		if (Debug.debugDefinitionPersistence)
+		if (Logger.DEBUG_DEFINITION_PERSISTENCE)
 			System.out.println("User item writer saving plugin record " + record.getPluginName() + "/" + record.getPluginVersion()); //$NON-NLS-1$ //$NON-NLS-2$
 		return element;
 	}
@@ -175,7 +182,7 @@ public class WorkspaceModelDumper {
 	 */
 	protected Element createVariable(Document doc, ISnippetVariable variable) {
 		Element element = doc.createElement(SnippetsPlugin.NAMES.VARIABLE);
-		element.setAttribute(SnippetsPlugin.NAMES.ID, variable.getId());
+		element.setAttribute(SnippetsPlugin.NAMES.ID, ((SnippetVariable) variable).getId());
 		element.setAttribute(SnippetsPlugin.NAMES.NAME, variable.getName());
 		element.setAttribute(SnippetsPlugin.NAMES.DEFAULT, variable.getDefaultValue());
 		element.appendChild(createDescription(doc, variable.getDescription()));

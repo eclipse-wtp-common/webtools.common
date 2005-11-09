@@ -23,6 +23,23 @@ import org.eclipse.core.runtime.Status;
  * plugin. Other plugins should make their own copy, with appropriate ID.
  */
 public class Logger {
+	/**
+	 * Controls debugging output for loading/storing of the Snippets model
+	 */
+	public static final boolean DEBUG_DEFINITION_PERSISTENCE = "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.wst.common.snippets/debug/definition_persistence")); //$NON-NLS-1$
+	/**
+	 * Controls debugging output for drag and drop processing
+	 */
+	public static final boolean DEBUG_DRAG_AND_DROP = "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.wst.common.snippets/debug/drag_and_drop")); //$NON-NLS-1$
+	/**
+	 * Controls debugging output for selection within the view
+	 */
+	public static final boolean DEBUG_PALETTE_SELECTION = "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.wst.common.snippets/debug/palette_selection")); //$NON-NLS-1$
+	/**
+	 * Controls debugging output for replacement of the model's category list
+	 */
+	public static final boolean DEBUG_VIEWER_CONTENT = "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.wst.common.snippets/debug/viewer_content")); //$NON-NLS-1$
+
 	public static final int ERROR = IStatus.ERROR; // 4
 	public static final int ERROR_DEBUG = 200 + ERROR;
 	private static Plugin fPlugin = SnippetsPlugin.getDefault();
@@ -31,10 +48,10 @@ public class Logger {
 	public static final int INFO_DEBUG = 200 + INFO;
 
 	public static final int OK = IStatus.OK; // 0
-
 	public static final int OK_DEBUG = 200 + OK;
 
 	private static final String TRACEFILTER_LOCATION = "/debug/tracefilter"; //$NON-NLS-1$
+
 	public static final int WARNING = IStatus.WARNING; // 2
 	public static final int WARNING_DEBUG = 200 + WARNING;
 

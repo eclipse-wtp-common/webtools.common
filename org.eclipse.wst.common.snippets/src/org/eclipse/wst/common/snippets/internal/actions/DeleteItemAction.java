@@ -13,9 +13,9 @@ package org.eclipse.wst.common.snippets.internal.actions;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.palette.PaletteEntry;
-import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
 import org.eclipse.wst.common.snippets.internal.SnippetsMessages;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
+import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteDrawer;
+import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteItem;
 
 public class DeleteItemAction extends AbstractItemAction {
 
@@ -36,10 +36,10 @@ public class DeleteItemAction extends AbstractItemAction {
 
 	public void run() {
 		super.run();
-		ISnippetItem item = (ISnippetItem) getEntry();
+		SnippetPaletteItem item = (SnippetPaletteItem) getEntry();
 		EditPart itemPart = (EditPart) getViewer().getEditPartRegistry().get(item);
 		if (itemPart != null) {
-			ISnippetCategory category = item.getCategory();
+			SnippetPaletteDrawer category = (SnippetPaletteDrawer) item.getCategory();
 			EditPart categoryPart = itemPart.getParent();
 			category.remove(item);
 			categoryPart.refresh();

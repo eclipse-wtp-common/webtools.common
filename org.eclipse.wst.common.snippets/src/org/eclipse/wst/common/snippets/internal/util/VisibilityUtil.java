@@ -31,20 +31,20 @@ import org.eclipse.wst.common.snippets.internal.Logger;
  */
 public class VisibilityUtil {
 	public static boolean isContentType(IEditorInput input, String[] filterContentTypes) {
-		boolean match = false;
+		boolean isMatch = false;
 		if (filterContentTypes == null) {
-			match = true;
+			isMatch = true;
 		}
 		else if (filterContentTypes.length >= 1) {
 			String firstFilter = filterContentTypes[0];
 			if (firstFilter.compareTo("*") == 0) //$NON-NLS-1$
-				match = true;
+				isMatch = true;
 			else if (firstFilter.compareTo("!") == 0) //$NON-NLS-1$
-				match = false;
+				isMatch = false;
 			else if (firstFilter.compareTo("-") == 0) //$NON-NLS-1$
-				match = false;
+				isMatch = false;
 			else {
-				match = false;
+				isMatch = false;
 				InputStream contents = null;
 				IContentDescription contentDesc = null;
 				try {
@@ -96,7 +96,7 @@ public class VisibilityUtil {
 							for (int i = 0; i < filterContentTypes.length; i++) {
 								IContentType contentType = Platform.getContentTypeManager().getContentType(filterContentTypes[i]);
 								if (contentType != null && currentContentType.isKindOf(contentType)) {
-									match = true;
+									isMatch = true;
 									break;
 								}
 							}
@@ -115,7 +115,7 @@ public class VisibilityUtil {
 								String filterContentTypeName = filterContentTypes[i];
 								IContentType filterContentType = Platform.getContentTypeManager().getContentType(filterContentTypeName);
 								if (filterContentType != null && contentTypes[j].isKindOf(filterContentType)) {
-									match = true;
+									isMatch = true;
 									break;
 								}
 							}
@@ -141,6 +141,6 @@ public class VisibilityUtil {
 				}
 			}
 		}
-		return match;
+		return isMatch;
 	}
 }

@@ -15,9 +15,9 @@ import org.eclipse.gef.palette.PaletteContainer;
 import org.eclipse.gef.palette.PaletteEntry;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IInputValidator;
-import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
+import org.eclipse.wst.common.snippets.core.ISnippetCategory;
+import org.eclipse.wst.common.snippets.core.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.SnippetsMessages;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.ui.SnippetsView;
 
 public abstract class AbstractCategoryAction extends Action {

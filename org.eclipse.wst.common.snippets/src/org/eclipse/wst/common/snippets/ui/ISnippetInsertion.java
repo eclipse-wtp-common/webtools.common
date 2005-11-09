@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004 IBM Corporation and others.
+ * Copyright (c) 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,26 +9,26 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 
-
-package org.eclipse.wst.common.snippets.internal.provisional;
+package org.eclipse.wst.common.snippets.ui;
 
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.wst.common.snippets.core.ISnippetItem;
 
 /**
  * An insertion class is responsible for inserting a snippet item's contents
  * into editors. Implementors are responsible for supporting the drag-and-drop
  * mechanism and inserting the snippet's text into a given editor part.
  */
-public interface ISnippetsInsertion {
+public interface ISnippetInsertion {
 
 	/**
 	 * The data is required from the drag source.
 	 * 
 	 * <p>
 	 * The following fields in the DragSourceEvent should be examined/updated
-	 * by the LibraryInsertion object:
+	 * by the Insertion object:
 	 * <ul>
 	 * <li>dataType - (in) the type of data requested. This is a TransferData
 	 * object and can be used with the Transfer subclasses.
@@ -40,8 +40,10 @@ public interface ISnippetsInsertion {
 	 * Subclasses should check which Transfer types are supported and set the
 	 * data accordingly.
 	 * 
-	 * @param event - the information associated with the drag set data event
-	 * @param item - the ISnippetItem instance from which to derive the data
+	 * @param event -
+	 *            the information associated with the drag set data event
+	 * @param item -
+	 *            the ISnippetItem instance from which to derive the data
 	 */
 	void dragSetData(DragSourceEvent event, ISnippetItem item);
 
@@ -58,21 +60,19 @@ public interface ISnippetsInsertion {
 	/**
 	 * Insert the current ISnippetItem's insertion String to the given
 	 * IEditorPart. Used by double-click behavior.
-	 * @param editorPart the editor part into which to insert
+	 * 
+	 * @param editorPart
+	 *            the editor part into which to insert
 	 */
 	void insert(IEditorPart editorPart);
 
-	/**
-	 * The active editorpart in the workbench window. May be used as a clue
-	 * for determining which Transfer types to allow.
-	 * 
-	 * @param activeEditorPart the editor part which is active
-	 */
-	void setActiveEditorPart(IEditorPart activeEditorPart);
+	void setEditorPart(IEditorPart targetPart);
 
 	/**
 	 * Use this ISnippetItem
-	 * @param item the item to insert
+	 * 
+	 * @param item
+	 *            the item to insert
 	 */
 	void setItem(ISnippetItem item);
 }

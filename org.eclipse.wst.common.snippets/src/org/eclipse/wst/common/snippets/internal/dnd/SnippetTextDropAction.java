@@ -23,11 +23,11 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.eclipse.wst.common.snippets.core.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.VariableItemHelper;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.ui.EntryDeserializer;
 
-public class VariableTextDropAction {
+public class SnippetTextDropAction {
 
 	protected String getInsertString(Shell host, ISnippetItem item) {
 		return VariableItemHelper.getInsertString(host, item, false);

@@ -16,8 +16,9 @@ import java.text.Collator;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry;
+import org.eclipse.wst.common.snippets.core.ISnippetCategory;
+import org.eclipse.wst.common.snippets.core.ISnippetItem;
+import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.util.Sorter;
 
 public class EntrySorter extends Sorter {

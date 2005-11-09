@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004 IBM Corporation and others.
+ * Copyright (c) 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -8,20 +8,22 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
+package org.eclipse.wst.common.snippets.core;
 
+public interface ISnippetVariable {
+	/**
+	 * @return Returns the default value for this variable
+	 */
+	String getDefaultValue();
 
-package org.eclipse.wst.common.snippets.internal;
+	/**
+	 * @return Returns the description of this variable
+	 */
+	String getDescription();
 
-import java.util.List;
-
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry;
-
-public interface ISnippetCategory extends ISnippetsEntry {
-
-	void add(ISnippetItem item);
-
-	List getChildren();
-
-	void remove(ISnippetItem item);
+	/**
+	 * 
+	 * @return Returns the name of this variable.
+	 */
+	String getName();
 }

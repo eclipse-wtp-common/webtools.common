@@ -13,12 +13,10 @@
 package org.eclipse.wst.common.snippets.internal.palette;
 
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
+import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.PluginRecord;
 import org.eclipse.wst.common.snippets.internal.SnippetsPluginImageHelper;
 import org.eclipse.wst.common.snippets.internal.SnippetsPluginImages;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry;
 
 
 public class SnippetImageDescriptorHelper {
@@ -43,14 +41,14 @@ public class SnippetImageDescriptorHelper {
 		return getImageDescriptor(SnippetsPluginImages.IMG_OBJ_SNIPPETS);
 	}
 
-	public ImageDescriptor getImageDescriptor(ISnippetCategory category) {
+	public ImageDescriptor getImageDescriptor(SnippetPaletteDrawer category) {
 		return getImageDescriptor(category, false);
 	}
 
-	public ImageDescriptor getImageDescriptor(ISnippetCategory category, boolean largeIcon) {
-		String iconName = largeIcon ? category.getLargeIconName() : category.getIconName();
+	public ImageDescriptor getImageDescriptor(SnippetPaletteDrawer category, boolean largeIcon) {
+		String iconName = largeIcon ? category.getLargeIconName() : category.getSmallIconName();
 		if (largeIcon && (iconName == null || iconName.length() == 0))
-			iconName = category.getIconName();
+			iconName = category.getSmallIconName();
 		if (category == null || iconName == null || iconName.length() == 0)
 			return getDefaultDescriptor();
 		ImageDescriptor image = null;
@@ -68,27 +66,27 @@ public class SnippetImageDescriptorHelper {
 		return image;
 	}
 
-	public ImageDescriptor getImageDescriptor(ISnippetItem item) {
+	public ImageDescriptor getImageDescriptor(SnippetPaletteItem item) {
 		return getImageDescriptor(item, false);
 	}
 
-	public ImageDescriptor getImageDescriptor(ISnippetItem item, boolean largeIcon) {
+	public ImageDescriptor getImageDescriptor(SnippetPaletteItem item, boolean largeIcon) {
 		ImageDescriptor image = null;
-		String iconName = largeIcon ? item.getLargeIconName() : item.getIconName();
+		String iconName = largeIcon ? item.getLargeIconName() : item.getSmallIconName();
 		if (largeIcon && (iconName == null || iconName.length() == 0))
-			iconName = item.getIconName();
+			iconName = item.getSmallIconName();
 		if (item.getSourceType() == ISnippetsEntry.SNIPPET_SOURCE_PLUGINS) {
 			PluginRecord record = (PluginRecord) item.getSourceDescriptor();
 			if (record != null && record.getPluginName() != null) {
 				image = getInstalledImage(record.getPluginName(), iconName);
 				if (image == null && item.getCategory() != null) {
-					image = getImageDescriptor(item.getCategory(), largeIcon);
+					image = getImageDescriptor((SnippetPaletteDrawer) item.getCategory(), largeIcon);
 				}
 			}
 		}
 		else {
 			if (iconName == null || iconName.length() < 1)
-				image = getImageDescriptor(item.getCategory(), largeIcon);
+				image = getImageDescriptor((SnippetPaletteDrawer) item.getCategory(), largeIcon);
 			else
 				image = getImageDescriptor(iconName);
 		}

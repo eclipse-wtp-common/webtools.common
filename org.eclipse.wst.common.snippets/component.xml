@@ -4,4 +4,13 @@
 	<component-depends unrestricted="true"/>
 	<plugin id="org.eclipse.wst.common.snippets"  fragment="false" />
 	<description url="http://eclipse.org/webtools/wst/components/common/overview/snippets/overview.html" />
+	<package name="org.eclipse.wst.common.snippets.core">
+		<type name="ISnippetCategory" implement="false" />
+		<type name="ISnippetEntry" implement="false" />
+		<type name="ISnippetItem" implement="false" />
+	</package>
+	<package name="org.eclipse.wst.common.snippets.ui">
+		<type name="DefaultSnippetInsertion" subclass="true" instantiate="true" />
+		<type name="ISnippetInsertion" implement="false" />
+	</package>
 </component>

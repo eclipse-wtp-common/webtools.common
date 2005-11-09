@@ -16,8 +16,8 @@ import java.util.List;
 
 import org.eclipse.gef.palette.PaletteEntry;
 import org.eclipse.gef.palette.PaletteRoot;
-import org.eclipse.wst.common.snippets.internal.Debug;
 import org.eclipse.wst.common.snippets.internal.IEntryChangeListener;
+import org.eclipse.wst.common.snippets.internal.Logger;
 import org.eclipse.wst.common.snippets.internal.SnippetDefinitions;
 import org.eclipse.wst.common.snippets.internal.model.SnippetManager;
 
@@ -68,7 +68,7 @@ public class SnippetPaletteRoot extends PaletteRoot implements IEntryChangeListe
 		for (int i = 0; i < children.size(); i++) {
 			((PaletteEntry) children.get(i)).setParent(this);
 		}
-		if (Debug.debugViewerContent)
+		if (Logger.DEBUG_VIEWER_CONTENT)
 			System.out.println(getClass().getName() + '@' + hashCode() + " setting categories to: " + children); //$NON-NLS-1$
 		listeners.firePropertyChange(PROPERTY_CHILDREN, oldChildren, children);
 	}

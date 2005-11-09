@@ -14,7 +14,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.common.snippets.internal.SnippetDefinitions;
 import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
-import org.eclipse.wst.common.snippets.internal.util.DocumentProvider;
+import org.eclipse.wst.common.snippets.internal.util.XMLDocumentProvider;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -57,7 +57,7 @@ public class ModelFactoryForWorkspace extends ModelFactoryForUser {
 
 	public SnippetDefinitions loadFrom(IFile input) {
 		SnippetDefinitions definitions = new SnippetDefinitions();
-		DocumentProvider provider = new DocumentProvider();
+		XMLDocumentProvider provider = new XMLDocumentProvider();
 		Document document = null;
 		try {
 			provider.setInputStream(input.getContents());

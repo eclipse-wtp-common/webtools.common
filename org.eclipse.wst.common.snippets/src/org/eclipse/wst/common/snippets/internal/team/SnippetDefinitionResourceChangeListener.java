@@ -31,11 +31,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.gef.palette.PaletteDrawer;
 import org.eclipse.gef.palette.PaletteEntry;
-import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
+import org.eclipse.wst.common.snippets.core.ISnippetCategory;
 import org.eclipse.wst.common.snippets.internal.Logger;
 import org.eclipse.wst.common.snippets.internal.SnippetDefinitions;
 import org.eclipse.wst.common.snippets.internal.model.SnippetManager;
 import org.eclipse.wst.common.snippets.internal.palette.ModelFactoryForWorkspace;
+import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteDrawer;
 
 
 /**
@@ -160,7 +161,7 @@ public class SnippetDefinitionResourceChangeListener implements IResourceChangeL
 		int oldIndex = -1;
 		List categories = SnippetManager.getInstance().getPaletteRoot().getChildren();
 		for (int i = 0; i < categories.size(); i++) {
-			if (((ISnippetCategory) categories.get(i)).getId().equals(info.getCategory().getId())) {
+			if (((SnippetPaletteDrawer) categories.get(i)).getId().equals(((SnippetPaletteDrawer) info.getCategory()).getId())) {
 				SnippetManager.getInstance().getPaletteRoot().remove((PaletteEntry) categories.get(i));
 				oldIndex = i;
 				break;
@@ -187,7 +188,7 @@ public class SnippetDefinitionResourceChangeListener implements IResourceChangeL
 		}
 		CategoryFileInfo result = new CategoryFileInfo(this, file, category);
 		if (category != null)
-			category.setSourceDescriptor(result);
+			((SnippetPaletteDrawer) category).setSourceDescriptor(result);
 		return result;
 	}
 

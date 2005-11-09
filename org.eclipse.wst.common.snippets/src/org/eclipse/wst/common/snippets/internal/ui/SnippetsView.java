@@ -59,9 +59,10 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.help.WorkbenchHelp;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipse.wst.common.snippets.internal.Debug;
+import org.eclipse.wst.common.snippets.core.ISnippetCategory;
+import org.eclipse.wst.common.snippets.core.ISnippetItem;
+import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.IHelpContextIds;
-import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
 import org.eclipse.wst.common.snippets.internal.Logger;
 import org.eclipse.wst.common.snippets.internal.PluginRecord;
 import org.eclipse.wst.common.snippets.internal.SnippetDefinitions;
@@ -73,17 +74,15 @@ import org.eclipse.wst.common.snippets.internal.SnippetsPluginImages;
 import org.eclipse.wst.common.snippets.internal.actions.DeleteCategoryAction;
 import org.eclipse.wst.common.snippets.internal.actions.DeleteItemAction;
 import org.eclipse.wst.common.snippets.internal.model.SnippetManager;
+import org.eclipse.wst.common.snippets.internal.palette.SnippetCustomizerDialog;
 import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteDrawer;
 import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteItem;
 import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteItemFactory;
 import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteRoot;
-import org.eclipse.wst.common.snippets.internal.palette.SnippetViewer;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsInsertion;
-import org.eclipse.wst.common.snippets.internal.provisional.insertions.VariableInsertion;
 import org.eclipse.wst.common.snippets.internal.util.UserDrawerSelector;
 import org.eclipse.wst.common.snippets.internal.util.VisibilityUtil;
+import org.eclipse.wst.common.snippets.ui.DefaultSnippetInsertion;
+import org.eclipse.wst.common.snippets.ui.ISnippetInsertion;
 import org.osgi.framework.Bundle;
 
 public class SnippetsView extends ViewPart {
@@ -142,7 +141,7 @@ public class SnippetsView extends ViewPart {
 
 	protected class InsertAction extends Action {
 		public InsertAction() {
-			super(SnippetsMessages.Insert___); 
+			super(SnippetsMessages.Insert___);
 			setImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_ELCL_INSERT));
 			setHoverImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_CLCL_INSERT));
 			setDisabledImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_DLCL_INSERT));
@@ -155,13 +154,13 @@ public class SnippetsView extends ViewPart {
 		}
 	}
 
-	protected class InsertionHelper {
+	class InsertionHelper {
 		protected InsertionHelper() {
 			super();
 		}
 
-		protected ISnippetsInsertion getInsertion(ISnippetItem item) {
-			ISnippetsInsertion insertion = null;
+		protected ISnippetInsertion getInsertion(SnippetPaletteItem item) {
+			ISnippetInsertion insertion = null;
 			String className = item.getClassName();
 
 			PluginRecord record = null;
@@ -187,7 +186,7 @@ public class SnippetsView extends ViewPart {
 				}
 				if (theClass != null) {
 					try {
-						insertion = (ISnippetsInsertion) theClass.newInstance();
+						insertion = (ISnippetInsertion) theClass.newInstance();
 					}
 					catch (IllegalAccessException e) {
 						Logger.logException("Could not access Insertion class", e); //$NON-NLS-1$
@@ -198,24 +197,15 @@ public class SnippetsView extends ViewPart {
 				}
 			}
 			if (insertion == null) {
-				try {
-					insertion = (ISnippetsInsertion) DEFAULT_INSERTION_CLASS.newInstance();
-				}
-				catch (IllegalAccessException e) {
-					Logger.logException("Could not access Insertion class", e); //$NON-NLS-1$
-				}
-				catch (InstantiationException e) {
-					Logger.logException("Could not instantiate Insertion class", e); //$NON-NLS-1$
-				}
+				insertion = new DefaultSnippetInsertion();
 			}
 			return insertion;
 		}
 
-		public boolean insert(ISnippetItem item, IEditorPart editorPart) {
-			ISnippetsInsertion insertion = getInsertion(item);
+		public boolean insert(SnippetPaletteItem item, IEditorPart editorPart) {
+			ISnippetInsertion insertion = getInsertion(item);
 			if (insertion != null) {
 				insertion.setItem(item);
-				insertion.setActiveEditorPart(editorPart);
 				insertion.insert(editorPart);
 				return true;
 			}
@@ -228,10 +218,10 @@ public class SnippetsView extends ViewPart {
 			// doesn't detect if hitpoint is on internal scrollbars
 			if (e.button == 1) {
 				EditPart part = SnippetsView.this.getViewer().findObjectAt(new Point(e.x, e.y));
-				ISnippetItem item = null;
+				SnippetPaletteItem item = null;
 				if (part != null) {
-					if (part.getModel() instanceof ISnippetItem)
-						item = (ISnippetItem) part.getModel();
+					if (part.getModel() instanceof SnippetPaletteItem)
+						item = (SnippetPaletteItem) part.getModel();
 				}
 				if (item != null)
 					insert(item);
@@ -276,7 +266,6 @@ public class SnippetsView extends ViewPart {
 	}
 
 	protected class PasteAction extends Action {
-
 		public PasteAction() {
 			super(SnippetsMessages.Paste_4); //$NON-NLS-1$
 			setImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_ELCL_PASTE));
@@ -325,16 +314,16 @@ public class SnippetsView extends ViewPart {
 					else
 						return;
 				}
-				if (entry instanceof ISnippetItem) {
-					ISnippetItem item = (ISnippetItem) entry;
-					if (destination instanceof ISnippetCategory) {
-						item.setId(destination.getId() + System.currentTimeMillis());
-						((ISnippetCategory) destination).add(item);
+				if (entry instanceof SnippetPaletteItem) {
+					SnippetPaletteItem item = (SnippetPaletteItem) entry;
+					if (destination instanceof SnippetPaletteDrawer) {
+						item.setId(((SnippetPaletteDrawer) destination).getId() + System.currentTimeMillis());
+						((SnippetPaletteDrawer) destination).add(item);
 						EditPart container = (EditPart) getViewer().getEditPartRegistry().get(destination);
 						container.refresh();
 					}
 					else if (destination instanceof ISnippetItem) {
-						ISnippetCategory category = ((ISnippetItem) destination).getCategory();
+						SnippetPaletteDrawer category = (SnippetPaletteDrawer) ((ISnippetItem) destination).getCategory();
 						item.setId("item_" + System.currentTimeMillis()); //$NON-NLS-1$
 						category.add(item);
 						EditPart container = (EditPart) getViewer().getEditPartRegistry().get(category);
@@ -409,7 +398,7 @@ public class SnippetsView extends ViewPart {
 		}
 
 		public void dragFinished(DragSourceEvent event) {
-			if (Debug.debugDragAndDrop)
+			if (Logger.DEBUG_DRAG_AND_DROP)
 				System.out.println("drag finished"); //$NON-NLS-1$
 		}
 
@@ -417,8 +406,8 @@ public class SnippetsView extends ViewPart {
 			if (getSelectedEntry() == null)
 				return;
 			if (getSelectedEntry() instanceof ISnippetItem) {
-				ISnippetsInsertion insertion = insertionHelper.getInsertion((ISnippetItem) getSelectedEntry());
-				insertion.setActiveEditorPart(getSite().getPage().getActiveEditor());
+				ISnippetInsertion insertion = insertionHelper.getInsertion((SnippetPaletteItem) getSelectedEntry());
+				insertion.setEditorPart(getSite().getPage().getActiveEditor());
 				insertion.dragSetData(event, (ISnippetItem) getSelectedEntry());
 			}
 			else {
@@ -430,7 +419,7 @@ public class SnippetsView extends ViewPart {
 		}
 
 		public void dragStart(DragSourceEvent event) {
-			if (Debug.debugDragAndDrop)
+			if (Logger.DEBUG_DRAG_AND_DROP)
 				System.out.println("drag begun"); //$NON-NLS-1$
 		}
 
@@ -443,8 +432,6 @@ public class SnippetsView extends ViewPart {
 			return fTransfer;
 		}
 	}
-
-	public static final Class DEFAULT_INSERTION_CLASS = VariableInsertion.class;
 
 	protected Clipboard clipboard = null;
 
@@ -482,11 +469,21 @@ public class SnippetsView extends ViewPart {
 		getTransferDragSourceListeners().add(listener);
 	}
 
+	private PaletteCustomizerDialog fPaletteCustomizerDialog = null;
+
 	/*
 	 * @see IWorkbenchPart#createPartControl(Composite)
 	 */
 	public void createPartControl(Composite parent) {
-		fViewer = new SnippetViewer();
+		fViewer = new PaletteViewer() {
+			public PaletteCustomizerDialog getCustomizerDialog() {
+				if (fPaletteCustomizerDialog == null) {
+					fPaletteCustomizerDialog = new SnippetCustomizerDialog(getControl().getShell(), getCustomizer(), getPaletteRoot());
+				}
+				return fPaletteCustomizerDialog;
+			}
+		};
+
 		fViewer.enableVerticalScrollbar(true);
 
 		fViewer.createControl(parent);
@@ -510,9 +507,10 @@ public class SnippetsView extends ViewPart {
 		fViewer.getContextMenu().setRemoveAllWhenShown(true);
 
 		fViewer.setCustomizer(new SnippetsCustomizer());
-		PaletteViewerPreferences libraryPreferences = new DefaultPaletteViewerPreferences(SnippetsPlugin.getDefault().getPreferenceStore());
+
+		PaletteViewerPreferences palettePreferences = new DefaultPaletteViewerPreferences(SnippetsPlugin.getDefault().getPreferenceStore());
 		SnippetsPlugin.getDefault().getPreferenceStore().setDefault(PaletteViewerPreferences.PREFERENCE_AUTO_COLLAPSE, PaletteViewerPreferences.COLLAPSE_ALWAYS);
-		fViewer.setPaletteViewerPreferences(libraryPreferences);
+		fViewer.setPaletteViewerPreferences(palettePreferences);
 
 		fViewer.setPaletteRoot(getRoot());
 
@@ -745,12 +743,12 @@ public class SnippetsView extends ViewPart {
 
 	public void insert() {
 		if (getSelectedEntry() != null && getSelectedEntry() instanceof ISnippetItem) {
-			ISnippetItem item = (ISnippetItem) getSelectedEntry();
+			SnippetPaletteItem item = (SnippetPaletteItem) getSelectedEntry();
 			insert(item);
 		}
 	}
 
-	public void insert(ISnippetItem item) {
+	public void insert(SnippetPaletteItem item) {
 		insertionHelper.insert(item, getSite().getPage().getActiveEditor());
 	}
 
@@ -779,7 +777,7 @@ public class SnippetsView extends ViewPart {
 	}
 
 	public void setSelectedEntry(ISnippetsEntry entry) {
-		if (Debug.debugPaletteSelection) {
+		if (Logger.DEBUG_PALETTE_SELECTION) {
 			if (fSelectedEntry == entry)
 				System.out.println("selection notification: " + entry + " (duplicated)"); //$NON-NLS-1$ //$NON-NLS-2$
 			else
@@ -788,7 +786,7 @@ public class SnippetsView extends ViewPart {
 		if (fSelectedEntry == entry) {
 			return;
 		}
-		if (Debug.debugPaletteSelection)
+		if (Logger.DEBUG_PALETTE_SELECTION)
 			System.out.println("processing selection: " + entry); //$NON-NLS-1$
 		fSelectedEntry = entry;
 		updateDragSource();
@@ -809,11 +807,11 @@ public class SnippetsView extends ViewPart {
 	protected void updateDragSource() {
 		Transfer[] supportedTypes = null;
 		if (getSelectedEntry() != null && getSelectedEntry() instanceof ISnippetItem) {
-			ISnippetItem item = (ISnippetItem) getSelectedEntry();
-			ISnippetsInsertion insertion = insertionHelper.getInsertion(item);
+			SnippetPaletteItem item = (SnippetPaletteItem) getSelectedEntry();
+			ISnippetInsertion insertion = insertionHelper.getInsertion(item);
 			if (insertion != null) {
 				insertion.setItem(item);
-				insertion.setActiveEditorPart(getSite().getPage().getActiveEditor());
+				insertion.setEditorPart(getSite().getPage().getActiveEditor());
 				supportedTypes = insertion.getTransfers();
 			}
 		}
@@ -859,7 +857,7 @@ public class SnippetsView extends ViewPart {
 		if (addTextTransfer) {
 			addTextTransferListener();
 		}
-		if (Debug.debugDragAndDrop)
+		if (Logger.DEBUG_DRAG_AND_DROP)
 			System.out.println("" + getTransferDragSourceListeners().size() + " transfer types"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 }

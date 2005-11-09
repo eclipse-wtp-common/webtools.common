@@ -11,7 +11,7 @@
 package org.eclipse.wst.common.snippets.internal.team;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
+import org.eclipse.wst.common.snippets.core.ISnippetCategory;
 
 
 /**

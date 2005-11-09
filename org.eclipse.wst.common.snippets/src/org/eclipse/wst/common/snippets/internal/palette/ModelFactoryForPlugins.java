@@ -19,13 +19,13 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.PluginVersionIdentifier;
 import org.eclipse.gef.palette.PaletteDrawer;
 import org.eclipse.gef.palette.PaletteEntry;
-import org.eclipse.wst.common.snippets.internal.Debug;
-import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
-import org.eclipse.wst.common.snippets.internal.ISnippetVariable;
+import org.eclipse.wst.common.snippets.core.ISnippetCategory;
+import org.eclipse.wst.common.snippets.core.ISnippetVariable;
+import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
+import org.eclipse.wst.common.snippets.internal.Logger;
 import org.eclipse.wst.common.snippets.internal.PluginRecord;
 import org.eclipse.wst.common.snippets.internal.SnippetDefinitions;
 import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.util.StringUtils;
 import org.osgi.framework.Bundle;
 
@@ -49,9 +49,10 @@ public class ModelFactoryForPlugins extends AbstractModelFactory {
 			if (category != null) {
 				assignSource(category, definitions, element);
 				definitions.getCategories().add(category);
-				if (Debug.debugDefinitionPersistence)
-					System.out.println("Plugin reader creating category " + category.getId()); //$NON-NLS-1$
-				
+				if (Logger.DEBUG_DEFINITION_PERSISTENCE) {
+					System.out.println("Plugin reader creating category " + ((SnippetPaletteDrawer) category).getId()); //$NON-NLS-1$
+				}
+
 				// add items for category
 				IConfigurationElement[] children = element.getChildren(SnippetsPlugin.NAMES.ITEM);
 				for (int i = 0; i < children.length; i++) {
@@ -62,7 +63,7 @@ public class ModelFactoryForPlugins extends AbstractModelFactory {
 						setProperty(item, SnippetsPlugin.NAMES.CATEGORY, element.getAttribute(SnippetsPlugin.NAMES.ID));
 						assignSource(item, definitions, element);
 						definitions.getItems().add(item);
-						if (Debug.debugDefinitionPersistence)
+						if (Logger.DEBUG_DEFINITION_PERSISTENCE)
 							System.out.println("Plugin reader creating item " + item.getId()); //$NON-NLS-1$
 					}
 				}
@@ -71,10 +72,16 @@ public class ModelFactoryForPlugins extends AbstractModelFactory {
 	}
 
 	protected void assignSource(ISnippetsEntry entry, SnippetDefinitions definitions, IConfigurationElement element) {
-		entry.setSourceType(ISnippetsEntry.SNIPPET_SOURCE_PLUGINS);
-		((PaletteEntry) entry).setUserModificationPermission(PaletteEntry.PERMISSION_HIDE_ONLY);
 		PluginRecord record = getPluginRecordFor(definitions, element);
-		entry.setSourceDescriptor(record);
+		if (entry instanceof SnippetPaletteItem) {
+			((SnippetPaletteItem) entry).setSourceType(ISnippetsEntry.SNIPPET_SOURCE_PLUGINS);
+			((SnippetPaletteItem) entry).setSourceDescriptor(record);
+		}
+		if (entry instanceof SnippetPaletteDrawer) {
+			((SnippetPaletteDrawer) entry).setSourceType(ISnippetsEntry.SNIPPET_SOURCE_PLUGINS);
+			((SnippetPaletteDrawer) entry).setSourceDescriptor(record);
+		}
+		((PaletteEntry) entry).setUserModificationPermission(PaletteEntry.PERMISSION_HIDE_ONLY);
 	}
 
 	/*
@@ -108,7 +115,7 @@ public class ModelFactoryForPlugins extends AbstractModelFactory {
 		PluginRecord record = new PluginRecord();
 		record.setPluginName(id);
 		record.setPluginVersion(identifier.toString());
-		if (Debug.debugDefinitionPersistence)
+		if (Logger.DEBUG_DEFINITION_PERSISTENCE)
 			System.out.println("Plugin reader creating plugin record for " + record.getPluginName() + "/" + record.getPluginVersion()); //$NON-NLS-1$ //$NON-NLS-2$
 		return record;
 	}
@@ -169,8 +176,8 @@ public class ModelFactoryForPlugins extends AbstractModelFactory {
 				setProperty(item, SnippetsPlugin.NAMES.CONTENT, children[i].getValue());
 			else if (children[i].getName().equals(SnippetsPlugin.NAMES.VARIABLES)) {
 				Iterator iterator = createVariables(children[i].getChildren()).iterator();
-				while(iterator.hasNext()) {
-					item.addVariable((ISnippetVariable)iterator.next());
+				while (iterator.hasNext()) {
+					item.addVariable((ISnippetVariable) iterator.next());
 				}
 			}
 			else if (children[i].getName().equals(SnippetsPlugin.NAMES.VARIABLE)) {

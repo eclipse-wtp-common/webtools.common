@@ -21,15 +21,14 @@ import javax.xml.parsers.DocumentBuilder;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.gef.palette.PaletteDrawer;
 import org.eclipse.gef.palette.PaletteEntry;
-import org.eclipse.wst.common.snippets.internal.Debug;
-import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
-import org.eclipse.wst.common.snippets.internal.ISnippetVariable;
+import org.eclipse.wst.common.snippets.core.ISnippetCategory;
+import org.eclipse.wst.common.snippets.core.ISnippetItem;
+import org.eclipse.wst.common.snippets.core.ISnippetVariable;
+import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.Logger;
 import org.eclipse.wst.common.snippets.internal.PluginRecord;
 import org.eclipse.wst.common.snippets.internal.SnippetDefinitions;
 import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.util.CommonXML;
 import org.eclipse.wst.common.snippets.internal.util.StringUtils;
 import org.osgi.framework.Bundle;
@@ -54,24 +53,23 @@ public class ModelFactoryForUser extends AbstractModelFactory {
 	}
 
 	protected void addCategory(SnippetDefinitions definitions, Element categoryElement) {
-		ISnippetCategory category = createCategory(categoryElement);
+		SnippetPaletteDrawer category = createCategory(categoryElement);
 		if (category != null) {
 			assignSource(category, definitions, categoryElement);
-			if (category instanceof PaletteDrawer) {
-				String stateString = categoryElement.getAttribute(SnippetsPlugin.NAMES.INITIAL_STATE);
-				int state = PaletteDrawer.INITIAL_STATE_CLOSED;
-				if (stateString != null && stateString.length() > 0) {
-					try {
-						state = Integer.parseInt(stateString);
-					}
-					catch (NumberFormatException e) {
-						// leave unchanged
-					}
+			String stateString = categoryElement.getAttribute(SnippetsPlugin.NAMES.INITIAL_STATE);
+			int state = PaletteDrawer.INITIAL_STATE_CLOSED;
+			if (stateString != null && stateString.length() > 0) {
+				try {
+					state = Integer.parseInt(stateString);
 				}
-				((PaletteDrawer) category).setInitialState(state);
+				catch (NumberFormatException e) {
+					// leave unchanged
+				}
 			}
+			((PaletteDrawer) category).setInitialState(state);
+
 			definitions.getCategories().add(category);
-			if (Debug.debugDefinitionPersistence)
+			if (Logger.DEBUG_DEFINITION_PERSISTENCE)
 				System.out.println("Plugin reader creating category " + category.getId()); //$NON-NLS-1$
 			NodeList children = categoryElement.getChildNodes();
 			for (int i = 0; i < children.getLength(); i++) {
@@ -83,26 +81,43 @@ public class ModelFactoryForUser extends AbstractModelFactory {
 	}
 
 	protected void addChild(SnippetDefinitions definitions, Element child) {
-		ISnippetItem item = createItem(child);
+		SnippetPaletteItem item = createItem(child);
 		if (item != null) {
 			assignSource(item, definitions, child);
 			definitions.getItems().add(item);
-			if (Debug.debugDefinitionPersistence)
+			if (Logger.DEBUG_DEFINITION_PERSISTENCE)
 				System.out.println("Plugin reader creating item " + item.getId()); //$NON-NLS-1$
 		}
 	}
 
 	protected void assignSource(ISnippetsEntry entry, SnippetDefinitions definitions, Element element) {
-		entry.setSourceType(ISnippetsEntry.SNIPPET_SOURCE_USER);
-		((PaletteEntry) entry).setUserModificationPermission(PaletteEntry.PERMISSION_FULL_MODIFICATION);
-		Object pluginRecord = createPluginRecord(definitions, element);
-		if (pluginRecord != null) {
-			entry.setSourceDescriptor(pluginRecord);
-			((PaletteEntry) entry).setUserModificationPermission(PaletteEntry.PERMISSION_HIDE_ONLY);
-			entry.setSourceType(ISnippetsEntry.SNIPPET_SOURCE_PLUGINS);
+		if (entry instanceof ISnippetItem) {
+			SnippetPaletteItem item = (SnippetPaletteItem) entry;
+			item.setSourceType(ISnippetsEntry.SNIPPET_SOURCE_USER);
+			item.setUserModificationPermission(PaletteEntry.PERMISSION_FULL_MODIFICATION);
+			Object pluginRecord = createPluginRecord(definitions, element);
+			if (pluginRecord != null) {
+				item.setSourceDescriptor(pluginRecord);
+				((PaletteEntry) entry).setUserModificationPermission(PaletteEntry.PERMISSION_HIDE_ONLY);
+				item.setSourceType(ISnippetsEntry.SNIPPET_SOURCE_PLUGINS);
+			}
+			else if (element.getAttribute(SnippetsPlugin.NAMES.SHARED).equals(SnippetsPlugin.NAMES.SHARED)) {
+				item.setSourceType(ISnippetsEntry.SNIPPET_SOURCE_WORKSPACE);
+			}
 		}
-		else if (element.getAttribute(SnippetsPlugin.NAMES.SHARED).equals(SnippetsPlugin.NAMES.SHARED)) {
-			entry.setSourceType(ISnippetsEntry.SNIPPET_SOURCE_WORKSPACE);
+		if (entry instanceof ISnippetCategory) {
+			SnippetPaletteDrawer drawer = (SnippetPaletteDrawer) entry;
+			drawer.setSourceType(ISnippetsEntry.SNIPPET_SOURCE_USER);
+			((PaletteEntry) entry).setUserModificationPermission(PaletteEntry.PERMISSION_FULL_MODIFICATION);
+			Object pluginRecord = createPluginRecord(definitions, element);
+			if (pluginRecord != null) {
+				drawer.setSourceDescriptor(pluginRecord);
+				((PaletteEntry) entry).setUserModificationPermission(PaletteEntry.PERMISSION_HIDE_ONLY);
+				drawer.setSourceType(ISnippetsEntry.SNIPPET_SOURCE_PLUGINS);
+			}
+			else if (element.getAttribute(SnippetsPlugin.NAMES.SHARED).equals(SnippetsPlugin.NAMES.SHARED)) {
+				drawer.setSourceType(ISnippetsEntry.SNIPPET_SOURCE_WORKSPACE);
+			}
 		}
 	}
 

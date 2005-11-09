@@ -14,7 +14,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
+import org.eclipse.wst.common.snippets.core.ISnippetCategory;
+import org.eclipse.wst.common.snippets.core.ISnippetItem;
+import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteDrawer;
+import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteItem;
 
 
 /**
@@ -52,7 +55,7 @@ public class SnippetDefinitions {
 	public ISnippetCategory getCategory(String id) {
 		Iterator iterator = getCategories().iterator();
 		while (iterator.hasNext()) {
-			ISnippetCategory category = (ISnippetCategory) iterator.next();
+			SnippetPaletteDrawer category = (SnippetPaletteDrawer) iterator.next();
 			if (category.getId().equals(id))
 				return category;
 		}
@@ -68,7 +71,7 @@ public class SnippetDefinitions {
 	public ISnippetItem getItem(String id) {
 		Iterator iterator = getItems().iterator();
 		while (iterator.hasNext()) {
-			ISnippetItem item = (ISnippetItem) iterator.next();
+			SnippetPaletteItem item = (SnippetPaletteItem) iterator.next();
 			if (item.getId().equals(id))
 				return item;
 		}

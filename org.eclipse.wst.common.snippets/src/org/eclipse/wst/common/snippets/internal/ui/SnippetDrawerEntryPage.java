@@ -47,9 +47,10 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.ListSelectionDialog;
 import org.eclipse.ui.help.WorkbenchHelp;
+import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.IHelpContextIds;
 import org.eclipse.wst.common.snippets.internal.SnippetsMessages;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry;
+import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteDrawer;
 import org.eclipse.wst.common.snippets.internal.util.VisibilityUtil;
 
 public class SnippetDrawerEntryPage extends DrawerEntryPage {
@@ -338,19 +339,19 @@ public class SnippetDrawerEntryPage extends DrawerEntryPage {
 	}
 
 	protected void refreshEntryFilters() {
-		ISnippetsEntry snippetEntry = (ISnippetsEntry) getEntry();
+		SnippetPaletteDrawer snippetDrawer = (SnippetPaletteDrawer) getEntry();
 		if (fAlwaysShowButton.getSelection()) {
-			snippetEntry.setFilters(new String[]{"*"}); //$NON-NLS-1$
-			snippetEntry.setVisible(true);
+			snippetDrawer.setFilters(new String[]{"*"}); //$NON-NLS-1$
+			snippetDrawer.setVisible(true);
 		}
 		else if (fAlwaysHideButton.getSelection()) {
-			snippetEntry.setFilters(new String[]{"!"}); //$NON-NLS-1$
-			snippetEntry.setVisible(false);
+			snippetDrawer.setFilters(new String[]{"!"}); //$NON-NLS-1$
+			snippetDrawer.setVisible(false);
 		}
 		else {
 			if (fContentTypes.length == 0) {
-				snippetEntry.setFilters(new String[]{"-"}); //$NON-NLS-1$
-				snippetEntry.setVisible(false);
+				snippetDrawer.setFilters(new String[]{"-"}); //$NON-NLS-1$
+				snippetDrawer.setVisible(false);
 			}
 			else {
 				String[] filters = new String[fContentTypes.length];
@@ -367,8 +368,8 @@ public class SnippetDrawerEntryPage extends DrawerEntryPage {
 					visible = VisibilityUtil.isContentType(input, filters);
 				}
 
-				snippetEntry.setFilters(filters);
-				snippetEntry.setVisible(visible);
+				snippetDrawer.setFilters(filters);
+				snippetDrawer.setVisible(visible);
 			}
 		}
 	}

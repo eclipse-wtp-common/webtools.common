@@ -12,19 +12,23 @@
 
 package org.eclipse.wst.common.snippets.internal.actions;
 
-import org.eclipse.wst.common.snippets.internal.ISnippetVariable;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
+import org.eclipse.wst.common.snippets.core.ISnippetItem;
+import org.eclipse.wst.common.snippets.core.ISnippetVariable;
+import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteItem;
 
 
 public class LibraryItemUtility {
 
-	public static void copyAttributes(ISnippetItem source, ISnippetItem target) {
+	public static void copyAttributes(ISnippetItem sourceItem, ISnippetItem targetItem) {
+		SnippetPaletteItem source = (SnippetPaletteItem) sourceItem;
+		SnippetPaletteItem target = (SnippetPaletteItem) targetItem;
+
 		target.setCategoryName(source.getCategoryName());
 		target.setClassName(source.getClassName());
 		target.setContentString(source.getContentString());
 		target.setDescription(source.getDescription());
 		target.setEditorClassName(source.getEditorClassName());
-		target.setIconName(source.getIconName());
+		target.setIconName(source.getSmallIconName());
 		target.setId(source.getId());
 		target.setLabel(source.getLabel());
 		target.setLargeIconName(source.getLargeIconName());

@@ -18,21 +18,19 @@ import java.io.UnsupportedEncodingException;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.gef.palette.PaletteDrawer;
-import org.eclipse.wst.common.snippets.internal.Debug;
-import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
-import org.eclipse.wst.common.snippets.internal.ISnippetVariable;
+import org.eclipse.wst.common.snippets.core.ISnippetCategory;
+import org.eclipse.wst.common.snippets.core.ISnippetItem;
+import org.eclipse.wst.common.snippets.core.ISnippetVariable;
+import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.Logger;
 import org.eclipse.wst.common.snippets.internal.PluginRecord;
 import org.eclipse.wst.common.snippets.internal.SnippetDefinitions;
 import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.util.CommonXML;
 import org.eclipse.wst.common.snippets.internal.util.StringUtils;
 import org.osgi.framework.Bundle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
 
 public class UserModelDumper {
 
@@ -53,15 +51,25 @@ public class UserModelDumper {
 	 * Save the properties known for ISnippetsEntry
 	 */
 	protected void assignEntryProperties(ISnippetsEntry entry, Element owningElement) {
-		owningElement.setAttribute(SnippetsPlugin.NAMES.ID, entry.getId());
-		if (entry.getIconName() != null)
-			owningElement.setAttribute(SnippetsPlugin.NAMES.ICON, entry.getIconName());
+		if (entry instanceof SnippetPaletteDrawer) {
+			owningElement.setAttribute(SnippetsPlugin.NAMES.ID, ((SnippetPaletteDrawer) entry).getId());
+			if (((SnippetPaletteDrawer) entry).getSmallIconName() != null)
+				owningElement.setAttribute(SnippetsPlugin.NAMES.ICON, ((SnippetPaletteDrawer) entry).getSmallIconName());
+			if (entry.getLabel() != null)
+				owningElement.setAttribute(SnippetsPlugin.NAMES.LABEL, entry.getLabel());
+			if (((SnippetPaletteDrawer) entry).getLargeIconName() != null)
+				owningElement.setAttribute(SnippetsPlugin.NAMES.LARGEICON, ((SnippetPaletteDrawer) entry).getLargeIconName());
+		}
+		if (entry instanceof SnippetPaletteItem) {
+			owningElement.setAttribute(SnippetsPlugin.NAMES.ID, ((SnippetPaletteItem) entry).getId());
+			if (((SnippetPaletteItem) entry).getSmallIconName() != null)
+				owningElement.setAttribute(SnippetsPlugin.NAMES.ICON, ((SnippetPaletteItem) entry).getSmallIconName());
+			if (entry.getLabel() != null)
+				owningElement.setAttribute(SnippetsPlugin.NAMES.LABEL, entry.getLabel());
+			if (((SnippetPaletteItem) entry).getLargeIconName() != null)
+				owningElement.setAttribute(SnippetsPlugin.NAMES.LARGEICON, ((SnippetPaletteItem) entry).getLargeIconName());
+		}
 		owningElement.appendChild(createDescription(owningElement.getOwnerDocument(), entry.getDescription()));
-		// new in V5.1
-		if (entry.getLabel() != null)
-			owningElement.setAttribute(SnippetsPlugin.NAMES.LABEL, entry.getLabel());
-		if (entry.getLargeIconName() != null)
-			owningElement.setAttribute(SnippetsPlugin.NAMES.LARGEICON, entry.getLargeIconName());
 	}
 
 	/**
@@ -87,7 +95,7 @@ public class UserModelDumper {
 		// if the category came from a plugin, only store a placeholder
 		// to maintain the ordering [it will be reloaded in subsequent
 		// sessions directly from the plugin definitions]
-		element.setAttribute(SnippetsPlugin.NAMES.ID, category.getId());
+		element.setAttribute(SnippetsPlugin.NAMES.ID, ((SnippetPaletteDrawer) category).getId());
 		if (category instanceof PaletteDrawer) {
 			element.setAttribute(SnippetsPlugin.NAMES.INITIAL_STATE, Integer.toString(((PaletteDrawer) category).getInitialState()));
 		}
@@ -104,15 +112,15 @@ public class UserModelDumper {
 		if (category.getSourceType() == ISnippetsEntry.SNIPPET_SOURCE_USER) {
 			assignEntryProperties(category, element);
 
-			for (int i = 0; i < category.getChildren().size(); i++) {
-				ISnippetItem item = (ISnippetItem) category.getChildren().get(i);
+			for (int i = 0; i < category.getItems().length; i++) {
+				ISnippetItem item = category.getItems()[i];
 				Element child = createItem(doc, item);
 				element.appendChild(child);
 			}
 		}
 
-		if (Debug.debugDefinitionPersistence)
-			System.out.println("User item writer saving category " + category.getId()); //$NON-NLS-1$
+		if (Logger.DEBUG_DEFINITION_PERSISTENCE)
+			System.out.println("User item writer saving category " + ((SnippetPaletteDrawer) category).getId()); //$NON-NLS-1$
 		return element;
 	}
 
@@ -165,19 +173,19 @@ public class UserModelDumper {
 		Element element = doc.createElement(SnippetsPlugin.NAMES.ITEM);
 		assignEntryProperties(item, element);
 		assignSourceFor(item, element);
-		element.setAttribute(SnippetsPlugin.NAMES.CATEGORY, item.getCategory().getId());
-		if (item.getClassName() != null)
-			element.setAttribute(SnippetsPlugin.NAMES.CLASSNAME, item.getClassName());
-		if (item.getEditorClassName() != null)
-			element.setAttribute(SnippetsPlugin.NAMES.EDITORCLASSNAME, item.getEditorClassName());
+		element.setAttribute(SnippetsPlugin.NAMES.CATEGORY, ((SnippetPaletteDrawer) item.getCategory()).getId());
+		if (((SnippetPaletteItem) item).getClassName() != null)
+			element.setAttribute(SnippetsPlugin.NAMES.CLASSNAME, ((SnippetPaletteItem) item).getClassName());
+		if (((SnippetPaletteItem) item).getEditorClassName() != null)
+			element.setAttribute(SnippetsPlugin.NAMES.EDITORCLASSNAME, ((SnippetPaletteItem) item).getEditorClassName());
 		element.appendChild(createContent(doc, item));
 		ISnippetVariable[] variables = item.getVariables();
 		for (int i = 0; i < variables.length; i++) {
 			Element variable = createVariable(doc, variables[i]);
 			element.appendChild(variable);
 		}
-		if (Debug.debugDefinitionPersistence)
-			System.out.println("User item writer saving item " + item.getCategory().getId() + ":" + item.getId()); //$NON-NLS-1$ //$NON-NLS-2$
+		if (Logger.DEBUG_DEFINITION_PERSISTENCE)
+			System.out.println("User item writer saving item " + ((SnippetPaletteDrawer) item.getCategory()).getId() + ":" + ((SnippetPaletteItem) item).getId()); //$NON-NLS-1$ //$NON-NLS-2$
 		return element;
 	}
 
@@ -189,7 +197,7 @@ public class UserModelDumper {
 		Element element = doc.createElement(SnippetsPlugin.NAMES.PLUGIN);
 		element.setAttribute(SnippetsPlugin.NAMES.NAME, record.getPluginName());
 		element.setAttribute(SnippetsPlugin.NAMES.VERSION, record.getPluginVersion());
-		if (Debug.debugDefinitionPersistence)
+		if (Logger.DEBUG_DEFINITION_PERSISTENCE)
 			System.out.println("User item writer saving plugin record " + record.getPluginName() + "/" + record.getPluginVersion()); //$NON-NLS-1$ //$NON-NLS-2$
 		return element;
 	}
@@ -199,7 +207,7 @@ public class UserModelDumper {
 	 */
 	protected Element createVariable(Document doc, ISnippetVariable variable) {
 		Element element = doc.createElement(SnippetsPlugin.NAMES.VARIABLE);
-		element.setAttribute(SnippetsPlugin.NAMES.ID, variable.getId());
+		element.setAttribute(SnippetsPlugin.NAMES.ID, ((SnippetVariable) variable).getId());
 		if (variable.getName() != null)
 			element.setAttribute(SnippetsPlugin.NAMES.NAME, variable.getName());
 		if (variable.getDefaultValue() != null)

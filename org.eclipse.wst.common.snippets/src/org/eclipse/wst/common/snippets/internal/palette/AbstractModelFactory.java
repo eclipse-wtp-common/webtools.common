@@ -15,14 +15,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.gef.palette.PaletteDrawer;
-import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
-import org.eclipse.wst.common.snippets.internal.ISnippetVariable;
+import org.eclipse.wst.common.snippets.core.ISnippetVariable;
+import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.Logger;
 import org.eclipse.wst.common.snippets.internal.SnippetDefinitions;
 import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry;
-
 
 public abstract class AbstractModelFactory {
 
@@ -33,14 +30,14 @@ public abstract class AbstractModelFactory {
 	protected void connectItemsAndCategories(SnippetDefinitions definitions) {
 		Iterator iterator = definitions.getCategories().iterator();
 		while (iterator.hasNext()) {
-			ISnippetCategory category = (ISnippetCategory) iterator.next();
+			SnippetPaletteDrawer category = (SnippetPaletteDrawer) iterator.next();
 			category.getChildren().clear();
 		}
 
 		iterator = definitions.getItems().iterator();
 		while (iterator.hasNext()) {
-			ISnippetItem item = (ISnippetItem) iterator.next();
-			ISnippetCategory parentCategory = definitions.getCategory(item.getCategoryName());
+			SnippetPaletteItem item = (SnippetPaletteItem) iterator.next();
+			SnippetPaletteDrawer parentCategory = (SnippetPaletteDrawer) definitions.getCategory(item.getCategoryName());
 			if (parentCategory != null) {
 				parentCategory.add(item);
 			}
@@ -104,27 +101,49 @@ public abstract class AbstractModelFactory {
 	public abstract SnippetDefinitions loadCurrent();
 
 	protected void migrate50to51(ISnippetsEntry entry) {
-		if (entry.getDescription() != null && entry.getDescription().length() > 0 && (entry.getLabel() == null || entry.getLabel().length() == 0 || entry.getId().equals(entry.getLabel()))) {
-			entry.setLabel(entry.getDescription());
-			entry.setDescription(""); //$NON-NLS-1$
+		if (entry.getDescription() != null && entry.getDescription().length() > 0 && (entry.getLabel() == null || entry.getLabel().length() == 0)) {
+			if (entry instanceof SnippetPaletteItem) {
+				((SnippetPaletteItem) entry).setLabel(entry.getDescription());
+				((SnippetPaletteItem) entry).setDescription(""); //$NON-NLS-1$
+			}
+			if (entry instanceof SnippetPaletteDrawer) {
+				((SnippetPaletteDrawer) entry).setLabel(entry.getDescription());
+				((SnippetPaletteDrawer) entry).setDescription(""); //$NON-NLS-1$
+			}
 		}
 	}
 
 	protected void setEntryProperty(ISnippetsEntry entry, String property, Object value) {
 		if (property == null || value == null)
 			return;
-		else if (property.equals(SnippetsPlugin.NAMES.DESCRIPTION))
-			entry.setDescription(value.toString());
-		else if (property.equals(SnippetsPlugin.NAMES.ICON))
-			entry.setIconName(value.toString());
-		else if (property.equals(SnippetsPlugin.NAMES.ID))
-			entry.setId(value.toString());
-		else if (property.equals(SnippetsPlugin.NAMES.LABEL))
-			entry.setLabel(value.toString());
-		else if (property.equals(SnippetsPlugin.NAMES.LARGEICON))
-			entry.setLargeIconName(value.toString());
-		else if (property.equals("filters")) //$NON-NLS-1$
-			entry.setFilters((String[]) value);
+		if (entry instanceof SnippetPaletteItem) {
+			if (property.equals(SnippetsPlugin.NAMES.DESCRIPTION))
+				((SnippetPaletteItem) entry).setDescription(value.toString());
+			else if (property.equals(SnippetsPlugin.NAMES.ICON))
+				((SnippetPaletteItem) entry).setIconName(value.toString());
+			else if (property.equals(SnippetsPlugin.NAMES.ID))
+				((SnippetPaletteItem) entry).setId(value.toString());
+			else if (property.equals(SnippetsPlugin.NAMES.LABEL))
+				((SnippetPaletteItem) entry).setLabel(value.toString());
+			else if (property.equals(SnippetsPlugin.NAMES.LARGEICON))
+				((SnippetPaletteItem) entry).setLargeIconName(value.toString());
+			else if (property.equals("filters")) //$NON-NLS-1$
+				((SnippetPaletteItem) entry).setFilters((String[]) value);
+		}
+		if (entry instanceof SnippetPaletteDrawer) {
+			if (property.equals(SnippetsPlugin.NAMES.DESCRIPTION))
+				((SnippetPaletteDrawer) entry).setDescription(value.toString());
+			else if (property.equals(SnippetsPlugin.NAMES.ICON))
+				((SnippetPaletteDrawer) entry).setIconName(value.toString());
+			else if (property.equals(SnippetsPlugin.NAMES.ID))
+				((SnippetPaletteDrawer) entry).setId(value.toString());
+			else if (property.equals(SnippetsPlugin.NAMES.LABEL))
+				((SnippetPaletteDrawer) entry).setLabel(value.toString());
+			else if (property.equals(SnippetsPlugin.NAMES.LARGEICON))
+				((SnippetPaletteDrawer) entry).setLargeIconName(value.toString());
+			else if (property.equals("filters")) //$NON-NLS-1$
+				((SnippetPaletteDrawer) entry).setFilters((String[]) value);
+		}
 	}
 
 	protected abstract void setProperties(SnippetPaletteDrawer category, Object source);
@@ -146,7 +165,7 @@ public abstract class AbstractModelFactory {
 		if (property == null)
 			return;
 		Object propertyValue = value;
-		if(propertyValue == null) {
+		if (propertyValue == null) {
 			propertyValue = "";
 		}
 		if (property.equals(SnippetsPlugin.NAMES.CATEGORY))
@@ -165,7 +184,7 @@ public abstract class AbstractModelFactory {
 		if (property == null)
 			return;
 		Object propertyValue = value;
-		if(propertyValue == null) {
+		if (propertyValue == null) {
 			propertyValue = "";
 		}
 		if (property.equals(SnippetsPlugin.NAMES.DEFAULT))

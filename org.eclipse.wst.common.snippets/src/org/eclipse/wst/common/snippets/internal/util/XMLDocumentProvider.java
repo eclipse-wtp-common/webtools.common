@@ -47,7 +47,7 @@ import org.xml.sax.SAXParseException;
  * from within a .JAR file (***read-only***)
  */
 
-public class DocumentProvider {
+public class XMLDocumentProvider {
 	/**
 	 * 
 	 * @param args
@@ -56,7 +56,7 @@ public class DocumentProvider {
 	public static void main(String[] args) {
 		if (args.length < 2)
 			return;
-		DocumentProvider p = new DocumentProvider();
+		XMLDocumentProvider p = new XMLDocumentProvider();
 		p.setFileName(args[0]);
 		p.setRootElementName(args[1]);
 		p.getDocument();
@@ -74,7 +74,7 @@ public class DocumentProvider {
 	protected String rootElementName = null;
 
 
-	public DocumentProvider() {
+	public XMLDocumentProvider() {
 		super();
 	}
 

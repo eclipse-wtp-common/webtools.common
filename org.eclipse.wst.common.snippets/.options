@@ -1,0 +1,6 @@
+org.eclipse.wst.common.snippets/debug=false
+org.eclipse.wst.common.snippets/debug/tracefilter=
+org.eclipse.wst.common.snippets/debug/definition_persistence=false
+org.eclipse.wst.common.snippets/debug/drag_and_drop=false
+org.eclipse.wst.common.snippets/debug/palette_selection=false
+org.eclipse.wst.common.snippets/debug/viewer_content=false

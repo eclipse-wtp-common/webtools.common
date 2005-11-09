@@ -27,7 +27,7 @@
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="icon" type="string">
+         <attribute name="smallicon" type="string">
             <annotation>
                <documentation>
                   The small icon to show for this category.  The value of this attributes specifies a path relative to the plugin&apos;s installation folder.
@@ -58,10 +58,10 @@
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="filetypes" type="string">
+         <attribute name="extensions" type="string">
             <annotation>
                <documentation>
-                  A list of file types identical to that used to register editors.  If the Snippets View has its drawer visibility tied to the active editor, the drawer will be hidden unless the filename from the active editor matches a value from this attribute&apos;s value.  More than one value may be specified if separated by commas.
+                  A list of filename extensions identical to that used to register editors.  If the Snippets View has its drawer visibility tied to the active editor, the drawer will be hidden unless the filename from the active editor matches a value from this attribute&apos;s value.  More than one value may be specified if separated by commas.
                </documentation>
             </annotation>
          </attribute>
@@ -100,14 +100,7 @@
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="editorclass" type="string">
-            <annotation>
-               <documentation>
-                  An implementation of org.eclipse.wst.common.snippets.editors.ISnippetEditor.  When the user brings up the Customizer dialog, selecting an item from the left-hand tree will display an editing page on the right.  Snippets will provide controls for editing the name and description of an item in addition to any controls provided by the editorclass.  A new instance of the class is used for every item being edited.  The default class, org.eclipse.wst.common.snippets.editors.VariableItemEditor provides a table for creating and editing variables and a text editor for the content.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="icon" type="string">
+         <attribute name="smallicon" type="string">
             <annotation>
                <documentation>
                   The small icon to show for this item.  The value of this attributes specifies a path relative to the plugin&apos;s installation folder.
@@ -202,14 +195,14 @@
    &lt;extension
          point=&quot;org.eclipse.wst.common.snippets.SnippetContributions&quot;&gt;
       &lt;category
-            icon=&quot;icons/tag-jsp.gif&quot;
+            smallicon=&quot;icons/tag-jsp.gif&quot;
             label=&quot;JSP&quot;
             description=&quot;Java Server Pages&quot;
             id=&quot;org.eclipse.wst.jsp.category0&quot;
             contenttypes=&quot;org.eclipse.wst.jsp.core.jspsource&quot;
-            filetypes=&quot;*.jsp, *.jsf, *.jspf&quot;&gt;
+            extensions=&quot;*.jsp, *.jsf, *.jspf&quot;&gt;
         &lt;item
-              icon=&quot;icons/tag-generic.gif&quot;
+              smallicon=&quot;icons/tag-generic.gif&quot;
               label=&quot;%jsp_hidden_comment&quot;
               id=&quot;org.eclipse.wst.jsp.jsp_hidden_comment&quot;&gt;
            &lt;content&gt;
@@ -224,7 +217,7 @@
            &lt;/content&gt;
         &lt;/item&gt;
         &lt;item
-              icon=&quot;icons/jsptaglib.gif&quot;
+              smallicon=&quot;icons/jsptaglib.gif&quot;
               label=&quot;%jsp_taglib_directive&quot;
               class=&quot;org.eclipse.wst.common.snippets.insertions.PrependInsertion&quot;
               id=&quot;org.eclipse.wst.jsp.jsp_taglib_directive&quot;&gt;

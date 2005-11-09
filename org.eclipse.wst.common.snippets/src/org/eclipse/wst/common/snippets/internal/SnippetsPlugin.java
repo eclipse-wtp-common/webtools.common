@@ -44,13 +44,13 @@ public class SnippetsPlugin extends AbstractUIPlugin {
 		String VERSION = "version"; //$NON-NLS-1$
 		String VIEW_ID = "org.eclipse.wst.common.snippets.internal.ui.SnippetsView"; //$NON-NLS-1$
 	}
-	
-	public static final String BUNDLE_ID = "org.eclipse.wst.common.snippets";  //$NON-NLS-1$
+
+	public static final String BUNDLE_ID = "org.eclipse.wst.common.snippets"; //$NON-NLS-1$
 
 	/**
 	 * The shared instance
 	 */
-	private static SnippetsPlugin fInstance;	
+	private static SnippetsPlugin fInstance;
 
 	/**
 	 * Returns the shared instance.

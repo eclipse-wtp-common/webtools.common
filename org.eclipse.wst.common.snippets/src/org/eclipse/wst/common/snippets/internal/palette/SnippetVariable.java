@@ -12,7 +12,7 @@
 
 package org.eclipse.wst.common.snippets.internal.palette;
 
-import org.eclipse.wst.common.snippets.internal.ISnippetVariable;
+import org.eclipse.wst.common.snippets.core.ISnippetVariable;
 
 public class SnippetVariable implements ISnippetVariable {
 	protected String fDefaultValue;

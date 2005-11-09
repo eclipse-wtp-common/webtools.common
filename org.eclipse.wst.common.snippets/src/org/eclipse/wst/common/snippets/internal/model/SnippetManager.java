@@ -22,25 +22,21 @@ import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 
-import org.eclipse.core.resources.IWorkspaceRunnable;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.gef.palette.PaletteContainer;
-import org.eclipse.wst.common.snippets.internal.Debug;
+import org.eclipse.wst.common.snippets.core.ISnippetCategory;
+import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.IEntryChangeListener;
-import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
 import org.eclipse.wst.common.snippets.internal.ISnippetManager;
 import org.eclipse.wst.common.snippets.internal.Logger;
 import org.eclipse.wst.common.snippets.internal.SnippetDefinitions;
 import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;
 import org.eclipse.wst.common.snippets.internal.palette.ModelFactoryForPlugins;
 import org.eclipse.wst.common.snippets.internal.palette.ModelFactoryForUser;
+import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteDrawer;
+import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteItem;
 import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteRoot;
 import org.eclipse.wst.common.snippets.internal.palette.UserModelDumper;
 import org.eclipse.wst.common.snippets.internal.palette.WorkspaceModelDumper;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.team.CategoryFileInfo;
 import org.eclipse.wst.common.snippets.internal.util.CommonXML;
 import org.w3c.dom.Document;
@@ -104,13 +100,13 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 		List categories = defs.getCategories();
 		ISnippetsEntry match = null;
 		for (int i = 0; match == null && i < categories.size(); i++) {
-			ISnippetCategory category = (ISnippetCategory) categories.get(i);
+			SnippetPaletteDrawer category = (SnippetPaletteDrawer) categories.get(i);
 			if (category.getId().equals(id)) {
 				match = category;
 			}
 			else {
 				for (int j = 0; match == null && j < category.getChildren().size(); j++) {
-					ISnippetsEntry item = (ISnippetsEntry) category.getChildren().get(j);
+					SnippetPaletteItem item = (SnippetPaletteItem) category.getChildren().get(j);
 					if (item.getId().equals(id)) {
 						match = item;
 					}
@@ -157,7 +153,12 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 				for (int i = 0; i < hiddenIDs.length; i++) {
 					ISnippetsEntry entry = findEntry(definitions, hiddenIDs[i]);
 					if (entry != null) {
-						entry.setVisible(false);
+						if (entry instanceof SnippetPaletteItem) {
+							((SnippetPaletteItem) entry).setVisible(false);
+						}
+						if (entry instanceof SnippetPaletteDrawer) {
+							((SnippetPaletteDrawer) entry).setVisible(false);
+						}
 					}
 				}
 			}
@@ -191,14 +192,14 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 		// break
 		// this into extensions with providers)
 		SnippetDefinitions pluginDefs = ModelFactoryForPlugins.getInstance().loadCurrent();
-		if (Debug.debugDefinitionPersistence)
+		if (Logger.DEBUG_DEFINITION_PERSISTENCE)
 			System.out.println("SnippetManager loaded " + pluginDefs.getCategories().size() + " categories from plug-ins"); //$NON-NLS-1$ //$NON-NLS-2$
 		SnippetDefinitions userDefs = ModelFactoryForUser.getInstance().loadCurrent();
-		if (Debug.debugDefinitionPersistence)
+		if (Logger.DEBUG_DEFINITION_PERSISTENCE)
 			System.out.println("SnippetManager loaded " + userDefs.getCategories().size() + " records for categories from user.xml"); //$NON-NLS-1$ //$NON-NLS-2$
 		// SnippetDefinitions sharedDefs =
 		// ModelFactoryForWorkspace.getInstance().loadCurrent();
-		// if (Debug.debugDefinitionPersistence)
+		// if (Logger.debugDefinitionPersistence)
 		// System.out.println("SnippetManager loaded " +
 		// userDefs.getCategories().size() + " records for categories from
 		// workspace"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -210,7 +211,7 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 		// Merge plugin drawers by replacing the placeholder drawers with the
 		// ones generated from the plugins
 		for (int i = 0; i < pluginDefs.getCategories().size(); i++) {
-			ISnippetCategory category = (ISnippetCategory) pluginDefs.getCategories().get(i);
+			SnippetPaletteDrawer category = (SnippetPaletteDrawer) pluginDefs.getCategories().get(i);
 			String id = category.getId();
 			ISnippetsEntry existingEntry = findEntry(defs, id);
 			int existingIndex = defs.getCategories().indexOf(existingEntry);
@@ -233,7 +234,7 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 		// well.
 		Iterator it = defs.getCategories().iterator();
 		while (it.hasNext()) {
-			ISnippetCategory category = (ISnippetCategory) it.next();
+			SnippetPaletteDrawer category = (SnippetPaletteDrawer) it.next();
 			if (category.getSourceType() != ISnippetsEntry.SNIPPET_SOURCE_USER && category.getChildren().isEmpty())
 				it.remove();
 		}
@@ -290,7 +291,7 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 				results = (String[]) names.toArray(results);
 			}
 		}
-		if (Debug.debugDefinitionPersistence)
+		if (Logger.DEBUG_DEFINITION_PERSISTENCE)
 			System.out.println("SnippetManager remembered " + results.length + " hidden categories"); //$NON-NLS-1$ //$NON-NLS-2$
 		return results;
 	}
@@ -334,12 +335,12 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 
 		// save the list of categories to not see
 		saveHiddenState();
-		if (Debug.debugDefinitionPersistence)
+		if (Logger.DEBUG_DEFINITION_PERSISTENCE)
 			System.out.println("SnippetManager saved hidden state"); //$NON-NLS-1$
 
 		// save the model
 		UserModelDumper.getInstance().write(getDefinitions());
-		if (Debug.debugDefinitionPersistence)
+		if (Logger.DEBUG_DEFINITION_PERSISTENCE)
 			System.out.println("SnippetManager wrote user records"); //$NON-NLS-1$
 		List categories = getDefinitions().getCategories();
 		final List workspaceCategories = new ArrayList();
@@ -352,22 +353,16 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 				}
 			}
 		}
-		IWorkspaceRunnable operation = new IWorkspaceRunnable() {
-
-			public void run(IProgressMonitor monitor) throws CoreException {
-				for (int i = 0; i < workspaceCategories.size(); i++) {
-					CategoryFileInfo info = (CategoryFileInfo) workspaceCategories.get(i);
-					if (Debug.debugDefinitionPersistence)
-						System.out.println("save workspace category: " + info.getCategory().getLabel()); //$NON-NLS-1$
-					WorkspaceModelDumper.getInstance().write(info.getCategory(), info.getFile());
-				}
+		for (int i = 0; i < workspaceCategories.size(); i++) {
+			CategoryFileInfo info = (CategoryFileInfo) workspaceCategories.get(i);
+			try {
+				if (Logger.DEBUG_DEFINITION_PERSISTENCE)
+					System.out.println("save workspace category: " + info.getCategory().getLabel()); //$NON-NLS-1$
+				WorkspaceModelDumper.getInstance().write(info.getCategory(), info.getFile());
 			}
-		};
-		try {
-			ResourcesPlugin.getWorkspace().run(operation, new NullProgressMonitor());
-		}
-		catch (Exception e) {
-			Logger.logException(e);
+			catch (Exception e) {
+				Logger.logException(e);
+			}
 		}
 	}
 
@@ -382,12 +377,12 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 			List itemIDs = new ArrayList(0);
 			// collect all of the hidden entry IDs
 			for (int i = 0; i < getDefinitions().getCategories().size(); i++) {
-				ISnippetCategory category = (ISnippetCategory) getDefinitions().getCategories().get(i);
+				SnippetPaletteDrawer category = (SnippetPaletteDrawer) getDefinitions().getCategories().get(i);
 				if (!category.isVisible() && !categoryIDs.contains(category.getId())) {
 					categoryIDs.add(category.getId());
 				}
 				for (int j = 0; j < category.getChildren().size(); j++) {
-					ISnippetsEntry entry = (ISnippetsEntry) category.getChildren().get(j);
+					SnippetPaletteItem entry = (SnippetPaletteItem) category.getChildren().get(j);
 					if (!entry.isVisible() && !itemIDs.contains(entry.getId())) {
 						itemIDs.add(entry.getId());
 					}

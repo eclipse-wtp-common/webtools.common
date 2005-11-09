@@ -52,13 +52,14 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.help.WorkbenchHelp;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.wst.common.snippets.core.ISnippetItem;
+import org.eclipse.wst.common.snippets.core.ISnippetVariable;
 import org.eclipse.wst.common.snippets.internal.IHelpContextIds;
-import org.eclipse.wst.common.snippets.internal.ISnippetVariable;
 import org.eclipse.wst.common.snippets.internal.Logger;
 import org.eclipse.wst.common.snippets.internal.SnippetsMessages;
+import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteItem;
 import org.eclipse.wst.common.snippets.internal.palette.SnippetVariable;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
 import org.eclipse.wst.common.snippets.internal.ui.StringPropertyTableViewer;
 import org.eclipse.wst.common.snippets.internal.ui.ValueChangedListener;
 import org.eclipse.wst.common.snippets.internal.util.Sorter;
@@ -200,7 +201,7 @@ public class VariableItemEditor implements ISnippetEditor {
 	}
 
 	protected StyledText content = null;
-	protected ISnippetItem fItem = null;
+	protected SnippetPaletteItem fItem = null;
 	protected StringPropertyTableViewer fTableViewer = null;
 	private ModifyListener modifyListener = null;
 
@@ -218,7 +219,7 @@ public class VariableItemEditor implements ISnippetEditor {
 		// create the contents of the variable editing dialog
 
 		// the container for the variables fTableViewer and new/remove buttons
-		WorkbenchHelp.setHelp(parent, IHelpContextIds.DIALOG_EDIT_VARITEM);
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, IHelpContextIds.DIALOG_EDIT_VARITEM);
 
 		Composite variableComposite = new Composite(parent, SWT.NONE);
 		variableComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -253,7 +254,7 @@ public class VariableItemEditor implements ISnippetEditor {
 		// description, and default value.
 		ISnippetVariable[] variables = fItem.getVariables();
 		for (int i = 0; i < variables.length; i++) {
-			ISnippetVariable var = variables[i];
+			SnippetVariable var = (SnippetVariable) variables[i];
 			fTableViewer.getColumnData()[0].put(var.getId(), var.getName());
 			if (var.getDescription() != null)
 				fTableViewer.getColumnData()[1].put(var.getId(), var.getDescription());
@@ -500,7 +501,7 @@ public class VariableItemEditor implements ISnippetEditor {
 		});
 	}
 
-	public void setItem(ISnippetItem item) {
+	public void setItem(SnippetPaletteItem item) {
 		fItem = item;
 	}
 

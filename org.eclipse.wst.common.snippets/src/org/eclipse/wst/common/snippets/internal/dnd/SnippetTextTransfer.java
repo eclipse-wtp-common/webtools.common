@@ -12,9 +12,9 @@ package org.eclipse.wst.common.snippets.internal.dnd;
 
 import org.eclipse.swt.dnd.ByteArrayTransfer;
 
-public class VariableTextTransfer extends ByteArrayTransfer {
+public class SnippetTextTransfer extends ByteArrayTransfer {
 
-	private static VariableTextTransfer instance;
+	private static SnippetTextTransfer instance;
 
 	private static final String LOCAL_NAME = "Text with Variables" + System.currentTimeMillis(); //$NON-NLS-1$
 	private static final int LOCAL_TYPE = registerType(LOCAL_NAME);
@@ -22,9 +22,9 @@ public class VariableTextTransfer extends ByteArrayTransfer {
 	private static String[] names = null;
 	private static int types[] = null;
 
-	public static VariableTextTransfer getTransferInstance() {
+	public static SnippetTextTransfer getTransferInstance() {
 		if (instance == null) {
-			instance = new VariableTextTransfer();
+			instance = new SnippetTextTransfer();
 			init();
 		}
 		return instance;
@@ -35,7 +35,7 @@ public class VariableTextTransfer extends ByteArrayTransfer {
 		names = new String[]{LOCAL_NAME};
 	}
 
-	private VariableTextTransfer() {
+	private SnippetTextTransfer() {
 		super();
 	}
 

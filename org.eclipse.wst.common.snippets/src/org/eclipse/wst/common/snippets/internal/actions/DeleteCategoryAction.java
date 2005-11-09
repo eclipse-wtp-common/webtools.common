@@ -12,7 +12,7 @@ package org.eclipse.wst.common.snippets.internal.actions;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.palette.PaletteContainer;
-import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
+import org.eclipse.wst.common.snippets.core.ISnippetCategory;
 import org.eclipse.wst.common.snippets.internal.SnippetDefinitions;
 import org.eclipse.wst.common.snippets.internal.SnippetsMessages;
 import org.eclipse.wst.common.snippets.internal.SnippetsPlugin;

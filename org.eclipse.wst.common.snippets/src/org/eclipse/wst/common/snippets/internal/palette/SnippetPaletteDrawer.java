@@ -16,9 +16,8 @@ import org.eclipse.gef.palette.PaletteDrawer;
 import org.eclipse.gef.palette.PaletteEntry;
 import org.eclipse.gef.palette.PaletteTemplateEntry;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
-
+import org.eclipse.wst.common.snippets.core.ISnippetCategory;
+import org.eclipse.wst.common.snippets.core.ISnippetItem;
 
 public class SnippetPaletteDrawer extends PaletteDrawer implements ISnippetCategory {
 	protected String[] fFilters = new String[0];
@@ -49,26 +48,14 @@ public class SnippetPaletteDrawer extends PaletteDrawer implements ISnippetCateg
 		setType(PaletteDrawer.PALETTE_TYPE_DRAWER);
 	}
 
-	/**
-	 * @see ISnippetCategory#add(ISnippetItem)
-	 */
-	public void add(ISnippetItem item) {
-		super.add((PaletteEntry) item);
+	public void add(SnippetPaletteItem item) {
+		super.add(item);
 		item.setCategory(this);
-		((PaletteEntry) item).setParent(this);
+		item.setParent(this);
 	}
 
 	public String[] getFilters() {
 		return fFilters;
-	}
-
-	/**
-	 * Gets the iconName.
-	 * 
-	 * @return Returns a String
-	 */
-	public String getIconName() {
-		return fIconName;
 	}
 
 	/**
@@ -78,6 +65,10 @@ public class SnippetPaletteDrawer extends PaletteDrawer implements ISnippetCateg
 	 */
 	public String getId() {
 		return fId;
+	}
+
+	public ISnippetItem[] getItems() {
+		return (ISnippetItem[]) getChildren().toArray(new ISnippetItem[0]);
 	}
 
 	public ImageDescriptor getLargeIcon() {
@@ -108,6 +99,15 @@ public class SnippetPaletteDrawer extends PaletteDrawer implements ISnippetCateg
 		return icon;
 	}
 
+	/**
+	 * Gets the iconName.
+	 * 
+	 * @return Returns a String
+	 */
+	public String getSmallIconName() {
+		return fIconName;
+	}
+
 	public Object getSourceDescriptor() {
 		return fSourceDescriptor;
 	}
@@ -119,16 +119,16 @@ public class SnippetPaletteDrawer extends PaletteDrawer implements ISnippetCateg
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.wst.common.snippets.internal.provisional.ISnippetCategory#remove(org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem)
+	 * @see org.eclipse.wst.common.snippets.ui.ISnippetCategory#remove(org.eclipse.wst.common.snippets.ui.ISnippetItem)
 	 */
-	public void remove(ISnippetItem item) {
-		super.remove((PaletteEntry) item);
+	public void remove(SnippetPaletteItem item) {
+		super.remove(item);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry#setFilters(java.lang.String[])
+	 * @see org.eclipse.wst.common.snippets.ui.ISnippetsEntry#setFilters(java.lang.String[])
 	 */
 	public void setFilters(String[] filters) {
 		fFilters = filters;

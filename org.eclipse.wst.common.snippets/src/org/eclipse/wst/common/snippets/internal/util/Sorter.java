@@ -12,8 +12,6 @@
  *******************************************************************************/
 package org.eclipse.wst.common.snippets.internal.util;
 
-
-
 /**
  * The SortOperation takes a collection of objects and returns a sorted
  * collection of these objects. Concrete instances of this class provide the

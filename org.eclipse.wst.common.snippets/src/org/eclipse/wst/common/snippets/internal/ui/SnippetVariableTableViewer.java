@@ -15,20 +15,19 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -36,7 +35,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.wst.common.snippets.internal.ISnippetVariable;
+import org.eclipse.wst.common.snippets.core.ISnippetVariable;
+import org.eclipse.wst.common.snippets.internal.palette.SnippetVariable;
 
 
 /**
@@ -94,18 +94,7 @@ public class SnippetVariableTableViewer {
 			}
 		});
 
-		fTableViewer.setContentProvider(new IStructuredContentProvider() {
-
-			public void dispose() {
-			}
-
-			public Object[] getElements(Object inputElement) {
-				return ((List) inputElement).toArray();
-			}
-
-			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			}
-		});
+		fTableViewer.setContentProvider(new ArrayContentProvider());
 
 		fTableViewer.setLabelProvider(new ITableLabelProvider() {
 
@@ -122,7 +111,7 @@ public class SnippetVariableTableViewer {
 			public String getColumnText(Object element, int columnIndex) {
 				if (element == null)
 					return null;
-				ISnippetVariable var = (ISnippetVariable) element;
+				SnippetVariable var = (SnippetVariable) element;
 				if (columnIndex == 0)
 					return var.getId();
 				else if (columnIndex == 1)
@@ -161,15 +150,15 @@ public class SnippetVariableTableViewer {
 
 			public Object getValue(Object element, String property) {
 				if (property.equals("id")) //$NON-NLS-1$
-					return ((ISnippetVariable) element).getId();
+					return ((SnippetVariable) element).getId();
 				else if (property.equals("value")) //$NON-NLS-1$
-					return fValues.get(((ISnippetVariable) element).getId());
+					return fValues.get(((SnippetVariable) element).getId());
 				return ""; //$NON-NLS-1$
 			}
 
 			public void modify(Object element, String property, Object value) {
 				TableItem item = (TableItem) element;
-				ISnippetVariable var = (ISnippetVariable) item.getData();
+				SnippetVariable var = (SnippetVariable) item.getData();
 				if (property.equals("value")) { //$NON-NLS-1$
 					String oldValue = (String) fValues.get(var.getId());
 					fValues.put(var.getId(), value);
@@ -236,7 +225,7 @@ public class SnippetVariableTableViewer {
 	}
 
 	public String getValue(ISnippetVariable var) {
-		return getValue(var.getId());
+		return getValue(((SnippetVariable) var).getId());
 	}
 
 	public String getValue(String id) {
@@ -266,7 +255,7 @@ public class SnippetVariableTableViewer {
 		if (fLibraryVariables != null) {
 			fValues = null;
 			for (int i = 0; i < fLibraryVariables.size(); i++) {
-				ISnippetVariable var = (ISnippetVariable) fLibraryVariables.get(i);
+				SnippetVariable var = (SnippetVariable) fLibraryVariables.get(i);
 				getValues().put(var.getId(), var.getDefaultValue());
 			}
 		}

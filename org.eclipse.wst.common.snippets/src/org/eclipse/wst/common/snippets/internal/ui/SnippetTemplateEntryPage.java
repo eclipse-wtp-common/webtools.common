@@ -10,19 +10,15 @@
  *******************************************************************************/
 package org.eclipse.wst.common.snippets.internal.ui;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.gef.palette.PaletteEntry;
 import org.eclipse.gef.ui.palette.customize.DefaultEntryPage;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.wst.common.snippets.internal.Logger;
-import org.eclipse.wst.common.snippets.internal.PluginRecord;
+import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.editors.ISnippetEditor;
 import org.eclipse.wst.common.snippets.internal.editors.VariableItemEditor;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry;
-import org.osgi.framework.Bundle;
+import org.eclipse.wst.common.snippets.internal.palette.SnippetPaletteItem;
 
 
 public class SnippetTemplateEntryPage extends DefaultEntryPage implements ModifyListener {
@@ -36,11 +32,11 @@ public class SnippetTemplateEntryPage extends DefaultEntryPage implements Modify
 
 	public void createControl(Composite parent, PaletteEntry entry) {
 		super.createControl(parent, entry);
-		editor = getEditor((ISnippetItem) entry);
+		editor = getEditor((SnippetPaletteItem) entry);
 		if (editor != null) {
 			snippetsCustomizer.activeEditors.add(editor);
 			editor.addModifyListener(this);
-			editor.setItem((ISnippetItem) entry);
+			editor.setItem((SnippetPaletteItem) entry);
 			editor.createContents((Composite) getControl());
 			// it can't be known in advance since the editor is unknown as
 			// well
@@ -48,58 +44,10 @@ public class SnippetTemplateEntryPage extends DefaultEntryPage implements Modify
 		}
 	}
 
-	protected ISnippetEditor getEditor(ISnippetItem item) {
+	protected ISnippetEditor getEditor(SnippetPaletteItem item) {
 		ISnippetEditor snippetEditor = null;
-
-		String editorClassName = item.getEditorClassName();
-
-		// ignore the version
-		Bundle bundle = null;
-		if (item.getSourceType() == ISnippetsEntry.SNIPPET_SOURCE_PLUGINS) {
-			PluginRecord pluginRecord = (PluginRecord) item.getSourceDescriptor();
-			if (pluginRecord != null) {
-				bundle = Platform.getBundle(pluginRecord.getPluginName());
-			}
-		}
-
-		boolean editorSpecified = editorClassName != null && editorClassName.length() > 0;
-
-		if (editorSpecified) {
-			Class theClass = null;
-			try {
-				if (editorClassName != null && editorClassName.length() > 0) {
-					if ( bundle != null && bundle.getState() != Bundle.UNINSTALLED) {
-						theClass = bundle.loadClass(editorClassName);
-					} else {
-						ClassLoader classLoader = getClass().getClassLoader();
-						theClass = classLoader != null ? classLoader.loadClass(editorClassName) : Class.forName(editorClassName); 
-					}
-				}
-			}
-			catch (ClassNotFoundException e) {
-				Logger.logException("Could not load ISnippetEditor class", e); //$NON-NLS-1$
-			}
-			if (theClass != null) {
-				try {
-					snippetEditor = (ISnippetEditor) theClass.newInstance();
-				}
-				catch (IllegalAccessException e) {
-					Logger.logException("Could not access ISnippetEditor class", e); //$NON-NLS-1$
-				}
-				catch (InstantiationException e) {
-					Logger.logException("Could not instantiate ISnippetEditor class", e); //$NON-NLS-1$
-				}
-			}
-		}
-
-		if (snippetEditor == null && !editorSpecified) {
-			try {
-				snippetEditor = (ISnippetEditor) DEFAULT_EDITOR_CLASS.newInstance();
-			}
-			catch (IllegalAccessException e) {
-			}
-			catch (InstantiationException e) {
-			}
+		if (item.getSourceType() != ISnippetsEntry.SNIPPET_SOURCE_PLUGINS) {
+			snippetEditor = new VariableItemEditor();
 		}
 		return snippetEditor;
 	}

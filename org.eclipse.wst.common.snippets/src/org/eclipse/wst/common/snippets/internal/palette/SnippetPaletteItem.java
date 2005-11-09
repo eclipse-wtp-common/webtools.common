@@ -19,14 +19,13 @@ import java.util.List;
 import org.eclipse.gef.palette.PaletteContainer;
 import org.eclipse.gef.palette.PaletteTemplateEntry;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.wst.common.snippets.internal.ISnippetCategory;
-import org.eclipse.wst.common.snippets.internal.ISnippetVariable;
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetItem;
-
+import org.eclipse.wst.common.snippets.core.ISnippetCategory;
+import org.eclipse.wst.common.snippets.core.ISnippetItem;
+import org.eclipse.wst.common.snippets.core.ISnippetVariable;
 
 public class SnippetPaletteItem extends PaletteTemplateEntry implements ISnippetItem {
 
-	protected ISnippetCategory fCategory;
+	protected SnippetPaletteDrawer fCategory;
 	protected String fCategoryName;
 
 	protected String fClassName;
@@ -95,7 +94,7 @@ public class SnippetPaletteItem extends PaletteTemplateEntry implements ISnippet
 		return fFilters;
 	}
 
-	public String getIconName() {
+	public String getSmallIconName() {
 		return fIconName;
 	}
 
@@ -142,7 +141,7 @@ public class SnippetPaletteItem extends PaletteTemplateEntry implements ISnippet
 	}
 
 	public void setCategory(ISnippetCategory category) {
-		fCategory = category;
+		fCategory = (SnippetPaletteDrawer) category;
 		super.setParent((PaletteContainer) category);
 		if (fCategory == null)
 			setCategoryName(null);
@@ -169,7 +168,7 @@ public class SnippetPaletteItem extends PaletteTemplateEntry implements ISnippet
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry#setFilters(java.lang.String[])
+	 * @see org.eclipse.wst.common.snippets.ui.ISnippetsEntry#setFilters(java.lang.String[])
 	 */
 	public void setFilters(String[] filters) {
 		fFilters = filters;

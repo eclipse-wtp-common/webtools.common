@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.snippets.internal;
 
-import org.eclipse.wst.common.snippets.internal.provisional.ISnippetsEntry;
+import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
 
 /**
  * <p>

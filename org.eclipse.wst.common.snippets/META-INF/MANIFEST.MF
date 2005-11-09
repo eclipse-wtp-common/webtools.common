@@ -6,17 +6,17 @@ Bundle-Version: 1.0.0
 Bundle-Activator: org.eclipse.wst.common.snippets.internal.SnippetsPlugin
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
-Export-Package: org.eclipse.wst.common.snippets.internal,
+Export-Package: org.eclipse.wst.common.snippets.core,
+ org.eclipse.wst.common.snippets.internal,
  org.eclipse.wst.common.snippets.internal.actions,
  org.eclipse.wst.common.snippets.internal.dnd,
  org.eclipse.wst.common.snippets.internal.editors,
  org.eclipse.wst.common.snippets.internal.model,
  org.eclipse.wst.common.snippets.internal.palette,
- org.eclipse.wst.common.snippets.internal.provisional,
- org.eclipse.wst.common.snippets.internal.provisional.insertions,
  org.eclipse.wst.common.snippets.internal.team,
  org.eclipse.wst.common.snippets.internal.ui,
- org.eclipse.wst.common.snippets.internal.util
+ org.eclipse.wst.common.snippets.internal.util,
+ org.eclipse.wst.common.snippets.ui
 Require-Bundle: org.eclipse.gef,
  org.eclipse.ui.ide,
  org.eclipse.ui.workbench.texteditor,
