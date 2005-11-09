@@ -180,7 +180,9 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	      			IProject project = projects[i];
 	      			if (!moved.contains(project))
 		      			moveMetaDataFile(project);
-		      			project.getFolder(".deployables").delete(true,monitor);
+	      				IFolder depFolder = project.getFolder(".deployables");
+	      				if (depFolder.exists())
+	      					depFolder.delete(true,monitor);
 		      			project.refreshLocal(IResource.DEPTH_INFINITE,monitor);
 		      			moved.add(project);
 	      			}
