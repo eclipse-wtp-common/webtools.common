@@ -113,7 +113,7 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 	}
 
 	public boolean canFlipToNextPage() {
-		return isPageComplete() && (null == wizard || wizard.getPageGroupManager().hasNextPage());
+		return isPageComplete() && ((null != wizard && wizard.getPageGroupManager().hasNextPage() || null != getNextPage()));
 	}
 
 	/*
