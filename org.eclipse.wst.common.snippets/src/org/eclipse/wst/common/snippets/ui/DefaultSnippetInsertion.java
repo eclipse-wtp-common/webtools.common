@@ -65,8 +65,8 @@ public class DefaultSnippetInsertion implements ISnippetInsertion {
 		String replacement = getInsertString(editorPart.getEditorSite().getShell());
 		if (replacement != null && (replacement.length() > 0 || textSelection.getLength() > 0)) {
 			// Update EOLs (bug 80231)
-			replacement = StringUtils.replace(replacement, "\r\n", "\n");
-			replacement = StringUtils.replace(replacement, "\r", "\n");
+			replacement = StringUtils.replace(replacement, "\r\n", "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+			replacement = StringUtils.replace(replacement, "\r", "\n"); //$NON-NLS-1$ //$NON-NLS-2$
 
 			String preferredEOL = null;
 			if (document instanceof IDocumentExtension4) {
@@ -94,10 +94,10 @@ public class DefaultSnippetInsertion implements ISnippetInsertion {
 
 			}
 			if (preferredEOL == null) {
-				preferredEOL = System.getProperty("line.separator");
+				preferredEOL = System.getProperty("line.separator"); //$NON-NLS-1$
 			}
-			if (!"\n".equals(preferredEOL) && preferredEOL != null) {
-				replacement = StringUtils.replace(replacement, "\n", preferredEOL);
+			if (!"\n".equals(preferredEOL) && preferredEOL != null) { //$NON-NLS-1$
+				replacement = StringUtils.replace(replacement, "\n", preferredEOL); //$NON-NLS-1$
 			}
 
 			document.replace(textSelection.getOffset(), textSelection.getLength(), replacement);
@@ -115,11 +115,11 @@ public class DefaultSnippetInsertion implements ISnippetInsertion {
 			}
 			String content = VariableItemHelper.getInsertString(shell, item);
 			// Update EOLs (bug 80231)
-			String systemEOL = System.getProperty("line.separator");
-			content = StringUtils.replace(content, "\r\n", "\n");
-			content = StringUtils.replace(content, "\r", "\n");
-			if (!"\n".equals(systemEOL) && systemEOL != null) {
-				content = StringUtils.replace(content, "\n", systemEOL);
+			String systemEOL = System.getProperty("line.separator"); //$NON-NLS-1$
+			content = StringUtils.replace(content, "\r\n", "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+			content = StringUtils.replace(content, "\r", "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+			if (!"\n".equals(systemEOL) && systemEOL != null) { //$NON-NLS-1$
+				content = StringUtils.replace(content, "\n", systemEOL); //$NON-NLS-1$
 			}
 			event.data = content;
 		}

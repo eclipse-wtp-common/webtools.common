@@ -26,19 +26,19 @@ public class Logger {
 	/**
 	 * Controls debugging output for loading/storing of the Snippets model
 	 */
-	public static final boolean DEBUG_DEFINITION_PERSISTENCE = "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.wst.common.snippets/debug/definition_persistence")); //$NON-NLS-1$
+	public static final boolean DEBUG_DEFINITION_PERSISTENCE = "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.wst.common.snippets/debug/definition_persistence")); //$NON-NLS-1$ //$NON-NLS-2$
 	/**
 	 * Controls debugging output for drag and drop processing
 	 */
-	public static final boolean DEBUG_DRAG_AND_DROP = "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.wst.common.snippets/debug/drag_and_drop")); //$NON-NLS-1$
+	public static final boolean DEBUG_DRAG_AND_DROP = "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.wst.common.snippets/debug/drag_and_drop")); //$NON-NLS-1$ //$NON-NLS-2$
 	/**
 	 * Controls debugging output for selection within the view
 	 */
-	public static final boolean DEBUG_PALETTE_SELECTION = "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.wst.common.snippets/debug/palette_selection")); //$NON-NLS-1$
+	public static final boolean DEBUG_PALETTE_SELECTION = "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.wst.common.snippets/debug/palette_selection")); //$NON-NLS-1$ //$NON-NLS-2$
 	/**
 	 * Controls debugging output for replacement of the model's category list
 	 */
-	public static final boolean DEBUG_VIEWER_CONTENT = "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.wst.common.snippets/debug/viewer_content")); //$NON-NLS-1$
+	public static final boolean DEBUG_VIEWER_CONTENT = "true".equalsIgnoreCase(Platform.getDebugOption("org.eclipse.wst.common.snippets/debug/viewer_content")); //$NON-NLS-1$ //$NON-NLS-2$
 
 	public static final int ERROR = IStatus.ERROR; // 4
 	public static final int ERROR_DEBUG = 200 + ERROR;

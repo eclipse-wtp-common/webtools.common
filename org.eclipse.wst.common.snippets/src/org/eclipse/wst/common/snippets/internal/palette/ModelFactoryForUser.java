@@ -136,9 +136,9 @@ public class ModelFactoryForUser extends AbstractModelFactory {
 		 * (https://bugs.eclipse.org/bugs/show_bug.cgi?id=102941). Convert
 		 * '\n' to native EOL.
 		 */
-		String systemEOL = System.getProperty("line.separator");
-		if (!"\n".equals(systemEOL)) {
-			content = StringUtils.replace(content, "\n", systemEOL);
+		String systemEOL = System.getProperty("line.separator"); //$NON-NLS-1$
+		if (!"\n".equals(systemEOL)) { //$NON-NLS-1$
+			content = StringUtils.replace(content, "\n", systemEOL); //$NON-NLS-1$
 		}
 		return content;
 	}

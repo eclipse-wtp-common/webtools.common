@@ -137,8 +137,8 @@ public class UserModelDumper {
 			 * (https://bugs.eclipse.org/bugs/show_bug.cgi?id=102941).
 			 * Normalize to '\n'.
 			 */
-			contents = StringUtils.replace(contents, "\r\n", "\n");
-			contents = StringUtils.replace(contents, "\r", "\n");
+			contents = StringUtils.replace(contents, "\r\n", "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+			contents = StringUtils.replace(contents, "\r", "\n"); //$NON-NLS-1$ //$NON-NLS-2$
 			element.appendChild(doc.createCDATASection(contents));
 		}
 		return element;

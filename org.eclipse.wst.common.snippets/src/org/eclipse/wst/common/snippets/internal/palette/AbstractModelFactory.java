@@ -166,7 +166,7 @@ public abstract class AbstractModelFactory {
 			return;
 		Object propertyValue = value;
 		if (propertyValue == null) {
-			propertyValue = "";
+			propertyValue = ""; //$NON-NLS-1$
 		}
 		if (property.equals(SnippetsPlugin.NAMES.CATEGORY))
 			item.setCategoryName(propertyValue.toString());
@@ -185,7 +185,7 @@ public abstract class AbstractModelFactory {
 			return;
 		Object propertyValue = value;
 		if (propertyValue == null) {
-			propertyValue = "";
+			propertyValue = ""; //$NON-NLS-1$
 		}
 		if (property.equals(SnippetsPlugin.NAMES.DEFAULT))
 			variable.setDefaultValue(propertyValue.toString());
