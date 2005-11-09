@@ -62,7 +62,9 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 			IDataModel facetDM = null;
 			for (Iterator iterator = dmMap.values().iterator(); iterator.hasNext();) {
 				facetDM = (IDataModel) iterator.next();
-				actions.add(facetDM.getProperty(IFacetDataModelProperties.FACET_ACTION));
+				if(facetDM.getBooleanProperty(IFacetDataModelProperties.SHOULD_EXECUTE)){
+					actions.add(facetDM.getProperty(IFacetDataModelProperties.FACET_ACTION));
+				}
 			}
 			facetProj.modify(actions, monitor);
 			Set fixedFacets = new HashSet(), newFacetVersions = facetProj.getProjectFacets();

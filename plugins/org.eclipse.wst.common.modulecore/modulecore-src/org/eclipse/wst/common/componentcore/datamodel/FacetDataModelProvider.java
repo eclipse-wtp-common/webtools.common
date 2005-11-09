@@ -31,6 +31,7 @@ public class FacetDataModelProvider extends AbstractDataModelProvider implements
 		names.add(FACET_TYPE);
 		names.add(FACET_VERSION);
 		names.add(FACET_ACTION);
+		names.add(SHOULD_EXECUTE);
 		return names;
 	}
 
@@ -39,6 +40,8 @@ public class FacetDataModelProvider extends AbstractDataModelProvider implements
 			return ProjectFacetsManager.getProjectFacet(getStringProperty(FACET_ID)).getVersion(getStringProperty(FACET_VERSION_STR));
 		} else if (FACET_ACTION.equals(propertyName)) {
 			return new IFacetedProject.Action((Type) model.getProperty(IFacetDataModelProperties.FACET_TYPE), (IProjectFacetVersion) model.getProperty(IFacetDataModelProperties.FACET_VERSION), model);
+		} else if (SHOULD_EXECUTE.equals(propertyName)) {
+			return Boolean.TRUE;
 		}
 		return super.getDefaultProperty(propertyName);
 	}

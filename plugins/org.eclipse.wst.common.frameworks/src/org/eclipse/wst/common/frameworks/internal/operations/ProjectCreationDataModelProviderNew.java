@@ -75,7 +75,7 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 		} else if (propertyName.equals(PROJECT_NAME)) {
 			IStatus stat = model.validateProperty(PROJECT_NAME);
 			if (stat != OK_STATUS)
-				return false;
+				return true;
 			model.setProperty(PROJECT, getProject());
 			model.notifyPropertyChange(DEFAULT_LOCATION, IDataModel.VALUE_CHG);
 			if (getBooleanProperty(USE_DEFAULT_LOCATION)) {

@@ -55,7 +55,7 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 		model.addListener(this);
 		synchHelper = initializeSynchHelper(model);
 	}
-
+	
 	/**
 	 * @return
 	 */
@@ -113,7 +113,7 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 	}
 
 	public boolean canFlipToNextPage() {
-		return isPageComplete() && wizard.getPageGroupManager().hasNextPage();
+		return isPageComplete() && (null == wizard || wizard.getPageGroupManager().hasNextPage());
 	}
 
 	/*
@@ -121,7 +121,9 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 	 */
 	public void setWizard(IWizard newWizard) {
 		super.setWizard(newWizard);
-		wizard = (DataModelWizard) newWizard;
+		if(newWizard instanceof DataModelWizard){
+			wizard = (DataModelWizard) newWizard;
+		}
 	}
 
 	public IWizardPage getPreviousPage() {
@@ -184,7 +186,7 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 	protected void enter() {
 		try {
 			// Check to see if we are moving back one page.
-			if (wizard.getPreviousPage(wizard.getPageGroupManager().getCurrentPage()) == this) {
+			if (null != wizard && wizard.getPreviousPage(wizard.getPageGroupManager().getCurrentPage()) == this) {
 				wizard.getPageGroupManager().moveBackOnePage();
 			}
 
