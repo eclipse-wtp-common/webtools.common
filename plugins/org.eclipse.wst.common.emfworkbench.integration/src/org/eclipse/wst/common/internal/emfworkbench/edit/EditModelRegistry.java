@@ -141,6 +141,7 @@ public class EditModelRegistry extends RegistryReader {
 		} catch (Exception e) {
 			return null;
 		}
+		if (facetedProject == null) return null;
 		Iterator keys = factoryConfigurations.keySet().iterator();
 		while (keys.hasNext()) {
 			Object key = keys.next();

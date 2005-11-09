@@ -45,7 +45,7 @@
         enabled="true"
         pattern=".deployables"/>
 	</extension>
-
+	<extension-point id="ComponentProjectMigrator" name="ComponentProjectMigrator" schema="schema/ComponentProjectMigrator.exsd"/>
 	<extension-point id="artifactedit" name="Component Artifact Edit" />
 	
 	<!-- Contribute a URIResolverExtension for flexible projects -->
