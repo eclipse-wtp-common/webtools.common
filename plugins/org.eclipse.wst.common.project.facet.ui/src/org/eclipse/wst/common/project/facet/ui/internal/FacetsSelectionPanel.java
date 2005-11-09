@@ -139,7 +139,7 @@ public final class FacetsSelectionPanel
 
     private final ArrayList data;
     private final HashSet fixed;
-    private final HashSet base;
+    private final Set base;
     private final HashSet actions;
     private final ArrayList presets;
 
@@ -156,14 +156,15 @@ public final class FacetsSelectionPanel
     public FacetsSelectionPanel( final Composite parent,
                                  final int style,
                                  final IRuntime runtime,
-                                 final IWizardContext context )
+                                 final IWizardContext context,
+                                 final Set base )
     {
         super( parent, style );
 
         this.context = context;
         this.data = new ArrayList();
         this.fixed = new HashSet();
-        this.base = new HashSet();
+        this.base = ( base == null ? new HashSet() : base );
         this.actions = new HashSet();
         this.presets = new ArrayList();
         this.problems = Status.OK_STATUS;
@@ -572,7 +573,7 @@ public final class FacetsSelectionPanel
     {
         return this.runtimesPanel.getSelectedRuntime();
     }
-
+    
     public Set getSelectedProjectFacets()
     {
         final HashSet set = new HashSet();
@@ -604,8 +605,6 @@ public final class FacetsSelectionPanel
             trd.setCurrentVersion( fv );
 
             this.tree.setChecked( trd, true );
-            
-            this.base.add( fv );
         }
 
         this.tree.refresh();

@@ -44,6 +44,7 @@ public final class FacetsSelectionPage
 
 {
     private IWizardContext context;
+    private Set base;
     private IPreset initialPreset;
     private Set initialSelection;
     private final Set fixed;
@@ -52,7 +53,8 @@ public final class FacetsSelectionPage
     private FacetsSelectionPanel panel;
     private ArrayList listeners;
 
-    public FacetsSelectionPage( final IWizardContext context )
+    public FacetsSelectionPage( final IWizardContext context,
+                                final Set base )
     {
         super( "facets.selection.page" ); //$NON-NLS-1$
 
@@ -60,6 +62,7 @@ public final class FacetsSelectionPage
         setDescription( "Select facets for this project." );
 
         this.context = context;
+        this.base = base;
         this.initialPreset = null;
         this.initialSelection = null;
         this.fixed = new HashSet();
@@ -123,7 +126,7 @@ public final class FacetsSelectionPage
     {
         this.panel 
             = new FacetsSelectionPanel( parent, SWT.NONE, this.runtime, 
-                                        context );
+                                        this.context, this.base );
 
         this.panel.setFixedProjectFacets( this.fixed );
         
