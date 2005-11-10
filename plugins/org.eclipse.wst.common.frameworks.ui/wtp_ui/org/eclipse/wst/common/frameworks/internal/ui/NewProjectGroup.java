@@ -43,8 +43,8 @@ public class NewProjectGroup implements IProjectCreationPropertiesNew {
 	// constants
 	private static final int SIZING_TEXT_FIELD_WIDTH = 305;
 	// default values
-	private String defProjectNameLabel = WTPCommonUIResourceHandler.getString("Name_"); //$NON-NLS-1$
-	private String defBrowseButtonLabel = WTPCommonUIResourceHandler.getString("Browse_");//$NON-NLS-1$
+	private String defProjectNameLabel = WTPCommonUIResourceHandler.Name_; //$NON-NLS-1$
+	private String defBrowseButtonLabel = WTPCommonUIResourceHandler.Browse_;//$NON-NLS-1$
 	private static final String defDirDialogLabel = "Directory"; //$NON-NLS-1$
 
 	private DataModelSynchHelper synchHelper;

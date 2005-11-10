@@ -16,9 +16,7 @@
  */
 package org.eclipse.wst.common.frameworks.internal.ui;
 
-import java.text.MessageFormat;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import org.eclipse.osgi.util.NLS;
 
 /**
  * @author vijayb
@@ -26,51 +24,45 @@ import java.util.ResourceBundle;
  * TODO To change the template for this generated type comment go to Window - Preferences - Java -
  * Code Style - Code Templates
  */
-public class WTPCommonUIResourceHandler {
+public class WTPCommonUIResourceHandler extends NLS {
+	private static final String BUNDLE_NAME = "wtpcommonui";//$NON-NLS-1$
 
-	private static ResourceBundle fgResourceBundle;
-
-	/**
-	 * Returns the resource bundle used by all classes in this Project
-	 */
-	public static ResourceBundle getResourceBundle() {
-		try {
-			return ResourceBundle.getBundle("wtpcommonui"); //$NON-NLS-1$
-		} catch (MissingResourceException e) {
-			// does nothing - this method will return null and
-			// getString(String) will return the key
-			// it was called with
-		}
-		return null;
+	private WTPCommonUIResourceHandler() {
+		// Do not instantiate
 	}
 
-	public static String getString(String key) {
-		if (fgResourceBundle == null) {
-			fgResourceBundle = getResourceBundle();
-		}
+	public static String Project_location_;
+	public static String WTPOperationAction_UI_1;
+	public static String MasterDescriptor_UI_1;
+	public static String WTPOptionalOperationDataModel_UI_1;
+	public static String WTPOperationAction_UI_0;
+	public static String WTPOptionalOperationDataModel_UI_0;
+	public static String MULTIPLE_MODULE_PREF_TEXT;
+	public static String IActionWTPOperation_UI_0;
+	public static String MasterDescriptor_ERROR_2;
+	public static String Name_;
+	public static String WTPWizard_UI_1;
+	public static String WTPWizard_UI_0;
+	public static String Browse_;
+	public static String ExtendableWizard_UI_0;
+	public static String ExtendedWizardPage_ERROR_1;
+	public static String ExtendedWizardPage_ERROR_0;
+	public static String WTPActionDialog_UI_0;
+	public static String TimerQueue_ERROR_0;
+	public static String Timer_UI_1;
+	public static String Timer_UI_0;
+	public static String WizardPageExtensionManager_UI_4;
+	public static String WizardPageExtensionManager_UI_3;
+	public static String WizardPageExtensionManager_UI_2;
+	public static String WizardPageExtensionManager_UI_1;
+	public static String WizardPageExtensionManager_UI_0;
+	public static String Delete_UI_0;
 
-		if (fgResourceBundle != null) {
-			try {
-				return fgResourceBundle.getString(key);
-			} catch (MissingResourceException e) {
-				return "!" + key + "!"; //$NON-NLS-2$//$NON-NLS-1$
-			}
-		}
-		return "!" + key + "!"; //$NON-NLS-2$//$NON-NLS-1$
+	static {
+		NLS.initializeMessages(BUNDLE_NAME, WTPCommonUIResourceHandler.class);
 	}
 
 	public static String getString(String key, Object[] args) {
-
-		try {
-			return MessageFormat.format(getString(key), args);
-		} catch (IllegalArgumentException e) {
-			return getString(key);
-		}
-
+		return NLS.bind(key, args);
 	}
-
-	public static String getString(String key, Object[] args, int x) {
-		return getString(key);
-	}
-
 }

@@ -308,7 +308,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 				getContainer().run(runForked(), isCancelable(), runnable);
 			} catch (Throwable exc) {
 				Logger.getLogger().logError(exc);
-				ErrorDialog.openError(getShell(), WTPCommonUIResourceHandler.getString("WTPWizard_UI_0", new Object[]{getWindowTitle()}), WTPCommonUIResourceHandler.getString("WTPWizard_UI_1", new Object[]{getWindowTitle()}), exc, 0, false); //$NON-NLS-1$ //$NON-NLS-2$
+				ErrorDialog.openError(getShell(), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_0, new Object[]{getWindowTitle()}), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_1, new Object[]{getWindowTitle()}), exc, 0, false); //$NON-NLS-1$ //$NON-NLS-2$
 				status[0] = new Status(IStatus.ERROR, "id", 0, exc.getMessage(), exc); //$NON-NLS-1$
 			}
 
@@ -326,7 +326,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 				getContainer().run(runForked(), isCancelable(), runnable);
 			} catch (Throwable exc) {
 				Logger.getLogger().logError(exc);
-				ErrorDialog.openError(getShell(), WTPCommonUIResourceHandler.getString("WTPWizard_UI_0", new Object[]{getWindowTitle()}), WTPCommonUIResourceHandler.getString("WTPWizard_UI_1", new Object[]{getWindowTitle()}), exc, 0, false); //$NON-NLS-1$ //$NON-NLS-2$
+				ErrorDialog.openError(getShell(), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_0, new Object[]{getWindowTitle()}), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_1, new Object[]{getWindowTitle()}), exc, 0, false); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 	}
