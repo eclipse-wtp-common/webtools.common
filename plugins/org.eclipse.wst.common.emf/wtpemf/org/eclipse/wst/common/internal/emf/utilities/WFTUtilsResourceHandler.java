@@ -9,53 +9,38 @@
 package org.eclipse.wst.common.internal.emf.utilities;
 
 
-import java.text.MessageFormat;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import org.eclipse.osgi.util.NLS;
 
-public class WFTUtilsResourceHandler {
-	private static ResourceBundle fgResourceBundle;
+public class WFTUtilsResourceHandler extends NLS {
+	private static final String BUNDLE_NAME = "wftutils";//$NON-NLS-1$
 
-	/**
-	 * Returns the resource bundle used by all classes in this Project
-	 */
-	public static ResourceBundle getResourceBundle() {
-		try {
-			return ResourceBundle.getBundle("wftutils");//$NON-NLS-1$
-		} catch (MissingResourceException e) {
-			// does nothing - this method will return null and
-			// getString(String, String) will return the key
-			// it was called with
-		}
-		return null;
+	private WFTUtilsResourceHandler() {
+		// Do not instantiate
 	}
 
-	public static String getString(String key) {
-		if (fgResourceBundle == null)
-			fgResourceBundle = getResourceBundle();
+	public static String DANGLING_HREF_ERROR_;
+	public static String Integer_UI_;
+	public static String Failed_to_convert__0__to___ERROR_;
+	public static String Enumeration_UI_;
+	public static String Short_UI_;
+	public static String Character_UI_;
+	public static String Long_UI_;
+	public static String Double_UI_;
+	public static String ResourceDependencyRegister_ERROR_0;
+	public static String Float_UI_;
+	public static String Byte_UI_;
+	public static String Warning__Could_not_write_b_WARN_;
+	public static String Boolean_UI_;
+	public static String Stack_trace_of_nested_exce_ERROR_;
+	public static String MofObject_UI_;
+	public static String PleaseMigrateYourCodeError_ERROR_0;
+	public static String EMF2DOMAdapterImpl_ERROR_0;
 
-		if (fgResourceBundle != null) {
-			try {
-				return fgResourceBundle.getString(key);
-			} catch (MissingResourceException e) {
-				return "!" + key + "!";//$NON-NLS-2$//$NON-NLS-1$
-			}
-		}
-		return "!" + key + "!";//$NON-NLS-2$ //$NON-NLS-1$ 
+	static {
+		NLS.initializeMessages(BUNDLE_NAME, WFTUtilsResourceHandler.class);
 	}
 
 	public static String getString(String key, Object[] args) {
-
-		try {
-			return MessageFormat.format(getString(key), args);
-		} catch (IllegalArgumentException e) {
-			return getString(key);
-		}
-
-	}
-
-	public static String getString(String key, Object[] args, int x) {
-
-		return getString(key);
+		return NLS.bind(key, args);
 	}
 }

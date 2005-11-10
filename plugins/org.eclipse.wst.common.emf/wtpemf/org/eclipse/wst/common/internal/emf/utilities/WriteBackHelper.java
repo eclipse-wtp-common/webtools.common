@@ -131,6 +131,6 @@ public class WriteBackHelper {
 	 * Warn the user of problems during save.
 	 */
 	protected void warn(Resource res, Exception e) {
-		System.err.println(WFTUtilsResourceHandler.getString("Warning__Could_not_write_b_WARN_", new Object[]{res.getURI()})); //$NON-NLS-1$
+		System.err.println(WFTUtilsResourceHandler.getString(WFTUtilsResourceHandler.Warning__Could_not_write_b_WARN_, new Object[]{res.getURI()})); //$NON-NLS-1$
 	}
 }
