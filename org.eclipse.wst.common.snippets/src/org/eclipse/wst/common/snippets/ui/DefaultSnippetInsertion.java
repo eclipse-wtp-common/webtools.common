@@ -42,7 +42,6 @@ import org.eclipse.wst.common.snippets.internal.util.StringUtils;
  * will be replaced with user-supplied values at insertion time.
  */
 public class DefaultSnippetInsertion implements ISnippetInsertion {
-	private IEditorPart fEditorPart;
 	private ISnippetItem fItem = null;
 	private Transfer[] fSupportedTransfers = null;
 
@@ -50,6 +49,9 @@ public class DefaultSnippetInsertion implements ISnippetInsertion {
 		super();
 	}
 
+	/**
+	 * @return an array of Transfer types supported by this insertion
+	 */
 	protected Transfer[] createTransfers() {
 		return new Transfer[]{SnippetTextTransfer.getTransferInstance(), TextTransfer.getInstance()};
 	}
@@ -134,34 +136,34 @@ public class DefaultSnippetInsertion implements ISnippetInsertion {
 	}
 
 	protected String getInsertString(Shell host) {
-		if (getItem() == null)
+		if (fItem == null)
 			return ""; //$NON-NLS-1$
 		String insertString = null;
-		ISnippetItem item = getItem();
-		if (item.getVariables().length > 0) {
-			insertString = VariableItemHelper.getInsertString(host, item);
+		if (fItem.getVariables().length > 0) {
+			insertString = VariableItemHelper.getInsertString(host, fItem);
 		}
 		else {
-			insertString = StringUtils.replace(item.getContentString(), "${cursor}", ""); //$NON-NLS-1$ //$NON-NLS-2$
+			insertString = StringUtils.replace(fItem.getContentString(), "${cursor}", ""); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return insertString;
 	}
 
-	/**
-	 * Gets the Item.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return the ISnippetItem
+	 * @see org.eclipse.wst.common.snippets.ui.ISnippetInsertion#getTransfers()
 	 */
-	public final ISnippetItem getItem() {
-		return fItem;
-	}
-
 	public Transfer[] getTransfers() {
 		if (fSupportedTransfers == null)
 			fSupportedTransfers = createTransfers();
 		return fSupportedTransfers;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.wst.common.snippets.ui.ISnippetInsertion#insert(org.eclipse.ui.IEditorPart)
+	 */
 	public void insert(IEditorPart editorPart) {
 		if (editorPart == null)
 			return;
@@ -218,7 +220,7 @@ public class DefaultSnippetInsertion implements ISnippetInsertion {
 						doInsert(editor, editor, document, textSel);
 					}
 					catch (Exception t) {
-						Logger.logException("Could not insert " + getItem(), t); //$NON-NLS-1$
+						Logger.logException("Could not insert " + fItem, t); //$NON-NLS-1$
 						editor.getSite().getShell().getDisplay().beep();
 					}
 				}
@@ -227,21 +229,20 @@ public class DefaultSnippetInsertion implements ISnippetInsertion {
 	}
 
 
-	/**
-	 * Sets the fItem.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param fItem
-	 *            The ISnippetItem to use
+	 * @see org.eclipse.wst.common.snippets.ui.ISnippetInsertion#setEditorPart(org.eclipse.ui.IEditorPart)
 	 */
-	public final void setItem(ISnippetItem item) {
-		fItem = item;
-	}
-
-	public IEditorPart getEditorPart() {
-		return fEditorPart;
-	}
-
 	public void setEditorPart(IEditorPart editorPart) {
-		fEditorPart = editorPart;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.wst.common.snippets.ui.ISnippetInsertion#setItem(org.eclipse.wst.common.snippets.core.ISnippetItem)
+	 */
+	public void setItem(ISnippetItem item) {
+		fItem = item;
 	}
 }

@@ -40,7 +40,11 @@ public interface ISnippetsEntry {
 	 * @return a longer description to display for this item
 	 */
 	String getDescription();
-	
+
+	/**
+	 * @return the filters for which this entry will be shown (when filtering
+	 *         is enabled)
+	 */
 	String[] getFilters();
 
 	/**

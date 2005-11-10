@@ -11,5 +11,8 @@
 package org.eclipse.wst.common.snippets.core;
 
 public interface ISnippetCategory extends ISnippetsEntry {
+	/**
+	 * @return an array of the items within this category
+	 */
 	ISnippetItem[] getItems();
 }

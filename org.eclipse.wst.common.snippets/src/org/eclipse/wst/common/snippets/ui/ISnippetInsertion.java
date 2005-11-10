@@ -66,6 +66,13 @@ public interface ISnippetInsertion {
 	 */
 	void insert(IEditorPart editorPart);
 
+	/**
+	 * The target editorpart in the workbench window. May be used as a hint
+	 * for determining which Transfer types to allow and what transfer data to
+	 * set during Drag and Drop operations.
+	 * 
+	 * @param targetPart
+	 */
 	void setEditorPart(IEditorPart targetPart);
 
 	/**
