@@ -28,7 +28,7 @@ import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchEditResourceHand
 public class Snapshot extends RuntimeException {
 
 	public Snapshot() {
-		super(EMFWorkbenchEditResourceHandler.getString("Snapshot_ERROR_0")); //$NON-NLS-1$
+		super(EMFWorkbenchEditResourceHandler.Snapshot_ERROR_0); //$NON-NLS-1$
 	}
 
 	/*

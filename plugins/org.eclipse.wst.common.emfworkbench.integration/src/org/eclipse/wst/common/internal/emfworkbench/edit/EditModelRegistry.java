@@ -114,7 +114,7 @@ public class EditModelRegistry extends RegistryReader {
 		/* collect the resources from the parents */
 		while (nextEditModelInfo != null && (parentModelID = nextEditModelInfo.getParentModelID()) != null) {
 			if (visitedEditModels.containsKey(parentModelID))
-				throw new IllegalStateException(EMFWorkbenchEditResourceHandler.getString("EditModelRegistry_ERROR_0", new Object[]{editModelID})); //$NON-NLS-1$
+				throw new IllegalStateException(EMFWorkbenchEditResourceHandler.getString(EMFWorkbenchEditResourceHandler.EditModelRegistry_ERROR_0, new Object[]{editModelID})); //$NON-NLS-1$
 			visitedEditModels.put(parentModelID, null);
 			resources.addAll(getAllEditModelResources(parentModelID));
 			nextEditModelInfo = (EditModelInfo) factoryConfigurations.get(parentModelID);
@@ -189,7 +189,7 @@ public class EditModelRegistry extends RegistryReader {
 		if (editMdlInfo != null)
 			factory = editMdlInfo.getEditModelFactory();
 		else
-			throw new IllegalArgumentException(EMFWorkbenchEditResourceHandler.getString("EditModelRegistry_ERROR_2", new Object[]{editModelID})); //$NON-NLS-1$
+			throw new IllegalArgumentException(EMFWorkbenchEditResourceHandler.getString(EMFWorkbenchEditResourceHandler.EditModelRegistry_ERROR_2, new Object[]{editModelID})); //$NON-NLS-1$
 
 		return factory;
 	}
@@ -235,7 +235,7 @@ public class EditModelRegistry extends RegistryReader {
 						Logger.getLogger(EMFWorkbenchEditPlugin.ID).logError(e);
 					}
 				} else {
-					Logger.getLogger().logError(EMFWorkbenchEditResourceHandler.getString("EditModelRegistry_ERROR_1")); //$NON-NLS-1$
+					Logger.getLogger().logError(EMFWorkbenchEditResourceHandler.EditModelRegistry_ERROR_1); //$NON-NLS-1$
 				}
 			}
 			return this.factory;

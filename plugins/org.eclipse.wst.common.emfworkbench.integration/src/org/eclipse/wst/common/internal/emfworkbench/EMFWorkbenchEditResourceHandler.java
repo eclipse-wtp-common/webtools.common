@@ -16,9 +16,7 @@
  */
 package org.eclipse.wst.common.internal.emfworkbench;
 
-import java.text.MessageFormat;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import org.eclipse.osgi.util.NLS;
 
 /**
  * @author vijayb
@@ -26,53 +24,30 @@ import java.util.ResourceBundle;
  * TODO To change the template for this generated type comment go to Window - Preferences - Java -
  * Code Style - Code Templates
  */
-public class EMFWorkbenchEditResourceHandler {
+public class EMFWorkbenchEditResourceHandler extends NLS {
+	private static final String BUNDLE_NAME = "emfworkbenchedit";//$NON-NLS-1$
 
-
-
-	private static ResourceBundle fgResourceBundle;
-
-	/**
-	 * Returns the resource bundle used by all classes in this Project
-	 */
-	public static ResourceBundle getResourceBundle() {
-		try {
-			return ResourceBundle.getBundle("emfworkbenchedit"); //$NON-NLS-1$
-		} catch (MissingResourceException e) {
-			// does nothing - this method will return null and
-			// getString(String, String) will return the key
-			// it was called with
-		}
-		return null;
+	private EMFWorkbenchEditResourceHandler() {
+		// Do not instantiate
 	}
 
-	public static String getString(String key) {
-		if (fgResourceBundle == null) {
-			fgResourceBundle = getResourceBundle();
-		}
+	public static String ClientAccessRegistryException_UI_1;
+	public static String ClientAccessRegistryException_UI_0;
+	public static String Snapshot_ERROR_0;
+	public static String EditModelRegistry_ERROR_2;
+	public static String EditModelRegistry_ERROR_1;
+	public static String EditModelRegistry_ERROR_0;
+	public static String AdapterFactoryDescriptor_ERROR_1;
+	public static String AdapterFactoryDescriptor_ERROR_0;
+	public static String DynamicAdapterFactory_ERROR_0;
+	public static String ClientAccessRegistry_ERROR_1;
+	public static String ClientAccessRegistry_ERROR_0;
 
-		if (fgResourceBundle != null) {
-			try {
-				return fgResourceBundle.getString(key);
-			} catch (MissingResourceException e) {
-				return "!" + key + "!"; //$NON-NLS-2$//$NON-NLS-1$
-			}
-		}
-		return "!" + key + "!"; //$NON-NLS-2$//$NON-NLS-1$ 
+	static {
+		NLS.initializeMessages(BUNDLE_NAME, EMFWorkbenchEditResourceHandler.class);
 	}
 
 	public static String getString(String key, Object[] args) {
-
-		try {
-			return MessageFormat.format(getString(key), args);
-		} catch (IllegalArgumentException e) {
-			return getString(key);
-		}
-
-	}
-
-	public static String getString(String key, Object[] args, int x) {
-
-		return getString(key);
+		return NLS.bind(key, args);
 	}
 }

@@ -36,7 +36,7 @@ public class ClientAccessRegistry {
 				this.baseSet.add(snapshot);
 
 			} else
-				throw new ClientAccessRegistryException(EMFWorkbenchEditResourceHandler.getString("ClientAccessRegistry_ERROR_0"), accessorKey); //$NON-NLS-1$
+				throw new ClientAccessRegistryException(EMFWorkbenchEditResourceHandler.ClientAccessRegistry_ERROR_0, accessorKey); //$NON-NLS-1$
 
 		} else
 			complain();

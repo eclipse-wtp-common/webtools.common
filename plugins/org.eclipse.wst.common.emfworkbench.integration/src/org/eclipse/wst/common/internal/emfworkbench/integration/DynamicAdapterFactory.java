@@ -518,7 +518,7 @@ public class DynamicAdapterFactory implements AdapterFactory, IChangeNotifier, I
 
 	private AdapterFactory createAdapterFactory(Object project, EPackage ePackage) {
 		if (ePackage == null)
-			throw new IllegalArgumentException(EMFWorkbenchEditResourceHandler.getString("DynamicAdapterFactory_ERROR_0")); //$NON-NLS-1$
+			throw new IllegalArgumentException(EMFWorkbenchEditResourceHandler.DynamicAdapterFactory_ERROR_0); //$NON-NLS-1$
 
 		return createAdapterFactory(project, AdapterFactoryRegistry.instance().getDescriptors(ePackage, viewID));
 
