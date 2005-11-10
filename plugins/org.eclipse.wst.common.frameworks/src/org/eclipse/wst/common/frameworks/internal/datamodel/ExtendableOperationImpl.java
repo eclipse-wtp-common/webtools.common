@@ -242,7 +242,7 @@ public final class ExtendableOperationImpl implements IDataModelOperation {
 					} else
 						localStatus = null;
 				} catch (Exception e) {
-					localStatus = new Status(IStatus.ERROR, WTPCommonPlugin.PLUGIN_ID, 0, WTPResourceHandler.getString(WTPResourceHandler._25, new Object[]{nestedOp.getClass().getName()}), e); //$NON-NLS-1$
+					localStatus = new Status(IStatus.ERROR, WTPCommonPlugin.PLUGIN_ID, 0, WTPResourceHandler.getString("25", new Object[]{nestedOp.getClass().getName()}), e); //$NON-NLS-1$
 				}
 				if (localStatus != null) {
 					if (returnStatus == null) {

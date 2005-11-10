@@ -35,8 +35,8 @@ import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 
 public final class DataModelImpl implements IDataModel, IDataModelListener {
 
-	private static final String PROPERTY_NOT_LOCATED_ = WTPResourceHandler._20;
-	private static final String NESTED_MODEL_NOT_LOCATED = WTPResourceHandler._21;
+	private static final String PROPERTY_NOT_LOCATED_ = WTPResourceHandler.getString("20"); //$NON-NLS-1$
+	private static final String NESTED_MODEL_NOT_LOCATED = WTPResourceHandler.getString("21"); //$NON-NLS-1$
 
 	private static final DataModelPropertyDescriptor[] NO_DESCRIPTORS = new DataModelPropertyDescriptor[0];
 

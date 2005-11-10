@@ -1,12 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 2001, 2005 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+
 package org.eclipse.wst.common.frameworks.internal;
-
-/*
- * Licensed Material - Property of IBM 
- * (C) Copyright IBM Corp. 2001, 2002 - All Rights Reserved. 
- * US Government Users Restricted Rights - Use, duplication or disclosure 
- * restricted by GSA ADP Schedule Contract with IBM Corp. 
- */
-
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jem.util.logger.proxy.Logger;
@@ -76,7 +79,7 @@ public class SaveHandlerHeadless implements ISaveHandler {
 	public boolean shouldContinueAndMakeFileEditable(org.eclipse.core.resources.IFile aFile) {
 		if (aFile == null)
 			return false;
-		String error = WTPResourceHandler.getString(WTPResourceHandler.Unable_to_save_read_only_f_ERROR_, new Object[]{aFile.getFullPath()}); //$NON-NLS-1$ = "Unable to save read-only file: "
+		String error = WTPResourceHandler.getString("Unable_to_save_read-only_f_ERROR_", new Object[]{aFile.getFullPath()}); //$NON-NLS-1$ = "Unable to save read-only file: "
 		Logger.getLogger().logError(error);
 		return false;
 	}

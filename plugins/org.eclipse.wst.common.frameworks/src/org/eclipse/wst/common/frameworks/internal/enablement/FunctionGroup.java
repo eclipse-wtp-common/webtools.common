@@ -85,7 +85,7 @@ public class FunctionGroup implements Comparable {
 			try {
 				groupInterface = (IGroupInitializer) element.createExecutableExtension(GROUP_INTIALIZER_CLASS_ATTR);
 			} catch (CoreException e) {
-				Logger.getLogger().logError(WTPResourceHandler.getString(WTPResourceHandler._29, new Object[]{GROUP_INTIALIZER_CLASS_ATTR, getInitalizerClassName(), getDeclaringExtensionName()}) + "\r\n"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-4$
+				Logger.getLogger().logError(WTPResourceHandler.getString("29", new Object[]{GROUP_INTIALIZER_CLASS_ATTR, getInitalizerClassName(), getDeclaringExtensionName()}) + "\r\n"); //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-4$
 				Logger.getLogger().logError(e);
 			}
 		return groupInterface;
@@ -131,7 +131,7 @@ public class FunctionGroup implements Comparable {
 	public boolean isMatch(String string) {
 		if (functionGroupPatternBindings == null) {
 			if (!errorReported) {
-				Logger.getLogger().logError(WTPResourceHandler.getString(WTPResourceHandler._30, new Object[]{getGroupID()})); //$NON-NLS-1$
+				Logger.getLogger().logError(WTPResourceHandler.getString("30", new Object[]{getGroupID()})); //$NON-NLS-1$
 				errorReported = true;
 			}
 			return false;
