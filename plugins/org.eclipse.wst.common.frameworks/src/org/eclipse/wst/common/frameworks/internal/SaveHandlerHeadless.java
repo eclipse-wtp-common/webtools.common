@@ -76,7 +76,7 @@ public class SaveHandlerHeadless implements ISaveHandler {
 	public boolean shouldContinueAndMakeFileEditable(org.eclipse.core.resources.IFile aFile) {
 		if (aFile == null)
 			return false;
-		String error = WTPResourceHandler.getString("Unable_to_save_read-only_f_ERROR_", new Object[]{aFile.getFullPath()}); //$NON-NLS-1$ = "Unable to save read-only file: "
+		String error = WTPResourceHandler.getString(WTPResourceHandler.Unable_to_save_read_only_f_ERROR_, new Object[]{aFile.getFullPath()}); //$NON-NLS-1$ = "Unable to save read-only file: "
 		Logger.getLogger().logError(error);
 		return false;
 	}

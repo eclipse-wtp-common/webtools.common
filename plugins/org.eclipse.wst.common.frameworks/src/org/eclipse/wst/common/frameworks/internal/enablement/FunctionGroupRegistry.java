@@ -224,11 +224,11 @@ public class FunctionGroupRegistry extends RegistryReader {
 		FunctionGroup group1 = getGroupByID(groupID1);
 		FunctionGroup group2 = getGroupByID(groupID2);
 		if (group1 == null) {
-			Logger.getLogger().logError(new IllegalArgumentException(WTPResourceHandler.getString("28", new Object[]{groupID1}))); //$NON-NLS-1$
+			Logger.getLogger().logError(new IllegalArgumentException(WTPResourceHandler.getString(WTPResourceHandler._28, new Object[]{groupID1}))); //$NON-NLS-1$
 			return -1;
 		}
 		if (group2 == null) {
-			Logger.getLogger().logError(new IllegalArgumentException(WTPResourceHandler.getString("28", new Object[]{groupID2}))); //$NON-NLS-1$
+			Logger.getLogger().logError(new IllegalArgumentException(WTPResourceHandler.getString(WTPResourceHandler._28, new Object[]{groupID2}))); //$NON-NLS-1$
 			return 1;
 		}
 
