@@ -155,7 +155,6 @@ public final class FacetsSelectionPanel
 
     public FacetsSelectionPanel( final Composite parent,
                                  final int style,
-                                 final IRuntime runtime,
                                  final IWizardContext context,
                                  final Set base )
     {
@@ -398,9 +397,7 @@ public final class FacetsSelectionPanel
 
         this.sform2.setWeights( weights2 );
         
-        this.runtimesPanel 
-            = new RuntimesPanel( this.sform1, SWT.NONE, this, runtime );
-        
+        this.runtimesPanel = new RuntimesPanel( this.sform1, SWT.NONE, this );
         this.runtimesPanel.setLayoutData( hhint( gdhfill(), 80 ) );
         
         this.runtimesPanel.addFilter
@@ -569,9 +566,14 @@ public final class FacetsSelectionPanel
         return action;
     }
     
-    public IRuntime getSelectedRuntime()
+    public IRuntime getRuntime()
     {
-        return this.runtimesPanel.getSelectedRuntime();
+        return this.runtimesPanel.getRuntime();
+    }
+    
+    public void setRuntime( final IRuntime runtime )
+    {
+        this.runtimesPanel.setRuntime( runtime );
     }
     
     public Set getSelectedProjectFacets()
@@ -664,22 +666,32 @@ public final class FacetsSelectionPanel
         this.tree.refresh();
     }
 
-    public void addListener( final Listener listener )
+    public void addProjectFacetsListener( final Listener listener )
     {
         this.listeners.add( listener );
     }
 
-    public void removeListener( final Listener listener )
+    public void removeProjectFacetsListener( final Listener listener )
     {
         this.listeners.remove( listener );
     }
 
-    private void notifyListeners()
+    private void notifyProjectFacetsListeners()
     {
         for( int i = 0, n = this.listeners.size(); i < n; i++ )
         {
             ( (Listener) this.listeners.get( i ) ).handleEvent( null );
         }
+    }
+    
+    public void addRuntimeListener( final Listener listener )
+    {
+        this.runtimesPanel.addRuntimeListener( listener );
+    }
+    
+    public void removeRuntimeListener( final Listener listener )
+    {
+        this.runtimesPanel.removeRuntimeListener( listener );
     }
 
     public void addSelectionChangedListener( final ISelectionChangedListener listener )
@@ -922,7 +934,7 @@ public final class FacetsSelectionPanel
             this.sform2.setMaximizedControl( null );
         }
 
-        notifyListeners();
+        notifyProjectFacetsListeners();
     }
     
     private void refreshPresetsCombo()

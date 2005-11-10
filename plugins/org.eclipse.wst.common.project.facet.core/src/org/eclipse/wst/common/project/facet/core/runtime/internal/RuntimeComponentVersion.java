@@ -104,7 +104,7 @@ public final class RuntimeComponentVersion
                         = NLS.bind( Resources.failedToCreate, ref.clname );
                     
                     final IStatus st
-                        = FacetCorePlugin.createErrorStatus( msg );
+                        = FacetCorePlugin.createErrorStatus( msg, e );
                     
                     throw new CoreException( st );
                 }

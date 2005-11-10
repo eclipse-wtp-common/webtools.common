@@ -104,4 +104,22 @@ public final class RuntimeComponent
         return res;
     }
 
+    public boolean equals( final Object obj )
+    {
+        if( obj instanceof RuntimeComponent )
+        {
+            final RuntimeComponent rc = (RuntimeComponent) obj;
+            
+            return this.rcv == rc.rcv && 
+                   this.properties.equals( rc.properties );
+        }
+        
+        return false;
+    }
+    
+    public int hashCode()
+    {
+        return this.rcv.hashCode();
+    }
+    
 }

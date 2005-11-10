@@ -39,6 +39,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
@@ -60,11 +61,12 @@ public final class RuntimesPanel
     private final TreeViewer runtimes;
     private final Button filterButton;
     private final Button bindButton;
-    private final Button newButton;
+    //private final Button newButton;
     private final FacetsSelectionPanel facetsSelectionPanel;
     private final Map facetFilters;
     private final Set filters;
     private IRuntime boundRuntime;
+    private final Set listeners;
     
     public interface IFilter
     {
@@ -73,21 +75,15 @@ public final class RuntimesPanel
 
     public RuntimesPanel( final Composite parent,
                           final int style,
-                          final FacetsSelectionPanel facetsSelectionPanel,
-                          final IRuntime runtime )
+                          final FacetsSelectionPanel facetsSelectionPanel )
     {
         super( parent, style );
 
         this.facetsSelectionPanel = facetsSelectionPanel;
         this.facetFilters = new HashMap();
         this.filters = new HashSet();
+        this.listeners = new HashSet();
 
-        if( runtime != null )
-        {
-            this.boundRuntime = runtime;
-            addProjectFacetsFilter( runtime );
-        }
-        
         // Layout the panel.
         
         final GridLayout layout = new GridLayout( 1, false );
@@ -157,16 +153,57 @@ public final class RuntimesPanel
             }
         );
         
-        this.newButton = new Button( buttons, SWT.PUSH );
-        this.newButton.setText( "New" );
-        this.newButton.setLayoutData( whint( new GridData(), 60 ) );
+        //this.newButton = new Button( buttons, SWT.PUSH );
+        //this.newButton.setText( "New" );
+        //this.newButton.setLayoutData( whint( new GridData(), 60 ) );
         
         updateButtons();
     }
     
-    public IRuntime getSelectedRuntime()
+    public IRuntime getRuntime()
     {
         return this.boundRuntime;
+    }
+    
+    public void setRuntime( final IRuntime runtime )
+    {
+        final IRuntime old = this.boundRuntime;
+        
+        if( old != null )
+        {
+            removeProjectFacetsFilter( old );
+            this.boundRuntime = null;
+            this.runtimes.update( old, null );
+        }
+        
+        this.boundRuntime = runtime;
+
+        if( runtime != null )
+        {
+            addProjectFacetsFilter( runtime );
+            this.runtimes.update( runtime, null );
+        }
+        
+        notifyRuntimeListeners();
+        updateButtons();
+    }
+    
+    public void addRuntimeListener( final Listener listener )
+    {
+        this.listeners.add( listener );
+    }
+    
+    public void removeRuntimeListener( final Listener listener )
+    {
+        this.listeners.remove( listener );
+    }
+    
+    private void notifyRuntimeListeners()
+    {
+        for( Iterator itr = this.listeners.iterator(); itr.hasNext(); )
+        {
+            ( (Listener) itr.next() ).handleEvent( null );
+        }
     }
     
     public void addFilter( final IFilter filter )
@@ -233,24 +270,14 @@ public final class RuntimesPanel
         
         final IRuntime runtime = (IRuntime) ssel.getFirstElement();
         
-        final IRuntime old = this.boundRuntime;
-        final boolean isBindAction = ( old != runtime );
-        
-        if( old != null )
+        if( this.boundRuntime.equals( runtime ) )
         {
-            removeProjectFacetsFilter( old );
-            this.boundRuntime = null;
-            this.runtimes.update( old, null );
+            setRuntime( null );
         }
-        
-        if( isBindAction )
+        else
         {
-            addProjectFacetsFilter( runtime );
-            this.boundRuntime = runtime;
-            this.runtimes.update( runtime, null );
+            setRuntime( runtime );
         }
-        
-        updateButtons();
     }
     
     private void updateButtons()
@@ -280,7 +307,7 @@ public final class RuntimesPanel
                 this.filterButton.setText( "Add Filter" );
             }
             
-            if( this.boundRuntime == runtime )
+            if( this.boundRuntime.equals( runtime ) )
             {
                 this.bindButton.setText( "Unbind" );
                 this.filterButton.setEnabled( false );
@@ -377,7 +404,8 @@ public final class RuntimesPanel
                     label.append( " <f>" );
                 }
                 
-                if( RuntimesPanel.this.boundRuntime == element )
+                if( RuntimesPanel.this.boundRuntime != null &&
+                    RuntimesPanel.this.boundRuntime.equals( element ) )
                 {
                     label.append( " <b>" );
                 }

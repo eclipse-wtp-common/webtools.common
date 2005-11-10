@@ -32,6 +32,7 @@ import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
+import org.eclipse.wst.common.project.facet.ui.AddRemoveFacetsWizard;
 import org.eclipse.wst.common.project.facet.ui.IWizardContext;
 
 /**
@@ -49,9 +50,9 @@ public final class FacetsSelectionPage
     private Set initialSelection;
     private final Set fixed;
     private FacetsSelectionPanel.IFilter[] filters;
-    private IRuntime runtime;
-    private FacetsSelectionPanel panel;
+    public FacetsSelectionPanel panel;
     private ArrayList listeners;
+    private ArrayList runtimeListeners;
 
     public FacetsSelectionPage( final IWizardContext context,
                                 final Set base )
@@ -67,8 +68,8 @@ public final class FacetsSelectionPage
         this.initialSelection = null;
         this.fixed = new HashSet();
         this.filters = new FacetsSelectionPanel.IFilter[ 0 ];
-        this.runtime = null;
         this.listeners = new ArrayList();
+        this.runtimeListeners = new ArrayList();
     }
 
     public void setInitialPreset( final IPreset preset )
@@ -92,11 +93,6 @@ public final class FacetsSelectionPage
         this.filters = filters;
     }
     
-    public void setRuntime( final IRuntime runtime )
-    {
-        this.runtime = runtime;
-    }
-    
     public Set getActions()
     {
         return this.panel.getActions();
@@ -117,16 +113,33 @@ public final class FacetsSelectionPage
         this.listeners.remove( listener );
     }
     
+    public final void addRuntimeListener( final Listener listener )
+    {
+        this.runtimeListeners.add( listener );
+    }
+    
+    public final void removeRuntimeListener( final Listener listener )
+    {
+        this.runtimeListeners.remove( listener );
+    }
+    
     public IRuntime getSelectedRuntime()
     {
-        return this.panel.getSelectedRuntime();
+        return this.panel.getRuntime();
     }
 
     public void createControl( final Composite parent )
     {
+        final AddRemoveFacetsWizard wizard 
+            = (AddRemoveFacetsWizard) getWizard();
+        
+        final IRuntime initialRuntime = wizard.getRuntime();
+        
         this.panel 
-            = new FacetsSelectionPanel( parent, SWT.NONE, this.runtime, 
-                                        this.context, this.base );
+            = new FacetsSelectionPanel( parent, SWT.NONE, this.context, 
+                                        this.base );
+        
+        this.panel.setRuntime( initialRuntime );
 
         this.panel.setFixedProjectFacets( this.fixed );
         
@@ -156,7 +169,7 @@ public final class FacetsSelectionPage
             }
         );
 
-        this.panel.addListener
+        this.panel.addProjectFacetsListener
         (
             new Listener()
             {
@@ -167,6 +180,17 @@ public final class FacetsSelectionPage
             }
         );
 
+        this.panel.addRuntimeListener
+        (
+            new Listener()
+            {
+                public void handleEvent( final Event event )
+                {
+                    handleRuntimeChangedEvent( event );
+                }
+            }
+        );
+        
         setControl( this.panel );
     }
 
@@ -202,6 +226,14 @@ public final class FacetsSelectionPage
         }
         
         setPageComplete( this.panel.isSelectionValid() );
+    }
+
+    private void handleRuntimeChangedEvent( final Event event )
+    {
+        for( int i = 0, n = this.runtimeListeners.size(); i < n; i++ )
+        {
+            ( (Listener) this.runtimeListeners.get( i ) ).handleEvent( event );
+        }
     }
     
     public void setVisible( final boolean visible )

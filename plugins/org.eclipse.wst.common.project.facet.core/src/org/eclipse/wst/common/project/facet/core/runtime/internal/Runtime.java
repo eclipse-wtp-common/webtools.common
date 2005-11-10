@@ -121,5 +121,24 @@ public final class Runtime
         
         return res;
     }
+    
+    public boolean equals( final Object obj )
+    {
+        if( obj instanceof Runtime )
+        {
+            final Runtime r = (Runtime) obj;
+            
+            return this.name.equals( r.name ) && 
+                   this.components.equals( r.components ) &&
+                   this.properties.equals( r.properties );
+        }
+        
+        return false;
+    }
+    
+    public int hashCode()
+    {
+        return this.name.hashCode();
+    }
 
 }

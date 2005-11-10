@@ -34,6 +34,7 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action.Type;
+import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.ui.internal.ConflictingFacetsFilter;
 import org.eclipse.wst.common.project.facet.ui.internal.FacetUiPlugin;
 import org.eclipse.wst.common.project.facet.ui.internal.FacetsSelectionPage;
@@ -55,6 +56,8 @@ public class AddRemoveFacetsWizard
     private FacetPages[] facetPages = new FacetPages[ 0 ];
     private Composite pageContainer;
     
+    private IRuntime initialRuntime;
+    
     public AddRemoveFacetsWizard( final IFacetedProject fproj )
     {
         this.fproj = fproj;
@@ -62,6 +65,40 @@ public class AddRemoveFacetsWizard
         setNeedsProgressMonitor( true );
         setForcePreviousAndNextButtons( true );
         setWindowTitle( "Add/Remove Project Facets" );
+    }
+    
+    public final IRuntime getRuntime()
+    {
+        if( this.facetsSelectionPage.panel == null )
+        {
+            return this.initialRuntime;
+        }
+        else
+        {
+            return this.facetsSelectionPage.panel.getRuntime();
+        }
+    }
+    
+    public final void setRuntime( final IRuntime runtime )
+    {
+        if( this.facetsSelectionPage.panel == null )
+        {
+            this.initialRuntime = runtime;
+        }
+        else
+        {
+            this.facetsSelectionPage.panel.setRuntime( runtime );
+        }
+    }
+    
+    public final void addRuntimeListener( final Listener listener )
+    {
+        this.facetsSelectionPage.addRuntimeListener( listener );
+    }
+    
+    public final void removeRuntimeListener( final Listener listener )
+    {
+        this.facetsSelectionPage.removeRuntimeListener( listener );
     }
     
     public void addPages()
@@ -81,7 +118,7 @@ public class AddRemoveFacetsWizard
             this.facetsSelectionPage.setInitialSelection( this.fproj.getProjectFacets() );
             this.facetsSelectionPage.setFixedProjectFacets( this.fproj.getFixedProjectFacets());
             this.facetsSelectionPage.setFilters( new FacetsSelectionPanel.IFilter[] { new ConflictingFacetsFilter( this.fproj.getFixedProjectFacets() ) } );
-            this.facetsSelectionPage.setRuntime( this.fproj.getRuntime() );
+            setRuntime( this.fproj.getRuntime() );
         }
         
         this.facetsSelectionPage.addSelectedFacetsChangedListener
