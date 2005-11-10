@@ -101,7 +101,7 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	public Resource prepareProjectModulesIfNecessary() throws CoreException {
 		ModuleMigratorManager manager = ModuleMigratorManager.getManager();
 		XMIResource res = (XMIResource) getPrimaryResource();
-		if ((!project.hasNature(FacetedProjectNature.NATURE_ID)) || !res.isLoaded()) {
+		if ((!project.hasNature(FacetedProjectNature.NATURE_ID)) || (res!=null && !res.isLoaded())) {
 			try {
 				if (!manager.isMigrating())
 					manager.migrateOldMetaData(getProject());
