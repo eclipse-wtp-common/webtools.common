@@ -10,34 +10,22 @@ package org.eclipse.wst.common.componentcore.internal;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashSet;
 
-import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.xmi.XMIResource;
-import org.eclipse.wst.common.componentcore.datamodel.ProjectMigratorDataModelProvider;
-import org.eclipse.wst.common.componentcore.datamodel.properties.IProjectMigratorDataModelProperties;
 import org.eclipse.wst.common.componentcore.internal.impl.WTPModulesResource;
 import org.eclipse.wst.common.componentcore.internal.impl.WTPModulesResourceFactory;
-import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.internal.emf.resource.ReferencedResource;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
-import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
+import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectNature;
 /**
  * Manages the underlying Module Structural Metamodel.
 * <a name="module-structural-model"/>
@@ -69,12 +57,7 @@ import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	
 	public static final String MODULE_CORE_ID = "moduleCoreId"; //$NON-NLS-1$ 
-	private boolean migrating;
-	private HashSet migrated = new HashSet();
-	private HashSet moved = new HashSet();
-  
-
-    public ModuleStructuralModel(String editModelID, EMFWorkbenchContext context, boolean readOnly) {
+	public ModuleStructuralModel(String editModelID, EMFWorkbenchContext context, boolean readOnly) {
         super(editModelID, context, readOnly);
     }
     /**
@@ -101,12 +84,13 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	 * @see org.eclipse.wst.common.internal.emfworkbench.integration.EditModel#getPrimaryRootObject()
 	 */
 	public EObject getPrimaryRootObject() {
-		
-		EObject modelRoot = super.getPrimaryRootObject();
-		if(modelRoot == null) {
+		try {
 			prepareProjectModulesIfNecessary();
-			return super.getPrimaryRootObject();
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		EObject modelRoot = super.getPrimaryRootObject();
 		return modelRoot;
 	}
        
@@ -114,11 +98,17 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 		return (WTPModulesResource) createResource(WTPModulesResourceFactory.WTP_MODULES_URI_OBJ);
 	}
 
-	public Resource prepareProjectModulesIfNecessary() {
-
+	public Resource prepareProjectModulesIfNecessary() throws CoreException {
+		ModuleMigratorManager manager = ModuleMigratorManager.getManager();
 		XMIResource res = (XMIResource) getPrimaryResource();
-		if (!res.isLoaded() && !migrating) {
-			migrateOldMetaData();
+		if ((!project.hasNature(FacetedProjectNature.NATURE_ID)) || !res.isLoaded()) {
+			try {
+				if (!manager.isMigrating())
+					manager.migrateOldMetaData(getProject());
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			res = (XMIResource) getPrimaryResource();
 		}
 		if(res == null)
@@ -131,88 +121,6 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 		return res;
 	}
 	
-	private synchronized void migrateOldMetaData() {
-		migrating = true;
-		moveOldMetaDataFile();
-		migrateComponentsIfNecessary();
-	}
-	private void migrateComponentsIfNecessary() {
-		
-		WorkspaceJob job = new WorkspaceJob("Adding Facets")
-	      {
-	        
-	        public IStatus runInWorkspace(IProgressMonitor monitor)
-	        {
-	          try
-	          {	
-	        	  IProject[] projects = WorkbenchResourceHelper.getWorkspace().getRoot().getProjects();
-			      for (int i = 0; i < projects.length; i++) {
-						IProject project = projects[i];
-						IDataModel dm = DataModelFactory.createDataModel(new ProjectMigratorDataModelProvider());
-						dm.setStringProperty(IProjectMigratorDataModelProperties.PROJECT_NAME,project.getName());
-						try {
-							dm.getDefaultOperation().execute(null,null);
-						} catch (ExecutionException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}}
-	          catch (Exception e)
-	          {
-	        	  return Status.CANCEL_STATUS;
-	          }
-	          return Status.OK_STATUS;
-	        }
-	      };
-	      job.schedule(50000);
-		
-	}
-	private void moveOldMetaDataFile() {
-		WorkspaceJob job = new WorkspaceJob("Migrating metadata")
-	      {
-	        
-	        public IStatus runInWorkspace(IProgressMonitor monitor)
-	        {
-	          try
-	          {
-	        	IProject[] projects = WorkbenchResourceHelper.getWorkspace().getRoot().getProjects();
-	      		for (int i = 0; i < projects.length; i++) {
-	      			IProject project = projects[i];
-	      			if (!moved.contains(project))
-		      			moveMetaDataFile(project);
-	      				IFolder depFolder = project.getFolder(".deployables");
-	      				if (depFolder.exists())
-	      					depFolder.delete(true,monitor);
-		      			project.refreshLocal(IResource.DEPTH_INFINITE,monitor);
-		      			moved.add(project);
-	      			}
-	      		}
-	          catch (Exception e)
-	          {
-	        	  return Status.CANCEL_STATUS;
-	          }
-	          return Status.OK_STATUS;
-	        }
-	      };
-	      job.schedule();
-	}
-	private void moveMetaDataFile(IProject project) {
-		IResource oldfile = project.findMember(".wtpmodules");
-		if (oldfile != null && oldfile.exists()) {
-			
-			try {
-				if (!migrated.contains(project)) {
-					IFolder settingsFolder = project.getFolder(".settings");
-					if (!settingsFolder.exists())
-						settingsFolder.create(true,true,null);
-					oldfile.move(new Path(".settings/.component"),true,null);
-					migrated.add(project);
-				}
-			} catch (CoreException e) {
-				Platform.getLog(ModulecorePlugin.getDefault().getBundle()).log(new Status(IStatus.ERROR, ModulecorePlugin.PLUGIN_ID, IStatus.ERROR, e.getMessage(), e));
-			}
-		}
-	}
 	public Object getAdapter(Class anAdapter) {
 		return Platform.getAdapterManager().getAdapter(this, anAdapter); 
 	}

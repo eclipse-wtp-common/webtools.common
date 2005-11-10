@@ -89,7 +89,8 @@ public class ArtifactEditAdapterFactory implements IAdapterFactory {
 			if (anAdaptableObject instanceof IVirtualComponent) {
 				ArtifactEditRegistryReader reader = ArtifactEditRegistryReader.instance();
 	    		IArtifactEditFactory factory = reader.getArtifactEdit(((IVirtualComponent)anAdaptableObject).getProject());
-	    		return factory.createArtifactEditForRead((IVirtualComponent)anAdaptableObject);
+	    		if (factory != null)
+	    			return factory.createArtifactEditForRead((IVirtualComponent)anAdaptableObject);
 			}
 		}
 		return null;

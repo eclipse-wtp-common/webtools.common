@@ -20,6 +20,7 @@ import java.util.Map;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -390,7 +391,12 @@ public class StructureEdit implements IEditModelHandler {
 	 * </p>
 	 */
 	public void prepareProjectComponentsIfNecessary() {
-		structuralModel.prepareProjectModulesIfNecessary();
+		try {
+			structuralModel.prepareProjectModulesIfNecessary();
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**

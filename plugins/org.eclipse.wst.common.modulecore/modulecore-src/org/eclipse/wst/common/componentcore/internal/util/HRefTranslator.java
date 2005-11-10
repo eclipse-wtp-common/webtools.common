@@ -58,6 +58,7 @@ public class HRefTranslator extends Translator {
 		WorkbenchComponent earComp = (WorkbenchComponent)anOwner.eContainer();
 		IVirtualComponent virtualComp = ComponentCore.createComponent(StructureEdit.getContainingProject(earComp));
 		ArtifactEdit edit = (ArtifactEdit)virtualComp.getAdapter(ArtifactEdit.class);
+		if (edit == null) return null;
 		Resource res = edit.getContentModelRoot().eResource();
 		return res.getEObject(aValue);
 	}
