@@ -64,7 +64,7 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 		private boolean supressNotification = false;
 
 		public void add(IDataModel facetDataModel) {
-			put(facetDataModel.getProperty(FacetDataModelProvider.FACET_ID), facetDataModel);
+			put(facetDataModel.getProperty(IFacetDataModelProperties.FACET_ID), facetDataModel);
 		}
 
 		public IDataModel getFacetDataModel(String facetID) {
