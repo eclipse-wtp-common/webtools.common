@@ -67,6 +67,10 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 			put(facetDataModel.getProperty(FacetDataModelProvider.FACET_ID), facetDataModel);
 		}
 
+		public IDataModel getFacetDataModel(String facetID) {
+			return (IDataModel)get(facetID);
+		}
+		
 		public void clear() {
 			try {
 				supressNotification = true;
@@ -122,6 +126,7 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 				}
 			}
 		}
+
 	}
 
 	public boolean propertySet(String propertyName, Object propertyValue) {

@@ -37,7 +37,12 @@ public interface IFacetProjectCreationDataModelProperties extends IDataModelProp
 	 */
 	public static final String FACET_RUNTIME = "IFacetProjectCreationDataModelProperties.FACET_RUNTIME"; //$NON-NLS-1$
 
+	/**
+	 * This map is used for tracking individual IDataModels implementing IFacetDataModelProperties.
+	 * The facet ids are the keys for retieving the specific IFacetataModelProperties IDataModels
+	 */
 	public interface FacetDataModelMap extends Map {
 		public void add(IDataModel facetDataModel);
+		public IDataModel getFacetDataModel(String facetID);
 	}
 }
