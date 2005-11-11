@@ -209,7 +209,7 @@ public class DataModelSynchHelper implements IDataModelListener {
 	 */
 	public void synchUIWithModel(final String propertyName, final int flag) {
 		if (null != propertyToWidgetHash && propertyToWidgetHash.containsKey(propertyName)) {
-			Display.getCurrent().syncExec(new Runnable() {
+			Display.getDefault().syncExec(new Runnable() {
 				public void run() {
 					try {
 						currentWidget = (Widget) propertyToWidgetHash.get(propertyName);
@@ -254,7 +254,7 @@ public class DataModelSynchHelper implements IDataModelListener {
 
 	private void setEnablement(final String propertyName, final boolean enabled) {
 		if (propertyToWidgetHash != null) {
-			Display.getCurrent().syncExec(new Runnable() {
+			Display.getDefault().syncExec(new Runnable() {
 				public void run() {
 					Control control = (Control) propertyToWidgetHash.get(propertyName);
 					if (control != null) {

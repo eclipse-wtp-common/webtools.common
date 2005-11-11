@@ -93,7 +93,7 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 					((IDataModel)lastValue).setProperty(FacetInstallDataModelProvider.MASTER_PROJECT_DM, null);
 				}
 				dm.setProperty(FACET_PROJECT_NAME, getDataModel().getProperty(FACET_PROJECT_NAME));
-				dm.setProperty(FacetInstallDataModelProvider.MASTER_PROJECT_DM, FacetProjectCreationDataModelProvider.this);
+				dm.setProperty(FacetInstallDataModelProvider.MASTER_PROJECT_DM, FacetProjectCreationDataModelProvider.this.model);
 				dm.addListener(this);
 				return lastValue;
 			} finally {
