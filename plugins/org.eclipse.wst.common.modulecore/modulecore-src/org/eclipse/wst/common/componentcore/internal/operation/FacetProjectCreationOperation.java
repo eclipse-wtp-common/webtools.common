@@ -47,15 +47,7 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		try {
-			IProject project = ProjectUtilities.getProject((String) model.getProperty(IFacetProjectCreationDataModelProperties.FACET_PROJECT_NAME));
-			IFacetedProject facetProj = null;
-			if (project.exists()) {
-				facetProj = ProjectFacetsManager.create(project, true, monitor);
-			} else {
-				String location = (String) model.getProperty(IProjectCreationPropertiesNew.PROJECT_LOCATION);
-				IPath locationPath = null == location ? null : new Path(location);
-				facetProj = ProjectFacetsManager.create(model.getStringProperty(IFacetProjectCreationDataModelProperties.FACET_PROJECT_NAME), locationPath, monitor);
-			}
+			IFacetedProject facetProj = createProject(monitor);
 
 			Map dmMap = (Map) model.getProperty(IFacetProjectCreationDataModelProperties.FACET_DM_MAP);
 			Set actions = new HashSet();
@@ -85,5 +77,20 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 		}
 		return OK_STATUS;
 	}
+
+	public IFacetedProject createProject(IProgressMonitor monitor) throws CoreException {
+		IProject project = ProjectUtilities.getProject((String) model.getProperty(IFacetProjectCreationDataModelProperties.FACET_PROJECT_NAME));
+		IFacetedProject facetProj = null;
+		if (project.exists()) {
+			facetProj = ProjectFacetsManager.create(project, true, monitor);
+		} else {
+			String location = (String) model.getProperty(IProjectCreationPropertiesNew.PROJECT_LOCATION);
+			IPath locationPath = null == location ? null : new Path(location);
+			facetProj = ProjectFacetsManager.create(model.getStringProperty(IFacetProjectCreationDataModelProperties.FACET_PROJECT_NAME), locationPath, monitor);
+		}
+		return facetProj;
+	}
+	
+	
 
 }

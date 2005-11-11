@@ -31,6 +31,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Table;
@@ -49,8 +50,8 @@ import org.eclipse.wst.common.frameworks.internal.ui.TimedModifyListener;
  * This class is EXPERIMENTAL and is subject to substantial changes.
  */
 public class DataModelSynchHelper implements IDataModelListener {
-	protected static final boolean isLinux = System.getProperty ("os.name").equals("Linux"); //$NON-NLS-1$ //$NON-NLS-2$
-	
+	protected static final boolean isLinux = System.getProperty("os.name").equals("Linux"); //$NON-NLS-1$ //$NON-NLS-2$
+
 	protected IDataModel dataModel;
 	protected Map widgetToPropertyHash;
 	protected Map propertyToWidgetHash;
@@ -78,23 +79,23 @@ public class DataModelSynchHelper implements IDataModelListener {
 	private TimedModifyListener timedModifyListener;
 
 	private class ComboListener implements SelectionListener, ModifyListener {
-		
+
 		public void modifyText(ModifyEvent e) {
 			if (ignoreModifyEvent)
 				return;
 			Combo combo = (Combo) e.getSource();
 			if (currentWidget == combo)
 				return;
-			
+
 			try {
 				currentWidgetFromEvent = combo;
 				String propertyName = (String) widgetToPropertyHash.get(combo);
 				DataModelPropertyDescriptor[] descriptors = dataModel.getValidPropertyDescriptors(propertyName);
 				String description = combo.getText();
-				//On a combo selection linux fires 2 events;
-				//the first clears the value which needs to be ignored when the type is not String
-				//the second sets the new value
-				if(isLinux && description.length()==0 && descriptors.length != 0 && !(descriptors[0].getPropertyValue() instanceof String)){
+				// On a combo selection linux fires 2 events;
+				// the first clears the value which needs to be ignored when the type is not String
+				// the second sets the new value
+				if (isLinux && description.length() == 0 && descriptors.length != 0 && !(descriptors[0].getPropertyValue() instanceof String)) {
 					return;
 				}
 				for (int i = 0; i < descriptors.length; i++) {
@@ -206,63 +207,61 @@ public class DataModelSynchHelper implements IDataModelListener {
 	 * @param propertyName
 	 * @link IDataModelListener for the flag values.
 	 */
-	public void synchUIWithModel(String propertyName, int flag) {
+	public void synchUIWithModel(final String propertyName, final int flag) {
 		if (null != propertyToWidgetHash && propertyToWidgetHash.containsKey(propertyName)) {
-			try {
-				currentWidget = (Widget) propertyToWidgetHash.get(propertyName);
-				if (currentWidget != null && currentWidget != currentWidgetFromEvent) {
-					ignoreModifyEvent = true;
+			Display.getCurrent().syncExec(new Runnable() {
+				public void run() {
 					try {
-						if (currentWidget instanceof Text)
-							setWidgetValue(propertyName, flag, (Text) currentWidget);
-						else if (currentWidget instanceof Combo) {
-							setWidgetValue(propertyName, flag, (Combo) currentWidget);
-						} else if (currentWidget instanceof Button)
-							setWidgetValue(propertyName, flag, (Button) currentWidget);
-						else if (currentWidget instanceof Label)
-							setWidgetValue(propertyName, flag, (Label) currentWidget);
-						else if (currentWidget instanceof List)
-							setWidgetValue(propertyName, flag, (List) currentWidget);
-						else if (currentWidget instanceof Table)
-							setWidgetValue(propertyName, flag, (Table) currentWidget);
-						else if (currentWidget instanceof Tree)
-							setWidgetValue(propertyName, flag, (Tree) currentWidget);
+						currentWidget = (Widget) propertyToWidgetHash.get(propertyName);
+						if (currentWidget != null && currentWidget != currentWidgetFromEvent) {
+							try {
+								if (currentWidget instanceof Text)
+									setWidgetValue(propertyName, flag, (Text) currentWidget);
+								else if (currentWidget instanceof Combo) {
+									setWidgetValue(propertyName, flag, (Combo) currentWidget);
+								} else if (currentWidget instanceof Button)
+									setWidgetValue(propertyName, flag, (Button) currentWidget);
+								else if (currentWidget instanceof Label)
+									setWidgetValue(propertyName, flag, (Label) currentWidget);
+								else if (currentWidget instanceof List)
+									setWidgetValue(propertyName, flag, (List) currentWidget);
+								else if (currentWidget instanceof Table)
+									setWidgetValue(propertyName, flag, (Table) currentWidget);
+								else if (currentWidget instanceof Tree)
+									setWidgetValue(propertyName, flag, (Tree) currentWidget);
+							} finally {
+								ignoreModifyEvent = false;
+							}
+							setEnablement((Control) currentWidget, dataModel.isPropertyEnabled(propertyName));
+						}
 					} finally {
-						ignoreModifyEvent = false;
+						currentWidget = null;
 					}
-					setEnablement(propertyName);
 				}
-			} finally {
-				currentWidget = null;
-			}
+			});
 		}
-	}
-
-	/**
-	 * @param control
-	 */
-	private void setEnablement(String propertyName) {
-		if (currentWidget == null)
-			return;
-		setEnablement((Control) currentWidget, dataModel.isPropertyEnabled(propertyName));
 	}
 
 	/**
 	 * @param control
 	 * @param enabled
 	 */
-	private void setEnablement(Control control, boolean enabled) {
+	protected void setEnablement(Control control, boolean enabled) {
 		if (control.isEnabled() != enabled)
 			control.setEnabled(enabled);
 		setDependentControlEnablement(control, enabled);
 	}
 
-	private void setEnablement(String propertyName, boolean enabled) {
+	private void setEnablement(final String propertyName, final boolean enabled) {
 		if (propertyToWidgetHash != null) {
-			Control control = (Control) propertyToWidgetHash.get(propertyName);
-			if (control != null) {
-				setEnablement(control, enabled);
-			}
+			Display.getCurrent().syncExec(new Runnable() {
+				public void run() {
+					Control control = (Control) propertyToWidgetHash.get(propertyName);
+					if (control != null) {
+						setEnablement(control, enabled);
+					}
+				}
+			});
 		}
 	}
 
