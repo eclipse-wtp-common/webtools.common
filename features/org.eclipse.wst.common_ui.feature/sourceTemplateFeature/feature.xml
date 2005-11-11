@@ -13,6 +13,10 @@
 	<license url="http://www.example.com/license">%license</license>
 	
 	<includes
+         id="org.eclipse.wst.common_core.feature"
+         version="0.0.0"/>
+         
+	<includes
          id="org.eclipse.wst.common_core.feature.source"
          version="0.0.0"/>
     <plugin
