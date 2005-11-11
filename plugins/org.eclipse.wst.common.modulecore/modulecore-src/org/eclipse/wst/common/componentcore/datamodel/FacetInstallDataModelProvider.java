@@ -21,6 +21,14 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 public class FacetInstallDataModelProvider extends FacetDataModelProvider implements IActionConfigFactory {
 
+	public static final String MASTER_PROJECT_DM = "FacetInstallDataModelProvider.MASTER_PROJECT_DM"; //$NON-NLS-1$
+	
+	public Set getPropertyNames() {
+		Set names = super.getPropertyNames();
+		names.add(MASTER_PROJECT_DM);
+		return names;
+	}
+	
 	public FacetInstallDataModelProvider() {
 		super();
 	}
