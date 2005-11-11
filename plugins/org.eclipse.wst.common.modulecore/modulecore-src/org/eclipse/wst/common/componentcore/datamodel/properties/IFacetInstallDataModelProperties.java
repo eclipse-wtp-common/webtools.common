@@ -10,6 +10,6 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.datamodel.properties;
 
-public interface IFacetInstalDataModelProperties extends IFacetDataModelProperties {
+public interface IFacetInstallDataModelProperties extends IFacetDataModelProperties {
 
 }
