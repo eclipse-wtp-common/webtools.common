@@ -26,12 +26,6 @@
          version="0.0.0"/>
 
    <plugin
-         id="org.eclipse.wst.common.tests"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
          id="org.eclipse.wst.common.tests.collector"
          download-size="0"
          install-size="0"
