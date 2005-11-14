@@ -10,7 +10,10 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.datamodel;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
@@ -71,8 +74,15 @@ public class FacetInstallDataModelProvider extends FacetDataModelProvider implem
 		if (FACET_VERSION.equals(propertyName)) {
 			if (null == cachedVersionDescriptors) {
 				Set versions = ProjectFacetsManager.getProjectFacet(getStringProperty(FACET_ID)).getVersions();
-				cachedVersionDescriptors = new DataModelPropertyDescriptor[versions.size()];
-				Iterator iterator = versions.iterator();
+				List list = Collections.list(Collections.enumeration(versions));
+				Collections.sort(list, new Comparator(){
+					public int compare(Object o1, Object o2) {
+						return ((IProjectFacetVersion)o1).getVersionString().compareTo(((IProjectFacetVersion)o2).getVersionString());
+					}
+				});
+				
+				cachedVersionDescriptors = new DataModelPropertyDescriptor[list.size()];
+				Iterator iterator = list.iterator();
 				for (int i = 0; i < cachedVersionDescriptors.length; i++) {
 					IProjectFacetVersion version = (IProjectFacetVersion) iterator.next();
 					cachedVersionDescriptors[i] = new DataModelPropertyDescriptor(version, version.getVersionString());
