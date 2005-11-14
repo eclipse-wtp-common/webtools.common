@@ -20,6 +20,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
@@ -107,7 +108,8 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 
 	public IStatus validate(String propertyName) {
 		if (propertyName.equals(PROJECT_NAME)) {
-			IStatus status = validateName();
+			String name = model.getStringProperty(PROJECT_NAME);
+			IStatus status = validateName( name );
 			if (!status.isOK())
 				return status;
 		}
@@ -158,17 +160,17 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 		return OK_STATUS;
 	}
 
-	private IStatus validateName() {
-		String name = getStringProperty(PROJECT_NAME);
+	public static IStatus validateName(String name) {
 		IStatus status = validateProjectName(name);
 		if (!status.isOK())
 			return status;
-		if (getProject().exists())
+		IProject project = ProjectUtilities.getProject( name );
+		if (project.exists())
 			return WTPCommonPlugin.createErrorStatus(WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_EXISTS_ERROR, new Object[]{name}));
 
 		if (!WTPPlugin.isPlatformCaseSensitive()) {
 			// now look for a matching case variant in the tree
-			IResource variant = ((Resource) getProject()).findExistingResourceVariant(getProject().getFullPath());
+			IResource variant = ((Resource) project).findExistingResourceVariant(project.getFullPath());
 			if (variant != null) {
 				// TODO Fix this string
 				return WTPCommonPlugin.createErrorStatus("Resource already exists with a different case."); //$NON-NLS-1$
@@ -176,6 +178,7 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 		}
 		return OK_STATUS;
 	}
+	
 
 	private IStatus validateLocation() {
 		String loc = (String) getProperty(PROJECT_LOCATION);
