@@ -16,3 +16,6 @@ org.eclipse.wst.common.environment/trace/command=true
 
 # Turn on emitter tracing
 org.eclipse.wst.common.environment/trace/emitter=true
+
+# Turn on web service ant tracing
+org.eclipse.wst.common.environment/trace/ws_ant=true
