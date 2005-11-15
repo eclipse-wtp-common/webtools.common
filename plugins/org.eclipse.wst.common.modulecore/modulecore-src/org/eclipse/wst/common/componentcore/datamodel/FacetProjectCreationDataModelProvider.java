@@ -138,6 +138,13 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 			}
 			IDataModel projModel = model.getNestedModel(NESTED_PROJECT_DM);
 			projModel.setProperty(IProjectCreationPropertiesNew.PROJECT_NAME, propertyValue);
+		}else if( FACET_RUNTIME.equals(propertyName)){
+				for (Iterator iterator = ((Map) getDataModel().getProperty(FACET_DM_MAP)).values().iterator(); iterator.hasNext();) {
+					IDataModel dm = (IDataModel)iterator.next();
+					if( dm.isProperty(FACET_RUNTIME)){
+						dm.setProperty(FACET_RUNTIME, propertyValue);
+					}
+				}			
 		}
 		return super.propertySet(propertyName, propertyValue);
 	}
@@ -148,10 +155,6 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 			setProperty(FACET_DM_MAP, obj);
 			return obj;
 		} 
-//		else if (FACET_RUNTIME.equals(propertyName)) {
-//			DataModelPropertyDescriptor[] runtimes = getValidPropertyDescriptors(FACET_RUNTIME);
-//			return runtimes.length > 0 ? runtimes[runtimes.length - 1].getPropertyValue() : null;
-//		}
 		return super.getDefaultProperty(propertyName);
 	}
 	
