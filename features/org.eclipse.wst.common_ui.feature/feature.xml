@@ -14,13 +14,14 @@
       %license
    </license>
 
-   <includes
-         id="org.eclipse.wst.common_core.feature"
-         version="0.0.0"/>
-
+   <requires>
+      <import feature="org.eclipse.gef" version="3.1.0"/>
+   </requires>
+   
    <includes
          id="org.eclipse.wst.common_userdoc.feature"
          version="0.0.0"/>
+
 
    <plugin
          id="org.eclipse.wst.command.env"
