@@ -117,7 +117,7 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 			addProjectModulesIfNecessary(res);
 		} catch (IOException e) {		
 			Platform.getLog(ModulecorePlugin.getDefault().getBundle()).log(new Status(IStatus.ERROR, ModulecorePlugin.PLUGIN_ID, IStatus.ERROR, e.getMessage(), e));
-		}
+		} 
 		return res;
 	}
 	
