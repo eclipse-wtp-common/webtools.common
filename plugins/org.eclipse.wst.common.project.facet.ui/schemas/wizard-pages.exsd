@@ -13,7 +13,8 @@
    <element name="extension">
       <complexType>
          <sequence>
-            <element ref="wizard-pages" minOccurs="1" maxOccurs="unbounded"/>
+            <element ref="wizard-pages" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="decorations" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -98,6 +99,47 @@
    <element name="config">
       <complexType>
          <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="decorations">
+      <complexType>
+         <sequence>
+            <element ref="icon"/>
+         </sequence>
+         <attribute name="facet" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="category" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="runtime-component-type" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="icon">
+      <complexType>
+         <attribute name="path" type="string" use="required">
             <annotation>
                <documentation>
                   
