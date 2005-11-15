@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.wst.common.project.facet.core.VersionFormatException;
 
 /**
@@ -26,6 +27,9 @@ import org.eclipse.wst.common.project.facet.core.VersionFormatException;
  */
 
 public interface IRuntimeComponentType
+
+    extends IAdaptable
+    
 {
     /**
      * Returns the runtime component type id.
@@ -111,15 +115,5 @@ public interface IRuntimeComponentType
     Comparator getVersionComparator()
     
         throws CoreException;
-    
-    /**
-     * Returns the path that can be used to find the icon to be used with this
-     * runtime component type, or <code>null</code> if the default icon should 
-     * be used.
-     * 
-     * @return the icon path, or <code>null</code>
-     */
-    
-    String getIconPath();
     
 }

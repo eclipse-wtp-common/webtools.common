@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.wst.common.project.facet.core.IListener;
 import org.eclipse.wst.common.project.facet.core.runtime.internal.RuntimeManagerImpl;
 
 /**
@@ -161,6 +162,16 @@ public final class RuntimeManager
                                                             final Map properties )
     {
         return RuntimeManagerImpl.createRuntimeComponent( rcv, properties );
+    }
+    
+    public static void addRuntimeListener( final IListener listener )
+    {
+        RuntimeManagerImpl.addRuntimeListener( listener );
+    }
+
+    public static void removeRuntimeListener( final IListener listener )
+    {
+        RuntimeManagerImpl.removeRuntimeListener( listener );
     }
     
 }

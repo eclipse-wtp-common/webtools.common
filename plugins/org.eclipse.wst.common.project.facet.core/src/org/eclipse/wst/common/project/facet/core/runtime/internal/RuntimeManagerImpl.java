@@ -14,6 +14,7 @@ package org.eclipse.wst.common.project.facet.core.runtime.internal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.common.project.facet.core.IListener;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
@@ -38,7 +40,6 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeBridge;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentType;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentVersion;
-import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -47,18 +48,24 @@ import org.osgi.framework.Bundle;
 public final class RuntimeManagerImpl
 {
     private static final String EXTENSION_ID = "runtimes";
+    private static final String BRIDGES_EXTENSION_ID = "runtimeBridges";
     
     private static final IndexedSet runtimeComponentTypes;
     private static final IndexedSet runtimes;
     private static final List mappings;
+    private static final Map bridges;
+    private static final Set listeners;
     
     static
     {
         runtimeComponentTypes = new IndexedSet();
         runtimes = new IndexedSet();
         mappings = new ArrayList();
+        bridges = new HashMap();
+        listeners = new HashSet();
         
         readMetadata();
+        readBridgesExtensions();
     }
     
     private RuntimeManagerImpl() {}
@@ -111,57 +118,70 @@ public final class RuntimeManagerImpl
     
     public static Set getRuntimes()
     {
-        bridge();
-        return (Set) runtimes.clone();
+        synchronized( runtimes )
+        {
+            bridge();
+            return (Set) runtimes.clone();
+        }
     }
     
     public static Set getRuntimes( final Set facets )
     {
-        bridge();
-        
-        final HashSet result = new HashSet();
-        
-        for( Iterator itr1 = runtimes.iterator(); itr1.hasNext(); )
+        synchronized( runtimes )
         {
-            final IRuntime r = (IRuntime) itr1.next();
-            boolean supports = true;
+            bridge();
             
-            for( Iterator itr2 = facets.iterator(); itr2.hasNext(); )
+            final HashSet result = new HashSet();
+            
+            for( Iterator itr1 = runtimes.iterator(); itr1.hasNext(); )
             {
-                if( ! r.supports( (IProjectFacetVersion) itr2.next() ) )
+                final IRuntime r = (IRuntime) itr1.next();
+                boolean supports = true;
+                
+                for( Iterator itr2 = facets.iterator(); itr2.hasNext(); )
                 {
-                    supports = false;
-                    break;
+                    if( ! r.supports( (IProjectFacetVersion) itr2.next() ) )
+                    {
+                        supports = false;
+                        break;
+                    }
+                }
+                
+                if( supports )
+                {
+                    result.add( r );
                 }
             }
             
-            if( supports )
-            {
-                result.add( r );
-            }
+            return result;
         }
-        
-        return result;
     }
     
     public static boolean isRuntimeDefined( final String name )
     {
-        bridge();
-        return runtimes.containsKey( name );
+        synchronized( runtimes )
+        {
+            bridge();
+            return runtimes.containsKey( name );
+        }
     }
     
     public static IRuntime getRuntime( final String name )
     {
-        bridge();
-        final IRuntime runtime = (IRuntime) runtimes.get( name );
-        
-        if( runtime == null )
+        synchronized( runtimes )
         {
-            final String msg = "Could not find runtime " + name + ".";
-            throw new IllegalArgumentException( msg );
+            bridge();
+            
+            final IRuntime runtime = (IRuntime) runtimes.get( name );
+            
+            if( runtime == null )
+            {
+                final String msg = "Could not find runtime " + name + ".";
+                throw new IllegalArgumentException( msg );
+            }
+            
+            return runtime;
         }
-        
-        return runtime;
     }
     
     public static IRuntime defineRuntime( final String name,
@@ -193,6 +213,8 @@ public final class RuntimeManagerImpl
             
             runtimes.add( r.getName(), r );
             
+            notifyRuntimeListeners();
+            
             return r;
         }
     }
@@ -201,7 +223,41 @@ public final class RuntimeManagerImpl
     {
         synchronized( runtimes )
         {
-            runtimes.delete( runtime.getName() );
+            if( runtimes.delete( runtime.getName() ) )
+            {
+                notifyRuntimeListeners();
+            }
+        }
+    }
+    
+    public static void addRuntimeListener( final IListener listener )
+    {
+        synchronized( listeners )
+        {
+            listeners.add( listener );
+        }
+    }
+    
+    public static void removeRuntimeListener( final IListener listener )
+    {
+        synchronized( listeners )
+        {
+            listeners.remove( listener );
+        }
+    }
+    
+    private static void notifyRuntimeListeners()
+    {
+        for( Iterator itr = listeners.iterator(); itr.hasNext(); )
+        {
+            try
+            {
+                ( (IListener) itr.next() ).handle();
+            }
+            catch( Exception e )
+            {
+                FacetCorePlugin.log( e );
+            }
         }
     }
     
@@ -268,32 +324,115 @@ public final class RuntimeManagerImpl
         return result;
     }
     
-    private static boolean bridging = false;
-    
     private static void bridge()
     {
-        if( ! bridging )
+        boolean modified = false;
+        
+        for( Iterator itr1 = bridges.entrySet().iterator(); itr1.hasNext(); )
         {
-            bridging = true;
+            final Map.Entry entry = (Map.Entry) itr1.next();
+            final String brid = (String) entry.getKey();
+            final IRuntimeBridge br = (IRuntimeBridge) entry.getValue();
+            
+            // Find the runtimes belonging to this bridge that are currently
+            // in the system.
+            
+            final HashMap existing = new HashMap();
+            
+            for( Iterator itr2 = runtimes.iterator(); itr2.hasNext(); )
+            {
+                final Object obj = itr2.next();
+                
+                if( obj instanceof BridgedRuntime )
+                {
+                    final BridgedRuntime bridged = (BridgedRuntime) obj;
+                    
+                    if( bridged.getBridgeId().equals( brid ) )
+                    {
+                        existing.put( bridged.getNativeRuntimeId(), bridged );
+                    }
+                }
+            }
+            
+            // Get the new set of exported runtimes.
+            
+            final Set exported;
             
             try
             {
-                // This is just a hack that needs to be replaced as soon as possible.
-                
-                final Bundle bundle = Platform.getBundle( "org.eclipse.jst.server.core" );
-                
-                final Class cl = bundle.loadClass( "org.eclipse.jst.server.core.internal.RuntimeBridge" );
-                ( (IRuntimeBridge) cl.newInstance() ).port();
+                exported = br.getExportedRuntimeNames();
             }
-            catch( Exception e )
+            catch( CoreException e )
             {
                 FacetCorePlugin.log( e );
+                
+                for( Iterator itr2 = existing.values().iterator(); 
+                     itr2.hasNext(); )
+                {
+                    runtimes.remove( ( (IRuntime) itr2 ).getName() );
+                    modified = true;
+                }
+                
+                continue;
             }
-            finally
+            
+            // Remove the absolete entries.
+            
+            for( Iterator itr2 = existing.values().iterator(); itr2.hasNext(); )
             {
-                bridging = false;
+                final BridgedRuntime r = (BridgedRuntime) itr2.next();
+                
+                if( ! exported.contains( r.getNativeRuntimeId() ) )
+                {
+                    runtimes.delete( r.getName() );
+                    modified = true;
+                }
+            }
+            
+            // Create the new entries.
+            
+            for( Iterator itr2 = exported.iterator(); itr2.hasNext(); )
+            {
+                final String id = (String) itr2.next();
+                
+                if( ! existing.containsKey( id ) )
+                {
+                    try
+                    {
+                        final IRuntimeBridge.IStub stub = br.bridge( id );
+                        
+                        final BridgedRuntime r 
+                            = new BridgedRuntime( brid, id, stub );
+                        
+                        r.setName( createUniqueRuntimeName( id ) );
+                        
+                        runtimes.add( r.getName(), r );
+                        modified = true;
+                    }
+                    catch( CoreException e )
+                    {
+                        FacetCorePlugin.log( e );
+                    }
+                }
+            }
+            
+            if( modified )
+            {
+                notifyRuntimeListeners();
             }
         }
+    }
+    
+    private static String createUniqueRuntimeName( final String suggestion )
+    {
+        String name = suggestion;
+        
+        for( int i = 1; runtimes.contains( name ); i++ )
+        {
+            name = suggestion + " (" + i + ")";
+        }
+        
+        return name;
     }
     
     private static void readMetadata()
@@ -400,10 +539,6 @@ public final class RuntimeManagerImpl
                 }
                 
                 rct.setVersionComparator( clname );
-            }
-            else if( childName.equals( "icon" ) )
-            {
-                rct.setIconPath( child.getValue().trim() );
             }
         }
         
@@ -682,6 +817,76 @@ public final class RuntimeManagerImpl
         }
         
         mappings.add( m );
+    }
+    
+    private static void readBridgesExtensions()
+    {
+        final IExtensionRegistry registry = Platform.getExtensionRegistry();
+        
+        final IExtensionPoint point 
+            = registry.getExtensionPoint( FacetCorePlugin.PLUGIN_ID, 
+                                          BRIDGES_EXTENSION_ID );
+        
+        if( point == null )
+        {
+            throw new RuntimeException( "Extension point not found!" );
+        }
+        
+        final ArrayList cfgels = new ArrayList();
+        final IExtension[] extensions = point.getExtensions();
+        
+        for( int i = 0; i < extensions.length; i++ )
+        {
+            final IConfigurationElement[] elements 
+                = extensions[ i ].getConfigurationElements();
+            
+            for( int j = 0; j < elements.length; j++ )
+            {
+                cfgels.add( elements[ j ] );
+            }
+        }
+        
+        for( int i = 0, n = cfgels.size(); i < n; i++ )
+        {
+            final IConfigurationElement config
+                = (IConfigurationElement) cfgels.get( i );
+            
+            if( config.getName().equals( "bridge" ) )
+            {
+                final String id = config.getAttribute( "id" );
+
+                if( id == null )
+                {
+                    reportMissingAttribute( config, "id" );
+                    return;
+                }
+                
+                final String clname = config.getAttribute( "class" );
+
+                if( clname == null )
+                {
+                    reportMissingAttribute( config, "class" );
+                    return;
+                }
+                
+                final String pluginId = config.getNamespace();
+                
+                final Object br;
+                
+                try
+                {
+                    br = FacetCorePlugin.instantiate( pluginId, clname,
+                                                      IRuntimeBridge.class );
+                }
+                catch( CoreException e )
+                {
+                    FacetCorePlugin.log( e );
+                    continue;
+                }
+                
+                bridges.put( id, br );
+            }
+        }
     }
     
     private static void reportMissingAttribute( final IConfigurationElement el,

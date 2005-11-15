@@ -12,6 +12,11 @@
     id="runtimes"
     name="Runtimes Extension Point"
     schema="schemas/runtimes.exsd"/>
+
+  <extension-point 
+    id="runtimeBridges"
+    name="Runtime Bridges Extension Point"
+    schema="schemas/runtimeBridges.exsd"/>
   
   <extension
     id="nature"

@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.common.project.facet.core.ICategory;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 
@@ -28,10 +29,9 @@ public final class Category
     
 {
     private String id = null;
+    private String plugin = null;
     private String label = null;
     private String description = null;
-    private String iconPath = null;
-    private String plugin = null;
     private HashSet facets = new HashSet();
     private Set facetsReadOnly = Collections.unmodifiableSet( this.facets );
     
@@ -45,6 +45,16 @@ public final class Category
     void setId( final String id )
     {
         this.id = id;
+    }
+    
+    public String getPluginId()
+    {
+        return this.plugin;
+    }
+    
+    void setPluginId( final String plugin )
+    {
+        this.plugin = plugin;
     }
     
     public String getLabel() 
@@ -67,26 +77,6 @@ public final class Category
         this.description = description;
     }
     
-    public String getIconPath()
-    {
-        return this.iconPath;
-    }
-    
-    void setIconPath( final String iconPath )
-    {
-        this.iconPath = iconPath;
-    }
-    
-    public String getPlugin()
-    {
-        return this.plugin;
-    }
-    
-    void setPlugin( final String plugin )
-    {
-        this.plugin = plugin;
-    }
-    
     public Set getProjectFacets()
     {
         return this.facetsReadOnly;
@@ -95,6 +85,11 @@ public final class Category
     void addProjectFacet( final IProjectFacet f )
     {
         this.facets.add( f );
+    }
+    
+    public Object getAdapter( final Class type )
+    {
+        return Platform.getAdapterManager().loadAdapter( this, type.getName() );
     }
     
     public String toString()

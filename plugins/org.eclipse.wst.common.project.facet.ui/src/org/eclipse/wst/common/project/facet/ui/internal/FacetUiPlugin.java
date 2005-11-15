@@ -11,7 +11,6 @@
 
 package org.eclipse.wst.common.project.facet.ui.internal;
 
-import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -43,17 +42,18 @@ public final class FacetUiPlugin
     
     public static void log( final Exception e )
     {
-        final ILog log = getInstance().getLog();
         final String msg = e.getMessage();
-        
-        log.log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, e ) );
+        log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, e ) );
     }
 
+    public static void log( final IStatus status )
+    {
+        getInstance().getLog().log( status );
+    }
+    
     public static void log( final String msg )
     {
-        final ILog log = getInstance().getLog();
-        
-        log.log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, null ) );
+        log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, null ) );
     }
     
     public static IStatus createErrorStatus( final String msg,

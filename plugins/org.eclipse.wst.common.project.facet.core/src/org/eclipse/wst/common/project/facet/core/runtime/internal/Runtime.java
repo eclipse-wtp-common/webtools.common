@@ -14,14 +14,11 @@ package org.eclipse.wst.common.project.facet.core.runtime.internal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
-import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
 
 /**
@@ -30,11 +27,9 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
 
 public final class Runtime
 
-    implements IRuntime
+    extends AbstractRuntime
     
 {
-    private String name;
-    
     private final List components = new ArrayList();
     
     private final List componentsReadOnly 
@@ -53,16 +48,6 @@ public final class Runtime
     
     Runtime() {}
     
-    public String getName()
-    {
-        return this.name;
-    }
-    
-    void setName( final String name )
-    {
-        this.name = name;
-    }
-
     public List getRuntimeComponents()
     {
         return this.componentsReadOnly;
@@ -78,11 +63,6 @@ public final class Runtime
         return this.propertiesReadOnly;
     }
 
-    public String getProperty( final String key )
-    {
-        return (String) this.properties.get( key );
-    }
-    
     void setProperty( final String key,
                       final String value )
     {
@@ -100,45 +80,6 @@ public final class Runtime
             
             return this.supported.contains( fv );
         }
-    }
-
-    public Object getAdapter( final Class adapter )
-    {
-        Object res = Platform.getAdapterManager().loadAdapter( this, adapter.getName() );
-        
-        if( res == null )
-        {
-            for( Iterator itr = this.components.iterator(); itr.hasNext(); )
-            {
-                res = ( (IRuntimeComponent) itr.next() ).getAdapter( adapter );
-                
-                if( res != null )
-                {
-                    return res;
-                }
-            }
-        }
-        
-        return res;
-    }
-    
-    public boolean equals( final Object obj )
-    {
-        if( obj instanceof Runtime )
-        {
-            final Runtime r = (Runtime) obj;
-            
-            return this.name.equals( r.name ) && 
-                   this.components.equals( r.components ) &&
-                   this.properties.equals( r.properties );
-        }
-        
-        return false;
-    }
-    
-    public int hashCode()
-    {
-        return this.name.hashCode();
     }
 
 }

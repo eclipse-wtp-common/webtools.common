@@ -11,6 +11,7 @@
 
 package org.eclipse.wst.common.project.facet.ui.internal;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,11 +25,13 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
+import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
 import org.osgi.framework.Bundle;
 
 /**
@@ -39,23 +42,47 @@ public final class ProjectFacetsUiManagerImpl
 {
     private static final String EXTENSION_ID = "wizard";
 
-    private final HashMap metadata;
+    private static final HashMap metadata;
     
-    public ProjectFacetsUiManagerImpl()
+    /**
+     * Maps either IProjectFacet or IRuntimeComponentType to an ImageDescriptor.
+     */
+    
+    private static final HashMap icons = new HashMap();
+    private static ImageDescriptor defaultIcon;
+    
+    static
     {
-        this.metadata = new HashMap();
+        // Make sure that the core extensions are loaded first.
+        
+        ProjectFacetsManager.getProjectFacets();
+        RuntimeManager.getRuntimeComponentTypes();
+        
+        metadata = new HashMap();
+        
+        final Bundle bundle = Platform.getBundle( FacetUiPlugin.PLUGIN_ID );
+        final URL url = bundle.getEntry( "images/unknown.gif" );
+        defaultIcon = ImageDescriptor.createFromURL( url );
         
         readExtensions();
+    }
+    
+    private ProjectFacetsUiManagerImpl() {}
+    
+    public static ImageDescriptor getIcon( final Object obj )
+    {
+        final ImageDescriptor imgdesc = (ImageDescriptor) icons.get( obj );
+        return imgdesc != null ? imgdesc : defaultIcon;
     }
     
     /**
      * @return (element type: {@see IFacetWizardPage})
      */
     
-    public List getWizardPages( final Action.Type actionType,
-                                final IProjectFacetVersion f )
+    public static List getWizardPages( final Action.Type actionType,
+                                       final IProjectFacetVersion f )
     {
-        final WizardPagesInfo info = (WizardPagesInfo) this.metadata.get( f );
+        final WizardPagesInfo info = (WizardPagesInfo) metadata.get( f );
         
         if( info != null )
         {
@@ -70,8 +97,8 @@ public final class ProjectFacetsUiManagerImpl
         return Collections.EMPTY_LIST;
     }
 
-    private List getWizardPages( final String plugin,
-                                 final List clnames )
+    private static List getWizardPages( final String plugin,
+                                        final List clnames )
     {
         final List pages = new ArrayList();
         
@@ -90,8 +117,8 @@ public final class ProjectFacetsUiManagerImpl
         return pages;
     }
     
-    private Object create( final String plugin,
-                           final String clname )
+    private static Object create( final String plugin,
+                                  final String clname )
     
         throws CoreException
         
@@ -114,7 +141,7 @@ public final class ProjectFacetsUiManagerImpl
         }
     }
     
-    private void readExtensions()
+    private static void readExtensions()
     {
         final IExtensionRegistry registry = Platform.getExtensionRegistry();
         
@@ -143,11 +170,15 @@ public final class ProjectFacetsUiManagerImpl
                 {
                     readWizardPagesInfo( config );
                 }
+                else if( ename.equals( "decorations" ) )
+                {
+                    readDecorations( config );
+                }
             }
         }
     }
     
-    private void readWizardPagesInfo( final IConfigurationElement config )
+    private static void readWizardPagesInfo( final IConfigurationElement config )
     {
         final String id = config.getAttribute( "facet" );
 
@@ -233,10 +264,10 @@ public final class ProjectFacetsUiManagerImpl
             info.pagesets.put( actionType, readPageList( child ) );
         }
         
-        this.metadata.put( fv, info );
+        metadata.put( fv, info );
     }
 
-    private List readPageList( final IConfigurationElement config )
+    private static List readPageList( final IConfigurationElement config )
     {
         final ArrayList list = new ArrayList();
         final IConfigurationElement[] children = config.getChildren();
@@ -261,6 +292,106 @@ public final class ProjectFacetsUiManagerImpl
         }
         
         return list;
+    }
+    
+    private static void readDecorations( final IConfigurationElement config )
+    {
+        final String fid = config.getAttribute( "facet" );
+        final String cid = config.getAttribute( "category" );
+        final String rct = config.getAttribute( "runtime-component-type" );
+        
+        final Object target;
+        
+        if( fid != null )
+        {
+            if( ! ProjectFacetsManager.isProjectFacetDefined( fid ) )
+            {
+                final String msg
+                    = NLS.bind( Resources.facetNotDefined, 
+                                config.getNamespace(), fid );
+                
+                FacetUiPlugin.log( msg );
+                
+                return;
+            }
+            
+            target = ProjectFacetsManager.getProjectFacet( fid );
+        }
+        else if( cid != null )
+        {
+            if( ! ProjectFacetsManager.isCategoryDefined( cid ) )
+            {
+                final String msg
+                    = NLS.bind( Resources.categoryNotDefined, 
+                                config.getNamespace(), fid );
+                
+                FacetUiPlugin.log( msg );
+                
+                return;
+            }
+            
+            target = ProjectFacetsManager.getCategory( cid );
+        }
+        else if( rct != null )
+        {
+            if( ! RuntimeManager.isRuntimeComponentTypeDefined( rct ) )
+            {
+                final String msg
+                    = NLS.bind( Resources.runtimeComponentTypeNotDefined, 
+                                config.getNamespace(), rct );
+                
+                FacetUiPlugin.log( msg );
+                
+                return;
+            }
+            
+            target = RuntimeManager.getRuntimeComponentType( rct );
+        }
+        else
+        {
+            reportMissingAttribute( config, "facet" );
+            return;
+        }
+        
+        final IConfigurationElement[] children = config.getChildren();
+        
+        for( int i = 0; i < children.length; i++ )
+        {
+            final IConfigurationElement child = children[ i ];
+            final String childName = child.getName();
+            
+            if( childName.equals( "icon" ) )
+            {
+                final String path = child.getAttribute( "path" );
+                
+                if( path == null )
+                {
+                    reportMissingAttribute( child, "path" );
+                    return;
+                }
+                
+                final String plugin = config.getNamespace();
+                final Bundle bundle = Platform.getBundle( plugin );
+                final URL url = bundle.getEntry( path );
+                
+                if( url == null )
+                {
+                    final String msg
+                        = NLS.bind( Resources.iconNotFound, plugin, path );
+                    
+                    FacetUiPlugin.log( msg );
+                }
+                else
+                {
+                    final ImageDescriptor imgdesc
+                        = ImageDescriptor.createFromURL( url );
+                    
+                    icons.put( target, imgdesc );
+                }
+                
+                return;
+            }
+        }
     }
     
     private static void reportMissingAttribute( final IConfigurationElement el,
@@ -288,8 +419,11 @@ public final class ProjectFacetsUiManagerImpl
         public static String missingAttribute;
         public static String facetNotDefined;
         public static String facetVersionNotDefined;
+        public static String categoryNotDefined;
+        public static String runtimeComponentTypeNotDefined;
         public static String failedToCreate;
         public static String invalidActionType;
+        public static String iconNotFound;
         
         static
         {

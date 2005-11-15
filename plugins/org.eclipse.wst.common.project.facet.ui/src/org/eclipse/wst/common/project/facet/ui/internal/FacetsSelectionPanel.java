@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -50,7 +51,6 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -82,6 +82,7 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
+import org.eclipse.wst.common.project.facet.ui.IDecorationsProvider;
 import org.eclipse.wst.common.project.facet.ui.IWizardContext;
 import org.osgi.framework.Bundle;
 
@@ -1505,100 +1506,35 @@ public final class FacetsSelectionPanel
             {
                 return null;
             }
-
-            String plugin = null;
-            String iconPath = null;
+            
+            String id;
+            IAdaptable obj;
 
             if( element instanceof TableRowData )
             {
                 final IProjectFacet f
                     = ( (TableRowData) element ).getProjectFacet();
 
-                iconPath = f.getIconPath();
-
-                if( iconPath != null )
-                {
-                    plugin = f.getPluginId();
-                }
+                id = "f:" + f.getId();
+                obj = f;
             }
             else
             {
-                final ICategory category = (ICategory) element;
-
-                iconPath = category.getIconPath();
-
-                if( iconPath != null )
-                {
-                    plugin = category.getPlugin();
-                }
-            }
-
-            if( iconPath == null )
-            {
-                return getDefaultImage();
-            }
-            else
-            {
-                return getImage( plugin, iconPath );
-            }
-        }
-        
-        private Image getImage( final String plugin,
-                                final String iconPath )
-        {
-            final String key = plugin + ":" + iconPath;
-            Image image = this.imageRegistry.get( key );
-
-            if( image == null )
-            {
-                Bundle bundle = Platform.getBundle( plugin );
-                URL url = bundle.getEntry( iconPath );
-                
-                if( url == null )
-                {
-                    final String msg 
-                        = Resources.bind( Resources.iconNotFound, plugin,
-                                          iconPath );
-                    
-                    final IStatus status
-                        = new Status( IStatus.ERROR, FacetUiPlugin.PLUGIN_ID,
-                                      0, msg, null );
-                    
-                    FacetUiPlugin.getInstance().getLog().log( status );
-                    
-                    image = getDefaultImage();
-                    this.imageRegistry.put( key, image );
-                }
-                else
-                {
-                    this.imageRegistry.put( key, ImageDescriptor.createFromURL( url ) );
-                    image = this.imageRegistry.get( key );
-                }
+                id = "c:" + ( (ICategory) element ).getId();
+                obj = (IAdaptable) element;
             }
             
-            return image;
-        }
-        
-        private static final String DEFAULT_IMG_KEY = "#DEFAULT#";
-        private static final String DEFAULT_IMG_LOCATION = "images/unknown.gif";
-        
-        private Image getDefaultImage()
-        {
-            Image image = this.imageRegistry.get( DEFAULT_IMG_KEY );
-
+            Image image = this.imageRegistry.get( id );
+            
             if( image == null )
             {
-                final Bundle bundle 
-                    = Platform.getBundle( FacetUiPlugin.PLUGIN_ID );
+                final IDecorationsProvider decprov
+                    = (IDecorationsProvider) obj.getAdapter( IDecorationsProvider.class );
                 
-                final URL url = bundle.getEntry( DEFAULT_IMG_LOCATION );
-                
-                this.imageRegistry.put( DEFAULT_IMG_KEY, 
-                                        ImageDescriptor.createFromURL( url ) );
-                
-                image = this.imageRegistry.get( DEFAULT_IMG_KEY );
+                this.imageRegistry.put( id, decprov.getIcon() );
+                image = this.imageRegistry.get( id );
             }
-            
+
             return image;
         }
 
@@ -1816,20 +1752,6 @@ public final class FacetsSelectionPanel
 
         public void addListener( final ILabelProviderListener listener ) {}
         public void removeListener( ILabelProviderListener listener ) {}
-    }
-    
-    private static final class Resources
-    
-        extends NLS
-        
-    {
-        public static String iconNotFound;
-        
-        static
-        {
-            initializeMessages( FacetsSelectionPanel.class.getName(), 
-                                Resources.class );
-        }
     }
     
     private static final GridData gdfill()

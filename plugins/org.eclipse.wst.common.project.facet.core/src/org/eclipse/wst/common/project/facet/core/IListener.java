@@ -11,33 +11,11 @@
 
 package org.eclipse.wst.common.project.facet.core;
 
-import java.util.Set;
-
-import org.eclipse.core.runtime.IAdaptable;
-
 /**
- * Models a grouping of project facets that are intended to be selected and 
- * deselected as a set. This interface is not intended to be implemented by 
- * clients.
- * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
-public interface ICategory
-
-    extends IAdaptable
-    
+public interface IListener
 {
-    String getId();
-    String getPluginId();
-    String getLabel();
-    String getDescription();
-    
-    /**
-     * Returns the project facets that compose this category.
-     * 
-     * @return the member project facets (element type: {@see IProjectFacet})
-     */
-    
-    Set getProjectFacets();
+    void handle();
 }

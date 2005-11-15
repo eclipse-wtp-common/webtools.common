@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 
 /**
  * Contains metadata that describes a project facet. This interface is not 
@@ -25,6 +26,9 @@ import org.eclipse.core.runtime.CoreException;
  */
 
 public interface IProjectFacet
+
+    extends IAdaptable
+    
 {
     /**
      * Returns the project facet identifier. 
@@ -58,15 +62,6 @@ public interface IProjectFacet
      */
 
     String getDescription();
-    
-    /**
-     * Returns the path that can be used to find the icon to be used with the
-     * project facet, or <code>null</code> if the default icon should be used.
-     * 
-     * @return the icon path, or <code>null</code>
-     */
-    
-    String getIconPath();
     
     /**
      * Returns the category, if any, that this project facet belongs to.

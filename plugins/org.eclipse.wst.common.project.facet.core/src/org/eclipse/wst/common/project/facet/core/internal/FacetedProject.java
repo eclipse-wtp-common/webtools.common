@@ -38,7 +38,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -387,18 +386,6 @@ public final class FacetedProject
         }
         catch( Exception e )
         {
-            final IStatus cause;
-            
-            if( e instanceof CoreException )
-            {
-                cause = ( (CoreException) e ).getStatus();
-            }
-            else
-            {
-                cause = new Status( IStatus.ERROR, FacetCorePlugin.PLUGIN_ID,
-                                    0, e.getMessage() + "", e );
-            }
-            
             final String msg;
             
             if( type == IDelegate.Type.INSTALL )
@@ -424,9 +411,9 @@ public final class FacetedProject
                 msg = "Unknown delegate type!";
             }
             
-            final IStatus status 
-                = new MultiStatus( FacetCorePlugin.PLUGIN_ID, 0, 
-                                   new IStatus[] { cause }, msg,  null );
+            final IStatus status
+                = new Status( IStatus.ERROR, FacetCorePlugin.PLUGIN_ID, 0, 
+                              msg, e );
 
             throw new CoreException( status ); 
         }

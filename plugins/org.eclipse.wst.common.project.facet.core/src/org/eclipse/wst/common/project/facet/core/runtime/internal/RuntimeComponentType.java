@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.VersionFormatException;
 import org.eclipse.wst.common.project.facet.core.internal.Versionable;
@@ -41,7 +42,6 @@ public final class RuntimeComponentType
 
     private String id;
     private String plugin;
-    private String iconPath;
     
     public String getId()
     {
@@ -96,16 +96,11 @@ public final class RuntimeComponentType
         return (IRuntimeComponentVersion) max;
     }
     
-    public String getIconPath()
+    public Object getAdapter( final Class type )
     {
-        return this.iconPath;
+        return Platform.getAdapterManager().loadAdapter( this, type.getName() );
     }
-    
-    void setIconPath( final String iconPath )
-    {
-        this.iconPath = iconPath;
-    }
-    
+
     protected IVersionAdapter getVersionAdapter()
     {
         return VERSION_ADAPTER;
@@ -116,6 +111,5 @@ public final class RuntimeComponentType
         return NLS.bind( RuntimeManagerImpl.Resources.runtimeComponentVersionNotDefinedNoPlugin,
                          this.id, verstr );
     }
-
     
 }

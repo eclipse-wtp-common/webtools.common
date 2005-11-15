@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.ICategory;
 import org.eclipse.wst.common.project.facet.core.IDelegate;
@@ -49,7 +50,6 @@ public final class ProjectFacet
     private String plugin;
     private String label;
     private String description;
-    private String iconPath;
     private ICategory category;
     private final List actionDefinitions = new ArrayList();
     
@@ -93,16 +93,6 @@ public final class ProjectFacet
     void setDescription( final String description )
     {
         this.description = description;
-    }
-    
-    public String getIconPath()
-    {
-        return this.iconPath;
-    }
-    
-    void setIconPath( final String iconPath )
-    {
-        this.iconPath = iconPath;
     }
     
     public ICategory getCategory()
@@ -186,6 +176,11 @@ public final class ProjectFacet
     void addActionDefinition( final ActionDefinition actionDefinition )
     {
         this.actionDefinitions.add( actionDefinition );
+    }
+    
+    public Object getAdapter( final Class type )
+    {
+        return Platform.getAdapterManager().loadAdapter( this, type.getName() );
     }
     
     public String createVersionNotFoundErrMsg( final String verstr )

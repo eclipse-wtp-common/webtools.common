@@ -11,28 +11,13 @@
 
 package org.eclipse.wst.common.project.facet.ui;
 
-import java.util.List;
-
-import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
-import org.eclipse.wst.common.project.facet.ui.internal.ProjectFacetsUiManagerImpl;
+import org.eclipse.jface.resource.ImageDescriptor;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
-public final class ProjectFacetsUiManager 
+public interface IDecorationsProvider
 {
-    private ProjectFacetsUiManager() {}
-    
-    /**
-     * @return (element type: {@see IFacetWizardPage})
-     */
-    
-    public static List getWizardPages( final Action.Type actionType,
-                                       final IProjectFacetVersion f )
-    {
-        return ProjectFacetsUiManagerImpl.getWizardPages( actionType, f );
-    }
-
+    ImageDescriptor getIcon();
 }

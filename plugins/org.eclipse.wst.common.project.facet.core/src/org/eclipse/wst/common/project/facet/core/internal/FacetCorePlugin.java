@@ -11,10 +11,14 @@
 
 package org.eclipse.wst.common.project.facet.core.internal;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.osgi.util.NLS;
+import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -64,6 +68,57 @@ public final class FacetCorePlugin
                                              final Exception e )
     {
         return new Status( IStatus.ERROR, FacetCorePlugin.PLUGIN_ID, 0, msg, e );
+    }
+    
+    public static Object instantiate( final String pluginId,
+                                      final String clname,
+                                      final Class interfc )
+    
+        throws CoreException
+        
+    {
+        final Bundle bundle = Platform.getBundle( pluginId );
+        
+        final Object obj;
+        
+        try
+        {
+            final Class cl = bundle.loadClass( clname );
+            obj = cl.newInstance();
+        }
+        catch( Exception e )
+        {
+            final String msg
+                = NLS.bind( Resources.failedToCreate, clname );
+            
+            throw new CoreException( createErrorStatus( msg, e ) );
+        }
+        
+        if( ! interfc.isAssignableFrom( obj.getClass() ) )
+        {
+            final String msg
+                = NLS.bind( Resources.doesNotImplement, clname, 
+                            interfc.getClass().getName() );
+            
+            throw new CoreException( createErrorStatus( msg ) );
+        }
+        
+        return obj;
+    }
+    
+    private static final class Resources
+    
+        extends NLS
+        
+    {
+        public static String failedToCreate;
+        public static String doesNotImplement;
+        
+        static
+        {
+            initializeMessages( FacetCorePlugin.class.getName(), 
+                                Resources.class );
+        }
     }
     
 }

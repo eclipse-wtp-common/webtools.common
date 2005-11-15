@@ -837,7 +837,7 @@ public final class ProjectFacetsManagerImpl
     private void readCategory( final IConfigurationElement config )
     {
         final Category category = new Category();
-        category.setPlugin( config.getDeclaringExtension().getNamespace() );
+        category.setPluginId( config.getDeclaringExtension().getNamespace() );
         
         final String id = config.getAttribute( "id" );
 
@@ -863,10 +863,6 @@ public final class ProjectFacetsManagerImpl
             else if( childName.equals( "description" ) )
             {
                 category.setDescription( child.getValue().trim() );
-            }
-            else if( childName.equals( "icon" ) )
-            {
-                category.setIconPath( child.getValue().trim() );
             }
         }
         
@@ -901,10 +897,6 @@ public final class ProjectFacetsManagerImpl
             else if( childName.equals( "description" ) )
             {
                 descriptor.setDescription( child.getValue().trim() );
-            }
-            else if( childName.equals( "icon" ) )
-            {
-                descriptor.setIconPath( child.getValue().trim() );
             }
             else if( childName.equals( "version-comparator" ) )
             {

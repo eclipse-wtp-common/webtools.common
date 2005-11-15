@@ -11,15 +11,12 @@
 
 package org.eclipse.wst.common.project.facet.ui.internal;
 
-import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -31,6 +28,8 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -40,13 +39,14 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.wst.common.project.facet.core.IListener;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentType;
 import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
+import org.eclipse.wst.common.project.facet.ui.IDecorationsProvider;
 import org.eclipse.wst.common.project.facet.ui.IRuntimeComponentLabelProvider;
-import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -156,6 +156,27 @@ public final class RuntimesPanel
         //this.newButton = new Button( buttons, SWT.PUSH );
         //this.newButton.setText( "New" );
         //this.newButton.setLayoutData( whint( new GridData(), 60 ) );
+        
+        final IListener listener = new IListener()
+        {
+            public void handle()
+            {
+                RuntimesPanel.this.runtimes.refresh();
+            }
+        };
+        
+        RuntimeManager.addRuntimeListener( listener );
+        
+        addDisposeListener
+        ( 
+            new DisposeListener()
+            {
+                public void widgetDisposed( final DisposeEvent e )
+                {
+                    RuntimeManager.removeRuntimeListener( listener );
+                }
+            }
+        );
         
         updateButtons();
     }
@@ -270,7 +291,8 @@ public final class RuntimesPanel
         
         final IRuntime runtime = (IRuntime) ssel.getFirstElement();
         
-        if( this.boundRuntime.equals( runtime ) )
+        if( this.boundRuntime != null &&
+            this.boundRuntime.equals( runtime ) )
         {
             setRuntime( null );
         }
@@ -307,7 +329,8 @@ public final class RuntimesPanel
                 this.filterButton.setText( "Add Filter" );
             }
             
-            if( this.boundRuntime.equals( runtime ) )
+            if( this.boundRuntime != null && 
+                this.boundRuntime.equals( runtime ) )
             {
                 this.bindButton.setText( "Unbind" );
                 this.filterButton.setEnabled( false );
@@ -437,8 +460,7 @@ public final class RuntimesPanel
 
         public Image getImage( final Object element )
         {
-            String plugin = null;
-            String iconPath = null;
+            final IRuntimeComponentType rct;
 
             if( element instanceof IRuntime )
             {
@@ -447,36 +469,23 @@ public final class RuntimesPanel
                 final IRuntimeComponent rc 
                     = (IRuntimeComponent) r.getRuntimeComponents().get( 0 );
                 
-                final IRuntimeComponentType rct = rc.getRuntimeComponentType();
-                
-                plugin = rct.getPluginId();
-                iconPath = rct.getIconPath();
+                rct = rc.getRuntimeComponentType();
             }
             else
             {
                 final IRuntimeComponent rc = (IRuntimeComponent) element;
-                final IRuntimeComponentType rct = rc.getRuntimeComponentType();
-                
-                plugin = rct.getPluginId();
-                iconPath = rct.getIconPath();
+                rct = rc.getRuntimeComponentType();
             }
-
-            if( iconPath == null )
-            {
-                plugin = FacetUiPlugin.PLUGIN_ID;
-                iconPath = "images/unknown.gif";
-            }
-
-            final String key = plugin + ":" + iconPath;
-            Image image = this.imageRegistry.get( key );
-
+            
+            Image image = this.imageRegistry.get( rct.getId() );
+            
             if( image == null )
             {
-                final Bundle bundle = Platform.getBundle( plugin );
-                final URL url = bundle.getEntry( iconPath );
-
-                this.imageRegistry.put( key, ImageDescriptor.createFromURL( url ) );
-                image = this.imageRegistry.get( key );
+                final IDecorationsProvider decprov
+                    = (IDecorationsProvider) rct.getAdapter( IDecorationsProvider.class );
+                
+                this.imageRegistry.put( rct.getId(), decprov.getIcon() );
+                image = this.imageRegistry.get( rct.getId() );
             }
 
             return image;

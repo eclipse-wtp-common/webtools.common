@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.wizard.IWizardPage;
@@ -299,12 +300,12 @@ public class AddRemoveFacetsWizard
             
             if( te instanceof CoreException )
             {
-                final CoreException ce = (CoreException) te;
+                final IStatus st = ( (CoreException) te ).getStatus();
                 
                 ErrorDialog.openError( getShell(), Resources.errDlgTitle,
-                                       ce.getMessage(), ce.getStatus() );
+                                       st.getMessage(), st );
                 
-                FacetUiPlugin.log( ce );
+                FacetUiPlugin.log( st );
             }
             else
             {

@@ -15,15 +15,11 @@ import java.util.HashMap;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdapterFactory;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin;
 import org.eclipse.wst.common.project.facet.core.internal.IVersion;
 import org.eclipse.wst.common.project.facet.core.internal.Versionable;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentType;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentVersion;
-import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -74,7 +70,7 @@ public final class RuntimeComponentVersion
         return (Versionable) this.type;
     }
 
-    IAdapterFactory getAdapterFactory( final Class type )
+    public IAdapterFactory getAdapterFactory( final Class type )
     
         throws CoreException
         
@@ -91,23 +87,9 @@ public final class RuntimeComponentVersion
             if( factory instanceof PluginAndClass )
             {
                 final PluginAndClass ref = (PluginAndClass) factory;
-                final Bundle bundle = Platform.getBundle( ref.plugin );
                 
-                try
-                {
-                    final Class cl = bundle.loadClass( ref.clname );
-                    factory = cl.newInstance();
-                }
-                catch( Exception e )
-                {
-                    final String msg
-                        = NLS.bind( Resources.failedToCreate, ref.clname );
-                    
-                    final IStatus st
-                        = FacetCorePlugin.createErrorStatus( msg, e );
-                    
-                    throw new CoreException( st );
-                }
+                factory = FacetCorePlugin.instantiate( ref.plugin, ref.clname,
+                                                       IAdapterFactory.class );
 
                 this.adapterFactories.put( type.getName(), factory );
             }
@@ -138,20 +120,5 @@ public final class RuntimeComponentVersion
             this.clname = clname;
         }
     }
-    
-    private static final class Resources
-    
-        extends NLS
-        
-    {
-        public static String failedToCreate;
-        
-        static
-        {
-            initializeMessages( RuntimeComponentVersion.class.getName(), 
-                                Resources.class );
-        }
-    }
-    
     
 }
