@@ -8,6 +8,7 @@
 		<type name="ISnippetCategory" implement="false" />
 		<type name="ISnippetEntry" implement="false" />
 		<type name="ISnippetItem" implement="false" />
+		<type name="ISnippetVariable" implement="false" />
 	</package>
 	<package name="org.eclipse.wst.common.snippets.ui">
 		<type name="DefaultSnippetInsertion" subclass="true" instantiate="true" />
