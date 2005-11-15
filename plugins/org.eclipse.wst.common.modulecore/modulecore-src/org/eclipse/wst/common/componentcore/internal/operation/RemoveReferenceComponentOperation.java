@@ -33,7 +33,7 @@ public class RemoveReferenceComponentOperation extends AbstractDataModelOperatio
 		return OK_STATUS;
 	}
 
-	private void removeProjectReferences() {
+	protected void removeProjectReferences() {
 		IVirtualComponent sourceComp = (IVirtualComponent) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT);
 		List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST);
 		List targetprojectList = new ArrayList();
@@ -50,7 +50,7 @@ public class RemoveReferenceComponentOperation extends AbstractDataModelOperatio
 		}
 	}
 
-	private void removeReferencedComponents(IProgressMonitor monitor) {
+	protected void removeReferencedComponents(IProgressMonitor monitor) {
 		
 		IVirtualComponent sourceComp = (IVirtualComponent) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT);
 		//IVirtualComponent sourceComp = ComponentCore.createComponent(sourceProject);
@@ -72,7 +72,7 @@ public class RemoveReferenceComponentOperation extends AbstractDataModelOperatio
 		
 	}
 
-	private void removeRefereneceInComponent(IVirtualComponent component, IVirtualReference reference) {
+	protected void removeRefereneceInComponent(IVirtualComponent component, IVirtualReference reference) {
 		List refList = new ArrayList();
 		IVirtualReference[] refArray = component.getReferences();
 		for (int i = 0; i < refArray.length; i++) {

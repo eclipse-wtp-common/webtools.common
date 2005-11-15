@@ -30,7 +30,7 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 		addProjectReferences();
 		return OK_STATUS;
 	}
-	private void addProjectReferences() {
+	protected void addProjectReferences() {
 		
 		IVirtualComponent sourceComp = (IVirtualComponent) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT);
 		List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST);
