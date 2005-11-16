@@ -429,8 +429,7 @@ public final class ConstraintDisplayDialog
         {
             final String fid = (String) constraint.getOperand( 0 );
             final String vstr = (String) constraint.getOperand( 1 );
-            final Boolean allowNewer = (Boolean) constraint.getOperand( 2 );
-            final Boolean soft = (Boolean) constraint.getOperand( 3 );
+            final Boolean soft = (Boolean) constraint.getOperand( 2 );
             
             setLayoutManager( new ToolbarLayout() );
             setBackgroundColor( new Color( null, 255, 255, 255 ) );
@@ -452,11 +451,6 @@ public final class ConstraintDisplayDialog
             bodyLabelText.append( f.getLabel() );
             bodyLabelText.append( ' ' );
             bodyLabelText.append( vstr );
-            
-            if( allowNewer.booleanValue() )
-            {
-                bodyLabelText.append( " or newer" );
-            }
             
             final Label bodyLabel = new Label();
             bodyLabel.setText( bodyLabelText.toString() );

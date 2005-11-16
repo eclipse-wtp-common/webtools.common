@@ -28,6 +28,15 @@ public final class VersionMatchExpr
     private final Versionable versionable;
     private final List subexprs = new ArrayList();
     
+    public VersionMatchExpr( final Object versionable,
+                             final String expr )
+    
+        throws CoreException
+        
+    {
+        this( (Versionable) versionable, expr );
+    }
+    
     public VersionMatchExpr( final Versionable versionable,
                              final String expr )
     
@@ -98,18 +107,48 @@ public final class VersionMatchExpr
     {
         for( Iterator itr = this.subexprs.iterator(); itr.hasNext(); )
         {
-            if( ! ( (AbstractVersionOperator) itr.next() ).evaluate( ver ) )
+            if( ( (AbstractVersionOperator) itr.next() ).evaluate( ver ) )
             {
-                return false;
+                return true;
             }
         }
         
-        return true;
+        return false;
+    }
+    
+    public boolean isSingleVersionMatch()
+    {
+        return this.subexprs.size() == 1 && 
+               this.subexprs.get( 0 ) instanceof Equals;
+    }
+
+    public boolean isSimpleAllowNewer()
+    {
+        return this.subexprs.size() == 1 && 
+               this.subexprs.get( 0 ) instanceof GreaterThanOrEq;
+    }
+    
+    public String getFirstVersion()
+    {
+        return ( (AbstractVersionOperator) this.subexprs.get( 0 ) ).param.getVersionString();
+    }
+    
+    public String toString()
+    {
+        final StringBuffer buf = new StringBuffer();
+        
+        for( Iterator itr = subexprs.iterator(); itr.hasNext(); )
+        {
+            if( buf.length() > 0 ) buf.append( ',' );
+            buf.append( itr.next().toString() );
+        }
+        
+        return buf.toString();
     }
     
     private static abstract class AbstractVersionOperator
     {
-        private final IVersion param;
+        protected final IVersion param;
         
         public AbstractVersionOperator( final IVersion param )
         {
@@ -148,6 +187,11 @@ public final class VersionMatchExpr
         {
             return ( result == 0 );
         }
+        
+        public String toString()
+        {
+            return this.param.getVersionString();
+        }
     }
 
     private static final class LessThan
@@ -163,6 +207,11 @@ public final class VersionMatchExpr
         protected boolean evaluate( final int result )
         {
             return ( result < 0 );
+        }
+        
+        public String toString()
+        {
+            return "<" + this.param.getVersionString();
         }
     }
 
@@ -180,6 +229,11 @@ public final class VersionMatchExpr
         {
             return ( result <= 0 );
         }
+        
+        public String toString()
+        {
+            return "<=" + this.param.getVersionString();
+        }
     }
 
     private static final class GreaterThan
@@ -196,6 +250,11 @@ public final class VersionMatchExpr
         {
             return ( result > 0 );
         }
+        
+        public String toString()
+        {
+            return ">" + this.param.getVersionString();
+        }
     }
 
     private static final class GreaterThanOrEq
@@ -211,6 +270,11 @@ public final class VersionMatchExpr
         protected boolean evaluate( final int result )
         {
             return ( result >= 0 );
+        }
+        
+        public String toString()
+        {
+            return ">=" + this.param.getVersionString();
         }
     }
 

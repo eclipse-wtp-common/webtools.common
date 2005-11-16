@@ -3,7 +3,7 @@
 <schema targetNamespace="org.eclipse.wst.common.project.facet.ui">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.eclipse.wst.common.project.facet.ui" id="wizard" name="Project Facet Wizard Pages Extension Point"/>
+         <meta.schema plugin="org.eclipse.wst.common.project.facet.ui" id="images" name="Project Facet Images Extension Point"/>
       </appInfo>
       <documentation>
          [Enter description of this extension point.]
@@ -13,8 +13,7 @@
    <element name="extension">
       <complexType>
          <sequence>
-            <element ref="wizard-pages" minOccurs="0" maxOccurs="unbounded"/>
-            <element ref="decorations" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="image" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -43,50 +42,30 @@
       </complexType>
    </element>
 
-   <element name="wizard-pages">
+   <element name="image">
       <complexType>
-         <sequence>
-            <element ref="install" minOccurs="0" maxOccurs="1"/>
-            <element ref="uninstall" minOccurs="0" maxOccurs="1"/>
-         </sequence>
-         <attribute name="facet" type="string" use="required">
+         <attribute name="facet" type="string">
             <annotation>
                <documentation>
                   
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="version" type="string" use="required">
+         <attribute name="category" type="string">
             <annotation>
                <documentation>
                   
                </documentation>
             </annotation>
          </attribute>
-      </complexType>
-   </element>
-
-   <element name="install">
-      <complexType>
-         <sequence>
-            <element ref="config"/>
-            <element ref="page" minOccurs="1" maxOccurs="unbounded"/>
-         </sequence>
-      </complexType>
-   </element>
-
-   <element name="uninstall">
-      <complexType>
-         <sequence>
-            <element ref="config"/>
-            <element ref="page" minOccurs="1" maxOccurs="unbounded"/>
-         </sequence>
-      </complexType>
-   </element>
-
-   <element name="page">
-      <complexType>
-         <attribute name="class" type="string" use="required">
+         <attribute name="runtime-component-type" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="path" type="string" use="required">
             <annotation>
                <documentation>
                   

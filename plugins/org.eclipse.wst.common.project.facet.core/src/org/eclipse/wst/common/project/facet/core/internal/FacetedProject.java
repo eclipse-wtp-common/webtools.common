@@ -34,6 +34,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -241,44 +244,50 @@ public final class FacetedProject
             
             // Execute the actions.
             
-            for( Iterator itr = copy.iterator(); itr.hasNext(); )
+            final IWorkspaceRunnable wr = new IWorkspaceRunnable()
             {
-                //if( monitor != null && monitor.isCanceled() &&
-                //    ProjectFacetsManager.get().check( this.facets ).isEmpty() )
-                //{
-                //    throw new OperationCanceledException();
-                //}
+                public void run( final IProgressMonitor monitor ) 
                 
-                final Action action = (Action) itr.next();
-                final Action.Type type = action.getType();
-                
-                final ProjectFacetVersion fv 
-                    = (ProjectFacetVersion) action.getProjectFacetVersion();
-                
-                final IDelegate delegate 
-                    = fv.getDelegate( IDelegate.Type.get( type ) );
-                
-                if( delegate == null )
+                    throws CoreException
+                    
                 {
-                    if( monitor != null )
+                    for( Iterator itr = copy.iterator(); itr.hasNext(); )
                     {
-                        monitor.worked( 1 );
+                        final Action action = (Action) itr.next();
+                        final Action.Type type = action.getType();
+                        
+                        final ProjectFacetVersion fv 
+                            = (ProjectFacetVersion) action.getProjectFacetVersion();
+                        
+                        final IDelegate delegate 
+                            = fv.getDelegate( IDelegate.Type.get( type ) );
+                        
+                        if( delegate == null )
+                        {
+                            if( monitor != null )
+                            {
+                                monitor.worked( 1 );
+                            }
+                        }
+                        else
+                        {
+                            final SubProgressMonitor submonitor
+                                = monitor == null 
+                                  ? null : new SubProgressMonitor( monitor, 1 );
+                            
+                            callDelegate( project, fv, action.getConfig(),
+                                          IDelegate.Type.get( type ), delegate,
+                                          submonitor );
+                        }
+        
+                        apply( facets, action );
+                        save();
                     }
                 }
-                else
-                {
-                    final SubProgressMonitor submonitor
-                        = monitor == null 
-                          ? null : new SubProgressMonitor( monitor, 1 );
-                    
-                    callDelegate( this.project, fv, action.getConfig(),
-                                  IDelegate.Type.get( type ), delegate,
-                                  submonitor );
-                }
-
-                apply( this.facets, action );
-                save();
-            }
+            };
+            
+            final IWorkspace ws = ResourcesPlugin.getWorkspace();
+            ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, monitor ); 
             
             if( monitor != null )
             {

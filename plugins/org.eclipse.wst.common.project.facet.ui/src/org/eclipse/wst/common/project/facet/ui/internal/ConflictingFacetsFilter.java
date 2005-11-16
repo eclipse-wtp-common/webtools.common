@@ -11,7 +11,6 @@
 
 package org.eclipse.wst.common.project.facet.ui.internal;
 
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -99,13 +98,10 @@ public final class ConflictingFacetsFilter
         else if( op.getType() == IConstraint.Type.REQUIRES )
         {
             final String name = (String) op.getOperand( 0 );
-            final String version = (String) op.getOperand( 1 );
-            
-            final boolean allowNewer 
-                = ( (Boolean) op.getOperand( 2 ) ).booleanValue();
+            final String vexpr = (String) op.getOperand( 1 );
             
             final boolean soft
-                = ( (Boolean) op.getOperand( 3 ) ).booleanValue();
+                = ( (Boolean) op.getOperand( 2 ) ).booleanValue();
         
             if( soft )
             {
@@ -116,12 +112,19 @@ public final class ConflictingFacetsFilter
                 final IProjectFacet rf 
                     = ProjectFacetsManager.getProjectFacet( name );
                 
-                final Set versions = rf.getVersions();
-                final Comparator comp;
-                
                 try
                 {
-                    comp = rf.getVersionComparator();
+                    for( Iterator itr = rf.getVersions( vexpr ).iterator();
+                         itr.hasNext(); )
+                    {
+                        final IProjectFacetVersion fv 
+                            = (IProjectFacetVersion) itr.next();
+                        
+                        if( check( fv ) )
+                        {
+                            return true;
+                        }
+                    }
                 }
                 catch( CoreException e )
                 {
@@ -129,24 +132,6 @@ public final class ConflictingFacetsFilter
                     return false;
                 }
                 
-                for( Iterator itr = versions.iterator(); itr.hasNext(); )
-                {
-                    final IProjectFacetVersion fv 
-                        = (IProjectFacetVersion) itr.next();
-                    
-                    final String fvstr = fv.getVersionString();
-                    
-                    final int compres = comp.compare( fvstr, version );
-                    
-                    if( ( allowNewer && compres >= 0 ) ||
-                        ( ! allowNewer && compres == 0 ) )
-                    {
-                        if( check( fv ) )
-                        {
-                            return true;
-                        }
-                    }
-                }
             
                 return false;
             }

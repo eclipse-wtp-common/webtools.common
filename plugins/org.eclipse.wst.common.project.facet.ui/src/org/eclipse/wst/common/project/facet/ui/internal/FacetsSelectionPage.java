@@ -220,12 +220,12 @@ public final class FacetsSelectionPage
 
     private void handleSelectedFacetsChangedEvent( final Event event )
     {
+        setPageComplete( this.panel.isSelectionValid() );
+
         for( int i = 0, n = this.listeners.size(); i < n; i++ )
         {
             ( (Listener) this.listeners.get( i ) ).handleEvent( event );
         }
-        
-        setPageComplete( this.panel.isSelectionValid() );
     }
 
     private void handleRuntimeChangedEvent( final Event event )

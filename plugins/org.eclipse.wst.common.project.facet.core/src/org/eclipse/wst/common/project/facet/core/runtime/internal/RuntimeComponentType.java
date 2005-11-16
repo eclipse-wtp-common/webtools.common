@@ -112,4 +112,9 @@ public final class RuntimeComponentType
                          this.id, verstr );
     }
     
+    public String toString()
+    {
+        return this.id;
+    }
+    
 }

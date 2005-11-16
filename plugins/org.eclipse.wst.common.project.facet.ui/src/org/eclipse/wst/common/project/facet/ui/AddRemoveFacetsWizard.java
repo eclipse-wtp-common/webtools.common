@@ -23,13 +23,13 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
@@ -266,18 +266,25 @@ public class AddRemoveFacetsWizard
         
         final Set actions = this.facetsSelectionPage.getActions();
         
-        final WorkspaceModifyOperation op = new WorkspaceModifyOperation() 
+        final IRunnableWithProgress op = new IRunnableWithProgress()
         {
-            protected void execute( final IProgressMonitor monitor )
+            public void run( final IProgressMonitor monitor ) 
             
-                throws CoreException 
+                throws InvocationTargetException, InterruptedException
                 
             {
                 monitor.beginTask( "", actions.size() );
                 
                 try
                 {
-                    performFinish( monitor );
+                    try
+                    {
+                        performFinish( monitor );
+                    }
+                    catch( CoreException e )
+                    {
+                        throw new InvocationTargetException( e );
+                    }
                 }
                 finally
                 {
@@ -288,7 +295,7 @@ public class AddRemoveFacetsWizard
 
         try 
         {
-            getContainer().run( true, true, op );
+            getContainer().run( false, false, op );
         }
         catch( InterruptedException e ) 
         {
@@ -354,6 +361,14 @@ public class AddRemoveFacetsWizard
     
     private void handleSelectedFacetsChangedEvent()
     {
+        // Don't do anything until the facet selection page does not have any
+        // errors.
+        
+        if( ! this.facetsSelectionPage.isPageComplete() )
+        {
+            return;
+        }
+        
         // Get the set of actions and sort them.
         
         final Set base;

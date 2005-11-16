@@ -89,5 +89,10 @@ public abstract class AbstractRuntime
     {
         return this.name.hashCode();
     }
+    
+    public String toString()
+    {
+        return this.name;
+    }
 
 }

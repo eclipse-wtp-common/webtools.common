@@ -667,15 +667,16 @@ public final class ProjectFacetsManagerImpl
                 }
                 else
                 {
-                    if( ! constraint.check( state, true ).isOK() &&
-                        constraint.check( fnl, true ).isOK() )
-                    {
-                        moveToEnd( actions, i );
-                    }
-                    else
+                    if( constraint.check( state ).isOK() &&
+                        ! ( ! constraint.check( state, true ).isOK() &&
+                            constraint.check( fnl, true ).isOK() ) )
                     {
                         apply( state, action );
                         i++;
+                    }
+                    else
+                    {
+                        moveToEnd( actions, i );
                     }
                 }
             }
@@ -1198,20 +1199,12 @@ public final class ProjectFacetsManagerImpl
                 return null;
             }
 
-            final String version = root.getAttribute( "version" );
+            final String vexpr = root.getAttribute( "version" );
             
-            if( version == null )
+            if( vexpr == null )
             {
                 reportMissingAttribute( root, "version" );
                 return null;
-            }
-            
-            final String allowNewerStr = root.getAttribute( "allow-newer" );
-            Boolean allowNewer = Boolean.FALSE;
-            
-            if( allowNewerStr != null && allowNewerStr.equals( "true" ) )
-            {
-                allowNewer = Boolean.TRUE;
             }
             
             final String softStr = root.getAttribute( "soft" );
@@ -1222,7 +1215,7 @@ public final class ProjectFacetsManagerImpl
                 soft = Boolean.TRUE;
             }
             
-            operands = new Object[] { fid, version, allowNewer, soft };
+            operands = new Object[] { fid, vexpr, soft };
         }
         else if( type == IConstraint.Type.CONFLICTS )
         {

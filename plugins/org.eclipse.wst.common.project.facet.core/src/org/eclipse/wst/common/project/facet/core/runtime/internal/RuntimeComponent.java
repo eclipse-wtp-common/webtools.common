@@ -122,4 +122,8 @@ public final class RuntimeComponent
         return this.rcv.hashCode();
     }
     
+    public String toString()
+    {
+        return this.rcv.toString();
+    }
 }

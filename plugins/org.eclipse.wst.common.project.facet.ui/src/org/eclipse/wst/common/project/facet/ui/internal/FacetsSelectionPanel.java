@@ -531,7 +531,7 @@ public final class FacetsSelectionPanel
                             {
                                 c = (IActionConfig) config;
                             }
-                            else
+                            else if( config != null )
                             {
                                 final IAdapterManager m 
                                     = Platform.getAdapterManager();

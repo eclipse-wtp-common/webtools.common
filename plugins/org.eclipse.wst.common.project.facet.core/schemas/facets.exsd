@@ -94,13 +94,6 @@
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="allow-newer" type="boolean">
-            <annotation>
-               <documentation>
-                  
-               </documentation>
-            </annotation>
-         </attribute>
          <attribute name="soft" type="boolean">
             <annotation>
                <documentation>

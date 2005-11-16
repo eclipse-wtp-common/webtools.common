@@ -13,7 +13,6 @@ package org.eclipse.wst.common.project.facet.core.runtime.internal;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -33,8 +32,10 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin;
+import org.eclipse.wst.common.project.facet.core.internal.IVersion;
 import org.eclipse.wst.common.project.facet.core.internal.IndexedSet;
 import org.eclipse.wst.common.project.facet.core.internal.ProjectFacetsManagerImpl;
+import org.eclipse.wst.common.project.facet.core.internal.VersionMatchExpr;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeBridge;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
@@ -263,60 +264,24 @@ public final class RuntimeManagerImpl
     
     static Set getSupportedFacets( final IRuntime runtime )
     {
-        final HashSet result = new HashSet();
+        final Set result = new HashSet();
         
         for( Iterator itr1 = runtime.getRuntimeComponents().iterator(); 
              itr1.hasNext(); )
         {
-            final IRuntimeComponent comp = (IRuntimeComponent) itr1.next();
+            final IRuntimeComponent rc = (IRuntimeComponent) itr1.next();
             
             for( Iterator itr2 = mappings.iterator(); itr2.hasNext(); )
             {
                 final Mapping m = (Mapping) itr2.next();
                 
-                if( m.match( comp.getRuntimeComponentVersion() ) )
+                try
                 {
-                    if( m.facetVersion == null )
-                    {
-                        result.addAll( m.facet.getVersions() );
-                    }
-                    else
-                    {
-                        result.add( m.facetVersion );
-                        
-                        if( m.facetAllowNewer )
-                        {
-                            final List sorted; 
-                            
-                            try
-                            {
-                                sorted = m.facet.getSortedVersions( true );
-                            }
-                            catch( CoreException e )
-                            {
-                                FacetCorePlugin.log( e );
-                                continue;
-                            }
-                            
-                            boolean found = false;
-                            
-                            for( Iterator itr3 = sorted.iterator(); 
-                                 itr3.hasNext(); )
-                            {
-                                if( found )
-                                {
-                                    result.add( itr3.next() );
-                                }
-                                else
-                                {
-                                    if( itr3.next() == m.facetVersion )
-                                    {
-                                        found = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    result.addAll( m.getSupportedFacets( rc ) );                    
+                }
+                catch( CoreException e )
+                {
+                    FacetCorePlugin.log( e.getStatus() );
                 }
             }
         }
@@ -727,36 +692,26 @@ public final class RuntimeManagerImpl
                     return;
                 }
                 
-                m.facet = ProjectFacetsManager.getProjectFacet( id );
+                final IProjectFacet f
+                    = ProjectFacetsManager.getProjectFacet( id );
                 
-                final String version = child.getAttribute( "version" );
+                final String v = child.getAttribute( "version" );
+                VersionMatchExpr expr = null;
                 
-                if( version != null )
+                if( v != null )
                 {
-                    if( ! m.facet.hasVersion( version ) )
+                    try
                     {
-                        final String[] params
-                            = new String[] { config.getNamespace(), id, 
-                                             version };
-                        
-                        final String msg
-                            = NLS.bind( ProjectFacetsManagerImpl.Resources.facetVersionNotDefined, 
-                                        params ); 
-                        
-                        FacetCorePlugin.log( msg );
-                        
+                        expr = new VersionMatchExpr( f, v );
+                    }
+                    catch( CoreException e )
+                    {
+                        FacetCorePlugin.log( e.getStatus() );
                         return;
                     }
-                    
-                    m.facetVersion = m.facet.getVersion( version );
-                    
-                    final String newer = child.getAttribute( "allow-newer" );
-                    
-                    if( newer != null && newer.equalsIgnoreCase( "true" ) )
-                    {
-                        m.facetAllowNewer = true;
-                    }
                 }
+                
+                m.facets.put( f, expr );
             }
             else if( childName.equals( "runtime-component" ) )
             {
@@ -781,37 +736,26 @@ public final class RuntimeManagerImpl
                         return;
                     }
                     
-                    m.runtimeCompType = getRuntimeComponentType( id );
+                    final IRuntimeComponentType rct 
+                        = getRuntimeComponentType( id );
                     
-                    final String version = child.getAttribute( "version" );
+                    final String v = child.getAttribute( "version" );
+                    VersionMatchExpr expr = null;
                     
-                    if( version != null )
+                    if( v != null )
                     {
-                        if( ! m.runtimeCompType.hasVersion( version ) )
+                        try
                         {
-                            final String[] params
-                                = new String[] { config.getNamespace(), id, 
-                                                 version };
-                            
-                            final String msg
-                                = NLS.bind( Resources.runtimeComponentVersionNotDefined, 
-                                            params ); 
-                            
-                            FacetCorePlugin.log( msg );
-                            
+                            expr = new VersionMatchExpr( rct, v );
+                        }
+                        catch( CoreException e )
+                        {
+                            FacetCorePlugin.log( e.getStatus() );
                             return;
                         }
-                        
-                        m.runtimeCompVersion 
-                            = m.runtimeCompType.getVersion( version );
-                        
-                        final String newer = child.getAttribute( "allow-newer" );
-                        
-                        if( newer != null && newer.equalsIgnoreCase( "true" ) )
-                        {
-                            m.runtimeCompAllowNewer = true;
-                        }
                     }
+                    
+                    m.runtimeComponents.put( rct, expr );
                 }
             }
         }
@@ -902,54 +846,58 @@ public final class RuntimeManagerImpl
     
     private static final class Mapping
     {
-        public IProjectFacet facet;
-        public IProjectFacetVersion facetVersion;
-        public boolean facetAllowNewer;
-        public IRuntimeComponentType runtimeCompType;
-        public IRuntimeComponentVersion runtimeCompVersion;
-        public boolean runtimeCompAllowNewer;
+        // IProjectFacet -> VersionMatchExpr
+        public final Map facets = new HashMap();
         
-        public boolean match( final IRuntimeComponentVersion version )
+        // IRuntimeComponentType -> VersionMatchExpr
+        public final Map runtimeComponents = new HashMap();
+        
+        private Set getSupportedFacets( final IRuntimeComponent rc )
+        
+            throws CoreException
+            
         {
-            if( this.runtimeCompType == null )
+            final IRuntimeComponentType rct = rc.getRuntimeComponentType();
+            final IRuntimeComponentVersion rcv = rc.getRuntimeComponentVersion();
+            
+            if( this.runtimeComponents.containsKey( rct ) )
             {
-                return true;
+                final VersionMatchExpr expr 
+                    = (VersionMatchExpr) this.runtimeComponents.get( rct );
+                
+                if( expr != null && ! expr.evaluate( (IVersion) rcv ) )
+                {
+                    return Collections.EMPTY_SET;
+                }
             }
-            else if( this.runtimeCompType == version.getRuntimeComponentType() )
+            else if( ! this.runtimeComponents.isEmpty() )
             {
-                if( this.runtimeCompVersion == null )
+                return Collections.EMPTY_SET;
+            }
+            
+            final Set result = new HashSet();
+            
+            for( Iterator itr1 = this.facets.entrySet().iterator(); 
+                 itr1.hasNext(); )
+            {
+                final Map.Entry entry = (Map.Entry) itr1.next();
+                final IProjectFacet f = (IProjectFacet) entry.getKey();
+                final VersionMatchExpr expr = (VersionMatchExpr) entry.getValue();
+                
+                for( Iterator itr2 = f.getVersions().iterator(); 
+                     itr2.hasNext(); )
                 {
-                    return true;
-                }
-                else if( this.runtimeCompVersion == version )
-                {
-                    return true;
-                }
-                else if( this.runtimeCompAllowNewer )
-                {
-                    final Comparator comp;
+                    final IProjectFacetVersion fv 
+                        = (IProjectFacetVersion) itr2.next();
                     
-                    try
+                    if( expr == null || expr.evaluate( (IVersion) fv ) )
                     {
-                        comp = this.runtimeCompType.getVersionComparator();
-                    }
-                    catch( CoreException e )
-                    {
-                        FacetCorePlugin.log( e );
-                        return false;
-                    }
-                    
-                    final String v1 = version.getVersionString();
-                    final String v2 = this.runtimeCompVersion.getVersionString();
-                    
-                    if( comp.compare( v1, v2 ) > 0 )
-                    {
-                        return true;
+                        result.add( fv );
                     }
                 }
             }
             
-            return false;
+            return result;
         }
     }
 

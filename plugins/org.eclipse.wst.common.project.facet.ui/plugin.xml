@@ -2,10 +2,15 @@
 <?eclipse version="3.0"?>
 <plugin>
 
-    <extension-point 
+  <extension-point 
     id="wizard"
-    name="Feature Wizard Pages Extension Point"
+    name="Project Facet Wizard Pages Extension Point"
     schema="schemas/wizard-pages.exsd"/>
+
+  <extension-point 
+    id="images"
+    name="Project Facet Images Extension Point"
+    schema="schemas/images.exsd"/>
 
   <extension point="org.eclipse.core.runtime.adapters">
     <factory 

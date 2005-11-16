@@ -147,14 +147,7 @@
          <attribute name="version" type="string">
             <annotation>
                <documentation>
-                  Specifies the runtime component version. Requires the &lt;code&gt;id&lt;/code&gt; attribute to be present. If used in conjunction with the &lt;code&gt;allow-newer&lt;/code&gt; attribute, this specifies the lowest version that should be matched.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="allow-newer" type="boolean">
-            <annotation>
-               <documentation>
-                  If set to &lt;code&gt;true&lt;/code&gt;, this attribute specifies that versions that are newer than the specified version are also allowed. Requires the &lt;code&gt;id&lt;/code&gt; and the &lt;code&gt;version&lt;/code&gt; attributes to be present.
+                  Specifies the match expression for the runtime component version. The expression should be of the form &quot;2.2,2.5,&lt;1.0,&gt;=5.3&quot;, where the comas function as an OR.
                </documentation>
             </annotation>
          </attribute>
@@ -209,10 +202,10 @@
          </documentation>
       </annotation>
       <complexType>
-         <all>
-            <element ref="facet"/>
-            <element ref="runtime-component"/>
-         </all>
+         <sequence>
+            <element ref="facet" minOccurs="1" maxOccurs="unbounded"/>
+            <element ref="runtime-component" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
       </complexType>
    </element>
 
@@ -233,14 +226,7 @@
          <attribute name="version" type="string">
             <annotation>
                <documentation>
-                  Specifies the project facet version. Requires the &lt;code&gt;id&lt;/code&gt; attribute to be present. If used in conjunction with the &lt;code&gt;allow-newer&lt;/code&gt; attribute, this specifies the lowest version that should be matched.
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="allow-newer" type="string">
-            <annotation>
-               <documentation>
-                  If set to &lt;code&gt;true&lt;/code&gt;, this attribute specifies that versions that are newer than the specified version are also allowed. Requires the &lt;code&gt;id&lt;/code&gt; and the &lt;code&gt;version&lt;/code&gt; attributes to be present.
+                  Specifies the match expression for the project facet version. The expression should be of the form &quot;2.2,2.5,&lt;1.0,&gt;=5.3&quot;, where the comas function as an OR.
                </documentation>
             </annotation>
          </attribute>

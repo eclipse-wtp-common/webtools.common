@@ -12,7 +12,6 @@
 package org.eclipse.wst.common.project.facet.core.internal;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
@@ -46,17 +45,18 @@ public final class FacetCorePlugin
     
     public static void log( final Exception e )
     {
-        final ILog log = getInstance().getLog();
-        final String msg = e.getMessage() + "";
-        
-        log.log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, e ) );
+        final String msg = e.getMessage();
+        log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, e ) );
     }
 
+    public static void log( final IStatus status )
+    {
+        getInstance().getLog().log( status );
+    }
+    
     public static void log( final String msg )
     {
-        final ILog log = getInstance().getLog();
-        
-        log.log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, null ) );
+        log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, null ) );
     }
     
     public static IStatus createErrorStatus( final String msg )

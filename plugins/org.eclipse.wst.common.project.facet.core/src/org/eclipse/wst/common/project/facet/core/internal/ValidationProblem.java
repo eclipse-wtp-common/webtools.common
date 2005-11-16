@@ -28,11 +28,14 @@ public final class ValidationProblem
 {
     public static final class Type
     {
-        public static final Type REQUIRES 
-            = new Type( Resources.requires );
-        
         public static final Type REQUIRES_EXACT 
             = new Type( Resources.requiresExact );
+
+        public static final Type REQUIRES_ALLOW_NEWER 
+            = new Type( Resources.requiresAllowNewer );
+    
+        public static final Type REQUIRES_EXPR 
+            = new Type( Resources.requiresExpr );
         
         public static final Type CONFLICTS 
             = new Type( Resources.oneof );
@@ -166,8 +169,9 @@ public final class ValidationProblem
         extends NLS
         
     {
-        public static String requires;
         public static String requiresExact;
+        public static String requiresAllowNewer;
+        public static String requiresExpr;
         public static String oneof;
         public static String complex;
         public static String installNotSupported;

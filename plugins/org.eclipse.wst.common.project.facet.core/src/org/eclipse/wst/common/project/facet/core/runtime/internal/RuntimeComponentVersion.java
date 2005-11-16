@@ -98,6 +98,11 @@ public final class RuntimeComponentVersion
         }
     }
     
+    public String toString()
+    {
+        return this.type.getId() + " " + this.version;
+    }
+
     void addAdapterFactory( final String type,
                             final String plugin,
                             final String factory )

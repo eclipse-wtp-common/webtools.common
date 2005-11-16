@@ -56,6 +56,10 @@ public interface IRuntimeComponentType
     
     Set getVersions();
     
+    Set getVersions( String expr )
+    
+        throws CoreException;
+    
     /**
      * Determines whether the specified version of this runtime component type
      * exists.

@@ -41,6 +41,7 @@ import org.osgi.framework.Bundle;
 public final class ProjectFacetsUiManagerImpl 
 {
     private static final String EXTENSION_ID = "wizard";
+    private static final String IMAGES_EXTENSION_ID = "images";
 
     private static final HashMap metadata;
     
@@ -65,6 +66,7 @@ public final class ProjectFacetsUiManagerImpl
         defaultIcon = ImageDescriptor.createFromURL( url );
         
         readExtensions();
+        readImagesExtensions();
     }
     
     private ProjectFacetsUiManagerImpl() {}
@@ -169,10 +171,6 @@ public final class ProjectFacetsUiManagerImpl
                 if( ename.equals( "wizard-pages" ) )
                 {
                     readWizardPagesInfo( config );
-                }
-                else if( ename.equals( "decorations" ) )
-                {
-                    readDecorations( config );
                 }
             }
         }
@@ -294,7 +292,40 @@ public final class ProjectFacetsUiManagerImpl
         return list;
     }
     
-    private static void readDecorations( final IConfigurationElement config )
+    private static void readImagesExtensions()
+    {
+        final IExtensionRegistry registry = Platform.getExtensionRegistry();
+        
+        final IExtensionPoint point 
+            = registry.getExtensionPoint( FacetUiPlugin.PLUGIN_ID, 
+                                          IMAGES_EXTENSION_ID );
+        
+        if( point == null )
+        {
+            throw new RuntimeException( "Extension point not found!" );
+        }
+        
+        final IExtension[] extensions = point.getExtensions();
+        
+        for( int i = 0; i < extensions.length; i++ )
+        {
+            final IConfigurationElement[] elements 
+                = extensions[ i ].getConfigurationElements();
+            
+            for( int j = 0; j < elements.length; j++ )
+            {
+                final IConfigurationElement config = elements[ j ];
+                final String ename = config.getName();
+                
+                if( ename.equals( "image" ) )
+                {
+                    readImage( config );
+                }
+            }
+        }
+    }
+    
+    private static void readImage( final IConfigurationElement config )
     {
         final String fid = config.getAttribute( "facet" );
         final String cid = config.getAttribute( "category" );
@@ -353,44 +384,30 @@ public final class ProjectFacetsUiManagerImpl
             return;
         }
         
-        final IConfigurationElement[] children = config.getChildren();
+        final String path = config.getAttribute( "path" );
         
-        for( int i = 0; i < children.length; i++ )
+        if( path == null )
         {
-            final IConfigurationElement child = children[ i ];
-            final String childName = child.getName();
+            reportMissingAttribute( config, "path" );
+        }
+                
+        final String plugin = config.getNamespace();
+        final Bundle bundle = Platform.getBundle( plugin );
+        final URL url = bundle.getEntry( path );
+        
+        if( url == null )
+        {
+            final String msg
+                = NLS.bind( Resources.iconNotFound, plugin, path );
             
-            if( childName.equals( "icon" ) )
-            {
-                final String path = child.getAttribute( "path" );
-                
-                if( path == null )
-                {
-                    reportMissingAttribute( child, "path" );
-                    return;
-                }
-                
-                final String plugin = config.getNamespace();
-                final Bundle bundle = Platform.getBundle( plugin );
-                final URL url = bundle.getEntry( path );
-                
-                if( url == null )
-                {
-                    final String msg
-                        = NLS.bind( Resources.iconNotFound, plugin, path );
-                    
-                    FacetUiPlugin.log( msg );
-                }
-                else
-                {
-                    final ImageDescriptor imgdesc
-                        = ImageDescriptor.createFromURL( url );
-                    
-                    icons.put( target, imgdesc );
-                }
-                
-                return;
-            }
+            FacetUiPlugin.log( msg );
+        }
+        else
+        {
+            final ImageDescriptor imgdesc
+                = ImageDescriptor.createFromURL( url );
+            
+            icons.put( target, imgdesc );
         }
     }
     

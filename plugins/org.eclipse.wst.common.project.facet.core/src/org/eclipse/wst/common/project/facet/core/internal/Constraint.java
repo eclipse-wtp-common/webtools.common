@@ -14,7 +14,6 @@ package org.eclipse.wst.common.project.facet.core.internal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -126,24 +125,21 @@ public final class Constraint
         else if( this.type == Type.REQUIRES )
         {
             final String name = (String) this.operands.get( 0 );
-            final String version = (String) this.operands.get( 1 );
-            
-            final boolean allowNewer 
-                = ( (Boolean) this.operands.get( 2 ) ).booleanValue();
+            final String vexprstr = (String) this.operands.get( 1 );
             
             final boolean soft
-                = ( (Boolean) this.operands.get( 3 ) ).booleanValue();
+                = ( (Boolean) this.operands.get( 2 ) ).booleanValue();
             
             if( ! soft || validateSoftDeps )
             {
                 final IProjectFacet rf 
                     = ProjectFacetsManager.getProjectFacet( name );
-                
-                final Comparator comp;
+
+                final VersionMatchExpr vexpr;
                 
                 try
                 {
-                    comp = rf.getVersionComparator();
+                    vexpr = new VersionMatchExpr( rf, vexprstr );
                 }
                 catch( CoreException e )
                 {
@@ -158,29 +154,48 @@ public final class Constraint
                     final IProjectFacetVersion fv 
                         = (IProjectFacetVersion) itr.next();
                     
-                    final String fvstr = fv.getVersionString();
-                    
                     if( fv.getProjectFacet() == rf )
                     {
-                        final int compres = comp.compare( fvstr, version );
-                        
-                        if( ( allowNewer && compres >= 0 ) ||
-                            ( ! allowNewer && compres == 0 ) )
+                        try
                         {
-                            found = true;
+                            if( vexpr.evaluate( (IVersion) fv ) )
+                            {
+                                found = true;
+                            }
                         }
+                        catch( CoreException e )
+                        {
+                            FacetCorePlugin.log( e );
+                        }
+                        
+                        break;
                     }
                 }
                 
                 if( ! found )
                 {
-                    final ValidationProblem.Type ptype
-                        = allowNewer ? ValidationProblem.Type.REQUIRES :
-                          ValidationProblem.Type.REQUIRES_EXACT;
+                    final ValidationProblem.Type ptype;
+                    final String vstr;
+                    
+                    if( vexpr.isSingleVersionMatch() )
+                    {
+                        ptype = ValidationProblem.Type.REQUIRES_EXACT;
+                        vstr = vexpr.toString();
+                    }
+                    else if( vexpr.isSimpleAllowNewer() )
+                    {
+                        ptype = ValidationProblem.Type.REQUIRES_ALLOW_NEWER;
+                        vstr = vexpr.getFirstVersion();
+                    }
+                    else
+                    {
+                        ptype = ValidationProblem.Type.REQUIRES_EXPR;
+                        vstr = vexpr.toString();
+                    }
                     
                     final ValidationProblem problem
                         = new ValidationProblem( ptype, this.fv, rf.getLabel(), 
-                                                 version );
+                                                 vstr );
                     
                     result.add( problem );
                 }

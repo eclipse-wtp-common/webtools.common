@@ -81,6 +81,10 @@ public interface IProjectFacet
     
     Set getVersions();
     
+    Set getVersions( String expr )
+    
+        throws CoreException;
+    
     /**
      * Determines whether the specified project facet version exists.
      * 
