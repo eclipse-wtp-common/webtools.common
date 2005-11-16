@@ -10,9 +10,12 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.datamodel;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -184,8 +187,15 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 				projectFacetVersions.add(facetDataModel.getProperty(IFacetDataModelProperties.FACET_VERSION));
 			}
 			Set runtimes = RuntimeManager.getRuntimes(projectFacetVersions);
-			DataModelPropertyDescriptor [] descriptors = new DataModelPropertyDescriptor[runtimes.size()];
-			Iterator iterator = runtimes.iterator();
+			List list = Collections.list(Collections.enumeration(runtimes));
+			Collections.sort(list, new Comparator(){
+				public int compare(Object o1, Object o2) {
+					return ((IRuntime)o1).getName().compareTo(((IRuntime)o2).getName());
+				}
+			});
+			
+			DataModelPropertyDescriptor [] descriptors = new DataModelPropertyDescriptor[list.size()];
+			Iterator iterator = list.iterator();
 			for(int i=0; i<descriptors.length; i++){
 				IRuntime runtime = (IRuntime)iterator.next();
 				descriptors[i]=new DataModelPropertyDescriptor(runtime, runtime.getName());
