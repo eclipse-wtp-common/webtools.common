@@ -121,17 +121,18 @@ public class VirtualComponent implements IVirtualComponent {
 
 	public Properties getMetaProperties() {
         StructureEdit core = null;
+        Properties props = new Properties();
         try {
             core = StructureEdit.getStructureEditForRead(getProject());
+            if (core == null)
+            	return props;
             WorkbenchComponent component = core.getComponent(); 
-            Properties props = new Properties();
-            
-                List propList = component.getProperties();
-                if(propList != null) {
-                    for (int i = 0; i < propList.size(); i++) {
-                        props.setProperty(((Property)propList.get(i)).getName(), ((Property)propList.get(i)).getValue());
-                    }
+            List propList = component.getProperties();
+            if(propList != null) {
+                for (int i = 0; i < propList.size(); i++) {
+                    props.setProperty(((Property)propList.get(i)).getName(), ((Property)propList.get(i)).getValue());
                 }
+            }
             return props; 
         } finally {
             if(core != null)
