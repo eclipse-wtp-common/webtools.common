@@ -10,7 +10,7 @@
 		<type name="ISnippetItem" implement="false" />
 		<type name="ISnippetVariable" implement="false" />
 	</package>
-	<package name="org.eclipse.wst.common.snippets.ui">
+	<package name="org.eclipse.wst.common.snippets.ui" api="false">
 		<type name="DefaultSnippetInsertion" subclass="true" instantiate="true" />
 		<type name="ISnippetInsertion" implement="false" />
 	</package>
