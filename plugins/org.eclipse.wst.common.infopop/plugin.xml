@@ -9,7 +9,6 @@
 
 <extension point="org.eclipse.help.contexts">
        <contexts file="SnippetsContexts.xml" plugin ="org.eclipse.wst.common.snippets"/>
-       <contexts file="EditorCssContexts.xml" plugin ="org.eclipse.wst.css.ui"/>
 </extension>
 
 
