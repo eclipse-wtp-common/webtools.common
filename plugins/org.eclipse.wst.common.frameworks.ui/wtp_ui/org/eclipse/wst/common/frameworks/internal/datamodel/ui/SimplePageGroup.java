@@ -8,6 +8,7 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.datamodel.ui;
 
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
@@ -65,6 +66,10 @@ public class SimplePageGroup implements AddablePageGroup {
 		return pageHandler;
 	}
 
+	public List getPages(IDataModel dataModel) {
+		return pages;
+	}
+	
 	public DataModelWizardPage[] getExtendedPages(IDataModel dataModel) {
 		return (DataModelWizardPage[]) pages.toArray(new DataModelWizardPage[0]);
 	}

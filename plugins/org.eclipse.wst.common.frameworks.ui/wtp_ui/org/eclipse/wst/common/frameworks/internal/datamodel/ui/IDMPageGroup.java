@@ -8,6 +8,7 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.datamodel.ui;
 
+import java.util.List;
 import java.util.Set;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
@@ -25,7 +26,7 @@ public interface IDMPageGroup
   
   public Set getDataModelIDs();
   
-  public DataModelWizardPage[] getExtendedPages( IDataModel dataModel );
+  public List getPages(IDataModel dataModel);
   
   public IDMPageHandler getPageHandler( IDataModel dataModel );
   

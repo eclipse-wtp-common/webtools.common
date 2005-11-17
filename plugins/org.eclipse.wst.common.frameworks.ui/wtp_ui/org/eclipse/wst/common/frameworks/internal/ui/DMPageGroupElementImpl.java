@@ -1,9 +1,11 @@
 package org.eclipse.wst.common.frameworks.internal.ui;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
+
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizardPage;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageGroup;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageGroupHandler;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageHandler;
@@ -32,10 +34,10 @@ public class DMPageGroupElementImpl implements IDMPageGroup {
 		return pageElement.createPageGroupHandler(dataModel);
 	}
 
-	public DataModelWizardPage[] getExtendedPages(IDataModel dataModel) {
-		return pageElement.createPageGroup(dataModel);
+	public List getPages(IDataModel dataModel){
+		return Arrays.asList(pageElement.createPageGroup(dataModel));
 	}
-
+	
 	public IDMPageHandler getPageHandler(IDataModel dataModel) {
 		return pageElement.createPageHandler(dataModel);
 	}

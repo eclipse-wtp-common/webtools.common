@@ -11,6 +11,7 @@ package org.eclipse.wst.common.frameworks.internal.ui;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
@@ -168,7 +169,7 @@ public class PageGroupManager {
 			StackEntry topEntry = (StackEntry) pageGroupStack.peek();
 			int pageIndex = topEntry.getTopPageIndex();
 
-			page = pageIndex == -1 ? null : topEntry.pageGroupEntry.getPages()[pageIndex];
+			page = pageIndex == -1 ? null : (DataModelWizardPage)topEntry.pageGroupEntry.getPages().get(pageIndex);
 		}
 
 		return page;
@@ -180,9 +181,9 @@ public class PageGroupManager {
 		if (null == hasMulitplePages) {
 			int pageCount = 0;
 			PageGroupEntry rootEntry = (PageGroupEntry) groupTable.get(rootPageGroup.getPageGroupID());
-			pageCount += rootEntry.getPages().length;
+			pageCount += rootEntry.getPages().size();
 			for (int i = 0; pageCount < 2 && i < rootEntry.groupsThatFollow.size(); i++) {
-				pageCount += ((PageGroupEntry) rootEntry.groupsThatFollow.get(i)).getPages().length;
+				pageCount += ((PageGroupEntry) rootEntry.groupsThatFollow.get(i)).getPages().size();
 			}
 			hasMulitplePages = pageCount > 1 ? Boolean.TRUE : Boolean.FALSE;
 		}
@@ -420,11 +421,11 @@ public class PageGroupManager {
 			int result = -1;
 
 			if (!pagesComplete) {
-				DataModelWizardPage[] pages = pageGroupEntry.getPages();
+				List pages = pageGroupEntry.getPages();
 
 				int pageIndex = getTopPageIndex();
-				String pageId = pageIndex == -1 ? null : pages[pageIndex].getName();
-				String expectedId = pageIndex + 1 >= pages.length ? null : pages[pageIndex + 1].getName();
+				String pageId = pageIndex == -1 ? null : ((DataModelWizardPage)pages.get(pageIndex)).getName();
+				String expectedId = pageIndex + 1 >= pages.size() ? null : ((DataModelWizardPage)pages.get(pageIndex + 1)).getName();
 				String newPageId = null;
 
 				try {
@@ -433,7 +434,7 @@ public class PageGroupManager {
 					Logger.getLogger().logError(exc);
 				}
 
-				if (newPageId != null && newPageId.equals(IDMPageHandler.SKIP_PAGE) && pageIndex >= 0 && pageIndex < pages.length - 2) {
+				if (newPageId != null && newPageId.equals(IDMPageHandler.SKIP_PAGE) && pageIndex >= 0 && pageIndex < pages.size() - 2) {
 					result = pageIndex + 2;
 				} else {
 					result = pageGroupEntry.checkForSpecialIds(newPageId);
@@ -489,7 +490,6 @@ public class PageGroupManager {
 		public Vector groupsThatFollow;
 		private IDMPageHandler pageHandler;
 		private IDMPageGroupHandler pageGroupHandler;
-		private DataModelWizardPage[] pages;
 		private boolean initialized;
 
 		public PageGroupEntry(IDMPageGroup newPageGroup) {
@@ -512,11 +512,11 @@ public class PageGroupManager {
 			return pageGroupHandler;
 		}
 
-		public DataModelWizardPage[] getPages() {
+		public List getPages() {
 			if (!initialized)
 				init();
 
-			return pages;
+			return pageGroup.getPages(dataModel);
 		}
 
 		public PageGroupEntry(PageGroupEntry originalEntry) {
@@ -524,14 +524,12 @@ public class PageGroupManager {
 			groupsThatFollow = originalEntry.groupsThatFollow;
 			pageHandler = originalEntry.pageHandler;
 			pageGroupHandler = originalEntry.pageGroupHandler;
-			pages = originalEntry.pages;
 		}
 
 		private void init() {
 			try {
 				pageHandler = pageGroup.getPageHandler(dataModel);
 				pageGroupHandler = pageGroup.getPageGroupHandler(dataModel);
-				pages = pageGroup.getExtendedPages(dataModel);
 			} catch (Throwable exc) {
 				Logger.getLogger().logError(exc);
 			}
@@ -542,26 +540,25 @@ public class PageGroupManager {
 			if (pageGroupHandler == null)
 				pageGroupHandler = new SimplePageGroupHandler();
 
-			if (pages == null)
-				pages = new DataModelWizardPage[0];
-
 			initialized = true;
 		}
 
 		private int checkForSpecialIds(String pageId) {
 			int result = -1;
 
-			if (pages.length == 0 || pageId == null)
+			List pages = getPages();
+			
+			if (pages.isEmpty() || pageId == null)
 				return -1;
 
 			if (pageId.startsWith(IDMPageHandler.PAGE_AFTER)) {
 				String afterID = pageId.substring(IDMPageHandler.PAGE_AFTER.length(), pageId.length());
 				result = getIndexOf(afterID);
-				result = result >= 0 && result < pages.length - 1 ? result + 1 : -1;
+				result = result >= 0 && result < pages.size() - 1 ? result + 1 : -1;
 			} else if (pageId.startsWith(IDMPageHandler.PAGE_BEFORE)) {
 				String beforeID = pageId.substring(IDMPageHandler.PAGE_BEFORE.length(), pageId.length());
 				result = getIndexOf(beforeID);
-				result = result >= 1 && result < pages.length ? result - 1 : -1;
+				result = result >= 1 && result < pages.size() ? result - 1 : -1;
 			} else {
 				result = getIndexOf(pageId);
 			}
@@ -572,8 +569,9 @@ public class PageGroupManager {
 		private int getIndexOf(String pageId) {
 			int result = -1;
 
-			for (int index = 0; index < pages.length; index++) {
-				if (pages[index].getName().equals(pageId)) {
+			List pages = getPages();
+			for (int index = 0; index < pages.size(); index++) {
+				if (((DataModelWizardPage)pages.get(index)).getName().equals(pageId)) {
 					result = index;
 					break;
 				}

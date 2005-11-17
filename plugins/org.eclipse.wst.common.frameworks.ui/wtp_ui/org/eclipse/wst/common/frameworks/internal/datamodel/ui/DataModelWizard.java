@@ -108,7 +108,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 			nextPage.setPreviousPage(currentPage);
 		}
 
-		return nextPage;
+		return currentPage == nextPage ? null : nextPage;
 	}
 
 	public String getNextPage(String currentPageName, String expectedNextPageName) {
