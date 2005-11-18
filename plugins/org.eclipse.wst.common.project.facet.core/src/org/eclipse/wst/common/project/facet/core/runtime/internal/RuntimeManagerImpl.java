@@ -31,6 +31,7 @@ import org.eclipse.wst.common.project.facet.core.IListener;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import org.eclipse.wst.common.project.facet.core.VersionFormatException;
 import org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin;
 import org.eclipse.wst.common.project.facet.core.internal.IVersion;
 import org.eclipse.wst.common.project.facet.core.internal.IndexedSet;
@@ -282,6 +283,10 @@ public final class RuntimeManagerImpl
                 catch( CoreException e )
                 {
                     FacetCorePlugin.log( e.getStatus() );
+                }
+                catch( VersionFormatException e )
+                {
+                    FacetCorePlugin.log( e );
                 }
             }
         }

@@ -659,12 +659,14 @@ public final class FacetsSelectionPanel
     {
         this.filters.add( filter );
         this.tree.refresh();
+        refreshPresetsCombo();
     }
 
     public void removeFilter( final IFilter filter )
     {
         this.filters.remove( filter );
         this.tree.refresh();
+        refreshPresetsCombo();
     }
 
     public void addProjectFacetsListener( final Listener listener )
@@ -786,19 +788,22 @@ public final class FacetsSelectionPanel
             // Reset the contents of the combo box cell editor to contain the
             // versions of the selected project facet.
 
-            final IProjectFacetVersion[] versions = trd.getVersions();
-            final String[] verstrs = new String[ versions.length ];
+            final List versions = trd.getVersions();
+            final String[] verstrs = new String[ versions.size() ];
 
-            for( int i = 0; i < versions.length; i++ )
+            for( int i = 0, n = versions.size(); i < n; i++ )
             {
-                verstrs[ i ] = versions[ i ].getVersionString();
+                final IProjectFacetVersion fv
+                    = (IProjectFacetVersion) versions.get( i );
+                
+                verstrs[ i ] = fv.getVersionString(); 
             }
 
             this.ceditor.setItems( verstrs );
 
-            for( int i = 0; i < versions.length; i++ )
+            for( int i = 0, n = versions.size(); i < n; i++ )
             {
-                if( versions[ i ] == trd.getCurrentVersion() )
+                if( versions.get( i ) == trd.getCurrentVersion() )
                 {
                     this.ceditor.setValue( new Integer( i ) );
                     break;
@@ -954,6 +959,14 @@ public final class FacetsSelectionPanel
             {
                 final IProjectFacetVersion fv
                     = (IProjectFacetVersion) itr2.next();
+                
+                final IProjectFacet f = fv.getProjectFacet();
+                final TableRowData trd = findTableRowData( f );
+                
+                if( ! trd.getVersions().contains( fv ) )
+                {
+                    continue;
+                }
                 
                 temp.add( fv.getProjectFacet() );
             }
@@ -1280,7 +1293,7 @@ public final class FacetsSelectionPanel
             return this.f;
         }
 
-        public IProjectFacetVersion[] getVersions()
+        public List getVersions()
         {
             final ArrayList list = new ArrayList();
 
@@ -1295,17 +1308,14 @@ public final class FacetsSelectionPanel
                 }
             }
 
-            final IProjectFacetVersion[] array
-                = new IProjectFacetVersion[ list.size() ];
-
-            return (IProjectFacetVersion[]) list.toArray( array );
+            return list;
         }
 
         public IProjectFacetVersion getCurrentVersion()
         {
             if( isFilteredOut( this.current ) )
             {
-                this.current = getVersions()[ 0 ];
+                this.current = (IProjectFacetVersion) getVersions().get( 0 );
             }
 
             return this.current;
@@ -1318,7 +1328,7 @@ public final class FacetsSelectionPanel
 
         public boolean isSelected()
         {
-            if( getVersions().length == 0 )
+            if( getVersions().isEmpty() )
             {
                 this.isSelected = false;
             }
@@ -1343,7 +1353,7 @@ public final class FacetsSelectionPanel
 
         public boolean isVisible()
         {
-            return getVersions().length > 0;
+            return ! getVersions().isEmpty();
         }
     }
 
@@ -1488,7 +1498,7 @@ public final class FacetsSelectionPanel
                         final String vstr
                             = trd.getCurrentVersion().getVersionString();
                         
-                        return trd.getVersions().length == 1 
+                        return trd.getVersions().size() == 1 
                                ? vstr : vstr + " ...";
                     }
                     default:
@@ -1576,11 +1586,11 @@ public final class FacetsSelectionPanel
 
             if( property.equals( "version" ) )
             {
-                final IProjectFacetVersion[] versions = trd.getVersions();
+                final List versions = trd.getVersions();
 
-                for( int i = 0; i < versions.length; i++ )
+                for( int i = 0, n = versions.size(); i < n; i++ )
                 {
-                    if( versions[ i ] == trd.getCurrentVersion() )
+                    if( versions.get( i ) == trd.getCurrentVersion() )
                     {
                         return new Integer( i );
                     }
@@ -1599,7 +1609,7 @@ public final class FacetsSelectionPanel
         {
             return property.equals( "version" ) &&
                    element instanceof TableRowData &&
-                   ( (TableRowData) element ).getVersions().length > 1;
+                   ( (TableRowData) element ).getVersions().size() > 1;
         }
 
         public void modify( final Object element,
@@ -1616,11 +1626,11 @@ public final class FacetsSelectionPanel
                 if( index != -1 )
                 {
                     final IProjectFacetVersion fv 
-                        = trd.getVersions()[ index ];
+                        = (IProjectFacetVersion) trd.getVersions().get( index );
                     
                     if( trd.getCurrentVersion() != fv )
                     {
-                        trd.setCurrentVersion( trd.getVersions()[ index ] );
+                        trd.setCurrentVersion( fv );
                         FacetsSelectionPanel.this.tree.refresh();
                         
                         if( trd.isSelected() )

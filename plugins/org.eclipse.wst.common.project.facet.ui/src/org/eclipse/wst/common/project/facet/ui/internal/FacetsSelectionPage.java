@@ -226,6 +226,8 @@ public final class FacetsSelectionPage
         {
             ( (Listener) this.listeners.get( i ) ).handleEvent( event );
         }
+        
+        getContainer().updateButtons();
     }
 
     private void handleRuntimeChangedEvent( final Event event )

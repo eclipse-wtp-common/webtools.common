@@ -25,5 +25,14 @@
       <run class="org.eclipse.wst.common.project.facet.core.internal.FacetedProjectNature"/>
     </runtime>
   </extension>
+  
+  <extension
+    point="org.eclipse.wst.common.project.facet.core.facets">
+    <preset id="my.preset">
+      <label>My Preset</label>
+      <facet id="jst.web" version="2.4"/>
+      <facet id="jst.java" version="5.0"/>
+    </preset>
+  </extension>
 
 </plugin>
