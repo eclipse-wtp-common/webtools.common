@@ -351,12 +351,12 @@ public class XMLDocumentProvider {
 				NodeList children = document.getChildNodes();
 				for (int i = 0; i < children.getLength(); i++) {
 					if (children.item(i).getNodeType() == Node.ELEMENT_NODE && children.item(i).getNodeName().equals(getRootElementName()))
-						rootElement = (Element) children.item(i);
+						rootElement = children.item(i);
 				}
 				if (rootElement == null) {
 					for (int i = 0; i < children.getLength(); i++) {
 						if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
-							rootElement = (Element) children.item(i);
+							rootElement =  children.item(i);
 							break;
 						}
 					}
