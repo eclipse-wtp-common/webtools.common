@@ -153,7 +153,9 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 			super.save(options);
 		}
 		else {
-			doSave(null, options);
+			// we cast to OutputStream, in preparation for 3.2 code base,
+			// where this doSave call is ambiguous with just "null". 
+			doSave((OutputStream) null, options);
 			notifySaved();
 		}
 	}
