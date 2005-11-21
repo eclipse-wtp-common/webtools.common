@@ -6,6 +6,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -36,43 +37,32 @@ public class ModuleMigratorManager {
 		}
 		return manager;
 	}
-	private void migrateComponentsIfNecessary(IProject project) {
-		
-//		WorkspaceJob job = new WorkspaceJob("Adding Facets")
-//	      {
-//	        
-//	        public IStatus runInWorkspace(IProgressMonitor monitor)
-//	        {
-//	          try
-//	          {	
+	private void migrateComponentsIfNecessary(IProject project, boolean multiComps) {
+		if (multiComps) {
+			setupAndMigrateComponentProject(project);
+		} else {
 	        	  
 	        	  IProject[] projects = WorkbenchResourceHelper.getWorkspace().getRoot().getProjects();
 			      for (int i = 0; i < projects.length; i++) {
 						IProject proj = projects[i];
-						migrated.add(proj);
-						IDataModel dm = DataModelFactory.createDataModel(new ProjectMigratorDataModelProvider());
-						dm.setStringProperty(IProjectMigratorDataModelProperties.PROJECT_NAME,proj.getName());
-						try {
-							dm.getDefaultOperation().execute(null,null);
-						} catch (ExecutionException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+						setupAndMigrateComponentProject(proj);
 			      }
+		}
 						
-//					}}
-//	          catch (Exception e)
-//	          {
-//	        	  return Status.CANCEL_STATUS;
-//	          }
-//	          return Status.OK_STATUS;
-//	        }
-//	      };
-//	      job.setRule(ResourcesPlugin.getWorkspace().getRuleFactory().buildRule());
-//	      job.schedule();
 		
 	}
-	public synchronized void migrateOldMetaData(IProject aProject) throws CoreException {
+	private void setupAndMigrateComponentProject(IProject proj) {
+		migrated.add(proj);
+		IDataModel dm = DataModelFactory.createDataModel(new ProjectMigratorDataModelProvider());
+		dm.setStringProperty(IProjectMigratorDataModelProperties.PROJECT_NAME,proj.getName());
+		try {
+			dm.getDefaultOperation().execute(null,null);
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public synchronized void migrateOldMetaData(IProject aProject, final boolean multiComps) throws CoreException {
 		
 		IWorkspaceRunnableWithStatus workspaceRunnable = new IWorkspaceRunnableWithStatus(aProject) {
 			public void run(IProgressMonitor pm) throws CoreException {
@@ -84,18 +74,26 @@ public class ModuleMigratorManager {
 							if (!moved.contains(aProj))
 								moveOldMetaDataFile();
 						} else moved.add(aProj);
-						if ((aProj.findMember(".settings/.component") != null) && 
-								(ProjectFacetsManager.create(aProj) == null) &&
-								(!migrated.contains(aProj)))
-							migrateComponentsIfNecessary(aProj);
+						if (needsComponentMigration(aProj,multiComps))
+							migrateComponentsIfNecessary(aProj,multiComps);
 					}
 				} finally {
 					migrating = false;
 				}
 			}
+
+			private boolean needsComponentMigration(IProject aProj,boolean multiComps) throws CoreException {
+				
+			boolean needs = !migrated.contains(aProj);
+			if (multiComps)
+				return (needs && multiComps);
+			else
+				return (aProj.findMember(".settings/.component") != null) && 
+						(ProjectFacetsManager.create(aProj) == null) && needs;
+			}
 		};
 		
-		ResourcesPlugin.getWorkspace().run(workspaceRunnable, null);
+		ResourcesPlugin.getWorkspace().run(workspaceRunnable, null,IWorkspace.AVOID_UPDATE,null);
 		
 		
 		

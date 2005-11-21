@@ -57,6 +57,7 @@ import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectNature;
 public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	
 	public static final String MODULE_CORE_ID = "moduleCoreId"; //$NON-NLS-1$ 
+	private boolean multiComps;
 	public ModuleStructuralModel(String editModelID, EMFWorkbenchContext context, boolean readOnly) {
         super(editModelID, context, readOnly);
     }
@@ -83,7 +84,7 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
     /* (non-Javadoc)
 	 * @see org.eclipse.wst.common.internal.emfworkbench.integration.EditModel#getPrimaryRootObject()
 	 */
-	public EObject getPrimaryRootObject() {
+	public synchronized EObject getPrimaryRootObject() {
 		try {
 			prepareProjectModulesIfNecessary();
 		} catch (CoreException e) {
@@ -101,10 +102,10 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	public Resource prepareProjectModulesIfNecessary() throws CoreException {
 		ModuleMigratorManager manager = ModuleMigratorManager.getManager();
 		XMIResource res = (XMIResource) getPrimaryResource();
-		if ((!project.hasNature(FacetedProjectNature.NATURE_ID)) || (res!=null && !res.isLoaded())) {
+		if (resNeedsMigrating(res)) {
 			try {
 				if (!manager.isMigrating())
-					manager.migrateOldMetaData(getProject());
+					manager.migrateOldMetaData(getProject(),multiComps);
 			} catch (CoreException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -119,6 +120,16 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 			Platform.getLog(ModulecorePlugin.getDefault().getBundle()).log(new Status(IStatus.ERROR, ModulecorePlugin.PLUGIN_ID, IStatus.ERROR, e.getMessage(), e));
 		} 
 		return res;
+	}
+	private boolean resNeedsMigrating(XMIResource res) throws CoreException {
+		multiComps = false;
+		boolean needsMigrating =  (!project.hasNature(FacetedProjectNature.NATURE_ID)) || (res!=null && !res.isLoaded());
+		if (!needsMigrating) {
+				multiComps = ((ProjectComponents)((WTPModulesResource)res).getRootObject()).getComponents().size() > 1;
+				return multiComps;
+		}
+		else
+			return needsMigrating;
 	}
 	
 	public Object getAdapter(Class anAdapter) {
