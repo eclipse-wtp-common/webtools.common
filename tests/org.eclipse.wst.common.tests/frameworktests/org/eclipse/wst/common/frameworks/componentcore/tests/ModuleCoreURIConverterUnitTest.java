@@ -39,11 +39,11 @@ public class ModuleCoreURIConverterUnitTest  extends TestCase {
 		
 		ComponentCoreURIConverter converter = new ComponentCoreURIConverter(TestWorkspace.getTargetProject());
 		
-		URI inputURI = URI.createURI("module:/resource/TestVirtualAPI/WebModule2/WEB-INF/web.xml"); //$NON-NLS-1$
+		URI inputURI = URI.createURI("module:/resource/WebModule1/WebModule1/WEB-INF/web.xml"); //$NON-NLS-1$
 		
 		URI resultURI = converter.normalize(inputURI);
 		
-		URI expectedURI = URI.createURI("platform:/resource/TestVirtualAPI/WebModule2/WebContent/WEB-INF/web.xml"); //$NON-NLS-1$
+		URI expectedURI = URI.createURI("platform:/resource/WebModule1/WebModule1/WebContent/WEB-INF/web.xml"); //$NON-NLS-1$
 		// TODO
 		//assertEquals("The resultant URI must match the expected URI", expectedURI, resultURI); //$NON-NLS-1$
 	}

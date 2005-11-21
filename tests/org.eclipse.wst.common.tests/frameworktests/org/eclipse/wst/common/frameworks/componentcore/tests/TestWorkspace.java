@@ -25,7 +25,7 @@ import org.eclipse.wst.common.tests.CommonTestsPlugin;
 
 public class TestWorkspace {
 
-	public static final String PROJECT_NAME = "TestVirtualAPI"; //$NON-NLS-1$
+	public static final String PROJECT_NAME = "WebModule1"; //$NON-NLS-1$
 	public static final String WEB_MODULE_1_NAME = "WebModule1"; //$NON-NLS-1$
 	public static final String WEB_MODULE_2_NAME = "WebModule2"; //$NON-NLS-1$
 	
