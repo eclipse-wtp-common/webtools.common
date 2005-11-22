@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.IEditModelHandler;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
@@ -177,11 +178,8 @@ public class StructureEdit implements IEditModelHandler {
 	 *             If the supplied module URI is invalid or unresolveable.
 	 */
 	public static IProject getContainingProject(WorkbenchComponent aComponent) {	
-		String projectName = aComponent.getHandle().segment(ModuleURIUtil.ModuleURI.PROJECT_NAME_INDX);
-		if (projectName == null || projectName.length() == 0)
-			return null;
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-		if (project.isAccessible())
+		IProject project = ProjectUtilities.getProject(aComponent);
+		if (project != null && project.isAccessible())
 			return project;
 		return null;
 	}
