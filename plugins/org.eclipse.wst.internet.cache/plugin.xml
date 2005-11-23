@@ -2,7 +2,7 @@
 <?eclipse version="3.0"?>
 <plugin>
 
-   <extension-point name="Cache a resource" id="cacheresource" schema="exsd/cacheresource.exsd"/>
+   <extension-point name="%cacheResource" id="cacheresource" schema="exsd/cacheresource.exsd"/>
 
    <extension
          point="org.eclipse.ui.preferencePages">
