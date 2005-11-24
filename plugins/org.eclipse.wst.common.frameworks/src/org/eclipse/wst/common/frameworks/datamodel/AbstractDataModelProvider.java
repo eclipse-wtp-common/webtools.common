@@ -23,7 +23,7 @@ import org.eclipse.core.runtime.IStatus;
  * </p>
  * 
  * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider
- * @plannedfor 1.0
+ * @since 1.0
  */
 public abstract class AbstractDataModelProvider implements IDataModelProvider {
 

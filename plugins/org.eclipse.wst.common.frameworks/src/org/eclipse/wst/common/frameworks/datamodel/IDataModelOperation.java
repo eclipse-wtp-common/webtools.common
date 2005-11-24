@@ -24,7 +24,7 @@ import org.eclipse.wst.common.environment.IEnvironment;
  * 
  * @see org.eclipse.wst.common.frameworks.datamodel.IDataModel
  * 
- * @plannedfor 1.0
+ * @since 1.0
  */
 public interface IDataModelOperation extends IUndoableOperation {
 

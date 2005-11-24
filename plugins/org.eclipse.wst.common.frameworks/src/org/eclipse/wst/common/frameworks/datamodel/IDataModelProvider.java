@@ -20,7 +20,7 @@ import org.eclipse.core.runtime.Status;
  * IDataModelProviders are used by the DataMdoelFactory to construct IDataModels.  
  * 
  * 
- * @plannedfor 1.0
+ * @since 1.0
  */
 public interface IDataModelProvider extends IDataModelProperties {
 

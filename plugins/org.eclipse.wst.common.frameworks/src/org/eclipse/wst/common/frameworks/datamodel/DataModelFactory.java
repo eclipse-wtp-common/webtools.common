@@ -18,7 +18,7 @@ import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelImpl;
  * DataModelFactory is used to create IDataModel instances.
  * </p>
  * 
- * @plannedfor 1.0
+ * @since 1.0
  */
 public class DataModelFactory {
 

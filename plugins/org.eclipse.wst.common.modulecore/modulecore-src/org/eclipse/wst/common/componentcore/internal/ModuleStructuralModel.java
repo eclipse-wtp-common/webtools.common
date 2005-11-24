@@ -125,8 +125,10 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 		multiComps = false;
 		boolean needsMigrating =  (!project.hasNature(FacetedProjectNature.NATURE_ID)) || (res!=null && !res.isLoaded());
 		if (!needsMigrating) {
-				multiComps = ((ProjectComponents)((WTPModulesResource)res).getRootObject()).getComponents().size() > 1;
-				return multiComps;
+				if (res != null && ((WTPModulesResource)res).getRootObject() != null) {
+					multiComps = ((ProjectComponents)((WTPModulesResource)res).getRootObject()).getComponents().size() > 1;
+					return multiComps;
+				} else return needsMigrating;
 		}
 		else
 			return needsMigrating;

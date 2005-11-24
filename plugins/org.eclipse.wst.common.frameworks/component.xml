@@ -26,4 +26,6 @@
     <type name="SimpleURIFactory" subclass="false" instantiate="false" />
     <type name="URIException" subclass="false" instantiate="false" />
   </package>
+
+  <package name="org.eclipse.wst.common.frameworks.datamodel"></package>
 </component>

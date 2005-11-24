@@ -24,7 +24,7 @@ package org.eclipse.wst.common.frameworks.datamodel;
  * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider
  * @see org.eclipse.wst.common.frameworks.datamodel.DataModelFactory
  * 
- * @plannedfor 1.0
+ * @since 1.0
  */
 public interface IDataModelProperties {
 

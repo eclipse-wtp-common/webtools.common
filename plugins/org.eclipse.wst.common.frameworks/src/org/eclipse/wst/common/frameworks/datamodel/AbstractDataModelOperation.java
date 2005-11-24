@@ -29,7 +29,7 @@ import org.eclipse.wst.common.environment.IEnvironment;
  * 
  * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation
  * 
- * @plannedfor 1.0
+ * @since 1.0
  */
 public abstract class AbstractDataModelOperation extends AbstractOperation implements IDataModelOperation {
 
@@ -102,14 +102,23 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 		return model;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation#getDataModelIDs()
+	 */
 	public Set getDataModelIDs() {
 		return new HashSet();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation#getSchedulingRule()
+	 */
 	public ISchedulingRule getSchedulingRule() {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation#getOperationExecutionFlags()
+	 */
 	public int getOperationExecutionFlags() {
 		return IWorkspace.AVOID_UPDATE;
 	}
@@ -159,6 +168,9 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
     return null; 
   }
   
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.commands.operations.IUndoableOperation#redo(org.eclipse.core.runtime.IProgressMonitor, org.eclipse.core.runtime.IAdaptable)
+	 */
 	public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		return Status.OK_STATUS;
 	}
