@@ -99,7 +99,7 @@ physical:          run after all pre and postnormalization resolvers
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         &lt;b&gt;Note:&lt;/b&gt; This extension point is part of an interim API that is still under development and expected to change significantly before reaching stability. It is being made available at this early stage to solicit feedback from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken (repeatedly) as the API evolves.
+         &lt;b&gt;This extension point is part of an interim API that is still under development and expected to change significantly before reaching stability. It is being made available at this early stage to solicit feedback from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken (repeatedly) as the API evolves.&lt;/b&gt;
 
       </documentation>
    </annotation>
@@ -128,7 +128,7 @@ physical:          run after all pre and postnormalization resolvers
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         The supplied class must implement org.eclipse.wst.common.uriresolver.internal.provisional.URIResolver.
+         The supplied class must implement &lt;code&gt;org.eclipse.wst.common.uriresolver.internal.provisional.URIResolver&lt;/code&gt;.
       </documentation>
    </annotation>
 
