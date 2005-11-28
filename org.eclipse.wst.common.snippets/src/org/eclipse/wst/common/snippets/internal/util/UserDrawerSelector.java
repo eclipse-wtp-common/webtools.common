@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.help.WorkbenchHelp;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.common.snippets.internal.IHelpContextIds;
 import org.eclipse.wst.common.snippets.internal.Logger;
 import org.eclipse.wst.common.snippets.internal.SnippetsMessages;
@@ -96,7 +96,7 @@ public class UserDrawerSelector {
 			CComboSelectionDialog dlg = new CComboSelectionDialog(fShell, SnippetsMessages.New_Category_Title, (fSelectionPrompt != null ? fSelectionPrompt : SnippetsMessages.choose_or_create), userDrawers, 0, new CategoryNameValidator()) { //$NON-NLS-1$ //$NON-NLS-2$
 				protected Control createDialogArea(Composite parent) {
 					Control mainHook = super.createDialogArea(parent);
-					WorkbenchHelp.setHelp(mainHook, IHelpContextIds.DIALOG_EDIT_CATEGORY);
+					PlatformUI.getWorkbench().getHelpSystem().setHelp(mainHook, IHelpContextIds.ADD_TO_SNIPPETS_DIALOG_CATEGORY);
 					return mainHook;
 				}
 			};
@@ -150,7 +150,7 @@ public class UserDrawerSelector {
 				InputDialog d = new InputDialog(fShell, SnippetsMessages.New_Category_Title, (fInputPrompt != null ? fInputPrompt : SnippetsMessages.force_create), defaultNewDrawerName, new CategoryNameValidator()) {//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					protected Control createContents(Composite parent) {
 						Control mainHook = super.createContents(parent);
-						WorkbenchHelp.setHelp(mainHook, IHelpContextIds.DIALOG_EDIT_CATEGORY);
+						PlatformUI.getWorkbench().getHelpSystem().setHelp(mainHook, IHelpContextIds.ADD_TO_SNIPPETS_DIALOG_CATEGORY);
 						return mainHook;
 					}
 				};

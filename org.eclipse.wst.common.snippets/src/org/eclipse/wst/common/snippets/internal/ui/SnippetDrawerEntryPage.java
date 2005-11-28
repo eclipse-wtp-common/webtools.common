@@ -46,7 +46,6 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.dialogs.ListSelectionDialog;
-import org.eclipse.ui.help.WorkbenchHelp;
 import org.eclipse.wst.common.snippets.core.ISnippetsEntry;
 import org.eclipse.wst.common.snippets.internal.IHelpContextIds;
 import org.eclipse.wst.common.snippets.internal.SnippetsMessages;
@@ -161,7 +160,7 @@ public class SnippetDrawerEntryPage extends DrawerEntryPage {
 		// create the dialog
 		// first to get the dialog shell and set the infopop on it
 		dialog.create();
-		WorkbenchHelp.setHelp(dialog.getShell(), IHelpContextIds.DIALOG_CONTENT_TYPE_SELECTION);
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(dialog.getShell(), IHelpContextIds.DIALOG_CONTENT_TYPE_SELECTION);
 
 		if (dialog.open() == Window.OK) {
 			fContentTypes = dialog.getResult();
@@ -232,7 +231,7 @@ public class SnippetDrawerEntryPage extends DrawerEntryPage {
 	}
 
 	public void createControl(Composite parent, PaletteEntry entry) {
-		WorkbenchHelp.setHelp(parent, IHelpContextIds.DIALOG_EDIT_CATEGORY);
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, IHelpContextIds.DIALOG_EDIT_CATEGORY);
 		super.createControl(parent, entry);
 		Composite panel = (Composite) getControl();
 		Control[] tablist = new Control[panel.getTabList().length + 2];

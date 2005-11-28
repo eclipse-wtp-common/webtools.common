@@ -30,7 +30,9 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.common.snippets.core.ISnippetCategory;
+import org.eclipse.wst.common.snippets.internal.IHelpContextIds;
 import org.eclipse.wst.common.snippets.internal.SnippetDefinitions;
 import org.eclipse.wst.common.snippets.internal.SnippetsMessages;
 import org.eclipse.wst.common.snippets.internal.SnippetsPluginImageHelper;
@@ -47,6 +49,7 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 			setImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_ELCL_EXPORT));
 			setDisabledImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_DLCL_EXPORT));
 			setHoverImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_CLCL_EXPORT));
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IHelpContextIds.CUSTOMIZE_EXPORT_BUTTON);
 		}
 
 		protected void handleExport() {
@@ -122,6 +125,7 @@ public class SnippetCustomizerDialog extends PaletteCustomizerDialog {
 			setImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_ELCL_IMPORT));
 			setDisabledImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_DLCL_IMPORT));
 			setHoverImageDescriptor(SnippetsPluginImageHelper.getInstance().getImageDescriptor(SnippetsPluginImages.IMG_CLCL_IMPORT));
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IHelpContextIds.CUSTOMIZE_IMPORT_BUTTON);
 		}
 
 		protected PaletteContainer determineContainerForNewEntry(PaletteEntry selected) {

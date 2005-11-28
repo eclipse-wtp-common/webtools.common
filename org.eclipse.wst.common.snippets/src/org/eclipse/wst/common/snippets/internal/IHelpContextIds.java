@@ -20,20 +20,8 @@ package org.eclipse.wst.common.snippets.internal;
  * 
  */
 public interface IHelpContextIds {
-
-	// not in use yet, so keep commented out
-	// // Import button in Customize dialog
-	// public static final String CUSTOMIZE_IMPORT_BUTTON = PREFIX +
-	// "snip0010"; //$NON-NLS-1$
-	// // Export button in Customize dialog
-	// public static final String CUSTOMIZE_EXPORT_BUTTON = PREFIX +
-	// "snip0020"; //$NON-NLS-1$
-
 	// org.eclipse.wst.common.snippets.
 	public static final String PREFIX = SnippetsPlugin.BUNDLE_ID + "."; //$NON-NLS-1$
-
-	// Content type selection dialog
-	public static final String DIALOG_CONTENT_TYPE_SELECTION = PREFIX + "snip0030"; //$NON-NLS-1$
 
 	// New/Edit Category (dialog)
 	public static final String DIALOG_EDIT_CATEGORY = PREFIX + "libv1300"; //$NON-NLS-1$
@@ -41,18 +29,23 @@ public interface IHelpContextIds {
 	// New/Edit Item (dialog)
 	public static final String DIALOG_EDIT_VARITEM = PREFIX + "libv1200"; //$NON-NLS-1$
 
-	// Selection Needed [for Filter Shown Categories] (dialog) (no longer
-	// needed??)
-	public static final String DIALOG_FILTER_CATEGORY = PREFIX + "libv1400"; //$NON-NLS-1$
-
 	// Insert Template (dialog)
 	public static final String DIALOG_INSERT_VARITEM = PREFIX + "libv1100"; //$NON-NLS-1$
 
 	// Snippets view (general)
 	public static final String MAIN_VIEW_GENERAL = PREFIX + "libv1000"; //$NON-NLS-1$
 
-	// Add to snippets menu item
-	public static final String MENU_ADD_TO_SNIPPETS = PREFIX + "snip0040"; //$NON-NLS-1$
+	// Import button in Customize dialog
+	public static final String CUSTOMIZE_IMPORT_BUTTON = PREFIX + "snip0010"; //$NON-NLS-1$
+	
+	// Export button in Customize dialog
+	public static final String CUSTOMIZE_EXPORT_BUTTON = PREFIX + "snip0020"; //$NON-NLS-1$
+	
+	// Content type selection dialog
+	public static final String DIALOG_CONTENT_TYPE_SELECTION = PREFIX + "snip0030"; //$NON-NLS-1$
+
+//	// Add to snippets menu item
+//	public static final String MENU_ADD_TO_SNIPPETS = PREFIX + "snip0040"; //$NON-NLS-1$
 
 	// Copy snippet menu item
 	public static final String MENU_COPY_SNIPPET = PREFIX + "snip0060"; //$NON-NLS-1$
@@ -62,4 +55,7 @@ public interface IHelpContextIds {
 
 	// Paste snippet menu item
 	public static final String MENU_PASTE_SNIPPET = PREFIX + "snip0070"; //$NON-NLS-1$
+	
+	// Add to snippets New/Edit Category (dialog)
+	public static final String ADD_TO_SNIPPETS_DIALOG_CATEGORY = PREFIX + "snip0080"; //$NON-NLS-1$
 }

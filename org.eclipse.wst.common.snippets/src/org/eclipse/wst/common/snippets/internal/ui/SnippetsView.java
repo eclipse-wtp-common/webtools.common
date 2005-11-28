@@ -57,7 +57,7 @@ import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.help.WorkbenchHelp;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wst.common.snippets.core.ISnippetCategory;
 import org.eclipse.wst.common.snippets.core.ISnippetItem;
@@ -519,7 +519,7 @@ public class SnippetsView extends ViewPart {
 		// drawers initially collapsed through model setup
 		fViewer.getControl().addMouseListener(insertListener);
 
-		WorkbenchHelp.setHelp(getViewer().getControl(), IHelpContextIds.MAIN_VIEW_GENERAL);
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(getViewer().getControl(), IHelpContextIds.MAIN_VIEW_GENERAL);
 
 		fPartActionUpdateListener = new PartActivationListener();
 		getViewSite().getPage().addPartListener(fPartActionUpdateListener);
@@ -606,7 +606,7 @@ public class SnippetsView extends ViewPart {
 	public Action getCopyAction() {
 		if (copyAction == null) {
 			copyAction = new CopyAction();
-			WorkbenchHelp.setHelp(copyAction, IHelpContextIds.MENU_COPY_SNIPPET);
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(copyAction, IHelpContextIds.MENU_COPY_SNIPPET);
 		}
 		return copyAction;
 	}
@@ -619,7 +619,7 @@ public class SnippetsView extends ViewPart {
 	public Action getCutAction() {
 		if (cutAction == null) {
 			cutAction = new CutAction();
-			WorkbenchHelp.setHelp(cutAction, IHelpContextIds.MENU_CUT_SNIPPET);
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(cutAction, IHelpContextIds.MENU_CUT_SNIPPET);
 		}
 		return cutAction;
 	}
@@ -683,7 +683,7 @@ public class SnippetsView extends ViewPart {
 	public PasteAction getPasteAction() {
 		if (pasteAction == null) {
 			pasteAction = new PasteAction();
-			WorkbenchHelp.setHelp(pasteAction, IHelpContextIds.MENU_PASTE_SNIPPET);
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(pasteAction, IHelpContextIds.MENU_PASTE_SNIPPET);
 		}
 		return pasteAction;
 	}
