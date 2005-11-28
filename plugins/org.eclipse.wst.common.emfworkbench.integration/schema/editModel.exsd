@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="com.ibm.etools.emf.workbench">
+<schema targetNamespace="org.eclipse.wst.common.emfworkbench.integration">
 <annotation>
       <appInfo>
-         <meta.schema plugin="com.ibm.etools.emf.workbench" id="editModel" name="EMF Resource Edit Model"/>
+         <meta.schema plugin="org.eclipse.wst.common.emfworkbench.integration" id="editModel" name="EMF Resource Edit Model"/>
       </appInfo>
       <documentation>
          Edit models provide a framework for managing a set of EMF resources within a unit of work.  For example, a workspace operation may affect a change to multiple EMF resources. Edit models provide basic services such as loads, saves (when necessary), and validate edit for the managed resources.  Edit models are reference counted, therefore a single instance of an edit model can be shared by more than one operation or editor.  By declaring an edit model, a plugin provider enables other components to contribute resources to be managed by that edit model.
@@ -18,21 +18,21 @@
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  a fully qualified identifier of the target extension point
                </documentation>
             </annotation>
          </attribute>
          <attribute name="id" type="string">
             <annotation>
                <documentation>
-                  
+                  an optional identifier of the extension instance
                </documentation>
             </annotation>
          </attribute>
          <attribute name="name" type="string">
             <annotation>
                <documentation>
-                  
+                  an optional name of the extension instance
                </documentation>
             </annotation>
          </attribute>
@@ -171,7 +171,11 @@
          <meta.section type="copyright"/>
       </appInfo>
       <documentation>
-         
+         Copyright (c) 2005 IBM Corporation and others.&lt;br&gt;
+All rights reserved. This program and the accompanying materials are made 
+available under the terms of the Eclipse Public License v1.0 which accompanies 
+this distribution, and is available at &lt;a
+href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
       </documentation>
    </annotation>
 

@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipse.wst.examples.xml.org.eclipse.wst.examples">
+<schema targetNamespace="org.eclipse.wst.common.ui">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.eclipse.wst.examples.xml.org.eclipse.wst.examples" id="ExampleProjectCreationWizard" name="Example Project Creation Wizard"/>
+         <meta.schema plugin="org.eclipse.wst.common.ui" id="ExampleProjectCreationWizard" name="Example Project Creation Wizard"/>
       </appInfo>
       <documentation>
          This extension point allows to extend New project withard with the
@@ -19,21 +19,21 @@ page set up setup information for the created project as well as source files th
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  a fully qualified identifier of the target extension point
                </documentation>
             </annotation>
          </attribute>
          <attribute name="id" type="string">
             <annotation>
                <documentation>
-                  Unique identifier for the extension
+                  an optional identifier of the extension instance
                </documentation>
             </annotation>
          </attribute>
          <attribute name="name" type="string">
             <annotation>
                <documentation>
-                  Optional name of the extension
+                  an optional name of the extension instance
                </documentation>
             </annotation>
          </attribute>
@@ -185,17 +185,17 @@ There will be as many pages created for the wizard as there are projectsetup ele
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         &lt;extension 		point=&quot;org.eclipse.wst.common.ui.exampleProjectCreationWizard&quot;
-   		id=&quot;org.eclipse.wst.xml.ui.ExampleProjectCreationWizardExtension&quot;&gt; 
-  	 &lt;wizard
-  	 	   id=&quot;org.eclipse.wst.xml.ui.ExampleProjectCreationWizard&quot;
+         &lt;extension   point=&quot;org.eclipse.wst.common.ui.exampleProjectCreationWizard&quot;
+     id=&quot;org.eclipse.wst.xml.ui.ExampleProjectCreationWizardExtension&quot;&gt; 
+    &lt;wizard
+        id=&quot;org.eclipse.wst.xml.ui.ExampleProjectCreationWizard&quot;
            banner=&quot;icons/newSampleProject_wizbanner.gif&quot;&gt;
         &lt;projectsetup
-           	pagetitle=&quot;%XMLExampleProjectCreationWizard.pagetitle&quot;
-           	name=&quot;%XMLExampleProjectCreationWizard.projectname&quot;
-           	label=&quot;%XMLExampleProjectCreationWizard.label&quot;
-           	pagedescription=&quot;%XMLExampleProjectCreationWizard.pagedescription&quot;
-           	open=&quot;readme.html&quot;&gt;
+            pagetitle=&quot;%XMLExampleProjectCreationWizard.pagetitle&quot;
+            name=&quot;%XMLExampleProjectCreationWizard.projectname&quot;
+            label=&quot;%XMLExampleProjectCreationWizard.label&quot;
+            pagedescription=&quot;%XMLExampleProjectCreationWizard.pagedescription&quot;
+            open=&quot;readme.html&quot;&gt;
             &lt;import
                   dest=&quot;&quot;
                   src=&quot;examples/EditingAndValidatingXML.zip&quot;&gt;
@@ -229,14 +229,11 @@ There will be as many pages created for the wizard as there are projectsetup ele
          <meta.section type="copyright"/>
       </appInfo>
       <documentation>
-         Copyright (c) 2001, 2004 IBM Corporation and others.
-All rights reserved. This program and the accompanying materials
-are made available under the terms of the Eclipse Public License v1.0
-which accompanies this distribution, and is available at
-http://www.eclipse.org/legal/epl-v10.html
-
-Contributors:
-	IBM Corporation - initial API and implementation
+         Copyright (c) 2005 IBM Corporation and others.&lt;br&gt;
+All rights reserved. This program and the accompanying materials are made 
+available under the terms of the Eclipse Public License v1.0 which accompanies 
+this distribution, and is available at &lt;a
+href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
       </documentation>
    </annotation>
 
