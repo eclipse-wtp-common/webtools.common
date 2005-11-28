@@ -17,6 +17,8 @@ import org.eclipse.wst.common.internal.environment.eclipse.ConsoleEclipseEnviron
  * This class creates a console environment.  It also contains static
  * conviences methods for creating an ILog object as well as an Eclipse and
  * File Scheme.
+ * 
+ * @since 1.0
  *
  */
 public class EnvironmentService

@@ -17,36 +17,48 @@ import org.eclipse.core.runtime.IStatus;
  * A IURIScheme represents a single scheme for some a family of
  * Univeral Resource Identifiers. Examples include "file", "http"
  * and "platform" (Eclipse).
+ * 
+ * @since 1.0
  */
 public interface IURIScheme
 {
   /**
-   * Returns a new IURI.
+   * @param uri the URI to be created.
+   * @return Returns a new IURI.
+   * @throws URIException if the uri specified is not valid or
+   * can not be created.
    */
   public IURI newURI ( String uri ) throws URIException;
 
   /**
-   * Returns a new IURI.
+   * @param url the url used to create the URI.
+   * @return Returns a new IURI.
+   * @throws URIException if the url specified is not valid or
+   * can not be created.
    */
   public IURI newURI ( URL url ) throws URIException;
 
   /**
-   * Returns a new IURI.
+   * @param uri the URI to be created.
+   * @return Returns a new IURI.
+   * @throws URIException if the uri specified is not valid or
+   * can not be created.
    */
   public IURI newURI ( IURI uri ) throws URIException;
 
   /**
-   * Returns the proper name of the scheme.
+   * @return Returns the proper name of the scheme.
    */
   public String toString ();
 
   /**
-   * Returns true if and only if this is a hierarchical scheme.
+   * @return Returns true if and only if this is a hierarchical scheme.
    */
   public boolean isHierarchical ();
 
   /**
-   * Returns true if and only if the given IURI satisfies the
+   * @param uri the uri to check for validity.
+   * @return Returns true if and only if the given IURI satisfies the
    * grammatical requirements of the scheme. Absolute URIs must
    * begin with "<scheme>:". Relative URIs must either not contain
    * a colon, ":", or it must begin with "./".
@@ -54,7 +66,8 @@ public interface IURIScheme
   public boolean isValid ( IURI uri );
 
   /**
-   * Returns a Status object indicating whether or not the given
+   * @param uri the uri to check for validity.
+   * @return Returns a Status object indicating whether or not the given
    * IURI is valid. The severity and message of the Status object
    * will describe this.
    */

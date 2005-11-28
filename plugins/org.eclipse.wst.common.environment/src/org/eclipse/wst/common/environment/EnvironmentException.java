@@ -14,6 +14,8 @@ import org.eclipse.core.runtime.IStatus;
 
 /**
  * This is the exception class for conditions raised by the IEnvironment.
+ * 
+ * @since 1.0
  */
 public class EnvironmentException extends Exception
 {
@@ -22,6 +24,9 @@ public class EnvironmentException extends Exception
    */
   private static final long serialVersionUID = 3978983275899402036L;
   
+  /**
+   * The status for this exception.
+   */
   protected IStatus status = null;
   
   /**
@@ -34,6 +39,8 @@ public class EnvironmentException extends Exception
 
   /**
    * Creates a new EnvironmentException.
+   * 
+   * @param status the status for this exception.
    */
   public EnvironmentException ( IStatus status )
   {
@@ -43,6 +50,8 @@ public class EnvironmentException extends Exception
 
   /**
    * Returns the Status object.
+   * 
+   * @return the status for this exception.
    */
   public IStatus getStatus()
   {

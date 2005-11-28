@@ -16,12 +16,13 @@ package org.eclipse.wst.common.environment;
  * It allows code that is reporting status to specify choices to the user
  * which this reporting code can react to. 
  *
+ * @since 1.0
  */
 public class Choice {
 
-  	protected char shortcut = ' '; 
-	protected String label = null;
-  	protected String description = null;
+  private char   shortcut = ' '; 
+  private String label = null;
+  private String description = null;
   	
 	/**
 	 * Constructor for Choice.
@@ -31,8 +32,8 @@ public class Choice {
 
 	/**
 	 * Constructor for Choice.
-	 * @param shortcut
-	 * @param label
+	 * @param shortcut the single letter shortcut for this choice.
+	 * @param label the label to be displayed to the user for this choice.
 	 */
 	public Choice(char shortcut, String label) {
 		this.shortcut = shortcut;
@@ -41,9 +42,9 @@ public class Choice {
 	
 	/**
 	 * Constructor for Choice.
-	 * @param shortcut
-	 * @param label
-	 * @param description
+   * @param shortcut the single letter shortcut for this choice.
+   * @param label the label to be displayed to the user for this choice.
+	 * @param description the description for this choice.
 	 */
 	public Choice(char shortcut, String label, String description) {
 		this.shortcut = shortcut;

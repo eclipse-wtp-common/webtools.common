@@ -15,6 +15,8 @@ import org.eclipse.core.runtime.IStatus;
 /**
  * 
  * This class provides a default implementation of the IStatusHandler interface.
+ * 
+ * @since 1.0
  *
  */
 public class NullStatusHandler implements IStatusHandler

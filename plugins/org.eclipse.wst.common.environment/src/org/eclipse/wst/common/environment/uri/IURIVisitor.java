@@ -13,6 +13,8 @@ package org.eclipse.wst.common.environment.uri;
 /**
  * This interface is implemented by classes that visit URIs.
  * Refer to {@link IURI#visit}.
+ * 
+ * @since 1.0
  */
 public interface IURIVisitor
 {

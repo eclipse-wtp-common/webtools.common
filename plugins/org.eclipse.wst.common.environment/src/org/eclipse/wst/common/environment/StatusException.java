@@ -15,6 +15,8 @@ import org.eclipse.core.runtime.IStatus;
 /**
  * This is the exception class used by StatusHandlers to tell their
  * callers that processing should stop.
+ * 
+ * @since 1.0
  */
 public class StatusException extends EnvironmentException
 {
@@ -31,6 +33,7 @@ public class StatusException extends EnvironmentException
 
   /**
    * Creates a new StatusException with the given Status.
+   * @param status the status for this exception.
    */
   public StatusException( IStatus status )
   {
@@ -40,6 +43,7 @@ public class StatusException extends EnvironmentException
   /**
    * Creates a new StatusException with the given Choice.
    * The Choice may be null.
+   * @param choice the choice for this exception.
    */
   public StatusException ( Choice choice )
   {
@@ -50,6 +54,9 @@ public class StatusException extends EnvironmentException
   /**
    * Creates a new StatusException with the given Choice
    * and status object. The Choice may be null.
+   * 
+   * @param status the status for this exception.
+   * @param choice the choice for this exception.
    */
   public StatusException ( IStatus status, Choice choice )
   {
@@ -58,7 +65,7 @@ public class StatusException extends EnvironmentException
   }
 
   /**
-   * Returns the Choice object inside this exception.
+   * @return Returns the Choice object inside this exception.
    */
   public Choice getChoice ()
   {

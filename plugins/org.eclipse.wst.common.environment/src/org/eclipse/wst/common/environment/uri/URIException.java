@@ -17,6 +17,8 @@ import org.eclipse.core.runtime.IStatus;
  * Every URIException carries a IURI and a Status, each of which may
  * be null. The getMessage() method as inherited from Exception will
  * return the message from the URIExceptin's Status object, if any.
+ * 
+ * @since 1.0
  */
 public class URIException extends Exception
 {
@@ -40,6 +42,8 @@ public class URIException extends Exception
   /**
    * Creates a new URIException with the given Status.
    * The status may be null.
+   * 
+   * @param status the staus for this exception.
    */
   public URIException ( IStatus status )
   {
@@ -50,6 +54,9 @@ public class URIException extends Exception
   /**
    * Creates a new URIException for the given Status and IURI,
    * each of which may be null.
+   * 
+   * @param status the status for this exception.
+   * @param uri the uri that caused this exception.
    */
   public URIException ( IStatus status, IURI uri )
   {
@@ -59,7 +66,7 @@ public class URIException extends Exception
   }
 
   /**
-   * Returns the Status object inside this exception.
+   * @return returns the Status object inside this exception.
    */
   public IStatus getStatus ()
   {
@@ -67,7 +74,7 @@ public class URIException extends Exception
   }
 
   /**
-   * Returns the IURI inside this exception.
+   * @return returns the IURI inside this exception.
    */
   public IURI getURI ()
   {

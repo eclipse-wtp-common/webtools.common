@@ -21,16 +21,22 @@ import org.eclipse.wst.common.environment.uri.IURIFactory;
  * <li>A status handler for receiving and processing status reports,</li>
  * <li>A factory for the handling of URIs (resources).</li>
  * </ol>
+ * 
+ * @since 1.0
  */
 public interface IEnvironment
 {
   /**
    * Returns a logging facility.
+   * 
+   * @return returns a logging facility.
    */
   public ILog getLog ();
 
   /**
    * Returns a status handler.
+   * 
+   * @return returns a status handler.
    */
   public IStatusHandler getStatusHandler ();
 
@@ -39,6 +45,8 @@ public interface IEnvironment
    * Hint: Implementers should insure that the Factory they return
    * has a reference to this IEnvironment so that IURI objects can
    * report progress and announce status.
+   * 
+   * @return returns a URI factory.
    */
   public IURIFactory getURIFactory ();
 }

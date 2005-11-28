@@ -14,16 +14,24 @@ import java.net.URL;
 
 /**
  * This is a factory for creating new IURI and IURIScheme objects.
+ * 
+ * @since 1.0
  */
 public interface IURIFactory
 {
   /**
    * Creates and returns a new IURI for the given string.
+   * @param uri the uri to be created.
+   * @return the new URI.
+   * @throws URIException if the uri parameter is not a valid URI.
    */
   public IURI newURI ( String uri ) throws URIException;
 
   /**
    * Creates and returns a new IURI for the given URL.
+   * @param url the url to use to create this URI
+   * @return the new URI.
+   * @throws URIException if the url parameter is not a valid url.
    */
   public IURI newURI ( URL url ) throws URIException;
 
@@ -34,6 +42,11 @@ public interface IURIFactory
    * substring up to but excluding the first colon is interpretted as the
    * name of the scheme, meaning the caller can pass in any IURI string in
    * order to get a IURIScheme object.
+   * 
+   * @param schemeOrURI the scheme or URI from which to create the scheme.
+   * @return the new Scheme.
+   * @throws URIException if schemeOrUri parameter does not contain
+   * a valid scheme or URI name.
    */
   public IURIScheme newURIScheme ( String schemeOrURI ) throws URIException;
 }

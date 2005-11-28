@@ -14,12 +14,29 @@ import org.eclipse.core.runtime.IStatus;
 
 /**
  * ILog objects provide a means for logging information for FFDC etc.
+ * 
+ * @since 1.0
  */
 public interface ILog
 {
+  /**
+   * This constant indicates that a logging message is Ok.
+   */
   public static final int OK = 0;
+  
+  /**
+   * This constant indicates that a logging message is informational.
+   */
   public static final int INFO = 1;
+  
+  /**
+   * This constant indicates that a logging message is warning.
+   */
   public static final int WARNING = 2;
+  
+  /**
+   * This constant indicates that a logging message is an error.
+   */
   public static final int ERROR = 4;
 
   /**
@@ -35,7 +52,10 @@ public interface ILog
   public boolean isEnabled ();
   
   /**
-   * Returns true if the the debug option is set to true.
+   * Returns true if this debug option is set to true.
+   * 
+   * @param option this debug option string.
+   * @return returns true if this debug option is set to true.
    */
   public boolean isEnabled (String option);
 
@@ -53,7 +73,7 @@ public interface ILog
   /**
    * Logs a <code>Throwable</code>.
    * @param severity The severity of the logging entry.
-   * @param debug option
+   * @param option this debug option string.
    * @param messageNum The message number.
    * @param caller The object (for non-static methods) or class (for
    * static methods) doing the logging.
@@ -76,7 +96,7 @@ public interface ILog
   /**
    * Logs a <code>Status</code>.
    * @param severity The severity of the logging entry.
-   * @param debug option
+   * @param option this debug option string.
    * @param messageNum  The message number.
    * @param caller The object (for non-static methods) or class (for
    * static methods) doing the logging.
@@ -99,7 +119,7 @@ public interface ILog
   /**
    * Logs an <code>Object</code>.
    * @param severity The severity of the logging entry.
-   * @param debug option
+   * @param option this debug option string.
    * @param messageNum  The message number.
    * @param caller The object (for non-static methods) or class (for
    * static methods) doing the logging.

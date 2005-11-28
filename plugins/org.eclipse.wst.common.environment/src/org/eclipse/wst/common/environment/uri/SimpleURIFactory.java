@@ -21,14 +21,17 @@ import org.eclipse.wst.common.internal.environment.relative.RelativeScheme;
 /**
  * 
  * This class provides a default implementation of the IURIFactory interface.
- *
+ * 
+ * @since 1.0
  */
 public class SimpleURIFactory implements IURIFactory
 {
   private Hashtable    schemes_ = new Hashtable();  
   
   /**
-   * Creates and returns a new IURI for the given string.
+   * @param uri the uri to be created.
+   * @return Creates and returns a new IURI for the given string.
+   * @throws URIException if an error occurs creating this URI.
    */
   public IURI newURI(String uri) throws URIException
   {
@@ -38,7 +41,9 @@ public class SimpleURIFactory implements IURIFactory
   }
 
   /**
-   * Creates and returns a new IURI for the given URL.
+   * @param url the url to use to create this uri.
+   * @return Creates and returns a new IURI for the given URL.
+   * @throws URIException if an error occurs creating this URI.
    */
   public IURI newURI(URL url) throws URIException
   {
@@ -48,18 +53,27 @@ public class SimpleURIFactory implements IURIFactory
   }
 
   /**
-   * Creates and returns a new IURIScheme for the given scheme string.
+   * @param schemeOrURI the scheme name or URI from which this scheme is 
+   * to be created.
+   * @return Creates and returns a new IURIScheme for the given scheme string.
    * If the string contains no colons, the entire string is interpretted
    * as the name of the scheme. If the string contains a colon, then the
    * substring up to but excluding the first colon is interpretted as the
    * name of the scheme, meaning the caller can pass in any IURI string in
    * order to get a IURIScheme object.
+   * @throws URIException if an error occurs creating this URI scheme.
    */
   public IURIScheme newURIScheme(String schemeOrURI) throws URIException
   {
     return newURIScheme( schemeOrURI, true );
   }
   
+  /**
+   * This method registers a scheme for a particular protocol.
+   * 
+   * @param protocol the protocol.
+   * @param scheme the scheme.
+   */
   public void registerScheme( String protocol, IURIScheme scheme )
   {
     schemes_.put( protocol, scheme );

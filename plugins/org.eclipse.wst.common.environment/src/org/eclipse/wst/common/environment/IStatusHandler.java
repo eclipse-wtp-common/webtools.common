@@ -17,32 +17,38 @@ import org.eclipse.core.runtime.IStatus;
  * indication of choices made by the recipient of the status and
  * may raise an exception against the caller to have them abort
  * procesing.
+ * 
+ * @since 1.0
  */
 public interface IStatusHandler
 {
   /**
    * Reports the given Status and set of possible responses.
-   * Returns the choice made by the handler.
+   * 
+   * @param status the status to report.
+   * @param choices the choices that will be displayed to the user.
+   * @return returns the choice made by the user/handler.
    */
   public Choice report ( IStatus status, Choice[] choices );
   
   /**
    * Reports the given Status with implied options to either
    * continue or abort.
-   * Throws an exception if the handler decides the caller
+   * @param status the status to report.
+   * @throws StatusException Throws an exception if the handler decides the caller
    * should stop processing.
    */
   public void report ( IStatus status ) throws StatusException;
   
   /**
    * Report the given Error Status.  No user feedback is provided.
-   * @param status
+   * @param status the error status to report.
    */
   public void reportError( IStatus status );
   
   /**
    * Report the given Info Status.  No user feedback is provided.
-   * @param status
+   * @param status the info status to report.
    */
   public void reportInfo( IStatus status );
 }
