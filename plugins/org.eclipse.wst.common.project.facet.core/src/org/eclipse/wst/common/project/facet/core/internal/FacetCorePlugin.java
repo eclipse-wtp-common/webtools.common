@@ -45,7 +45,7 @@ public final class FacetCorePlugin
     
     public static void log( final Exception e )
     {
-        final String msg = e.getMessage();
+        final String msg = e.getMessage() + "";
         log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, e ) );
     }
 
