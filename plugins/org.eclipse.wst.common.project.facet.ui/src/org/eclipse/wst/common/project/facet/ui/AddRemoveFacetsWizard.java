@@ -532,6 +532,5 @@ public class AddRemoveFacetsWizard
                                 Resources.class );
         }
     }
-
     
 }

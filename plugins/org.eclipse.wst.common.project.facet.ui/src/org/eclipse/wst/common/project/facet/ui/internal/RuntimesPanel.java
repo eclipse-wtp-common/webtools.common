@@ -18,25 +18,35 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
+import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.IColorProvider;
+import org.eclipse.jface.viewers.IFontProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.wst.common.project.facet.core.IListener;
@@ -58,10 +68,10 @@ public final class RuntimesPanel
 
 {
     private final Label runtimesLabel;
-    private final TreeViewer runtimes;
-    private final Button filterButton;
-    private final Button bindButton;
-    //private final Button newButton;
+    private final CheckboxTableViewer runtimes;
+    private final Button makePreferredButton;
+    private final Label runtimeComponentsLabel;
+    private final TableViewer runtimeComponents;
     private final FacetsSelectionPanel facetsSelectionPanel;
     private final Map facetFilters;
     private final Set filters;
@@ -93,11 +103,11 @@ public final class RuntimesPanel
         setLayout( layout );
 
         this.runtimesLabel = new Label( this, SWT.NONE );
-        this.runtimesLabel.setText( "Runtimes:" );
+        this.runtimesLabel.setText( Resources.runtimesLabel );
         this.runtimesLabel.setLayoutData( gdhfill() );
         
-        this.runtimes = new TreeViewer( this, SWT.BORDER );
-        this.runtimes.getTree().setLayoutData( gdfill() );
+        this.runtimes = CheckboxTableViewer.newCheckList( this, SWT.BORDER );
+        this.runtimes.getTable().setLayoutData( gdfill() );
         this.runtimes.setContentProvider( new ContentProvider() );
         this.runtimes.setLabelProvider( new LabelProvider() );
         this.runtimes.setSorter( new Sorter() );
@@ -109,59 +119,53 @@ public final class RuntimesPanel
             {
                 public void selectionChanged( final SelectionChangedEvent e )
                 {
-                    updateButtons();
+                    handleRuntimeSelectionChanged();
                 }
             }
         );
         
-        final Composite buttons = new Composite( this, SWT.NONE );
-        buttons.setLayoutData( halign( new GridData(), SWT.RIGHT ) );
+        this.runtimes.addCheckStateListener
+        (
+            new ICheckStateListener()
+            {
+                public void checkStateChanged( final CheckStateChangedEvent e )
+                {
+                    handleCheckStateChanged( e );
+                }
+            }
+        );
         
-        final GridLayout buttonsLayout = new GridLayout( 3, false );
-        buttonsLayout.marginHeight = 0;
-        buttonsLayout.marginWidth = 0;
+        this.makePreferredButton = new Button( this, SWT.PUSH );
+        this.makePreferredButton.setText( Resources.makePreferredLabel );
+        this.makePreferredButton.setLayoutData( halign( whint( new GridData(), 110 ), GridData.END ) );
+        this.makePreferredButton.setEnabled( false );
         
-        buttons.setLayout( buttonsLayout );
-        
-        this.filterButton = new Button( buttons, SWT.PUSH );
-        this.filterButton.setText( "Add Filter" );
-        this.filterButton.setLayoutData( whint( new GridData(), 80 ) );
-        
-        this.filterButton.addSelectionListener
+        this.makePreferredButton.addSelectionListener
         (
             new SelectionAdapter()
             {
                 public void widgetSelected( final SelectionEvent e )
                 {
-                    handleAddRemoveFilter();
-                }
-            }
-        );
-
-        this.bindButton = new Button( buttons, SWT.PUSH );
-        this.bindButton.setText( "Bind" );
-        this.bindButton.setLayoutData( whint( new GridData(), 60 ) );
-
-        this.bindButton.addSelectionListener
-        (
-            new SelectionAdapter()
-            {
-                public void widgetSelected( final SelectionEvent e )
-                {
-                    handleBindUnbindRuntime();
+                    handleMakePreferred();
                 }
             }
         );
         
-        //this.newButton = new Button( buttons, SWT.PUSH );
-        //this.newButton.setText( "New" );
-        //this.newButton.setLayoutData( whint( new GridData(), 60 ) );
+        this.runtimeComponentsLabel = new Label( this, SWT.NONE );
+        this.runtimeComponentsLabel.setText( Resources.runtimeCompositionLabel );
+        this.runtimeComponentsLabel.setLayoutData( gdhfill() );
+        
+        this.runtimeComponents = new TableViewer( this, SWT.BORDER );
+        this.runtimeComponents.getTable().setLayoutData( hhint( gdhfill(), 50 ) );
+        this.runtimeComponents.setContentProvider( new RuntimeComponentsContentProvider() );
+        this.runtimeComponents.setLabelProvider( new RuntimeComponentsLabelProvider() );
+        this.runtimeComponents.getTable().setBackground( new Color( null, 255, 255, 206 ) );
         
         final IListener listener = new IListener()
         {
             public void handle()
             {
-                RuntimesPanel.this.runtimes.refresh();
+                refresh();
             }
         };
         
@@ -177,8 +181,6 @@ public final class RuntimesPanel
                 }
             }
         );
-        
-        updateButtons();
     }
     
     public IRuntime getRuntime()
@@ -206,7 +208,6 @@ public final class RuntimesPanel
         }
         
         notifyRuntimeListeners();
-        updateButtons();
     }
     
     public void addRuntimeListener( final Listener listener )
@@ -230,18 +231,49 @@ public final class RuntimesPanel
     public void addFilter( final IFilter filter )
     {
         this.filters.add( filter );
-        this.runtimes.refresh();
+        refresh();
     }
     
     public void removeFilter( final IFilter filter )
     {
         this.filters.remove( filter );
-        this.runtimes.refresh();
+        refresh();
+    }
+    
+    private boolean isFilteredOut( final IRuntime r )
+    {
+        for( Iterator itr = RuntimesPanel.this.filters.iterator(); 
+             itr.hasNext(); )
+        {
+            final IFilter filter = (IFilter) itr.next();
+            
+            if( ! filter.check( r ) )
+            {
+                return true;
+            }
+        }
+        
+        return false;
     }
     
     public void refresh()
     {
         this.runtimes.refresh();
+        
+        for( Iterator itr = RuntimeManager.getRuntimes().iterator(); 
+             itr.hasNext(); )
+        {
+            final IRuntime r = (IRuntime) itr.next();
+            
+            if( isFilteredOut( r ) )
+            {
+                this.runtimes.setGrayed( r, true );
+            }
+            else
+            {
+                this.runtimes.setGrayed( r, false );
+            }
+        }
     }
     
     private void addProjectFacetsFilter( final IRuntime r )
@@ -253,6 +285,11 @@ public final class RuntimesPanel
             
             this.facetFilters.put( r, filter );
             this.facetsSelectionPanel.addFilter( filter );
+            
+            if( ! this.runtimes.getChecked( r ) )
+            {
+                this.runtimes.setChecked( r, true );
+            }
         }
     }
     
@@ -262,143 +299,124 @@ public final class RuntimesPanel
             = (FacetsSelectionPanel.IFilter) this.facetFilters.remove( r );
         
         this.facetsSelectionPanel.removeFilter( filter );
+        
+        if( this.runtimes.getChecked( r ) )
+        {
+            this.runtimes.setChecked( r, false );
+        }
     }
     
-    private void handleAddRemoveFilter()
+    private void handleCheckStateChanged( final CheckStateChangedEvent e )
     {
-        final IStructuredSelection ssel 
-            = (IStructuredSelection) this.runtimes.getSelection();
+        final IRuntime runtime = (IRuntime) e.getElement();
         
-        final IRuntime runtime = (IRuntime) ssel.getFirstElement();
+        if( isFilteredOut( runtime ) && e.getChecked() )
+        {
+            this.runtimes.setChecked( runtime, false );
+            return;
+        }
         
         if( this.facetFilters.containsKey( runtime ) )
         {
             removeProjectFacetsFilter( runtime );
+
+            if( runtime == this.boundRuntime )
+            {
+                if( this.facetFilters.isEmpty() )
+                {
+                    this.boundRuntime = null;
+                }
+                else
+                {
+                    final IRuntime r 
+                        = (IRuntime) this.facetFilters.keySet().iterator().next();
+                    
+                    this.boundRuntime = r;
+                    this.runtimes.update( r, null );
+                    
+                    final IRuntime selection = getSelection();
+                    
+                    if( selection != null && selection.equals( r ) )
+                    {
+                        this.makePreferredButton.setEnabled( false );
+                    }
+                }
+
+                this.runtimes.update( runtime, null );
+                notifyRuntimeListeners();
+            }
         }
         else
         {
             addProjectFacetsFilter( runtime );
+            
+            if( this.boundRuntime == null )
+            {
+                this.boundRuntime = runtime;
+                this.runtimes.update( runtime, null );
+                notifyRuntimeListeners();
+            }
         }
-        
-        this.runtimes.update( runtime, null );
-        updateButtons();
     }
     
-    private void handleBindUnbindRuntime()
+    private void handleRuntimeSelectionChanged()
+    {
+        final IRuntime r = getSelection();
+        
+        if( r != null )
+        {
+            if( this.runtimeComponents.getInput() == null ||
+                ! this.runtimeComponents.getInput().equals( r ) )
+            {
+                this.runtimeComponents.setInput( r );
+            }
+            
+            if( this.runtimes.getChecked( r ) && this.boundRuntime != null && 
+                ! this.boundRuntime.equals( r ) && ! isFilteredOut( r ) )
+            {
+                this.makePreferredButton.setEnabled( true );
+            }
+            else
+            {
+                this.makePreferredButton.setEnabled( false );
+            }
+        }
+    }
+    
+    private void handleMakePreferred()
+    {
+        final IRuntime old = this.boundRuntime;
+        this.boundRuntime = getSelection();
+        
+        this.runtimes.refresh( old );
+        this.runtimes.refresh( this.boundRuntime );
+        
+        notifyRuntimeListeners();
+    }
+    
+    private IRuntime getSelection()
     {
         final IStructuredSelection ssel 
             = (IStructuredSelection) this.runtimes.getSelection();
         
-        final IRuntime runtime = (IRuntime) ssel.getFirstElement();
-        
-        if( this.boundRuntime != null &&
-            this.boundRuntime.equals( runtime ) )
+        if( ssel.isEmpty() )
         {
-            setRuntime( null );
+            return null;
         }
         else
         {
-            setRuntime( runtime );
-        }
-    }
-    
-    private void updateButtons()
-    {
-        final IStructuredSelection ssel
-            = (IStructuredSelection) this.runtimes.getSelection();
-        
-        final Object sel = ssel.getFirstElement();
-        
-        if( sel == null || sel instanceof IRuntimeComponent )
-        {
-            this.filterButton.setText( "Add Filter" );
-            this.filterButton.setEnabled( false );
-            this.bindButton.setText( "Bind" );
-            this.bindButton.setEnabled( false );
-        }
-        else
-        {
-            final IRuntime runtime = (IRuntime) sel;
-            
-            if( this.facetFilters.containsKey( runtime ) )
-            {
-                this.filterButton.setText( "Remove Filter" );
-            }
-            else
-            {
-                this.filterButton.setText( "Add Filter" );
-            }
-            
-            if( this.boundRuntime != null && 
-                this.boundRuntime.equals( runtime ) )
-            {
-                this.bindButton.setText( "Unbind" );
-                this.filterButton.setEnabled( false );
-            }
-            else
-            {
-                this.bindButton.setText( "Bind" );
-                this.filterButton.setEnabled( true );
-            }
-            
-            this.bindButton.setEnabled( true );
+            return (IRuntime) ssel.getFirstElement();
         }
     }
     
     private final class ContentProvider
 
-        implements ITreeContentProvider
+        implements IStructuredContentProvider
     
     {
         public Object[] getElements( final Object element )
         {
-            final Set res = new HashSet();
-            
-            for( Iterator itr1 = RuntimeManager.getRuntimes().iterator();
-                 itr1.hasNext(); )
-            {
-                final IRuntime r = (IRuntime) itr1.next();
-                boolean ok = true;
-                
-                for( Iterator itr2 = RuntimesPanel.this.filters.iterator();
-                     itr2.hasNext(); )
-                {
-                    if( ! ( (IFilter) itr2.next() ).check( r ) )
-                    {
-                        ok = false;
-                        break;
-                    }
-                }
-                
-                if( ok )
-                {
-                    res.add( r );
-                }
-            }
-            
-            return res.toArray();
-        }
-    
-        public Object[] getChildren( final Object parent )
-        {
-            if( parent instanceof IRuntime )
-            {
-                return ( (IRuntime) parent ).getRuntimeComponents().toArray();
-            }
-            else
-            {
-                return new Object[ 0 ];
-            }
-        }
-    
-        public Object getParent( final Object element )
-        {
-            return null;
-        }
-    
-        public boolean hasChildren( final Object element )
-        {
-            return ( element instanceof IRuntime );
+            return RuntimeManager.getRuntimes().toArray();
         }
     
         public void dispose() { }
@@ -410,72 +428,197 @@ public final class RuntimesPanel
     
     private final class LabelProvider
 
-        implements ILabelProvider
+        implements ILabelProvider, IFontProvider, IColorProvider
     
     {
-        private ImageRegistry imageRegistry = new ImageRegistry();
+        private final Color COLOR_GREY 
+            = new Color( null, 160, 160, 164 );
+        
+        private final ImageRegistry imageRegistry;
+        private final Font boldFont;
+        
+        public LabelProvider()
+        {
+            this.imageRegistry = new ImageRegistry();
+            
+            final FontData system 
+                = Display.getCurrent().getSystemFont().getFontData()[ 0 ];
+        
+            final FontData bold 
+                = new FontData( system.getName(), system.getHeight(), SWT.BOLD );
+            
+            this.boldFont = new Font( Display.getCurrent(), bold );
+        }
         
         public String getText( final Object element )
         {
-            if( element instanceof IRuntime )
+            return ( (IRuntime) element ).getName();
+        }
+
+        public Image getImage( final Object element )
+        {
+            final IRuntime r = (IRuntime) element;
+            
+            final IRuntimeComponent rc 
+                = (IRuntimeComponent) r.getRuntimeComponents().get( 0 );
+            
+            final IRuntimeComponentType rct = rc.getRuntimeComponentType();
+            
+            Image image = this.imageRegistry.get( rct.getId() );
+            
+            if( image == null )
+            {
+                final IDecorationsProvider decprov
+                    = (IDecorationsProvider) rct.getAdapter( IDecorationsProvider.class );
+                
+                this.imageRegistry.put( rct.getId(), decprov.getIcon() );
+                image = this.imageRegistry.get( rct.getId() );
+            }
+
+            if( isFilteredOut( r ) )
+            {
+                final String greyedId = rct.getId() + "##greyed##";
+                Image greyed = this.imageRegistry.get( greyedId );
+                
+                if( greyed == null )
+                {
+                    greyed = new Image( null, image, SWT.IMAGE_GRAY );
+                    this.imageRegistry.put( greyedId, greyed );
+                }
+                
+                return greyed;
+            }
+            else
+            {
+                return image;
+            }
+        }
+        
+        public Font getFont( final Object element )
+        {
+            if( RuntimesPanel.this.boundRuntime != null &&
+                RuntimesPanel.this.boundRuntime.equals( element ) )
+            {
+                return this.boldFont;
+            }
+            
+            return null;
+        }
+        
+        public Color getForeground( final Object element )
+        {
+            if( isFilteredOut( (IRuntime) element ) )
+            {
+                return COLOR_GREY;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public Color getBackground( final Object element )
+        {
+            return null;
+        }
+
+        public void dispose()
+        {
+            this.imageRegistry.dispose();
+            this.boldFont.dispose();
+        }
+
+        public boolean isLabelProperty( final Object element, 
+                                        final String property )
+        {
+            return false;
+        }
+
+        public void addListener( final ILabelProviderListener listener ) {}
+        public void removeListener( final ILabelProviderListener listener ) {}
+    }
+
+    private final class Sorter
+
+        extends ViewerSorter
+    
+    {
+        public int compare( final Viewer viewer,
+                            final Object a,
+                            final Object b )
+        {
+            final IRuntime r1 = (IRuntime) a;
+            final boolean r1fo = isFilteredOut( r1 );
+            
+            final IRuntime r2 = (IRuntime) b;
+            final boolean r2fo = isFilteredOut( r2 );
+            
+            if( r1fo && ! r2fo )
+            {
+                return 1;
+            }
+            else if( ! r1fo && r2fo )
+            {
+                return -1;
+            }
+            else
+            {
+                return r1.getName().compareToIgnoreCase( r2.getName() );
+            }
+        }
+    }
+    
+    private final class RuntimeComponentsContentProvider
+
+        implements IStructuredContentProvider
+    
+    {
+        public Object[] getElements( final Object element )
+        {
+            final IRuntime r = (IRuntime) element;
+            return r.getRuntimeComponents().toArray();
+        }
+    
+        public void dispose() { }
+    
+        public void inputChanged( final Viewer viewer,
+                                  final Object oldObject,
+                                  final Object newObject ) {}
+    }
+    
+    private final class RuntimeComponentsLabelProvider
+
+        implements ILabelProvider
+    
+    {
+        private final ImageRegistry imageRegistry = new ImageRegistry();
+        
+        public String getText( final Object element )
+        {
+            final IRuntimeComponent comp = (IRuntimeComponent) element;
+            
+            final IRuntimeComponentLabelProvider provider
+                = (IRuntimeComponentLabelProvider) comp.getAdapter( IRuntimeComponentLabelProvider.class );
+            
+            if( provider == null )
             {
                 final StringBuffer label = new StringBuffer();
-                label.append( ( (IRuntime) element ).getName() );
-                
-                if( RuntimesPanel.this.facetFilters.containsKey( element ) )
-                {
-                    label.append( " <f>" );
-                }
-                
-                if( RuntimesPanel.this.boundRuntime != null &&
-                    RuntimesPanel.this.boundRuntime.equals( element ) )
-                {
-                    label.append( " <b>" );
-                }
+                label.append( comp.getRuntimeComponentType().getId() );
+                label.append( ' ' );
+                label.append( comp.getRuntimeComponentVersion().getVersionString() );
                 
                 return label.toString();
             }
             else
             {
-                final IRuntimeComponent comp = (IRuntimeComponent) element;
-                
-                final IRuntimeComponentLabelProvider provider
-                    = (IRuntimeComponentLabelProvider) comp.getAdapter( IRuntimeComponentLabelProvider.class );
-                
-                if( provider == null )
-                {
-                    final StringBuffer label = new StringBuffer();
-                    label.append( comp.getRuntimeComponentType().getId() );
-                    label.append( ' ' );
-                    label.append( comp.getRuntimeComponentVersion().getVersionString() );
-                    
-                    return label.toString();
-                }
-                else
-                {
-                    return provider.getLabel();
-                }
+                return provider.getLabel();
             }
         }
 
         public Image getImage( final Object element )
         {
-            final IRuntimeComponentType rct;
-
-            if( element instanceof IRuntime )
-            {
-                final IRuntime r = (IRuntime) element;
-                
-                final IRuntimeComponent rc 
-                    = (IRuntimeComponent) r.getRuntimeComponents().get( 0 );
-                
-                rct = rc.getRuntimeComponentType();
-            }
-            else
-            {
-                final IRuntimeComponent rc = (IRuntimeComponent) element;
-                rct = rc.getRuntimeComponentType();
-            }
+            final IRuntimeComponent rc = (IRuntimeComponent) element;
+            final IRuntimeComponentType rct = rc.getRuntimeComponentType();
             
             Image image = this.imageRegistry.get( rct.getId() );
             
@@ -506,32 +649,6 @@ public final class RuntimesPanel
         public void removeListener( final ILabelProviderListener listener ) {}
     }
 
-    private static final class Sorter
-
-        extends ViewerSorter
-    
-    {
-        public int compare( final Viewer viewer,
-                            final Object a,
-                            final Object b )
-        {
-            if( a instanceof IRuntime )
-            {
-                final IRuntime r1 = (IRuntime) a;
-                final IRuntime r2 = (IRuntime) b;
-                
-                return r1.getName().compareToIgnoreCase( r2.getName() );
-            }
-            else
-            {
-                // Don't sort the runtime components. Their order is 
-                // significant.
-                
-                return 0;
-            }
-        }
-    }
-    
     private static final class SupportedFacetsFilter
     
         implements FacetsSelectionPanel.IFilter
@@ -567,11 +684,34 @@ public final class RuntimesPanel
         return gd;
     }
 
+    private static final GridData hhint( final GridData gd,
+                                         final int height )
+    {
+        gd.heightHint = height;
+        return gd;
+    }
+    
     private static final GridData halign( final GridData gd,
                                           final int alignment )
     {
         gd.horizontalAlignment = alignment;
         return gd;
+    }
+
+    private static final class Resources
+    
+        extends NLS
+        
+    {
+        public static String runtimesLabel;
+        public static String runtimeCompositionLabel;
+        public static String makePreferredLabel;
+        
+        static
+        {
+            initializeMessages( RuntimesPanel.class.getName(), 
+                                Resources.class );
+        }
     }
     
 }

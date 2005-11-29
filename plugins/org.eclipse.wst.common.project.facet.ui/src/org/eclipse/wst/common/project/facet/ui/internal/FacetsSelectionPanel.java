@@ -51,6 +51,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -109,10 +110,10 @@ public final class FacetsSelectionPanel
         final FontData system 
             = Display.getCurrent().getSystemFont().getFontData()[ 0 ];
         
-        final FontData italic 
+        final FontData bold 
             = new FontData( system.getName(), system.getHeight(), SWT.BOLD );
         
-        FIXED_FONT = new Font( Display.getCurrent(), italic );
+        FIXED_FONT = new Font( Display.getCurrent(), bold );
     }
 
     private final IDialogSettings settings;
@@ -130,6 +131,7 @@ public final class FacetsSelectionPanel
     private final ComboBoxCellEditor ceditor;
     private final TableViewer problemsView;
     private final RuntimesPanel runtimesPanel;
+    private final Button showHideRuntimesButton;
     
     private final IWizardContext context;
 
@@ -208,23 +210,12 @@ public final class FacetsSelectionPanel
 
         // Layout the panel.
 
-        setLayout( new GridLayout( 1, false ) );
+        setLayout( new GridLayout( 4, false ) );
         
-        this.sform1 = new SashForm( this, SWT.HORIZONTAL | SWT.SMOOTH );
-        this.sform1.setLayoutData( gdfill() );
-
-        final Composite composite = new Composite( this.sform1, SWT.NONE );
-        composite.setLayoutData( gdhfill() );
-        
-        final GridLayout layout = new GridLayout( 4, false );
-        layout.marginWidth = 0;
-        layout.marginHeight = 0;
-        composite.setLayout( layout );
-        
-        this.presetsLabel = new Label( composite, SWT.NONE );
+        this.presetsLabel = new Label( this, SWT.NONE );
         this.presetsLabel.setText( "Presets: " );
         
-        this.presetsCombo = new Combo( composite, SWT.READ_ONLY );
+        this.presetsCombo = new Combo( this, SWT.READ_ONLY );
         this.presetsCombo.setLayoutData( gdhfill() );
 
         this.presetsCombo.addSelectionListener
@@ -238,7 +229,7 @@ public final class FacetsSelectionPanel
             }
         );
         
-        this.savePresetButton = new Button( composite, SWT.PUSH );
+        this.savePresetButton = new Button( this, SWT.PUSH );
         this.savePresetButton.setText( "Save" );
         this.savePresetButton.setLayoutData( whint( new GridData(), 60 ) );
         
@@ -253,7 +244,7 @@ public final class FacetsSelectionPanel
             }
         );
 
-        this.deletePresetButton = new Button( composite, SWT.PUSH );
+        this.deletePresetButton = new Button( this, SWT.PUSH );
         this.deletePresetButton.setText( "Delete" );
         this.deletePresetButton.setLayoutData( whint( new GridData(), 60 ) );
         
@@ -269,8 +260,11 @@ public final class FacetsSelectionPanel
         );
         
         refreshPresetsCombo();
-        
-        this.sform2 = new SashForm( composite, SWT.VERTICAL | SWT.SMOOTH );
+
+        this.sform1 = new SashForm( this, SWT.HORIZONTAL | SWT.SMOOTH );
+        this.sform1.setLayoutData( hspan( gdfill(), 4 ) );
+
+        this.sform2 = new SashForm( this.sform1, SWT.VERTICAL | SWT.SMOOTH );
         this.sform2.setLayoutData( hspan( gdfill(), 4 ) );
         
         this.tree = new CheckboxTreeViewer( this.sform2, SWT.BORDER );
@@ -443,6 +437,22 @@ public final class FacetsSelectionPanel
                           this.settings.getInt( SASH1W2 ) };
     
         this.sform1.setWeights( weights1 );
+        this.sform1.setMaximizedControl( this.sform2 );
+        
+        this.showHideRuntimesButton = new Button( this, SWT.PUSH );
+        this.showHideRuntimesButton.setLayoutData( halign( whint( hspan( new GridData(), 4 ), 110 ), GridData.END ) );
+        this.showHideRuntimesButton.setText( Resources.showRuntimes );
+        
+        this.showHideRuntimesButton.addSelectionListener
+        (
+            new SelectionAdapter()
+            {
+                public void widgetSelected( final SelectionEvent e )
+                {
+                    handleShowHideRuntimes();
+                }
+            }
+        );
         
         updateValidationDisplay();
     }
@@ -1249,6 +1259,20 @@ public final class FacetsSelectionPanel
         refreshPresetsCombo();
     }
     
+    private void handleShowHideRuntimes()
+    {
+        if( this.sform1.getMaximizedControl() == null )
+        {
+            this.sform1.setMaximizedControl( this.sform2 );
+            this.showHideRuntimesButton.setText( Resources.showRuntimes );
+        }
+        else
+        {
+            this.sform1.setMaximizedControl( null );
+            this.showHideRuntimesButton.setText( Resources.hideRuntimes );
+        }
+    }
+    
     private ArrayList getAllTreeItems()
     {
         final ArrayList result = new ArrayList();
@@ -1794,5 +1818,27 @@ public final class FacetsSelectionPanel
         gd.horizontalSpan = span;
         return gd;
     }
+    
+    private static final GridData halign( final GridData gd,
+                                          final int alignment )
+    {
+        gd.horizontalAlignment = alignment;
+        return gd;
+    }
 
+    private static final class Resources
+    
+        extends NLS
+        
+    {
+        public static String showRuntimes;
+        public static String hideRuntimes;
+        
+        static
+        {
+            initializeMessages( FacetsSelectionPanel.class.getName(), 
+                                Resources.class );
+        }
+    }
+    
 }
