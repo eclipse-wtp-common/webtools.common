@@ -197,7 +197,6 @@ public interface IVirtualComponent extends IAdaptable {
 	 *
 	 * @param name the string name of the member folder
 	 * @return the (handle of the) member folder
-	 * @see #getFile(String)
 	 */
 	public IVirtualFolder getRootFolder();
 	
