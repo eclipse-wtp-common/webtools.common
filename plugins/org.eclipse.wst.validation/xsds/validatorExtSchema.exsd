@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="com.ibm.etools.validation">
+<schema targetNamespace="org.eclipse.wst.validation">
 <annotation>
       <appInfo>
-         <meta.schema plugin="com.ibm.etools.validation" id="validator" name="Validator"/>
+         <meta.schema plugin="org.eclipse.wst.validation" id="validator" name="Validator"/>
       </appInfo>
       <documentation>
          This extension point give the ability to create a new validator that can validate resources in a Java Project. The validator needs to registered for a given nature of the project for it to run on that project. The user can specifiy file filters to filter out files that need to be validated. The new validator registered by the project nature on the project can be run manually or incrementally if  Auto Build is turned on, during incremental builds the changed delta of files are only validated if those files are part of the validation filters specified.
@@ -18,21 +18,21 @@
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  a fully qualified identifier of the target extension point
                </documentation>
             </annotation>
          </attribute>
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  an optional identifier of the extension instance
                </documentation>
             </annotation>
          </attribute>
          <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  an optional name of the extension instance
                </documentation>
             </annotation>
          </attribute>
@@ -273,7 +273,11 @@ This markerId element also needs a corresponding problemMarker extension to be d
          <meta.section type="copyright"/>
       </appInfo>
       <documentation>
-         
+         Copyright (c) 2005 IBM Corporation and others.&lt;br&gt;
+All rights reserved. This program and the accompanying materials are made 
+available under the terms of the Eclipse Public License v1.0 which accompanies 
+this distribution, and is available at &lt;a
+href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
       </documentation>
    </annotation>
 
