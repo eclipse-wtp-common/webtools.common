@@ -169,12 +169,21 @@ public class VirtualComponent implements IVirtualComponent {
         StructureEdit core = null;
         try {
             core = StructureEdit.getStructureEditForWrite(getProject());
-            WorkbenchComponent component = core.getComponent(); 
-            
-                final Property prop = ComponentcoreFactory.eINSTANCE.createProperty();
-				prop.setName(key);
-				prop.setValue(value);
-				component.getProperties().add(prop);
+            WorkbenchComponent component = core.getComponent();
+            //Remove existing property first
+            List properties = component.getProperties();
+            for (int i=0; i<properties.size(); i++) {
+            	Property existing = (Property) properties.get(i);
+            	if (existing.getName().equals(key)) {
+            		properties.remove(existing);
+            		break;
+            	}
+            }
+        	//Set new property
+            final Property prop = ComponentcoreFactory.eINSTANCE.createProperty();
+			prop.setName(key);
+			prop.setValue(value);
+			component.getProperties().add(prop);
             
         } finally {
             if(core != null){
