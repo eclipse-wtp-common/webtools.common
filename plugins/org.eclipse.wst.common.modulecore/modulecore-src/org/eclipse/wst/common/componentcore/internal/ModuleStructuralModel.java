@@ -123,15 +123,19 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	}
 	private boolean resNeedsMigrating(XMIResource res) throws CoreException {
 		multiComps = false;
+		if (project==null)
+			return false;
 		boolean needsMigrating =  (!project.hasNature(FacetedProjectNature.NATURE_ID)) || (res!=null && !res.isLoaded());
 		if (!needsMigrating) {
-				if (res != null && ((WTPModulesResource)res).getRootObject() != null) {
-					multiComps = ((ProjectComponents)((WTPModulesResource)res).getRootObject()).getComponents().size() > 1;
+			if (res != null && ((WTPModulesResource)res).getRootObject() != null) {
+				ProjectComponents components = (ProjectComponents) ((WTPModulesResource)res).getRootObject();
+				if (components.getComponents() != null) {
+					multiComps = components.getComponents().size() > 1;
 					return multiComps;
-				} else return needsMigrating;
+				}
+			}
 		}
-		else
-			return needsMigrating;
+		return needsMigrating;
 	}
 	
 	public Object getAdapter(Class anAdapter) {
