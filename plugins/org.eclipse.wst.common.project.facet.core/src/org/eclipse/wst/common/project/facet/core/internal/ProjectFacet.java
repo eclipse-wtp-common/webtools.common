@@ -25,6 +25,7 @@ import org.eclipse.wst.common.project.facet.core.IDelegate;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.VersionFormatException;
+import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 
 /**
  * The implementation of the <code>IProjectFacet</code> interface.
@@ -136,6 +137,25 @@ public final class ProjectFacet
         final Object max = Collections.max( this.versions, comp );
         
         return (IProjectFacetVersion) max;
+    }
+    
+    public IProjectFacetVersion getLatestSupportedVersion( final IRuntime r )
+    
+        throws CoreException
+        
+    {
+        for( Iterator itr = getSortedVersions( false ).iterator(); 
+             itr.hasNext(); )
+        {
+            final IProjectFacetVersion fv = (IProjectFacetVersion) itr.next();
+            
+            if( r.supports( fv ) )
+            {
+                return fv;
+            }
+        }
+        
+        return null;
     }
     
     protected IVersionAdapter getVersionAdapter()

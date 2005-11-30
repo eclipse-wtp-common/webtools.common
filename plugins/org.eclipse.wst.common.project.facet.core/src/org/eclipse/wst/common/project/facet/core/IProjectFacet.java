@@ -17,6 +17,7 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 
 /**
  * Contains metadata that describes a project facet. This interface is not 
@@ -115,6 +116,10 @@ public interface IProjectFacet
     IProjectFacetVersion getLatestVersion()
     
         throws VersionFormatException, CoreException;
+    
+    IProjectFacetVersion getLatestSupportedVersion( IRuntime runtime )
+    
+        throws CoreException;
 
     /**
      * Returns a sorted list containing the descriptors of all versions of this 

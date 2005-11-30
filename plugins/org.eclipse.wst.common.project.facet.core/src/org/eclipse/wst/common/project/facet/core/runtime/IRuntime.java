@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 
 /**
@@ -82,5 +83,7 @@ public interface IRuntime
      */
     
     boolean supports( IProjectFacetVersion fv );
+    
+    boolean supports( IProjectFacet f );
     
 }

@@ -14,6 +14,8 @@ package org.eclipse.wst.common.project.facet.core.runtime.internal;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.wst.common.project.facet.core.IProjectFacet;
+import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
 
@@ -71,6 +73,20 @@ public abstract class AbstractRuntime
         return res;
     }
     
+    
+    public boolean supports( final IProjectFacet f )
+    {
+        for( Iterator itr = f.getVersions().iterator(); itr.hasNext(); )
+        {
+            if( supports( (IProjectFacetVersion) itr.next() ) )
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
     public final boolean equals( final Object obj )
     {
         if( obj instanceof IRuntime )
