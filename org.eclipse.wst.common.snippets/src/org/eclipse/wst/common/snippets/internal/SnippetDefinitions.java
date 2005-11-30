@@ -75,6 +75,15 @@ public class SnippetDefinitions {
 			if (item.getId().equals(id))
 				return item;
 		}
+		for (int i = 0; i < fCategories.size(); i++) {
+			ISnippetItem[] items = ((ISnippetCategory) fCategories.get(i)).getItems();
+			for (int j = 0; j < items.length; j++) {
+				SnippetPaletteItem item = (SnippetPaletteItem) items[j];
+				if (item.getId().equals(id)) {
+					return item;
+				}
+			}
+		}
 		return null;
 	}
 

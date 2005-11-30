@@ -42,8 +42,8 @@ public interface ISnippetsEntry {
 	String getDescription();
 
 	/**
-	 * @return the filters for which this entry will be shown (when filtering
-	 *         is enabled)
+	 * @return the filters for which this entry will be shown when filtering
+	 *         is enabled
 	 */
 	String[] getFilters();
 
