@@ -21,6 +21,12 @@ import java.util.StringTokenizer;
  * specified. The default version comparator can handle version strings using 
  * the standard decimal notation. It can also be subclassed to modify the 
  * separators that are used or to provide custom parsing for a version segment.
+ *
+ * <p><i>This class is part of an interim API that is still under development 
+ * and expected to change significantly before reaching stability. It is being 
+ * made available at this early stage to solicit feedback from pioneering 
+ * adopters on the understanding that any code that uses this API will almost 
+ * certainly be broken (repeatedly) as the API evolves.</i></p>
  * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
