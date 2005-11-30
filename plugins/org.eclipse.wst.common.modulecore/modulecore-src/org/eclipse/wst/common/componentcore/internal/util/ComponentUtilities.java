@@ -83,10 +83,11 @@ public class ComponentUtilities {
 
 
 	public static ArtifactEdit getArtifactEditForRead(IVirtualComponent comp) {
-		ArtifactEditRegistryReader reader = ArtifactEditRegistryReader.instance();
 		if (comp != null) {
+			ArtifactEditRegistryReader reader = ArtifactEditRegistryReader.instance();
 			IArtifactEditFactory factory = reader.getArtifactEdit(comp.getProject());
-			return factory.createArtifactEditForRead(comp);
+			if (factory != null)
+				return factory.createArtifactEditForRead(comp);
 		}
 		return null;
 	}
@@ -151,9 +152,13 @@ public class ComponentUtilities {
 
 
 	public static ArtifactEdit getArtifactEditForWrite(IVirtualComponent comp) {
-		ArtifactEditRegistryReader reader = ArtifactEditRegistryReader.instance();
-		IArtifactEditFactory factory = reader.getArtifactEdit(comp.getProject());
-		return factory.createArtifactEditForWrite(comp);
+		if (comp != null) {
+			ArtifactEditRegistryReader reader = ArtifactEditRegistryReader.instance();
+			IArtifactEditFactory factory = reader.getArtifactEdit(comp.getProject());
+			if (factory != null)
+				return factory.createArtifactEditForWrite(comp);
+		}
+		return null;
 	}
 
 	public static IVirtualComponent findComponent(EObject anObject) {
