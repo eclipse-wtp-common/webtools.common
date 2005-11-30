@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
+
 <plugin>
 
   <extension-point 
@@ -28,21 +29,18 @@
     </factory>
   </extension>
     
-  <extension
-    point="org.eclipse.ui.popupMenus">
-    <objectContribution
+  <extension point="org.eclipse.ui.propertyPages">
+    <page
       adaptable="true"
-      objectClass="org.eclipse.core.resources.IProject"
-      nameFilter="*"
-      id="org.eclipse.wst.common.project.facet.ui.AddRemoveProjectFacetsMenuItem">
-      <filter name="nature" value="org.eclipse.wst.common.project.facet.core.nature"/>
-      <action
-        label="%add.remove.facets"
-        class="org.eclipse.wst.common.project.facet.ui.internal.AddRemoveFacetsAction"
-        menubarPath="additions"
-        enablesFor="+"
-        id="org.eclipse.wst.common.project.facet.ui.AddRemoveProjectFacetsMenuAction"/>
-    </objectContribution>
+      class="org.eclipse.wst.common.project.facet.ui.internal.FacetsPropertyPage"
+      id="org.eclipse.wst.common.project.facet.ui.internal.FacetsPropertyPage"
+      name="%project.facets"
+      objectClass="org.eclipse.core.resources.IProject">
+      <filter
+        name="nature"
+        value="org.eclipse.wst.common.project.facet.core.nature">
+      </filter>
+    </page>
   </extension>
   
 </plugin>
