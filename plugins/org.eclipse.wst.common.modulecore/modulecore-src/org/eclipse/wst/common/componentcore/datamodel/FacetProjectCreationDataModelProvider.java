@@ -10,16 +10,17 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.datamodel;
 
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetDataModelProperties;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetProjectCreationDataModelProperties;
 import org.eclipse.wst.common.componentcore.internal.operation.FacetProjectCreationOperation;
@@ -32,8 +33,11 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModelListener;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.IProjectCreationPropertiesNew;
 import org.eclipse.wst.common.frameworks.internal.operations.ProjectCreationDataModelProviderNew;
+import org.eclipse.wst.common.project.facet.core.IProjectFacet;
+import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
-import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
+import org.eclipse.wst.common.project.facet.core.runtime.internal.RuntimeManagerImpl;
 
 public class FacetProjectCreationDataModelProvider extends AbstractDataModelProvider implements IFacetProjectCreationDataModelProperties {
 
@@ -153,7 +157,21 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 					if( dm.isProperty(FACET_RUNTIME)){
 						dm.setProperty(FACET_RUNTIME, propertyValue);
 					}
-				}			
+				}
+				Map facetDMs = (Map) getProperty(FACET_DM_MAP);
+				for (Iterator iterator = facetDMs.values().iterator(); iterator.hasNext();) {
+					IDataModel facetDataModel = (IDataModel) iterator.next();
+					IProjectFacet facet = ProjectFacetsManager.getProjectFacet((String) facetDataModel.getProperty(IFacetDataModelProperties.FACET_ID));
+					
+					try {
+						IProjectFacetVersion version = facet.getLatestSupportedVersion( (IRuntime) propertyValue );
+		                IDataModel facetModel = ((FacetDataModelMap) facetDMs).getFacetDataModel( facet.getId() );
+		                facetModel.setProperty(IFacetDataModelProperties.FACET_VERSION, version);
+
+					} catch (CoreException e) {
+						Logger.getLogger().logError(e);
+					}					
+				}					
 		}
 		return super.propertySet(propertyName, propertyValue);
 	}
@@ -180,19 +198,47 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 
 	public DataModelPropertyDescriptor[] getValidPropertyDescriptors(String propertyName) {
 		if (FACET_RUNTIME.equals(propertyName)) {
-			Set projectFacetVersions = new HashSet();
+	
+			Set projectFacets = new HashSet();
 			Map facetDMs = (Map) getProperty(FACET_DM_MAP);
 			for (Iterator iterator = facetDMs.values().iterator(); iterator.hasNext();) {
 				IDataModel facetDataModel = (IDataModel) iterator.next();
-				projectFacetVersions.add(facetDataModel.getProperty(IFacetDataModelProperties.FACET_VERSION));
-			}
-			Set runtimes = RuntimeManager.getRuntimes(projectFacetVersions);
-			List list = Collections.list(Collections.enumeration(runtimes));
-			Collections.sort(list, new Comparator(){
-				public int compare(Object o1, Object o2) {
-					return ((IRuntime)o1).getName().compareTo(((IRuntime)o2).getName());
+				IProjectFacet facet = ProjectFacetsManager.getProjectFacet((String) facetDataModel.getProperty(IFacetDataModelProperties.FACET_ID));
+				projectFacets.add( facet );
+			}			
+			Set runtimes = RuntimeManagerImpl.getRuntimes();
+			ArrayList list = new ArrayList();
+			
+			for( Iterator it= runtimes.iterator(); it.hasNext(); ){
+				IRuntime rt = (IRuntime)it.next();
+				
+				//add this runtime in the list only if this runtime supports all of the facets
+				//in the project
+				
+				boolean supportsFactet = true;
+				for( Iterator facetIt = projectFacets.iterator(); facetIt.hasNext();){
+					IProjectFacet facet = (IProjectFacet)facetIt.next();
+					if(	!rt.supports( facet ) ){
+						supportsFactet = false;
+					} 
+//					else
+//						try {
+//							IProjectFacetVersion version = facet.getLatestSupportedVersion( rt );
+//						
+//			                IDataModel facetModel = ((FacetDataModelMap) facetDMs).getFacetDataModel( facet.getId() );
+//
+//			                facetModel.setProperty(IFacetDataModelProperties.FACET_VERSION, version);
+//            
+//
+//						} catch (CoreException e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
 				}
-			});
+				if( supportsFactet ){
+					list.add( rt );
+				}
+			}
 			
 			DataModelPropertyDescriptor [] descriptors = new DataModelPropertyDescriptor[list.size()];
 			Iterator iterator = list.iterator();
