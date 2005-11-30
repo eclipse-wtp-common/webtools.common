@@ -40,7 +40,7 @@
 			dir="${wst-folder}"
 			quiet="true" />
 		<ant
-			target="core-test"
+			target="ui-test"
 			antfile="${library-file}"
 			dir="${eclipse-home}">
 			<property
