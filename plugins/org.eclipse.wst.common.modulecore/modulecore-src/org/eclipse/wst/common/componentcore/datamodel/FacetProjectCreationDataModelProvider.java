@@ -221,19 +221,6 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 					if(	!rt.supports( facet ) ){
 						supportsFactet = false;
 					} 
-//					else
-//						try {
-//							IProjectFacetVersion version = facet.getLatestSupportedVersion( rt );
-//						
-//			                IDataModel facetModel = ((FacetDataModelMap) facetDMs).getFacetDataModel( facet.getId() );
-//
-//			                facetModel.setProperty(IFacetDataModelProperties.FACET_VERSION, version);
-//            
-//
-//						} catch (CoreException e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}
 				}
 				if( supportsFactet ){
 					list.add( rt );
