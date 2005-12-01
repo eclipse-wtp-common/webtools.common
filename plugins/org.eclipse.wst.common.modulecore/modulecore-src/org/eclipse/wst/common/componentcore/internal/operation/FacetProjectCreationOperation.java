@@ -31,6 +31,7 @@ import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.operations.IProjectCreationPropertiesNew;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
@@ -48,26 +49,53 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		try {
 			IFacetedProject facetProj = createProject(monitor);
+			Set existingFacets = facetProj.getProjectFacets();
 
 			Map dmMap = (Map) model.getProperty(IFacetProjectCreationDataModelProperties.FACET_DM_MAP);
 			Set actions = new HashSet();
 			IDataModel facetDM = null;
 			for (Iterator iterator = dmMap.values().iterator(); iterator.hasNext();) {
 				facetDM = (IDataModel) iterator.next();
-				if(facetDM.getBooleanProperty(IFacetDataModelProperties.SHOULD_EXECUTE)){
-					actions.add(facetDM.getProperty(IFacetDataModelProperties.FACET_ACTION));
+				if (facetDM.getBooleanProperty(IFacetDataModelProperties.SHOULD_EXECUTE)) {
+					String facetID = facetDM.getStringProperty(IFacetDataModelProperties.FACET_ID);
+					boolean shouldInstallFacet = true;
+					for (Iterator existingFacetsIterator = existingFacets.iterator(); shouldInstallFacet && existingFacetsIterator.hasNext();) {
+						IProjectFacetVersion version = (IProjectFacetVersion) existingFacetsIterator.next();
+						if (version.getProjectFacet().getId().equals(facetID)) {
+							shouldInstallFacet = false;
+						}
+					}
+					if (shouldInstallFacet) {
+						actions.add(facetDM.getProperty(IFacetDataModelProperties.FACET_ACTION));
+					}
 				}
 			}
-			facetProj.modify(actions, monitor);
-			Set fixedFacets = new HashSet(), newFacetVersions = facetProj.getProjectFacets();
+			if (!actions.isEmpty()) {
+				facetProj.modify(actions, monitor);
+			}
+			Set fixedFacets = new HashSet(), newFacetVersions = facetProj.getProjectFacets(), existingFixedFacets = facetProj.getFixedProjectFacets();
 			for (Iterator iter = newFacetVersions.iterator(); iter.hasNext();) {
 				IProjectFacetVersion facetVersion = (IProjectFacetVersion) iter.next();
-				fixedFacets.add(facetVersion.getProjectFacet());
+				String facetID = facetVersion.getProjectFacet().getId();
+				boolean shouldInstallFacet = true;
+				for (Iterator existingFacetsIterator = existingFixedFacets.iterator(); shouldInstallFacet && existingFacetsIterator.hasNext();) {
+					IProjectFacet facet = (IProjectFacet) existingFacetsIterator.next();
+					if (facet.getId().equals(facetID)) {
+						shouldInstallFacet = false;
+					}
+				}
+				if (shouldInstallFacet) {
+					fixedFacets.add(facetVersion.getProjectFacet());
+				}
 			}
-			facetProj.setFixedProjectFacets(fixedFacets);
+			if (!fixedFacets.isEmpty()) {
+				facetProj.setFixedProjectFacets(fixedFacets);
+			}
 			IRuntime runtime = (IRuntime) model.getProperty(IFacetProjectCreationDataModelProperties.FACET_RUNTIME);
-			if (runtime != null)
+			IRuntime existingRuntime = facetProj.getRuntime();
+			if (runtime != null && (existingRuntime == null || !runtime.equals(existingRuntime))) {
 				facetProj.setRuntime(runtime, null);
+			}
 
 		} catch (CoreException e) {
 			Logger.getLogger().logError(e);
@@ -90,7 +118,7 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 		}
 		return facetProj;
 	}
-	
-	
+
+
 
 }
