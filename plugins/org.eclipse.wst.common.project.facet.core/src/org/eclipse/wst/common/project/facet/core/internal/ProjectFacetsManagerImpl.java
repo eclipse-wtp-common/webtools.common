@@ -84,8 +84,9 @@ public final class ProjectFacetsManagerImpl
         readMetadata();
         readUserPresets();
         
-        final IResourceChangeListener listener = new ResourceChangeListener();
-        ResourcesPlugin.getWorkspace().addResourceChangeListener( listener );
+        final IWorkspace ws = ResourcesPlugin.getWorkspace();
+        final IResourceChangeListener ls = new ResourceChangeListener();
+        ws.addResourceChangeListener( ls, IResourceChangeEvent.POST_CHANGE );
     }
     
     public Set getProjectFacets()
