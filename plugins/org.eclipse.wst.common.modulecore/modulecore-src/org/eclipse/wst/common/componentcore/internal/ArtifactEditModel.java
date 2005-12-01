@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -27,6 +28,9 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IFacetedProjectListener;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 /**
  * 
@@ -53,7 +57,7 @@ import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
  * @see org.eclipse.wst.common.componentcore.internal.ComponentResource
  */
 
-public class ArtifactEditModel extends EditModel implements IAdaptable {
+public class ArtifactEditModel extends EditModel implements IAdaptable, IFacetedProjectListener {
 
 	public static final Class ADAPTER_TYPE = ArtifactEditModel.class;
 	private final IProject componentProject; 
@@ -126,10 +130,17 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 		IProject aProject = null;
 		try {
 			aProject = StructureEdit.getContainingProject(aModuleURI);
+			IFacetedProject facetProj;
+			facetProj = ProjectFacetsManager.create(project);
+			if (facetProj != null)
+				facetProj.addListener(this);
 		} catch (UnresolveableURIException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} finally {
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
 			componentProject = aProject;
 		}
 		
@@ -278,5 +289,10 @@ public class ArtifactEditModel extends EditModel implements IAdaptable {
 
 	public IVirtualComponent getVirtualComponent() {
 		return virtualComponent;
+	}
+
+	public void projectChanged() {
+		initializeKnownResourceUris();
+		
 	}
 }
