@@ -164,9 +164,12 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 					IProjectFacet facet = ProjectFacetsManager.getProjectFacet((String) facetDataModel.getProperty(IFacetDataModelProperties.FACET_ID));
 					
 					try {
-						IProjectFacetVersion version = facet.getLatestSupportedVersion( (IRuntime) propertyValue );
-		                IDataModel facetModel = ((FacetDataModelMap) facetDMs).getFacetDataModel( facet.getId() );
-		                facetModel.setProperty(IFacetDataModelProperties.FACET_VERSION, version);
+						IDataModel facetModel = ((FacetDataModelMap) facetDMs).getFacetDataModel( facet.getId() );
+		                IProjectFacetVersion oldVersion = (IProjectFacetVersion)facetModel.getProperty(IFacetDataModelProperties.FACET_VERSION);
+		                IProjectFacetVersion newVersion = facet.getLatestSupportedVersion( (IRuntime) propertyValue );
+		                if(newVersion != null && (oldVersion == null || oldVersion.getVersionString().compareTo(newVersion.getVersionString()) > 0)){
+		                	facetModel.setProperty(IFacetDataModelProperties.FACET_VERSION, newVersion);
+		                }
 
 					} catch (CoreException e) {
 						Logger.getLogger().logError(e);

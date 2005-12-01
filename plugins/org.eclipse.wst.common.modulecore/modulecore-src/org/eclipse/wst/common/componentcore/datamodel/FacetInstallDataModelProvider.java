@@ -60,7 +60,7 @@ public class FacetInstallDataModelProvider extends FacetDataModelProvider implem
 					break;
 				}
 			}
-		} else if (FACET_VERSION.equals(propertyName)) {
+		} else if (null != propertyValue && FACET_VERSION.equals(propertyName)) {
 			IProjectFacetVersion version = (IProjectFacetVersion) propertyValue;
 			setProperty(FACET_VERSION_STR, version.getVersionString());
 		}

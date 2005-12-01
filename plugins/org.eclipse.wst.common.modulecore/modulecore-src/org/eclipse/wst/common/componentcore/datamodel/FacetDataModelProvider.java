@@ -39,7 +39,7 @@ public class FacetDataModelProvider extends AbstractDataModelProvider implements
 		if (FACET_VERSION.equals(propertyName)) {
 			return ProjectFacetsManager.getProjectFacet(getStringProperty(FACET_ID)).getVersion(getStringProperty(FACET_VERSION_STR));
 		} else if (FACET_ACTION.equals(propertyName)) {
-			return new IFacetedProject.Action((Type) model.getProperty(IFacetDataModelProperties.FACET_TYPE), (IProjectFacetVersion) model.getProperty(IFacetDataModelProperties.FACET_VERSION), model);
+			return new IFacetedProject.Action((Type) model.getProperty(FACET_TYPE), (IProjectFacetVersion) model.getProperty(FACET_VERSION), model);
 		} else if (SHOULD_EXECUTE.equals(propertyName)) {
 			return Boolean.TRUE;
 		}
