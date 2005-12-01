@@ -274,4 +274,7 @@ public interface IFacetedProject
     
         throws CoreException;
     
+    void addListener( IFacetedProjectListener listener );
+    void removeListener( IFacetedProjectListener listener );
+    
 }

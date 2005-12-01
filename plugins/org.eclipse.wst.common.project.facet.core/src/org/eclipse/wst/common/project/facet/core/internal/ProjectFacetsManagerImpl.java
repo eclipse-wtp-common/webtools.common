@@ -22,6 +22,9 @@ import java.util.Set;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -67,6 +70,7 @@ public final class ProjectFacetsManagerImpl
     private final IndexedSet presets;
     private final IndexedSet templates;
     private final IndexedSet groups;
+    private final Map projects;
     
     public ProjectFacetsManagerImpl()
     {
@@ -75,9 +79,13 @@ public final class ProjectFacetsManagerImpl
         this.presets = new IndexedSet();
         this.templates = new IndexedSet();
         this.groups = new IndexedSet();
+        this.projects = new HashMap();
         
         readMetadata();
         readUserPresets();
+        
+        final IResourceChangeListener listener = new ResourceChangeListener();
+        ResourcesPlugin.getWorkspace().addResourceChangeListener( listener );
     }
     
     public Set getProjectFacets()
@@ -265,7 +273,19 @@ public final class ProjectFacetsManagerImpl
     {
         if( project.isNatureEnabled( FacetedProjectNature.NATURE_ID ) )
         {
-            return new FacetedProject( project );
+            synchronized( this.projects )
+            {
+                FacetedProject fproj 
+                    = (FacetedProject) this.projects.get( project.getName() );
+                
+                if( fproj == null )
+                {
+                    fproj = new FacetedProject( project );
+                    this.projects.put( project.getName(), fproj );
+                }
+                
+                return fproj;
+            }
         }
 
         return null;
@@ -1499,6 +1519,60 @@ public final class ProjectFacetsManagerImpl
             = scope.getNode( FacetCorePlugin.PLUGIN_ID );
         
         return pluginRoot.node( "user.presets" );
+    }
+    
+    private final class ResourceChangeListener
+    
+        implements IResourceChangeListener
+        
+    {
+        public void resourceChanged( final IResourceChangeEvent event )
+        {
+            final int type = event.getType();
+            final IResourceDelta delta = event.getDelta();
+            final ArrayList toRefresh = new ArrayList();
+            
+            synchronized( projects )
+            {
+                for( Iterator itr = projects.values().iterator(); 
+                     itr.hasNext(); )
+                {
+                    final FacetedProject fproj = (FacetedProject) itr.next();
+                    
+                    final IResourceDelta subdelta 
+                        = delta.findMember( fproj.f.getFullPath() );
+                    
+                    if( subdelta != null )
+                    {
+                        toRefresh.add( fproj );
+                    }
+                }
+            }
+            
+            // Handle refresh in a separate thread so that the lock on the
+            // critical section around the file is released.
+            
+            final Thread thread = new Thread()
+            {
+                public void run()
+                {
+                    for( Iterator itr = toRefresh.iterator(); itr.hasNext(); )
+                    {
+                        try
+                        {
+                            ( (FacetedProject) itr.next() ).refresh();
+                        }
+                        catch( CoreException e )
+                        {
+                            FacetCorePlugin.log( e );
+                        }
+                    }
+                }
+            };
+            
+            thread.start();
+        }
+        
     }
 
     public static final class Resources

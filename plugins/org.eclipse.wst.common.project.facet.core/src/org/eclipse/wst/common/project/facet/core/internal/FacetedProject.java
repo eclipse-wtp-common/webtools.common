@@ -48,6 +48,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IActionConfig;
 import org.eclipse.wst.common.project.facet.core.IDelegate;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
@@ -69,12 +70,14 @@ public final class FacetedProject
     
 {
     private final IProject project;
-    private final HashSet facets;
-    private final Set facetsReadOnly;
-    private final HashSet fixed;
-    private final Set fixedReadOnly;
+    private HashSet facets;
+    private Set facetsReadOnly;
+    private HashSet fixed;
+    private Set fixedReadOnly;
     private IRuntime runtime;
-    private final IFile f;
+    IFile f;
+    private long fLastModified = -1;
+    private final List listeners;
     
     FacetedProject( final IProject project )
     
@@ -82,16 +85,12 @@ public final class FacetedProject
         
     {
         this.project = project;
-        this.facets = new HashSet();
-        this.facetsReadOnly = Collections.unmodifiableSet( this.facets );
-        this.fixed = new HashSet();
-        this.fixedReadOnly = Collections.unmodifiableSet( this.fixed );
-        this.runtime = null;
+        this.listeners = new ArrayList();
         
         this.f = project.getFile( ".settings/" + FacetCorePlugin.PLUGIN_ID 
                                   + ".xml" );
         
-        open();
+        refresh();
     }
     
     public IProject getProject()
@@ -99,12 +98,12 @@ public final class FacetedProject
         return this.project;
     }
     
-    public Set getProjectFacets()
+    public synchronized Set getProjectFacets()
     {
         return this.facetsReadOnly;
     }
     
-    public boolean hasProjectFacet( final IProjectFacet f )
+    public synchronized boolean hasProjectFacet( final IProjectFacet f )
     {
         for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
         {
@@ -120,12 +119,12 @@ public final class FacetedProject
         return false;
     }
     
-    public boolean hasProjectFacet( final IProjectFacetVersion fv )
+    public synchronized boolean hasProjectFacet( final IProjectFacetVersion fv )
     {
         return this.facets.contains( fv );
     }
     
-    public IProjectFacetVersion getInstalledVersion( final IProjectFacet f )
+    public synchronized IProjectFacetVersion getInstalledVersion( final IProjectFacet f )
     {
         for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
         {
@@ -169,6 +168,29 @@ public final class FacetedProject
     
     public void modify( final Set actions,
                         final IProgressMonitor monitor )
+    
+        throws CoreException
+        
+    {
+        final IWorkspaceRunnable wr = new IWorkspaceRunnable()
+        {
+            public void run( final IProgressMonitor monitor ) 
+            
+                throws CoreException
+                
+            {
+                modifyInternal( actions, monitor );
+            }
+        };
+        
+        final IWorkspace ws = ResourcesPlugin.getWorkspace();
+        ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, monitor ); 
+        
+        notifyListeners();
+    }
+        
+    private synchronized void modifyInternal( final Set actions,
+                                              final IProgressMonitor monitor )
     
         throws CoreException
         
@@ -244,50 +266,38 @@ public final class FacetedProject
             
             // Execute the actions.
             
-            final IWorkspaceRunnable wr = new IWorkspaceRunnable()
+            for( Iterator itr = copy.iterator(); itr.hasNext(); )
             {
-                public void run( final IProgressMonitor monitor ) 
+                final Action action = (Action) itr.next();
+                final Action.Type type = action.getType();
                 
-                    throws CoreException
-                    
+                final ProjectFacetVersion fv 
+                    = (ProjectFacetVersion) action.getProjectFacetVersion();
+                
+                final IDelegate delegate 
+                    = fv.getDelegate( IDelegate.Type.get( type ) );
+                
+                if( delegate == null )
                 {
-                    for( Iterator itr = copy.iterator(); itr.hasNext(); )
+                    if( monitor != null )
                     {
-                        final Action action = (Action) itr.next();
-                        final Action.Type type = action.getType();
-                        
-                        final ProjectFacetVersion fv 
-                            = (ProjectFacetVersion) action.getProjectFacetVersion();
-                        
-                        final IDelegate delegate 
-                            = fv.getDelegate( IDelegate.Type.get( type ) );
-                        
-                        if( delegate == null )
-                        {
-                            if( monitor != null )
-                            {
-                                monitor.worked( 1 );
-                            }
-                        }
-                        else
-                        {
-                            final SubProgressMonitor submonitor
-                                = monitor == null 
-                                  ? null : new SubProgressMonitor( monitor, 1 );
-                            
-                            callDelegate( project, fv, action.getConfig(),
-                                          IDelegate.Type.get( type ), delegate,
-                                          submonitor );
-                        }
-        
-                        apply( facets, action );
-                        save();
+                        monitor.worked( 1 );
                     }
                 }
-            };
-            
-            final IWorkspace ws = ResourcesPlugin.getWorkspace();
-            ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, monitor ); 
+                else
+                {
+                    final SubProgressMonitor submonitor
+                        = monitor == null 
+                          ? null : new SubProgressMonitor( monitor, 1 );
+                    
+                    callDelegate( project, fv, action.getConfig(),
+                                  IDelegate.Type.get( type ), delegate,
+                                  submonitor );
+                }
+        
+                apply( facets, action );
+                save();
+            }
             
             if( monitor != null )
             {
@@ -303,7 +313,7 @@ public final class FacetedProject
         }
     }
     
-    public Set getFixedProjectFacets()
+    public synchronized Set getFixedProjectFacets()
     {
         return this.fixedReadOnly;
     }
@@ -313,19 +323,59 @@ public final class FacetedProject
         throws CoreException
         
     {
-        this.fixed.clear();
-        this.fixed.addAll( facets );
+        final IWorkspaceRunnable wr = new IWorkspaceRunnable()
+        {
+            public void run( final IProgressMonitor monitor ) 
+            
+                throws CoreException
+                
+            {
+                synchronized( FacetedProject.this )
+                {
+                    FacetedProject.this.fixed.clear();
+                    FacetedProject.this.fixed.addAll( facets );
+                    
+                    save();
+                }
+            }
+        };
         
-        save();
+        final IWorkspace ws = ResourcesPlugin.getWorkspace();
+        ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, null ); 
+        
+        notifyListeners();
     }
     
-    public IRuntime getRuntime()
+    public synchronized IRuntime getRuntime()
     {
         return this.runtime;
     }
     
     public void setRuntime( final IRuntime runtime,
                             final IProgressMonitor monitor )
+    
+        throws CoreException
+        
+    {
+        final IWorkspaceRunnable wr = new IWorkspaceRunnable()
+        {
+            public void run( final IProgressMonitor monitor ) 
+            
+                throws CoreException
+                
+            {
+                setRuntimeInternal( runtime, monitor );
+            }
+        };
+        
+        final IWorkspace ws = ResourcesPlugin.getWorkspace();
+        ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, null ); 
+        
+        notifyListeners();
+    }
+    
+    private synchronized void setRuntimeInternal( final IRuntime runtime,
+                                                  final IProgressMonitor monitor )
     
         throws CoreException
         
@@ -375,6 +425,40 @@ public final class FacetedProject
             if( monitor != null )
             {
                 monitor.done();
+            }
+        }
+    }
+    
+    public void addListener( final IFacetedProjectListener listener )
+    {
+        synchronized( this.listeners )
+        {
+            this.listeners.add( listener );
+        }
+    }
+    
+    public void removeListener( final IFacetedProjectListener listener )
+    {
+        synchronized( this.listeners )
+        {
+            this.listeners.remove( listener );
+        }
+    }
+    
+    private void notifyListeners()
+    {
+        synchronized( this.listeners )
+        {
+            for( Iterator itr = this.listeners.iterator(); itr.hasNext(); )
+            {
+                try
+                {
+                    ( (IFacetedProjectListener) itr.next() ).projectChanged();
+                }
+                catch( Exception e )
+                {
+                    FacetCorePlugin.log( e );
+                }
             }
         }
     }
@@ -526,17 +610,34 @@ public final class FacetedProject
             
             this.f.create( in, true, null );
         }
+        
+        this.fLastModified = this.f.getLocation().toFile().lastModified();
     }
 
-    private void open()
+    public synchronized void refresh()
     
         throws CoreException
         
     {
-        if( ! this.f.exists() )
+        if( this.f.exists() && 
+            this.f.getLocation().toFile().lastModified() == this.fLastModified )
         {
             return;
         }
+        
+        this.facets = new HashSet();
+        this.facetsReadOnly = Collections.unmodifiableSet( this.facets );
+        this.fixed = new HashSet();
+        this.fixedReadOnly = Collections.unmodifiableSet( this.fixed );
+        this.runtime = null;
+        
+        if( ! this.f.exists() )
+        {
+            this.fLastModified = -1;
+            return;
+        }
+        
+        this.fLastModified = this.f.getLocation().toFile().lastModified();
         
         final Element root = parse( this.f.getLocation().toFile() );
         final Element[] elements = children( root );
