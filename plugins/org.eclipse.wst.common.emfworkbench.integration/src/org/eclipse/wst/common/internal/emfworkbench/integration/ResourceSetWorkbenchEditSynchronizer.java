@@ -213,7 +213,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 
 	protected boolean processResource(IFile aFile, boolean isRemove) {
 		Resource resource = getResource(aFile);
-		if (resource != null) {
+		if ((resource != null) || (recentlySavedFiles.contains(resource))){
 			if (resource.isModified()) {
 				if (WorkbenchResourceHelper.isReferencedResource(resource)) {
 					ReferencedResource refRes = (ReferencedResource) resource;
