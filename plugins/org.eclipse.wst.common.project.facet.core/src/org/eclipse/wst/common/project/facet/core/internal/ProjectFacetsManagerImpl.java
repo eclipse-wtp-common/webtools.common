@@ -1528,9 +1528,7 @@ public final class ProjectFacetsManagerImpl
     {
         public void resourceChanged( final IResourceChangeEvent event )
         {
-            final int type = event.getType();
             final IResourceDelta delta = event.getDelta();
-            final ArrayList toRefresh = new ArrayList();
             
             synchronized( projects )
             {
@@ -1544,23 +1542,9 @@ public final class ProjectFacetsManagerImpl
                     
                     if( subdelta != null )
                     {
-                        toRefresh.add( fproj );
-                    }
-                }
-            }
-            
-            // Handle refresh in a separate thread so that the lock on the
-            // critical section around the file is released.
-            
-            final Thread thread = new Thread()
-            {
-                public void run()
-                {
-                    for( Iterator itr = toRefresh.iterator(); itr.hasNext(); )
-                    {
                         try
                         {
-                            ( (FacetedProject) itr.next() ).refresh();
+                            fproj.refresh();
                         }
                         catch( CoreException e )
                         {
@@ -1568,9 +1552,7 @@ public final class ProjectFacetsManagerImpl
                         }
                     }
                 }
-            };
-            
-            thread.start();
+            }
         }
         
     }
