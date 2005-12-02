@@ -1,8 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Project Facet Core (Java Support)
+Bundle-Vendor: %providerName
+Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.jst.common.project.facet.core; singleton:=true
-Bundle-Version: 1.0
+Bundle-Version: 1.0.0
 Bundle-ClassPath: .
 Bundle-Localization: plugin
 Export-Package: org.eclipse.jst.common.project.facet.core,
