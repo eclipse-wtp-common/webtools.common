@@ -6,7 +6,7 @@
          <meta.schema plugin="org.eclipse.wst.common.modulecore" id="artifactedit" name="Component Artifact Edit"/>
       </appInfo>
       <documentation>
-         [Enter description of this extension point.]
+         This is used to contribute an artifact edit model type.
       </documentation>
    </annotation>
 
