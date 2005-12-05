@@ -196,6 +196,19 @@ public class ComponentUtilities {
 		return new CreateReferenceComponentsOp(model);
 	}
 
+	public static RemoveReferenceComponentOperation removeWLPReferenceComponentOperation(IVirtualComponent sourceComponent, List targetComponentProjects) {
+		IDataModel model = DataModelFactory.createDataModel(new RemoveReferenceComponentsDataModelProvider());
+		model.setProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT, sourceComponent);
+		List modHandlesList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST);
+		modHandlesList.addAll(targetComponentProjects);
+		model.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST, modHandlesList);
+		
+		model.setProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH,"/WEB-INF/lib"); //$NON-NLS-1$
+		
+		return new RemoveReferenceComponentOperation(model);
+
+	}
+	
 	public static RemoveReferenceComponentOperation removeReferenceComponentOperation(IVirtualComponent sourceComponent, List targetComponentProjects) {
 		IDataModel model = DataModelFactory.createDataModel(new RemoveReferenceComponentsDataModelProvider());
 		model.setProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT, sourceComponent);

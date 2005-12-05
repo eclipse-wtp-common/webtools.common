@@ -18,8 +18,10 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.datamodel.properties.ICreateReferenceComponentsDataModelProperties;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
@@ -39,48 +41,44 @@ public class RemoveReferenceComponentOperation extends AbstractDataModelOperatio
 
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		removeReferencedComponents(monitor);
-		removeProjectReferences();
 		return OK_STATUS;
-	}
-
-	protected void removeProjectReferences() {
-		IVirtualComponent sourceComp = (IVirtualComponent) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT);
-		if (!sourceComp.getProject().isAccessible()) return;
-		List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST);
-		List targetprojectList = new ArrayList();
-		for( int i=0; i< modList.size(); i++){
-			IVirtualComponent targethandle = (IVirtualComponent) modList.get(i);
-			IProject targetProject = targethandle.getProject();
-			targetprojectList.add(targetProject);
-		}
-		try {
-			ProjectUtilities.removeReferenceProjects(sourceComp.getProject(),targetprojectList);
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	protected void removeReferencedComponents(IProgressMonitor monitor) {
 		
 		IVirtualComponent sourceComp = (IVirtualComponent) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT);
 		if (!sourceComp.getProject().isAccessible()) return;
-		//IVirtualComponent sourceComp = ComponentCore.createComponent(sourceProject);
 		
         List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST);
     
+		List targetprojectList = new ArrayList();
+
 		for (int i = 0; i < modList.size(); i++) {
 			IVirtualComponent comp = (IVirtualComponent) modList.get(i);
 			IVirtualReference ref = sourceComp.getReference(comp.getName());
 			if( ref != null && ref.getReferencedComponent() != null && ref.getReferencedComponent().isBinary()){
 				removeRefereneceInComponent(sourceComp, ref);
 			}else{
-				//IVirtualComponent comp = ComponentCore.createComponent(handle);
 				if (Arrays.asList(comp.getReferencingComponents()).contains(sourceComp)) {
-					removeRefereneceInComponent(sourceComp,sourceComp.getReference(comp.getName()));
+					
+					String deployPath = model.getStringProperty( ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH );
+					IPath path = new Path( deployPath );
+					
+					if( ref.getRuntimePath() != null && path != null && ref.getRuntimePath().equals( path )){
+						removeRefereneceInComponent(sourceComp,sourceComp.getReference(comp.getName()));
+						IProject targetProject = comp.getProject();
+						targetprojectList.add(targetProject);
+					}
 				}					
 			}
 		}
+		
+		try {
+			ProjectUtilities.removeReferenceProjects(sourceComp.getProject(),targetprojectList);
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
 		
 	}
 

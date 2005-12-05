@@ -40,6 +40,9 @@ public class CreateReferenceComponentsDataModelProvider extends AbstractDataMode
 	public Object getDefaultProperty(String propertyName) {
 		if (propertyName.equals(TARGET_COMPONENT_LIST))
 			return new ArrayList();
+		else if (propertyName.equals(TARGET_COMPONENTS_DEPLOY_PATH)){
+			return "/";
+		}
 		return super.getDefaultProperty(propertyName);
 	}
 }
