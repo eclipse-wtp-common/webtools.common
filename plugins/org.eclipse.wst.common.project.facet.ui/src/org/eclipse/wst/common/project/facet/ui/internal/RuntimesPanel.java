@@ -46,6 +46,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -137,7 +138,10 @@ public final class RuntimesPanel
         
         this.makePreferredButton = new Button( this, SWT.PUSH );
         this.makePreferredButton.setText( Resources.makePreferredLabel );
-        this.makePreferredButton.setLayoutData( halign( whint( new GridData(), 110 ), GridData.END ) );
+        GridData gd = halign( new GridData(), GridData.END );
+        gd = whint( gd, getPreferredWidth( this.makePreferredButton ) + 15 );
+        this.makePreferredButton.setLayoutData( gd );
+        
         this.makePreferredButton.setEnabled( false );
         
         this.makePreferredButton.addSelectionListener
@@ -696,6 +700,11 @@ public final class RuntimesPanel
     {
         gd.horizontalAlignment = alignment;
         return gd;
+    }
+
+    private static final int getPreferredWidth( final Control control )
+    {
+        return control.computeSize( SWT.DEFAULT, SWT.DEFAULT ).x;
     }
 
     private static final class Resources

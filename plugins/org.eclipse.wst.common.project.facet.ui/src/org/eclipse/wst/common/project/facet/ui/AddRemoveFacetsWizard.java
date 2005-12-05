@@ -359,6 +359,20 @@ public class AddRemoveFacetsWizard
 		return null;
 	}
     
+    public void dispose()
+    {
+        super.dispose();
+        
+        for( int i = 0; i < this.facetPages.length; i++ )
+        {
+            for( Iterator itr = this.facetPages[ i ].pages.iterator(); 
+                 itr.hasNext(); )
+            {
+                ( (IWizardPage) itr.next() ).dispose();
+            }
+        }
+    }
+    
     private static final class FacetPages
     {
         public Action action;

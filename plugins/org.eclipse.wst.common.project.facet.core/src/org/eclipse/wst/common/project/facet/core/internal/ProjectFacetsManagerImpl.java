@@ -617,6 +617,17 @@ public final class ProjectFacetsManagerImpl
     {
         final int count = actions.size();
         
+        // Before sorting, check that the constraints can be met. Otherwise
+        // the sort algorithm will not terminate.
+        
+        final IStatus st = check( base, new HashSet( actions ) );
+        
+        if( ! st.isOK() )
+        {
+            FacetCorePlugin.log( st );
+            return;
+        }
+        
         // Step 1 : Pre-sort all uninstall actions to the front of the list.
         
         for( int i = 0, j = 0; j < count; j++ )

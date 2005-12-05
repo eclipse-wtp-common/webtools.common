@@ -66,6 +66,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -440,8 +441,10 @@ public final class FacetsSelectionPanel
         this.sform1.setMaximizedControl( this.sform2 );
         
         this.showHideRuntimesButton = new Button( this, SWT.PUSH );
-        this.showHideRuntimesButton.setLayoutData( halign( whint( hspan( new GridData(), 4 ), 110 ), GridData.END ) );
         this.showHideRuntimesButton.setText( Resources.showRuntimes );
+        GridData gd = halign( hspan( new GridData(), 4 ), GridData.END );
+        gd = whint( gd, getPreferredWidth( this.showHideRuntimesButton ) + 15 );
+        this.showHideRuntimesButton.setLayoutData( gd );
         
         this.showHideRuntimesButton.addSelectionListener
         (
@@ -1824,6 +1827,11 @@ public final class FacetsSelectionPanel
     {
         gd.horizontalAlignment = alignment;
         return gd;
+    }
+    
+    private static final int getPreferredWidth( final Control control )
+    {
+        return control.computeSize( SWT.DEFAULT, SWT.DEFAULT ).x;
     }
 
     private static final class Resources
