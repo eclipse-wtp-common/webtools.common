@@ -11,13 +11,19 @@
 
 package org.eclipse.wst.common.project.facet.core.runtime.internal;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
+import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentVersion;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -85,6 +91,74 @@ public abstract class AbstractRuntime
         }
         
         return false;
+    }
+    
+    public Set getDefaultFacets( final Set fixed )
+    
+        throws CoreException
+        
+    {
+        // 1. Get the complete list.
+        
+        final Map facets = new HashMap();
+        
+        for( Iterator itr1 = getRuntimeComponents().iterator(); itr1.hasNext(); )
+        {
+            final IRuntimeComponent rc = (IRuntimeComponent) itr1.next();
+            final IRuntimeComponentVersion rcv = rc.getRuntimeComponentVersion();
+            
+            for( Iterator itr2 = RuntimeManagerImpl.getDefaultFacets( rcv ).iterator();
+                 itr2.hasNext(); )
+            {
+                final IProjectFacetVersion fv = (IProjectFacetVersion) itr2.next();
+                
+                if( ! facets.containsKey( fv.getProjectFacet() ) )
+                {
+                    facets.put( fv.getProjectFacet(), fv );
+                }
+            }
+        }
+        
+        // 2. Remove the facets that conflict with fixed facets.
+        
+        final ConflictingFacetsFilter filter 
+            = new ConflictingFacetsFilter( fixed );
+        
+        for( Iterator itr = facets.values().iterator(); itr.hasNext(); )
+        {
+            if( ! filter.check( (IProjectFacetVersion) itr.next() ) )
+            {
+                itr.remove();
+            }
+        }
+        
+        // 3. Make sure that the result includes all of the fixed facets.
+        
+        Map toadd = null;
+        
+        for( Iterator itr = fixed.iterator(); itr.hasNext(); )
+        {
+            final IProjectFacet f = (IProjectFacet) itr.next();
+            
+            if( ! facets.containsKey( f ) )
+            {
+                if( toadd == null )
+                {
+                    toadd = new HashMap();
+                }
+                
+                toadd.put( f, f.getLatestSupportedVersion( this ) );
+            }
+        }
+        
+        if( toadd != null )
+        {
+            facets.putAll( toadd );
+        }
+        
+        // 4. Return the result.
+        
+        return new HashSet( facets.values() );
     }
 
     public final boolean equals( final Object obj )

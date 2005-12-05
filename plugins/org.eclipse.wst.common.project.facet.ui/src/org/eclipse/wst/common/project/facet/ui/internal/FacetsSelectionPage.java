@@ -139,10 +139,10 @@ public final class FacetsSelectionPage
             = new FacetsSelectionPanel( parent, SWT.NONE, this.context, 
                                         this.base );
         
-        this.panel.setRuntime( initialRuntime );
-
         this.panel.setFixedProjectFacets( this.fixed );
         
+        this.panel.setRuntime( initialRuntime );
+
         if( this.initialPreset != null )
         {
             this.panel.selectPreset( this.initialPreset );

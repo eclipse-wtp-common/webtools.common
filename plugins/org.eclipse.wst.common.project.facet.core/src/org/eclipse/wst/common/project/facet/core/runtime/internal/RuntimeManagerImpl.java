@@ -51,11 +51,13 @@ public final class RuntimeManagerImpl
 {
     private static final String EXTENSION_ID = "runtimes";
     private static final String BRIDGES_EXTENSION_ID = "runtimeBridges";
+    private static final String DEFAULT_FACETS_EXTENSION_ID = "defaultFacets";
     
     private static final IndexedSet runtimeComponentTypes;
     private static final IndexedSet runtimes;
     private static final List mappings;
     private static final Map bridges;
+    private static final Map defaultFacets;
     private static final Set listeners;
     
     static
@@ -64,10 +66,12 @@ public final class RuntimeManagerImpl
         runtimes = new IndexedSet();
         mappings = new ArrayList();
         bridges = new HashMap();
+        defaultFacets = new HashMap();
         listeners = new HashSet();
         
         readMetadata();
         readBridgesExtensions();
+        readDefaultFacetsExtensions();
     }
     
     private RuntimeManagerImpl() {}
@@ -292,6 +296,20 @@ public final class RuntimeManagerImpl
         }
         
         return result;
+    }
+    
+    static Set getDefaultFacets( final IRuntimeComponentVersion rcv )
+    {
+        final Set result = (Set) defaultFacets.get( rcv );
+        
+        if( result == null )
+        {
+            return Collections.EMPTY_SET;
+        }
+        else
+        {
+            return result;
+        }
     }
     
     private static void bridge()
@@ -678,27 +696,12 @@ public final class RuntimeManagerImpl
             
             if( childName.equals( "facet" ) )
             {
-                final String id = child.getAttribute( "id" );
-
-                if( id == null )
+                final IProjectFacet f = readProjectFacetRef( child );
+                
+                if( f == null )
                 {
-                    reportMissingAttribute( child, "id" );
                     return;
                 }
-                
-                if( ! ProjectFacetsManager.isProjectFacetDefined( id ) )
-                {
-                    final String msg
-                        = NLS.bind( ProjectFacetsManagerImpl.Resources.facetNotDefined, 
-                                    child.getNamespace(), id );
-                    
-                    FacetCorePlugin.log( msg );
-                    
-                    return;
-                }
-                
-                final IProjectFacet f
-                    = ProjectFacetsManager.getProjectFacet( id );
                 
                 final String v = child.getAttribute( "version" );
                 VersionMatchExpr expr = null;
@@ -722,27 +725,13 @@ public final class RuntimeManagerImpl
             {
                 if( child.getAttribute( "any" ) == null )
                 {
-                    final String id = child.getAttribute( "id" );
-    
-                    if( id == null )
-                    {
-                        reportMissingAttribute( child, "id" );
-                        return;
-                    }
-                    
-                    if( ! isRuntimeComponentTypeDefined( id ) )
-                    {
-                        final String msg
-                            = NLS.bind( Resources.runtimeComponentTypeNotDefined, 
-                                        config.getNamespace(), id );
-                        
-                        FacetCorePlugin.log( msg );
-                        
-                        return;
-                    }
-                    
                     final IRuntimeComponentType rct 
-                        = getRuntimeComponentType( id );
+                        = readRuntimeComponentTypeRef( child );
+                    
+                    if( rct == null )
+                    {
+                        return;
+                    }
                     
                     final String v = child.getAttribute( "version" );
                     VersionMatchExpr expr = null;
@@ -836,6 +825,191 @@ public final class RuntimeManagerImpl
                 bridges.put( id, br );
             }
         }
+    }
+
+    private static void readDefaultFacetsExtensions()
+    {
+        final IExtensionRegistry registry = Platform.getExtensionRegistry();
+        
+        final IExtensionPoint point 
+            = registry.getExtensionPoint( FacetCorePlugin.PLUGIN_ID, 
+                                          DEFAULT_FACETS_EXTENSION_ID );
+        
+        if( point == null )
+        {
+            throw new RuntimeException( "Extension point not found!" );
+        }
+        
+        final ArrayList cfgels = new ArrayList();
+        final IExtension[] extensions = point.getExtensions();
+        
+        for( int i = 0; i < extensions.length; i++ )
+        {
+            final IConfigurationElement[] elements 
+                = extensions[ i ].getConfigurationElements();
+            
+            for( int j = 0; j < elements.length; j++ )
+            {
+                cfgels.add( elements[ j ] );
+            }
+        }
+        
+        for( int i = 0, n = cfgels.size(); i < n; i++ )
+        {
+            final IConfigurationElement config
+                = (IConfigurationElement) cfgels.get( i );
+            
+            if( config.getName().equals( "default-facets" ) )
+            {
+                readDefaultFacets( config );
+            }
+        }
+    }
+    
+    private static void readDefaultFacets( final IConfigurationElement config )
+    {
+        IRuntimeComponentVersion rcv = null;
+        final Set facets = new HashSet();
+        
+        final IConfigurationElement[] children = config.getChildren();
+        
+        for( int i = 0; i < children.length; i++ )
+        {
+            final IConfigurationElement child = children[ i ];
+            final String childName = child.getName();
+            
+            if( childName.equals( "runtime-component" ) )
+            {
+                final IRuntimeComponentType rct
+                    = readRuntimeComponentTypeRef( child );
+                
+                if( rct == null )
+                {
+                    return;
+                }
+                
+                final String ver = child.getAttribute( "version" );
+                
+                if( ver == null )
+                {
+                    reportMissingAttribute( child, "version" );
+                    return;
+                }
+                
+                if( ! rct.hasVersion( ver ) )
+                {
+                    final String[] args
+                        = new String[] { config.getNamespace(), rct.getId(), ver };
+                        
+                    final String msg
+                        = NLS.bind( Resources.runtimeComponentVersionNotDefined, 
+                                    args );
+                    
+                    FacetCorePlugin.log( msg );
+                    
+                    return;
+                }
+                
+                rcv = rct.getVersion( ver );
+            }
+            else if( childName.equals( "facet" ) )
+            {
+                final IProjectFacet f = readProjectFacetRef( child );
+                
+                if( f == null )
+                {
+                    return;
+                }
+                
+                final String ver = child.getAttribute( "version" );
+                
+                if( ver == null )
+                {
+                    reportMissingAttribute( child, "version" );
+                    return;
+                }
+                
+                if( ! f.hasVersion( ver ) )
+                {
+                    final String[] args
+                        = new String[] { config.getNamespace(), f.getId(), ver };
+                        
+                    final String msg
+                        = NLS.bind( ProjectFacetsManagerImpl.Resources.facetVersionNotDefined, 
+                                    args );
+                    
+                    FacetCorePlugin.log( msg );
+                    
+                    return;
+                }
+                
+                facets.add( f.getVersion( ver ) );
+            }
+        }
+        
+        if( rcv == null )
+        {
+            return;
+        }
+        
+        final Set current = (Set) defaultFacets.get( rcv );
+        
+        if( current != null )
+        {
+            current.addAll( facets );
+        }
+        else
+        {
+            defaultFacets.put( rcv, facets );
+        }
+    }
+    
+    private static IRuntimeComponentType readRuntimeComponentTypeRef( final IConfigurationElement config )
+    {
+        final String id = config.getAttribute( "id" );
+        
+        if( id == null )
+        {
+            reportMissingAttribute( config, "id" );
+            return null;
+        }
+        
+        if( ! isRuntimeComponentTypeDefined( id ) )
+        {
+            final String msg
+                = NLS.bind( Resources.runtimeComponentTypeNotDefined, 
+                            config.getNamespace(), id );
+            
+            FacetCorePlugin.log( msg );
+            
+            return null;
+        }
+        
+        return getRuntimeComponentType( id );
+    }
+    
+    private static IProjectFacet readProjectFacetRef( final IConfigurationElement config )
+    {
+        final String id = config.getAttribute( "id" );
+
+        if( id == null )
+        {
+            reportMissingAttribute( config, "id" );
+            return null;
+        }
+        
+        if( ! ProjectFacetsManager.isProjectFacetDefined( id ) )
+        {
+            final String msg
+                = NLS.bind( ProjectFacetsManagerImpl.Resources.facetNotDefined, 
+                            config.getNamespace(), id );
+            
+            FacetCorePlugin.log( msg );
+            
+            return null;
+        }
+        
+        return ProjectFacetsManager.getProjectFacet( id );
     }
     
     private static void reportMissingAttribute( final IConfigurationElement el,

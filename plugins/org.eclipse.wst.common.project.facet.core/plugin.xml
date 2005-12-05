@@ -17,6 +17,11 @@
     id="runtimeBridges"
     name="Runtime Bridges Extension Point"
     schema="schemas/runtimeBridges.exsd"/>
+
+  <extension-point 
+    id="defaultFacets"
+    name="Default Facets Extension Point"
+    schema="schemas/defaultFacets.exsd"/>
   
   <extension
     id="nature"
@@ -25,5 +30,5 @@
       <run class="org.eclipse.wst.common.project.facet.core.internal.FacetedProjectNature"/>
     </runtime>
   </extension>
-
+  
 </plugin>

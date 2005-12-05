@@ -588,6 +588,23 @@ public final class FacetsSelectionPanel
     public void setRuntime( final IRuntime runtime )
     {
         this.runtimesPanel.setRuntime( runtime );
+        
+        if( runtime != null )
+        {
+            final Set defaultFacets;
+            
+            try
+            {
+                defaultFacets = runtime.getDefaultFacets( this.fixed );
+            }
+            catch( CoreException e )
+            {
+                FacetUiPlugin.log( e );
+                return;
+            }
+            
+            setSelectedProjectFacets( defaultFacets );
+        }
     }
     
     public Set getSelectedProjectFacets()
@@ -621,6 +638,20 @@ public final class FacetsSelectionPanel
             trd.setCurrentVersion( fv );
 
             this.tree.setChecked( trd, true );
+            refreshCategoryState( trd );
+        }
+        
+        for( Iterator itr = this.data.iterator(); itr.hasNext(); )
+        {
+            final TableRowData trd = (TableRowData) itr.next();
+
+            if( trd.isSelected() && ! sel.contains( trd.getCurrentVersion() ) )
+            {
+                trd.setSelected( false );
+
+                this.tree.setChecked( trd, false );
+                refreshCategoryState( trd );
+            }
         }
 
         this.tree.refresh();

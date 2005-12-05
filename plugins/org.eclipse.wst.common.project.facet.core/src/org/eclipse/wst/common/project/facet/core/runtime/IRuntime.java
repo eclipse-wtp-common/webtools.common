@@ -13,7 +13,9 @@ package org.eclipse.wst.common.project.facet.core.runtime;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
@@ -91,5 +93,24 @@ public interface IRuntime
     boolean supports( IProjectFacetVersion fv );
     
     boolean supports( IProjectFacet f );
+    
+    /**
+     * Returns the facets (and the versions) that should be selected by default 
+     * when this runtime is selected. This information is drawn from what's
+     * specified through the <code>org.eclipse.wst.common.project.facet.core.defaultFacets</code>
+     * extension point. The returned list is filtered by removing facets that
+     * would conflict with the specified fixed facets. Note that the returned 
+     * set will always include the fixed facets. If the default version for any 
+     * fixed facet is not explicitly specified through the above extension 
+     * point, the latest version will be used.
+     * 
+     * @param fixed the fixed facets (element type: {@see IProjectFacet})
+     * @return the default facets (element type: {@see IProjectFacetVersion})
+     * @throws CoreException if failed for any reason
+     */
+    
+    Set getDefaultFacets( final Set fixed )
+    
+        throws CoreException;
     
 }
