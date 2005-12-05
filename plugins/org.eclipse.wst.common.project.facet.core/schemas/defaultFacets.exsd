@@ -7,7 +7,6 @@
       </appInfo>
       <documentation>
          Used to specify which facets (and which versions of those facets) should be selected by default when a runtime that includes the specified runtime component is selected. Multiple extensions referring to the same runtime component (type and version) will be merged. This allows a party not affiliated with the runtime vendor to specify that a certain additional facet should be preselected when the runtime containing the specified runtime component is selected.
-
       </documentation>
    </annotation>
 
@@ -66,7 +65,7 @@
          <attribute name="version" type="string" use="required">
             <annotation>
                <documentation>
-                  runtime component version
+                  Specifies the match expression for the runtime component version. The expression should be of the form &quot;2.2,2.5,&lt;1.0,&gt;=5.3&quot;, where the comas function as an OR.
                </documentation>
             </annotation>
          </attribute>
@@ -77,7 +76,6 @@
       <annotation>
          <documentation>
             Specifies project facet id and version
-
          </documentation>
       </annotation>
       <complexType>

@@ -57,7 +57,7 @@ public final class RuntimeManagerImpl
     private static final IndexedSet runtimes;
     private static final List mappings;
     private static final Map bridges;
-    private static final Map defaultFacets;
+    private static final List defaultFacets;
     private static final Set listeners;
     
     static
@@ -66,7 +66,7 @@ public final class RuntimeManagerImpl
         runtimes = new IndexedSet();
         mappings = new ArrayList();
         bridges = new HashMap();
-        defaultFacets = new HashMap();
+        defaultFacets = new ArrayList();
         listeners = new HashSet();
         
         readMetadata();
@@ -300,16 +300,26 @@ public final class RuntimeManagerImpl
     
     static Set getDefaultFacets( final IRuntimeComponentVersion rcv )
     {
-        final Set result = (Set) defaultFacets.get( rcv );
+        final Set result = new HashSet();
         
-        if( result == null )
+        for( Iterator itr = defaultFacets.iterator(); itr.hasNext(); )
         {
-            return Collections.EMPTY_SET;
+            final DefaultFacetsEntry dfe = (DefaultFacetsEntry) itr.next();
+            
+            try
+            {
+                if( dfe.match( rcv ) )
+                {
+                    result.addAll( dfe.facets );
+                }
+            }
+            catch( CoreException e )
+            {
+                FacetCorePlugin.log( e );
+            }
         }
-        else
-        {
-            return result;
-        }
+        
+        return result;
     }
     
     private static void bridge()
@@ -868,9 +878,7 @@ public final class RuntimeManagerImpl
     
     private static void readDefaultFacets( final IConfigurationElement config )
     {
-        IRuntimeComponentVersion rcv = null;
-        final Set facets = new HashSet();
-        
+        final DefaultFacetsEntry dfe = new DefaultFacetsEntry();
         final IConfigurationElement[] children = config.getChildren();
         
         for( int i = 0; i < children.length; i++ )
@@ -880,37 +888,27 @@ public final class RuntimeManagerImpl
             
             if( childName.equals( "runtime-component" ) )
             {
-                final IRuntimeComponentType rct
-                    = readRuntimeComponentTypeRef( child );
+                dfe.rct = readRuntimeComponentTypeRef( child );
                 
-                if( rct == null )
+                if( dfe.rct == null )
                 {
                     return;
                 }
                 
-                final String ver = child.getAttribute( "version" );
+                final String v = child.getAttribute( "version" );
                 
-                if( ver == null )
+                if( v != null )
                 {
-                    reportMissingAttribute( child, "version" );
-                    return;
+                    try
+                    {
+                        dfe.rcvexpr = new VersionMatchExpr( dfe.rct, v );
+                    }
+                    catch( CoreException e )
+                    {
+                        FacetCorePlugin.log( e.getStatus() );
+                        return;
+                    }
                 }
-                
-                if( ! rct.hasVersion( ver ) )
-                {
-                    final String[] args
-                        = new String[] { config.getNamespace(), rct.getId(), ver };
-                        
-                    final String msg
-                        = NLS.bind( Resources.runtimeComponentVersionNotDefined, 
-                                    args );
-                    
-                    FacetCorePlugin.log( msg );
-                    
-                    return;
-                }
-                
-                rcv = rct.getVersion( ver );
             }
             else if( childName.equals( "facet" ) )
             {
@@ -943,25 +941,16 @@ public final class RuntimeManagerImpl
                     return;
                 }
                 
-                facets.add( f.getVersion( ver ) );
+                dfe.facets.add( f.getVersion( ver ) );
             }
         }
         
-        if( rcv == null )
+        if( dfe.rct == null )
         {
             return;
         }
         
-        final Set current = (Set) defaultFacets.get( rcv );
-        
-        if( current != null )
-        {
-            current.addAll( facets );
-        }
-        else
-        {
-            defaultFacets.put( rcv, facets );
-        }
+        defaultFacets.add( dfe );
     }
     
     private static IRuntimeComponentType readRuntimeComponentTypeRef( final IConfigurationElement config )
@@ -1077,6 +1066,28 @@ public final class RuntimeManagerImpl
             }
             
             return result;
+        }
+    }
+    
+    private static final class DefaultFacetsEntry
+    {
+        public IRuntimeComponentType rct;
+        public VersionMatchExpr rcvexpr;
+        public final Set facets = new HashSet();
+        
+        public boolean match( final IRuntimeComponentVersion rcv )
+        
+            throws CoreException
+            
+        {
+            if( rcv.getRuntimeComponentType() != this.rct )
+            {
+                return false;
+            }
+            else
+            {
+                return this.rcvexpr.evaluate( (IVersion) rcv );
+            }
         }
     }
 
