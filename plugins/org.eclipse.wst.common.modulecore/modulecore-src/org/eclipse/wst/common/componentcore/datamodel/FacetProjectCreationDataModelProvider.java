@@ -75,9 +75,9 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 		}
 
 		public IDataModel getFacetDataModel(String facetID) {
-			return (IDataModel)get(facetID);
+			return (IDataModel) get(facetID);
 		}
-		
+
 		public void clear() {
 			try {
 				supressNotification = true;
@@ -97,7 +97,7 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 				Object lastValue = super.put(key, value);
 				if (lastValue != null) {
 					((IDataModel) lastValue).removeListener(this);
-					((IDataModel)lastValue).setProperty(FacetInstallDataModelProvider.MASTER_PROJECT_DM, null);
+					((IDataModel) lastValue).setProperty(FacetInstallDataModelProvider.MASTER_PROJECT_DM, null);
 				}
 				dm.setProperty(FACET_PROJECT_NAME, getDataModel().getProperty(FACET_PROJECT_NAME));
 				dm.setProperty(FacetInstallDataModelProvider.MASTER_PROJECT_DM, FacetProjectCreationDataModelProvider.this.model);
@@ -133,7 +133,7 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 				} else {
 					event.getDataModel().removeListener(this);
 				}
-			} else if(event.getPropertyName().equals(FACET_RUNTIME)){
+			} else if (event.getPropertyName().equals(FACET_RUNTIME)) {
 				if (containsValue(event.getDataModel())) {
 					getDataModel().setProperty(FACET_RUNTIME, event.getProperty());
 				} else {
@@ -151,30 +151,34 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 			}
 			IDataModel projModel = model.getNestedModel(NESTED_PROJECT_DM);
 			projModel.setProperty(IProjectCreationPropertiesNew.PROJECT_NAME, propertyValue);
-		}else if( FACET_RUNTIME.equals(propertyName)){
-				for (Iterator iterator = ((Map) getDataModel().getProperty(FACET_DM_MAP)).values().iterator(); iterator.hasNext();) {
-					IDataModel dm = (IDataModel)iterator.next();
-					if( dm.isProperty(FACET_RUNTIME)){
-						dm.setProperty(FACET_RUNTIME, propertyValue);
-					}
+		} else if (FACET_RUNTIME.equals(propertyName)) {
+			IRuntime runtime = (IRuntime) propertyValue;
+			for (Iterator iterator = ((Map) getDataModel().getProperty(FACET_DM_MAP)).values().iterator(); iterator.hasNext();) {
+				IDataModel dm = (IDataModel) iterator.next();
+				if (dm.isProperty(FACET_RUNTIME)) {
+					dm.setProperty(FACET_RUNTIME, runtime);
 				}
+			}
+			if (runtime != null) {
 				Map facetDMs = (Map) getProperty(FACET_DM_MAP);
+
 				for (Iterator iterator = facetDMs.values().iterator(); iterator.hasNext();) {
 					IDataModel facetDataModel = (IDataModel) iterator.next();
 					IProjectFacet facet = ProjectFacetsManager.getProjectFacet((String) facetDataModel.getProperty(IFacetDataModelProperties.FACET_ID));
-					
+
 					try {
-						IDataModel facetModel = ((FacetDataModelMap) facetDMs).getFacetDataModel( facet.getId() );
-		                IProjectFacetVersion oldVersion = (IProjectFacetVersion)facetModel.getProperty(IFacetDataModelProperties.FACET_VERSION);
-		                IProjectFacetVersion newVersion = facet.getLatestSupportedVersion( (IRuntime) propertyValue );
-		                if(newVersion != null && (oldVersion == null || oldVersion.getVersionString().compareTo(newVersion.getVersionString()) > 0)){
-		                	facetModel.setProperty(IFacetDataModelProperties.FACET_VERSION, newVersion);
-		                }
+						IDataModel facetModel = ((FacetDataModelMap) facetDMs).getFacetDataModel(facet.getId());
+						IProjectFacetVersion oldVersion = (IProjectFacetVersion) facetModel.getProperty(IFacetDataModelProperties.FACET_VERSION);
+						IProjectFacetVersion newVersion = facet.getLatestSupportedVersion(runtime);
+						if (newVersion != null && (oldVersion == null || oldVersion.getVersionString().compareTo(newVersion.getVersionString()) > 0)) {
+							facetModel.setProperty(IFacetDataModelProperties.FACET_VERSION, newVersion);
+						}
 
 					} catch (CoreException e) {
 						Logger.getLogger().logError(e);
-					}					
-				}					
+					}
+				}
+			}
 		}
 		return super.propertySet(propertyName, propertyValue);
 	}
@@ -184,57 +188,57 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 			Object obj = new FacetDataModelMapImpl();
 			setProperty(FACET_DM_MAP, obj);
 			return obj;
-		} 
+		}
 		return super.getDefaultProperty(propertyName);
 	}
-	
+
 	public DataModelPropertyDescriptor getPropertyDescriptor(String propertyName) {
-		if(FACET_RUNTIME.equals(propertyName)){
-			IRuntime runtime = (IRuntime)getProperty(propertyName);
-			if(null != runtime){
+		if (FACET_RUNTIME.equals(propertyName)) {
+			IRuntime runtime = (IRuntime) getProperty(propertyName);
+			if (null != runtime) {
 				return new DataModelPropertyDescriptor(runtime, runtime.getName());
 			}
 		}
 		return super.getPropertyDescriptor(propertyName);
 	}
-	
+
 
 	public DataModelPropertyDescriptor[] getValidPropertyDescriptors(String propertyName) {
 		if (FACET_RUNTIME.equals(propertyName)) {
-	
+
 			Set projectFacets = new HashSet();
 			Map facetDMs = (Map) getProperty(FACET_DM_MAP);
 			for (Iterator iterator = facetDMs.values().iterator(); iterator.hasNext();) {
 				IDataModel facetDataModel = (IDataModel) iterator.next();
 				IProjectFacet facet = ProjectFacetsManager.getProjectFacet((String) facetDataModel.getProperty(IFacetDataModelProperties.FACET_ID));
-				projectFacets.add( facet );
-			}			
+				projectFacets.add(facet);
+			}
 			Set runtimes = RuntimeManagerImpl.getRuntimes();
 			ArrayList list = new ArrayList();
-			
-			for( Iterator it= runtimes.iterator(); it.hasNext(); ){
-				IRuntime rt = (IRuntime)it.next();
-				
-				//add this runtime in the list only if this runtime supports all of the facets
-				//in the project
-				
+
+			for (Iterator it = runtimes.iterator(); it.hasNext();) {
+				IRuntime rt = (IRuntime) it.next();
+
+				// add this runtime in the list only if this runtime supports all of the facets
+				// in the project
+
 				boolean supportsFactet = true;
-				for( Iterator facetIt = projectFacets.iterator(); facetIt.hasNext();){
-					IProjectFacet facet = (IProjectFacet)facetIt.next();
-					if(	!rt.supports( facet ) ){
+				for (Iterator facetIt = projectFacets.iterator(); facetIt.hasNext();) {
+					IProjectFacet facet = (IProjectFacet) facetIt.next();
+					if (!rt.supports(facet)) {
 						supportsFactet = false;
-					} 
+					}
 				}
-				if( supportsFactet ){
-					list.add( rt );
+				if (supportsFactet) {
+					list.add(rt);
 				}
 			}
-			
-			DataModelPropertyDescriptor [] descriptors = new DataModelPropertyDescriptor[list.size()];
+
+			DataModelPropertyDescriptor[] descriptors = new DataModelPropertyDescriptor[list.size()];
 			Iterator iterator = list.iterator();
-			for(int i=0; i<descriptors.length; i++){
-				IRuntime runtime = (IRuntime)iterator.next();
-				descriptors[i]=new DataModelPropertyDescriptor(runtime, runtime.getName());
+			for (int i = 0; i < descriptors.length; i++) {
+				IRuntime runtime = (IRuntime) iterator.next();
+				descriptors[i] = new DataModelPropertyDescriptor(runtime, runtime.getName());
 			}
 			return descriptors;
 		}
