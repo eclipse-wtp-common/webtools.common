@@ -12,16 +12,22 @@ package org.eclipse.wst.common.componentcore.datamodel;
 
 import java.util.Set;
 
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetDataModelProperties;
 import org.eclipse.wst.common.componentcore.internal.operation.FacetDataModelOperation;
+import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ExtendableOperationImpl;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action.Type;
 
 public class FacetDataModelProvider extends AbstractDataModelProvider implements IFacetDataModelProperties {
+
+	public static final String NOTIFICATION_OPERATION = "FacetDataModelProvider.NOTIFICATION_OPERATION"; //$NON-NLS-1$
 
 	public Set getPropertyNames() {
 		Set names = super.getPropertyNames();
@@ -32,6 +38,7 @@ public class FacetDataModelProvider extends AbstractDataModelProvider implements
 		names.add(FACET_VERSION);
 		names.add(FACET_ACTION);
 		names.add(SHOULD_EXECUTE);
+		names.add(NOTIFICATION_OPERATION);
 		return names;
 	}
 
@@ -42,6 +49,8 @@ public class FacetDataModelProvider extends AbstractDataModelProvider implements
 			return new IFacetedProject.Action((Type) model.getProperty(FACET_TYPE), (IProjectFacetVersion) model.getProperty(FACET_VERSION), model);
 		} else if (SHOULD_EXECUTE.equals(propertyName)) {
 			return Boolean.TRUE;
+		} else if (NOTIFICATION_OPERATION.equals(propertyName)) {
+			return getFacetNotificationOperation();
 		}
 		return super.getDefaultProperty(propertyName);
 	}
@@ -57,4 +66,15 @@ public class FacetDataModelProvider extends AbstractDataModelProvider implements
 		return new FacetDataModelOperation(model);
 	}
 
+	protected IDataModelOperation getFacetNotificationOperation() {
+		return new ExtendableOperationImpl(new AbstractDataModelOperation(this.model) {
+			public String getID() {
+				return "FacetDataModelProvider.Notification." + model.getProperty(FACET_TYPE) + "." + model.getStringProperty(FACET_ID); //$NON-NLS-1$//$NON-NLS-2$ 
+			}
+
+			public org.eclipse.core.runtime.IStatus execute(IProgressMonitor monitor, org.eclipse.core.runtime.IAdaptable info) throws ExecutionException {
+				return AbstractDataModelProvider.OK_STATUS;
+			}
+		});
+	}
 }
