@@ -65,7 +65,7 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 			createModuleTypeTranslator(MODULE_CORE_PKG.getWorkbenchComponent_ComponentType()),
 			createWBResourceTranslator(MODULE_CORE_PKG.getWorkbenchComponent_Resources()),
 			createDependentModuleTranslator(MODULE_CORE_PKG.getWorkbenchComponent_ReferencedComponents()),
-			new Translator(META_RESOURCES, MODULE_CORE_PKG.getWorkbenchComponent_MetadataResources()),
+			new IPathTranslator(META_RESOURCES, MODULE_CORE_PKG.getWorkbenchComponent_MetadataResources()),
 			createPropertiesTranslator(MODULE_CORE_PKG.getWorkbenchComponent_Properties())
 		});
 		return result;
