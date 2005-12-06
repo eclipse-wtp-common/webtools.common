@@ -54,7 +54,8 @@ public class EclipseResourceAdapter extends AdapterImpl implements Adapter {
 				ComponentResource moduleResource = (ComponentResource) getTarget();
 				IPath sourcePath = moduleResource.getSourcePath();
 				IProject container = StructureEdit.getContainingProject(moduleResource.getComponent());
-				resource = container.findMember(sourcePath); 
+				if (container != null)
+					resource = container.findMember(sourcePath); 
 				if(resource == null)
 					resource = ResourcesPlugin.getWorkspace().getRoot().findMember(sourcePath); 
 				
