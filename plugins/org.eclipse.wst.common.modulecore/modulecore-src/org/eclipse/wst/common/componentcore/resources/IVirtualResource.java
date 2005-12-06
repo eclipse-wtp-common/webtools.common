@@ -147,6 +147,19 @@ public interface IVirtualResource extends ISchedulingRule, IAdaptable {
 	 */
 	public void createLink(IPath aProjectRelativeLocation, int updateFlags, IProgressMonitor monitor) throws CoreException;
 
+	/**
+	 * Removes the mapping, if it exists, from the supplied location to the runtime path of this 
+	 * virtual resource. Model changes will occur as a result of this method, 
+	 * and potentially resource-level creations as well.
+	 * 
+	 * @param aProjectRelativeLocation A project relative location whose mapping to the runtime path of this object should be removed.
+	 * @param updateFlags A bitmask of flags to supply to the method. 
+	 * @param monitor
+	 * @throws CoreException
+	 */
+	public void removeLink(IPath aProjectRelativeLocation, int updateFlags, IProgressMonitor monitor) throws CoreException;
+
+	
 	/**   
 	 * Remove the resource from the flexible structure. Removing the resource could require
 	 * changes to the underlying metamodel or changes to the file structure. To avoid
