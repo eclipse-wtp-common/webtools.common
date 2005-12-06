@@ -50,13 +50,13 @@ public class EntrySerializer {
 			SnippetPaletteItem item = (SnippetPaletteItem) entry;
 			owningElement.setAttribute(SnippetsPlugin.NAMES.ID, item.getId());
 			if (item.getSmallIconName() != null)
-				owningElement.setAttribute(SnippetsPlugin.NAMES.ICON, item.getSmallIconName());
+				owningElement.setAttribute(SnippetsPlugin.NAMES.SMALLICON, item.getSmallIconName());
 		}
 		if (entry instanceof SnippetPaletteDrawer) {
 			SnippetPaletteDrawer drawer = (SnippetPaletteDrawer) entry;
 			owningElement.setAttribute(SnippetsPlugin.NAMES.ID, drawer.getId());
 			if (drawer.getSmallIconName() != null)
-				owningElement.setAttribute(SnippetsPlugin.NAMES.ICON, drawer.getSmallIconName());
+				owningElement.setAttribute(SnippetsPlugin.NAMES.SMALLICON, drawer.getSmallIconName());
 		}
 		if (entry.getDescription() != null)
 			owningElement.appendChild(createDescription(owningElement.getOwnerDocument(), entry.getDescription()));

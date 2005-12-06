@@ -27,7 +27,7 @@ public class SnippetsPlugin extends AbstractUIPlugin {
 		String EDITORCLASSNAME = "editorclass"; //$NON-NLS-1$
 		String EXTENSION_POINT_ID = "SnippetContributions"; //$NON-NLS-1$
 		String HIDE = "hide"; //$NON-NLS-1$
-		String ICON = "icon"; //$NON-NLS-1$
+		String SMALLICON = "smallicon"; //$NON-NLS-1$
 		String ID = "id"; //$NON-NLS-1$
 		String INITIAL_STATE = "initial_state"; //$NON-NLS-1$
 		String ITEM = "item"; //$NON-NLS-1$

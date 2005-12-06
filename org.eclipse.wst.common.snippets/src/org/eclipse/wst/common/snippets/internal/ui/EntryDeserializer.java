@@ -46,7 +46,7 @@ public class EntryDeserializer {
 
 	private void assignEntryProperties(Element element, SnippetPaletteItem entry) {
 		entry.setId(element.getAttribute(SnippetsPlugin.NAMES.ID));
-		entry.setIconName(element.getAttribute(SnippetsPlugin.NAMES.ICON));
+		entry.setIconName(element.getAttribute(SnippetsPlugin.NAMES.SMALLICON));
 		String description = createDescription(element);
 		String label = element.getAttribute(SnippetsPlugin.NAMES.LABEL);
 		if ((label == null || label.length() == 0) && description != null) {

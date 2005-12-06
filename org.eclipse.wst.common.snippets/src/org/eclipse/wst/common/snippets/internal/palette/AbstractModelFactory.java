@@ -119,7 +119,7 @@ public abstract class AbstractModelFactory {
 		if (entry instanceof SnippetPaletteItem) {
 			if (property.equals(SnippetsPlugin.NAMES.DESCRIPTION))
 				((SnippetPaletteItem) entry).setDescription(value.toString());
-			else if (property.equals(SnippetsPlugin.NAMES.ICON))
+			else if (property.equals(SnippetsPlugin.NAMES.SMALLICON))
 				((SnippetPaletteItem) entry).setIconName(value.toString());
 			else if (property.equals(SnippetsPlugin.NAMES.ID))
 				((SnippetPaletteItem) entry).setId(value.toString());
@@ -133,7 +133,7 @@ public abstract class AbstractModelFactory {
 		if (entry instanceof SnippetPaletteDrawer) {
 			if (property.equals(SnippetsPlugin.NAMES.DESCRIPTION))
 				((SnippetPaletteDrawer) entry).setDescription(value.toString());
-			else if (property.equals(SnippetsPlugin.NAMES.ICON))
+			else if (property.equals(SnippetsPlugin.NAMES.SMALLICON))
 				((SnippetPaletteDrawer) entry).setIconName(value.toString());
 			else if (property.equals(SnippetsPlugin.NAMES.ID))
 				((SnippetPaletteDrawer) entry).setId(value.toString());

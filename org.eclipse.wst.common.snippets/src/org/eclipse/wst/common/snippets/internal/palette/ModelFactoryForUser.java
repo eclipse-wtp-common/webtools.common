@@ -280,7 +280,7 @@ public class ModelFactoryForUser extends AbstractModelFactory {
 			return;
 		Element element = ((Element) source);
 
-		setProperty(category, SnippetsPlugin.NAMES.ICON, element.getAttribute(SnippetsPlugin.NAMES.ICON));
+		setProperty(category, SnippetsPlugin.NAMES.SMALLICON, element.getAttribute(SnippetsPlugin.NAMES.SMALLICON));
 		setProperty(category, SnippetsPlugin.NAMES.ID, element.getAttribute(SnippetsPlugin.NAMES.ID));
 		setProperty(category, SnippetsPlugin.NAMES.LABEL, element.getAttribute(SnippetsPlugin.NAMES.LABEL));
 		setProperty(category, SnippetsPlugin.NAMES.LARGEICON, element.getAttribute(SnippetsPlugin.NAMES.LARGEICON));
@@ -307,7 +307,7 @@ public class ModelFactoryForUser extends AbstractModelFactory {
 		setProperty(item, SnippetsPlugin.NAMES.CATEGORY, element.getAttribute(SnippetsPlugin.NAMES.CATEGORY));
 		setProperty(item, SnippetsPlugin.NAMES.CLASSNAME, element.getAttribute(SnippetsPlugin.NAMES.CLASSNAME));
 		setProperty(item, SnippetsPlugin.NAMES.EDITORCLASSNAME, element.getAttribute(SnippetsPlugin.NAMES.EDITORCLASSNAME));
-		setProperty(item, SnippetsPlugin.NAMES.ICON, element.getAttribute(SnippetsPlugin.NAMES.ICON));
+		setProperty(item, SnippetsPlugin.NAMES.SMALLICON, element.getAttribute(SnippetsPlugin.NAMES.SMALLICON));
 		setProperty(item, SnippetsPlugin.NAMES.ID, element.getAttribute(SnippetsPlugin.NAMES.ID));
 		setProperty(item, SnippetsPlugin.NAMES.LABEL, element.getAttribute(SnippetsPlugin.NAMES.LABEL));
 		setProperty(item, SnippetsPlugin.NAMES.LARGEICON, element.getAttribute(SnippetsPlugin.NAMES.LARGEICON));

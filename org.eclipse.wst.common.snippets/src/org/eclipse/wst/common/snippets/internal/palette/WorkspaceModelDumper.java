@@ -54,14 +54,14 @@ public class WorkspaceModelDumper {
 		if (entry instanceof SnippetPaletteDrawer) {
 			SnippetPaletteDrawer drawer = (SnippetPaletteDrawer) entry;
 			owningElement.setAttribute(SnippetsPlugin.NAMES.ID, drawer.getId());
-			owningElement.setAttribute(SnippetsPlugin.NAMES.ICON, drawer.getSmallIconName());
+			owningElement.setAttribute(SnippetsPlugin.NAMES.SMALLICON, drawer.getSmallIconName());
 			owningElement.setAttribute(SnippetsPlugin.NAMES.LABEL, drawer.getLabel());
 			owningElement.setAttribute(SnippetsPlugin.NAMES.LARGEICON, drawer.getLargeIconName());
 		}
 		if (entry instanceof SnippetPaletteItem) {
 			SnippetPaletteItem item = (SnippetPaletteItem) entry;
 			owningElement.setAttribute(SnippetsPlugin.NAMES.ID, item.getId());
-			owningElement.setAttribute(SnippetsPlugin.NAMES.ICON, item.getSmallIconName());
+			owningElement.setAttribute(SnippetsPlugin.NAMES.SMALLICON, item.getSmallIconName());
 			owningElement.setAttribute(SnippetsPlugin.NAMES.LABEL, item.getLabel());
 			owningElement.setAttribute(SnippetsPlugin.NAMES.LARGEICON, item.getLargeIconName());
 		}

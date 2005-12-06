@@ -54,7 +54,7 @@ public class UserModelDumper {
 		if (entry instanceof SnippetPaletteDrawer) {
 			owningElement.setAttribute(SnippetsPlugin.NAMES.ID, ((SnippetPaletteDrawer) entry).getId());
 			if (((SnippetPaletteDrawer) entry).getSmallIconName() != null)
-				owningElement.setAttribute(SnippetsPlugin.NAMES.ICON, ((SnippetPaletteDrawer) entry).getSmallIconName());
+				owningElement.setAttribute(SnippetsPlugin.NAMES.SMALLICON, ((SnippetPaletteDrawer) entry).getSmallIconName());
 			if (entry.getLabel() != null)
 				owningElement.setAttribute(SnippetsPlugin.NAMES.LABEL, entry.getLabel());
 			if (((SnippetPaletteDrawer) entry).getLargeIconName() != null)
@@ -63,7 +63,7 @@ public class UserModelDumper {
 		if (entry instanceof SnippetPaletteItem) {
 			owningElement.setAttribute(SnippetsPlugin.NAMES.ID, ((SnippetPaletteItem) entry).getId());
 			if (((SnippetPaletteItem) entry).getSmallIconName() != null)
-				owningElement.setAttribute(SnippetsPlugin.NAMES.ICON, ((SnippetPaletteItem) entry).getSmallIconName());
+				owningElement.setAttribute(SnippetsPlugin.NAMES.SMALLICON, ((SnippetPaletteItem) entry).getSmallIconName());
 			if (entry.getLabel() != null)
 				owningElement.setAttribute(SnippetsPlugin.NAMES.LABEL, entry.getLabel());
 			if (((SnippetPaletteItem) entry).getLargeIconName() != null)
