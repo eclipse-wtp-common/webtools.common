@@ -8,8 +8,8 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.tests.ui.wizard;
 
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizardPage;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.SimplePageGroup;
 
 public class TestPageGroup2 extends SimplePageGroup {
@@ -19,6 +19,6 @@ public class TestPageGroup2 extends SimplePageGroup {
 		super("group2", dataModel.getID(), true, "TestOperation"); //$NON-NLS-1$ //$NON-NLS-2$
 		this.dataModel = dataModel;
 
-		addPages(new DataModelWizardPage[]{new TestPage2(this.dataModel)});
+		addPages(new IWizardPage[]{new TestPage2(this.dataModel)});
 	}
 }

@@ -8,8 +8,8 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.tests.ui.wizard;
 
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizardPage;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.SimplePageGroup;
 
 public class TestRootPageGroup extends SimplePageGroup {
@@ -19,6 +19,6 @@ public class TestRootPageGroup extends SimplePageGroup {
 		super(dataModel.getID(), dataModel.getID());
 		this.dataModel = dataModel;
 
-		addPages(new DataModelWizardPage[]{new TestPage1(this.dataModel)});
+		addPages(new IWizardPage[]{new TestPage1(this.dataModel)});
 	}
 }
