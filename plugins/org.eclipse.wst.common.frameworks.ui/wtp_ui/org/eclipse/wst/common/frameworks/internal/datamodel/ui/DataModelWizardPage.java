@@ -118,6 +118,7 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 	}
 
 	public boolean canFlipToNextPage() {
+		//TODO why is that last getNextPage() call here???
 		return isPageComplete() && ((null != wizard && wizard.getPageGroupManager().hasNextPage() || null != getNextPage()));
 	}
 

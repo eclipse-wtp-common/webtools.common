@@ -283,7 +283,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	}
 
 	public void addPage(IWizardPage page) {
-		rootPageGroup.addPage((DataModelWizardPage) page);
+		rootPageGroup.addPage(page);
 	}
 
 	private void init() {

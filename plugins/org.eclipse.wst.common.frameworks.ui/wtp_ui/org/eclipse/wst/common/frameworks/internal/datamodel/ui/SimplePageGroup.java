@@ -11,6 +11,8 @@ package org.eclipse.wst.common.frameworks.internal.datamodel.ui;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
+
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
 public class SimplePageGroup implements AddablePageGroup {
@@ -36,11 +38,11 @@ public class SimplePageGroup implements AddablePageGroup {
 		this(groupID, wizardID, true, null);
 	}
 
-	public void addPage(DataModelWizardPage page) {
+	public void addPage(IWizardPage page) {
 		pages.add(page);
 	}
 
-	public void addPages(DataModelWizardPage[] newPages) {
+	public void addPages(IWizardPage[] newPages) {
 		for (int index = 0; index < newPages.length; index++) {
 			pages.add(newPages[index]);
 		}
@@ -70,8 +72,8 @@ public class SimplePageGroup implements AddablePageGroup {
 		return pages;
 	}
 	
-	public DataModelWizardPage[] getExtendedPages(IDataModel dataModel) {
-		return (DataModelWizardPage[]) pages.toArray(new DataModelWizardPage[0]);
+	public IWizardPage[] getExtendedPages(IDataModel dataModel) {
+		return (IWizardPage[]) pages.toArray(new IWizardPage[0]);
 	}
 
 	public String getPageGroupID() {

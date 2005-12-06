@@ -15,17 +15,18 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
+
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.internal.DataModelManager;
 import org.eclipse.wst.common.frameworks.internal.OperationListener;
 import org.eclipse.wst.common.frameworks.internal.OperationManager;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizardPage;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageGroup;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageGroupHandler;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageHandler;
@@ -162,14 +163,14 @@ public class PageGroupManager {
 		pageGroupStack.clear();
 	}
 	
-	public DataModelWizardPage getCurrentPage() {
-		DataModelWizardPage page = null;
+	public IWizardPage getCurrentPage() {
+		IWizardPage page = null;
 
 		if (!pageGroupStack.empty()) {
 			StackEntry topEntry = (StackEntry) pageGroupStack.peek();
 			int pageIndex = topEntry.getTopPageIndex();
 
-			page = pageIndex == -1 ? null : (DataModelWizardPage)topEntry.pageGroupEntry.getPages().get(pageIndex);
+			page = pageIndex == -1 ? null : (IWizardPage)topEntry.pageGroupEntry.getPages().get(pageIndex);
 		}
 
 		return page;
@@ -424,8 +425,8 @@ public class PageGroupManager {
 				List pages = pageGroupEntry.getPages();
 
 				int pageIndex = getTopPageIndex();
-				String pageId = pageIndex == -1 ? null : ((DataModelWizardPage)pages.get(pageIndex)).getName();
-				String expectedId = pageIndex + 1 >= pages.size() ? null : ((DataModelWizardPage)pages.get(pageIndex + 1)).getName();
+				String pageId = pageIndex == -1 ? null : ((IWizardPage)pages.get(pageIndex)).getName();
+				String expectedId = pageIndex + 1 >= pages.size() ? null : ((IWizardPage)pages.get(pageIndex + 1)).getName();
 				String newPageId = null;
 
 				try {
@@ -571,7 +572,7 @@ public class PageGroupManager {
 
 			List pages = getPages();
 			for (int index = 0; index < pages.size(); index++) {
-				if (((DataModelWizardPage)pages.get(index)).getName().equals(pageId)) {
+				if (((IWizardPage)pages.get(index)).getName().equals(pageId)) {
 					result = index;
 					break;
 				}
