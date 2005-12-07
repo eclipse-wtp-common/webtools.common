@@ -410,6 +410,7 @@ public class AddRemoveFacetsWizard
         
         final ArrayList newFacetPages = new ArrayList();
         final boolean[] markers = new boolean[ this.facetPages.length ];
+        boolean changed = false;
         
         for( Iterator itr1 = sortedActions.iterator(); itr1.hasNext(); )
         {
@@ -419,28 +420,39 @@ public class AddRemoveFacetsWizard
             
             if( fp == null )
             {
-                fp = new FacetPages();
-                fp.action = action;
-                fp.pages = ProjectFacetsUiManager.getWizardPages( action.getType(), f );
+                final List pages
+                    = ProjectFacetsUiManager.getWizardPages( action.getType(), f );
                 
-                for( Iterator itr2 = fp.pages.iterator(); itr2.hasNext(); )
+                if( ! pages.isEmpty() )
                 {
-                    final IFacetWizardPage page 
-                        = (IFacetWizardPage) itr2.next();
+                    fp = new FacetPages();
+                    fp.action = action;
+                    fp.pages = pages;
                     
-                    page.setWizard( this );
-                    page.setWizardContext( this.context );
-                    page.setConfig( action.getConfig() );
-                    
-                    if( page.getControl() == null ) 
+                    for( Iterator itr2 = fp.pages.iterator(); itr2.hasNext(); )
                     {
-                        page.createControl( this.pageContainer );
-                        page.getControl().setVisible( false );
+                        final IFacetWizardPage page 
+                            = (IFacetWizardPage) itr2.next();
+                        
+                        page.setWizard( this );
+                        page.setWizardContext( this.context );
+                        page.setConfig( action.getConfig() );
+                        
+                        if( page.getControl() == null ) 
+                        {
+                            page.createControl( this.pageContainer );
+                            page.getControl().setVisible( false );
+                        }
                     }
+                    
+                    changed = true;
                 }
             }
             
-            newFacetPages.add( fp );
+            if( fp != null )
+            {
+                newFacetPages.add( fp );
+            }
         }
         
         for( int i = 0; i < this.facetPages.length; i++ )
@@ -456,13 +468,18 @@ public class AddRemoveFacetsWizard
                     page.setWizard( null );
                     page.dispose();
                 }
+                
+                changed = true;
             }
         }
         
-        this.facetPages = new FacetPages[ newFacetPages.size() ];
-        newFacetPages.toArray( this.facetPages );
-        
-        this.pageContainer.layout( true, true );
+        if( changed )
+        {
+            this.facetPages = new FacetPages[ newFacetPages.size() ];
+            newFacetPages.toArray( this.facetPages );
+            
+            this.pageContainer.layout( true, true );
+        }
     }
     
     private FacetPages findFacetPages( final Action action,

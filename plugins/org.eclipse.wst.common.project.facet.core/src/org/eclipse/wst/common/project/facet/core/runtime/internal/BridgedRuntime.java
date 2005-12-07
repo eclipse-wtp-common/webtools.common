@@ -14,6 +14,7 @@ package org.eclipse.wst.common.project.facet.core.runtime.internal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeBridge;
@@ -30,6 +31,8 @@ public final class BridgedRuntime
     private final String bridgeId;
     private final String nativeRuntimeId;
     private final IRuntimeBridge.IStub stub;
+    private Set supported;
+    private List composition;
     
     BridgedRuntime( final String bridgeId,
                     final String nativeRuntimeId,
@@ -60,9 +63,17 @@ public final class BridgedRuntime
         return Collections.unmodifiableMap( this.stub.getProperties() );
     }
 
-    public boolean supports( final IProjectFacetVersion fv )
+    public synchronized boolean supports( final IProjectFacetVersion fv )
     {
-        return RuntimeManagerImpl.getSupportedFacets( this ).contains( fv );
+        final List comp = this.stub.getRuntimeComponents();
+        
+        if( this.supported == null || ! this.composition.equals( comp ) )
+        {
+            this.supported = RuntimeManagerImpl.getSupportedFacets( comp );
+            this.composition = comp;
+        }
+        
+        return this.supported.contains( fv );
     }
 
 }

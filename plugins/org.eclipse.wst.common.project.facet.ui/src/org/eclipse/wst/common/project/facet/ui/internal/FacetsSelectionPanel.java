@@ -146,6 +146,7 @@ public final class FacetsSelectionPanel
     private final Set base;
     private final HashSet actions;
     private final ArrayList presets;
+    private Object oldSelection;
 
     private IStatus problems;
     private final HashSet filters;
@@ -170,6 +171,7 @@ public final class FacetsSelectionPanel
         this.base = ( base == null ? new HashSet() : base );
         this.actions = new HashSet();
         this.presets = new ArrayList();
+        this.oldSelection = null;
         this.problems = Status.OK_STATUS;
         this.filters = new HashSet();
         this.listeners = new ArrayList();
@@ -820,42 +822,47 @@ public final class FacetsSelectionPanel
         final Object selection
             = ( (IStructuredSelection) event.getSelection() ).getFirstElement();
 
-        if( selection instanceof TableRowData )
+        if( selection != this.oldSelection )
         {
-            final TableRowData trd = (TableRowData) selection;
-
-            if( trd == null )
+            if( selection instanceof TableRowData )
             {
-                return;
-            }
-
-            // Reset the contents of the combo box cell editor to contain the
-            // versions of the selected project facet.
-
-            final List versions = trd.getVersions();
-            final String[] verstrs = new String[ versions.size() ];
-
-            for( int i = 0, n = versions.size(); i < n; i++ )
-            {
-                final IProjectFacetVersion fv
-                    = (IProjectFacetVersion) versions.get( i );
-                
-                verstrs[ i ] = fv.getVersionString(); 
-            }
-
-            this.ceditor.setItems( verstrs );
-
-            for( int i = 0, n = versions.size(); i < n; i++ )
-            {
-                if( versions.get( i ) == trd.getCurrentVersion() )
+                final TableRowData trd = (TableRowData) selection;
+        
+                if( trd == null )
                 {
-                    this.ceditor.setValue( new Integer( i ) );
-                    break;
+                    return;
+                }
+        
+                // Reset the contents of the combo box cell editor to contain the
+                // versions of the selected project facet.
+                
+                final List versions = trd.getVersions();
+                final String[] verstrs = new String[ versions.size() ];
+        
+                for( int i = 0, n = versions.size(); i < n; i++ )
+                {
+                    final IProjectFacetVersion fv
+                        = (IProjectFacetVersion) versions.get( i );
+                    
+                    verstrs[ i ] = fv.getVersionString(); 
+                }
+        
+                this.ceditor.setItems( verstrs );
+        
+                for( int i = 0, n = versions.size(); i < n; i++ )
+                {
+                    if( versions.get( i ) == trd.getCurrentVersion() )
+                    {
+                        this.ceditor.setValue( new Integer( i ) );
+                        break;
+                    }
                 }
             }
+            
+            this.oldSelection = selection;
+        
+            notifySelectionChangedListeners();
         }
-
-        notifySelectionChangedListeners();
     }
 
     private void checkStateChanged( final CheckStateChangedEvent event )
@@ -977,11 +984,17 @@ public final class FacetsSelectionPanel
 
         if( this.problems.isOK() )
         {
-            this.sform2.setMaximizedControl( this.tree.getTree() );
+            if( this.sform2.getMaximizedControl() == null )
+            {
+                this.sform2.setMaximizedControl( this.tree.getTree() );
+            }
         }
         else
         {
-            this.sform2.setMaximizedControl( null );
+            if( this.sform2.getMaximizedControl() != null )
+            {
+                this.sform2.setMaximizedControl( null );
+            }
         }
 
         notifyProjectFacetsListeners();

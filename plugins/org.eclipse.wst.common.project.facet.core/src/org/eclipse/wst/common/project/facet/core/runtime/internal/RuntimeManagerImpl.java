@@ -267,12 +267,11 @@ public final class RuntimeManagerImpl
         }
     }
     
-    static Set getSupportedFacets( final IRuntime runtime )
+    static Set getSupportedFacets( final List composition )
     {
         final Set result = new HashSet();
         
-        for( Iterator itr1 = runtime.getRuntimeComponents().iterator(); 
-             itr1.hasNext(); )
+        for( Iterator itr1 = composition.iterator(); itr1.hasNext(); )
         {
             final IRuntimeComponent rc = (IRuntimeComponent) itr1.next();
             

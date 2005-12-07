@@ -69,17 +69,14 @@ public final class Runtime
         this.properties.put( key, value );
     }
 
-    public boolean supports( final IProjectFacetVersion fv )
+    public synchronized boolean supports( final IProjectFacetVersion fv )
     {
-        synchronized( this )
+        if( this.supported == null )
         {
-            if( this.supported == null )
-            {
-                this.supported = RuntimeManagerImpl.getSupportedFacets( this );
-            }
-            
-            return this.supported.contains( fv );
+            this.supported = RuntimeManagerImpl.getSupportedFacets( components );
         }
+            
+        return this.supported.contains( fv );
     }
 
 }
