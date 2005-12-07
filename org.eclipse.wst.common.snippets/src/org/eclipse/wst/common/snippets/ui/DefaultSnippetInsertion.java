@@ -40,11 +40,17 @@ import org.eclipse.wst.common.snippets.internal.util.StringUtils;
  * An insertion implementation that supports ISnippetVariables. The content
  * string of the item can contain markers, in the form ${+variable+}, that
  * will be replaced with user-supplied values at insertion time.
+ * 
+ * @since 1.0
  */
 public class DefaultSnippetInsertion implements ISnippetInsertion {
 	private ISnippetItem fItem = null;
 	private Transfer[] fSupportedTransfers = null;
 
+	/**
+	 * Default constructor. Subclasses may call, but only the Snippets view
+	 * should ever instantiate an insertion.
+	 */
 	public DefaultSnippetInsertion() {
 		super();
 	}
@@ -57,10 +63,18 @@ public class DefaultSnippetInsertion implements ISnippetInsertion {
 	}
 
 	/**
+	 * Insert the current snippet item.
+	 * 
 	 * @param editorPart
+	 *            the editor part that is active
 	 * @param textEditor
+	 *            the text editor (or adapter) with which to interact (may be
+	 *            the same as editorPart)
 	 * @param document
+	 *            the text document to update
 	 * @param textSelection
+	 *            the selection of text within the document to be replaced by
+	 *            the inserted snippet
 	 * @throws BadLocationException
 	 */
 	protected void doInsert(IEditorPart editorPart, ITextEditor textEditor, IDocument document, ITextSelection textSelection) throws BadLocationException {
@@ -135,6 +149,14 @@ public class DefaultSnippetInsertion implements ISnippetInsertion {
 		}
 	}
 
+	/**
+	 * Gets the string to be inserted by interacting further with the user if
+	 * needed.
+	 * 
+	 * @param host
+	 *            Shell to use for creating dialogs
+	 * @return the string to be inserted
+	 */
 	protected String getInsertString(Shell host) {
 		if (fItem == null)
 			return ""; //$NON-NLS-1$

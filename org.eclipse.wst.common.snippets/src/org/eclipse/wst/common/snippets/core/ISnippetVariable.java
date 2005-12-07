@@ -10,6 +10,12 @@
  *******************************************************************************/
 package org.eclipse.wst.common.snippets.core;
 
+/**
+ * A variable is a user-prompted value meant to be filled-in by the user
+ * during insertion.
+ * 
+ * @since 1.0
+ */
 public interface ISnippetVariable {
 	/**
 	 * @return Returns the default value for this variable

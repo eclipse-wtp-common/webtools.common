@@ -10,6 +10,11 @@
  *******************************************************************************/
 package org.eclipse.wst.common.snippets.core;
 
+/**
+ * Represents a category containing individual snippets.
+ * 
+ * @since 1.0
+ */
 public interface ISnippetCategory extends ISnippetsEntry {
 	/**
 	 * @return an array of the items within this category
