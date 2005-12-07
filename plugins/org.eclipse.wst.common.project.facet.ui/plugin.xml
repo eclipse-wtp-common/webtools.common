@@ -24,6 +24,14 @@
   <extension point="org.eclipse.core.runtime.adapters">
     <factory 
       class="org.eclipse.wst.common.project.facet.ui.internal.DecorationsProvider$Factory" 
+      adaptableType="org.eclipse.wst.common.project.facet.core.ICategory">
+      <adapter type="org.eclipse.wst.common.project.facet.ui.IDecorationsProvider"/>
+    </factory>
+  </extension>
+
+  <extension point="org.eclipse.core.runtime.adapters">
+    <factory 
+      class="org.eclipse.wst.common.project.facet.ui.internal.DecorationsProvider$Factory" 
       adaptableType="org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentType">
       <adapter type="org.eclipse.wst.common.project.facet.ui.IDecorationsProvider"/>
     </factory>
@@ -42,5 +50,5 @@
       </filter>
     </page>
   </extension>
-  
+    
 </plugin>
