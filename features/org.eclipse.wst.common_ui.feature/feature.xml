@@ -8,21 +8,18 @@
       %description
    </description>
 
-
-
    <license url="license.html">
       %license
    </license>
 
-   <requires>
-      <import feature="org.eclipse.gef" version="3.1.0"/>
-   </requires>
-   
    <includes
          id="org.eclipse.wst.common_userdoc.feature"
          version="0.0.0"/>
 
-
+   <requires>
+      <import feature="org.eclipse.gef" version="3.1.1" match="equivalent"/>
+      <import feature="org.eclipse.wst.common_core.feature" version="1.0.0" match="equivalent"/>
+   </requires>
 
    <plugin
          id="org.eclipse.wst.command.env.ui"
@@ -100,7 +97,6 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-
 
    <plugin
          id="org.eclipse.wst.validation.ui"

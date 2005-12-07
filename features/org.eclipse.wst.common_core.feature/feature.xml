@@ -8,16 +8,13 @@
       %description
    </description>
 
-
-
    <license url="license.html">
       %license
    </license>
 
    <requires>
-      <import feature="org.eclipse.jem" version="1.1.0"/>
-      <import feature="org.eclipse.emf" version="2.1.0"/>
-      <import feature="org.eclipse.jdt" version="3.1.0"/>
+      <import feature="org.eclipse.jem" version="1.1.0.1" match="equivalent"/>
+      <import feature="org.eclipse.emf" version="2.1.1" match="equivalent"/>
    </requires>
 
    <plugin
@@ -32,7 +29,7 @@
          download-size="0"
          install-size="0"
          version="0.0.0"/>
-         
+
    <plugin
          id="org.eclipse.wst.command.env.core"
          download-size="0"
