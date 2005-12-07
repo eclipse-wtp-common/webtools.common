@@ -27,6 +27,7 @@ import org.eclipse.wst.common.componentcore.internal.impl.PlatformURLModuleConne
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
+import org.eclipse.wst.common.frameworks.internal.enablement.EnablementManager;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
@@ -294,7 +295,12 @@ public class ArtifactEditModel extends EditModel implements IAdaptable, IFaceted
 	}
 
 	public void projectChanged() {
-		initializeKnownResourceUris();
+		try {
+			EnablementManager.INSTANCE.notifyFunctionGroupChanged(null,getComponentProject());
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 }
