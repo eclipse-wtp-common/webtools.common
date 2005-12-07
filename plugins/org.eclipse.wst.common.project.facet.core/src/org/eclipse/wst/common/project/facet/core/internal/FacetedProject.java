@@ -656,6 +656,8 @@ public final class FacetedProject
         
         final String nl = System.getProperty( "line.separator" );
         
+        out.print( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" );
+        out.print( nl );
         out.print( "<faceted-project>" );
         out.print( nl );
         
