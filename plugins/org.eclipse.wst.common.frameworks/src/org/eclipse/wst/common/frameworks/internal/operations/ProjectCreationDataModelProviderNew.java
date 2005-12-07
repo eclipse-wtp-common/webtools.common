@@ -108,32 +108,12 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 		return (null != projectName && projectName.length() > 0) ? ResourcesPlugin.getWorkspace().getRoot().getProject(projectName) : null;
 	}
 
-	protected IStatus validateProjectExists( String name, String location){
-		IStatus status = OK_STATUS;
-		
-		if (null != location) {
-			name = location + name;
-		}
-		if( name != null && !name.equals("")){
-			IProject project = ProjectUtilities.getProject( name );
-			if( project.exists() ){
-				WTPCommonPlugin.createErrorStatus("Project exists with the name in the location");
-			}		
-		}
-		return status;
-	}
-	
 	public IStatus validate(String propertyName) {
 		if (propertyName.equals(PROJECT_NAME)) {
 			String name = model.getStringProperty(PROJECT_NAME);
 			IStatus status = validateName( name );
-//			if (status.isOK()){
-//				status = validateProjectExists( name, model.getStringProperty(PROJECT_LOCATION));
-//				return status;
-//			}
-			if( !status.isOK() ){
+			if (!status.isOK())
 				return status;
-			}
 		}
 		if (propertyName.equals(PROJECT_LOCATION)) {
 			IStatus status = validateLocation();
