@@ -470,7 +470,7 @@ public final class FacetedProject
         
         try
         {
-            this.runtimeName = runtime.getName();
+            this.runtimeName = ( runtime == null ? null : runtime.getName() );
             save();
 
             for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
