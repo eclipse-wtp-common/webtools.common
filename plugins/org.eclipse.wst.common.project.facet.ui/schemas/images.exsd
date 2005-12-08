@@ -80,12 +80,7 @@
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         This extension point is part of an interim API that is still under 
-         development and expected to change significantly before reaching 
-         stability. It is being made available at this early stage to solicit 
-         feedback from pioneering adopters on the understanding that any code 
-         that uses this API will almost certainly be broken (repeatedly) as 
-         the API evolves.
+         &lt;b&gt;This extension point is part of an interim API that is still under development and expected to change significantly before reaching stability. It is being made available at this early stage to solicit feedback from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken (repeatedly) as the API evolves.&lt;/b&gt;
       </documentation>
    </annotation>
 
@@ -121,10 +116,11 @@
          <meta.section type="copyright"/>
       </appInfo>
       <documentation>
-         Copyright (c) 2005 BEA Systems, Inc. All rights reserved. This program 
-         and the accompanying materials are made available under the terms of 
-         the Eclipse Public License v1.0 which accompanies this distribution, 
-         and is available at http://www.eclipse.org/legal/epl-v10.html.
+         Copyright (c) 2005 BEA Systems, Inc. and others.&lt;br&gt;
+All rights reserved. This program and the accompanying materials are made 
+available under the terms of the Eclipse Public License v1.0 which accompanies 
+this distribution, and is available at &lt;a
+href=&quot;http://www.eclipse.org/legal/epl-v10.html&quot;&gt;http://www.eclipse.org/legal/epl-v10.html&lt;/a&gt;
       </documentation>
    </annotation>
 
