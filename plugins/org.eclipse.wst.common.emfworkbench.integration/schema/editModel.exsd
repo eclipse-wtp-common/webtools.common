@@ -109,7 +109,7 @@
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         6.0
+         1.0
       </documentation>
    </annotation>
 
@@ -118,33 +118,32 @@
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         &lt;br&gt;
-&lt;code&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;extension&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;id=&quot;editModel.acme.parent&quot;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;name=&quot;Acme&amp;nbsp;Parent&amp;nbsp;Edit&amp;nbsp;Model&quot;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;point=&quot;com.ibm.etools.emf.workbench.editModel&quot;&amp;gt;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;editModel&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;editModelID=&quot;com.acme.acmepro.parent.editModel&quot;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;factoryClass=&quot;com.ibm.etools.emf.workbench.edit.EditModelFactory&quot;&amp;gt;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;editModelResource&amp;nbsp;URI=&quot;DIR/resource0.xml&quot;&amp;nbsp;/&amp;gt;&amp;nbsp;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;editModelResource&amp;nbsp;URI=&quot;DIR/resource1.xml&quot;&amp;nbsp;/&amp;gt;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;/editModel&amp;gt;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;/extension&amp;gt;&amp;nbsp;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;extension&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;id=&quot;editModel.acme.child&quot;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;name=&quot;Acme&amp;nbsp;Child&amp;nbsp;Edit&amp;nbsp;Model&quot;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;point=&quot;com.ibm.etools.emf.workbench.editModel&quot;&amp;gt;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;editModel&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;editModelID=&quot;com.acme.acmepro.child.editModel&quot;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;factoryClass=&quot;com.ibm.etools.emf.workbench.edit.EditModelFactory&quot;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;parentModelID=&quot;com.acme.acmepro.parent.editModel&quot;&amp;gt;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;editModelResource&amp;nbsp;URI=&quot;DIR/resource2.xml&quot;&amp;nbsp;/&amp;gt;&amp;nbsp;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;editModelResource&amp;nbsp;URI=&quot;DIR/resource3.xml&quot;&amp;nbsp;/&amp;gt;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;/editModel&amp;gt;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;/extension&amp;gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;br&gt;
-&lt;/code&gt;
+         &lt;pre&gt;
+   &lt;extension
+         id=&quot;editModel.acme.parent&quot;
+         name=&quot;Acme Parent Edit Model&quot;
+         point=&quot;com.ibm.etools.emf.workbench.editModel&quot;&gt;
+      &lt;editModel
+            editModelID=&quot;com.acme.acmepro.parent.editModel&quot;
+            factoryClass=&quot;com.ibm.etools.emf.workbench.edit.EditModelFactory&quot;&gt;
+        &lt;editModelResource URI=&quot;DIR/resource0.xml&quot;/&gt;
+        &lt;editModelResource URI=&quot;DIR/resource1.xml&quot;/&gt;
+      &lt;/editModel&gt;
+   &lt;/extension&gt;
+
+   &lt;extension
+         id=&quot;editModel.acme.child&quot;
+         name=&quot;Acme Child Edit Model&quot;
+         point=&quot;com.ibm.etools.emf.workbench.editModel&quot;&gt;
+      &lt;editModel
+            editModelID=&quot;com.acme.acmepro.child.editModel&quot;
+            factoryClass=&quot;com.ibm.etools.emf.workbench.edit.EditModelFactory&quot;
+            parentModelID=&quot;com.acme.acmepro.parent.editModel&quot;&gt;
+        &lt;editModelResource URI=&quot;DIR/resource2.xml&quot;/&gt;
+        &lt;editModelResource URI=&quot;DIR/resource3.xml&quot;/&gt;
+      &lt;/editModel&gt;
+   &lt;/extension&gt;
+&lt;/pre&gt;
       </documentation>
    </annotation>
 

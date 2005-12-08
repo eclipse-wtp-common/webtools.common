@@ -176,7 +176,7 @@ There will be as many pages created for the wizard as there are projectsetup ele
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         November 2004
+         &lt;b&gt;This extension point is part of an interim API that is still under development and expected to change significantly before reaching stability. It is being made available at this early stage to solicit feedback from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken (repeatedly) as the API evolves.&lt;/b&gt;
       </documentation>
    </annotation>
 
@@ -185,17 +185,19 @@ There will be as many pages created for the wizard as there are projectsetup ele
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         &lt;extension   point=&quot;org.eclipse.wst.common.ui.exampleProjectCreationWizard&quot;
-     id=&quot;org.eclipse.wst.xml.ui.ExampleProjectCreationWizardExtension&quot;&gt; 
-    &lt;wizard
-        id=&quot;org.eclipse.wst.xml.ui.ExampleProjectCreationWizard&quot;
+         &lt;pre&gt;
+   &lt;extension
+         point=&quot;org.eclipse.wst.common.ui.exampleProjectCreationWizard&quot;
+         id=&quot;org.eclipse.wst.xml.ui.ExampleProjectCreationWizardExtension&quot;&gt; 
+      &lt;wizard
+           id=&quot;org.eclipse.wst.xml.ui.ExampleProjectCreationWizard&quot;
            banner=&quot;icons/newSampleProject_wizbanner.gif&quot;&gt;
-        &lt;projectsetup
-            pagetitle=&quot;%XMLExampleProjectCreationWizard.pagetitle&quot;
-            name=&quot;%XMLExampleProjectCreationWizard.projectname&quot;
-            label=&quot;%XMLExampleProjectCreationWizard.label&quot;
-            pagedescription=&quot;%XMLExampleProjectCreationWizard.pagedescription&quot;
-            open=&quot;readme.html&quot;&gt;
+         &lt;projectsetup
+               pagetitle=&quot;%XMLExampleProjectCreationWizard.pagetitle&quot;
+               name=&quot;%XMLExampleProjectCreationWizard.projectname&quot;
+               label=&quot;%XMLExampleProjectCreationWizard.label&quot;
+               pagedescription=&quot;%XMLExampleProjectCreationWizard.pagedescription&quot;
+               open=&quot;readme.html&quot;&gt;
             &lt;import
                   dest=&quot;&quot;
                   src=&quot;examples/EditingAndValidatingXML.zip&quot;&gt;
@@ -203,6 +205,7 @@ There will be as many pages created for the wizard as there are projectsetup ele
         &lt;/projectsetup&gt;
      &lt;/wizard&gt;
    &lt;/extension&gt;
+&lt;/pre&gt;
       </documentation>
    </annotation>
 

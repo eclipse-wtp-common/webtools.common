@@ -3,7 +3,7 @@
 <schema targetNamespace="org.eclipse.wst.common.emfworkbench.integration">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.eclipse.wst.common.emfworkbench.integration" id="ModifierHelperFactory" name="ModifierHelperFactory"/>
+         <meta.schema plugin="org.eclipse.wst.common.emfworkbench.integration" id="ModifierHelperFactory" name="Modifier Helper Factory"/>
       </appInfo>
       <documentation>
          [Enter description of this extension point.]

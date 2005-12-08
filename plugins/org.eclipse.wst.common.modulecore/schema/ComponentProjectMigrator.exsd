@@ -3,7 +3,7 @@
 <schema targetNamespace="org.eclipse.wst.common.modulecore">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.eclipse.wst.common.modulecore" id="ComponentProjectMigrator" name="ComponentProjectMigrator"/>
+         <meta.schema plugin="org.eclipse.wst.common.modulecore" id="ComponentProjectMigrator" name="Component Project Migrator"/>
       </appInfo>
       <documentation>
          This allows specific implementations of components to contribute migrators Those plugins have dependencies on the modulecore plugin, but not vice versa. In order for code defined within the modulecore plugin to execute these actions, we need this extension point.

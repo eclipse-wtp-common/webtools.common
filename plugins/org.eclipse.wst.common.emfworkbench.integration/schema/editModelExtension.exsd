@@ -3,7 +3,7 @@
 <schema targetNamespace="org.eclipse.wst.common.emfworkbench.integration">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.eclipse.wst.common.emfworkbench.integration" id="geditModelExtension" name="Edit Model Extensions"/>
+         <meta.schema plugin="org.eclipse.wst.common.emfworkbench.integration" id="editModelExtension" name="Edit Model Extensions"/>
       </appInfo>
       <documentation>
          The Edit Model Extension allows third parties to contribute expected resources to Edit Models. The functionGroupID allows users to select which extensions they choose to have enabled.
@@ -73,7 +73,7 @@
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         6.0
+         1.0
       </documentation>
    </annotation>
 
@@ -82,18 +82,17 @@
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         &lt;br&gt;
-&lt;code&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;extension&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;point=&quot;com.ibm.etools.emf.workbench.editModelExtension&quot;&amp;gt;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;editModelExtension&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;editModelID=&quot;com.ibm.etools.inheritance.parent.editModel&quot;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;functionGroupID=&quot;com.ibm.etools.websphere.group&quot;&amp;gt;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;editModelResource&amp;nbsp;URI=&quot;DIR/extension0.xml&quot;/&amp;gt;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;editModelResource&amp;nbsp;URI=&quot;DIR/extension1.xml&quot;/&amp;gt;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;/editModelExtension&amp;gt;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;/extension&amp;gt;&lt;br&gt;
-&lt;/code&gt;
+         &lt;pre&gt;
+   &lt;extension
+         point=&quot;com.ibm.etools.emf.workbench.editModelExtension&quot;&gt;
+      &lt;editModelExtension
+            editModelID=&quot;org.sample.inheritance.parent.editModel&quot;
+            functionGroupID=&quot;org.sample.group&quot;&gt;
+         &lt;editModelResource URI=&quot;DIR/extension0.xml&quot;/&gt;
+         &lt;editModelResource URI=&quot;DIR/extension1.xml&quot;/&gt;
+      &lt;/editModelExtension&gt;
+   &lt;/extension&gt;
+&lt;/pre&gt;
       </documentation>
    </annotation>
 

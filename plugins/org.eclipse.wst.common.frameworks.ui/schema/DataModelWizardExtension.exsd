@@ -3,7 +3,7 @@
 <schema targetNamespace="org.eclipse.wst.common.frameworks.ui">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.eclipse.wst.common.frameworks.ui" id="DataModelWizardExtension" name="DataModelWizard"/>
+         <meta.schema plugin="org.eclipse.wst.common.frameworks.ui" id="DataModelWizardExtension" name="Data Model Wizard Extension"/>
       </appInfo>
       <documentation>
          [Enter description of this extension point.]

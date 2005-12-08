@@ -128,7 +128,7 @@
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         6.0
+         1.0
       </documentation>
    </annotation>
 
@@ -137,20 +137,18 @@
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         &lt;code&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;extension&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;point=&quot;com.ibm.wtp.common.functionGroup&quot;&amp;gt;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;functionGroup&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;name=&quot;Acme&amp;nbsp;Co.&amp;nbsp;Function&amp;nbsp;Extension&quot;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;functionGroupID=&quot;com.acme.acmepro&quot;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;description=&quot;The&amp;nbsp;AcmePro&amp;nbsp;Extensions&amp;nbsp;add&amp;nbsp;integration&amp;nbsp;to&amp;nbsp;the&amp;nbsp;Acme&amp;nbsp;Web&amp;nbsp;Server.&quot;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;enabledByDefault=&quot;true&quot;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;icon=&quot;...&quot;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;url=&quot;http://www.acme.com/&quot;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;/&amp;gt;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;/extension&amp;gt;&lt;br&gt;
-&lt;/code&gt;
+         &lt;pre&gt;
+   &lt;extension
+         point=&quot;org.eclipse.wst.common.frameworks.functionGroup&quot;&gt;
+      &lt;functionGroup
+            name=&quot;Acme Co. Function Extension&quot;
+            functionGroupID=&quot;com.acme.acmepro&quot;
+            description=&quot;The AcmePro Extensions add integration to the Acme Web Server.&quot;
+            enabledByDefault=&quot;true&quot;
+            icon=&quot;...&quot;
+            url=&quot;http://www.acme.com/&quot;/&gt;
+   &lt;/extension&gt;
+&lt;/pre&gt;
       </documentation>
    </annotation>
 
@@ -159,7 +157,7 @@
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         WTP Function Groups can be referenced through com.ibm.wtp.common.group.WTPFunctionGroupRegistry.
+         
       </documentation>
    </annotation>
 
