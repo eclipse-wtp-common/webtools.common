@@ -97,7 +97,7 @@ public final class FacetedProject
     private final IProject project;
     private final CopyOnWriteSet facets;
     private final CopyOnWriteSet fixed;
-    private IRuntime runtime;
+    private String runtimeName;
     IFile f;
     private long fLastModified = -1;
     private final List listeners;
@@ -414,7 +414,14 @@ public final class FacetedProject
     {
         synchronized( this.lock )
         {
-            return this.runtime;
+            if( RuntimeManager.isRuntimeDefined( this.runtimeName ) )
+            {
+                return RuntimeManager.getRuntime( this.runtimeName );
+            }
+            else
+            {
+                return null;
+            }
         }
     }
     
@@ -463,36 +470,33 @@ public final class FacetedProject
         
         try
         {
-            if( this.runtime != runtime )
+            this.runtimeName = runtime.getName();
+            save();
+
+            for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
             {
-                this.runtime = runtime;
-                save();
-    
-                for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
+                final ProjectFacetVersion fv
+                    = (ProjectFacetVersion) itr.next();
+                
+                final IDelegate delegate
+                    = fv.getDelegate( IDelegate.Type.RUNTIME_CHANGED );
+                
+                if( delegate == null )
                 {
-                    final ProjectFacetVersion fv
-                        = (ProjectFacetVersion) itr.next();
-                    
-                    final IDelegate delegate
-                        = fv.getDelegate( IDelegate.Type.RUNTIME_CHANGED );
-                    
-                    if( delegate == null )
+                    if( monitor != null )
                     {
-                        if( monitor != null )
-                        {
-                            monitor.worked( 1 );
-                        }
+                        monitor.worked( 1 );
                     }
-                    else
-                    {
-                        final SubProgressMonitor submonitor
-                            = monitor == null 
-                              ? null : new SubProgressMonitor( monitor, 1 );
-                        
-                        callDelegate( this.project, fv, null,
-                                      IDelegate.Type.RUNTIME_CHANGED, delegate,
-                                      submonitor );
-                    }
+                }
+                else
+                {
+                    final SubProgressMonitor submonitor
+                        = monitor == null 
+                          ? null : new SubProgressMonitor( monitor, 1 );
+                    
+                    callDelegate( this.project, fv, null,
+                                  IDelegate.Type.RUNTIME_CHANGED, delegate,
+                                  submonitor );
                 }
             }
         }
@@ -661,10 +665,10 @@ public final class FacetedProject
         out.print( "<faceted-project>" );
         out.print( nl );
         
-        if( this.runtime != null )
+        if( this.runtimeName != null )
         {
             out.print( "  <runtime name=\"" );
-            out.print( this.runtime.getName() );
+            out.print( this.runtimeName );
             out.print( "\"/>" );
             out.print( nl );
         }
@@ -732,7 +736,7 @@ public final class FacetedProject
             
             this.facets.clear();
             this.fixed.clear();
-            this.runtime = null;
+            this.runtimeName = null;
             
             if( ! this.f.exists() )
             {
@@ -752,8 +756,7 @@ public final class FacetedProject
                 
                 if( name.equals( "runtime" ) )
                 {
-                    final String rn = e.getAttribute( "name" );
-                    this.runtime = RuntimeManager.getRuntime( rn );
+                    this.runtimeName = e.getAttribute( "name" );
                 }
                 else if( name.equals( "fixed" ) )
                 {
