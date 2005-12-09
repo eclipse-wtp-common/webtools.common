@@ -277,7 +277,7 @@
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         This API and extension point are still being developed.  As such, extenders should expect incompatible changes in the near future.  The baseline for API and extension point stability will be WTP 1.0.
+         
       </documentation>
    </annotation>
 
