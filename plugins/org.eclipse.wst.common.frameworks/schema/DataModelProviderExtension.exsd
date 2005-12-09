@@ -3,10 +3,10 @@
 <schema targetNamespace="org.eclipse.wst.common.frameworks">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.eclipse.wst.common.frameworks" id="DataModelProviderExtension" name="DataModelProvider"/>
+         <meta.schema plugin="org.eclipse.wst.common.frameworks" id="DataModelProviderExtension" name="Data Model Provider"/>
       </appInfo>
       <documentation>
-         [Enter description of this extension point.]
+         
       </documentation>
    </annotation>
 
@@ -106,7 +106,7 @@
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         [Enter the first release in which this extension point appears.]
+         &lt;b&gt;This extension point is part of an interim API that is still under development and expected to change significantly before reaching stability. It is being made available at this early stage to solicit feedback from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken (repeatedly) as the API evolves.&lt;/b&gt;
       </documentation>
    </annotation>
 
@@ -115,7 +115,7 @@
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         [Enter extension point usage example here.]
+         
       </documentation>
    </annotation>
 
@@ -124,7 +124,7 @@
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         [Enter API information here.]
+         
       </documentation>
    </annotation>
 
@@ -133,7 +133,7 @@
          <meta.section type="implementation"/>
       </appInfo>
       <documentation>
-         [Enter information about supplied implementation of this extension point.]
+         
       </documentation>
    </annotation>
 

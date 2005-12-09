@@ -84,7 +84,7 @@
       <documentation>
          &lt;pre&gt;
    &lt;extension
-         point=&quot;com.ibm.etools.emf.workbench.editModelExtension&quot;&gt;
+         point=&quot;org.eclipse.wst.common.emfworkbench.integration.editModelExtension&quot;&gt;
       &lt;editModelExtension
             editModelID=&quot;org.sample.inheritance.parent.editModel&quot;
             functionGroupID=&quot;org.sample.group&quot;&gt;
@@ -101,7 +101,7 @@
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         [Enter API information here.]
+         
       </documentation>
    </annotation>
 
@@ -110,7 +110,7 @@
          <meta.section type="implementation"/>
       </appInfo>
       <documentation>
-         [Enter information about supplied implementation of this extension point.]
+         
       </documentation>
    </annotation>
 

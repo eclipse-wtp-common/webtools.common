@@ -77,12 +77,12 @@
       <documentation>
          The following is an example of a cache resource contribution:
 &lt;pre&gt;
-&lt;extension
-  point=&quot;org.eclipse.wst.internet.cache.cacheresource&quot;&gt;
-  &lt;cacheresource
-    license=&quot;URL of license file&quot;
-    url=&quot;URL of resource&quot;/&gt;
-&lt;/extension&gt;
+   &lt;extension
+         point=&quot;org.eclipse.wst.internet.cache.cacheresource&quot;&gt;
+      &lt;cacheresource
+            license=&quot;http://www.eclipse.org/license.html&quot;
+            url=&quot;http://www.eclipse.org&quot;/&gt;
+   &lt;/extension&gt;
 &lt;/pre&gt;
       </documentation>
    </annotation>

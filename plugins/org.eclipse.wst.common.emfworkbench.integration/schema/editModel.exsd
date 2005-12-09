@@ -59,7 +59,7 @@
          <attribute name="factoryClass" type="string" use="required">
             <annotation>
                <documentation>
-                  An optional factory class that is used for this edit model.  The class must implement the interface &lt;code&gt;com.ibm.etools.emf.workbench.edit.EditModelFactory&lt;/code&gt;. If none is specified, then a generic &lt;code&gt;EditModel&lt;/code&gt; is created.
+                  An optional factory class that is used for this edit model.  The class must implement the interface &lt;code&gt;org.eclipse.wst.common.internal.emfworkbench.integration.EditModelFactory&lt;/code&gt;. If none is specified, then a generic &lt;code&gt;EditModel&lt;/code&gt; is created.
                </documentation>
             </annotation>
          </attribute>
@@ -122,10 +122,10 @@
    &lt;extension
          id=&quot;editModel.acme.parent&quot;
          name=&quot;Acme Parent Edit Model&quot;
-         point=&quot;com.ibm.etools.emf.workbench.editModel&quot;&gt;
+         point=&quot;org.eclipse.wst.common.emfworkbench.integration.editModel&quot;&gt;
       &lt;editModel
             editModelID=&quot;com.acme.acmepro.parent.editModel&quot;
-            factoryClass=&quot;com.ibm.etools.emf.workbench.edit.EditModelFactory&quot;&gt;
+            factoryClass=&quot;org.eclipse.wst.common.internal.emfworkbench.integration.EditModelFactory&quot;&gt;
         &lt;editModelResource URI=&quot;DIR/resource0.xml&quot;/&gt;
         &lt;editModelResource URI=&quot;DIR/resource1.xml&quot;/&gt;
       &lt;/editModel&gt;
@@ -134,10 +134,10 @@
    &lt;extension
          id=&quot;editModel.acme.child&quot;
          name=&quot;Acme Child Edit Model&quot;
-         point=&quot;com.ibm.etools.emf.workbench.editModel&quot;&gt;
+         point=&quot;org.eclipse.wst.common.emfworkbench.integration.editModel&quot;&gt;
       &lt;editModel
             editModelID=&quot;com.acme.acmepro.child.editModel&quot;
-            factoryClass=&quot;com.ibm.etools.emf.workbench.edit.EditModelFactory&quot;
+            factoryClass=&quot;org.eclipse.wst.common.internal.emfworkbench.integration.EditModelFactory&quot;
             parentModelID=&quot;com.acme.acmepro.parent.editModel&quot;&gt;
         &lt;editModelResource URI=&quot;DIR/resource2.xml&quot;/&gt;
         &lt;editModelResource URI=&quot;DIR/resource3.xml&quot;/&gt;
@@ -152,7 +152,7 @@
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         Edit Models can be accessed through the com.ibm.etools.emf.workbench.EMFWorkbenchContext.
+         Edit Models can be accessed through the &lt;code&gt;org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext&lt;/code&gt;.
       </documentation>
    </annotation>
 
@@ -161,7 +161,7 @@
          <meta.section type="implementation"/>
       </appInfo>
       <documentation>
-         [Enter information about supplied implementation of this extension point.]
+         
       </documentation>
    </annotation>
 

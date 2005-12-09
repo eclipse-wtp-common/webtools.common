@@ -227,8 +227,12 @@
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         The following example declares two Master Operations (&lt;code&gt;com.acme.ui.operation.MasterOperationA&lt;/code&gt; and &lt;code&gt;com.acme.ui.operation.MasterOperationB&lt;/code&gt;) which are attached to the Generic ID &lt;code&gt;com.acme.ui.WTPOptionalOperationTest&lt;/code&gt;. 
+         &lt;!-- The examples in this section have been commented out because they reference only extension point IDs. These examples must be corrected before being included in the documentation. --&gt;
+&lt;!--
+The following example declares two Master Operations (&lt;code&gt;com.acme.ui.operation.MasterOperationA&lt;/code&gt; and &lt;code&gt;com.acme.ui.operation.MasterOperationB&lt;/code&gt;) which are attached to the Generic ID &lt;code&gt;com.acme.ui.WTPOptionalOperationTest&lt;/code&gt;. 
 The scenario has Master A which has as a pre-operation of Slave A and a post-operation of Slave C. Slave A is made optional by the &lt;code&gt;slaveOperation&lt;/code&gt; element, while Slave C will always be run (no &lt;code&gt;slaveOperation&lt;/code&gt; is given to run it seperately). Slave A further has an optional pre-operation (Slave B) that can be executed indepently of either Slave A or Master A.
+--&gt;
+&lt;!--
 &lt;pre&gt;
    &lt;extension
          point=&quot;org.eclipse.wst.common.frameworks.ui.wtpuiAction&quot;&gt;
@@ -258,9 +262,11 @@ The scenario has Master A which has as a pre-operation of Slave A and a post-ope
       &lt;/masterOperation&gt;   
    &lt;/extension&gt;
 &lt;/pre&gt;   
-
+--&gt;
+&lt;!--
 For each of the slaveOperations referenced above, you must have a corresponding WTP Operation Extension declared similar to the following:
- 
+--&gt;
+&lt;!--
 &lt;pre&gt; 
    &lt;extension
          id=&quot;wtpuiAciton.Acme.Extensions&quot;
@@ -275,39 +281,44 @@ For each of the slaveOperations referenced above, you must have a corresponding 
       &lt;/extendableOperation&gt;
    &lt;/extension&gt;
    &lt;extension
-         point=&quot;com.ibm.wtp.common.OperationExtension&quot;&gt;
+         point=&quot;com.ibm.wtp.common.OperationExtension&quot;&gt;--&gt;
       &lt;!-- Made optional by the above declaration --&gt;
-      &lt;operationExtension
+      &lt;!--&lt;operationExtension
             preOperationClass=&quot;com.acme.ui.operation.SlaveOperationA&quot;
             id=&quot;com.acme.ui.operation.MasterOperationA&quot;&gt;
-      &lt;/operationExtension&gt; 
+      &lt;/operationExtension&gt;--&gt;
       &lt;!-- Made optional by the above declaration --&gt;
-      &lt;operationExtension
+      &lt;!--&lt;operationExtension
             postOperationClass=&quot;com.acme.ui.operation.SlaveOperationB&quot;
             id=&quot;com.acme.ui.operation.SlaveOperationA&quot;&gt;
-      &lt;/operationExtension&gt;   
+      &lt;/operationExtension&gt;--&gt;   
       &lt;!-- Non-optional operation, will always run --&gt;
-      &lt;operationExtension
+      &lt;!--&lt;operationExtension
             postOperationClass=&quot;com.acme.ui.operation.SlaveOperationC&quot;
             id=&quot;com.acme.ui.operation.MasterOperationA&quot;&gt;
       &lt;/operationExtension&gt;  
    &lt;/extension&gt; 
 &lt;/pre&gt;
-
+--&gt;
+&lt;!--
 In general, users extending existing actions only need to declare the following: 
+--&gt;
+&lt;!--
 &lt;pre&gt;
  &lt;extension
-         point=&quot;com.ibm.wtp.common.OperationExtension&quot;&gt; 
+         point=&quot;com.ibm.wtp.common.OperationExtension&quot;&gt;--&gt; 
  &lt;!-- The action referenced must be declared as extensible by the   com.ibm.wtp.common.ExtendableOperation extension point --&gt;         
-      &lt;operationExtension
+      &lt;!--&lt;operationExtension
             preOperationClass=&quot;...YOUR CLASS...&quot;            
             id=&quot;...ID OF EXISTING OPERATION...&quot;&gt; 
       &lt;/operationExtension&gt; 
  &lt;/extension&gt;      
 &lt;/pre&gt;      
-
+--&gt;
+&lt;!--
 And if your operation is optional declare the slaveOperation:
-
+--&gt;
+&lt;!--
 &lt;pre&gt; 
    &lt;extension
          point=&quot;org.eclipse.wst.common.frameworks.ui.wtpuiAction&quot;&gt; 
@@ -318,6 +329,7 @@ And if your operation is optional declare the slaveOperation:
       &lt;/slaveOperation&gt; 
    &lt;/extension&gt;      
 &lt;/pre&gt;
+--&gt;
       </documentation>
    </annotation>
 

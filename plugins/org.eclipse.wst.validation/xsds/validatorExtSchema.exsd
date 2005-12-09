@@ -246,7 +246,7 @@ This markerId element also needs a corresponding problemMarker extension to be d
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         [Enter extension point usage example here.]
+         
       </documentation>
    </annotation>
 
@@ -255,7 +255,7 @@ This markerId element also needs a corresponding problemMarker extension to be d
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         [Enter API information here.]
+         
       </documentation>
    </annotation>
 
@@ -264,7 +264,7 @@ This markerId element also needs a corresponding problemMarker extension to be d
          <meta.section type="implementation"/>
       </appInfo>
       <documentation>
-         [Enter information about supplied implementation of this extension point.]
+         
       </documentation>
    </annotation>
 

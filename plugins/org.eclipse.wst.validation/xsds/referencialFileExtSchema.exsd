@@ -6,16 +6,11 @@
          <meta.schema plugin="org.eclipse.wst.validation" id="referencialFileValidator" name="Referencial File Validator"/>
       </appInfo>
       <documentation>
-         [Enter description of this extension point.]
+         This extension point is used for referential file validation. This extension point should be extended if you have files that reference other files and would like the validation on referenced files to run when the validation on the referencing file is run. The Post Validator operation that is used by this extension point expects a flat list of files to run validation on referenced files.
       </documentation>
    </annotation>
 
    <element name="extension">
-      <annotation>
-         <documentation>
-            This extension point is used for referential file validation. This extension point should be extended if you have files that reference other files and would like the validation on referenced files to run when the validation on the referencing file is run. The Post Validator operation that is used by this extension point expects a flat list of files to run validation on referenced files.
-         </documentation>
-      </annotation>
       <complexType>
          <sequence>
             <element ref="referencialFileValidator"/>
@@ -85,7 +80,7 @@
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         [Enter extension point usage example here.]
+         
       </documentation>
    </annotation>
 
@@ -94,7 +89,7 @@
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         [Enter API information here.]
+         
       </documentation>
    </annotation>
 
@@ -103,7 +98,7 @@
          <meta.section type="implementation"/>
       </appInfo>
       <documentation>
-         [Enter information about supplied implementation of this extension point.]
+         
       </documentation>
    </annotation>
 
