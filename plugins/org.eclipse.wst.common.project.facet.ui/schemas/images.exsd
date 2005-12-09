@@ -6,7 +6,7 @@
          <meta.schema plugin="org.eclipse.wst.common.project.facet.ui" id="images" name="Project Facet Images Extension Point"/>
       </appInfo>
       <documentation>
-         [Enter description of this extension point.]
+         
       </documentation>
    </annotation>
 
@@ -89,7 +89,7 @@
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         [Enter extension point usage example here.]
+         
       </documentation>
    </annotation>
 
@@ -98,7 +98,7 @@
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         [Enter API information here.]
+         
       </documentation>
    </annotation>
 
@@ -107,7 +107,7 @@
          <meta.section type="implementation"/>
       </appInfo>
       <documentation>
-         [Enter information about supplied implementation of this extension point.]
+         
       </documentation>
    </annotation>
 
