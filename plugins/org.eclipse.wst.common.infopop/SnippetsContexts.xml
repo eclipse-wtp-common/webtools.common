@@ -97,5 +97,11 @@ You can specify how you want the category drawer displayed in the Snippets view 
 <topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
 <topic label="Adding items to snippets drawers" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt015.html"/>
 </context>
+<context id="snip0080">
+<description>Type a name for the category. The category appears in the Customize Palette dialog box. Once you have created a category, you can add items to the category.
+</description>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
+<topic label="Adding items to snippets drawers" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt015.html"/>
+</context>
 
 </contexts>
