@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $RCSfile: AbstractWorkBenchRenderer.java,v $
- *  $Revision: 1.4 $  $Date: 2005/06/24 21:22:25 $ 
+ *  $Revision: 1.5 $  $Date: 2005/12/14 21:24:26 $ 
  */
 package org.eclipse.jem.util.logger.proxyrender;
 
@@ -93,7 +93,7 @@ public abstract class AbstractWorkBenchRenderer implements ILogRenderer2 {
 		} catch (NoSuchFieldException e) {
 		} catch (IllegalAccessException e) {
 		}
-		consoleLogOn = consologPropertyName != null && "true".equals(System.getProperty(consologPropertyName)) ; 
+		consoleLogOn = consologPropertyName != null && "true".equals(System.getProperty(consologPropertyName)) ;  //$NON-NLS-1$
 	}
 
 	/*
