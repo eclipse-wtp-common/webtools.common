@@ -18,5 +18,7 @@ public interface IProjectValidationHelper {
 	public IContainer[] getOutputContainers(IProject project);
 	
 	public IContainer[] getSourceContainers(IProject project);
+	
+	public void disposeInstance();
 
 }

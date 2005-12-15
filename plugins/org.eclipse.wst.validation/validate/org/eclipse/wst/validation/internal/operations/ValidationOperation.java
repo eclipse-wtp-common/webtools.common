@@ -34,6 +34,7 @@ import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.internal.operations.IHeadlessRunnableWithProgress;
 import org.eclipse.wst.validation.internal.FilterUtil;
+import org.eclipse.wst.validation.internal.IProjectValidationHelper;
 import org.eclipse.wst.validation.internal.InternalValidatorManager;
 import org.eclipse.wst.validation.internal.ReferencialFileValidatorRegistryReader;
 import org.eclipse.wst.validation.internal.RegistryConstants;
@@ -47,6 +48,7 @@ import org.eclipse.wst.validation.internal.core.IFileDelta;
 import org.eclipse.wst.validation.internal.core.Message;
 import org.eclipse.wst.validation.internal.core.ValidationException;
 import org.eclipse.wst.validation.internal.core.ValidatorLauncher;
+import org.eclipse.wst.validation.internal.plugin.ValidationHelperRegistryReader;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 import org.eclipse.wst.validation.internal.provisional.core.IReporter;
@@ -950,6 +952,9 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			ValidationRegistryReader.getReader().projectValidationMetaData.clear();
 			ValidationRegistryReader.getReader().projectValidationMetaData = null;
 		}
+		IProjectValidationHelper helper = ValidationHelperRegistryReader.getInstance().getValidationHelper();
+		if (helper != null)
+			helper.disposeInstance();
 	}
 
 	private void initValidateContext(IFileDelta[] delta) {
