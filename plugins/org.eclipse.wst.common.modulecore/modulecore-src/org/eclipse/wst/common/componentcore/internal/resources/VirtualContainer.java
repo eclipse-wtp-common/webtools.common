@@ -311,16 +311,10 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 				return;
 		}
 		// If the parent path is in the resources set already, ignore the child
-		String newRuntimePathString = newRuntimePath.toString();
-		if (!newRuntimePathString.endsWith("/")) //$NON-NLS-1$
-			newRuntimePathString = newRuntimePathString + "/"; //$NON-NLS-1$
 		Iterator iter = virtualResources.iterator();
 		while (iter.hasNext()) {
 			IVirtualResource resource = (IVirtualResource)iter.next();
-			String existingResourcePath = resource.getRuntimePath().toString();
-			if (!existingResourcePath.endsWith("/")) //$NON-NLS-1$
-				existingResourcePath = existingResourcePath + "/"; //$NON-NLS-1$
-			if (newRuntimePathString.startsWith(existingResourcePath))
+			if (newRuntimePath.matchingFirstSegments(resource.getRuntimePath())>getRuntimePath().segmentCount())
 				return;
 		}
 		if (realResource.getType() == IResource.FOLDER)
