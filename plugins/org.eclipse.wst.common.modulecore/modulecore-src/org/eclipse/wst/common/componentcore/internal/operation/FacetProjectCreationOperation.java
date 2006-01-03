@@ -25,15 +25,18 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.common.componentcore.datamodel.FacetInstallDataModelProvider;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetDataModelProperties;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetProjectCreationDataModelProperties;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
+import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.operations.IProjectCreationPropertiesNew;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 
 public class FacetProjectCreationOperation extends AbstractDataModelOperation {
@@ -96,6 +99,8 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 			if (runtime != null && (existingRuntime == null || !runtime.equals(existingRuntime))) {
 				facetProj.setRuntime(runtime, null);
 			}
+			
+			addDefaultFacets(facetProj,runtime.getDefaultFacets( fixedFacets ));
 
 		} catch (CoreException e) {
 			Logger.getLogger().logError(e);
@@ -104,6 +109,29 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 			Logger.getLogger().logError(e);
 		}
 		return OK_STATUS;
+	}
+
+	private void addDefaultFacets(IFacetedProject facetProj, Set defaultFacets) {
+		Set actions = new HashSet();
+		for (Iterator iter = defaultFacets.iterator(); iter.hasNext();) {
+			IProjectFacetVersion facetVersion = (IProjectFacetVersion) iter.next();
+			if (!facetProj.hasProjectFacet(facetVersion.getProjectFacet())) {
+				IDataModel dm = DataModelFactory.createDataModel(new FacetInstallDataModelProvider());
+				dm.setProperty(IFacetDataModelProperties.FACET_ID, facetVersion.getProjectFacet().getId());
+				dm.setProperty(IFacetDataModelProperties.FACET_PROJECT_NAME, facetProj.getProject().getName());
+				dm.setProperty(IFacetDataModelProperties.FACET_VERSION_STR, facetVersion.getVersionString()); //$NON-NLS-1$
+				actions.add(new IFacetedProject.Action(Action.Type.INSTALL, facetVersion, dm));
+			}
+		}
+		
+		try {
+			if (!actions.isEmpty())
+				facetProj.modify(actions,null);
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	public IFacetedProject createProject(IProgressMonitor monitor) throws CoreException {
