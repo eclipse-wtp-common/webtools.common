@@ -36,8 +36,8 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 public abstract class VirtualResource implements IVirtualResource {
 
 	protected static final IResource[] NO_RESOURCES = null;
-	private IProject componentProject;
-	private IPath runtimePath;
+	private final IProject componentProject;
+	private final IPath runtimePath;
 	private int hashCode;
 	private String toString;
 	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
