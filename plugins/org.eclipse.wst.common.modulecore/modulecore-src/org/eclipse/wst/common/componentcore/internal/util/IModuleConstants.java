@@ -40,5 +40,7 @@ public interface IModuleConstants {
     
     //Property Constants
     public final static String PROJ_REL_JAVA_OUTPUT_PATH = "java-output-path"; //$NON-NLS-1$ 
+    
+    public final static String CONTEXTROOT = "context-root"; //$NON-NLS-1$
 	 
 }

@@ -23,6 +23,7 @@ import org.eclipse.core.resources.ResourceAttributes;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -31,6 +32,10 @@ import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.datamodel.properties.ICreateReferenceComponentsDataModelProperties;
+import org.eclipse.wst.common.componentcore.internal.ComponentcoreFactory;
+import org.eclipse.wst.common.componentcore.internal.Property;
+import org.eclipse.wst.common.componentcore.internal.StructureEdit;
+import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.operation.CreateReferenceComponentsDataModelProvider;
 import org.eclipse.wst.common.componentcore.internal.operation.CreateReferenceComponentsOp;
 import org.eclipse.wst.common.componentcore.internal.operation.RemoveReferenceComponentOperation;
@@ -231,6 +236,84 @@ public class ComponentUtilities {
 			}
 		}
 		return (IVirtualComponent[]) result.toArray(new IVirtualComponent[result.size()]);
+	}
+	
+	/**
+	 * This method will retrieve the context root for the associated workbench module which is used
+	 * by the server at runtime.  This method is not yet completed as the context root has to be
+	 * abstracted and added to the workbenchModule model.  This API will not change though.
+	 * Returns null for now.
+	 * 
+	 * @return String value of the context root for runtime of the associated module
+	 */
+	public static String getServerContextRoot(IProject project) {
+		
+		StructureEdit moduleCore = null;
+		WorkbenchComponent wbComponent = null;
+		try {
+			moduleCore = StructureEdit.getStructureEditForRead(project);
+			if (moduleCore == null || moduleCore.getComponent() == null)
+				return null;
+			wbComponent = moduleCore.getComponent();
+		} finally {
+			if (moduleCore != null) {
+				moduleCore.dispose();
+			}
+		}
+		List existingProps = wbComponent.getProperties();
+		for (int i = 0; i < existingProps.size(); i++) {
+			Property prop = (Property) existingProps.get(i);
+			if(prop.getName().equals(IModuleConstants.CONTEXTROOT)){
+				return prop.getValue();
+			}
+		}			
+		// If all else fails...
+		return null;
+	}
+	
+	/**
+	 * This method will set the context root on the associated workbench module with the given string
+	 * value passed in.  This context root is used by the server at runtime.  This method is not yet
+	 * completed as the context root still needs to be abstracted and added to the workbench module
+	 * model.  This API will not change though.
+	 * Does nothing as of now.
+	 * 
+	 * @param contextRoot string
+	 */
+	public static void setServerContextRoot(IProject project, String contextRoot) {
+		StructureEdit moduleCore = null;
+		WorkbenchComponent wbComponent = null;
+		try {
+			moduleCore = StructureEdit.getStructureEditForWrite(project);
+			if (moduleCore == null || moduleCore.getComponent() == null)
+				return;
+			wbComponent = moduleCore.getComponent();
+			
+			boolean found = false;
+			Property prop = null;
+			List existingProps = wbComponent.getProperties();
+			for (  int i = 0; i < existingProps.size(); i++) {
+				prop = (Property) existingProps.get(i);
+				if(prop.getName().equals(IModuleConstants.CONTEXTROOT)){
+					found = true;
+					break;
+				}
+			}	
+			
+			if( found )
+				prop.setValue(contextRoot);
+			else{
+			    prop = ComponentcoreFactory.eINSTANCE.createProperty();
+			    prop.setName(IModuleConstants.CONTEXTROOT);
+			    prop.setValue(contextRoot);
+				existingProps.add(prop);
+			}			
+		} finally {
+			if (moduleCore != null) {
+				moduleCore.saveIfNecessary(new NullProgressMonitor());
+				moduleCore.dispose();
+			}
+		}
 	}
 
 }
