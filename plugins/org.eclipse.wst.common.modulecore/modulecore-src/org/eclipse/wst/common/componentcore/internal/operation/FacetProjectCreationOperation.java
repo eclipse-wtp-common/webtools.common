@@ -98,9 +98,8 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 			IRuntime existingRuntime = facetProj.getRuntime();
 			if (runtime != null && (existingRuntime == null || !runtime.equals(existingRuntime))) {
 				facetProj.setRuntime(runtime, null);
+				addDefaultFacets(facetProj,runtime.getDefaultFacets( fixedFacets ));
 			}
-			
-			addDefaultFacets(facetProj,runtime.getDefaultFacets( fixedFacets ));
 
 		} catch (CoreException e) {
 			Logger.getLogger().logError(e);
