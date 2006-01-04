@@ -73,6 +73,10 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 	public String getName() {
 		return this.archiveType + IPath.SEPARATOR + this.archivePath.toString();
 	}
+	
+	public String getDeployedName() {
+		return getName();
+	}
 
 	public void setComponentTypeId(String aComponentTypeId) {
 		return;
