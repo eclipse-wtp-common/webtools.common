@@ -60,6 +60,25 @@ public class VirtualComponent implements IVirtualComponent {
 		return getProject().getName();
 	}
 	
+	public String getDeployedName() {
+		StructureEdit core = null;
+		IProject project = getProject();
+		try {
+			if (project != null && getName() != null) {
+				core = StructureEdit.getStructureEditForRead(project);
+				if(core != null && core.getComponent() != null){
+					WorkbenchComponent component = core.getComponent();
+					if (component.getName()!=null && component.getName().length()>0)
+						return component.getName();
+				}
+			}
+		} finally {
+			if(core != null)
+				core.dispose();
+		}
+		return getProject().getName();
+	}
+	
 	public boolean exists() { 
 		StructureEdit core = null;
 		IProject project = getProject();

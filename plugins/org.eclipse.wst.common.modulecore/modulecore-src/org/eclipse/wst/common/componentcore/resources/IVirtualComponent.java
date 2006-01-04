@@ -43,6 +43,11 @@ public interface IVirtualComponent extends IAdaptable {
 	 * @return The name of the component.
 	 */
 	String getName();
+	
+	/**
+	 * @return The deployed name of the component.
+	 */
+	String getDeployedName();
 
 	/**
 	 * The componentTypeId is used to understand how this component should be edited and deployed.
