@@ -30,8 +30,15 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 
 public class VirtualFile extends VirtualResource implements IVirtualFile {
 
+	private IFile underlyingFile;
+
 	public VirtualFile(IProject aComponentProject, IPath aRuntimePath) {
 		super(aComponentProject, aRuntimePath); 
+	}
+
+	public VirtualFile(IProject aComponentProject, IPath aRuntimePath, IFile underlyingFile) {
+		super(aComponentProject, aRuntimePath);
+		this.underlyingFile = underlyingFile; 
 	}
 
 	/**
@@ -88,9 +95,12 @@ public class VirtualFile extends VirtualResource implements IVirtualFile {
 	}
 	
 	public IFile getUnderlyingFile() {
-		return getProject().getFile(getProjectRelativePath());
+		if (underlyingFile == null) {
+			underlyingFile = getProject().getFile(getProjectRelativePath());
+		}
+		return underlyingFile;
 	}
-	
+
 	public IFile[] getUnderlyingFiles() {
 		IPath[] paths = getProjectRelativePaths();
 		List result = new ArrayList();

@@ -190,22 +190,23 @@ public class ResourceTreeNode {
 			Set resultSet = new HashSet();
 			for (Iterator resourceIter = moduleResources.iterator(); resourceIter.hasNext();) {
 				moduleResource = (ComponentResource) resourceIter.next();
-				if(moduleResource.getRuntimePath() != null) {
+				if(moduleResource.getRuntimePath() != null && moduleResource.eResource() != null) {
 					eclipseResource = StructureEdit.getEclipseResource(moduleResource);
 					
 					if (eclipseResource != null && (eclipseResource.getType() == IResource.FOLDER || eclipseResource.getType() == IResource.PROJECT)) {
 						eclipseContainer = (IContainer) eclipseResource;
 				 
 						IPath runtimeURI = moduleResource.getRuntimePath().append(aPath);
+						IPath srcPath = eclipseContainer.getProjectRelativePath().append(aPath);
 						
 						// check for existing subpath in tree
-						ComponentResource newResource = findExistingComponentResource(moduleResource.getComponent(), runtimeURI);
+						ComponentResource newResource = findExistingComponentResource(moduleResource.getComponent(), runtimeURI, srcPath);
 						
-						// add new resource if null or found resource does not have the same source path
-						IPath srcPath = eclipseContainer.getProjectRelativePath().append(aPath);
-						if(newResource == null || !newResource.getSourcePath().equals(srcPath)) {
+						// add new resource if null
+						if(newResource == null) {
 							// flesh out the tree
-							if ((toCreateResourceAlways) || (eclipseContainer.findMember(aPath)) != null) {
+							IResource eclipseRes = eclipseContainer.findMember(aPath);
+							if ((toCreateResourceAlways) || (eclipseRes != null) && (eclipseRes.getType() == IResource.FOLDER)) {
 								newResource = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentResource();
 								newResource.setComponent(moduleResource.getComponent());		
 								newResource.setRuntimePath(runtimeURI);
@@ -222,11 +223,11 @@ public class ResourceTreeNode {
 		return Collections.EMPTY_SET;
 	}
 
-	private ComponentResource findExistingComponentResource(WorkbenchComponent component, IPath runtimeURI) { 
+	private ComponentResource findExistingComponentResource(WorkbenchComponent component, IPath runtimeURI, IPath srcPath) { 
 		List resources = component.getResources();
 		for (Iterator iter = resources.iterator(); iter.hasNext();) {
 			ComponentResource element = (ComponentResource) iter.next();
-			if(runtimeURI.equals(element.getRuntimePath()))
+			if(runtimeURI.equals(element.getRuntimePath()) && srcPath.equals(element.getSourcePath()))
 				return element;
 			
 		}

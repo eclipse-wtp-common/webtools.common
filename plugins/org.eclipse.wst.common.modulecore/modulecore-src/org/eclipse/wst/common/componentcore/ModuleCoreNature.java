@@ -458,7 +458,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		// addAdapterFactories(set);
 		// set.getSynchronizer().addExtender(this); // added so we can be informed of closes to the
 		// new J2EEResourceDependencyRegister(set); // This must be done after the URIConverter is
-
+		cacheModuleStructuralModel();
 	}
 	
 	/**
@@ -511,7 +511,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	 */
 	public void configure() throws CoreException {
 		super.configure();
-		cacheModuleStructuralModel();
+		
 	}
 
 	private void cacheModuleStructuralModel() {
