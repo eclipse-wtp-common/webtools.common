@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.impl;
 
+import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.wst.common.componentcore.internal.ComponentcoreFactory;
 import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
 import org.eclipse.wst.common.internal.emf.resource.EMF2DOMRendererFactory;
 import org.eclipse.wst.common.internal.emf.utilities.DOMUtilities;
@@ -66,6 +68,9 @@ public class WTPModulesInit {
 		ExtendedEcoreUtil.preRegisterPackage("moduleCore.xmi", new EPackage.Descriptor() { //$NON-NLS-1$
 			public EPackage getEPackage() {
 				return ComponentcorePackage.eINSTANCE;
+			}
+			public EFactory getEFactory() {
+				return ComponentcoreFactory.eINSTANCE;
 			}
 		});
 	}
