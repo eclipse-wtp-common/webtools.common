@@ -127,8 +127,14 @@ public class ModuleURIUtil {
 	 * @return
 	 */
 	public static URI trimToDeployPathSegment(URI aFullyQualifiedModuleResourcePath) {
-		int segmentCount = aFullyQualifiedModuleResourcePath.segmentCount(); 
-		return aFullyQualifiedModuleResourcePath.deresolve(aFullyQualifiedModuleResourcePath.trimSegments(segmentCount - 4));
+		int segmentCount = aFullyQualifiedModuleResourcePath.segmentCount();
+		URI uri;
+		if(segmentCount > 4){
+			uri = aFullyQualifiedModuleResourcePath.deresolve(aFullyQualifiedModuleResourcePath.trimSegments(segmentCount - 4));
+		} else {
+			uri = URI.createURI(aFullyQualifiedModuleResourcePath.segment(segmentCount-1));
+		}
+		return uri;
 	}
 
 	public static URI concat(URI uri1, URI uri2){
