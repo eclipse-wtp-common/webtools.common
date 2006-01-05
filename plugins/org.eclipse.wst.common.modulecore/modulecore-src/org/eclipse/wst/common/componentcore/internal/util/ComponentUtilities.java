@@ -23,7 +23,6 @@ import org.eclipse.core.resources.ResourceAttributes;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -32,7 +31,6 @@ import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.datamodel.properties.ICreateReferenceComponentsDataModelProperties;
-import org.eclipse.wst.common.componentcore.internal.ComponentcoreFactory;
 import org.eclipse.wst.common.componentcore.internal.Property;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
@@ -281,39 +279,8 @@ public class ComponentUtilities {
 	 * @param contextRoot string
 	 */
 	public static void setServerContextRoot(IProject project, String contextRoot) {
-		StructureEdit moduleCore = null;
-		WorkbenchComponent wbComponent = null;
-		try {
-			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			if (moduleCore == null || moduleCore.getComponent() == null)
-				return;
-			wbComponent = moduleCore.getComponent();
-			
-			boolean found = false;
-			Property prop = null;
-			List existingProps = wbComponent.getProperties();
-			for (  int i = 0; i < existingProps.size(); i++) {
-				prop = (Property) existingProps.get(i);
-				if(prop.getName().equals(IModuleConstants.CONTEXTROOT)){
-					found = true;
-					break;
-				}
-			}	
-			
-			if( found )
-				prop.setValue(contextRoot);
-			else{
-			    prop = ComponentcoreFactory.eINSTANCE.createProperty();
-			    prop.setName(IModuleConstants.CONTEXTROOT);
-			    prop.setValue(contextRoot);
-				existingProps.add(prop);
-			}			
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.saveIfNecessary(new NullProgressMonitor());
-				moduleCore.dispose();
-			}
-		}
+		IVirtualComponent comp = ComponentCore.createComponent(project);
+		comp.setMetaProperty(IModuleConstants.CONTEXTROOT, contextRoot);
 	}
 
 }
