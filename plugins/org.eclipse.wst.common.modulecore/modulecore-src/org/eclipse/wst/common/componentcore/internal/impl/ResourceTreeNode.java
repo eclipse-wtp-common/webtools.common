@@ -215,6 +215,8 @@ public class ResourceTreeNode {
 								// newResource.setComponent(moduleResource.getComponent());
 								newResource.setRuntimePath(runtimeURI);
 								newResource.setSourcePath(srcPath);
+								if (eclipseRes != null)
+									newResource.setOwningProject(eclipseRes.getProject());
 								transientChildResources.put(aPath,newResource);
 								}
 								resultSet.add(newResource);
