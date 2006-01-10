@@ -173,7 +173,8 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 					IPath fullRuntimePath = componentResources[componentResourceIndex].getRuntimePath();
 					// exact match
 					if (fullRuntimePath.equals(getRuntimePath())) {
-						IResource realResource = StructureEdit.getEclipseResource(componentResources[componentResourceIndex]);
+						
+						IResource realResource = getProject().findMember(componentResources[componentResourceIndex].getSourcePath());
 						if ((realResource != null) && (realResource.getType() == IResource.FOLDER || realResource.getType() == IResource.PROJECT)) {
 							IContainer realContainer = (IContainer) realResource;
 							IResource[] realChildResources = realContainer.members(memberFlags);
