@@ -62,7 +62,7 @@
          <attribute name="operationClass" type="string">
             <annotation>
                <documentation>
-                  The fully qualified class of your operation. Your operation must extend com.ibm.wtp.common.operation.WTPOperation and must provide a no-arguments default constructor. If this attribute is not provided, the getDefaultOperation() returned by the dataModel will be used.
+                  The fully qualified class of your operation. Your operation must be a WTPOperation and must provide a no-arguments default constructor. If this attribute is not provided, the getDefaultOperation() returned by the dataModel will be used.
                </documentation>
             </annotation>
          </attribute>
@@ -83,7 +83,7 @@
          <attribute name="populatorClass" type="string" use="required">
             <annotation>
                <documentation>
-                  An implementation of com.ibm.wtp.common.operation.extension.ui.WTPOperationDataModelUICreator. The populatorClass knows how to provide a WTP Operation Data Model based on a given selection. The getDefaultOperation() method of the data model will be ignored if the operationClass is provided.
+                  The populatorClass knows how to provide a WTP Operation Data Model based on a given selection. The getDefaultOperation() method of the data model will be ignored if the operationClass is provided.
                </documentation>
             </annotation>
          </attribute>
@@ -135,7 +135,7 @@
          <attribute name="operationClass" type="string" use="required">
             <annotation>
                <documentation>
-                  The fully qualified class of your operation. Your operation must extend com.ibm.wtp.common.operation.WTPOperation and must provide a no-arguments default constructor. For slave operations, the data model of the master operation will be provided. Therefore, slaves cannot override the data model using a seperate populatorClass.
+                  The fully qualified class of your operation. Your operation must be a WTPOperation and must provide a no-arguments default constructor. For slave operations, the data model of the master operation will be provided. Therefore, slaves cannot override the data model using a seperate populatorClass.
                </documentation>
             </annotation>
          </attribute>
@@ -270,7 +270,7 @@ For each of the slaveOperations referenced above, you must have a corresponding 
 &lt;pre&gt; 
    &lt;extension
          id=&quot;wtpuiAciton.Acme.Extensions&quot;
-         point=&quot;com.ibm.wtp.common.ExtendableOperation&quot;&gt;
+         point=&quot;org.eclipse.wst.common.frameworks.ExtendableOperation&quot;&gt;
       &lt;extendableOperation
             class=&quot;com.acme.ui.operation.MasterOperationA&quot;
             id=&quot;com.acme.ui.operation.MasterOperationA&quot;&gt;
@@ -281,7 +281,7 @@ For each of the slaveOperations referenced above, you must have a corresponding 
       &lt;/extendableOperation&gt;
    &lt;/extension&gt;
    &lt;extension
-         point=&quot;com.ibm.wtp.common.OperationExtension&quot;&gt;--&gt;
+         point=&quot;org.eclipse.wst.common.frameworks.OperationExtension&quot;&gt;--&gt;
       &lt;!-- Made optional by the above declaration --&gt;
       &lt;!--&lt;operationExtension
             preOperationClass=&quot;com.acme.ui.operation.SlaveOperationA&quot;
@@ -306,8 +306,8 @@ In general, users extending existing actions only need to declare the following:
 &lt;!--
 &lt;pre&gt;
  &lt;extension
-         point=&quot;com.ibm.wtp.common.OperationExtension&quot;&gt;--&gt; 
- &lt;!-- The action referenced must be declared as extensible by the   com.ibm.wtp.common.ExtendableOperation extension point --&gt;         
+         point=&quot;org.eclipse.wst.common.frameworks.OperationExtension&quot;&gt;--&gt; 
+ &lt;!-- The action referenced must be declared as extensible by the   org.eclipse.wst.common.frameworks.ExtendableOperation extension point --&gt;         
       &lt;!--&lt;operationExtension
             preOperationClass=&quot;...YOUR CLASS...&quot;            
             id=&quot;...ID OF EXISTING OPERATION...&quot;&gt; 
