@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: WST Common Core Plug-in
+Bundle-SymbolicName: org.eclipse.wst.common.core; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: org.eclipse.wst.common.core.search.SearchPlugin
+Bundle-Localization: plugin
+Export-Package: org.eclipse.wst.common.core.search,
+ org.eclipse.wst.common.core.search.document,
+ org.eclipse.wst.common.core.search.pattern, 
+ org.eclipse.wst.common.core.search.scope,
+ org.eclipse.wst.common.core.search.util
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.core.expressions
+Eclipse-AutoStart: true
