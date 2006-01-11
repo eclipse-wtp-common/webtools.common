@@ -62,7 +62,7 @@ public abstract class ArtifactEditProviderOperation extends AbstractDataModelOpe
 		//Default
 	}
 
-	private ArtifactEdit getArtifactEditForModule(IVirtualComponent comp) {
+	protected ArtifactEdit getArtifactEditForModule(IVirtualComponent comp) {
 		ArtifactEditRegistryReader reader = ArtifactEditRegistryReader.instance();
 		IArtifactEditFactory factory = reader.getArtifactEdit(comp.getProject());
 		if (factory == null)
