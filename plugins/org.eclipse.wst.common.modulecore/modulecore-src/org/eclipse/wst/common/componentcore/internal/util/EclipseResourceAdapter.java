@@ -47,13 +47,17 @@ public class EclipseResourceAdapter extends AdapterImpl implements Adapter {
 	}
 
 	public IResource getEclipseResource() {
+		IProject container = null;
 		if (resource != null || hasSearchFailed)
 			return resource;
 		synchronized (this) {
 			if (resource == null) {
 				ComponentResource moduleResource = (ComponentResource) getTarget();
 				IPath sourcePath = moduleResource.getSourcePath();
-				IProject container = StructureEdit.getContainingProject(moduleResource.getComponent());
+				if (moduleResource.getOwningProject() != null)
+					container = moduleResource.getOwningProject();
+				else
+					container = StructureEdit.getContainingProject(moduleResource.getComponent());
 				if (container != null)
 					resource = container.findMember(sourcePath); 
 				if(resource == null)

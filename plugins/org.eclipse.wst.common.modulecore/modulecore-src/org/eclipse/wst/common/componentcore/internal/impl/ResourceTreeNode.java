@@ -49,6 +49,7 @@ public class ResourceTreeNode {
 
 	private final Set moduleResources = Collections.synchronizedSet(new HashSet());	
 	private final Map children = Collections.synchronizedMap(new HashMap());
+	private final Map transientChildResources = Collections.synchronizedMap(new HashMap());
 	private static final ComponentResource[] NO_MODULE_RESOURCES = new ComponentResource[]{};
 	private IPathProvider pathProvider;
 //	private ResourceTreeNode parent;
@@ -206,11 +207,18 @@ public class ResourceTreeNode {
 						if(newResource == null) {
 							// flesh out the tree
 							IResource eclipseRes = eclipseContainer.findMember(aPath);
-							if ((toCreateResourceAlways) || (eclipseRes != null) && (eclipseRes.getType() == IResource.FOLDER)) {
+							if ((toCreateResourceAlways) || (eclipseRes != null)) {
+								newResource = (ComponentResource)transientChildResources.get(aPath);
+								if (newResource == null) {
 								newResource = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentResource();
-								newResource.setComponent(moduleResource.getComponent());		
+								// Not setting the parent on this transient child resource
+								// newResource.setComponent(moduleResource.getComponent());
 								newResource.setRuntimePath(runtimeURI);
 								newResource.setSourcePath(srcPath);
+								if (eclipseRes != null)
+									newResource.setOwningProject(eclipseRes.getProject());
+								transientChildResources.put(aPath,newResource);
+								}
 								resultSet.add(newResource);
 							}
 						}

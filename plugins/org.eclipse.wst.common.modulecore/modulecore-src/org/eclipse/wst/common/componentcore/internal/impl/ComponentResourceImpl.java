@@ -2,12 +2,13 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentResourceImpl.java,v 1.2 2005/04/05 03:35:37 cbridgha Exp $
+ * $Id: ComponentResourceImpl.java,v 1.3 2006/01/11 18:40:31 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
 import java.util.Collection;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
@@ -111,6 +112,7 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 	 */
 	protected String resourceType = RESOURCE_TYPE_EDEFAULT;
 
+	protected IProject owningProject;
 	protected static final int VIRTUAL = 0;
 	protected static final int PERSISTED = 1;
 	
@@ -418,6 +420,14 @@ public class ComponentResourceImpl extends EObjectImpl implements ComponentResou
 	
 	public void setType(int type) {
 		this.type = type;
+	}
+
+	public IProject getOwningProject() {
+		return owningProject;
+	}
+
+	public void setOwningProject(IProject aProject) {
+		owningProject = aProject;
 	}
 	
 

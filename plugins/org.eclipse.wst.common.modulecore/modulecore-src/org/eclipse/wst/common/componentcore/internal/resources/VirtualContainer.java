@@ -21,6 +21,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -83,17 +84,19 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 			for (int i=0; i<resources.length; i++) {
 				// return the resources corresponding to the root, not any of the children if its a folder
 				if (resources[i].getRuntimePath().equals(getRuntimePath().append(aPath))) {
-					IResource platformResource = StructureEdit.getEclipseResource(resources[i]);
-				if (platformResource != null) {
-					switch (platformResource.getType()) {
-						case IResource.FOLDER :
-						case IResource.PROJECT :
+					IResource platformResource = getProject().findMember(resources[i].getSourcePath()); 
+					if(platformResource == null)
+						platformResource = ResourcesPlugin.getWorkspace().getRoot().findMember(resources[i].getSourcePath()); 
+					if (platformResource != null) {
+						switch (platformResource.getType()) {
+						case IResource.FOLDER:
+						case IResource.PROJECT:
 							return new VirtualFolder(getProject(), getRuntimePath().append(aPath));
-						case IResource.FILE :
+						case IResource.FILE:
 							return new VirtualFile(getProject(), getRuntimePath().append(aPath));
+						}
 					}
 				}
-			}
 			}
 		} finally {
 			if (structureEdit != null)
@@ -170,6 +173,7 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 					IPath fullRuntimePath = componentResources[componentResourceIndex].getRuntimePath();
 					// exact match
 					if (fullRuntimePath.equals(getRuntimePath())) {
+						
 						IResource realResource = getProject().findMember(componentResources[componentResourceIndex].getSourcePath());
 						if ((realResource != null) && (realResource.getType() == IResource.FOLDER || realResource.getType() == IResource.PROJECT)) {
 							IContainer realContainer = (IContainer) realResource;

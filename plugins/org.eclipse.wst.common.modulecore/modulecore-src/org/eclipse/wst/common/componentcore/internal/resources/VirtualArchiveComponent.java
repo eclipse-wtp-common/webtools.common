@@ -14,8 +14,10 @@ package org.eclipse.wst.common.componentcore.internal.resources;
 import java.io.File;
 import java.util.Properties;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
@@ -108,13 +110,17 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 	}
 
 	public IPath getWorkspaceRelativePath() {
-		if (getProject() != null)
-			return getProject().getFile(archivePath).getFullPath();
+		IFile aFile = ResourcesPlugin.getWorkspace().getRoot().getFile(archivePath);
+		if (aFile.exists())
+			aFile.getFullPath();
 		return archivePath;
 	}
 
 	public IPath getProjectRelativePath() {
-		return archivePath;
+		IFile aFile = ResourcesPlugin.getWorkspace().getRoot().getFile(getWorkspaceRelativePath());
+		if (aFile.exists())
+			return aFile.getProjectRelativePath();
+		return null;
 	}
 
 	public IProject getProject() {
@@ -192,6 +198,9 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 
 	public void setMetaProperties(Properties properties) {
 
+	}
+	public IFile getUnderlyingWorkbenchFile() {
+		return ResourcesPlugin.getWorkspace().getRoot().getFile(getWorkspaceRelativePath());
 	}
 
 	public File getUnderlyingDiskFile() {
