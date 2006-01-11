@@ -14,6 +14,13 @@ package org.eclipse.wst.common.core.search.pattern;
 /**
  * This data class represents a qualified name, consisting of a local name and a
  * qualifier
+ * 
+ * <p>
+ * <b>Note:</b> This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves.
+ * </p>
  */
 // issue (cs) should this go in the 'matching' package (BTW... rename
 // matching->pattern)
