@@ -279,24 +279,25 @@ public class StructureEdit implements IEditModelHandler {
 
 		IVirtualComponent targetComponent = null;
 		IProject targetProject = null;
-		boolean isClassPathURI = ModuleURIUtil.isClassPathURI(referencedComponent.getHandle());
+		URI uri = referencedComponent.getHandle();
+		if (uri == null)
+			return null;
+		boolean isClassPathURI = ModuleURIUtil.isClassPathURI(uri);
 		if( !isClassPathURI ){
 			try { 
-				targetProject = StructureEdit.getContainingProject(referencedComponent.getHandle());
+				targetProject = StructureEdit.getContainingProject(uri);
 			} catch(UnresolveableURIException uurie) {
 				//Ignore
 			} 
 			// if the project cannot be resolved, assume it's local - really it probably deleted 
 			
 			targetComponent = ComponentCore.createComponent(targetProject);  
-				
-
 		}else{
 			String archiveType = ""; //$NON-NLS-1$
 			String archiveName = ""; //$NON-NLS-1$
 			try {
-				archiveType = ModuleURIUtil.getArchiveType(referencedComponent.getHandle());
-				archiveName = ModuleURIUtil.getArchiveName(referencedComponent.getHandle());
+				archiveType = ModuleURIUtil.getArchiveType(uri);
+				archiveName = ModuleURIUtil.getArchiveName(uri);
 				
 			} catch (UnresolveableURIException e) {
 				//Ignore
