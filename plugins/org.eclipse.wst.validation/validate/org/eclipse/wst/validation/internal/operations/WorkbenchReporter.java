@@ -579,9 +579,13 @@ public final class WorkbenchReporter implements IReporter {
 
 		ValidatorManager mgr = ValidatorManager.getManager();
 		if (mgr.isMessageLimitExceeded(resource.getProject())) {
-			validateMessageLimitExceeded(validator, resource);
+			try{
+				validateMessageLimitExceeded(validator, resource);
+			}catch(MessageLimitException e){
+				//do nothing here, a message is already logged by now 
+			}
 		}
-
+	
 		addMessage(resource, validator.getClass(), message, getTargetObjectName(helper, message), getLocation(helper, message),vmd.getMarkerId());
 	}
 
