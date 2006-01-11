@@ -166,7 +166,7 @@ public class ModuleURIUtil {
 	}
 	
 	public static boolean isClassPathURI(URI uri){
-		if( PlatformURLModuleConnection.CLASSPATH.equals(uri.segment(0) )){
+		if(uri !=null && PlatformURLModuleConnection.CLASSPATH.equals(uri.segment(0) )){
 			return true;
 		}
 		return false;
