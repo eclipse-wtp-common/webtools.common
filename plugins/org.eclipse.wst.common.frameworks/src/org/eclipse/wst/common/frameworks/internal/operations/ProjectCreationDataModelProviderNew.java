@@ -60,18 +60,26 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 			}
 			return getProperty(USER_DEFINED_LOCATION);
 		} else if (DEFAULT_LOCATION.equals(propertyName)) {
-			IPath path = ResourcesPlugin.getWorkspace().getRoot().getLocation();
-			path = path.append(getStringProperty(PROJECT_NAME));
-			return path.toOSString();
+			return getDefaultLocation();
 		} else if (USE_DEFAULT_LOCATION.equals(propertyName)) {
 			return Boolean.TRUE;
 		} else if (USER_DEFINED_LOCATION.equals(propertyName)) {
 			return "";
-		} else if (propertyName.equals(PROJECT_DESCRIPTION))
+		} else if (propertyName.equals(PROJECT_DESCRIPTION)){
 			return getProjectDescription();
+		}
+		
 		return super.getDefaultProperty(propertyName);
 	}
 
+	private String getDefaultLocation() {
+		IPath path = ResourcesPlugin.getWorkspace().getRoot().getLocation();
+		String projectName = (String) getProperty(PROJECT_NAME);
+		if (projectName != null)
+			path = path.append(projectName);
+		return path.toOSString();
+	}
+	
 	public boolean propertySet(String propertyName, Object propertyValue) {
 		if (propertyName.equals(PROJECT_LOCATION) || propertyName.equals(DEFAULT_LOCATION) || propertyName.equals(PROJECT_DESCRIPTION)) {
 			throw new RuntimeException();
@@ -122,7 +130,13 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 		}
 		if (propertyName.equals(PROJECT_LOCATION) || propertyName.equals(PROJECT_NAME)) {
 			String projectName = getStringProperty(PROJECT_NAME);
-			String projectLoc = getStringProperty(PROJECT_LOCATION);
+			
+			String projectLoc = "";
+			if( getBooleanProperty(USE_DEFAULT_LOCATION )){
+				projectLoc = getDefaultLocation();
+			}else{
+				projectLoc = getStringProperty(PROJECT_LOCATION);
+			}
 			return validateExisting(projectName, projectLoc);
 		}
 		return OK_STATUS;
