@@ -265,7 +265,7 @@ public final class ProjectFacetsManager
      * manipulating the set of project facets installed on a project.
      *  
      * @param project an Eclipse project
-     * @return an instance of {@link IFacetedProject}
+     * @return an instance of {@link IFacetedProject}, or <code>null</code>
      * @throws CoreException
      */
 
@@ -277,6 +277,41 @@ public final class ProjectFacetsManager
         return impl.create( project );
     }
     
+    /**
+     * Creates a wrapper around an <code>IProject</code> that exposes API for
+     * manipulating the set of project facets installed on a project. The
+     * project will be made into a faceted project if necessary.
+     *  
+     * @param project an Eclipse project
+     * @param convertIfNecessary whether the project should be converted into a
+     *   faceted project
+     * @param monitor a progress monitor, or null if progress reporting and 
+     *   cancellation are not desired
+     * @return an instance of {@link IFacetedProject}, or <code>null</code>
+     * @throws CoreException
+     */
+
+    public static IFacetedProject create( final IProject project,
+                                          final boolean convertIfNecessary,
+                                          final IProgressMonitor monitor )
+    
+        throws CoreException
+        
+    {
+        return impl.create( project, convertIfNecessary, monitor );
+    }
+
+    /**
+     * Creates a new faceted project.
+     * 
+     * @param name project name
+     * @param location 
+     * @param monitor a progress monitor, or null if progress reporting and 
+     *   cancellation are not desired
+     * @return an instance of {@link IFacetedProject}
+     * @throws CoreException
+     */
+    
     public static IFacetedProject create( final String name,
                                           final IPath location,
                                           final IProgressMonitor monitor )
@@ -286,17 +321,6 @@ public final class ProjectFacetsManager
     {
         return impl.create( name, location, monitor );
     }
-    
-    public static IFacetedProject create( final IProject project,
-    								final boolean convertIfNecessary,
-									final IProgressMonitor monitor )
-    
-    	throws CoreException
-    	
-    	{
-    		return impl.create( project, convertIfNecessary, monitor );
-    	}
-    
     
     /**
      * Checks the validity of applying the specified set of actions to the

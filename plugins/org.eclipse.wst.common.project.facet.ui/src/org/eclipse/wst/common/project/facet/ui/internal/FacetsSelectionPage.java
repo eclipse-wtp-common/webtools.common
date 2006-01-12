@@ -22,6 +22,7 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -59,8 +60,8 @@ public final class FacetsSelectionPage
     {
         super( "facets.selection.page" ); //$NON-NLS-1$
 
-        setTitle( "Select Project Facets" );
-        setDescription( "Select facets for this project." );
+        setTitle( Resources.pageTitle );
+        setDescription( Resources.pageDescription );
 
         this.context = context;
         this.base = base;
@@ -275,6 +276,21 @@ public final class FacetsSelectionPage
         }
         
         super.setVisible( visible );
+    }
+
+    private static final class Resources
+    
+        extends NLS
+        
+    {
+        public static String pageTitle;
+        public static String pageDescription;
+        
+        static
+        {
+            initializeMessages( FacetsSelectionPage.class.getName(), 
+                                Resources.class );
+        }
     }
 
 }

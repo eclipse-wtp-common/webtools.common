@@ -605,7 +605,27 @@ public final class FacetsSelectionPanel
                 return;
             }
             
-            setSelectedProjectFacets( defaultFacets );
+            IPreset presetToUse = null;
+            
+            for( Iterator itr = this.presets.iterator(); itr.hasNext(); )
+            {
+                final IPreset preset = (IPreset) itr.next();
+                
+                if( preset.getProjectFacets().equals( defaultFacets ) )
+                {
+                    presetToUse = preset;
+                    break;
+                }
+            }
+            
+            if( presetToUse == null )
+            {
+                setSelectedProjectFacets( defaultFacets );
+            }
+            else
+            {
+                selectPreset( presetToUse );
+            }
         }
     }
     
@@ -1002,6 +1022,12 @@ public final class FacetsSelectionPanel
     
     private void refreshPresetsCombo()
     {
+        final int selectedPresetIndex = this.presetsCombo.getSelectionIndex();
+        
+        final IPreset selectedPreset
+            = selectedPresetIndex < 1 ? null 
+              : (IPreset) this.presets.get( selectedPresetIndex - 1 );
+        
         this.presetsCombo.removeAll();
         this.presets.clear();
         
@@ -1009,7 +1035,7 @@ public final class FacetsSelectionPanel
              itr1.hasNext(); )
         {
             final IPreset preset = (IPreset) itr1.next();
-            final HashSet temp = new HashSet();
+            boolean applicable = true;
             
             for( Iterator itr2 = preset.getProjectFacets().iterator(); 
                  itr2.hasNext(); )
@@ -1022,13 +1048,12 @@ public final class FacetsSelectionPanel
                 
                 if( ! trd.getVersions().contains( fv ) )
                 {
-                    continue;
+                    applicable = false;
+                    break;
                 }
-                
-                temp.add( fv.getProjectFacet() );
             }
             
-            if( temp.containsAll( this.fixed ) )
+            if( applicable )
             {
                 this.presets.add( preset );
             }
@@ -1065,7 +1090,11 @@ public final class FacetsSelectionPanel
             this.presetsCombo.add( preset.getLabel() );
         }
         
-        this.presetsCombo.select( 0 );
+        final int indexToSelect 
+            = this.presets.indexOf( selectedPreset ) + 1;
+        
+        this.presetsCombo.select( indexToSelect );
+        
         refreshPresetsButtons();
     }
     

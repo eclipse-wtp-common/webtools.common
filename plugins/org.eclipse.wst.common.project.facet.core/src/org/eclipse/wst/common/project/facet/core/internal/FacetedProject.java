@@ -94,6 +94,9 @@ public final class FacetedProject
     implements IFacetedProject
     
 {
+    private static final String TRACING_DELEGATE_CALLS
+        = FacetCorePlugin.PLUGIN_ID + "/delegate/calls";
+    
     private final IProject project;
     private final CopyOnWriteSet facets;
     private final CopyOnWriteSet fixed;
@@ -103,6 +106,7 @@ public final class FacetedProject
     private final List listeners;
     private final Object lock = new Object();
     private boolean isBeingModified = false;
+    private Thread modifierThread = null;
     
     FacetedProject( final IProject project )
     
@@ -544,11 +548,22 @@ public final class FacetedProject
     }
     
     private void beginModification()
+    
+        throws CoreException
+        
     {
         synchronized( this.lock )
         {
             while( this.isBeingModified )
             {
+                if( this.modifierThread == Thread.currentThread() )
+                {
+                    final String msg = Resources.illegalModificationMsg;
+                    final IStatus st = FacetCorePlugin.createErrorStatus( msg );
+                    
+                    throw new CoreException( st );
+                }
+                
                 try
                 {
                     this.lock.wait();
@@ -557,6 +572,7 @@ public final class FacetedProject
             }
             
             this.isBeingModified = true;
+            this.modifierThread = Thread.currentThread();
         }
     }
     
@@ -565,7 +581,8 @@ public final class FacetedProject
         synchronized( this.lock )
         {
             this.isBeingModified = false;
-            this.lock.notify();
+            this.modifierThread = null;
+            this.lock.notifyAll();
         }
     }
     
@@ -579,6 +596,28 @@ public final class FacetedProject
         throws CoreException
         
     {
+        final String tracingDelegateCallsStr
+            = Platform.getDebugOption( TRACING_DELEGATE_CALLS );
+        
+        final boolean tracingDelegateCalls 
+            = tracingDelegateCallsStr == null ? false 
+              : tracingDelegateCallsStr.equals( "true" ); 
+        
+        long timeStarted = -1;
+        
+        if( tracingDelegateCalls )
+        {
+            final String msg
+                = Resources.bind( Resources.tracingDelegateStarting,
+                                  fv.getProjectFacet().getId(),
+                                  fv.getVersionString(), type.toString(),
+                                  delegate.getClass().getName() );
+            
+            System.out.println( msg );
+            
+            timeStarted = System.currentTimeMillis();
+        }
+        
         try
         {
             delegate.execute( project, fv, config, monitor ); 
@@ -617,6 +656,16 @@ public final class FacetedProject
             throw new CoreException( status ); 
         }
         
+        if( tracingDelegateCalls )
+        {
+            final long duration = System.currentTimeMillis() - timeStarted;
+            
+            final String msg 
+                = NLS.bind( Resources.tracingDelegateFinished, 
+                            String.valueOf( duration ) );
+            
+            System.out.println( msg );
+        }
     }
     
     private void apply( final Action action )
@@ -897,11 +946,23 @@ public final class FacetedProject
         public static String failedOnRuntimeChanged;
         public static String facetNotDefined;
         public static String facetVersionNotDefined;
+        public static String illegalModificationMsg;
+        public static String tracingDelegateStarting;
+        public static String tracingDelegateFinished;
         
         static
         {
             initializeMessages( FacetedProject.class.getName(), 
                                 Resources.class );
+        }
+        
+        public static final String bind( final String msg,
+                                         final String arg1,
+                                         final String arg2,
+                                         final String arg3,
+                                         final String arg4 )
+        {
+            return NLS.bind( msg, new Object[] { arg1, arg2, arg3, arg4 } );
         }
     }
 

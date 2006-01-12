@@ -291,6 +291,45 @@ public final class ProjectFacetsManagerImpl
 
         return null;
     }
+
+    public IFacetedProject create( final IProject project,
+                                   final boolean convertIfNecessary,
+                                   final IProgressMonitor monitor)
+    
+        throws CoreException
+        
+    {
+        if( monitor != null )
+        {
+            monitor.beginTask( "", 2 );
+        }
+        
+        try
+        {
+            if( project.exists() && convertIfNecessary )
+            {
+                IProjectDescription description = project.getDescription();
+                String[] prevNatures = description.getNatureIds();
+                String[] newNatures = new String[ prevNatures.length + 1 ];
+                System.arraycopy( prevNatures, 0, newNatures, 0, prevNatures.length );
+                newNatures[ prevNatures.length ] = FacetedProjectNature.NATURE_ID;
+                description.setNatureIds( newNatures );
+                
+                project.setDescription( description, submon( monitor, 1 ) );
+            }
+            
+            project.open( IResource.BACKGROUND_REFRESH, submon( monitor, 1 ) );
+            
+            return create( project );
+        }
+        finally
+        {
+            if( monitor != null )
+            {
+                monitor.done();
+            }
+        }
+    }
     
     public IFacetedProject create( final String name,
                                    final IPath location,
@@ -299,41 +338,34 @@ public final class ProjectFacetsManagerImpl
         throws CoreException
         
     {
-        final IWorkspace ws = ResourcesPlugin.getWorkspace();
-        final IProject project = ws.getRoot().getProject( name );
+        if( monitor != null )
+        {
+            monitor.beginTask( "", 2 );
+        }
         
-        final IProjectDescription desc
-            = ws.newProjectDescription( name );
-
-        desc.setLocation( location );
-        desc.setNatureIds( new String[] { FacetedProjectNature.NATURE_ID } );
-                
-        project.create( desc, new SubProgressMonitor( monitor, 1 ) );
+        try
+        {
+            final IWorkspace ws = ResourcesPlugin.getWorkspace();
+            final IProject project = ws.getRoot().getProject( name );
+            
+            final IProjectDescription desc
+                = ws.newProjectDescription( name );
+    
+            desc.setLocation( location );
+            desc.setNatureIds( new String[] { FacetedProjectNature.NATURE_ID } );
                     
-        project.open( IResource.BACKGROUND_REFRESH,
-                      new SubProgressMonitor( monitor, 1 ) );
-
-        return create( project );
-    }
+            project.create( desc, submon( monitor, 1 ) );
+            project.open( IResource.BACKGROUND_REFRESH, submon( monitor, 1 ) );
     
-    public IFacetedProject create( final IProject project,
-    								final boolean convertIfNecessary,
-    								final IProgressMonitor monitor)
-    
-    throws CoreException
-    {
-    	if( project.exists() && convertIfNecessary ){
-	  		IProjectDescription description = project.getDescription();
-			String[] prevNatures = description.getNatureIds();
-			String[] newNatures = new String[ prevNatures.length + 1 ];
-			System.arraycopy( prevNatures, 0, newNatures, 0, prevNatures.length );
-			newNatures[ prevNatures.length ] = FacetedProjectNature.NATURE_ID;
-			description.setNatureIds( newNatures );
-			project.setDescription( description, monitor ); 
-    	}
-        project.open( IResource.BACKGROUND_REFRESH,
-                new SubProgressMonitor( monitor, 1 ) );  
-        return create( project );
+            return create( project );
+        }
+        finally
+        {
+            if( monitor != null )
+            {
+                monitor.done();
+            }
+        }
     }
     
     public IStatus check( final Set base,
@@ -744,6 +776,19 @@ public final class ProjectFacetsManagerImpl
             }
             
             facets.add( fv );
+        }
+    }
+    
+    private static IProgressMonitor submon( final IProgressMonitor monitor,
+                                            final int ticks )
+    {
+        if( monitor == null )
+        {
+            return null;
+        }
+        else
+        {
+            return new SubProgressMonitor( monitor, ticks );
         }
     }
     

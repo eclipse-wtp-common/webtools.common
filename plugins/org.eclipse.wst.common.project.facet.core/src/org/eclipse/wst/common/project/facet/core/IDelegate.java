@@ -40,12 +40,17 @@ public interface IDelegate
     
     public static final class Type
     {
-        public static final Type INSTALL = new Type();
-        public static final Type UNINSTALL = new Type();
-        public static final Type VERSION_CHANGE = new Type();
-        public static final Type RUNTIME_CHANGED = new Type();
+        public static final Type INSTALL = new Type( "INSTALL" );
+        public static final Type UNINSTALL = new Type( "UNINSTALL" );
+        public static final Type VERSION_CHANGE = new Type( "VERSION_CHANGE" );
+        public static final Type RUNTIME_CHANGED = new Type( "RUNTIME_CHANGED" );
         
-        private Type() {}
+        private final String code;
+        
+        private Type( final String code )
+        {
+            this.code = code;
+        }
         
         public static Type get( final Action.Type t )
         {
@@ -65,6 +70,11 @@ public interface IDelegate
             {
                 throw new IllegalArgumentException();
             }
+        }
+        
+        public String toString()
+        {
+            return this.code;
         }
     }
     

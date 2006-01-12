@@ -201,7 +201,8 @@ public interface IFacetedProject
      * @param fv the descriptor of the project facet version that should be 
      *   installed
      * @param config the associated configuration object, or <code>null</code>
-     * @param monitor the progress monitor
+     * @param monitor a progress monitor, or null if progress reporting and 
+     *   cancellation are not desired
      * @throws CoreException if anything goes wrong during install
      */
     
@@ -219,7 +220,8 @@ public interface IFacetedProject
      * @param fv the descriptor of the project facet version that should be 
      *   uninstalled
      * @param config the associated configuration object, or <code>null</code>
-     * @param monitor the progress monitor
+     * @param monitor a progress monitor, or null if progress reporting and 
+     *   cancellation are not desired
      * @throws CoreException if anything goes wrong during uninstall
      */
     
@@ -234,7 +236,8 @@ public interface IFacetedProject
      * performing a series of actions such as install and uninstall. 
      * 
      * @param actions the set of actions to apply to the project
-     * @param monitor the progress monitor
+     * @param monitor a progress monitor, or null if progress reporting and 
+     *   cancellation are not desired
      * @throws CoreException if anything goes wrong while applying actions
      */
     
@@ -268,6 +271,11 @@ public interface IFacetedProject
         throws CoreException;
     
     IRuntime getRuntime();
+    
+    /**
+     * @param monitor a progress monitor, or null if progress reporting and 
+     *   cancellation are not desired
+     */
     
     void setRuntime( IRuntime runtime,
                      IProgressMonitor monitor )
