@@ -3,7 +3,7 @@
 <plugin
    id="org.eclipse.wst.common.snippets.tests"
    name="org.eclipse.wst.common.snippets.tests"
-   version="1.0.0"
+   version="1.0.0.qualifier"
    provider-name="Eclipse.org"
    class="org.eclipse.wst.common.snippets.tests.TestsPlugin">
    <runtime>
