@@ -24,10 +24,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
 import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 import org.eclipse.wst.common.componentcore.ComponentCore;
-import org.eclipse.wst.common.componentcore.UnresolveableURIException;
-import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
-import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
@@ -68,25 +65,9 @@ public class ComponentCoreURIConverter extends CompatibilityWorkbenchURIConverte
 	} 
  
 	public IVirtualComponent findComponent(IResource res) {
-
-		StructureEdit moduleCore = null;
-		WorkbenchComponent module = null;
-		try {
-			moduleCore = StructureEdit.getStructureEditForRead(containingProject);
-			ComponentResource[] resources = moduleCore.findResourcesBySourcePath(res.getFullPath(), ResourceTreeNode.CREATE_RESOURCE_ALWAYS);
-			for (int i = 0; i < resources.length; i++) {
-				module = resources[i].getComponent();
-				if (module != null)
-					break;
-			}
-		} catch (UnresolveableURIException e) {
-			// Ignore
-		} finally {
-			if (moduleCore != null)
-				moduleCore.dispose();
-		}
-		if( module != null )
-			return ComponentCore.createComponent(containingProject);
+		
+		if (res != null && res.exists())
+			return ComponentCore.createComponent(res.getProject());
 		return null;
 	}
 	/* (non-Javadoc)
