@@ -165,25 +165,33 @@ public class VirtualComponent implements IVirtualComponent {
             core = StructureEdit.getStructureEditForWrite(getProject());
             WorkbenchComponent component = core.getComponent(); 
             
-                List propList = component.getProperties();
-				if (properties != null && !properties.isEmpty()) {
-				        for(Enumeration itr = properties.keys(); itr.hasMoreElements();) {
-				            final String key = (String) itr.nextElement();
-				            final Property prop = ComponentcoreFactory.eINSTANCE.createProperty();
-				            prop.setName(key);
-				            prop.setValue(properties.getProperty(key));
-				            propList.add(prop);
-				         }
-				}
-                
-            
+            List propList = component.getProperties();
+			if (properties != null && !properties.isEmpty()) {
+		        for(Enumeration itr = properties.keys(); itr.hasMoreElements();) {
+		            final String key = (String) itr.nextElement();
+		            final Property prop = ComponentcoreFactory.eINSTANCE.createProperty();
+		            prop.setName(key);
+		            prop.setValue(properties.getProperty(key));
+		            // Remove existing property first
+		            for (int i=0; i<propList.size(); i++) {
+		            	Property existing = (Property) propList.get(i);
+		            	if (existing.getName().equals(key)) {
+		            		propList.remove(existing);
+		            		break;
+		            	}
+		            }
+		            // Add new property
+		            propList.add(prop);
+		         }
+			} 
         } finally {
             if(core != null){
             	core.saveIfNecessary(null);
                 core.dispose();
             }
         }
-	}	
+	}
+	
 	public void setMetaProperty(String key, String value) {
         StructureEdit core = null;
         try {
