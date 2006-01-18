@@ -146,6 +146,59 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 		return facetProj;
 	}
 
-
+	private static void addDefaultFacetsInProject(IFacetedProject facetProj, Set defaultFacets) {
+		Set actions = new HashSet();
+		for (Iterator iter = defaultFacets.iterator(); iter.hasNext();) {
+			IProjectFacetVersion facetVersion = (IProjectFacetVersion) iter.next();
+			if (!facetProj.hasProjectFacet(facetVersion.getProjectFacet())) {
+				IDataModel dm = DataModelFactory.createDataModel(new FacetInstallDataModelProvider());
+				dm.setProperty(IFacetDataModelProperties.FACET_ID, facetVersion.getProjectFacet().getId());
+				dm.setProperty(IFacetDataModelProperties.FACET_PROJECT_NAME, facetProj.getProject().getName());
+				dm.setProperty(IFacetDataModelProperties.FACET_VERSION_STR, facetVersion.getVersionString()); //$NON-NLS-1$
+				actions.add(new IFacetedProject.Action(Action.Type.INSTALL, facetVersion, dm));
+			}
+		}
+		
+		try {
+			if (!actions.isEmpty())
+				facetProj.modify(actions,null);
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public static void addDefaultFactets(IFacetedProject facetProj, IRuntime runtime) throws ExecutionException{
+	
+		Set fixedFacets = new HashSet(), newFacetVersions = facetProj.getProjectFacets(), existingFixedFacets = facetProj.getFixedProjectFacets();
+		for (Iterator iter = newFacetVersions.iterator(); iter.hasNext();) {
+			IProjectFacetVersion facetVersion = (IProjectFacetVersion) iter.next();
+			String facetID = facetVersion.getProjectFacet().getId();
+			boolean shouldInstallFacet = true;
+			for (Iterator existingFacetsIterator = existingFixedFacets.iterator(); shouldInstallFacet && existingFacetsIterator.hasNext();) {
+				IProjectFacet facet = (IProjectFacet) existingFacetsIterator.next();
+				if (facet.getId().equals(facetID)) {
+					shouldInstallFacet = false;
+				}
+			}
+			if (shouldInstallFacet) {
+				fixedFacets.add(facetVersion.getProjectFacet());
+			}
+		}
+		
+		try{
+			if (!fixedFacets.isEmpty()) {
+					facetProj.setFixedProjectFacets(fixedFacets);
+			}
+		
+			if (runtime != null ) {
+				addDefaultFacetsInProject(facetProj,runtime.getDefaultFacets( fixedFacets ));
+			}
+		}catch(CoreException e){
+			Logger.getLogger().logError(e);
+			throw new ExecutionException(e.getMessage(), e);			
+		}
+	}
 
 }
