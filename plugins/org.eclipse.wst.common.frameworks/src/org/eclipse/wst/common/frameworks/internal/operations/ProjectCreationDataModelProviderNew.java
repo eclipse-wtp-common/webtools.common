@@ -27,6 +27,7 @@ import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.internal.WTPPlugin;
+import org.eclipse.wst.common.frameworks.internal.WTPResourceHandler;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 
@@ -64,7 +65,7 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 		} else if (USE_DEFAULT_LOCATION.equals(propertyName)) {
 			return Boolean.TRUE;
 		} else if (USER_DEFINED_LOCATION.equals(propertyName)) {
-			return "";
+			return ""; //$NON-NLS-1$
 		} else if (propertyName.equals(PROJECT_DESCRIPTION)){
 			return getProjectDescription();
 		}
@@ -131,7 +132,7 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 		if (propertyName.equals(PROJECT_LOCATION) || propertyName.equals(PROJECT_NAME)) {
 			String projectName = getStringProperty(PROJECT_NAME);
 			
-			String projectLoc = "";
+			String projectLoc = ""; //$NON-NLS-1$
 			if( getBooleanProperty(USE_DEFAULT_LOCATION )){
 				projectLoc = getDefaultLocation();
 			}else{
@@ -173,6 +174,8 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 		IStatus status = workspace.validateName(projectName, IResource.PROJECT);
 		if (!status.isOK())
 			return status;
+		if (projectName.endsWith(" ")) //$NON-NLS-1$
+			return WTPCommonPlugin.createErrorStatus(WTPResourceHandler.getString("41")); //$NON-NLS-1$
 		return OK_STATUS;
 	}
 
@@ -188,8 +191,7 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 			// now look for a matching case variant in the tree
 			IResource variant = ((Resource) project).findExistingResourceVariant(project.getFullPath());
 			if (variant != null) {
-				// TODO Fix this string
-				return WTPCommonPlugin.createErrorStatus("Resource already exists with a different case."); //$NON-NLS-1$
+				return WTPCommonPlugin.createErrorStatus(WTPResourceHandler.getString("42")); //$NON-NLS-1$
 			}
 		}
 		return OK_STATUS;
