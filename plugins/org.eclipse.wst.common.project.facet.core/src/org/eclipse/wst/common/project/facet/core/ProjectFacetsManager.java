@@ -260,6 +260,30 @@ public final class ProjectFacetsManager
         return impl.getGroup( id );
     }
     
+    public static Set getFacetedProjects()
+    
+        throws CoreException
+        
+    {
+        return impl.getFacetedProjects();
+    }
+
+    public static Set getFacetedProjects( final IProjectFacet f )
+    
+        throws CoreException
+        
+    {
+        return impl.getFacetedProjects( f );
+    }
+
+    public static Set getFacetedProjects( final IProjectFacetVersion fv )
+    
+        throws CoreException
+        
+    {
+        return impl.getFacetedProjects( fv );
+    }
+    
     /**
      * Creates a wrapper around an <code>IProject</code> that exposes API for
      * manipulating the set of project facets installed on a project.

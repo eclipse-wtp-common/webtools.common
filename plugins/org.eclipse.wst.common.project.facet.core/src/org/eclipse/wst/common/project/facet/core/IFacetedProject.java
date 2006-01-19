@@ -13,6 +13,7 @@ package org.eclipse.wst.common.project.facet.core;
 
 import java.util.Set;
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -279,6 +280,24 @@ public interface IFacetedProject
     
     void setRuntime( IRuntime runtime,
                      IProgressMonitor monitor )
+    
+        throws CoreException;
+    
+    IMarker createErrorMarker( String message )
+    
+        throws CoreException;
+    
+    IMarker createErrorMarker( String type,
+                               String message )
+    
+        throws CoreException;
+    
+    IMarker createWarningMarker( String message )
+    
+        throws CoreException;
+    
+    IMarker createWarningMarker( String type,
+                                 String message )
     
         throws CoreException;
     

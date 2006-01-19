@@ -267,6 +267,63 @@ public final class ProjectFacetsManagerImpl
         return group;
     }
 
+    public Set getFacetedProjects()
+    
+        throws CoreException
+        
+    {
+        return getFacetedProjects( null, null );
+    }
+
+    public Set getFacetedProjects( final IProjectFacet f )
+    
+        throws CoreException
+        
+    {
+        return getFacetedProjects( f, null );
+    }
+
+    public Set getFacetedProjects( final IProjectFacetVersion fv )
+    
+        throws CoreException
+        
+    {
+        return getFacetedProjects( null, fv );
+    }
+
+    private Set getFacetedProjects( final IProjectFacet f,
+                                    final IProjectFacetVersion fv )
+    
+        throws CoreException
+        
+    {
+        final IProject[] all 
+            = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+        
+        final Set result = new HashSet();
+        
+        for( int i = 0; i < all.length; i++ )
+        {
+            final IProject proj = all[ i ];
+            final IFacetedProject fproj = create( proj );
+            
+            if( fproj != null )
+            {
+                if( ( f != null && ! fproj.hasProjectFacet( f ) ) ||
+                    ( fv != null && ! fproj.hasProjectFacet( fv ) ) )
+                {
+                    continue;
+                }
+                else
+                {
+                    result.add( fproj );
+                }
+            }
+        }
+        
+        return result;
+    }
+
     public IFacetedProject create( final IProject project )
     
         throws CoreException
@@ -352,11 +409,18 @@ public final class ProjectFacetsManagerImpl
                 = ws.newProjectDescription( name );
     
             desc.setLocation( location );
-            desc.setNatureIds( new String[] { FacetedProjectNature.NATURE_ID } );
                     
             project.create( desc, submon( monitor, 1 ) );
             project.open( IResource.BACKGROUND_REFRESH, submon( monitor, 1 ) );
-    
+            
+            // This is odd, but apparently nature's configure() method will only
+            // be called if the setDescription() method is used. It will not be
+            // called if nature is added to the project description prior to
+            // calling IProject.create() method.
+            
+            desc.setNatureIds( new String[] { FacetedProjectNature.NATURE_ID } );
+            project.setDescription( desc, null );
+            
             return create( project );
         }
         finally
@@ -1443,8 +1507,8 @@ public final class ProjectFacetsManagerImpl
         this.presets.add( id, preset );
     }
     
-    private static void reportMissingAttribute( final IConfigurationElement el,
-                                                final String attribute )
+    static void reportMissingAttribute( final IConfigurationElement el,
+                                        final String attribute )
     {
         final String[] params 
             = new String[] { el.getNamespace(), el.getName(), attribute };

@@ -11,8 +11,11 @@
 
 package org.eclipse.wst.common.project.facet.core.internal;
 
+import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
+import org.eclipse.core.runtime.CoreException;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -24,7 +27,7 @@ public final class FacetedProjectNature
 
 {
     public static final String NATURE_ID 
-        = "org.eclipse.wst.common.project.facet.core.nature";
+        = FacetCorePlugin.PLUGIN_ID + ".nature";
     
     private IProject project;
     
@@ -38,7 +41,25 @@ public final class FacetedProjectNature
         this.project = project;
     }
     
-    public void configure() {}
+    public void configure() 
+    
+        throws CoreException
+        
+    {
+        final IProjectDescription desc = this.project.getDescription();
+        
+        final ICommand[] existing = desc.getBuildSpec();
+        final ICommand[] cmds = new ICommand[ existing.length + 1 ];
+        
+        final ICommand newcmd = this.project.getDescription().newCommand();
+        newcmd.setBuilderName( FacetedProjectValidationBuilder.BUILDER_ID );
+        
+        cmds[ 0 ] = newcmd;
+        System.arraycopy( existing, 0, cmds, 1, existing.length );
+        
+        desc.setBuildSpec( cmds );
+        this.project.setDescription( desc, null );
+    }
     
     public void deconfigure() {}
     

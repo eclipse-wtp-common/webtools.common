@@ -22,6 +22,11 @@
     id="defaultFacets"
     name="Default Facets Extension Point"
     schema="schemas/defaultFacets.exsd"/>
+
+  <extension-point 
+    id="validators"
+    name="Faceted Project Validators Extension Point"
+    schema="schemas/validators.exsd"/>
   
   <extension
     id="nature"
@@ -29,6 +34,29 @@
     <runtime>
       <run class="org.eclipse.wst.common.project.facet.core.internal.FacetedProjectNature"/>
     </runtime>
+    <builder id="org.eclipse.wst.common.project.facet.core.builder"/>
   </extension>
+  
+  <extension
+    id="builder"
+    name="%builderName"
+    point="org.eclipse.core.resources.builders">
+    <builder hasNature="true">
+      <run class="org.eclipse.wst.common.project.facet.core.internal.FacetedProjectValidationBuilder"/>
+    </builder>
+  </extension>
+  
+  <extension 
+    point="org.eclipse.core.resources.markers"
+    id="validation.marker">
+    <super type="org.eclipse.core.resources.problemmarker"/>
+    <persistent value="true"/>
+  </extension>
+  
+  <extension
+    point="org.eclipse.wst.common.project.facet.core.validators">
+    <validator 
+      class="org.eclipse.wst.common.project.facet.core.internal.BasicFacetedProjectValidator"/>
+  </extension>    
   
 </plugin>

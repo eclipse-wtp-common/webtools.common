@@ -32,7 +32,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -48,6 +50,7 @@ import org.eclipse.wst.common.project.facet.core.IActionConfig;
 import org.eclipse.wst.common.project.facet.core.IDelegate;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectListener;
+import org.eclipse.wst.common.project.facet.core.IFacetedProjectValidator;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
@@ -414,6 +417,14 @@ public final class FacetedProject
         notifyListeners();
     }
     
+    public String getRuntimeName()
+    {
+        synchronized( this.lock )
+        {
+            return this.runtimeName;
+        }
+    }
+    
     public IRuntime getRuntime()
     {
         synchronized( this.lock )
@@ -474,6 +485,27 @@ public final class FacetedProject
         
         try
         {
+            if( runtime != null )
+            {
+                for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
+                {
+                    final IProjectFacetVersion fv 
+                        = (IProjectFacetVersion) itr.next();
+                    
+                    if( ! runtime.supports( fv ) )
+                    {
+                        final String msg 
+                            = NLS.bind( Resources.facetNotSupported, 
+                                        runtime.getName(), fv.toString() );
+                        
+                        final IStatus st 
+                            = FacetCorePlugin.createErrorStatus( msg );
+                        
+                        throw new CoreException( st );
+                    }
+                }
+            }
+            
             this.runtimeName = ( runtime == null ? null : runtime.getName() );
             save();
 
@@ -511,6 +543,69 @@ public final class FacetedProject
                 monitor.done();
             }
         }
+    }
+    
+    public IMarker createErrorMarker( final String message )
+    
+        throws CoreException
+        
+    {
+        return createErrorMarker( IFacetedProjectValidator.BASE_MARKER_ID, message );
+    }
+
+    public IMarker createErrorMarker( final String type,
+                                      final String message )
+    
+        throws CoreException
+        
+    {
+        return createMarker( IMarker.SEVERITY_ERROR, type, message );
+    }
+    
+    public IMarker createWarningMarker( final String message )
+    
+        throws CoreException
+        
+    {
+        return createWarningMarker( IFacetedProjectValidator.BASE_MARKER_ID, message );
+    }
+    
+    public IMarker createWarningMarker( final String type,
+                                      final String message )
+    
+        throws CoreException
+        
+    {
+        return createMarker( IMarker.SEVERITY_WARNING, type, message );
+    }
+    
+    private IMarker createMarker( final int severity,
+                                  final String type,
+                                  final String message )
+      
+        throws CoreException
+      
+    {
+        final IMarker[] existing
+            = this.project.findMarkers( type, false, IResource.DEPTH_ZERO );
+        
+        for( int i = 0; i < existing.length; i++ )
+        {
+            final IMarker m = existing[ i ];
+            
+            if( m.getAttribute( IMarker.SEVERITY, -1 ) == severity &&
+                m.getAttribute( IMarker.MESSAGE, "" ).equals( message ) )
+            {
+                return m;
+            }
+        }
+        
+        final IMarker m = this.project.createMarker( type );
+      
+        m.setAttribute( IMarker.MESSAGE, message ); 
+        m.setAttribute( IMarker.SEVERITY, severity );
+      
+        return m;
     }
     
     public void addListener( final IFacetedProjectListener listener )
@@ -946,6 +1041,7 @@ public final class FacetedProject
         public static String failedOnRuntimeChanged;
         public static String facetNotDefined;
         public static String facetVersionNotDefined;
+        public static String facetNotSupported;
         public static String illegalModificationMsg;
         public static String tracingDelegateStarting;
         public static String tracingDelegateFinished;
