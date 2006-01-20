@@ -44,7 +44,7 @@ public class OperationManager {
 	private OperationListener preExecuteListener;
 	private OperationListener postExecuteListener;
 	private OperationListener undoExecuteListener;
-  private IEnvironment       environment;
+	private IEnvironment environment;
 
 	public OperationManager(DataModelManager aDataModelManager, IDataModelOperation aRootOperation, IEnvironment aEnvironment) {
 		if (aRootOperation == null)
@@ -58,8 +58,8 @@ public class OperationManager {
 		operationTable = new HashMap();
 		runStopList = new Stack();
 		operationTable.put(aRootOperation.getID(), entry);
-    environment = aEnvironment;
- 		addExtendedOperations(aRootOperation);
+		environment = aEnvironment;
+		addExtendedOperations(aRootOperation);
 
 		OperationListener defaultListener = new OperationListener() {
 			public boolean notify(IDataModelOperation operation) {
@@ -145,16 +145,14 @@ public class OperationManager {
 				IDataModelOperation operation = (IDataModelOperation) runListEntry.executedOperations.elementAt(index);
 				Set dataModelIDs = operation.getDataModelIDs();
 
-				if( dataModelIDs != null && dataModelIDs.size() > 0 )
-        {
-          Iterator ids = dataModelIDs.iterator();
-          
-          while( ids.hasNext() )
-          {
-            String dataModelID = (String)ids.next();
-					  dataModelManager.removeNestedDataModel(dataModelID);
-          }
-        }
+				if (dataModelIDs != null && dataModelIDs.size() > 0) {
+					Iterator ids = dataModelIDs.iterator();
+
+					while (ids.hasNext()) {
+						String dataModelID = (String) ids.next();
+						dataModelManager.removeNestedDataModel(dataModelID);
+					}
+				}
 
 				try {
 					undoExecuteListener.notify(operation);
@@ -191,7 +189,7 @@ public class OperationManager {
 	private boolean runOperationsUntilStopped(RunListEntry runListEntry) {
 		StackEntry stackEntry = (StackEntry) runListEntry.stackEntries.peek();
 		boolean continueRun = true;
-    
+
 		// Run extended pre operations.
 		for (int index = stackEntry.preOperationIndex + 1; continueRun && index < stackEntry.tableEntry.preOperations.size(); index++) {
 			TableEntry tableEntry = (TableEntry) stackEntry.tableEntry.preOperations.elementAt(index);
@@ -200,18 +198,19 @@ public class OperationManager {
 			stackEntry.preOperationIndex = index;
 			continueRun = runOperationsUntilStopped(runListEntry);
 		}
-    
-    if( continueRun && stackEntry.preOpChildIndex == -1 ) stackEntry.addPreOpChildren();
 
-    // Run child pre operations.
-    for (int index = stackEntry.preOpChildIndex + 1; continueRun && index < stackEntry.preOpChildren.size(); index++) {
-      TableEntry tableEntry = (TableEntry) stackEntry.preOpChildren.elementAt(index);
+		if (continueRun && stackEntry.preOpChildIndex == -1)
+			stackEntry.addPreOpChildren();
 
-      runListEntry.stackEntries.push(new StackEntry(tableEntry));
-      stackEntry.preOpChildIndex = index;
-      continueRun = runOperationsUntilStopped(runListEntry);
-    }
-    
+		// Run child pre operations.
+		for (int index = stackEntry.preOpChildIndex + 1; continueRun && index < stackEntry.preOpChildren.size(); index++) {
+			TableEntry tableEntry = (TableEntry) stackEntry.preOpChildren.elementAt(index);
+
+			runListEntry.stackEntries.push(new StackEntry(tableEntry));
+			stackEntry.preOpChildIndex = index;
+			continueRun = runOperationsUntilStopped(runListEntry);
+		}
+
 		if (continueRun && !stackEntry.operationExecuted) {
 			IDataModelOperation operation = stackEntry.tableEntry.operation;
 
@@ -221,19 +220,17 @@ public class OperationManager {
 				if (continueRun) {
 					Set dataModelIDs = operation.getDataModelIDs();
 
-					if (dataModelIDs != null && dataModelIDs.size() > 0 )
-          {
-            Iterator ids = dataModelIDs.iterator();
-            
-            while( ids.hasNext() )
-            {
-              String dataModelID = (String)ids.next();
-						  dataModelManager.addNestedDataModel(dataModelID);
-            }
-          }
-          
+					if (dataModelIDs != null && dataModelIDs.size() > 0) {
+						Iterator ids = dataModelIDs.iterator();
+
+						while (ids.hasNext()) {
+							String dataModelID = (String) ids.next();
+							dataModelManager.addNestedDataModel(dataModelID);
+						}
+					}
+
 					operation.setDataModel(dataModel);
-          operation.setEnvironment( environment );
+					operation.setEnvironment(environment);
 					setStatus(runOperation(operation, false));
 					runListEntry.executedOperations.add(operation);
 					stackEntry.operationExecuted = true;
@@ -248,17 +245,18 @@ public class OperationManager {
 				continueRun = false;
 			}
 		}
-    
-    if( continueRun && stackEntry.postOpChildIndex == -1 ) stackEntry.addPostOpChildren();
-    
-    // Run child post operations.
-    for (int index = stackEntry.postOpChildIndex + 1; continueRun && index < stackEntry.postOpChildren.size(); index++) {
-      TableEntry tableEntry = (TableEntry) stackEntry.postOpChildren.elementAt(index);
 
-      stackEntry.postOpChildIndex = index;
-      runListEntry.stackEntries.push(new StackEntry(tableEntry));
-      continueRun = runOperationsUntilStopped(runListEntry);
-    }    
+		if (continueRun && stackEntry.postOpChildIndex == -1)
+			stackEntry.addPostOpChildren();
+
+		// Run child post operations.
+		for (int index = stackEntry.postOpChildIndex + 1; continueRun && index < stackEntry.postOpChildren.size(); index++) {
+			TableEntry tableEntry = (TableEntry) stackEntry.postOpChildren.elementAt(index);
+
+			stackEntry.postOpChildIndex = index;
+			runListEntry.stackEntries.push(new StackEntry(tableEntry));
+			continueRun = runOperationsUntilStopped(runListEntry);
+		}
 
 		// Run extended post operations.
 		for (int index = stackEntry.postOperationIndex + 1; continueRun && index < stackEntry.tableEntry.postOperations.size(); index++) {
@@ -319,7 +317,7 @@ public class OperationManager {
 			status.add(newStatus);
 		}
 	}
-  
+
 	private void addExtendedOperations(IDataModelOperation operation) {
 		ComposedExtendedOperationHolder extendedOps = ComposedExtendedOperationHolder.createExtendedOperationHolder(operation.getID());
 
@@ -375,19 +373,19 @@ public class OperationManager {
 	private class StackEntry {
 		public int preOperationIndex;
 		public int postOperationIndex;
-    public int preOpChildIndex;
-    public int postOpChildIndex;
+		public int preOpChildIndex;
+		public int postOpChildIndex;
 		public boolean operationExecuted;
-    public Vector preOpChildren;
-    public Vector postOpChildren;
+		public Vector preOpChildren;
+		public Vector postOpChildren;
 		public TableEntry tableEntry;
 
 		public StackEntry(TableEntry newTableEntry) {
 			preOperationIndex = -1;
 			postOperationIndex = -1;
 			operationExecuted = false;
-      preOpChildIndex = -1;
-      postOpChildIndex = -1;
+			preOpChildIndex = -1;
+			postOpChildIndex = -1;
 			tableEntry = newTableEntry;
 		}
 
@@ -396,51 +394,45 @@ public class OperationManager {
 			postOperationIndex = newStackEntry.postOperationIndex;
 			operationExecuted = newStackEntry.operationExecuted;
 			tableEntry = newStackEntry.tableEntry;
-      preOpChildIndex = newStackEntry.preOpChildIndex;
-      postOpChildIndex = newStackEntry.postOpChildIndex;
-      preOpChildren     = newStackEntry.preOpChildren == null ? null :new Vector( newStackEntry.preOpChildren );
-      postOpChildren    = newStackEntry.postOpChildren == null ? null : new Vector( newStackEntry.postOpChildren );
+			preOpChildIndex = newStackEntry.preOpChildIndex;
+			postOpChildIndex = newStackEntry.postOpChildIndex;
+			preOpChildren = newStackEntry.preOpChildren == null ? null : new Vector(newStackEntry.preOpChildren);
+			postOpChildren = newStackEntry.postOpChildren == null ? null : new Vector(newStackEntry.postOpChildren);
 		}
-    
-    public void addPreOpChildren()
-    {
-      List preOps = tableEntry.operation.getPreOperations();
-      
-      preOpChildren = new Vector();
-      
-      if( preOps != null )
-      {        
-        for( int index = 0; index < preOps.size(); index++ )
-        {
-          IDataModelOperation op       = (IDataModelOperation)preOps.get( index );
-          TableEntry          newEntry = new TableEntry(op);
 
-          preOpChildren.add( newEntry );
-          operationTable.put( op.getID(), newEntry );
-          addExtendedOperations( op );
-        }
-      }
-    }
-    
-    public void addPostOpChildren()
-    {
-      List postOps = tableEntry.operation.getPostOperations();
-      
-      postOpChildren = new Vector();
-      
-      if( postOps != null )
-      {        
-        for( int index = 0; index < postOps.size(); index++ )
-        {
-          IDataModelOperation op       = (IDataModelOperation)postOps.get( index );
-          TableEntry          newEntry = new TableEntry(op);
+		public void addPreOpChildren() {
+			List preOps = tableEntry.operation.getPreOperations();
 
-          postOpChildren.add( newEntry );
-          operationTable.put( op.getID(), newEntry );
-          addExtendedOperations( op );
-        }
-      }
-    }
+			preOpChildren = new Vector();
+
+			if (preOps != null) {
+				for (int index = 0; index < preOps.size(); index++) {
+					IDataModelOperation op = (IDataModelOperation) preOps.get(index);
+					TableEntry newEntry = new TableEntry(op);
+
+					preOpChildren.add(newEntry);
+					operationTable.put(op.getID(), newEntry);
+					addExtendedOperations(op);
+				}
+			}
+		}
+
+		public void addPostOpChildren() {
+			List postOps = tableEntry.operation.getPostOperations();
+
+			postOpChildren = new Vector();
+
+			if (postOps != null) {
+				for (int index = 0; index < postOps.size(); index++) {
+					IDataModelOperation op = (IDataModelOperation) postOps.get(index);
+					TableEntry newEntry = new TableEntry(op);
+
+					postOpChildren.add(newEntry);
+					operationTable.put(op.getID(), newEntry);
+					addExtendedOperations(op);
+				}
+			}
+		}
 	}
 
 	private class TableEntry {
