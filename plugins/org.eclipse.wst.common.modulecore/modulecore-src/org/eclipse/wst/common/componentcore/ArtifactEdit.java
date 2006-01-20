@@ -482,7 +482,6 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	
 	/**
 	 * @return The EMF command stack managed by the underlying editmodel
-	 * @deprecated Use ((ArtifactEditModel)getAdapter(ArtifactEditModel.ADAPTER_TYPE)).getCommandStack()
 	 */
 	public CommandStack getCommandStack() {
 		return artifactEditModel.getCommandStack();
@@ -496,7 +495,6 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	}
 	/**
 	 * @return The isDirty flag based the underlying editmodel's list of resources.
-	 * @deprecated Use ((ArtifactEditModel)getAdapter(ArtifactEditModel.ADAPTER_TYPE)).isDirty()
 	 */
 	public boolean isDirty() {
 		return artifactEditModel.isDirty();
@@ -513,7 +511,6 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	/**
 	 * Force all of the known resource URIs to be loaded
 	 * if they are not already.
-	 * @deprecated Use ((ArtifactEditModel)getAdapter(ArtifactEditModel.ADAPTER_TYPE)).forceLoadKnownResources();
 	 */
 	public void forceLoadKnownResources() {
 		List uris = getArtifactEditModel().getKnownResourceUris();
