@@ -63,7 +63,8 @@ public interface IConstraint
             }
             else
             {
-                throw new IllegalArgumentException();
+                final String msg = "Invalid constraint type: " + str;
+                throw new IllegalArgumentException( msg );
             }
         }
         
