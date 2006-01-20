@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $RCSfile: LogEntry.java,v $
- *  $Revision: 1.3 $  $Date: 2005/11/01 21:09:03 $ 
+ *  $Revision: 1.4 $  $Date: 2006/01/20 19:30:40 $ 
  */
 package org.eclipse.jem.util.logger;
 
@@ -315,12 +315,15 @@ public class LogEntry {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		StringBuffer b = new StringBuffer();
+		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+		PrintWriter printWriter = new PrintWriter(byteOutput);
 		if (text != null)
-			b.append(text);
-		if (_caughtException != null)
-			b.append(_caughtException.toString());
-		return b.toString();
+			printWriter.println(text);
+		if (_caughtException != null) {
+			_caughtException.printStackTrace(printWriter);
+		}
+		printWriter.flush();
+		return byteOutput.toString();
 	}
 
 }
