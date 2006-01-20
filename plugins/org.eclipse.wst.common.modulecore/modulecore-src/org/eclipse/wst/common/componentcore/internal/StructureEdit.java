@@ -86,6 +86,7 @@ public class StructureEdit implements IEditModelHandler {
 	
 	private final ModuleStructuralModel structuralModel;
 	private final Map dependentCores = new HashMap();
+	private IProject aProject;
 	private boolean isStructuralModelSelfManaged;
 	private boolean isReadOnly;
 
@@ -292,6 +293,8 @@ public class StructureEdit implements IEditModelHandler {
 			// if the project cannot be resolved, assume it's local - really it probably deleted 
 			
 			targetComponent = ComponentCore.createComponent(targetProject);  
+				
+
 		}else{
 			String archiveType = ""; //$NON-NLS-1$
 			String archiveName = ""; //$NON-NLS-1$
@@ -312,6 +315,7 @@ public class StructureEdit implements IEditModelHandler {
 			structuralModel = aNature.getModuleStructuralModelForRead(this);
 		else
 			structuralModel = aNature.getModuleStructuralModelForWrite(this);
+		aProject = aNature.getProject();
 		isReadOnly = toAccessAsReadOnly;
 		isStructuralModelSelfManaged = true;
 	}
@@ -329,6 +333,7 @@ public class StructureEdit implements IEditModelHandler {
 	 */
 	public StructureEdit(ModuleStructuralModel aStructuralModel) {
 		structuralModel = aStructuralModel;
+		aProject = aStructuralModel.getProject();
 	}
 
 	/**
@@ -345,7 +350,10 @@ public class StructureEdit implements IEditModelHandler {
 	public void save(IProgressMonitor aMonitor) {
 		if (isReadOnly)
 			throwAttemptedReadOnlyModification();
-		structuralModel.save(aMonitor, this);
+		synchronized (structuralModel) {
+			if (!structuralModel.isDisposed())
+				structuralModel.save(aMonitor, this);
+		}
 	}
 
 	/**
@@ -362,7 +370,10 @@ public class StructureEdit implements IEditModelHandler {
 	public void saveIfNecessary(IProgressMonitor aMonitor) {
 		if (isReadOnly)
 			throwAttemptedReadOnlyModification();
-		structuralModel.saveIfNecessary(aMonitor, this);
+		synchronized (structuralModel) {
+			if (!structuralModel.isDisposed())
+				structuralModel.saveIfNecessary(aMonitor, this);
+		}
 	}
 
 	/**
@@ -375,8 +386,15 @@ public class StructureEdit implements IEditModelHandler {
 	 * @see org.eclipse.wst.common.componentcore.IEditModelHandler#dispose()
 	 */
 	public void dispose() {
-		if (isStructuralModelSelfManaged)
-			structuralModel.releaseAccess(this);
+		
+		if (isStructuralModelSelfManaged) {
+			synchronized (structuralModel) {
+				if (!structuralModel.isDisposed()) {
+					structuralModel.releaseAccess(this);
+				}
+			}
+			
+		}
 		if (dependentCores.size() > 0) {
 			synchronized (dependentCores) {
 				for (Iterator cores = dependentCores.values().iterator(); cores.hasNext();)
@@ -391,11 +409,16 @@ public class StructureEdit implements IEditModelHandler {
 	 * </p>
 	 */
 	public void prepareProjectComponentsIfNecessary() {
-		try {
-			structuralModel.prepareProjectModulesIfNecessary();
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		
+		synchronized (structuralModel) {
+			if (!structuralModel.isDisposed()) {
+				try {
+					structuralModel.prepareProjectModulesIfNecessary();
+				} catch (CoreException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -409,7 +432,12 @@ public class StructureEdit implements IEditModelHandler {
 	 * @return The root object of the underlying model
 	 */
 	public ProjectComponents getComponentModelRoot() {
-		return (ProjectComponents) structuralModel.getPrimaryRootObject();
+		ProjectComponents comps = null;
+		synchronized (structuralModel) {
+			if (!structuralModel.isDisposed())
+				comps = (ProjectComponents) structuralModel.getPrimaryRootObject();
+		}
+		return comps;
 	}
 
 	/**
@@ -741,7 +769,7 @@ public class StructureEdit implements IEditModelHandler {
 		ModuleURIUtil.ensureValidFullyQualifiedModuleURI(aModuleURI);
 		String projectName = aModuleURI.segment(ModuleURIUtil.ModuleURI.PROJECT_NAME_INDX);
 		/* Accessing a local module */
-		if (structuralModel.getProject().getName().equals(projectName)) {
+		if (getProject().getName().equals(projectName)) {
 			return getComponent();
 		}
 		return getDependentModuleCore(aModuleURI).getComponent();
@@ -819,7 +847,7 @@ public class StructureEdit implements IEditModelHandler {
 			return true; 
 		try {
 
-			String localProjectName = structuralModel.getProject().getName();
+			String localProjectName = getProject().getName();
 			if(ModuleURIUtil.ensureValidFullyQualifiedModuleURI(dependentHandle, false)) {
 				String dependentProjectName = aDependentModule.getHandle().segment(ModuleURIUtil.ModuleURI.PROJECT_NAME_INDX);
 				return localProjectName.equals(dependentProjectName);
@@ -882,5 +910,10 @@ public class StructureEdit implements IEditModelHandler {
 
 	public static URI createComponentURI(IProject aContainingProject, String aComponentName) {
 		return URI.createURI(PlatformURLModuleConnection.MODULE_PROTOCOL + IPath.SEPARATOR + PlatformURLModuleConnection.RESOURCE_MODULE + aContainingProject.getName() + IPath.SEPARATOR + aComponentName);
+	}
+
+	
+	protected IProject getProject() {
+		return aProject;
 	}
 }

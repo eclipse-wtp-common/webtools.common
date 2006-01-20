@@ -113,7 +113,7 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 		IFile aFile = ResourcesPlugin.getWorkspace().getRoot().getFile(archivePath);
 		if (aFile.exists())
 			aFile.getFullPath();
-		return archivePath;
+		return null;
 	}
 
 	public IPath getProjectRelativePath() {
