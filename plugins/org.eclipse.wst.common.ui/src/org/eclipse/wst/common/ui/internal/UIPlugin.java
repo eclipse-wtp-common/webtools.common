@@ -26,6 +26,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -163,4 +165,15 @@ public class UIPlugin extends AbstractUIPlugin {
 		// TODO Auto-generated method stub
 		super.stop(context);
 	}
+    
+    public static IWorkbenchPage getActivePage() {
+        return getDefault().internalGetActivePage();
+    }
+    
+    private IWorkbenchPage internalGetActivePage() {
+        IWorkbenchWindow window= getWorkbench().getActiveWorkbenchWindow();
+        if (window == null)
+            return null;
+        return getWorkbench().getActiveWorkbenchWindow().getActivePage();
+    }    
 }
