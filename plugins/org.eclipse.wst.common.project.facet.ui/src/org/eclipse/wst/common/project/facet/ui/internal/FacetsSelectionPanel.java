@@ -676,7 +676,7 @@ public final class FacetsSelectionPanel
             }
         }
 
-        this.tree.refresh();
+        refresh();
         this.runtimesPanel.refresh();
         updateValidationDisplay();
     }
@@ -715,7 +715,7 @@ public final class FacetsSelectionPanel
             this.tree.setChecked( trd, true );
         }
 
-        this.tree.refresh();
+        refresh();
         this.runtimesPanel.refresh();
         refreshPresetsCombo();
         updateValidationDisplay();
@@ -724,14 +724,14 @@ public final class FacetsSelectionPanel
     public void addFilter( final IFilter filter )
     {
         this.filters.add( filter );
-        this.tree.refresh();
+        refresh();
         refreshPresetsCombo();
     }
 
     public void removeFilter( final IFilter filter )
     {
         this.filters.remove( filter );
-        this.tree.refresh();
+        refresh();
         refreshPresetsCombo();
     }
 
@@ -1018,6 +1018,16 @@ public final class FacetsSelectionPanel
         }
 
         notifyProjectFacetsListeners();
+    }
+    
+    private void refresh()
+    {
+        // Somehow the checked state of nested items gets lost when a refresh
+        // is performed, so we have to do this workaround.
+        
+        final Object[] checked = this.tree.getCheckedElements();
+        this.tree.refresh();
+        this.tree.setCheckedElements( checked );
     }
     
     private void refreshPresetsCombo()
@@ -1455,6 +1465,11 @@ public final class FacetsSelectionPanel
         {
             return ! getVersions().isEmpty();
         }
+        
+        public String toString()
+        {
+            return this.current.toString();
+        }
     }
 
     private final class ContentProvider
@@ -1731,7 +1746,7 @@ public final class FacetsSelectionPanel
                     if( trd.getCurrentVersion() != fv )
                     {
                         trd.setCurrentVersion( fv );
-                        FacetsSelectionPanel.this.tree.refresh();
+                        refresh();
                         
                         if( trd.isSelected() )
                         {

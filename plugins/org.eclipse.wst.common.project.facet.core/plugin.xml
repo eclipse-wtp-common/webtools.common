@@ -59,4 +59,12 @@
       class="org.eclipse.wst.common.project.facet.core.internal.BasicFacetedProjectValidator"/>
   </extension>    
   
+  <extension point="org.eclipse.core.runtime.adapters">
+    <factory 
+      class="org.eclipse.wst.common.project.facet.core.internal.FacetedProjectAdapter" 
+      adaptableType="org.eclipse.core.resources.IProject">
+      <adapter type="org.eclipse.wst.common.project.facet.core.IFacetedProject"/>
+    </factory>
+  </extension>
+  
 </plugin>
