@@ -19,16 +19,18 @@ import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 public class HelloOperationExtension extends AbstractDataModelOperation {
 
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-		System.out.println(getClass().getName() + " execute");
+		System.out.println(getClass().getName() + " execute"); //$NON-NLS-1$
 		return OK_STATUS;
 	}
 
 	public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-		System.out.println(getClass().getName() + " redo");
-		return OK_STATUS;	}
+		System.out.println(getClass().getName() + " redo"); //$NON-NLS-1$
+		return OK_STATUS;
+	}
 
 	public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-		System.out.println(getClass().getName() + " undo");
-		return OK_STATUS;	}
+		System.out.println(getClass().getName() + " undo"); //$NON-NLS-1$
+		return OK_STATUS;
+	}
 
 }

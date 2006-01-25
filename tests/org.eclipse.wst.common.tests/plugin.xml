@@ -120,10 +120,10 @@
          point="org.eclipse.wst.common.frameworks.OperationExtension"
          id="org.eclipse.wst.common.frameworks.datamodel.tests.extended">
       <operationExtension
-            id="org.eclipse.jst.j2ee.application.internal.operations.EARComponentCreationOperation"
-            postOperationClass="org.eclipse.wst.common.frameworks.datamodel.tests.HelloOperationExtension"
-            preOperationClass="org.eclipse.wst.common.frameworks.datamodel.tests.HelloOperationExtension"/>
-  </extension>
+            id="org.eclipse.jst.j2ee.internal.web.archive.operations.WebComponentExportOperation"
+            preOperationClass="org.eclipse.wst.common.frameworks.datamodel.tests.HelloPreOperationExtension"
+            postOperationClass="org.eclipse.wst.common.frameworks.datamodel.tests.HelloPostOperationExtension"/>
+   </extension>
    -->
   
 </plugin>
