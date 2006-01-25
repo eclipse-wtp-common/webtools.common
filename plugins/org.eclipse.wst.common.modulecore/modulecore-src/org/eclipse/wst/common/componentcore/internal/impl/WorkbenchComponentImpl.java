@@ -2,16 +2,19 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchComponentImpl.java,v 1.7 2005/10/18 22:25:44 cbridgha Exp $
+ * $Id: WorkbenchComponentImpl.java,v 1.7.2.1 2006/01/25 15:01:18 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
@@ -131,6 +134,8 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	private static final ComponentResource[] NO_MODULE_RESOURCES = new ComponentResource[0];
 
 	private URI handle;
+	
+	private IPath defaultSourceRoot;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -138,6 +143,17 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	 */
 	protected WorkbenchComponentImpl() {
 		super();
+	}
+	private IPath getFirstRootSource() {
+		
+		List res = getResources();
+		for (Iterator iter = res.iterator(); iter.hasNext();) {
+			ComponentResource element = (ComponentResource) iter.next();
+			if (element.getRuntimePath().equals(new Path("/")))
+				return element.getSourcePath();
+			
+		}	
+		return null;
 	}
 
 	/**
@@ -460,6 +476,16 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	public boolean exists(IPath aSourcePath, int resourceFlag) { 
 		ResourceTreeRoot resourceTreeRoot = ResourceTreeRoot.getSourceResourceTreeRoot(this);
 		return resourceTreeRoot.exists(aSourcePath, resourceFlag); 
+	}
+	
+	public IPath getDefaultSourceRoot() {
+		if (defaultSourceRoot == null)
+			defaultSourceRoot = getFirstRootSource();
+		return defaultSourceRoot;
+	}
+	
+	public void setDefaultSourceRoot(IPath defaultSourceRoot) {
+		this.defaultSourceRoot = defaultSourceRoot;
 	}
   
 
