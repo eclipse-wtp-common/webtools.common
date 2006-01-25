@@ -913,15 +913,32 @@ public final class FacetsSelectionPanel
                 = (ContentProvider) this.tree.getContentProvider();
 
             final Object[] children = cp.getChildren( el );
-
+            int selected = 0;
+            
             for( int i = 0; i < children.length; i++ )
             {
                 final TableRowData trd = (TableRowData) children[ i ];
-                trd.setSelected( checked );
-                this.tree.setChecked( trd, checked );
+                
+                if( ! trd.isFixed() )
+                {
+                    trd.setSelected( checked );
+                    this.tree.setChecked( trd, checked );
+                }
+                
+                if( trd.isSelected() )
+                {
+                    selected++;
+                }
             }
-
-            this.tree.setGrayed( el, false );
+            
+            if( selected == 0 || selected == children.length )
+            {
+                this.tree.setGrayed( el, false );
+            }
+            else
+            {
+                this.tree.setGrayChecked( el, true );
+            }
         }
 
         updateValidationDisplay();
@@ -1045,10 +1062,13 @@ public final class FacetsSelectionPanel
              itr1.hasNext(); )
         {
             final IPreset preset = (IPreset) itr1.next();
+            final Set facets = preset.getProjectFacets();
             boolean applicable = true;
             
-            for( Iterator itr2 = preset.getProjectFacets().iterator(); 
-                 itr2.hasNext(); )
+            // All of the facets listed in the preset and their versions
+            // must be selectable.
+            
+            for( Iterator itr2 = facets.iterator(); itr2.hasNext(); )
             {
                 final IProjectFacetVersion fv
                     = (IProjectFacetVersion) itr2.next();
@@ -1057,6 +1077,29 @@ public final class FacetsSelectionPanel
                 final TableRowData trd = findTableRowData( f );
                 
                 if( ! trd.getVersions().contains( fv ) )
+                {
+                    applicable = false;
+                    break;
+                }
+            }
+            
+            // The preset must span across all of the fixed facets.
+            
+            for( Iterator itr2 = this.fixed.iterator(); itr2.hasNext(); )
+            {
+                final IProjectFacet f = (IProjectFacet) itr2.next();
+                boolean found = false;
+                
+                for( Iterator itr3 = f.getVersions().iterator(); itr3.hasNext(); )
+                {
+                    if( facets.contains( (IProjectFacetVersion) itr3.next() ) )
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if( ! found )
                 {
                     applicable = false;
                     break;
