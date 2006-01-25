@@ -59,6 +59,7 @@ import org.eclipse.core.runtime.IStatus;
  * 
  * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider
  * @see org.eclipse.wst.common.frameworks.datamodel.DataModelFactory
+ * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation
  * 
  * @since 1.0
  */
@@ -89,12 +90,14 @@ public interface IDataModel {
 	 * Returns the default operation to execute against this IDataModel.
 	 * </p>
 	 * <p>
-	 * An IDataModel implementor defines this in IDataModelProvider.
+	 * An IDataModel implementor defines this in IDataModelProvider. If the IDataModelProvider does
+	 * not define an operation, an empty operation will be returned; <code>null</code> will never
+	 * be returned.
 	 * </p>
 	 * 
 	 * @see IDataModelProvider#getDefaultOperation()
 	 * 
-	 * @return the default operation
+	 * @return the default operation or an empty operation; never <code>null</code>.
 	 */
 	public IDataModelOperation getDefaultOperation();
 
@@ -118,7 +121,7 @@ public interface IDataModel {
 	 * This method should not be called by clients.
 	 * </p>
 	 * 
-	 * @return a List of Objects adaptable to IProject
+	 * @return a List of Objects adaptable to IProject or an empty list; never <code>null</code>.
 	 * 
 	 * @see IDataModelProvider#getExtendedContext()
 	 */
@@ -178,8 +181,8 @@ public interface IDataModel {
 
 	/**
 	 * <p>
-	 * A convenience method for getting ints. If the property is set then this method is equavalent
-	 * to:
+	 * A convenience method for getting ints. If the property is set or has a default value then
+	 * this method is equavalent to:
 	 * </p>
 	 * <p>
 	 * <code>((Integer)getProperty(propertyName)).intValue();</code>
@@ -199,8 +202,8 @@ public interface IDataModel {
 
 	/**
 	 * <p>
-	 * A convenience method for getting booleans. If the property is set then this method is
-	 * equavalent to:
+	 * A convenience method for getting booleans. If the property is set or has a default value then
+	 * this method is equavalent to:
 	 * </p>
 	 * <p>
 	 * <code>((Boolean)getProperty(propertyName)).booleanValue();</code>
@@ -220,11 +223,11 @@ public interface IDataModel {
 
 	/**
 	 * <p>
-	 * A convenience method for getting Strings. If the property is set then this method is
-	 * equavalent to:
+	 * A convenience method for getting Strings. If the property is set or has a default value then
+	 * this method is equavalent to:
 	 * </p>
 	 * <p>
-	 * <code>(String)getProperty(propertyName)</code>
+	 * <code>(String)getProperty(propertyName);</code>
 	 * </p>
 	 * <p>
 	 * <code>""</code> is returned if a call to getProperty(propertyName) returns
@@ -242,7 +245,7 @@ public interface IDataModel {
 	 * {@link #getProperty(String)} will return the same propertyValue.
 	 * </p>
 	 * <p>
-	 * When a propertyValue other than <code>null</code> is set, then the property is considered
+	 * When a propertyValue other than <code>null</code> is set, the property is considered
 	 * "set" (see {@link #isPropertySet(String)}), conversly, a propertyValue of <code>null</code>
 	 * is considered "unset".
 	 * </p>

@@ -11,6 +11,8 @@
 package org.eclipse.wst.common.frameworks.internal.datamodel.ui;
 
 import java.lang.reflect.InvocationTargetException;
+
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -40,6 +42,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	private PageGroupManager pageGroupManager;
 	private IDataModel dataModel;
 	private AddablePageGroup rootPageGroup;
+	private IDataModelOperation rootOperation;
 
 	// private IWizardPage firstpage;
 
@@ -167,7 +170,9 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 			if (prePerformFinish()) {
 				storeDefaultSettings();
 
-				wasSuccessful = pageGroupManager.runAllRemainingOperations();
+				//wasSuccessful = pageGroupManager.runAllRemainingOperations();
+				wasSuccessful = runOperations().getSeverity() != IStatus.ERROR;
+				
 				postPerformFinish();
 			}
 		} catch (Throwable exc) {
@@ -176,6 +181,29 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 		}
 
 		return wasSuccessful;
+	}
+	
+	private IStatus runOperations() {
+		final IStatus[] status = new IStatus[1];
+		IRunnableWithProgress runnable = new IRunnableWithProgress() {
+			public void run(IProgressMonitor monitor) {
+				try {
+					status[0] =rootOperation.execute(monitor, null);
+				} catch (ExecutionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+		try {
+			getContainer().run(runForked(), isCancelable(), runnable);
+		} catch (Throwable exc) {
+			Logger.getLogger().logError(exc);
+			ErrorDialog.openError(getShell(), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_0, new Object[]{getWindowTitle()}), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_1, new Object[]{getWindowTitle()}), exc, 0, false); //$NON-NLS-1$ //$NON-NLS-2$
+			status[0] = new Status(IStatus.ERROR, "id", 0, exc.getMessage(), exc); //$NON-NLS-1$
+		}
+
+		return status[0];
 	}
 
 	public boolean performCancel() {
@@ -288,7 +316,8 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 
 	private void init() {
 		dataModelManager = new DataModelManager(getDataModel());
-		operationManager = new WizardOperationManager(dataModelManager, getRootOperation());
+		rootOperation = getRootOperation(); 
+		operationManager = new WizardOperationManager(dataModelManager, rootOperation);
 		rootPageGroup = createRootPageGroup();
 		pageGroupManager = new PageGroupManager(operationManager, dataModelManager, rootPageGroup);
 	}
