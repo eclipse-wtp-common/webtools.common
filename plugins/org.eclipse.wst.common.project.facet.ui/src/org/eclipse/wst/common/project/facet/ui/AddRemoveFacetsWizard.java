@@ -118,7 +118,7 @@ public class AddRemoveFacetsWizard
         }
         
         this.facetsSelectionPage 
-            = new FacetsSelectionPage( context, base );
+            = new FacetsSelectionPage( this.context, base );
         
         if( this.fproj != null )
         {

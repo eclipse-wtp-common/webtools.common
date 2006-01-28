@@ -98,6 +98,8 @@ public final class FacetsSelectionPanel
     implements ISelectionProvider
 
 {
+    private static final String WIDTH = "width"; //$NON-NLS-1$
+    private static final String HEIGHT = "height"; //$NON-NLS-1$
     private static final String CW_FACET = "cw.facet"; //$NON-NLS-1$
     private static final String CW_VERSION = "cw.version"; //$NON-NLS-1$
     private static final String SASH1W1 = "sash.1.weight.1"; //$NON-NLS-1$
@@ -118,6 +120,7 @@ public final class FacetsSelectionPanel
     }
 
     private final IDialogSettings settings;
+    private final Composite topComposite;
     private final SashForm sform1;
     private final SashForm sform2;
     private final Label presetsLabel;
@@ -202,23 +205,53 @@ public final class FacetsSelectionPanel
             temp = root.addNewSection( getClass().getName() );
         }
         
+        if( temp.get( WIDTH ) == null ) temp.put( WIDTH, 600 );
+        if( temp.get( HEIGHT ) == null ) temp.put( HEIGHT, 300 );
         if( temp.get( CW_FACET ) == null ) temp.put( CW_FACET, 200 );
         if( temp.get( CW_VERSION ) == null ) temp.put( CW_VERSION, 100 );
         if( temp.get( SASH1W1 ) == null ) temp.put( SASH1W1, 60 );
         if( temp.get( SASH1W2 ) == null ) temp.put( SASH1W2, 40 );
         if( temp.get( SASH2W1 ) == null ) temp.put( SASH2W1, 70 );
         if( temp.get( SASH2W2 ) == null ) temp.put( SASH2W2, 30 );
-
+        
         this.settings = temp;
 
         // Layout the panel.
 
-        setLayout( new GridLayout( 4, false ) );
+        final GridLayout layout = new GridLayout( 1, false );
+        layout.marginWidth = 0;
+        layout.marginHeight = 0;
         
-        this.presetsLabel = new Label( this, SWT.NONE );
+        setLayout( layout );
+        
+        final GridData topgd = gdfill();
+        topgd.heightHint = this.settings.getInt( HEIGHT );
+        topgd.widthHint = this.settings.getInt( WIDTH );
+        
+        this.topComposite = new Composite( this, SWT.NONE );
+        this.topComposite.setLayout( new GridLayout( 4, false ) );
+        this.topComposite.setLayoutData( topgd );
+        
+        this.topComposite.addListener
+        (
+            SWT.Resize,
+            new Listener()
+            {
+                public void handleEvent( final Event event )
+                {
+                    final Point size 
+                        = FacetsSelectionPanel.this.topComposite.getSize();
+                    
+                    FacetsSelectionPanel.this.settings.put( WIDTH, size.x );
+                    FacetsSelectionPanel.this.settings.put( HEIGHT, size.y );
+                }
+            }
+        );
+
+        this.presetsLabel = new Label( this.topComposite, SWT.NONE );
         this.presetsLabel.setText( "Presets: " );
         
-        this.presetsCombo = new Combo( this, SWT.READ_ONLY );
+        this.presetsCombo = new Combo( this.topComposite, SWT.READ_ONLY );
         this.presetsCombo.setLayoutData( gdhfill() );
 
         this.presetsCombo.addSelectionListener
@@ -232,7 +265,7 @@ public final class FacetsSelectionPanel
             }
         );
         
-        this.savePresetButton = new Button( this, SWT.PUSH );
+        this.savePresetButton = new Button( this.topComposite, SWT.PUSH );
         this.savePresetButton.setText( "Save" );
         this.savePresetButton.setLayoutData( whint( new GridData(), 60 ) );
         
@@ -247,7 +280,7 @@ public final class FacetsSelectionPanel
             }
         );
 
-        this.deletePresetButton = new Button( this, SWT.PUSH );
+        this.deletePresetButton = new Button( this.topComposite, SWT.PUSH );
         this.deletePresetButton.setText( "Delete" );
         this.deletePresetButton.setLayoutData( whint( new GridData(), 60 ) );
         
@@ -264,9 +297,9 @@ public final class FacetsSelectionPanel
         
         refreshPresetsCombo();
 
-        this.sform1 = new SashForm( this, SWT.HORIZONTAL | SWT.SMOOTH );
+        this.sform1 = new SashForm( this.topComposite, SWT.HORIZONTAL | SWT.SMOOTH );
         this.sform1.setLayoutData( hspan( gdfill(), 4 ) );
-
+        
         this.sform2 = new SashForm( this.sform1, SWT.VERTICAL | SWT.SMOOTH );
         this.sform2.setLayoutData( hspan( gdfill(), 4 ) );
         
@@ -297,7 +330,7 @@ public final class FacetsSelectionPanel
             {
                 public void handleEvent( final Event event )
                 {
-                    settings.put( CW_FACET, colFacet.getWidth() );
+                    FacetsSelectionPanel.this.settings.put( CW_FACET, FacetsSelectionPanel.this.colFacet.getWidth() );
                 }
             }
         );
@@ -314,7 +347,7 @@ public final class FacetsSelectionPanel
             {
                 public void handleEvent( final Event event )
                 {
-                    settings.put( CW_VERSION, colVersion.getWidth() );
+                    FacetsSelectionPanel.this.settings.put( CW_VERSION, FacetsSelectionPanel.this.colVersion.getWidth() );
                 }
             }
         );
@@ -382,9 +415,9 @@ public final class FacetsSelectionPanel
             {
                 public void handleEvent( final Event event )
                 {
-                    final int[] weights = sform2.getWeights();
-                    settings.put( SASH2W1, weights[ 0 ] );
-                    settings.put( SASH2W2, weights[ 1 ] );
+                    final int[] weights = FacetsSelectionPanel.this.sform2.getWeights();
+                    FacetsSelectionPanel.this.settings.put( SASH2W1, weights[ 0 ] );
+                    FacetsSelectionPanel.this.settings.put( SASH2W2, weights[ 1 ] );
                 }
             }
         );
@@ -428,9 +461,9 @@ public final class FacetsSelectionPanel
             {
                 public void handleEvent( final Event event )
                 {
-                    final int[] weights = sform1.getWeights();
-                    settings.put( SASH1W1, weights[ 0 ] );
-                    settings.put( SASH1W2, weights[ 1 ] );
+                    final int[] weights = FacetsSelectionPanel.this.sform1.getWeights();
+                    FacetsSelectionPanel.this.settings.put( SASH1W1, weights[ 0 ] );
+                    FacetsSelectionPanel.this.settings.put( SASH1W2, weights[ 1 ] );
                 }
             }
         );
@@ -442,7 +475,7 @@ public final class FacetsSelectionPanel
         this.sform1.setWeights( weights1 );
         this.sform1.setMaximizedControl( this.sform2 );
         
-        this.showHideRuntimesButton = new Button( this, SWT.PUSH );
+        this.showHideRuntimesButton = new Button( this.topComposite, SWT.PUSH );
         this.showHideRuntimesButton.setText( Resources.showRuntimes );
         GridData gd = halign( hspan( new GridData(), 4 ), GridData.END );
         gd = whint( gd, getPreferredWidth( this.showHideRuntimesButton ) + 15 );
@@ -956,7 +989,7 @@ public final class FacetsSelectionPanel
         
         // What has been removed?
         
-        for( Iterator itr = base.iterator(); itr.hasNext(); )
+        for( Iterator itr = this.base.iterator(); itr.hasNext(); )
         {
             final IProjectFacetVersion f
                 = (IProjectFacetVersion) itr.next();
@@ -974,7 +1007,7 @@ public final class FacetsSelectionPanel
             final IProjectFacetVersion f 
                 = (IProjectFacetVersion) itr.next();
             
-            if( ! base.contains( f ) )
+            if( ! this.base.contains( f ) )
             {
                 this.actions.add( createAction( old, Action.Type.INSTALL, f ) );
             }
@@ -1092,7 +1125,7 @@ public final class FacetsSelectionPanel
                 
                 for( Iterator itr3 = f.getVersions().iterator(); itr3.hasNext(); )
                 {
-                    if( facets.contains( (IProjectFacetVersion) itr3.next() ) )
+                    if( facets.contains( itr3.next() ) )
                     {
                         found = true;
                         break;
@@ -1869,7 +1902,7 @@ public final class FacetsSelectionPanel
     {
         public Object[] getElements( final Object element )
         {
-            return problems.getChildren();
+            return FacetsSelectionPanel.this.problems.getChildren();
         }
 
         public void dispose() { }

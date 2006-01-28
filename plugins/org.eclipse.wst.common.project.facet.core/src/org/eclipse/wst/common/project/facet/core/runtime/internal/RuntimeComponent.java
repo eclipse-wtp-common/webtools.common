@@ -88,7 +88,7 @@ public final class RuntimeComponent
             
             try
             {
-                factory = rcv.getAdapterFactory( type );
+                factory = this.rcv.getAdapterFactory( type );
             }
             catch( CoreException e )
             {

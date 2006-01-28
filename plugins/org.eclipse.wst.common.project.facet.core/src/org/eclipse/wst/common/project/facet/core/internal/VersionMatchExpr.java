@@ -137,7 +137,7 @@ public final class VersionMatchExpr
     {
         final StringBuffer buf = new StringBuffer();
         
-        for( Iterator itr = subexprs.iterator(); itr.hasNext(); )
+        for( Iterator itr = this.subexprs.iterator(); itr.hasNext(); )
         {
             if( buf.length() > 0 ) buf.append( ',' );
             buf.append( itr.next().toString() );
@@ -165,7 +165,7 @@ public final class VersionMatchExpr
             
             final int result
                 = comp.compare( fv.getVersionString(), 
-                                param.getVersionString() );
+                                this.param.getVersionString() );
             
             return evaluate( result );
         }

@@ -513,7 +513,7 @@ public final class RuntimesPanel
         {
             if( isFilteredOut( (IRuntime) element ) )
             {
-                return COLOR_GREY;
+                return this.COLOR_GREY;
             }
             else
             {

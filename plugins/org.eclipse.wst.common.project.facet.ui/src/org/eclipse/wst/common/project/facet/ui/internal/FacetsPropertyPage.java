@@ -54,9 +54,9 @@ import org.eclipse.wst.common.project.facet.ui.AddRemoveFacetsWizard;
 
 public class FacetsPropertyPage extends PropertyPage 
 {
-    private IFacetedProject _project;
-    private TableViewer _viewer;
-    private Label _runtimeLabel;
+    private IFacetedProject project;
+    private TableViewer viewer;
+    private Label runtimeLabel;
 	
 	protected Control createContents(Composite parent) 
 	{
@@ -67,7 +67,7 @@ public class FacetsPropertyPage extends PropertyPage
 		{
 			final IProject project = (IProject)element;
 			try {
-				_project = ProjectFacetsManager.create(project);
+				this.project = ProjectFacetsManager.create(project);
 			}
 			catch (CoreException ce)
 			{
@@ -77,7 +77,7 @@ public class FacetsPropertyPage extends PropertyPage
 	        composite.setLayout(new GridLayout());
 	        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-			_runtimeLabel = new Label(composite, SWT.NONE);
+			this.runtimeLabel = new Label(composite, SWT.NONE);
 	        setRuntimeLabel();
             
             // quick hack to get a bit of separation.
@@ -105,8 +105,8 @@ public class FacetsPropertyPage extends PropertyPage
         composite.setLayout(layout);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-        _viewer = createTableViewer(composite);
-		_viewer.setInput(_project);
+        this.viewer = createTableViewer(composite);
+		this.viewer.setInput(this.project);
 		
 		// add the button for the facets wizard
 		final Button button = new Button(parent, SWT.PUSH);
@@ -116,13 +116,13 @@ public class FacetsPropertyPage extends PropertyPage
 				{
 					public void widgetSelected(SelectionEvent event)
 					{
-			            final IWizard wizard = new AddRemoveFacetsWizard( _project );
+			            final IWizard wizard = new AddRemoveFacetsWizard( FacetsPropertyPage.this.project );
 			            final WizardDialog dialog = new WizardDialog( getShell(), wizard );
 			            
 			            if (dialog.open() == Window.OK)
 			            {
 			            	// redisplay the facets information
-			            	_viewer.setInput(_project);
+                            FacetsPropertyPage.this.viewer.setInput(FacetsPropertyPage.this.project);
 			            	setRuntimeLabel();
 			            }
 					}
@@ -158,12 +158,12 @@ public class FacetsPropertyPage extends PropertyPage
 
 	private void setRuntimeLabel()
 	{
-        final IRuntime runtime = _project.getRuntime();
+        final IRuntime runtime = this.project.getRuntime();
         if (runtime != null)
-	        _runtimeLabel.setText(NLS.bind(Resources.runtimeLabel, _project.getRuntime().getName()));
+	        this.runtimeLabel.setText(NLS.bind(Resources.runtimeLabel, this.project.getRuntime().getName()));
         else
-        	_runtimeLabel.setText(Resources.runtimeText);
-        _runtimeLabel.redraw();
+        	this.runtimeLabel.setText(Resources.runtimeText);
+        this.runtimeLabel.redraw();
 	}
 	
 	private static class FacetsLabelProvider extends LabelProvider implements ITableLabelProvider

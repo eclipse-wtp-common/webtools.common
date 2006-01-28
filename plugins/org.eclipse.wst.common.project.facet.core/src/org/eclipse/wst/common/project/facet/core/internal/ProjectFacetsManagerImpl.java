@@ -1651,9 +1651,9 @@ public final class ProjectFacetsManagerImpl
         {
             final IResourceDelta delta = event.getDelta();
             
-            synchronized( projects )
+            synchronized( ProjectFacetsManagerImpl.this.projects )
             {
-                for( Iterator itr = projects.values().iterator(); 
+                for( Iterator itr = ProjectFacetsManagerImpl.this.projects.values().iterator(); 
                      itr.hasNext(); )
                 {
                     final FacetedProject fproj = (FacetedProject) itr.next();

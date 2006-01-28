@@ -38,7 +38,7 @@ public final class IndexedSet
     
     public boolean delete( final Object key )
     {
-        final Object value = index.get( key );
+        final Object value = this.index.get( key );
         
         if( value == null )
         {

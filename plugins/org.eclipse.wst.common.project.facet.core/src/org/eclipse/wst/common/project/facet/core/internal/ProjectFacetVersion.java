@@ -69,7 +69,7 @@ public final class ProjectFacetVersion
     
     public Versionable getVersionable()
     {
-        return (Versionable) this.facet;
+        return this.facet;
     }
 
     public IConstraint getConstraint()

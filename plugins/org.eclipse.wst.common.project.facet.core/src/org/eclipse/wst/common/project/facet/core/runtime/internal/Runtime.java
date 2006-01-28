@@ -73,7 +73,7 @@ public final class Runtime
     {
         if( this.supported == null )
         {
-            this.supported = RuntimeManagerImpl.getSupportedFacets( components );
+            this.supported = RuntimeManagerImpl.getSupportedFacets( this.components );
         }
             
         return this.supported.contains( fv );
