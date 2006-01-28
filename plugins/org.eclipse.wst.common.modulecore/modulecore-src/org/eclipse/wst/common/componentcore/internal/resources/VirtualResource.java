@@ -21,6 +21,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
@@ -29,6 +30,7 @@ import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeRoot;
+import org.eclipse.wst.common.componentcore.internal.impl.WorkbenchComponentImpl;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualContainer;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
@@ -141,6 +143,23 @@ public abstract class VirtualResource implements IVirtualResource {
 	}
 
 	public IPath getProjectRelativePath() {
+		StructureEdit moduleCore = null;
+		if (getRuntimePath().equals(new Path("/"))) {
+			try {
+				moduleCore = StructureEdit.getStructureEditForRead(getProject());
+				if (moduleCore != null) {
+					WorkbenchComponent aComponent = moduleCore.getComponent();
+					if (aComponent != null) {
+						if (((WorkbenchComponentImpl) aComponent).getDefaultSourceRoot() != null)
+							return ((WorkbenchComponentImpl) aComponent).getDefaultSourceRoot();
+					}
+				}
+			} finally {
+				if (moduleCore != null) {
+					moduleCore.dispose();
+				}
+			}
+		}
 		return getProjectRelativePaths()[0];
 	}
 	
