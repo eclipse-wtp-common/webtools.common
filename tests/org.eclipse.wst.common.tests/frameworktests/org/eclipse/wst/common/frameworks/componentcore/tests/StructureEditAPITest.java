@@ -4,11 +4,8 @@ import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
@@ -22,8 +19,10 @@ public class StructureEditAPITest extends TestCase {
 	public static final String WEB_MODULE_NAME = "WebModule1";
 	public static final URI moduleURI = URI.createURI("module:/resource/TestArtifactEdit/WebModule1");
 	public static final String EDIT_MODEL_ID = "jst.web";
+	public static final String EDITMODEL_STRESS = "stresstest";
 	private Path zipFilePath = new Path("TestData" + fileSep + "TestArtifactEdit.zip");
 	private IProject project;
+	
 
 
 	// /This should be extracted out, dont have time, just trying to get coverage
@@ -275,38 +274,6 @@ public class StructureEditAPITest extends TestCase {
 			assertNotNull(moduleCore);
 
 		}
-	}
-
-	public void testMultiThreadAccess() {
-		
-		Thread[] testJobs = new Thread[200];
-		for (int i = 0; i < testJobs.length; i++) {
-			Thread job = new Thread("Job " + i)
-		      {
-		        
-		        protected IStatus run(IProgressMonitor monitor)
-		        {
-		          try
-		          {
-		        	StructureEdit moduleCore = StructureEdit.getStructureEditForRead(project);
-		      		System.out.println(moduleCore.getWorkbenchModules());
-		      		moduleCore.dispose();
-		          }
-		          catch (Exception e)
-		          {
-		        	  e.printStackTrace();
-		        	  return Status.CANCEL_STATUS;
-		          }
-		          return Status.OK_STATUS;
-		        }
-		      };
-			testJobs[i] = job;	
-			}
-		for (int j = 0; j < testJobs.length; j++) {
-			Thread job = testJobs[j];
-			job.run();
-		}
-		
 	}
 
 	public void testPrepareProjectComponentsIfNecessary() {

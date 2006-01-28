@@ -24,6 +24,8 @@ public class AllTests extends TestCase {
 		suite.addTestSuite(ModuleCoreAPIFVTTest.class);
 		suite.addTestSuite(ModuleCoreURIConverterUnitTest.class);
 		suite.addTestSuite(StructureEditAPITest.class);
+		suite.addTestSuite(StructureEditStressTest.class);
+		
 		
 		return suite;
 	}
