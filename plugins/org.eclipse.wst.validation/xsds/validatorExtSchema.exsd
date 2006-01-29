@@ -48,6 +48,7 @@
             <element ref="dependentValidator" minOccurs="0" maxOccurs="1"/>
             <element ref="run"/>
             <element ref="markerId" minOccurs="0" maxOccurs="1"/>
+            <element ref="facet" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="to" type="string">
             <annotation>
@@ -223,6 +224,18 @@ This markerId element also needs a corresponding problemMarker extension to be d
       </annotation>
       <complexType>
          <attribute name="markerIdValue" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="facet">
+      <complexType>
+         <attribute name="facetId" type="string">
             <annotation>
                <documentation>
                   

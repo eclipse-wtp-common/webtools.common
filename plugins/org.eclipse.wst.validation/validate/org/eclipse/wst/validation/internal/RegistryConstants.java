@@ -68,4 +68,6 @@ public interface RegistryConstants {
 	static final String MARKER_ID = "markerId"; //$NON-NLS-1$
 	static final String MARKER_ID_VALUE = "markerIdValue"; //$NON-NLS-1$
 	static final boolean DEP_VAL_VALUE_DEFAULT = false;
+	static final String FACET = "facet"; //$NON-NLS-1$
+	static final String FACET_ID ="facetId"; //$NON-NLS-1$
 }

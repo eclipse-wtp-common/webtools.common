@@ -37,6 +37,7 @@ import org.osgi.framework.Bundle;
 public class ValidatorMetaData {
 	private ValidatorFilter[] _filters = null;
 	private ValidatorNameFilter[] _projectNatureFilters = null;
+	private String[] facetFilters = null;
 	private IValidator _validator = null;
 	private IWorkbenchContext _helper = null;
 	private String _validatorDisplayName = null;
@@ -83,6 +84,17 @@ public class ValidatorMetaData {
 	 */
 	/* package */void addProjectNatureFilters(ValidatorNameFilter[] filters) {
 		_projectNatureFilters = filters;
+	}
+	
+	/**
+	 * Add the facet  filter(s).
+	 */
+	protected void addFacetFilters(String[] filters) {
+		facetFilters = filters;
+	}
+	
+	protected String[] getFacetFilters() {
+		return facetFilters;
 	}
 
 	public List getNameFilters() {

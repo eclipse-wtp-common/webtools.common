@@ -13,6 +13,7 @@ package org.eclipse.wst.validation.internal;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,10 +34,15 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IProjectFacet;
+import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.validation.internal.operations.IRuleGroup;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchContext;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
+import org.omg.CORBA.UNKNOWN;
 
 
 /**
@@ -447,6 +453,17 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			return null;
 		return markerId[0].getAttribute(MARKER_ID_VALUE);
 	}
+	
+	public String[] getFacetIds(IConfigurationElement element) {
+		IConfigurationElement[] facets = element.getChildren(FACET);
+		if (facets.length == 0)
+			return null;
+		String[] facetIds = new String[facets.length];
+		for (int i = 0; i < facets.length; i++) {
+			facetIds[i] = facets[i].getAttribute(FACET_ID);
+		}
+		return facetIds;
+	}
 
 	/**
 	 * Return the name of the helper class associated with the IValidator.
@@ -836,13 +853,11 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				entry.setText("IProject is " + String.valueOf(project)); //$NON-NLS-1$
 				logger.write(Level.FINEST, entry);
 			}
-
 			if (project == null) {
 				executionMap |= 0x1;
 				// vmds is already clear
 				return;
 			}
-
 			String[] projectNatures = null;
 			try {
 				projectNatures = project.getDescription().getNatureIds();
@@ -858,7 +873,6 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				}
 				return;
 			}
-
 			// If there are no project natures on a particular project,
 			// or if this project nature has no validators configured
 			// on it, return the validators which are configured on all
@@ -872,33 +886,13 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				if (logger.isLoggingLevel(Level.FINEST)) {
 					LogEntry entry = ValidationPlugin.getLogEntry();
 					entry.setSourceID("ValidationRegistryReader.getValidatorMetaData(IProject)"); //$NON-NLS-1$
-					//entry.setTokens(projectNatures);
+					// entry.setTokens(projectNatures);
 					entry.setText(projectNatures.toString());
 					logger.write(Level.FINEST, entry);
 				}
-
-				for (int i = 0; i < projectNatures.length; i++) {
-					String projectNatureId = projectNatures[i];
-					projVmds = (Set) _validators.get(projectNatureId);
-
-					if (projVmds == null) {
-						// no validators registered for that type of project id
-						executionMap |= 0x10;
-						continue;
-					}
-
-					Iterator iterator = projVmds.iterator();
-					while (iterator.hasNext()) {
-						ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
-						if (!vmds.contains(vmd)) {
-							vmds.add(vmd);
-						}
-					}
-				}
-
+				calculateVmdsForNatureAndFacets(vmds, projectNatures,project);
 				// Now filter out the validators which must not run on this project
 				removeExcludedProjects(project, vmds);
-
 				if (vmds.size() == 0) {
 					executionMap |= 0x20;
 					clone(getValidatorMetaDataUnknownProject(), vmds);
@@ -909,7 +903,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				LogEntry entry = ValidationPlugin.getLogEntry();
 				entry.setSourceID("ValidationRegistryReader.getValidatorMetaData(IProject)"); //$NON-NLS-1$
 				entry.setExecutionMap(executionMap);
-
+				
 				StringBuffer buffer = new StringBuffer();
 				Iterator iterator = vmds.iterator();
 				while (iterator.hasNext()) {
@@ -921,6 +915,65 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				logger.write(Level.FINER, entry);
 			}
 		}
+	}
+
+	/**
+	 * @param project
+	 * @param vmds
+	 * @param projectNatures
+	 */
+	private void calculateVmdsForNatureAndFacets(Set vmds, String[] projectNatures,IProject project) {
+		Set projVmds;
+		String[] projectFacetIds = getProjectFacetIds(project);
+		Iterator allValidators = getAllValidators().iterator();
+		while (allValidators.hasNext()) {
+			ValidatorMetaData vmd = (ValidatorMetaData) allValidators.next();
+			if (containsProjectFacet(vmd, projectFacetIds)) {
+				vmds.add(vmd);
+			}
+		}
+		for (int i = 0; i < projectNatures.length; i++) {
+			String projectNatureId = projectNatures[i];
+			projVmds = (Set) _validators.get(projectNatureId);
+			if (projVmds == null) {
+				continue;
+			}
+			Iterator iterator = projVmds.iterator();
+			while (iterator.hasNext()) {
+				ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
+				if (!vmds.contains(vmd) && (vmd.getFacetFilters() == null || vmd.getFacetFilters().length == 0)) {
+					vmds.add(vmd);
+				}
+			}
+		}
+	}
+
+	private boolean containsProjectFacet(ValidatorMetaData vmd, String[] projectFacetIds) {
+		String[] validatorFacets = vmd.getFacetFilters();
+		if (validatorFacets != null && validatorFacets.length > 0) {
+			if (projectFacetIds != null && projectFacetIds.length > 0) {
+				if (Arrays.asList(projectFacetIds).containsAll(Arrays.asList(validatorFacets)))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	private String[] getProjectFacetIds(IProject project) {
+		try {
+			IFacetedProject fProject = ProjectFacetsManager.create(project);
+			Object[] projectFacets = fProject.getProjectFacets().toArray();
+			String[] projectFacetIds = new String[projectFacets.length];
+			for (int i = 0; i < projectFacets.length; i++) {
+				IProjectFacet projectFacet = ((IProjectFacetVersion) projectFacets[i]).getProjectFacet();
+				projectFacetIds[i] = projectFacet.getId();
+			}
+			return projectFacetIds;
+		} catch (CoreException ce) {
+			Logger.getLogger().log(ce);
+		}
+
+		return null;
 	}
 
 	/*
@@ -1264,8 +1317,8 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		//
 		ValidatorMetaData vmd = new ValidatorMetaData();
 		vmd.addFilters(getFilters(element)); // validator may, or may not, have filters
-		vmd.addProjectNatureFilters(getProjectNatureFilters(element)); // validator may, or may not,
-		// specify a project nature
+		vmd.addProjectNatureFilters(getProjectNatureFilters(element)); // validator may, or may not, specify a project nature
+		vmd.addFacetFilters(getFacetIds(element));//validator may or may not specify the facet
 		vmd.addAggregatedValidatorNames(getAggregateValidatorsNames(element)); // if a validator
 		// aggregated another
 		// validator, it
