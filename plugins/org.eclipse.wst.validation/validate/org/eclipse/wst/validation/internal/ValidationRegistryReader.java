@@ -962,13 +962,15 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	private String[] getProjectFacetIds(IProject project) {
 		try {
 			IFacetedProject fProject = ProjectFacetsManager.create(project);
-			Object[] projectFacets = fProject.getProjectFacets().toArray();
-			String[] projectFacetIds = new String[projectFacets.length];
-			for (int i = 0; i < projectFacets.length; i++) {
-				IProjectFacet projectFacet = ((IProjectFacetVersion) projectFacets[i]).getProjectFacet();
-				projectFacetIds[i] = projectFacet.getId();
+			if (fProject != null) {
+				Object[] projectFacets = fProject.getProjectFacets().toArray();
+				String[] projectFacetIds = new String[projectFacets.length];
+				for (int i = 0; i < projectFacets.length; i++) {
+					IProjectFacet projectFacet = ((IProjectFacetVersion) projectFacets[i]).getProjectFacet();
+					projectFacetIds[i] = projectFacet.getId();
+				}
+				return projectFacetIds;
 			}
-			return projectFacetIds;
 		} catch (CoreException ce) {
 			Logger.getLogger().log(ce);
 		}
