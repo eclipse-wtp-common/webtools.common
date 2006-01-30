@@ -42,8 +42,6 @@ import org.eclipse.wst.validation.internal.operations.IRuleGroup;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchContext;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
-import org.omg.CORBA.UNKNOWN;
-
 
 /**
  * ValidationRegistryReader is a singleton who reads the plugin registry for Validator extensions.
