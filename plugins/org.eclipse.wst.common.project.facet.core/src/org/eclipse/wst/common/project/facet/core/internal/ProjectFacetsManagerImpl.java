@@ -341,6 +341,10 @@ public final class ProjectFacetsManagerImpl
                     fproj = new FacetedProject( project );
                     this.projects.put( project.getName(), fproj );
                 }
+                else
+                {
+                    fproj.refresh();
+                }
                 
                 return fproj;
             }
