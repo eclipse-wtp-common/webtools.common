@@ -64,7 +64,7 @@ public class RemoveReferenceComponentOperation extends AbstractDataModelOperatio
 					String deployPath = model.getStringProperty( ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH );
 					IPath path = new Path( deployPath );
 					
-					if( ref.getRuntimePath() != null && path != null && ref.getRuntimePath().equals( path )){
+					if( ref != null && ref.getRuntimePath() != null && path != null && ref.getRuntimePath().equals( path )){
 						removeRefereneceInComponent(sourceComp,sourceComp.getReference(comp.getName()));
 						IProject targetProject = comp.getProject();
 						targetprojectList.add(targetProject);
