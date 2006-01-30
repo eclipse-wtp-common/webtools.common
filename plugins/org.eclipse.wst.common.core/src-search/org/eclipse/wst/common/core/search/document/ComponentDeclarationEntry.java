@@ -25,7 +25,8 @@ import org.eclipse.wst.common.core.search.pattern.QualifiedName;
  */
 public class ComponentDeclarationEntry extends Entry
 {
-	QualifiedName name;
+	QualifiedName metaName;
+    QualifiedName name;
 
 	public QualifiedName getName()
 	{
@@ -36,4 +37,14 @@ public class ComponentDeclarationEntry extends Entry
 	{
 		this.name = name;
 	}
+
+  public QualifiedName getMetaName()
+  {
+    return metaName;
+  }
+
+  public void setMetaName(QualifiedName metaName)
+  {
+    this.metaName = metaName;
+  }
 }

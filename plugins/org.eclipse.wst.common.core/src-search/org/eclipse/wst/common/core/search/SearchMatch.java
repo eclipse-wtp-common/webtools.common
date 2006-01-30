@@ -11,9 +11,12 @@
 
 package org.eclipse.wst.common.core.search;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.wst.common.core.search.pattern.SearchPattern;
 
 /**
  * A search match represents the result of a search query.
@@ -148,5 +151,7 @@ public class SearchMatch implements IAdaptable
 	{
 		return Platform.getAdapterManager().getAdapter(this, adapter);
 	}
+    
+    public Map map = new HashMap(); 
 
 }
