@@ -12,6 +12,7 @@
 package org.eclipse.wst.common.core.search;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
@@ -74,10 +75,14 @@ public abstract class SearchParticipant
 	 * @param contentTypes
 	 * @return
 	 */
-	public boolean initialize(SearchPattern pattern, String[] contentTypes)
-	{
-		return false;
-	}
+	 public boolean isApplicable(SearchPattern pattern)
+	 {
+       return false;		 
+	 }
+	//public boolean initialize(SearchPattern pattern, String[] contentTypes)
+	//{
+	//	return false;
+	//}
 
 	/**
 	 * Notification that this participant's help is needed in a search.
@@ -132,7 +137,7 @@ public abstract class SearchParticipant
 	 *            the path of the document.
 	 * @return a search document
 	 */
-	public abstract SearchDocument getDocument(String documentPath);
+	public abstract SearchDocument createSearchDocument(String documentPath);
 
 	/**
 	 * Locates the matches in the given documents. This method should be called
@@ -158,14 +163,6 @@ public abstract class SearchParticipant
 			SearchRequestor requestor, IProgressMonitor monitor)
 			throws CoreException;
 
-	 // SAX : run the SAX parser and store enough information to support the requirements of the pattern
-    //       parser may only store a few entries to satisfy the pattern
-    //
-    // INDEX : if the INDEX info for the document and pattern is stale, recompute info
-    //         usually an index will compute all possibly require info at this time
-    //         bit there's no reason why the index can compute just enough for this pattern
-    //         and compute the rest when a different pattern arrives
-    //
 	public abstract void populateSearchDocument(SearchDocument document,
 			SearchPattern pattern);
 
@@ -193,8 +190,9 @@ public abstract class SearchParticipant
 		return scope;
 	}
 	
-	public void createSearchDocument(SearchDocumentSet set, SearchPattern pattern, SearchScope scope, IProgressMonitor monitor)
+	public void createSearchDocuments(SearchDocumentSet set, SearchPattern pattern, SearchScope scope, IProgressMonitor monitor)
 	{
+		Assert.isNotNull(id, "The SearchPartipants id has not been initalized");
 		IFile[] files = scope.enclosingFiles();
 		
 		for (int i = 0; i < files.length; i++)
@@ -202,14 +200,11 @@ public abstract class SearchParticipant
 			String location = files[i].getLocation().toString();
 			SearchDocument document = set.getSearchDocument(location, id);
 			if(document == null && id != null){
-				set.putSearchDocument(id, document = getDocument(location));
+				set.putSearchDocument(id, document = createSearchDocument(location));
 			}
 			populateSearchDocument(document, pattern); 
 			
 		}
 
-	}
-
-	
-	
+	}	
 }

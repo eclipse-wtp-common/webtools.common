@@ -102,7 +102,7 @@ public class SearchEngine
 					SearchScope newScope = participant.selectDocumentLocations(pattern, scope, monitor);
                     scopeArray[i] = newScope;
 					// participant creates search documents based on it's search scope
-					participant.createSearchDocument(set, pattern, newScope, subMonitor);
+					participant.createSearchDocuments(set, pattern, newScope, subMonitor);
                 }
                 catch(Exception e)
                 {                  

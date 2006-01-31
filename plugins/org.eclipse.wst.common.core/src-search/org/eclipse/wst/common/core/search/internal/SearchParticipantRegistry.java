@@ -144,8 +144,7 @@ public class SearchParticipantRegistry
 								.getSearchParticipant();
 						if (!SearchParticipant.class.isInstance(participant))
 							throw new ClassCastException();
-						if (participant.initialize(pattern, descriptor
-								.getSupportedContentTypes()))
+						if (participant.isApplicable(pattern))
 						{
 							result.add(participant);
 						}
