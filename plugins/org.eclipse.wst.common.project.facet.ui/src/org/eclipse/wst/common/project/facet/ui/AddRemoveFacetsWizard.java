@@ -18,6 +18,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -270,7 +273,16 @@ public class AddRemoveFacetsWizard
             }
         }
         
-        final Set actions = this.facetsSelectionPage.getActions();
+        final IWorkspaceRunnable wr = new IWorkspaceRunnable()
+        {
+            public void run( final IProgressMonitor monitor ) 
+            
+                throws CoreException
+                
+            {
+                performFinish( monitor );
+            }
+        };
         
         final IRunnableWithProgress op = new IRunnableWithProgress()
         {
@@ -279,29 +291,21 @@ public class AddRemoveFacetsWizard
                 throws InvocationTargetException, InterruptedException
                 
             {
-                monitor.beginTask( "", actions.size() );
-                
                 try
                 {
-                    try
-                    {
-                        performFinish( monitor );
-                    }
-                    catch( CoreException e )
-                    {
-                        throw new InvocationTargetException( e );
-                    }
+                    final IWorkspace ws = ResourcesPlugin.getWorkspace();
+                    ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, monitor );
                 }
-                finally
+                catch( CoreException e )
                 {
-                    monitor.done();
+                    throw new InvocationTargetException( e );
                 }
             }
         };
 
         try 
         {
-            getContainer().run( false, false, op );
+            getContainer().run( true, false, op );
         }
         catch( InterruptedException e ) 
         {
