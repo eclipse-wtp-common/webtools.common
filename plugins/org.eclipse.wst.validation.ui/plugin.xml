@@ -9,8 +9,9 @@
 <!-- By saying "adaptable=true", this item will appear on both IProject and IJavaProject -->
    <extension
          point="org.eclipse.ui.popupMenus">
-      <viewerContribution 
-            targetID="#CommonNavigatorPopupMenu"
+      <objectContribution
+            adaptable="true"
+            objectClass="org.eclipse.core.resources.IResource"
             id="ValidationMenuAction">
          <action
                label="%VBF_UI_POPUP_RUNVALIDATION"
@@ -19,7 +20,7 @@
                enablesFor="+"
                id="ValidationAction">
          </action>
-      </viewerContribution>
+      </objectContribution>      
    </extension>
   
 
