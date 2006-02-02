@@ -626,18 +626,26 @@ public final class FacetedProject
     
     private void notifyListeners()
     {
+        // Copy the list of listeners in order to avoid holding the monitor
+        // while calling the listeners. This is done to avoid potential 
+        // deadlocks.
+        
+        final Object[] copy;
+        
         synchronized( this.listeners )
         {
-            for( Iterator itr = this.listeners.iterator(); itr.hasNext(); )
+            copy = this.listeners.toArray();
+        }
+        
+        for( int i = 0; i < copy.length; i++ )
+        {
+            try
             {
-                try
-                {
-                    ( (IFacetedProjectListener) itr.next() ).projectChanged();
-                }
-                catch( Exception e )
-                {
-                    FacetCorePlugin.log( e );
-                }
+                ( (IFacetedProjectListener) copy[ i ] ).projectChanged();
+            }
+            catch( Exception e )
+            {
+                FacetCorePlugin.log( e );
             }
         }
     }
