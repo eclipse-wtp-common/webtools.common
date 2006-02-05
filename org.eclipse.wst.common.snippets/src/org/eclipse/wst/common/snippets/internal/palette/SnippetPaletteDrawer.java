@@ -13,7 +13,6 @@
 package org.eclipse.wst.common.snippets.internal.palette;
 
 import org.eclipse.gef.palette.PaletteDrawer;
-import org.eclipse.gef.palette.PaletteEntry;
 import org.eclipse.gef.palette.PaletteTemplateEntry;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.wst.common.snippets.core.ISnippetCategory;
