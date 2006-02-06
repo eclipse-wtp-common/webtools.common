@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: WorkbenchURIConverterImpl.java,v $$
- *  $$Revision: 1.4 $$  $$Date: 2005/05/11 16:11:09 $$ 
+ *  $$Revision: 1.5 $$  $$Date: 2006/02/06 22:05:46 $$ 
  */
 package org.eclipse.jem.util.emf.workbench;
 
@@ -494,7 +494,7 @@ public class WorkbenchURIConverterImpl extends URIConverterImpl implements Workb
 	public InputStream createPlatformResourceInputStream(String platformResourcePath) throws IOException {
 		IFile file = WORKSPACE_ROOT.getFile(new Path(platformResourcePath));
 		try {
-			if (!file.isLocal(IResource.DEPTH_ONE) || !file.isSynchronized(IResource.DEPTH_ONE)) {
+			if (!file.isSynchronized(IResource.DEPTH_ONE)) {
 				try {
 					File iofile = file.getFullPath().toFile();
 					if (iofile.exists() || file.exists())
