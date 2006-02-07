@@ -208,7 +208,7 @@ public class ResourceTreeNode {
 							// flesh out the tree
 							IResource eclipseRes = eclipseContainer.findMember(aPath);
 							if ((toCreateResourceAlways) || (eclipseRes != null)) {
-								newResource = (ComponentResource)transientChildResources.get(aPath);
+								newResource = (ComponentResource)transientChildResources.get(srcPath);
 								if (newResource == null) {
 								newResource = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentResource();
 								// Not setting the parent on this transient child resource
@@ -217,7 +217,7 @@ public class ResourceTreeNode {
 								newResource.setSourcePath(srcPath);
 								if (eclipseRes != null)
 									newResource.setOwningProject(eclipseRes.getProject());
-								transientChildResources.put(aPath,newResource);
+								transientChildResources.put(srcPath,newResource);
 								}
 								resultSet.add(newResource);
 							}
