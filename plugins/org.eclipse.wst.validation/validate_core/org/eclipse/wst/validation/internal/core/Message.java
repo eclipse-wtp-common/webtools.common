@@ -370,4 +370,9 @@ public class Message implements IMessage {
 		}
 		messageAttributes.put(attributeName,value);
 	}
+	
+	public HashMap getAttributes() {
+		  return messageAttributes;
+	}
+
 }

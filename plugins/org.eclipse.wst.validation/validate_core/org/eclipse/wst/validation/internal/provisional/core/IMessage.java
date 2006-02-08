@@ -11,6 +11,7 @@
 package org.eclipse.wst.validation.internal.provisional.core;
 
 
+import java.util.HashMap;
 import java.util.Locale;
 
 /**
@@ -327,4 +328,11 @@ public interface IMessage {
 	 *         The object that has the problem.
 	 */
 	public void setTargetObject(Object obj);
+	
+	/**
+	  * return all the attributes of a Message object
+	  * @return
+	  */
+	public HashMap getAttributes();
+
 }
