@@ -187,15 +187,14 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 			}
 		}
 		
-		try{
-			if (!fixedFacets.isEmpty()) {
-					facetProj.setFixedProjectFacets(fixedFacets);
-			}
+		try {
+			fixedFacets.addAll(facetProj.getFixedProjectFacets());
+			facetProj.setFixedProjectFacets(fixedFacets);
 		
 			if (runtime != null ) {
 				addDefaultFacetsInProject(facetProj,runtime.getDefaultFacets( fixedFacets ));
 			}
-		}catch(CoreException e){
+		} catch(CoreException e){
 			Logger.getLogger().logError(e);
 			throw new ExecutionException(e.getMessage(), e);			
 		}
