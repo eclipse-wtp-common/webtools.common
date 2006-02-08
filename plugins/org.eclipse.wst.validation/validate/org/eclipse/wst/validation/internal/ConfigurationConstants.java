@@ -23,15 +23,17 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  */
 public interface ConfigurationConstants {
 	/* package */static final String ASYNC_SETTING = "runAsync"; //$NON-NLS-1$ // boolean (Use the global preferences or override)
-	/* package */static final String AUTO_SETTING = "autoValidate"; //$NON-NLS-1$ // boolean
-	/* package */static final String BUILD_SETTING = "runWhenBuild"; //$NON-NLS-1$ // boolean
+	public static final String DISABLE_VALIDATION_SETTING = "disableValidation"; //$NON-NLS-1$ // boolean
+	///* package */static final String AUTO_SETTING = "autoValidate"; //$NON-NLS-1$ // boolean
+	///* package */static final String BUILD_SETTING = "runWhenBuild"; //$NON-NLS-1$ // boolean
 
 	// Defaults for the preference and project values
 	
 	/* package */static String CURRENT_VERSION = (String) ValidationPlugin.getPlugin().getBundle().getHeaders().get(org.osgi.framework.Constants.BUNDLE_VERSION); //$NON-NLS-1$ // this is a constant, so it should be intern
 	/* package */static final boolean DEFAULT_ASYNC = true;
-	/* package */static final boolean DEFAULT_AUTO_SETTING = true;
-	/* package */static final boolean DEFAULT_BUILD_SETTING = true;
+	/* package */static final boolean DEFAULT_DISABLE_VALIDATION_SETTING = false;
+	///* package */static final boolean DEFAULT_AUTO_SETTING = true;
+	///* package */static final boolean DEFAULT_BUILD_SETTING = true;
 	/* package */static ValidatorMetaData[] DEFAULT_ENABLED_VALIDATORS = ValidationRegistryReader.getReader().getValidatorMetaDataArrayEnabledByDefault(); //$NON-NLS-1$ // store a copy here so that we don't modify the original and don't create a copy every time we need this value
 	/* package */static final int DEFAULT_MAXNUMMESSAGES = 50;
 	public static final int DEPTH_INFINITE = IResource.DEPTH_INFINITE;

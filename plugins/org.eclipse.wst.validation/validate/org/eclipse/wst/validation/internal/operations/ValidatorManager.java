@@ -491,9 +491,11 @@ public final class ValidatorManager {
 	 * does not have an auto-validate value set, is the global auto-validate preference on? 3. if 1
 	 * or 2 is true, does the project support auto-validate? 4. if 1/2, & 3, is auto-build on? 5. if
 	 * 1/2, 3, and 4, is there at least one incremental validator enabled on the project?
+	 * 
+	 * @deprecated auto validate is not used any more
 	 */
 	public boolean isAutoValidate(IProject project, boolean isGlobalAutoBuildOn) {
-		try {
+		/*try {
 			// 1. does the project have auto-validate on or off?
 			boolean isAutoValidate = ConfigurationManager.getManager().getProjectConfiguration(project).isAutoValidate();
 			if (!isAutoValidate) {
@@ -503,7 +505,7 @@ public final class ValidatorManager {
 			// 3. does the project support auto-validate?
 			// 4. is auto-build on?
 			// 5. is there at least one incremental validator enabled on the project?
-			/*
+			
 			 * Auto-validation, on the properties page, can be enabled under these conditions: 1.
 			 * the project supports auto-validation, AND 2. fhe platform's global "automatically
 			 * build" is selected, AND 3. at least one of the project's validators supports
@@ -511,7 +513,7 @@ public final class ValidatorManager {
 			 * it's not configured on the project. Without #2, the ValidationBuilder will not be
 			 * called because auto-building is turned off. Without #3, the ValidationBuilder will be
 			 * called, but there's no point because no validators can run.
-			 */
+			 
 			return canAutoValidateButtonBeEnabled(project, isGlobalAutoBuildOn);
 		} catch (InvocationTargetException exc) {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
@@ -529,7 +531,8 @@ public final class ValidatorManager {
 
 			// If the user's setting can't be retrieved, return the default
 			return ValidationConfiguration.getAutoValidateDefault();
-		}
+		}*/
+		return false;
 	}
 
 	public boolean canAutoValidateButtonBeEnabled(IProject project) {
@@ -1041,10 +1044,11 @@ public final class ValidatorManager {
 	 * messages allowed.
 	 * 
 	 * Enable a project to have an infinite number of messages.
+	 * @deprecated
 	 */
-	public void setNoMessageLimit(IProject project) {
+	public void setNoMessageLimit(IProject project) {/*
 		setMessageLimit(project, WorkbenchReporter.NO_MESSAGE_LIMIT);
-	}
+	*/}
 
 	/**
 	 * This method is for use by batch EJB deploy only. Only in batch mode is an infinitie number of
@@ -1078,8 +1082,9 @@ public final class ValidatorManager {
 
 	/**
 	 * This method is for use by the validation framework only.
+	 * @deprecated - message limits no longer used
 	 */
-	public void setMessageLimit(IProject project, int limit) {
+	public void setMessageLimit(IProject project, int limit) {/*
 		try {
 			if ((limit == WorkbenchReporter.NO_MESSAGE_LIMIT) || (limit >= 0)) {
 				ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
@@ -1102,7 +1107,7 @@ public final class ValidatorManager {
 				}
 			}
 		}
-	}
+	*/}
 
 	/**
 	 * @deprecated This method should be used only by the validation framework. If a validator

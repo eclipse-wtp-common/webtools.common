@@ -64,10 +64,10 @@ public class GlobalConfiguration extends ValidationConfiguration {
 	}
 
 	public void resetToDefault() {
-		setAutoValidate(getAutoValidateDefault());
+		//setAutoValidate(getAutoValidateDefault());
 		setEnabledValidators(getEnabledValidatorsDefault());
-		setMaximumNumberOfMessages(getMaximumNumberOfMessagesDefault());
-		setBuildValidate(getBuildValidateDefault());
+		//setMaximumNumberOfMessages(getMaximumNumberOfMessagesDefault());
+		//setBuildValidate(getBuildValidateDefault());
 		setCanProjectsOverride(getCanProjectsOverrideDefault());
 	}
 
@@ -123,9 +123,9 @@ public class GlobalConfiguration extends ValidationConfiguration {
 			}
 
 			setEnabledValidators(enabledValidators);
-			setAutoValidate(getValue(rootMarker, ConfigurationConstants.AUTO_SETTING, ConfigurationConstants.DEFAULT_AUTO_SETTING));
-			setBuildValidate(getValue(rootMarker, ConfigurationConstants.BUILD_SETTING, ConfigurationConstants.DEFAULT_BUILD_SETTING));
-			setMaximumNumberOfMessages(getValue(rootMarker, ConfigurationConstants.MAXNUMMESSAGES, ConfigurationConstants.DEFAULT_MAXNUMMESSAGES));
+			//setAutoValidate(getValue(rootMarker, ConfigurationConstants.AUTO_SETTING, ConfigurationConstants.DEFAULT_AUTO_SETTING));
+			//setBuildValidate(getValue(rootMarker, ConfigurationConstants.BUILD_SETTING, ConfigurationConstants.DEFAULT_BUILD_SETTING));
+			//setMaximumNumberOfMessages(getValue(rootMarker, ConfigurationConstants.MAXNUMMESSAGES, ConfigurationConstants.DEFAULT_MAXNUMMESSAGES));
 			setCanProjectsOverride(getValue(rootMarker, ConfigurationConstants.PREF_PROJECTS_CAN_OVERRIDE, PREF_PROJECTS_CAN_OVERRIDE_DEFAULT));
 
 			root.getWorkspace().deleteMarkers(marker);
@@ -165,9 +165,9 @@ public class GlobalConfiguration extends ValidationConfiguration {
 			// If it's null, then super.deserialize has already called resetToDefault to initialize
 			// this instance.
 			int canOverrideIndex = storedConfiguration.indexOf(ConfigurationConstants.PREF_PROJECTS_CAN_OVERRIDE);
-			int autoIndex = storedConfiguration.indexOf(ConfigurationConstants.AUTO_SETTING);
+			//int autoIndex = storedConfiguration.indexOf(ConfigurationConstants.AUTO_SETTING);
 
-			String canOverride = storedConfiguration.substring(canOverrideIndex + ConfigurationConstants.PREF_PROJECTS_CAN_OVERRIDE.length(), autoIndex);
+			String canOverride = storedConfiguration.substring(canOverrideIndex + ConfigurationConstants.PREF_PROJECTS_CAN_OVERRIDE.length());
 			setCanProjectsOverride(Boolean.valueOf(canOverride).booleanValue());
 		}
 	}
@@ -182,4 +182,6 @@ public class GlobalConfiguration extends ValidationConfiguration {
 		buffer.append(super.serialize());
 		return buffer.toString();
 	}
+
+	
 }

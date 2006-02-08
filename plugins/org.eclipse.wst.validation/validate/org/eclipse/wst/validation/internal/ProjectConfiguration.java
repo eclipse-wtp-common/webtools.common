@@ -248,34 +248,40 @@ public class ProjectConfiguration extends ValidationConfiguration {
 	/**
 	 * If the preferences should be used then the preference settings are returned; otherwise return
 	 * the project settings.
+	 * @deprecated - message limit no longer used
 	 */
 	public int getMaximumNumberOfMessages() throws InvocationTargetException {
-		if (useGlobalPreference()) {
+		/*if (useGlobalPreference()) {
 			return ConfigurationManager.getManager().getGlobalConfiguration().getMaximumNumberOfMessages();
 		}
-		return super.getMaximumNumberOfMessages();
+		return super.getMaximumNumberOfMessages();*/
+		return -1;
 	}
 
 	/**
 	 * If the preferences should be used then the preference settings are returned; otherwise return
 	 * the project settings.
+	 * @deprecated - do not use this setting as it is being replaced with setting at individual validator basis
 	 */
 	public boolean isAutoValidate() throws InvocationTargetException {
-		if (useGlobalPreference()) {
+		/*if (useGlobalPreference()) {
 			return ConfigurationManager.getManager().getGlobalConfiguration().isAutoValidate();
 		}
-		return super.isAutoValidate();
+		return super.isAutoValidate();*/
+		return false;
 	}
 
 	/**
 	 * If the preferences should be used then the preference settings are returned; otherwise return
 	 * the project settings.
+	 * @deprecated - do not use this setting as it is being replaced with setting at individual validator basis
 	 */
 	public boolean isBuildValidate() throws InvocationTargetException {
-		if (useGlobalPreference()) {
+		/*if (useGlobalPreference()) {
 			return ConfigurationManager.getManager().getGlobalConfiguration().isBuildValidate();
 		}
-		return super.isBuildValidate();
+		return super.isBuildValidate();*/
+		return false;
 	}
 
 	/**
@@ -293,10 +299,10 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		// The default values of the project is whatever the preference values are
 		GlobalConfiguration gp = ConfigurationManager.getManager().getGlobalConfiguration();
 
-		setAutoValidate(gp.isAutoValidate());
+		//setAutoValidate(gp.isAutoValidate());
 		setEnabledValidators(gp.getEnabledValidators());
-		setMaximumNumberOfMessages(gp.getMaximumNumberOfMessages());
-		setBuildValidate(gp.isBuildValidate());
+		//setMaximumNumberOfMessages(gp.getMaximumNumberOfMessages());
+		//setBuildValidate(gp.isBuildValidate());
 
 		// except for this field, which is unique to the project preferences
 		setDoesProjectOverride(getDoesProjectOverrideDefault());
@@ -306,10 +312,10 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		// The default values of the project is whatever the preference values are
 		GlobalConfiguration gp = ConfigurationManager.getManager().getGlobalConfiguration();
 
-		setAutoValidate(gp.isAutoValidate());
+		//setAutoValidate(gp.isAutoValidate());
 		setEnabledValidators(gp.getEnabledValidators());
-		setMaximumNumberOfMessages(gp.getMaximumNumberOfMessages());
-		setBuildValidate(gp.isBuildValidate());
+		//setMaximumNumberOfMessages(gp.getMaximumNumberOfMessages());
+		//setBuildValidate(gp.isBuildValidate());
 
 		// except for this field, which is unique to the project preferences
 		//setDoesProjectOverride(getDoesProjectOverrideDefault());
@@ -408,8 +414,8 @@ public class ProjectConfiguration extends ValidationConfiguration {
 			}
 			boolean override = doesProjectOverride();
 
-
-			boolVal = (Boolean) getValue(prjMarker, ConfigurationConstants.AUTO_SETTING);
+			//All the following settings are no longer used
+			/*boolVal = (Boolean) getValue(prjMarker, ConfigurationConstants.AUTO_SETTING);
 			if ((boolVal == null) || (!override)) {
 				setAutoValidate(gp.isAutoValidate());
 			} else {
@@ -428,7 +434,7 @@ public class ProjectConfiguration extends ValidationConfiguration {
 				setMaximumNumberOfMessages(gp.getMaximumNumberOfMessages());
 			} else {
 				setMaximumNumberOfMessages(intVal.intValue());
-			}
+			}*/
 
 			getResource().getWorkspace().deleteMarkers(marker);
 		} catch (CoreException exc) {
@@ -518,7 +524,7 @@ public class ProjectConfiguration extends ValidationConfiguration {
 			resetToDefault();
 		} else if (storedConfiguration != null) {
 			int prjOverrideIndex = storedConfiguration.indexOf(ConfigurationConstants.PRJ_OVERRIDEGLOBAL);
-			int autoIndex = storedConfiguration.indexOf(ConfigurationConstants.AUTO_SETTING);
+			int autoIndex = storedConfiguration.indexOf(ConfigurationConstants.DISABLE_VALIDATION_SETTING);
 
 			String prjOverride = null;
 			if (autoIndex < 0) {

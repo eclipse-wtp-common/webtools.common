@@ -38,9 +38,10 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  */
 public abstract class ValidationConfiguration {
 	private IResource _resource = null;
-	private boolean _autoValidate = getAutoValidateDefault();
-	private boolean _buildValidate = getBuildValidateDefault();
-	private int _maxMessages = getMaximumNumberOfMessagesDefault();
+	private boolean disableAllValidation = getDisableAllValidation();
+	//private boolean _autoValidate = getAutoValidateDefault();
+	//private boolean _buildValidate = getBuildValidateDefault();
+	//private int _maxMessages = getMaximumNumberOfMessagesDefault();
 	private String _version = null;
 	private Map _validators = null; // Map of all validators (ValidatorMetaData) configured on the
 	// project or installed globally. The value is a Boolean; TRUE
@@ -60,6 +61,11 @@ public abstract class ValidationConfiguration {
 			buffer.append(ConfigurationConstants.ELEMENT_SEPARATOR);
 		}
 		return buffer.toString();
+	}
+
+	private boolean getDisableAllValidation() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	public static String getEnabledElementsAsString(Object[] elements) {
@@ -136,20 +142,43 @@ public abstract class ValidationConfiguration {
 		_resource = resource;
 	}
 
+	/*
+	 * deprecated is no longer used by framework
+	 */
 	public boolean isAutoValidate() throws InvocationTargetException {
-		return _autoValidate;
+		//return _autoValidate;
+		return false;
 	}
 
+	/*
+	 * deprecated is no longer used by framework
+	 */
 	public void setAutoValidate(boolean auto) {
-		_autoValidate = auto;
+		//_autoValidate = auto;
 	}
 
+	/*
+	 * deprecated is no longer used by framework
+	 */
 	public boolean isBuildValidate() throws InvocationTargetException {
-		return _buildValidate;
+		//return _buildValidate;
+		return false;
 	}
 
+	/*
+	 * deprecated is no longer used by framework
+	 */
 	public void setBuildValidate(boolean build) {
-		_buildValidate = build;
+		//_buildValidate = build;
+		
+	}
+	
+	public boolean isDisableAllValidation() throws InvocationTargetException {
+		return disableAllValidation;
+	}
+
+	public void setDisableAllValidation(boolean allValidation) {
+		disableAllValidation = allValidation;
 	}
 
 	public boolean runAsync() throws InvocationTargetException {
@@ -348,13 +377,13 @@ public abstract class ValidationConfiguration {
 		return getDisabledValidators().length;
 	}
 
-	public int getMaximumNumberOfMessages() throws InvocationTargetException {
+	/*public int getMaximumNumberOfMessages() throws InvocationTargetException {
 		return _maxMessages;
 	}
 
 	public void setMaximumNumberOfMessages(int max) {
 		_maxMessages = max;
-	}
+	}*/
 
 	/**
 	 * The value returned from this method is guaranteed to be non-null.
@@ -656,10 +685,11 @@ public abstract class ValidationConfiguration {
 		up.setVersion(getVersion());
 		up.setResource(getResource());
 		up.setValidators(getValidators());
-		up.setAutoValidate(isAutoValidate());
-		up.setBuildValidate(isBuildValidate());
+		up.setDisableAllValidation(isDisableAllValidation());
+		//up.setAutoValidate(isAutoValidate());
+		//up.setBuildValidate(isBuildValidate());
 		up.setEnabledValidators(getEnabledValidators());
-		up.setMaximumNumberOfMessages(getMaximumNumberOfMessages());
+		//up.setMaximumNumberOfMessages(getMaximumNumberOfMessages());
 	}
 
 	/**
@@ -694,12 +724,14 @@ public abstract class ValidationConfiguration {
 
 	protected String serialize() throws InvocationTargetException {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(ConfigurationConstants.AUTO_SETTING);
-		buffer.append(String.valueOf(isAutoValidate()));
-		buffer.append(ConfigurationConstants.BUILD_SETTING);
-		buffer.append(String.valueOf(isBuildValidate()));
-		buffer.append(ConfigurationConstants.MAXNUMMESSAGES);
-		buffer.append(String.valueOf(getMaximumNumberOfMessages()));
+		buffer.append(ConfigurationConstants.DISABLE_VALIDATION_SETTING);
+		buffer.append(String.valueOf(isDisableAllValidation()));
+		//buffer.append(ConfigurationConstants.AUTO_SETTING);
+		//buffer.append(String.valueOf(isAutoValidate()));
+		//buffer.append(ConfigurationConstants.BUILD_SETTING);
+		//buffer.append(String.valueOf(isBuildValidate()));
+		//buffer.append(ConfigurationConstants.MAXNUMMESSAGES);
+		//buffer.append(String.valueOf(getMaximumNumberOfMessages()));
 		buffer.append(ConfigurationConstants.ASYNC_SETTING);
 		buffer.append(String.valueOf(runAsync()));
 		buffer.append(ConfigurationConstants.ENABLED_VALIDATORS);
@@ -719,34 +751,39 @@ public abstract class ValidationConfiguration {
 			resetToDefault();
 			return;
 		}
-
-		int autoIndex = storedConfiguration.indexOf(ConfigurationConstants.AUTO_SETTING);
-		int buildIndex = storedConfiguration.indexOf(ConfigurationConstants.BUILD_SETTING);
-		int maxIndex = storedConfiguration.indexOf(ConfigurationConstants.MAXNUMMESSAGES);
+		int disableValidationIndex = storedConfiguration.indexOf(ConfigurationConstants.DISABLE_VALIDATION_SETTING);
+		//int autoIndex = storedConfiguration.indexOf(ConfigurationConstants.AUTO_SETTING);
+		//int buildIndex = storedConfiguration.indexOf(ConfigurationConstants.BUILD_SETTING);
+		//int maxIndex = storedConfiguration.indexOf(ConfigurationConstants.MAXNUMMESSAGES);
 		int asyncIndex = storedConfiguration.indexOf(ConfigurationConstants.ASYNC_SETTING);
 		int enabledIndex = storedConfiguration.indexOf(ConfigurationConstants.ENABLED_VALIDATORS);
 		int versionIndex = storedConfiguration.indexOf(ConfigurationConstants.VERSION);
 
-		String auto = storedConfiguration.substring(autoIndex + ConfigurationConstants.AUTO_SETTING.length(), buildIndex);
-		String build = storedConfiguration.substring(buildIndex + ConfigurationConstants.BUILD_SETTING.length(), maxIndex);
-		String max = storedConfiguration.substring(maxIndex + ConfigurationConstants.MAXNUMMESSAGES.length(), asyncIndex);
+		String disableValidation = storedConfiguration.substring(disableValidationIndex + ConfigurationConstants.DISABLE_VALIDATION_SETTING.length(), asyncIndex);
+		//String auto = storedConfiguration.substring(autoIndex + ConfigurationConstants.AUTO_SETTING.length(), buildIndex);
+		//String build = storedConfiguration.substring(buildIndex + ConfigurationConstants.BUILD_SETTING.length(), maxIndex);
+		//String max = storedConfiguration.substring(maxIndex + ConfigurationConstants.MAXNUMMESSAGES.length(), asyncIndex);
 		String async = storedConfiguration.substring(asyncIndex + ConfigurationConstants.ASYNC_SETTING.length(), enabledIndex);
 		String enabled = storedConfiguration.substring(enabledIndex + ConfigurationConstants.ENABLED_VALIDATORS.length(), versionIndex);
 
-		setAutoValidate(Boolean.valueOf(auto).booleanValue());
-		setBuildValidate(Boolean.valueOf(build).booleanValue());
-		setMaximumNumberOfMessages(Integer.valueOf(max).intValue());
+		//setAutoValidate(Boolean.valueOf(auto).booleanValue());
+		//setBuildValidate(Boolean.valueOf(build).booleanValue());
+		//setMaximumNumberOfMessages(Integer.valueOf(max).intValue());
+		setDisableAllValidation(Boolean.valueOf(disableValidation).booleanValue());
 		setAsync(Boolean.valueOf(async).booleanValue());
 		setEnabledValidators(getStringAsEnabledElementsArray(enabled));
 	}
 
-	public static boolean getAutoValidateDefault() {
+	public static boolean getDisableValidationDefault() {
+		return ConfigurationConstants.DEFAULT_DISABLE_VALIDATION_SETTING;
+	}
+	/*public static boolean getAutoValidateDefault() {
 		return ConfigurationConstants.DEFAULT_AUTO_SETTING;
 	}
 
 	public static boolean getBuildValidateDefault() {
 		return ConfigurationConstants.DEFAULT_BUILD_SETTING;
-	}
+	}*/
 
 	public static ValidatorMetaData[] getEnabledValidatorsDefault() {
 		return ConfigurationConstants.DEFAULT_ENABLED_VALIDATORS;
@@ -765,5 +802,25 @@ public abstract class ValidationConfiguration {
 
 	public static boolean getAsyncDefault() {
 		return ConfigurationConstants.DEFAULT_ASYNC;
+	}
+	
+	public boolean isManualEnabled(ValidatorMetaData vmd) {
+		if (vmd == null) {
+			return false;
+		}
+		Boolean value = (Boolean) getValidatorMetaData().get(vmd);
+		if (value == null) 
+			return false;
+		return vmd.isManualValidation();
+	}
+
+	public boolean isBuildEnable(ValidatorMetaData vmd) {
+		if (vmd == null) {
+			return false;
+		}
+		Boolean value = (Boolean) getValidatorMetaData().get(vmd);
+		if (value == null) 
+			return false;
+		return vmd.isBuildValidation();
 	}
 }

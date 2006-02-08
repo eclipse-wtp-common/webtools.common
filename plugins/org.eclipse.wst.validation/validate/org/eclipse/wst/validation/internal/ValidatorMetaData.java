@@ -58,6 +58,8 @@ public class ValidatorMetaData {
 	private IConfigurationElement _helperClassElement = null;
 	private IConfigurationElement _validatorClassElement = null;
 	private boolean _cannotLoad = false;
+	private boolean manualValidation = true;
+	private boolean buildValidation = true;
 
 	/* package */ValidatorMetaData() {
 		//default
@@ -518,5 +520,21 @@ public class ValidatorMetaData {
 	 */
 	public void setMarkerId(String markerId) {
 		this.markerId = markerId;
+	}
+
+	public boolean isBuildValidation() {
+		return buildValidation;
+	}
+
+	public void setBuildValidation(boolean buildValidation) {
+		this.buildValidation = buildValidation;
+	}
+
+	public boolean isManualValidation() {
+		return manualValidation;
+	}
+
+	public void setManualValidation(boolean manualValidation) {
+		this.manualValidation = manualValidation;
 	}
 }
