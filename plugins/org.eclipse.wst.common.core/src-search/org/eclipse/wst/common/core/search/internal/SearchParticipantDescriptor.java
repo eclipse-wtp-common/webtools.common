@@ -11,9 +11,6 @@
 
 package org.eclipse.wst.common.core.search.internal;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.eclipse.core.expressions.EvaluationResult;
 import org.eclipse.core.expressions.Expression;
 import org.eclipse.core.expressions.ExpressionConverter;
@@ -28,8 +25,6 @@ public class SearchParticipantDescriptor
 {
 
 	private IConfigurationElement fElement;
-
-	private Set supportedContentTypes = new HashSet();
 
 	private SearchParticipant participant;
 
@@ -72,19 +67,19 @@ public class SearchParticipantDescriptor
 		return true;
 	}
 
+	/**
+	 * @deprecated No replacement
+	 */
 	public String[] getSupportedContentTypes()
 	{
-		return (String[]) supportedContentTypes
-				.toArray(new String[supportedContentTypes.size()]);
+		return new String[0];
 	}
 
+	/**
+	 * @deprecated No replacement
+	 */
 	public void addSupportedContentTypeId(String contentTypeId)
 	{
-		if (contentTypeId != null)
-		{
-			this.supportedContentTypes.add(contentTypeId);
-		}
-
 	}
 	
 	public String getElementId(){

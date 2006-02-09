@@ -21,13 +21,9 @@ public class SearchParticipantRegistryReader
 
 	protected static final String TAG_NAME = "searchParticipant"; //$NON-NLS-1$
 
-	protected static final String TAG_CONTENT_TYPE_BINDING = "contentTypeBinding"; //$NON-NLS-1$
-
 	protected static final String ATT_CLASS = "class"; //$NON-NLS-1$
 
 	protected static final String ATT_ID = "id"; //$NON-NLS-1$
-
-	protected static final String ATT_TYPE = "contentTypeId"; //$NON-NLS-1$
 
 	protected String pluginId, extensionPointId;
 
@@ -66,22 +62,8 @@ public class SearchParticipantRegistryReader
 					SearchParticipantDescriptor descriptor = new SearchParticipantDescriptor(
 							element);
 					registry.putSearchParticipant(id, descriptor);
-					IConfigurationElement[] elements = element
-							.getChildren(TAG_CONTENT_TYPE_BINDING);
-					for (int i = 0; i < elements.length; i++)
-					{
-						IConfigurationElement typeBinding = elements[i];
-						String type = typeBinding.getAttribute(ATT_TYPE);
-						if (type != null)
-						{
-							descriptor.addSupportedContentTypeId(type);
-							registry.putSearchParticipantForContentType(type,
-									id);
-						}
-					}
 				}
 			}
-
 		}
 	}
 }
