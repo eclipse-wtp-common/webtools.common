@@ -22,6 +22,12 @@ package org.eclipse.wst.common.core.search;
  * Also note that individual search participants may support additional options not
  * listed here. These search options should be formed so that a search participant can
  * safely ignore any that it does not understand.
+ * 
+ * <b>Note:</b> This class/interface is part of an interim API that is still under development and expected to
+ * change significantly before reaching stability. It is being made available at this early stage to solicit feedback
+ * from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken
+ * (repeatedly) as the API evolves.
+ * </p>
  */
 public interface ISearchOptions {
 
