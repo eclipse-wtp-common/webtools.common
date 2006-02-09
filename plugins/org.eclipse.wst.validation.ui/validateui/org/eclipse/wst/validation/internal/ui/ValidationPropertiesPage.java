@@ -51,8 +51,10 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.forms.events.IHyperlinkListener;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
@@ -458,36 +460,12 @@ public class ValidationPropertiesPage extends PropertyPage {
 			validatorGroupLayout.numColumns = 2;
 			validatorGroup.setLayout(validatorGroupLayout);
 			
-			Hyperlink link = new Hyperlink(validatorGroup,SWT.NONE);
-			link.setUnderlined(true);
-			Color color = new Color(validatorGroup.getDisplay(),new RGB(0,0,255) );
-			link.setForeground(color);
-			link.setText("Gloabl Preferences...");
-			link.addHyperlinkListener(new IHyperlinkListener() {
-					
-					public void hyperlinkUpdate(HyperlinkEvent e) {
-						
-						
-					}
-					
-					public void linkEntered(org.eclipse.ui.forms.events.HyperlinkEvent e) {
-						// TODO Auto-generated method stub
-						
-					}
-
-					public void linkExited(org.eclipse.ui.forms.events.HyperlinkEvent e) {
-						// TODO Auto-generated method stub
-						
-					}
-
-					public void linkActivated(org.eclipse.ui.forms.events.HyperlinkEvent e) {
-						ValidationPreferencePage globalPrefPage = new ValidationPreferencePage();
-					}
-
-				});
+//			FormToolkit toolKit =  new FormToolkit(validatorGroup.getDisplay());
+//			Hyperlink link = toolKit.createHyperlink(validatorGroup, "Gloabl Preferences...", SWT.RIGHT);
+			
+			
 			
 			GridData overrideData = new GridData(GridData.FILL_HORIZONTAL);
-			overrideData.horizontalSpan = 2;
 			overrideGlobalButton = new Button(validatorGroup, SWT.CHECK);
 			overrideGlobalButton.setLayoutData(overrideData);
 			overrideGlobalButton.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.PROP_BUTTON_OVERRIDE, new String[]{getProject().getName()}));
@@ -504,7 +482,44 @@ public class ValidationPropertiesPage extends PropertyPage {
 				}
 			});
 
+			Hyperlink link = new Hyperlink(validatorGroup,SWT.None);
+			GridData layout = new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_END);
+			link.setLayoutData(layout);
+			link.setUnderlined(true);
+			Color color = new Color(validatorGroup.getDisplay(),new RGB(0,0,255) );
+			link.setForeground(color);
+			link.setText("Gloabl Preferences...");
+			link.addHyperlinkListener(new IHyperlinkListener() {
+				
+				public static final String DATA_NO_LINK= "PropertyAndPreferencePage.nolink"; //$NON-NLS-1$
+				
+					public void hyperlinkUpdate(HyperlinkEvent e) {
+						
+						
+					}
+					
+					public void linkEntered(org.eclipse.ui.forms.events.HyperlinkEvent e) {
+						// TODO Auto-generated method stub
+						
+					}
 
+					public void linkExited(org.eclipse.ui.forms.events.HyperlinkEvent e) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					public void linkActivated(org.eclipse.ui.forms.events.HyperlinkEvent e) {
+						String id= getPreferencePageID();
+						PreferencesUtil.createPreferenceDialogOn(getShell(), id, new String[] { id }, DATA_NO_LINK).open();
+					}
+					
+					private String getPreferencePageID() {
+						return "ValidationPreferencePage";
+					}
+					
+
+				});
+			
 			emptyRowPlaceholder = new Label(validatorGroup, SWT.NONE);
 			emptyRowPlaceholder.setLayoutData(new GridData());
 			
@@ -798,6 +813,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 			overrideGlobalButton.setSelection(overridePreferences);
 			disableAllValidation.setEnabled(overridePreferences);
 			validatorList.getTable().setEnabled(overridePreferences);
+			validatorsTable.setEnabled(overridePreferences);
 			validatorsTable.setEnabled(overridePreferences);
 			enableAllButton.setEnabled(overridePreferences); // since help messsage isn't
 			disableAllButton.setEnabled(overridePreferences);
