@@ -107,7 +107,7 @@ public abstract class AbstractSearchQuery implements ISearchQuery {
 		
 		try {
             SearchPattern pattern = createSearchPattern(typeName);
-            searchEngine.search(pattern, collector, fScope, new NullProgressMonitor());
+            searchEngine.search(pattern, collector, fScope, null, new NullProgressMonitor());
 		} catch (CoreException e) {
 			status.add(e.getStatus());
 		}
