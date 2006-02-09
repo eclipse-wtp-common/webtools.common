@@ -11,6 +11,8 @@
 
 package org.eclipse.wst.common.core.search;
 
+import java.util.Map;
+
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.wst.common.core.search.internal.SearchParticipantRegistry;
 import org.eclipse.wst.common.core.search.internal.SearchParticipantRegistryReader;
@@ -26,7 +28,7 @@ import org.osgi.framework.BundleContext;
  * (repeatedly) as the API evolves.
  * </p>
  */
-public class SearchPlugin extends Plugin
+public class SearchPlugin extends Plugin implements ISearchOptions
 {
 
 	private SearchParticipantRegistry searchParticipantRegistry;
@@ -84,9 +86,18 @@ public class SearchPlugin extends Plugin
 		return getSearchParticipantRegistry().getSearchParticipant(id);
 	}
 
-	SearchParticipant[] loadSearchParticipants(SearchPattern pattern)
+	/**
+	 * Returns the registered search participants that support the specified search
+	 * pattern and options, loading and creating the search participants if necessary.
+	 * @param pattern The pattern representing a search request
+	 * @param searchOptions Map of options and values defining behavior of the search;
+	 *         <code>null</code> if no options are specified;
+	 *         some options and values are provided by {@link ISearchOptions}
+	 * @return Array of search participants that support the specified search request 
+	 */
+	SearchParticipant[] loadSearchParticipants(SearchPattern pattern, Map searchOptions)
 	{
-		return getSearchParticipantRegistry().getParticipants(pattern);
+		return getSearchParticipantRegistry().getParticipants(pattern, searchOptions);
 	}
 
 }

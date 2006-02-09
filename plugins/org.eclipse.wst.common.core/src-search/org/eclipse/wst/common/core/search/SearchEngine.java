@@ -11,6 +11,8 @@
 
 package org.eclipse.wst.common.core.search;
 
+import java.util.Map;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -20,21 +22,17 @@ import org.eclipse.wst.common.core.search.internal.Messages;
 import org.eclipse.wst.common.core.search.internal.SearchDocumentSetImpl;
 import org.eclipse.wst.common.core.search.pattern.SearchPattern;
 import org.eclipse.wst.common.core.search.scope.SearchScope;
-import org.eclipse.wst.common.core.search.util.CollectingSearchRequestor;
 
 /**
- * A {@link SearchEngine} searches for the file references, component
- * declarations and references, provided they have a quialified name and a
- * component description. The search can be limited to a search scope. By
- * default, whole workspace is searched.
- * 
- * The search engine also provides a generic way of accessing the search
- * function.
- * 
- * {@link SearchRequestor} is expected to be passed in when performing searches
- * and a client can use {@link CollectingSearchRequestor} to access the results
- * of the search.
- * 
+ * The {@link SearchEngine} class provides a generic way of searching for information
+ * without the need of knowing how or where that information is stored. The results
+ * returned by a search could be scattered in a number of files or stored in an index.
+ * Examples of the information you can search for include element declarations and
+ * references, references between files, and use of qualifiers.
+ * <p>
+ * The search can be limited to a specified search scope, or the entire workspace can
+ * be searched. Search matches are returned to the specified {@link SearchRequestor}.
+ * <p>
  * This class may be instantiated; it is not intended to be subclassed.
  * 
  * <p>
@@ -44,26 +42,35 @@ import org.eclipse.wst.common.core.search.util.CollectingSearchRequestor;
  * (repeatedly) as the API evolves.
  * </p>
  */
-public class SearchEngine
+public class SearchEngine implements ISearchOptions
 {
 
 	/**
-	 * Searches for matches of a given search pattern using set participant and
-	 * search scope. Search patterns can be created using factory methods and
-	 * encapsulate the description of what is being searched (for example,
-	 * search type declarations in a case sensitive way).
-	 * 
+	 * Searches for matches of a given search pattern using a specified set of search
+	 * participants and search scope. Search patterns can be created using factory
+	 * methods and encapsulate the description of the information to be searched for
+	 * (for example, element declarations of a specified type, in a case sensitive
+	 * manner).
 	 * @param pattern
-	 *            the pattern to search
+	 *            The pattern describing the information to search for
 	 * @param requestor
-	 *            the requestor to report the matches to
+	 *            Callback object to notify with the results of the search (each match
+	 *            is reported to {@link SearchRequestor#acceptSearchMatch(SearchMatch)})
+	 * @param participants
+	 *            The search participants that will conduct the search
+	 * @param scope
+	 *            Optional search scope to limit the source of search candidates;
+	 *            specify <code>null</code> to search the entire workspace
+	 * @param searchOptions
+	 *            Optional map of options and values defining behavior of the search;
+	 *            some options and values are provided by {@link ISearchOptions}
 	 * @param monitor
-	 *            the progress monitor used to report progress
+	 *            Optional progress monitor used to report work completed
 	 * @exception CoreException
-	 *                if the search failed.
+	 *            if the search fails
 	 */
 	public void search(SearchPattern pattern, SearchRequestor requestor,
-			SearchParticipant[] participants, SearchScope scope,
+			SearchParticipant[] participants, SearchScope scope, Map searchOptions,
 			IProgressMonitor monitor) throws CoreException
 	{
 
@@ -96,13 +103,14 @@ public class SearchEngine
 								Messages.engine_searching_locatingDocuments,
 								new String[]
 								{ participant.getDescription() }));
-					participant.beginSearching(pattern);
+					participant.beginSearching(pattern, searchOptions);
 					// requestor.enterParticipant(participant);
 					// participant creates it's own search scope 
-					SearchScope newScope = participant.selectDocumentLocations(pattern, scope, monitor);
+					SearchScope newScope =
+						participant.selectDocumentLocations(pattern, scope, searchOptions, monitor);
                     scopeArray[i] = newScope;
 					// participant creates search documents based on it's search scope
-					participant.createSearchDocuments(set, pattern, newScope, subMonitor);
+					participant.createSearchDocuments(set, pattern, newScope, searchOptions, subMonitor);
                 }
                 catch(Exception e)
                 {                  
@@ -129,12 +137,12 @@ public class SearchEngine
                             { participant.getDescription() }));
                 // a search document set should contain enough info to reduce the search scope even further 
                 // before finding precize locations
-                participant.locateMatches(set, pattern, scopeArray[i], requestor, subMonitor);
+                participant.locateMatches(set, pattern, scopeArray[i], requestor, searchOptions, subMonitor);
                 }
                 finally
                 {
                   // requestor.exitParticipant(participant);
-                  participant.doneSearching(pattern);
+                  participant.doneSearching(pattern, searchOptions);
                 }                
             }    
 		} finally
@@ -145,16 +153,51 @@ public class SearchEngine
 		}
 	}
 
+	/**
+	 * Searches for matches of a given search pattern. Search patterns can be created
+	 * using factory methods and encapsulate the description of the information to be
+	 * searched for (for example, element declarations of a specified type, in a case
+	 * sensitive manner).
+	 * @param pattern
+	 *            The pattern describing the information to search for
+	 * @param requestor
+	 *            Callback object to notify with the results of the search (each match
+	 *            is reported to {@link SearchRequestor#acceptSearchMatch(SearchMatch)})
+	 * @param scope
+	 *            Optional search scope to limit the source of search candidates;
+	 *            specify <code>null</code> to search the entire workspace
+	 * @param searchOptions
+	 *            Optional map of options and values defining behavior of the search;
+	 *            some options and values are provided by {@link ISearchOptions}
+	 * @param monitor
+	 *            Optional progress monitor used to report work completed
+	 * @exception CoreException
+	 *            if the search fails
+	 */
 	public void search(SearchPattern pattern, SearchRequestor requestor,
-			SearchScope scope, IProgressMonitor monitor) throws CoreException
+			SearchScope scope, Map searchOptions, IProgressMonitor monitor)
+			throws CoreException
 	{
-		SearchParticipant[] participants = getApplicableParticipants(pattern);
-		search(pattern, requestor, participants, scope, monitor);
+		SearchParticipant[] participants =
+			getApplicableParticipants(pattern, searchOptions);
+        System.out.println("participants = " + participants.length);
+		search(pattern, requestor, participants, scope, searchOptions, monitor);
 	}
 
-	public SearchParticipant[] getApplicableParticipants(SearchPattern pattern)
+	/**
+	 * Queries the set of participants that support searches described by the
+	 * specified search pattern and options.
+	 * @param pattern
+	 *            The pattern describing the information to search for
+	 * @param searchOptions
+	 *            Optional map of options and values defining behavior of the search;
+	 *            some options and values are provided by {@link ISearchOptions}
+	 * @return Array of applicable search participants
+	 */
+	public SearchParticipant[] getApplicableParticipants(SearchPattern pattern,
+			Map searchOptions)
 	{
-		return SearchPlugin.getDefault().loadSearchParticipants(pattern);
+		return SearchPlugin.getDefault().loadSearchParticipants(pattern, searchOptions);
 	}
 
 }

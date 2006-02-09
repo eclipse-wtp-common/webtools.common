@@ -65,7 +65,7 @@ public class SearchParticipantRegistry
 
 	}
 
-	public SearchParticipant[] getParticipants(SearchPattern pattern)
+	public SearchParticipant[] getParticipants(SearchPattern pattern, Map searchOptions)
 	{
 
 		EvaluationContext evalContext = createEvaluationContext(pattern);
@@ -84,7 +84,7 @@ public class SearchParticipantRegistry
 								.getSearchParticipant();
 						if (!SearchParticipant.class.isInstance(participant))
 							throw new ClassCastException();
-						if (participant.isApplicable(pattern))
+						if (participant.isApplicable(pattern, searchOptions))
 						{
 							result.add(participant);
 						}
