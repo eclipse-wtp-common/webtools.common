@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.wst.common_ui.feature"
       label="org.eclipse.wst.common_ui.feature"
-      version="1.0.0">
+      version="1.0.1">
 
    <description>
       %description
@@ -90,7 +90,7 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
    <plugin
          id="org.eclipse.wst.internet.proxy.infopop"
          download-size="0"
