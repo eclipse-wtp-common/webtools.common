@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.wst.common_core.feature"
       label="org.eclipse.wst.common_core.feature"
-      version="1.0.0">
+      version="1.0.100.qualifier">
 
    <description>
       %description
