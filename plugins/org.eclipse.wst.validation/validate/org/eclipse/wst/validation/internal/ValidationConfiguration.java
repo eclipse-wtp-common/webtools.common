@@ -64,7 +64,6 @@ public abstract class ValidationConfiguration {
 	}
 
 	private boolean getDisableAllValidation() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

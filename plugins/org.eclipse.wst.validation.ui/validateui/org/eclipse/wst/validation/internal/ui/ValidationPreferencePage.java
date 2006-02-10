@@ -523,24 +523,11 @@ private class ValidatorListPage implements IValidationPage {
 		validatorList.setContentProvider(new ValidationContentProvider());
 		validatorList.setSorter(new ValidationViewerSorter());
         setupTableColumns(validatorsTable,validatorList);
-        
 		validatorList.setCellModifier(new ICellModifier() {
-
 			public boolean canModify(Object element, String property) {
 				ComboBoxCellEditor cellEditor = getComboBoxCellEditor(property);
 				if (cellEditor == null)
 					return false;
-				((CCombo)cellEditor.getControl()).addFocusListener(new FocusListener() {
-
-					public void focusGained(FocusEvent e) {
-					}
-
-					public void focusLost(FocusEvent e) {
-						// TODO Auto-generated method stub
-						
-					}
-					
-				});
 				return true;
 			}
 
@@ -699,6 +686,26 @@ private class ValidatorListPage implements IValidationPage {
 			// Should the validator be enabled? Read the user's preferences from last time,
 			// if they exist, and set from that. If they don't exist, use the Validator class'
 			// default value.
+			if(pagePreferences.isEnabled(vmd)) {
+				vmd.setManualValidation(true);
+				vmd.setBuildValidation(true);
+			} else {
+				vmd.setManualValidation(false);
+				vmd.setBuildValidation(false);
+			}
+		}
+		validatorList.refresh();
+	}
+	
+	protected void updateManualAndBuildValues() {
+		TableItem[] items = validatorsTable.getItems();
+		for (int i = 0; i < items.length; i++) {
+			TableItem item = items[i];
+			ValidatorMetaData vmd = (ValidatorMetaData) item.getData();
+
+			// Should the validator be enabled? Read the user's preferences from last time,
+			// if they exist, and set from that. If they don't exist, use the Validator class'
+			// default value.
 			if(pagePreferences.isManualEnabled(vmd))
 				vmd.setManualValidation(true);
 			else
@@ -727,7 +734,7 @@ private class ValidatorListPage implements IValidationPage {
 	public boolean performEnableAll() throws InvocationTargetException {
 		setAllValidators(true);
 		pagePreferences.setEnabledValidators(getEnabledValidators());
-		updateWidgets();
+		updateManualAndBuildValues();
 		enableAllButton.setFocus();
 		return true;
 	}
@@ -758,7 +765,7 @@ private class ValidatorListPage implements IValidationPage {
 	public boolean performDisableAll() throws InvocationTargetException {
 		setAllValidators(false);
 		pagePreferences.setEnabledValidators(getEnabledValidators());
-		updateWidgets();
+		updateManualAndBuildValues();
 		disableAllButton.setFocus();
 		return true;
 	}

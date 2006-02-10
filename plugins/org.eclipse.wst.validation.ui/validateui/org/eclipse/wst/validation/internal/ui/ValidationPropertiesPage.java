@@ -250,12 +250,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 		private static final int MANUAL_COL = 1;
 		private static final int BUILD_COL = 2;
 		private Label globalPrefLink = null;
-
 		ProjectConfiguration pagePreferences = null;
-
-		// default values for the widgets, initialized in the constructor
-		//private boolean isAutoBuildEnabled = false;
-		//private boolean isBuilderConfigured = false;
 		private boolean canOverride = false;
 
 		private ValidatorMetaData[] oldVmd = null; // Cache the enabled validators so that, if there
@@ -460,17 +455,47 @@ public class ValidationPropertiesPage extends PropertyPage {
 			validatorGroupLayout.numColumns = 2;
 			validatorGroup.setLayout(validatorGroupLayout);
 			
-//			FormToolkit toolKit =  new FormToolkit(validatorGroup.getDisplay());
-//			Hyperlink link = toolKit.createHyperlink(validatorGroup, "Gloabl Preferences...", SWT.RIGHT);
+			Hyperlink link = new Hyperlink(validatorGroup,SWT.None);
+			GridData layout = new GridData(GridData.HORIZONTAL_ALIGN_END);
+			layout.horizontalSpan = 2;
+			link.setLayoutData(layout);
+			link.setUnderlined(true);
+			Color color = new Color(validatorGroup.getDisplay(),new RGB(0,0,255) );
+			link.setForeground(color);
+			link.setText("Gloabl Preferences...");
+			link.addHyperlinkListener(new IHyperlinkListener() {
+				public static final String DATA_NO_LINK = "PropertyAndPreferencePage.nolink"; //$NON-NLS-1$
+
+				public void hyperlinkUpdate(HyperlinkEvent e) {
+				}
+
+				public void linkEntered(org.eclipse.ui.forms.events.HyperlinkEvent e) {
+				}
+
+				public void linkExited(org.eclipse.ui.forms.events.HyperlinkEvent e) {
+				}
+
+				public void linkActivated(org.eclipse.ui.forms.events.HyperlinkEvent e) {
+					String id = getPreferencePageID();
+					PreferencesUtil.createPreferenceDialogOn(getShell(), id, new String[]{id}, DATA_NO_LINK).open();
+					try {
+						updateWidgets();
+					} catch (InvocationTargetException ie) {
+
+					}
+				}
+
+				private String getPreferencePageID() {
+					return "ValidationPreferencePage";
+				}
+			});
 			
-			
-			
-			GridData overrideData = new GridData(GridData.FILL_HORIZONTAL);
+			GridData overrideData = new GridData(GridData.GRAB_HORIZONTAL);
+			overrideData.horizontalSpan = 2;
 			overrideGlobalButton = new Button(validatorGroup, SWT.CHECK);
 			overrideGlobalButton.setLayoutData(overrideData);
 			overrideGlobalButton.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.PROP_BUTTON_OVERRIDE, new String[]{getProject().getName()}));
-			overrideGlobalButton.setFocus(); // must focus on something for F1 to have a topic to
-			// launch
+			overrideGlobalButton.setFocus(); // must focus on something for F1 to have a topic to lanuch
 			overrideGlobalButton.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					pagePreferences.setDoesProjectOverride(overrideGlobalButton.getSelection());
@@ -481,44 +506,6 @@ public class ValidationPropertiesPage extends PropertyPage {
 					}
 				}
 			});
-
-			Hyperlink link = new Hyperlink(validatorGroup,SWT.None);
-			GridData layout = new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_END);
-			link.setLayoutData(layout);
-			link.setUnderlined(true);
-			Color color = new Color(validatorGroup.getDisplay(),new RGB(0,0,255) );
-			link.setForeground(color);
-			link.setText("Gloabl Preferences...");
-			link.addHyperlinkListener(new IHyperlinkListener() {
-				
-				public static final String DATA_NO_LINK= "PropertyAndPreferencePage.nolink"; //$NON-NLS-1$
-				
-					public void hyperlinkUpdate(HyperlinkEvent e) {
-						
-						
-					}
-					
-					public void linkEntered(org.eclipse.ui.forms.events.HyperlinkEvent e) {
-						// TODO Auto-generated method stub
-						
-					}
-
-					public void linkExited(org.eclipse.ui.forms.events.HyperlinkEvent e) {
-						// TODO Auto-generated method stub
-						
-					}
-
-					public void linkActivated(org.eclipse.ui.forms.events.HyperlinkEvent e) {
-						String id= getPreferencePageID();
-						PreferencesUtil.createPreferenceDialogOn(getShell(), id, new String[] { id }, DATA_NO_LINK).open();
-					}
-					
-					private String getPreferencePageID() {
-						return "ValidationPreferencePage";
-					}
-					
-
-				});
 			
 			emptyRowPlaceholder = new Label(validatorGroup, SWT.NONE);
 			emptyRowPlaceholder.setLayoutData(new GridData());
@@ -807,7 +794,9 @@ public class ValidationPropertiesPage extends PropertyPage {
 			// Since the setting of the "override" button enables/disables the other widgets on the
 			// page,
 			// update the enabled state of the other widgets from the "override" button.
-			boolean overridePreferences = canOverride && pagePreferences.doesProjectOverride();
+			ConfigurationManager prefMgr = ConfigurationManager.getManager();
+			canOverride = prefMgr.getGlobalConfiguration().canProjectsOverride();
+			boolean overridePreferences =  canOverride && pagePreferences.doesProjectOverride();
 
 			overrideGlobalButton.setEnabled(canOverride);
 			overrideGlobalButton.setSelection(overridePreferences);

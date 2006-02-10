@@ -64,10 +64,8 @@ public class GlobalConfiguration extends ValidationConfiguration {
 	}
 
 	public void resetToDefault() {
-		//setAutoValidate(getAutoValidateDefault());
+		setDisableAllValidation(getDisableValidationDefault());
 		setEnabledValidators(getEnabledValidatorsDefault());
-		//setMaximumNumberOfMessages(getMaximumNumberOfMessagesDefault());
-		//setBuildValidate(getBuildValidateDefault());
 		setCanProjectsOverride(getCanProjectsOverrideDefault());
 	}
 
