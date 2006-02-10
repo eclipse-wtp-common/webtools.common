@@ -21,6 +21,8 @@ package org.eclipse.wst.validation.internal.provisional.core;
  *  I don't think there's a need for this class to be exposed to clients. If too many
  *  messages are added the framework should handle this without notifying the client
  *  validator. ]
+ *  @deprecated This class is not longer used by the framework. The framework is
+ *  not going to limit the number of messages displayed by a validator.
  */
 public class MessageLimitException extends RuntimeException {
 	private final static long serialVersionUID = -7034897190745766940L;
