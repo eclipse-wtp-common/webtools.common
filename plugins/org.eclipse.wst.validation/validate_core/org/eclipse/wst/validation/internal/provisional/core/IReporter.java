@@ -63,7 +63,7 @@ public interface IReporter  {
 	 *  to handle a MessageLimitException? Seems to me that this is a validation framework
 	 *  specific issue and that client validators shouldn't know about this at all. ]
 	 */
-	public abstract void addMessage(IValidator origin, IMessage message) throws MessageLimitException;
+	public abstract void addMessage(IValidator origin, IMessage message);
 
 	/**
 	 * <p>

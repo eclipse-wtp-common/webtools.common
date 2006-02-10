@@ -54,7 +54,6 @@ import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 import org.eclipse.wst.validation.internal.provisional.core.IReporter;
 import org.eclipse.wst.validation.internal.provisional.core.IValidationContext;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
-import org.eclipse.wst.validation.internal.provisional.core.MessageLimitException;
 
 /**
  * Implemented Validators methods must not be called directly by anyone other than this class, since
@@ -215,32 +214,30 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		Set enabledValidators = getEnabledValidators();
 		Iterator iterator = enabledValidators.iterator();
 		ValidatorMetaData vmd = null;
-		try {
-			while (iterator.hasNext()) {
-				vmd = (ValidatorMetaData) iterator.next();
-				reporter.displaySubtask(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_VALIDATOR_CLEANUP, new String[]{vmd.getValidatorDisplayName()}));
-				try {
-					reporter.removeAllMessages(vmd.getValidator());
-				} catch (InstantiationException exc) {
-					// Remove the vmd from the reader's list
-					ValidationRegistryReader.getReader().disableValidator(vmd);
-					// Log the reason for the disabled validator
-					final Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-					if (logger.isLoggingLevel(Level.SEVERE)) {
-						LogEntry entry = ValidationPlugin.getLogEntry();
-						entry.setSourceID("ValidationOperation::terminateCleanup"); //$NON-NLS-1$
-						entry.setTargetException(exc);
-						logger.write(Level.SEVERE, entry);
-					}
-					continue;
+
+		while (iterator.hasNext()) {
+			vmd = (ValidatorMetaData) iterator.next();
+			reporter.displaySubtask(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_VALIDATOR_CLEANUP, new String[]{vmd.getValidatorDisplayName()}));
+			try {
+				reporter.removeAllMessages(vmd.getValidator());
+			} catch (InstantiationException exc) {
+				// Remove the vmd from the reader's list
+				ValidationRegistryReader.getReader().disableValidator(vmd);
+				// Log the reason for the disabled validator
+				final Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
+				if (logger.isLoggingLevel(Level.SEVERE)) {
+					LogEntry entry = ValidationPlugin.getLogEntry();
+					entry.setSourceID("ValidationOperation::terminateCleanup"); //$NON-NLS-1$
+					entry.setTargetException(exc);
+					logger.write(Level.SEVERE, entry);
 				}
-				addCancelTask(vmd);
-				reporter.displaySubtask(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_VALIDATOR_TERMINATED, new String[]{getProject().getName(), vmd.getValidatorDisplayName()}));
+				continue;
 			}
-		} catch (MessageLimitException e) {
-			ValidatorManager.getManager().addMessageLimitExceeded(getProject());
+			addCancelTask(vmd);
+			reporter.displaySubtask(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_VALIDATOR_TERMINATED, new String[]{getProject().getName(), vmd.getValidatorDisplayName()}));
 		}
-	}
+	} 
+	
 
 	/**
 	 * @param vmd
@@ -1047,9 +1044,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		} catch (OperationCanceledException exc) {
 			// This is handled in the validate(WorkbenchReporter) method.
 			throw exc;
-		} catch (MessageLimitException exc) {
-			// Let the finally block handle this case.
-			// handleMessageLimit();
 		} catch (Throwable exc) {
 			// If there is a problem with this particular validator, log the
 			// error and continue
@@ -1242,8 +1236,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			}
 			message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_ENDING_VALIDATION, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
 			reporter.displaySubtask(message);
-		} catch (MessageLimitException exc) {
-			throw exc;
 		} catch (OperationCanceledException exc) {
 			throw exc;
 		} catch (ValidationException exc) {
@@ -1251,10 +1243,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			// accidentally wrapped a MessageLimitException instead of
 			// propagating it.
 			if (exc.getAssociatedException() != null) {
-				if (exc.getAssociatedException() instanceof MessageLimitException) {
-					MessageLimitException mssgExc = (MessageLimitException) exc.getAssociatedException();
-					throw mssgExc;
-				} else if (exc.getAssociatedException() instanceof ValidationException) {
+				 if (exc.getAssociatedException() instanceof ValidationException) {
 					ValidationException vexc = (ValidationException) exc.getAssociatedException();
 					vexc.setClassLoader(validator.getClass().getClassLoader()); // first,
 					// set
@@ -1334,8 +1323,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		} finally {
 			try {
 				validator.cleanup(reporter);
-			} catch (MessageLimitException e) {
-				throw e;
 			} catch (OperationCanceledException e) {
 				throw e;
 			} catch (Throwable exc) {
@@ -1355,17 +1342,10 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				message.setSeverity(IMessage.NORMAL_SEVERITY);
 				message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 				message.setParams(msgParm);
-				try {
-					reporter.addMessage(validator, message);
-				} catch (MessageLimitException e) {
-					throw e;
-				}
-				return;
+				reporter.addMessage(validator, message);
 			}
 			try {
 				helper.cleanup(reporter);
-			} catch (MessageLimitException e) {
-				throw e;
 			} catch (OperationCanceledException e) {
 				throw e;
 			} catch (Throwable exc) {
@@ -1385,11 +1365,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				message.setSeverity(IMessage.NORMAL_SEVERITY);
 				message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 				message.setParams(msgParm);
-				try {
-					reporter.addMessage(validator, message);
-				} catch (MessageLimitException e) {
-					throw e;
-				}
+				reporter.addMessage(validator, message);
 				return;
 			} finally {
 				// Now that cleanup has been called, set the project to null.
