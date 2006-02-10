@@ -661,20 +661,14 @@ private class ValidatorListPage implements IValidationPage {
 		// widgets because of performDefaults(). If performDefaults() is selected,
 		// then the pagePreferences values are reset, and these widgets
 		// might also need to be updated.
-		
 		overrideButton.setSelection(pagePreferences.canProjectsOverride());
-
 		updateTable();
-
-		boolean valEnabled = (pagePreferences.numberOfEnabledValidators() > 0);
-		//valWhenBuildButton.setEnabled(valEnabled);
-		//valWhenBuildButton.setSelection(pagePreferences.isBuildValidate() && valEnabled);
-
-		boolean incValEnabled = (pagePreferences.numberOfEnabledIncrementalValidators() > 0);
-		//valWhenAutoBuildButton.setEnabled(_isAutoBuildEnabled && incValEnabled);
-		//valWhenAutoBuildButton.setSelection(pagePreferences.isAutoValidate() && incValEnabled && _isAutoBuildEnabled);
-
-		//updateHelp();
+		disableAllValidation.setSelection(pagePreferences.isDisableAllValidation());
+		validatorsTable.setEnabled(!disableAllValidation.getSelection());
+		enableAllButton.setEnabled(!disableAllValidation.getSelection());
+		disableAllButton.setEnabled(!disableAllValidation.getSelection());
+		
+		updateHelp();
 	}
 
 	protected void updateTable() throws InvocationTargetException {
@@ -770,15 +764,9 @@ private class ValidatorListPage implements IValidationPage {
 		return true;
 	}
 
-	/*protected void updateHelp() {
-		// never disable this widget because users don't expect the preference page to alter
-		// based on workbench contents
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(valWhenBuildButton, ContextIds.VALIDATION_PREFERENCE_PAGE_REBUILD_ENABLED);
-
-		// never disable this widget because users don't expect the preference page to alter
-		// based on workbench contents
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(valWhenAutoBuildButton, ContextIds.VALIDATION_PREFERENCE_PAGE_AUTO_ENABLED);
-	}*/
+	protected void updateHelp() {
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(disableAllValidation, ContextIds.VALIDATION_PREFERENCE_PAGE_DISABLE_ALL_ENABLED);
+	}
 
 	/*
 	 * Store the current values of the controls into the preference store.
@@ -852,11 +840,6 @@ private class ValidatorListPage implements IValidationPage {
 		listLabel.dispose();
 		overrideButton.dispose();
 		disableAllValidation.dispose();
-		//removing message limit
-		//maxValProblemsField.dispose();
-		//maxValProblemsFieldLabel.dispose();
-		//valWhenAutoBuildButton.dispose();
-		//valWhenBuildButton.dispose();
 		emptyRowPlaceholder.dispose();
 		disableAllButton.dispose();
 		enableAllButton.dispose();

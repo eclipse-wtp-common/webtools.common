@@ -32,7 +32,7 @@ public interface ContextIds {
 
 	public static final String VALIDATION_PREFERENCE_PAGE = PREFIX + ".jvgp0000"; //$NON-NLS-1$
 	public static final String VALIDATION_PREFERENCE_PAGE_OVERRIDE = PREFIX + ".jvgp0005"; //$NON-NLS-1$
-	public static final String VALIDATION_PREFERENCE_PAGE_REBUILD_ENABLED = PREFIX + ".jvgp0010"; //$NON-NLS-1$
+	public static final String VALIDATION_PREFERENCE_PAGE_DISABLE_ALL_ENABLED = PREFIX + ".jvgp0010"; //$NON-NLS-1$
 	//	public static final String VALIDATION_PREFERENCE_PAGE_REBUILD_DISABLED = PREFIX +
 	// ".jvgp0011"; //$NON-NLS-1$
 	public static final String VALIDATION_PREFERENCE_PAGE_AUTO_ENABLED = PREFIX + ".jvgp0020"; //$NON-NLS-1$
