@@ -18,6 +18,9 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.MultiPageEditorSite;
 
+/**
+ * @deprecated - No longer necessary as of 3.2M3.
+ */
 public class PostMultiPageEditorSite extends MultiPageEditorSite {
 	/**
 	 * The post selection change listener, initialized lazily;

@@ -19,6 +19,9 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.MultiPageSelectionProvider;
 
+/**
+ * @deprecated - No longer necessary as of 3.2M3.
+ */
 public class PostMultiPageSelectionProvider extends MultiPageSelectionProvider implements IPostSelectionProvider {
 	private ListenerList postListeners;
 

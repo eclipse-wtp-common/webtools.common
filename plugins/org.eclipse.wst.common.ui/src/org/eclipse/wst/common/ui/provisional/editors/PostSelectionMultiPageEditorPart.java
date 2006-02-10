@@ -23,6 +23,8 @@ import org.eclipse.ui.part.MultiPageEditorPart;
  * listeners. This part was created as a workaround for
  * https://bugs.eclipse.org/bugs/show_bug.cgi?id=108324 and will be removed
  * once WTP is building on a platform milestone that includes a fix.
+ * 
+ * @deprecated - No longer necessary as of 3.2M3.
  */
 public abstract class PostSelectionMultiPageEditorPart extends MultiPageEditorPart {
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
