@@ -654,7 +654,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 			enableAllButton.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					try {
-						performSelectAll();
+						performEnableAll();
 					} catch (InvocationTargetException exc) {
 						displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
 					}
@@ -670,7 +670,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 			disableAllButton.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					try {
-						performDeselectAll();
+						performDisableAll();
 					} catch (InvocationTargetException exc) {
 						displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
 					}
@@ -705,6 +705,25 @@ public class ValidationPropertiesPage extends PropertyPage {
 
 				// Should the validator be enabled? Read the user's preferences from last time,
 				// if they exist, and set from that. If they don't exist, use the Validator class'
+				if(pagePreferences.isEnabled(vmd)) {
+					vmd.setManualValidation(true);
+					vmd.setBuildValidation(true);
+				} else {
+					vmd.setManualValidation(false);
+					vmd.setBuildValidation(false);
+				}
+			}
+			validatorList.refresh();
+		}
+		
+		protected void updateManualAndBuildValues() {
+			TableItem[] items = validatorsTable.getItems();
+			for (int i = 0; i < items.length; i++) {
+				TableItem item = items[i];
+				ValidatorMetaData vmd = (ValidatorMetaData) item.getData();
+
+				// Should the validator be enabled? Read the user's preferences from last time,
+				// if they exist, and set from that. If they don't exist, use the Validator class'
 				// default value.
 				if(pagePreferences.isManualEnabled(vmd))
 					vmd.setManualValidation(true);
@@ -721,23 +740,22 @@ public class ValidationPropertiesPage extends PropertyPage {
 		public boolean performDefaults() throws InvocationTargetException {
 			pagePreferences.resetToDefault();
 			updateWidgets();
-			//checkInteger(); // clear the "max must be a positive integer" message if it exists
 			getDefaultsButton().setFocus();
 			return true;
 		}
 
-		public boolean performSelectAll() throws InvocationTargetException {
+		public boolean performEnableAll() throws InvocationTargetException {
 			setAllValidators(true);
 			pagePreferences.setEnabledValidators(getEnabledValidators());
-			updateWidgets();
+			updateManualAndBuildValues();
 			enableAllButton.setFocus();
 			return true;
 		}
 
-		public boolean performDeselectAll() throws InvocationTargetException {
+		public boolean performDisableAll() throws InvocationTargetException {
 			setAllValidators(false);
 			pagePreferences.setEnabledValidators(getEnabledValidators());
-			updateWidgets();
+			updateManualAndBuildValues();
 			disableAllButton.setFocus();
 			return true;
 		}
@@ -792,38 +810,30 @@ public class ValidationPropertiesPage extends PropertyPage {
 
 		void updateWidgets() throws InvocationTargetException {
 			// Since the setting of the "override" button enables/disables the other widgets on the
-			// page,
-			// update the enabled state of the other widgets from the "override" button.
+			// page, update the enabled state of the other widgets from the "override" button.
 			ConfigurationManager prefMgr = ConfigurationManager.getManager();
 			canOverride = prefMgr.getGlobalConfiguration().canProjectsOverride();
-			boolean overridePreferences =  canOverride && pagePreferences.doesProjectOverride();
-
+			boolean overridePreferences = canOverride && pagePreferences.doesProjectOverride();
 			overrideGlobalButton.setEnabled(canOverride);
 			overrideGlobalButton.setSelection(overridePreferences);
 			disableAllValidation.setEnabled(overridePreferences);
-			validatorList.getTable().setEnabled(overridePreferences);
-			validatorsTable.setEnabled(overridePreferences);
+			disableAllValidation.setSelection(pagePreferences.isDisableAllValidation());
+			if (overridePreferences)
+				enableDependentControls(!pagePreferences.isDisableAllValidation());
+			else
+				enableDependentControls(overridePreferences);
+
+			updateTable();
+			updateHelp();
+		}
+
+		/**
+		 * @param overridePreferences
+		 */
+		private void enableDependentControls(boolean overridePreferences) {
 			validatorsTable.setEnabled(overridePreferences);
 			enableAllButton.setEnabled(overridePreferences); // since help messsage isn't
 			disableAllButton.setEnabled(overridePreferences);
-
-			updateTable();
-
-			// Never check if builder is configured because if it isn't, the user needs to be able
-			// to add the builder via the instructions on the F1 infopops.
-			// In the case when the builder isn't configured, show the checkbox as enabled but
-			// cleared
-			// The only time that these two checkboxes are disabled is when no validators are
-			// enabled in the list.
-			boolean valEnabled = (pagePreferences.numberOfEnabledValidators() > 0);
-			/*valWhenBuildButton.setEnabled(overridePreferences && valEnabled);
-			valWhenBuildButton.setSelection(pagePreferences.isBuildValidate() && valEnabled && isBuilderConfigured);
-*/
-			boolean incValEnabled = (pagePreferences.numberOfEnabledIncrementalValidators() > 0);
-			//autoButton.setEnabled(overridePreferences && isAutoBuildEnabled && incValEnabled);
-			//autoButton.setSelection(pagePreferences.isAutoValidate() && incValEnabled && isAutoBuildEnabled && isBuilderConfigured);
-
-			updateHelp();
 		}
 
 		protected void updateHelp() throws InvocationTargetException {
