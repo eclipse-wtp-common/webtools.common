@@ -245,8 +245,6 @@ private class ValidatorListPage implements IValidationPage {
 	private String[] columnProperties;
 	private CellEditor[] columnEditors;
 	private String[] COMBO_VALUES = new String[] {"Enabled","Disabled"};
-	private static final String ENABLED = "Enabled";
-	private static final String DISABLED = "Disabled";
 	private static final int ENABLED_INT = 0;
 	private static final int DISABLED_INT = 1;
 	private Table validatorsTable;
@@ -360,12 +358,12 @@ private class ValidatorListPage implements IValidationPage {
 			}
 			if(columnIndex == 1) {
 				if(((ValidatorMetaData)element).isManualValidation())
-					return ENABLED;
-				return DISABLED;	
+					return COMBO_VALUES[0];
+				return COMBO_VALUES[1];	
 			} else if(columnIndex == 2) {
 				if(((ValidatorMetaData)element).isBuildValidation())
-					return ENABLED;
-				return DISABLED;
+					return COMBO_VALUES[0];
+				return COMBO_VALUES[1];
 			}
 			return null;
 		}
@@ -593,7 +591,7 @@ private class ValidatorListPage implements IValidationPage {
 			}
 		});
 		validatorList.setInput(pagePreferences.getValidators());
-		validatorsTable.addSelectionListener(new SelectionAdapter() {
+		/*validatorsTable.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				pagePreferences.setEnabledValidators(getEnabledValidators());
 				try {
@@ -610,7 +608,7 @@ private class ValidatorListPage implements IValidationPage {
 					displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
 				}
 			}
-		});
+		});*/
 
 		enableAllButton = new Button(validatorGroup, SWT.PUSH);
 		enableAllButton.setLayoutData(new GridData());
