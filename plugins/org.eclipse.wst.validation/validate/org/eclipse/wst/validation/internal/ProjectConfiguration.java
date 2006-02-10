@@ -110,6 +110,14 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		}
 		return super.getEnabledValidators();
 	}
+	
+	public ValidatorMetaData[] getManualEnabledValidators() throws InvocationTargetException {
+		if (useGlobalPreference()) {
+			return extractProjectValidators(ConfigurationManager.getManager().getGlobalConfiguration().getManualEnabledValidators(), getResource());
+		}
+		return super.getManualEnabledValidators();
+	}
+	
 
 	/**
 	 * @see org.eclipse.wst.validation.internal.operations.internal.preference.ValidationConfiguration#getDisabledValidators()
@@ -263,26 +271,26 @@ public class ProjectConfiguration extends ValidationConfiguration {
 	 * the project settings.
 	 * @deprecated - do not use this setting as it is being replaced with setting at individual validator basis
 	 */
-	public boolean isAutoValidate() throws InvocationTargetException {
-		/*if (useGlobalPreference()) {
-			return ConfigurationManager.getManager().getGlobalConfiguration().isAutoValidate();
-		}
-		return super.isAutoValidate();*/
-		return false;
-	}
+//	public boolean isAutoValidate() throws InvocationTargetException {
+//		/*if (useGlobalPreference()) {
+//			return ConfigurationManager.getManager().getGlobalConfiguration().isAutoValidate();
+//		}
+//		return super.isAutoValidate();*/
+//		return false;
+//	}
 
 	/**
 	 * If the preferences should be used then the preference settings are returned; otherwise return
 	 * the project settings.
 	 * @deprecated - do not use this setting as it is being replaced with setting at individual validator basis
 	 */
-	public boolean isBuildValidate() throws InvocationTargetException {
-		/*if (useGlobalPreference()) {
-			return ConfigurationManager.getManager().getGlobalConfiguration().isBuildValidate();
-		}
-		return super.isBuildValidate();*/
-		return false;
-	}
+//	public boolean isBuildValidate() throws InvocationTargetException {
+//		/*if (useGlobalPreference()) {
+//			return ConfigurationManager.getManager().getGlobalConfiguration().isBuildValidate();
+//		}
+//		return super.isBuildValidate();*/
+//		return false;
+//	}
 
 	/**
 	 * If the preferences should be used then the preference settings are returned; otherwise return

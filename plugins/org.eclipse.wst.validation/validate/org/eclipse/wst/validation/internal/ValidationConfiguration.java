@@ -192,6 +192,8 @@ public abstract class ValidationConfiguration {
 		return getValidators(true);
 	}
 
+
+	
 	/**
 	 * If "incremental" is true, return the enabled incremental validators. If "incremental" is
 	 * false, return the enabled non-incremental validators.
@@ -205,7 +207,7 @@ public abstract class ValidationConfiguration {
 			Boolean bvalue = (Boolean) getValidatorMetaData().get(vmd);
 			if (bvalue.booleanValue() == true) {
 				// If the validator is enabled
-				if ((vmd.isIncremental() && incremental) || (!vmd.isIncremental() && !incremental)) {
+				if ((vmd.isIncremental() && incremental && vmd.isBuildValidation()) || (!vmd.isIncremental() && !incremental)) {
 					temp[count++] = vmd;
 				}
 			}
@@ -235,7 +237,8 @@ public abstract class ValidationConfiguration {
 				// If the validator is enabled
 				if (vmd == null)
 					continue;
-				if ((vmd.isFullBuild() && fullBuild) || (!vmd.isFullBuild() && !fullBuild)) {
+				
+				if (( vmd.isBuildValidation() && vmd.isFullBuild() && fullBuild) || (!vmd.isFullBuild() && !fullBuild)) {
 					if (!onlyReferenced || vmd.isDependentValidator())
 						temp[count++] = vmd;
 				}
@@ -293,6 +296,27 @@ public abstract class ValidationConfiguration {
 		System.arraycopy(temp, 0, result, 0, count);
 		return result;
 	}
+	
+	public ValidatorMetaData[] getManualEnabledValidators() throws InvocationTargetException {
+		ValidatorMetaData[] temp = new ValidatorMetaData[numberOfValidators()];
+		Iterator iterator = getValidatorMetaData().keySet().iterator();
+		int count = 0;
+		while (iterator.hasNext()) {
+			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
+			Boolean bvalue = (Boolean) getValidatorMetaData().get(vmd);
+//			if (bvalue.booleanValue() == value) {
+//				temp[count++] = vmd;
+//			}
+			if (bvalue.booleanValue() && vmd.isManualValidation()) {
+				temp[count++] = vmd;
+			}			
+			
+		}
+
+		ValidatorMetaData[] result = new ValidatorMetaData[count];
+		System.arraycopy(temp, 0, result, 0, count);
+		return result;
+	}	
 
 	/**
 	 * Return all incremental validators for this preference; either every installed validator
