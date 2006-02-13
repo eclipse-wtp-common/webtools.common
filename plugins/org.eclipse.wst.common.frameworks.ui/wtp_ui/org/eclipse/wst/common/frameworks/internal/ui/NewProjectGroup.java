@@ -103,7 +103,7 @@ public class NewProjectGroup implements IProjectCreationPropertiesNew {
 		projectGroup.setLayout(layout);
 		projectGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		projectGroup.setFont(font);
-		projectGroup.setText(IDEWorkbenchMessages.WizardNewProjectCreationPage_projectContentsGroupLabel);
+		projectGroup.setText(IDEWorkbenchMessages.WizardNewProjectCreationPage_projectContentsLabel);
 
 		final Button useDefaultsButton = new Button(projectGroup, SWT.CHECK | SWT.RIGHT);
 		useDefaultsButton.setText(IDEWorkbenchMessages.WizardNewProjectCreationPage_useDefaultLabel);
