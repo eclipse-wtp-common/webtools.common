@@ -32,7 +32,7 @@ import org.eclipse.wst.validation.internal.core.ValidationException;
  * [issue: LM - This interface will be implemented by clients. This should be considered a candidate
  * for an abstract class. ]
  */
-public interface IValidatorJob extends IValidator{
+public interface IValidatorJob extends ICommonValidator{
 	public static IStatus OK_STATUS = new Status(IStatus.OK, "org.eclipse.wst.validation", 0, "OK", null); //$NON-NLS-1$ //$NON-NLS-2$
 	
 
@@ -54,4 +54,6 @@ public interface IValidatorJob extends IValidator{
 	public IStatus validate(IValidationContext helper, IReporter reporter, IProgressMonitor monitor) throws ValidationException;
 
 	public ISchedulingRule getSchedulingRule();
+	
+	public void cleanup(IReporter reporter);
 }

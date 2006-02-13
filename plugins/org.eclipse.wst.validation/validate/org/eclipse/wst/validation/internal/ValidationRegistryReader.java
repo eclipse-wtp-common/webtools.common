@@ -41,7 +41,7 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.validation.internal.operations.IRuleGroup;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchContext;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
-import org.eclipse.wst.validation.internal.provisional.core.IValidator;
+import org.eclipse.wst.validation.internal.provisional.core.ICommonValidator;
 
 /**
  * ValidationRegistryReader is a singleton who reads the plugin registry for Validator extensions.
@@ -495,10 +495,10 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		return wh;
 	}
 
-	/* package */static IValidator createValidator(IConfigurationElement element, String validatorClassName) {
-		IValidator validator = null;
+	/* package */static ICommonValidator createValidator(IConfigurationElement element, String validatorClassName) {
+		ICommonValidator validator = null;
 		try {
-			validator = (IValidator) element.createExecutableExtension(TAG_RUN_CLASS);
+			validator = (ICommonValidator) element.createExecutableExtension(TAG_RUN_CLASS);
 		} catch (Throwable exc) {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {
@@ -784,7 +784,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	 * It's okay to return a handle to the ValidatorMetaData because the vmd can't be modified by
 	 * any code not in this package.
 	 */
-	public ValidatorMetaData getValidatorMetaData(IValidator validator) {
+	public ValidatorMetaData getValidatorMetaData(ICommonValidator validator) {
 		// retrieval will be in log(n) time
 		if (validator == null) {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
@@ -1437,7 +1437,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		}
 	}
 
-	public IValidator getValidator(String validatorClassName) throws InstantiationException {
+	public ICommonValidator getValidator(String validatorClassName) throws InstantiationException {
 		ValidatorMetaData vmd = (ValidatorMetaData) _indexedValidators.get(validatorClassName);
 		if(vmd != null)
 			return vmd.getValidator();

@@ -26,7 +26,7 @@ import org.eclipse.wst.validation.internal.operations.IWorkbenchContext;
 import org.eclipse.wst.validation.internal.operations.WorkbenchContext;
 import org.eclipse.wst.validation.internal.plugin.ValidationHelperRegistryReader;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
-import org.eclipse.wst.validation.internal.provisional.core.IValidator;
+import org.eclipse.wst.validation.internal.provisional.core.ICommonValidator;
 import org.osgi.framework.Bundle;
 
 /**
@@ -38,7 +38,7 @@ public class ValidatorMetaData {
 	private ValidatorFilter[] _filters = null;
 	private ValidatorNameFilter[] _projectNatureFilters = null;
 	private String[] facetFilters = null;
-	private IValidator _validator = null;
+	private ICommonValidator _validator = null;
 	private IWorkbenchContext _helper = null;
 	private String _validatorDisplayName = null;
 	private String _validatorUniqueName = null;
@@ -274,7 +274,7 @@ public class ValidatorMetaData {
 	 * @return IValidator
 	 * @throws InstantiationException
 	 */
-	public IValidator getValidator() throws InstantiationException {
+	public ICommonValidator getValidator() throws InstantiationException {
 		if (_validator == null) {
 			_validator = ValidationRegistryReader.createValidator(_validatorClassElement, getValidatorUniqueName());
 

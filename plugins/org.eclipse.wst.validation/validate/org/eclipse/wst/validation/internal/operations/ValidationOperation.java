@@ -43,7 +43,6 @@ import org.eclipse.wst.validation.internal.RegistryConstants;
 import org.eclipse.wst.validation.internal.ResourceConstants;
 import org.eclipse.wst.validation.internal.ResourceHandler;
 import org.eclipse.wst.validation.internal.TimeEntry;
-import org.eclipse.wst.validation.internal.VThreadManager;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.core.EmptySchedulingRule;
@@ -53,6 +52,7 @@ import org.eclipse.wst.validation.internal.core.ValidationException;
 import org.eclipse.wst.validation.internal.core.ValidatorLauncher;
 import org.eclipse.wst.validation.internal.plugin.ValidationHelperRegistryReader;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.internal.provisional.core.ICommonValidator;
 import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 import org.eclipse.wst.validation.internal.provisional.core.IReporter;
 import org.eclipse.wst.validation.internal.provisional.core.IValidationContext;
@@ -794,7 +794,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 					while (it.hasNext()) {
 						ValidatorMetaData data = (ValidatorMetaData) it.next();
 						if (data.isApplicableTo(refFile)) {
-							IValidator validator = data.getValidator();
+							IValidator validator = (IValidator)data.getValidator();
 							validator.validate(data.getHelper(project),reporter);
 							validatedFiles.add(refFile);
 						}
@@ -826,7 +826,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		}
 		checkCanceled(reporter);
 		reporter.getProgressMonitor().beginTask(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_PROGRESSMONITOR_TITLE), getUnitsOfWork());
-		IValidator validator = null;
+		ICommonValidator validator = null;
 		ValidatorMetaData vmd = null;
 		Iterator iterator = null;
 		WorkbenchReporter nullReporter = new WorkbenchReporter(getProject(), new NullProgressMonitor());
@@ -952,16 +952,17 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 					continue;
 				}
 				
-				if (isFork() && vmd.isAsync()) {
-					// Don't appear to run in the foreground by sending
-					// progress to the IProgressMonitor in the
-					// WorkbenchMonitor. Suppress the status messages by
-					// changing the IProgressMonitor to a
-					// NullProgressMonitor.
-					VThreadManager.getManager().queue(wrapInRunnable(nullReporter, validator, vmd,(WorkbenchContext)getContext(),delta, iterator));
-				} else {
-					internalValidate(reporter, validator, vmd, context, delta);
-				}
+//				if (isFork() && vmd.isAsync()) {
+//					// Don't appear to run in the foreground by sending
+//					// progress to the IProgressMonitor in the
+//					// WorkbenchMonitor. Suppress the status messages by
+//					// changing the IProgressMonitor to a
+//					// NullProgressMonitor.
+//					VThreadManager.getManager().queue(wrapInRunnable(nullReporter, validator, vmd,(WorkbenchContext)getContext(),delta, iterator));
+//				} else {
+//					internalValidate(reporter, validator, vmd, context, delta);
+//				}
+				internalValidate(reporter, (IValidator)validator, vmd, context, delta);
 			}
 		} catch (OperationCanceledException exc) {
 			handleOperationCancelledValidateException(reporter, validator, vmd, iterator, logger, exc);
@@ -1011,7 +1012,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 * @param logger
 	 * @param exc
 	 */
-	private void handleOperationCancelledValidateException(WorkbenchReporter reporter, IValidator validator, ValidatorMetaData vmd, Iterator iterator, final Logger logger, OperationCanceledException exc) {
+	private void handleOperationCancelledValidateException(WorkbenchReporter reporter, ICommonValidator validator, ValidatorMetaData vmd, Iterator iterator, final Logger logger, OperationCanceledException exc) {
 		/*
 		 * If the user terminates validation (i.e., presses "cancel" on the progress monitor) before
 		 * the validation completes, perform clean up on each configured enabled validator.
@@ -1118,7 +1119,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 * the old markers must not prevent validation from running again (limit exceeded), so delete
 	 * all of the old markers first, and then run validation.
 	 */
-	private final void removeOldMessages(WorkbenchReporter reporter, IValidator validator, ValidatorMetaData vmd, IFileDelta[] delta) {
+	private final void removeOldMessages(WorkbenchReporter reporter, ICommonValidator validator, ValidatorMetaData vmd, IFileDelta[] delta) {
 		if (reporter == null) {
 			return;
 		}
@@ -1514,7 +1515,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		final Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 		Iterator iterator = validators.iterator();
 		ValidatorMetaData vmd = null;
-		IValidator validator = null;
+		ICommonValidator validator = null;
 		IFileDelta[] delta = null;
 		IWorkbenchContext workbenchcontext = null;
 		
