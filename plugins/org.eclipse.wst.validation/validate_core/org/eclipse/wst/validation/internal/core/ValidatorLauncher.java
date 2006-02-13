@@ -10,13 +10,9 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal.core;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.wst.validation.internal.provisional.core.IReporter;
 import org.eclipse.wst.validation.internal.provisional.core.IValidationContext;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
-import org.eclipse.wst.validation.internal.provisional.core.IValidatorJob;
 
 
 
@@ -96,43 +92,4 @@ public class ValidatorLauncher {
 
 	}
 	
-	
-	public void start(final IValidationContext helper, final IValidatorJob validator, final IReporter reporter)
-					throws ValidationException {
-		
-		if ((helper == null) || (validator == null) || (reporter == null)) {
-			return;
-		}
-
-		// Can't force each validator to check if it's cancelled or not,
-		// so check for cancellation here. Hopefully the user won't wait
-		// too long.
-		if (reporter.isCancelled()) {
-			return;
-		}
-
-		// If the validator is about to perform a full build, remove all of its previous validation
-		// messages.
-		if ((helper.getURIs() == null) || (helper.getURIs().length == 0)) {
-			reporter.removeAllMessages(validator);
-		}
-
-
-		Job validatiorJob = new Job("Validation"){ //$NON-NLS-1$
-			protected IStatus run(IProgressMonitor monitor) {
-				IStatus stat = IValidatorJob.OK_STATUS;
-				try {
-					stat = validator.validate(helper, reporter, monitor);
-				} catch (ValidationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}	
-				return stat;
-			}
-		};
-		EmptySchedulingRule rule = new EmptySchedulingRule();
-		validatiorJob.setRule(rule);
-		validatiorJob.schedule();
-
-	}	
 }

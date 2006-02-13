@@ -11,7 +11,7 @@
 package org.eclipse.wst.validation.internal.provisional;
 
 import org.eclipse.wst.validation.internal.ValidationFactoryImpl;
-import org.eclipse.wst.validation.internal.provisional.core.ICommonValidator;
+import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 
 /**
  * This interface provides a way to access an instance of the ValidationFactoryImpl
@@ -41,6 +41,6 @@ public interface ValidationFactory {
 	 * @return IValidator
 	 * @plannedfor WTP 1.0
 	 */
-	public ICommonValidator getValidator(String validatorUniqueId) throws InstantiationException;
+	public IValidator getValidator(String validatorUniqueId) throws InstantiationException;
 
 }

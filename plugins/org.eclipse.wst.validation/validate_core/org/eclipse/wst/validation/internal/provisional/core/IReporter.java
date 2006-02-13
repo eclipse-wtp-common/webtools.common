@@ -37,7 +37,7 @@ import java.util.List;
  * at a time. 
  * ] 
  */
-public interface IReporter  {
+public interface IReporter {
 	/**
 	 * <p>
 	 * Add a locale-independent validation message. It will be displayed later, with all of the
@@ -63,7 +63,7 @@ public interface IReporter  {
 	 *  to handle a MessageLimitException? Seems to me that this is a validation framework
 	 *  specific issue and that client validators shouldn't know about this at all. ]
 	 */
-	public abstract void addMessage(ICommonValidator origin, IMessage message);
+	public abstract void addMessage(IValidator origin, IMessage message);
 
 	/**
 	 * <p>
@@ -83,7 +83,7 @@ public interface IReporter  {
 	 *            message The message to be displayed to the user.
 	 *                       
 	 */
-	public abstract void displaySubtask(ICommonValidator validator, IMessage message);
+	public abstract void displaySubtask(IValidator validator, IMessage message);
 
 	/**
 	 * @return the message access interface to this reporter, or null if message access is not
@@ -116,7 +116,7 @@ public interface IReporter  {
 	 * @param origin
 	 * 			originator validator of the message.  
 	 */
-	public abstract void removeAllMessages(ICommonValidator origin);
+	public abstract void removeAllMessages(IValidator origin);
 
 	/**
 	 * Remove all validation messages, entered by the identified validator, pertaining to the Object
@@ -135,7 +135,7 @@ public interface IReporter  {
 	 * when adding the message as problem marker.
 	 * 
  	 */
-	public abstract void removeAllMessages(ICommonValidator origin, Object object);
+	public abstract void removeAllMessages(IValidator origin, Object object);
 
 	/**
 	 * To support removal of a subset of validation messages, an IValidator may assign group names
@@ -160,5 +160,5 @@ public interface IReporter  {
 	 * @param groupName
 	 * 			name of the group to which the message belongs. 
 	 */
-	public void removeMessageSubset(ICommonValidator validator, Object obj, String groupName);
+	public void removeMessageSubset(IValidator validator, Object obj, String groupName);
 }

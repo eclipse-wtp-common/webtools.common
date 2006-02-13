@@ -11,7 +11,7 @@
 package org.eclipse.wst.validation.internal;
 
 import org.eclipse.wst.validation.internal.provisional.ValidationFactory;
-import org.eclipse.wst.validation.internal.provisional.core.ICommonValidator;
+import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 
 public class ValidationFactoryImpl implements ValidationFactory {
 	static ValidationFactory inst = null;
@@ -26,7 +26,9 @@ public class ValidationFactoryImpl implements ValidationFactory {
 		return inst;
 	}
 
-	public ICommonValidator getValidator(String validatorUniqueId) throws InstantiationException {
+
+
+	public IValidator getValidator(String validatorUniqueId) throws InstantiationException {
 		ValidationRegistryReader reader = ValidationRegistryReader.getReader();
 		return reader.getValidator(validatorUniqueId);
 	}

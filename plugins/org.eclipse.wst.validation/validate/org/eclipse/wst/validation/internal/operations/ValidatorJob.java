@@ -28,7 +28,7 @@ public class ValidatorJob extends Job {
 
 	private IProject			project;
 	private String				validatorUniqueName;
-	//private IWorkbenchContext 	helper;
+	private IWorkbenchContext 	helper;
 	
 	public ValidatorJob(String name) {
 		super(name);
@@ -37,11 +37,11 @@ public class ValidatorJob extends Job {
 
 	   
 	   
-	public ValidatorJob(String name, IProject project ){
+	public ValidatorJob(String name, IProject project, IWorkbenchContext aHelper  ){
 		super(name);
 		validatorUniqueName = name;
 		this.project = project;
-		//this.helper = helper;
+		this.helper = aHelper;
 	}
 	
 	//revisit reporter in the code  below
@@ -54,7 +54,7 @@ public class ValidatorJob extends Job {
 		WorkbenchReporter	reporter = new WorkbenchReporter( project, monitor );
 
 		IValidatorJob	validator = null;
-		IWorkbenchContext helper = null;
+
 		
 		try {
 			validator = (IValidatorJob) ValidationFactoryImpl.getInstance().getValidator( validatorUniqueName );
@@ -65,11 +65,11 @@ public class ValidatorJob extends Job {
 
 		ValidatorMetaData vmd = ValidationRegistryReader.getReader().getValidatorMetaData(validator);
 		
-		try {
-			helper = vmd.getHelper(project);
-		} catch (InstantiationException e1) {
-			Logger.getLogger().logError(e1);
-		}
+//		try {
+//			helper = vmd.getHelper(project);
+//		} catch (InstantiationException e1) {
+//			Logger.getLogger().logError(e1);
+//		}
 		
 		Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 
@@ -82,7 +82,7 @@ public class ValidatorJob extends Job {
 			monitor.subTask(message);
 			
 		
-			status = validator.validate(helper, reporter, monitor);
+			status = validator.validateInJob(helper, reporter);
 		
 			//to remove, if error is returned from the validator, the job stays back in the UI...
 			//should we even return error status if error is found in the validator
@@ -94,9 +94,7 @@ public class ValidatorJob extends Job {
 					ResourceConstants.VBF_STATUS_ENDING_VALIDATION,
 					new String[]{helper.getProject().getName(), vmd.getValidatorDisplayName()});
 			monitor.subTask(message);
-			
-		} catch (MessageLimitException exc) {
-			throw exc;
+ 
 		} catch (OperationCanceledException exc) {
 			throw exc;
 		} catch (ValidationException exc) {
@@ -164,8 +162,6 @@ public class ValidatorJob extends Job {
 		} finally {
 			try {
 				validator.cleanup(reporter);
-			} catch (MessageLimitException e) {
-				throw e;
 			} catch (OperationCanceledException e) {
 				throw e;
 			} catch (Throwable exc) {
@@ -188,9 +184,7 @@ public class ValidatorJob extends Job {
 			}
 			try {
 				helper.cleanup(reporter);
-			} catch (MessageLimitException e) {
-				throw e;
-			} catch (OperationCanceledException e) {
+			}catch (OperationCanceledException e) {
 				throw e;
 			} catch (Throwable exc) {
 				if (logger.isLoggingLevel(Level.SEVERE)) {

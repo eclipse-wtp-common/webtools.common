@@ -52,7 +52,6 @@ import org.eclipse.wst.validation.internal.core.ValidationException;
 import org.eclipse.wst.validation.internal.core.ValidatorLauncher;
 import org.eclipse.wst.validation.internal.plugin.ValidationHelperRegistryReader;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
-import org.eclipse.wst.validation.internal.provisional.core.ICommonValidator;
 import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 import org.eclipse.wst.validation.internal.provisional.core.IReporter;
 import org.eclipse.wst.validation.internal.provisional.core.IValidationContext;
@@ -826,7 +825,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		}
 		checkCanceled(reporter);
 		reporter.getProgressMonitor().beginTask(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_PROGRESSMONITOR_TITLE), getUnitsOfWork());
-		ICommonValidator validator = null;
+		IValidator validator = null;
 		ValidatorMetaData vmd = null;
 		Iterator iterator = null;
 		WorkbenchReporter nullReporter = new WorkbenchReporter(getProject(), new NullProgressMonitor());
@@ -1012,7 +1011,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 * @param logger
 	 * @param exc
 	 */
-	private void handleOperationCancelledValidateException(WorkbenchReporter reporter, ICommonValidator validator, ValidatorMetaData vmd, Iterator iterator, final Logger logger, OperationCanceledException exc) {
+	private void handleOperationCancelledValidateException(WorkbenchReporter reporter, IValidator validator, ValidatorMetaData vmd, Iterator iterator, final Logger logger, OperationCanceledException exc) {
 		/*
 		 * If the user terminates validation (i.e., presses "cancel" on the progress monitor) before
 		 * the validation completes, perform clean up on each configured enabled validator.
@@ -1119,7 +1118,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 * the old markers must not prevent validation from running again (limit exceeded), so delete
 	 * all of the old markers first, and then run validation.
 	 */
-	private final void removeOldMessages(WorkbenchReporter reporter, ICommonValidator validator, ValidatorMetaData vmd, IFileDelta[] delta) {
+	private final void removeOldMessages(WorkbenchReporter reporter, IValidator validator, ValidatorMetaData vmd, IFileDelta[] delta) {
 		if (reporter == null) {
 			return;
 		}
@@ -1515,7 +1514,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		final Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 		Iterator iterator = validators.iterator();
 		ValidatorMetaData vmd = null;
-		ICommonValidator validator = null;
+		IValidator validator = null;
 		IFileDelta[] delta = null;
 		IWorkbenchContext workbenchcontext = null;
 		
@@ -1580,10 +1579,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			} catch (OperationCanceledException exc) {
 				throw exc;
 
-			} catch (MessageLimitException exc) {
-				// Let the finally block handle this case.
-				// handleMessageLimit();
-			} catch (Throwable exc) {
+			}catch (Throwable exc) {
 				if (logger.isLoggingLevel(Level.SEVERE)) {
 					LogEntry entry = ValidationPlugin.getLogEntry();
 					entry.setSourceID("ValidationOperation.launchJobs()"); //$NON-NLS-1$
@@ -1606,11 +1602,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				reporter.getProgressMonitor().done();
 			}
 		}
-				
-				
-				
-		
-
 	}
 	
 	private void initValidateContext(IFileDelta[] delta, IWorkbenchContext context ) {
@@ -1645,16 +1636,15 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			getLaunchedValidators().add(vmd);
 		}
 		
-		ValidatorJob validatorjob = new ValidatorJob( vmd.getValidatorUniqueName(), helper.getProject() );
+		ValidatorJob validatorjob = new ValidatorJob( vmd.getValidatorUniqueName(), helper.getProject(), helper );
 
 
-		ISchedulingRule schedulingRule = validator.getSchedulingRule();
+		ISchedulingRule schedulingRule = validator.getSchedulingRule(helper);
 		if( schedulingRule == null ){
 			schedulingRule = new EmptySchedulingRule();
 			validatorjob.setRule( schedulingRule );
 		}
 		validatorjob.schedule();		
-		
 	}
 	
 	

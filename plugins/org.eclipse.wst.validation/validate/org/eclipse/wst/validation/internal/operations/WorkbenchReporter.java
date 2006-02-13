@@ -27,7 +27,6 @@ import org.eclipse.wst.validation.internal.TaskListUtility;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
-import org.eclipse.wst.validation.internal.provisional.core.ICommonValidator;
 import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 import org.eclipse.wst.validation.internal.provisional.core.IReporter;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
@@ -146,7 +145,7 @@ public final class WorkbenchReporter implements IReporter {
 		ValidatorManager.messageLimitProjectMap.put(project,new Integer(newVal));
 	}
 
-	public static void removeAllMessages(IResource resource, ICommonValidator validator) {
+	public static void removeAllMessages(IResource resource, IValidator validator) {
 		if (resource == null) {
 			return;
 		}
@@ -176,7 +175,7 @@ public final class WorkbenchReporter implements IReporter {
 	 * @deprecated Will be removed in Milestone 3. Should not be called outside of the validation
 	 *             framework.
 	 */
-	public static void removeAllMessages(IResource resource, ICommonValidator validator, Object object) {
+	public static void removeAllMessages(IResource resource, IValidator validator, Object object) {
 		if (resource == null) {
 			return;
 		}
@@ -349,7 +348,7 @@ public final class WorkbenchReporter implements IReporter {
 
 	// TODO This method was made "protected" for the SaberReporter. Do not call this method! This
 	// method will be made private once support for marker PRIORITY attributes is in the framework.
-	protected static ValidatorMetaData getVMD(ICommonValidator validator) throws IllegalArgumentException {
+	protected static ValidatorMetaData getVMD(IValidator validator) throws IllegalArgumentException {
 		ValidatorMetaData vmd = ValidationRegistryReader.getReader().getValidatorMetaData(validator);
 		if (vmd == null) {
 			throw new IllegalArgumentException(); // already logged in the ValidationRegistryReader
@@ -376,7 +375,7 @@ public final class WorkbenchReporter implements IReporter {
 
 	// TODO This method was made protected for the SaberReporter. Make it private again once the
 	// framework support IMarker.PRIORITY.
-	protected IWorkbenchContext getHelper(ICommonValidator validator) throws InstantiationException, IllegalArgumentException {
+	protected IWorkbenchContext getHelper(IValidator validator) throws InstantiationException, IllegalArgumentException {
 		ValidatorMetaData vmd = getVMD(validator);
 		IWorkbenchContext helper = vmd.getHelper(getProject());
 		return helper;
@@ -409,7 +408,7 @@ public final class WorkbenchReporter implements IReporter {
 	 * IMessage. This method, given the target object, returns the IResource which represents that
 	 * object in the workbench.
 	 */
-	public IResource getMessageResource(ICommonValidator validator, Object object) {
+	public IResource getMessageResource(IValidator validator, Object object) {
 		if (validator == null) {
 			return null;
 		}
@@ -529,7 +528,7 @@ public final class WorkbenchReporter implements IReporter {
 	/**
 	 * @see org.eclipse.wst.validation.internal.provisional.core.core.IReporter#addMessage(IValidator, IMessage)
 	 */
-	public void addMessage(ICommonValidator validator, IMessage message)  {
+	public void addMessage(IValidator validator, IMessage message)  {
 		IResource resource = getMessageResource(validator, message.getTargetObject());
 		IWorkbenchContext helper = null;
 		ValidatorMetaData vmd = getVMD(validator);
@@ -621,7 +620,7 @@ public final class WorkbenchReporter implements IReporter {
 	/**
 	 * @see org.eclipse.wst.validation.internal.provisional.core.core.IReporter#displaySubtask(IValidator, IMessage)
 	 */
-	public void displaySubtask(ICommonValidator validator, IMessage message) {
+	public void displaySubtask(IValidator validator, IMessage message) {
 		if ((message == null) || (message.equals(""))) { //$NON-NLS-1$
 			return;
 		}
@@ -632,7 +631,7 @@ public final class WorkbenchReporter implements IReporter {
 	/**
 	 * @see org.eclipse.wst.validation.internal.provisional.core.core.IReporter#removeAllMessages(IValidator)
 	 */
-	public void removeAllMessages(ICommonValidator validator) {
+	public void removeAllMessages(IValidator validator) {
 		if (validator == null) { // getHelper could be null if the user cancelled before something
 			// was fully initialized
 			return;
@@ -644,7 +643,7 @@ public final class WorkbenchReporter implements IReporter {
 	/**
 	 * @see org.eclipse.wst.validation.internal.provisional.core.core.IReporter#removeAllMessages(IValidator, Object)
 	 */
-	public void removeAllMessages(ICommonValidator validator, Object object) {
+	public void removeAllMessages(IValidator validator, Object object) {
 		IResource resource = getMessageResource(validator, object);
 		if (resource == null) {
 			return;
@@ -686,7 +685,7 @@ public final class WorkbenchReporter implements IReporter {
 	/**
 	 * @see org.eclipse.wst.validation.internal.provisional.core.core.IReporter#removeMessageSubset(IValidator, Object, String)
 	 */
-	public void removeMessageSubset(ICommonValidator validator, Object obj, String groupName) {
+	public void removeMessageSubset(IValidator validator, Object obj, String groupName) {
 		IResource resource = getMessageResource(validator, obj);
 		if (resource == null) {
 			return;

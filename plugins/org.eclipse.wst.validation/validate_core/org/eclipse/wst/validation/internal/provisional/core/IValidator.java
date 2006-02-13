@@ -28,7 +28,7 @@ import org.eclipse.wst.validation.internal.core.ValidationException;
  * [issue: LM - This interface will be implemented by clients. This should be considered a candidate for
  *  an abstract class. ]   
  */
-public interface IValidator extends ICommonValidator{
+public interface IValidator{
 	/**
 	 * <p>
 	 * Perform any resource cleanup once validation is complete. If cleanup will take some time, the
