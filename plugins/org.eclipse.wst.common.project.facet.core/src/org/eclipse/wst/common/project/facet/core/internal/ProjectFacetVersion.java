@@ -12,6 +12,8 @@
 package org.eclipse.wst.common.project.facet.core.internal;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdapterManager;
@@ -22,8 +24,10 @@ import org.eclipse.wst.common.project.facet.core.IActionConfig;
 import org.eclipse.wst.common.project.facet.core.IActionConfigFactory;
 import org.eclipse.wst.common.project.facet.core.IConstraint;
 import org.eclipse.wst.common.project.facet.core.IDelegate;
+import org.eclipse.wst.common.project.facet.core.IGroup;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.internal.ProjectFacet.ActionDefinition;
 import org.osgi.framework.Bundle;
@@ -175,6 +179,117 @@ public final class ProjectFacetVersion
         
         return this.facet.getActionDefinition( fv, t )
                == this.facet.getActionDefinition( this, t );
+    }
+    
+    public boolean isValidFor( final Set fixed )
+    {
+        for( Iterator itr = fixed.iterator(); itr.hasNext(); )
+        {
+            final IProjectFacet f = (IProjectFacet) itr.next();
+            
+            if( f.getVersions().contains( this ) )
+            {
+                return true;
+            }
+        }
+        
+        return isValidFor( fixed, getConstraint() );
+    }
+    
+    private boolean isValidFor( final Set fixed,
+                                final IConstraint op )
+    {
+        if( op.getType() == IConstraint.Type.AND )
+        {
+            for( Iterator itr = op.getOperands().iterator(); itr.hasNext(); )
+            {
+                if( ! isValidFor( fixed, (IConstraint) itr.next() ) )
+                {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        else if( op.getType() == IConstraint.Type.OR )
+        {
+            for( Iterator itr = op.getOperands().iterator(); itr.hasNext(); )
+            {
+                if( isValidFor( fixed, (IConstraint) itr.next() ) )
+                {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+        else if( op.getType() == IConstraint.Type.CONFLICTS )
+        {
+            final String gid = (String) op.getOperand( 0 );
+            final IGroup group = ProjectFacetsManager.getGroup( gid );
+            
+            for( Iterator itr = fixed.iterator(); itr.hasNext(); )
+            {
+                final IProjectFacet f = (IProjectFacet) itr.next();
+                
+                if( group.getMembers().containsAll( f.getVersions() ) )
+                {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        else if( op.getType() == IConstraint.Type.REQUIRES )
+        {
+            final String id = (String) op.getOperand( 0 );
+            final String vexpr = (String) op.getOperand( 1 );
+            
+            final boolean soft
+                = ( (Boolean) op.getOperand( 2 ) ).booleanValue();
+        
+            if( soft )
+            {
+                return true;
+            }
+            else
+            {
+                if( ! ProjectFacetsManager.isProjectFacetDefined( id ) )
+                {
+                    ProjectFacetsManagerImpl.reportMissingFacet( id, this );
+                    return false;
+                }
+                
+                final IProjectFacet rf 
+                    = ProjectFacetsManager.getProjectFacet( id );
+                
+                try
+                {
+                    for( Iterator itr = rf.getVersions( vexpr ).iterator();
+                         itr.hasNext(); )
+                    {
+                        final IProjectFacetVersion fv 
+                            = (IProjectFacetVersion) itr.next();
+                        
+                        if( fv.isValidFor( fixed ) )
+                        {
+                            return true;
+                        }
+                    }
+                }
+                catch( CoreException e )
+                {
+                    FacetCorePlugin.log( e );
+                    return false;
+                }
+            
+                return false;
+            }
+        }
+        else
+        {
+            throw new IllegalStateException();
+        }
     }
     
     IDelegate getDelegate( final IDelegate.Type type )

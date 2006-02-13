@@ -121,12 +121,9 @@ public abstract class AbstractRuntime
         
         // 2. Remove the facets that conflict with fixed facets.
         
-        final ConflictingFacetsFilter filter 
-            = new ConflictingFacetsFilter( fixed );
-        
         for( Iterator itr = facets.values().iterator(); itr.hasNext(); )
         {
-            if( ! filter.check( (IProjectFacetVersion) itr.next() ) )
+            if( ! ( (IProjectFacetVersion) itr.next() ).isValidFor( fixed ) )
             {
                 itr.remove();
             }

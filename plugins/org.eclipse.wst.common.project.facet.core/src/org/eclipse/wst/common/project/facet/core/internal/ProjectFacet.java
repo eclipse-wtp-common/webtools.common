@@ -184,8 +184,15 @@ public final class ProjectFacet
                 }
                 else
                 {
-                    // TODO: Throw better error.
-                    throw new RuntimeException();
+                    final String msg
+                        = Resources.bind( Resources.multipleActionDefinitions,
+                                          fv.getProjectFacet().getId(),
+                                          fv.getVersionString(),
+                                          type.toString() );
+                    
+                    FacetCorePlugin.log( msg );
+
+                    break;
                 }
             }
         }
@@ -222,4 +229,26 @@ public final class ProjectFacet
         public String configFactoryClassName;
     }
 
+    public static final class Resources
+    
+        extends NLS
+        
+    {
+        public static String multipleActionDefinitions;
+        
+        static
+        {
+            initializeMessages( ProjectFacet.class.getName(), 
+                                Resources.class );
+        }
+        
+        public static String bind( final String template,
+                                   final Object arg1,
+                                   final Object arg2,
+                                   final Object arg3 )
+        {
+            return NLS.bind( template, new Object[] { arg1, arg2, arg3 } );
+        }
+    }
+    
 }

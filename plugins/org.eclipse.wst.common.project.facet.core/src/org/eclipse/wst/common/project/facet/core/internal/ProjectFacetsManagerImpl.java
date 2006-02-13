@@ -64,6 +64,8 @@ import org.osgi.service.prefs.Preferences;
 public final class ProjectFacetsManagerImpl
 {
     private static final String EXTENSION_ID = "facets";
+
+    private static final Set facetsReportedMissing = new HashSet();
     
     private final IndexedSet facets;
     private final IndexedSet categories;
@@ -847,6 +849,43 @@ public final class ProjectFacetsManagerImpl
         }
     }
     
+    public static void reportMissingFacet( final String fid,
+                                           final String plugin )
+    {
+        synchronized( facetsReportedMissing )
+        {
+            if( ! facetsReportedMissing.contains( fid ) )
+            {
+                final String msg
+                    = Resources.bind( Resources.facetNotDefinedFromPlugin, fid, 
+                                      plugin );
+                
+                FacetCorePlugin.log( msg );
+                
+                facetsReportedMissing.add( fid );
+            }
+        }
+    }
+
+    public static void reportMissingFacet( final String fid,
+                                           final IProjectFacetVersion fv )
+    {
+        synchronized( facetsReportedMissing )
+        {
+            if( ! facetsReportedMissing.contains( fid ) )
+            {
+                final String msg
+                    = Resources.bind( Resources.facetNotDefinedFromFacet, fid,
+                                      fv.getProjectFacet().getId(),
+                                      fv.getVersionString() ); 
+                
+                FacetCorePlugin.log( msg );
+                
+                facetsReportedMissing.add( fid );
+            }
+        }
+    }
+    
     private static IProgressMonitor submon( final IProgressMonitor monitor,
                                             final int ticks )
     {
@@ -1104,12 +1143,7 @@ public final class ProjectFacetsManagerImpl
         
         if( f == null )
         {
-            final String msg
-                = NLS.bind( Resources.facetNotDefined, 
-                            config.getNamespace(), fid );
-            
-            FacetCorePlugin.log( msg );
-            
+            reportMissingFacet( fid, config.getNamespace() );
             return;
         }
         
@@ -1209,12 +1243,7 @@ public final class ProjectFacetsManagerImpl
         
         if( f == null )
         {
-            final String msg
-                = NLS.bind( Resources.facetNotDefined, 
-                            config.getNamespace(), fid );
-            
-            FacetCorePlugin.log( msg );
-            
+            reportMissingFacet( fid, config.getNamespace() );
             return;
         }
         
@@ -1419,12 +1448,7 @@ public final class ProjectFacetsManagerImpl
                 
                 if( ! isProjectFacetDefined( fid ) )
                 {
-                    final String msg
-                        = NLS.bind( Resources.facetNotDefined, 
-                                    child.getNamespace(), fid );
-                    
-                    FacetCorePlugin.log( msg );
-                    
+                    reportMissingFacet( fid, child.getNamespace() );
                     return;
                 }
                 
@@ -1689,7 +1713,8 @@ public final class ProjectFacetsManagerImpl
     {
         public static String missingAttribute;
         public static String categoryNotDefined;
-        public static String facetNotDefined;
+        public static String facetNotDefinedFromPlugin;
+        public static String facetNotDefinedFromFacet;
         public static String facetVersionNotDefined;
         public static String facetVersionNotDefinedNoPlugin;
         public static String presetNotDefined;
@@ -1699,6 +1724,14 @@ public final class ProjectFacetsManagerImpl
         {
             initializeMessages( ProjectFacetsManagerImpl.class.getName(), 
                                 Resources.class );
+        }
+        
+        public static String bind( final String template,
+                                   final Object arg1,
+                                   final Object arg2,
+                                   final Object arg3 )
+        {
+            return NLS.bind( template, new Object[] { arg1, arg2, arg3 } );
         }
     }
     

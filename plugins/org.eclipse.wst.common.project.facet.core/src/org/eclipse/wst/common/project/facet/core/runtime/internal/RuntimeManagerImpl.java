@@ -988,12 +988,7 @@ public final class RuntimeManagerImpl
         
         if( ! ProjectFacetsManager.isProjectFacetDefined( id ) )
         {
-            final String msg
-                = NLS.bind( ProjectFacetsManagerImpl.Resources.facetNotDefined, 
-                            config.getNamespace(), id );
-            
-            FacetCorePlugin.log( msg );
-            
+            ProjectFacetsManagerImpl.reportMissingFacet( id, config.getNamespace() );
             return null;
         }
         

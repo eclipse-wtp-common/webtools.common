@@ -11,6 +11,8 @@
 
 package org.eclipse.wst.common.project.facet.core;
 
+import java.util.Set;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 
@@ -90,5 +92,18 @@ public interface IProjectFacetVersion
                                 IProjectFacetVersion fv )
     
         throws CoreException;
+    
+    /**
+     * Determines whether this facet version is valid for projects that have
+     * the provided set of fixed facets. The determination is done by checking 
+     * to see whether this facet or any of its dependencies are in conflict with
+     * any of the fixed facets.
+     * 
+     * @param fixed the set of fixed facets (element type: {@see IProjectFacet})
+     * @return <code>true</code> if this facet version is valid for the projects
+     *   that have the provided set of fixed facets
+     */
+    
+    boolean isValidFor( Set fixed );
     
 }

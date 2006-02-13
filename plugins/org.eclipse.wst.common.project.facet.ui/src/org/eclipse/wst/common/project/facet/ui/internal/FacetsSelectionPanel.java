@@ -732,6 +732,8 @@ public final class FacetsSelectionPanel
 
     public void setFixedProjectFacets( final Set fixed )
     {
+        this.fixed.clear();
+        
         for( int i = 0, n = this.data.size(); i < n; i++ )
         {
             ( (TableRowData) this.data.get( i ) ).setFixed( false );
