@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.snippets.internal.editors;
 
-import java.text.Collator;
+import com.ibm.icu.text.Collator;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
