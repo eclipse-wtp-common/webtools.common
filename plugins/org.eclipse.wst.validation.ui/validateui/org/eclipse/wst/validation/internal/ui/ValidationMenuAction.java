@@ -571,9 +571,9 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		
 		ManualValidatorsOperation validOp = null;
 		if (resources == null) {
-			validOp = new ManualValidatorsOperation(project,prjp.runAsync());
+			validOp = new ManualValidatorsOperation(project,false);
 		} else {
-			validOp = new ManualEnabledIncrementalValidatorsOperation(resources, project, prjp.runAsync());
+			validOp = new ManualEnabledIncrementalValidatorsOperation(resources, project,false);
 		}
 		if (validOp.isNecessary(monitor)) {
 			validOp.run(monitor);

@@ -658,14 +658,26 @@ private class ValidatorListPage implements IValidationPage {
 		// widgets because of performDefaults(). If performDefaults() is selected,
 		// then the pagePreferences values are reset, and these widgets
 		// might also need to be updated.
-		overrideButton.setSelection(pagePreferences.canProjectsOverride());
 		updateTable();
+		updateAllWidgets();
+		updateHelp();
+	}
+	
+	protected void updateWidgetsForDefaults() throws InvocationTargetException {
+		updateTableForDefaults();
+		updateAllWidgets();
+		updateHelp();
+	}
+
+	/**
+	 * @throws InvocationTargetException
+	 */
+	private void updateAllWidgets() throws InvocationTargetException {
+		overrideButton.setSelection(pagePreferences.canProjectsOverride());
 		disableAllValidation.setSelection(pagePreferences.isDisableAllValidation());
 		validatorsTable.setEnabled(!disableAllValidation.getSelection());
 		enableAllButton.setEnabled(!disableAllValidation.getSelection());
 		disableAllButton.setEnabled(!disableAllValidation.getSelection());
-		
-		updateHelp();
 	}
 
 	protected void updateTable() throws InvocationTargetException {
@@ -687,6 +699,26 @@ private class ValidatorListPage implements IValidationPage {
 					vmd.setBuildValidation(false);
 
 			}
+		validatorList.refresh();
+	}
+	
+	protected void updateTableForDefaults() throws InvocationTargetException {
+		TableItem[] items = validatorsTable.getItems();
+		for (int i = 0; i < items.length; i++) {
+			TableItem item = items[i];
+			ValidatorMetaData vmd = (ValidatorMetaData) item.getData();
+
+			// Should the validator be enabled? Read the user's preferences from last time,
+			// if they exist, and set from that. If they don't exist, use the Validator class'
+			// default value.
+			if(pagePreferences.isEnabled(vmd)) {
+				vmd.setManualValidation(true);
+				vmd.setBuildValidation(true);
+			} else {
+				vmd.setManualValidation(false);
+				vmd.setBuildValidation(false);
+			}
+		}
 		validatorList.refresh();
 	}
 	
@@ -719,7 +751,7 @@ private class ValidatorListPage implements IValidationPage {
 
 	public boolean performDefaults() throws InvocationTargetException {
 		pagePreferences.resetToDefault();
-		updateWidgets();
+		updateWidgetsForDefaults();
 		getDefaultsButton().setFocus();
 		return true;
 	}
@@ -879,7 +911,7 @@ private class ValidatorListPage implements IValidationPage {
 		// This page does not need to cache anything before it loses focus.
 	}
 
-	public void gainFocus() {
+	public void gainFocus() {/*
 		// This page depends on the Workbench Preference page, so update the value of the
 		// isAutoBuild (in case the workbench page's value has changed), and then update
 		// this page's widgets.
@@ -889,7 +921,7 @@ private class ValidatorListPage implements IValidationPage {
 		} catch (InvocationTargetException exc) {
 			displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
 		}
-	}
+	*/}
 }
 
 /*

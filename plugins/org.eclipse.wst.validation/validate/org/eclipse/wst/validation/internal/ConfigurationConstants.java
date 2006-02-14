@@ -22,7 +22,6 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  * Only the validation framework should use this interface.
  */
 public interface ConfigurationConstants {
-	/* package */static final String ASYNC_SETTING = "runAsync"; //$NON-NLS-1$ // boolean (Use the global preferences or override)
 	public static final String DISABLE_ALL_VALIDATION_SETTING = "disableAllValidation"; //$NON-NLS-1$ // boolean
 	///* package */static final String AUTO_SETTING = "autoValidate"; //$NON-NLS-1$ // boolean
 	///* package */static final String BUILD_SETTING = "runWhenBuild"; //$NON-NLS-1$ // boolean

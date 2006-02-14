@@ -806,31 +806,20 @@ public class ValidationPropertiesPage extends PropertyPage {
 			}
 		}
 
-		/*protected int checkInteger() throws InvocationTargetException {
-			ProjectConfiguration pc = ConfigurationManager.getManager().getProjectConfiguration(getProject());
-			String text = maxValProblemsField.getText();
-			if (text == null) {
-				setErrorMessage(ResourceHandler.getExternalizedMessage(ResourceConstants.PROP_ERROR_INT));
-				return pc.getMaximumNumberOfMessages();
-			}
-			try {
-				Integer tempInt = new Integer(text.trim());
-
-				// no exception? It's an int, then.
-				if (tempInt.intValue() <= 0) {
-					setErrorMessage(ResourceHandler.getExternalizedMessage(ResourceConstants.PROP_ERROR_INT));
-					return pc.getMaximumNumberOfMessages();
-				}
-				setErrorMessage(null);
-				return Integer.valueOf(maxValProblemsField.getText().trim()).intValue();
-			} catch (NumberFormatException exc) {
-				setErrorMessage(ResourceHandler.getExternalizedMessage(ResourceConstants.PROP_ERROR_INT));
-				return pc.getMaximumNumberOfMessages();
-			}
-
-		}*/
-
 		void updateWidgets() throws InvocationTargetException {
+			// Since the setting of the "override" button enables/disables the other widgets on the
+			// page, update the enabled state of the other widgets from the "override" button.
+			updateTable();
+			updateAllWidgets();
+			
+		}
+		
+		protected void updateWidgetsForDefaults() throws InvocationTargetException {
+			updateTableForDefaults();
+			updateAllWidgets();
+		}
+		
+		private void updateAllWidgets() throws InvocationTargetException {
 			// Since the setting of the "override" button enables/disables the other widgets on the
 			// page, update the enabled state of the other widgets from the "override" button.
 			ConfigurationManager prefMgr = ConfigurationManager.getManager();
@@ -844,9 +833,26 @@ public class ValidationPropertiesPage extends PropertyPage {
 				enableDependentControls(!pagePreferences.isDisableAllValidation());
 			else
 				enableDependentControls(overridePreferences);
-
-			updateTable();
 			updateHelp();
+		}
+
+		private void updateTableForDefaults() throws InvocationTargetException {
+			TableItem[] items = validatorsTable.getItems();
+			for (int i = 0; i < items.length; i++) {
+				TableItem item = items[i];
+				ValidatorMetaData vmd = (ValidatorMetaData) item.getData();
+
+				// Should the validator be enabled? Read the user's preferences from last time,
+				// if they exist, and set from that. If they don't exist, use the Validator class'
+				if(pagePreferences.isEnabled(vmd)) {
+					vmd.setManualValidation(true);
+					vmd.setBuildValidation(true);
+				} else {
+					vmd.setManualValidation(false);
+					vmd.setBuildValidation(false);
+				}
+			}
+			validatorList.refresh();
 		}
 
 		/**

@@ -651,6 +651,29 @@ public final class ValidatorManager {
 			return Collections.EMPTY_SET;
 		}
 	}	
+	
+	protected Set getBuildEnabledValidators(IProject project) {
+		try {
+			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
+			ValidatorMetaData[] vmds = prjp.getBuildEnabledValidators();
+			return InternalValidatorManager.wrapInSet(vmds);
+		} catch (InvocationTargetException exc) {
+			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
+			if (logger.isLoggingLevel(Level.SEVERE)) {
+				LogEntry entry = ValidationPlugin.getLogEntry();
+				entry.setSourceIdentifier("ValidatorManager::getEnabledValidators" + project.getName() + ")"); //$NON-NLS-1$  //$NON-NLS-2$
+				entry.setTargetException(exc);
+				logger.write(Level.SEVERE, entry);
+
+				if (exc.getTargetException() != null) {
+					entry.setTargetException(exc);
+					logger.write(Level.SEVERE, entry);
+				}
+			}
+			return Collections.EMPTY_SET;
+		}
+	}	
+	
 	/**
 	 * This method is for use only by the validation framework. Update the task list based on which
 	 * validators are enabled or disabled. This method should be called only by the validation

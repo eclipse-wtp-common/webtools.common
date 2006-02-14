@@ -118,6 +118,13 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		return super.getManualEnabledValidators();
 	}
 	
+	public ValidatorMetaData[] getBuildEnabledValidators() throws InvocationTargetException {
+		if (useGlobalPreference()) {
+			return extractProjectValidators(ConfigurationManager.getManager().getGlobalConfiguration().getBuildEnabledValidators(), getResource());
+		}
+		return super.getBuildEnabledValidators();
+	}
+	
 
 	/**
 	 * @see org.eclipse.wst.validation.internal.operations.internal.preference.ValidationConfiguration#getDisabledValidators()
@@ -223,6 +230,8 @@ public class ProjectConfiguration extends ValidationConfiguration {
 	 */
 	public void setValidators(ValidatorMetaData[] vmds) {
 		super.setValidators(extractProjectValidators(vmds, getResource()));
+		super.setManualValidators(extractProjectValidators(vmds, getResource()));
+		super.setBuildValidators(extractProjectValidators(vmds, getResource()));
 	}
 
 	/**
@@ -266,17 +275,6 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		return -1;
 	}
 
-	/**
-	 * If the preferences should be used then the preference settings are returned; otherwise return
-	 * the project settings.
-	 */
-	public boolean runAsync() throws InvocationTargetException {
-		if (useGlobalPreference()) {
-			return ConfigurationManager.getManager().getGlobalConfiguration().runAsync();
-		}
-		return super.runAsync();
-	}
-
 	public void resetToDefault() throws InvocationTargetException {
 		// The default values of the project is whatever the preference values are
 		GlobalConfiguration gp = ConfigurationManager.getManager().getGlobalConfiguration();
@@ -291,7 +289,6 @@ public class ProjectConfiguration extends ValidationConfiguration {
 	public void resetToDefaultForProjectDescriptionChange() throws InvocationTargetException {
 		// The default values of the project is whatever the preference values are
 		GlobalConfiguration gp = ConfigurationManager.getManager().getGlobalConfiguration();
-
 		setEnabledManualValidators(gp.getManualEnabledValidators());
 		setEnabledBuildValidators(gp.getBuildEnabledValidators());
 	}
