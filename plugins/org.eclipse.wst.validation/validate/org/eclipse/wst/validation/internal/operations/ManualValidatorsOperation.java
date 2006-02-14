@@ -67,7 +67,7 @@ public class ManualValidatorsOperation extends ValidatorSubsetOperation {
 	 * validators will run in in the main thread.
 	 */
 	public ManualValidatorsOperation(IProject project, IWorkbenchContext aWorkbenchContext, int ruleGroup, boolean force, boolean async) {
-		this(project, aWorkbenchContext, ValidatorManager.getManager().getEnabledValidators(project), ruleGroup, force, async);
+		this(project, aWorkbenchContext, ValidatorManager.getManager().getManualEnabledValidators(project), ruleGroup, force, async);
 	}
 	
 
@@ -121,9 +121,9 @@ public class ManualValidatorsOperation extends ValidatorSubsetOperation {
 	 * validation thread, and all other validators in the main thread. If async is false, all
 	 * validators will run in in the main thread.
 	 */
-	protected ManualValidatorsOperation(IProject project, Set enabledValidators, int ruleGroup, boolean force, boolean async) {
+	protected ManualValidatorsOperation(IProject project, Set manualEnabledValidators, int ruleGroup, boolean force, boolean async) {
 		super(project, force, ruleGroup, async);
-		setEnabledValidators(enabledValidators);
+		setEnabledValidators(manualEnabledValidators);
 	}
 	
 	/**
