@@ -281,4 +281,8 @@ public class ResourceTreeNode {
 	/* package */IPathProvider getPathProvider() {
 		return pathProvider;
 	}
+
+	public Map getChildren() {
+		return children;
+	}
 }
