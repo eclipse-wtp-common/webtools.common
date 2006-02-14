@@ -11,6 +11,7 @@
 package org.eclipse.wst.validation.internal;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,6 +21,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 
+import org.apache.xerces.impl.validation.ValidationManager;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -39,15 +41,14 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 public abstract class ValidationConfiguration {
 	private IResource _resource = null;
 	private boolean disableAllValidation = getDisableAllValidation();
-	//private boolean _autoValidate = getAutoValidateDefault();
-	//private boolean _buildValidate = getBuildValidateDefault();
-	//private int _maxMessages = getMaximumNumberOfMessagesDefault();
 	private String _version = null;
 	private Map _validators = null; // Map of all validators (ValidatorMetaData) configured on the
 	// project or installed globally. The value is a Boolean; TRUE
 	// means that the VMD is enabled, FALSE means that the VMD is
 	// disabled.
 	private boolean _runAsync = getAsyncDefault();
+	private Map manualValidators;
+	private Map buildValidators;
 
 	public static String getEnabledElementsAsString(Set elements) {
 		if (elements == null) {
@@ -124,6 +125,8 @@ public abstract class ValidationConfiguration {
 
 	protected ValidationConfiguration() throws InvocationTargetException {
 		_validators = new HashMap();
+		manualValidators = new HashMap();
+		buildValidators = new HashMap();
 	}
 
 	protected ValidationConfiguration(IResource resource, ValidatorMetaData[] validators) throws InvocationTargetException {
@@ -267,10 +270,56 @@ public abstract class ValidationConfiguration {
 			all.put(vmds[i], Boolean.TRUE);
 		}
 	}
+	
+	public void setEnabledManualValidators(ValidatorMetaData[] vmds) {
+		// First, "disable" all validators
+		Map all = getValidatorMetaData();
+		Iterator iterator = all.keySet().iterator();
+		while (iterator.hasNext()) {
+			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
+			all.put(vmd, Boolean.FALSE);
+		}
+
+		// Then enable only the validators in the array
+		if ((vmds == null) || (vmds.length == 0)) {
+			return;
+		}
+		for (int i = 0; i < vmds.length; i++) {
+			all.put(vmds[i], Boolean.TRUE);
+		}
+	}
+	
+	public void setEnabledBuildValidators(ValidatorMetaData[] vmds) {
+		// First, "disable" all validators
+		Map all = getValidatorMetaData();
+		Iterator iterator = all.keySet().iterator();
+		while (iterator.hasNext()) {
+			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
+			all.put(vmd, Boolean.FALSE);
+		}
+
+		// Then enable only the validators in the array
+		if ((vmds == null) || (vmds.length == 0)) {
+			return;
+		}
+		for (int i = 0; i < vmds.length; i++) {
+			all.put(vmds[i], Boolean.TRUE);
+		}
+	}
 
 	private Map getValidatorMetaData() {
 		return _validators;
 	}
+	
+	private Map getManualValidatorMetaData() {
+		return manualValidators;
+	}
+	
+	private Map getBuildValidatorMetaData() {
+		return buildValidators;
+	}
+	
+	
 
 	public ValidatorMetaData[] getDisabledValidators() throws InvocationTargetException {
 		return getValidators(false);
@@ -317,6 +366,27 @@ public abstract class ValidationConfiguration {
 		System.arraycopy(temp, 0, result, 0, count);
 		return result;
 	}	
+	
+	public ValidatorMetaData[] getBuildEnabledValidators() throws InvocationTargetException {
+		ValidatorMetaData[] temp = new ValidatorMetaData[numberOfValidators()];
+		Iterator iterator = getValidatorMetaData().keySet().iterator();
+		int count = 0;
+		while (iterator.hasNext()) {
+			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
+			Boolean bvalue = (Boolean) getValidatorMetaData().get(vmd);
+//			if (bvalue.booleanValue() == value) {
+//				temp[count++] = vmd;
+//			}
+			if (bvalue.booleanValue() && vmd.isBuildValidation()) {
+				temp[count++] = vmd;
+			}			
+			
+		}
+
+		ValidatorMetaData[] result = new ValidatorMetaData[count];
+		System.arraycopy(temp, 0, result, 0, count);
+		return result;
+	}	
 
 	/**
 	 * Return all incremental validators for this preference; either every installed validator
@@ -349,6 +419,22 @@ public abstract class ValidationConfiguration {
 	public ValidatorMetaData[] getValidators() throws InvocationTargetException {
 		return convertToArray(_validators.keySet());
 	}
+	
+	/**
+	 * Return all validators for this preference; either every installed validator (global) or every
+	 * validator configured on the project (project).
+	 */
+	public ValidatorMetaData[] getManualValidators() throws InvocationTargetException {
+		return convertToArray(manualValidators.keySet());
+	}
+	
+	/**
+	 * Return all validators for this preference; either every installed validator (global) or every
+	 * validator configured on the project (project).
+	 */
+	public ValidatorMetaData[] getBuildValidators() throws InvocationTargetException {
+		return convertToArray(buildValidators.keySet());
+	}
 
 	public void setValidators(ValidatorMetaData[] vmds) {
 		_validators.clear();
@@ -356,6 +442,24 @@ public abstract class ValidationConfiguration {
 			if (vmds[i] == null)
 				continue;
 			_validators.put(vmds[i], (vmds[i].isEnabledByDefault() ? Boolean.TRUE : Boolean.FALSE));
+		}
+	}
+	
+	public void setManualValidators(ValidatorMetaData[] vmds) {
+		manualValidators.clear();
+		for (int i = 0; i < vmds.length; i++) {
+			if (vmds[i] == null)
+				continue;
+			manualValidators.put(vmds[i], (vmds[i].isEnabledByDefault() ? Boolean.TRUE : Boolean.FALSE));
+		}
+	}
+	
+	public void setBuildValidators(ValidatorMetaData[] vmds) {
+		buildValidators.clear();
+		for (int i = 0; i < vmds.length; i++) {
+			if (vmds[i] == null)
+				continue;
+			buildValidators.put(vmds[i], (vmds[i].isEnabledByDefault() ? Boolean.TRUE : Boolean.FALSE));
 		}
 	}
 
@@ -468,6 +572,32 @@ public abstract class ValidationConfiguration {
 
 		return value.booleanValue();
 	}
+	
+	public boolean isManualEnabled(ValidationManager vmd) throws InvocationTargetException {
+		if (vmd == null) {
+			return false;
+		}
+
+		Boolean value = (Boolean) manualValidators.get(vmd);
+		if (value == null) {
+			return false;
+		}
+
+		return value.booleanValue();
+	}
+	
+	public boolean isBuildEnabled(ValidationManager vmd) throws InvocationTargetException {
+		if (vmd == null) {
+			return false;
+		}
+
+		Boolean value = (Boolean) buildValidators.get(vmd);
+		if (value == null) {
+			return false;
+		}
+
+		return value.booleanValue();
+	}
 
 	/**
 	 * Once all of the fields have been updated on this ValidationConfiguration instance, this
@@ -479,7 +609,6 @@ public abstract class ValidationConfiguration {
 			if (getResource() == null) {
 				throw new InvocationTargetException(null, ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_NULLSAVE));
 			}
-
 			getResource().setSessionProperty(ConfigurationConstants.USER_PREFERENCE, this);
 		} catch (CoreException exc) {
 			throw new InvocationTargetException(exc, ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SAVE, new String[]{getResource().getName()}));
@@ -544,9 +673,10 @@ public abstract class ValidationConfiguration {
 		if (getResource() == null) {
 			throw new InvocationTargetException(null, ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_NULLSAVE));
 		}
-
 		try {
 			getResource().setPersistentProperty(ConfigurationConstants.USER_PREFERENCE, serialize());
+			getResource().setPersistentProperty(ConfigurationConstants.USER_MANUAL_PREFERENCE, serializeManualSeeting());
+			getResource().setPersistentProperty(ConfigurationConstants.USER_BUILD_PREFERENCE, serializeBuildSeeting());
 		} catch (CoreException exc) {
 			throw new InvocationTargetException(exc, ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SAVE, new String[]{getResource().getName()}));
 		}
@@ -699,9 +829,37 @@ public abstract class ValidationConfiguration {
 		try {
 			String storedConfiguration = resource.getPersistentProperty(ConfigurationConstants.USER_PREFERENCE);
 			deserialize(storedConfiguration);
+			String storedManualConfiguration = resource.getPersistentProperty(ConfigurationConstants.USER_MANUAL_PREFERENCE);
+			deserializeManual(storedConfiguration);
+			String storedBuildConfiguration = resource.getPersistentProperty(ConfigurationConstants.USER_BUILD_PREFERENCE);
+			deserializeBuild(storedConfiguration);
 		} catch (CoreException exc) {
 			throw new InvocationTargetException(exc, ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_RETRIEVE, new String[]{getResource().getName()}));
 		}
+	}
+
+	private void deserializeBuild(String storedConfiguration) throws InvocationTargetException {
+		if (storedConfiguration == null || storedConfiguration.length() == 0) {
+			// Assume that the configuration has never been set (new workspace).
+			resetToDefault();
+			return;
+		}
+		int manualValidationIndex = storedConfiguration.indexOf(ConfigurationConstants.ENABLED_MANUAL_VALIDATORS);
+
+		String manualValidation = storedConfiguration.substring(manualValidationIndex + ConfigurationConstants.DISABLE_ALL_VALIDATION_SETTING.length(),storedConfiguration.length());
+		setEnabledManualValidators(getStringAsEnabledElementsArray(manualValidation));
+	}
+
+	private void deserializeManual(String storedConfiguration) throws InvocationTargetException {
+		if (storedConfiguration == null || storedConfiguration.length() == 0) {
+			// Assume that the configuration has never been set (new workspace).
+			resetToDefault();
+			return;
+		}
+		int buildValidationIndex = storedConfiguration.indexOf(ConfigurationConstants.ENABLED_BUILD_VALIDATORS);
+
+		String buildValidation = storedConfiguration.substring(buildValidationIndex + ConfigurationConstants.DISABLE_ALL_VALIDATION_SETTING.length(),storedConfiguration.length());
+		setEnabledBuildValidators(getStringAsEnabledElementsArray(buildValidation));
 	}
 
 	protected void copyTo(ValidationConfiguration up) throws InvocationTargetException {
@@ -709,10 +867,9 @@ public abstract class ValidationConfiguration {
 		up.setResource(getResource());
 		up.setValidators(getValidators());
 		up.setDisableAllValidation(isDisableAllValidation());
-		//up.setAutoValidate(isAutoValidate());
-		//up.setBuildValidate(isBuildValidate());
-		up.setEnabledValidators(getEnabledValidators());
-		//up.setMaximumNumberOfMessages(getMaximumNumberOfMessages());
+		//up.setEnabledValidators(getEnabledValidators());
+		up.setEnabledManualValidators(getEnabledValidators());
+		up.setEnabledBuildValidators(getEnabledValidators());
 	}
 
 	/**
@@ -747,20 +904,26 @@ public abstract class ValidationConfiguration {
 
 	protected String serialize() throws InvocationTargetException {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(ConfigurationConstants.DISABLE_VALIDATION_SETTING);
+		buffer.append(ConfigurationConstants.DISABLE_ALL_VALIDATION_SETTING);
 		buffer.append(String.valueOf(isDisableAllValidation()));
-		//buffer.append(ConfigurationConstants.AUTO_SETTING);
-		//buffer.append(String.valueOf(isAutoValidate()));
-		//buffer.append(ConfigurationConstants.BUILD_SETTING);
-		//buffer.append(String.valueOf(isBuildValidate()));
-		//buffer.append(ConfigurationConstants.MAXNUMMESSAGES);
-		//buffer.append(String.valueOf(getMaximumNumberOfMessages()));
 		buffer.append(ConfigurationConstants.ASYNC_SETTING);
 		buffer.append(String.valueOf(runAsync()));
-		buffer.append(ConfigurationConstants.ENABLED_VALIDATORS);
-		buffer.append(getEnabledElementsAsString(getEnabledValidators()));
 		buffer.append(ConfigurationConstants.VERSION);
 		buffer.append(getVersion());
+		return buffer.toString();
+	}
+	
+	protected String serializeManualSeeting() throws InvocationTargetException {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(ConfigurationConstants.ENABLED_MANUAL_VALIDATORS);
+		buffer.append(getEnabledElementsAsString(getManualEnabledValidators()));
+		return buffer.toString();
+	}
+	
+	protected String serializeBuildSeeting() throws InvocationTargetException {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(ConfigurationConstants.ENABLED_BUILD_VALIDATORS);
+		buffer.append(getEnabledElementsAsString(getBuildEnabledValidators()));
 		return buffer.toString();
 	}
 
@@ -774,39 +937,20 @@ public abstract class ValidationConfiguration {
 			resetToDefault();
 			return;
 		}
-		int disableValidationIndex = storedConfiguration.indexOf(ConfigurationConstants.DISABLE_VALIDATION_SETTING);
-		//int autoIndex = storedConfiguration.indexOf(ConfigurationConstants.AUTO_SETTING);
-		//int buildIndex = storedConfiguration.indexOf(ConfigurationConstants.BUILD_SETTING);
-		//int maxIndex = storedConfiguration.indexOf(ConfigurationConstants.MAXNUMMESSAGES);
-		int asyncIndex = storedConfiguration.indexOf(ConfigurationConstants.ASYNC_SETTING);
-		int enabledIndex = storedConfiguration.indexOf(ConfigurationConstants.ENABLED_VALIDATORS);
+		int disableAllValidationIndex = storedConfiguration.indexOf(ConfigurationConstants.DISABLE_ALL_VALIDATION_SETTING);
+		//int enabledIndex = storedConfiguration.indexOf(ConfigurationConstants.ENABLED_VALIDATORS);
 		int versionIndex = storedConfiguration.indexOf(ConfigurationConstants.VERSION);
 
-		String disableValidation = storedConfiguration.substring(disableValidationIndex + ConfigurationConstants.DISABLE_VALIDATION_SETTING.length(), asyncIndex);
-		//String auto = storedConfiguration.substring(autoIndex + ConfigurationConstants.AUTO_SETTING.length(), buildIndex);
-		//String build = storedConfiguration.substring(buildIndex + ConfigurationConstants.BUILD_SETTING.length(), maxIndex);
-		//String max = storedConfiguration.substring(maxIndex + ConfigurationConstants.MAXNUMMESSAGES.length(), asyncIndex);
-		String async = storedConfiguration.substring(asyncIndex + ConfigurationConstants.ASYNC_SETTING.length(), enabledIndex);
-		String enabled = storedConfiguration.substring(enabledIndex + ConfigurationConstants.ENABLED_VALIDATORS.length(), versionIndex);
-
-		//setAutoValidate(Boolean.valueOf(auto).booleanValue());
-		//setBuildValidate(Boolean.valueOf(build).booleanValue());
-		//setMaximumNumberOfMessages(Integer.valueOf(max).intValue());
+		String disableValidation = storedConfiguration.substring(disableAllValidationIndex + ConfigurationConstants.DISABLE_ALL_VALIDATION_SETTING.length(),versionIndex);
+		//String enabled = storedConfiguration.substring(enabledIndex + ConfigurationConstants.ENABLED_VALIDATORS.length(), versionIndex);
+		
 		setDisableAllValidation(Boolean.valueOf(disableValidation).booleanValue());
-		setAsync(Boolean.valueOf(async).booleanValue());
-		setEnabledValidators(getStringAsEnabledElementsArray(enabled));
+		//setEnabledValidators(getStringAsEnabledElementsArray(enabled));
 	}
 
 	public static boolean getDisableValidationDefault() {
 		return ConfigurationConstants.DEFAULT_DISABLE_VALIDATION_SETTING;
 	}
-	/*public static boolean getAutoValidateDefault() {
-		return ConfigurationConstants.DEFAULT_AUTO_SETTING;
-	}
-
-	public static boolean getBuildValidateDefault() {
-		return ConfigurationConstants.DEFAULT_BUILD_SETTING;
-	}*/
 
 	public static ValidatorMetaData[] getEnabledValidatorsDefault() {
 		return ConfigurationConstants.DEFAULT_ENABLED_VALIDATORS;
@@ -837,7 +981,7 @@ public abstract class ValidationConfiguration {
 		return vmd.isManualValidation();
 	}
 
-	public boolean isBuildEnable(ValidatorMetaData vmd) {
+	public boolean isBuildEnabled(ValidatorMetaData vmd) {
 		if (vmd == null) {
 			return false;
 		}

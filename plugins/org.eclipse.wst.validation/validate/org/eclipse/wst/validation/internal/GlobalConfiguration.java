@@ -113,17 +113,20 @@ public class GlobalConfiguration extends ValidationConfiguration {
 			IMarker rootMarker = marker[0]; // getMarker() has already checked that there's a marker
 			// in the array
 			ValidatorMetaData[] enabledValidators = null;
-			String enabledValidatorsString = (String) getValue(rootMarker, ConfigurationConstants.ENABLED_VALIDATORS);
-			if (enabledValidatorsString == null) {
+//			String enabledValidatorsString = (String) getValue(rootMarker, ConfigurationConstants.ENABLED_VALIDATORS);
+//			if (enabledValidatorsString == null) {
+//				enabledValidators = ConfigurationConstants.DEFAULT_ENABLED_VALIDATORS;
+//			} else {
+//				enabledValidators = getStringAsEnabledElementsArray(enabledValidatorsString);
+//			}
+//
+//			setEnabledValidators(enabledValidators);
+			String enabledManualValidators = (String) getValue(rootMarker, ConfigurationConstants.ENABLED_MANUAL_VALIDATORS);
+			setEnabledManualValidators(getStringAsEnabledElementsArray(enabledManualValidators));
+			String enabledBuildValidators = (String) getValue(rootMarker, ConfigurationConstants.ENABLED_BUILD_VALIDATORS);
+			setEnabledManualValidators(getStringAsEnabledElementsArray(enabledBuildValidators));
+			if (enabledManualValidators.equals(null) || enabledBuildValidators.equals(null)) 
 				enabledValidators = ConfigurationConstants.DEFAULT_ENABLED_VALIDATORS;
-			} else {
-				enabledValidators = getStringAsEnabledElementsArray(enabledValidatorsString);
-			}
-
-			setEnabledValidators(enabledValidators);
-			//setAutoValidate(getValue(rootMarker, ConfigurationConstants.AUTO_SETTING, ConfigurationConstants.DEFAULT_AUTO_SETTING));
-			//setBuildValidate(getValue(rootMarker, ConfigurationConstants.BUILD_SETTING, ConfigurationConstants.DEFAULT_BUILD_SETTING));
-			//setMaximumNumberOfMessages(getValue(rootMarker, ConfigurationConstants.MAXNUMMESSAGES, ConfigurationConstants.DEFAULT_MAXNUMMESSAGES));
 			setCanProjectsOverride(getValue(rootMarker, ConfigurationConstants.PREF_PROJECTS_CAN_OVERRIDE, PREF_PROJECTS_CAN_OVERRIDE_DEFAULT));
 
 			root.getWorkspace().deleteMarkers(marker);
@@ -163,7 +166,8 @@ public class GlobalConfiguration extends ValidationConfiguration {
 			// If it's null, then super.deserialize has already called resetToDefault to initialize
 			// this instance.
 			int canOverrideIndex = storedConfiguration.indexOf(ConfigurationConstants.PREF_PROJECTS_CAN_OVERRIDE);
-			//int autoIndex = storedConfiguration.indexOf(ConfigurationConstants.AUTO_SETTING);
+			int manualIndex = storedConfiguration.indexOf(ConfigurationConstants.ENABLED_MANUAL_VALIDATORS);
+			int buildIndex = storedConfiguration.indexOf(ConfigurationConstants.ENABLED_BUILD_VALIDATORS);
 
 			String canOverride = storedConfiguration.substring(canOverrideIndex + ConfigurationConstants.PREF_PROJECTS_CAN_OVERRIDE.length());
 			setCanProjectsOverride(Boolean.valueOf(canOverride).booleanValue());

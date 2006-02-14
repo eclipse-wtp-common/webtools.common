@@ -962,7 +962,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 //					internalValidate(reporter, validator, vmd, context, delta);
 //				}
 				internalValidate(reporter, (IValidator)validator, vmd, context, delta);
-			}
+				}
 		} catch (OperationCanceledException exc) {
 			handleOperationCancelledValidateException(reporter, validator, vmd, iterator, logger, exc);
 		} finally {
@@ -1108,7 +1108,8 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			// If user fixes problem, and limit exceeded, add "exceeded"
 			// message, or
 			// if limit not exceeded any more, remove "exceeded" message.
-			ValidatorManager.getManager().checkMessageLimit(getProject(), true);
+			//Message Limit is removed from the framework
+			//ValidatorManager.getManager().checkMessageLimit(getProject(), true);
 			reporter.getProgressMonitor().done();
 		}
 	}
@@ -1579,7 +1580,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			} catch (OperationCanceledException exc) {
 				throw exc;
 
-			}catch (Throwable exc) {
+			} catch (Throwable exc) {
 				if (logger.isLoggingLevel(Level.SEVERE)) {
 					LogEntry entry = ValidationPlugin.getLogEntry();
 					entry.setSourceID("ValidationOperation.launchJobs()"); //$NON-NLS-1$
@@ -1602,6 +1603,11 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				reporter.getProgressMonitor().done();
 			}
 		}
+				
+				
+				
+		
+
 	}
 	
 	private void initValidateContext(IFileDelta[] delta, IWorkbenchContext context ) {
@@ -1645,6 +1651,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			validatorjob.setRule( schedulingRule );
 		}
 		validatorjob.schedule();		
+		
 	}
 	
 	

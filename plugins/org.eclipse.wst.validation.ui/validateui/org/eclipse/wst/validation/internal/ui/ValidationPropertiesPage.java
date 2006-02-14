@@ -703,13 +703,15 @@ public class ValidationPropertiesPage extends PropertyPage {
 
 				// Should the validator be enabled? Read the user's preferences from last time,
 				// if they exist, and set from that. If they don't exist, use the Validator class'
-				if(pagePreferences.isEnabled(vmd)) {
+				if (pagePreferences.isManualEnabled(vmd))
 					vmd.setManualValidation(true);
-					vmd.setBuildValidation(true);
-				} else {
+				else
 					vmd.setManualValidation(false);
+				
+				if (pagePreferences.isBuildEnabled(vmd))
+					vmd.setBuildValidation(true);
+				else
 					vmd.setBuildValidation(false);
-				}
 			}
 			validatorList.refresh();
 		}
@@ -727,7 +729,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 					vmd.setManualValidation(true);
 				else
 					vmd.setManualValidation(false);
-				if(pagePreferences.isBuildEnable(vmd))
+				if(pagePreferences.isBuildEnabled(vmd))
 					vmd.setBuildValidation(true);
 				else
 					vmd.setBuildValidation(false);
@@ -764,6 +766,28 @@ public class ValidationPropertiesPage extends PropertyPage {
 			for (int i = 0; i < items.length; i++) {
 				ValidatorMetaData validatorMetaData = (ValidatorMetaData) items[i].getData();
 				if(validatorMetaData.isManualValidation() || validatorMetaData.isBuildValidation())
+					enabledValidators.add(validatorMetaData);
+			}
+			return (ValidatorMetaData[])enabledValidators.toArray(new ValidatorMetaData[enabledValidators.size()]);
+		}
+		
+		public ValidatorMetaData[] getManualEnabledValidators() {
+			List enabledValidators = new ArrayList();
+			TableItem[] items = validatorsTable.getItems();
+			for (int i = 0; i < items.length; i++) {
+				ValidatorMetaData validatorMetaData = (ValidatorMetaData) items[i].getData();
+				if(validatorMetaData.isManualValidation())
+					enabledValidators.add(validatorMetaData);
+			}
+			return (ValidatorMetaData[])enabledValidators.toArray(new ValidatorMetaData[enabledValidators.size()]);
+		}
+		
+		public ValidatorMetaData[] getBuildEnabledValidators() {
+			List enabledValidators = new ArrayList();
+			TableItem[] items = validatorsTable.getItems();
+			for (int i = 0; i < items.length; i++) {
+				ValidatorMetaData validatorMetaData = (ValidatorMetaData) items[i].getData();
+				if(validatorMetaData.isBuildValidation())
 					enabledValidators.add(validatorMetaData);
 			}
 			return (ValidatorMetaData[])enabledValidators.toArray(new ValidatorMetaData[enabledValidators.size()]);
@@ -920,13 +944,14 @@ public class ValidationPropertiesPage extends PropertyPage {
 			pagePreferences.setDoesProjectOverride(overrideGlobalButton.getSelection());
 
 			if (pagePreferences.doesProjectOverride()) {
-				pagePreferences.setEnabledValidators(getEnabledValidators());
+				pagePreferences.setEnabledManualValidators(getManualEnabledValidators());
+				pagePreferences.setEnabledBuildValidators(getBuildEnabledValidators());
 			} else {
 				pagePreferences.resetToDefault(); // If the project can't or doesn't override,
 				// update its values to match the global
 				// preference values.
 			}
-			pagePreferences.passivate();
+			pagePreferences.store();
 		}
 
 		/**
@@ -952,54 +977,9 @@ public class ValidationPropertiesPage extends PropertyPage {
 			// Persist the values.
 			storeValues();
 
-			/*if (autoButton.getSelection()) {
-				int enabledIncrementalValidators = pagePreferences.numberOfEnabledIncrementalValidators();
-				int enabledValidators = pagePreferences.numberOfEnabledValidators();
-				if (enabledValidators != enabledIncrementalValidators) {
-					// Then some of the enabled validators are not incremental
-					int iIconType = org.eclipse.swt.SWT.ICON_INFORMATION;
-					Display display = Display.getCurrent();
-					Shell shell = (display == null) ? null : display.getActiveShell();
-					MessageBox messageBox = new MessageBox(shell, org.eclipse.swt.SWT.OK | iIconType);
-					messageBox.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_MSSGBOX_TITLE_NONINC));
-
-					ValidatorMetaData[] vmds = pagePreferences.getEnabledValidators();
-					StringBuffer buffer = new StringBuffer(NEWLINE_AND_TAB);
-					for (int i = 0; i < vmds.length; i++) {
-						ValidatorMetaData vmd = vmds[i];
-
-						if (!vmd.isIncremental()) {
-							buffer.append(vmd.getValidatorDisplayName());
-							buffer.append(NEWLINE_AND_TAB);
-						}
-					}
-					messageBox.setMessage(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_AUTO_ON_NONINC, new String[]{buffer.toString()}));
-					messageBox.open();
-				}
-			}*/
-
-			if (pagePreferences.hasEnabledValidatorsChanged(oldVmd, false) || ValidatorManager.getManager().isMessageLimitExceeded(getProject())) { // false
-				// means
-				// that
-				// the
-				// preference
-				// "allow"
-				// value
-				// hasn't
-				// changed
-				ValidatorManager.getManager().updateTaskList(getProject()); // Do not remove the
-				// exceeded message;
-				// only
-				// ValidationOperation
-				// should do that
-				// because it's about to
-				// run validation. If
-				// the limit is
-				// increased, messages
-				// may still be missing,
-				// so don't remove the
-				// "messages may be
-				// missing" message.
+			if (pagePreferences.hasEnabledValidatorsChanged(oldVmd, false)) { 
+				// false means that the preference "allow" value hasn't changed
+				ValidatorManager.getManager().updateTaskList(getProject()); 
 			}
 
 			return true;

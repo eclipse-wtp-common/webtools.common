@@ -12,7 +12,9 @@ package org.eclipse.wst.validation.internal.ui;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.eclipse.core.resources.IProject;
@@ -257,7 +259,7 @@ private class ValidatorListPage implements IValidationPage {
 	// for the widget listeners (the compiler would
 	// have to create a synthetic accessor method in
 	// order to access this field)
-	private boolean _isAutoBuildEnabled; // initialized in the constructor
+	//private boolean _isAutoBuildEnabled; // initialized in the constructor
 	private ValidatorMetaData[] _oldVmd = null; // Cache the enabled validators so that, if
 	// there is no change to this list, the
 	// expensive task list update can be avoided
@@ -399,7 +401,7 @@ private class ValidatorListPage implements IValidationPage {
 	}
 
 	public ValidatorListPage(Composite parent) throws InvocationTargetException {
-		_isAutoBuildEnabled = ValidatorManager.getManager().isGlobalAutoBuildEnabled();
+		//_isAutoBuildEnabled = ValidatorManager.getManager().isGlobalAutoBuildEnabled();
 		pagePreferences = new GlobalConfiguration(ConfigurationManager.getManager().getGlobalConfiguration()); // This
 		// represents the values on the page that haven't been persistedyet.
 		// Start with the last values that were persisted into the current page's starting values.
@@ -669,20 +671,22 @@ private class ValidatorListPage implements IValidationPage {
 	protected void updateTable() throws InvocationTargetException {
 		TableItem[] items = validatorsTable.getItems();
 		for (int i = 0; i < items.length; i++) {
-			TableItem item = items[i];
-			ValidatorMetaData vmd = (ValidatorMetaData) item.getData();
+				TableItem item = items[i];
+				ValidatorMetaData vmd = (ValidatorMetaData) item.getData();
 
-			// Should the validator be enabled? Read the user's preferences from last time,
-			// if they exist, and set from that. If they don't exist, use the Validator class'
-			// default value.
-			if(pagePreferences.isEnabled(vmd)) {
-				vmd.setManualValidation(true);
-				vmd.setBuildValidation(true);
-			} else {
-				vmd.setManualValidation(false);
-				vmd.setBuildValidation(false);
+				// Should the validator be enabled? Read the user's preferences from last time,
+				// if they exist, and set from that. If they don't exist, use the Validator class'
+				// default value.
+				if (pagePreferences.isManualEnabled(vmd))
+					vmd.setManualValidation(true);
+				else
+					vmd.setManualValidation(false);
+				if (pagePreferences.isBuildEnabled(vmd))
+					vmd.setBuildValidation(true);
+				else
+					vmd.setBuildValidation(false);
+
 			}
-		}
 		validatorList.refresh();
 	}
 	
@@ -699,7 +703,7 @@ private class ValidatorListPage implements IValidationPage {
 				vmd.setManualValidation(true);
 			else
 				vmd.setManualValidation(false);
-			if(pagePreferences.isBuildEnable(vmd))
+			if(pagePreferences.isBuildEnabled(vmd))
 				vmd.setBuildValidation(true);
 			else
 				vmd.setBuildValidation(false);
@@ -750,6 +754,30 @@ private class ValidatorListPage implements IValidationPage {
 		}
 		return (ValidatorMetaData[])enabledValidators.toArray(new ValidatorMetaData[enabledValidators.size()]);
 	}
+	
+	public ValidatorMetaData[] getEnabledManualValidators() {
+		List enabledValidators = new ArrayList();
+		TableItem[] items = validatorsTable.getItems();
+		for (int i = 0; i < items.length; i++) {
+			ValidatorMetaData validatorMetaData = (ValidatorMetaData) items[i].getData();
+			if(validatorMetaData.isManualValidation())
+				enabledValidators.add(validatorMetaData);
+		}
+		return (ValidatorMetaData[])enabledValidators.toArray(new ValidatorMetaData[enabledValidators.size()]);
+	
+	}
+	
+	public ValidatorMetaData[] getEnabledBuildValidators() {
+		List enabledValidators = new ArrayList();
+		TableItem[] items = validatorsTable.getItems();
+		for (int i = 0; i < items.length; i++) {
+			ValidatorMetaData validatorMetaData = (ValidatorMetaData) items[i].getData();
+			if(validatorMetaData.isBuildValidation())
+				enabledValidators.add(validatorMetaData);
+		}
+		return (ValidatorMetaData[])enabledValidators.toArray(new ValidatorMetaData[enabledValidators.size()]);
+	
+	}
 
 	public boolean performDisableAll() throws InvocationTargetException {
 		setAllValidators(false);
@@ -772,10 +800,15 @@ private class ValidatorListPage implements IValidationPage {
 		if (disableAllValidation.isEnabled()) {
 			pagePreferences.setDisableAllValidation(disableAllValidation.getSelection());
 		}
-		pagePreferences.setEnabledValidators(getEnabledValidators());
+		//pagePreferences.setEnabledValidators(getEnabledValidators());
+		
+		pagePreferences.setEnabledManualValidators(getEnabledManualValidators());
+		
+		pagePreferences.setEnabledBuildValidators(getEnabledBuildValidators());
 
 		pagePreferences.passivate();
 		pagePreferences.store();
+		
 		// If the projects aren't allowed to override, clear their settings.
 		if (!pagePreferences.canProjectsOverride()) {
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -808,7 +841,7 @@ private class ValidatorListPage implements IValidationPage {
 			try {
 				if (project.isOpen()) {
 					ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
-					if (!prjp.doesProjectOverride() && (prjp.hasEnabledValidatorsChanged(_oldVmd, allowChanged) || ValidatorManager.getManager().isMessageLimitExceeded(project))) {
+					if (!prjp.doesProjectOverride() && (prjp.hasEnabledValidatorsChanged(_oldVmd, allowChanged) || true)) {
 						// If the project used to override the preferences, and the preferences
 						// make that impossible now, then update the task list.
 						//
@@ -851,7 +884,7 @@ private class ValidatorListPage implements IValidationPage {
 		// isAutoBuild (in case the workbench page's value has changed), and then update
 		// this page's widgets.
 		try {
-			_isAutoBuildEnabled = ValidatorManager.getManager().isGlobalAutoBuildEnabled();
+			//_isAutoBuildEnabled = ValidatorManager.getManager().isGlobalAutoBuildEnabled();
 			updateWidgets();
 		} catch (InvocationTargetException exc) {
 			displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);

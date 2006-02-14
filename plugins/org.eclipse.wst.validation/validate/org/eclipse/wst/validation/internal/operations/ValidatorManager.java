@@ -667,8 +667,8 @@ public final class ValidatorManager {
 				// The uniqueness of each Validator is checked by the plugin registry.
 				WorkbenchReporter.removeAllMessages(project, vmd.getValidatorNames(), null);
 			}
-
-			if (prjp.numberOfEnabledValidators() > 0) {
+			 //Message Limit is removed from the framework - WTP1.5M5
+			/*if (prjp.numberOfEnabledValidators() > 0) {
 				ValidatorManager.getManager().checkMessageLimit(project, false); // Do not remove
 				// the exceeded
 				// message; only
@@ -689,7 +689,7 @@ public final class ValidatorManager {
 			} else {
 				// Can't run validation, so remove the "exceeded" message
 				ValidatorManager.getManager().removeMessageLimitExceeded(project);
-			}
+			}*/
 		} catch (InvocationTargetException exc) {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {
@@ -986,62 +986,7 @@ public final class ValidatorManager {
 		_resourceUtilClass = clazz;
 	}
 
-	public boolean isMessageLimitExceeded(IResource resource) {
-		if(resource == null) {
-			return false;
-		}
-		if(!resource.exists()) {
-			return false;
-		}
-		IProject project = resource.getProject();
-		if(isNoMessageLimit(project)) {
-			return false;
-		}
-		try {
-			//IMarker[] valTasks = getValidationTasks(project,SeverityEnum.ALL_MESSAGES);
-			initializeMessageLimitProjectMap(project);
-			Object messagesAddedForProject = messageLimitProjectMap.get(project);
-			int valTasks = ((Integer) messagesAddedForProject).intValue();
-			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
-			int max = prjp.getMaximumNumberOfMessages();
-			initializeMessageLimitMessageProjectMap();
-			Object messageLimitMessageAdded = messageLimitMessageProjectMap.get(project);
-			boolean isMessageLimitMessageAdded = false;
-			if(messageLimitMessageAdded != null) {
-				isMessageLimitMessageAdded = ((Boolean)messageLimitMessageAdded).booleanValue();
-			}
-			if (valTasks >= max || isMessageLimitMessageAdded) {
-				IMarker[] exceededTasks = getLimitMessage(project);
-				int numExceeded = (exceededTasks == null) ? 0 : exceededTasks.length;
-				// Excluding the "max messages were reported" messages, do the
-				// number of validation messages exceed the limit?
-				int numValTasks = valTasks - numExceeded;
-				if (numValTasks > max) {
-					return true;
-				}
-				// If the "max were reported" exists, does the number of
-				// messages equal the limit?
-				if ((numExceeded > 0) && (numValTasks == max)) {
-					return true;
-				}
-			}
-		}
-		catch(InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ValidatorManager.setEnabledValidators(" + project.getName() + ", Set, IProgressMonitor)"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-				
-				if(exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
-		}
-		return false;
-	}
+	
 	
 	public static void initializeMessageLimitProjectMap(IProject project) {
 		if(messageLimitProjectMap == null) 
@@ -1143,7 +1088,8 @@ public final class ValidatorManager {
 	}
 
 	/**
-	 * @deprecated This method should be used only by the validation framework.
+	 * @deprecated This method should be not be used anymore as Message Limit is removed from
+	 * the framework
 	 */
 	public boolean checkMessageLimit(IProject project, Iterator iterator) {
 		return checkMessageLimit(project, false);
@@ -1153,20 +1099,23 @@ public final class ValidatorManager {
 	 * This method is intended to be used only by the validation framework. This method should be
 	 * used by the validation operation to add/remove the "exceeded" message. Return true if the
 	 * project is under the limit of messages, false otherwise.
+	 * 
+	 * @deprecated This method should be not be used anymore as Message Limit is removed from
+	 * the framework - WTP1.5M5
 	 */
 	public boolean checkMessageLimit(IProject project, boolean removeExceededMessage) {
 		if (project == null) {
 			return true;
 		}
 
-		if (!isMessageLimitExceeded(project)) {
+		/*if (!isMessageLimitExceeded(project)) {
 			if (removeExceededMessage) {
 				// If the max was exceeded before, but isn't exceeded now,
 				// remove the "exceeded" message.
 				removeMessageLimitExceeded(project);
 			}
 			return true;
-		}
+		}*/
 
 		// This method is called under two conditions:
 		//    1. The UI's message limit has changed, and some messages may need to be removed. The
@@ -1290,6 +1239,8 @@ public final class ValidatorManager {
 	/**
 	 * This method should be called only by the validation framework. Return true if the message was
 	 * removed, false if the message didn't exist.
+	 * @deprecated This method should be not be used anymore as Message Limit is removed from
+	 * the framework - WTP1.5M5
 	 */
 	public boolean removeMessageLimitExceeded(IProject project) {
 		IMarker[] exceededMessage = getLimitMessage(project);

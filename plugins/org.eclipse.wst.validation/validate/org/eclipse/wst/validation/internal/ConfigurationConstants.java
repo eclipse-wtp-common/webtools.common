@@ -23,7 +23,7 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  */
 public interface ConfigurationConstants {
 	/* package */static final String ASYNC_SETTING = "runAsync"; //$NON-NLS-1$ // boolean (Use the global preferences or override)
-	public static final String DISABLE_VALIDATION_SETTING = "disableValidation"; //$NON-NLS-1$ // boolean
+	public static final String DISABLE_ALL_VALIDATION_SETTING = "disableAllValidation"; //$NON-NLS-1$ // boolean
 	///* package */static final String AUTO_SETTING = "autoValidate"; //$NON-NLS-1$ // boolean
 	///* package */static final String BUILD_SETTING = "runWhenBuild"; //$NON-NLS-1$ // boolean
 
@@ -45,7 +45,8 @@ public interface ConfigurationConstants {
 	// Even though the plugin.xml values are not used to create new Preference or Project markers,
 	// maintaining one local name ensures that there's no confusion writing the migration code.
 	// These are the QualifiedNames used to persist the user's settings.
-	/* package */static final String ENABLED_VALIDATORS = "enabledValidatorList"; //$NON-NLS-1$ // String
+	/* package */static final String ENABLED_MANUAL_VALIDATORS = "enabledManualValidatorList"; //$NON-NLS-1$ // String
+	/* package */static final String ENABLED_BUILD_VALIDATORS = "enabledBuildValidatorList"; //$NON-NLS-1$ // String
 	public static final String J2EE_PLUGIN_ID = "org.eclipse.jst.j2ee"; //$NON-NLS-1$ // For 4.03, this is the plugin id that the validation constants were declared in.
 	/* package */static final String MAXNUMMESSAGES = "maxNumMessages"; //$NON-NLS-1$ // integer
 	public static final String PLUGIN_ID = ValidationPlugin.PLUGIN_ID;
@@ -59,6 +60,8 @@ public interface ConfigurationConstants {
 	/* package */static final String PRJ_OVERRIDEGLOBAL = "overrideGlobalPreferences"; //$NON-NLS-1$ // boolean (Use the global preferences or override)
 
 	/* package */static final QualifiedName USER_PREFERENCE = new QualifiedName(PLUGIN_ID, "ValidationConfiguration"); //$NON-NLS-1$ // ValidationConfiguration for the IResource
+	/* package */static final QualifiedName USER_MANUAL_PREFERENCE = new QualifiedName(PLUGIN_ID, "ValidationManualConfiguration"); //$NON-NLS-1$ // ValidationConfiguration for the IResource
+	/* package */static final QualifiedName USER_BUILD_PREFERENCE = new QualifiedName(PLUGIN_ID, "ValidationBuildConfiguration"); //$NON-NLS-1$ // ValidationConfiguration for the IResource
 
 	// Validation message marker constants
 	/* package */static final String VALIDATION_MARKER = PLUGIN_ID + ".problemmarker"; //$NON-NLS-1$ // The extension which is used to add validation markers to the task list
