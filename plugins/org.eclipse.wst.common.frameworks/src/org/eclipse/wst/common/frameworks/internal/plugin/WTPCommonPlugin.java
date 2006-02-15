@@ -74,6 +74,14 @@ public class WTPCommonPlugin extends WTPPlugin {
 	public static IStatus createWarningStatus(String message) {
 		return createWarningStatus(message, null);
 	}
+	
+	/**
+	 * @param string
+	 * @return
+	 */
+	public static IStatus createCancelStatus(String message) {
+		return createCancelStatus(message, null);
+	}	
 
 	/**
 	 * @param string
@@ -90,6 +98,14 @@ public class WTPCommonPlugin extends WTPPlugin {
 	public static IStatus createErrorStatus(String message, Throwable exception) {
 		return new Status(IStatus.ERROR, PLUGIN_ID, -1, message, exception);
 	}
+	
+	/**
+	 * @param string
+	 * @return
+	 */
+	public static IStatus createCancelStatus(String message, Throwable exception) {
+		return new Status(IStatus.CANCEL, PLUGIN_ID, -1, message, exception);
+	}	
 
 	/**
 	 * Returns the string from the plugin's resource bundle, or 'key' if not found.
