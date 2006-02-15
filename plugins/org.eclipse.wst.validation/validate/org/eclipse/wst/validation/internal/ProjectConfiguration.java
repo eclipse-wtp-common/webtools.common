@@ -398,28 +398,6 @@ public class ProjectConfiguration extends ValidationConfiguration {
 			}
 			boolean override = doesProjectOverride();
 
-			//All the following settings are no longer used
-			/*boolVal = (Boolean) getValue(prjMarker, ConfigurationConstants.AUTO_SETTING);
-			if ((boolVal == null) || (!override)) {
-				setAutoValidate(gp.isAutoValidate());
-			} else {
-				setAutoValidate(boolVal.booleanValue());
-			}
-
-			boolVal = (Boolean) getValue(prjMarker, ConfigurationConstants.BUILD_SETTING);
-			if ((boolVal == null) || (!override)) {
-				setBuildValidate(gp.isBuildValidate());
-			} else {
-				setBuildValidate(boolVal.booleanValue());
-			}
-
-			Integer intVal = (Integer) getValue(prjMarker, ConfigurationConstants.MAXNUMMESSAGES);
-			if ((intVal == null) || (!override)) {
-				setMaximumNumberOfMessages(gp.getMaximumNumberOfMessages());
-			} else {
-				setMaximumNumberOfMessages(intVal.intValue());
-			}*/
-
 			getResource().getWorkspace().deleteMarkers(marker);
 		} catch (CoreException exc) {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
@@ -508,18 +486,19 @@ public class ProjectConfiguration extends ValidationConfiguration {
 			resetToDefault();
 		} else if (storedConfiguration != null) {
 			int prjOverrideIndex = storedConfiguration.indexOf(ConfigurationConstants.PRJ_OVERRIDEGLOBAL);
-			int autoIndex = storedConfiguration.indexOf(ConfigurationConstants.DISABLE_ALL_VALIDATION_SETTING);
-
-			String prjOverride = null;
-			if (autoIndex < 0) {
-				// project doesn't override the global
-				prjOverride = storedConfiguration.substring(prjOverrideIndex + ConfigurationConstants.PRJ_OVERRIDEGLOBAL.length());
+			int disableAllValidationIndex = storedConfiguration.indexOf(ConfigurationConstants.DISABLE_ALL_VALIDATION_SETTING);
+			int versionIndex = storedConfiguration.indexOf(ConfigurationConstants.VERSION);
+			if (disableAllValidationIndex != -1) {
+				String disableAllValidation = storedConfiguration.substring(disableAllValidationIndex + ConfigurationConstants.DISABLE_ALL_VALIDATION_SETTING.length(), versionIndex);
+				setDisableAllValidation(Boolean.valueOf(disableAllValidation).booleanValue());
 			} else {
-				// project overrides the global, so retrieve the values
-				super.deserialize(storedConfiguration);
-				prjOverride = storedConfiguration.substring(prjOverrideIndex + ConfigurationConstants.PRJ_OVERRIDEGLOBAL.length(), autoIndex);
+				setDisableAllValidation(false);;
 			}
-			setDoesProjectOverride(Boolean.valueOf(prjOverride).booleanValue());
+			// project doesn't override the global
+			if (disableAllValidationIndex != -1) {
+				String prjOverride = storedConfiguration.substring(prjOverrideIndex + ConfigurationConstants.PRJ_OVERRIDEGLOBAL.length(), disableAllValidationIndex);
+				setDoesProjectOverride(Boolean.valueOf(prjOverride).booleanValue());
+			}
 		}
 	}
 

@@ -393,7 +393,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 			ConfigurationManager prefMgr = ConfigurationManager.getManager();
 			ValidatorManager vMgr = ValidatorManager.getManager();
 
-			pagePreferences = new ProjectConfiguration(prefMgr.getProjectConfiguration(getProject())); // This
+			pagePreferences = prefMgr.getProjectConfiguration(getProject()); // This
 			// represents the values on the page that haven't been persisted yet.
 			// Start with the last values that were persisted into the current
 			// page's starting values.

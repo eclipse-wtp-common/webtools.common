@@ -562,8 +562,8 @@ public abstract class ValidationConfiguration {
 		}
 		try {
 			getResource().setPersistentProperty(ConfigurationConstants.USER_PREFERENCE, serialize());
-			getResource().setPersistentProperty(ConfigurationConstants.USER_MANUAL_PREFERENCE, serializeManualSeeting());
-			getResource().setPersistentProperty(ConfigurationConstants.USER_BUILD_PREFERENCE, serializeBuildSeeting());
+			getResource().setPersistentProperty(ConfigurationConstants.USER_MANUAL_PREFERENCE, serializeManualSetting());
+			getResource().setPersistentProperty(ConfigurationConstants.USER_BUILD_PREFERENCE, serializeBuildSetting());
 		} catch (CoreException exc) {
 			throw new InvocationTargetException(exc, ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SAVE, new String[]{getResource().getName()}));
 		}
@@ -798,14 +798,14 @@ public abstract class ValidationConfiguration {
 		return buffer.toString();
 	}
 	
-	protected String serializeManualSeeting() throws InvocationTargetException {
+	protected String serializeManualSetting() throws InvocationTargetException {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(ConfigurationConstants.ENABLED_MANUAL_VALIDATORS);
 		buffer.append(getEnabledElementsAsString(getManualEnabledValidators()));
 		return buffer.toString();
 	}
 	
-	protected String serializeBuildSeeting() throws InvocationTargetException {
+	protected String serializeBuildSetting() throws InvocationTargetException {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(ConfigurationConstants.ENABLED_BUILD_VALIDATORS);
 		buffer.append(getEnabledElementsAsString(getBuildEnabledValidators()));
@@ -823,14 +823,14 @@ public abstract class ValidationConfiguration {
 			return;
 		}
 		int disableAllValidationIndex = storedConfiguration.indexOf(ConfigurationConstants.DISABLE_ALL_VALIDATION_SETTING);
-		//int enabledIndex = storedConfiguration.indexOf(ConfigurationConstants.ENABLED_VALIDATORS);
 		int versionIndex = storedConfiguration.indexOf(ConfigurationConstants.VERSION);
-
-		String disableAllValidation = storedConfiguration.substring(disableAllValidationIndex + ConfigurationConstants.DISABLE_ALL_VALIDATION_SETTING.length(),versionIndex);
-		//String enabled = storedConfiguration.substring(enabledIndex + ConfigurationConstants.ENABLED_VALIDATORS.length(), versionIndex);
+		if(disableAllValidationIndex != -1) {
+				String disableAllValidation = storedConfiguration.substring(disableAllValidationIndex + ConfigurationConstants.DISABLE_ALL_VALIDATION_SETTING.length(),versionIndex);
+				setDisableAllValidation(Boolean.valueOf(disableAllValidation).booleanValue());
+		} else {
+				setDisableAllValidation(false);;
+		}
 		
-		setDisableAllValidation(Boolean.valueOf(disableAllValidation).booleanValue());
-		//setEnabledValidators(getStringAsEnabledElementsArray(enabled));
 	}
 
 	public static boolean getDisableValidationDefault() {
