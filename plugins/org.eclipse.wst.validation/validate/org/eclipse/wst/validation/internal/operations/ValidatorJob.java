@@ -21,7 +21,6 @@ import org.eclipse.wst.validation.internal.core.ValidationException;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 import org.eclipse.wst.validation.internal.provisional.core.IValidatorJob;
-import org.eclipse.wst.validation.internal.provisional.core.MessageLimitException;
 
 public class ValidatorJob extends Job {
 
@@ -37,8 +36,8 @@ public class ValidatorJob extends Job {
 
 	   
 	   
-	public ValidatorJob(String name, IProject project, IWorkbenchContext aHelper  ){
-		super(name);
+	public ValidatorJob(String displayName, String name, IProject project, IWorkbenchContext aHelper  ){
+		super(displayName);
 		validatorUniqueName = name;
 		this.project = project;
 		this.helper = aHelper;
@@ -102,10 +101,7 @@ public class ValidatorJob extends Job {
 			// accidentally wrapped a MessageLimitException instead of
 			// propagating it.
 			if (exc.getAssociatedException() != null) {
-				if (exc.getAssociatedException() instanceof MessageLimitException) {
-					MessageLimitException mssgExc = (MessageLimitException) exc.getAssociatedException();
-					throw mssgExc;
-				} else if (exc.getAssociatedException() instanceof ValidationException) {
+				if (exc.getAssociatedException() instanceof ValidationException) {
 					ValidationException vexc = (ValidationException) exc.getAssociatedException();
 					vexc.setClassLoader(validator.getClass().getClassLoader()); 
 				}
@@ -117,7 +113,7 @@ public class ValidatorJob extends Job {
 
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidationOperation.validate(WorkbenchMonitor)"); //$NON-NLS-1$
+				entry.setSourceID("ValidatorJob.run()"); //$NON-NLS-1$
 				entry.setTargetException(exc);
 				logger.write(Level.SEVERE, entry);
 				if (exc.getAssociatedException() != null) {
@@ -136,14 +132,12 @@ public class ValidatorJob extends Job {
 		} catch (Throwable exc) {
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidationOperation.validate(WorkbenchMonitor)"); //$NON-NLS-1$
+				entry.setSourceID("ValidatorJob.run()"); //$NON-NLS-1$
 				entry.setTargetException(exc);
 				logger.write(Level.SEVERE, entry);
-			      IStatus stat = new Status(IStatus.ERROR,
+				IStatus stat = new Status(IStatus.ERROR,
 			    		      ValidationPlugin.getPlugin().PLUGIN_ID, 0, "", exc );
-
-
-			      logger.write(Level.SEVERE, stat);
+					logger.write(Level.SEVERE, stat);
 				
 			}
 			String mssg = ResourceHandler.getExternalizedMessage(
@@ -167,7 +161,7 @@ public class ValidatorJob extends Job {
 			} catch (Throwable exc) {
 				if (logger.isLoggingLevel(Level.SEVERE)) {
 					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("ValidationOperation::launchValidator"); //$NON-NLS-1$
+					entry.setSourceID("ValidatorJob.run()"); //$NON-NLS-1$
 					entry.setTargetException(exc);
 					logger.write(Level.SEVERE, entry);
 				}
@@ -189,7 +183,7 @@ public class ValidatorJob extends Job {
 			} catch (Throwable exc) {
 				if (logger.isLoggingLevel(Level.SEVERE)) {
 					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("ValidationOperation::launchValidator"); //$NON-NLS-1$
+					entry.setSourceID("ValidatorJob.run()"); //$NON-NLS-1$
 					entry.setTargetException(exc);
 					logger.write(Level.SEVERE, entry);
 				}
@@ -198,11 +192,8 @@ public class ValidatorJob extends Job {
 				message.setSeverity(IMessage.NORMAL_SEVERITY);
 				message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 				message.setParams(msgParm);
-				try {
-					reporter.addMessage(validator, message);
-				} catch (MessageLimitException e) {
-					throw e;
-				}
+				reporter.addMessage(validator, message);
+
 				status = WTPCommonPlugin.createErrorStatus(message.getText());	
 				return status;
 			} finally {
@@ -214,4 +205,7 @@ public class ValidatorJob extends Job {
 		return status;
 	}
 
+	public boolean belongsTo(Object family) {
+		return (project.getName() + ValidatorManager.VALIDATOR_JOB_FAMILY).equals(family);
+	}	
 }

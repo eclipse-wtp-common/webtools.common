@@ -1599,7 +1599,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				// If user fixes problem, and limit exceeded, add "exceeded"
 				// message, or
 				// if limit not exceeded any more, remove "exceeded" message.
-				ValidatorManager.getManager().checkMessageLimit(getProject(), true);
 				reporter.getProgressMonitor().done();
 			}
 		}
@@ -1642,7 +1641,8 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			getLaunchedValidators().add(vmd);
 		}
 		
-		ValidatorJob validatorjob = new ValidatorJob( vmd.getValidatorUniqueName(), helper.getProject(), helper );
+		ValidatorJob validatorjob = new ValidatorJob( vmd.getValidatorDisplayName(), vmd.getValidatorUniqueName(),
+					helper.getProject(), helper );
 
 
 		ISchedulingRule schedulingRule = validator.getSchedulingRule(helper);

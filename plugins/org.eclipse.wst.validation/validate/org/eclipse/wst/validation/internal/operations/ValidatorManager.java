@@ -48,6 +48,7 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidator;
  * This class is not intended to be subclassed outside of the validation framework.
  */
 public final class ValidatorManager {
+	public static final String VALIDATOR_JOB_FAMILY = "validators";	 //$NON-NLS-1$	
 	private static ValidatorManager inst = null;
 	private static IResourceUtil _resourceUtil = null; // a common utility, different whether or not
 	// WSAD is running in headless or UI mode,

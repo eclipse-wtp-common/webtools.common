@@ -24,6 +24,7 @@ import org.eclipse.wst.validation.internal.core.ValidationException;
  */
 
 public interface IValidatorJob extends IValidator{
+
 	public static IStatus OK_STATUS = new Status(IStatus.OK, "org.eclipse.wst.validation", 0, "OK", null); //$NON-NLS-1$ //$NON-NLS-2$
 	
 
