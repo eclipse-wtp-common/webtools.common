@@ -12,9 +12,7 @@ package org.eclipse.wst.validation.internal.ui;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 
 import org.eclipse.core.resources.IProject;
@@ -56,7 +54,6 @@ import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.GlobalConfiguration;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
-import org.eclipse.wst.validation.internal.ValidationConfiguration;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;

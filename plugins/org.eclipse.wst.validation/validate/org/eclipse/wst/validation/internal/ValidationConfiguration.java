@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 
-import org.apache.xerces.impl.validation.ValidationManager;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
