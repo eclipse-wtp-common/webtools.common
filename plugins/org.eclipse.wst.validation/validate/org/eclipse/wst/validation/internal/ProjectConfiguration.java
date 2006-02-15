@@ -111,7 +111,7 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		return super.getEnabledValidators();
 	}
 	
-	public ValidatorMetaData[] getManualEnabledValidators() throws InvocationTargetException {
+	public ValidatorMetaData[] getManualEnabledValidators() throws InvocationTargetException  {
 		if (useGlobalPreference()) {
 			return extractProjectValidators(ConfigurationManager.getManager().getGlobalConfiguration().getManualEnabledValidators(), getResource());
 		}
@@ -230,8 +230,6 @@ public class ProjectConfiguration extends ValidationConfiguration {
 	 */
 	public void setValidators(ValidatorMetaData[] vmds) {
 		super.setValidators(extractProjectValidators(vmds, getResource()));
-		super.setManualValidators(extractProjectValidators(vmds, getResource()));
-		super.setBuildValidators(extractProjectValidators(vmds, getResource()));
 	}
 
 	/**

@@ -11,11 +11,13 @@
 package org.eclipse.wst.validation.internal;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -46,8 +48,8 @@ public abstract class ValidationConfiguration {
 	// project or installed globally. The value is a Boolean; TRUE
 	// means that the VMD is enabled, FALSE means that the VMD is
 	// disabled.
-	private Map manualValidators;
-	private Map buildValidators;
+	private static HashMap manualValidators = null;
+	private static HashMap buildValidators = null;
 
 	public static String getEnabledElementsAsString(Set elements) {
 		if (elements == null) {
@@ -124,8 +126,6 @@ public abstract class ValidationConfiguration {
 
 	protected ValidationConfiguration() throws InvocationTargetException {
 		_validators = new HashMap();
-		manualValidators = new HashMap();
-		buildValidators = new HashMap();
 	}
 
 	protected ValidationConfiguration(IResource resource, ValidatorMetaData[] validators) throws InvocationTargetException {
@@ -137,44 +137,10 @@ public abstract class ValidationConfiguration {
 
 		setResource(resource);
 		setValidators(validators);
-		setManualValidators(validators);
-		setBuildValidators(validators);
-		
 	}
 
 	private void setResource(IResource resource) {
 		_resource = resource;
-	}
-
-	/*
-	 * deprecated is no longer used by framework
-	 */
-	public boolean isAutoValidate() throws InvocationTargetException {
-		//return _autoValidate;
-		return false;
-	}
-
-	/*
-	 * deprecated is no longer used by framework
-	 */
-	public void setAutoValidate(boolean auto) {
-		//_autoValidate = auto;
-	}
-
-	/*
-	 * deprecated is no longer used by framework
-	 */
-	public boolean isBuildValidate() throws InvocationTargetException {
-		//return _buildValidate;
-		return false;
-	}
-
-	/*
-	 * deprecated is no longer used by framework
-	 */
-	public void setBuildValidate(boolean build) {
-		//_buildValidate = build;
-		
 	}
 	
 	public boolean isDisableAllValidation() throws InvocationTargetException {
@@ -188,8 +154,6 @@ public abstract class ValidationConfiguration {
 	public ValidatorMetaData[] getEnabledValidators() throws InvocationTargetException {
 		return getValidators(true);
 	}
-
-
 	
 	/**
 	 * If "incremental" is true, return the enabled incremental validators. If "incremental" is
@@ -265,54 +229,35 @@ public abstract class ValidationConfiguration {
 		}
 	}
 	
-	public void setEnabledManualValidators(ValidatorMetaData[] vmds) {
-		// First, "disable" all validators
-		Map all = getValidatorMetaData();
-		Iterator iterator = all.keySet().iterator();
-		while (iterator.hasNext()) {
-			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
-			all.put(vmd, Boolean.FALSE);
-		}
-
-		// Then enable only the validators in the array
-		if ((vmds == null) || (vmds.length == 0)) {
-			return;
-		}
-		for (int i = 0; i < vmds.length; i++) {
-			all.put(vmds[i], Boolean.TRUE);
+	public void setEnabledManualValidators(ValidatorMetaData[] vmds) throws InvocationTargetException {
+		List manualEnabledVMDList = Arrays.asList(vmds);
+		List allValidators = Arrays.asList(getValidators());
+		for(int i = 0; i < allValidators.size(); i++) {
+			ValidatorMetaData data = (ValidatorMetaData) allValidators.get(i);
+			if(manualEnabledVMDList.contains(data))
+				getManualEnabledValidatorsMap().put(data, new Boolean(true));
+			else
+				getManualEnabledValidatorsMap().put(data, new Boolean(false));
+			
 		}
 	}
 	
-	public void setEnabledBuildValidators(ValidatorMetaData[] vmds) {
-		// First, "disable" all validators
-		Map all = getValidatorMetaData();
-		Iterator iterator = all.keySet().iterator();
-		while (iterator.hasNext()) {
-			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
-			all.put(vmd, Boolean.FALSE);
-		}
-
-		// Then enable only the validators in the array
-		if ((vmds == null) || (vmds.length == 0)) {
-			return;
-		}
-		for (int i = 0; i < vmds.length; i++) {
-			all.put(vmds[i], Boolean.TRUE);
+	public void setEnabledBuildValidators(ValidatorMetaData[] vmds) throws InvocationTargetException {
+		List buildEnabledVMDList = Arrays.asList(vmds);
+		List allValidators = Arrays.asList(getValidators());
+		for(int i = 0; i < allValidators.size(); i++) {
+			ValidatorMetaData data = (ValidatorMetaData) allValidators.get(i);
+			if(buildEnabledVMDList.contains(data))
+				getBuildEnabledValidatorsMap().put(data, new Boolean(true));
+			else
+				getBuildEnabledValidatorsMap().put(data, new Boolean(false));
+			
 		}
 	}
 
 	private Map getValidatorMetaData() {
 		return _validators;
 	}
-	
-	private Map getManualValidatorMetaData() {
-		return manualValidators;
-	}
-	
-	private Map getBuildValidatorMetaData() {
-		return buildValidators;
-	}
-	
 	
 
 	public ValidatorMetaData[] getDisabledValidators() throws InvocationTargetException {
@@ -341,45 +286,51 @@ public abstract class ValidationConfiguration {
 	}
 	
 	public ValidatorMetaData[] getManualEnabledValidators() throws InvocationTargetException {
-		ValidatorMetaData[] temp = new ValidatorMetaData[numberOfValidators()];
-		Iterator iterator = getValidatorMetaData().keySet().iterator();
-		int count = 0;
-		while (iterator.hasNext()) {
-			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
-			Boolean bvalue = (Boolean) getValidatorMetaData().get(vmd);
-//			if (bvalue.booleanValue() == value) {
-//				temp[count++] = vmd;
-//			}
-			if (bvalue.booleanValue() && vmd.isManualValidation()) {
-				temp[count++] = vmd;
-			}			
-			
+		HashMap map = getManualEnabledValidatorsMap();
+		Set set = getManualEnabledValidatorsMap().keySet();
+		if (!set.isEmpty()) {
+			Iterator it = set.iterator();
+			List enabledManualValidators = new ArrayList();
+			while (it.hasNext()) {
+				ValidatorMetaData data = (ValidatorMetaData) it.next();
+				Boolean obj = (Boolean) map.get(data);
+				if (obj != null && obj.booleanValue() == true) {
+					enabledManualValidators.add(data);
+				}
+			}
+			return (ValidatorMetaData[]) enabledManualValidators.toArray(new ValidatorMetaData[enabledManualValidators.size()]);
 		}
-
-		ValidatorMetaData[] result = new ValidatorMetaData[count];
-		System.arraycopy(temp, 0, result, 0, count);
-		return result;
+		return getEnabledValidators();
 	}	
 	
-	public ValidatorMetaData[] getBuildEnabledValidators() throws InvocationTargetException {
-		ValidatorMetaData[] temp = new ValidatorMetaData[numberOfValidators()];
-		Iterator iterator = getValidatorMetaData().keySet().iterator();
-		int count = 0;
-		while (iterator.hasNext()) {
-			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
-			Boolean bvalue = (Boolean) getValidatorMetaData().get(vmd);
-//			if (bvalue.booleanValue() == value) {
-//				temp[count++] = vmd;
-//			}
-			if (bvalue.booleanValue() && vmd.isBuildValidation()) {
-				temp[count++] = vmd;
-			}			
-			
+	public  ValidatorMetaData[] getBuildEnabledValidators() throws InvocationTargetException {
+		HashMap map = getBuildEnabledValidatorsMap();
+		Set set = getBuildEnabledValidatorsMap().keySet();
+		Iterator it = set.iterator();
+		List enabledBuildValidators = new ArrayList();
+		if (!set.isEmpty()) {
+			while (it.hasNext()) {
+				ValidatorMetaData data = (ValidatorMetaData) it.next();
+				Boolean obj = (Boolean) map.get(data);
+				if (obj != null && obj.booleanValue() == true) {
+					enabledBuildValidators.add(data);
+				}
+			}
+			return (ValidatorMetaData[]) enabledBuildValidators.toArray(new ValidatorMetaData[enabledBuildValidators.size()]);
 		}
-
-		ValidatorMetaData[] result = new ValidatorMetaData[count];
-		System.arraycopy(temp, 0, result, 0, count);
-		return result;
+		return getEnabledValidators();
+	}
+	
+	public  HashMap getBuildEnabledValidatorsMap() {
+		if(buildValidators == null)
+			buildValidators = new HashMap();
+		return buildValidators;
+	}	
+	
+	public  HashMap getManualEnabledValidatorsMap() {
+		if(manualValidators == null)
+			manualValidators = new HashMap();
+		return manualValidators;
 	}	
 
 	/**
@@ -414,22 +365,6 @@ public abstract class ValidationConfiguration {
 		return convertToArray(_validators.keySet());
 	}
 	
-	/**
-	 * Return all validators for this preference; either every installed validator (global) or every
-	 * validator configured on the project (project).
-	 */
-	public ValidatorMetaData[] getManualValidators() throws InvocationTargetException {
-		return convertToArray(manualValidators.keySet());
-	}
-	
-	/**
-	 * Return all validators for this preference; either every installed validator (global) or every
-	 * validator configured on the project (project).
-	 */
-	public ValidatorMetaData[] getBuildValidators() throws InvocationTargetException {
-		return convertToArray(buildValidators.keySet());
-	}
-
 	public void setValidators(ValidatorMetaData[] vmds) {
 		_validators.clear();
 		for (int i = 0; i < vmds.length; i++) {
@@ -439,23 +374,7 @@ public abstract class ValidationConfiguration {
 		}
 	}
 	
-	public void setManualValidators(ValidatorMetaData[] vmds) {
-		manualValidators.clear();
-		for (int i = 0; i < vmds.length; i++) {
-			if (vmds[i] == null)
-				continue;
-			manualValidators.put(vmds[i], (vmds[i].isEnabledByDefault() ? Boolean.TRUE : Boolean.FALSE));
-		}
-	}
 	
-	public void setBuildValidators(ValidatorMetaData[] vmds) {
-		buildValidators.clear();
-		for (int i = 0; i < vmds.length; i++) {
-			if (vmds[i] == null)
-				continue;
-			buildValidators.put(vmds[i], (vmds[i].isEnabledByDefault() ? Boolean.TRUE : Boolean.FALSE));
-		}
-	}
 
 	/**
 	 * Returns the number of configured validators on the given project or installed validators in
@@ -834,12 +753,10 @@ public abstract class ValidationConfiguration {
 		up.setVersion(getVersion());
 		up.setResource(getResource());
 		up.setValidators(getValidators());
-		up.setManualValidators(getValidators());
-		up.setBuildValidators(getValidators());
 		up.setDisableAllValidation(isDisableAllValidation());
 		up.setEnabledValidators(getEnabledValidators());
-		up.setEnabledManualValidators(getEnabledValidators());
-		up.setEnabledBuildValidators(getEnabledValidators());
+		up.setEnabledManualValidators(getManualEnabledValidators());
+		up.setEnabledBuildValidators(getBuildEnabledValidators());
 	}
 
 	/**
@@ -940,19 +857,19 @@ public abstract class ValidationConfiguration {
 		if (vmd == null) {
 			return false;
 		}
-		Boolean value = (Boolean) manualValidators.get(vmd);
+		Boolean value = (Boolean) getManualEnabledValidatorsMap().get(vmd);
 		if (value == null) 
 			return false;
-		return vmd.isManualValidation();
+		return value.booleanValue();
 	}
 
 	public boolean isBuildEnabled(ValidatorMetaData vmd) {
 		if (vmd == null) {
 			return false;
 		}
-		Boolean value = (Boolean) buildValidators.get(vmd);
+		Boolean value = (Boolean) getBuildEnabledValidatorsMap().get(vmd);
 		if (value == null) 
 			return false;
-		return vmd.isBuildValidation();
+		return value.booleanValue();
 	}
 }

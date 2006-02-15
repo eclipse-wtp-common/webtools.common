@@ -14,7 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.eclipse.core.resources.IProject;
@@ -56,6 +56,7 @@ import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.GlobalConfiguration;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
+import org.eclipse.wst.validation.internal.ValidationConfiguration;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;
@@ -571,6 +572,7 @@ private class ValidatorListPage implements IValidationPage {
 			}
 
 			public void modify(Object element, String property, Object value) {
+
 				ValidatorMetaData data = (ValidatorMetaData) ((TableItem) element).getData();
 				int intValue = ((Integer) value).intValue();
 				if (property.equals(MANUAL_CHECK)) {
@@ -590,25 +592,7 @@ private class ValidatorListPage implements IValidationPage {
 			}
 		});
 		validatorList.setInput(pagePreferences.getValidators());
-		/*validatorsTable.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				pagePreferences.setEnabledValidators(getEnabledValidators());
-				try {
-					updateWidgets();
-				} catch (InvocationTargetException exc) {
-					displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
-				}
-			}
-			
-			public void widgetDefaultSelected(SelectionEvent e) {
-				try {
-					performDefaults();
-				} catch (InvocationTargetException exc) {
-					displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
-				}
-			}
-		});*/
-
+		
 		enableAllButton = new Button(validatorGroup, SWT.PUSH);
 		enableAllButton.setLayoutData(new GridData());
 		enableAllButton.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.PREF_BUTTON_ENABLEALL));

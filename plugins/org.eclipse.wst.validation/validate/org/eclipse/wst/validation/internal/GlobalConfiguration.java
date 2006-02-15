@@ -97,7 +97,7 @@ public class GlobalConfiguration extends ValidationConfiguration {
 		}
 	}
 
-	protected void load(IMarker[] marker) {
+	protected void load(IMarker[] marker) throws InvocationTargetException {
 		// The 5.0 preferences were stored in an IMarker, and the current.preferences are stored in
 		// PersistentProperties on the IResource.
 		// A 5.0 root can have no marker values if the preference page, properties page, and

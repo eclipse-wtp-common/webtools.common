@@ -849,35 +849,6 @@ public final class ValidatorManager {
 		}
 	}
 
-	/**
-	 * @deprecated
-	 * 
-	 * Use the suspendValidation(IProject, boolean) or suspendAllValidation(boolean) method instead.
-	 * This method does not guarantee that validation will be suspended. If the project is
-	 * overriding the preferences then validation will be suspended; otherwise validation will be
-	 * performed.
-	 * 
-	 * Programmatically changing the value of the project's preferences may be done only by the
-	 * validation framework.
-	 */
-	public void setAutoValidate(IProject project, boolean auto) {
-		try {
-			ConfigurationManager.getManager().getProjectConfiguration(project).setAutoValidate(auto);
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ValidatorManager.setAutoValidate(" + project.getName() + ", " + auto + ")"); //$NON-NLS-1$  //$NON-NLS-2$ //$NON-NLS-3$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
-		}
-	}
 
 	/**
 	 * Suspends, or undoes the suspension of, validation on the current project. If "suspend" is
