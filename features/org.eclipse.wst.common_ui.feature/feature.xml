@@ -2,7 +2,8 @@
 <feature
       id="org.eclipse.wst.common_ui.feature"
       label="org.eclipse.wst.common_ui.feature"
-      version="1.0.100.qualifier">
+      version="1.0.100.qualifier"
+      provider-name="Eclipse.org">
 
    <description>
       %description
@@ -11,6 +12,10 @@
    <license url="license.html">
       %license
    </license>
+
+   <url>
+      <update label="Web Tools Platform (WTP) Updates" url="http://download.eclipse.org/webtools/updates/"/>
+   </url>
 
    <includes
          id="org.eclipse.wst.common_userdoc.feature"
