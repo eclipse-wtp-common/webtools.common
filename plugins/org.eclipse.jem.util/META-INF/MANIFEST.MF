@@ -20,6 +20,5 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.emf.ecore,
  org.eclipse.emf.ecore.xmi,
- org.eclipse.perfmsr.core;resolution:=optional,
- com.ibm.icu
+ org.eclipse.perfmsr.core;resolution:=optional
 Eclipse-LazyStart: true

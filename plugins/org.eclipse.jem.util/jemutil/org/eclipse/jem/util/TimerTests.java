@@ -10,13 +10,12 @@
  *******************************************************************************/
 /*
  *  $RCSfile: TimerTests.java,v $
- *  $Revision: 1.6 $  $Date: 2006/02/15 16:11:50 $ 
+ *  $Revision: 1.7 $  $Date: 2006/02/15 23:40:59 $ 
  */
 package org.eclipse.jem.util;
 
+import java.text.NumberFormat;
 import java.util.*;
-
-import com.ibm.icu.text.NumberFormat;
 
 /**
  * 

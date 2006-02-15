@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $RCSfile: Logger.java,v $
- *  $Revision: 1.6 $  $Date: 2006/02/15 16:11:50 $ 
+ *  $Revision: 1.7 $  $Date: 2006/02/15 23:40:59 $ 
  */
 package org.eclipse.jem.util.logger.proxy;
 
@@ -18,8 +18,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
 import java.util.logging.Level;
-
-import com.ibm.icu.util.StringTokenizer;
 
 /**
  * This is a base, UI independent logger.   It will
