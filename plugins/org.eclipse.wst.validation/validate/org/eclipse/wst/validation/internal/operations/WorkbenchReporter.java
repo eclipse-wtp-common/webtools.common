@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.ResourceConstants;
+import org.eclipse.wst.validation.internal.ResourceHandler;
 import org.eclipse.wst.validation.internal.TaskListUtility;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
@@ -29,8 +30,6 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 import org.eclipse.wst.validation.internal.provisional.core.IReporter;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
-import org.eclipse.wst.validation.internal.provisional.core.MessageLimitException;
-import org.eclipse.wst.validation.internal.ResourceHandler;
 
 /**
  * IValidator instances will interact with an instance of this class, but should never cast that
@@ -529,7 +528,7 @@ public final class WorkbenchReporter implements IReporter {
 	/**
 	 * @see org.eclipse.wst.validation.internal.provisional.core.core.IReporter#addMessage(IValidator, IMessage)
 	 */
-	public void addMessage(IValidator validator, IMessage message) throws MessageLimitException {
+	public void addMessage(IValidator validator, IMessage message)  {
 		IResource resource = getMessageResource(validator, message.getTargetObject());
 		IWorkbenchContext helper = null;
 		ValidatorMetaData vmd = getVMD(validator);
@@ -578,14 +577,6 @@ public final class WorkbenchReporter implements IReporter {
 		}
 
 		ValidatorManager mgr = ValidatorManager.getManager();
-		if (mgr.isMessageLimitExceeded(resource.getProject())) {
-			try{
-				validateMessageLimitExceeded(validator, resource);
-			}catch(MessageLimitException e){
-				//do nothing here, a message is already logged by now 
-			}
-		}
-	
 		addMessage(resource, validator.getClass(), message, getTargetObjectName(helper, message), getLocation(helper, message),vmd.getMarkerId());
 	}
 
@@ -624,7 +615,6 @@ public final class WorkbenchReporter implements IReporter {
 				logger.write(Level.SEVERE, entry);
 			}
 		}
-		throw new MessageLimitException();
 	}
 
 	/**

@@ -61,8 +61,8 @@ public interface ResourceConstants {
 
 	public static final String VBF_UI_POPUP_RUNVALIDATION = "%VBF_UI_POPUP_RUNVALIDATION"; //$NON-NLS-1$
 
-	/* package */static final String PREF_BUTTON_SELECTALL = "PREF_BUTTON_SELECTALL"; //$NON-NLS-1$
-	/* package */static final String PREF_BUTTON_DESELECTALL = "PREF_BUTTON_DESELECTALL"; //$NON-NLS-1$
+	/* package */static final String PREF_BUTTON_ENABLEALL = "PREF_BUTTON_ENABLEALL"; //$NON-NLS-1$
+	/* package */static final String PREF_BUTTON_DISABLEALL = "PREF_BUTTON_DISABLEALL"; //$NON-NLS-1$
 	/* package */static final String PREF_VALLIST_TITLE = "PREF_VALLIST_TITLE"; //$NON-NLS-1$
 	/* package */static final String PREF_BUTTON_AUTO = "PREF_BUTTON_AUTO"; //$NON-NLS-1$
 	/* package */static final String PREF_BUTTON_OVERRIDE = "PREF_BUTTON_OVERRIDE"; //$NON-NLS-1$
@@ -86,4 +86,6 @@ public interface ResourceConstants {
 	/* package */static final String VBF_UI_CLOSE = "VBF_UI_CLOSE"; //$NON-NLS-1$
 	/* package */static final String VBF_UI_STATUS = "VBF_UI_STATUS"; //$NON-NLS-1$
 	/* package */static final String VBF_UI_RESCANCELLED = "VBF_UI_RESCANCELLED"; //$NON-NLS-1$
+	
+	/* package */static final String DISABLE_VALIDATION = "DISABLE_VALIDATION"; //$NON-NLS-1$
 }

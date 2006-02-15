@@ -330,9 +330,8 @@ public interface IMessage {
 	public void setTargetObject(Object obj);
 	
 	/**
-	  * return all the attributes of a Message object
-	  * @return
-	  */
+	 * return all the attributes of a Message object
+	 * @return
+	 */
 	public HashMap getAttributes();
-
 }

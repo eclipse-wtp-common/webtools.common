@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal.operations;
 
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +31,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.internal.operations.IHeadlessRunnableWithProgress;
@@ -41,9 +43,9 @@ import org.eclipse.wst.validation.internal.RegistryConstants;
 import org.eclipse.wst.validation.internal.ResourceConstants;
 import org.eclipse.wst.validation.internal.ResourceHandler;
 import org.eclipse.wst.validation.internal.TimeEntry;
-import org.eclipse.wst.validation.internal.VThreadManager;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
+import org.eclipse.wst.validation.internal.core.EmptySchedulingRule;
 import org.eclipse.wst.validation.internal.core.IFileDelta;
 import org.eclipse.wst.validation.internal.core.Message;
 import org.eclipse.wst.validation.internal.core.ValidationException;
@@ -54,6 +56,7 @@ import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 import org.eclipse.wst.validation.internal.provisional.core.IReporter;
 import org.eclipse.wst.validation.internal.provisional.core.IValidationContext;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
+import org.eclipse.wst.validation.internal.provisional.core.IValidatorJob;
 import org.eclipse.wst.validation.internal.provisional.core.MessageLimitException;
 
 /**
@@ -790,7 +793,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 					while (it.hasNext()) {
 						ValidatorMetaData data = (ValidatorMetaData) it.next();
 						if (data.isApplicableTo(refFile)) {
-							IValidator validator = data.getValidator();
+							IValidator validator = (IValidator)data.getValidator();
 							validator.validate(data.getHelper(project),reporter);
 							validatedFiles.add(refFile);
 						}
@@ -828,8 +831,35 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		WorkbenchReporter nullReporter = new WorkbenchReporter(getProject(), new NullProgressMonitor());
 		final Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 		IFileDelta[] delta = null;
+		
+		HashSet jobValidators = new HashSet();
+		HashSet validators = new HashSet();
+		
+		iterator = getEnabledValidators().iterator();
+		while( iterator.hasNext() ){
+			vmd = (ValidatorMetaData) iterator.next();
+			try {
+				if( vmd.getValidator() instanceof IValidatorJob ){
+					jobValidators.add( vmd );
+				}else{
+					validators.add( vmd );
+				}
+			} catch (InstantiationException e) {
+				Logger.getLogger().logError(e);
+				if (logger.isLoggingLevel(Level.SEVERE)) {
+					LogEntry entry = ValidationPlugin.getLogEntry();
+					entry.setSourceID("ValidationOperation.validate(WorkbenchReporter)"); //$NON-NLS-1$
+					entry.setTargetException(e);
+					logger.write(Level.SEVERE, entry);
+				}				
+			}
+		}
+		launchJobs( jobValidators, reporter );
+		
 		try {
-			iterator = getEnabledValidators().iterator();
+			//iterator = getEnabledValidators().iterator();
+			iterator = validators.iterator();
+			
 			// In order to allow validators to run, must first check if there's
 			// space for new markers.
 			// But we don't want the old markers to prevent validation from
@@ -905,6 +935,9 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 					context = vmd.getHelper(getProject());
 					initValidateContext(delta);
 					validator = vmd.getValidator();
+					
+					checkCanceled(reporter);
+					
 				} catch (InstantiationException exc) {
 					// Remove the vmd from the reader's list
 					ValidationRegistryReader.getReader().disableValidator(vmd);
@@ -918,17 +951,18 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 					continue;
 				}
 				
-				if (isFork() && vmd.isAsync()) {
-					// Don't appear to run in the foreground by sending
-					// progress to the IProgressMonitor in the
-					// WorkbenchMonitor. Suppress the status messages by
-					// changing the IProgressMonitor to a
-					// NullProgressMonitor.
-					VThreadManager.getManager().queue(wrapInRunnable(nullReporter, validator, vmd,(WorkbenchContext)getContext(),delta, iterator));
-				} else {
-					internalValidate(reporter, validator, vmd,context,delta);
+//				if (isFork() && vmd.isAsync()) {
+//					// Don't appear to run in the foreground by sending
+//					// progress to the IProgressMonitor in the
+//					// WorkbenchMonitor. Suppress the status messages by
+//					// changing the IProgressMonitor to a
+//					// NullProgressMonitor.
+//					VThreadManager.getManager().queue(wrapInRunnable(nullReporter, validator, vmd,(WorkbenchContext)getContext(),delta, iterator));
+//				} else {
+//					internalValidate(reporter, validator, vmd, context, delta);
+//				}
+				internalValidate(reporter, (IValidator)validator, vmd, context, delta);
 				}
-			}
 		} catch (OperationCanceledException exc) {
 			handleOperationCancelledValidateException(reporter, validator, vmd, iterator, logger, exc);
 		} finally {
@@ -1043,14 +1077,11 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			// needs to, and if it tries to add a message when the limit is
 			// exceeded, let
 			// the WorkbenchReporter take care of it.
-			launchValidator(reporter, validator, vmd,aContext,delta);
+			launchValidator(reporter, validator, vmd, aContext, delta);
 		} catch (OperationCanceledException exc) {
 			// This is handled in the validate(WorkbenchReporter) method.
 			throw exc;
-		} catch (MessageLimitException exc) {
-			// Let the finally block handle this case.
-			// handleMessageLimit();
-		} catch (Throwable exc) {
+		}catch (Throwable exc) {
 			// If there is a problem with this particular validator, log the
 			// error and continue
 			// with the next validator.
@@ -1077,7 +1108,8 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			// If user fixes problem, and limit exceeded, add "exceeded"
 			// message, or
 			// if limit not exceeded any more, remove "exceeded" message.
-			ValidatorManager.getManager().checkMessageLimit(getProject(), true);
+			//Message Limit is removed from the framework
+			//ValidatorManager.getManager().checkMessageLimit(getProject(), true);
 			reporter.getProgressMonitor().done();
 		}
 	}
@@ -1477,4 +1509,150 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	public void setContext(IWorkbenchContext context) {
 		this.context = context;
 	}
+	
+	void launchJobs(HashSet validators, final WorkbenchReporter reporter) throws OperationCanceledException{
+		
+		final Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
+		Iterator iterator = validators.iterator();
+		ValidatorMetaData vmd = null;
+		IValidator validator = null;
+		IFileDelta[] delta = null;
+		IWorkbenchContext workbenchcontext = null;
+		
+		while (iterator.hasNext()) {
+			checkCanceled(reporter);
+			
+			vmd = (ValidatorMetaData) iterator.next();
+
+			try {
+				delta = getFileDeltas(reporter.getProgressMonitor(), vmd);
+				boolean willRun = (isForce() || isValidationNecessary(vmd, delta));
+				if (!willRun) {
+					continue;
+				}
+			} catch (CoreException exc) {
+				if (logger.isLoggingLevel(Level.SEVERE)) {
+					LogEntry entry = ValidationPlugin.getLogEntry();
+					entry.setSourceID("ValidationOperation.launchJobs()"); //$NON-NLS-1$
+					entry.setTargetException(exc);
+					logger.write(Level.SEVERE, entry);
+				}
+				String mssg = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_ENDING_VALIDATION_ABNORMALLY, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
+				reporter.displaySubtask(mssg);
+				String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
+				Message message = ValidationPlugin.getMessage();
+				message.setSeverity(IMessage.NORMAL_SEVERITY);
+				message.setId(ResourceConstants.VBF_EXC_RUNTIME);
+				message.setParams(msgParm);
+				reporter.addMessage(validator, message);
+				continue;
+			}
+			
+			try {
+				workbenchcontext = vmd.getHelper( getProject() );
+				initValidateContext( delta, workbenchcontext );
+				validator = vmd.getValidator();
+				
+				checkCanceled(reporter);
+				
+			} catch (InstantiationException exc) {
+				// Remove the vmd from the reader's list
+				ValidationRegistryReader.getReader().disableValidator(vmd);
+				// Log the reason for the disabled validator
+				if (logger.isLoggingLevel(Level.SEVERE)) {
+					LogEntry entry = ValidationPlugin.getLogEntry();
+					entry.setSourceID("ValidationOperation.launchJobs()"); //$NON-NLS-1$
+					entry.setTargetException(exc);
+					logger.write(Level.SEVERE, entry);
+				}
+				continue;
+			}
+			
+			try {
+				checkCanceled(reporter);
+				removeOldMessages(reporter, validator, vmd, delta);
+				
+				if( validator instanceof IValidatorJob ){
+					launchValidatorJob( reporter, (IValidatorJob)validator, vmd, workbenchcontext, delta);
+				}
+
+				
+			} catch (OperationCanceledException exc) {
+				throw exc;
+
+			} catch (Throwable exc) {
+				if (logger.isLoggingLevel(Level.SEVERE)) {
+					LogEntry entry = ValidationPlugin.getLogEntry();
+					entry.setSourceID("ValidationOperation.launchJobs()"); //$NON-NLS-1$
+					entry.setTargetException(exc);
+					logger.write(Level.SEVERE, entry);
+				}
+				String mssg = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_ENDING_VALIDATION_ABNORMALLY, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
+				reporter.displaySubtask(mssg);
+				String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
+				Message message = ValidationPlugin.getMessage();
+				message.setSeverity(IMessage.NORMAL_SEVERITY);
+				message.setId(ResourceConstants.VBF_EXC_RUNTIME);
+				message.setParams(msgParm);
+				reporter.addMessage(validator, message);
+			} finally {
+				// If user fixes problem, and limit exceeded, add "exceeded"
+				// message, or
+				// if limit not exceeded any more, remove "exceeded" message.
+				reporter.getProgressMonitor().done();
+			}
+		}
+				
+				
+				
+		
+
+	}
+	
+	private void initValidateContext(IFileDelta[] delta, IWorkbenchContext context ) {
+		 if (context instanceof WorkbenchContext) {
+			 ((WorkbenchContext)context).setValidationFileURIs(new ArrayList());
+			 for(int i = 0; i < delta.length; i++) {
+				 IFileDelta file = delta[i];
+				 if(file.getDeltaType() != IFileDelta.DELETED ) {
+					 ((WorkbenchContext)context).getValidationFileURIs().add(file.getFileName());
+				 }
+			 } 
+		}
+	}
+			
+			
+	private final void launchValidatorJob(WorkbenchReporter reporter,
+				   IValidatorJob validator, ValidatorMetaData vmd,
+				   IWorkbenchContext helper, IFileDelta[] delta) {
+		
+		if (reporter == null) {
+			return;
+		}
+		checkCanceled(reporter);
+		Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
+
+		if (helper instanceof WorkbenchContext) {
+			((WorkbenchContext) helper).setRuleGroup(getRuleGroup());
+		}
+		if (logger.isLoggingLevel(Level.FINEST)) {
+			// This internal "launched validators" value is used only in
+			// tests.
+			getLaunchedValidators().add(vmd);
+		}
+		
+		ValidatorJob validatorjob = new ValidatorJob( vmd.getValidatorDisplayName(), vmd.getValidatorUniqueName(),
+					helper.getProject(), helper );
+
+
+		ISchedulingRule schedulingRule = validator.getSchedulingRule(helper);
+		if( schedulingRule == null ){
+			schedulingRule = new EmptySchedulingRule();
+			validatorjob.setRule( schedulingRule );
+		}
+		validatorjob.schedule();		
+		
+	}
+	
+	
 }

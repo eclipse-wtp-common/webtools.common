@@ -48,6 +48,7 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidator;
  * This class is not intended to be subclassed outside of the validation framework.
  */
 public final class ValidatorManager {
+	public static final String VALIDATOR_JOB_FAMILY = "validators";	 //$NON-NLS-1$	
 	private static ValidatorManager inst = null;
 	private static IResourceUtil _resourceUtil = null; // a common utility, different whether or not
 	// WSAD is running in headless or UI mode,
@@ -491,9 +492,11 @@ public final class ValidatorManager {
 	 * does not have an auto-validate value set, is the global auto-validate preference on? 3. if 1
 	 * or 2 is true, does the project support auto-validate? 4. if 1/2, & 3, is auto-build on? 5. if
 	 * 1/2, 3, and 4, is there at least one incremental validator enabled on the project?
+	 * 
+	 * @deprecated auto validate is not used any more
 	 */
 	public boolean isAutoValidate(IProject project, boolean isGlobalAutoBuildOn) {
-		try {
+		/*try {
 			// 1. does the project have auto-validate on or off?
 			boolean isAutoValidate = ConfigurationManager.getManager().getProjectConfiguration(project).isAutoValidate();
 			if (!isAutoValidate) {
@@ -503,7 +506,7 @@ public final class ValidatorManager {
 			// 3. does the project support auto-validate?
 			// 4. is auto-build on?
 			// 5. is there at least one incremental validator enabled on the project?
-			/*
+			
 			 * Auto-validation, on the properties page, can be enabled under these conditions: 1.
 			 * the project supports auto-validation, AND 2. fhe platform's global "automatically
 			 * build" is selected, AND 3. at least one of the project's validators supports
@@ -511,7 +514,7 @@ public final class ValidatorManager {
 			 * it's not configured on the project. Without #2, the ValidationBuilder will not be
 			 * called because auto-building is turned off. Without #3, the ValidationBuilder will be
 			 * called, but there's no point because no validators can run.
-			 */
+			 
 			return canAutoValidateButtonBeEnabled(project, isGlobalAutoBuildOn);
 		} catch (InvocationTargetException exc) {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
@@ -529,7 +532,8 @@ public final class ValidatorManager {
 
 			// If the user's setting can't be retrieved, return the default
 			return ValidationConfiguration.getAutoValidateDefault();
-		}
+		}*/
+		return false;
 	}
 
 	public boolean canAutoValidateButtonBeEnabled(IProject project) {
@@ -627,6 +631,50 @@ public final class ValidatorManager {
 		}
 	}
 
+	protected Set getManualEnabledValidators(IProject project) {
+		try {
+			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
+			ValidatorMetaData[] vmds = prjp.getManualEnabledValidators();
+			return InternalValidatorManager.wrapInSet(vmds);
+		} catch (InvocationTargetException exc) {
+			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
+			if (logger.isLoggingLevel(Level.SEVERE)) {
+				LogEntry entry = ValidationPlugin.getLogEntry();
+				entry.setSourceIdentifier("ValidatorManager::getEnabledValidators" + project.getName() + ")"); //$NON-NLS-1$  //$NON-NLS-2$
+				entry.setTargetException(exc);
+				logger.write(Level.SEVERE, entry);
+
+				if (exc.getTargetException() != null) {
+					entry.setTargetException(exc);
+					logger.write(Level.SEVERE, entry);
+				}
+			}
+			return Collections.EMPTY_SET;
+		}
+	}	
+	
+	protected Set getBuildEnabledValidators(IProject project) {
+		try {
+			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
+			ValidatorMetaData[] vmds = prjp.getBuildEnabledValidators();
+			return InternalValidatorManager.wrapInSet(vmds);
+		} catch (InvocationTargetException exc) {
+			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
+			if (logger.isLoggingLevel(Level.SEVERE)) {
+				LogEntry entry = ValidationPlugin.getLogEntry();
+				entry.setSourceIdentifier("ValidatorManager::getEnabledValidators" + project.getName() + ")"); //$NON-NLS-1$  //$NON-NLS-2$
+				entry.setTargetException(exc);
+				logger.write(Level.SEVERE, entry);
+
+				if (exc.getTargetException() != null) {
+					entry.setTargetException(exc);
+					logger.write(Level.SEVERE, entry);
+				}
+			}
+			return Collections.EMPTY_SET;
+		}
+	}	
+	
 	/**
 	 * This method is for use only by the validation framework. Update the task list based on which
 	 * validators are enabled or disabled. This method should be called only by the validation
@@ -643,8 +691,8 @@ public final class ValidatorManager {
 				// The uniqueness of each Validator is checked by the plugin registry.
 				WorkbenchReporter.removeAllMessages(project, vmd.getValidatorNames(), null);
 			}
-
-			if (prjp.numberOfEnabledValidators() > 0) {
+			 //Message Limit is removed from the framework - WTP1.5M5
+			/*if (prjp.numberOfEnabledValidators() > 0) {
 				ValidatorManager.getManager().checkMessageLimit(project, false); // Do not remove
 				// the exceeded
 				// message; only
@@ -665,7 +713,7 @@ public final class ValidatorManager {
 			} else {
 				// Can't run validation, so remove the "exceeded" message
 				ValidatorManager.getManager().removeMessageLimitExceeded(project);
-			}
+			}*/
 		} catch (InvocationTargetException exc) {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {
@@ -802,35 +850,6 @@ public final class ValidatorManager {
 		}
 	}
 
-	/**
-	 * @deprecated
-	 * 
-	 * Use the suspendValidation(IProject, boolean) or suspendAllValidation(boolean) method instead.
-	 * This method does not guarantee that validation will be suspended. If the project is
-	 * overriding the preferences then validation will be suspended; otherwise validation will be
-	 * performed.
-	 * 
-	 * Programmatically changing the value of the project's preferences may be done only by the
-	 * validation framework.
-	 */
-	public void setAutoValidate(IProject project, boolean auto) {
-		try {
-			ConfigurationManager.getManager().getProjectConfiguration(project).setAutoValidate(auto);
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ValidatorManager.setAutoValidate(" + project.getName() + ", " + auto + ")"); //$NON-NLS-1$  //$NON-NLS-2$ //$NON-NLS-3$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
-		}
-	}
 
 	/**
 	 * Suspends, or undoes the suspension of, validation on the current project. If "suspend" is
@@ -962,62 +981,7 @@ public final class ValidatorManager {
 		_resourceUtilClass = clazz;
 	}
 
-	public boolean isMessageLimitExceeded(IResource resource) {
-		if(resource == null) {
-			return false;
-		}
-		if(!resource.exists()) {
-			return false;
-		}
-		IProject project = resource.getProject();
-		if(isNoMessageLimit(project)) {
-			return false;
-		}
-		try {
-			//IMarker[] valTasks = getValidationTasks(project,SeverityEnum.ALL_MESSAGES);
-			initializeMessageLimitProjectMap(project);
-			Object messagesAddedForProject = messageLimitProjectMap.get(project);
-			int valTasks = ((Integer) messagesAddedForProject).intValue();
-			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
-			int max = prjp.getMaximumNumberOfMessages();
-			initializeMessageLimitMessageProjectMap();
-			Object messageLimitMessageAdded = messageLimitMessageProjectMap.get(project);
-			boolean isMessageLimitMessageAdded = false;
-			if(messageLimitMessageAdded != null) {
-				isMessageLimitMessageAdded = ((Boolean)messageLimitMessageAdded).booleanValue();
-			}
-			if (valTasks >= max || isMessageLimitMessageAdded) {
-				IMarker[] exceededTasks = getLimitMessage(project);
-				int numExceeded = (exceededTasks == null) ? 0 : exceededTasks.length;
-				// Excluding the "max messages were reported" messages, do the
-				// number of validation messages exceed the limit?
-				int numValTasks = valTasks - numExceeded;
-				if (numValTasks > max) {
-					return true;
-				}
-				// If the "max were reported" exists, does the number of
-				// messages equal the limit?
-				if ((numExceeded > 0) && (numValTasks == max)) {
-					return true;
-				}
-			}
-		}
-		catch(InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ValidatorManager.setEnabledValidators(" + project.getName() + ", Set, IProgressMonitor)"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-				
-				if(exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
-		}
-		return false;
-	}
+	
 	
 	public static void initializeMessageLimitProjectMap(IProject project) {
 		if(messageLimitProjectMap == null) 
@@ -1041,10 +1005,11 @@ public final class ValidatorManager {
 	 * messages allowed.
 	 * 
 	 * Enable a project to have an infinite number of messages.
+	 * @deprecated
 	 */
-	public void setNoMessageLimit(IProject project) {
+	public void setNoMessageLimit(IProject project) {/*
 		setMessageLimit(project, WorkbenchReporter.NO_MESSAGE_LIMIT);
-	}
+	*/}
 
 	/**
 	 * This method is for use by batch EJB deploy only. Only in batch mode is an infinitie number of
@@ -1078,8 +1043,9 @@ public final class ValidatorManager {
 
 	/**
 	 * This method is for use by the validation framework only.
+	 * @deprecated - message limits no longer used
 	 */
-	public void setMessageLimit(IProject project, int limit) {
+	public void setMessageLimit(IProject project, int limit) {/*
 		try {
 			if ((limit == WorkbenchReporter.NO_MESSAGE_LIMIT) || (limit >= 0)) {
 				ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
@@ -1102,7 +1068,7 @@ public final class ValidatorManager {
 				}
 			}
 		}
-	}
+	*/}
 
 	/**
 	 * @deprecated This method should be used only by the validation framework. If a validator
@@ -1117,7 +1083,8 @@ public final class ValidatorManager {
 	}
 
 	/**
-	 * @deprecated This method should be used only by the validation framework.
+	 * @deprecated This method should be not be used anymore as Message Limit is removed from
+	 * the framework
 	 */
 	public boolean checkMessageLimit(IProject project, Iterator iterator) {
 		return checkMessageLimit(project, false);
@@ -1127,20 +1094,23 @@ public final class ValidatorManager {
 	 * This method is intended to be used only by the validation framework. This method should be
 	 * used by the validation operation to add/remove the "exceeded" message. Return true if the
 	 * project is under the limit of messages, false otherwise.
+	 * 
+	 * @deprecated This method should be not be used anymore as Message Limit is removed from
+	 * the framework - WTP1.5M5
 	 */
 	public boolean checkMessageLimit(IProject project, boolean removeExceededMessage) {
 		if (project == null) {
 			return true;
 		}
 
-		if (!isMessageLimitExceeded(project)) {
+		/*if (!isMessageLimitExceeded(project)) {
 			if (removeExceededMessage) {
 				// If the max was exceeded before, but isn't exceeded now,
 				// remove the "exceeded" message.
 				removeMessageLimitExceeded(project);
 			}
 			return true;
-		}
+		}*/
 
 		// This method is called under two conditions:
 		//    1. The UI's message limit has changed, and some messages may need to be removed. The
@@ -1264,6 +1234,8 @@ public final class ValidatorManager {
 	/**
 	 * This method should be called only by the validation framework. Return true if the message was
 	 * removed, false if the message didn't exist.
+	 * @deprecated This method should be not be used anymore as Message Limit is removed from
+	 * the framework - WTP1.5M5
 	 */
 	public boolean removeMessageLimitExceeded(IProject project) {
 		IMarker[] exceededMessage = getLimitMessage(project);

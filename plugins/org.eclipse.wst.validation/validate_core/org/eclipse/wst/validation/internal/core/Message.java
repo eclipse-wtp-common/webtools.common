@@ -372,7 +372,6 @@ public class Message implements IMessage {
 	}
 	
 	public HashMap getAttributes() {
-		  return messageAttributes;
+		return messageAttributes;
 	}
-
 }

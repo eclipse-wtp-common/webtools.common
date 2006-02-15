@@ -12,40 +12,52 @@ package org.eclipse.wst.validation.internal.ui;
 
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
+
+import javax.swing.event.HyperlinkEvent;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
-import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.ComboBoxCellEditor;
+import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TableLayout;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.dialogs.PropertyPage;
+import org.eclipse.ui.forms.events.IHyperlinkListener;
+import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.GlobalConfiguration;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
-import org.eclipse.wst.validation.internal.ValidationConfiguration;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;
@@ -156,7 +168,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 		private GridLayout layout = null;
 		private GridData data = null;
 		private Label messageLabel = null;
-
+		
 		public NoValidatorsPage(Composite parent) {
 			page = createPage(parent);
 		}
@@ -215,21 +227,28 @@ public class ValidationPropertiesPage extends PropertyPage {
 		GridLayout layout = null;
 		GridData data = null;
 		Label messageLabel = null;
-		CheckboxTableViewer validatorList = null;
+		TableViewer validatorList = null;
 		Button overrideGlobalButton = null;
-		Button autoButton = null;
-		Button valWhenBuildButton = null;
-		Button selectAllButton = null;
-		Button deselectAllButton = null;
+		Button disableAllValidation = null;
+		private Button enableAllButton = null;
+		private Button disableAllButton = null;
 		Label emptyRowPlaceholder = null;
-		Text maxValProblemsField = null;
-		Label maxValProblemsFieldLabel = null;
-
+		private String[] columnProperties;
+		private CellEditor[] columnEditors;
+		private String[] COMBO_VALUES = new String[] {"Enabled","Disabled"};
+		private static final String ENABLED = "Enabled";
+		private static final String DISABLED = "Disabled";
+		private static final int ENABLED_INT = 0;
+		private static final int DISABLED_INT = 1;
+		private Table validatorsTable;
+		private static final String VALIDATORS = "validators"; //$NON-NLS-1$
+		private static final String MANUAL_CHECK = "manualCheck";//$NON-NLS-2$
+		private static final String BUILD_CHECK = "buildCheck";//$NON-NLS-2$
+		private static final int VALUE_NOT_FOUND = -1;
+		private static final int MANUAL_COL = 1;
+		private static final int BUILD_COL = 2;
+		private Label globalPrefLink = null;
 		ProjectConfiguration pagePreferences = null;
-
-		// default values for the widgets, initialized in the constructor
-		private boolean isAutoBuildEnabled = false;
-		private boolean isBuilderConfigured = false;
 		private boolean canOverride = false;
 
 		private ValidatorMetaData[] oldVmd = null; // Cache the enabled validators so that, if there
@@ -301,7 +320,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 		 * This class is provided for ValidationPropertiesPage$ValidatorListPage's
 		 * checkboxTableViewer element.
 		 */
-		public class ValidationLabelProvider extends LabelProvider {
+		public class ValidationLabelProvider extends LabelProvider implements ITableLabelProvider {
 			/**
 			 * Override the LabelProvider's text, by customizing the text for a ValidatorMetaData
 			 * element.
@@ -314,6 +333,27 @@ public class ValidationPropertiesPage extends PropertyPage {
 				} else {
 					return super.getText(element);
 				}
+			}
+			
+			public String getColumnText(Object element, int columnIndex) {
+				if(columnIndex == 0) {
+					return ((ValidatorMetaData) element).getValidatorDisplayName();
+				}
+				if(columnIndex == 1) {
+					if(((ValidatorMetaData)element).isManualValidation())
+						return ENABLED;
+					return DISABLED;	
+				} else if(columnIndex == 2) {
+					if(((ValidatorMetaData)element).isBuildValidation())
+						return ENABLED;
+					return DISABLED;
+				}
+				return null;
+			}
+
+			public Image getColumnImage(Object element, int columnIndex) {
+				// TODO Auto-generated method stub
+				return null;
 			}
 		}
 
@@ -353,37 +393,15 @@ public class ValidationPropertiesPage extends PropertyPage {
 			ConfigurationManager prefMgr = ConfigurationManager.getManager();
 			ValidatorManager vMgr = ValidatorManager.getManager();
 
-			pagePreferences = new ProjectConfiguration(prefMgr.getProjectConfiguration(getProject())); // This
-			// represents
-			// the
-			// values
-			// on
-			// the
-			// page
-			// that
-			// haven't
-			// been
-			// persisted
-			// yet.
-			// Start
-			// with
-			// the
-			// last
-			// values
-			// that
-			// were
-			// persisted
-			// into
-			// the
-			// current
-			// page's
-			// starting
-			// values.
+			pagePreferences = prefMgr.getProjectConfiguration(getProject()); // This
+			// represents the values on the page that haven't been persisted yet.
+			// Start with the last values that were persisted into the current
+			// page's starting values.
 
 			// store the default values for the widgets
 			canOverride = prefMgr.getGlobalConfiguration().canProjectsOverride();
-			isAutoBuildEnabled = vMgr.isGlobalAutoBuildEnabled();
-			isBuilderConfigured = ValidatorManager.doesProjectSupportBuildValidation(getProject());
+			//isAutoBuildEnabled = vMgr.isGlobalAutoBuildEnabled();
+			//isBuilderConfigured = ValidatorManager.doesProjectSupportBuildValidation(getProject());
 			oldVmd = pagePreferences.getEnabledValidators(); // Cache the enabled validators so
 			// that, if there is no change to this
 			// list, the expensive task list update
@@ -391,6 +409,33 @@ public class ValidationPropertiesPage extends PropertyPage {
 
 			createPage(parent);
 		}
+		
+		private void setupTableColumns(Table table, TableViewer viewer) {
+			TableColumn validatorColumn = new TableColumn(table, SWT.NONE);
+	        validatorColumn.setText("Validator");
+	        validatorColumn.setResizable(false);
+	        validatorColumn.setWidth(240);
+	        TableColumn manualColumn = new TableColumn(table, SWT.NONE);
+	        manualColumn.setText("Manual");
+	        manualColumn.setResizable(false);
+	        manualColumn.setWidth(80);
+	        TableColumn buildColumn = new TableColumn(table, SWT.NONE);
+	        buildColumn.setText("Build");
+	        buildColumn.setResizable(false);
+	        buildColumn.setWidth(80);
+	        setupCellModifiers(table, viewer);
+	    }
+		private void setupCellModifiers(Table table, TableViewer viewer) {
+	        columnProperties = new String[3];
+	        columnProperties[0] = VALIDATORS; //$NON-NLS-1$
+	        columnProperties[1] = MANUAL_CHECK;//$NON-NLS-2$
+	        columnProperties[2] = BUILD_CHECK;//$NON-NLS-2$
+	        viewer.setColumnProperties(columnProperties);
+	        columnEditors = new CellEditor[table.getColumnCount()];
+	        columnEditors[1] = new ComboBoxCellEditor(table,COMBO_VALUES, SWT.READ_ONLY);
+	        columnEditors[2] = new ComboBoxCellEditor(table,COMBO_VALUES, SWT.READ_ONLY);
+	        viewer.setCellEditors(columnEditors);
+	    }
 
 		/**
 		 * This page is created if the current project has at least one validator configured on it.
@@ -402,19 +447,53 @@ public class ValidationPropertiesPage extends PropertyPage {
 			page = new Composite(sc1, SWT.NONE);
 			sc1.setContent(page);
 			page.setLayout(new GridLayout()); // use the layout's default preferences
-
+			
 			Composite validatorGroup = new Composite(page, SWT.NONE);
 			GridLayout validatorGroupLayout = new GridLayout();
 			validatorGroupLayout.numColumns = 2;
 			validatorGroup.setLayout(validatorGroupLayout);
+			
+			Hyperlink link = new Hyperlink(validatorGroup,SWT.None);
+			GridData layout = new GridData(GridData.HORIZONTAL_ALIGN_END);
+			layout.horizontalSpan = 2;
+			link.setLayoutData(layout);
+			link.setUnderlined(true);
+			Color color = new Color(validatorGroup.getDisplay(),new RGB(0,0,255) );
+			link.setForeground(color);
+			link.setText("Gloabl Preferences...");
+			link.addHyperlinkListener(new IHyperlinkListener() {
+				public static final String DATA_NO_LINK = "PropertyAndPreferencePage.nolink"; //$NON-NLS-1$
 
-			GridData overrideData = new GridData(GridData.FILL_HORIZONTAL);
+				public void hyperlinkUpdate(HyperlinkEvent e) {
+				}
+
+				public void linkEntered(org.eclipse.ui.forms.events.HyperlinkEvent e) {
+				}
+
+				public void linkExited(org.eclipse.ui.forms.events.HyperlinkEvent e) {
+				}
+
+				public void linkActivated(org.eclipse.ui.forms.events.HyperlinkEvent e) {
+					String id = getPreferencePageID();
+					PreferencesUtil.createPreferenceDialogOn(getShell(), id, new String[]{id}, DATA_NO_LINK).open();
+					try {
+						updateWidgets();
+					} catch (InvocationTargetException ie) {
+
+					}
+				}
+
+				private String getPreferencePageID() {
+					return "ValidationPreferencePage";
+				}
+			});
+			
+			GridData overrideData = new GridData(GridData.GRAB_HORIZONTAL);
 			overrideData.horizontalSpan = 2;
 			overrideGlobalButton = new Button(validatorGroup, SWT.CHECK);
 			overrideGlobalButton.setLayoutData(overrideData);
 			overrideGlobalButton.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.PROP_BUTTON_OVERRIDE, new String[]{getProject().getName()}));
-			overrideGlobalButton.setFocus(); // must focus on something for F1 to have a topic to
-			// launch
+			overrideGlobalButton.setFocus(); // must focus on something for F1 to have a topic to lanuch
 			overrideGlobalButton.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					pagePreferences.setDoesProjectOverride(overrideGlobalButton.getSelection());
@@ -425,34 +504,29 @@ public class ValidationPropertiesPage extends PropertyPage {
 					}
 				}
 			});
-
-
+			
+			emptyRowPlaceholder = new Label(validatorGroup, SWT.NONE);
+			emptyRowPlaceholder.setLayoutData(new GridData());
+			
+			GridData disableValidationData = new GridData(GridData.FILL_HORIZONTAL);
+			disableValidationData.horizontalSpan = 2;
+			disableAllValidation = new Button(validatorGroup, SWT.CHECK);
+			disableAllValidation.setLayoutData(disableValidationData);
+			disableAllValidation.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.DISABLE_VALIDATION));
+			disableAllValidation.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					pagePreferences.setDisableAllValidation(disableAllValidation.getSelection());
+					disableAllValidation.setFocus();
+					validatorsTable.setEnabled(!disableAllValidation.getSelection());
+					enableAllButton.setEnabled(!disableAllValidation.getSelection());
+					disableAllButton.setEnabled(!disableAllValidation.getSelection());
+				}
+			});
+			
 			emptyRowPlaceholder = new Label(validatorGroup, SWT.NONE);
 			emptyRowPlaceholder.setLayoutData(new GridData());
 
-			GridData valWhenBuildData = new GridData(GridData.FILL_HORIZONTAL);
-			valWhenBuildData.horizontalSpan = 2;
-			valWhenBuildButton = new Button(validatorGroup, SWT.CHECK);
-			valWhenBuildButton.setLayoutData(valWhenBuildData);
-			valWhenBuildButton.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.PROP_BUTTON_FULL, new String[]{getProject().getName()}));
-			valWhenBuildButton.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
-					pagePreferences.setBuildValidate(valWhenBuildButton.getSelection());
-					valWhenBuildButton.setFocus();
-				}
-			});
 
-			GridData valWhenAutoBuildData = new GridData(GridData.FILL_HORIZONTAL);
-			valWhenAutoBuildData.horizontalSpan = 2;
-			autoButton = new Button(validatorGroup, SWT.CHECK);
-			autoButton.setLayoutData(valWhenAutoBuildData);
-			autoButton.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_LBL_AUTO_VALIDATE, new String[]{getProject().getName()}));
-			autoButton.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
-					pagePreferences.setAutoValidate(autoButton.getSelection());
-					autoButton.setFocus();
-				}
-			});
 
 			GridData listLabelData = new GridData(GridData.FILL_HORIZONTAL);
 			listLabelData.horizontalSpan = 2;
@@ -460,55 +534,147 @@ public class ValidationPropertiesPage extends PropertyPage {
 			messageLabel.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_LBL_DESC, new String[]{getProject().getName()}));
 			messageLabel.setLayoutData(listLabelData);
 
-			GridData validatorListData = new GridData(GridData.FILL_HORIZONTAL);
+			validatorsTable = new Table(validatorGroup,SWT.BORDER);
+			TableLayout tableLayout = new TableLayout();
+			tableLayout.addColumnData(new ColumnWeightData(160, true));
+	        tableLayout.addColumnData(new ColumnWeightData(80, true));
+	        tableLayout.addColumnData(new ColumnWeightData(80, true));
+			validatorsTable.setHeaderVisible(true);
+			validatorsTable.setLinesVisible(true);
+	        validatorsTable.setLayout(tableLayout);
+			
+			validatorList = new TableViewer(validatorsTable);
+	        GridData validatorListData = new GridData(GridData.FILL_HORIZONTAL);
 			validatorListData.horizontalSpan = 2;
-			validatorList = CheckboxTableViewer.newCheckList(validatorGroup, SWT.BORDER);
+			validatorsTable.setLayoutData(validatorListData);
 			validatorList.getTable().setLayoutData(validatorListData);
 			validatorList.setLabelProvider(new ValidationLabelProvider());
 			validatorList.setContentProvider(new ValidationContentProvider());
 			validatorList.setSorter(new ValidationViewerSorter());
-			validatorList.getTable().addSelectionListener(new SelectionAdapter() {
+	        setupTableColumns(validatorsTable,validatorList);
+	        
+			validatorList.setCellModifier(new ICellModifier() {
+
+				public boolean canModify(Object element, String property) {
+					ComboBoxCellEditor cellEditor = getComboBoxCellEditor(property);
+					if (cellEditor == null)
+						return false;
+					return true;
+				}
+
+				protected ComboBoxCellEditor getComboBoxCellEditor(String property) {
+					CellEditor cellEditor = getCellEditor(property);
+					if (cellEditor instanceof ComboBoxCellEditor)
+						return (ComboBoxCellEditor) cellEditor;
+					return null;
+
+				}
+
+				protected int getPropertyIntValue(String property) {
+					if (columnProperties != null) {
+						for (int i = 0; i < columnProperties.length; i++) {
+							if (columnProperties[i].equals(property))
+								return i;
+						}
+					}
+					return VALUE_NOT_FOUND;
+				}
+
+				protected CellEditor getCellEditor(String property) {
+					int comboCellEditorIndex = getPropertyIntValue(property);
+					if (comboCellEditorIndex == VALUE_NOT_FOUND)
+						return null;
+					return columnEditors[comboCellEditorIndex];
+				}
+
+				public Object getValue(Object element, String property) {
+					ValidatorMetaData data = (ValidatorMetaData) element;
+					if (property == MANUAL_CHECK) {
+						if (data.isManualValidation())
+							return new Integer(ENABLED_INT);
+						else
+							return new Integer(DISABLED_INT);
+
+					} else if (property == BUILD_CHECK) {
+						if (data.isBuildValidation())
+							return new Integer(ENABLED_INT);
+						else
+							return new Integer(DISABLED_INT);
+					}
+					return new Integer(VALUE_NOT_FOUND);
+				}
+
+				public void modify(Object element, String property, Object value) {
+					ValidatorMetaData data = (ValidatorMetaData) ((TableItem) element).getData();
+					int intValue = ((Integer) value).intValue();
+					if (property.equals(MANUAL_CHECK)) {
+						if (intValue == ENABLED_INT) {
+							data.setManualValidation(true);
+						} else if (intValue == DISABLED_INT) {
+							data.setManualValidation(false);
+						}
+					} else if (property.equals(BUILD_CHECK)) {
+						if (intValue == ENABLED_INT) {
+							data.setBuildValidation(true);
+						} else if (intValue == DISABLED_INT) {
+							data.setBuildValidation(false);
+						}
+					}
+					validatorList.refresh();
+				}
+			});
+			
+			validatorList.setInput(pagePreferences.getValidators());
+			validatorsTable.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
-					pagePreferences.setEnabledValidators(ValidationConfiguration.convertToArray(validatorList.getCheckedElements()));
+					pagePreferences.setEnabledValidators(getEnabledValidators());
 					try {
 						updateWidgets();
 					} catch (InvocationTargetException exc) {
 						displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
 					}
 				}
-			});
-			validatorList.setInput(pagePreferences.getValidators());
-
-			selectAllButton = new Button(validatorGroup, SWT.PUSH);
-			GridData selectData = new GridData();
-			selectAllButton.setLayoutData(selectData);
-			selectAllButton.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.PROP_BUTTON_SELECTALL));
-			selectAllButton.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
+				
+				public void widgetDefaultSelected(SelectionEvent e) {
 					try {
-						performSelectAll();
+						performDefaults();
 					} catch (InvocationTargetException exc) {
 						displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
 					}
 				}
 			});
-			PlatformUI.getWorkbench().getHelpSystem().setHelp(selectAllButton, ContextIds.VALIDATION_PROPERTIES_PAGE);
+
+
+			enableAllButton = new Button(validatorGroup, SWT.PUSH);
+			GridData selectData = new GridData();
+			enableAllButton.setLayoutData(selectData);
+			enableAllButton.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.PREF_BUTTON_ENABLEALL));
+			enableAllButton.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					try {
+						performEnableAll();
+					} catch (InvocationTargetException exc) {
+						displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
+					}
+				}
+			});
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(enableAllButton, ContextIds.VALIDATION_PROPERTIES_PAGE);
 
 
 			GridData deselectData = new GridData();
-			deselectAllButton = new Button(validatorGroup, SWT.PUSH);
-			deselectAllButton.setLayoutData(deselectData);
-			deselectAllButton.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.PROP_BUTTON_DESELECTALL));
-			deselectAllButton.addSelectionListener(new SelectionAdapter() {
+			disableAllButton = new Button(validatorGroup, SWT.PUSH);
+			disableAllButton.setLayoutData(deselectData);
+			disableAllButton.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.PREF_BUTTON_DISABLEALL));
+			disableAllButton.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					try {
-						performDeselectAll();
+						performDisableAll();
 					} catch (InvocationTargetException exc) {
 						displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
 					}
 				}
 			});
-			PlatformUI.getWorkbench().getHelpSystem().setHelp(deselectAllButton, ContextIds.VALIDATION_PROPERTIES_PAGE);
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(disableAllButton, ContextIds.VALIDATION_PROPERTIES_PAGE);
 
 			Composite maxGroup = new Composite(page, SWT.NONE);
 			GridLayout maxGroupLayout = new GridLayout();
@@ -517,45 +683,10 @@ public class ValidationPropertiesPage extends PropertyPage {
 			GridData maxGroupData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 			maxGroup.setLayoutData(maxGroupData);
 
-			GridData maxLabel = new GridData();
-			maxValProblemsFieldLabel = new Label(maxGroup, SWT.NONE);
-			maxValProblemsFieldLabel.setLayoutData(maxLabel);
-			maxValProblemsFieldLabel.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.PROP_LBL_MAXMSSGS, new String[]{getProject().getName()}));
-
-			maxValProblemsField = new Text(maxGroup, SWT.SINGLE | SWT.BORDER);
-			GridData maxValProblemsData = new GridData(GridData.FILL_HORIZONTAL);
-			maxValProblemsField.setLayoutData(maxValProblemsData);
-			maxValProblemsField.addKeyListener(new KeyListener() {
-				/**
-				 * Sent when a key is pressed on the system keyboard.
-				 * 
-				 * @param e
-				 *            an event containing information about the key press
-				 */
-				public void keyPressed(KeyEvent e) {
-					//do nothing
-				}
-
-				/**
-				 * Sent when a key is released on the system keyboard.
-				 * 
-				 * @param e
-				 *            an event containing information about the key release
-				 */
-				public void keyReleased(KeyEvent e) {
-					try {
-						pagePreferences.setMaximumNumberOfMessages(checkInteger());
-					} catch (InvocationTargetException exc) {
-						displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
-					}
-				}
-			});
-			PlatformUI.getWorkbench().getHelpSystem().setHelp(maxValProblemsField, ContextIds.VALIDATION_PROPERTIES_PAGE_MAX_MESSAGES);
-
 			// Have to set the tab order or only the first checkbox in a Composite can
 			// be tab-ed to. (Seems to apply only to checkboxes. Have to use the arrow
 			// key to navigate the checkboxes.)
-			validatorGroup.setTabList(new Control[]{overrideGlobalButton, valWhenBuildButton, autoButton, validatorList.getTable(), selectAllButton, deselectAllButton});
+			validatorGroup.setTabList(new Control[]{overrideGlobalButton, validatorList.getTable(), enableAllButton, disableAllButton});
 
 			updateWidgets();
 
@@ -565,7 +696,28 @@ public class ValidationPropertiesPage extends PropertyPage {
 		}
 
 		protected void updateTable() throws InvocationTargetException {
-			TableItem[] items = validatorList.getTable().getItems();
+			TableItem[] items = validatorsTable.getItems();
+			for (int i = 0; i < items.length; i++) {
+				TableItem item = items[i];
+				ValidatorMetaData vmd = (ValidatorMetaData) item.getData();
+
+				// Should the validator be enabled? Read the user's preferences from last time,
+				// if they exist, and set from that. If they don't exist, use the Validator class'
+				if (pagePreferences.isManualEnabled(vmd))
+					vmd.setManualValidation(true);
+				else
+					vmd.setManualValidation(false);
+				
+				if (pagePreferences.isBuildEnabled(vmd))
+					vmd.setBuildValidation(true);
+				else
+					vmd.setBuildValidation(false);
+			}
+			validatorList.refresh();
+		}
+		
+		protected void updateManualAndBuildValues() {
+			TableItem[] items = validatorsTable.getItems();
 			for (int i = 0; i < items.length; i++) {
 				TableItem item = items[i];
 				ValidatorMetaData vmd = (ValidatorMetaData) item.getData();
@@ -573,95 +725,143 @@ public class ValidationPropertiesPage extends PropertyPage {
 				// Should the validator be enabled? Read the user's preferences from last time,
 				// if they exist, and set from that. If they don't exist, use the Validator class'
 				// default value.
-				validatorList.setChecked(vmd, pagePreferences.isEnabled(vmd));
+				if(pagePreferences.isManualEnabled(vmd))
+					vmd.setManualValidation(true);
+				else
+					vmd.setManualValidation(false);
+				if(pagePreferences.isBuildEnabled(vmd))
+					vmd.setBuildValidation(true);
+				else
+					vmd.setBuildValidation(false);
 			}
+			validatorList.refresh();
 		}
 
 		public boolean performDefaults() throws InvocationTargetException {
 			pagePreferences.resetToDefault();
 			updateWidgets();
-			checkInteger(); // clear the "max must be a positive integer" message if it exists
 			getDefaultsButton().setFocus();
 			return true;
 		}
 
-		public boolean performSelectAll() throws InvocationTargetException {
-			validatorList.setAllChecked(true);
-			pagePreferences.setEnabledValidators(ValidationConfiguration.convertToArray(validatorList.getCheckedElements()));
-			updateWidgets();
-			selectAllButton.setFocus();
+		public boolean performEnableAll() throws InvocationTargetException {
+			setAllValidators(true);
+			pagePreferences.setEnabledValidators(getEnabledValidators());
+			updateManualAndBuildValues();
+			enableAllButton.setFocus();
 			return true;
 		}
 
-		public boolean performDeselectAll() throws InvocationTargetException {
-			validatorList.setAllChecked(false);
-			pagePreferences.setEnabledValidators(ValidationConfiguration.convertToArray(validatorList.getCheckedElements()));
-			updateWidgets();
-			deselectAllButton.setFocus();
+		public boolean performDisableAll() throws InvocationTargetException {
+			setAllValidators(false);
+			pagePreferences.setEnabledValidators(getEnabledValidators());
+			updateManualAndBuildValues();
+			disableAllButton.setFocus();
 			return true;
 		}
-
-		protected int checkInteger() throws InvocationTargetException {
-			ProjectConfiguration pc = ConfigurationManager.getManager().getProjectConfiguration(getProject());
-			String text = maxValProblemsField.getText();
-			if (text == null) {
-				setErrorMessage(ResourceHandler.getExternalizedMessage(ResourceConstants.PROP_ERROR_INT));
-				return pc.getMaximumNumberOfMessages();
+		
+		public ValidatorMetaData[] getEnabledValidators() {
+			List enabledValidators = new ArrayList();
+			TableItem[] items = validatorsTable.getItems();
+			for (int i = 0; i < items.length; i++) {
+				ValidatorMetaData validatorMetaData = (ValidatorMetaData) items[i].getData();
+				if(validatorMetaData.isManualValidation() || validatorMetaData.isBuildValidation())
+					enabledValidators.add(validatorMetaData);
 			}
-			try {
-				Integer tempInt = new Integer(text.trim());
-
-				// no exception? It's an int, then.
-				if (tempInt.intValue() <= 0) {
-					setErrorMessage(ResourceHandler.getExternalizedMessage(ResourceConstants.PROP_ERROR_INT));
-					return pc.getMaximumNumberOfMessages();
-				}
-				setErrorMessage(null);
-				return Integer.valueOf(maxValProblemsField.getText().trim()).intValue();
-			} catch (NumberFormatException exc) {
-				setErrorMessage(ResourceHandler.getExternalizedMessage(ResourceConstants.PROP_ERROR_INT));
-				return pc.getMaximumNumberOfMessages();
+			return (ValidatorMetaData[])enabledValidators.toArray(new ValidatorMetaData[enabledValidators.size()]);
+		}
+		
+		public ValidatorMetaData[] getManualEnabledValidators() {
+			List enabledValidators = new ArrayList();
+			TableItem[] items = validatorsTable.getItems();
+			for (int i = 0; i < items.length; i++) {
+				ValidatorMetaData validatorMetaData = (ValidatorMetaData) items[i].getData();
+				if(validatorMetaData.isManualValidation())
+					enabledValidators.add(validatorMetaData);
 			}
+			return (ValidatorMetaData[])enabledValidators.toArray(new ValidatorMetaData[enabledValidators.size()]);
+		}
+		
+		public ValidatorMetaData[] getBuildEnabledValidators() {
+			List enabledValidators = new ArrayList();
+			TableItem[] items = validatorsTable.getItems();
+			for (int i = 0; i < items.length; i++) {
+				ValidatorMetaData validatorMetaData = (ValidatorMetaData) items[i].getData();
+				if(validatorMetaData.isBuildValidation())
+					enabledValidators.add(validatorMetaData);
+			}
+			return (ValidatorMetaData[])enabledValidators.toArray(new ValidatorMetaData[enabledValidators.size()]);
+		}
 
+		
+		/**
+		 * 
+		 */
+		private void setAllValidators(boolean bool) {
+			TableItem[] items = validatorsTable.getItems();
+			for (int i = 0; i < items.length; i++) {
+				ValidatorMetaData validatorMetaData = (ValidatorMetaData) items[i].getData();
+				validatorMetaData.setManualValidation(bool);
+				validatorMetaData.setBuildValidation(bool);
+			}
 		}
 
 		void updateWidgets() throws InvocationTargetException {
 			// Since the setting of the "override" button enables/disables the other widgets on the
-			// page,
-			// update the enabled state of the other widgets from the "override" button.
+			// page, update the enabled state of the other widgets from the "override" button.
+			updateTable();
+			updateAllWidgets();
+			
+		}
+		
+		protected void updateWidgetsForDefaults() throws InvocationTargetException {
+			updateTableForDefaults();
+			updateAllWidgets();
+		}
+		
+		private void updateAllWidgets() throws InvocationTargetException {
+			// Since the setting of the "override" button enables/disables the other widgets on the
+			// page, update the enabled state of the other widgets from the "override" button.
+			ConfigurationManager prefMgr = ConfigurationManager.getManager();
+			canOverride = prefMgr.getGlobalConfiguration().canProjectsOverride();
 			boolean overridePreferences = canOverride && pagePreferences.doesProjectOverride();
-
 			overrideGlobalButton.setEnabled(canOverride);
 			overrideGlobalButton.setSelection(overridePreferences);
-
-			validatorList.getTable().setEnabled(overridePreferences);
-			validatorList.setAllGrayed(!overridePreferences);
-
-			selectAllButton.setEnabled(overridePreferences); // since help messsage isn't
-			// context-sensitive, it's set in the
-			// createPage method
-			deselectAllButton.setEnabled(overridePreferences);
-
-			maxValProblemsField.setEnabled(overridePreferences);
-			maxValProblemsField.setText(String.valueOf(pagePreferences.getMaximumNumberOfMessages()));
-
-			updateTable();
-
-			// Never check if builder is configured because if it isn't, the user needs to be able
-			// to add the builder via the instructions on the F1 infopops.
-			// In the case when the builder isn't configured, show the checkbox as enabled but
-			// cleared
-			// The only time that these two checkboxes are disabled is when no validators are
-			// enabled in the list.
-			boolean valEnabled = (pagePreferences.numberOfEnabledValidators() > 0);
-			valWhenBuildButton.setEnabled(overridePreferences && valEnabled);
-			valWhenBuildButton.setSelection(pagePreferences.isBuildValidate() && valEnabled && isBuilderConfigured);
-
-			boolean incValEnabled = (pagePreferences.numberOfEnabledIncrementalValidators() > 0);
-			autoButton.setEnabled(overridePreferences && isAutoBuildEnabled && incValEnabled);
-			autoButton.setSelection(pagePreferences.isAutoValidate() && incValEnabled && isAutoBuildEnabled && isBuilderConfigured);
-
+			disableAllValidation.setEnabled(overridePreferences);
+			disableAllValidation.setSelection(pagePreferences.isDisableAllValidation());
+			if (overridePreferences)
+				enableDependentControls(!pagePreferences.isDisableAllValidation());
+			else
+				enableDependentControls(overridePreferences);
 			updateHelp();
+		}
+
+		private void updateTableForDefaults() throws InvocationTargetException {
+			TableItem[] items = validatorsTable.getItems();
+			for (int i = 0; i < items.length; i++) {
+				TableItem item = items[i];
+				ValidatorMetaData vmd = (ValidatorMetaData) item.getData();
+
+				// Should the validator be enabled? Read the user's preferences from last time,
+				// if they exist, and set from that. If they don't exist, use the Validator class'
+				if(pagePreferences.isEnabled(vmd)) {
+					vmd.setManualValidation(true);
+					vmd.setBuildValidation(true);
+				} else {
+					vmd.setManualValidation(false);
+					vmd.setBuildValidation(false);
+				}
+			}
+			validatorList.refresh();
+		}
+
+		/**
+		 * @param overridePreferences
+		 */
+		private void enableDependentControls(boolean overridePreferences) {
+			validatorsTable.setEnabled(overridePreferences);
+			enableAllButton.setEnabled(overridePreferences); // since help messsage isn't
+			disableAllButton.setEnabled(overridePreferences);
 		}
 
 		protected void updateHelp() throws InvocationTargetException {
@@ -674,7 +874,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 			// than the page F1, so this fudge doesn't remove any context-sensitive help
 			// from the table widget.
 
-			if (autoButton.getEnabled()) {
+			/*if (autoButton.getEnabled()) {
 				// set the table's help back to what it was
 				PlatformUI.getWorkbench().getHelpSystem().setHelp(validatorList.getTable(), ContextIds.VALIDATION_PROPERTIES_PAGE);
 				PlatformUI.getWorkbench().getHelpSystem().setHelp(autoButton, ContextIds.VALIDATION_PROPERTIES_PAGE_AUTO_ENABLED);
@@ -706,20 +906,20 @@ public class ValidationPropertiesPage extends PropertyPage {
 				validatorList.getTable().setFocus();
 				PlatformUI.getWorkbench().getHelpSystem().setHelp(validatorList.getTable(), ContextIds.VALIDATION_PROPERTIES_PAGE_DISABLED_BUILD_NOVALSELECTED);
 			}
-
+*/
 			// if the override button is disabled, show its "to enable" text.
 			if (overrideGlobalButton.getEnabled()) {
 				// Do NOT set the table's help back to what it was.
 				// Only if auto-validate is enabled should the page go back.
 				boolean doesProjectSupportBuildValidation = ValidatorManager.doesProjectSupportBuildValidation(getProject());
 				GlobalConfiguration gp = ConfigurationManager.getManager().getGlobalConfiguration();
-				boolean isPrefAuto = gp.isAutoValidate();
-				boolean isPrefManual = gp.isBuildValidate();
+				//boolean isPrefAuto = gp.isAutoValidate();
+				//boolean isPrefManual = gp.isBuildValidate();
 				if (doesProjectSupportBuildValidation) {
 					// Project supports build validation, so it doesn't matter what the preferences
 					// are
 					PlatformUI.getWorkbench().getHelpSystem().setHelp(overrideGlobalButton, ContextIds.VALIDATION_PROPERTIES_PAGE_OVERRIDE_ENABLED);
-				} else if (!doesProjectSupportBuildValidation && (isPrefAuto && isPrefManual)) {
+				} /*else if (!doesProjectSupportBuildValidation && (isPrefAuto && isPrefManual)) {
 					// Project doesn't support build validation, and the user prefers both auto and
 					// manual build validation
 					PlatformUI.getWorkbench().getHelpSystem().setHelp(overrideGlobalButton, ContextIds.VALIDATION_PROPERTIES_PAGE_OVERRIDE_ENABLED_CANNOT_HONOUR_BOTH);
@@ -735,7 +935,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 					// Project doesn't support build validation, but that doesn't matter because the
 					// user prefers no build validation.
 					PlatformUI.getWorkbench().getHelpSystem().setHelp(overrideGlobalButton, ContextIds.VALIDATION_PROPERTIES_PAGE_OVERRIDE_ENABLED);
-				}
+				}*/
 			} else {
 				validatorList.getTable().setFocus();
 				// Preference page doesn't allow projects to override
@@ -750,31 +950,14 @@ public class ValidationPropertiesPage extends PropertyPage {
 			pagePreferences.setDoesProjectOverride(overrideGlobalButton.getSelection());
 
 			if (pagePreferences.doesProjectOverride()) {
-				// project override = user's preference + does the global preference allow the
-				// project to override
-
-				// If the manual build button is disabled because no validators are selected in the
-				// task list, don't overwrite the user's preference.
-				if (valWhenBuildButton.isEnabled()) {
-					pagePreferences.setBuildValidate(valWhenBuildButton.getSelection());
-				}
-
-				// If the auto build button is disabled because no validators are selected in the
-				// task list, or because auto-build is disabled, don't overwrite the user's
-				// preference.
-				if (autoButton.isEnabled()) {
-					pagePreferences.setAutoValidate(autoButton.getSelection());
-				}
-
-				pagePreferences.setMaximumNumberOfMessages(checkInteger());
-				pagePreferences.setEnabledValidators(ValidationConfiguration.convertToArray(validatorList.getCheckedElements()));
+				pagePreferences.setEnabledManualValidators(getManualEnabledValidators());
+				pagePreferences.setEnabledBuildValidators(getBuildEnabledValidators());
 			} else {
 				pagePreferences.resetToDefault(); // If the project can't or doesn't override,
 				// update its values to match the global
 				// preference values.
 			}
-
-			pagePreferences.passivate();
+			pagePreferences.store();
 		}
 
 		/**
@@ -795,59 +978,14 @@ public class ValidationPropertiesPage extends PropertyPage {
 			// recalculate the "can build be enabled" status because the builder may have
 			// been added in the addBuilder() call above.
 			// Also recalculate the values that depend on the isBuilderConfigured value.
-			isBuilderConfigured = ValidatorManager.doesProjectSupportBuildValidation(getProject());
+			//isBuilderConfigured = ValidatorManager.doesProjectSupportBuildValidation(getProject());
 
 			// Persist the values.
 			storeValues();
 
-			if (autoButton.getSelection()) {
-				int enabledIncrementalValidators = pagePreferences.numberOfEnabledIncrementalValidators();
-				int enabledValidators = pagePreferences.numberOfEnabledValidators();
-				if (enabledValidators != enabledIncrementalValidators) {
-					// Then some of the enabled validators are not incremental
-					int iIconType = org.eclipse.swt.SWT.ICON_INFORMATION;
-					Display display = Display.getCurrent();
-					Shell shell = (display == null) ? null : display.getActiveShell();
-					MessageBox messageBox = new MessageBox(shell, org.eclipse.swt.SWT.OK | iIconType);
-					messageBox.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_MSSGBOX_TITLE_NONINC));
-
-					ValidatorMetaData[] vmds = pagePreferences.getEnabledValidators();
-					StringBuffer buffer = new StringBuffer(NEWLINE_AND_TAB);
-					for (int i = 0; i < vmds.length; i++) {
-						ValidatorMetaData vmd = vmds[i];
-
-						if (!vmd.isIncremental()) {
-							buffer.append(vmd.getValidatorDisplayName());
-							buffer.append(NEWLINE_AND_TAB);
-						}
-					}
-					messageBox.setMessage(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_AUTO_ON_NONINC, new String[]{buffer.toString()}));
-					messageBox.open();
-				}
-			}
-
-			if (pagePreferences.hasEnabledValidatorsChanged(oldVmd, false) || ValidatorManager.getManager().isMessageLimitExceeded(getProject())) { // false
-				// means
-				// that
-				// the
-				// preference
-				// "allow"
-				// value
-				// hasn't
-				// changed
-				ValidatorManager.getManager().updateTaskList(getProject()); // Do not remove the
-				// exceeded message;
-				// only
-				// ValidationOperation
-				// should do that
-				// because it's about to
-				// run validation. If
-				// the limit is
-				// increased, messages
-				// may still be missing,
-				// so don't remove the
-				// "messages may be
-				// missing" message.
+			if (pagePreferences.hasEnabledValidatorsChanged(oldVmd, false)) { 
+				// false means that the preference "allow" value hasn't changed
+				ValidatorManager.getManager().updateTaskList(getProject()); 
 			}
 
 			return true;
@@ -860,9 +998,9 @@ public class ValidationPropertiesPage extends PropertyPage {
 		private void addBuilder() {
 			if (overrideGlobalButton.getSelection()) { // do not add the builder unless the user
 				// overrides the preferences
-				if (autoButton.getSelection() || valWhenBuildButton.getSelection()) {
+				/*if (autoButton.getSelection() || valWhenBuildButton.getSelection()) {
 					ValidatorManager.addProjectBuildValidationSupport(getProject());
-				}
+				}*/
 			}
 		}
 
@@ -871,12 +1009,8 @@ public class ValidationPropertiesPage extends PropertyPage {
 		}
 
 		public void dispose() {
-			maxValProblemsField.dispose();
-			maxValProblemsFieldLabel.dispose();
-			selectAllButton.dispose();
-			deselectAllButton.dispose();
-			autoButton.dispose();
-			valWhenBuildButton.dispose();
+			enableAllButton.dispose();
+			disableAllButton.dispose();
 			validatorList.getTable().dispose();
 			messageLabel.dispose();
 			//			layout.dispose();

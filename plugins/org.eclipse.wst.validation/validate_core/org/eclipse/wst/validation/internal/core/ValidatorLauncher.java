@@ -69,7 +69,7 @@ public class ValidatorLauncher {
 	 * array, then a full validation should be performed. Otherwise, validation on just the files
 	 * listed in the array should performed if the validator supports incremental validation.
 	 */
-	public void start(IValidationContext helper, IValidator validator, IReporter reporter) throws ValidationException {
+	public void start(final IValidationContext helper, final IValidator validator, final IReporter reporter) throws ValidationException {
 		if ((helper == null) || (validator == null) || (reporter == null)) {
 			return;
 		}
@@ -89,5 +89,7 @@ public class ValidatorLauncher {
 
 		validator.validate(helper, reporter);
 		validator.cleanup(reporter);
+
 	}
+	
 }

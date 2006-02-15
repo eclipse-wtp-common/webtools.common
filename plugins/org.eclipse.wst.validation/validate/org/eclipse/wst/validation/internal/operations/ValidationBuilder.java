@@ -163,12 +163,12 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 			boolean doFullBuild = (kind == FULL_BUILD);
 			boolean doAutoBuild = ((delta != null) && (kind == AUTO_BUILD));
 			boolean doIncrementalBuild = ((delta != null) && (kind == INCREMENTAL_BUILD));
-			if ((doFullBuild || doIncrementalBuild) && !prjp.isBuildValidate()) {
-				// Is a build validation about to be invoked? If so, does the
-				// user want build validation to run?
-				executionMap |= 0x2;
-				return referenced;
-			}
+//			if ((doFullBuild || doIncrementalBuild) && !prjp.isBuildValidate()) {
+//				// Is a build validation about to be invoked? If so, does the
+//				// user want build validation to run?
+//				executionMap |= 0x2;
+//				return referenced;
+//			}
 			// It is possible for kind to == AUTO_BUILD while delta is null
 			// (saw this
 			// when creating a project by copying another project.)
@@ -194,10 +194,10 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 			if (doFullBuild) {
 				performFullBuild(monitor, prjp);
 			} else {
-				if (doAutoBuild && !prjp.isAutoValidate()) {
-					executionMap |= 0x8;
-					return referenced;
-				}
+//				if (doAutoBuild && !prjp.isAutoValidate()) {
+//					executionMap |= 0x8;
+//					return referenced;
+//				}
 				if (delta.getAffectedChildren().length == 0) {
 					if (isReferencedProjectInDelta(referenced))
 						performFullBuildForReferencedProjectChanged(monitor, prjp);
@@ -205,7 +205,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 						executionMap |= 0x10;
 					return referenced;
 				}
-				EnabledIncrementalValidatorsOperation operation = new EnabledIncrementalValidatorsOperation(project, delta, prjp.runAsync());
+				EnabledIncrementalValidatorsOperation operation = new EnabledIncrementalValidatorsOperation(project, delta, false);
 				operation.run(monitor);
 			}
 			return referenced;
@@ -258,7 +258,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 		ValidatorMetaData[] enabledValidators = prjp.getEnabledFullBuildValidators(true, onlyDependentValidators);
 		if ((enabledValidators != null) && (enabledValidators.length > 0)) {
 			Set enabledValidatorsSet = InternalValidatorManager.wrapInSet(enabledValidators);
-			EnabledValidatorsOperation op = new EnabledValidatorsOperation(getProject(), enabledValidatorsSet, prjp.runAsync());
+			EnabledValidatorsOperation op = new EnabledValidatorsOperation(getProject(), enabledValidatorsSet,false);
 			op.run(monitor);
 		}
 	}
