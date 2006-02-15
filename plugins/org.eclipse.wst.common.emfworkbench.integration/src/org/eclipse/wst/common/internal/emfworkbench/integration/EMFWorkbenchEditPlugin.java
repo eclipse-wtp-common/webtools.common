@@ -13,15 +13,11 @@ package org.eclipse.wst.common.internal.emfworkbench.integration;
 import java.io.FileNotFoundException;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IAdapterManager;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.emf.common.util.WrappedException;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 import org.eclipse.wst.common.internal.emf.utilities.ExtendedEcoreUtil;
-import org.eclipse.wst.common.internal.emfworkbench.EMFAdapterFactory;
 import org.eclipse.wst.common.internal.emfworkbench.PassthruResourceSet;
 import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
 import org.osgi.framework.BundleContext;
@@ -68,9 +64,6 @@ public class EMFWorkbenchEditPlugin extends Plugin {
 			}
 		});
 		WorkbenchResourceHelper.initializeFileAdapterFactory();
-
-		IAdapterManager manager = Platform.getAdapterManager();
-		manager.registerAdapters(new EMFAdapterFactory(), EObject.class);
 	}
 
 	public static ResourceSet createIsolatedResourceSet(IProject project) {
