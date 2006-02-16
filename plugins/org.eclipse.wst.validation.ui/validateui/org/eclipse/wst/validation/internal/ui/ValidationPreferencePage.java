@@ -703,27 +703,28 @@ private class ValidatorListPage implements IValidationPage {
 		validatorList.refresh();
 	}
 	
-	protected void updateManualAndBuildValues() {
+	protected void enableManualAndBuildValues() {
 		TableItem[] items = validatorsTable.getItems();
 		for (int i = 0; i < items.length; i++) {
 			TableItem item = items[i];
 			ValidatorMetaData vmd = (ValidatorMetaData) item.getData();
-
-			// Should the validator be enabled? Read the user's preferences from last time,
-			// if they exist, and set from that. If they don't exist, use the Validator class'
-			// default value.
-			if(pagePreferences.isManualEnabled(vmd))
-				vmd.setManualValidation(true);
-			else
-				vmd.setManualValidation(false);
-			if(pagePreferences.isBuildEnabled(vmd))
-				vmd.setBuildValidation(true);
-			else
-				vmd.setBuildValidation(false);
+			vmd.setManualValidation(true);
+			vmd.setBuildValidation(true);
 		}
 		validatorList.refresh();
 	}
-
+	
+	protected void disableManualAndBuildValues() {
+		TableItem[] items = validatorsTable.getItems();
+		for (int i = 0; i < items.length; i++) {
+			TableItem item = items[i];
+			ValidatorMetaData vmd = (ValidatorMetaData) item.getData();
+			vmd.setManualValidation(false);
+			vmd.setBuildValidation(false);
+		}
+		validatorList.refresh();
+	}
+	
 	public boolean performOk() throws InvocationTargetException {
 		storeValues();
 		updateTaskList();
@@ -740,7 +741,7 @@ private class ValidatorListPage implements IValidationPage {
 	public boolean performEnableAll() throws InvocationTargetException {
 		setAllValidators(true);
 		pagePreferences.setEnabledValidators(getEnabledValidators());
-		updateManualAndBuildValues();
+		enableManualAndBuildValues();
 		enableAllButton.setFocus();
 		return true;
 	}
@@ -795,7 +796,7 @@ private class ValidatorListPage implements IValidationPage {
 	public boolean performDisableAll() throws InvocationTargetException {
 		setAllValidators(false);
 		pagePreferences.setEnabledValidators(getEnabledValidators());
-		updateManualAndBuildValues();
+		disableManualAndBuildValues();
 		disableAllButton.setFocus();
 		return true;
 	}
