@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS type="org.eclipse.help.contexts"?>
+<!-- /*******************************************************************************
+ * Copyright (c) 2000, 2005 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/ -->
+
+<contexts>
+<context id="libv1000">
+<description>Use this view to catalog and organize reusable programming objects, such as HTML tagging, JavaScript, and JSP markup, along with custom tags, that can be embedded in existing files.
+</description>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
+</context>
+
+<context id="libv1100">
+<description>Supply values in this dialog to define the Snippets view object to be inserted in the current file at the cursor position. Assign a value to the variables being inserted.
+</description>
+<topic label="Inserting and editing items in the active editor" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt015.html"/>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
+</context>
+
+<context id="libv1200">
+<description>In the <b>Name</b> field, type the name of the object as you want it be displayed in the Snippets view.  Optionally, add a description of the object in the <b>Description</b> field.
+
+Select the <b>Hide</b> check box to make this snippet object not visible in the view.
+
+To add a new variable, click the <b>New</b> push button, and type values in the cells of the <b>Variables</b> table. The <b>Name</b> field represents name of the variable that will be inserted when you add it to a document. <b>Default value</b> is the initial value of the named variable. Optionally, add a description of the variable.
+
+Insert the variables that you define into the <b>Template Pattern</b> field using the <b>Insert Variable Placeholder</b> push button.
+</description>
+<topic label="Deleting or hiding snippet items or drawers" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt016.html"/>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
+</context>
+
+<context id="libv1300">
+<description>Type the name of the new category in the <b>Name</b> field and optionally add a description of the category in the <b>Description</b> field.
+
+Select <b>Open drawer at start-up</b> to have the category drawer opened in the Snippets view when the workbench starts up.
+
+You can specify how you want the category drawer displayed in the Snippets view by selecting a radio button for the <b>Show/Hide Drawer</b> field.
+</description>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
+<topic label="Deleting or hiding snippet items or drawers" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt016.html"/>
+</context>
+
+<context id="snip0010">
+<description>Select this option to open the <b>Import</b> dialog, which lets you import snippet categories from the file system.
+</description>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
+<topic label="Adding items to snippets drawers" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt015.html"/>
+</context>
+
+<context id="snip0020">
+<description>Select this option to open the <b>Export</b> dialog, which lets you export snippet categories to the file system.
+</description>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
+<topic label="Adding items to snippets drawers" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt015.html"/>
+</context>
+
+<context id="snip0030">
+<description>Select the content types that should be visible in this drawer for in the Snippets view.
+</description>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
+<topic label="Deleting or hiding snippet items or drawers" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt016.html"/>
+</context>
+
+<context id="snip0040">
+<description>This menu item adds the selected text to the Snippets view as a new item.
+</description>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
+<topic label="Adding items to snippets drawers" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt015.html"/>
+</context>
+
+<context id="snip0050">
+<description>This menu item cuts the selected Snippet item to the clipboard.
+</description>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
+<topic label="Editing snippet items" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt022.html"/>
+</context>
+
+<context id="snip0060">
+<description>This menu item copies the selected Snippet item to the clipboard.
+</description>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
+<topic label="Editing snippet items" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt022.html"/>
+</context>
+
+<context id="snip0070">
+<description>This menu item creates a new Snippets view item containing the current contents of the clipboard.
+</description>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
+<topic label="Adding items to snippets drawers" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt015.html"/>
+</context>
+<context id="snip0080">
+<description>Type a name for the category. The category appears in the Customize Palette dialog box. Once you have created a category, you can add items to the category.
+</description>
+<topic label="Snippets view" href="../org.eclipse.wst.sse.doc.user/topics/csrcedt001.html"/>
+<topic label="Adding items to snippets drawers" href="../org.eclipse.wst.sse.doc.user/topics/tsrcedt015.html"/>
+</context>
+
+</contexts>

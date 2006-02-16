@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: org.eclipse.wst.common.uriresolver; singleton:=true
+Bundle-Version: 1.0.1.qualifier
+Bundle-Activator: org.eclipse.wst.common.uriresolver.internal.provisional.URIResolverPlugin
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
+Export-Package: org.eclipse.wst.common.uriresolver.internal,
+ org.eclipse.wst.common.uriresolver.internal.provisional,
+  org.eclipse.wst.common.uriresolver.internal.util
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.resources
+Eclipse-AutoStart: true
+Bundle-ClassPath: .

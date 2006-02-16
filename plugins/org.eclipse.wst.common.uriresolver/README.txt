@@ -1,0 +1,1 @@
+API for an URI resolver.
