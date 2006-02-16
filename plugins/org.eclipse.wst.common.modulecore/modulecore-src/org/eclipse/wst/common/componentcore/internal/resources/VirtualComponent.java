@@ -389,8 +389,10 @@ public class VirtualComponent implements IVirtualComponent {
 		IVirtualReference[] refs = getReferences();
 		for (int i = 0; i < refs.length; i++) {
 			IVirtualReference reference = refs[i];
-			if (reference.getReferencedComponent().getName().equals(aComponentName))
-				return reference;
+			if( reference.getReferencedComponent() != null ){
+				if (reference.getReferencedComponent().getName().equals(aComponentName))
+					return reference;
+			}
 		}
 		return null;
 	}
