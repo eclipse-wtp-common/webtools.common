@@ -634,26 +634,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 			});
 			
 			validatorList.setInput(pagePreferences.getValidators());
-			validatorsTable.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
-					pagePreferences.setEnabledValidators(getEnabledValidators());
-					try {
-						updateWidgets();
-					} catch (InvocationTargetException exc) {
-						displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
-					}
-				}
-				
-				public void widgetDefaultSelected(SelectionEvent e) {
-					try {
-						performDefaults();
-					} catch (InvocationTargetException exc) {
-						displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
-					}
-				}
-			});
-
-
+			
 			enableAllButton = new Button(validatorGroup, SWT.PUSH);
 			GridData selectData = new GridData();
 			enableAllButton.setLayoutData(selectData);
