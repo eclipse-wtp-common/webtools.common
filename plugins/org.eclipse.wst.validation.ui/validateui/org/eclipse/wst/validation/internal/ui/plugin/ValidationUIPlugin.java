@@ -8,16 +8,24 @@
  **************************************************************************************************/
 package org.eclipse.wst.validation.internal.ui.plugin;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.logging.Level;
 
 import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 import org.eclipse.wst.validation.internal.operations.ValidationOperation;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 
@@ -27,6 +35,7 @@ public class ValidationUIPlugin extends WTPUIPlugin {
 
 	public final static String VALIDATION_PROP_FILE_NAME = "validate_ui"; //$NON-NLS-1$
 	public static final String VALIDATION_PLUGIN_ID = "org.eclipse.wst.validation.ui"; //$NON-NLS-1$
+	public static final String[] ICON_DIRS = new String[]{"icons"};
 
 	public ValidationUIPlugin() {
 		super();
@@ -94,5 +103,60 @@ public class ValidationUIPlugin extends WTPUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		//	org.eclipse.wst.validation.internal.operations.ValidatorManager.setResourceUtilClass(org.eclipse.wst.validation.internal.operations.ui.UIResourceUtil.class);
+	}
+	
+	/**
+	 * Get a .gif from the image registry.
+	 */
+	public Image getImage(String key) {
+		ImageRegistry imageRegistry = getImageRegistry();
+		Image image = imageRegistry.get(key);
+		if (image == null || image.isDisposed()) {
+			ImageDescriptor descriptor = getImageDescriptor(key);
+			if (descriptor != null) {
+				image = descriptor.createImage();
+				imageRegistry.put(key, image);
+			}
+		}
+		return image;
+	}
+	
+	/**
+	 * This gets a .gif from the icons folder.
+	 */
+	public ImageDescriptor getImageDescriptor(String key) {
+		ImageDescriptor imageDescriptor = null;
+		URL gifImageURL = getImageURL(key);
+		if (gifImageURL != null)
+			imageDescriptor = ImageDescriptor.createFromURL(gifImageURL);
+		return imageDescriptor;
+	}
+	
+	/**
+	 * @param key
+	 * @return
+	 */
+	private URL getImageURL(String key) {
+		return ValidationUIPlugin.getImageURL(key, getBundle());
+	}
+	
+	/**
+	 * This gets a .gif from the icons folder.
+	 */
+	public static URL getImageURL(String key, Bundle bundle) {
+		String gif = "/" + key + ".gif"; //$NON-NLS-1$ //$NON-NLS-2$
+		IPath path = null;
+		for (int i = 0; i < ICON_DIRS.length; i++) {
+			path = new Path(ICON_DIRS[i]).append(gif);
+			if (Platform.find(bundle,path) == null)
+				continue;
+			try {
+				return new URL( bundle.getEntry("/"), path.toString()); //$NON-NLS-1$ 
+			} catch (MalformedURLException exception) {
+				exception.printStackTrace();
+				continue;
+			}
+		}
+		return null;
 	}
 }

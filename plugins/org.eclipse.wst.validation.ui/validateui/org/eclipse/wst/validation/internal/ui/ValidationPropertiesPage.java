@@ -339,7 +339,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 				if(columnIndex == 0) {
 					return ((ValidatorMetaData) element).getValidatorDisplayName();
 				}
-				if(columnIndex == 1) {
+				/*if(columnIndex == 1) {
 					if(((ValidatorMetaData)element).isManualValidation())
 						return ENABLED;
 					return DISABLED;	
@@ -347,13 +347,22 @@ public class ValidationPropertiesPage extends PropertyPage {
 					if(((ValidatorMetaData)element).isBuildValidation())
 						return ENABLED;
 					return DISABLED;
-				}
+				}*/
 				return null;
 			}
 
 			public Image getColumnImage(Object element, int columnIndex) {
-				// TODO Auto-generated method stub
+				if(columnIndex == 1) {
+					if(((ValidatorMetaData)element).isManualValidation())
+						return  ValidationUIPlugin.getPlugin().getImage("OK");
+					return ValidationUIPlugin.getPlugin().getImage("FAIL");
+				} else if(columnIndex == 2) {
+					if(((ValidatorMetaData)element).isBuildValidation())
+						return ValidationUIPlugin.getPlugin().getImage("OK");;
+					return ValidationUIPlugin.getPlugin().getImage("FAIL");
+				}
 				return null;
+			
 			}
 		}
 

@@ -346,14 +346,24 @@ private class ValidatorListPage implements IValidationPage {
 		}
 
 		public Image getColumnImage(Object element, int columnIndex) {
+			if(columnIndex == 1) {
+				if(((ValidatorMetaData)element).isManualValidation())
+					return  ValidationUIPlugin.getPlugin().getImage("OK");
+				return ValidationUIPlugin.getPlugin().getImage("FAIL");
+			} else if(columnIndex == 2) {
+				if(((ValidatorMetaData)element).isBuildValidation())
+					return ValidationUIPlugin.getPlugin().getImage("OK");;
+				return ValidationUIPlugin.getPlugin().getImage("FAIL");
+			}
 			return null;
+		
 		}
 
 		public String getColumnText(Object element, int columnIndex) {
 			if(columnIndex == 0) {
 				return ((ValidatorMetaData) element).getValidatorDisplayName();
 			}
-			if(columnIndex == 1) {
+			/*if(columnIndex == 1) {
 				if(((ValidatorMetaData)element).isManualValidation())
 					return COMBO_VALUES[0];
 				return COMBO_VALUES[1];	
@@ -361,7 +371,7 @@ private class ValidatorListPage implements IValidationPage {
 				if(((ValidatorMetaData)element).isBuildValidation())
 					return COMBO_VALUES[0];
 				return COMBO_VALUES[1];
-			}
+			}*/
 			return null;
 		}
 	}
