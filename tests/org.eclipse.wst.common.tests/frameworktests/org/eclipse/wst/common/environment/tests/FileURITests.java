@@ -1,11 +1,16 @@
-/***************************************************************************************************
- * Copyright (c) 2003, 2005 IBM Corporation and others. All rights reserved. This program and the
- * accompanying materials are made available under the terms of the Eclipse Public License v1.0
+/*******************************************************************************
+ * Copyright (c) 2003, 2006 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: IBM Corporation - initial API and implementation
- **************************************************************************************************/
+ *
+ * Contributors:
+ * IBM Corporation - initial API and implementation
+ * yyyymmdd bug      Email and other contact information
+ * -------- -------- -----------------------------------------------------------
+ * 20060217   128456 pmoogk@ca.ibm.com - Peter Moogk
+ *******************************************************************************/
 package org.eclipse.wst.common.environment.tests;
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,7 +38,8 @@ import org.eclipse.wst.common.environment.uri.URIException;
 
 public class FileURITests extends TestCase
 {  
-  private File tempDir = null;
+  private File  tempFile;
+  private File  tempDir;
   
   public FileURITests(String name)
   {
@@ -78,7 +84,8 @@ public class FileURITests extends TestCase
   {
     super.setUp();  
     
-    tempDir = new File( "/tmp/uritests" );
+    tempFile  = File.createTempFile("tmp", "tmp", null );
+    tempDir   = new File( tempFile.getParentFile(), "tmpDir" );
     tempDir.mkdir();
   }
   
@@ -90,6 +97,7 @@ public class FileURITests extends TestCase
     super.tearDown();
     
     deleteFiles( tempDir );
+    tempFile.delete();
   }
   
   private void deleteFiles( File directory )
@@ -109,6 +117,13 @@ public class FileURITests extends TestCase
     }
   }
   
+  private String getTmpFileURL( String fileName )
+  {
+    File newFile = new File( tempDir, fileName );  
+    
+    return "file:/" + newFile.getAbsolutePath();
+  }
+  
   public static Test getTest()
   {
     return new FileURITests("FileURITests");
@@ -122,7 +137,7 @@ public class FileURITests extends TestCase
     
     try
     {      
-      IURI uri2 = factory.newURI( "file:/tmp/somedirectory/somefile" );
+      IURI uri2 = factory.newURI( getTmpFileURL( "somefile" ) );
       IURI uri3 = factory.newURI( "relativedirectory/relativefile" );
       
       assertTrue( "Not available as URL", uri2.isAvailableAsURL() );

@@ -1,11 +1,16 @@
-/***************************************************************************************************
- * Copyright (c) 2003, 2005 IBM Corporation and others. All rights reserved. This program and the
- * accompanying materials are made available under the terms of the Eclipse Public License v1.0
+/*******************************************************************************
+ * Copyright (c) 2003, 2006 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
- * Contributors: IBM Corporation - initial API and implementation
- **************************************************************************************************/
+ *
+ * Contributors:
+ * IBM Corporation - initial API and implementation
+ * yyyymmdd bug      Email and other contact information
+ * -------- -------- -----------------------------------------------------------
+ * 20060217   128456 pmoogk@ca.ibm.com - Peter Moogk
+ *******************************************************************************/
 package org.eclipse.wst.common.environment.tests;
 import java.io.BufferedReader;
 import java.io.File;
@@ -40,6 +45,8 @@ import org.eclipse.wst.common.environment.uri.URIException;
 public class EclipseURITests extends TestCase
 {
   private final String projectName_ = "TestProject";
+  private File  tempFile;
+  private File  tempDir;
   
   public EclipseURITests(String name)
   {
@@ -84,6 +91,10 @@ public class EclipseURITests extends TestCase
   {
     super.setUp();
     
+    tempFile  = File.createTempFile("tmp", "tmp", null );
+    tempDir   = new File( tempFile.getParentFile(), "tmpDir" );
+    tempDir.mkdir();
+    
     // Create a test project in the workbench
     IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
     IProject       project       = workspaceRoot.getProject( projectName_ );
@@ -110,6 +121,8 @@ public class EclipseURITests extends TestCase
     IProject       project       = workspaceRoot.getProject( projectName_ );
     
     project.delete( true, null );
+    tempFile.delete();
+    deleteDir( tempDir );
   }
   
   public static Test getTest()
@@ -126,7 +139,7 @@ public class EclipseURITests extends TestCase
     try
     {      
       IURI uri1 = factory.newURI( "platform:/resource/" + projectName_ +  "/myfile" );
-      IURI uri2 = factory.newURI( "file:/tmp/somedirectory/somefile" );
+      IURI uri2 = factory.newURI( getTmpFileURL( "somefile" ) );
       IURI uri3 = factory.newURI( "relativedirectory/relativefile" );
       
       assertTrue( "Not available as URL", uri1.isAvailableAsURL() );
@@ -198,17 +211,17 @@ public class EclipseURITests extends TestCase
     try
     {
       IURIScheme scheme1 = factory.newURIScheme( "platform:/resource/myproj/myfile" );
-      IURIScheme scheme2 = factory.newURIScheme( "file:/tmp/somedirectory/somefile" );
+      IURIScheme scheme2 = factory.newURIScheme( getTmpFileURL( "somefile2" ) );
       IURIScheme scheme3 = factory.newURIScheme( "platform" );
       IURIScheme scheme4 = factory.newURIScheme( "file" );
       IURIScheme scheme5 = factory.newURI( "rel1/rel2" ).getURIScheme();
       
       IURI uri1 = factory.newURI( "platform:/resource/myproj/myfile" );
-      IURI uri2 = factory.newURI( "file:/somedirectory/somefile" );
+      IURI uri2 = factory.newURI( getTmpFileURL( "somefile3" ) );
       IURI uri3 = factory.newURI( "relativedirectory/relativefile" );
       
       IURI uri4 = factory.newURI( new URL( "platform:/resource/myproj/myfile" ));
-      IURI uri5 = factory.newURI( new URL( "file:/tmp/somedirectory/somefile" ) );
+      IURI uri5 = factory.newURI( new URL( getTmpFileURL( "somefile4" ) ) );
   
       
       assertTrue( "Scheme not platform protocol", scheme1.toString().equals("platform") );
@@ -866,6 +879,29 @@ public class EclipseURITests extends TestCase
   private String getURLFromPath( IPath absolutePath )
   {
     return "platform:/resource" + absolutePath;
+  }
+  
+  private String getTmpFileURL( String fileName )
+  {
+    File newFile = new File( tempDir, fileName );  
+    
+    return "file:/" + newFile.getAbsolutePath();
+  }
+  
+  private void deleteDir( File fileOrDirectory )
+  {
+    File[] childFiles = fileOrDirectory.listFiles();
+    
+    if( childFiles != null )
+    {
+      // Delete all the child files or directories first before this one.
+      for( int index = 0; index < childFiles.length; index++ )
+      {
+        deleteDir( childFiles[index] );
+      }
+    }
+    
+    fileOrDirectory.delete();
   }
   
   private class NodeEntry
