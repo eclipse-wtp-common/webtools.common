@@ -581,4 +581,10 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		return super.getIncrementalValidators();
 	}
 
+	public int numberOfManualValidators() throws InvocationTargetException {
+		if (useGlobalPreference()) {
+			return ConfigurationManager.getManager().getGlobalConfiguration().numberOfManualEnabledValidators();
+		}
+		return super.numberOfManualEnabledValidators();
+	}
 }

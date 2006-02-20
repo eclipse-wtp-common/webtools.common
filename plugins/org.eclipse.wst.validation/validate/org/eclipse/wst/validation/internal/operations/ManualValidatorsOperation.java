@@ -11,8 +11,6 @@
 package org.eclipse.wst.validation.internal.operations;
 
 
-import java.util.Set;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.wst.validation.internal.RegistryConstants;
 
@@ -30,113 +28,8 @@ import org.eclipse.wst.validation.internal.RegistryConstants;
  */
 public class ManualValidatorsOperation extends ValidatorSubsetOperation {
 
-
-	/**
-	 * Run all enabled validators on the project.
-	 * 
-	 * IProject must exist and be open.
-	 * 
-	 * If async is true, the validation will run all thread-safe validators in the background
-	 * validation thread, and all other validators in the main thread. If async is false, all
-	 * validators will run in in the main thread.
-	 */
-	public ManualValidatorsOperation(IProject project, boolean async) {
-		this(project, RegistryConstants.ATT_RULE_GROUP_DEFAULT, DEFAULT_FORCE, async);
-	}
-	
-	/**
-	 * Run all enabled validators on the project.
-	 * 
-	 * IProject must exist and be open.
-	 * 
-	 * If async is true, the validation will run all thread-safe validators in the background
-	 * validation thread, and all other validators in the main thread. If async is false, all
-	 * validators will run in in the main thread.
-	 */
-	public ManualValidatorsOperation(IProject project, IWorkbenchContext aWorkbenchContext, boolean async) {
-		this(project, aWorkbenchContext, RegistryConstants.ATT_RULE_GROUP_DEFAULT, DEFAULT_FORCE, async);
-	}
-	
-	/**
-	 * Run all enabled validators on the project with the identified ruleGroup.
-	 * 
-	 * IProject must exist and be open.
-	 * 
-	 * If async is true, the validation will run all thread-safe validators in the background
-	 * validation thread, and all other validators in the main thread. If async is false, all
-	 * validators will run in in the main thread.
-	 */
-	public ManualValidatorsOperation(IProject project, IWorkbenchContext aWorkbenchContext, int ruleGroup, boolean force, boolean async) {
-		this(project, aWorkbenchContext, ValidatorManager.getManager().getManualEnabledValidators(project), ruleGroup, force, async);
-	}
-	
-
-	/**
-	 * Run all enabled validators on the project with the identified ruleGroup.
-	 * 
-	 * IProject must exist and be open.
-	 * 
-	 * If async is true, the validation will run all thread-safe validators in the background
-	 * validation thread, and all other validators in the main thread. If async is false, all
-	 * validators will run in in the main thread.
-	 */
-	public ManualValidatorsOperation(IProject project, int ruleGroup, boolean force, boolean async) {
-		this(project, ValidatorManager.getManager().getManualEnabledValidators(project), ruleGroup, force, async);
-	}
-
-	/**
-	 * Run the identified validators on the project.
-	 * 
-	 * IProject must exist and be open.
-	 * 
-	 * If async is true, the validation will run all thread-safe validators in the background
-	 * validation thread, and all other validators in the main thread. If async is false, all
-	 * validators will run in in the main thread.
-	 */
-	protected ManualValidatorsOperation(IProject project, Set enabledValidators, boolean async) {
-		this(project, enabledValidators, RegistryConstants.ATT_RULE_GROUP_DEFAULT, DEFAULT_FORCE, async); 
-		// true = force validation to run whether or not auto-validate is on
-	}
-	
-	/**
-	 * Run the identified validators on the project.
-	 * 
-	 * IProject must exist and be open.
-	 * 
-	 * If async is true, the validation will run all thread-safe validators in the background
-	 * validation thread, and all other validators in the main thread. If async is false, all
-	 * validators will run in in the main thread.
-	 */
-	protected ManualValidatorsOperation(IProject project,IWorkbenchContext aWorkbenchContext, Set enabledValidators, boolean async) {
-		this(project,aWorkbenchContext, enabledValidators, RegistryConstants.ATT_RULE_GROUP_DEFAULT, DEFAULT_FORCE, async); 
-		// true = force validation to run whether or not auto-validate is on
-	}
-
-	/**
-	 * Run the identified validators on the project with the ruleGroup.
-	 * 
-	 * IProject must exist and be open.
-	 * 
-	 * If async is true, the validation will run all thread-safe validators in the background
-	 * validation thread, and all other validators in the main thread. If async is false, all
-	 * validators will run in in the main thread.
-	 */
-	protected ManualValidatorsOperation(IProject project, Set manualEnabledValidators, int ruleGroup, boolean force, boolean async) {
-		super(project, force, ruleGroup, async);
-		setEnabledValidators(manualEnabledValidators);
-	}
-	
-	/**
-	 * Run the identified validators on the project with the ruleGroup.
-	 * 
-	 * IProject must exist and be open.
-	 * 
-	 * If async is true, the validation will run all thread-safe validators in the background
-	 * validation thread, and all other validators in the main thread. If async is false, all
-	 * validators will run in in the main thread.
-	 */
-	protected ManualValidatorsOperation(IProject project, IWorkbenchContext aWorkbenchContext, Set enabledValidators, int ruleGroup, boolean force, boolean async) {
-		super(project,aWorkbenchContext,force, ruleGroup, async);
-		setEnabledValidators(enabledValidators);
-	}
+	public ManualValidatorsOperation(IProject project) {
+		super(project, DEFAULT_FORCE, RegistryConstants.ATT_RULE_GROUP_DEFAULT, false);
+		setEnabledValidators(ValidatorManager.getManager().getManualEnabledValidators(project));
+	}	
 }

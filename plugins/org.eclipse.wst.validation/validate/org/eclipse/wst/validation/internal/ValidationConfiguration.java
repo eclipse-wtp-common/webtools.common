@@ -871,4 +871,8 @@ public abstract class ValidationConfiguration {
 			return false;
 		return value.booleanValue();
 	}
+	
+	public int numberOfManualEnabledValidators() throws InvocationTargetException {
+		return getManualEnabledValidators().length;
+	}	
 }

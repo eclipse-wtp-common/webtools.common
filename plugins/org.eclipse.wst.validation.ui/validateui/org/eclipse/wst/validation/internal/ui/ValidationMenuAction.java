@@ -43,7 +43,6 @@ import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidationSelectionHandlerRegistryReader;
-import org.eclipse.wst.validation.internal.operations.ManualEnabledIncrementalValidatorsOperation;
 import org.eclipse.wst.validation.internal.operations.ManualValidatorsOperation;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
@@ -486,7 +485,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		}
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
-			if (prjp.numberOfEnabledValidators() > 0) {
+			if (prjp.numberOfManualEnabledValidators() > 0) {
 				checkProjectConfiguration(monitor, project, resources, prjp);
 			} else {
 				String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_NO_VALIDATORS_ENABLED, new String[]{project.getName()});
@@ -570,11 +569,12 @@ public class ValidationMenuAction implements IViewActionDelegate {
 			new Status(IStatus.CANCEL, "org.eclipse.wst.validation", 0, "OK", null);
 		
 		ManualValidatorsOperation validOp = null;
-		if (resources == null) {
-			validOp = new ManualValidatorsOperation(project,false);
-		} else {
-			validOp = new ManualEnabledIncrementalValidatorsOperation(resources, project,false);
-		}
+		validOp = new ManualValidatorsOperation(project);
+//		if (resources == null) {
+//			validOp = new ManualValidatorsOperation(project);
+//		} else {
+//			validOp = new ManualEnabledIncrementalValidatorsOperation(resources, project,false);
+//		}
 		if (validOp.isNecessary(monitor)) {
 			validOp.run(monitor);
 			//ResourcesPlugin.getWorkspace().run(validOp, monitor);
@@ -685,7 +685,9 @@ public class ValidationMenuAction implements IViewActionDelegate {
 						// the plugin has already been activated.
 						try {
 							ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfigurationWithoutMigrate(project);
-							count += prjp.numberOfEnabledValidators();
+							if( !prjp.isDisableAllValidation() ){
+								count += prjp.numberOfManualValidators();
+							}							
 						} catch (InvocationTargetException exc) {
 							Logger logger = ValidationPlugin.getPlugin().getLogger();
 							if (logger.isLoggingLevel(Level.SEVERE)) {
