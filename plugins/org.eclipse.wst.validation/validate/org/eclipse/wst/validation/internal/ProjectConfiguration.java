@@ -587,4 +587,10 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		}
 		return super.numberOfManualEnabledValidators();
 	}
+	public boolean isDisableAllValidation() throws InvocationTargetException{
+		if (useGlobalPreference()) {
+			return ConfigurationManager.getManager().getGlobalConfiguration().isDisableAllValidation();
+		}
+		return super.isDisableAllValidation();
+	}	
 }
