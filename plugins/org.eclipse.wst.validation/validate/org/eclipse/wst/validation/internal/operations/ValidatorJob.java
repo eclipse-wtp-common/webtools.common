@@ -49,6 +49,7 @@ public class ValidatorJob extends Job {
 	
 	protected IStatus run(IProgressMonitor monitor) {
 
+		monitor.beginTask("Starting validation", IProgressMonitor.UNKNOWN);
 		IStatus status = IValidatorJob.OK_STATUS;
 		WorkbenchReporter	reporter = new WorkbenchReporter( project, monitor );
 
@@ -201,6 +202,7 @@ public class ValidatorJob extends Job {
 			}
 			//reporter.getProgressMonitor().worked(((delta == null) ? 1 : delta.length)); // One
 			//monitor.worked(((delta == null) ? 1 : delta.length)); // One
+			monitor.done();
 		}
 		return status;
 	}

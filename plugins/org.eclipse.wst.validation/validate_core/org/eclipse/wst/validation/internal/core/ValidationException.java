@@ -30,6 +30,8 @@ public class ValidationException extends Exception {
 	private ClassLoader _loader = null;
 	private final static long serialVersionUID = -3387516993124229949L;
 
+
+	
 	/**
 	 * Constructs a new exception with a given message string. <br>
 	 * <br>
