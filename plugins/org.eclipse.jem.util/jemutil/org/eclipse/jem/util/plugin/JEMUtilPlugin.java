@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: JEMUtilPlugin.java,v $$
- *  $$Revision: 1.3 $$  $$Date: 2005/06/28 20:13:16 $$ 
+ *  $$Revision: 1.4 $$  $$Date: 2006/02/21 17:16:30 $$ 
  */
 package org.eclipse.jem.util.plugin;
 
@@ -391,7 +391,7 @@ public class JEMUtilPlugin extends Plugin {
 		String[] names = new String[extensions.length];
 		if (extensions.length > 0) {
 			for (int i = 0; i < extensions.length; i++)
-				names[i] = extensions[i].getNamespace();
+				names[i] = extensions[i].getContributor().getName();
 		}
 		return names;
 	}

@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: RegistryReader.java,v $$
- *  $$Revision: 1.3 $$  $$Date: 2005/05/18 21:58:34 $$ 
+ *  $$Revision: 1.4 $$  $$Date: 2006/02/21 17:16:30 $$ 
  */
 package org.eclipse.jem.util;
 import org.eclipse.core.runtime.*;
@@ -46,7 +46,7 @@ public abstract class RegistryReader {
 			IExtension extension = configurationElement.getDeclaringExtension();
 
 			if (extension != null)
-				pluginId = extension.getNamespace();
+				pluginId = extension.getContributor().getName();
 		}
 
 		return pluginId;
@@ -93,7 +93,7 @@ public abstract class RegistryReader {
 	protected void logError(IConfigurationElement element, String text) {
 		IExtension extension = element.getDeclaringExtension();
 		StringBuffer buf = new StringBuffer();
-		buf.append("Plugin " + extension.getNamespace() + ", extension " + extension.getExtensionPointUniqueIdentifier()); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("Plugin " + extension.getContributor().getName() + ", extension " + extension.getExtensionPointUniqueIdentifier()); //$NON-NLS-1$ //$NON-NLS-2$
 		buf.append("\n" + text); //$NON-NLS-1$
 		Logger.getLogger().logError(buf.toString());
 	}
