@@ -167,8 +167,10 @@ public class GlobalConfiguration extends ValidationConfiguration {
 			// this instance.
 			int canOverrideIndex = storedConfiguration.indexOf(ConfigurationConstants.PREF_PROJECTS_CAN_OVERRIDE);
 			int disableAllValidationIndex = storedConfiguration.indexOf(ConfigurationConstants.DISABLE_ALL_VALIDATION_SETTING);
-			String canOverride = storedConfiguration.substring(0 + ConfigurationConstants.PREF_PROJECTS_CAN_OVERRIDE.length(),disableAllValidationIndex);
-			setCanProjectsOverride(Boolean.valueOf(canOverride).booleanValue());
+			if (disableAllValidationIndex != -1) {
+				String canOverride = storedConfiguration.substring(0 + ConfigurationConstants.PREF_PROJECTS_CAN_OVERRIDE.length(), disableAllValidationIndex);
+				setCanProjectsOverride(Boolean.valueOf(canOverride).booleanValue());
+			}
 		}
 	}
 
