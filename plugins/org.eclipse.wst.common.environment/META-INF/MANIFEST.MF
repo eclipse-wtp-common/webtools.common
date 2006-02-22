@@ -3,10 +3,12 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.wst.common.environment
 Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.eclipse.wst.common.internal.environment.plugin.EnvironmentPlugin
 Bundle-Localization: plugin
+Export-Package: org.eclipse.wst.common.environment,
+ org.eclipse.wst.common.environment.uri
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.osgi.util
-Export-Package: org.eclipse.wst.common.environment,
- org.eclipse.wst.common.environment.uri
 Bundle-Vendor: %providerName
+Eclipse-AutoStart: true 
