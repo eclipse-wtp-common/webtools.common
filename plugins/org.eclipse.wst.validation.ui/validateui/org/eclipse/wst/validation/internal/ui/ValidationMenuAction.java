@@ -23,6 +23,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -302,7 +303,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 			return;
 		}
 
-		ValidationJob validationop = new ValidationJob("ValidationOperation"){ //$NON-NLS-1$
+		ValidationJob validationop = new ValidationJob("Running Validation"){ //$NON-NLS-1$
 			protected IStatus run(IProgressMonitor monitor) {
 				final Map projectsMap = projects;
 				IStatus stat = validate(monitor, projectsMap);	
@@ -311,6 +312,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 			}
 		};
 		validationop.setProjectsMap(projects);
+		validationop.setRule(ResourcesPlugin.getWorkspace().getRoot());
 		validationop.setUser(true);
 		validationop.schedule();
 
