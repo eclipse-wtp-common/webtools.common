@@ -49,7 +49,7 @@ public class ValidatorJob extends Job {
 	
 	protected IStatus run(IProgressMonitor monitor) {
 
-		monitor.beginTask("Starting validation", IProgressMonitor.UNKNOWN);
+		monitor.beginTask("Validating", IProgressMonitor.UNKNOWN); //$NON-NLS-1$
 		IStatus status = IValidatorJob.OK_STATUS;
 		WorkbenchReporter	reporter = new WorkbenchReporter( project, monitor );
 
