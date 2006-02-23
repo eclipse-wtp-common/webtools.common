@@ -91,24 +91,27 @@ public class QualifiedName
 	 */
 	public boolean equals(Object obj)
 	{
-
-		boolean isEquals = false;
-		if (obj instanceof QualifiedName)
+		boolean isEqual = false;
+		if (this == obj)
 		{
-			QualifiedName qname = (QualifiedName) obj;
-			String otherNS = qname.getNamespace();
-			String otherName = qname.getLocalName();
-			if ((this.qualifier == otherNS || (this.qualifier != null && this.qualifier
-					.equals(otherNS)))
-					&& (this.name == otherName || (this.name != null && this.name
-							.equals(otherName))))
-			{
-				isEquals = true;
-			}
+		  isEqual = true;
 		}
-		return isEquals;
-
+		else
+		{	
+		  if (obj instanceof QualifiedName)
+		  {
+			QualifiedName that = (QualifiedName) obj;
+		    isEqual = isMatch(this.getNamespace(), that.getNamespace()) &&
+		              isMatch(this.getLocalName(), that.getLocalName());	
+		  }  
+		}
+		return isEqual;
 	}
+	
+	protected boolean isMatch(String a, String b)
+	{
+	  return a != null ? a.equals(b) : a == b;
+	}	
 
 	/*
 	 * (non-Javadoc)
