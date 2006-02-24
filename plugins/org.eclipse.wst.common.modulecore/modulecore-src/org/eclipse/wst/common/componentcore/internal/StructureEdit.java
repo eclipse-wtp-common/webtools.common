@@ -433,10 +433,8 @@ public class StructureEdit implements IEditModelHandler {
 	 */
 	public ProjectComponents getComponentModelRoot() {
 		ProjectComponents comps = null;
-		synchronized (structuralModel) {
-			if (!structuralModel.isDisposed())
-				comps = (ProjectComponents) structuralModel.getPrimaryRootObject();
-		}
+		if (!structuralModel.isDisposed())
+			comps = (ProjectComponents) structuralModel.getPrimaryRootObject();
 		return comps;
 	}
 
