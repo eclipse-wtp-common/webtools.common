@@ -19,7 +19,6 @@ import java.util.ResourceBundle;
 
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
@@ -30,8 +29,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-
-
 
 /**
  * The main plugin class to be used in the desktop.
@@ -45,11 +42,6 @@ public class UIPlugin extends AbstractUIPlugin {
 	 */
 	public UIPlugin() {
 		super();
-		plugin = this;
-	}
-	
-	public UIPlugin(IPluginDescriptor descriptor) {
-		super(descriptor);
 		plugin = this;
 	}
 	
