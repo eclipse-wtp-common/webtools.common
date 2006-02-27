@@ -55,6 +55,8 @@ public class RemoveReferenceComponentOperation extends AbstractDataModelOperatio
 
 		for (int i = 0; i < modList.size(); i++) {
 			IVirtualComponent comp = (IVirtualComponent) modList.get(i);
+			if (comp==null || sourceComp==null)
+				continue;
 			IVirtualReference ref = sourceComp.getReference(comp.getName());
 			if( ref != null && ref.getReferencedComponent() != null && ref.getReferencedComponent().isBinary()){
 				removeRefereneceInComponent(sourceComp, ref);
