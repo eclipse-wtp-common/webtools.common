@@ -11,7 +11,7 @@
 	<extension point="org.eclipse.ui.views">
 		<view
 			name="%Snippets.name"
-			icon="icons/snippets_view.gif"
+			icon="$nl$/icons/snippets_view.gif"
 			category="org.eclipse.ui"
 			class="org.eclipse.wst.common.snippets.internal.ui.SnippetsView"
 			id="org.eclipse.wst.common.snippets.internal.ui.SnippetsView">
@@ -25,7 +25,7 @@
 			id="org.eclipse.wst.common.snippets.actions">
 			<action
 				label="%Add_to_Snippets.name"
-				icon="icons/snippets_view.gif"
+				icon="$nl$/icons/snippets_view.gif"
 				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
 				menubarPath="group.add"
 				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate">
@@ -38,7 +38,7 @@
 			<action
 				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
 				label="%Add_to_Snippets.name"
-				icon="icons/snippets_view.gif"
+				icon="$nl$/icons/snippets_view.gif"
 				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
 				menubarPath="group.add" />
 		</viewerContribution>
@@ -48,7 +48,7 @@
 			<action
 				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
 				label="%Add_to_Snippets.name"
-				icon="icons/snippets_view.gif"
+				icon="$nl$/icons/snippets_view.gif"
 				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
 				menubarPath="group.add" />
 		</viewerContribution>
@@ -58,7 +58,7 @@
 			<action
 				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
 				label="%Add_to_Snippets.name"
-				icon="icons/snippets_view.gif"
+				icon="$nl$/icons/snippets_view.gif"
 				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
 				menubarPath="group.add" />
 		</viewerContribution>
@@ -68,7 +68,7 @@
 			<action
 				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
 				label="%Add_to_Snippets.name"
-				icon="icons/snippets_view.gif"
+				icon="$nl$/icons/snippets_view.gif"
 				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
 				menubarPath="group.add" />
 		</viewerContribution>
@@ -78,7 +78,7 @@
 			<action
 				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
 				label="%Add_to_Snippets.name"
-				icon="icons/snippets_view.gif"
+				icon="$nl$/icons/snippets_view.gif"
 				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
 				menubarPath="group.add" />
 		</viewerContribution>
@@ -88,7 +88,7 @@
 			<action
 				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
 				label="%Add_to_Snippets.name"
-				icon="icons/snippets_view.gif"
+				icon="$nl$/icons/snippets_view.gif"
 				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
 				menubarPath="group.add" />
 		</viewerContribution>
@@ -98,7 +98,7 @@
 			<action
 				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
 				label="%Add_to_Snippets.name"
-				icon="icons/snippets_view.gif"
+				icon="$nl$/icons/snippets_view.gif"
 				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
 				menubarPath="group.add" />
 		</viewerContribution>
@@ -108,7 +108,7 @@
 			id="org.eclipse.wst.common.snippets.actions.compilationuniteditor">
 			<action
 				label="%Add_to_Snippets.name"
-				icon="icons/snippets_view.gif"
+				icon="$nl$/icons/snippets_view.gif"
 				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
 				menubarPath="group.add"
 				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate">
