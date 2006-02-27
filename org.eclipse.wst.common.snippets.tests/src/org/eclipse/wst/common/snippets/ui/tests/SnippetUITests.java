@@ -124,7 +124,8 @@ public class SnippetUITests extends TestCase {
 		ISnippetItem item = fCurrentDefinitions.getItem("org.eclipse.wst.common.snippets.tests.item0"); //$NON-NLS-1$
 		assertNotNull("test item 1 not found", item); //$NON-NLS-1$
 
-		IProject p = createSimpleProject("testInsertIntoActiveEditor", null, null);
+		//IProject p = 
+			createSimpleProject("testInsertIntoActiveEditor", null, null);
 		IFile testFile = copyBundleEntryIntoWorkspace("testfiles/testInsertIntoActiveEditor.txt", "testInsertIntoActiveEditor/testInsertIntoActiveEditor.txt");
 		IEditorDescriptor descriptor = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(testFile.getName());
 		assertTrue("no default editor found", descriptor != null);
@@ -146,7 +147,6 @@ public class SnippetUITests extends TestCase {
 
 	public void testOpenSnippetsView() throws CoreException {
 		IWorkbenchPage page = getActivePage();
-		SnippetsView view = null;
 		Object o;
 		assertNotNull(o = page.showView("org.eclipse.wst.common.snippets.internal.ui.SnippetsView"));
 		assertEquals("view part is wrong type", SnippetsView.class.getName(), o.getClass().getName());

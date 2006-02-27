@@ -1,30 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-   id="org.eclipse.wst.common.snippets.tests"
-   name="org.eclipse.wst.common.snippets.tests"
-   version="1.0.0"
-   provider-name="Eclipse.org"
-   class="org.eclipse.wst.common.snippets.tests.TestsPlugin">
-   <runtime>
-      <library name="snippetstests.jar">
-         <export name="*"/>
-      </library>
-   </runtime>
-
-
-   <requires>
-      <import plugin="org.junit"/>
-      <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.eclipse.text"/>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.wst.common.snippets"/>
-      <import plugin="org.eclipse.ui.ide"/>
-      <import plugin="org.eclipse.ui.workbench.texteditor"/>
-   </requires>
-
-	<!--======================================================================================-->
+<plugin>
+    	<!--======================================================================================-->
 	<!-- Snippet View contributions                                                           -->
 	<!--======================================================================================-->
 	<extension
