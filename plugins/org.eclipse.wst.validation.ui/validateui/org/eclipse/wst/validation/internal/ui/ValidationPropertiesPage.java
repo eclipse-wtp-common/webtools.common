@@ -354,12 +354,12 @@ public class ValidationPropertiesPage extends PropertyPage {
 			public Image getColumnImage(Object element, int columnIndex) {
 				if(columnIndex == 1) {
 					if(((ValidatorMetaData)element).isManualValidation())
-						return  ValidationUIPlugin.getPlugin().getImage("OK");
-					return ValidationUIPlugin.getPlugin().getImage("FAIL");
+						return  ValidationUIPlugin.getPlugin().getImage("ok_tbl");
+					return ValidationUIPlugin.getPlugin().getImage("fail_tbl");
 				} else if(columnIndex == 2) {
 					if(((ValidatorMetaData)element).isBuildValidation())
-						return ValidationUIPlugin.getPlugin().getImage("OK");;
-					return ValidationUIPlugin.getPlugin().getImage("FAIL");
+						return ValidationUIPlugin.getPlugin().getImage("ok_tbl");;
+					return ValidationUIPlugin.getPlugin().getImage("fail_tbl");
 				}
 				return null;
 			
