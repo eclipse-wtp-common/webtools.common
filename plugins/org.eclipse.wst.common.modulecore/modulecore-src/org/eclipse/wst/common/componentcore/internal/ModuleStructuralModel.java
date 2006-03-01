@@ -35,7 +35,7 @@ import org.eclipse.wst.common.componentcore.internal.impl.WTPModulesResourceFact
 import org.eclipse.wst.common.internal.emf.resource.ReferencedResource;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
-import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectNature;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 /**
  * Manages the underlying Module Structural Metamodel.
 * <a name="module-structural-model"/>
@@ -196,7 +196,7 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 		multiComps = false;
 		if (project==null)
 			return false;
-		boolean needsMigrating =  (!project.hasNature(FacetedProjectNature.NATURE_ID)) || (res!=null && !res.isLoaded());
+		boolean needsMigrating =  (ProjectFacetsManager.create(project) == null) || (res!=null && !res.isLoaded());
 		if (!needsMigrating) {
 			if (res != null && ((WTPModulesResource)res).getRootObject() != null) {
 				ProjectComponents components = (ProjectComponents) ((WTPModulesResource)res).getRootObject();
