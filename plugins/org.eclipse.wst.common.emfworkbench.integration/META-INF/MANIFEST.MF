@@ -6,11 +6,10 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipse.wst.common.internal.emfworkbench.integration.EMFWorkbenchEditPlugin
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
-Export-Package: .,
- org.eclipse.wst.common.internal.emfworkbench,
- org.eclipse.wst.common.internal.emfworkbench.edit,
- org.eclipse.wst.common.internal.emfworkbench.integration,
- org.eclipse.wst.common.internal.emfworkbench.validateedit
+Export-Package: org.eclipse.wst.common.internal.emfworkbench;x-internal:=true,
+ org.eclipse.wst.common.internal.emfworkbench.edit;x-internal:=true,
+ org.eclipse.wst.common.internal.emfworkbench.integration;x-internal:=true,
+ org.eclipse.wst.common.internal.emfworkbench.validateedit;x-internal:=true
 Require-Bundle: org.eclipse.wst.common.frameworks,
  org.eclipse.jem.util,
  org.eclipse.emf.edit,

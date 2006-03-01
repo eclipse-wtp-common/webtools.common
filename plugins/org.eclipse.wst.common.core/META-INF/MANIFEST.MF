@@ -7,7 +7,8 @@ Bundle-Activator: org.eclipse.wst.common.core.search.SearchPlugin
 Bundle-Localization: plugin
 Export-Package: org.eclipse.wst.common.core.search,
  org.eclipse.wst.common.core.search.document,
- org.eclipse.wst.common.core.search.pattern, 
+ org.eclipse.wst.common.core.search.internal;x-internal:=true,
+ org.eclipse.wst.common.core.search.pattern,
  org.eclipse.wst.common.core.search.scope,
  org.eclipse.wst.common.core.search.util
 Require-Bundle: org.eclipse.core.runtime,

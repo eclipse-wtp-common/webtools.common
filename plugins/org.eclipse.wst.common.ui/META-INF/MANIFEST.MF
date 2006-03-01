@@ -6,11 +6,11 @@ Bundle-Version: 1.0.100.qualifier
 Bundle-Activator: org.eclipse.wst.common.ui.internal.UIPlugin
 Bundle-Vendor: %pluginProvider
 Bundle-Localization: plugin
-Export-Package: org.eclipse.wst.common.ui.internal,
- org.eclipse.wst.common.ui.internal.dialogs,
- org.eclipse.wst.common.ui.internal.dnd,
- org.eclipse.wst.common.ui.internal.search,
- org.eclipse.wst.common.ui.internal.viewers,
+Export-Package: org.eclipse.wst.common.ui.internal;x-internal:=true,
+ org.eclipse.wst.common.ui.internal.dialogs;x-internal:=true,
+ org.eclipse.wst.common.ui.internal.dnd;x-internal:=true,
+ org.eclipse.wst.common.ui.internal.search;x-internal:=true,
+ org.eclipse.wst.common.ui.internal.viewers;x-internal:=true,
  org.eclipse.wst.common.ui.provisional.editors
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.ide,

@@ -6,16 +6,15 @@ Bundle-Version: 1.0.100.qualifier
 Bundle-Activator: org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin
 Bundle-Vendor: %provider
 Bundle-Localization: plugin
-Export-Package: .,
- org.eclipse.wst.common.frameworks.datamodel,
+Export-Package: org.eclipse.wst.common.frameworks.datamodel,
  org.eclipse.wst.common.frameworks.datamodel.properties,
- org.eclipse.wst.common.frameworks.internal,
- org.eclipse.wst.common.frameworks.internal.activities,
- org.eclipse.wst.common.frameworks.internal.datamodel,
- org.eclipse.wst.common.frameworks.internal.enablement,
- org.eclipse.wst.common.frameworks.internal.enablement.nonui,
- org.eclipse.wst.common.frameworks.internal.operations,
- org.eclipse.wst.common.frameworks.internal.plugin
+ org.eclipse.wst.common.frameworks.internal;x-internal:=true,
+ org.eclipse.wst.common.frameworks.internal.activities;x-internal:=true,
+ org.eclipse.wst.common.frameworks.internal.datamodel;x-internal:=true,
+ org.eclipse.wst.common.frameworks.internal.enablement;x-internal:=true,
+ org.eclipse.wst.common.frameworks.internal.enablement.nonui;x-internal:=true,
+ org.eclipse.wst.common.frameworks.internal.operations;x-internal:=true,
+ org.eclipse.wst.common.frameworks.internal.plugin;x-internal:=true
 Require-Bundle: org.eclipse.core.resources,
  org.eclipse.core.runtime,
  org.eclipse.core.commands,
