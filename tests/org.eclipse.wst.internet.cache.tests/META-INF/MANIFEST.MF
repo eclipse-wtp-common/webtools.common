@@ -14,3 +14,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.resources,
  org.eclipse.wst.common.uriresolver
 Eclipse-AutoStart: true
+Export-Package: org.eclipse.wst.internet.cache.internal;x-internal:=true,
+ org.eclipse.wst.internet.cache.tests.internal;x-internal:=true
