@@ -24,4 +24,14 @@
         selectionType="org.eclipse.emf.ecore.EObject"/>
    </extension>
    
+   <extension point="org.eclipse.core.expressions.propertyTesters">
+    <propertyTester
+      id="org.eclipse.wst.common.internal.emfworkbench.EmfPackagePropertyTester"
+      type="org.eclipse.emf.ecore.EObject"
+      namespace="org.eclipse.wst.common.emfworkbench.integration"
+      properties="emfPackage"
+      class="org.eclipse.wst.common.internal.emfworkbench.EmfPackagePropertyTester">
+    </propertyTester>
+  </extension>
+   
 </plugin>
