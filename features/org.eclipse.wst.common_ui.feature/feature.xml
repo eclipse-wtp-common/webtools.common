@@ -23,7 +23,7 @@
 
    <requires>
       <import feature="org.eclipse.gef" version="3.2" match="equivalent"/>
-      <import feature="org.eclipse.wst.common_core.feature" version="1.0.0" match="equivalent"/>
+      <import feature="org.eclipse.wst.common_core.feature" version="1.0.1" match="greaterOrEqual"/>
    </requires>
 
    <plugin
