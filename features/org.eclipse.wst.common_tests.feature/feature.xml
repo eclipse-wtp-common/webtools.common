@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.wst.common_tests.feature"
       label="WST Common Feature Tests"
-      version="1.0.1.qualifier"
+      version="1.0.1"
       provider-name="Eclipse.org">
 
    <description>
