@@ -222,9 +222,10 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 				} else
 					return false;
 			}
+			
 			if (isRemove)
 				deferredRemoveResources.add(resource);
-			else if (resource.isLoaded())
+			else if (resource.isLoaded() && !(WorkbenchResourceHelper.isReferencedResource(resource) && WorkbenchResourceHelper.isConsistent((ReferencedResource)resource)))
 				deferredUnloadResources.add(resource);
 			else if (autoloadResourcesURIs.contains(resource.getURI()))
 				deferredLoadResources.add(resource.getURI());
