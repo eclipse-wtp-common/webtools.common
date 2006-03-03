@@ -200,6 +200,8 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 
 	}
 	public IFile getUnderlyingWorkbenchFile() {
+		if (getWorkspaceRelativePath()==null)
+			return null;
 		return ResourcesPlugin.getWorkspace().getRoot().getFile(getWorkspaceRelativePath());
 	}
 
