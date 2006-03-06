@@ -12,6 +12,7 @@ package org.eclipse.wst.common.componentcore.resources;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.wst.common.componentcore.internal.DependencyType;
 
 /**
@@ -86,5 +87,10 @@ public interface IVirtualReference {
 	 * @return the referenced component.
 	 */
 	public IVirtualComponent getReferencedComponent();
-
+	
+	/**
+	 * Set the referenced component that is "targeted" by the reference and will be absorbed by the enclosing component. 
+	 * @param referencedComponent
+	 */
+	public void setReferencedComponent(IVirtualComponent referencedComponent, EObject dependentObject);
 }

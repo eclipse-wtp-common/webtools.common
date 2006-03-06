@@ -14,7 +14,9 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
 import org.eclipse.wst.common.componentcore.internal.DependencyType;
 import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
@@ -102,5 +104,38 @@ public class VirtualReference implements IVirtualReference {
 	public IVirtualComponent getReferencedComponent() { 
 		return referencedComponent;
 	}
-
+	
+	/**
+	 * This is a helper method to update the actual referenceComponent on the .component file for this virtual reference.
+	 */
+	public void setReferencedComponent(IVirtualComponent aReferencedComponent, EObject dependentObject) {
+		if (aReferencedComponent == null)
+			return;
+		StructureEdit enclosingCore = null;
+		StructureEdit refCore = null;
+		try {
+			enclosingCore = StructureEdit.getStructureEditForWrite(enclosingComponent.getProject());
+			refCore = StructureEdit.getStructureEditForWrite(referencedComponent.getProject());
+			WorkbenchComponent enclosingComp = enclosingCore.getComponent();
+			WorkbenchComponent refComp = refCore.getComponent();
+			ReferencedComponent actualReferencedComponent = enclosingCore.findReferencedComponent(enclosingComp, refComp);
+			if (actualReferencedComponent != null) {
+				referencedComponent = aReferencedComponent;
+				if(!referencedComponent.isBinary())
+					actualReferencedComponent.setHandle(ModuleURIUtil.fullyQualifyURI(referencedComponent.getProject()));
+				else
+					actualReferencedComponent.setHandle(ModuleURIUtil.archiveComponentfullyQualifyURI(referencedComponent.getName()));
+				actualReferencedComponent.setDependentObject(dependentObject);
+			}
+		} finally {
+			if (enclosingCore != null) {
+				enclosingCore.saveIfNecessary(new NullProgressMonitor());
+				enclosingCore.dispose();
+			}
+			if (refCore != null) {
+				refCore.saveIfNecessary(new NullProgressMonitor());
+				refCore.dispose();
+			}
+		}
+	}
 }
