@@ -303,4 +303,16 @@ public class ArtifactEditModel extends EditModel implements IAdaptable, IFaceted
 		}
 		
 	}
+	
+	public void dispose() {
+		//Remove the listener from the faceted project
+		try {
+			IFacetedProject facetProj = ProjectFacetsManager.create(getComponentProject());
+			if (facetProj != null)
+				facetProj.removeListener(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		super.dispose();
+	}
 }
