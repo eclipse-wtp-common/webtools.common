@@ -171,7 +171,7 @@ public class Translator {
 
 	public Translator(String domNameAndPath, EStructuralFeature aFeature, EClass eClass) {
 		this(domNameAndPath, aFeature);
-		setEMFClass(emfClass);
+		setEMFClass(eClass);
 	}
 
 	public Translator(String domNameAndPath, EStructuralFeature aFeature, TranslatorPath path) {
