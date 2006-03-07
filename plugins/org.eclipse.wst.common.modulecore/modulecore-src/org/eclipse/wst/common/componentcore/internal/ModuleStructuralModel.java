@@ -96,7 +96,9 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	 */
 	public EObject getPrimaryRootObject() {
 		try {
-			prepareProjectModulesIfNecessary();
+			Resource res = prepareProjectModulesIfNecessary();
+			if (res == null)
+				return null;
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -171,17 +173,23 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	}
 
 	public Resource prepareProjectModulesIfNecessary() throws CoreException {
-		ModuleMigratorManager manager = ModuleMigratorManager.getManager();
+		ModuleMigratorManager manager = ModuleMigratorManager.getManager(getProject());
 		XMIResource res = (XMIResource) getPrimaryResource();
 		if (resNeedsMigrating(res)) {
 			try {
-				if (!manager.isMigrating())
+				if (!manager.isMigrating() && !ResourcesPlugin.getWorkspace().isTreeLocked())
 					manager.migrateOldMetaData(getProject(),multiComps);
 			} catch (CoreException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} finally {
+				res = (XMIResource) getPrimaryResource();
+				if ((res == null) || (res != null && res.getContents().isEmpty())) {
+					if (res != null)
+						removeResource(res);
+					return null;
+				}
 			}
-			res = (XMIResource) getPrimaryResource();
 		}
 		if(res == null)
 			res = makeWTPModulesResource();		
@@ -196,7 +204,7 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 		multiComps = false;
 		if (project==null)
 			return false;
-		boolean needsMigrating =  (!project.hasNature(FacetedProjectNature.NATURE_ID)) || (res!=null && !res.isLoaded());
+		boolean needsMigrating =  (!project.hasNature(FacetedProjectNature.NATURE_ID)); //|| (res!=null && !res.isLoaded() && ((WTPModulesResource)res).getRootObject() != null);
 		if (!needsMigrating) {
 			if (res != null && ((WTPModulesResource)res).getRootObject() != null) {
 				ProjectComponents components = (ProjectComponents) ((WTPModulesResource)res).getRootObject();
