@@ -146,6 +146,7 @@ public class VirtualComponent implements IVirtualComponent {
             if (core == null)
             	return props;
             WorkbenchComponent component = core.getComponent(); 
+            if (component == null) return props;
             List propList = component.getProperties();
             if(propList != null) {
                 for (int i = 0; i < propList.size(); i++) {

@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -34,16 +35,19 @@ import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 public class ModuleMigratorManager {
-	private static ModuleMigratorManager manager;
-	private HashSet migrated = new HashSet();
+
+	private static HashMap managerCache = new HashMap();
+	private static HashSet migrated = new HashSet();
 	private boolean migrating;
 	private HashSet moved = new HashSet();
 	public ModuleMigratorManager() {
 		super();
 	}
-	public static ModuleMigratorManager getManager() {
+	public static ModuleMigratorManager getManager(IProject proj) {
+		ModuleMigratorManager manager = (ModuleMigratorManager)managerCache.get(proj);
 		if (manager == null) {
 			manager = new ModuleMigratorManager();
+			managerCache.put(proj,manager);
 		}
 		return manager;
 	}
@@ -73,11 +77,10 @@ public class ModuleMigratorManager {
 		}
 	}
 	public synchronized void migrateOldMetaData(IProject aProject, final boolean multiComps) throws CoreException {
-		
+		migrating = true;
 		IWorkspaceRunnableWithStatus workspaceRunnable = new IWorkspaceRunnableWithStatus(aProject) {
 			public void run(IProgressMonitor pm) throws CoreException {
 				IProject aProj = (IProject)this.getInfo();
-				migrating = true;
 				try {
 					if (aProj.isAccessible() && ModuleCoreNature.isFlexibleProject(aProj)) {
 						if (aProj.findMember(".wtpmodules") != null) {
