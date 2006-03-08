@@ -27,6 +27,7 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.internal.DataModelManager;
 import org.eclipse.wst.common.frameworks.internal.OperationListener;
 import org.eclipse.wst.common.frameworks.internal.OperationManager;
+import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizard;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageGroup;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageGroupHandler;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageHandler;
@@ -159,10 +160,10 @@ public class PageGroupManager {
 		}
 	}
 
-	public void reset(){
+	public void reset() {
 		pageGroupStack.clear();
 	}
-	
+
 	public IWizardPage getCurrentPage() {
 		IWizardPage page = null;
 
@@ -170,7 +171,7 @@ public class PageGroupManager {
 			StackEntry topEntry = (StackEntry) pageGroupStack.peek();
 			int pageIndex = topEntry.getTopPageIndex();
 
-			page = pageIndex == -1 ? null : (IWizardPage)topEntry.pageGroupEntry.getPages().get(pageIndex);
+			page = pageIndex == -1 ? null : (IWizardPage) topEntry.pageGroupEntry.getPages().get(pageIndex);
 		}
 
 		return page;
@@ -425,8 +426,8 @@ public class PageGroupManager {
 				List pages = pageGroupEntry.getPages();
 
 				int pageIndex = getTopPageIndex();
-				String pageId = pageIndex == -1 ? null : ((IWizardPage)pages.get(pageIndex)).getName();
-				String expectedId = pageIndex + 1 >= pages.size() ? null : ((IWizardPage)pages.get(pageIndex + 1)).getName();
+				String pageId = pageIndex == -1 ? null : ((IWizardPage) pages.get(pageIndex)).getName();
+				String expectedId = pageIndex + 1 >= pages.size() ? null : ((IWizardPage) pages.get(pageIndex + 1)).getName();
 				String newPageId = null;
 
 				try {
@@ -548,7 +549,7 @@ public class PageGroupManager {
 			int result = -1;
 
 			List pages = getPages();
-			
+
 			if (pages.isEmpty() || pageId == null)
 				return -1;
 
@@ -572,7 +573,7 @@ public class PageGroupManager {
 
 			List pages = getPages();
 			for (int index = 0; index < pages.size(); index++) {
-				if (((IWizardPage)pages.get(index)).getName().equals(pageId)) {
+				if (((IWizardPage) pages.get(index)).getName().equals(pageId)) {
 					result = index;
 					break;
 				}
@@ -580,5 +581,24 @@ public class PageGroupManager {
 
 			return result;
 		}
+
+		public boolean isInitialized() {
+			return initialized;
+		}
+	}
+
+	public void storeDefaultSettings(DataModelWizard wizard) {
+		Iterator pageGroups = groupTable.values().iterator();
+		while (pageGroups.hasNext()) {
+			PageGroupEntry pageGroup = (PageGroupEntry) pageGroups.next();
+			if (pageGroup.isInitialized()) {
+				Iterator pages = pageGroup.getPages().iterator();
+				while (pages.hasNext()) {
+					IWizardPage page = (IWizardPage) pages.next();
+					wizard.storeDefaultSettings(page);
+				}
+			}
+		}
+
 	}
 }

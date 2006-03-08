@@ -229,11 +229,15 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	}
 
 	protected void storeDefaultSettings() {
-		IWizardPage[] pages = getPages();
-		for (int i = 0; i < pages.length; i++)
-			storeDefaultSettings(pages[i], i);
+		pageGroupManager.storeDefaultSettings(this);
 	}
 
+	public void storeDefaultSettings(IWizardPage page){
+		if (page instanceof DataModelWizardPage)
+			((DataModelWizardPage) page).storeDefaultSettings();
+	}
+	
+	
 	/**
 	 * Subclasses may override if they need to do something special when storing the default
 	 * settings for a particular page.
@@ -242,8 +246,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	 * @param pageIndex
 	 */
 	protected void storeDefaultSettings(IWizardPage page, int pageIndex) {
-		if (page instanceof DataModelWizardPage)
-			((DataModelWizardPage) page).storeDefaultSettings();
+		storeDefaultSettings(page);
 	}
 
 	/**
