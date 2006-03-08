@@ -147,13 +147,6 @@ public class ValidatorJob extends Job {
 			
 			monitor.subTask(mssg);
 			
-			String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
-			Message message = ValidationPlugin.getMessage();
-			message.setSeverity(IMessage.NORMAL_SEVERITY);
-			message.setId(ResourceConstants.VBF_EXC_RUNTIME);
-			message.setParams(msgParm);
-			reporter.addMessage(validator, message);
-			
 		} finally {
 			try {
 				validator.cleanup(reporter);

@@ -1357,12 +1357,20 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			}
 			String mssg = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_ENDING_VALIDATION_ABNORMALLY, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
 			reporter.displaySubtask(mssg);
+			
+			/*
+			 The code  above  causes bundle not found exception since, the  bundle here is
+			 validate_base and we  are  trying to load that bundle from the classloader of 
+			 the Validator. 
+			 
 			String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 			Message message = ValidationPlugin.getMessage();
 			message.setSeverity(IMessage.NORMAL_SEVERITY);
 			message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 			message.setParams(msgParm);
 			reporter.addMessage(validator, message);
+			*/
+			
 		} finally {
 			try {
 				validator.cleanup(reporter);
