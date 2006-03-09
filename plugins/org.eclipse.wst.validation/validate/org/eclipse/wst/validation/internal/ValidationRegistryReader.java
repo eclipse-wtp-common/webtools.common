@@ -445,11 +445,15 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	/**
 	 * Return the name of the marker ID associated with the IValidator.
 	 */
-	public String getMarkerIdValue(IConfigurationElement element) {
+	public String[] getMarkerIdsValue(IConfigurationElement element) {
 		IConfigurationElement[] markerId = element.getChildren(MARKER_ID);
 		if (markerId.length == 0)
 			return null;
-		return markerId[0].getAttribute(MARKER_ID_VALUE);
+		String markerIds[] = new String[markerId.length];
+		for(int i = 0; i < markerIds.length; i++) {
+			markerIds[i] = markerId[i].getAttribute(MARKER_ID_VALUE);
+		}
+		return markerIds;
 	}
 	
 	public String[] getFacetIds(IConfigurationElement element) {
@@ -1338,10 +1342,15 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		vmd.setHelperClass(element, helperImplName);
 		vmd.setValidatorClass(element); // associate the above attributes with the validator
 		vmd.addDependentValidator(getDependentValidatorValue(element));
-		String customMarkerId = getMarkerIdValue(element);
-		if(customMarkerId != null)
-		    vmd.setMarkerId(pluginId+"."+customMarkerId); //$NON-NLS-1$
-
+		String[] customMarkerIds = getMarkerIdsValue(element);
+		if(customMarkerIds != null && customMarkerIds.length > 0) {
+			String[] qualifiedMarkerIds = new String[customMarkerIds.length];
+			for(int i = 0; i < customMarkerIds.length; i++) {
+				qualifiedMarkerIds[i] = pluginId+"."+ customMarkerIds[i];
+			}
+			vmd.setMarkerIds(qualifiedMarkerIds); //$NON-NLS-1$
+		}
+		
 		Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 		if (logger.isLoggingLevel(Level.FINEST)) {
 			LogEntry entry = ValidationPlugin.getLogEntry();

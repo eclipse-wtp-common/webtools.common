@@ -53,7 +53,7 @@ public class ValidatorMetaData {
 	private int _ruleGroup = RegistryConstants.ATT_RULE_GROUP_DEFAULT;
 	private boolean _async = RegistryConstants.ATT_ASYNC_DEFAULT;
 	private boolean dependentValidator = RegistryConstants.DEP_VAL_VALUE_DEFAULT;
-	private String markerId = null;
+	private String[] markerIds = null;
 	private String _helperClassName = null;
 	private IConfigurationElement _helperClassElement = null;
 	private IConfigurationElement _validatorClassElement = null;
@@ -510,16 +510,16 @@ public class ValidatorMetaData {
 	/**
 	 * @return Returns the markerId.
 	 */
-	public String getMarkerId() {
-		return markerId;
+	public String[] getMarkerIds() {
+		return markerIds;
 	}
 
 	/**
 	 * @param markerId
 	 *            The markerId to set.
 	 */
-	public void setMarkerId(String markerId) {
-		this.markerId = markerId;
+	public void setMarkerIds(String[] markerId) {
+		this.markerIds = markerId;
 	}
 
 	public boolean isBuildValidation() {

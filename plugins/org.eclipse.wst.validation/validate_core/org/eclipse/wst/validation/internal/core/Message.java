@@ -69,6 +69,7 @@ public class Message implements IMessage {
 	private int length = IMessage.OFFSET_UNSET;
 	private int offset = IMessage.OFFSET_UNSET;
 	private HashMap messageAttributes;
+	private String markerId = null;
 
 	/**
 	 * <p>
@@ -373,5 +374,13 @@ public class Message implements IMessage {
 	
 	public HashMap getAttributes() {
 		return messageAttributes;
+	}
+
+	public String getMarkerId() {
+		return markerId;
+	}
+
+	public void setMarkerId(String markerId) {
+		this.markerId = markerId;
 	}
 }

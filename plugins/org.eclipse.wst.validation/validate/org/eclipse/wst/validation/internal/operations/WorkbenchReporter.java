@@ -11,6 +11,7 @@
 package org.eclipse.wst.validation.internal.operations;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -125,7 +126,6 @@ public final class WorkbenchReporter implements IReporter {
 		int severity = message.getSeverity();
 		try {
 			TaskListUtility.addTask(messageOwnerId, resource, location, message.getId(), message.getText(cl), severity,markerId,targetObjectName, message.getGroupName(), message.getOffset(), message.getLength());
-			increaseMessageCountForProject(resource.getProject());;
 		} catch (CoreException exc) {
 			// Couldn't add the task to the task list for some reason...
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
@@ -138,12 +138,7 @@ public final class WorkbenchReporter implements IReporter {
 		}
 	}
 	
-	private static void increaseMessageCountForProject(IProject project) {
-		ValidatorManager.initializeMessageLimitProjectMap(project);
-		Object integer = ValidatorManager.messageLimitProjectMap.get(project);
-		int newVal = ((Integer) integer).intValue() + 1;
-		ValidatorManager.messageLimitProjectMap.put(project,new Integer(newVal));
-	}
+	
 
 	public static void removeAllMessages(IResource resource, IValidator validator) {
 		if (resource == null) {
@@ -305,20 +300,6 @@ public final class WorkbenchReporter implements IReporter {
 			location = DEFAULT_LOCATION;
 		}
 		return location;
-	}
-
-	/**
-	 * If the user is cancelling validation on the current project/resource, Add an information task
-	 * to the task list informing the user that validation has not been run on the current project.
-	 */
-	// TODO This method was made protected for the SaberReporter. Make this method private again
-	// once the framework supports IMarker.PRIORITY.
-	protected static void addTerminatedTask(IProject project, IValidator validator) throws IllegalArgumentException {
-		if ((project == null) || (validator == null)) {
-			return;
-		}
-		ValidatorManager.getManager().addMessageLimitExceeded(project);
-		ValidatorManager.setMessageLimitMessageForProject(project);
 	}
 
 	// TODO This method was made protected for the SaberReporter. Make this method private again
@@ -577,7 +558,28 @@ public final class WorkbenchReporter implements IReporter {
 		}
 
 		ValidatorManager mgr = ValidatorManager.getManager();
-		addMessage(resource, validator.getClass(), message, getTargetObjectName(helper, message), getLocation(helper, message),vmd.getMarkerId());
+		addMessage(resource, validator.getClass(), message, getTargetObjectName(helper, message), getLocation(helper, message),getMarkerId(vmd,message));
+	}
+
+	/**
+	 * @param vmd
+	 */
+	private String getMarkerId(ValidatorMetaData vmd, IMessage message) {
+		if (vmd.getMarkerIds() != null) {
+			if (vmd.getMarkerIds().length == 1)
+				return vmd.getMarkerIds()[0];
+			else if (vmd.getMarkerIds().length > 1) {
+				String messageMarkerId = message.getMarkerId();
+				if (messageMarkerId != null && messageMarkerId.length() > 0) {
+					String firstMarkerId = vmd.getMarkerIds()[0];
+					String pluginQualifier = firstMarkerId.substring(0, firstMarkerId.lastIndexOf("."));
+					String qualifiesMessageMarkerId = pluginQualifier + "." + messageMarkerId;
+					if (Arrays.asList(vmd.getMarkerIds()).contains(qualifiesMessageMarkerId))
+						return qualifiesMessageMarkerId;
+				}
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -595,26 +597,6 @@ public final class WorkbenchReporter implements IReporter {
 			logger.write(Level.SEVERE, entry);
 		}
 		return;
-	}
-
-	/**
-	 * @param validator
-	 * @param resource
-	 */
-	private void validateMessageLimitExceeded(IValidator validator, IResource resource) {
-		try {
-			addTerminatedTask(resource.getProject(), validator);
-		} catch (IllegalArgumentException exc) {
-			// Even the IValidator is invalid. Unfortunately, can't disable the
-			// validator because it can't be found by the registry reader.
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("WorkbenchReporter::addMessage(IValidator, IMessage)"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
-		}
 	}
 
 	/**

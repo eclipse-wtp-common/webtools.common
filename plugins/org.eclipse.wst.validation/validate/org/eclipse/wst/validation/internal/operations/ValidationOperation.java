@@ -218,32 +218,30 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		Set enabledValidators = getEnabledValidators();
 		Iterator iterator = enabledValidators.iterator();
 		ValidatorMetaData vmd = null;
-		try {
-			while (iterator.hasNext()) {
-				vmd = (ValidatorMetaData) iterator.next();
-				reporter.displaySubtask(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_VALIDATOR_CLEANUP, new String[]{vmd.getValidatorDisplayName()}));
-				try {
-					reporter.removeAllMessages(vmd.getValidator());
-				} catch (InstantiationException exc) {
-					// Remove the vmd from the reader's list
-					ValidationRegistryReader.getReader().disableValidator(vmd);
-					// Log the reason for the disabled validator
-					final Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-					if (logger.isLoggingLevel(Level.SEVERE)) {
-						LogEntry entry = ValidationPlugin.getLogEntry();
-						entry.setSourceID("ValidationOperation::terminateCleanup"); //$NON-NLS-1$
-						entry.setTargetException(exc);
-						logger.write(Level.SEVERE, entry);
-					}
-					continue;
+
+		while (iterator.hasNext()) {
+			vmd = (ValidatorMetaData) iterator.next();
+			reporter.displaySubtask(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_VALIDATOR_CLEANUP, new String[]{vmd.getValidatorDisplayName()}));
+			try {
+				reporter.removeAllMessages(vmd.getValidator());
+			} catch (InstantiationException exc) {
+				// Remove the vmd from the reader's list
+				ValidationRegistryReader.getReader().disableValidator(vmd);
+				// Log the reason for the disabled validator
+				final Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
+				if (logger.isLoggingLevel(Level.SEVERE)) {
+					LogEntry entry = ValidationPlugin.getLogEntry();
+					entry.setSourceID("ValidationOperation::terminateCleanup"); //$NON-NLS-1$
+					entry.setTargetException(exc);
+					logger.write(Level.SEVERE, entry);
 				}
-				addCancelTask(vmd);
-				reporter.displaySubtask(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_VALIDATOR_TERMINATED, new String[]{getProject().getName(), vmd.getValidatorDisplayName()}));
+				continue;
 			}
-		} catch (MessageLimitException e) {
-			ValidatorManager.getManager().addMessageLimitExceeded(getProject());
+			addCancelTask(vmd);
+			reporter.displaySubtask(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_VALIDATOR_TERMINATED, new String[]{getProject().getName(), vmd.getValidatorDisplayName()}));
 		}
-	}
+	} 
+	
 
 	/**
 	 * @param vmd
@@ -974,14 +972,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 * 
 	 */
 	private void releaseCachedMaps() {
-		if(ValidatorManager.messageLimitProjectMap != null) {
-			ValidatorManager.messageLimitProjectMap.clear();
-			ValidatorManager.messageLimitProjectMap = null;
-		}
-		if(ValidatorManager.messageLimitMessageProjectMap != null) {
-			ValidatorManager.messageLimitMessageProjectMap.clear();
-			ValidatorManager.messageLimitMessageProjectMap = null;
-		}
 		if (ValidationRegistryReader.getReader().projectValidationMetaData != null) {
 			ValidationRegistryReader.getReader().projectValidationMetaData.clear();
 			ValidationRegistryReader.getReader().projectValidationMetaData = null;

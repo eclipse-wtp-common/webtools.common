@@ -334,4 +334,14 @@ public interface IMessage {
 	 * @return
 	 */
 	public HashMap getAttributes();
+	
+	/**
+	 * return the marker id if one is set on this object when created
+	 */
+	public String getMarkerId();
+	
+	/**
+	 * set the marker id on a Message object
+	 */
+	 public void setMarkerId(String markerId);
 }
