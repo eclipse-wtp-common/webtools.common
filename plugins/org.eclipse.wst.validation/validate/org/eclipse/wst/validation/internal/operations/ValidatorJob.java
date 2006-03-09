@@ -159,14 +159,12 @@ public class ValidatorJob extends Job {
 					entry.setTargetException(exc);
 					logger.write(Level.SEVERE, entry);
 				}
-				String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
+				
+				String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$				
 				Message message = ValidationPlugin.getMessage();
 				message.setSeverity(IMessage.NORMAL_SEVERITY);
 				message.setId(ResourceConstants.VBF_EXC_RUNTIME);
-				message.setParams(msgParm);
-				reporter.addMessage(validator, message);
-
-				
+				message.setParams(msgParm);				
 				status = WTPCommonPlugin.createErrorStatus(message.getText());
 				return status;
 			}

@@ -47,12 +47,10 @@ import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.core.EmptySchedulingRule;
 import org.eclipse.wst.validation.internal.core.IFileDelta;
-import org.eclipse.wst.validation.internal.core.Message;
 import org.eclipse.wst.validation.internal.core.ValidationException;
 import org.eclipse.wst.validation.internal.core.ValidatorLauncher;
 import org.eclipse.wst.validation.internal.plugin.ValidationHelperRegistryReader;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
-import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 import org.eclipse.wst.validation.internal.provisional.core.IReporter;
 import org.eclipse.wst.validation.internal.provisional.core.IValidationContext;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
@@ -921,12 +919,18 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 					}
 					String mssg = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_ENDING_VALIDATION_ABNORMALLY, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
 					reporter.displaySubtask(mssg);
+					/*
+					 The code  below  causes bundle not found exception since, the  bundle here is
+					 validate_base and we  are  trying to load that bundle from the classloader of 
+					 the Validator. 
+			  
 					String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 					Message message = ValidationPlugin.getMessage();
 					message.setSeverity(IMessage.NORMAL_SEVERITY);
 					message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 					message.setParams(msgParm);
 					reporter.addMessage(validator, message);
+					*/
 					continue;
 				}
 				try {
@@ -1088,12 +1092,19 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			}
 			String mssg = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_ENDING_VALIDATION_ABNORMALLY, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
 			reporter.displaySubtask(mssg);
+			
+			/*
+			 The code  below  causes bundle not found exception since, the  bundle here is
+			 validate_base and we  are  trying to load that bundle from the classloader of 
+			 the Validator. 
+			  
 			String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 			Message message = ValidationPlugin.getMessage();
 			message.setSeverity(IMessage.NORMAL_SEVERITY);
 			message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 			message.setParams(msgParm);
 			reporter.addMessage(validator, message);
+			*/
 		} finally {
 			// If user fixes problem, and limit exceeded, add "exceeded"
 			// message, or
@@ -1183,12 +1194,18 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			}
 			String mssg = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_ENDING_VALIDATION_ABNORMALLY, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
 			reporter.displaySubtask(mssg);
+			
+			/*
+			 The code  below  causes bundle not found exception since, the  bundle here is
+			 validate_base and we  are  trying to load that bundle from the classloader of 
+			 the Validator. 			 * 
 			String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 			Message message = ValidationPlugin.getMessage();
 			message.setSeverity(IMessage.NORMAL_SEVERITY);
 			message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 			message.setParams(msgParm);
 			reporter.addMessage(validator, message);
+			*/
 			return;
 		}
 	}
@@ -1349,7 +1366,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			reporter.displaySubtask(mssg);
 			
 			/*
-			 The code  above  causes bundle not found exception since, the  bundle here is
+			 The code  below  causes bundle not found exception since, the  bundle here is
 			 validate_base and we  are  trying to load that bundle from the classloader of 
 			 the Validator. 
 			 
@@ -1380,6 +1397,11 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 					entry.setTargetException(exc);
 					logger.write(Level.SEVERE, entry);
 				}
+				
+				/*
+			 The code  below  causes bundle not found exception since, the  bundle here is
+			 validate_base and we  are  trying to load that bundle from the classloader of 
+			 the Validator.  
 				String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 				Message message = ValidationPlugin.getMessage();
 				message.setSeverity(IMessage.NORMAL_SEVERITY);
@@ -1390,6 +1412,8 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				} catch (MessageLimitException e) {
 					throw e;
 				}
+				
+				*/
 				return;
 			}
 			try {
@@ -1410,6 +1434,12 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 					entry.setTargetException(exc);
 					logger.write(Level.SEVERE, entry);
 				}
+				
+				/*
+			 The code  below bundle not found exception since, the  bundle here is
+			 validate_base and we  are  trying to load that bundle from the classloader of 
+			 the Validator. 
+			 				 
 				String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 				Message message = ValidationPlugin.getMessage();
 				message.setSeverity(IMessage.NORMAL_SEVERITY);
@@ -1420,6 +1450,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				} catch (MessageLimitException e) {
 					throw e;
 				}
+				*/
 				return;
 			} finally {
 				// Now that cleanup has been called, set the project to null.
@@ -1537,12 +1568,20 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				}
 				String mssg = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_ENDING_VALIDATION_ABNORMALLY, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
 				reporter.displaySubtask(mssg);
+				
+				/*
+			 The code  below  causes bundle not found exception since, the  bundle here is
+			 validate_base and we  are  trying to load that bundle from the classloader of 
+			 the Validator. 
+			  
 				String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 				Message message = ValidationPlugin.getMessage();
 				message.setSeverity(IMessage.NORMAL_SEVERITY);
 				message.setId(ResourceConstants.VBF_EXC_RUNTIME);
 				message.setParams(msgParm);
 				reporter.addMessage(validator, message);
+				*/
+				
 				continue;
 			}
 			
@@ -1587,12 +1626,19 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				}
 				String mssg = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_ENDING_VALIDATION_ABNORMALLY, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
 				reporter.displaySubtask(mssg);
-				String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
-				Message message = ValidationPlugin.getMessage();
-				message.setSeverity(IMessage.NORMAL_SEVERITY);
-				message.setId(ResourceConstants.VBF_EXC_RUNTIME);
-				message.setParams(msgParm);
-				reporter.addMessage(validator, message);
+
+				/*
+				 The code  below  causes bundle not found exception since, the  bundle here is
+				 validate_base and we  are  trying to load that bundle from the classloader of 
+				 the Validator. 
+				 */
+				 
+//				String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
+//				Message message = ValidationPlugin.getMessage();
+//				message.setSeverity(IMessage.NORMAL_SEVERITY);
+//				message.setId(ResourceConstants.VBF_EXC_RUNTIME);
+//				message.setParams(msgParm);
+//				reporter.addMessage(validator, message);
 			} finally {
 				// If user fixes problem, and limit exceeded, add "exceeded"
 				// message, or
