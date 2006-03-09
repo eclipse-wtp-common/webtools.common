@@ -47,6 +47,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
@@ -450,6 +451,29 @@ private class ValidatorListPage implements IValidationPage {
         viewer.setCellEditors(columnEditors);
     }
 
+	protected  void createDescriptionComposite(final Composite parent, final String description) {
+		Composite descriptionComp = new Composite(parent, SWT.NONE);
+		GridLayout layout = new GridLayout();
+		layout.numColumns = 1;
+		descriptionComp.setLayout(layout);
+		descriptionComp.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		fillDescription(descriptionComp, description);
+	}
+	
+	private  void fillDescription(Composite c, String s) {
+		GridData data = new GridData();
+		data.horizontalSpan = 1;
+		data.horizontalIndent = 5;
+		data = new GridData(GridData.FILL_HORIZONTAL);
+		data.widthHint = 250;
+		Text text = new Text(c, SWT.MULTI | SWT.WRAP);
+		text.setLayoutData(data);
+		text.setTextLimit(80);
+		text.setEditable(false);
+		text.setText(s);
+	}
+	
+	
 	public Composite createPage(Composite parent) throws InvocationTargetException {
 		// top level group
 		final ScrolledComposite sc1 = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
@@ -460,12 +484,28 @@ private class ValidatorListPage implements IValidationPage {
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(composite, ContextIds.VALIDATION_PREFERENCE_PAGE);
 
 		Composite validatorGroup = new Composite(composite, SWT.NONE);
+
+		
 		GridLayout validatorGroupLayout = new GridLayout();
 		validatorGroupLayout.numColumns = 2;
 		validatorGroup.setLayout(validatorGroupLayout);
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(validatorGroup, ContextIds.VALIDATION_PREFERENCE_PAGE);
 
 		GridData overrideData = new GridData(GridData.FILL_HORIZONTAL);
+		
+//		Font font = parent.getFont();
+//		Label projectLabel = new Label(validatorGroup, SWT.NONE);
+//		projectLabel.setFont(font);
+//		projectLabel.setText("This preference applies to the projects that have ModuleCoreNature"); //$NON-NLS-1$
+		
+		createDescriptionComposite(validatorGroup, ResourceHandler.getExternalizedMessage(ResourceConstants.INFO));
+				
+		
+		emptyRowPlaceholder = new Label(validatorGroup, SWT.NONE);
+		emptyRowPlaceholder.setLayoutData(new GridData());
+		emptyRowPlaceholder = new Label(validatorGroup, SWT.NONE);
+		emptyRowPlaceholder.setLayoutData(new GridData());		
+		
 		overrideData.horizontalSpan = 2;
 		overrideButton = new Button(validatorGroup, SWT.CHECK);
 		overrideButton.setLayoutData(overrideData);
