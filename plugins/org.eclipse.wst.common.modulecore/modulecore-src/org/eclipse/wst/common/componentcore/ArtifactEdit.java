@@ -212,10 +212,7 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 		IProject project = aModule.getProject();
 		if (project == null || !project.isAccessible())
 			return false;
-		/* and an edit model factory must be defined for the module type */
-		IEditModelFactory factory = EditModelRegistry.getInstance().findEditModelFactoryByProject(aModule.getProject());
-		if (factory == null)
-			return false;
+		
 		return true;
 	}
 
