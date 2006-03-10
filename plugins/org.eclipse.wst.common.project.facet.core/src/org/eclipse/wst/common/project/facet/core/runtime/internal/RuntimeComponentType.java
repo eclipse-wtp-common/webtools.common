@@ -75,9 +75,9 @@ public final class RuntimeComponentType
         
         if( rcv == null )
         {
-            final String msg 
-                = "Could not find version " + version + " of runtime component " 
-                  + this.id + ".";
+            final String msg
+                = NLS.bind( RuntimeManagerImpl.Resources.runtimeComponentVersionNotDefined,
+                            this.id, version );
             
             throw new IllegalArgumentException( msg );
         }
@@ -108,7 +108,7 @@ public final class RuntimeComponentType
     
     public String createVersionNotFoundErrMsg( final String verstr )
     {
-        return NLS.bind( RuntimeManagerImpl.Resources.runtimeComponentVersionNotDefinedNoPlugin,
+        return NLS.bind( RuntimeManagerImpl.Resources.runtimeComponentVersionNotDefined,
                          this.id, verstr );
     }
     

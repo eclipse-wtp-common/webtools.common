@@ -27,7 +27,6 @@ import org.eclipse.wst.common.project.facet.core.IDelegate;
 import org.eclipse.wst.common.project.facet.core.IGroup;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
-import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.internal.ProjectFacet.ActionDefinition;
 import org.osgi.framework.Bundle;
@@ -100,7 +99,7 @@ public final class ProjectFacetVersion
     {
         try
         {
-            return this.facet.getActionDefinition( this, IDelegate.Type.get( type ) ) != null;
+            return this.facet.getActionDefinition( this, type ) != null;
         }
         catch( CoreException e )
         {
@@ -125,7 +124,7 @@ public final class ProjectFacetVersion
         }
         
         final ActionDefinition def
-            = this.facet.getActionDefinition( this, IDelegate.Type.get( type ) );
+            = this.facet.getActionDefinition( this, type );
         
         if( def == null || def.configFactoryClassName == null )
         {
@@ -175,10 +174,8 @@ public final class ProjectFacetVersion
         throws CoreException
         
     {
-        final IDelegate.Type t = IDelegate.Type.get( type );
-        
-        return this.facet.getActionDefinition( fv, t )
-               == this.facet.getActionDefinition( this, t );
+        return this.facet.getActionDefinition( fv, type )
+               == this.facet.getActionDefinition( this, type );
     }
     
     public boolean isValidFor( final Set fixed )
@@ -193,29 +190,57 @@ public final class ProjectFacetVersion
             }
         }
         
-        return isValidFor( fixed, getConstraint() );
+        for( Iterator itr1 = fixed.iterator(); itr1.hasNext(); )
+        {
+            final IProjectFacet f = (IProjectFacet) itr1.next();
+            
+            boolean conflictsWithAllVersions = true;
+            
+            for( Iterator itr2 = f.getVersions().iterator(); itr2.hasNext(); )
+            {
+                final IProjectFacetVersion fv 
+                    = (IProjectFacetVersion) itr2.next();
+                
+                if( ! ( this.conflictsWith( fv ) || fv.conflictsWith( this ) ) )
+                {
+                    conflictsWithAllVersions = false;
+                    break;
+                }
+            }
+            
+            if( conflictsWithAllVersions )
+            {
+                return false;
+            }
+        }
+        
+        return true;
     }
     
-    private boolean isValidFor( final Set fixed,
-                                final IConstraint op )
+    public boolean conflictsWith( final IProjectFacetVersion fv )
+    {
+        if( this == fv )
+        {
+            return false;
+        }
+        else if( this.facet == fv.getProjectFacet() )
+        {
+            return true;
+        }
+        else
+        {
+            return conflictsWith( fv, getConstraint() );
+        }
+    }
+    
+    private boolean conflictsWith( final IProjectFacetVersion fv,
+                                   final IConstraint op )
     {
         if( op.getType() == IConstraint.Type.AND )
         {
             for( Iterator itr = op.getOperands().iterator(); itr.hasNext(); )
             {
-                if( ! isValidFor( fixed, (IConstraint) itr.next() ) )
-                {
-                    return false;
-                }
-            }
-            
-            return true;
-        }
-        else if( op.getType() == IConstraint.Type.OR )
-        {
-            for( Iterator itr = op.getOperands().iterator(); itr.hasNext(); )
-            {
-                if( isValidFor( fixed, (IConstraint) itr.next() ) )
+                if( conflictsWith( fv, (IConstraint) itr.next() ) )
                 {
                     return true;
                 }
@@ -223,27 +248,61 @@ public final class ProjectFacetVersion
             
             return false;
         }
-        else if( op.getType() == IConstraint.Type.CONFLICTS )
+        else if( op.getType() == IConstraint.Type.OR )
         {
-            final String gid = (String) op.getOperand( 0 );
-            final IGroup group = ProjectFacetsManager.getGroup( gid );
+            boolean allBranchesConflict = true;
             
-            for( Iterator itr = fixed.iterator(); itr.hasNext(); )
+            for( Iterator itr = op.getOperands().iterator(); itr.hasNext(); )
             {
-                final IProjectFacet f = (IProjectFacet) itr.next();
-                
-                if( group.getMembers().containsAll( f.getVersions() ) )
+                if( ! conflictsWith( fv, (IConstraint) itr.next() ) )
                 {
-                    return false;
+                    allBranchesConflict = false;
+                    break;
                 }
             }
             
-            return true;
+            return allBranchesConflict;
+        }
+        else if( op.getType() == IConstraint.Type.CONFLICTS )
+        {
+            final Object firstOperand = op.getOperand( 0 );
+            
+            if( firstOperand instanceof IGroup )
+            {
+                final IGroup group = (IGroup) firstOperand;
+                return group.getMembers().contains( fv );
+            }
+            else
+            {
+                final IProjectFacet f = (IProjectFacet) firstOperand;
+                
+                final VersionExpr vexpr
+                    = op.getOperands().size() == 2 
+                      ? (VersionExpr) op.getOperand( 1 ) : null;
+                
+                try
+                {
+                    if( fv.getProjectFacet() == f )
+                    {
+                        if( vexpr == null || vexpr.evaluate( (IVersion ) fv ) )
+                        {
+                            return true;
+                        }
+                    }
+                    
+                    return false;
+                }
+                catch( CoreException e )
+                {
+                    FacetCorePlugin.log( e );
+                    return false;
+                }
+            }
         }
         else if( op.getType() == IConstraint.Type.REQUIRES )
         {
-            final String id = (String) op.getOperand( 0 );
-            final String vexpr = (String) op.getOperand( 1 );
+            final IProjectFacet rf = (IProjectFacet) op.getOperand( 0 );
+            final VersionExpr vexpr = (VersionExpr) op.getOperand( 1 );
             
             final boolean soft
                 = ( (Boolean) op.getOperand( 2 ) ).booleanValue();
@@ -254,26 +313,22 @@ public final class ProjectFacetVersion
             }
             else
             {
-                if( ! ProjectFacetsManager.isProjectFacetDefined( id ) )
-                {
-                    ProjectFacetsManagerImpl.reportMissingFacet( id, this );
-                    return false;
-                }
-                
-                final IProjectFacet rf 
-                    = ProjectFacetsManager.getProjectFacet( id );
+                boolean conflictsWithAllVersions = true;
                 
                 try
                 {
-                    for( Iterator itr = rf.getVersions( vexpr ).iterator();
+                    final String vexprstr = vexpr.toString();
+                    
+                    for( Iterator itr = rf.getVersions( vexprstr ).iterator();
                          itr.hasNext(); )
                     {
-                        final IProjectFacetVersion fv 
+                        final IProjectFacetVersion rfv 
                             = (IProjectFacetVersion) itr.next();
                         
-                        if( fv.isValidFor( fixed ) )
+                        if( ! rfv.conflictsWith( fv ) )
                         {
-                            return true;
+                            conflictsWithAllVersions = false;
+                            break;
                         }
                     }
                 }
@@ -283,7 +338,7 @@ public final class ProjectFacetVersion
                     return false;
                 }
             
-                return false;
+                return conflictsWithAllVersions;
             }
         }
         else
@@ -292,7 +347,7 @@ public final class ProjectFacetVersion
         }
     }
     
-    IDelegate getDelegate( final IDelegate.Type type )
+    IDelegate getDelegate( final Action.Type type )
     
         throws CoreException
         
@@ -352,7 +407,7 @@ public final class ProjectFacetVersion
     
     public String toString()
     {
-        return this.facet.getLabel() + " " + this.version;
+        return this.facet.getLabel() + " " + this.version; //$NON-NLS-1$
     }
     
     private static final class Resources

@@ -41,10 +41,14 @@ public final class FacetedProjectValidationBuilder
     
 {
     public static final String BUILDER_ID
-        = FacetCorePlugin.PLUGIN_ID + ".builder";
+        = FacetCorePlugin.PLUGIN_ID + ".builder"; //$NON-NLS-1$
 
-    public static final String VALIDATORS_EXTENSION_ID = "validators";
+    public static final String VALIDATORS_EXTENSION_ID = "validators"; //$NON-NLS-1$
     
+    private static final String EL_VALIDATOR = "validator"; //$NON-NLS-1$
+    private static final String EL_FACET = "facet"; //$NON-NLS-1$
+    private static final String ATTR_CLASS = "class"; //$NON-NLS-1$
+
     private static final List validators = new ArrayList();
     
     static
@@ -93,7 +97,7 @@ public final class FacetedProjectValidationBuilder
         
         if( point == null )
         {
-            throw new RuntimeException( "Extension point not found!" );
+            throw new RuntimeException( "Extension point not found!" ); //$NON-NLS-1$
         }
         
         final ArrayList cfgels = new ArrayList();
@@ -115,16 +119,16 @@ public final class FacetedProjectValidationBuilder
             final IConfigurationElement config
                 = (IConfigurationElement) cfgels.get( i );
             
-            if( config.getName().equals( "validator" ) )
+            if( config.getName().equals( EL_VALIDATOR ) )
             {
                 ValidatorDefinition def = new ValidatorDefinition();
                 def.plugin = config.getDeclaringExtension().getNamespace();
                 
-                def.className = config.getAttribute( "class" );
+                def.className = config.getAttribute( ATTR_CLASS );
 
                 if( def.className == null )
                 {
-                    ProjectFacetsManagerImpl.reportMissingAttribute( config, "class" );
+                    ProjectFacetsManagerImpl.reportMissingAttribute( config, ATTR_CLASS );
                     continue;
                 }
                 
@@ -135,7 +139,7 @@ public final class FacetedProjectValidationBuilder
                     final IConfigurationElement child = children[ j ];
                     final String childName = child.getName();
                     
-                    if( childName.equals( "facet" ) )
+                    if( childName.equals( EL_FACET ) )
                     {
                         final ProjectFacetRef ref 
                             = ProjectFacetRef.read( child );

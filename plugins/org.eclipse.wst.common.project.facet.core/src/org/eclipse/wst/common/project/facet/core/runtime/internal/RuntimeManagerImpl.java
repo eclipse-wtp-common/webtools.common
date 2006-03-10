@@ -36,7 +36,7 @@ import org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin;
 import org.eclipse.wst.common.project.facet.core.internal.IVersion;
 import org.eclipse.wst.common.project.facet.core.internal.IndexedSet;
 import org.eclipse.wst.common.project.facet.core.internal.ProjectFacetsManagerImpl;
-import org.eclipse.wst.common.project.facet.core.internal.VersionMatchExpr;
+import org.eclipse.wst.common.project.facet.core.internal.VersionExpr;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeBridge;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
@@ -49,9 +49,26 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentVersio
 
 public final class RuntimeManagerImpl
 {
-    private static final String EXTENSION_ID = "runtimes";
-    private static final String BRIDGES_EXTENSION_ID = "runtimeBridges";
-    private static final String DEFAULT_FACETS_EXTENSION_ID = "defaultFacets";
+    private static final String EXTENSION_ID = "runtimes"; //$NON-NLS-1$
+    private static final String BRIDGES_EXTENSION_ID = "runtimeBridges"; //$NON-NLS-1$
+    private static final String DEFAULT_FACETS_EXTENSION_ID = "defaultFacets"; //$NON-NLS-1$
+
+    private static final String ATTR_CLASS = "class"; //$NON-NLS-1$
+    private static final String ATTR_ID = "id"; //$NON-NLS-1$
+    private static final String ATTR_TYPE = "type"; //$NON-NLS-1$
+    private static final String ATTR_VERSION = "version"; //$NON-NLS-1$
+    private static final String EL_ADAPTER = "adapter"; //$NON-NLS-1$
+    private static final String EL_BRIDGE = "bridge"; //$NON-NLS-1$
+    private static final String EL_DEFAULT_FACETS = "default-facets"; //$NON-NLS-1$
+    private static final String EL_FACET = "facet"; //$NON-NLS-1$
+    private static final String EL_FACTORY = "factory"; //$NON-NLS-1$
+    private static final String EL_RUNTIME_COMPONENT = "runtime-component"; //$NON-NLS-1$
+    private static final String EL_RUNTIME_COMPONENT_TYPE = "runtime-component-type"; //$NON-NLS-1$
+    private static final String EL_RUNTIME_COMPONENT_VERSION = "runtime-component-version"; //$NON-NLS-1$
+    private static final String EL_SUPPORTED = "supported"; //$NON-NLS-1$
+    private static final String EL_VERSION_COMPARATOR = "version-comparator"; //$NON-NLS-1$
+
+    private static final String ANY = "any"; //$NON-NLS-1$
     
     private static final IndexedSet runtimeComponentTypes;
     private static final IndexedSet runtimes;
@@ -93,7 +110,9 @@ public final class RuntimeManagerImpl
         
         if( rc == null )
         {
-            final String msg = "Could not find runtime component type " + id + ".";
+            final String msg 
+                = NLS.bind( Resources.runtimeComponentTypeNotDefined, id );
+            
             throw new IllegalArgumentException( msg );
         }
         
@@ -182,7 +201,7 @@ public final class RuntimeManagerImpl
             
             if( runtime == null )
             {
-                final String msg = "Could not find runtime " + name + ".";
+                final String msg = NLS.bind( Resources.runtimeNotDefined, name );
                 throw new IllegalArgumentException( msg );
             }
             
@@ -426,7 +445,7 @@ public final class RuntimeManagerImpl
         
         for( int i = 1; runtimes.contains( name ); i++ )
         {
-            name = suggestion + " (" + i + ")";
+            name = suggestion + " (" + i + ")"; //$NON-NLS-1$ //$NON-NLS-2$
         }
         
         return name;
@@ -442,7 +461,7 @@ public final class RuntimeManagerImpl
         
         if( point == null )
         {
-            throw new RuntimeException( "Extension point not found!" );
+            throw new RuntimeException( "Extension point not found!" ); //$NON-NLS-1$
         }
         
         final ArrayList cfgels = new ArrayList();
@@ -464,7 +483,7 @@ public final class RuntimeManagerImpl
             final IConfigurationElement config
                 = (IConfigurationElement) cfgels.get( i );
             
-            if( config.getName().equals( "runtime-component-type" ) )
+            if( config.getName().equals( EL_RUNTIME_COMPONENT_TYPE ) )
             {
                 readRuntimeComponentType( config );
             }
@@ -475,7 +494,7 @@ public final class RuntimeManagerImpl
             final IConfigurationElement config
                 = (IConfigurationElement) cfgels.get( i );
             
-            if( config.getName().equals( "runtime-component-version" ) )
+            if( config.getName().equals( EL_RUNTIME_COMPONENT_VERSION ) )
             {
                 readRuntimeComponentVersion( config );
             }
@@ -486,7 +505,7 @@ public final class RuntimeManagerImpl
             final IConfigurationElement config
                 = (IConfigurationElement) cfgels.get( i );
             
-            if( config.getName().equals( "adapter" ) )
+            if( config.getName().equals( EL_ADAPTER ) )
             {
                 readAdapter( config );
             }
@@ -497,7 +516,7 @@ public final class RuntimeManagerImpl
             final IConfigurationElement config
                 = (IConfigurationElement) cfgels.get( i );
             
-            if( config.getName().equals( "supported" ) )
+            if( config.getName().equals( EL_SUPPORTED ) )
             {
                 readMapping( config );
             }
@@ -506,11 +525,11 @@ public final class RuntimeManagerImpl
     
     private static void readRuntimeComponentType( final IConfigurationElement config )
     {
-        final String id = config.getAttribute( "id" );
+        final String id = config.getAttribute( ATTR_ID );
 
         if( id == null )
         {
-            reportMissingAttribute( config, "id" );
+            reportMissingAttribute( config, ATTR_ID );
             return;
         }
         
@@ -525,13 +544,13 @@ public final class RuntimeManagerImpl
             final IConfigurationElement child = children[ i ];
             final String childName = child.getName();
             
-            if( childName.equals( "version-comparator" ) )
+            if( childName.equals( EL_VERSION_COMPARATOR ) )
             {
-                final String clname = child.getAttribute( "class" );
+                final String clname = child.getAttribute( ATTR_CLASS );
                 
                 if( clname == null )
                 {
-                    reportMissingAttribute( child, "class" );
+                    reportMissingAttribute( child, ATTR_CLASS );
                     return;
                 }
                 
@@ -544,19 +563,19 @@ public final class RuntimeManagerImpl
     
     private static void readRuntimeComponentVersion( final IConfigurationElement config )
     {
-        final String type = config.getAttribute( "type" );
+        final String type = config.getAttribute( ATTR_TYPE );
 
         if( type == null )
         {
-            reportMissingAttribute( config, "type" );
+            reportMissingAttribute( config, ATTR_TYPE );
             return;
         }
         
-        final String ver = config.getAttribute( "version" );
+        final String ver = config.getAttribute( ATTR_VERSION );
 
         if( ver == null )
         {
-            reportMissingAttribute( config, "version" );
+            reportMissingAttribute( config, ATTR_VERSION );
             return;
         }
         
@@ -566,8 +585,8 @@ public final class RuntimeManagerImpl
         if( rct == null )
         {
             final String msg
-                = NLS.bind( Resources.runtimeComponentTypeNotDefined, 
-                            config.getNamespace(), type );
+                = NLS.bind( Resources.runtimeComponentTypeNotDefined, type ) +
+                  NLS.bind( Resources.usedInPlugin, config.getNamespace() );
             
             FacetCorePlugin.log( msg );
             
@@ -597,21 +616,21 @@ public final class RuntimeManagerImpl
             final IConfigurationElement child = children[ i ];
             final String childName = child.getName();
             
-            if( childName.equals( "runtime-component" ) )
+            if( childName.equals( EL_RUNTIME_COMPONENT ) )
             {
-                final String id = child.getAttribute( "id" );
+                final String id = child.getAttribute( ATTR_ID );
 
                 if( id == null )
                 {
-                    reportMissingAttribute( child, "id" );
+                    reportMissingAttribute( child, ATTR_ID );
                     return;
                 }
                 
                 if( ! isRuntimeComponentTypeDefined( id ) )
                 {
                     final String msg
-                        = NLS.bind( Resources.runtimeComponentTypeNotDefined, 
-                                    child.getNamespace(), id );
+                        = NLS.bind( Resources.runtimeComponentTypeNotDefined, id ) +
+                          NLS.bind( Resources.usedInPlugin, child.getNamespace() );
                     
                     FacetCorePlugin.log( msg );
                     
@@ -620,19 +639,17 @@ public final class RuntimeManagerImpl
                 
                 rctype = getRuntimeComponentType( id );
                 
-                final String version = child.getAttribute( "version" );
+                final String version = child.getAttribute( ATTR_VERSION );
                 
                 if( version != null )
                 {
                     if( ! rctype.hasVersion( version ) )
                     {
-                        final String[] params
-                            = new String[] { config.getNamespace(), id, 
-                                             version };
+                        String msg
+                            = NLS.bind( Resources.runtimeComponentVersionNotDefined,
+                                        id, version );
                         
-                        final String msg
-                            = NLS.bind( Resources.runtimeComponentVersionNotDefined, 
-                                        params ); 
+                        msg += NLS.bind( Resources.usedInPlugin, config.getNamespace() );
                         
                         FacetCorePlugin.log( msg );
                         
@@ -642,23 +659,23 @@ public final class RuntimeManagerImpl
                     rcversion = rctype.getVersion( version );
                 }
             }
-            else if( childName.equals( "factory" ) )
+            else if( childName.equals( EL_FACTORY ) )
             {
-                factory = child.getAttribute( "class" );
+                factory = child.getAttribute( ATTR_CLASS );
 
                 if( factory == null )
                 {
-                    reportMissingAttribute( child, "class" );
+                    reportMissingAttribute( child, ATTR_CLASS );
                     return;
                 }
             }
-            else if( childName.equals( "type" ) )
+            else if( childName.equals( ATTR_TYPE ) )
             {
-                final String type = child.getAttribute( "class" );
+                final String type = child.getAttribute( ATTR_CLASS );
 
                 if( type == null )
                 {
-                    reportMissingAttribute( child, "class" );
+                    reportMissingAttribute( child, ATTR_CLASS );
                     return;
                 }
                 else
@@ -703,7 +720,7 @@ public final class RuntimeManagerImpl
             final IConfigurationElement child = children[ i ];
             final String childName = child.getName();
             
-            if( childName.equals( "facet" ) )
+            if( childName.equals( EL_FACET ) )
             {
                 final IProjectFacet f = readProjectFacetRef( child );
                 
@@ -712,14 +729,14 @@ public final class RuntimeManagerImpl
                     return;
                 }
                 
-                final String v = child.getAttribute( "version" );
-                VersionMatchExpr expr = null;
+                final String v = child.getAttribute( ATTR_VERSION );
+                VersionExpr expr = null;
                 
                 if( v != null )
                 {
                     try
                     {
-                        expr = new VersionMatchExpr( f, v );
+                        expr = new VersionExpr( f, v, config.getNamespace() );
                     }
                     catch( CoreException e )
                     {
@@ -730,9 +747,9 @@ public final class RuntimeManagerImpl
                 
                 m.facets.put( f, expr );
             }
-            else if( childName.equals( "runtime-component" ) )
+            else if( childName.equals( EL_RUNTIME_COMPONENT ) )
             {
-                if( child.getAttribute( "any" ) == null )
+                if( child.getAttribute( ANY ) == null )
                 {
                     final IRuntimeComponentType rct 
                         = readRuntimeComponentTypeRef( child );
@@ -742,14 +759,15 @@ public final class RuntimeManagerImpl
                         return;
                     }
                     
-                    final String v = child.getAttribute( "version" );
-                    VersionMatchExpr expr = null;
+                    final String v = child.getAttribute( ATTR_VERSION );
+                    VersionExpr expr = null;
                     
                     if( v != null )
                     {
                         try
                         {
-                            expr = new VersionMatchExpr( rct, v );
+                            final String pluginId = config.getNamespace();
+                            expr = new VersionExpr( rct, v, pluginId );
                         }
                         catch( CoreException e )
                         {
@@ -776,7 +794,7 @@ public final class RuntimeManagerImpl
         
         if( point == null )
         {
-            throw new RuntimeException( "Extension point not found!" );
+            throw new RuntimeException( "Extension point not found!" ); //$NON-NLS-1$
         }
         
         final ArrayList cfgels = new ArrayList();
@@ -798,21 +816,21 @@ public final class RuntimeManagerImpl
             final IConfigurationElement config
                 = (IConfigurationElement) cfgels.get( i );
             
-            if( config.getName().equals( "bridge" ) )
+            if( config.getName().equals( EL_BRIDGE ) )
             {
-                final String id = config.getAttribute( "id" );
+                final String id = config.getAttribute( ATTR_ID );
 
                 if( id == null )
                 {
-                    reportMissingAttribute( config, "id" );
+                    reportMissingAttribute( config, ATTR_ID );
                     return;
                 }
                 
-                final String clname = config.getAttribute( "class" );
+                final String clname = config.getAttribute( ATTR_CLASS );
 
                 if( clname == null )
                 {
-                    reportMissingAttribute( config, "class" );
+                    reportMissingAttribute( config, ATTR_CLASS );
                     return;
                 }
                 
@@ -846,7 +864,7 @@ public final class RuntimeManagerImpl
         
         if( point == null )
         {
-            throw new RuntimeException( "Extension point not found!" );
+            throw new RuntimeException( "Extension point not found!" ); //$NON-NLS-1$
         }
         
         final ArrayList cfgels = new ArrayList();
@@ -868,7 +886,7 @@ public final class RuntimeManagerImpl
             final IConfigurationElement config
                 = (IConfigurationElement) cfgels.get( i );
             
-            if( config.getName().equals( "default-facets" ) )
+            if( config.getName().equals( EL_DEFAULT_FACETS ) )
             {
                 readDefaultFacets( config );
             }
@@ -885,7 +903,7 @@ public final class RuntimeManagerImpl
             final IConfigurationElement child = children[ i ];
             final String childName = child.getName();
             
-            if( childName.equals( "runtime-component" ) )
+            if( childName.equals( EL_RUNTIME_COMPONENT ) )
             {
                 dfe.rct = readRuntimeComponentTypeRef( child );
                 
@@ -894,13 +912,14 @@ public final class RuntimeManagerImpl
                     return;
                 }
                 
-                final String v = child.getAttribute( "version" );
+                final String v = child.getAttribute( ATTR_VERSION );
                 
                 if( v != null )
                 {
                     try
                     {
-                        dfe.rcvexpr = new VersionMatchExpr( dfe.rct, v );
+                        final String pluginId = config.getNamespace();
+                        dfe.rcvexpr = new VersionExpr( dfe.rct, v, pluginId );
                     }
                     catch( CoreException e )
                     {
@@ -909,7 +928,7 @@ public final class RuntimeManagerImpl
                     }
                 }
             }
-            else if( childName.equals( "facet" ) )
+            else if( childName.equals( EL_FACET ) )
             {
                 final IProjectFacet f = readProjectFacetRef( child );
                 
@@ -918,22 +937,21 @@ public final class RuntimeManagerImpl
                     return;
                 }
                 
-                final String ver = child.getAttribute( "version" );
+                final String ver = child.getAttribute( ATTR_VERSION );
                 
                 if( ver == null )
                 {
-                    reportMissingAttribute( child, "version" );
+                    reportMissingAttribute( child, ATTR_VERSION );
                     return;
                 }
                 
                 if( ! f.hasVersion( ver ) )
                 {
-                    final String[] args
-                        = new String[] { config.getNamespace(), f.getId(), ver };
-                        
-                    final String msg
-                        = NLS.bind( ProjectFacetsManagerImpl.Resources.facetVersionNotDefined, 
-                                    args );
+                    String msg
+                        = NLS.bind( ProjectFacetsManagerImpl.Resources.facetVersionNotDefined,
+                                    f.getId(), ver );
+                    
+                    msg += NLS.bind( Resources.usedInPlugin, config.getNamespace() );
                     
                     FacetCorePlugin.log( msg );
                     
@@ -954,19 +972,19 @@ public final class RuntimeManagerImpl
     
     private static IRuntimeComponentType readRuntimeComponentTypeRef( final IConfigurationElement config )
     {
-        final String id = config.getAttribute( "id" );
+        final String id = config.getAttribute( ATTR_ID );
         
         if( id == null )
         {
-            reportMissingAttribute( config, "id" );
+            reportMissingAttribute( config, ATTR_ID );
             return null;
         }
         
         if( ! isRuntimeComponentTypeDefined( id ) )
         {
             final String msg
-                = NLS.bind( Resources.runtimeComponentTypeNotDefined, 
-                            config.getNamespace(), id );
+                = NLS.bind( Resources.runtimeComponentTypeNotDefined, id ) +
+                  NLS.bind( Resources.usedInPlugin, config.getNamespace() );
             
             FacetCorePlugin.log( msg );
             
@@ -978,11 +996,11 @@ public final class RuntimeManagerImpl
     
     private static IProjectFacet readProjectFacetRef( final IConfigurationElement config )
     {
-        final String id = config.getAttribute( "id" );
+        final String id = config.getAttribute( ATTR_ID );
 
         if( id == null )
         {
-            reportMissingAttribute( config, "id" );
+            reportMissingAttribute( config, ATTR_ID );
             return null;
         }
         
@@ -1024,8 +1042,8 @@ public final class RuntimeManagerImpl
             
             if( this.runtimeComponents.containsKey( rct ) )
             {
-                final VersionMatchExpr expr 
-                    = (VersionMatchExpr) this.runtimeComponents.get( rct );
+                final VersionExpr expr 
+                    = (VersionExpr) this.runtimeComponents.get( rct );
                 
                 if( expr != null && ! expr.evaluate( (IVersion) rcv ) )
                 {
@@ -1044,7 +1062,7 @@ public final class RuntimeManagerImpl
             {
                 final Map.Entry entry = (Map.Entry) itr1.next();
                 final IProjectFacet f = (IProjectFacet) entry.getKey();
-                final VersionMatchExpr expr = (VersionMatchExpr) entry.getValue();
+                final VersionExpr expr = (VersionExpr) entry.getValue();
                 
                 for( Iterator itr2 = f.getVersions().iterator(); 
                      itr2.hasNext(); )
@@ -1066,7 +1084,7 @@ public final class RuntimeManagerImpl
     private static final class DefaultFacetsEntry
     {
         public IRuntimeComponentType rct;
-        public VersionMatchExpr rcvexpr;
+        public VersionExpr rcvexpr;
         public final Set facets = new HashSet();
         
         public boolean match( final IRuntimeComponentVersion rcv )
@@ -1093,7 +1111,8 @@ public final class RuntimeManagerImpl
         public static String missingAttribute;
         public static String runtimeComponentTypeNotDefined;
         public static String runtimeComponentVersionNotDefined;
-        public static String runtimeComponentVersionNotDefinedNoPlugin;
+        public static String runtimeNotDefined;
+        public static String usedInPlugin;
         
         static
         {

@@ -11,6 +11,8 @@
 
 package org.eclipse.wst.common.project.facet.core;
 
+import org.eclipse.osgi.util.NLS;
+
 /**
  * The exception that's thrown when version string cannot be parsed.
  * 
@@ -52,11 +54,22 @@ public class VersionFormatException
     
     public String getMessage()
     {
-        final String msg 
-            = "Could not parse \"" + this.version + "\" with " +
-              this.comparator.getClass().getName() + ".";
+        return NLS.bind( Resources.couldNotParse, this.version,
+                         this.comparator.getClass().getName() );
+    }
+    
+    private static final class Resources
+    
+        extends NLS
         
-        return msg;
+    {
+        public static String couldNotParse;
+        
+        static
+        {
+            initializeMessages( VersionFormatException.class.getName(), 
+                                Resources.class );
+        }
     }
 
 }

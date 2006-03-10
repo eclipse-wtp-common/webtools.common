@@ -100,7 +100,7 @@ public final class RuntimeComponentVersion
     
     public String toString()
     {
-        return this.type.getId() + " " + this.version;
+        return this.type.getId() + " " + this.version; //$NON-NLS-1$
     }
 
     void addAdapterFactory( final String type,

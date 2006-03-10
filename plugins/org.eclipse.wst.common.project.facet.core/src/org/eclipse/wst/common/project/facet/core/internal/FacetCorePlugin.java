@@ -11,6 +11,9 @@
 
 package org.eclipse.wst.common.project.facet.core.internal;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -28,9 +31,11 @@ public final class FacetCorePlugin
     extends Plugin 
     
 {
-    public static final String PLUGIN_ID = "org.eclipse.wst.common.project.facet.core";
+    public static final String PLUGIN_ID 
+        = "org.eclipse.wst.common.project.facet.core"; //$NON-NLS-1$
     
     private static FacetCorePlugin plugin;
+    private static final Set messagesLogged = new HashSet();
     
     public FacetCorePlugin() 
     {
@@ -45,7 +50,7 @@ public final class FacetCorePlugin
     
     public static void log( final Exception e )
     {
-        final String msg = e.getMessage() + "";
+        final String msg = e.getMessage() + ""; //$NON-NLS-1$
         log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, e ) );
     }
 
@@ -57,6 +62,42 @@ public final class FacetCorePlugin
     public static void log( final String msg )
     {
         log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, null ) );
+    }
+    
+    public static void logError( final String msg )
+    {
+        logError( msg, false );
+    }
+    
+    public static void logError( final String msg,
+                                 final boolean suppressDuplicates )
+    {
+        if( suppressDuplicates && messagesLogged.contains( msg ) )
+        {
+            return;
+        }
+        
+        messagesLogged.add( msg );
+        
+        log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, null ) );
+    }
+
+    public static void logWarning( final String msg )
+    {
+        logWarning( msg, false );
+    }
+    
+    public static void logWarning( final String msg,
+                                   final boolean suppressDuplicates )
+    {
+        if( suppressDuplicates && messagesLogged.contains( msg ) )
+        {
+            return;
+        }
+        
+        messagesLogged.add( msg );
+        
+        log( new Status( IStatus.WARNING, PLUGIN_ID, IStatus.OK, msg, null ) );
     }
     
     public static IStatus createErrorStatus( final String msg )

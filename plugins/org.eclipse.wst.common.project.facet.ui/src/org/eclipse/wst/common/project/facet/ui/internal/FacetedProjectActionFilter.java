@@ -32,7 +32,7 @@ public final class FacetedProjectActionFilter
                                   final String name, 
                                   final String value )
     {
-        if( name.equals( "facet" ) )
+        if( name.equals( "facet" ) ) //$NON-NLS-1$
         {
             final IFacetedProject fproj = (IFacetedProject) target;
             

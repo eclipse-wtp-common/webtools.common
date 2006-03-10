@@ -40,8 +40,18 @@ import org.osgi.framework.Bundle;
 
 public final class ProjectFacetsUiManagerImpl 
 {
-    private static final String EXTENSION_ID = "wizard";
-    private static final String IMAGES_EXTENSION_ID = "images";
+    private static final String EXTENSION_ID = "wizard"; //$NON-NLS-1$
+    private static final String IMAGES_EXTENSION_ID = "images"; //$NON-NLS-1$
+    
+    private static final String EL_WIZARD_PAGES = "wizard-pages"; //$NON-NLS-1$
+    private static final String EL_PAGE = "page"; //$NON-NLS-1$
+    private static final String EL_IMAGE = "image"; //$NON-NLS-1$
+    private static final String ATTR_PATH = "path"; //$NON-NLS-1$
+    private static final String ATTR_RUNTIME_COMPONENT_TYPE = "runtime-component-type"; //$NON-NLS-1$
+    private static final String ATTR_CATEGORY = "category"; //$NON-NLS-1$
+    private static final String ATTR_CLASS = "class"; //$NON-NLS-1$
+    private static final String ATTR_VERSION = "version"; //$NON-NLS-1$
+    private static final String ATTR_FACET = "facet"; //$NON-NLS-1$
 
     private static final HashMap metadata;
     
@@ -62,7 +72,7 @@ public final class ProjectFacetsUiManagerImpl
         metadata = new HashMap();
         
         final Bundle bundle = Platform.getBundle( FacetUiPlugin.PLUGIN_ID );
-        final URL url = bundle.getEntry( "images/unknown.gif" );
+        final URL url = bundle.getEntry( "images/unknown.gif" ); //$NON-NLS-1$
         defaultIcon = ImageDescriptor.createFromURL( url );
         
         readExtensions();
@@ -153,7 +163,7 @@ public final class ProjectFacetsUiManagerImpl
         
         if( point == null )
         {
-            throw new RuntimeException( "Extension point not found!" );
+            throw new RuntimeException( "Extension point not found!" ); //$NON-NLS-1$
         }
         
         final IExtension[] extensions = point.getExtensions();
@@ -168,7 +178,7 @@ public final class ProjectFacetsUiManagerImpl
                 final IConfigurationElement config = elements[ j ];
                 final String ename = config.getName();
                 
-                if( ename.equals( "wizard-pages" ) )
+                if( ename.equals( EL_WIZARD_PAGES ) )
                 {
                     readWizardPagesInfo( config );
                 }
@@ -178,11 +188,11 @@ public final class ProjectFacetsUiManagerImpl
     
     private static void readWizardPagesInfo( final IConfigurationElement config )
     {
-        final String id = config.getAttribute( "facet" );
+        final String id = config.getAttribute( ATTR_FACET );
 
         if( id == null )
         {
-            reportMissingAttribute( config, "facet" );
+            reportMissingAttribute( config, ATTR_FACET );
             return;
         }
         
@@ -199,11 +209,11 @@ public final class ProjectFacetsUiManagerImpl
         
         final IProjectFacet f = ProjectFacetsManager.getProjectFacet( id );
 
-        final String version = config.getAttribute( "version" );
+        final String version = config.getAttribute( ATTR_VERSION );
 
         if( version == null )
         {
-            reportMissingAttribute( config, "version" );
+            reportMissingAttribute( config, ATTR_VERSION );
             return;
         }
         
@@ -233,22 +243,9 @@ public final class ProjectFacetsUiManagerImpl
         {
             final IConfigurationElement child = children[ i ];
             final String childName = child.getName();
+            final Action.Type actionType = Action.Type.valueOf( childName );
             
-            final Action.Type actionType;
-            
-            if( childName.equals( "install" ) )
-            {
-                actionType = Action.Type.INSTALL;
-            }
-            else if( childName.equals( "uninstall" ) )
-            {
-                actionType = Action.Type.UNINSTALL;
-            }
-            else if( childName.equals( "version-change" ) )
-            {
-                actionType = Action.Type.UNINSTALL;
-            }
-            else
+            if( actionType == null )
             {
                 final String msg
                     = NLS.bind( Resources.invalidActionType, 
@@ -275,13 +272,13 @@ public final class ProjectFacetsUiManagerImpl
             final IConfigurationElement child = children[ i ];
             final String childName = child.getName();
             
-            if( childName.equals( "page" ) )
+            if( childName.equals( EL_PAGE ) )
             {
-                final String clname = child.getAttribute( "class" );
+                final String clname = child.getAttribute( ATTR_CLASS );
                 
                 if( clname == null )
                 {
-                    reportMissingAttribute( config, "class" );
+                    reportMissingAttribute( config, ATTR_CLASS );
                     continue;
                 }
                 
@@ -302,7 +299,7 @@ public final class ProjectFacetsUiManagerImpl
         
         if( point == null )
         {
-            throw new RuntimeException( "Extension point not found!" );
+            throw new RuntimeException( "Extension point not found!" ); //$NON-NLS-1$
         }
         
         final IExtension[] extensions = point.getExtensions();
@@ -317,7 +314,7 @@ public final class ProjectFacetsUiManagerImpl
                 final IConfigurationElement config = elements[ j ];
                 final String ename = config.getName();
                 
-                if( ename.equals( "image" ) )
+                if( ename.equals( EL_IMAGE ) )
                 {
                     readImage( config );
                 }
@@ -327,9 +324,9 @@ public final class ProjectFacetsUiManagerImpl
     
     private static void readImage( final IConfigurationElement config )
     {
-        final String fid = config.getAttribute( "facet" );
-        final String cid = config.getAttribute( "category" );
-        final String rct = config.getAttribute( "runtime-component-type" );
+        final String fid = config.getAttribute( ATTR_FACET );
+        final String cid = config.getAttribute( ATTR_CATEGORY );
+        final String rct = config.getAttribute( ATTR_RUNTIME_COMPONENT_TYPE );
         
         final Object target;
         
@@ -380,15 +377,15 @@ public final class ProjectFacetsUiManagerImpl
         }
         else
         {
-            reportMissingAttribute( config, "facet" );
+            reportMissingAttribute( config, ATTR_FACET );
             return;
         }
         
-        final String path = config.getAttribute( "path" );
+        final String path = config.getAttribute( ATTR_PATH );
         
         if( path == null )
         {
-            reportMissingAttribute( config, "path" );
+            reportMissingAttribute( config, ATTR_PATH );
         }
                 
         final String plugin = config.getNamespace();

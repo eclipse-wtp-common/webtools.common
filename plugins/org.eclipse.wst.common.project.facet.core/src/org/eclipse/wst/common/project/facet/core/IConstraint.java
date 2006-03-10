@@ -12,7 +12,9 @@
 package org.eclipse.wst.common.project.facet.core;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IStatus;
 
@@ -38,37 +40,42 @@ public interface IConstraint
     
     static final class Type
     {
-        public static final Type AND = new Type();
-        public static final Type OR = new Type();
-        public static final Type REQUIRES = new Type();
-        public static final Type CONFLICTS = new Type();
+        private static final Map items = new HashMap();
 
-        public static Type get( final String str )
+        public static final Type AND 
+            = new Type( "and" ); //$NON-NLS-1$
+        
+        public static final Type OR 
+            = new Type( "or" ); //$NON-NLS-1$
+        
+        public static final Type REQUIRES 
+            = new Type( "requires" ); //$NON-NLS-1$
+        
+        public static final Type CONFLICTS 
+            = new Type( "conflicts" ); //$NON-NLS-1$
+        
+        private final String name;
+        
+        private Type( final String name )
         {
-            if( str.equals( "and" ) )
-            {
-                return AND;
-            }
-            else if( str.equals( "or" ) )
-            {
-                return OR;
-            }
-            else if( str.equals( "requires" ) )
-            {
-                return REQUIRES;
-            }
-            else if( str.equals( "conflicts" ) )
-            {
-                return CONFLICTS;
-            }
-            else
-            {
-                final String msg = "Invalid constraint type: " + str;
-                throw new IllegalArgumentException( msg );
-            }
+            this.name = name;
+            items.put( name, this );
         }
         
-        private Type() {};
+        public static Type valueOf( final String name )
+        {
+            return (Type) items.get( name );
+        }
+        
+        public String name()
+        {
+            return this.name;
+        }
+        
+        public String toString()
+        {
+            return this.name;
+        }
     }
     
     /**

@@ -16,6 +16,7 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
@@ -26,11 +27,14 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 public final class ProjectFacetRef
 {
+    private static final String ATTR_ID = "id"; //$NON-NLS-1$
+    private static final String ATTR_VERSION = "version"; //$NON-NLS-1$
+    
     private final IProjectFacet f;
-    private final VersionMatchExpr vexpr;
+    private final VersionExpr vexpr;
     
     public ProjectFacetRef( final IProjectFacet f,
-                            final VersionMatchExpr vexpr )
+                            final VersionExpr vexpr )
     {
         this.f = f;
         this.vexpr = vexpr;
@@ -63,11 +67,11 @@ public final class ProjectFacetRef
     
     public static ProjectFacetRef read( final IConfigurationElement config )
     {
-        final String id = config.getAttribute( "id" );
+        final String id = config.getAttribute( ATTR_ID );
 
         if( id == null )
         {
-            ProjectFacetsManagerImpl.reportMissingAttribute( config, "id" );
+            ProjectFacetsManagerImpl.reportMissingAttribute( config, ATTR_ID );
             return null;
         }
         
@@ -79,14 +83,14 @@ public final class ProjectFacetRef
         
         final IProjectFacet f = ProjectFacetsManager.getProjectFacet( id );
         
-        final String v = config.getAttribute( "version" );
-        VersionMatchExpr vexpr = null;
+        final String v = config.getAttribute( ATTR_VERSION );
+        VersionExpr vexpr = null;
         
         if( v != null )
         {
             try
             {
-                vexpr = new VersionMatchExpr( f, v );
+                vexpr = new VersionExpr( f, v, config.getNamespace() );
             }
             catch( CoreException e )
             {
@@ -97,5 +101,44 @@ public final class ProjectFacetRef
         
         return new ProjectFacetRef( f, vexpr );
     }
+    
+    public String toString()
+    {
+        if( this.vexpr == null )
+        {
+            return this.f.getLabel();
+        }
+        else if( this.vexpr.isSingleVersionMatch() )
+        {
+            return NLS.bind( Resources.exactVersion, this.f.getLabel(),
+                             this.vexpr.toString() );
+        }
+        else if( this.vexpr.isSimpleAllowNewer() )
+        {
+            return NLS.bind( Resources.allowNewer, this.f.getLabel(),
+                             this.vexpr.getFirstVersion() );
+        }
+        else
+        {
+            return NLS.bind( Resources.versionExpr, this.f.getLabel(),
+                             this.vexpr.toString() );
+        }
+    }
 
+    private static final class Resources
+    
+        extends NLS
+        
+    {
+        public static String exactVersion;
+        public static String allowNewer;
+        public static String versionExpr;
+        
+        static
+        {
+            initializeMessages( ProjectFacetRef.class.getName(), 
+                                Resources.class );
+        }
+    }
+    
 }

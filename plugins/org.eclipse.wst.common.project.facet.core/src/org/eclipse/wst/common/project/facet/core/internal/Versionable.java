@@ -52,7 +52,7 @@ public abstract class Versionable
         throws CoreException
         
     {
-        final VersionMatchExpr prepared = new VersionMatchExpr( this, expr );
+        final VersionExpr prepared = new VersionExpr( this, expr, null );
         final Set result = new HashSet();
             
         for( Iterator itr = this.versions.iterator(); itr.hasNext(); )

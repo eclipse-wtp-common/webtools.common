@@ -32,7 +32,7 @@ public interface IFacetedProjectValidator
      */
     
     static final String BASE_MARKER_ID
-        = FacetCorePlugin.PLUGIN_ID + ".validation.marker";
+        = FacetCorePlugin.PLUGIN_ID + ".validation.marker"; //$NON-NLS-1$
     
     void validate( IFacetedProject fproj )
     

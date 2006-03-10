@@ -21,7 +21,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.ICategory;
-import org.eclipse.wst.common.project.facet.core.IDelegate;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.VersionFormatException;
@@ -53,6 +53,7 @@ public final class ProjectFacet
     private String description;
     private ICategory category;
     private final List actionDefinitions = new ArrayList();
+    private final List eventHandlers = new ArrayList();
     
     ProjectFacet() {}
     
@@ -114,8 +115,7 @@ public final class ProjectFacet
         if( fv == null )
         {
             final String msg 
-                = "Could not find version " + version + " of project facet " 
-                  + this.id + ".";
+                = NLS.bind( Resources.versionNotFound, this.getId(), version );
             
             throw new IllegalArgumentException( msg );
         }
@@ -163,8 +163,24 @@ public final class ProjectFacet
         return VERSION_ADAPTER;
     }
     
+    public Object getAdapter( final Class type )
+    {
+        return Platform.getAdapterManager().loadAdapter( this, type.getName() );
+    }
+    
+    public String createVersionNotFoundErrMsg( final String verstr )
+    {
+        return NLS.bind( ProjectFacetsManagerImpl.Resources.facetVersionNotDefined,
+                         this.id, verstr );
+    }
+    
+    public String toString()
+    {
+        return this.label;
+    }
+    
     ActionDefinition getActionDefinition( final IProjectFacetVersion fv,
-                                          final IDelegate.Type type )
+                                          final Action.Type type )
     
         throws CoreException
         
@@ -205,26 +221,41 @@ public final class ProjectFacet
         this.actionDefinitions.add( actionDefinition );
     }
     
-    public Object getAdapter( final Class type )
+    List getEventHandlers( final IProjectFacetVersion fv,
+                           final EventHandler.Type type )
     {
-        return Platform.getAdapterManager().loadAdapter( this, type.getName() );
+        final List res = new ArrayList();
+        
+        for( Iterator itr = this.eventHandlers.iterator(); itr.hasNext(); )
+        {
+            final EventHandler h = (EventHandler) itr.next();
+            
+            try
+            {
+                if( h.getType() == type &&
+                    h.getVersionExpr().evaluate( (IVersion) fv ) )
+                {
+                    res.add( h );
+                }
+            }
+            catch( CoreException e )
+            {
+                FacetCorePlugin.log( e.getStatus() );
+            }
+        }
+        
+        return res;
     }
     
-    public String createVersionNotFoundErrMsg( final String verstr )
+    void addEventHandler( final EventHandler h )
     {
-        return NLS.bind( ProjectFacetsManagerImpl.Resources.facetVersionNotDefinedNoPlugin,
-                         this.id, verstr );
-    }
-    
-    public String toString()
-    {
-        return this.label;
+        this.eventHandlers.add( h );
     }
     
     static final class ActionDefinition
     {
-        public IDelegate.Type type;
-        public VersionMatchExpr versionMatchExpr;
+        public Action.Type type;
+        public VersionExpr versionMatchExpr;
         public String delegateClassName;
         public String configFactoryClassName;
     }
@@ -234,6 +265,7 @@ public final class ProjectFacet
         extends NLS
         
     {
+        public static String versionNotFound;
         public static String multipleActionDefinitions;
         
         static

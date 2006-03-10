@@ -98,8 +98,18 @@ public final class FacetedProject
     
 {
     private static final String TRACING_DELEGATE_CALLS
-        = FacetCorePlugin.PLUGIN_ID + "/delegate/calls";
+        = FacetCorePlugin.PLUGIN_ID + "/delegate/calls"; //$NON-NLS-1$
     
+    private static final String FACETS_METADATA_FILE
+        = ".settings/" + FacetCorePlugin.PLUGIN_ID + ".xml"; //$NON-NLS-1$ //$NON-NLS-2$
+    
+    private static final String EL_RUNTIME = "runtime"; //$NON-NLS-1$
+    private static final String EL_FIXED = "fixed"; //$NON-NLS-1$
+    private static final String EL_INSTALLED = "installed"; //$NON-NLS-1$
+    private static final String ATTR_NAME = "name"; //$NON-NLS-1$
+    private static final String ATTR_FACET = "facet"; //$NON-NLS-1$
+    private static final String ATTR_VERSION = "version"; //$NON-NLS-1$
+
     private final IProject project;
     private final CopyOnWriteSet facets;
     private final CopyOnWriteSet fixed;
@@ -121,8 +131,7 @@ public final class FacetedProject
         this.fixed = new CopyOnWriteSet();
         this.listeners = new ArrayList();
         
-        this.f = project.getFile( ".settings/" + FacetCorePlugin.PLUGIN_ID 
-                                  + ".xml" );
+        this.f = project.getFile( FACETS_METADATA_FILE );
         
         refresh();
     }
@@ -252,7 +261,7 @@ public final class FacetedProject
     {
         if( monitor != null )
         {
-            monitor.beginTask( "", actions.size() + 1 );
+            monitor.beginTask( "", actions.size() * 100 ); //$NON-NLS-1$
         }
         
         try
@@ -329,25 +338,22 @@ public final class FacetedProject
                 final ProjectFacetVersion fv 
                     = (ProjectFacetVersion) action.getProjectFacetVersion();
                 
-                final IDelegate delegate 
-                    = fv.getDelegate( IDelegate.Type.get( type ) );
+                callEventHandlers( fv, getPreEventHandlerType( type ), 
+                                   action.getConfig(), submon( monitor, 10 ) );
+                
+                final IDelegate delegate = fv.getDelegate( type );
                 
                 if( delegate == null )
                 {
                     if( monitor != null )
                     {
-                        monitor.worked( 1 );
+                        monitor.worked( 80 );
                     }
                 }
                 else
                 {
-                    final SubProgressMonitor submonitor
-                        = monitor == null 
-                          ? null : new SubProgressMonitor( monitor, 1 );
-                    
-                    callDelegate( this.project, fv, action.getConfig(),
-                                  IDelegate.Type.get( type ), delegate,
-                                  submonitor );
+                    callDelegate( fv, delegate, action.getConfig(), type,
+                                  submon( monitor, 80 ) );
                 }
         
                 synchronized( this.lock )
@@ -356,11 +362,9 @@ public final class FacetedProject
                 }
                 
                 save();
-            }
-            
-            if( monitor != null )
-            {
-                monitor.worked( 1 );
+
+                callEventHandlers( fv, getPostEventHandlerType( type ), 
+                                   action.getConfig(), submon( monitor, 10 ) );
             }
         }
         finally
@@ -480,7 +484,7 @@ public final class FacetedProject
     {
         if( monitor != null )
         {
-            monitor.beginTask( "", this.facets.size() );
+            monitor.beginTask( "", this.facets.size() ); //$NON-NLS-1$
         }
         
         try
@@ -514,26 +518,8 @@ public final class FacetedProject
                 final ProjectFacetVersion fv
                     = (ProjectFacetVersion) itr.next();
                 
-                final IDelegate delegate
-                    = fv.getDelegate( IDelegate.Type.RUNTIME_CHANGED );
-                
-                if( delegate == null )
-                {
-                    if( monitor != null )
-                    {
-                        monitor.worked( 1 );
-                    }
-                }
-                else
-                {
-                    final SubProgressMonitor submonitor
-                        = monitor == null 
-                          ? null : new SubProgressMonitor( monitor, 1 );
-                    
-                    callDelegate( this.project, fv, null,
-                                  IDelegate.Type.RUNTIME_CHANGED, delegate,
-                                  submonitor );
-                }
+                callEventHandlers( fv, EventHandler.Type.RUNTIME_CHANGED, null,
+                                   submon( monitor, 1 ) );
             }
         }
         finally
@@ -594,7 +580,7 @@ public final class FacetedProject
             final IMarker m = existing[ i ];
             
             if( m.getAttribute( IMarker.SEVERITY, -1 ) == severity &&
-                m.getAttribute( IMarker.MESSAGE, "" ).equals( message ) )
+                m.getAttribute( IMarker.MESSAGE, "" ).equals( message ) ) //$NON-NLS-1$
             {
                 return m;
             }
@@ -689,12 +675,104 @@ public final class FacetedProject
         }
     }
     
-    private static void callDelegate( final IProject project,
-                                      final IProjectFacetVersion fv,
-                                      final Object config,
-                                      final IDelegate.Type type,
-                                      final IDelegate delegate,
-                                      final IProgressMonitor monitor )
+    private EventHandler.Type getPreEventHandlerType( final Action.Type t )
+    {
+        if( t == Action.Type.INSTALL )
+        {
+            return EventHandler.Type.PRE_INSTALL;
+        }
+        else if( t == Action.Type.UNINSTALL )
+        {
+            return EventHandler.Type.PRE_UNINSTALL;
+        }
+        else if( t == Action.Type.VERSION_CHANGE )
+        {
+            return EventHandler.Type.PRE_VERSION_CHANGE;
+        }
+        else
+        {
+            throw new IllegalStateException();
+        }
+    }
+    
+    private EventHandler.Type getPostEventHandlerType( final Action.Type t )
+    {
+        if( t == Action.Type.INSTALL )
+        {
+            return EventHandler.Type.POST_INSTALL;
+        }
+        else if( t == Action.Type.UNINSTALL )
+        {
+            return EventHandler.Type.POST_UNINSTALL;
+        }
+        else if( t == Action.Type.VERSION_CHANGE )
+        {
+            return EventHandler.Type.POST_VERSION_CHANGE;
+        }
+        else
+        {
+            throw new IllegalStateException();
+        }
+    }
+
+    private void callEventHandlers( final IProjectFacetVersion fv,
+                                    final EventHandler.Type type,
+                                    final Object config,
+                                    final IProgressMonitor monitor )
+    
+        throws CoreException
+        
+    {
+        final ProjectFacet f = (ProjectFacet) fv.getProjectFacet();
+        final List handlers = f.getEventHandlers( fv, type );
+        
+        if( monitor != null )
+        {
+            monitor.beginTask( "", handlers.size() ); //$NON-NLS-1$
+        }
+        
+        try
+        {
+            for( Iterator itr = handlers.iterator(); itr.hasNext(); )
+            {
+                final EventHandler h = (EventHandler) itr.next();
+                IDelegate delegate = null;
+                
+                try
+                {
+                    delegate = h.getDelegate();
+                }
+                catch( CoreException e )
+                {
+                    FacetCorePlugin.log( e.getStatus() );
+                }
+                
+                if( delegate != null )
+                {
+                    callDelegate( fv, delegate, config, type,
+                                  submon( monitor, 1 ) );
+                }
+                
+                if( monitor != null )
+                {
+                    monitor.worked( 1 );
+                }
+            }
+        }
+        finally
+        {
+            if( monitor != null )
+            {
+                monitor.done();
+            }
+        }
+    }
+    
+    private void callDelegate( final IProjectFacetVersion fv,
+                               final IDelegate delegate,
+                               final Object config,
+                               final Object context,
+                               final IProgressMonitor monitor )
     
         throws CoreException
         
@@ -704,7 +782,7 @@ public final class FacetedProject
         
         final boolean tracingDelegateCalls 
             = tracingDelegateCallsStr == null ? false 
-              : tracingDelegateCallsStr.equals( "true" ); 
+              : tracingDelegateCallsStr.equals( "true" );  //$NON-NLS-1$
         
         long timeStarted = -1;
         
@@ -713,7 +791,7 @@ public final class FacetedProject
             final String msg
                 = Resources.bind( Resources.tracingDelegateStarting,
                                   fv.getProjectFacet().getId(),
-                                  fv.getVersionString(), type.toString(),
+                                  fv.getVersionString(), context.toString(),
                                   delegate.getClass().getName() );
             
             System.out.println( msg );
@@ -723,33 +801,39 @@ public final class FacetedProject
         
         try
         {
-            delegate.execute( project, fv, config, monitor ); 
+            delegate.execute( this.project, fv, config, monitor ); 
         }
         catch( Exception e )
         {
             final String msg;
             
-            if( type == IDelegate.Type.INSTALL )
+            if( context == Action.Type.INSTALL ||
+                context == EventHandler.Type.PRE_INSTALL ||
+                context == EventHandler.Type.POST_INSTALL )
             {
                 msg = NLS.bind( Resources.failedOnInstall, fv );
             }
-            else if( type == IDelegate.Type.UNINSTALL )
+            else if( context == Action.Type.UNINSTALL ||
+                     context == EventHandler.Type.PRE_UNINSTALL ||
+                     context == EventHandler.Type.POST_UNINSTALL )
             {
                 msg = NLS.bind( Resources.failedOnUninstall, fv );
             }
-            else if( type == IDelegate.Type.VERSION_CHANGE )
+            else if( context == Action.Type.VERSION_CHANGE ||
+                     context == EventHandler.Type.PRE_VERSION_CHANGE ||
+                     context == EventHandler.Type.POST_VERSION_CHANGE )
             {
                 msg = NLS.bind( Resources.failedOnVersionChange, 
                                 fv.getProjectFacet().getLabel(), 
                                 fv.getVersionString() );
             }
-            else if( type == IDelegate.Type.RUNTIME_CHANGED )
+            else if( context == EventHandler.Type.RUNTIME_CHANGED )
             {
                 msg = NLS.bind( Resources.failedOnRuntimeChanged, fv );
             }
             else
             {
-                msg = "Unknown delegate type!";
+                throw new IllegalStateException( context.toString() );
             }
             
             final IStatus status
@@ -810,18 +894,18 @@ public final class FacetedProject
         final StringWriter w = new StringWriter();
         final PrintWriter out = new PrintWriter( w );
         
-        final String nl = System.getProperty( "line.separator" );
+        final String nl = System.getProperty( "line.separator" ); //$NON-NLS-1$
         
-        out.print( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" );
+        out.print( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" ); //$NON-NLS-1$
         out.print( nl );
-        out.print( "<faceted-project>" );
+        out.print( "<faceted-project>" ); //$NON-NLS-1$
         out.print( nl );
         
         if( this.runtimeName != null )
         {
-            out.print( "  <runtime name=\"" );
+            out.print( "  <runtime name=\"" ); //$NON-NLS-1$
             out.print( this.runtimeName );
-            out.print( "\"/>" );
+            out.print( "\"/>" ); //$NON-NLS-1$
             out.print( nl );
         }
         
@@ -829,9 +913,9 @@ public final class FacetedProject
         {
             final IProjectFacet f = (IProjectFacet) itr.next();
             
-            out.print( "  <fixed facet=\"" );
+            out.print( "  <fixed facet=\"" ); //$NON-NLS-1$
             out.print( f.getId() );
-            out.print( "\"/>" );
+            out.print( "\"/>" ); //$NON-NLS-1$
             out.print( nl );
         }
         
@@ -840,15 +924,15 @@ public final class FacetedProject
             final IProjectFacetVersion fv
                 = (IProjectFacetVersion) itr.next();
             
-            out.print( "  <installed facet=\"" );
+            out.print( "  <installed facet=\"" ); //$NON-NLS-1$
             out.print( fv.getProjectFacet().getId() );
-            out.print( "\" version=\"" );
+            out.print( "\" version=\"" ); //$NON-NLS-1$
             out.print( fv.getVersionString() );
-            out.print( "\"/>" );
+            out.print( "\"/>" ); //$NON-NLS-1$
             out.print( nl );
         }
         
-        out.print( "</faceted-project>" );
+        out.print( "</faceted-project>" ); //$NON-NLS-1$
         out.print( nl );
         
         final InputStream in 
@@ -906,13 +990,13 @@ public final class FacetedProject
                 final Element e = elements[ i ];
                 final String name = e.getNodeName();
                 
-                if( name.equals( "runtime" ) )
+                if( name.equals( EL_RUNTIME ) )
                 {
-                    this.runtimeName = e.getAttribute( "name" );
+                    this.runtimeName = e.getAttribute( ATTR_NAME );
                 }
-                else if( name.equals( "fixed" ) )
+                else if( name.equals( EL_FIXED ) )
                 {
-                    final String id = e.getAttribute( "facet" );
+                    final String id = e.getAttribute( ATTR_FACET );
                     
                     if( ! ProjectFacetsManager.isProjectFacetDefined( id ) )
                     {
@@ -929,10 +1013,10 @@ public final class FacetedProject
                     
                     this.fixed.add( f );
                 }
-                else if( name.equals( "installed" ) )
+                else if( name.equals( EL_INSTALLED ) )
                 {
-                    final String id = e.getAttribute( "facet" );
-                    final String version = e.getAttribute( "version" );
+                    final String id = e.getAttribute( ATTR_FACET );
+                    final String version = e.getAttribute( ATTR_VERSION );
                     
                     if( ! ProjectFacetsManager.isProjectFacetDefined( id ) )
                     {
@@ -986,7 +1070,7 @@ public final class FacetedProject
                     public InputSource resolveEntity( final String publicID, 
                                                       final String systemID )
                     {
-                        return new InputSource( new StringReader( "" ) );
+                        return new InputSource( new StringReader( "" ) ); //$NON-NLS-1$
                     }
                 }
             );
@@ -1036,6 +1120,12 @@ public final class FacetedProject
         }
         
         return (Element[]) list.toArray( new Element[ list.size() ] );
+    }
+    
+    private static IProgressMonitor submon( final IProgressMonitor parent,
+                                            final int ticks )
+    {
+        return ( parent == null ? null : new SubProgressMonitor( parent, ticks ) );
     }
     
     private static final class Resources

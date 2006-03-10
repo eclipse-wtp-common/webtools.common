@@ -98,6 +98,8 @@ public final class FacetsSelectionPanel
     implements ISelectionProvider
 
 {
+    private static final String FACET_COLUMN = "facet"; //$NON-NLS-1$
+    private static final String VERSION_COLUMN = "version"; //$NON-NLS-1$
     private static final String WIDTH = "width"; //$NON-NLS-1$
     private static final String HEIGHT = "height"; //$NON-NLS-1$
     private static final String CW_FACET = "cw.facet"; //$NON-NLS-1$
@@ -249,7 +251,7 @@ public final class FacetsSelectionPanel
         );
 
         this.presetsLabel = new Label( this.topComposite, SWT.NONE );
-        this.presetsLabel.setText( "Presets: " );
+        this.presetsLabel.setText( Resources.presetsLabel );
         
         this.presetsCombo = new Combo( this.topComposite, SWT.READ_ONLY );
         this.presetsCombo.setLayoutData( gdhfill() );
@@ -266,7 +268,7 @@ public final class FacetsSelectionPanel
         );
         
         this.savePresetButton = new Button( this.topComposite, SWT.PUSH );
-        this.savePresetButton.setText( "Save" );
+        this.savePresetButton.setText( Resources.saveButtonLabel );
         this.savePresetButton.setLayoutData( whint( new GridData(), 60 ) );
         
         this.savePresetButton.addSelectionListener
@@ -281,7 +283,7 @@ public final class FacetsSelectionPanel
         );
 
         this.deletePresetButton = new Button( this.topComposite, SWT.PUSH );
-        this.deletePresetButton.setText( "Delete" );
+        this.deletePresetButton.setText( Resources.deleteButtonLabel );
         this.deletePresetButton.setLayoutData( whint( new GridData(), 60 ) );
         
         this.deletePresetButton.addSelectionListener
@@ -310,7 +312,7 @@ public final class FacetsSelectionPanel
             = new ComboBoxCellEditor( this.tree.getTree(), new String[ 0 ],
                                       SWT.READ_ONLY );
 
-        this.tree.setColumnProperties( new String[] { "facet", "version" } );
+        this.tree.setColumnProperties( new String[] { FACET_COLUMN, VERSION_COLUMN } );
         this.tree.setCellModifier( new CellModifier() );
         this.tree.setCellEditors( new CellEditor[] { null, this.ceditor } );
 
@@ -319,7 +321,7 @@ public final class FacetsSelectionPanel
         this.tree.setSorter( new Sorter() );
         
         this.colFacet = new TreeColumn( this.tree.getTree(), SWT.NONE );
-        this.colFacet.setText( "Project Facet" );
+        this.colFacet.setText( Resources.facetColumnLabel );
         this.colFacet.setWidth( this.settings.getInt( CW_FACET ) );
         this.colFacet.setResizable( true );
         
@@ -336,7 +338,7 @@ public final class FacetsSelectionPanel
         );
 
         this.colVersion = new TreeColumn( this.tree.getTree(), SWT.NONE );
-        this.colVersion.setText( "Version" );
+        this.colVersion.setText( Resources.versionColumnLabel );
         this.colVersion.setWidth( this.settings.getInt( CW_VERSION ) );
         this.colVersion.setResizable( true );
 
@@ -354,7 +356,7 @@ public final class FacetsSelectionPanel
 
         this.popupMenu = new Menu( getShell(), SWT.POP_UP );
         this.popupMenuConstraints = new MenuItem( this.popupMenu, SWT.PUSH );
-        this.popupMenuConstraints.setText( "Show Constraints..." );
+        this.popupMenuConstraints.setText( Resources.showConstraints );
         
         this.popupMenuConstraints.addSelectionListener
         (
@@ -759,15 +761,19 @@ public final class FacetsSelectionPanel
     public void addFilter( final IFilter filter )
     {
         this.filters.add( filter );
+        
         refresh();
         refreshPresetsCombo();
+        refreshVersionsDropDown();
     }
 
     public void removeFilter( final IFilter filter )
     {
         this.filters.remove( filter );
+        
         refresh();
         refreshPresetsCombo();
+        refreshVersionsDropDown();
     }
 
     public void addProjectFacetsListener( final Listener listener )
@@ -879,47 +885,12 @@ public final class FacetsSelectionPanel
 
         if( selection != this.oldSelection )
         {
-            if( selection instanceof TableRowData )
-            {
-                final TableRowData trd = (TableRowData) selection;
-        
-                if( trd == null )
-                {
-                    return;
-                }
-        
-                // Reset the contents of the combo box cell editor to contain the
-                // versions of the selected project facet.
-                
-                final List versions = trd.getVersions();
-                final String[] verstrs = new String[ versions.size() ];
-        
-                for( int i = 0, n = versions.size(); i < n; i++ )
-                {
-                    final IProjectFacetVersion fv
-                        = (IProjectFacetVersion) versions.get( i );
-                    
-                    verstrs[ i ] = fv.getVersionString(); 
-                }
-        
-                this.ceditor.setItems( verstrs );
-        
-                for( int i = 0, n = versions.size(); i < n; i++ )
-                {
-                    if( versions.get( i ) == trd.getCurrentVersion() )
-                    {
-                        this.ceditor.setValue( new Integer( i ) );
-                        break;
-                    }
-                }
-            }
-            
             this.oldSelection = selection;
-        
+            refreshVersionsDropDown();
             notifySelectionChangedListeners();
         }
     }
-
+    
     private void checkStateChanged( final CheckStateChangedEvent event )
     {
         final Object el = event.getElement();
@@ -1170,7 +1141,7 @@ public final class FacetsSelectionPanel
             }
         );
         
-        this.presetsCombo.add( "<custom>" );
+        this.presetsCombo.add( Resources.customPreset );
         
         for( Iterator itr = this.presets.iterator(); itr.hasNext(); )
         {
@@ -1240,7 +1211,57 @@ public final class FacetsSelectionPanel
             }
         }
     }
+    
+    private void refreshVersionsDropDown()
+    {
+        final TableRowData trd = getSelectedTableRowData();
+        
+        if( trd == null )
+        {
+            return;
+        }
+        
+        final List versions = trd.getVersions();
+        final String[] verstrs = new String[ versions.size() ];
 
+        for( int i = 0, n = versions.size(); i < n; i++ )
+        {
+            final IProjectFacetVersion fv
+                = (IProjectFacetVersion) versions.get( i );
+            
+            verstrs[ i ] = fv.getVersionString(); 
+        }
+
+        this.ceditor.setItems( verstrs );
+
+        for( int i = 0, n = versions.size(); i < n; i++ )
+        {
+            if( versions.get( i ) == trd.getCurrentVersion() )
+            {
+                this.ceditor.setValue( new Integer( i ) );
+                break;
+            }
+        }
+    }
+
+    private TableRowData getSelectedTableRowData()
+    {
+        final IStructuredSelection ssel 
+            = (IStructuredSelection) this.tree.getSelection();
+        
+        if( ssel != null && ! ssel.isEmpty() )
+        {
+            final Object obj = ssel.getFirstElement();
+            
+            if( obj instanceof TableRowData )
+            {
+                return (TableRowData) obj;
+            }
+        }
+
+        return null;
+    }
+    
     private boolean isFilteredOut( final IProjectFacetVersion fv )
     {
         for( Iterator itr = FacetsSelectionPanel.this.filters.iterator();
@@ -1393,8 +1414,8 @@ public final class FacetsSelectionPanel
     private void handleSavePreset()
     {
         final InputDialog dialog 
-            = new InputDialog( getShell(), "Save Preset", 
-                               "Enter the name for the preset.",
+            = new InputDialog( getShell(), Resources.savePresetDialogTitle, 
+                               Resources.savePresetDialogMessage,
                                null, null );
         
         if( dialog.open() == IDialogConstants.OK_ID )
@@ -1673,7 +1694,7 @@ public final class FacetsSelectionPanel
                 }
                 else
                 {
-                    return "";
+                    return ""; //$NON-NLS-1$
                 }
             }
             else
@@ -1692,7 +1713,7 @@ public final class FacetsSelectionPanel
                             = trd.getCurrentVersion().getVersionString();
                         
                         return trd.getVersions().size() == 1 
-                               ? vstr : vstr + " ...";
+                               ? vstr : vstr + " ..."; //$NON-NLS-1$
                     }
                     default:
                     {
@@ -1718,12 +1739,12 @@ public final class FacetsSelectionPanel
                 final IProjectFacet f
                     = ( (TableRowData) element ).getProjectFacet();
 
-                id = "f:" + f.getId();
+                id = "f:" + f.getId(); //$NON-NLS-1$
                 obj = f;
             }
             else
             {
-                id = "c:" + ( (ICategory) element ).getId();
+                id = "c:" + ( (ICategory) element ).getId(); //$NON-NLS-1$
                 obj = (IAdaptable) element;
             }
             
@@ -1777,7 +1798,7 @@ public final class FacetsSelectionPanel
         {
             final TableRowData trd = (TableRowData) element;
 
-            if( property.equals( "version" ) )
+            if( property.equals( VERSION_COLUMN ) )
             {
                 final List versions = trd.getVersions();
 
@@ -1800,7 +1821,7 @@ public final class FacetsSelectionPanel
         public boolean canModify( final Object element,
                                   final String property )
         {
-            return property.equals( "version" ) &&
+            return property.equals( VERSION_COLUMN ) &&
                    element instanceof TableRowData &&
                    ( (TableRowData) element ).getVersions().size() > 1;
         }
@@ -1812,7 +1833,7 @@ public final class FacetsSelectionPanel
             final TreeItem item = (TreeItem) element;
             final TableRowData trd = (TableRowData) item.getData();
 
-            if( property.equals( "version" ) )
+            if( property.equals( VERSION_COLUMN ) )
             {
                 final int index = ( (Integer) value ).intValue();
 
@@ -1924,7 +1945,7 @@ public final class FacetsSelectionPanel
         public ProblemsLabelProvider()
         {
             final Bundle bundle = Platform.getBundle( FacetUiPlugin.PLUGIN_ID );
-            final URL url = bundle.getEntry( "images/error.gif" );
+            final URL url = bundle.getEntry( "images/error.gif" ); //$NON-NLS-1$
 
             this.errorImage
                 = ImageDescriptor.createFromURL( url ).createImage();
@@ -2005,6 +2026,15 @@ public final class FacetsSelectionPanel
         extends NLS
         
     {
+        public static String presetsLabel;
+        public static String customPreset;
+        public static String saveButtonLabel;
+        public static String deleteButtonLabel;
+        public static String savePresetDialogTitle;
+        public static String savePresetDialogMessage;
+        public static String facetColumnLabel;
+        public static String versionColumnLabel;
+        public static String showConstraints;
         public static String showRuntimes;
         public static String hideRuntimes;
         

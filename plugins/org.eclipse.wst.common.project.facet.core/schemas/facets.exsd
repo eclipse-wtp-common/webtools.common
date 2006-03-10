@@ -19,6 +19,7 @@
             <element ref="preset"/>
             <element ref="template"/>
             <element ref="action"/>
+            <element ref="event-handler"/>
          </choice>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -106,7 +107,21 @@
 
    <element name="conflicts">
       <complexType>
-         <attribute name="group" type="string" use="required">
+         <attribute name="group" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="facet" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="version" type="string">
             <annotation>
                <documentation>
                   
@@ -165,6 +180,7 @@
             <element ref="constraint" minOccurs="0" maxOccurs="1"/>
             <element ref="group-member" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="action" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="event-handler" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="facet" type="string" use="required">
             <annotation>
@@ -284,10 +300,10 @@
 
    <element name="action">
       <complexType>
-         <all>
+         <sequence>
             <element ref="config-factory" minOccurs="0" maxOccurs="1"/>
             <element ref="delegate"/>
-         </all>
+         </sequence>
          <attribute name="type" use="required">
             <annotation>
                <documentation>
@@ -303,6 +319,12 @@
                   <enumeration value="version-change">
                   </enumeration>
                   <enumeration value="runtime-changed">
+                  </enumeration>
+                  <enumeration value="INSTALL">
+                  </enumeration>
+                  <enumeration value="UNINSTALL">
+                  </enumeration>
+                  <enumeration value="VERSION_CHANGE">
                   </enumeration>
                </restriction>
             </simpleType>
@@ -339,6 +361,53 @@
    <element name="delegate">
       <complexType>
          <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="event-handler">
+      <complexType>
+         <sequence>
+            <element ref="delegate"/>
+         </sequence>
+         <attribute name="type" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+            <simpleType>
+               <restriction base="string">
+                  <enumeration value="PRE_INSTALL">
+                  </enumeration>
+                  <enumeration value="POST_INSTALL">
+                  </enumeration>
+                  <enumeration value="PRE_UNINSTALL">
+                  </enumeration>
+                  <enumeration value="POST_UNINSTALL">
+                  </enumeration>
+                  <enumeration value="PRE_VERSION_CHANGE">
+                  </enumeration>
+                  <enumeration value="POST_VERSION_CHANGE">
+                  </enumeration>
+                  <enumeration value="RUNTIME_CHANGED">
+                  </enumeration>
+               </restriction>
+            </simpleType>
+         </attribute>
+         <attribute name="facet" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="version" type="string">
             <annotation>
                <documentation>
                   

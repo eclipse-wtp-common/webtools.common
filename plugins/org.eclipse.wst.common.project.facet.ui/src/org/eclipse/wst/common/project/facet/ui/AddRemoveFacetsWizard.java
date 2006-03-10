@@ -74,7 +74,7 @@ public class AddRemoveFacetsWizard
         
         setNeedsProgressMonitor( true );
         setForcePreviousAndNextButtons( true );
-        setWindowTitle( "Add/Remove Project Facets" );
+        setWindowTitle( Resources.wizardTitle );
     }
     
     public final IRuntime getRuntime()
@@ -338,7 +338,7 @@ public class AddRemoveFacetsWizard
         throws CoreException
         
     {
-        monitor.beginTask( "", 2 );
+        monitor.beginTask( "", 2 ); //$NON-NLS-1$
         
         try
         {
@@ -565,6 +565,7 @@ public class AddRemoveFacetsWizard
         extends NLS
         
     {
+        public static String wizardTitle;
         public static String errDlgTitle;
         
         static

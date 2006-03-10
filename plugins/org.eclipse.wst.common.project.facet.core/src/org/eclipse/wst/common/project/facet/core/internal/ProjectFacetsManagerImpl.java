@@ -43,7 +43,6 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.ICategory;
 import org.eclipse.wst.common.project.facet.core.IConstraint;
-import org.eclipse.wst.common.project.facet.core.IDelegate;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectTemplate;
 import org.eclipse.wst.common.project.facet.core.IGroup;
@@ -63,7 +62,30 @@ import org.osgi.service.prefs.Preferences;
 
 public final class ProjectFacetsManagerImpl
 {
-    private static final String EXTENSION_ID = "facets";
+    private static final String EXTENSION_ID = "facets"; //$NON-NLS-1$
+
+    private static final String ATTR_CLASS = "class"; //$NON-NLS-1$
+    private static final String ATTR_FACET = "facet"; //$NON-NLS-1$
+    private static final String ATTR_GROUP = "group"; //$NON-NLS-1$
+    private static final String ATTR_ID = "id"; //$NON-NLS-1$
+    private static final String ATTR_SOFT = "soft"; //$NON-NLS-1$
+    private static final String ATTR_TYPE = "type"; //$NON-NLS-1$
+    private static final String ATTR_VERSION = "version"; //$NON-NLS-1$
+    private static final String EL_ACTION = "action"; //$NON-NLS-1$
+    private static final String EL_CATEGORY = "category"; //$NON-NLS-1$
+    private static final String EL_CONFIG_FACTORY = "config-factory"; //$NON-NLS-1$
+    private static final String EL_CONSTRAINT = "constraint"; //$NON-NLS-1$
+    private static final String EL_DELEGATE = "delegate"; //$NON-NLS-1$
+    private static final String EL_DESCRIPTION = "description"; //$NON-NLS-1$
+    private static final String EL_EVENT_HANDLER = "event-handler"; //$NON-NLS-1$
+    private static final String EL_FIXED = "fixed"; //$NON-NLS-1$
+    private static final String EL_GROUP_MEMBER = "group-member"; //$NON-NLS-1$
+    private static final String EL_LABEL = "label"; //$NON-NLS-1$
+    private static final String EL_PRESET = "preset"; //$NON-NLS-1$
+    private static final String EL_PROJECT_FACET = "project-facet"; //$NON-NLS-1$
+    private static final String EL_PROJECT_FACET_VERSION = "project-facet-version"; //$NON-NLS-1$
+    private static final String EL_TEMPLATE = "template"; //$NON-NLS-1$
+    private static final String EL_VERSION_COMPARATOR = "version-comparator"; //$NON-NLS-1$
 
     private static final Set facetsReportedMissing = new HashSet();
     
@@ -108,7 +130,7 @@ public final class ProjectFacetsManagerImpl
         
         if( f == null )
         {
-            final String msg = "Could not find project facet " + id + ".";
+            final String msg = NLS.bind( Resources.facetNotDefined, id );
             throw new IllegalArgumentException( msg );
         }
         
@@ -132,7 +154,7 @@ public final class ProjectFacetsManagerImpl
         
         if( category == null )
         {
-            final String msg = "Could not find category " + id + ".";
+            final String msg = NLS.bind( Resources.categoryNotDefined, id );
             throw new IllegalArgumentException( msg );
         }
         
@@ -155,7 +177,7 @@ public final class ProjectFacetsManagerImpl
         
         if( preset == null )
         {
-            final String msg = "Could not find preset " + id + ".";
+            final String msg = NLS.bind( Resources.presetNotDefined, id );
             throw new IllegalArgumentException( msg );
         }
         
@@ -179,7 +201,7 @@ public final class ProjectFacetsManagerImpl
             
             do
             {
-                id = ".usr." + i;
+                id = ".usr." + i; //$NON-NLS-1$
                 i++;
             }
             while( this.presets.containsKey( id ) );
@@ -239,7 +261,7 @@ public final class ProjectFacetsManagerImpl
         
         if( template == null )
         {
-            final String msg = "Could not find template " + id + ".";
+            final String msg = NLS.bind( Resources.templateNotDefined, id );
             throw new IllegalArgumentException( msg );
         }
         
@@ -262,7 +284,7 @@ public final class ProjectFacetsManagerImpl
         
         if( group == null )
         {
-            final String msg = "Could not find group " + id + ".";
+            final String msg = NLS.bind( Resources.groupNotDefined, id );
             throw new IllegalArgumentException( msg );
         }
         
@@ -364,7 +386,7 @@ public final class ProjectFacetsManagerImpl
     {
         if( monitor != null )
         {
-            monitor.beginTask( "", 2 );
+            monitor.beginTask( "", 2 ); //$NON-NLS-1$
         }
         
         try
@@ -403,7 +425,7 @@ public final class ProjectFacetsManagerImpl
     {
         if( monitor != null )
         {
-            monitor.beginTask( "", 2 );
+            monitor.beginTask( "", 2 ); //$NON-NLS-1$
         }
         
         try
@@ -857,8 +879,8 @@ public final class ProjectFacetsManagerImpl
             if( ! facetsReportedMissing.contains( fid ) )
             {
                 final String msg
-                    = Resources.bind( Resources.facetNotDefinedFromPlugin, fid, 
-                                      plugin );
+                    = NLS.bind( Resources.facetNotDefined, fid ) +
+                      NLS.bind( Resources.usedInPlugin, plugin );
                 
                 FacetCorePlugin.log( msg );
                 
@@ -875,9 +897,10 @@ public final class ProjectFacetsManagerImpl
             if( ! facetsReportedMissing.contains( fid ) )
             {
                 final String msg
-                    = Resources.bind( Resources.facetNotDefinedFromFacet, fid,
-                                      fv.getProjectFacet().getId(),
-                                      fv.getVersionString() ); 
+                    = NLS.bind( Resources.facetNotDefined, fid ) +
+                      NLS.bind( Resources.usedInConstraint, 
+                                fv.getProjectFacet().getId(),
+                                fv.getVersionString() );
                 
                 FacetCorePlugin.log( msg );
                 
@@ -935,7 +958,7 @@ public final class ProjectFacetsManagerImpl
         
         if( point == null )
         {
-            throw new RuntimeException( "Extension point not found!" );
+            throw new RuntimeException( "Extension point not found!" ); //$NON-NLS-1$
         }
         
         final ArrayList cfgels = new ArrayList();
@@ -957,7 +980,7 @@ public final class ProjectFacetsManagerImpl
             final IConfigurationElement config
                 = (IConfigurationElement) cfgels.get( i );
             
-            if( config.getName().equals( "category" ) )
+            if( config.getName().equals( EL_CATEGORY ) )
             {
                 readCategory( config );
             }
@@ -968,21 +991,36 @@ public final class ProjectFacetsManagerImpl
             final IConfigurationElement config
                 = (IConfigurationElement) cfgels.get( i );
             
-            if( config.getName().equals( "project-facet" ) )
+            if( config.getName().equals( EL_PROJECT_FACET ) )
             {
                 readProjectFacet( config );
             }
         }
+        
+        final Map fvToConstraint = new HashMap();
         
         for( int i = 0, n = cfgels.size(); i < n; i++ )
         {
             final IConfigurationElement config
                 = (IConfigurationElement) cfgels.get( i );
             
-            if( config.getName().equals( "project-facet-version" ) )
+            if( config.getName().equals( EL_PROJECT_FACET_VERSION ) )
             {
-                readProjectFacetVersion( config );
+                readProjectFacetVersion( config, fvToConstraint );
             }
+        }
+        
+        for( Iterator itr = fvToConstraint.entrySet().iterator(); 
+             itr.hasNext(); )
+        {
+            final Map.Entry entry = (Map.Entry) itr.next();
+            
+            final ProjectFacetVersion fv = (ProjectFacetVersion) entry.getKey();
+            
+            final IConfigurationElement config 
+                = (IConfigurationElement) entry.getValue();
+            
+            readConstraint( config, fv );
         }
 
         for( int i = 0, n = cfgels.size(); i < n; i++ )
@@ -990,9 +1028,13 @@ public final class ProjectFacetsManagerImpl
             final IConfigurationElement config
                 = (IConfigurationElement) cfgels.get( i );
             
-            if( config.getName().equals( "action" ) )
+            if( config.getName().equals( EL_ACTION ) )
             {
                 readAction( config );
+            }
+            else if( config.getName().equals( EL_EVENT_HANDLER ) )
+            {
+                readEventHandler( config );
             }
         }
         
@@ -1001,7 +1043,7 @@ public final class ProjectFacetsManagerImpl
             final IConfigurationElement config
                 = (IConfigurationElement) cfgels.get( i );
             
-            if( config.getName().equals( "preset" ) )
+            if( config.getName().equals( EL_PRESET ) )
             {
                 readPreset( config );
             }
@@ -1012,7 +1054,7 @@ public final class ProjectFacetsManagerImpl
             final IConfigurationElement config
                 = (IConfigurationElement) cfgels.get( i );
             
-            if( config.getName().equals( "template" ) )
+            if( config.getName().equals( EL_TEMPLATE ) )
             {
                 readTemplate( config );
             }
@@ -1024,11 +1066,11 @@ public final class ProjectFacetsManagerImpl
         final Category category = new Category();
         category.setPluginId( config.getDeclaringExtension().getNamespace() );
         
-        final String id = config.getAttribute( "id" );
+        final String id = config.getAttribute( ATTR_ID );
 
         if( id == null )
         {
-            reportMissingAttribute( config, "id" );
+            reportMissingAttribute( config, ATTR_ID );
             return;
         }
 
@@ -1041,11 +1083,11 @@ public final class ProjectFacetsManagerImpl
             final IConfigurationElement child = children[ i ];
             final String childName = child.getName();
             
-            if( childName.equals( "label" ) )
+            if( childName.equals( EL_LABEL ) )
             {
                 category.setLabel( child.getValue().trim() );
             }
-            else if( childName.equals( "description" ) )
+            else if( childName.equals( EL_DESCRIPTION ) )
             {
                 category.setDescription( child.getValue().trim() );
             }
@@ -1056,11 +1098,11 @@ public final class ProjectFacetsManagerImpl
     
     private void readProjectFacet( final IConfigurationElement config )
     {
-        final String id = config.getAttribute( "id" );
+        final String id = config.getAttribute( ATTR_ID );
 
         if( id == null )
         {
-            reportMissingAttribute( config, "id" );
+            reportMissingAttribute( config, ATTR_ID );
             return;
         }
         
@@ -1075,27 +1117,27 @@ public final class ProjectFacetsManagerImpl
             final IConfigurationElement child = children[ i ];
             final String childName = child.getName();
             
-            if( childName.equals( "label" ) )
+            if( childName.equals( EL_LABEL ) )
             {
                 descriptor.setLabel( child.getValue().trim() );
             }
-            else if( childName.equals( "description" ) )
+            else if( childName.equals( EL_DESCRIPTION ) )
             {
                 descriptor.setDescription( child.getValue().trim() );
             }
-            else if( childName.equals( "version-comparator" ) )
+            else if( childName.equals( EL_VERSION_COMPARATOR ) )
             {
-                final String clname = child.getAttribute( "class" );
+                final String clname = child.getAttribute( ATTR_CLASS );
                 
                 if( clname == null )
                 {
-                    reportMissingAttribute( child, "class" );
+                    reportMissingAttribute( child, ATTR_CLASS );
                     return;
                 }
                 
                 descriptor.setVersionComparator( clname );
             }
-            else if( childName.equals( "category" ) )
+            else if( childName.equals( EL_CATEGORY ) )
             {
                 final String catname = child.getValue().trim();
                 
@@ -1105,8 +1147,8 @@ public final class ProjectFacetsManagerImpl
                 if( category == null )
                 {
                     final String msg
-                        = NLS.bind( Resources.categoryNotDefined, 
-                                    child.getNamespace(), catname );
+                        = NLS.bind( Resources.categoryNotDefined, catname ) +
+                          NLS.bind( Resources.usedInPlugin, child.getNamespace() );
                     
                     FacetCorePlugin.log( msg );
                     
@@ -1121,21 +1163,22 @@ public final class ProjectFacetsManagerImpl
         this.facets.add( id, descriptor );
     }
     
-    private void readProjectFacetVersion( final IConfigurationElement config )
+    private void readProjectFacetVersion( final IConfigurationElement config,
+                                          final Map fvToConstraint )
     {
-        final String fid = config.getAttribute( "facet" );
+        final String fid = config.getAttribute( ATTR_FACET );
 
         if( fid == null )
         {
-            reportMissingAttribute( config, "facet" );
+            reportMissingAttribute( config, ATTR_FACET );
             return;
         }
         
-        final String ver = config.getAttribute( "version" );
+        final String ver = config.getAttribute( ATTR_VERSION );
 
         if( ver == null )
         {
-            reportMissingAttribute( config, "version" );
+            reportMissingAttribute( config, ATTR_VERSION );
             return;
         }
         
@@ -1161,41 +1204,17 @@ public final class ProjectFacetsManagerImpl
             final IConfigurationElement child = children[ i ];
             final String childName = child.getName();
             
-            if( childName.equals( "constraint" ) )
+            if( childName.equals( EL_CONSTRAINT ) )
             {
-                final IConfigurationElement[] ops = child.getChildren();
-                final ArrayList parsed = new ArrayList();
-                
-                for( int j = 0; j < ops.length; j++ )
-                {
-                    final IConstraint op = readConstraint( ops[ j ], fv );
-                    
-                    if( op != null )
-                    {
-                        parsed.add( op );
-                    }
-                }
-                
-                if( parsed.size() == 1 )
-                {
-                    fv.setConstraint( (IConstraint) parsed.get( 0 ) );
-                }
-                else if( parsed.size() > 1 )
-                {
-                    final IConstraint and 
-                        = new Constraint( fv, IConstraint.Type.AND, 
-                                          parsed.toArray() );
-                    
-                    fv.setConstraint( and );
-                }
+                fvToConstraint.put( fv, child );
             }
-            else if( childName.equals( "group-member" ) )
+            else if( childName.equals( EL_GROUP_MEMBER ) )
             {
-                final String id = child.getAttribute( "id" );
+                final String id = child.getAttribute( ATTR_ID );
                 
                 if( id == null )
                 {
-                    reportMissingAttribute( child, "id" );
+                    reportMissingAttribute( child, ATTR_ID );
                     return;
                 }
                 
@@ -1222,20 +1241,24 @@ public final class ProjectFacetsManagerImpl
             final IConfigurationElement child = children[ i ];
             final String childName = child.getName();
             
-            if( childName.equals( "action" ) )
+            if( childName.equals( EL_ACTION ) )
             {
                 readAction( child, f, ver );
+            }
+            else if( childName.equals( EL_EVENT_HANDLER ) )
+            {
+                readEventHandler( child, f, ver );
             }
         }
     }
     
     private void readAction( final IConfigurationElement config )
     {
-        final String fid = config.getAttribute( "facet" );
+        final String fid = config.getAttribute( ATTR_FACET );
 
         if( fid == null )
         {
-            reportMissingAttribute( config, "facet" );
+            reportMissingAttribute( config, ATTR_FACET );
             return;
         }
         
@@ -1247,11 +1270,11 @@ public final class ProjectFacetsManagerImpl
             return;
         }
         
-        final String ver = config.getAttribute( "version" );
+        final String ver = config.getAttribute( ATTR_VERSION );
 
         if( ver == null )
         {
-            reportMissingAttribute( config, "version" );
+            reportMissingAttribute( config, ATTR_VERSION );
             return;
         }
         
@@ -1262,36 +1285,40 @@ public final class ProjectFacetsManagerImpl
                              final ProjectFacet f,
                              final String version )
     {
+        final String pluginId = config.getNamespace();
         final ActionDefinition def = new ActionDefinition();
         
-        final String type = config.getAttribute( "type" );
+        final String type = config.getAttribute( ATTR_TYPE );
         
         if( type == null )
         {
-            reportMissingAttribute( config, "type" );
+            reportMissingAttribute( config, ATTR_TYPE );
             return;
         }
-        else if( type.equals( "install" ) )
-        {
-            def.type = IDelegate.Type.INSTALL;
-        }
-        else if( type.equals( "uninstall" ) )
-        {
-            def.type = IDelegate.Type.UNINSTALL;
-        }
-        else if( type.equals( "version-change" ) )
-        {
-            def.type = IDelegate.Type.VERSION_CHANGE; 
-        }
-        else if( type.equals( "runtime-changed" ) )
-        {
-            def.type = IDelegate.Type.RUNTIME_CHANGED;
-        }
-        else
+        
+        // Backwards compatibility of deprecated functionality.
+        
+        if( type.equals( "runtime-changed" ) ) //$NON-NLS-1$
         {
             final String msg
-                = NLS.bind( Resources.invalidActionType, config.getNamespace(),
-                            type );
+                = NLS.bind( Resources.deprecatedRuntimeChangedAction, pluginId );
+            
+            FacetCorePlugin.logWarning( msg, true );
+            
+            readEventHandler( config, f, version );
+            
+            return;
+        }
+        
+        // End of backwards compatibility code.
+        
+        def.type = Action.Type.valueOf( type ); 
+
+        if( def.type == null )
+        {
+            final String msg
+                = NLS.bind( Resources.invalidActionType, type ) +
+                  NLS.bind( Resources.usedInPlugin, pluginId );
             
             FacetCorePlugin.log( msg );
             
@@ -1300,7 +1327,7 @@ public final class ProjectFacetsManagerImpl
         
         try
         {
-            def.versionMatchExpr = new VersionMatchExpr( f, version );
+            def.versionMatchExpr = new VersionExpr( f, version, pluginId );
         }
         catch( CoreException e )
         {
@@ -1315,25 +1342,25 @@ public final class ProjectFacetsManagerImpl
             final IConfigurationElement child = children[ i ];
             final String childName = child.getName();
             
-            if( childName.equals( "config-factory" ) )
+            if( childName.equals( EL_CONFIG_FACTORY ) )
             {
-                final String clname = child.getAttribute( "class" );
+                final String clname = child.getAttribute( ATTR_CLASS );
                 
                 if( clname == null )
                 {
-                    reportMissingAttribute( child, "class" );
+                    reportMissingAttribute( child, ATTR_CLASS );
                     return;
                 }
                 
                 def.configFactoryClassName = clname;
             }
-            else if( childName.equals( "delegate" ) )
+            else if( childName.equals( EL_DELEGATE ) )
             {
-                final String clname = child.getAttribute( "class" );
+                final String clname = child.getAttribute( ATTR_CLASS );
                 
                 if( clname == null )
                 {
-                    reportMissingAttribute( config, "class" );
+                    reportMissingAttribute( config, ATTR_CLASS );
                     return;
                 }
                 
@@ -1344,11 +1371,150 @@ public final class ProjectFacetsManagerImpl
         f.addActionDefinition( def );
     }
     
-    private IConstraint readConstraint( final IConfigurationElement root,
-                                        final ProjectFacetVersion fv )
+    private void readEventHandler( final IConfigurationElement config )
     {
+        final String fid = config.getAttribute( ATTR_FACET );
+
+        if( fid == null )
+        {
+            reportMissingAttribute( config, ATTR_FACET );
+            return;
+        }
+        
+        final ProjectFacet f = (ProjectFacet) this.facets.get( fid );
+        
+        if( f == null )
+        {
+            reportMissingFacet( fid, config.getNamespace() );
+            return;
+        }
+        
+        final String ver = config.getAttribute( ATTR_VERSION );
+
+        if( ver == null )
+        {
+            reportMissingAttribute( config, ATTR_VERSION );
+            return;
+        }
+        
+        readEventHandler( config, f, ver );
+    }
+
+    private void readEventHandler( final IConfigurationElement config,
+                                   final ProjectFacet f,
+                                   final String version )
+    {
+        final EventHandler h = new EventHandler();
+        final String pluginId = config.getNamespace();
+        h.setPluginId( pluginId );
+        
+        final String type = config.getAttribute( ATTR_TYPE );
+        
+        if( type == null )
+        {
+            reportMissingAttribute( config, ATTR_TYPE );
+            return;
+        }
+        
+        if( type.equals( "runtime-changed" ) ) //$NON-NLS-1$
+        {
+            // Backwards compatibility of deprecated functionality.
+            
+            h.setType( EventHandler.Type.RUNTIME_CHANGED );
+        }
+        else
+        {
+            h.setType( EventHandler.Type.valueOf( type ) );
+        }
+        
+        if( h.getType() == null )
+        {
+            final String msg
+                = NLS.bind( Resources.invalidEventHandlerType, type ) +
+                  NLS.bind( Resources.usedInPlugin, pluginId );
+            
+            FacetCorePlugin.log( msg );
+            
+            return;
+        }
+        
+        try
+        {
+            h.setVersionExpr( new VersionExpr( f, version, pluginId ) );
+        }
+        catch( CoreException e )
+        {
+            FacetCorePlugin.log( e );
+            return;
+        }
+
+        final IConfigurationElement[] children = config.getChildren();
+        
+        for( int i = 0; i < children.length; i++ )
+        {
+            final IConfigurationElement child = children[ i ];
+            final String childName = child.getName();
+            
+            if( childName.equals( EL_DELEGATE ) )
+            {
+                final String clname = child.getAttribute( ATTR_CLASS );
+                
+                if( clname == null )
+                {
+                    reportMissingAttribute( config, ATTR_CLASS );
+                    return;
+                }
+                
+                h.setDelegate( clname );
+            }
+        }
+        
+        if( ! h.hasDelegate() )
+        {
+            reportMissingElement( config, EL_DELEGATE );
+            return;
+        }
+        
+        f.addEventHandler( h );
+    }
+    
+    private void readConstraint( final IConfigurationElement config,
+                                 final ProjectFacetVersion fv )
+    {
+        final IConfigurationElement[] ops = config.getChildren();
+        final ArrayList parsed = new ArrayList();
+        
+        for( int j = 0; j < ops.length; j++ )
+        {
+            final IConstraint op = readConstraintHelper( ops[ j ], fv );
+            
+            if( op != null )
+            {
+                parsed.add( op );
+            }
+        }
+        
+        if( parsed.size() == 1 )
+        {
+            fv.setConstraint( (IConstraint) parsed.get( 0 ) );
+        }
+        else if( parsed.size() > 1 )
+        {
+            final IConstraint and 
+                = new Constraint( fv, IConstraint.Type.AND, 
+                                  parsed.toArray() );
+            
+            fv.setConstraint( and );
+        }
+    }
+    
+    private IConstraint readConstraintHelper( final IConfigurationElement root,
+                                              final ProjectFacetVersion fv )
+    {
+        final String pluginId = root.getNamespace();
+        
         final IConstraint.Type type
-            = IConstraint.Type.get( root.getName() );
+            = IConstraint.Type.valueOf( root.getName() );
         
         final Object[] operands;
      
@@ -1360,48 +1526,118 @@ public final class ProjectFacetsManagerImpl
             
             for( int i = 0; i < children.length; i++ )
             {
-                operands[ i ] = readConstraint( children[ i ], fv );
+                operands[ i ] = readConstraintHelper( children[ i ], fv );
             }
         }
         else if( type == IConstraint.Type.REQUIRES )
         {
-            final String fid = root.getAttribute( "facet" );
+            final String fid = root.getAttribute( ATTR_FACET );
             
             if( fid == null )
             {
-                reportMissingAttribute( root, "facet" );
+                reportMissingAttribute( root, ATTR_FACET );
                 return null;
             }
 
-            final String vexpr = root.getAttribute( "version" );
+            final String vexprstr = root.getAttribute( ATTR_VERSION );
             
-            if( vexpr == null )
+            if( vexprstr == null )
             {
-                reportMissingAttribute( root, "version" );
+                reportMissingAttribute( root, ATTR_VERSION );
                 return null;
             }
             
-            final String softStr = root.getAttribute( "soft" );
+            final IProjectFacet f;
+            final VersionExpr vexpr;
+            
+            try
+            {
+                f = getProjectFacet( fid );
+                vexpr = new VersionExpr( f, vexprstr, pluginId );
+            }
+            catch( CoreException e )
+            {
+                FacetCorePlugin.log( e );
+                return null;
+            }
+            
+            final String softStr = root.getAttribute( ATTR_SOFT );
             Boolean soft = Boolean.FALSE;
             
-            if( softStr != null && softStr.equals( "true" ) )
+            if( softStr != null && softStr.equals( Boolean.TRUE.toString() ) )
             {
                 soft = Boolean.TRUE;
             }
             
-            operands = new Object[] { fid, vexpr, soft };
+            operands = new Object[] { f, vexpr, soft };
         }
         else if( type == IConstraint.Type.CONFLICTS )
         {
-            final String group = root.getAttribute( "group" );
+            final String gid = root.getAttribute( ATTR_GROUP );
+            final String fid = root.getAttribute( ATTR_FACET );
+            final String vexprstr = root.getAttribute( ATTR_VERSION );
             
-            if( group == null )
+            if( gid != null && ( fid != null || vexprstr != null ) )
             {
-                reportMissingAttribute( root, "group" );
+                final String msg
+                    = NLS.bind( Resources.invalidConflictsConstraint, pluginId );
+                
+                FacetCorePlugin.logError( msg, true );
                 return null;
             }
-
-            operands = new Object[] { group };
+            else if( gid != null )
+            {
+                if( ! isGroupDefined( gid ) )
+                {
+                    final String msg
+                        = NLS.bind( Resources.groupNotDefined, gid ) +
+                          NLS.bind( Resources.usedInPlugin, pluginId );
+                    
+                    FacetCorePlugin.logError( msg, true );
+                    return null;
+                }
+                
+                operands = new Object[] { getGroup( gid ) };
+            }
+            else if( fid != null )
+            {
+                final IProjectFacet f;
+                VersionExpr vexpr = null;
+                
+                try
+                {
+                    f = getProjectFacet( fid );
+                    
+                    if( vexprstr != null )
+                    {
+                        vexpr = new VersionExpr( f, vexprstr, pluginId );
+                    }
+                }
+                catch( CoreException e )
+                {
+                    FacetCorePlugin.log( e );
+                    return null;
+                }
+                
+                if( vexpr == null )
+                {
+                    operands = new Object[] { f };
+                }
+                else
+                {
+                    operands = new Object[] { f, vexpr };
+                }
+            }
+            else
+            {
+                final String msg
+                    = Resources.bind( Resources.missingOneOfTwoAttributes,
+                                      pluginId, root.getName(), ATTR_GROUP,
+                                      ATTR_FACET );
+                
+                FacetCorePlugin.logError( msg, true );
+                return null;
+            }
         }
         else
         {
@@ -1415,11 +1651,11 @@ public final class ProjectFacetsManagerImpl
     {
         final FacetedProjectTemplate template = new FacetedProjectTemplate();
         
-        final String id = config.getAttribute( "id" );
+        final String id = config.getAttribute( ATTR_ID );
 
         if( id == null )
         {
-            reportMissingAttribute( config, "id" );
+            reportMissingAttribute( config, ATTR_ID );
             return;
         }
 
@@ -1432,17 +1668,17 @@ public final class ProjectFacetsManagerImpl
             final IConfigurationElement child = children[ i ];
             final String childName = child.getName();
             
-            if( childName.equals( "label" ) )
+            if( childName.equals( EL_LABEL ) )
             {
                 template.setLabel( child.getValue().trim() );
             }
-            else if( childName.equals( "fixed" ) )
+            else if( childName.equals( EL_FIXED ) )
             {
-                final String fid = child.getAttribute( "facet" );
+                final String fid = child.getAttribute( ATTR_FACET );
                 
                 if( fid == null )
                 {
-                    reportMissingAttribute( child, "facet" );
+                    reportMissingAttribute( child, ATTR_FACET );
                     return;
                 }
                 
@@ -1454,21 +1690,21 @@ public final class ProjectFacetsManagerImpl
                 
                 template.addFixedProjectFacet( getProjectFacet( fid ) );
             }
-            else if( childName.equals( "preset" ) )
+            else if( childName.equals( EL_PRESET ) )
             {
-                final String pid = child.getAttribute( "id" );
+                final String pid = child.getAttribute( ATTR_ID );
                 
                 if( pid == null )
                 {
-                    reportMissingAttribute( child, "id" );
+                    reportMissingAttribute( child, ATTR_ID );
                     return;
                 }
                 
                 if( ! isPresetDefined( pid ) )
                 {
                     final String msg
-                        = NLS.bind( Resources.presetNotDefined, 
-                                    child.getNamespace(), pid );
+                        = NLS.bind( Resources.presetNotDefined, pid ) +
+                          NLS.bind( Resources.usedInPlugin, child.getNamespace() );
                     
                     FacetCorePlugin.log( msg );
                     
@@ -1486,11 +1722,11 @@ public final class ProjectFacetsManagerImpl
     {
         final Preset preset = new Preset();
         
-        final String id = config.getAttribute( "id" );
+        final String id = config.getAttribute( ATTR_ID );
 
         if( id == null )
         {
-            reportMissingAttribute( config, "id" );
+            reportMissingAttribute( config, ATTR_ID );
             return;
         }
 
@@ -1503,25 +1739,25 @@ public final class ProjectFacetsManagerImpl
             final IConfigurationElement child = children[ i ];
             final String childName = child.getName();
             
-            if( childName.equals( "label" ) )
+            if( childName.equals( EL_LABEL ) )
             {
                 preset.setLabel( child.getValue().trim() );
             }
-            else if( childName.equals( "facet" ) )
+            else if( childName.equals( ATTR_FACET ) )
             {
-                final String fid = child.getAttribute( "id" );
+                final String fid = child.getAttribute( ATTR_ID );
                 
                 if( fid == null )
                 {
-                    reportMissingAttribute( child, "id" );
+                    reportMissingAttribute( child, ATTR_ID );
                     return;
                 }
                 
-                final String fver = child.getAttribute( "version" );
+                final String fver = child.getAttribute( ATTR_VERSION );
                 
                 if( fver == null )
                 {
-                    reportMissingAttribute( child, "version" );
+                    reportMissingAttribute( child, ATTR_VERSION );
                     return;
                 }
                 
@@ -1542,6 +1778,17 @@ public final class ProjectFacetsManagerImpl
             = new String[] { el.getNamespace(), el.getName(), attribute };
         
         final String msg = NLS.bind( Resources.missingAttribute, params ); 
+    
+        FacetCorePlugin.log( msg );
+    }
+
+    static void reportMissingElement( final IConfigurationElement el,
+                                      final String element )
+    {
+        final String[] params 
+            = new String[] { el.getNamespace(), el.getName(), element };
+        
+        final String msg = NLS.bind( Resources.missingElement, params ); 
     
         FacetCorePlugin.log( msg );
     }
@@ -1566,7 +1813,7 @@ public final class ProjectFacetsManagerImpl
                 if( preset.isUserDefined() )
                 {
                     final Preferences pnode = root.node( preset.getId() );
-                    pnode.put( "label", preset.getLabel() );
+                    pnode.put( EL_LABEL, preset.getLabel() );
                     
                     int counter = 1;
                     
@@ -1579,8 +1826,8 @@ public final class ProjectFacetsManagerImpl
                         final Preferences fnode 
                             = pnode.node( String.valueOf( counter ) );
                         
-                        fnode.put( "id", f.getProjectFacet().getId() );
-                        fnode.put( "version", f.getVersionString() );
+                        fnode.put( ATTR_ID, f.getProjectFacet().getId() );
+                        fnode.put( ATTR_VERSION, f.getVersionString() );
                         
                         counter++;
                     }
@@ -1605,7 +1852,7 @@ public final class ProjectFacetsManagerImpl
             for( int i = 0; i < pkeys.length; i++ )
             {
                 final Preferences pnode = root.node( pkeys[ i ] );
-                final String label = pnode.get( "label", null );
+                final String label = pnode.get( EL_LABEL, null );
                 
                 if( label == null )
                 {
@@ -1618,8 +1865,8 @@ public final class ProjectFacetsManagerImpl
                 for( int j = 0; j < fkeys.length; j++ )
                 {
                     final Preferences fnode = pnode.node( fkeys[ j ] );
-                    final String id = fnode.get( "id", null );
-                    final String version = fnode.get( "version", null );
+                    final String id = fnode.get( ATTR_ID, null );
+                    final String version = fnode.get( ATTR_VERSION, null );
                     
                     if( id == null || version == null )
                     {
@@ -1667,7 +1914,7 @@ public final class ProjectFacetsManagerImpl
         final IEclipsePreferences pluginRoot 
             = scope.getNode( FacetCorePlugin.PLUGIN_ID );
         
-        return pluginRoot.node( "user.presets" );
+        return pluginRoot.node( "user.presets" ); //$NON-NLS-1$
     }
     
     private final class ResourceChangeListener
@@ -1712,13 +1959,20 @@ public final class ProjectFacetsManagerImpl
         
     {
         public static String missingAttribute;
+        public static String missingOneOfTwoAttributes;
+        public static String missingElement;
         public static String categoryNotDefined;
-        public static String facetNotDefinedFromPlugin;
-        public static String facetNotDefinedFromFacet;
+        public static String facetNotDefined;
         public static String facetVersionNotDefined;
-        public static String facetVersionNotDefinedNoPlugin;
+        public static String groupNotDefined;
         public static String presetNotDefined;
+        public static String templateNotDefined;
+        public static String usedInPlugin;
+        public static String usedInConstraint;
         public static String invalidActionType;
+        public static String invalidEventHandlerType;
+        public static String invalidConflictsConstraint;
+        public static String deprecatedRuntimeChangedAction;
         
         static
         {
@@ -1732,6 +1986,15 @@ public final class ProjectFacetsManagerImpl
                                    final Object arg3 )
         {
             return NLS.bind( template, new Object[] { arg1, arg2, arg3 } );
+        }
+
+        public static String bind( final String template,
+                                   final Object arg1,
+                                   final Object arg2,
+                                   final Object arg3,
+                                   final Object arg4 )
+        {
+            return NLS.bind( template, new Object[] { arg1, arg2, arg3, arg4 } );
         }
     }
     

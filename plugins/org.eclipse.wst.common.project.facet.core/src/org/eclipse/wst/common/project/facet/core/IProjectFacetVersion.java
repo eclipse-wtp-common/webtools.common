@@ -106,4 +106,6 @@ public interface IProjectFacetVersion
     
     boolean isValidFor( Set fixed );
     
+    boolean conflictsWith( IProjectFacetVersion fv );
+    
 }

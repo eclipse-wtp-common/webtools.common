@@ -25,7 +25,7 @@ public final class FacetUiPlugin
     
 {
     public static final String PLUGIN_ID 
-        = "org.eclipse.wst.common.project.facet.ui";
+        = "org.eclipse.wst.common.project.facet.ui"; //$NON-NLS-1$
     
     private static FacetUiPlugin plugin;
     

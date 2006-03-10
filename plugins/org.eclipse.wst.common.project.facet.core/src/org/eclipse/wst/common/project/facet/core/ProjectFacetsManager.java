@@ -302,9 +302,14 @@ public final class ProjectFacetsManager
     }
     
     /**
-     * Creates a wrapper around an <code>IProject</code> that exposes API for
+     * <p>Creates a wrapper around an <code>IProject</code> that exposes API for
      * manipulating the set of project facets installed on a project. The
-     * project will be made into a faceted project if necessary.
+     * project will be made into a faceted project if necessary.</p>
+     * 
+     * <p>This method should not be called from the UI thread as it is long-
+     * running and may trigger resource change events. Although this framework
+     * is safe, there is no guarantee that other bundles are UI-safe and the
+     * risk of UI deadlock is high.</p>
      *  
      * @param project an Eclipse project
      * @param convertIfNecessary whether the project should be converted into a
@@ -326,8 +331,13 @@ public final class ProjectFacetsManager
     }
 
     /**
-     * Creates a new faceted project.
+     * <p>Creates a new faceted project.</p>
      * 
+     * <p>This method should not be called from the UI thread as it is long-
+     * running and may trigger resource change events. Although this framework
+     * is safe, there is no guarantee that other bundles are UI-safe and the
+     * risk of UI deadlock is high.</p>
+
      * @param name project name
      * @param location 
      * @param monitor a progress monitor, or null if progress reporting and 

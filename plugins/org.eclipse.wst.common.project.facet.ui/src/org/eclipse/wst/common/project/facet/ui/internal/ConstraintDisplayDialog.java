@@ -32,6 +32,7 @@ import org.eclipse.draw2d.graph.DirectedGraphLayout;
 import org.eclipse.draw2d.graph.Edge;
 import org.eclipse.draw2d.graph.Node;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -44,8 +45,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.common.project.facet.core.IConstraint;
+import org.eclipse.wst.common.project.facet.core.IGroup;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
-import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import org.eclipse.wst.common.project.facet.core.IVersionExpr;
 
 public final class ConstraintDisplayDialog
 
@@ -99,7 +101,7 @@ public final class ConstraintDisplayDialog
         createConstraintGraph( contents, null, this.constraint );
         contents.setLayoutManager( new GraphLayoutManager() );
         
-        final Label escLabel = new Label( "Press 'Esc' to close." );
+        final Label escLabel = new Label( Resources.pressEscToClose );
         escLabel.setLabelAlignment( Label.RIGHT );
         escLabel.setBorder( new CompoundBorder( new DividerBorder( 2 ), new MarginBorder( 2 ) ) );
         
@@ -389,12 +391,12 @@ public final class ConstraintDisplayDialog
             
             if( constraint.getType() == IConstraint.Type.AND )
             {
-                labelText = "AND";
+                labelText = Resources.andOperator;
                 background = new Color( null, 0, 175, 0 );
             }
             else if( constraint.getType() == IConstraint.Type.OR )
             {
-                labelText = "OR";
+                labelText = Resources.orOperator;
                 background = new Color( null, 255, 128, 0 ); 
             }
             else
@@ -427,8 +429,8 @@ public final class ConstraintDisplayDialog
     {
         public RequiresConstraintFigure( final IConstraint constraint )
         {
-            final String fid = (String) constraint.getOperand( 0 );
-            final String vstr = (String) constraint.getOperand( 1 );
+            final IProjectFacet f = (IProjectFacet) constraint.getOperand( 0 );
+            final IVersionExpr vexpr = (IVersionExpr) constraint.getOperand( 1 );
             final Boolean soft = (Boolean) constraint.getOperand( 2 );
             
             setLayoutManager( new ToolbarLayout() );
@@ -440,17 +442,15 @@ public final class ConstraintDisplayDialog
             
             final Label headerLabel = new Label();
             headerLabel.setFont( BOLD_FONT );
-            headerLabel.setText( "requires" );
+            headerLabel.setText( Resources.requiresOperator );
             headerLabel.setBorder( new MarginBorder( 2 ) );
             add( headerLabel );
-            
-            final IProjectFacet f = ProjectFacetsManager.getProjectFacet( fid );
             
             final StringBuffer bodyLabelText = new StringBuffer();
             
             bodyLabelText.append( f.getLabel() );
             bodyLabelText.append( ' ' );
-            bodyLabelText.append( vstr );
+            bodyLabelText.append( vexpr.toDisplayString() );
             
             final Label bodyLabel = new Label();
             bodyLabel.setText( bodyLabelText.toString() );
@@ -473,18 +473,59 @@ public final class ConstraintDisplayDialog
             
             final Label headerLabel = new Label();
             headerLabel.setFont( BOLD_FONT );
-            headerLabel.setText( "conflicts (group)" );
             headerLabel.setBorder( new MarginBorder( 2 ) );
             add( headerLabel );
             
             final StringBuffer bodyLabelText = new StringBuffer();
+            final Object firstOperand = constraint.getOperand( 0 );
             
-            bodyLabelText.append( (String) constraint.getOperand( 0 ) );
+            if( firstOperand instanceof IGroup )
+            {
+                headerLabel.setText( Resources.conflictsWithGroupOperator );
+                
+                bodyLabelText.append( ( (IGroup) firstOperand ).getId() );
+            }
+            else
+            {
+                headerLabel.setText( Resources.conflictsWithFacetOperator );
+                
+                final IProjectFacet f = (IProjectFacet) firstOperand;
+                
+                bodyLabelText.append( f.getLabel() );
+                
+                if( constraint.getOperands().size() == 2 )
+                {
+                    final IVersionExpr vexpr 
+                        = (IVersionExpr) constraint.getOperand( 1 );
+                    
+                    bodyLabelText.append( ' ' );
+                    bodyLabelText.append( vexpr.toDisplayString() );
+                }
+            }
 
             final Label bodyLabel = new Label();
             bodyLabel.setText( bodyLabelText.toString() );
             bodyLabel.setBorder( new CompoundBorder( new DividerBorder( 1 ), new MarginBorder( 2 ) ) );
             add( bodyLabel );
+        }
+    }
+
+    private static final class Resources
+    
+        extends NLS
+        
+    {
+        public static String pressEscToClose;
+        public static String andOperator;
+        public static String orOperator;
+        public static String requiresOperator;
+        public static String conflictsWithGroupOperator;
+        public static String conflictsWithFacetOperator;
+        
+        static
+        {
+            initializeMessages( ConstraintDisplayDialog.class.getName(), 
+                                Resources.class );
         }
     }
     

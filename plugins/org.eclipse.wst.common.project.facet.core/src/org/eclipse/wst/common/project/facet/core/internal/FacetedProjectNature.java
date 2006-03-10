@@ -27,7 +27,7 @@ public final class FacetedProjectNature
 
 {
     public static final String NATURE_ID 
-        = FacetCorePlugin.PLUGIN_ID + ".nature";
+        = FacetCorePlugin.PLUGIN_ID + ".nature"; //$NON-NLS-1$
     
     private IProject project;
     

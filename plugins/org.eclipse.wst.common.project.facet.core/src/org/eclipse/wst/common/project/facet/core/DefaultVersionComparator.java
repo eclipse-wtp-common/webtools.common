@@ -75,7 +75,7 @@ public class DefaultVersionComparator
     
     protected String getSeparators()
     {
-        return ".";
+        return "."; //$NON-NLS-1$
     }
     
     /**
@@ -107,7 +107,7 @@ public class DefaultVersionComparator
             }
             else
             {
-                return new BigDecimal( "." + segment );
+                return new BigDecimal( "." + segment ); //$NON-NLS-1$
             }
         }
         catch( NumberFormatException e )

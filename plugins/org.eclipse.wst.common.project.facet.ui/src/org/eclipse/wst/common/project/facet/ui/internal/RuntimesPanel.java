@@ -481,7 +481,7 @@ public final class RuntimesPanel
 
             if( isFilteredOut( r ) )
             {
-                final String greyedId = rct.getId() + "##greyed##";
+                final String greyedId = rct.getId() + "##greyed##"; //$NON-NLS-1$
                 Image greyed = this.imageRegistry.get( greyedId );
                 
                 if( greyed == null )

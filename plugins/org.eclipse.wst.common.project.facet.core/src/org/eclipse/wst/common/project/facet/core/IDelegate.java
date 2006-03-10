@@ -14,7 +14,6 @@ package org.eclipse.wst.common.project.facet.core;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 
 /**
  * This interface is implemented in order to provide logic associated with
@@ -32,52 +31,6 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 
 public interface IDelegate 
 {
-    /**
-     * The delegate type enumeration.
-     *  
-     * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
-     */
-    
-    public static final class Type
-    {
-        public static final Type INSTALL = new Type( "INSTALL" );
-        public static final Type UNINSTALL = new Type( "UNINSTALL" );
-        public static final Type VERSION_CHANGE = new Type( "VERSION_CHANGE" );
-        public static final Type RUNTIME_CHANGED = new Type( "RUNTIME_CHANGED" );
-        
-        private final String code;
-        
-        private Type( final String code )
-        {
-            this.code = code;
-        }
-        
-        public static Type get( final Action.Type t )
-        {
-            if( t == Action.Type.INSTALL )
-            {
-                return INSTALL;
-            }
-            else if( t == Action.Type.UNINSTALL )
-            {
-                return UNINSTALL;
-            }
-            else if( t == Action.Type.VERSION_CHANGE )
-            {
-                return VERSION_CHANGE;
-            }
-            else
-            {
-                throw new IllegalArgumentException();
-            }
-        }
-        
-        public String toString()
-        {
-            return this.code;
-        }
-    }
-    
     /**
      * The method that's called to execute the delegate.
      * 

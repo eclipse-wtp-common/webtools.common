@@ -11,6 +11,8 @@
 
 package org.eclipse.wst.common.project.facet.core;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
@@ -42,7 +44,7 @@ public interface IFacetedProject
      * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
      */
     
-    public static final class Action
+    static final class Action
     {
         /**
          * The action type enumeration.
@@ -52,22 +54,47 @@ public interface IFacetedProject
         
         public static final class Type
         {
-            public static final Type INSTALL = new Type( "INSTALL" );
-            public static final Type UNINSTALL = new Type( "UNINSTALL" );
+            private static final Map items = new HashMap();
+            
+            public static final Type INSTALL 
+                = new Type( "INSTALL" ); //$NON-NLS-1$
+            
+            public static final Type UNINSTALL 
+                = new Type( "UNINSTALL" ); //$NON-NLS-1$
             
             public static final Type VERSION_CHANGE 
-                = new Type( "VERSION_CHANGE" );
+                = new Type( "VERSION_CHANGE" ); //$NON-NLS-1$
             
-            private final String code;
-            
-            private Type( final String code )
+            static
             {
-                this.code = code;
+                // Backwards compatibility.
+                
+                items.put( "install", INSTALL ); //$NON-NLS-1$
+                items.put( "uninstall", UNINSTALL ); //$NON-NLS-1$
+                items.put( "version-change", VERSION_CHANGE ); //$NON-NLS-1$
+            }
+            
+            private final String name;
+            
+            private Type( final String name )
+            {
+                this.name = name;
+                items.put( name, this );
+            }
+            
+            public static Type valueOf( final String name )
+            {
+                return (Type) items.get( name );
+            }
+            
+            public String name()
+            {
+                return this.name;
             }
             
             public String toString()
             {
-                return this.code;
+                return this.name;
             }
         }
         
@@ -155,7 +182,7 @@ public interface IFacetedProject
         
         public String toString()
         {
-            return this.type.toString() + "[" + this.fv.toString() + "]";
+            return this.type.toString() + "[" + this.fv.toString() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
     
@@ -195,9 +222,14 @@ public interface IFacetedProject
     IProjectFacetVersion getInstalledVersion( IProjectFacet f );
     
     /**
-     * Installs a project facet on this project. This method is equivalent to 
+     * <p>Installs a project facet on this project. This method is equivalent to 
      * calling the {@see #modify(Set, IProgressMonitor)} method with a single 
-     * install action.
+     * install action.</p>
+     * 
+     * <p>This method should not be called from the UI thread as it is long-
+     * running and may trigger resource change events. Although this framework
+     * is safe, there is no guarantee that other bundles are UI-safe and the
+     * risk of UI deadlock is high.</p>
      * 
      * @param fv the descriptor of the project facet version that should be 
      *   installed
@@ -214,9 +246,14 @@ public interface IFacetedProject
         throws CoreException;
     
     /**
-     * Uninstalls a project facet from this project. This method is equivalent 
-     * to calling the {@see #modify(Set, IProgressMonitor)} method with a single
-     * uninstall action.
+     * <p>Uninstalls a project facet from this project. This method is 
+     * equivalent to calling the {@see #modify(Set, IProgressMonitor)} method 
+     * with a single uninstall action.</p>
+     * 
+     * <p>This method should not be called from the UI thread as it is long-
+     * running and may trigger resource change events. Although this framework
+     * is safe, there is no guarantee that other bundles are UI-safe and the
+     * risk of UI deadlock is high.</p>
      * 
      * @param fv the descriptor of the project facet version that should be 
      *   uninstalled
@@ -233,8 +270,13 @@ public interface IFacetedProject
         throws CoreException;
     
     /**
-     * Modifies the set of project facets installed on this project by 
-     * performing a series of actions such as install and uninstall. 
+     * <p>Modifies the set of project facets installed on this project by 
+     * performing a series of actions such as install and uninstall.</p>
+     * 
+     * <p>This method should not be called from the UI thread as it is long-
+     * running and may trigger resource change events. Although this framework
+     * is safe, there is no guarantee that other bundles are UI-safe and the
+     * risk of UI deadlock is high.</p>
      * 
      * @param actions the set of actions to apply to the project
      * @param monitor a progress monitor, or null if progress reporting and 
@@ -274,6 +316,12 @@ public interface IFacetedProject
     IRuntime getRuntime();
     
     /**
+     * 
+     * <p>This method should not be called from the UI thread as it is long-
+     * running and may trigger resource change events. Although this framework
+     * is safe, there is no guarantee that other bundles are UI-safe and the
+     * risk of UI deadlock is high.</p>
+     * 
      * @param monitor a progress monitor, or null if progress reporting and 
      *   cancellation are not desired
      */

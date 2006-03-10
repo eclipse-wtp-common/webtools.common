@@ -115,38 +115,52 @@ public final class Constraint
             
             if( ! someBranchWorks )
             {
-                final ValidationProblem problem
-                    = new ValidationProblem( ValidationProblem.Type.COMPLEX,
-                                             this.fv );
+                ValidationProblem p = null;
                 
-                result.add( problem );
+                if( this.operands.size() == 2 && containsOnlyRequires() )
+                {
+                    final ProjectFacetRef[] frefs = new ProjectFacetRef[ 2 ];
+                    
+                    for( int i = 0; i < 2; i++ )
+                    {
+                        final IConstraint c 
+                            = (IConstraint) this.operands.get( i );
+                        
+                        final String name = (String) c.getOperand( 0 );
+
+                        final IProjectFacet rf 
+                            = ProjectFacetsManager.getProjectFacet( name );
+
+                        final VersionExpr vexpr 
+                            = (VersionExpr) c.getOperand( 1 );
+                        
+                        frefs[ i ] = new ProjectFacetRef( rf, vexpr );
+                    }
+                    
+                    p = new ValidationProblem( ValidationProblem.Type.REQUIRES_ONE_OF_TWO,
+                                               this.fv, frefs[ 0 ], 
+                                               frefs[ 1 ] );
+                }
+                
+                if( p == null )
+                {
+                    p = new ValidationProblem( ValidationProblem.Type.COMPLEX,
+                                               this.fv );
+                }
+                
+                result.add( p );
             }
         }
         else if( this.type == Type.REQUIRES )
         {
-            final String name = (String) this.operands.get( 0 );
-            final String vexprstr = (String) this.operands.get( 1 );
+            final IProjectFacet rf = (IProjectFacet) this.operands.get( 0 );
+            final VersionExpr vexpr = (VersionExpr) this.operands.get( 1 );
             
             final boolean soft
                 = ( (Boolean) this.operands.get( 2 ) ).booleanValue();
             
             if( ! soft || validateSoftDeps )
             {
-                final IProjectFacet rf 
-                    = ProjectFacetsManager.getProjectFacet( name );
-
-                final VersionMatchExpr vexpr;
-                
-                try
-                {
-                    vexpr = new VersionMatchExpr( rf, vexprstr );
-                }
-                catch( CoreException e )
-                {
-                    FacetCorePlugin.log( e );
-                    return result;
-                }
-                
                 boolean found = false;
                 
                 for( Iterator itr = facets.iterator(); itr.hasNext(); )
@@ -174,28 +188,14 @@ public final class Constraint
                 
                 if( ! found )
                 {
-                    final ValidationProblem.Type ptype;
-                    final String vstr;
+                    final ValidationProblem.Type ptype 
+                        = ValidationProblem.Type.REQUIRES;
                     
-                    if( vexpr.isSingleVersionMatch() )
-                    {
-                        ptype = ValidationProblem.Type.REQUIRES_EXACT;
-                        vstr = vexpr.toString();
-                    }
-                    else if( vexpr.isSimpleAllowNewer() )
-                    {
-                        ptype = ValidationProblem.Type.REQUIRES_ALLOW_NEWER;
-                        vstr = vexpr.getFirstVersion();
-                    }
-                    else
-                    {
-                        ptype = ValidationProblem.Type.REQUIRES_EXPR;
-                        vstr = vexpr.toString();
-                    }
+                    final ProjectFacetRef fref 
+                        = new ProjectFacetRef( rf, vexpr );
                     
                     final ValidationProblem problem
-                        = new ValidationProblem( ptype, this.fv, rf.getLabel(), 
-                                                 vstr );
+                        = new ValidationProblem( ptype, this.fv, fref ); 
                     
                     result.add( problem );
                 }
@@ -203,23 +203,67 @@ public final class Constraint
         }
         else if( this.type == Type.CONFLICTS )
         {
-            final String gid = (String) this.operands.get( 0 );
-            final IGroup group = ProjectFacetsManager.getGroup( gid );
+            final Object firstOperand = this.operands.get( 0 );
             
-            for( Iterator itr = group.getMembers().iterator(); itr.hasNext(); )
+            if( firstOperand instanceof IGroup )
             {
-                final IProjectFacetVersion member
-                    = (IProjectFacetVersion) itr.next();
-                
-                if( member != this.fv && facets.contains( member ) )
+                final IGroup group = (IGroup) firstOperand;
+            
+                for( Iterator itr = group.getMembers().iterator(); 
+                     itr.hasNext(); )
                 {
-                    final ValidationProblem.Type t 
-                        = ValidationProblem.Type.CONFLICTS;
-                            
-                    final ValidationProblem problem
-                        = new ValidationProblem( t, this.fv, member );
+                    final IProjectFacetVersion member
+                        = (IProjectFacetVersion) itr.next();
                     
-                    result.add( problem );
+                    if( member != this.fv && facets.contains( member ) )
+                    {
+                        final ValidationProblem.Type t 
+                            = ValidationProblem.Type.CONFLICTS;
+                                
+                        final ValidationProblem problem
+                            = new ValidationProblem( t, this.fv, member );
+                        
+                        result.add( problem );
+                    }
+                }
+            }
+            else
+            {
+                final IProjectFacet f = (IProjectFacet) firstOperand;
+                
+                final VersionExpr vexpr
+                    = this.operands.size() == 2 
+                      ? (VersionExpr) this.operands.get( 1 ) : null;
+                      
+                for( Iterator itr = facets.iterator(); itr.hasNext(); )
+                {
+                    final IProjectFacetVersion fver 
+                        = (IProjectFacetVersion) itr.next();
+                    
+                    if( fver.getProjectFacet() == f )
+                    {
+                        try
+                        {
+                            if( vexpr == null 
+                                || vexpr.evaluate( (IVersion) fver ) )
+                            {
+                                final ValidationProblem.Type t 
+                                    = ValidationProblem.Type.CONFLICTS;
+                                        
+                                final ValidationProblem problem
+                                    = new ValidationProblem( t, this.fv, fver );
+                                
+                                result.add( problem );
+                                
+                                break;
+                            }
+                        }
+                        catch( CoreException e )
+                        {
+                            FacetCorePlugin.log( e );
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -229,6 +273,19 @@ public final class Constraint
         }
         
         return result;
+    }
+    
+    private boolean containsOnlyRequires()
+    {
+        for( Iterator itr = this.operands.iterator(); itr.hasNext(); )
+        {
+            if( ( (IConstraint) itr.next() ).getType() != Type.REQUIRES )
+            {
+                return false;
+            }
+        }
+        
+        return true;
     }
     
     static MultiStatus createMultiStatus()

@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
@@ -54,7 +55,7 @@ public abstract class FacetedProjectWizard
         
         this.template = getTemplate();
         
-        this.setWindowTitle( "New " + this.template.getLabel() );
+        this.setWindowTitle( Resources.newPrefix + this.template.getLabel() );
         this.setDefaultPageImageDescriptor( getDefaultPageImageDescriptor() );
     }
     
@@ -66,7 +67,7 @@ public abstract class FacetedProjectWizard
     
     public void addPages()
     {
-        this.firstPage = new WizardNewProjectCreationPage( "first.page" );
+        this.firstPage = new WizardNewProjectCreationPage( "first.page" ); //$NON-NLS-1$
         this.firstPage.setTitle( this.template.getLabel() );
         this.firstPage.setDescription( getPageDescription() );
     
@@ -144,4 +145,18 @@ public abstract class FacetedProjectWizard
     protected abstract String getPageDescription();
     protected abstract ImageDescriptor getDefaultPageImageDescriptor();
 
+    private static final class Resources
+    
+        extends NLS
+        
+    {
+        public static String newPrefix;
+        
+        static
+        {
+            initializeMessages( FacetedProjectWizard.class.getName(), 
+                                Resources.class );
+        }
+    }
+    
 }
