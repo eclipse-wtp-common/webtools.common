@@ -13,6 +13,7 @@ package org.eclipse.wst.common.frameworks.internal.datamodel.ui;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -31,6 +32,7 @@ import org.eclipse.wst.common.frameworks.internal.eclipse.ui.EclipseEnvironment;
 import org.eclipse.wst.common.frameworks.internal.ui.ErrorDialog;
 import org.eclipse.wst.common.frameworks.internal.ui.PageGroupManager;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPCommonUIResourceHandler;
+import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 
 
 /**
@@ -164,23 +166,26 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	 * @see org.eclipse.jface.wizard.IWizard#performFinish()
 	 */
 	public final boolean performFinish() {
-		boolean wasSuccessful = false;
-
 		try {
 			if (prePerformFinish()) {
 				storeDefaultSettings();
 
-				//wasSuccessful = pageGroupManager.runAllRemainingOperations();
-				wasSuccessful = runOperations().getSeverity() != IStatus.ERROR;
+				final IStatus st = runOperations();
+                
+                if( st.getSeverity() == IStatus.ERROR )
+                {
+                    WTPUIPlugin.log(st);
+                    ErrorDialog.openError(getShell(), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_0, new Object[]{getWindowTitle()}), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_1, new Object[]{getWindowTitle()}), new CoreException( st ), 0, false); //$NON-NLS-1$ //$NON-NLS-2$
+                }
 				
 				postPerformFinish();
 			}
 		} catch (Throwable exc) {
-			wasSuccessful = false;
-			// TODO log error
+            WTPUIPlugin.log(exc);
+            ErrorDialog.openError(getShell(), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_0, new Object[]{getWindowTitle()}), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_1, new Object[]{getWindowTitle()}), exc, 0, false); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
-		return wasSuccessful;
+		return true;
 	}
 	
 	private IStatus runOperations() {
@@ -198,7 +203,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 		try {
 			getContainer().run(runForked(), isCancelable(), runnable);
 		} catch (Throwable exc) {
-			Logger.getLogger().logError(exc);
+            WTPUIPlugin.log(exc);
 			ErrorDialog.openError(getShell(), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_0, new Object[]{getWindowTitle()}), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_1, new Object[]{getWindowTitle()}), exc, 0, false); //$NON-NLS-1$ //$NON-NLS-2$
 			status[0] = new Status(IStatus.ERROR, "id", 0, exc.getMessage(), exc); //$NON-NLS-1$
 		}
