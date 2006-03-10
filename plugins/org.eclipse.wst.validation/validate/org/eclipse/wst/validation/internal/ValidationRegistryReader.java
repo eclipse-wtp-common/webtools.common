@@ -156,9 +156,10 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		// Build the cache with the identified project natures in validators'
 		// extensions.
 		ValidatorNameFilter[] projNatureIds = vmd.getProjectNatureFilters();
+		String[] facetFilters = vmd.getFacetFilters();
 		if (projNatureIds == null) {
-			// Can run on any project
-			add(UNKNOWN_PROJECT, vmd);
+			if(facetFilters == null) 
+				add(UNKNOWN_PROJECT, vmd);
 		} else {
 			boolean noneIncluded = true; // assume that the validator does not include any project
 			// natures
@@ -180,7 +181,6 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			}
 		}
 	}
-
 	/**
 	 * Build the list of validators which are enabled by default.
 	 */
