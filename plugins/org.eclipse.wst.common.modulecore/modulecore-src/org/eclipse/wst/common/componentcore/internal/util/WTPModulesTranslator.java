@@ -30,13 +30,6 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 		super(PROJECT_MODULES, ComponentcorePackage.eINSTANCE.getProjectComponents());
 	}	
 	
-//	public void setMOFValue(Notifier owner, Object value, int newIndex) {		
-//		super.setMOFValue(owner, value, newIndex);
-//		EObject target = ((EObject)value);
-//		IProject project = ProjectUtilities.getProject(target);
-//		if(project != null)
-//			target.eSet(ComponentcorePackage.eINSTANCE.getProjectComponents_ProjectName(), project.getName());
-//	}
 	/* (non-Javadoc)
 	 * @see org.eclipse.wst.common.internal.emf.resource.Translator#getChildren(java.lang.Object, int)
 	 */
