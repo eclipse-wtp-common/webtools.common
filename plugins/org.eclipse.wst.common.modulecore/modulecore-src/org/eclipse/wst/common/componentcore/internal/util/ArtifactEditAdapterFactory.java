@@ -26,7 +26,6 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.internal.emfworkbench.edit.EditModelRegistry;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
-import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 /**
@@ -66,12 +65,9 @@ public class ArtifactEditAdapterFactory implements IAdapterFactory {
 					String[] editModelIDs = EditModelRegistry.getInstance().getRegisteredEditModelIDs();
 					for (int i=0; i<editModelIDs.length; i++) {
 						try {
-							IProjectFacet facet = ProjectFacetsManager.getProjectFacet(editModelIDs[i]);
-							if (facet != null && facetedProject.hasProjectFacet(facet)) {
-								EditModel editModel = nature.getExistingEditModel(editModelIDs[i],params,edit.isReadOnly());
-								if (editModel !=null)
-									return editModel;
-							}
+							EditModel editModel = nature.getExistingEditModel(editModelIDs[i],params,edit.isReadOnly());
+							if (editModel !=null)
+								return editModel;
 						} catch (Exception e) {
 							continue;
 						}

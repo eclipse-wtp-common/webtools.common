@@ -25,10 +25,8 @@ import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.internal.operations.IOperationHandler;
-import org.eclipse.wst.common.internal.emfworkbench.edit.EditModelRegistry;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelListener;
-import org.eclipse.wst.common.internal.emfworkbench.integration.IEditModelFactory;
 
 /**
  * Provides a Facade pattern for accessing Module Content Metamodels for Web Tools Platform flexible
@@ -212,10 +210,7 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 		IProject project = aModule.getProject();
 		if (project == null || !project.isAccessible())
 			return false;
-		/* and an edit model factory must be defined for the module type */
-		IEditModelFactory factory = EditModelRegistry.getInstance().findEditModelFactoryByProject(aModule.getProject());
-		if (factory == null)
-			return false;
+		
 		return true;
 	}
 
