@@ -15,7 +15,7 @@ public interface ICreateReferenceComponentsDataModelProperties {
     /**
      * Required, type IVirtualComponent
      */	
-	public static final String SOURCE_COMPONENT = "ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT";
+	public static final String SOURCE_COMPONENT = "ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT"; //$NON-NLS-1$
 	
     /**
      * Required, type ArrayList, ArrayList  should contain list of IVirtualComponent

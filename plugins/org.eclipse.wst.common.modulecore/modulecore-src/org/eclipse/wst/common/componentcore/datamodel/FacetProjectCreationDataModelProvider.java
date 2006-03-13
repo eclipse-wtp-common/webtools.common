@@ -321,7 +321,9 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 
 	public IStatus validate(String propertyName) {
 		if (FACET_PROJECT_NAME.equals(propertyName)) {
-			return validate(IProjectCreationPropertiesNew.PROJECT_NAME);
+			//return validate(IProjectCreationPropertiesNew.PROJECT_NAME);
+			IDataModel projModel = model.getNestedModel(NESTED_PROJECT_DM);
+			return projModel.validateProperty(IProjectCreationPropertiesNew.PROJECT_NAME);			
 		}
 		return super.validate(propertyName);
 	}
