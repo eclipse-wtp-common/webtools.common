@@ -170,7 +170,10 @@ public class ComponentUtilities {
 	}
 
 	public static IVirtualComponent findComponent(Resource aResource) {
-		return (IVirtualComponent)WorkbenchResourceHelper.getFile(aResource).getAdapter(IVirtualComponent.class);
+		IFile file = WorkbenchResourceHelper.getFile(aResource);
+		if (file == null)
+			return null;
+		return (IVirtualComponent)file.getAdapter(IVirtualComponent.class);
 	}
 
 //	public static JavaProjectMigrationOperation createFlexJavaProjectForProjectOperation(IProject project) {
