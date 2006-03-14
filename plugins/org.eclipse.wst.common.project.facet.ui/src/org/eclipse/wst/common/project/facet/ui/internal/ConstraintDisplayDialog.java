@@ -301,7 +301,7 @@ public final class ConstraintDisplayDialog
                     {
                         final Node vn = (Node) itr2.next();
                         
-                        if( edge.isFeedback )
+                        if( edge.isFeedback() )
                         {
                             bends.add( new AbsoluteBendpoint( vn.x, vn.y + vn.height ) );
                             bends.add( new AbsoluteBendpoint( vn.x, vn.y ) );

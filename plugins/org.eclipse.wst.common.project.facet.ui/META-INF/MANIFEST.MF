@@ -16,4 +16,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.wst.common.project.facet.core,
  org.eclipse.draw2d,
  org.eclipse.gef
-Eclipse-AutoStart: true
+Eclipse-LazyStart: true

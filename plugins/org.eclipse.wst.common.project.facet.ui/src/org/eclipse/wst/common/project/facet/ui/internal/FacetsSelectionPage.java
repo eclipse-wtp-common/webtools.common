@@ -50,7 +50,6 @@ public final class FacetsSelectionPage
     private IPreset initialPreset;
     private Set initialSelection;
     private final Set fixed;
-    private FacetsSelectionPanel.IFilter[] filters;
     public FacetsSelectionPanel panel;
     private ArrayList listeners;
     private ArrayList runtimeListeners;
@@ -68,7 +67,6 @@ public final class FacetsSelectionPage
         this.initialPreset = null;
         this.initialSelection = null;
         this.fixed = new HashSet();
-        this.filters = new FacetsSelectionPanel.IFilter[ 0 ];
         this.listeners = new ArrayList();
         this.runtimeListeners = new ArrayList();
     }
@@ -89,11 +87,6 @@ public final class FacetsSelectionPage
         this.fixed.addAll( fixed );
     }
 
-    public void setFilters( final FacetsSelectionPanel.IFilter[] filters )
-    {
-        this.filters = filters;
-    }
-    
     public Set getActions()
     {
         return this.panel.getActions();
@@ -154,11 +147,6 @@ public final class FacetsSelectionPage
             this.panel.setSelectedProjectFacets( this.initialSelection );
         }
 
-        for( int i = 0; i < this.filters.length; i++ )
-        {
-            this.panel.addFilter( this.filters[ i ] );
-        }
-        
         this.panel.addSelectionChangedListener
         (
             new ISelectionChangedListener()

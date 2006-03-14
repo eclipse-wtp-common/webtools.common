@@ -157,6 +157,7 @@ public final class FacetsSelectionPanel
     private final HashSet filters;
     private final ArrayList listeners;
     private final ArrayList selectionListeners;
+    private ConflictingFacetsFilter conflictingFilter;
     
     public interface IFilter 
     {
@@ -181,6 +182,7 @@ public final class FacetsSelectionPanel
         this.filters = new HashSet();
         this.listeners = new ArrayList();
         this.selectionListeners = new ArrayList();
+        this.conflictingFilter = null;
         
         for( Iterator itr = ProjectFacetsManager.getProjectFacets().iterator();
              itr.hasNext(); )
@@ -724,11 +726,34 @@ public final class FacetsSelectionPanel
             
             if( index == -1 )
             {
-                throw new IllegalArgumentException();
+                IProjectFacetVersion problemFacet = null;
+                
+                for( Iterator itr = preset.getProjectFacets().iterator();
+                     itr.hasNext(); )
+                {
+                    final IProjectFacetVersion fv
+                        = (IProjectFacetVersion) itr.next();
+                    
+                    if( isFilteredOut( fv ) )
+                    {
+                        problemFacet = fv;
+                        break;
+                    }
+                }
+                
+                final String msg
+                    = Resources.bind( Resources.couldNotSelectPreset, 
+                                      preset.getLabel(), 
+                                      problemFacet.getProjectFacet().getLabel(),
+                                      problemFacet.getVersionString() );
+                
+                FacetUiPlugin.log( msg );
             }
-            
-            this.presetsCombo.select( index + 1 );
-            handlePresetSelected();
+            else
+            {
+                this.presetsCombo.select( index + 1 );
+                handlePresetSelected();
+            }
         }
     }
 
@@ -751,10 +776,19 @@ public final class FacetsSelectionPanel
             trd.setSelected( true );
             this.tree.setChecked( trd, true );
         }
+        
+        if( this.conflictingFilter != null )
+        {
+            this.filters.remove( this.conflictingFilter );
+        }
+        
+        this.conflictingFilter = new ConflictingFacetsFilter( fixed );
+        this.filters.add( this.conflictingFilter );
 
         refresh();
-        this.runtimesPanel.refresh();
         refreshPresetsCombo();
+        refreshVersionsDropDown();
+        this.runtimesPanel.refresh();
         updateValidationDisplay();
     }
     
@@ -2037,11 +2071,20 @@ public final class FacetsSelectionPanel
         public static String showConstraints;
         public static String showRuntimes;
         public static String hideRuntimes;
+        public static String couldNotSelectPreset;
         
         static
         {
             initializeMessages( FacetsSelectionPanel.class.getName(), 
                                 Resources.class );
+        }
+        
+        public static String bind( final String msg,
+                                   final Object arg1,
+                                   final Object arg2,
+                                   final Object arg3 )
+        {
+            return NLS.bind( msg, new Object[] { arg1, arg2, arg3 } );
         }
     }
     

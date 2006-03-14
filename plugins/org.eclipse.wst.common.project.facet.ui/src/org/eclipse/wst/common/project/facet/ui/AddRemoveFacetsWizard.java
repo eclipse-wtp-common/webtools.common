@@ -39,10 +39,8 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action.Type;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
-import org.eclipse.wst.common.project.facet.ui.internal.ConflictingFacetsFilter;
 import org.eclipse.wst.common.project.facet.ui.internal.FacetUiPlugin;
 import org.eclipse.wst.common.project.facet.ui.internal.FacetsSelectionPage;
-import org.eclipse.wst.common.project.facet.ui.internal.FacetsSelectionPanel;
 
 /**
  * <p><i>This class is part of an interim API that is still under development 
@@ -127,7 +125,6 @@ public class AddRemoveFacetsWizard
         {
             this.facetsSelectionPage.setInitialSelection( this.fproj.getProjectFacets() );
             this.facetsSelectionPage.setFixedProjectFacets( this.fproj.getFixedProjectFacets());
-            this.facetsSelectionPage.setFilters( new FacetsSelectionPanel.IFilter[] { new ConflictingFacetsFilter( this.fproj.getFixedProjectFacets() ) } );
             setRuntime( this.fproj.getRuntime() );
         }
         

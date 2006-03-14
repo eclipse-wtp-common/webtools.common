@@ -200,7 +200,7 @@ public final class ProjectFacetsUiManagerImpl
         {
             final String msg
                 = NLS.bind( Resources.facetNotDefined, 
-                            config.getNamespace(), id );
+                            config.getContributor().getName(), id );
             
             FacetUiPlugin.log( msg );
             
@@ -220,7 +220,7 @@ public final class ProjectFacetsUiManagerImpl
         if( ! f.hasVersion( version ) )
         {
             final String[] params
-                = new String[] { config.getNamespace(), id, 
+                = new String[] { config.getContributor().getName(), id, 
                                  version };
             
             final String msg
@@ -235,7 +235,7 @@ public final class ProjectFacetsUiManagerImpl
         final IProjectFacetVersion fv = f.getVersion( version );
         
         final WizardPagesInfo info = new WizardPagesInfo();
-        info.plugin = config.getDeclaringExtension().getNamespace();
+        info.plugin = config.getContributor().getName();
         
         final IConfigurationElement[] children = config.getChildren();
         
@@ -249,7 +249,7 @@ public final class ProjectFacetsUiManagerImpl
             {
                 final String msg
                     = NLS.bind( Resources.invalidActionType, 
-                                config.getNamespace(), childName );
+                                config.getContributor().getName(), childName );
                 
                 FacetUiPlugin.log( msg );
                 
@@ -336,7 +336,7 @@ public final class ProjectFacetsUiManagerImpl
             {
                 final String msg
                     = NLS.bind( Resources.facetNotDefined, 
-                                config.getNamespace(), fid );
+                                config.getContributor().getName(), fid );
                 
                 FacetUiPlugin.log( msg );
                 
@@ -351,7 +351,7 @@ public final class ProjectFacetsUiManagerImpl
             {
                 final String msg
                     = NLS.bind( Resources.categoryNotDefined, 
-                                config.getNamespace(), fid );
+                                config.getContributor().getName(), fid );
                 
                 FacetUiPlugin.log( msg );
                 
@@ -366,7 +366,7 @@ public final class ProjectFacetsUiManagerImpl
             {
                 final String msg
                     = NLS.bind( Resources.runtimeComponentTypeNotDefined, 
-                                config.getNamespace(), rct );
+                                config.getContributor().getName(), rct );
                 
                 FacetUiPlugin.log( msg );
                 
@@ -388,7 +388,7 @@ public final class ProjectFacetsUiManagerImpl
             reportMissingAttribute( config, ATTR_PATH );
         }
                 
-        final String plugin = config.getNamespace();
+        final String plugin = config.getContributor().getName();
         final Bundle bundle = Platform.getBundle( plugin );
         final URL url = bundle.getEntry( path );
         
@@ -412,7 +412,8 @@ public final class ProjectFacetsUiManagerImpl
                                                 final String attribute )
     {
         final String[] params 
-            = new String[] { el.getNamespace(), el.getName(), attribute };
+            = new String[] { el.getContributor().getName(), el.getName(), 
+                             attribute };
         
         final String msg = NLS.bind( Resources.missingAttribute, params ); 
     

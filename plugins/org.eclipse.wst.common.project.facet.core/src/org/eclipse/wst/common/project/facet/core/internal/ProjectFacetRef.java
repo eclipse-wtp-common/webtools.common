@@ -77,7 +77,7 @@ public final class ProjectFacetRef
         
         if( ! ProjectFacetsManager.isProjectFacetDefined( id ) )
         {
-            ProjectFacetsManagerImpl.reportMissingFacet( id, config.getNamespace() );
+            ProjectFacetsManagerImpl.reportMissingFacet( id, config.getContributor().getName() );
             return null;
         }
         
@@ -90,7 +90,7 @@ public final class ProjectFacetRef
         {
             try
             {
-                vexpr = new VersionExpr( f, v, config.getNamespace() );
+                vexpr = new VersionExpr( f, v, config.getContributor().getName() );
             }
             catch( CoreException e )
             {

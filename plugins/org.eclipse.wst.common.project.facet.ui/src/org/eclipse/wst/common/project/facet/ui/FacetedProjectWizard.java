@@ -25,8 +25,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectTemplate;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
-import org.eclipse.wst.common.project.facet.ui.internal.ConflictingFacetsFilter;
-import org.eclipse.wst.common.project.facet.ui.internal.FacetsSelectionPanel;
 
 /**
  * <p><i>This class is part of an interim API that is still under development 
@@ -80,11 +78,6 @@ public abstract class FacetedProjectWizard
         final Set fixed = this.template.getFixedProjectFacets();
         
         this.facetsSelectionPage.setFixedProjectFacets( fixed );
-        
-        final ConflictingFacetsFilter filter 
-            = new ConflictingFacetsFilter( fixed );
-        
-        this.facetsSelectionPage.setFilters( new FacetsSelectionPanel.IFilter[] { filter } );
     }
     
     public boolean canFinish()

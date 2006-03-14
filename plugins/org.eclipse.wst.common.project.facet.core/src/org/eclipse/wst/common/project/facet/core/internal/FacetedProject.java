@@ -53,6 +53,7 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectValidator;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.IRuntimeChangedEvent;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
@@ -482,6 +483,13 @@ public final class FacetedProject
         throws CoreException
         
     {
+        final IRuntime oldRuntime = getRuntime();
+        
+        if( equals( oldRuntime, runtime ) )
+        {
+            return;
+        }
+        
         if( monitor != null )
         {
             monitor.beginTask( "", this.facets.size() ); //$NON-NLS-1$
@@ -512,13 +520,16 @@ public final class FacetedProject
             
             this.runtimeName = ( runtime == null ? null : runtime.getName() );
             save();
+            
+            final IRuntimeChangedEvent event 
+                = new RuntimeChangedEvent( oldRuntime, runtime );
 
             for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
             {
                 final ProjectFacetVersion fv
                     = (ProjectFacetVersion) itr.next();
                 
-                callEventHandlers( fv, EventHandler.Type.RUNTIME_CHANGED, null,
+                callEventHandlers( fv, EventHandler.Type.RUNTIME_CHANGED, event,
                                    submon( monitor, 1 ) );
             }
         }
@@ -1126,6 +1137,23 @@ public final class FacetedProject
                                             final int ticks )
     {
         return ( parent == null ? null : new SubProgressMonitor( parent, ticks ) );
+    }
+    
+    private static boolean equals( final Object obj1,
+                                   final Object obj2 )
+    {
+        if( obj1 == obj2 )
+        {
+            return true;
+        }
+        else if( obj1 == null || obj2 == null )
+        {
+            return false;
+        }
+        else
+        {
+            return obj1.equals( obj2 );
+        }
     }
     
     private static final class Resources

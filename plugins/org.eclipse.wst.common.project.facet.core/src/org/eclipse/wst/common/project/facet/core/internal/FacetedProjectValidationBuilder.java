@@ -122,7 +122,7 @@ public final class FacetedProjectValidationBuilder
             if( config.getName().equals( EL_VALIDATOR ) )
             {
                 ValidatorDefinition def = new ValidatorDefinition();
-                def.plugin = config.getDeclaringExtension().getNamespace();
+                def.plugin = config.getContributor().getName();
                 
                 def.className = config.getAttribute( ATTR_CLASS );
 

@@ -535,7 +535,7 @@ public final class RuntimeManagerImpl
         
         final RuntimeComponentType rct = new RuntimeComponentType();
         rct.setId( id );
-        rct.setPluginId( config.getDeclaringExtension().getNamespace() );
+        rct.setPluginId( config.getContributor().getName() );
 
         final IConfigurationElement[] children = config.getChildren();
         
@@ -586,7 +586,7 @@ public final class RuntimeManagerImpl
         {
             final String msg
                 = NLS.bind( Resources.runtimeComponentTypeNotDefined, type ) +
-                  NLS.bind( Resources.usedInPlugin, config.getNamespace() );
+                  NLS.bind( Resources.usedInPlugin, config.getContributor().getName() );
             
             FacetCorePlugin.log( msg );
             
@@ -597,7 +597,7 @@ public final class RuntimeManagerImpl
         
         rcv.setRuntimeComponentType( rct );
         rcv.setVersionString( ver );
-        rcv.setPluginId( config.getDeclaringExtension().getNamespace() );
+        rcv.setPluginId( config.getContributor().getName() );
         
         rct.addVersion( rcv );
     }
@@ -630,7 +630,8 @@ public final class RuntimeManagerImpl
                 {
                     final String msg
                         = NLS.bind( Resources.runtimeComponentTypeNotDefined, id ) +
-                          NLS.bind( Resources.usedInPlugin, child.getNamespace() );
+                          NLS.bind( Resources.usedInPlugin, 
+                                    child.getContributor().getName() );
                     
                     FacetCorePlugin.log( msg );
                     
@@ -649,7 +650,8 @@ public final class RuntimeManagerImpl
                             = NLS.bind( Resources.runtimeComponentVersionNotDefined,
                                         id, version );
                         
-                        msg += NLS.bind( Resources.usedInPlugin, config.getNamespace() );
+                        msg += NLS.bind( Resources.usedInPlugin, 
+                                         config.getContributor().getName() );
                         
                         FacetCorePlugin.log( msg );
                         
@@ -696,7 +698,7 @@ public final class RuntimeManagerImpl
             versions = Collections.singleton( rcversion );
         }
         
-        final String plugin = config.getDeclaringExtension().getNamespace();
+        final String plugin = config.getContributor().getName();
         
         for( Iterator itr1 = versions.iterator(); itr1.hasNext(); )
         {
@@ -736,7 +738,7 @@ public final class RuntimeManagerImpl
                 {
                     try
                     {
-                        expr = new VersionExpr( f, v, config.getNamespace() );
+                        expr = new VersionExpr( f, v, config.getContributor().getName() );
                     }
                     catch( CoreException e )
                     {
@@ -766,7 +768,9 @@ public final class RuntimeManagerImpl
                     {
                         try
                         {
-                            final String pluginId = config.getNamespace();
+                            final String pluginId 
+                                = config.getContributor().getName();
+                            
                             expr = new VersionExpr( rct, v, pluginId );
                         }
                         catch( CoreException e )
@@ -834,7 +838,7 @@ public final class RuntimeManagerImpl
                     return;
                 }
                 
-                final String pluginId = config.getNamespace();
+                final String pluginId = config.getContributor().getName();
                 
                 final Object br;
                 
@@ -918,7 +922,9 @@ public final class RuntimeManagerImpl
                 {
                     try
                     {
-                        final String pluginId = config.getNamespace();
+                        final String pluginId 
+                            = config.getContributor().getName();
+                        
                         dfe.rcvexpr = new VersionExpr( dfe.rct, v, pluginId );
                     }
                     catch( CoreException e )
@@ -951,7 +957,8 @@ public final class RuntimeManagerImpl
                         = NLS.bind( ProjectFacetsManagerImpl.Resources.facetVersionNotDefined,
                                     f.getId(), ver );
                     
-                    msg += NLS.bind( Resources.usedInPlugin, config.getNamespace() );
+                    msg += NLS.bind( Resources.usedInPlugin, 
+                                     config.getContributor().getName() );
                     
                     FacetCorePlugin.log( msg );
                     
@@ -984,7 +991,8 @@ public final class RuntimeManagerImpl
         {
             final String msg
                 = NLS.bind( Resources.runtimeComponentTypeNotDefined, id ) +
-                  NLS.bind( Resources.usedInPlugin, config.getNamespace() );
+                  NLS.bind( Resources.usedInPlugin, 
+                            config.getContributor().getName() );
             
             FacetCorePlugin.log( msg );
             
@@ -1006,7 +1014,7 @@ public final class RuntimeManagerImpl
         
         if( ! ProjectFacetsManager.isProjectFacetDefined( id ) )
         {
-            ProjectFacetsManagerImpl.reportMissingFacet( id, config.getNamespace() );
+            ProjectFacetsManagerImpl.reportMissingFacet( id, config.getContributor().getName() );
             return null;
         }
         
@@ -1017,7 +1025,7 @@ public final class RuntimeManagerImpl
                                                 final String attribute )
     {
         final String[] params 
-            = new String[] { el.getNamespace(), el.getName(), attribute };
+            = new String[] { el.getContributor().getName(), el.getName(), attribute };
         
         final String msg = NLS.bind( Resources.missingAttribute, params ); 
     

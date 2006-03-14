@@ -353,7 +353,8 @@ public final class ProjectFacetsManagerImpl
         throws CoreException
         
     {
-        if( project.isNatureEnabled( FacetedProjectNature.NATURE_ID ) )
+        if( project.isAccessible() &&
+            project.isNatureEnabled( FacetedProjectNature.NATURE_ID ) )
         {
             synchronized( this.projects )
             {
@@ -1064,7 +1065,7 @@ public final class ProjectFacetsManagerImpl
     private void readCategory( final IConfigurationElement config )
     {
         final Category category = new Category();
-        category.setPluginId( config.getDeclaringExtension().getNamespace() );
+        category.setPluginId( config.getContributor().getName() );
         
         final String id = config.getAttribute( ATTR_ID );
 
@@ -1108,7 +1109,7 @@ public final class ProjectFacetsManagerImpl
         
         final ProjectFacet descriptor = new ProjectFacet();
         descriptor.setId( id );
-        descriptor.setPluginId( config.getDeclaringExtension().getNamespace() );
+        descriptor.setPluginId( config.getContributor().getName() );
 
         final IConfigurationElement[] children = config.getChildren();
         
@@ -1148,7 +1149,8 @@ public final class ProjectFacetsManagerImpl
                 {
                     final String msg
                         = NLS.bind( Resources.categoryNotDefined, catname ) +
-                          NLS.bind( Resources.usedInPlugin, child.getNamespace() );
+                          NLS.bind( Resources.usedInPlugin, 
+                                    child.getContributor().getName() );
                     
                     FacetCorePlugin.log( msg );
                     
@@ -1186,7 +1188,7 @@ public final class ProjectFacetsManagerImpl
         
         if( f == null )
         {
-            reportMissingFacet( fid, config.getNamespace() );
+            reportMissingFacet( fid, config.getContributor().getName() );
             return;
         }
         
@@ -1195,7 +1197,7 @@ public final class ProjectFacetsManagerImpl
         
         fv.setProjectFacet( f );
         fv.setVersionString( ver );
-        fv.setPlugin( config.getDeclaringExtension().getNamespace() );
+        fv.setPlugin( config.getContributor().getName() );
         
         final IConfigurationElement[] children = config.getChildren();
         
@@ -1266,7 +1268,7 @@ public final class ProjectFacetsManagerImpl
         
         if( f == null )
         {
-            reportMissingFacet( fid, config.getNamespace() );
+            reportMissingFacet( fid, config.getContributor().getName() );
             return;
         }
         
@@ -1285,7 +1287,7 @@ public final class ProjectFacetsManagerImpl
                              final ProjectFacet f,
                              final String version )
     {
-        final String pluginId = config.getNamespace();
+        final String pluginId = config.getContributor().getName();
         final ActionDefinition def = new ActionDefinition();
         
         final String type = config.getAttribute( ATTR_TYPE );
@@ -1385,7 +1387,7 @@ public final class ProjectFacetsManagerImpl
         
         if( f == null )
         {
-            reportMissingFacet( fid, config.getNamespace() );
+            reportMissingFacet( fid, config.getContributor().getName() );
             return;
         }
         
@@ -1405,7 +1407,7 @@ public final class ProjectFacetsManagerImpl
                                    final String version )
     {
         final EventHandler h = new EventHandler();
-        final String pluginId = config.getNamespace();
+        final String pluginId = config.getContributor().getName();
         h.setPluginId( pluginId );
         
         final String type = config.getAttribute( ATTR_TYPE );
@@ -1511,7 +1513,7 @@ public final class ProjectFacetsManagerImpl
     private IConstraint readConstraintHelper( final IConfigurationElement root,
                                               final ProjectFacetVersion fv )
     {
-        final String pluginId = root.getNamespace();
+        final String pluginId = root.getContributor().getName();
         
         final IConstraint.Type type
             = IConstraint.Type.valueOf( root.getName() );
@@ -1526,7 +1528,15 @@ public final class ProjectFacetsManagerImpl
             
             for( int i = 0; i < children.length; i++ )
             {
-                operands[ i ] = readConstraintHelper( children[ i ], fv );
+                final IConstraint operand 
+                    = readConstraintHelper( children[ i ], fv );
+                
+                if( operand == null )
+                {
+                    return null;
+                }
+                
+                operands[ i ] = operand;
             }
         }
         else if( type == IConstraint.Type.REQUIRES )
@@ -1684,7 +1694,7 @@ public final class ProjectFacetsManagerImpl
                 
                 if( ! isProjectFacetDefined( fid ) )
                 {
-                    reportMissingFacet( fid, child.getNamespace() );
+                    reportMissingFacet( fid, child.getContributor().getName() );
                     return;
                 }
                 
@@ -1704,7 +1714,8 @@ public final class ProjectFacetsManagerImpl
                 {
                     final String msg
                         = NLS.bind( Resources.presetNotDefined, pid ) +
-                          NLS.bind( Resources.usedInPlugin, child.getNamespace() );
+                          NLS.bind( Resources.usedInPlugin, 
+                                    child.getContributor().getName() );
                     
                     FacetCorePlugin.log( msg );
                     
@@ -1775,7 +1786,8 @@ public final class ProjectFacetsManagerImpl
                                         final String attribute )
     {
         final String[] params 
-            = new String[] { el.getNamespace(), el.getName(), attribute };
+            = new String[] { el.getContributor().getName(), el.getName(), 
+                             attribute };
         
         final String msg = NLS.bind( Resources.missingAttribute, params ); 
     
@@ -1786,7 +1798,8 @@ public final class ProjectFacetsManagerImpl
                                       final String element )
     {
         final String[] params 
-            = new String[] { el.getNamespace(), el.getName(), element };
+            = new String[] { el.getContributor().getName(), el.getName(), 
+                             element };
         
         final String msg = NLS.bind( Resources.missingElement, params ); 
     
