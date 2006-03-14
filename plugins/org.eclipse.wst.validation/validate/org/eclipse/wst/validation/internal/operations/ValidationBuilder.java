@@ -23,6 +23,7 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
@@ -278,10 +279,12 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 
 	private void logBuildError(Logger logger, Throwable exc) {
 		if (logger.isLoggingLevel(Level.SEVERE)) {
-			LogEntry entry = ValidationPlugin.getLogEntry();
-			entry.setSourceID("ValidationBuilder.build(int, Map, IProgressMonitor)"); //$NON-NLS-1$
-			entry.setTargetException(exc);
-			logger.write(Level.SEVERE, entry);
+			if( ! (exc instanceof OperationCanceledException) ){
+				LogEntry entry = ValidationPlugin.getLogEntry();
+				entry.setSourceID("ValidationBuilder.build(int, Map, IProgressMonitor)"); //$NON-NLS-1$
+				entry.setTargetException(exc);
+				logger.write(Level.SEVERE, entry);
+			}
 		}
 	}
 
