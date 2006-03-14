@@ -182,9 +182,9 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 		if (!status.isOK())
 			return status;
 		IProject project = ProjectUtilities.getProject( name );
-		if (project.exists())
-			return WTPCommonPlugin.createErrorStatus(WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_EXISTS_ERROR, new Object[]{name}));
-
+		if (project.exists()){
+			return WTPCommonPlugin.createErrorStatus(WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_EXISTS_SAMENAME_ERROR, new Object[]{name}));
+		}
 		if (!WTPPlugin.isPlatformCaseSensitive()) {
 			// now look for a matching case variant in the tree
 			IResource variant = ((Resource) project).findExistingResourceVariant(project.getFullPath());
