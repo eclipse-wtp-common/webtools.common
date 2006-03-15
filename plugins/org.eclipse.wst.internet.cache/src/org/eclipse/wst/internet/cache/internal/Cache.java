@@ -400,7 +400,7 @@ public class Cache
 	  TransformerFactory tFactory  = TransformerFactory.newInstance();
       Transformer transformer = tFactory.newTransformer();
       Source input = new DOMSource(cachedoc);
-	  IPath stateLocation = Platform.getPluginStateLocation(CachePlugin.getDefault());
+	  IPath stateLocation = Platform.getStateLocation(CachePlugin.getDefault().getBundle());
       Result output = new StreamResult(stateLocation.toString() + "/" + CACHE_FILE);
       transformer.transform(input, output);
 

@@ -57,7 +57,7 @@ public class CachePlugin extends AbstractUIPlugin
   {
 	super.start(context);
 	ToCacheRegistryReader.getInstance().readRegistry();
-	Cache.open(Platform.getPluginStateLocation(this));
+	Cache.open(Platform.getStateLocation(getBundle()));
 	if (getPluginPreferences().contains(PreferenceConstants.CACHE_ENABLED)) 
 	{
 	  setCacheEnabled(getPluginPreferences().getBoolean(PreferenceConstants.CACHE_ENABLED));
