@@ -313,7 +313,7 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 				IRuntime runtime = (IRuntime) iterator.next();
 				descriptors[i] = new DataModelPropertyDescriptor(runtime, runtime.getName());
 			}
-			descriptors[descriptors.length -1] = new DataModelPropertyDescriptor(null, "");
+			descriptors[descriptors.length -1] = new DataModelPropertyDescriptor(null, "<None>"); //$NON-NLS-1$
 			return descriptors;
 		}
 		return super.getValidPropertyDescriptors(propertyName);
