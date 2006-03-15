@@ -113,7 +113,7 @@ public class URIResolverExtensionRegistryReader
 			{
 				try
 				{
-					String pluginId = element.getDeclaringExtension().getNamespace();
+					String pluginId = element.getDeclaringExtension().getNamespaceIdentifier();
 
 					int stageint = URIResolverExtensionRegistry.STAGE_POSTNORMALIZATION;
 					if (stage.equalsIgnoreCase(VAL_STAGE_PRE))

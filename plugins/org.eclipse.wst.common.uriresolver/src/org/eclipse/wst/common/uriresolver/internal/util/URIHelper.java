@@ -18,9 +18,9 @@ import java.net.URI;
 import java.net.URL;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 
 
 public class URIHelper
@@ -176,7 +176,7 @@ public class URIHelper
     {                        
       urlspec = urlspec.replace('\\', '/'); 
       URL url = new URL(urlspec);
-      URL resolvedURL = Platform.resolve(url);
+      URL resolvedURL = FileLocator.resolve(url);
       result = resolvedURL.toString();
     }
     catch (Exception e)
