@@ -26,6 +26,7 @@ import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.wst.common.internal.emf.annotations.core.AnnotationsTranslator;
 import org.eclipse.wst.common.internal.emf.utilities.Assert;
 import org.eclipse.wst.common.internal.emf.utilities.DOMUtilities;
 import org.eclipse.wst.common.internal.emf.utilities.EtoolsCopySession;
@@ -125,8 +126,7 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	protected void initChildTranslators() {
 
 		List children = new ArrayList();
-		// TODO come up with translator extension mechanism
-		//children.add(AnnotationsTranslator.INSTANCE);
+		children.add(AnnotationsTranslator.INSTANCE);
 		children.addAll(Arrays.asList(fTranslator.getChildren(getTarget(), fRenderer.getVersionID())));
 
 		VariableTranslatorFactory factory = fTranslator.getVariableTranslatorFactory();
