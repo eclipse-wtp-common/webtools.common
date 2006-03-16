@@ -21,11 +21,9 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jface.preference.PreferencePage;
-import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.ComboBoxCellEditor;
-import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableLayout;
@@ -34,9 +32,13 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -239,18 +241,7 @@ private class ValidatorListPage implements IValidationPage {
 	Button disableAllValidation = null;
 	Button overrideButton = null;
 	private Label listLabel = null;
-	private String[] columnProperties;
-	private CellEditor[] columnEditors;
-	private String[] COMBO_VALUES = new String[] {"Enabled","Disabled"};
-	private static final int ENABLED_INT = 0;
-	private static final int DISABLED_INT = 1;
 	private Table validatorsTable;
-	private static final String VALIDATORS = "validators"; //$NON-NLS-1$
-	private static final String MANUAL_CHECK = "manualCheck";//$NON-NLS-2$
-	private static final String BUILD_CHECK = "buildCheck";//$NON-NLS-2$
-	private static final int VALUE_NOT_FOUND = -1;
-	private static final int MANUAL_COL = 1;
-	private static final int BUILD_COL = 2;
 
 	GlobalConfiguration pagePreferences = null; // the values currently on the page, but not
 	// necessarily stored yet. Package visibility
@@ -431,23 +422,11 @@ private class ValidatorListPage implements IValidationPage {
         TableColumn manualColumn = new TableColumn(table, SWT.NONE);
         manualColumn.setText("Manual");
         manualColumn.setResizable(false);
-        manualColumn.setWidth(80);
+        manualColumn.setWidth(40);
         TableColumn buildColumn = new TableColumn(table, SWT.NONE);
         buildColumn.setText("Build");
         buildColumn.setResizable(false);
-        buildColumn.setWidth(80);
-        setupCellModifiers(table, viewer);
-    }
-	private void setupCellModifiers(Table table, TableViewer viewer) {
-        columnProperties = new String[3];
-        columnProperties[0] = VALIDATORS; //$NON-NLS-1$
-        columnProperties[1] = MANUAL_CHECK;//$NON-NLS-2$
-        columnProperties[2] = BUILD_CHECK;//$NON-NLS-2$
-        viewer.setColumnProperties(columnProperties);
-        columnEditors = new CellEditor[table.getColumnCount()];
-        columnEditors[1] = new ComboBoxCellEditor(table,COMBO_VALUES, SWT.READ_ONLY);
-        columnEditors[2] = new ComboBoxCellEditor(table,COMBO_VALUES, SWT.READ_ONLY);
-        viewer.setCellEditors(columnEditors);
+        buildColumn.setWidth(30);
     }
 	
 	public Composite createPage(Composite parent) throws InvocationTargetException {
@@ -517,11 +496,11 @@ private class ValidatorListPage implements IValidationPage {
 		listLabel.setLayoutData(listLabelData);
 		listLabel.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.PREF_VALLIST_TITLE));
 
-		validatorsTable = new Table(validatorGroup,SWT.BORDER);
+		validatorsTable = new Table(validatorGroup,SWT.BORDER | SWT.FULL_SELECTION);
 		TableLayout tableLayout = new TableLayout();
 		tableLayout.addColumnData(new ColumnWeightData(160, true));
-        tableLayout.addColumnData(new ColumnWeightData(80, true));
-        tableLayout.addColumnData(new ColumnWeightData(80, true));
+        tableLayout.addColumnData(new ColumnWeightData(40, true));
+        tableLayout.addColumnData(new ColumnWeightData(30, true));
 		validatorsTable.setHeaderVisible(true);
 		validatorsTable.setLinesVisible(true);
         validatorsTable.setLayout(tableLayout);
@@ -534,78 +513,47 @@ private class ValidatorListPage implements IValidationPage {
 		validatorList.setLabelProvider(new ValidationLabelProvider());
 		validatorList.setContentProvider(new ValidationContentProvider());
 		validatorList.setSorter(new ValidationViewerSorter());
-        setupTableColumns(validatorsTable,validatorList);
-		validatorList.setCellModifier(new ICellModifier() {
-			public boolean canModify(Object element, String property) {
-				ComboBoxCellEditor cellEditor = getComboBoxCellEditor(property);
-				if (cellEditor == null)
-					return false;
-				return true;
-			}
-
-			protected ComboBoxCellEditor getComboBoxCellEditor(String property) {
-				CellEditor cellEditor = getCellEditor(property);
-				if (cellEditor instanceof ComboBoxCellEditor)
-					return (ComboBoxCellEditor) cellEditor;
-				return null;
-
-			}
-
-			protected int getPropertyIntValue(String property) {
-				if (columnProperties != null) {
-					for (int i = 0; i < columnProperties.length; i++) {
-						if (columnProperties[i].equals(property))
-							return i;
-					}
-				}
-				return VALUE_NOT_FOUND;
-			}
-
-			protected CellEditor getCellEditor(String property) {
-				int comboCellEditorIndex = getPropertyIntValue(property);
-				if (comboCellEditorIndex == VALUE_NOT_FOUND)
-					return null;
-				return columnEditors[comboCellEditorIndex];
-			}
-
-			public Object getValue(Object element, String property) {
-				ValidatorMetaData data = (ValidatorMetaData) element;
-				if (property == MANUAL_CHECK) {
-					if (data.isManualValidation())
-						return new Integer(ENABLED_INT);
-					else
-						return new Integer(DISABLED_INT);
-
-				} else if (property == BUILD_CHECK) {
-					if (data.isBuildValidation())
-						return new Integer(ENABLED_INT);
-					else
-						return new Integer(DISABLED_INT);
-				}
-				return new Integer(VALUE_NOT_FOUND);
-			}
-
-			public void modify(Object element, String property, Object value) {
-
-				ValidatorMetaData data = (ValidatorMetaData) ((TableItem) element).getData();
-				int intValue = ((Integer) value).intValue();
-				if (property.equals(MANUAL_CHECK)) {
-					if (intValue == ENABLED_INT) {
-						data.setManualValidation(true);
-					} else if (intValue == DISABLED_INT) {
-						data.setManualValidation(false);
-					}
-				} else if (property.equals(BUILD_CHECK)) {
-					if (intValue == ENABLED_INT) {
-						data.setBuildValidation(true);
-					} else if (intValue == DISABLED_INT) {
-						data.setBuildValidation(false);
-					}
-				}
-				validatorList.refresh();
-			}
-		});
+    setupTableColumns(validatorsTable,validatorList);
 		validatorList.setInput(pagePreferences.getValidators());
+    validatorsTable.addMouseListener(new MouseAdapter() {
+
+      public void mouseDown(MouseEvent e)
+      {
+        TableItem tableItem = validatorsTable.getItem(new Point(e.x, e.y));
+        if (tableItem == null || tableItem.isDisposed())
+        {
+          // item no longer exists
+          return;
+        }
+        int columnNumber;
+        int columnsCount = validatorsTable.getColumnCount();
+        if (columnsCount == 0)
+        {
+          // If no TableColumn, Table acts as if it has a single column
+          // which takes the whole width.
+          columnNumber = 0;
+        }
+        else
+        {
+          columnNumber = -1;
+          for (int i = 0; i < columnsCount; i++)
+          {
+            Rectangle bounds = tableItem.getBounds(i);
+            if (bounds.contains(e.x, e.y))
+            {
+              columnNumber = i;
+              break;
+            }
+          }
+          if (columnNumber == -1)
+          {
+            return;
+          }
+        }
+
+        columnClicked(columnNumber);          
+      }});
+    
 		
 		enableAllButton = new Button(validatorGroup, SWT.PUSH);
 		enableAllButton.setLayoutData(new GridData());
@@ -651,7 +599,27 @@ private class ValidatorListPage implements IValidationPage {
 
 		return composite;
 	}
-	protected void updateWidgets() throws InvocationTargetException {
+  
+  protected void columnClicked(int columnToEdit)
+  {
+    IStructuredSelection selection = (IStructuredSelection) validatorList.getSelection();
+    ValidatorMetaData vmd = (ValidatorMetaData) selection.getFirstElement();
+    
+    switch (columnToEdit)
+    {
+    case 1:
+      vmd.setManualValidation(!vmd.isManualValidation());
+      break;
+    case 2:
+      vmd.setBuildValidation(!vmd.isBuildValidation());
+      break;
+    default:
+      break;
+    }
+    validatorList.refresh();      
+  }	
+  
+  protected void updateWidgets() throws InvocationTargetException {
 		// Need to update even the widgets that do not change based on another
 		// widgets because of performDefaults(). If performDefaults() is selected,
 		// then the pagePreferences values are reset, and these widgets
