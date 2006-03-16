@@ -34,6 +34,9 @@ public final class FacetCorePlugin
     public static final String PLUGIN_ID 
         = "org.eclipse.wst.common.project.facet.core"; //$NON-NLS-1$
     
+    private static final String TRACING_ACTION_SORTING
+        = PLUGIN_ID + "/actionSorting"; //$NON-NLS-1$
+    
     private static FacetCorePlugin plugin;
     private static final Set messagesLogged = new HashSet();
     
@@ -46,6 +49,14 @@ public final class FacetCorePlugin
     public static FacetCorePlugin getInstance()
     {
         return plugin;
+    }
+    
+    public static boolean isTracingActionSorting()
+    {
+        final String optionValue
+            = Platform.getDebugOption( TRACING_ACTION_SORTING );
+        
+        return optionValue == null ? false : optionValue.equals( "true" ); //$NON-NLS-1$
     }
     
     public static void log( final Exception e )

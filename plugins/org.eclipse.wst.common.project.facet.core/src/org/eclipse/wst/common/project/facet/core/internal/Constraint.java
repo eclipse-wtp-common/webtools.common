@@ -215,7 +215,8 @@ public final class Constraint
                     final IProjectFacetVersion member
                         = (IProjectFacetVersion) itr.next();
                     
-                    if( member != this.fv && facets.contains( member ) )
+                    if( member.getProjectFacet() != this.fv.getProjectFacet() && 
+                        facets.contains( member ) )
                     {
                         final ValidationProblem.Type t 
                             = ValidationProblem.Type.CONFLICTS;

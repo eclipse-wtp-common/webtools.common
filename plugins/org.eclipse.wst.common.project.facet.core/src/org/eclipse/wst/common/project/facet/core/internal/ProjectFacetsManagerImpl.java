@@ -12,6 +12,7 @@
 package org.eclipse.wst.common.project.facet.core.internal;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -86,7 +87,7 @@ public final class ProjectFacetsManagerImpl
     private static final String EL_PROJECT_FACET_VERSION = "project-facet-version"; //$NON-NLS-1$
     private static final String EL_TEMPLATE = "template"; //$NON-NLS-1$
     private static final String EL_VERSION_COMPARATOR = "version-comparator"; //$NON-NLS-1$
-
+    
     private static final Set facetsReportedMissing = new HashSet();
     
     private final IndexedSet facets;
@@ -742,6 +743,11 @@ public final class ProjectFacetsManagerImpl
     {
         final int count = actions.size();
         
+        if( count == 0 )
+        {
+            return;
+        }
+        
         // Before sorting, check that the constraints can be met. Otherwise
         // the sort algorithm will not terminate.
         
@@ -751,6 +757,16 @@ public final class ProjectFacetsManagerImpl
         {
             FacetCorePlugin.log( st );
             return;
+        }
+        
+        // Initialize tracing.
+        
+        List unsorted = null;
+        int steps = 0;
+        
+        if( FacetCorePlugin.isTracingActionSorting() )
+        {
+            unsorted = new ArrayList( actions );
         }
         
         // Step 1 : Pre-sort all uninstall actions to the front of the list.
@@ -764,6 +780,7 @@ public final class ProjectFacetsManagerImpl
                 actions.set( j, actions.get( i ) );
                 actions.set( i, action );
                 i++;
+                steps++;
             }
         }
         
@@ -798,27 +815,12 @@ public final class ProjectFacetsManagerImpl
                     {
                         moveToFront( actions, i );
                         makeAnotherPass = true;
+                        steps++;
                         break;
                     }
                     else
                     {
                         apply( state, action );
-                        i++;
-                    }
-                }
-                else if( type == Action.Type.VERSION_CHANGE )
-                {
-                    final HashSet copy = new HashSet( state );
-                    apply( state, action );
-                    
-                    if( ! constraint.check( copy, true ).isOK() &&
-                        constraint.check( fnl, true ).isOK() )
-                    {
-                        moveToEnd( actions, i );
-                    }
-                    else
-                    {
-                        state = copy;
                         i++;
                     }
                 }
@@ -834,9 +836,22 @@ public final class ProjectFacetsManagerImpl
                     else
                     {
                         moveToEnd( actions, i );
+                        steps++;
                     }
                 }
             }
+        }
+        
+        // Output tracing information.
+        
+        if( FacetCorePlugin.isTracingActionSorting() )
+        {
+            final String text
+                = Resources.bind( Resources.tracingActionSorting,
+                                  toString( base ), toString( unsorted ),
+                                  toString( actions ), String.valueOf( steps ) );
+            
+            System.out.println( text );
         }
     }
     
@@ -1930,6 +1945,36 @@ public final class ProjectFacetsManagerImpl
         return pluginRoot.node( "user.presets" ); //$NON-NLS-1$
     }
     
+    private static String toString( final Collection collection )
+    {
+        final StringBuffer buf = new StringBuffer();
+        
+        for( Iterator itr = collection.iterator(); itr.hasNext(); )
+        {
+            final Object obj = itr.next();
+            
+            if( buf.length() > 0 )
+            {
+                buf.append( ", " ); //$NON-NLS-1$
+            }
+            
+            if( obj instanceof IProjectFacetVersion )
+            {
+                final IProjectFacetVersion fv = (IProjectFacetVersion) obj;
+                
+                buf.append( fv.getProjectFacet().getId() );
+                buf.append( ' ' );
+                buf.append( fv.getVersionString() );
+            }
+            else
+            {
+                buf.append( obj.toString() );
+            }
+        }
+        
+        return buf.toString();
+    }
+    
     private final class ResourceChangeListener
     
         implements IResourceChangeListener
@@ -1986,6 +2031,7 @@ public final class ProjectFacetsManagerImpl
         public static String invalidEventHandlerType;
         public static String invalidConflictsConstraint;
         public static String deprecatedRuntimeChangedAction;
+        public static String tracingActionSorting;
         
         static
         {

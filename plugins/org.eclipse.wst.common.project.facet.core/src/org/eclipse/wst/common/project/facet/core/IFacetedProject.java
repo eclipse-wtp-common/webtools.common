@@ -182,7 +182,16 @@ public interface IFacetedProject
         
         public String toString()
         {
-            return this.type.toString() + "[" + this.fv.toString() + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+            final StringBuffer buf = new StringBuffer();
+            
+            buf.append( this.type.toString() );
+            buf.append( '[' );
+            buf.append( this.fv.getProjectFacet().getId() );
+            buf.append( ' ' );
+            buf.append( this.fv.getVersionString() );
+            buf.append( ']' );
+            
+            return buf.toString();
         }
     }
     
