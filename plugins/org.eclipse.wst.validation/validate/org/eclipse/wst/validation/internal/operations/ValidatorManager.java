@@ -32,7 +32,6 @@ import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.InternalValidatorManager;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
 import org.eclipse.wst.validation.internal.TaskListUtility;
-import org.eclipse.wst.validation.internal.ValidationConfiguration;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
@@ -382,27 +381,6 @@ public final class ValidatorManager {
 	 */
 	public IMarker[] getValidationTasks(IResource resource, String[] validatorNames) {
 		return TaskListUtility.getValidationTasks(resource, validatorNames);
-	}
-
-	public int getMaximumMessagesAllowed(IProject project) {
-		try {
-			return ConfigurationManager.getManager().getProjectConfiguration(project).getMaximumNumberOfMessages();
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ValidatorManager.getMaximumMessagesAllowed(" + project.getName() + ")"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
-
-			return ValidationConfiguration.getMaximumNumberOfMessagesDefault();
-		}
 	}
 
 	/**
@@ -985,36 +963,6 @@ public final class ValidatorManager {
 	public void setNoMessageLimit(IProject project) {/*
 		setMessageLimit(project, WorkbenchReporter.NO_MESSAGE_LIMIT);
 	*/}
-
-	/**
-	 * This method is for use by batch EJB deploy only. Only in batch mode is an infinitie number of
-	 * messages allowed.
-	 * 
-	 * Return true if the given project is allowed an infinite number of validation messages.
-	 */
-	public boolean isNoMessageLimit(IProject project) {
-		try {
-			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
-			int max = prjp.getMaximumNumberOfMessages();
-			if (max == WorkbenchReporter.NO_MESSAGE_LIMIT) {
-				return true;
-			}
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ValidatorManager.setEnabledValidators(" + project.getName() + ", Set, IProgressMonitor)"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
-		}
-		return false;
-	}
 
 	/**
 	 * This message is for use only by the validation framework. If the "max messages were reported"

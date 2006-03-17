@@ -626,10 +626,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				// save some processing time...
 				return;
 			}
-			if (ValidatorManager.getManager().getMaximumMessagesAllowed(getProject()) == 0) {
-				// save some processing time
-				return;
-			}
+			
 			final WorkbenchReporter reporter = new WorkbenchReporter(getProject(), progressMonitor);
 
 			try {
