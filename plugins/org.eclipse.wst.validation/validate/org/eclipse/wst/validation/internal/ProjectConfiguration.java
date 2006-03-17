@@ -260,19 +260,6 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		return result;
 	}
 
-	/**
-	 * If the preferences should be used then the preference settings are returned; otherwise return
-	 * the project settings.
-	 * @deprecated - message limit no longer used
-	 */
-	public int getMaximumNumberOfMessages() throws InvocationTargetException {
-		/*if (useGlobalPreference()) {
-			return ConfigurationManager.getManager().getGlobalConfiguration().getMaximumNumberOfMessages();
-		}
-		return super.getMaximumNumberOfMessages();*/
-		return -1;
-	}
-
 	public void resetToDefault() throws InvocationTargetException {
 		// The default values of the project is whatever the preference values are
 		GlobalConfiguration gp = ConfigurationManager.getManager().getGlobalConfiguration();
