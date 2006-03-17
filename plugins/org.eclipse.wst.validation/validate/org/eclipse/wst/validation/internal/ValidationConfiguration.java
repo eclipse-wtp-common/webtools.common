@@ -47,8 +47,8 @@ public abstract class ValidationConfiguration {
 	// project or installed globally. The value is a Boolean; TRUE
 	// means that the VMD is enabled, FALSE means that the VMD is
 	// disabled.
-	private static HashMap manualValidators = null;
-	private static HashMap buildValidators = null;
+	protected HashMap manualValidators = null;
+	protected HashMap buildValidators = null;
 
 	public static String getEnabledElementsAsString(Set elements) {
 		if (elements == null) {
@@ -320,13 +320,13 @@ public abstract class ValidationConfiguration {
 		return getEnabledValidators();
 	}
 	
-	public  HashMap getBuildEnabledValidatorsMap() {
+	protected  HashMap getBuildEnabledValidatorsMap() {
 		if(buildValidators == null)
 			buildValidators = new HashMap();
 		return buildValidators;
 	}	
 	
-	public  HashMap getManualEnabledValidatorsMap() {
+	protected  HashMap getManualEnabledValidatorsMap() {
 		if(manualValidators == null)
 			manualValidators = new HashMap();
 		return manualValidators;
