@@ -71,7 +71,11 @@ public class UIPlugin extends AbstractUIPlugin {
 			return key;
 		}
 	}
-	
+
+    public static String getString(String key)
+    {
+      return getResourceString(key);     
+    }
 	/**
 	 * This gets the string resource and does one substitution.
 	 */

@@ -12,4 +12,20 @@
 	</viewPage>
   </extension>
  
+ <!--
+   <extension point="org.eclipse.ui.popupMenus"> 
+      <objectContribution 
+         id="test" 
+         objectClass="org.eclipse.core.resources.IFile">  
+         <action
+            id="testit" 
+            enablesFor="1"
+            style="pulldown"
+            menubarPath="additions"
+            label="TEST SEARCH DIALOG" 
+            class="org.eclipse.wst.common.ui.internal.search.dialogs.Test"> 
+         </action>          
+      </objectContribution>               
+    </extension> 
+ -->
 </plugin>
