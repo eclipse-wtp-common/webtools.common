@@ -11,6 +11,7 @@
 package org.eclipse.wst.validation.internal;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.eclipse.core.resources.IMarker;
@@ -19,6 +20,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.validation.internal.delegates.ValidatorDelegateDescriptor;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 
@@ -146,6 +148,17 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		return super.getValidators();
 	}
 
+	/*
+   * (non-Javadoc)
+   * @see org.eclipse.wst.validation.internal.ValidationConfiguration#getDelegatingValidators()
+	 */
+  public Map getDelegatingValidators() throws InvocationTargetException {
+    if (useGlobalPreference()) {
+      return ConfigurationManager.getManager().getGlobalConfiguration().getDelegatingValidators();
+    }
+    return super.getDelegatingValidators();
+  }
+
 	/**
 	 * @see org.eclipse.wst.validation.internal.operations.internal.attribute.ValidationConfiguration#getEnabledIncrementalValidators(boolean)
 	 */
@@ -266,6 +279,7 @@ public class ProjectConfiguration extends ValidationConfiguration {
 
 		setEnabledManualValidators(gp.getManualEnabledValidators());
 		setEnabledBuildValidators(gp.getBuildEnabledValidators());
+    setDelegatingValidators(gp.getDelegatingValidators());
 		
 		// except for this field, which is unique to the project preferences
 		setDoesProjectOverride(getDoesProjectOverrideDefault());
@@ -276,6 +290,7 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		GlobalConfiguration gp = ConfigurationManager.getManager().getGlobalConfiguration();
 		setEnabledManualValidators(gp.getManualEnabledValidators());
 		setEnabledBuildValidators(gp.getBuildEnabledValidators());
+    setDelegatingValidators(gp.getDelegatingValidators());
 	}
 
 	/**
@@ -464,6 +479,21 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		return false;
 	}
 
+  public boolean haveDelegatesChanged(Map oldDelegates, boolean allow) throws InvocationTargetException {
+
+    if (super.haveDelegatesChanged(oldDelegates)) {
+      return true;
+    }
+
+    if (allow) {
+      Map projDelegates = super.getDelegatingValidators(); 
+      GlobalConfiguration gp = ConfigurationManager.getManager().getGlobalConfiguration();
+      return gp.haveDelegatesChanged(projDelegates);
+    }
+      
+    return false;
+  }
+
 
 	/**
 	 * @see org.eclipse.wst.validation.internal.operations.internal.attribute.ValidationConfiguration#deserialize(String)
@@ -580,4 +610,12 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		}
 		return super.isDisableAllValidation();
 	}	
+
+  public ValidatorDelegateDescriptor getDelegateDescriptor(ValidatorMetaData vmd) throws InvocationTargetException {
+    if (useGlobalPreference()) {
+      return ConfigurationManager.getManager().getGlobalConfiguration().getDelegateDescriptor(vmd);
+    }
+    
+    return super.getDelegateDescriptor(vmd);
+  }
 }

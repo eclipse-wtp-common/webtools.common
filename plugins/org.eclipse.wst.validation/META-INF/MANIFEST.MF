@@ -8,6 +8,7 @@ Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
 Export-Package: org.eclipse.wst.validation.internal;x-internal:=true,
  org.eclipse.wst.validation.internal.core;x-internal:=true,
+ org.eclipse.wst.validation.internal.delegates;x-internal:=true,
  org.eclipse.wst.validation.internal.operations;x-internal:=true,
  org.eclipse.wst.validation.internal.plugin;x-internal:=true,
  org.eclipse.wst.validation.internal.provisional;x-internal:=true,

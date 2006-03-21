@@ -12,7 +12,9 @@ package org.eclipse.wst.validation.internal.ui;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.eclipse.core.resources.IProject;
@@ -30,6 +32,7 @@ import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.MouseAdapter;
@@ -44,8 +47,10 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -250,6 +255,7 @@ private class ValidatorListPage implements IValidationPage {
 	// order to access this field)
 	//private boolean _isAutoBuildEnabled; // initialized in the constructor
 	private ValidatorMetaData[] _oldVmd = null; // Cache the enabled validators so that, if
+  private Map _oldDelegates = null; // Cache the validator delegates.
 	// there is no change to this list, the
 	// expensive task list update can be avoided
 	private boolean _allow = false; // Cache the value of the prefence "allow projects to
@@ -336,16 +342,35 @@ private class ValidatorListPage implements IValidationPage {
 			}
 		}
 
+    private Image getImage(String imageName) {
+      boolean isDisabled = !validatorsTable.isEnabled();
+      if (isDisabled) {
+          imageName = imageName + "_disabled";  //$NON-NLS-N$
+      }
+      Image image = ValidationUIPlugin.getPlugin().getImage(imageName);
+      return image;
+    }
+    
 		public Image getColumnImage(Object element, int columnIndex) {
 			if(columnIndex == 1) {
 				if(((ValidatorMetaData)element).isManualValidation())
-					return  ValidationUIPlugin.getPlugin().getImage("ok_tbl");
-				return ValidationUIPlugin.getPlugin().getImage("fail_tbl");
-			} else if(columnIndex == 2) {
+					return  getImage("ok_tbl");
+				return getImage("fail_tbl");
+			} 
+      else if(columnIndex == 2) {
 				if(((ValidatorMetaData)element).isBuildValidation())
-					return ValidationUIPlugin.getPlugin().getImage("ok_tbl");;
-				return ValidationUIPlugin.getPlugin().getImage("fail_tbl");
+					return getImage("ok_tbl");;
+				return getImage("fail_tbl");
 			}
+      else if (columnIndex == 3)
+      {
+        ValidatorMetaData vmd = (ValidatorMetaData)element;
+
+        if (vmd.isDelegating())
+        {
+          return getImage("settings");          
+        }
+      }
 			return null;
 		
 		}
@@ -409,7 +434,10 @@ private class ValidatorListPage implements IValidationPage {
 		// that, if there is no change to this
 		// list, the expensive task list
 		// update can be avoided
-		_allow = pagePreferences.canProjectsOverride();
+
+    _oldDelegates =  new HashMap(pagePreferences.getDelegatingValidators());
+		
+    _allow = pagePreferences.canProjectsOverride();
 
 		page = createPage(parent);
 	}
@@ -427,6 +455,10 @@ private class ValidatorListPage implements IValidationPage {
         buildColumn.setText("Build");
         buildColumn.setResizable(false);
         buildColumn.setWidth(30);
+        TableColumn settingsColumn = new TableColumn(table, SWT.NONE);
+        settingsColumn.setText("Settings");
+        settingsColumn.setResizable(false);
+        settingsColumn.setWidth(40);
     }
 	
 	public Composite createPage(Composite parent) throws InvocationTargetException {
@@ -484,6 +516,7 @@ private class ValidatorListPage implements IValidationPage {
 				validatorsTable.setEnabled(!disableAllValidation.getSelection());
 				enableAllButton.setEnabled(!disableAllValidation.getSelection());
 				disableAllButton.setEnabled(!disableAllValidation.getSelection());
+        validatorList.refresh();
 			}
 		});
 		
@@ -499,8 +532,10 @@ private class ValidatorListPage implements IValidationPage {
 		validatorsTable = new Table(validatorGroup,SWT.BORDER | SWT.FULL_SELECTION);
 		TableLayout tableLayout = new TableLayout();
 		tableLayout.addColumnData(new ColumnWeightData(160, true));
-        tableLayout.addColumnData(new ColumnWeightData(40, true));
-        tableLayout.addColumnData(new ColumnWeightData(30, true));
+    tableLayout.addColumnData(new ColumnWeightData(40, true));
+    tableLayout.addColumnData(new ColumnWeightData(30, true));
+    tableLayout.addColumnData(new ColumnWeightData(40, true));
+    
 		validatorsTable.setHeaderVisible(true);
 		validatorsTable.setLinesVisible(true);
         validatorsTable.setLayout(tableLayout);
@@ -612,6 +647,28 @@ private class ValidatorListPage implements IValidationPage {
       break;
     case 2:
       vmd.setBuildValidation(!vmd.isBuildValidation());
+      break;
+    case 3:
+      {
+        if (!vmd.isDelegating()) {
+          break;
+        }
+          
+        String delegateID = pagePreferences.getDelegateUniqueName(vmd);
+  
+        Shell shell = Display.getCurrent().getActiveShell();
+        DelegatingValidatorPreferencesDialog dialog = new DelegatingValidatorPreferencesDialog(shell, vmd, delegateID);
+  
+        dialog.setBlockOnOpen(true);
+        dialog.create();
+  
+        int result = dialog.open();
+  
+        if (result == Window.OK)
+        {
+          pagePreferences.setDelegateUniqueName(vmd, dialog.getDelegateID());
+        }
+      }
       break;
     default:
       break;
@@ -840,7 +897,8 @@ private class ValidatorListPage implements IValidationPage {
 			try {
 				if (project.isOpen()) {
 					ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
-					if (!prjp.doesProjectOverride() && (prjp.hasEnabledValidatorsChanged(_oldVmd, allowChanged) || true)) {
+					if (!prjp.doesProjectOverride() && (prjp.hasEnabledValidatorsChanged(_oldVmd, allowChanged) || true) && 
+              (prjp.haveDelegatesChanged(_oldDelegates, allowChanged) || true)) {
 						// If the project used to override the preferences, and the preferences
 						// make that impossible now, then update the task list.
 						//

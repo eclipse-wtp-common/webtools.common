@@ -13,7 +13,9 @@ package org.eclipse.wst.validation.internal.ui;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import javax.swing.event.HyperlinkEvent;
@@ -30,6 +32,7 @@ import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.MouseAdapter;
@@ -46,8 +49,10 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -241,6 +246,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 		private boolean canOverride = false;
 
 		private ValidatorMetaData[] oldVmd = null; // Cache the enabled validators so that, if there
+    private Map oldDelegates = null; // Cache the validator delegates.
 
 		// is no change to this list, the expensive task
 		// list update can be avoided
@@ -340,18 +346,36 @@ public class ValidationPropertiesPage extends PropertyPage {
 				return null;
 			}
 
-			public Image getColumnImage(Object element, int columnIndex) {
+      private Image getImage(String imageName) {
+        boolean isDisabled = !validatorsTable.isEnabled();
+        if (isDisabled) {
+            imageName = imageName + "_disabled";  //$NON-NLS-N$
+        }
+        Image image = ValidationUIPlugin.getPlugin().getImage(imageName);
+        return image;
+      }
+      
+
+      public Image getColumnImage(Object element, int columnIndex) {
 				if(columnIndex == 1) {
 					if(((ValidatorMetaData)element).isManualValidation())
-						return  ValidationUIPlugin.getPlugin().getImage("ok_tbl");
-					return ValidationUIPlugin.getPlugin().getImage("fail_tbl");
+						return  getImage("ok_tbl");
+					return getImage("fail_tbl");
 				} else if(columnIndex == 2) {
 					if(((ValidatorMetaData)element).isBuildValidation())
-						return ValidationUIPlugin.getPlugin().getImage("ok_tbl");;
-					return ValidationUIPlugin.getPlugin().getImage("fail_tbl");
+						return getImage("ok_tbl");;
+					return getImage("fail_tbl");
 				}
+        else if (columnIndex == 3)
+        {
+          ValidatorMetaData vmd = (ValidatorMetaData)element;
+
+          if (vmd.isDelegating())
+          {
+            return getImage("settings");          
+          }
+        }
 				return null;
-			
 			}
 		}
 
@@ -401,9 +425,11 @@ public class ValidationPropertiesPage extends PropertyPage {
 			//isAutoBuildEnabled = vMgr.isGlobalAutoBuildEnabled();
 			//isBuilderConfigured = ValidatorManager.doesProjectSupportBuildValidation(getProject());
 			oldVmd = pagePreferences.getEnabledValidators(); // Cache the enabled validators so
-			// that, if there is no change to this
-			// list, the expensive task list update
-			// can be avoided
+      // that, if there is no change to this
+      // list, the expensive task list update
+      // can be avoided
+
+      oldDelegates =  new HashMap(pagePreferences.getDelegatingValidators());
 
 			createPage(parent);
 		}
@@ -421,6 +447,10 @@ public class ValidationPropertiesPage extends PropertyPage {
 	        buildColumn.setText("Build");
 	        buildColumn.setResizable(false);
 	        buildColumn.setWidth(30);
+          TableColumn settingsColumn = new TableColumn(table, SWT.NONE);
+          settingsColumn.setText("Settings");
+          settingsColumn.setResizable(false);
+          settingsColumn.setWidth(40);
 	    }
 
 		/**
@@ -506,6 +536,11 @@ public class ValidationPropertiesPage extends PropertyPage {
 					validatorsTable.setEnabled(!disableAllValidation.getSelection());
 					enableAllButton.setEnabled(!disableAllValidation.getSelection());
 					disableAllButton.setEnabled(!disableAllValidation.getSelection());
+          try {
+            updateWidgets();
+          } catch (InvocationTargetException exc) {
+            displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
+          }
 				}
 			});
 			
@@ -523,8 +558,9 @@ public class ValidationPropertiesPage extends PropertyPage {
 			validatorsTable = new Table(validatorGroup,SWT.BORDER | SWT.FULL_SELECTION);
 			TableLayout tableLayout = new TableLayout();
 			tableLayout.addColumnData(new ColumnWeightData(160, true));
-	        tableLayout.addColumnData(new ColumnWeightData(40, true));
-	        tableLayout.addColumnData(new ColumnWeightData(30, true));
+	    tableLayout.addColumnData(new ColumnWeightData(40, true));
+	    tableLayout.addColumnData(new ColumnWeightData(30, true));
+      tableLayout.addColumnData(new ColumnWeightData(40, true));
 			validatorsTable.setHeaderVisible(true);
 			validatorsTable.setLinesVisible(true);
 	        validatorsTable.setLayout(tableLayout);
@@ -756,6 +792,27 @@ public class ValidationPropertiesPage extends PropertyPage {
       case 2:
         vmd.setBuildValidation(!vmd.isBuildValidation());
         break;
+      case 3:
+      {
+        if (!vmd.isDelegating()) {
+          break;
+        }
+        
+        String delegateID = pagePreferences.getDelegateUniqueName(vmd);
+  
+        Shell shell = Display.getCurrent().getActiveShell();
+        DelegatingValidatorPreferencesDialog dialog = new DelegatingValidatorPreferencesDialog(shell, vmd, delegateID);
+  
+        dialog.setBlockOnOpen(true);
+        dialog.create();
+  
+        int result = dialog.open();
+  
+        if (result == Window.OK)
+        {
+          pagePreferences.setDelegateUniqueName(vmd, dialog.getDelegateID());
+        }
+      }
       default:
         break;
       }
@@ -816,8 +873,10 @@ public class ValidationPropertiesPage extends PropertyPage {
 		 */
 		private void enableDependentControls(boolean overridePreferences) {
 			validatorsTable.setEnabled(overridePreferences);
+      validatorList.refresh();
 			enableAllButton.setEnabled(overridePreferences); // since help messsage isn't
 			disableAllButton.setEnabled(overridePreferences);
+      
 		}
 
 		protected void updateHelp() throws InvocationTargetException {
@@ -939,7 +998,8 @@ public class ValidationPropertiesPage extends PropertyPage {
 			// Persist the values.
 			storeValues();
 
-			if (pagePreferences.hasEnabledValidatorsChanged(oldVmd, false)) { 
+			if (pagePreferences.hasEnabledValidatorsChanged(oldVmd, false) ||
+          pagePreferences.haveDelegatesChanged(oldDelegates, false)) { 
 				// false means that the preference "allow" value hasn't changed
 				ValidatorManager.getManager().updateTaskList(getProject()); 
 			}

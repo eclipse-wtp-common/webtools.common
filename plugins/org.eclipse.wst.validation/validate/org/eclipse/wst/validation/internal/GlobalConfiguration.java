@@ -63,10 +63,11 @@ public class GlobalConfiguration extends ValidationConfiguration {
 		_canProjectsOverride = can;
 	}
 
-	public void resetToDefault() {
+	public void resetToDefault()  throws InvocationTargetException {
 		setDisableAllValidation(getDisableValidationDefault());
 		setEnabledValidators(getEnabledValidatorsDefault());
 		setCanProjectsOverride(getCanProjectsOverrideDefault());
+    setDefaultDelegates(getValidators());
 	}
 
 	/**

@@ -22,6 +22,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.validation.internal.delegates.ValidatorDelegatesRegistry;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchContext;
 import org.eclipse.wst.validation.internal.operations.WorkbenchContext;
 import org.eclipse.wst.validation.internal.plugin.ValidationHelperRegistryReader;
@@ -537,4 +538,13 @@ public class ValidatorMetaData {
 	public void setManualValidation(boolean manualValidation) {
 		this.manualValidation = manualValidation;
 	}
+  
+	/**
+   * Determines if the validator described by this metadata object is a delegating validator. 
+   * @return true if the validator described by this metadata object is a delegating validator, false otherwise.
+	 */
+  public boolean isDelegating() {
+    String targetID = getValidatorUniqueName();
+    return ValidatorDelegatesRegistry.getInstance().hasDelegates(targetID);
+  }
 }

@@ -30,6 +30,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.validation.internal.delegates.ValidatorDelegateDescriptor;
+import org.eclipse.wst.validation.internal.delegates.ValidatorDelegatesRegistry;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 
@@ -49,6 +51,7 @@ public abstract class ValidationConfiguration {
 	// disabled.
 	protected HashMap manualValidators = null;
 	protected HashMap buildValidators = null;
+  private Map _delegatesByTarget = null;
 
 	public static String getEnabledElementsAsString(Set elements) {
 		if (elements == null) {
@@ -125,6 +128,7 @@ public abstract class ValidationConfiguration {
 
 	protected ValidationConfiguration() throws InvocationTargetException {
 		_validators = new HashMap();
+    _delegatesByTarget = new HashMap();
 	}
 
 	protected ValidationConfiguration(IResource resource, ValidatorMetaData[] validators) throws InvocationTargetException {
@@ -373,7 +377,21 @@ public abstract class ValidationConfiguration {
 		}
 	}
 	
-	
+  public void setDefaultDelegates(ValidatorMetaData[] vmds) throws InvocationTargetException {
+    _delegatesByTarget.clear();
+    for (int i = 0; i < vmds.length; i++) {
+      ValidatorMetaData vmd = vmds[i];
+      if (vmd == null) {
+        continue;
+      }
+      String targetID = vmd.getValidatorUniqueName();
+      String delegateID = ValidatorDelegatesRegistry.getInstance().getDefaultDelegate(targetID);
+      if (delegateID == null) {
+        continue;
+      }
+      _delegatesByTarget.put(targetID, ValidatorDelegatesRegistry.getInstance().getDefaultDelegate(targetID));
+    }
+  }
 
 	/**
 	 * Returns the number of configured validators on the given project or installed validators in
@@ -563,6 +581,7 @@ public abstract class ValidationConfiguration {
 			getResource().setPersistentProperty(ConfigurationConstants.USER_PREFERENCE, serialize());
 			getResource().setPersistentProperty(ConfigurationConstants.USER_MANUAL_PREFERENCE, serializeManualSetting());
 			getResource().setPersistentProperty(ConfigurationConstants.USER_BUILD_PREFERENCE, serializeBuildSetting());
+      getResource().setPersistentProperty(ConfigurationConstants.DELEGATES_PREFERENCE, serializeDelegatesSetting());
 		} catch (CoreException exc) {
 			throw new InvocationTargetException(exc, ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SAVE, new String[]{getResource().getName()}));
 		}
@@ -719,6 +738,8 @@ public abstract class ValidationConfiguration {
 			deserializeManual(storedManualConfiguration);
 			String storedBuildConfiguration = resource.getPersistentProperty(ConfigurationConstants.USER_BUILD_PREFERENCE);
 			deserializeBuild(storedBuildConfiguration);
+      String storedDelegatesConfiguration = resource.getPersistentProperty(ConfigurationConstants.DELEGATES_PREFERENCE);
+      deserializeDelegates(storedDelegatesConfiguration);
 		} catch (CoreException exc) {
 			throw new InvocationTargetException(exc, ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_RETRIEVE, new String[]{getResource().getName()}));
 		}
@@ -748,6 +769,32 @@ public abstract class ValidationConfiguration {
 		setEnabledManualValidators(getStringAsEnabledElementsArray(manualValidation));
 	}
 
+	private void deserializeDelegates(String storedConfiguration) throws InvocationTargetException {
+
+    if (storedConfiguration == null || storedConfiguration.length() == 0) {
+	    // Assume that the configuration has never been set (new workspace).
+	    resetToDefault();
+	    return;
+	  }
+
+	  int delegatesIndex = storedConfiguration.indexOf(ConfigurationConstants.DELEGATE_VALIDATORS);
+
+	  String delegates = storedConfiguration.substring(delegatesIndex + ConfigurationConstants.DELEGATE_VALIDATORS.length(),storedConfiguration.length());
+
+	  if (delegates == null) {
+	    return;
+	  }
+
+	  StringTokenizer tokenizer = new StringTokenizer(delegates, ConfigurationConstants.ELEMENT_SEPARATOR);
+	  while (tokenizer.hasMoreTokens()) {
+	    String delegateConfiguration = tokenizer.nextToken();
+	    int separatorIndex = delegateConfiguration.indexOf(ConfigurationConstants.DELEGATES_SEPARATOR);
+	    String targetID = delegateConfiguration.substring(0, separatorIndex);
+	    String delegateID = delegateConfiguration.substring(separatorIndex + 1);
+      _delegatesByTarget.put(targetID, delegateID);
+	  }
+	}
+
 	protected void copyTo(ValidationConfiguration up) throws InvocationTargetException {
 		up.setVersion(getVersion());
 		up.setResource(getResource());
@@ -756,9 +803,20 @@ public abstract class ValidationConfiguration {
 		up.setEnabledValidators(getEnabledValidators());
 		up.setEnabledManualValidators(getManualEnabledValidators());
 		up.setEnabledBuildValidators(getBuildEnabledValidators());
+    up.setDelegatingValidators(getDelegatingValidators());
 	}
 
-	/**
+  public Map getDelegatingValidators() throws InvocationTargetException {
+    return _delegatesByTarget;
+  }
+
+  public void setDelegatingValidators(Map source)
+  {
+    // It is safe to copy this map as it contains only immutable strings.
+    _delegatesByTarget.putAll(source);
+  }
+
+  /**
 	 * Return true if the enabled validators have not changed since this ValidationConfiguration was
 	 * constructed, false otherwise. (This method is needed for the Properties and Preference pages;
 	 * if the list of validators hasn't changed, then there is no need to update the task list;
@@ -787,6 +845,42 @@ public abstract class ValidationConfiguration {
 
 		return false;
 	}
+  
+  /**
+   * Determines if there has been a change in the list of delegate validators.
+   * @param oldDelegates a Map with the old delegates ID by target ID.
+   * @return true if there has been a change, false otherwise.
+   * @throws InvocationTargetException
+   */
+  protected boolean haveDelegatesChanged(Map oldDelegates) throws InvocationTargetException {
+    
+    if (oldDelegates == null) {
+      return true;
+    }
+    
+    Iterator iterator = oldDelegates.keySet().iterator();
+    
+    while (iterator.hasNext())
+    {
+      String targetID = (String) iterator.next();
+      String oldDelegateID = (String) oldDelegates.get(targetID);
+      String newDelegateID = (String) _delegatesByTarget.get(targetID);
+      
+      if (oldDelegateID == null || newDelegateID == null) {
+        return true;
+      }
+        
+      if (!newDelegateID.equals(oldDelegateID)) {
+        return true;
+      }
+    }
+    
+    if (oldDelegates.size() != _delegatesByTarget.size()) {
+      return true;
+    }
+    
+    return false;
+  }
 
 	protected String serialize() throws InvocationTargetException {
 		StringBuffer buffer = new StringBuffer();
@@ -811,7 +905,69 @@ public abstract class ValidationConfiguration {
 		return buffer.toString();
 	}
 
-	/**
+  protected String serializeDelegatesSetting() throws InvocationTargetException {
+    StringBuffer buffer = new StringBuffer();
+    buffer.append(ConfigurationConstants.DELEGATE_VALIDATORS);
+    buffer.append(getDelegatesAsString(getValidatorMetaData()));
+    return buffer.toString();
+  }
+
+  /**
+   * Provides a String which contains pairs of targetID=delegateID separated by a semicolon.
+   * @param validatorMetaData a Map with the currently configured validators.
+   * @return a String.
+   */
+  private String getDelegatesAsString(Map validatorMetaData) {
+    
+    StringBuffer buffer = new StringBuffer();
+    Iterator iterator = validatorMetaData.keySet().iterator();
+    
+    while (iterator.hasNext()) {
+    
+      ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
+      String targetID = vmd.getValidatorUniqueName();
+      String delegateID = getDelegateUniqueName(vmd);
+      
+      if (delegateID == null) {
+        continue;
+      }
+
+      // Write out pairs targetID=delegateID
+
+      buffer.append(targetID);
+      buffer.append(ConfigurationConstants.DELEGATES_SEPARATOR);
+      buffer.append(delegateID);
+      buffer.append(ConfigurationConstants.ELEMENT_SEPARATOR);
+    }
+    
+    return buffer.toString();
+  }
+  
+  /**
+   * Provides the delegate's ID of the validator delegate configured in this configuration for 
+   * a given delegating validator.
+   * 
+   * @param vmd the delegating validator's metadata. Must not be null.
+   * @return a String with the unique name (ID) of the validator delegate, null if there isn't one.
+   */
+  public String getDelegateUniqueName(ValidatorMetaData vmd) {
+    String targetID = vmd.getValidatorUniqueName();    
+    return (String) _delegatesByTarget.get(targetID);
+  }
+
+  /**
+   * Sets the delegate's ID of the validator delegate to be used in this configuration for the
+   * given delegating validator.
+   * 
+   * @param vmd the delegating validator's metadata. Must not be null.
+   * @param delegateID a String with the unique name (ID) of the validator delegate. Must not be null.
+   */
+  public void setDelegateUniqueName(ValidatorMetaData vmd, String delegateID) {
+    String targetID = vmd.getValidatorUniqueName();    
+    _delegatesByTarget.put(targetID, delegateID);
+  }
+
+  /**
 	 * Deserialize everything except the version number; the version is deserialized first, in the
 	 * loadVersion() method.
 	 */
@@ -874,5 +1030,19 @@ public abstract class ValidationConfiguration {
 	
 	public int numberOfManualEnabledValidators() throws InvocationTargetException {
 		return getManualEnabledValidators().length;
-	}	
+	}
+
+  /**
+   * Provides the delegate validator descriptor of the validator delegate configured 
+   * for the given delegating validator in the context of this configuration. 
+   * @param vmd the delegating validator's meta data. Must not be null.
+   * @return a ValidatorDelegateDescriptor for the given delegating validator.
+   */
+  public ValidatorDelegateDescriptor getDelegateDescriptor(ValidatorMetaData vmd)  throws InvocationTargetException {
+    String targetID = vmd.getValidatorUniqueName();
+    String delegateID = getDelegateUniqueName(vmd);
+  
+    ValidatorDelegateDescriptor descriptor = ValidatorDelegatesRegistry.getInstance().getDescriptor(targetID, delegateID); 
+    return descriptor;    
+  }
 }

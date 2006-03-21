@@ -113,5 +113,9 @@ public interface ResourceConstants {
 	public static final String VBF_STATUS_LOOKING = "VBF_STATUS_LOOKING"; //$NON-NLS-1$ 
 	public static final String VBF_STATUS_LOOKINGDONE = "VBF_STATUS_LOOKINGDONE"; //$NON-NLS-1$ 
 	public static final String VBF_STATUS_REMOVING = "VBF_STATUS_REMOVING"; //$NON-NLS-1$ 
-	public static final String VBF_STATUS_REMOVINGDONE = "VBF_STATUS_REMOVINGDONE"; //$NON-NLS-1$ 
+	public static final String VBF_STATUS_REMOVINGDONE = "VBF_STATUS_REMOVINGDONE"; //$NON-NLS-1$
+  
+  public static final String VBF_WRONG_CONTEXT_FOR_DELEGATE = "VBF_WRONG_CONTEXT_FOR_DELEGATE"; //$NON-NLS-1$
+  public static final String VBF_NO_DELEGATE = "VBF_NO_DELEGATE"; //$NON-NLS-1$
+  public static final String VBF_CANNOT_INSTANTIATE_DELEGATE = "VBF_CANNOT_INSTANTIATE_DELEGATE"; //$NON-NLS-1$  
 }

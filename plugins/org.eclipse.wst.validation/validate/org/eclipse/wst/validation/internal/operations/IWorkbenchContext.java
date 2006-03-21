@@ -13,7 +13,7 @@ package org.eclipse.wst.validation.internal.operations;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.wst.validation.internal.provisional.core.IValidationContext;
+import org.eclipse.wst.validation.internal.provisional.core.IProjectValidationContext;
 
 
 
@@ -23,7 +23,7 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidationContext;
  * also needs to load items from the eclipse workbench. This interface should be extended by
  * workbench IHelpers, so that items can be added to, and from, the task list.
  */
-public interface IWorkbenchContext extends IValidationContext {
+public interface IWorkbenchContext extends IProjectValidationContext {
 	/**
 	 * When the validation is complete, this method will be called so that the IWorkbenchContext can
 	 * clean up any resources it allocated during the validation.

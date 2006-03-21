@@ -89,4 +89,7 @@ public interface ResourceConstants {
 	
 	/* package */static final String DISABLE_VALIDATION = "DISABLE_VALIDATION"; //$NON-NLS-1$
 	static final String INFO = "INFO"; //$NON-NLS-1$
-}
+  
+  String DELEGATES_DIALOG_TITLE = "DELEGATES_DIALOG_TITLE"; //$NON-NLS-1$
+  String DELEGATES_COMBO_LABEL = "DELEGATES_COMBO_LABEL"; //$NON-NLS-1$
+ }
