@@ -13,6 +13,8 @@ package org.eclipse.wst.common.ui.internal.search.dialogs;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.wst.common.core.search.pattern.QualifiedName;
 
+// TODO.. use QualifiedName consistently for name and metaName
+//
 public class ComponentSpecification
 {
   String qualifier;

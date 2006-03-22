@@ -72,10 +72,10 @@ public class ScopedComponentSearchListDialog extends ComponentSearchListDialog
     this.listTitle = listTitle;
   }  
 
-  public Control createDialogArea(Composite parent)
+  protected Control createDialogArea(Composite parent)
   {
-    super.setFilterLabel(filterLabel != null ? filterLabel : DEFAULT_NAME_FIELD_TITLE);
-    setComponentTableLabel(listTitle != null ? listTitle : DEFAULT_LIST_TITLE);
+    //super.setFilterLabel(filterLabel != null ? filterLabel : DEFAULT_NAME_FIELD_TITLE);
+    //setListLabelText(listTitle != null ? listTitle : DEFAULT_LIST_TITLE);
     super.createDialogArea(parent);
     // We use the Composite topComposite to create additional widgets
     GridLayout layout = new GridLayout();

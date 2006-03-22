@@ -69,8 +69,6 @@ public class ComponentSearchListDialog extends Dialog {
     // widgets
     protected Composite topComposite;
     protected Composite bottomComposite; 
-    private String filterTextLabel = "";
-    private String componentListLabel = "Components";
     private Text textFilter;
     protected TableViewer componentTableViewer;
     
@@ -103,22 +101,6 @@ public class ComponentSearchListDialog extends Dialog {
         configuration.init(this);
     }
     
-
-    /*
-     * This method should be called before createDialogArea(Composite)
-     */
-    public void setComponentTableLabel(String string) {
-        componentListLabel = string;
-    }
-
-    /*
-     * This method should be called before createDialogArea(Composite)
-     */
-    public void setFilterLabel(String string) {
-        filterTextLabel = string;
-    }
-    
-
 	public void create() {
         super.create();
         setTextFilterFocus();
@@ -128,7 +110,7 @@ public class ComponentSearchListDialog extends Dialog {
         textFilter.setFocus();        
     }
 
-    public Control createDialogArea(Composite parent) {
+    protected Control createDialogArea(Composite parent) {
         getShell().setText(dialogTitle);
 
         Composite mainComposite = (Composite) super.createDialogArea(parent);
@@ -151,8 +133,9 @@ public class ComponentSearchListDialog extends Dialog {
         filterLabelAndText.setLayout(layoutFilterLabelAndText);
 
         // Create Text textFilter
+        
         Label filterLabel = new Label(filterLabelAndText, SWT.NONE);
-        filterLabel.setText(filterTextLabel);// + "(? = any character, * = any string):");
+        filterLabel.setText(configuration.getFilterLabelText());// + "(? = any character, * = any string):");
         GridData filterLabelData = new GridData();
         filterLabelData.horizontalSpan = 2;
         filterLabel.setLayoutData(filterLabelData);
@@ -269,7 +252,7 @@ public class ComponentSearchListDialog extends Dialog {
         return mainComposite;
     }
     
-    protected TableViewer createFilterMenuAndTableViewer(Composite comp, String title) {
+    protected TableViewer createFilterMenuAndTableViewer(Composite comp) {
     	Composite labelAndFilter = new Composite(comp, SWT.NONE);
     	labelAndFilter.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		GridLayout layout= new GridLayout();
@@ -277,9 +260,9 @@ public class ComponentSearchListDialog extends Dialog {
 		layout.marginWidth= 0; layout.marginHeight= 0;
     	labelAndFilter.setLayout(layout);
     	
-        Label TableLabel = new Label(labelAndFilter, SWT.NONE);
-        TableLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        TableLabel.setText(title);
+        Label tableLabel = new Label(labelAndFilter, SWT.NONE);
+        tableLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        tableLabel.setText(configuration.getListLabelText());
         
         filterToolBar = new ToolBar(labelAndFilter,SWT.FLAT);
         configuration.createToolBarItems(filterToolBar);
@@ -296,7 +279,7 @@ public class ComponentSearchListDialog extends Dialog {
      * Creates the Component TableViewer.
      */
     private void createComponentTableViewer(Composite base) {
-        componentTableViewer = createFilterMenuAndTableViewer(base, componentListLabel);    
+        componentTableViewer = createFilterMenuAndTableViewer(base);    
         
         componentTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
             public void selectionChanged(SelectionChangedEvent event) {

@@ -27,11 +27,12 @@ public class Test extends ActionDelegate
     try
     {
       ComponentSearchListDialogConfiguration configuration = new ComponentSearchListDialogConfiguration();
+      configuration.setListLabelText("List:");
+      configuration.setFilterLabelText("Filter:");
       configuration.setSearchListProvider(searchListProvider);
       configuration.setDescriptionProvider(new BaseComponentDescriptionProvider("foo"));
       Shell shell = Display.getCurrent().getActiveShell();
       ComponentSearchListDialog dialog = new ComponentSearchListDialog(shell, "test", configuration);
-      dialog.setFilterLabel("Text:");
       dialog.setBlockOnOpen(true);
       dialog.create();
       dialog.open();

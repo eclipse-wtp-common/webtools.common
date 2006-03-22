@@ -15,10 +15,12 @@ import org.eclipse.swt.widgets.ToolBar;
 
 public class ComponentSearchListDialogConfiguration
 {
-  IComponentSearchListProvider searchListProvider; 
-  IComponentDescriptionProvider descriptionProvider;
-  INewComponentHandler newComponentHandler;
-  ComponentSearchListDialog dialog;
+  private String filterLabelText = "Name:";
+  private String listLabelText = "Components";  
+  private IComponentSearchListProvider searchListProvider; 
+  private IComponentDescriptionProvider descriptionProvider;
+  private INewComponentHandler newComponentHandler;
+  private ComponentSearchListDialog dialog;
 
   public void init(ComponentSearchListDialog dialog)
   {
@@ -70,4 +72,24 @@ public class ComponentSearchListDialogConfiguration
   {
     this.newComponentHandler = newComponentHandler;
   }
+  
+  public String getFilterLabelText()
+  {
+    return filterLabelText;
+  }
+  
+  public String getListLabelText()
+  {
+    return listLabelText;
+  }
+
+  public void setFilterLabelText(String filterLabelText)
+  {
+    this.filterLabelText = filterLabelText;
+  }
+
+  public void setListLabelText(String listLabelText)
+  {
+    this.listLabelText = listLabelText;
+  }  
 }
