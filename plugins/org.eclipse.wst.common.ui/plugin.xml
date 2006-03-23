@@ -12,7 +12,7 @@
 	</viewPage>
   </extension>
  
- 
+  <!--
    <extension point="org.eclipse.ui.popupMenus"> 
       <objectContribution 
          id="test" 
@@ -27,5 +27,5 @@
          </action>          
       </objectContribution>               
     </extension> 
-
+   -->
 </plugin>
