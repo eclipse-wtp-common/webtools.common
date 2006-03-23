@@ -15,4 +15,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.osgi.util
 Bundle-Vendor: %providerName
-Eclipse-AutoStart: true 
+Eclipse-LazyStart: true 
