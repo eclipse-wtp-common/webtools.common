@@ -30,7 +30,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.IWorkingSetSelectionDialog;
 import org.eclipse.wst.common.core.search.scope.ProjectSearchScope;
 import org.eclipse.wst.common.core.search.scope.SearchScope;
-//import org.eclipse.wst.common.core.search.scope.WorkingSetSearchScope;
+import org.eclipse.wst.common.core.search.scope.WorkingSetSearchScope;
 import org.eclipse.wst.common.core.search.scope.WorkspaceSearchScope;
 import org.eclipse.wst.common.ui.internal.UIPlugin;
 
@@ -173,17 +173,14 @@ private void scopeChangeHandler(Button b) {
 			  scope = new WorkspaceSearchScope();
 		  }
 		  else if (currentSearchScope == SCOPE_WORKING_SETS){
-			  /*
+			  
 			  // Constructs the working sets scope from the working sets the user
 			  // selected
 			  WorkingSetSearchScope workingSetsScope = new WorkingSetSearchScope();
 			  for (int i = 0; i < workingSets.length; i++){
 				  workingSetsScope.addAWorkingSetToScope(workingSets[i].getElements());
-			  }
-			  
+			  }			  
 			  scope = workingSetsScope;
-			  //System.err.println("WS");
-              */
 		  }
 		  
 		  populateMasterComponentList(scope);
