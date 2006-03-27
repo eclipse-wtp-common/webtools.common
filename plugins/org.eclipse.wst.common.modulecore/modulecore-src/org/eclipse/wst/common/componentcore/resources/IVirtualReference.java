@@ -93,4 +93,18 @@ public interface IVirtualReference {
 	 * @param referencedComponent
 	 */
 	public void setReferencedComponent(IVirtualComponent referencedComponent, EObject dependentObject);
+	
+	
+	/**
+	 * Get the archive name of the referenced component
+	 * @return
+	 */
+	public String getArchiveName();
+
+	/**
+	 * Set the archive name of the referenced component
+	 * @param archiveName
+	 */
+	public void setArchiveName(String archiveName);
+	
 }

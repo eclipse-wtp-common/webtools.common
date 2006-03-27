@@ -1,7 +1,7 @@
 /**
  * <copyright></copyright>
  * 
- * $Id: ComponentResource.java,v 1.4 2006/01/11 18:40:31 cbridgha Exp $
+ * $Id: ComponentResource.java,v 1.5 2006/03/27 21:49:39 vbhadrir Exp $
  */
 package org.eclipse.wst.common.componentcore.internal;
 
@@ -164,7 +164,7 @@ public interface ComponentResource extends EObject{
 	 * @generated
 	 */
 	void setResourceType(String value);
-	
+
 	IProject getOwningProject();
 	void setOwningProject(IProject aProject);
 

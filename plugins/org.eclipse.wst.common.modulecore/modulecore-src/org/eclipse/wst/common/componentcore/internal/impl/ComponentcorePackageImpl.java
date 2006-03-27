@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentcorePackageImpl.java,v 1.7 2005/10/18 22:25:44 cbridgha Exp $
+ * $Id: ComponentcorePackageImpl.java,v 1.8 2006/03/27 21:49:41 vbhadrir Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
@@ -401,6 +401,15 @@ public class ComponentcorePackageImpl extends EPackageImpl implements Componentc
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getReferencedComponent_ArchiveName() {
+		return (EAttribute)referencedComponentEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getProjectComponents() {
 		return projectComponentsEClass;
 	}
@@ -508,6 +517,7 @@ public class ComponentcorePackageImpl extends EPackageImpl implements Componentc
 		createEAttribute(referencedComponentEClass, REFERENCED_COMPONENT__RUNTIME_PATH);
 		createEAttribute(referencedComponentEClass, REFERENCED_COMPONENT__DEPENDENCY_TYPE);
 		createEReference(referencedComponentEClass, REFERENCED_COMPONENT__DEPENDENT_OBJECT);
+		createEAttribute(referencedComponentEClass, REFERENCED_COMPONENT__ARCHIVE_NAME);
 
 		projectComponentsEClass = createEClass(PROJECT_COMPONENTS);
 		createEAttribute(projectComponentsEClass, PROJECT_COMPONENTS__PROJECT_NAME);
@@ -577,6 +587,7 @@ public class ComponentcorePackageImpl extends EPackageImpl implements Componentc
 		initEAttribute(getReferencedComponent_RuntimePath(), this.getIPath(), "runtimePath", null, 1, 1, ReferencedComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEAttribute(getReferencedComponent_DependencyType(), this.getDependencyType(), "dependencyType", null, 1, 1, ReferencedComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getReferencedComponent_DependentObject(), ecorePackage.getEObject(), null, "dependentObject", null, 0, 1, ReferencedComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getReferencedComponent_ArchiveName(), ecorePackage.getEString(), "archiveName", null, 0, 1, ReferencedComponent.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(projectComponentsEClass, ProjectComponents.class, "ProjectComponents", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getProjectComponents_ProjectName(), ecorePackage.getEString(), "projectName", "", 1, 1, ProjectComponents.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

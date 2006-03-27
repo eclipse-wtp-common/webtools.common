@@ -58,6 +58,7 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="dependencyType" lowerBound="1"
         eType="#//DependencyType"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="dependentObject" eType="ecore:EClass http://www.eclipse.org/emf/2002/Ecore#//EObject"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="archiveName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EDataType" name="URI" instanceClassName="org.eclipse.emf.common.util.URI">
     <eAnnotations source="keywords">

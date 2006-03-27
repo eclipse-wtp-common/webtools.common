@@ -27,6 +27,9 @@ public interface ICreateReferenceComponentsDataModelProperties {
      */
 	public static final String TARGET_COMPONENTS_DEPLOY_PATH = "ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_DEPLOY_PATH"; //$NON-NLS-1$
 	
-	
+	/**
+     * Optional, archive name for the dependent component, default is ""
+     */
+	public static final String TARGET_COMPONENT_ARCHIVE_NAME = "ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_ARCHIVE_NAME"; //$NON-NLS-1$	
 	
 }

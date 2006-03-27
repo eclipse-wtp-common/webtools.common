@@ -300,6 +300,7 @@ public class VirtualComponent implements IVirtualComponent {
 						if (referencedComponent==null) 
 							continue;
 						IVirtualReference vReference = StructureEdit.createVirtualReference(this, referencedComponent);
+						vReference.setArchiveName( referencedComponent.getArchiveName() );
 						if (vReference != null)
 							references.add(vReference); 
 					}
@@ -337,6 +338,8 @@ public class VirtualComponent implements IVirtualComponent {
 					referencedComponent.setHandle(ModuleURIUtil.archiveComponentfullyQualifyURI(comp.getName()));
 				if (component != null)
 					component.getReferencedComponents().add(referencedComponent);
+				referencedComponent.setArchiveName(references[i].getArchiveName());
+				
 			}
 		} finally {
 			if(core != null) {
@@ -366,6 +369,7 @@ public class VirtualComponent implements IVirtualComponent {
 				else
 					referencedComponent.setHandle(ModuleURIUtil.archiveComponentfullyQualifyURI(references[i].getReferencedComponent().getName()));
 				
+				referencedComponent.setArchiveName(references[i].getArchiveName());
 				component.getReferencedComponents().add(referencedComponent);
 			}
 			 

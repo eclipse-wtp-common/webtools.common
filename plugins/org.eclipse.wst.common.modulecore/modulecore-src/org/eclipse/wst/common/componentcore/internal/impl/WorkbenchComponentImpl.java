@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchComponentImpl.java,v 1.8 2006/01/28 21:02:06 cbridgha Exp $
+ * $Id: WorkbenchComponentImpl.java,v 1.9 2006/03/27 21:49:41 vbhadrir Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
@@ -144,6 +144,7 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	protected WorkbenchComponentImpl() {
 		super();
 	}
+
 	private IPath getFirstRootSource() {
 		
 		List res = getResources();

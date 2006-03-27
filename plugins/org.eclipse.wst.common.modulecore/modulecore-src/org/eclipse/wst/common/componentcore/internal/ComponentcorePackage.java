@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentcorePackage.java,v 1.6 2005/10/18 22:25:43 cbridgha Exp $
+ * $Id: ComponentcorePackage.java,v 1.7 2006/03/27 21:49:39 vbhadrir Exp $
  */
 package org.eclipse.wst.common.componentcore.internal;
 
@@ -337,13 +337,22 @@ public interface ComponentcorePackage extends EPackage{
 	int REFERENCED_COMPONENT__DEPENDENT_OBJECT = 3;
 
 	/**
+	 * The feature id for the '<em><b>Archive Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REFERENCED_COMPONENT__ARCHIVE_NAME = 4;
+
+	/**
 	 * The number of structural features of the the '<em>Referenced Component</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int REFERENCED_COMPONENT_FEATURE_COUNT = 4;
+	int REFERENCED_COMPONENT_FEATURE_COUNT = 5;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.wst.common.componentcore.internal.impl.ProjectComponentsImpl <em>Project Components</em>}' class.
@@ -693,6 +702,17 @@ public interface ComponentcorePackage extends EPackage{
 	 * @generated
 	 */
 	EReference getReferencedComponent_DependentObject();
+
+	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.componentcore.internal.ReferencedComponent#getArchiveName <em>Archive Name</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Archive Name</em>'.
+	 * @see org.eclipse.wst.common.componentcore.internal.ReferencedComponent#getArchiveName()
+	 * @see #getReferencedComponent()
+	 * @generated
+	 */
+	EAttribute getReferencedComponent_ArchiveName();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.wst.common.componentcore.internal.ProjectComponents <em>Project Components</em>}'.

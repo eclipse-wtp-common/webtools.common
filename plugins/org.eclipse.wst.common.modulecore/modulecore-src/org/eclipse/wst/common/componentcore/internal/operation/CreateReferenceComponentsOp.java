@@ -69,6 +69,11 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 				String deployPath = model.getStringProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH);
 				if(deployPath != null && deployPath.length() > 0)
 					ref.setRuntimePath(new Path(deployPath));
+				
+				String archiveName = model.getStringProperty( ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_ARCHIVE_NAME );
+				if( archiveName.length() > 0 ){
+					ref.setArchiveName( archiveName );
+				}
 				vlist.add(ref);
 			}
 		}

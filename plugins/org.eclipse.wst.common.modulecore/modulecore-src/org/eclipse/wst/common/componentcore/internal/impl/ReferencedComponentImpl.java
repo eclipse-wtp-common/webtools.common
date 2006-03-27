@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ReferencedComponentImpl.java,v 1.2 2005/09/12 02:48:31 cbridgha Exp $
+ * $Id: ReferencedComponentImpl.java,v 1.3 2006/03/27 21:49:41 vbhadrir Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
@@ -31,6 +31,7 @@ import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.ReferencedComponentImpl#getRuntimePath <em>Runtime Path</em>}</li>
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.ReferencedComponentImpl#getDependencyType <em>Dependency Type</em>}</li>
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.ReferencedComponentImpl#getDependentObject <em>Dependent Object</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.ReferencedComponentImpl#getArchiveName <em>Archive Name</em>}</li>
  * </ul>
  * </p>
  *
@@ -106,6 +107,26 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 	 * @ordered
 	 */
 	protected EObject dependentObject = null;
+
+	/**
+	 * The default value of the '{@link #getArchiveName() <em>Archive Name</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getArchiveName()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String ARCHIVE_NAME_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getArchiveName() <em>Archive Name</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getArchiveName()
+	 * @generated
+	 * @ordered
+	 */
+	protected String archiveName = ARCHIVE_NAME_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -231,6 +252,27 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public String getArchiveName() {
+		return archiveName;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setArchiveName(String newArchiveName) {
+		String oldArchiveName = archiveName;
+		archiveName = newArchiveName;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ComponentcorePackage.REFERENCED_COMPONENT__ARCHIVE_NAME, oldArchiveName, archiveName));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public Object eGet(EStructuralFeature eFeature, boolean resolve) {
 		switch (eDerivedStructuralFeatureID(eFeature)) {
 			case ComponentcorePackage.REFERENCED_COMPONENT__HANDLE:
@@ -242,6 +284,8 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 			case ComponentcorePackage.REFERENCED_COMPONENT__DEPENDENT_OBJECT:
 				if (resolve) return getDependentObject();
 				return basicGetDependentObject();
+			case ComponentcorePackage.REFERENCED_COMPONENT__ARCHIVE_NAME:
+				return getArchiveName();
 		}
 		return eDynamicGet(eFeature, resolve);
 	}
@@ -264,6 +308,9 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 				return;
 			case ComponentcorePackage.REFERENCED_COMPONENT__DEPENDENT_OBJECT:
 				setDependentObject((EObject)newValue);
+				return;
+			case ComponentcorePackage.REFERENCED_COMPONENT__ARCHIVE_NAME:
+				setArchiveName((String)newValue);
 				return;
 		}
 		eDynamicSet(eFeature, newValue);
@@ -288,6 +335,9 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 			case ComponentcorePackage.REFERENCED_COMPONENT__DEPENDENT_OBJECT:
 				setDependentObject((EObject)null);
 				return;
+			case ComponentcorePackage.REFERENCED_COMPONENT__ARCHIVE_NAME:
+				setArchiveName(ARCHIVE_NAME_EDEFAULT);
+				return;
 		}
 		eDynamicUnset(eFeature);
 	}
@@ -307,6 +357,8 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 				return dependencyType != DEPENDENCY_TYPE_EDEFAULT;
 			case ComponentcorePackage.REFERENCED_COMPONENT__DEPENDENT_OBJECT:
 				return dependentObject != null;
+			case ComponentcorePackage.REFERENCED_COMPONENT__ARCHIVE_NAME:
+				return ARCHIVE_NAME_EDEFAULT == null ? archiveName != null : !ARCHIVE_NAME_EDEFAULT.equals(archiveName);
 		}
 		return eDynamicIsSet(eFeature);
 	}
@@ -326,6 +378,8 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 		result.append(runtimePath);
 		result.append(", dependencyType: ");
 		result.append(dependencyType);
+		result.append(", archiveName: ");
+		result.append(archiveName);
 		result.append(')');
 		return result.toString();
 	}

@@ -32,6 +32,7 @@ public class VirtualReference implements IVirtualReference {
 	private IVirtualComponent enclosingComponent;
 	private IPath runtimePath;
 	private int dependencyType;
+	private String archiveName;
 
 	public VirtualReference() {
 		
@@ -65,6 +66,7 @@ public class VirtualReference implements IVirtualReference {
 				refComp.setHandle(ModuleURIUtil.archiveComponentfullyQualifyURI(referencedComponent.getName())); 
 			refComp.setRuntimePath(runtimePath);
 			refComp.setDependencyType(DependencyType.get(dependencyType));
+			refComp.setArchiveName(archiveName);
 			if(!referencedComponents.contains(refComp)){
 				referencedComponents.add(refComp);
 			}
@@ -137,5 +139,13 @@ public class VirtualReference implements IVirtualReference {
 				refCore.dispose();
 			}
 		}
+	}
+
+	public String getArchiveName() {
+		return archiveName;
+	}
+
+	public void setArchiveName(String archiveName) {
+		this.archiveName = archiveName;
 	}
 }

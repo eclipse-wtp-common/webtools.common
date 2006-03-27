@@ -114,12 +114,11 @@ public final class DependencyType extends AbstractEnumerator {
 	public static final List VALUES = Collections.unmodifiableList(Arrays.asList(VALUES_ARRAY));
 
 	/**
-	 * Returns the '<em><b>Dependency Type</b></em>' literal with the specified name. 
+	 * Returns the '<em><b>Dependency Type</b></em>' literal with the specified name.
 	 * <!-- begin-user-doc --> 
 	 * @param name passes literal name
 	 * @return literal instance
 	 * <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public static DependencyType get(String name) {
@@ -133,12 +132,11 @@ public final class DependencyType extends AbstractEnumerator {
 	}
 
 	/**
-	 * Returns the '<em><b>Dependency Type</b></em>' literal with the specified value. 
+	 * Returns the '<em><b>Dependency Type</b></em>' literal with the specified value.
 	 *  <!-- begin-user-doc -->
 	 * @param value passes literal value
 	 * @return literal instance
 	 *  <!-- end-user-doc -->
-	 * 
 	 * @generated
 	 */
 	public static DependencyType get(int value) {

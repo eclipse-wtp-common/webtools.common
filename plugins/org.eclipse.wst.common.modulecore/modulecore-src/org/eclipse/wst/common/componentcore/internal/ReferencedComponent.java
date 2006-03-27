@@ -39,6 +39,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.ReferencedComponent#getRuntimePath <em>Runtime Path</em>}</li>
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.ReferencedComponent#getDependencyType <em>Dependency Type</em>}</li>
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.ReferencedComponent#getDependentObject <em>Dependent Object</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.componentcore.internal.ReferencedComponent#getArchiveName <em>Archive Name</em>}</li>
  * </ul>
  * </p>
  *
@@ -152,5 +153,31 @@ public interface ReferencedComponent extends EObject{
 	 * @generated
 	 */
 	void setDependentObject(EObject value);
+
+	/**
+	 * Returns the value of the '<em><b>Archive Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Archive Name</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Archive Name</em>' attribute.
+	 * @see #setArchiveName(String)
+	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getReferencedComponent_ArchiveName()
+	 * @model
+	 * @generated
+	 */
+	String getArchiveName();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.wst.common.componentcore.internal.ReferencedComponent#getArchiveName <em>Archive Name</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Archive Name</em>' attribute.
+	 * @see #getArchiveName()
+	 * @generated
+	 */
+	void setArchiveName(String value);
 
 } // ReferencedComponent

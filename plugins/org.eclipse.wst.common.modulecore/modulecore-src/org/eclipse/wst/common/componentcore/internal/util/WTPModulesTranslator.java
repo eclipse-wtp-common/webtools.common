@@ -92,6 +92,7 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 			new IPathTranslator(RUNTIME_PATH, MODULE_CORE_PKG.getReferencedComponent_RuntimePath(), DOM_ATTRIBUTE),
 			new URITranslator(HANDLE, MODULE_CORE_PKG.getReferencedComponent_Handle(), DOM_ATTRIBUTE),
 			new HRefTranslator(DEP_OBJECT,MODULE_CORE_PKG.getReferencedComponent_DependentObject()),
+			new Translator(ARCHIVE_NAME, MODULE_CORE_PKG.getReferencedComponent_ArchiveName(), DOM_ATTRIBUTE),
 			new DependencyTypeTranslator()
 		});
 		return result;

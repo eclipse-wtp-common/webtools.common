@@ -29,6 +29,7 @@ public class CreateReferenceComponentsDataModelProvider extends AbstractDataMode
 		propertyNames.add(SOURCE_COMPONENT);
 		propertyNames.add(TARGET_COMPONENT_LIST);
 		propertyNames.add(TARGET_COMPONENTS_DEPLOY_PATH);
+		propertyNames.add(TARGET_COMPONENT_ARCHIVE_NAME);
 		return propertyNames;
 	}
 
