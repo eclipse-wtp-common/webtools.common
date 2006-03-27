@@ -6,8 +6,7 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: org.eclipse.wst.common.internal.emf.plugin.EcoreUtilitiesPlugin
 Bundle-Vendor: Eclipse.org
 Bundle-Localization: plugin
-Export-Package: org.eclipse.wst.common.internal.emf.annotations.core;x-internal:=true,
- org.eclipse.wst.common.internal.emf.plugin;x-internal:=true,
+Export-Package: org.eclipse.wst.common.internal.emf.plugin;x-internal:=true,
  org.eclipse.wst.common.internal.emf.resource;x-internal:=true,
  org.eclipse.wst.common.internal.emf.utilities;x-internal:=true
 Require-Bundle: org.eclipse.emf.ecore.xmi,
