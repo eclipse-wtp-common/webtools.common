@@ -2,7 +2,6 @@ package org.eclipse.wst.common.frameworks.componentcore.tests;
 
 import junit.framework.TestCase;
 
-import org.eclipse.core.internal.jobs.JobManager;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
@@ -10,6 +9,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.util.URI;
@@ -89,7 +89,7 @@ public class StructureEditStressTest extends TestCase {
 			job.schedule();
 		}
 		try {
-			JobManager.getInstance().join(EDITMODEL_STRESS,null);
+			Platform.getJobManager().join(EDITMODEL_STRESS,null);
 		} catch (OperationCanceledException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -124,7 +124,7 @@ public void testMultiThreadComponentAccess() {
 			job.schedule();
 		}
 		try {
-			JobManager.getInstance().join(EDITMODEL_STRESS,null);
+			Platform.getJobManager().join(EDITMODEL_STRESS,null);
 		} catch (OperationCanceledException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
