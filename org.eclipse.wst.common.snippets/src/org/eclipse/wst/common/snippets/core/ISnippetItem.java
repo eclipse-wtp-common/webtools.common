@@ -13,7 +13,9 @@ package org.eclipse.wst.common.snippets.core;
 
 /**
  * A snippet item is the actual object draggable from the Snippets view.
- * 
+ * <p>
+ * Clients are not intended to implement this interface.
+ * </p>
  * @since 1.0
  */
 public interface ISnippetItem extends ISnippetsEntry {

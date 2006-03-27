@@ -16,7 +16,9 @@ package org.eclipse.wst.common.snippets.core;
  * A Snippets Entry is an abstract notion encapsulating the values used to
  * represent Snippet Items and Containers. No object implements only this
  * interface.
- * 
+ * <p>
+ * Clients are not intended to implement this interface.
+ * </p>
  * @since 1.0
  */
 

@@ -40,7 +40,9 @@ import org.eclipse.wst.common.snippets.internal.util.StringUtils;
  * An insertion implementation that supports ISnippetVariables. The content
  * string of the item can contain markers, in the form ${+variable+}, that
  * will be replaced with user-supplied values at insertion time.
- * 
+ * <p>
+ * Clients may subclass this class.
+ * </p>
  * @since 1.0
  */
 public class DefaultSnippetInsertion implements ISnippetInsertion {

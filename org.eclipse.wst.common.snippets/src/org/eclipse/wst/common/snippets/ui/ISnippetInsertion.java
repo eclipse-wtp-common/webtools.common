@@ -20,7 +20,9 @@ import org.eclipse.wst.common.snippets.core.ISnippetItem;
  * An insertion class is responsible for inserting a snippet item's contents
  * into editors. Implementors are responsible for supporting the drag-and-drop
  * mechanism and inserting the snippet's text into a given editor part.
- * 
+ * <p>
+ * Clients may implement this interface.
+ * </p>
  * @since 1.0
  */
 public interface ISnippetInsertion {
