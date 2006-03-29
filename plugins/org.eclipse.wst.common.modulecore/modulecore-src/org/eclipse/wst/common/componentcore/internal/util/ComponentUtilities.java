@@ -41,6 +41,7 @@ import org.eclipse.wst.common.componentcore.internal.operation.RemoveReferenceCo
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
+import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
@@ -286,4 +287,14 @@ public class ComponentUtilities {
 		comp.setMetaProperty(IModuleConstants.CONTEXTROOT, contextRoot);
 	}
 
+	public static String getDeployUriOfUtilComponent(IVirtualReference reference){
+		String archiveName = reference.getArchiveName();
+		String uri = null;
+		if( archiveName != null && archiveName != "" ){ //$NON-NLS-1$
+			uri = reference.getRuntimePath() + "/" + reference.getArchiveName(); //$NON-NLS-1$
+		}else{
+			uri = reference.getReferencedComponent().getProject().getName() + ".jar"; //$NON-NLS-1$
+		}
+		return uri;
+	}
 }
