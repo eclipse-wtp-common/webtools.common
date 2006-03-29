@@ -51,16 +51,19 @@ public class ResourceTreeRoot extends ResourceTreeNode {
 					}
 					break;
 				case Notification.REMOVE:
-					resource = (ComponentResource) msg.getNewValue();
-					if(resource != null)
+					resource = (ComponentResource) msg.getOldValue();
+					if(resource != null){
 						resource.eAdapters().remove(getResourcePathListenerAdapter());
+						removeChild(resource);
+					}
 					break;
 				case Notification.REMOVE_MANY:
-					List removedValues = (List) msg.getNewValue();
+					List removedValues = (List) msg.getOldValue();
 					if (removedValues != null) {
 						for (int i = 0; i < removedValues.size(); i++) {
 							resource = (ComponentResource) removedValues.get(i);
 							resource.eAdapters().remove(getResourcePathListenerAdapter());
+							removeChild(resource);
 						}
 					}
 					break;
