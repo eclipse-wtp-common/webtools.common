@@ -245,7 +245,7 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 		StructureEdit moduleCore = null;
 		try {
 			IContainer resource = null;
-			if (aProjectRelativeLocation.isRoot()) {
+			if (aProjectRelativeLocation.isRoot() || aProjectRelativeLocation.isEmpty()) {
 				resource = getProject();
 			} else {
 				resource = getProject().getFolder(aProjectRelativeLocation);
