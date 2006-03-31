@@ -33,12 +33,12 @@ public class AbstractIDataModelTestOperation extends AbstractDataModelOperation 
 	}
 
 	public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-		// TODO Auto-generated method stub
-		return null;
+		ExtendedOperationTests.executionList.add(getClass().getName());
+		return OK_STATUS;
 	}
 
 	public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-		// TODO Auto-generated method stub
-		return null;
+		ExtendedOperationTests.executionList.add(getClass().getName());
+		return OK_STATUS;
 	}
 }

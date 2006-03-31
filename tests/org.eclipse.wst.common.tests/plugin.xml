@@ -85,6 +85,23 @@
             name="Common Framework BVT Tests"/>
    </extension>
    
+   <!--
+   		A picture of the operation tree
+   
+                        R
+                       / \
+                      /   \
+                     /     \
+                    A       B
+                   / \     / \
+                  /   \   /   \
+                 C     D E     F
+                                \
+                                 H
+                                /
+                               G
+   -->
+   
   <extension
          point="org.eclipse.wst.common.frameworks.OperationExtension"
          id="org.eclipse.wst.common.frameworks.datamodel.tests.extended">

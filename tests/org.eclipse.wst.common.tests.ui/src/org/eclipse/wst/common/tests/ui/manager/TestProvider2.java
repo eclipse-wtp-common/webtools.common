@@ -6,7 +6,7 @@
  * 
  * Contributors: IBM Corporation - initial API and implementation
  **************************************************************************************************/
-package org.eclipse.wst.common.frameworks.operations.tests.manager;
+package org.eclipse.wst.common.tests.ui.manager;
 
 import java.util.Set;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;

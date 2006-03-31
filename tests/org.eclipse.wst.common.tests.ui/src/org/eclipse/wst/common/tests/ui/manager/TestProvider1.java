@@ -6,28 +6,34 @@
  * 
  * Contributors: IBM Corporation - initial API and implementation
  **************************************************************************************************/
-package org.eclipse.wst.common.frameworks.operations.tests.manager;
+package org.eclipse.wst.common.tests.ui.manager;
 
 import java.util.Set;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 
-public class TestExtendedProvider extends AbstractDataModelProvider
+public class TestProvider1 extends AbstractDataModelProvider
 {
   public Set getPropertyNames(){
     Set propertyNames = super.getPropertyNames();
-    propertyNames.add("executedOps");
-    propertyNames.add("executedUndoOps");
+    propertyNames.add("provider1Prop1");
+    propertyNames.add("provider1Prop2");
+    propertyNames.add("provider1Prop3");
+    propertyNames.add("provider1Prop4");
     
     return propertyNames;
   }
 
   public void init()
   {
+    setProperty( "provider1Prop1", "11" );
+    setProperty( "provider1Prop2", "22" );
+    setProperty( "provider1Prop3", "33" );
+    setProperty( "provider1Prop4", "44" );
   }
 
   public String getID()
   {
-    return "TestExtendedProvider";
+    return "testprovider1";
   }
   
 

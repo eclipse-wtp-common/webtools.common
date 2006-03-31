@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.wst.common.tests.ui.wizard;
 
-import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.AddablePageGroup;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizard;
@@ -38,11 +37,6 @@ public class Test2DataModelWizard extends DataModelWizard {
 			}
 		});
 		return pg;
-	}
-	
-	protected IDataModelOperation getRootOperation() {
-		// TODO Auto-generated method stub
-		return super.getRootOperation();
 	}
 
 }

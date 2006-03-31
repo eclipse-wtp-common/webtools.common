@@ -17,28 +17,23 @@ import junit.framework.TestCase;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.common.environment.EnvironmentService;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
+import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelPausibleOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
-import org.eclipse.wst.common.frameworks.internal.DataModelManager;
-import org.eclipse.wst.common.frameworks.internal.OperationManager;
 import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelImpl;
+import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelPausibleOperationImpl;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizardPage;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageGroupHandler;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageHandler;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.SimplePageGroup;
 import org.eclipse.wst.common.frameworks.internal.ui.PageGroupManager;
-import org.eclipse.wst.common.frameworks.operations.tests.manager.BaseOperation;
 
 public class TestGroupManager extends TestCase {
-	private OperationManager operationManager;
+
+	private IDataModelPausibleOperation rootOperation;
+
 	private PageGroupManager pageGroupManager;
-	private BaseOperation opA;
-	private BaseOperation opB;
-	private BaseOperation opC;
-	private BaseOperation opD;
-	private BaseOperation opE;
-	private BaseOperation opF;
-	private BaseOperation opG;
 	private SimplePageGroup pgA;
 	private SimplePageGroup pgB;
 	private SimplePageGroup pgC;
@@ -65,56 +60,59 @@ public class TestGroupManager extends TestCase {
 
 	private AGroupHandler aGroupHandler;
 	private FGroupHandler fGroupHandler;
-	// private Status error_ = new Status( IStatus.ERROR, "id", 0, "mess", null );
-	private Vector executedOps;
-	private Vector executedUndoOps;
 	private Vector expectedOps;
 	private Vector expectedUndoOps;
 	private IDataModel dataModel;
 
+	public static final String a = A.class.getName();
+	public static final String b = B.class.getName();
+	public static final String c = C.class.getName();
+	public static final String d = D.class.getName();
+	public static final String e = E.class.getName();
+	public static final String f = F.class.getName();
+	public static final String g = G.class.getName();
+
+
 	protected void setUp() throws Exception {
 		super.setUp();
+		BaseOperation.resultList = new Vector();
+		BaseOperation.undoList = new Vector();
 
-		executedOps = new Vector();
-		executedUndoOps = new Vector();
 		expectedOps = new Vector();
 		expectedUndoOps = new Vector();
-		dataModel = new DataModelImpl(new DataModelProvider());
+		dataModel = new DataModelImpl(new EmptyProvider());
+		dataModel.addNestedModel("testprovider1", DataModelFactory.createDataModel(new TestProvider1()));
+		dataModel.addNestedModel("testprovider2", DataModelFactory.createDataModel(new TestProvider2()));
+		dataModel.addNestedModel("testextendedprovider", DataModelFactory.createDataModel(new TestExtendedProvider()));
 
-		DataModelManager dataModelManager = new DataModelManager(dataModel);
+		/**
+		 * Operations are organized as follows: <code>
+		 *	    D
+		 *     / \
+		 *    /   \
+		 *   B     F
+		 *  / \   / \
+		 * A   C E   G
+		 * </code>
+		 */
+		rootOperation = new DataModelPausibleOperationImpl(new D());
+		rootOperation.setDataModel(dataModel);
+		rootOperation.setEnvironment(EnvironmentService.getEclipseConsoleEnvironment());
 
-		opA = new BaseOperation("A", executedOps, executedUndoOps); //$NON-NLS-1$
-		opB = new BaseOperation("B", executedOps, executedUndoOps); //$NON-NLS-1$
-		opC = new BaseOperation("C", executedOps, executedUndoOps); //$NON-NLS-1$
-		opD = new BaseOperation("D", executedOps, executedUndoOps); //$NON-NLS-1$
-		opE = new BaseOperation("E", executedOps, executedUndoOps); //$NON-NLS-1$
-		opF = new BaseOperation("F", executedOps, executedUndoOps); //$NON-NLS-1$
-		opG = new BaseOperation("G", executedOps, executedUndoOps); //$NON-NLS-1$
+		/**
+		 * Page groups are organized as follows:
+		 * 
+		 * <code>
+		 *
+		 *              B - C
+		 *             /     \
+		 * Root - A - D       \         G
+		 *             \       \      /
+		 *               ------ E - F - H
+		 *                            \ null
+		 * </code>
+		 */
 
-		// Operations are organized as follows:
-		//
-		//    D
-		//   /  \
-		//   B   F
-		//  / \ / \
-		// A  C E  G
-		operationManager = new OperationManager(dataModelManager, opD, EnvironmentService.getEclipseConsoleEnvironment() );
-		operationManager.addExtendedPreOperation(opD.getID(), opB);
-		operationManager.addExtendedPostOperation(opD.getID(), opF);
-		operationManager.addExtendedPreOperation(opB.getID(), opA);
-		operationManager.addExtendedPostOperation(opB.getID(), opC);
-		operationManager.addExtendedPreOperation(opF.getID(), opE);
-		operationManager.addExtendedPostOperation(opF.getID(), opG);
-
-		// Page groups are organized as follows:
-		//
-		//              B - C
-		//             /     \
-		// Root - A - D       \         G
-		//             \       \      /
-		//               ------ E - F - H
-		//                            \ null
-		//                     
 		// The page group handler for A will return either B and then E or D and
 		// then E. The group handler for F will return either G or H and then null or
 		// just null.
@@ -164,11 +162,11 @@ public class TestGroupManager extends TestCase {
 
 		pgRoot = new SimplePageGroup("Root", wizardID); //$NON-NLS-1$
 		pgA = new SimplePageGroup("A", wizardID); //$NON-NLS-1$
-		pgB = new SimplePageGroup("B", wizardID, true, "C"); //$NON-NLS-1$ //$NON-NLS-2$
+		pgB = new SimplePageGroup("B", wizardID, true, c); //$NON-NLS-1$ //$NON-NLS-2$
 		pgC = new SimplePageGroup("C", wizardID); //$NON-NLS-1$
-		pgD = new SimplePageGroup("D", wizardID, true, "C"); //$NON-NLS-1$ //$NON-NLS-2$
-		pgE = new SimplePageGroup("E", wizardID, true, "E"); //$NON-NLS-1$ //$NON-NLS-2$
-		pgF = new SimplePageGroup("F", wizardID, true, "C"); //$NON-NLS-1$ //$NON-NLS-2$
+		pgD = new SimplePageGroup("D", wizardID, true, c); //$NON-NLS-1$ //$NON-NLS-2$
+		pgE = new SimplePageGroup("E", wizardID, true, e); //$NON-NLS-1$ //$NON-NLS-2$
+		pgF = new SimplePageGroup("F", wizardID, true, c); //$NON-NLS-1$ //$NON-NLS-2$
 		pgG = new SimplePageGroup("G", wizardID); //$NON-NLS-1$
 		pgH = new SimplePageGroup("H", wizardID); //$NON-NLS-1$
 
@@ -187,7 +185,7 @@ public class TestGroupManager extends TestCase {
 		pgA.setPageGroupHandler(aGroupHandler);
 		pgF.setPageGroupHandler(fGroupHandler);
 
-		pageGroupManager = new PageGroupManager(operationManager, dataModelManager, pgRoot);
+		pageGroupManager = new PageGroupManager(rootOperation, pgRoot);
 		pageGroupManager.addGroupAfter("Root", pgA); //$NON-NLS-1$
 		pageGroupManager.addGroupAfter("A", pgB); //$NON-NLS-1$
 		pageGroupManager.addGroupAfter("A", pgD); //$NON-NLS-1$
@@ -199,10 +197,10 @@ public class TestGroupManager extends TestCase {
 	}
 
 	public void testSimpleRun() throws Exception {
-    HashSet ids = new HashSet();
-    ids.add( "testprovider1" );
-    ids.add( "testprovider2" );
-    pgA.setDataModelIDs( ids );
+		HashSet ids = new HashSet();
+		ids.add("testprovider1");
+		ids.add("testprovider2");
+		pgA.setDataModelIDs(ids);
 		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
 		assertTrue("The root page should be null", pageGroupManager.getCurrentPage() == null); //$NON-NLS-1$
 		pageGroupManager.moveBackOnePage(); // Should do nothing.
@@ -213,14 +211,14 @@ public class TestGroupManager extends TestCase {
 		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
 		assertTrue("The page should be r1", pageGroupManager.getCurrentPage() == r1); //$NON-NLS-1$
 		checkResults();
-    assertTrue("Data models not Ok for page group A", checkDataModels() ); //$NON-NLS-1$
+		assertTrue("Data models not Ok for page group A", checkDataModels()); //$NON-NLS-1$
 
 		pageGroupManager.moveForwardOnePage();
 		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
 		assertTrue("The page should be b1", pageGroupManager.getCurrentPage() == b1); //$NON-NLS-1$
-		expectedOps.add(opA);
-		expectedOps.add(opB);
-		expectedOps.add(opC);
+		expectedOps.add(a);
+		expectedOps.add(b);
+		expectedOps.add(c);
 		checkResults();
 
 		pageGroupManager.moveForwardOnePage();
@@ -236,8 +234,8 @@ public class TestGroupManager extends TestCase {
 		pageGroupManager.moveForwardOnePage();
 		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
 		assertTrue("The page should be f1", pageGroupManager.getCurrentPage() == f1); //$NON-NLS-1$
-		expectedOps.add(opD);
-		expectedOps.add(opE);
+		expectedOps.add(d);
+		expectedOps.add(e);
 		checkResults();
 
 		pageGroupManager.moveForwardOnePage();
@@ -295,8 +293,8 @@ public class TestGroupManager extends TestCase {
 		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
 		assertTrue("The page should be f4", pageGroupManager.getCurrentPage() == c1); //$NON-NLS-1$
 		expectedOps.setSize(3);
-		expectedUndoOps.add(opE);
-		expectedUndoOps.add(opD);
+		expectedUndoOps.add(e);
+		expectedUndoOps.add(d);
 		checkResults();
 
 		pageGroupManager.moveBackOnePage();
@@ -313,9 +311,9 @@ public class TestGroupManager extends TestCase {
 		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
 		assertTrue("The root page should be r1", pageGroupManager.getCurrentPage() == r1); //$NON-NLS-1$
 		expectedOps = new Vector();
-		expectedUndoOps.add(opC);
-		expectedUndoOps.add(opB);
-		expectedUndoOps.add(opA);
+		expectedUndoOps.add(c);
+		expectedUndoOps.add(b);
+		expectedUndoOps.add(a);
 		checkResults();
 
 		reset();
@@ -323,9 +321,9 @@ public class TestGroupManager extends TestCase {
 		pageGroupManager.moveForwardOnePage();
 		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
 		assertTrue("The page should be d1", pageGroupManager.getCurrentPage() == d1); //$NON-NLS-1$
-		expectedOps.add(opA);
-		expectedOps.add(opB);
-		expectedOps.add(opC);
+		expectedOps.add(a);
+		expectedOps.add(b);
+		expectedOps.add(c);
 		checkResults();
 
 		pageGroupManager.moveForwardOnePage();
@@ -341,8 +339,8 @@ public class TestGroupManager extends TestCase {
 		pageGroupManager.moveForwardOnePage();
 		assertTrue("There should be a next page", pageGroupManager.hasNextPage()); //$NON-NLS-1$
 		assertTrue("The page should be f1", pageGroupManager.getCurrentPage() == f1); //$NON-NLS-1$
-		expectedOps.add(opD);
-		expectedOps.add(opE);
+		expectedOps.add(d);
+		expectedOps.add(e);
 		checkResults();
 
 		pageGroupManager.moveForwardOnePage();
@@ -368,54 +366,51 @@ public class TestGroupManager extends TestCase {
 	}
 
 	private void checkResults() {
-		assertTrue("Expected=" + expectedOps.size() + " executed=" + executedOps.size(), executedOps.size() == expectedOps.size()); //$NON-NLS-1$ //$NON-NLS-2$
+		assertTrue("Expected=" + expectedOps.size() + " executed=" + BaseOperation.resultList.size(), BaseOperation.resultList.size() == expectedOps.size()); //$NON-NLS-1$ //$NON-NLS-2$
 
-		for (int index = 0; index < executedOps.size(); index++) {
-			assertEquals(((BaseOperation) expectedOps.elementAt(index)).getID(), ((BaseOperation) executedOps.elementAt(index)).getID());
+		for (int index = 0; index < BaseOperation.resultList.size(); index++) {
+			assertEquals(expectedOps.elementAt(index), BaseOperation.resultList.elementAt(index));
 		}
 
-		assertTrue("Expected undo=" + expectedUndoOps.size() + " executed=" + executedUndoOps.size(), executedUndoOps.size() == expectedUndoOps.size()); //$NON-NLS-1$ //$NON-NLS-2$
+		assertTrue("Expected undo=" + expectedUndoOps.size() + " executed=" + BaseOperation.undoList.size(), BaseOperation.undoList.size() == expectedUndoOps.size()); //$NON-NLS-1$ //$NON-NLS-2$
 
-		for (int index = 0; index < executedUndoOps.size(); index++) {
-			assertEquals(((BaseOperation) expectedUndoOps.elementAt(index)).getID(), ((BaseOperation) executedUndoOps.elementAt(index)).getID());
+		for (int index = 0; index < BaseOperation.undoList.size(); index++) {
+			assertEquals(expectedUndoOps.elementAt(index), BaseOperation.undoList.elementAt(index));
 		}
 	}
 
 	private void reset() {
-		executedOps.removeAllElements();
+		BaseOperation.resultList.removeAllElements();
 		expectedOps.removeAllElements();
-		executedUndoOps.removeAllElements();
+		BaseOperation.undoList.removeAllElements();
 		expectedUndoOps.removeAllElements();
 	}
 
-  private boolean checkDataModels()
-  {
-    IDataModel model = dataModel;
-    
-    boolean containsModel1 = model.isNestedModel( "testprovider1" );
-    boolean containsModel2 = model.isNestedModel( "testprovider2" );
-    boolean prop1          = model.isPropertySet( "provider1Prop1" );
-    boolean prop2          = model.isPropertySet( "provider1Prop2" );
-    boolean prop3          = model.isPropertySet( "provider1Prop3" );
-    boolean prop4          = model.isPropertySet( "provider1Prop4" );
-    boolean prop5          = model.isPropertySet( "provider2Prop1" );
-    boolean prop6          = model.isPropertySet( "provider2Prop2" );
-    boolean prop7          = model.isPropertySet( "provider2Prop3" );
-    boolean prop8          = model.isPropertySet( "provider2Prop4" );
-    boolean value1         = model.getProperty( "provider1Prop1" ).equals( "11" );
-    boolean value2         = model.getProperty( "provider1Prop2" ).equals( "22" );
-    boolean value3         = model.getProperty( "provider1Prop3" ).equals( "33" );
-    boolean value4         = model.getProperty( "provider1Prop4" ).equals( "44" );
-    boolean value5         = model.getProperty( "provider2Prop1" ).equals( "1111" );
-    boolean value6         = model.getProperty( "provider2Prop2" ).equals( "2222" );
-    boolean value7         = model.getProperty( "provider2Prop3" ).equals( "3333" );
-    boolean value8         = model.getProperty( "provider2Prop4" ).equals( "4444" );
-    
-    return containsModel1 && containsModel2 &&
-           prop1 && prop2 && prop3 && prop4 && prop5 && prop6 && prop7 && prop8 &&
-           value1 && value2 && value3 && value4 && value5 && value6 && value7 && value8;
-  }
-  
+	private boolean checkDataModels() {
+		IDataModel model = dataModel;
+
+		boolean containsModel1 = model.isNestedModel("testprovider1");
+		boolean containsModel2 = model.isNestedModel("testprovider2");
+		boolean prop1 = model.isPropertySet("provider1Prop1");
+		boolean prop2 = model.isPropertySet("provider1Prop2");
+		boolean prop3 = model.isPropertySet("provider1Prop3");
+		boolean prop4 = model.isPropertySet("provider1Prop4");
+		boolean prop5 = model.isPropertySet("provider2Prop1");
+		boolean prop6 = model.isPropertySet("provider2Prop2");
+		boolean prop7 = model.isPropertySet("provider2Prop3");
+		boolean prop8 = model.isPropertySet("provider2Prop4");
+		boolean value1 = model.getProperty("provider1Prop1").equals("11");
+		boolean value2 = model.getProperty("provider1Prop2").equals("22");
+		boolean value3 = model.getProperty("provider1Prop3").equals("33");
+		boolean value4 = model.getProperty("provider1Prop4").equals("44");
+		boolean value5 = model.getProperty("provider2Prop1").equals("1111");
+		boolean value6 = model.getProperty("provider2Prop2").equals("2222");
+		boolean value7 = model.getProperty("provider2Prop3").equals("3333");
+		boolean value8 = model.getProperty("provider2Prop4").equals("4444");
+
+		return containsModel1 && containsModel2 && prop1 && prop2 && prop3 && prop4 && prop5 && prop6 && prop7 && prop8 && value1 && value2 && value3 && value4 && value5 && value6 && value7 && value8;
+	}
+
 	private class AGroupHandler implements IDMPageGroupHandler {
 		private String groupID_;
 
@@ -493,7 +488,7 @@ public class TestGroupManager extends TestCase {
 
 	}
 
-	private class DataModelProvider extends AbstractDataModelProvider {
+	private class EmptyProvider extends AbstractDataModelProvider {
 
 		public Set getPropertyNames() {
 			return new HashSet();

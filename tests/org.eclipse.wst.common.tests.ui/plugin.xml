@@ -53,5 +53,36 @@
       </wizardPageGroup>
    </extension>
   
+     <!--
+   		A picture of the operation tree
+  		/**
+		 * Operations are organized as follows: <code>
+		 *	    D
+		 *     / \
+		 *    /   \
+		 *   B     F
+		 *  / \   / \
+		 * A   C E   G
+		 * </code>
+		 */
+       -->
+   
+  <extension
+         point="org.eclipse.wst.common.frameworks.OperationExtension"
+         id="org.eclipse.wst.common.tests.ui.manager">
+      <operationExtension
+            id="org.eclipse.wst.common.tests.ui.manager.D"
+            postOperationClass="org.eclipse.wst.common.tests.ui.manager.F"
+            preOperationClass="org.eclipse.wst.common.tests.ui.manager.B"/>
+      <operationExtension
+            id="org.eclipse.wst.common.tests.ui.manager.B"
+            postOperationClass="org.eclipse.wst.common.tests.ui.manager.C"
+            preOperationClass="org.eclipse.wst.common.tests.ui.manager.A"/>
+      <operationExtension
+            id="org.eclipse.wst.common.tests.ui.manager.F"
+            postOperationClass="org.eclipse.wst.common.tests.ui.manager.G"
+            preOperationClass="org.eclipse.wst.common.tests.ui.manager.E"/>
+   </extension>
+  
 
 </plugin>
