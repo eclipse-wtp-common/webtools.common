@@ -30,6 +30,7 @@ import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelListener;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelPausibleOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
@@ -441,7 +442,7 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		provider.dispose();
 	}
 
-	public IDataModelOperation getDefaultOperation() {
+	public IDataModelOperation getRawOperation() {
 		IDataModelOperation providerOp = provider.getDefaultOperation();
 		if (null == providerOp) {
 			providerOp = new AbstractDataModelOperation(this) {
@@ -450,7 +451,11 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 				}
 			};
 		}
-		return new ExtendableOperationImpl(providerOp);
+		return providerOp;
+	}
+
+	public IDataModelPausibleOperation getDefaultOperation() {
+		return new DataModelPausibleOperationImpl(getRawOperation());
 	}
 
 	public String toString() {

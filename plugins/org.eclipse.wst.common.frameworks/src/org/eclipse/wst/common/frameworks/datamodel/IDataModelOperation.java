@@ -10,9 +10,8 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel;
 
-import java.util.List;
-import java.util.Set;
 import org.eclipse.core.commands.operations.IUndoableOperation;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.wst.common.environment.IEnvironment;
 
@@ -20,6 +19,11 @@ import org.eclipse.wst.common.environment.IEnvironment;
  * <p>
  * IDataModelOperation defines an IDataModel driven undoable operation. Every IDataModelOperation
  * may be extended by third party clients using the extended operation framework.
+ * </p>
+ * 
+ * <p>
+ * This interface is not intended to be implemented by clients. Clients should subclass
+ * {@link AbstractDataModelOperation}.
  * </p>
  * 
  * @see org.eclipse.wst.common.frameworks.datamodel.IDataModel
@@ -66,37 +70,55 @@ public interface IDataModelOperation extends IUndoableOperation {
 	 */
 	public IDataModel getDataModel();
 
-	public Set getDataModelIDs();
-
+	/**
+	 * <p>
+	 * Returns the ISchedulingRule used for executing this job using
+	 * {@link IWorkspace#run(org.eclipse.core.resources.IWorkspaceRunnable, ISchedulingRule, int, org.eclipse.core.runtime.IProgressMonitor)}.
+	 * If <code>null</code> is returned, then IWorkspace.getRoot() is used as the ISchedulingRule
+	 * during execution.
+	 * </p>
+	 * 
+	 * @return the ISchedulingRule
+	 * 
+	 * @see #getOperationExecutionFlags()
+	 * @see IWorkspace#run(org.eclipse.core.resources.IWorkspaceRunnable, ISchedulingRule, int,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
+	 */
 	public ISchedulingRule getSchedulingRule();
 
+	/**
+	 * <p>
+	 * Returns the OperationExecutionFlags used for executing this Operation as a workspace job.
+	 * {@link IWorkspace#run(org.eclipse.core.resources.IWorkspaceRunnable, ISchedulingRule, int, org.eclipse.core.runtime.IProgressMonitor)}.
+	 * </p>
+	 * 
+	 * @return the OperationExecutionFlags
+	 * 
+	 * @see #getSchedulingRule()
+	 * @see IWorkspace#run(org.eclipse.core.resources.IWorkspaceRunnable, ISchedulingRule, int,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
+	 */
 	public int getOperationExecutionFlags();
 
-  /**
-   * The framework will set the environment on this operation 
-   * before it is executed.  The operation can then use the
-   * environment to report status, log information, and access
-   * resources in an environment neutral way.
-   */
-  public void setEnvironment( IEnvironment environment );
-  
-  /**
-   * An operation can specify a list of operations that should run
-   * before this operation.  Subclasses can override this method to 
-   * provide these operations.  The operations provided will be
-   * executed in the order specified in the list.
-   * @return returns a list of data model operations or null.  
-   * Null indicates that there are no pre operations.
-   */
-  public List getPreOperations();
-  
-  /**
-   * An operation can specify a list of operations that should run
-   * after this operation.  Subclasses can override this method to 
-   * provide these operations.  The operations provided will be
-   * executed in the order specified in the list.
-   * @return returns a list of data model operations or null.
-   * Null indicates that there are no post operations.
-   */
-  public List getPostOperations();
+	/**
+	 * <p>
+	 * The framework will set the environment on this operation before it is executed. The operation
+	 * can then use the environment to report status, log information, and access resources in an
+	 * environment neutral way.
+	 * <p>
+	 * 
+	 * @param environment
+	 *            the IEnvironment to set.
+	 */
+	public void setEnvironment(IEnvironment environment);
+
+	/**
+	 * Returns the IEvironment set in {@link #setEnvironment(IEnvironment)}}
+	 * 
+	 * @return the set IEnvironment
+	 * 
+	 * @see #setEnvironment(IEnvironment)
+	 */
+	public IEnvironment getEnvironment();
+
 }

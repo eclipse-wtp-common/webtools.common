@@ -9,7 +9,7 @@
 package org.eclipse.wst.common.frameworks.internal.datamodel.ui;
 
 import java.util.List;
-import java.util.Set;
+
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
 public interface IDMPageGroup 
@@ -23,8 +23,6 @@ public interface IDMPageGroup
   public boolean getAllowsExtendedPages();
   
   public String getRequiredDataOperationToRun();
-  
-  public Set getDataModelIDs();
   
   public List getPages(IDataModel dataModel);
   

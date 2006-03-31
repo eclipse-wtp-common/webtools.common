@@ -10,13 +10,10 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -25,7 +22,9 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.wst.common.environment.IEnvironment;
 
 /**
+ * <p>
  * Abstract implementation for an IDataModelOperation.
+ * </p>
  * 
  * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation
  * 
@@ -34,7 +33,9 @@ import org.eclipse.wst.common.environment.IEnvironment;
 public abstract class AbstractDataModelOperation extends AbstractOperation implements IDataModelOperation {
 
 	/**
+	 * <p>
 	 * Convenience IStatus.OK.
+	 * </p>
 	 */
 	protected static final IStatus OK_STATUS = IDataModelProvider.OK_STATUS;
 
@@ -42,12 +43,16 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	private IEnvironment environment;
 
 	/**
+	 * <p>
 	 * The IDataModel used by this IDataModelOperation
+	 * </p>
 	 */
 	protected IDataModel model;
 
 	/**
+	 * <p>
 	 * Default constructor.
+	 * </p>
 	 */
 	public AbstractDataModelOperation() {
 		super(""); //$NON-NLS-1$
@@ -55,7 +60,9 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	}
 
 	/**
+	 * <p>
 	 * Constructor taking an IDataModel
+	 * </p>
 	 * 
 	 * @param model
 	 *            the IDataModel used to drive this operation
@@ -67,7 +74,9 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	}
 
 	/**
+	 * <p>
 	 * Default implementation of setID().
+	 * <p>
 	 * 
 	 * @see IDataModelOperation#setID(String)
 	 */
@@ -76,7 +85,9 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	}
 
 	/**
+	 * <p>
 	 * Default implementation of getID().
+	 * </p>
 	 * 
 	 * @see IDataModelOperation#getID()
 	 */
@@ -85,7 +96,9 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	}
 
 	/**
+	 * <p>
 	 * Default implementation of setDataModel()
+	 * </p>
 	 * 
 	 * @see IDataModelOperation#setDataModel(IDataModel)
 	 */
@@ -94,7 +107,9 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 	}
 
 	/**
+	 * <p>
 	 * Default implementation of getDataModel()
+	 * </p>
 	 * 
 	 * @see IDataModelOperation#getDataModel()
 	 */
@@ -102,79 +117,71 @@ public abstract class AbstractDataModelOperation extends AbstractOperation imple
 		return model;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation#getDataModelIDs()
-	 */
-	public Set getDataModelIDs() {
-		return new HashSet();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation#getSchedulingRule()
+	/**
+	 * <p>
+	 * Default implementation of getSchedulingRule() returns
+	 * <code>ResourcesPlugin.getWorkspace().getRoot()</code>.
+	 * </p>
+	 * 
+	 * @see IDataModelOperation#getSchedulingRule()
 	 */
 	public ISchedulingRule getSchedulingRule() {
-		return null;
+		return ResourcesPlugin.getWorkspace().getRoot();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation#getOperationExecutionFlags()
+	/**
+	 * <p>
+	 * Default implementation of getOperationExecutionFlags() returns
+	 * <code>IWorkspace.AVOID_UPDATE</code>.
+	 * </p>
+	 * 
+	 * @see IDataModelOperation#getOperationExecutionFlags()
 	 */
 	public int getOperationExecutionFlags() {
 		return IWorkspace.AVOID_UPDATE;
 	}
 
-  /**
-   * The framework will set the environment on this operation 
-   * before it is executed.  The operation can then use the
-   * environment to report status, log information, and access
-   * resources in an environment neutral way.
-   */
+	/**
+	 * <p>
+	 * The framework will set the environment on this operation before it is executed. The operation
+	 * can then use the environment to report status, log information, and access resources in an
+	 * environment neutral way.
+	 * </p>
+	 * 
+	 * @param env
+	 *            the environment.
+	 * 
+	 */
 	public final void setEnvironment(IEnvironment env) {
 		environment = env;
 	}
 
-  /**
-   * An operation can call this method to get the environment
-   * that has been set by the operations framework.
-   * @return returns an environment.
-   */
+	/**
+	 * <p>
+	 * An operation can call this method to get the environment that has been set by the operations
+	 * framework.
+	 * </p>
+	 * 
+	 * @return returns an environment.
+	 */
 	public final IEnvironment getEnvironment() {
 		return environment;
 	}
 
-  /**
-   * An operation can specify a list of operations that should run
-   * before this operation.  Subclasses can override this method to 
-   * provide these operations.  The operations provided will be
-   * executed in the order specified in the list.
-   * @return returns a list of data model operations or null.  
-   * Null indicates that there are no pre operations.
-   */
-  public List getPreOperations()
-  {
-    return null; 
-  }
-  
-  /**
-   * An operation can specify a list of operations that should run
-   * after this operation.  Subclasses can override this method to 
-   * provide these operations.  The operations provided will be
-   * executed in the order specified in the list.
-   * @return returns a list of data model operations or null.
-   * Null indicates that there are no post operations.
-   */
-  public List getPostOperations()
-  {
-    return null; 
-  }
-  
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.commands.operations.IUndoableOperation#redo(org.eclipse.core.runtime.IProgressMonitor, org.eclipse.core.runtime.IAdaptable)
+	/**
+	 * <p>
+	 * Default empty implementation of redo.
+	 * </p>
 	 */
 	public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		return Status.OK_STATUS;
 	}
 
+	/**
+	 * <p>
+	 * Default empty implementation of undo.
+	 * </p>
+	 */
 	public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		return Status.OK_STATUS;
 	}

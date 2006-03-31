@@ -19,7 +19,7 @@ import org.eclipse.wst.common.componentcore.internal.operation.FacetDataModelOpe
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ExtendableOperationImpl;
+import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelPausibleOperationImpl;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
@@ -67,7 +67,7 @@ public class FacetDataModelProvider extends AbstractDataModelProvider implements
 	}
 
 	protected IDataModelOperation getFacetNotificationOperation() {
-		return new ExtendableOperationImpl(new AbstractDataModelOperation(this.model) {
+		return new DataModelPausibleOperationImpl(new AbstractDataModelOperation(this.model) {
 			public String getID() {
 				return "FacetDataModelProvider.Notification." + model.getProperty(FACET_TYPE) + "." + model.getStringProperty(FACET_ID); //$NON-NLS-1$//$NON-NLS-2$ 
 			}

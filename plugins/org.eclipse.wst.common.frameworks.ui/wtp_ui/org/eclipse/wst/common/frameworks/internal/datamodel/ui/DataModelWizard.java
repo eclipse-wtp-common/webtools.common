@@ -14,6 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -24,10 +25,11 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.wst.common.environment.IEnvironment;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelPausibleOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
-import org.eclipse.wst.common.frameworks.internal.DataModelManager;
-import org.eclipse.wst.common.frameworks.internal.OperationManager;
+import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelImpl;
+import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelPausibleOperationImpl;
 import org.eclipse.wst.common.frameworks.internal.eclipse.ui.EclipseEnvironment;
 import org.eclipse.wst.common.frameworks.internal.ui.ErrorDialog;
 import org.eclipse.wst.common.frameworks.internal.ui.PageGroupManager;
@@ -39,12 +41,10 @@ import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
  * This class is EXPERIMENTAL and is subject to substantial changes.
  */
 public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
-	private DataModelManager dataModelManager;
-	private OperationManager operationManager;
 	private PageGroupManager pageGroupManager;
 	private IDataModel dataModel;
 	private AddablePageGroup rootPageGroup;
-	private IDataModelOperation rootOperation;
+	private IDataModelPausibleOperation rootOperation;
 
 	// private IWizardPage firstpage;
 
@@ -68,8 +68,8 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	 * 
 	 * @return returns the root operation for this wizard.
 	 */
-	protected IDataModelOperation getRootOperation() {
-		return getDataModel().getDefaultOperation();
+	protected IDataModelPausibleOperation getRootOperation() {
+		return new WizardDataModelManagerOperationImpl(((DataModelImpl)getDataModel()).getRawOperation());
 	}
 
 	/**
@@ -171,29 +171,28 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 				storeDefaultSettings();
 
 				final IStatus st = runOperations();
-                
-                if( st.getSeverity() == IStatus.ERROR )
-                {
-                    WTPUIPlugin.log(st);
-                    ErrorDialog.openError(getShell(), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_0, new Object[]{getWindowTitle()}), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_1, new Object[]{getWindowTitle()}), new CoreException( st ), 0, false); //$NON-NLS-1$ //$NON-NLS-2$
-                }
-				
+
+				if (st.getSeverity() == IStatus.ERROR) {
+					WTPUIPlugin.log(st);
+					ErrorDialog.openError(getShell(), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_0, new Object[]{getWindowTitle()}), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_1, new Object[]{getWindowTitle()}), new CoreException(st), 0, false); //$NON-NLS-1$ //$NON-NLS-2$
+				}
+
 				postPerformFinish();
 			}
 		} catch (Throwable exc) {
-            WTPUIPlugin.log(exc);
-            ErrorDialog.openError(getShell(), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_0, new Object[]{getWindowTitle()}), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_1, new Object[]{getWindowTitle()}), exc, 0, false); //$NON-NLS-1$ //$NON-NLS-2$
+			WTPUIPlugin.log(exc);
+			ErrorDialog.openError(getShell(), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_0, new Object[]{getWindowTitle()}), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_1, new Object[]{getWindowTitle()}), exc, 0, false); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		return true;
 	}
-	
+
 	private IStatus runOperations() {
 		final IStatus[] status = new IStatus[1];
 		IRunnableWithProgress runnable = new IRunnableWithProgress() {
 			public void run(IProgressMonitor monitor) {
 				try {
-					status[0] =rootOperation.execute(monitor, null);
+					status[0] = rootOperation.execute(monitor, null);
 				} catch (ExecutionException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -203,7 +202,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 		try {
 			getContainer().run(runForked(), isCancelable(), runnable);
 		} catch (Throwable exc) {
-            WTPUIPlugin.log(exc);
+			WTPUIPlugin.log(exc);
 			ErrorDialog.openError(getShell(), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_0, new Object[]{getWindowTitle()}), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_1, new Object[]{getWindowTitle()}), exc, 0, false); //$NON-NLS-1$ //$NON-NLS-2$
 			status[0] = new Status(IStatus.ERROR, "id", 0, exc.getMessage(), exc); //$NON-NLS-1$
 		}
@@ -237,12 +236,12 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 		pageGroupManager.storeDefaultSettings(this);
 	}
 
-	public void storeDefaultSettings(IWizardPage page){
+	public void storeDefaultSettings(IWizardPage page) {
 		if (page instanceof DataModelWizardPage)
 			((DataModelWizardPage) page).storeDefaultSettings();
 	}
-	
-	
+
+
 	/**
 	 * Subclasses may override if they need to do something special when storing the default
 	 * settings for a particular page.
@@ -323,50 +322,41 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	}
 
 	private void init() {
-		dataModelManager = new DataModelManager(getDataModel());
-		rootOperation = getRootOperation(); 
-		operationManager = new WizardOperationManager(dataModelManager, rootOperation);
+		rootOperation = getRootOperation();
 		rootPageGroup = createRootPageGroup();
-		pageGroupManager = new PageGroupManager(operationManager, dataModelManager, rootPageGroup);
+		pageGroupManager = new PageGroupManager(rootOperation, rootPageGroup);
 	}
 
-	private class WizardOperationManager extends OperationManager {
-		public WizardOperationManager(DataModelManager dataModelManager, IDataModelOperation rootOperation) {
-			super(dataModelManager, rootOperation, createEnvironment());
+	private class WizardDataModelManagerOperationImpl extends DataModelPausibleOperationImpl {
+		WizardDataModelManagerOperationImpl(IDataModelOperation rootOperation) {
+			super(rootOperation);
 		}
 
-		public IStatus runOperations() {
+		public IStatus execute(IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
 			final IStatus[] status = new IStatus[1];
-			IRunnableWithProgress runnable = new IRunnableWithProgress() {
+			class CatchThrowableRunnableWithProgress implements IRunnableWithProgress {
+				public Throwable caught = null;
+
 				public void run(IProgressMonitor monitor) {
-					setProgressMonitor(monitor);
-					status[0] = WizardOperationManager.super.runOperations();
+					try {
+						status[0] = WizardDataModelManagerOperationImpl.super.execute(monitor, info);
+					} catch (Throwable e) {
+						caught = e;
+					}
 				}
-			};
+			}
+			CatchThrowableRunnableWithProgress runnable = new CatchThrowableRunnableWithProgress();
 			try {
 				getContainer().run(runForked(), isCancelable(), runnable);
-			} catch (Throwable exc) {
-				Logger.getLogger().logError(exc);
-				ErrorDialog.openError(getShell(), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_0, new Object[]{getWindowTitle()}), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_1, new Object[]{getWindowTitle()}), exc, 0, false); //$NON-NLS-1$ //$NON-NLS-2$
-				status[0] = new Status(IStatus.ERROR, "id", 0, exc.getMessage(), exc); //$NON-NLS-1$
+			} catch (Throwable e) {
+				runnable.caught = e;
 			}
-
+			if (runnable.caught != null) {
+				Logger.getLogger().logError(runnable.caught);
+				ErrorDialog.openError(getShell(), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_0, new Object[]{getWindowTitle()}), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_1, new Object[]{getWindowTitle()}), runnable.caught, 0, false); //$NON-NLS-1$ //$NON-NLS-2$
+				status[0] = new Status(IStatus.ERROR, "id", 0, runnable.caught.getMessage(), runnable.caught); //$NON-NLS-1$
+			}
 			return status[0];
-		}
-
-		public void undoLastRun() {
-			IRunnableWithProgress runnable = new IRunnableWithProgress() {
-				public void run(IProgressMonitor monitor) {
-					setProgressMonitor(monitor);
-					WizardOperationManager.super.undoLastRun();
-				}
-			};
-			try {
-				getContainer().run(runForked(), isCancelable(), runnable);
-			} catch (Throwable exc) {
-				Logger.getLogger().logError(exc);
-				ErrorDialog.openError(getShell(), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_0, new Object[]{getWindowTitle()}), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_1, new Object[]{getWindowTitle()}), exc, 0, false); //$NON-NLS-1$ //$NON-NLS-2$
-			}
 		}
 	}
 

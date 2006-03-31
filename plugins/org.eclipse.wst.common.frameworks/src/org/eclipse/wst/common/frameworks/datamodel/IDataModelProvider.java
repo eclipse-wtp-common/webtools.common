@@ -17,8 +17,12 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 /**
- * IDataModelProviders are used by the DataMdoelFactory to construct IDataModels.  
+ * IDataModelProviders are used by the DataMdoelFactory to construct IDataModels.
  * 
+ * <p>
+ * This interface is not intended to be implemented by clients. Clients should subclass
+ * {@link AbstractDataModelProvider}.
+ * </p>
  * 
  * @since 1.0
  */

@@ -12,10 +12,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IStatus;
@@ -23,10 +23,9 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
-import org.eclipse.wst.common.frameworks.internal.DataModelManager;
-import org.eclipse.wst.common.frameworks.internal.OperationListener;
-import org.eclipse.wst.common.frameworks.internal.OperationManager;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelPausibleOperation;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelPausibleOperationEvent;
+import org.eclipse.wst.common.frameworks.datamodel.IDataModelPausibleOperationListener;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizard;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageGroup;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageGroupHandler;
@@ -34,9 +33,8 @@ import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageHandler;
 import org.eclipse.wst.common.frameworks.internal.operation.extensionui.CommonUIPluginConstants;
 
 public class PageGroupManager {
+	private IDataModelPausibleOperation rootOperation;
 	private IDMPageGroup rootPageGroup;
-	private OperationManager operationManager;
-	private DataModelManager dataModelManager;
 	private HashMap groupTable;
 	private HashSet operationsRun;
 	private Stack pageGroupStack;
@@ -48,10 +46,11 @@ public class PageGroupManager {
 
 	private final String ELEMENT_PAGE_GROUP = "wizardPageGroup"; //$NON-NLS-1$
 
-	public PageGroupManager(OperationManager operationManager, DataModelManager dataModelManager, IDMPageGroup rootPageGroup) {
-		this.operationManager = operationManager;
-		this.dataModelManager = dataModelManager;
-		dataModel = this.dataModelManager.getDataModel();
+	private String pauseAfterExecution = null;
+
+	public PageGroupManager(IDataModelPausibleOperation rootOperation, IDMPageGroup rootPageGroup) {
+		this.rootOperation = rootOperation;
+		dataModel = rootOperation.getDataModel();
 		groupTable = new HashMap();
 		operationsRun = new HashSet();
 		pageGroupStack = new Stack();
@@ -68,11 +67,26 @@ public class PageGroupManager {
 			loadExtendedPages(rootPageGroup);
 		}
 
-		this.operationManager.setUndoExecuteListener(new OperationListener() {
-			public boolean notify(IDataModelOperation operation) {
-				operationsRun.remove(operation.getID());
+		rootOperation.addOperationListener(new IDataModelPausibleOperationListener() {
+			public int notify(IDataModelPausibleOperationEvent event) {
+				switch (event.getExecutionType()) {
+					case IDataModelPausibleOperationEvent.ROLLBACK :
+						if (event.getOperationType() == IDataModelPausibleOperationEvent.MAIN_FINISHED) {
+							operationsRun.remove(event.getOperation().getID());
+						}
+						break;
+					case IDataModelPausibleOperationEvent.EXECUTE :
+						if (event.getOperationType() == IDataModelPausibleOperationEvent.MAIN_FINISHED) {
+							operationsRun.add(event.getOperation().getID());
+							if (null != pauseAfterExecution && event.getOperation().getID().equals(pauseAfterExecution)) {
+								return IDataModelPausibleOperationListener.PAUSE;
+							}
+						}
+						
+						break;
 
-				return true;
+				}
+				return IDataModelPausibleOperationListener.CONTINUE;
 			}
 		});
 
@@ -91,17 +105,7 @@ public class PageGroupManager {
 
 		if (pageGroupStack.empty()) {
 			PageGroupEntry rootEntry = (PageGroupEntry) groupTable.get(rootPageGroup.getPageGroupID());
-			Set dataModelIDs = rootEntry.pageGroup.getDataModelIDs();
 			pageGroupStack.push(new StackEntry(rootEntry, -1));
-
-			if (dataModelIDs != null && dataModelIDs.size() > 0) {
-				Iterator ids = dataModelIDs.iterator();
-
-				while (ids.hasNext()) {
-					String dataModelID = (String) ids.next();
-					dataModelManager.addNestedDataModel(dataModelID);
-				}
-			}
 		}
 
 		saveStackInfo();
@@ -110,7 +114,11 @@ public class PageGroupManager {
 			pageFound = findNextPage(true);
 		} catch (Throwable exc) {
 			Logger.getLogger().logError(exc);
-			operationManager.undoLastRun();
+			try {
+				rootOperation.rollBack(null, null);
+			} catch (ExecutionException e) {
+				Logger.getLogger().logError(e);
+			}
 			pageFound = false;
 		}
 
@@ -137,17 +145,10 @@ public class PageGroupManager {
 
 		while (!foundPreviousPage && !pageGroupStack.empty()) {
 			if (topEntry.ranOperations) {
-				operationManager.undoLastRun();
-			}
-
-			Set dataModelIDs = topEntry.pageGroupEntry.pageGroup.getDataModelIDs();
-
-			if (dataModelIDs != null && dataModelIDs.size() > 0) {
-				Iterator ids = dataModelIDs.iterator();
-
-				while (ids.hasNext()) {
-					String dataModelID = (String) ids.next();
-					dataModelManager.removeNestedDataModel(dataModelID);
+				try {
+					rootOperation.rollBack(null, null);
+				} catch (ExecutionException e) {
+					Logger.getLogger().logError(e);
 				}
 			}
 
@@ -199,32 +200,13 @@ public class PageGroupManager {
 
 		if (pageGroupStack.empty()) {
 			PageGroupEntry rootEntry = (PageGroupEntry) groupTable.get(rootPageGroup.getPageGroupID());
-			Set dataModelIDs = rootEntry.pageGroup.getDataModelIDs();
-
 			pageGroupStack.push(new StackEntry(rootEntry, -1));
-
-			if (dataModelIDs != null && dataModelIDs.size() > 0) {
-				Iterator ids = dataModelIDs.iterator();
-
-				while (ids.hasNext()) {
-					String dataModelID = (String) ids.next();
-					dataModelManager.addNestedDataModel(dataModelID);
-				}
-			}
 		}
 
 		pageFound = findNextPage(false);
 		restoreStackInfo();
 
 		return pageFound;
-	}
-
-	public boolean runAllRemainingOperations() {
-		setPostListener(null);
-
-		IStatus status = operationManager.runOperations();
-
-		return status.getSeverity() != IStatus.ERROR;
 	}
 
 	public void undoAllCurrentOperations() {
@@ -260,27 +242,24 @@ public class PageGroupManager {
 			if (nextStackEntry != null) {
 				IDMPageGroup pageGroup = nextStackEntry.pageGroupEntry.pageGroup;
 				String requiresOperationsId = pageGroup.getRequiredDataOperationToRun();
-				Set dataModelIDs = pageGroup.getDataModelIDs();
 
 				// If this group requires an operation and it has not already been run
 				// then we need to run it.
 				if (runOperations && requiresOperationsId != null && !operationsRun.contains(requiresOperationsId)) {
-					setPostListener(requiresOperationsId);
-					IStatus status = operationManager.runOperations();
+					pauseAfterExecution = requiresOperationsId;
+					IStatus status = null; 
+					
+					try {
+						status = rootOperation.resume(null, null);
+					} catch (ExecutionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 
 					nextStackEntry.ranOperations = true;
 					if (status.getSeverity() == IStatus.ERROR) {
 						// TODO need a better error feedback mechanism here.
 						throw new IllegalArgumentException(status.getMessage());
-					}
-				}
-
-				if (dataModelIDs != null && dataModelIDs.size() > 0) {
-					Iterator ids = dataModelIDs.iterator();
-
-					while (ids.hasNext()) {
-						String dataModelID = (String) ids.next();
-						dataModelManager.addNestedDataModel(dataModelID);
 					}
 				}
 
@@ -296,28 +275,7 @@ public class PageGroupManager {
 		return pageFound;
 	}
 
-	private void setPostListener(final String operationId) {
-		if (operationId != null) {
-			// Listener for a particular operation and stop after we are notified of it.
-			operationManager.setPostExecuteListener(new OperationListener() {
-				public boolean notify(IDataModelOperation operation) {
-					String id = operation.getID();
 
-					operationsRun.add(id);
-
-					return !id.equals(operationId);
-				}
-			});
-		} else {
-			// Set the post execution listener to doing nothing so that all operations
-			// will execute.
-			operationManager.setPostExecuteListener(new OperationListener() {
-				public boolean notify(IDataModelOperation operation) {
-					return true;
-				}
-			});
-		}
-	}
 
 	private void saveStackInfo() {
 		if (!pageGroupStack.empty()) {

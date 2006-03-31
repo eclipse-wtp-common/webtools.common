@@ -21,7 +21,7 @@ import org.eclipse.core.runtime.IStatus;
  * execution, and Wizard generation.
  * </p>
  * <p>
- * IDataModels are primaryly an intelligent mechanism for managing data. Each IDataModel tracks
+ * IDataModels are primarily an intelligent mechanism for managing data. Each IDataModel tracks
  * specific Objects known as "properties". Each property may be set or get using its property name.
  * A Collection of property names for an IDataModel instance may be retreived using
  * <code>getAllProperties()</code>. In addition to getting/setting properties, IDataModels may
@@ -86,7 +86,10 @@ public interface IDataModel {
 
 	/**
 	 * <p>
-	 * Returns the default operation to execute against this IDataModel.
+	 * Returns the default operation to execute against this IDataModel. The returned operation is
+	 * derived from the operation supplied by the backing IDataModelProvider. The returned type is
+	 * IDataModelManagerOperation which adds additional functionality to the returned
+	 * IDataModelOperation.
 	 * </p>
 	 * <p>
 	 * An IDataModel implementor defines this in IDataModelProvider.
@@ -96,7 +99,7 @@ public interface IDataModel {
 	 * 
 	 * @return the default operation
 	 */
-	public IDataModelOperation getDefaultOperation();
+	public IDataModelPausibleOperation getDefaultOperation();
 
 	/**
 	 * <p>
@@ -359,8 +362,10 @@ public interface IDataModel {
 	public IDataModel removeNestedModel(String nestedModelName);
 
 	/**
+	 * <p>
 	 * Returns <code>true</code> if a nested model exists (at the top level only) with the
 	 * specified name and <code>false</code> otherwise.
+	 * </p>
 	 * 
 	 * @param nestedModelName
 	 *            the name of the nested IDataModel to check.
@@ -370,9 +375,11 @@ public interface IDataModel {
 	public boolean isNestedModel(String nestedModelName);
 
 	/**
+	 * <p>
 	 * Returns the nested IDataModel identified the by the specified name. A RuntimeException is
 	 * thrown if there is no such nested IDataModel (i.e. isNestedModel() would return
 	 * <code>false</code>).
+	 * </p>
 	 * 
 	 * @param nestedModelName
 	 *            the name of the nested IDataModel to get.
@@ -381,22 +388,28 @@ public interface IDataModel {
 	public IDataModel getNestedModel(String nestedModelName);
 
 	/**
+	 * <p>
 	 * Returns a Collection of all nested IDataModels, or an empty Collection if none exist.
+	 * </p>
 	 * 
 	 * @return a Collection of all nested IDataModels, or an empty Collection if none exist.
 	 */
 	public Collection getNestedModels();
 
 	/**
+	 * <p>
 	 * Returns a Collection of all nested IDataModels names, or an empty Collection if none exist.
+	 * </p>
 	 * 
 	 * @return a Collection of all nested IDataModels names, or an empty Collection if none exist.
 	 */
 	public Collection getNestedModelNames();
 
 	/**
+	 * <p>
 	 * Returns a Collection of all nesting (the inverse of nested) IDataModels, or an empty
 	 * Collection if none exist.
+	 * </p>
 	 * 
 	 * @return a Collection of all nesting (the inverse of nested) IDataModels, or an empty
 	 *         Collection if none exist.
@@ -404,8 +417,10 @@ public interface IDataModel {
 	public Collection getNestingModels();
 
 	/**
+	 * <p>
 	 * Returns a Collection of all base properties (not including nested properties), or an empty
 	 * Collection if none exist.
+	 * </p>
 	 * 
 	 * @return a Collection of all base properties (not including nested properties), or an empty
 	 *         Collection if none exist.
@@ -413,8 +428,10 @@ public interface IDataModel {
 	public Collection getBaseProperties();
 
 	/**
+	 * <p>
 	 * Returns a Collection of all properties of recursively nested IDataModels, or an empty
 	 * Collection if none exist.
+	 * </p>
 	 * 
 	 * @return a Collection of all properties of recursively nested IDataModels, or an empty
 	 *         Collection if none exist.
@@ -422,8 +439,10 @@ public interface IDataModel {
 	public Collection getNestedProperties();
 
 	/**
+	 * <p>
 	 * Returns a Collection of all properties (the union of getBaseProperties() and
 	 * getNestedProperties()), or an empty Collection if none exist.
+	 * </p>
 	 * 
 	 * @return a Collection of all properties (the union of getBaseProperties() and
 	 *         getNestedProperties()), or an empty Collection if none exist.
@@ -431,9 +450,11 @@ public interface IDataModel {
 	public Collection getAllProperties();
 
 	/**
+	 * <p>
 	 * Returns <code>true</code> if the specified propertyName is a valid propertyName for this
 	 * root IDataModel only. Nested IDataModels are not checked, though it is possible for a nested
 	 * IDataModel to contain the same property.
+	 * </p>
 	 * 
 	 * @param propertyName
 	 *            the property name to check
@@ -446,8 +467,10 @@ public interface IDataModel {
 	public boolean isBaseProperty(String propertyName);
 
 	/**
+	 * <p>
 	 * Returns <code>true</code> if the specified propertyName is a valid propertyName for this
 	 * DataModel or any of its (recursively) nested IDataModels.
+	 * </p>
 	 * 
 	 * @param propertyName
 	 *            the property name to check
@@ -458,9 +481,11 @@ public interface IDataModel {
 	public boolean isProperty(String propertyName);
 
 	/**
+	 * <p>
 	 * Returns <code>true</code> if the specified propertyName is a valid propertyName for any of
 	 * its (recursively) nested IDataModels. The root IDataModel is not checked, though it is
 	 * possible for the root IDataModel to contain the same property.
+	 * </p>
 	 * 
 	 * @param propertyName
 	 *            the property name to check
@@ -470,8 +495,10 @@ public interface IDataModel {
 	public boolean isNestedProperty(String propertyName);
 
 	/**
+	 * <p>
 	 * Returns <code>true</code> if the specified property has been set on the IDataModel. If it
 	 * has not been set, then a call to get the same property will return the default value.
+	 * </p>
 	 * 
 	 * @param propertyName
 	 *            the property name to check
@@ -610,7 +637,6 @@ public interface IDataModel {
 	 * <p>
 	 * An IDataModel implementor defines this in IDataModelProvider.
 	 * </p>
-	 * 
 	 * 
 	 * @param propertyName
 	 *            then name of the property to check

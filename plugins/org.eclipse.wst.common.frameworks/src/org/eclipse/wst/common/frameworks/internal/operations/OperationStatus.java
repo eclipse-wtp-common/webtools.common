@@ -36,18 +36,30 @@ public class OperationStatus extends MultiStatus {
 		}
 	}
 
+	/**
+	 * Overridden to expose as public instead of protected
+	 */
 	public void setCode(int code) {
 		super.setCode(code);
 	}
 
+	/**
+	 * Overridden to expose as public instead of protected
+	 */
 	public void setException(Throwable exception) {
 		super.setException(exception);
 	}
 
+	/**
+	 * Overridden to expose as public instead of protected
+	 */
 	public void setMessage(String message) {
 		super.setMessage(message);
 	}
 
+	/**
+	 * Overridden to expose as public instead of protected
+	 */
 	public void setSeverity(int severity) {
 		super.setSeverity(severity);
 	}
