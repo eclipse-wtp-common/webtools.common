@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.wst.common_sdk.feature"
       label="WST Common Feature SDK"
-      version="1.0.100.qualifier"
+      version="1.5.0.qualifier"
       provider-name="Eclipse.org">
 
    <description>
