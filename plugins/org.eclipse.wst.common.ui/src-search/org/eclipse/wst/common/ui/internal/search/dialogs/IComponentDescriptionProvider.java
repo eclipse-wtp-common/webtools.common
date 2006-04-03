@@ -12,6 +12,7 @@ package org.eclipse.wst.common.ui.internal.search.dialogs;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.swt.graphics.Image;
 
 public interface IComponentDescriptionProvider
 {
@@ -22,6 +23,8 @@ public interface IComponentDescriptionProvider
   String getName(Object component);
 
   IFile getFile(Object component);
+  
+  Image getFileIcon(Object component);
 
   ILabelProvider getLabelProvider();
 }

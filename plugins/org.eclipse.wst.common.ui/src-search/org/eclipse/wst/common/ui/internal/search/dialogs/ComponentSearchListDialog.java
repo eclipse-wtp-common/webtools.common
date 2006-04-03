@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -117,7 +118,7 @@ public class ComponentSearchListDialog extends Dialog {
         GridData gData = (GridData) mainComposite.getLayoutData();
         gData.heightHint = 500;
         gData.widthHint = 400;
-
+        
         // Subclasses may use this Composite to add desired widgets
         //topComposite = new Composite(mainComposite, SWT.NONE);
         //topComposite.setLayoutData(new GridData());
@@ -162,26 +163,19 @@ public class ComponentSearchListDialog extends Dialog {
             }
 
             public void widgetSelected(SelectionEvent e)
-            {              
+            {
+              handler.openNewComponentDialog();
             }             
            });                   
         }
         
-        //Composite for table viewer
-        Composite tableComp = new Composite(mainComposite, SWT.NONE);
-        GridLayout tableCompLayout = new GridLayout();
-        tableCompLayout.marginWidth = 0;
-        tableCompLayout.marginTop = 0;
-        tableComp.setLayoutData(new GridData(GridData.FILL_BOTH));
-        tableComp.setLayout(tableCompLayout);
-        
         // Create Component TableViewer
-        createComponentTableViewer(tableComp);
+        createComponentTableViewer(mainComposite);
         componentTableViewer.getTable().addSelectionListener(new SelectionListener(){
         	// Changing the text for the component selected and display its source
         	// file in the box under the table viewer
           
-        	IComponentDescriptionProvider lp = configuration.getDescriptionProvider();        	
+        	IComponentDescriptionProvider descriptionProvider = configuration.getDescriptionProvider();        	
 			public void widgetSelected(SelectionEvent e) {				
 				run();
 			}
@@ -202,11 +196,10 @@ public class ComponentSearchListDialog extends Dialog {
 				prevItemText = items[0].getText();
 
 				// add clarification for the first selected item
-				items[0].setText(  lp.getName(component) + " - " + 
-    					lp.getQualifier(component));
+				items[0].setText(  descriptionProvider.getName(component) + " - " + 
+    					descriptionProvider.getQualifier(component));
 
-				IFile file = lp.getFile(component);
-				updateLocationView(file);
+				updateLocationView(component, descriptionProvider);
 			}
         });
 
@@ -221,7 +214,7 @@ public class ComponentSearchListDialog extends Dialog {
         GridData data = new GridData();
         data.horizontalAlignment = GridData.FILL;
         data.grabExcessHorizontalSpace = true;
-        data.heightHint = 25;
+        data.heightHint = 22;
         fileLocationView.setLayoutData(data);
         
     	locationLabel = new CLabel(fileLocationView, SWT.FLAT);
@@ -252,29 +245,6 @@ public class ComponentSearchListDialog extends Dialog {
         return mainComposite;
     }
     
-    protected TableViewer createFilterMenuAndTableViewer(Composite comp) {
-    	Composite labelAndFilter = new Composite(comp, SWT.NONE);
-    	labelAndFilter.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		GridLayout layout= new GridLayout();
-		layout.numColumns= 2;
-		layout.marginWidth= 0; layout.marginHeight= 0;
-    	labelAndFilter.setLayout(layout);
-    	
-        Label tableLabel = new Label(labelAndFilter, SWT.NONE);
-        tableLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-        tableLabel.setText(configuration.getListLabelText());
-        
-        filterToolBar = new ToolBar(labelAndFilter,SWT.FLAT);
-        configuration.createToolBarItems(filterToolBar);
-
-        TableViewer TableViewer = new TableViewer(new Table(comp, SWT.SINGLE | SWT.BORDER));
-        Control TableWidget = TableViewer.getTable();
-        GridData gd = new GridData(GridData.FILL_BOTH);
-        TableWidget.setLayoutData(gd);
-
-        return TableViewer;
-    }
-    
     /*
      * Creates the Component TableViewer.
      */
@@ -291,8 +261,33 @@ public class ComponentSearchListDialog extends Dialog {
         });
     }
     
-    private void updateLocationView(IFile file) {
-    	//file Path relative to current workspace
+    protected TableViewer createFilterMenuAndTableViewer(Composite comp) {
+    	Composite labelAndFilter = new Composite(comp, SWT.NONE);
+    	labelAndFilter.setLayoutData(new GridData(GridData.FILL_BOTH));
+		GridLayout layout= new GridLayout();
+		layout.numColumns= 2;
+		layout.marginWidth= 0; layout.marginHeight= 0;
+    	labelAndFilter.setLayout(layout);
+    	
+        Label tableLabel = new Label(labelAndFilter, SWT.NONE);
+        tableLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+        tableLabel.setText(configuration.getListLabelText());
+        
+        filterToolBar = new ToolBar(labelAndFilter,SWT.FLAT);
+        configuration.createToolBarItems(filterToolBar);
+
+        TableViewer tableViewer = new TableViewer(new Table(labelAndFilter, SWT.SINGLE | SWT.BORDER));
+        Control TableWidget = tableViewer.getTable();
+        GridData gd = new GridData(GridData.FILL_BOTH);
+        gd.horizontalSpan = 2;
+        TableWidget.setLayoutData(gd);
+
+        return tableViewer;
+    }
+    
+    private void updateLocationView(Object component, IComponentDescriptionProvider lp) {
+    	IFile file = lp.getFile(component);
+    	
     	if ( file == null ){
     		locationLabel.setText("");
     		locationLabel.setImage(null);
@@ -303,9 +298,7 @@ public class ComponentSearchListDialog extends Dialog {
         //locationView.redraw();
         
         locationLabel.setText(filePath);
-        // TODO.. get an image from the plugin
-        //locationLabel.setImage(plugin.getImage("icons/XSDFile.gif"));
-        //locationView.redraw();
+        locationLabel.setImage(lp.getFileIcon(component));
     }
     
     

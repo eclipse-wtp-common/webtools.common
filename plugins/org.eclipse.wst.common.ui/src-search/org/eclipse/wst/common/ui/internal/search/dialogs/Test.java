@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.actions.ActionDelegate;
@@ -85,6 +86,10 @@ public class Test extends ActionDelegate
       }
       return false;
     }
+
+	public Image getFileIcon(Object component) {
+		return null;
+	}
   }
   
   IComponentSearchListProvider searchListProvider = new IComponentSearchListProvider()

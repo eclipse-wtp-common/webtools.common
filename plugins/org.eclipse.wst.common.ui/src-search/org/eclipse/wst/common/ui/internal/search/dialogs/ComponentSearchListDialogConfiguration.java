@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.ToolBar;
 public class ComponentSearchListDialogConfiguration
 {
   private String filterLabelText = "Name:";
-  private String listLabelText = "Components";  
+  private String listLabelText = "Components:";  
   private IComponentSearchListProvider searchListProvider; 
   private IComponentDescriptionProvider descriptionProvider;
   private INewComponentHandler newComponentHandler;
