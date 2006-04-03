@@ -25,6 +25,7 @@ public interface ConfigurationConstants {
 	public static final String DISABLE_ALL_VALIDATION_SETTING = "disableAllValidation"; //$NON-NLS-1$ // boolean
 	///* package */static final String AUTO_SETTING = "autoValidate"; //$NON-NLS-1$ // boolean
 	///* package */static final String BUILD_SETTING = "runWhenBuild"; //$NON-NLS-1$ // boolean
+	public static final String SAVE_AUTOMATICALLY_SETTING = "saveAutomatically"; //$NON-NLS-1$ // boolean
 
 	// Defaults for the preference and project values
 	

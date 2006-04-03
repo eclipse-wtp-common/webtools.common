@@ -27,8 +27,10 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  */
 public class GlobalConfiguration extends ValidationConfiguration {
 	/* package */static final boolean PREF_PROJECTS_CAN_OVERRIDE_DEFAULT = true;
+	static final boolean PREF_SAVE_AUTOMATICALLY_DEFAULT = false;
 
 	private boolean _canProjectsOverride = getCanProjectsOverrideDefault();
+	private boolean _saveAutomatically = getSaveAutomaticallyDefault();
 
 	/**
 	 * This constructor should be used in all cases except for the Preference page's values.
@@ -62,11 +64,20 @@ public class GlobalConfiguration extends ValidationConfiguration {
 	public void setCanProjectsOverride(boolean can) {
 		_canProjectsOverride = can;
 	}
+	
+	public boolean getSaveAutomatically() {
+		return _saveAutomatically;
+	}
+	
+	public void setSaveAutomatically(boolean save) {
+		_saveAutomatically = save;
+	}
 
 	public void resetToDefault()  throws InvocationTargetException {
 		setDisableAllValidation(getDisableValidationDefault());
 		setEnabledValidators(getEnabledValidatorsDefault());
 		setCanProjectsOverride(getCanProjectsOverrideDefault());
+		setSaveAutomatically(getSaveAutomaticallyDefault());
     setDefaultDelegates(getValidators());
 	}
 
@@ -129,7 +140,6 @@ public class GlobalConfiguration extends ValidationConfiguration {
 			if (enabledManualValidators.equals(null) || enabledBuildValidators.equals(null)) 
 				enabledValidators = ConfigurationConstants.DEFAULT_ENABLED_VALIDATORS;
 			setCanProjectsOverride(getValue(rootMarker, ConfigurationConstants.PREF_PROJECTS_CAN_OVERRIDE, PREF_PROJECTS_CAN_OVERRIDE_DEFAULT));
-
 			root.getWorkspace().deleteMarkers(marker);
 		} catch (CoreException exc) {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
@@ -151,10 +161,15 @@ public class GlobalConfiguration extends ValidationConfiguration {
 		// this field is overwritten. Fields of this class are initialized to the
 		// default after the ValidationConfiguration parent is created.
 		gp.setCanProjectsOverride(canProjectsOverride());
+		gp.setSaveAutomatically(getSaveAutomatically());
 	}
 
 	public static boolean getCanProjectsOverrideDefault() {
 		return PREF_PROJECTS_CAN_OVERRIDE_DEFAULT;
+	}
+	
+	public static boolean getSaveAutomaticallyDefault() {
+		return PREF_SAVE_AUTOMATICALLY_DEFAULT;
 	}
 
 	/**
@@ -168,9 +183,15 @@ public class GlobalConfiguration extends ValidationConfiguration {
 			// this instance.
 			int canOverrideIndex = storedConfiguration.indexOf(ConfigurationConstants.PREF_PROJECTS_CAN_OVERRIDE);
 			int disableAllValidationIndex = storedConfiguration.indexOf(ConfigurationConstants.DISABLE_ALL_VALIDATION_SETTING);
+			int saveAutomaticallyIndex = storedConfiguration.indexOf(ConfigurationConstants.SAVE_AUTOMATICALLY_SETTING);
 			if (disableAllValidationIndex != -1) {
-				String canOverride = storedConfiguration.substring(0 + ConfigurationConstants.PREF_PROJECTS_CAN_OVERRIDE.length(), disableAllValidationIndex);
+				String canOverride = storedConfiguration.substring(canOverrideIndex + ConfigurationConstants.PREF_PROJECTS_CAN_OVERRIDE.length(), disableAllValidationIndex);
 				setCanProjectsOverride(Boolean.valueOf(canOverride).booleanValue());
+			}
+			if(saveAutomaticallyIndex != -1)
+			{
+				String saveAutomatically = storedConfiguration.substring(saveAutomaticallyIndex + ConfigurationConstants.SAVE_AUTOMATICALLY_SETTING.length(), canOverrideIndex);
+				setSaveAutomatically(Boolean.valueOf(saveAutomatically).booleanValue());
 			}
 		}
 	}
@@ -180,6 +201,8 @@ public class GlobalConfiguration extends ValidationConfiguration {
 	 */
 	public String serialize() throws InvocationTargetException {
 		StringBuffer buffer = new StringBuffer();
+		buffer.append(ConfigurationConstants.SAVE_AUTOMATICALLY_SETTING);
+		buffer.append(String.valueOf(getSaveAutomatically()));
 		buffer.append(ConfigurationConstants.PREF_PROJECTS_CAN_OVERRIDE);
 		buffer.append(String.valueOf(canProjectsOverride()));
 		buffer.append(super.serialize());

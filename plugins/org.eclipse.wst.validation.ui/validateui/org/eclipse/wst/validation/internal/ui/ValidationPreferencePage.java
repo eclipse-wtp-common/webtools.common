@@ -245,6 +245,7 @@ private class ValidatorListPage implements IValidationPage {
 	private Label emptyRowPlaceholder = null;
 	Button disableAllValidation = null;
 	Button overrideButton = null;
+	Button saveButton = null;
 	private Label listLabel = null;
 	private Table validatorsTable;
 
@@ -517,6 +518,22 @@ private class ValidatorListPage implements IValidationPage {
 				enableAllButton.setEnabled(!disableAllValidation.getSelection());
 				disableAllButton.setEnabled(!disableAllValidation.getSelection());
         validatorList.refresh();
+			}
+		});
+		
+		emptyRowPlaceholder = new Label(validatorGroup, SWT.NONE);
+		emptyRowPlaceholder.setLayoutData(new GridData());
+		
+		GridData saveFileData = new GridData(GridData.FILL_HORIZONTAL);
+		saveFileData.horizontalSpan = 2;
+		saveButton = new Button(validatorGroup, SWT.CHECK);
+		saveButton.setLayoutData(saveFileData);
+		saveButton.setText(ValidationUIMessages.PrefPage_always_save);
+		saveButton.setSelection(pagePreferences.getSaveAutomatically());
+		saveButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				pagePreferences.setSaveAutomatically(saveButton.getSelection());
+				saveButton.setFocus();
 			}
 		});
 		

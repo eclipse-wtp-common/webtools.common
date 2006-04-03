@@ -12,12 +12,15 @@ package org.eclipse.wst.validation.internal.ui;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
+import org.eclipse.core.internal.resources.Project;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -34,13 +37,16 @@ import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
+import org.eclipse.wst.validation.internal.GlobalConfiguration;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidationSelectionHandlerRegistryReader;
@@ -58,6 +64,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	protected static final String SEP = "/"; //$NON-NLS-1$
 	private Display _currentDisplay = null;
 	private IResourceVisitor _folderVisitor = null;
+	private IResourceVisitor _projectVisitor = null;
 	private Map _selectedResources = null;
 	//protected IWorkbenchContext workbenchContext;
 
@@ -101,6 +108,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	 * files/folders will be validated. If a folder is selected, all of its contents are also
 	 * validated.
 	 */
+	// TODO: Check this method for selected resources.
 	private Map loadSelected(ValidateAction action, boolean refresh) {
 		if (refresh) {
 			// selectionChanged(IAction, ISelection) has been called. Flush the
@@ -125,7 +133,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 
 	private void addSelected(ValidateAction action, Object selected) {
 		if (selected instanceof IProject) {
-			addSelected((IProject) selected);
+			addVisitor((IProject) selected);
 		} else if (selected instanceof IFile) {
 			addSelected((IFile) selected);
 		} else if (selected instanceof IFolder) {
@@ -165,11 +173,11 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		return object instanceof IProject || object instanceof IFile || object instanceof IFolder;
 	}
 
-	private void addSelected(IProject selected) {
-		_selectedResources.put(selected, null); // whatever the values were
-		// before, the entire project
-		// needs to be revalidated now
-	}
+//	private void addSelected(IProject selected) {
+//		_selectedResources.put(selected, null); // whatever the values were
+//		// before, the entire project
+//		// needs to be revalidated now
+//	}
 
 //	private void addSelected(IJavaProject selected) {
 //		_selectedResources.put(selected.getProject(), null); // whatever the
@@ -231,6 +239,39 @@ public class ValidationMenuAction implements IViewActionDelegate {
 			};
 		}
 		return _folderVisitor;
+	}
+	
+	private void addVisitor(IProject selected) {
+		// add the folder and its children
+		try {
+			selected.accept(getProjectVisitor());
+		} catch (CoreException exc) {
+			Logger logger = WTPUIPlugin.getLogger();
+			if (logger.isLoggingLevel(Level.SEVERE)) {
+				LogEntry entry = ValidationUIPlugin.getLogEntry();
+				entry.setSourceIdentifier("ValidationMenuAction.addSelected(IFolder)"); //$NON-NLS-1$
+				entry.setMessageTypeIdentifier(ResourceConstants.VBF_EXC_INTERNAL);
+				entry.setTargetException(exc);
+				logger.write(Level.SEVERE, entry);
+			}
+			return;
+		}
+	}
+
+	private IResourceVisitor getProjectVisitor() {
+		if (_projectVisitor == null) {
+			_projectVisitor = new IResourceVisitor() {
+				public boolean visit(IResource res) {
+					if (res instanceof IFile) {
+						addSelected(res);
+					} else if (res instanceof IFolder) {
+						addSelected(res);
+					}
+					return true; // visit the resource's children
+				}
+			};
+		}
+		return _projectVisitor;
 	}
 
 	/**
@@ -294,6 +335,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	
 	
 	public void run(IAction action) {
+		// TODO: Insert dirty file check here.
 		ValidateAction vaction = null;
 		if (action instanceof ValidateAction) {
 			vaction = (ValidateAction) action;
@@ -301,6 +343,12 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		final Map projects = loadSelected(vaction, false);
 		if ((projects == null) || (projects.size() == 0)) {
 			return;
+		}
+		
+		// If the files aren't saved do not run validation.
+		if(!handleFilesToSave(projects))
+		{
+		  return;
 		}
 
 		ValidationJob validationop = new ValidationJob("Running Validation"){ //$NON-NLS-1$
@@ -571,7 +619,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 			new Status(IStatus.CANCEL, "org.eclipse.wst.validation", 0, "OK", null);
 		
 		ManualValidatorsOperation validOp = null;
-		validOp = new ManualValidatorsOperation(project);
+		validOp = new ManualValidatorsOperation(project, resources);
 //		if (resources == null) {
 //			validOp = new ManualValidatorsOperation(project);
 //		} else {
@@ -758,4 +806,70 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		//init
 		
 	}
+	
+	/**
+	 * Handle any files that must be saved prior to running
+	 * validation.
+	 * 
+	 * @param projects
+	 * 			The list of projects that will be validated.
+	 * @return
+	 * 			True if all files have been saved, false otherwise.
+	 */
+	protected boolean handleFilesToSave(Map projects)
+	{
+	  List fileList = getIFiles(projects);
+      IEditorPart[] dirtyEditors = SaveFilesHelper.getDirtyEditors(fileList);
+      if(dirtyEditors == null || dirtyEditors.length == 0)
+    	return true;
+      boolean saveAutomatically = false;
+      try
+      {
+        saveAutomatically = new GlobalConfiguration(ConfigurationManager.getManager().getGlobalConfiguration()).getSaveAutomatically();
+      }
+      catch(InvocationTargetException e)
+      {
+    	// In this case simply default to false.
+      }
+      SaveFilesDialog sfDialog = null;
+      if(!saveAutomatically)
+      {
+	    sfDialog = new SaveFilesDialog(ValidationUIPlugin.getPlugin().getWorkbench().getActiveWorkbenchWindow().getShell());
+	    sfDialog.setInput(Arrays.asList(dirtyEditors));
+      }
+	  // Save all open editors.
+	  if(saveAutomatically || sfDialog.open() == Window.OK)
+	  {
+		int numDirtyEditors = dirtyEditors.length;
+		for(int i = 0; i < numDirtyEditors; i++)
+		{
+		  dirtyEditors[i].doSave(null);
+		}
+		return true;
+	  }
+	  return false;
+	}
+	
+	protected List getIFiles(Map projects)
+	{
+		List fileList = new ArrayList();
+		Set projectKeys = projects.keySet();
+		Iterator projectIter = projectKeys.iterator();
+		while(projectIter.hasNext())
+		{
+		  Project project = (Project)projectIter.next();
+		  List resourcesList = (List)projects.get(project);
+		  Iterator resourcesIter = resourcesList.iterator();
+		  while(resourcesIter.hasNext())
+		  {
+			IResource resource = (IResource)resourcesIter.next();
+			if(resource instanceof IFile)
+			{
+				fileList.add(resource);
+			}
+		  }
+		}
+		return fileList;
+	}
+	
 }
