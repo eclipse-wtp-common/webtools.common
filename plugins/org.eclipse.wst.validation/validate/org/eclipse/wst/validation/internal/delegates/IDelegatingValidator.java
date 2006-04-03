@@ -11,7 +11,7 @@
 
 package org.eclipse.wst.validation.internal.delegates;
 
-import org.eclipse.wst.validation.internal.provisional.core.IValidator;
+import org.eclipse.wst.validation.internal.provisional.core.IValidatorJob;
 
 /**
  * A delegating validator delegates the actual validation work to a delegate
@@ -29,6 +29,6 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidator;
  * API will almost certainly be broken (repeatedly) as the API evolves.
  * </p>
  */
-public interface IDelegatingValidator extends IValidator
+public interface IDelegatingValidator extends IValidatorJob
 {
 }
