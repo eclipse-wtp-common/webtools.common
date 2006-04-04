@@ -12,53 +12,29 @@ package org.eclipse.wst.common.frameworks.datamodel.tests;
 
 import junit.framework.TestCase;
 
-import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.internal.enablement.DataModelEnablementFactory;
-import org.eclipse.wst.common.frameworks.internal.operations.IProjectCreationProperties;
-import org.eclipse.wst.common.frameworks.internal.operations.ProjectCreationDataModelProvider;
 
 public class DataModelEnablementTest extends TestCase {
 
-    public void testValidExtensionIDAndProviderType() {
-        IProject proj = ResourcesPlugin.getWorkspace().getRoot().getProject("temp");
-        if(proj == null){
-            IDataModel model = DataModelFactory.createDataModel(new ProjectCreationDataModelProvider());
-            model.setProperty(IProjectCreationProperties.PROJECT_NAME, "temp");
-            IDataModelOperation op = model.getDefaultOperation();
-            try {
-                op.execute(new NullProgressMonitor(), null);
-            } catch (ExecutionException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } 
-            proj = ResourcesPlugin.getWorkspace().getRoot().getProject("temp");
-        }
-        IDataModel dataModel = DataModelEnablementFactory.createDataModel("testProviderBase", proj);
-        assertTrue(dataModel.isProperty(ITestDataModel.FOO));
-    }
+	public void testValidExtensionIDAndProviderType() throws Exception {
+		IProject proj = ResourcesPlugin.getWorkspace().getRoot().getProject("temp");
+		if (proj == null) {
+			proj.create(null);
+		}
+		IDataModel dataModel = DataModelEnablementFactory.createDataModel("testProviderBase", proj);
+		assertTrue(dataModel.isProperty(ITestDataModel.FOO));
+	}
 
-    public void testValidExtensionIDImplementorForProviderType() {
-        IProject proj = ResourcesPlugin.getWorkspace().getRoot().getProject("temp");
-        if(proj == null){
-            IDataModel model = DataModelFactory.createDataModel(new ProjectCreationDataModelProvider());
-            model.setProperty(IProjectCreationProperties.PROJECT_NAME, "temp");
-            IDataModelOperation op = model.getDefaultOperation();
-            try {
-                op.execute(new NullProgressMonitor(), null);
-            } catch (ExecutionException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } 
-            proj = ResourcesPlugin.getWorkspace().getRoot().getProject("temp");
-        }
-        IDataModel dataModel = DataModelEnablementFactory.createDataModel("testProviderBogus", proj);
-        assertTrue(dataModel == null);
-    }
+	public void testValidExtensionIDImplementorForProviderType() throws Exception{
+		IProject proj = ResourcesPlugin.getWorkspace().getRoot().getProject("temp");
+		if (proj == null) {
+			proj.create(null);
+		}
+		IDataModel dataModel = DataModelEnablementFactory.createDataModel("testProviderBogus", proj);
+		assertTrue(dataModel == null);
+	}
 
 }
