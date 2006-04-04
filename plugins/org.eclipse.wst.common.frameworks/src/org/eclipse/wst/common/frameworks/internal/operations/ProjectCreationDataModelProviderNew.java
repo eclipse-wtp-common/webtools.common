@@ -34,7 +34,7 @@ import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvider implements IProjectCreationPropertiesNew {
 
 	public IDataModelOperation getDefaultOperation() {
-		return new ProjectCreationOperation(model);
+		return new ProjectCreationOperationNew(model);
 	}
 
 	public void init() {
@@ -78,7 +78,7 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 			path = path.append(projectName);
 		return path.toOSString();
 	}
-	
+
 	public boolean propertySet(String propertyName, Object propertyValue) {
 		if (propertyName.equals(PROJECT_LOCATION) || propertyName.equals(DEFAULT_LOCATION) || propertyName.equals(PROJECT_DESCRIPTION)) {
 			throw new RuntimeException();
@@ -118,7 +118,7 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 	public IStatus validate(String propertyName) {
 		if (propertyName.equals(PROJECT_NAME)) {
 			String name = model.getStringProperty(PROJECT_NAME);
-			IStatus status = validateName( name );
+			IStatus status = validateName(name);
 			if (!status.isOK())
 				return status;
 		}
@@ -131,12 +131,12 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 			String projectName = getStringProperty(PROJECT_NAME);
 
 			String projectLoc = ""; //$NON-NLS-1$
-			if( getBooleanProperty(USE_DEFAULT_LOCATION )){
+			if (getBooleanProperty(USE_DEFAULT_LOCATION)) {
 				projectLoc = getDefaultLocation();
-			}else{
+			} else {
 				projectLoc = getStringProperty(PROJECT_LOCATION);
 			}
-			return validateExisting(projectName, projectLoc);			
+			return validateExisting(projectName, projectLoc);
 		}
 		return OK_STATUS;
 	}
@@ -181,8 +181,8 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 		IStatus status = validateProjectName(name);
 		if (!status.isOK())
 			return status;
-		IProject project = ProjectUtilities.getProject( name );
-		if (project.exists()){
+		IProject project = ProjectUtilities.getProject(name);
+		if (project.exists()) {
 			return WTPCommonPlugin.createErrorStatus(WTPCommonPlugin.getResourceString(WTPCommonMessages.PROJECT_EXISTS_SAMENAME_ERROR, new Object[]{name}));
 		}
 		if (!WTPPlugin.isPlatformCaseSensitive()) {
@@ -194,7 +194,7 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 		}
 		return OK_STATUS;
 	}
-	
+
 
 	private IStatus validateLocation() {
 		String loc = (String) getProperty(PROJECT_LOCATION);
