@@ -422,7 +422,8 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 *            A non-null EditModelListener
 	 */
 	public void addListener(EditModelListener listener) {
-		artifactEditModel.addListener(listener);
+		if (artifactEditModel!=null && listener!=null)
+			artifactEditModel.addListener(listener);
 	}
 
 	/**
