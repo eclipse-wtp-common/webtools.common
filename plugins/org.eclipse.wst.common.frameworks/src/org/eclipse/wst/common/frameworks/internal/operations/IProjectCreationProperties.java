@@ -10,11 +10,15 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.operations;
 
+import org.eclipse.wst.common.frameworks.internal.DoNotUseMeThisWillBeDeletedPost15;
+
 
 /**
- * @deprecated use IProjectCreationPropertiesNew
+ * This has been slated for removal post WTP 1.5. Do not use this class/interface
+ * 
+ * @deprecated IProjectCreationPropertiesNew
  */
-public interface IProjectCreationProperties {
+public interface IProjectCreationProperties extends DoNotUseMeThisWillBeDeletedPost15{
 
 	/**
 	 * A required dataModel propertyName for a <code>java.lang.String</code> type. This is used to

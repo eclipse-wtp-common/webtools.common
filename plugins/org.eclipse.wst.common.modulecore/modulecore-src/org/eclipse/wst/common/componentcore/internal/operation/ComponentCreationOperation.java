@@ -27,9 +27,17 @@ import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
+import org.eclipse.wst.common.frameworks.internal.DoNotUseMeThisWillBeDeletedPost15;
 
 
-public abstract class ComponentCreationOperation extends AbstractDataModelOperation implements IComponentCreationDataModelProperties {
+/**
+ * This has been slated for removal post WTP 1.5. Do not use this class/interface
+ * 
+ * @deprecated
+ * 
+ * @see FacetProjectCreationOperation
+ */
+public abstract class ComponentCreationOperation extends AbstractDataModelOperation implements IComponentCreationDataModelProperties, DoNotUseMeThisWillBeDeletedPost15 {
 
     public ComponentCreationOperation(IDataModel model) {
         super(model);

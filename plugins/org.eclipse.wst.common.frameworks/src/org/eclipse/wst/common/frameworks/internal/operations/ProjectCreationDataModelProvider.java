@@ -30,6 +30,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
+import org.eclipse.wst.common.frameworks.internal.DoNotUseMeThisWillBeDeletedPost15;
 import org.eclipse.wst.common.frameworks.internal.WTPPlugin;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
@@ -37,7 +38,14 @@ import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 /**
  * @deprecated use ProjectCreationDataModelProviderNew instead.
  */
-public class ProjectCreationDataModelProvider extends AbstractDataModelProvider implements IProjectCreationProperties {
+/**
+ * This has been slated for removal post WTP 1.5. Do not use this class/interface
+ * 
+ * @deprecated
+ * 
+ * @see ProjectCreationDataModelProviderNew
+ */
+public class ProjectCreationDataModelProvider extends AbstractDataModelProvider implements IProjectCreationProperties, DoNotUseMeThisWillBeDeletedPost15 {
 
 	public IDataModelOperation getDefaultOperation() {
 		return new ProjectCreationOperation(model);

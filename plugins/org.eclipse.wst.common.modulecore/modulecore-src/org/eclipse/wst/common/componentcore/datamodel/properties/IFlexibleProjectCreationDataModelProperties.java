@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.datamodel.properties;
 
+import org.eclipse.wst.common.frameworks.internal.DoNotUseMeThisWillBeDeletedPost15;
 import org.eclipse.wst.common.frameworks.internal.operations.IProjectCreationProperties;
 /**
  * <p>
@@ -29,7 +30,14 @@ import org.eclipse.wst.common.frameworks.internal.operations.IProjectCreationPro
  * 
  * @plannedfor 1.0
  */
-public interface IFlexibleProjectCreationDataModelProperties extends IProjectCreationProperties {
+/**
+ * This has been slated for removal post WTP 1.5. Do not use this class/interface
+ * 
+ * @deprecated
+ * 
+ * @see IFacetProjectCreationDataModelProperties
+ */
+public interface IFlexibleProjectCreationDataModelProperties extends IProjectCreationProperties, DoNotUseMeThisWillBeDeletedPost15 {
    
     /**
      * Required, type IDataModel. The user set IDataModel used to create the initial project.  Providers which currently exist for

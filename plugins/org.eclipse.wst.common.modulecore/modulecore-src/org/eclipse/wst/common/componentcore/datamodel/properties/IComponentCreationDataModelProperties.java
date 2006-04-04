@@ -11,6 +11,7 @@
 package org.eclipse.wst.common.componentcore.datamodel.properties;
 
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties;
+import org.eclipse.wst.common.frameworks.internal.DoNotUseMeThisWillBeDeletedPost15;
 
 /**
  * <p>
@@ -31,7 +32,14 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties;
  * 
  * @plannedfor 1.0
  */
-public interface IComponentCreationDataModelProperties extends IDataModelProperties {
+/**
+ * This has been slated for removal post WTP 1.5. Do not use this class/interface
+ * 
+ * @deprecated
+ * 
+ * @see IConnectorFacetInstallDataModelProperties
+ */
+public interface IComponentCreationDataModelProperties extends IDataModelProperties, DoNotUseMeThisWillBeDeletedPost15 {
 
 	/**
 	 * Required, type String. The user defined name of the target project for the component to be

@@ -21,10 +21,18 @@ import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelProvider;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
+import org.eclipse.wst.common.frameworks.internal.DoNotUseMeThisWillBeDeletedPost15;
 import org.eclipse.wst.common.frameworks.internal.operations.IProjectCreationProperties;
 import org.eclipse.wst.common.frameworks.internal.operations.ProjectCreationDataModelProvider;
 
-public class FlexibleProjectCreationDataModelProvider extends AbstractDataModelProvider implements IFlexibleProjectCreationDataModelProperties {
+/**
+ * This has been slated for removal post WTP 1.5. Do not use this class/interface
+ * 
+ * @deprecated
+ * 
+ * @see FacetProjectCreationDataModelProvider
+ */
+public class FlexibleProjectCreationDataModelProvider extends AbstractDataModelProvider implements IFlexibleProjectCreationDataModelProperties, DoNotUseMeThisWillBeDeletedPost15 {
 
 	public FlexibleProjectCreationDataModelProvider() {
 		super();

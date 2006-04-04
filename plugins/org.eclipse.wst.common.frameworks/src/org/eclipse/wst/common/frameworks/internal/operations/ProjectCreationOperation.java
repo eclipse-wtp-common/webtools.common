@@ -28,8 +28,16 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.eclipse.wst.common.frameworks.internal.DoNotUseMeThisWillBeDeletedPost15;
 
-public class ProjectCreationOperation extends AbstractDataModelOperation implements IProjectCreationProperties {
+/**
+ * This has been slated for removal post WTP 1.5. Do not use this class/interface
+ * 
+ * @deprecated
+ * 
+ * @see ProjectCreationDataModelProviderNew
+ */
+public class ProjectCreationOperation extends AbstractDataModelOperation implements IProjectCreationProperties, DoNotUseMeThisWillBeDeletedPost15{
 
 	public ProjectCreationOperation(IDataModel dataModel) {
 		super(dataModel);
