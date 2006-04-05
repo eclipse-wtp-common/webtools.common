@@ -13,6 +13,7 @@ package org.eclipse.wst.common.ui.internal.search;
 import java.text.Collator;
 import java.text.MessageFormat;
 import java.util.HashMap;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
@@ -39,7 +40,6 @@ import org.eclipse.search.internal.ui.SearchPlugin;
 import org.eclipse.search.internal.ui.SearchPreferencePage;
 import org.eclipse.search.internal.ui.text.EditorOpener;
 import org.eclipse.search.internal.ui.text.FileLabelProvider;
-import org.eclipse.search.internal.ui.text.FileSearchQuery;
 import org.eclipse.search.internal.ui.text.IFileSearchContentProvider;
 import org.eclipse.search.internal.ui.text.ResourceTransferDragAdapter;
 import org.eclipse.search.internal.ui.text.SortAction;
@@ -216,8 +216,8 @@ public class SearchResultPage extends AbstractTextSearchViewPage implements IAda
 		addSortActions(mgr);
 		fActionGroup.setContext(new ActionContext(getSite().getSelectionProvider().getSelection()));
 		fActionGroup.fillContextMenu(mgr);
-		FileSearchQuery query= (FileSearchQuery) getInput().getQuery();
-	
+//		FileSearchQuery query= (FileSearchQuery) getInput().getQuery();
+
 	}
 	
 	
