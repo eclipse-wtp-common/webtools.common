@@ -369,10 +369,12 @@ public class DataModelSynchHelper implements IDataModelListener {
 
 	protected void setTreeItemChecked(TreeItem[] treeItems, java.util.List items) {
 		for (int i = 0; i < treeItems.length; i++) {
-			if (items.contains(treeItems[i].getData()))
+			if (items.contains(treeItems[i].getData())){
 				treeItems[i].setChecked(true);
-			else
+				treeItems[i].setGrayed(false);
+			}else{
 				treeItems[i].setGrayed(true);
+			}
 			TreeItem[] childernItems = treeItems[i].getItems();
 			if (childernItems.length > 0) {
 				treeItems[i].setExpanded(true);
