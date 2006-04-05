@@ -21,6 +21,9 @@ package org.eclipse.wst.common.frameworks.internal;
  * implementing or extending this interface respectively should not be used. All such classes and
  * interfaces have been deprecated and are no longer supported and will be deleted post WTP 1.5.
  * 
+ * Any method or field with javadoc referencing this interface should not be used and will be
+ * deleted post WTP 1.5
+ * 
  * @deprecated
  */
 public interface DoNotUseMeThisWillBeDeletedPost15 {
