@@ -11,9 +11,10 @@
 package org.eclipse.wst.common.frameworks.internal;
 
 /**
- * This has been slated for removal post WTP 1.5. Do not use this class/interface
+ * This has been slated for removal post WTP 1.5. Do not use this class/interface/method/field
  * 
  * @deprecated
+ * 
  */
 
 /**
