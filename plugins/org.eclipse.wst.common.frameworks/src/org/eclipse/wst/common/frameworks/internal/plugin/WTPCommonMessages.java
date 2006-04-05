@@ -48,5 +48,6 @@ public class WTPCommonMessages {
     public static final String MODULE_EXISTS_ERROR = "38"; //$NON-NLS-1$
 	public static final String SOURCEFOLDER_EMPTY = "39"; //$NON-NLS-1$
 	public static final String WEBCONTENTFOLDER_EMPTY = "40"; //$NON-NLS-1$
-	public static final String PROJECT_EXISTS_SAMENAME_ERROR = "PROJECT_EXISTS_SAMENAME_ERROR"; //$NON-NLS-1$
+	public static final String PROJECT_EXISTS_SAMENAME_ERROR = "43"; //$NON-NLS-1$
+	public static final String RUNTIME_NONE = "44"; //$NON-NLS-1$
 }

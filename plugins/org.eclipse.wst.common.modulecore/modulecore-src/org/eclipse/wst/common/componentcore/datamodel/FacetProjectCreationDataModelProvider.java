@@ -32,6 +32,8 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModelListener;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.internal.operations.IProjectCreationPropertiesNew;
 import org.eclipse.wst.common.frameworks.internal.operations.ProjectCreationDataModelProviderNew;
+import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
+import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
@@ -265,6 +267,7 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 			if (null != runtime) {
 				return new DataModelPropertyDescriptor(runtime, runtime.getName());
 			}
+			return new DataModelPropertyDescriptor(null, WTPCommonPlugin.getResourceString(WTPCommonMessages.RUNTIME_NONE, null));
 		}
 		return super.getPropertyDescriptor(propertyName);
 	}
@@ -313,7 +316,7 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 				IRuntime runtime = (IRuntime) iterator.next();
 				descriptors[i] = new DataModelPropertyDescriptor(runtime, runtime.getName());
 			}
-			descriptors[descriptors.length -1] = new DataModelPropertyDescriptor(null, "<None>"); //$NON-NLS-1$
+			descriptors[descriptors.length -1] = new DataModelPropertyDescriptor(null, WTPCommonPlugin.getResourceString(WTPCommonMessages.RUNTIME_NONE, null));
 			return descriptors;
 		}
 		return super.getValidPropertyDescriptors(propertyName);
@@ -321,7 +324,6 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 
 	public IStatus validate(String propertyName) {
 		if (FACET_PROJECT_NAME.equals(propertyName)) {
-			//return validate(IProjectCreationPropertiesNew.PROJECT_NAME);
 			IDataModel projModel = model.getNestedModel(NESTED_PROJECT_DM);
 			return projModel.validateProperty(IProjectCreationPropertiesNew.PROJECT_NAME);			
 		}
