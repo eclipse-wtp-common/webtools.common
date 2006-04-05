@@ -41,6 +41,8 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 
 public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 
+	protected boolean runtimeAdded = false;
+	
 	public FacetProjectCreationOperation() {
 		super();
 	}
@@ -94,10 +96,8 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 			if (!fixedFacets.isEmpty()) {
 				facetProj.setFixedProjectFacets(fixedFacets);
 			}
-			IRuntime runtime = (IRuntime) model.getProperty(IFacetProjectCreationDataModelProperties.FACET_RUNTIME);
-			IRuntime existingRuntime = facetProj.getRuntime();
-			if (runtime != null && (existingRuntime == null || !runtime.equals(existingRuntime))) {
-				facetProj.setRuntime(runtime, null);
+			if (runtimeAdded) {
+				IRuntime runtime = (IRuntime) model.getProperty(IFacetProjectCreationDataModelProperties.FACET_RUNTIME);
 				addDefaultFacets(facetProj,runtime.getDefaultFacets( fixedFacets ));
 			}
 
@@ -142,6 +142,12 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 			String location = (String) model.getProperty(IProjectCreationPropertiesNew.PROJECT_LOCATION);
 			IPath locationPath = null == location ? null : new Path(location);
 			facetProj = ProjectFacetsManager.create(model.getStringProperty(IFacetProjectCreationDataModelProperties.FACET_PROJECT_NAME), locationPath, monitor);
+		}
+		IRuntime runtime = (IRuntime) model.getProperty(IFacetProjectCreationDataModelProperties.FACET_RUNTIME);
+		IRuntime existingRuntime = facetProj.getRuntime();
+		if (runtime != null && (existingRuntime == null || !runtime.equals(existingRuntime))) {
+			facetProj.setRuntime(runtime, null);
+			runtimeAdded = true;
 		}
 		return facetProj;
 	}
