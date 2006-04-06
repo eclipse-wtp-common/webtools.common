@@ -121,9 +121,9 @@ public class ComponentCoreURIConverter extends CompatibilityWorkbenchURIConverte
 			IFile aFile = WorkbenchResourceHelper.getPlatformFile(uri);
 			
 			if (aFile != null) {
-				IVirtualComponent component = findComponent(aFile);
+				IVirtualComponent component = ComponentCore.createComponent(getContainingProject());
 				if (component != null) {
-					IProject fileProject = aFile.getProject();
+					IProject fileProject = getContainingProject();
 					//If it is not in the same project then just return the URI as is.
 					if (resourceSetSynchronizer.getProject() == fileProject)
 						return getArchiveRelativeURI(aFile,component.getRootFolder().getUnderlyingFolder());
@@ -145,6 +145,11 @@ public class ComponentCoreURIConverter extends CompatibilityWorkbenchURIConverte
 		if (path != null)
 			return URI.createURI(path.toString());
 		return null;
+	}
+
+	
+	protected IProject getContainingProject() {
+		return containingProject;
 	}
 
 
