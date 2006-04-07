@@ -49,6 +49,7 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 		propertyNames.add(USE_DEFAULT_LOCATION);
 		propertyNames.add(DEFAULT_LOCATION);
 		propertyNames.add(USER_DEFINED_LOCATION);
+		propertyNames.add(USER_DEFINED_BASE_LOCATION);
 		propertyNames.add(PROJECT_NATURES);
 		propertyNames.add(PROJECT_DESCRIPTION);
 		return propertyNames;
@@ -58,13 +59,15 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 		if (propertyName.equals(PROJECT_LOCATION)) {
 			if (getBooleanProperty(USE_DEFAULT_LOCATION)) {
 				return null;
+			} else if (isPropertySet(USER_DEFINED_BASE_LOCATION)) {
+				return getStringProperty(USER_DEFINED_BASE_LOCATION) + File.separator + getStringProperty(PROJECT_NAME);
 			}
 			return getProperty(USER_DEFINED_LOCATION);
 		} else if (DEFAULT_LOCATION.equals(propertyName)) {
 			return getDefaultLocation();
 		} else if (USE_DEFAULT_LOCATION.equals(propertyName)) {
 			return Boolean.TRUE;
-		} else if (USER_DEFINED_LOCATION.equals(propertyName)) {
+		} else if (USER_DEFINED_LOCATION.equals(propertyName) || USER_DEFINED_BASE_LOCATION.equals(propertyName)) {
 			return ""; //$NON-NLS-1$
 		} else if (propertyName.equals(PROJECT_DESCRIPTION))
 			return getProjectDescription();
@@ -88,12 +91,12 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 				return true;
 			model.setProperty(PROJECT, getProject());
 			model.notifyPropertyChange(DEFAULT_LOCATION, IDataModel.VALUE_CHG);
-			if (getBooleanProperty(USE_DEFAULT_LOCATION)) {
+			if (getBooleanProperty(USE_DEFAULT_LOCATION) || isPropertySet(USER_DEFINED_BASE_LOCATION)) {
 				model.notifyPropertyChange(PROJECT_LOCATION, IDataModel.VALUE_CHG);
 			}
 		} else if (propertyName.equals(USE_DEFAULT_LOCATION)) {
 			model.notifyPropertyChange(PROJECT_LOCATION, IDataModel.VALUE_CHG);
-		} else if (propertyName.equals(USER_DEFINED_LOCATION) && !getBooleanProperty(USE_DEFAULT_LOCATION)) {
+		} else if ((propertyName.equals(USER_DEFINED_LOCATION) || propertyName.equals(USER_DEFINED_BASE_LOCATION)) && !getBooleanProperty(USE_DEFAULT_LOCATION)) {
 			model.notifyPropertyChange(PROJECT_LOCATION, IDataModel.VALUE_CHG);
 		}
 		return true;

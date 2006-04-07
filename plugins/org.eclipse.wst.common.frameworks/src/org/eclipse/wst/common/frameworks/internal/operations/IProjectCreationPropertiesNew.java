@@ -32,6 +32,15 @@ public interface IProjectCreationPropertiesNew {
 	public static final String USER_DEFINED_LOCATION = "IProjectCreationPropertiesNew.USER_DEFINED_LOCATION"; //$NON-NLS-1$
 
 	/**
+	 * A String property used in conjunction with {@link #USE_DEFAULT_LOCATION} and
+	 * {@link #PROJECT_NAME} to overrid the {@link #PROJECT_LOCATION}.
+	 * 
+	 * If {@link #USE_DEFAULT_LOCATION} is <code>false</code> and this property is set, then the
+	 * {@link #PROJECT_LOCATION} is defined by {@link #USER_DEFINED_BASE_LOCATION}/{@link #PROJECT_NAME}.
+	 */
+	public static final String USER_DEFINED_BASE_LOCATION = "IProjectCreationPropertiesNew.USER_DEFINED_BASE_LOCATION"; //$NON-NLS-1$
+
+	/**
 	 * An unsettable property which specified the default location for a newly created project. The
 	 * value is computed by appending the project name to the workspace location.
 	 */
