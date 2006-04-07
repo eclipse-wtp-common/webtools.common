@@ -78,22 +78,24 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 
 			structureEdit = StructureEdit.getStructureEditForRead(getProject());
 			WorkbenchComponent component = structureEdit.getComponent();
-			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
-			ComponentResource[] resources = root.findModuleResources(getRuntimePath().append(aPath), ResourceTreeNode.CREATE_NONE);
+			if (null != component) {
+				ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
+				ComponentResource[] resources = root.findModuleResources(getRuntimePath().append(aPath), ResourceTreeNode.CREATE_NONE);
 
-			for (int i=0; i<resources.length; i++) {
+				for (int i = 0; i < resources.length; i++) {
 				// return the resources corresponding to the root, not any of the children if its a folder
-				if (resources[i].getRuntimePath().equals(getRuntimePath().append(aPath))) {
-					IResource platformResource = getProject().findMember(resources[i].getSourcePath()); 
-					if(platformResource == null)
-						platformResource = ResourcesPlugin.getWorkspace().getRoot().findMember(resources[i].getSourcePath()); 
-					if (platformResource != null) {
-						switch (platformResource.getType()) {
-						case IResource.FOLDER:
-						case IResource.PROJECT:
-							return new VirtualFolder(getProject(), getRuntimePath().append(aPath));
-						case IResource.FILE:
-							return new VirtualFile(getProject(), getRuntimePath().append(aPath));
+					if (resources[i].getRuntimePath().equals(getRuntimePath().append(aPath))) {
+						IResource platformResource = getProject().findMember(resources[i].getSourcePath());
+						if (platformResource == null)
+							platformResource = ResourcesPlugin.getWorkspace().getRoot().findMember(resources[i].getSourcePath());
+						if (platformResource != null) {
+							switch (platformResource.getType()) {
+								case IResource.FOLDER :
+								case IResource.PROJECT :
+									return new VirtualFolder(getProject(), getRuntimePath().append(aPath));
+								case IResource.FILE :
+									return new VirtualFile(getProject(), getRuntimePath().append(aPath));
+							}
 						}
 					}
 				}
@@ -155,7 +157,7 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 		Set allNames = new HashSet();
 		// Ignore all meta data paths in the virtual container resource set
 		IPath[] metaPaths = getComponent().getMetaResources();
-		for (int i=0; i<metaPaths.length; i++) {
+		for (int i = 0; i < metaPaths.length; i++) {
 			String localName = getLocalName(metaPaths[i]);
 			if (localName != null)
 				allNames.add(localName);
@@ -167,13 +169,13 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 			if (wbComponent != null) {
 				ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(wbComponent);
 				ComponentResource[] componentResources = root.findModuleResources(getRuntimePath(), ResourceTreeNode.CREATE_NONE);
-				//componentResources = orderResourcesByFolder(componentResources);
+				// componentResources = orderResourcesByFolder(componentResources);
 
 				for (int componentResourceIndex = 0; componentResourceIndex < componentResources.length; componentResourceIndex++) {
 					IPath fullRuntimePath = componentResources[componentResourceIndex].getRuntimePath();
 					// exact match
 					if (fullRuntimePath.equals(getRuntimePath())) {
-						
+
 						IResource realResource = getProject().findMember(componentResources[componentResourceIndex].getSourcePath());
 						if ((realResource != null) && (realResource.getType() == IResource.FOLDER || realResource.getType() == IResource.PROJECT)) {
 							IContainer realContainer = (IContainer) realResource;
@@ -224,10 +226,11 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 	}
 
 	/**
-	 * Local name within context of this virtual container. 
+	 * Local name within context of this virtual container.
 	 */
 	private String getLocalName(IPath path) {
-		if (!getRuntimePath().isPrefixOf(path)) return null;
+		if (!getRuntimePath().isPrefixOf(path))
+			return null;
 		return path.segment(getRuntimePath().segmentCount());
 	}
 
@@ -253,27 +256,28 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 
 			moduleCore = StructureEdit.getStructureEditForWrite(getProject());
 			WorkbenchComponent component = moduleCore.getComponent();
+			if (null != component) {
+				ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
+				ComponentResource[] resources = root.findModuleResources(getRuntimePath(), ResourceTreeNode.CREATE_NONE);
 
-			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(component);
-			ComponentResource[] resources = root.findModuleResources(getRuntimePath(), ResourceTreeNode.CREATE_NONE);
-
-			if (resources.length == 0) {
-				ComponentResource componentResource = moduleCore.createWorkbenchModuleResource(resource);
-				componentResource.setRuntimePath(getRuntimePath());
-				component.getResources().add(componentResource);
-			} else {
-				boolean foundMapping = false;
-				for (int resourceIndx = 0; resourceIndx < resources.length && !foundMapping; resourceIndx++) {
-					if (aProjectRelativeLocation.makeAbsolute().equals(resources[resourceIndx].getSourcePath()))
-						foundMapping = true;
-				}
-				if (!foundMapping) {
+				if (resources.length == 0) {
 					ComponentResource componentResource = moduleCore.createWorkbenchModuleResource(resource);
 					componentResource.setRuntimePath(getRuntimePath());
 					component.getResources().add(componentResource);
+				} else {
+					boolean foundMapping = false;
+					for (int resourceIndx = 0; resourceIndx < resources.length && !foundMapping; resourceIndx++) {
+						if (aProjectRelativeLocation.makeAbsolute().equals(resources[resourceIndx].getSourcePath()))
+							foundMapping = true;
+					}
+					if (!foundMapping) {
+						ComponentResource componentResource = moduleCore.createWorkbenchModuleResource(resource);
+						componentResource.setRuntimePath(getRuntimePath());
+						component.getResources().add(componentResource);
+					}
 				}
+				createResource(resource, updateFlags, monitor);
 			}
-			createResource(resource, updateFlags, monitor);
 
 		} finally {
 			if (moduleCore != null) {
@@ -300,7 +304,9 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(getProject());
 			WorkbenchComponent component = moduleCore.getComponent();
-			moduleCore.getComponentModelRoot().getComponents().remove(component);
+			if (null != component) {
+				moduleCore.getComponentModelRoot().getComponents().remove(component);
+			}
 		} finally {
 			if (moduleCore != null) {
 				moduleCore.saveIfNecessary(monitor);
@@ -318,20 +324,23 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 		try {
 			core = StructureEdit.getStructureEditForRead(getProject());
 			WorkbenchComponent component = core.getComponent();
-			List currentResources = component.getResources();
-			List foundResources = new ArrayList();
+			if (null != component) {
+				List currentResources = component.getResources();
+				List foundResources = new ArrayList();
 
-			if (aResourceType != null) {
-				for (Iterator iter = currentResources.iterator(); iter.hasNext();) {
-					ComponentResource resource = (ComponentResource) iter.next();
-					if (aResourceType.equals(resource.getResourceType())) {
-						IVirtualResource vres = createVirtualResource(resource);
-						if (vres != null)
-							foundResources.add(vres);
+				if (aResourceType != null) {
+					for (Iterator iter = currentResources.iterator(); iter.hasNext();) {
+						ComponentResource resource = (ComponentResource) iter.next();
+						if (aResourceType.equals(resource.getResourceType())) {
+							IVirtualResource vres = createVirtualResource(resource);
+							if (vres != null)
+								foundResources.add(vres);
+						}
 					}
 				}
+				return (IVirtualResource[]) foundResources.toArray(new IVirtualResource[foundResources.size()]);
 			}
-			return (IVirtualResource[]) foundResources.toArray(new IVirtualResource[foundResources.size()]);
+			return new IVirtualResource[0];
 		} finally {
 			if (core != null)
 				core.dispose();
