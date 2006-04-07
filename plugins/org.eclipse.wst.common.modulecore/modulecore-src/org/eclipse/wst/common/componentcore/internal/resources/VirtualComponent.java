@@ -301,7 +301,7 @@ public class VirtualComponent implements IVirtualComponent {
 							continue;
 						IVirtualReference vReference = StructureEdit.createVirtualReference(this, referencedComponent);
 						vReference.setArchiveName( referencedComponent.getArchiveName() );
-						if (vReference != null)
+						if (vReference != null && vReference.getReferencedComponent().exists())
 							references.add(vReference); 
 					}
 				}
