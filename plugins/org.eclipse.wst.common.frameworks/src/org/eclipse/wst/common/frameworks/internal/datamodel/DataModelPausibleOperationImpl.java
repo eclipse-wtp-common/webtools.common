@@ -376,13 +376,13 @@ public class DataModelPausibleOperationImpl extends WrappedOperation implements 
 				try {
 					switch (executionType) {
 						case IDataModelPausibleOperationEvent.EXECUTE :
-							this.setStatus(operation.execute(monitor, info));
+							this.setStatus(operation.execute(pm, info));
 							break;
 						case IDataModelPausibleOperationEvent.UNDO :
-							this.setStatus(operation.undo(monitor, info));
+							this.setStatus(operation.undo(pm, info));
 							break;
 						case IDataModelPausibleOperationEvent.REDO :
-							this.setStatus(operation.redo(monitor, info));
+							this.setStatus(operation.redo(pm, info));
 							break;
 					}
 					if (null == this.getStatus()) {
