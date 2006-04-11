@@ -351,7 +351,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		  return;
 		}
 
-		ValidationJob validationop = new ValidationJob("Running Validation"){ //$NON-NLS-1$
+		ValidationJob validationop = new ValidationJob(ValidationUIMessages.RunValidationDialogTitle){
 			protected IStatus run(IProgressMonitor monitor) {
 				final Map projectsMap = projects;
 				IStatus stat = validate(monitor, projectsMap);	

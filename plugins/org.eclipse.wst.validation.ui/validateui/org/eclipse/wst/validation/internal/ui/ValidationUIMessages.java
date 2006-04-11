@@ -23,6 +23,7 @@ public class ValidationUIMessages extends NLS {
 	public static String SaveFilesDialog_save_all_resources;
 	public static String SaveFilesDialog_must_save;
 	public static String PrefPage_always_save;
+	public static String RunValidationDialogTitle;
 
 	static {
 		// load message values from bundle file
