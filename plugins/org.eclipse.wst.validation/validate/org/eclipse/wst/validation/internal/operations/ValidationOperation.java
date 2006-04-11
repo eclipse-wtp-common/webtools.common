@@ -833,7 +833,15 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			vmd = (ValidatorMetaData) iterator.next();
 			try {
 				if( vmd.getValidator() instanceof IValidatorJob ){
-					jobValidators.add( vmd );
+					try {
+						delta = getFileDeltas(reporter.getProgressMonitor(), vmd);
+					} catch (CoreException e) {
+						e.printStackTrace();
+					}
+					boolean willRun = (isForce() || isValidationNecessary(vmd, delta));
+					if( willRun ){
+						jobValidators.add( vmd );
+					}
 				}else{
 					validators.add( vmd );
 				}

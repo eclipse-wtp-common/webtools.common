@@ -33,6 +33,7 @@ public class ManualValidatorsOperation extends ValidatorSubsetOperation {
 		setEnabledValidators(ValidatorManager.getManager().getManualEnabledValidators(project));
 	}	
 	public ManualValidatorsOperation(IProject project, Object[] changedResources) {
-		super(project, DEFAULT_FORCE, RegistryConstants.ATT_RULE_GROUP_DEFAULT, changedResources, false);
+		super(project, shouldForce(changedResources), RegistryConstants.ATT_RULE_GROUP_DEFAULT, false);
+		setEnabledValidators(ValidatorManager.getManager().getManualEnabledValidators(project));
 	}	
 }

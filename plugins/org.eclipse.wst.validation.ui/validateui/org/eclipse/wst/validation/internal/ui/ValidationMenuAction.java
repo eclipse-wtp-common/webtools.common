@@ -50,6 +50,7 @@ import org.eclipse.wst.validation.internal.GlobalConfiguration;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidationSelectionHandlerRegistryReader;
+import org.eclipse.wst.validation.internal.operations.ManualIncrementalValidatorsOperation;
 import org.eclipse.wst.validation.internal.operations.ManualValidatorsOperation;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
@@ -619,12 +620,12 @@ public class ValidationMenuAction implements IViewActionDelegate {
 			new Status(IStatus.CANCEL, "org.eclipse.wst.validation", 0, "OK", null);
 		
 		ManualValidatorsOperation validOp = null;
-		validOp = new ManualValidatorsOperation(project, resources);
-//		if (resources == null) {
-//			validOp = new ManualValidatorsOperation(project);
-//		} else {
-//			validOp = new ManualEnabledIncrementalValidatorsOperation(resources, project,false);
-//		}
+		//validOp = new ManualValidatorsOperation(project, resources);
+		if (resources == null) {
+			validOp = new ManualValidatorsOperation(project);
+		} else {
+			validOp = new ManualIncrementalValidatorsOperation(project, resources);
+		}
 		if (validOp.isNecessary(monitor)) {
 			validOp.run(monitor);
 			//ResourcesPlugin.getWorkspace().run(validOp, monitor);
