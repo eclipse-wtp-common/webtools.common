@@ -70,7 +70,7 @@ public class ModelFactoryForUser extends AbstractModelFactory {
 
 			definitions.getCategories().add(category);
 			if (Logger.DEBUG_DEFINITION_PERSISTENCE)
-				System.out.println("Plugin reader creating category " + category.getId()); //$NON-NLS-1$
+				System.out.println("Plug-in reader creating category " + category.getId()); //$NON-NLS-1$
 			NodeList children = categoryElement.getChildNodes();
 			for (int i = 0; i < children.getLength(); i++) {
 				Node child = children.item(i);
@@ -86,7 +86,7 @@ public class ModelFactoryForUser extends AbstractModelFactory {
 			assignSource(item, definitions, child);
 			definitions.getItems().add(item);
 			if (Logger.DEBUG_DEFINITION_PERSISTENCE)
-				System.out.println("Plugin reader creating item " + item.getId()); //$NON-NLS-1$
+				System.out.println("Plug-in reader creating item " + item.getId()); //$NON-NLS-1$
 		}
 	}
 
@@ -130,7 +130,8 @@ public class ModelFactoryForUser extends AbstractModelFactory {
 	}
 
 	protected String createContent(Node item) {
-		String content = readCDATAofChild(item, SnippetsPlugin.NAMES.CONTENT);
+		String content = readCDATAofChildren(item, SnippetsPlugin.NAMES.CONTENT);
+
 		/*
 		 * EOL translation
 		 * (https://bugs.eclipse.org/bugs/show_bug.cgi?id=102941). Convert
@@ -144,7 +145,7 @@ public class ModelFactoryForUser extends AbstractModelFactory {
 	}
 
 	protected String createDescription(Node entryElement) {
-		return readCDATAofChild(entryElement, SnippetsPlugin.NAMES.DESCRIPTION);
+		return readCDATAofChildren(entryElement, SnippetsPlugin.NAMES.DESCRIPTION);
 	}
 
 	protected PluginRecord createPluginRecord(SnippetDefinitions definitions, Element element) {
@@ -257,22 +258,23 @@ public class ModelFactoryForUser extends AbstractModelFactory {
 	 * <node><otherChild/><childName><wrong element/> <![CDATA[ RETURNED
 	 * TEXT]]> </childName> </node>
 	 */
-	protected String readCDATAofChild(Node node, String childName) {
-		NodeList children = node.getChildNodes();
-		for (int i = 0; i < children.getLength(); i++) {
-			Node child = children.item(i);
-			if (child.getNodeType() == Node.ELEMENT_NODE && child.getNodeName().equals(childName)) {
-				NodeList descriptionChildren = child.getChildNodes();
-				for (int j = 0; j < descriptionChildren.getLength(); j++) {
-					Node descriptionChild = descriptionChildren.item(j);
-					if (descriptionChild.getNodeType() == Node.CDATA_SECTION_NODE) {
-						return descriptionChild.getNodeValue();
+	protected String readCDATAofChildren(Node parentNode, String elementName) {
+		StringBuffer s = new StringBuffer();
+		Node element = parentNode.getFirstChild();
+		while (element != null) {
+			if (element.getNodeType() == Node.ELEMENT_NODE && element.getNodeName().equals(elementName)) {
+				Node child = element.getFirstChild();
+				while (child != null) {
+					if (child.getNodeType() == Node.CDATA_SECTION_NODE) {
+						s.append(child.getNodeValue());
 					}
+					child = child.getNextSibling();
 				}
-				return ""; //$NON-NLS-1$
+				return s.toString(); //$NON-NLS-1$
 			}
+			element = element.getNextSibling();
 		}
-		return ""; //$NON-NLS-1$
+		return s.toString(); //$NON-NLS-1$
 	}
 
 	protected void setProperties(SnippetPaletteDrawer category, Object source) {
