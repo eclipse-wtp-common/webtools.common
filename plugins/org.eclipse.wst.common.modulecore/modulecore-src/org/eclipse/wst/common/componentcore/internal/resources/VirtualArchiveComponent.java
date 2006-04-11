@@ -65,7 +65,7 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 
 		String archivePathString = archiveLocation.substring(4, archiveLocation.length());
 		archiveType	= archiveLocation.substring(0, archiveLocation.length() - archivePathString.length() -1);
-		archivePath = new  Path(archivePathString);
+		archivePath = new  Path(archivePathString).makeRelative();
 	}
 
 	public IVirtualComponent getComponent() {
