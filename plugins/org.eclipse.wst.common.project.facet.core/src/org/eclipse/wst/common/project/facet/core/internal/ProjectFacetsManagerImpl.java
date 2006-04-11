@@ -42,6 +42,7 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.common.project.facet.core.IActionDefinition;
 import org.eclipse.wst.common.project.facet.core.ICategory;
 import org.eclipse.wst.common.project.facet.core.IConstraint;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
@@ -51,7 +52,6 @@ import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
-import org.eclipse.wst.common.project.facet.core.internal.ProjectFacet.ActionDefinition;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
@@ -91,6 +91,7 @@ public final class ProjectFacetsManagerImpl
     private static final Set facetsReportedMissing = new HashSet();
     
     private final IndexedSet facets;
+    private final IndexedSet actions;
     private final IndexedSet categories;
     private final IndexedSet presets;
     private final IndexedSet templates;
@@ -100,6 +101,7 @@ public final class ProjectFacetsManagerImpl
     public ProjectFacetsManagerImpl()
     {
         this.facets = new IndexedSet();
+        this.actions = new IndexedSet();
         this.categories = new IndexedSet();
         this.presets = new IndexedSet();
         this.templates = new IndexedSet();
@@ -136,6 +138,30 @@ public final class ProjectFacetsManagerImpl
         }
         
         return f;
+    }
+    
+    public Set getActionDefinitions()
+    {
+        return this.actions.getUnmodifiable();
+    }
+    
+    public boolean isActionDefined( final String id )
+    {
+        return this.actions.containsKey( id );
+    }
+    
+    public IActionDefinition getActionDefinition( final String id )
+    {
+        final IActionDefinition adef
+            = (IActionDefinition) this.actions.get( id );
+        
+        if( adef == null )
+        {
+            final String msg = NLS.bind( Resources.actionNotDefined, id );
+            throw new IllegalArgumentException( msg );
+        }
+        
+        return adef;
     }
     
     public Set getCategories()
@@ -1177,6 +1203,11 @@ public final class ProjectFacetsManagerImpl
             }
         }
         
+        if( descriptor.getLabel() == null )
+        {
+            descriptor.setLabel( id );
+        }
+        
         this.facets.add( id, descriptor );
     }
     
@@ -1329,9 +1360,9 @@ public final class ProjectFacetsManagerImpl
         
         // End of backwards compatibility code.
         
-        def.type = Action.Type.valueOf( type ); 
+        def.setActionType( Action.Type.valueOf( type ) ); 
 
-        if( def.type == null )
+        if( def.getActionType() == null )
         {
             final String msg
                 = NLS.bind( Resources.invalidActionType, type ) +
@@ -1344,7 +1375,7 @@ public final class ProjectFacetsManagerImpl
         
         try
         {
-            def.versionMatchExpr = new VersionExpr( f, version, pluginId );
+            def.setVersionExpr( new VersionExpr( f, version, pluginId ) );
         }
         catch( CoreException e )
         {
@@ -1369,7 +1400,7 @@ public final class ProjectFacetsManagerImpl
                     return;
                 }
                 
-                def.configFactoryClassName = clname;
+                def.setConfigFactoryClassName( clname );
             }
             else if( childName.equals( EL_DELEGATE ) )
             {
@@ -1381,11 +1412,32 @@ public final class ProjectFacetsManagerImpl
                     return;
                 }
                 
-                def.delegateClassName = clname;
+                def.setDelegateClassName( clname );
             }
         }
         
-        f.addActionDefinition( def );
+        String id = config.getAttribute( ATTR_ID );
+        
+        if( id == null )
+        {
+            id = f.getId() + "#" + version + "#" //$NON-NLS-1$ //$NON-NLS-2$ 
+                 + def.getActionType().name();
+        }
+        
+        def.setId( id );
+        
+        if( isActionDefined( id ) )
+        {
+            final String msg
+                = NLS.bind( Resources.actionAlreadyDefined, id, pluginId );
+            
+            FacetCorePlugin.logError( msg );
+        }
+        else
+        {
+            this.actions.add( def.getId(), def );
+            f.addActionDefinition( def );
+        }
     }
     
     private void readEventHandler( final IConfigurationElement config )
@@ -2022,6 +2074,8 @@ public final class ProjectFacetsManagerImpl
         public static String categoryNotDefined;
         public static String facetNotDefined;
         public static String facetVersionNotDefined;
+        public static String actionNotDefined;
+        public static String actionAlreadyDefined;
         public static String groupNotDefined;
         public static String presetNotDefined;
         public static String templateNotDefined;

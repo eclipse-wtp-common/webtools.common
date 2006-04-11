@@ -11,8 +11,12 @@
 
 package org.eclipse.wst.common.project.facet.ui.internal;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
@@ -28,6 +32,7 @@ public final class FacetUiPlugin
         = "org.eclipse.wst.common.project.facet.ui"; //$NON-NLS-1$
     
     private static FacetUiPlugin plugin;
+    private static final Set messagesLogged = new HashSet();
     
     public FacetUiPlugin() 
     {
@@ -38,6 +43,11 @@ public final class FacetUiPlugin
     public static FacetUiPlugin getInstance()
     {
         return plugin;
+    }
+    
+    public static ImageDescriptor getImageDescriptor( final String path )
+    {
+        return imageDescriptorFromPlugin( PLUGIN_ID, path );
     }
     
     public static void log( final Exception e )
@@ -54,6 +64,42 @@ public final class FacetUiPlugin
     public static void log( final String msg )
     {
         log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, null ) );
+    }
+    
+    public static void logError( final String msg )
+    {
+        logError( msg, false );
+    }
+    
+    public static void logError( final String msg,
+                                 final boolean suppressDuplicates )
+    {
+        if( suppressDuplicates && messagesLogged.contains( msg ) )
+        {
+            return;
+        }
+        
+        messagesLogged.add( msg );
+        
+        log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, null ) );
+    }
+
+    public static void logWarning( final String msg )
+    {
+        logWarning( msg, false );
+    }
+    
+    public static void logWarning( final String msg,
+                                   final boolean suppressDuplicates )
+    {
+        if( suppressDuplicates && messagesLogged.contains( msg ) )
+        {
+            return;
+        }
+        
+        messagesLogged.add( msg );
+        
+        log( new Status( IStatus.WARNING, PLUGIN_ID, IStatus.OK, msg, null ) );
     }
     
     public static IStatus createErrorStatus( final String msg,

@@ -33,6 +33,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.wst.common.project.facet.core.IActionDefinition;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
@@ -416,13 +417,25 @@ public class AddRemoveFacetsWizard
         for( Iterator itr1 = sortedActions.iterator(); itr1.hasNext(); )
         {
             final Action action = (Action) itr1.next();
-            final IProjectFacetVersion f = action.getProjectFacetVersion();
+            final IProjectFacetVersion fv = action.getProjectFacetVersion();
             FacetPages fp = findFacetPages( action, markers );
             
             if( fp == null )
             {
+                final IActionDefinition actiondef;
+                
+                try
+                {
+                    actiondef = fv.getActionDefinition( action.getType() );
+                }
+                catch( CoreException e )
+                {
+                    FacetUiPlugin.log( e );
+                    continue;
+                }
+                
                 final List pages
-                    = ProjectFacetsUiManager.getWizardPages( action.getType(), f );
+                    = ProjectFacetsUiManager.getWizardPages( actiondef.getId() );
                 
                 if( ! pages.isEmpty() )
                 {
@@ -484,7 +497,7 @@ public class AddRemoveFacetsWizard
     }
     
     private FacetPages findFacetPages( final Action action,
-                                           final boolean[] markers )
+                                       final boolean[] markers )
     {
         for( int i = 0; i < this.facetPages.length; i++ )
         {

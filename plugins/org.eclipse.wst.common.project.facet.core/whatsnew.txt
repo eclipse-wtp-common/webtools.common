@@ -1,0 +1,59 @@
+New API:
+
+org.eclipse.wst.common.project.facet.core:
+
+1. IActionDefinition
+2. IProjectFacetVersion.getActionDefinition( Action.Type type )
+3. ProjectFacetsManager.getActionDefinitions()
+4. ProjectFacetsManager.isActionDefined( final String id )
+5. ProjectFacetsManager.getActionDefinition( final String id )
+
+org.eclipse.wst.common.project.facet.ui:
+
+1. ProjectFacetsUiManager.getWizardPages( String actionId )
+
+Deprecated API:
+
+The following describes API that was deprecated in this release as well as the
+replacement API to use going forward. All of the API deprecated in the 1.5
+release is still fully supported in this release, but it will be removed in the
+next major release of WTP.
+
+1. The extension point schema for defining wizard pages associated with the
+   project facet actions has been revised to be more flexible.
+   
+   Deprecated extension point:
+   
+   <extension point="org.eclipse.wst.common.project.facet.ui.wizard">
+     <wizard-pages facet="...">
+       <install> (0 or 1)
+        <page class="..."/> (1 or more)
+       </install>
+       <uninstall> (0 or 1)
+        <page class="..."/> (1 or more)
+       </uninstall>
+     </wizard-pages>
+   </extension>
+   
+   New extension point:
+   
+   <extension point="org.eclipse.wst.common.project.facet.ui.wizardPages">
+     <wizard-pages action="..."> (1 or more)
+       <page class="..."/> (1 or more)
+     </wizard-pages>
+   </extension>
+   
+   Note the new extension point id. The "action" attribute should contain the
+   action that these pages are to be associated with. The action id can
+   be explicitly specified via the new "id" attribute available on the "action"
+   element of the core facets extension point. If not specified, the default id
+   is generated using the "[facet-id]#[version-expression]#[action-type]" 
+   pattern.
+   
+   Also, the following method has been deprecated and replaced:
+   
+   org.eclipse.wst.common.project.facet.ui.ProjectFacetsUiManager:
+   
+     deprecated: getWizardPages( Action.Type type, IProjectFacetVersion fv )
+     new: getWizardPages( String actionId )
+   

@@ -70,6 +70,23 @@ public interface IProjectFacetVersion
     boolean supports( Action.Type type );
     
     /**
+     * Returns the action definition corresponding to a particular action type
+     * over this project facet version. The {@link supports( Action.Type )} 
+     * method can be used to check whether the action is supported prior to
+     * calling this method.
+     * 
+     * @param type action type
+     * @return the action definition corresponding to a particular action type
+     *   over this project facet version
+     * @throws CoreException if this project facet version does not support the
+     *   provided action type
+     */
+    
+    IActionDefinition getActionDefinition( Action.Type type )
+    
+        throws CoreException;
+    
+    /**
      * Creates a new instance of the config object associated with the specified
      * action on this facet. Will return <code>null</code> if the action 
      * requires no config.

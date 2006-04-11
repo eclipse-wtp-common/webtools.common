@@ -27,6 +27,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.eclipse.wst.common.project.facet.core.IActionConfig;
 import org.eclipse.wst.common.project.facet.core.ICategory;
 import org.eclipse.wst.common.project.facet.core.IPreset;
@@ -34,6 +36,7 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.ui.AddRemoveFacetsWizard;
+import org.eclipse.wst.common.project.facet.ui.FacetUiHelpContextIds;
 import org.eclipse.wst.common.project.facet.ui.IWizardContext;
 
 /**
@@ -45,6 +48,9 @@ public final class FacetsSelectionPage
     extends WizardPage
 
 {
+    private static final String IMG_PATH_WIZBAN
+        = "images/facets-page-wizban.png"; //$NON-NLS-1$
+    
     private IWizardContext context;
     private Set base;
     private IPreset initialPreset;
@@ -61,6 +67,7 @@ public final class FacetsSelectionPage
 
         setTitle( Resources.pageTitle );
         setDescription( Resources.pageDescription );
+        setImageDescriptor( FacetUiPlugin.getImageDescriptor( IMG_PATH_WIZBAN ) );
 
         this.context = context;
         this.base = base;
@@ -179,6 +186,9 @@ public final class FacetsSelectionPage
                 }
             }
         );
+        
+        final IWorkbenchHelpSystem h = PlatformUI.getWorkbench().getHelpSystem();
+        h.setHelp( this.panel, FacetUiHelpContextIds.FACETS_SELECTION_PAGE );
         
         setControl( this.panel );
     }

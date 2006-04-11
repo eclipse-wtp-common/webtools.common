@@ -42,7 +42,7 @@
          <attribute name="version" type="string">
             <annotation>
                <documentation>
-                  Specifies the match expression for the runtime component version. The expression should be of the form "2.2,2.5,[3.0-5.3],(7.3", where the comas function as an OR. Brackets and parenthesis are used as part of the range notation. A bracket means inclusive while a parenthesis means exclusive.
+                  Specifies the match expression for the runtime component version. The expression should be of the form &quot;2.2,2.5,[3.0-5.3],(7.3&quot;, where the comas function as an OR. Brackets and parenthesis are used as part of the range notation. A bracket means inclusive while a parenthesis means exclusive.
                </documentation>
             </annotation>
          </attribute>
@@ -59,6 +59,9 @@
                <documentation>
                   
                </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="org.eclipse.wst.common.project.facet.core.IFacetedProjectValidator"/>
+               </appInfo>
             </annotation>
          </attribute>
       </complexType>

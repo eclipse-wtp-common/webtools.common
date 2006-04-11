@@ -54,7 +54,6 @@
       <complexType>
          <sequence>
             <element ref="version-comparator" minOccurs="0" maxOccurs="1"/>
-            <element ref="icon" minOccurs="0" maxOccurs="1"/>
          </sequence>
          <attribute name="id" type="string" use="required">
             <annotation>
@@ -78,17 +77,12 @@
                <documentation>
                   The class name.
                </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="java.util.Comparator"/>
+               </appInfo>
             </annotation>
          </attribute>
       </complexType>
-   </element>
-
-   <element name="icon" type="string">
-      <annotation>
-         <documentation>
-            Specifies the location of the icon that should be used with this runtime component type.
-         </documentation>
-      </annotation>
    </element>
 
    <element name="runtime-component-version">
@@ -173,6 +167,9 @@
                <documentation>
                   The class name.
                </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="org.eclipse.core.runtime.IAdapterFactory"/>
+               </appInfo>
             </annotation>
          </attribute>
       </complexType>
@@ -190,6 +187,9 @@
                <documentation>
                   The class name.
                </documentation>
+               <appInfo>
+                  <meta.attribute kind="java"/>
+               </appInfo>
             </annotation>
          </attribute>
       </complexType>

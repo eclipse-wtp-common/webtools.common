@@ -82,6 +82,45 @@ public final class ProjectFacetsManager
     }
     
     /**
+     * Returns all of the available project facet action definitions.
+     * 
+     * @return a set containing all of the available project facets action
+     *   definitions (element type: {@link IActionDefinition})
+     */
+    
+    public static Set getActionDefinitions()
+    {
+        return impl.getActionDefinitions();
+    }
+    
+    /**
+     * Determines whether a given project facet action id is recognized.
+     * 
+     * @param id the id of the project facet action
+     * @return <code>true</code> if the project facet action id is recognized, 
+     *   <code>false</code> otherwise 
+     */
+    
+    public static boolean isActionDefined( final String id )
+    {
+        return impl.isActionDefined( id );
+    }
+    
+    /**
+     * Returns the project facet action definition corresponding to the 
+     * specified action id.
+     * 
+     * @param id the id of the project facet action
+     * @return the project facet action definition
+     * @throws IllegalArgumentException if id is not found
+     */
+    
+    public static IActionDefinition getActionDefinition( final String id )
+    {
+        return impl.getActionDefinition( id );
+    }
+
+    /**
      * Returns all of the categories.
      * 
      * @return a set containing all of the categories (element type: {@link 

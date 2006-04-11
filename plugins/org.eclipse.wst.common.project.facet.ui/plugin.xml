@@ -5,6 +5,11 @@
 
   <extension-point 
     id="wizard"
+    name="Project Facet Wizard Pages Extension Point (Deprecated)"
+    schema="schemas/wizard-pages-old.exsd"/>
+
+  <extension-point 
+    id="wizardPages"
     name="Project Facet Wizard Pages Extension Point"
     schema="schemas/wizard-pages.exsd"/>
 

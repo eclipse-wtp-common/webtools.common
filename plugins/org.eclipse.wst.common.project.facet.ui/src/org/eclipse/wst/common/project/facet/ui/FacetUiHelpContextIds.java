@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2006 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,13 +11,11 @@
 
 package org.eclipse.wst.common.project.facet.ui;
 
-import java.util.List;
-
-import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
-import org.eclipse.wst.common.project.facet.ui.internal.ProjectFacetsUiManagerImpl;
+import org.eclipse.wst.common.project.facet.ui.internal.FacetUiPlugin;
 
 /**
+ * Contains the help context ids defined in the facet UI plugin.
+ * 
  * <p><i>This class is part of an interim API that is still under development 
  * and expected to change significantly before reaching stability. It is being 
  * made available at this early stage to solicit feedback from pioneering 
@@ -27,28 +25,16 @@ import org.eclipse.wst.common.project.facet.ui.internal.ProjectFacetsUiManagerIm
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
-public final class ProjectFacetsUiManager 
+public final class FacetUiHelpContextIds
 {
-    private ProjectFacetsUiManager() {}
-    
     /**
-     * @return (element type: {@see IFacetWizardPage})
+     * The help context id for the overall facets selection page:  
+     * "org.eclipse.wst.common.project.facet.ui.facetsSelectionPage".
      */
     
-    public static List getWizardPages( final String actionId )
-    {
-        return ProjectFacetsUiManagerImpl.getWizardPages( actionId );
-    }
-
-    /**
-     * @return (element type: {@see IFacetWizardPage})
-     * @deprecated
-     */
+    public static final String FACETS_SELECTION_PAGE
+        = FacetUiPlugin.PLUGIN_ID + ".facetsSelectionPage"; //$NON-NLS-1$
     
-    public static List getWizardPages( final Action.Type actionType,
-                                       final IProjectFacetVersion f )
-    {
-        return ProjectFacetsUiManagerImpl.getWizardPages( actionType, f );
-    }
-
+    private FacetUiHelpContextIds() {}
+    
 }

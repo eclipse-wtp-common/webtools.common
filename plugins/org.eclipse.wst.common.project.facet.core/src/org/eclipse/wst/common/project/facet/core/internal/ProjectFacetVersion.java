@@ -22,13 +22,13 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IActionConfig;
 import org.eclipse.wst.common.project.facet.core.IActionConfigFactory;
+import org.eclipse.wst.common.project.facet.core.IActionDefinition;
 import org.eclipse.wst.common.project.facet.core.IConstraint;
 import org.eclipse.wst.common.project.facet.core.IDelegate;
 import org.eclipse.wst.common.project.facet.core.IGroup;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
-import org.eclipse.wst.common.project.facet.core.internal.ProjectFacet.ActionDefinition;
 import org.osgi.framework.Bundle;
 
 /**
@@ -99,13 +99,21 @@ public final class ProjectFacetVersion
     {
         try
         {
-            return this.facet.getActionDefinition( this, type ) != null;
+            return getActionDefinition( type ) != null;
         }
         catch( CoreException e )
         {
             FacetCorePlugin.log( e );
             return false;
         }
+    }
+    
+    public IActionDefinition getActionDefinition( final Action.Type type )
+    
+        throws CoreException
+        
+    {
+        return this.facet.getActionDefinition( this, type );
     }
     
     public Object createActionConfig( final Action.Type type,
@@ -126,13 +134,13 @@ public final class ProjectFacetVersion
         final ActionDefinition def
             = this.facet.getActionDefinition( this, type );
         
-        if( def == null || def.configFactoryClassName == null )
+        if( def == null || def.getConfigFactoryClassName() == null )
         {
             return null;
         }
         else
         {
-            final String clname = def.configFactoryClassName;
+            final String clname = def.getConfigFactoryClassName();
             final Object temp = create( clname );
             
             if( ! ( temp instanceof IActionConfigFactory ) )
@@ -364,7 +372,7 @@ public final class ProjectFacetVersion
                 return null;
             }
             
-            final String clname = def.delegateClassName;
+            final String clname = def.getDelegateClassName();
             delegate = create( clname );
             
             if( ! ( delegate instanceof IDelegate ) )

@@ -191,8 +191,8 @@ public final class ProjectFacet
         {
             final ActionDefinition def = (ActionDefinition) itr.next();
             
-            if( def.type == type && 
-                def.versionMatchExpr.evaluate( (IVersion) fv ) )
+            if( def.getActionType() == type && 
+                ( (VersionExpr) def.getVersionExpr() ).evaluate( (IVersion) fv ) )
             {
                 if( result == null )
                 {
@@ -252,14 +252,6 @@ public final class ProjectFacet
         this.eventHandlers.add( h );
     }
     
-    static final class ActionDefinition
-    {
-        public Action.Type type;
-        public VersionExpr versionMatchExpr;
-        public String delegateClassName;
-        public String configFactoryClassName;
-    }
-
     public static final class Resources
     
         extends NLS

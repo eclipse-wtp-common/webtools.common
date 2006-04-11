@@ -206,6 +206,9 @@
                <documentation>
                   
                </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="java.util.Comparator"/>
+               </appInfo>
             </annotation>
          </attribute>
       </complexType>
@@ -343,6 +346,13 @@
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
@@ -353,6 +363,9 @@
                <documentation>
                   
                </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="org.eclipse.wst.common.project.facet.core.IActionConfigFactory"/>
+               </appInfo>
             </annotation>
          </attribute>
       </complexType>
@@ -365,6 +378,9 @@
                <documentation>
                   
                </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="org.eclipse.wst.common.project.facet.core.IDelegate"/>
+               </appInfo>
             </annotation>
          </attribute>
       </complexType>
