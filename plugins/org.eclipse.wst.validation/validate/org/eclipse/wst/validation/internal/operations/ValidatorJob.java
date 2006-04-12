@@ -189,7 +189,7 @@ public class ValidatorJob extends Job {
 				status = WTPCommonPlugin.createErrorStatus(message.getText());	
 				return status;
 			} finally {
-				helper.setProject(null);
+				//helper.setProject(null);
 			}
 			//reporter.getProgressMonitor().worked(((delta == null) ? 1 : delta.length)); // One
 			//monitor.worked(((delta == null) ? 1 : delta.length)); // One
