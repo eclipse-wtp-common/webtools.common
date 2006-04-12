@@ -70,10 +70,10 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 				if(deployPath != null && deployPath.length() > 0)
 					ref.setRuntimePath(new Path(deployPath));
 				
-				String archiveName = model.getStringProperty( ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_ARCHIVE_NAME );
+				String archiveName = getArchiveName(comp);
 				if( archiveName.length() > 0 ){
 					ref.setArchiveName( archiveName );
-				}
+				} 
 				vlist.add(ref);
 			}
 		}
@@ -81,6 +81,11 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 		IVirtualReference[] refs = (IVirtualReference[]) vlist.toArray(new IVirtualReference[vlist.size()]);
 		sourceComp.addReferences(refs);
 	}
+	
+	protected String getArchiveName(IVirtualComponent comp){
+		return model.getStringProperty( ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_ARCHIVE_NAME );
+	}
+	
 
 	private boolean srcComponentContainsReference(IVirtualComponent sourceComp, IVirtualComponent comp) {
 		if (sourceComp == null || comp == null)
