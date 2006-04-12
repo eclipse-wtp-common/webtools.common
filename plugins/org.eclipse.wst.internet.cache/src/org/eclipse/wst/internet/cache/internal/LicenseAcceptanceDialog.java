@@ -145,7 +145,7 @@ public class LicenseAcceptanceDialog extends IconAndMessageDialog
 	  gd.heightHint = 400;
 	  monitorComposite.setLayoutData(gd);
 	  final ProgressMonitorPart monitor = new ProgressMonitorPart(monitorComposite, new GridLayout());
-	  gd = new GridData(SWT.FILL, SWT.CENTER, true, true);
+	  gd = new GridData(SWT.FILL, SWT.BOTTOM, true, true);
 	  monitor.setLayoutData(gd);
 	  monitor.beginTask(CacheMessages._UI_LOADING_LICENSE, 100);
 	  stackLayout.topControl = monitorComposite;
