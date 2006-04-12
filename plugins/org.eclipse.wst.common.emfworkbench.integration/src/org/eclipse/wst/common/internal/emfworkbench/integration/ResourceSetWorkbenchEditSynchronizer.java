@@ -29,6 +29,10 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.jobs.IJobManager;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -60,6 +64,14 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 
 	protected List autoloadResourcesURIs = new ArrayList();
 
+	private static final ISchedulingRule NULL_SCHEDULING_RULE= new ISchedulingRule() {
+        public boolean contains(ISchedulingRule rule) {
+                return false;
+        }
+        public boolean isConflicting(ISchedulingRule rule) {
+                return false;
+        }
+	};
 
 
 	/**
@@ -94,7 +106,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 		Resource resource = null;
 		for (int i = 0; i < deferredRemoveResources.size(); i++) {
 			resource = (Resource) deferredRemoveResources.get(i);
-			resourceSet.getResources().remove(resource);
+			getResourceSet().getResources().remove(resource);
 			resource.unload();
 		}
 	}
@@ -112,7 +124,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 		for (int i = 0; i < deferredLoadResources.size(); i++) {
 			uri = (URI) deferredLoadResources.get(i);
 			try {
-				resourceSet.getResource(uri, true);
+				getResourceSet().getResource(uri, true);
 			} catch (WrappedException ex) {
 				Logger.getLogger().logError(ex);
 			}
@@ -123,13 +135,21 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	protected void acceptDelta(IResourceChangeEvent event) {
 		IResourceDelta delta = event.getDelta();
 		// search for changes to any projects using a visitor
-		if (delta != null) {
-			try {
-				delta.accept(this);
-			} catch (Exception e) {
-				Logger.getLogger().logError(e);
-			}
-		}
+
+        ISchedulingRule rule = null;
+        try {
+                rule = acquireResourceRule(project);
+        		if (delta != null) {
+        			try {
+        				delta.accept(this);
+        			} catch (Exception e) {
+        				Logger.getLogger().logError(e);
+        			}
+        		}
+        } finally {
+                releaseResourceRule(rule);
+        }
+
 	}
 
 	/**
@@ -139,8 +159,8 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	protected void release() {
 		if (JEMUtilPlugin.isActivated()) {
 			try {
-				if (resourceSet instanceof ProjectResourceSet)
-					((ProjectResourceSet) resourceSet).release();
+				if (getResourceSet() instanceof ProjectResourceSet)
+					((ProjectResourceSet) getResourceSet()).release();
 			} finally {
 				EMFWorkbenchContextFactory.INSTANCE.removeCachedProject(getProject());
 				dispose();
@@ -255,7 +275,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	}
 
 	protected Resource getResource(IFile aFile) {
-		return resourceSet.getResource(URI.createPlatformResourceURI(aFile.getFullPath().toString()), false);
+		return getResourceSet().getResource(URI.createPlatformResourceURI(aFile.getFullPath().toString()), false);
 	}
 
 
@@ -336,12 +356,12 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	}
 
 	public void enableAutoload(URI uri) {
-		URI normalized = resourceSet.getURIConverter().normalize(uri);
+		URI normalized = getResourceSet().getURIConverter().normalize(uri);
 		autoloadResourcesURIs.add(normalized);
 	}
 
 	public void disableAutoload(URI uri) {
-		URI normalized = resourceSet.getURIConverter().normalize(uri);
+		URI normalized = getResourceSet().getURIConverter().normalize(uri);
 		autoloadResourcesURIs.remove(normalized);
 	}
 
@@ -354,4 +374,32 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 		getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE | IResourceChangeEvent.POST_CHANGE);
 	}
 
+	protected synchronized ResourceSet getResourceSet(){
+		return resourceSet;
+	}
+	
+	private static void releaseResourceRule(ISchedulingRule rule) {
+        if(rule == null) return;
+        IJobManager manager= Platform.getJobManager();
+        manager.endRule(rule);
+	}
+	
+	private static ISchedulingRule acquireResourceRule(IResource res) {
+	        ISchedulingRule rule = (res != null ? res : NULL_SCHEDULING_RULE);
+	        IJobManager manager= Platform.getJobManager();
+	        Job currentJob = manager.currentJob();
+	        if (currentJob != null) {
+	                ISchedulingRule currentRule = currentJob.getRule();
+	                if (currentRule != null)                                
+	                        return null;
+	        }
+	        try {
+	                manager.beginRule(rule, null);
+	        } catch (IllegalArgumentException ex){
+	                //Catching Scope exception
+	        }
+	        return rule;
+	}
+	
+	
 }
