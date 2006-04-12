@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2004 IBM Corporation and others.
+ * Copyright (c) 2001, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -168,10 +168,12 @@ public class Cache
   }
   
   /**
-   * Add an uncached resource to the list.
+   * Add an uncached resource to the list and start the 
+   * uncached job if not already started.
    */
   protected void addUncachedURI(String uri)
   {
+	CachePlugin.getDefault().startJob();
     uncached.add(uri);
   }
   
@@ -231,7 +233,7 @@ public class Cache
 	  {
 		  // Put the entry in the uncached list so the resolution work will not be performed again.
       // TODO: Add in a timeout for the non-located uris.
-      uncached.add(uri);
+      addUncachedURI(uri);
 	  }
 	  finally
 	  {

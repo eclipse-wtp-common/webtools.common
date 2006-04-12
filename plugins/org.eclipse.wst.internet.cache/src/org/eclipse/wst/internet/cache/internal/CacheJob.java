@@ -25,7 +25,6 @@ import org.eclipse.core.runtime.jobs.Job;
  */
 public class CacheJob extends Job
 {
-  private String[] specifiedURIsToCache = null;
   private static final long SCHEDULE_TIME = 3600000;
 
   /**
@@ -34,7 +33,6 @@ public class CacheJob extends Job
   public CacheJob()
   {
     super(CacheMessages._UI_CACHE_MONITOR_NAME);
-    //specifiedURIsToCache = ToCacheRegistryReader.getInstance().getURIsToCache();
   }
 
   /**
@@ -42,21 +40,10 @@ public class CacheJob extends Job
    */
   protected IStatus run(IProgressMonitor monitor)
   {
+	boolean allSuccessful = true;
     Cache cache = Cache.getInstance();
     String[] uncachedURIs = cache.getUncachedURIs();
     int numUncachedURIs = uncachedURIs.length;
-    // Special case for the first time the job is run which will attemp to 
-    // cache specified resources.
-    if(specifiedURIsToCache != null)
-    {
-      int numSpecifiedURIs = specifiedURIsToCache.length;
-      String[] temp = new String[numUncachedURIs + numSpecifiedURIs];
-      System.arraycopy(specifiedURIsToCache, 0, temp, 0, numSpecifiedURIs);
-      System.arraycopy(uncachedURIs, 0, temp, numSpecifiedURIs, numUncachedURIs);
-      uncachedURIs = temp;
-      numUncachedURIs = uncachedURIs.length;
-      specifiedURIsToCache = null;
-    }
 
     cache.clearUncachedURIs();
     monitor.beginTask(CacheMessages._UI_CACHE_MONITOR_NAME, numUncachedURIs);
@@ -74,7 +61,11 @@ public class CacheJob extends Job
         }
         String uri = uncachedURIs[i];
         monitor.subTask(MessageFormat.format(CacheMessages._UI_CACHE_MONITOR_CACHING, new Object[]{uri}));
-        cache.getResource(uri);
+        String cachedURI = cache.getResource(uri);
+        if(cachedURI == null)
+    	{
+    	  allSuccessful = false;
+    	}
         monitor.worked(1);
         monitor.subTask("");
       }
@@ -83,7 +74,12 @@ public class CacheJob extends Job
     } 
     finally
     {
-      schedule(SCHEDULE_TIME); // schedule the next time the job should run
+      // If all the uncached URIs could not be cached 
+      // schedule the next time the job should run.
+      if(!allSuccessful)
+      {
+        schedule(SCHEDULE_TIME); 
+      }
     }
   }
 

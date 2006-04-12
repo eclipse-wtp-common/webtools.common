@@ -129,14 +129,7 @@ public class CachePlugin extends AbstractUIPlugin
   public void setCacheEnabled(boolean enabled) 
   {
 	getPluginPreferences().setValue(PreferenceConstants.CACHE_ENABLED, enabled);
-	if (enabled) 
-	{
-	  startJob();
-	} 
-	else 
-	{
-	  stopJob();
-	}
+	stopJob();
   }
 
   /**
@@ -177,9 +170,9 @@ public class CachePlugin extends AbstractUIPlugin
 
   /**
    * Start the cache job. The cache job caches resources that were not able to be previously
-   * downloaded.
+   * downloaded. Only one job is run at a time.
    */
-  private void startJob() 
+  protected void startJob() 
   {
 	if (job == null) 
 	{
@@ -193,7 +186,7 @@ public class CachePlugin extends AbstractUIPlugin
    * Stop the cache job. The cache job caches resources that were not able to be previously
    * downloaded.
    */
-  private void stopJob() 
+  protected void stopJob() 
   {
 	if (job != null) 
 	{
