@@ -173,7 +173,7 @@ public class Cache
    */
   protected void addUncachedURI(String uri)
   {
-	CachePlugin.getDefault().startJob();
+	CacheJob.startJob();
     uncached.add(uri);
   }
   

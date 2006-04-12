@@ -27,6 +27,7 @@ public class CacheJob extends Job
 {
   private static final long SCHEDULE_TIME = 3600000;
 
+  private static CacheJob job = null;
   /**
    * Constructor.
    */
@@ -60,14 +61,14 @@ public class CacheJob extends Job
           return Status.CANCEL_STATUS;
         }
         String uri = uncachedURIs[i];
-        monitor.subTask(MessageFormat.format(CacheMessages._UI_CACHE_MONITOR_CACHING, new Object[]{uri}));
+        monitor.setTaskName(MessageFormat.format(CacheMessages._UI_CACHE_MONITOR_CACHING, new Object[]{uri}));
+       
         String cachedURI = cache.getResource(uri);
         if(cachedURI == null)
     	{
     	  allSuccessful = false;
     	}
         monitor.worked(1);
-        monitor.subTask("");
       }
       monitor.done();
       return Status.OK_STATUS;
@@ -78,9 +79,47 @@ public class CacheJob extends Job
       // schedule the next time the job should run.
       if(!allSuccessful)
       {
-        schedule(SCHEDULE_TIME); 
+    	  startJob(SCHEDULE_TIME); 
       }
     }
+  }
+  
+  /**
+   * Start the cache job. The cache job caches resources that were not able to be previously
+   * downloaded. Only one job is run at a time.
+   */
+  protected static void startJob() 
+  {
+	if(job == null)
+	{
+	  startJob(0);
+	}
+  }
+  
+  /**
+   * Start a new cache job with the specified delay.
+   * 
+   * @param delay
+   * 		The start delay for the cache job.
+   */
+  private static void startJob(long delay)
+  {
+	job = new CacheJob();
+	job.setPriority(CacheJob.DECORATE);
+	job.schedule(delay); // start as soon as possible
+  }
+
+  /**
+   * Stop the current cache job. The cache job caches resources that were not able to be previously
+   * downloaded.
+   */
+  protected static void stopJob() 
+  {
+	if (job != null) 
+	{
+	  job.cancel();
+	}
+	job = null;
   }
 
 }

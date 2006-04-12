@@ -33,11 +33,6 @@ public class CachePlugin extends AbstractUIPlugin
   private static CachePlugin plugin;
 
   /**
-   * The cache job caches resources that were not able to be downloaded when requested.
-   */
-  private CacheJob job = null;
-
-  /**
    * The constructor.
    */
   public CachePlugin() 
@@ -106,7 +101,7 @@ public class CachePlugin extends AbstractUIPlugin
 	}
 	
 	Cache.getInstance().close();
-	stopJob();
+	CacheJob.stopJob();
 	super.stop(context);
 	plugin = null;
   }
@@ -129,7 +124,7 @@ public class CachePlugin extends AbstractUIPlugin
   public void setCacheEnabled(boolean enabled) 
   {
 	getPluginPreferences().setValue(PreferenceConstants.CACHE_ENABLED, enabled);
-	stopJob();
+	CacheJob.stopJob();
   }
 
   /**
@@ -166,32 +161,5 @@ public class CachePlugin extends AbstractUIPlugin
 	if (getPluginPreferences().contains(PreferenceConstants.PROMPT_DISAGREED_LICENSES))
 	  return getPluginPreferences().getBoolean(PreferenceConstants.PROMPT_DISAGREED_LICENSES);
 	return true;
-  }
-
-  /**
-   * Start the cache job. The cache job caches resources that were not able to be previously
-   * downloaded. Only one job is run at a time.
-   */
-  protected void startJob() 
-  {
-	if (job == null) 
-	{
-	  job = new CacheJob();
-	  job.setPriority(CacheJob.DECORATE);
-	  job.schedule(); // start as soon as possible
-	}
-  }
-
-  /**
-   * Stop the cache job. The cache job caches resources that were not able to be previously
-   * downloaded.
-   */
-  protected void stopJob() 
-  {
-	if (job != null) 
-	{
-	  job.cancel();
-	}
-	job = null;
   }
 }
