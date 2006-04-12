@@ -163,22 +163,29 @@ public abstract class ValidationConfiguration {
 	 * false, return the enabled non-incremental validators.
 	 */
 	public ValidatorMetaData[] getEnabledIncrementalValidators(boolean incremental) throws InvocationTargetException {
-		ValidatorMetaData[] temp = new ValidatorMetaData[numberOfValidators()];
-		Iterator iterator = getValidatorMetaData().keySet().iterator();
+		
 		int count = 0;
-		while (iterator.hasNext()) {
-			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
-			Boolean bvalue = (Boolean) getValidatorMetaData().get(vmd);
-			if (bvalue.booleanValue() == true) {
-				// If the validator is enabled
-				if ((vmd.isIncremental() && incremental && vmd.isBuildValidation()) || (!vmd.isIncremental() && !incremental)) {
-					temp[count++] = vmd;
+		ValidatorMetaData[] result = null;
+		
+		if( !isDisableAllValidation() ){
+			ValidatorMetaData[] temp = new ValidatorMetaData[numberOfValidators()];
+			Iterator iterator = getValidatorMetaData().keySet().iterator();
+			while (iterator.hasNext()) {
+				ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
+				Boolean bvalue = (Boolean) getValidatorMetaData().get(vmd);
+				if (bvalue.booleanValue() == true) {
+					// If the validator is enabled
+					if ((vmd.isIncremental() && incremental && vmd.isBuildValidation()) || (!vmd.isIncremental() && !incremental)) {
+						temp[count++] = vmd;
+					}
 				}
 			}
+	
+			result = new ValidatorMetaData[count];
+			System.arraycopy(temp, 0, result, 0, count);
+		}else{
+			result = new ValidatorMetaData[0];			
 		}
-
-		ValidatorMetaData[] result = new ValidatorMetaData[count];
-		System.arraycopy(temp, 0, result, 0, count);
 		return result;
 	}
 
@@ -191,26 +198,36 @@ public abstract class ValidationConfiguration {
 	}
 
 	public ValidatorMetaData[] getEnabledFullBuildValidators(boolean fullBuild, boolean onlyReferenced) throws InvocationTargetException {
-		ValidatorMetaData[] temp = new ValidatorMetaData[numberOfValidators()];
-		Iterator iterator = getValidatorMetaData().keySet().iterator();
+
 		int count = 0;
-		while (iterator.hasNext()) {
-			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
-			Boolean bvalue = (Boolean) getValidatorMetaData().get(vmd);
-			if (bvalue.booleanValue() == true) {
-				// If the validator is enabled
-				if (vmd == null)
-					continue;
-				
-				if (( vmd.isBuildValidation() && vmd.isFullBuild() && fullBuild) || (!vmd.isFullBuild() && !fullBuild)) {
-					if (!onlyReferenced || vmd.isDependentValidator())
-						temp[count++] = vmd;
+		ValidatorMetaData[] result = null;
+		 
+		if( !isDisableAllValidation() ){
+			ValidatorMetaData[] temp = new ValidatorMetaData[numberOfValidators()];
+			Iterator iterator = getValidatorMetaData().keySet().iterator();
+			
+			while (iterator.hasNext()) {
+				ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
+				Boolean bvalue = (Boolean) getValidatorMetaData().get(vmd);
+				if (bvalue.booleanValue() == true) {
+					// If the validator is enabled
+					if (vmd == null)
+						continue;
+					
+					if (( vmd.isBuildValidation() && vmd.isFullBuild() && fullBuild) || (!vmd.isFullBuild() && !fullBuild)) {
+						if (!onlyReferenced || vmd.isDependentValidator())
+							temp[count++] = vmd;
+					}
 				}
 			}
+			result = new ValidatorMetaData[count];
+			System.arraycopy(temp, 0, result, 0, count);
+		}else{
+			 result = new ValidatorMetaData[0];
 		}
 
-		ValidatorMetaData[] result = new ValidatorMetaData[count];
-		System.arraycopy(temp, 0, result, 0, count);
+//		ValidatorMetaData[] result = new ValidatorMetaData[count];
+//		System.arraycopy(temp, 0, result, 0, count);
 		return result;
 	}
 
