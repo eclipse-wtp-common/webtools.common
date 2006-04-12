@@ -185,9 +185,10 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 			} finally {
 				res = (XMIResource) getPrimaryResource();
 				if ((res == null) || (res != null && res.getContents().isEmpty())) {
-					if (res != null)
+					if (res != null) {
 						removeResource(res);
-					return null;
+					}
+					res = null;
 				}
 			}
 		}
