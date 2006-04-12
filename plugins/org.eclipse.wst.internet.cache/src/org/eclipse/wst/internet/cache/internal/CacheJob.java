@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2004 IBM Corporation and others.
+ * Copyright (c) 2001, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,8 @@
  *******************************************************************************/
 
 package org.eclipse.wst.internet.cache.internal;
+
+import java.text.MessageFormat;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -23,8 +25,6 @@ import org.eclipse.core.runtime.jobs.Job;
  */
 public class CacheJob extends Job
 {
-  private static final String _UI_CACHE_MONITOR_NAME = "_UI_CACHE_MONITOR_NAME";
-  private static final String _UI_CACHE_MONITOR_CACHING = "_UI_CACHE_MONITOR_CACHING";
   private String[] specifiedURIsToCache = null;
   private static final long SCHEDULE_TIME = 3600000;
 
@@ -33,7 +33,7 @@ public class CacheJob extends Job
    */
   public CacheJob()
   {
-    super(CachePlugin.getResourceString(_UI_CACHE_MONITOR_NAME));
+    super(CacheMessages._UI_CACHE_MONITOR_NAME);
     //specifiedURIsToCache = ToCacheRegistryReader.getInstance().getURIsToCache();
   }
 
@@ -59,7 +59,7 @@ public class CacheJob extends Job
     }
 
     cache.clearUncachedURIs();
-    monitor.beginTask(CachePlugin.getResourceString(_UI_CACHE_MONITOR_NAME), numUncachedURIs);
+    monitor.beginTask(CacheMessages._UI_CACHE_MONITOR_NAME, numUncachedURIs);
     try
     {
       for(int i = 0; i < numUncachedURIs; i++)
@@ -73,7 +73,7 @@ public class CacheJob extends Job
           return Status.CANCEL_STATUS;
         }
         String uri = uncachedURIs[i];
-        monitor.subTask(CachePlugin.getResourceString(_UI_CACHE_MONITOR_CACHING, uri));
+        monitor.subTask(MessageFormat.format(CacheMessages._UI_CACHE_MONITOR_CACHING, new Object[]{uri}));
         cache.getResource(uri);
         monitor.worked(1);
         monitor.subTask("");

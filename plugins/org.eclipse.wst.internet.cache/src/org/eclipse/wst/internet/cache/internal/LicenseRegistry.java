@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2004 IBM Corporation and others.
+ * Copyright (c) 2001, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.internet.cache.internal;
 
+import java.text.MessageFormat;
 import java.util.Hashtable;
 
 import org.eclipse.core.runtime.IStatus;
@@ -27,10 +28,6 @@ public class LicenseRegistry
   protected static Integer LICENSE_DISAGREE = new Integer(2);
   // Signifies a license that has been disagreed to this session.
   protected static Integer LICENSE_DISAGREE_THIS_SESSION = new Integer(3);
-  
-  protected final static String _LOG_INFO_WTP_NO_USER_INTERACTION = "_LOG_INFO_WTP_NO_USER_INTERACTION";
-  
-  protected final static String WTP_NO_USER_INTERACTION_SYSTEM_PROP = CachePlugin.getResourceString("WTP_NO_USER_INTERACTION_SYSTEM_PROP");
   
   /**
    * There is only one instance of the license registry.
@@ -53,9 +50,9 @@ public class LicenseRegistry
 	
 	// If the wtp quiet system property is set the DO_NOT_PROMPT flag is set to true.
 	// This is used for automated testing.
-	if(System.getProperty(WTP_NO_USER_INTERACTION_SYSTEM_PROP, "false").equals("true"))
+	if(System.getProperty(CacheMessages.WTP_NO_USER_INTERACTION_SYSTEM_PROP, "false").equals("true"))
 	{
-	  CachePlugin.getDefault().getLog().log(new Status(IStatus.INFO, CachePlugin.PLUGIN_ID, IStatus.OK, CachePlugin.getResourceString(_LOG_INFO_WTP_NO_USER_INTERACTION, WTP_NO_USER_INTERACTION_SYSTEM_PROP), null));
+	  CachePlugin.getDefault().getLog().log(new Status(IStatus.INFO, CachePlugin.PLUGIN_ID, IStatus.OK, MessageFormat.format(CacheMessages._LOG_INFO_WTP_NO_USER_INTERACTION, new Object[]{CacheMessages.WTP_NO_USER_INTERACTION_SYSTEM_PROP}), null));
 	  DO_NOT_PROMPT = true;
 	}
   }

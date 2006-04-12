@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2004 IBM Corporation and others.
+ * Copyright (c) 2001, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,12 +11,18 @@
 
 package org.eclipse.wst.internet.cache.internal;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Hashtable;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.osgi.framework.Bundle;
 
 /**
  * The ToCacheRegistryReaders reads Eclipse extensions which specify
@@ -88,6 +94,30 @@ public class ToCacheRegistryReader
       if(url != null)
       {
     	String license = element.getAttribute(ATT_LICENSE);
+    	
+    	// If the license is relative resolve relative to the
+    	// plug-in that declares it.
+    	try
+    	{
+    	  URI licenseURI = new URI(license);
+    	  if(!licenseURI.isAbsolute())
+    	  {
+    		Bundle pluginBundle = Platform.getBundle(element.getDeclaringExtension().getContributor().getName());
+    		URL licenseURL = pluginBundle.getEntry(license);
+    		if(licenseURL != null)
+    		{
+    	      license = FileLocator.resolve(licenseURL).toExternalForm();  
+    		}
+    	  }
+    	}
+    	catch(URISyntaxException e)
+    	{
+    	  // Use the license as specified.
+    	}
+    	catch(IOException e)
+    	{
+    	  // Use the license as specified.
+    	}
     	return new ToCacheResource(url, license);
       }
     }

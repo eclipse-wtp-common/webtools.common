@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2004 IBM Corporation and others.
+ * Copyright (c) 2001, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,6 +31,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.internet.cache.internal.Cache;
+import org.eclipse.wst.internet.cache.internal.CacheMessages;
 import org.eclipse.wst.internet.cache.internal.CachePlugin;
 
 /**
@@ -43,26 +44,6 @@ import org.eclipse.wst.internet.cache.internal.CachePlugin;
 public class CachePreferencePage extends PreferencePage implements
     IWorkbenchPreferencePage
 {
-  private static final String _UI_CONFIRM_CLEAR_CACHE_DIALOG_TITLE = "_UI_CONFIRM_CLEAR_CACHE_DIALOG_TITLE";
-
-  private static final String _UI_CONFIRM_CLEAR_CACHE_DIALOG_MESSAGE = "_UI_CONFIRM_CLEAR_CACHE_DIALOG_MESSAGE";
-
-  private static final String _UI_BUTTON_CLEAR_CACHE = "_UI_BUTTON_CLEAR_CACHE";
-
-  private static final String _UI_BUTTON_DELETE_ENTRY = "_UI_BUTTON_DELETE_ENTRY";
-
-  private static final String _UI_PREF_CACHE_ENTRIES_TITLE = "_UI_PREF_CACHE_ENTRIES_TITLE";
-
-  private static final String _UI_PREF_CACHE_CACHE_OPTION = "_UI_PREF_CACHE_CACHE_OPTION";
-
-  private static final String _UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_TITLE = "_UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_TITLE";
-
-  private static final String _UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_MESSAGE = "_UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_MESSAGE";
-  
-  private static final String _UI_PREF_CACHE_ABOUT = "_UI_PREF_CACHE_ABOUT";
-  
-  private static final String _UI_PREF_PROMPT_FOR_DISAGREED_LICENSES = "_UI_PREF_PROMPT_FOR_DISAGREED_LICENSES";
-
   protected Button clearButton;
 
   protected Button deleteButton;
@@ -121,7 +102,7 @@ public class CachePreferencePage extends PreferencePage implements
     composite.setLayoutData(gd);
     
     Label aboutLabel = new Label(composite, SWT.WRAP);
-    aboutLabel.setText(CachePlugin.getResourceString(_UI_PREF_CACHE_ABOUT));
+    aboutLabel.setText(CacheMessages._UI_PREF_CACHE_ABOUT);
     GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
     gridData.horizontalSpan = 2;
     aboutLabel.setLayoutData(gridData);
@@ -133,8 +114,7 @@ public class CachePreferencePage extends PreferencePage implements
       gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
       gridData.horizontalSpan = 2;
       enabledButton.setLayoutData(gridData);
-      enabledButton.setText(CachePlugin
-          .getResourceString(_UI_PREF_CACHE_CACHE_OPTION));
+      enabledButton.setText(CacheMessages._UI_PREF_CACHE_CACHE_OPTION);
       enabledButton.setSelection(!CachePlugin.getDefault().getPreferenceStore()
           .getBoolean(PreferenceConstants.CACHE_ENABLED));
       enabledButton.addSelectionListener(new SelectionListener()
@@ -158,8 +138,7 @@ public class CachePreferencePage extends PreferencePage implements
       gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
       gridData.horizontalSpan = 2;
       disagreedLicensesButton.setLayoutData(gridData);
-      disagreedLicensesButton.setText(CachePlugin
-          .getResourceString(_UI_PREF_PROMPT_FOR_DISAGREED_LICENSES));
+      disagreedLicensesButton.setText(CacheMessages._UI_PREF_PROMPT_FOR_DISAGREED_LICENSES);
       disagreedLicensesButton.setSelection(CachePlugin.getDefault().getPreferenceStore()
           .getBoolean(PreferenceConstants.PROMPT_DISAGREED_LICENSES));
       disagreedLicensesButton.addSelectionListener(new SelectionListener()
@@ -181,7 +160,7 @@ public class CachePreferencePage extends PreferencePage implements
 
       // Create the entities group.
       Label entriesLabel = new Label(composite, SWT.WRAP);
-      entriesLabel.setText(CachePlugin.getResourceString(_UI_PREF_CACHE_ENTRIES_TITLE));
+      entriesLabel.setText(CacheMessages._UI_PREF_CACHE_ENTRIES_TITLE);
       gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
       gridData.horizontalSpan = 2;
       entriesLabel.setLayoutData(gridData);
@@ -217,8 +196,7 @@ public class CachePreferencePage extends PreferencePage implements
       buttonComposite.setLayoutData(gridData);
       // Create the Delete button
       deleteButton = new Button(buttonComposite, SWT.PUSH);
-      deleteButton.setText(CachePlugin
-          .getResourceString(_UI_BUTTON_DELETE_ENTRY));
+      deleteButton.setText(CacheMessages._UI_BUTTON_DELETE_ENTRY);
       gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_BEGINNING);
       gridData.grabExcessHorizontalSpace = true;
       deleteButton.setLayoutData(gridData);
@@ -229,8 +207,8 @@ public class CachePreferencePage extends PreferencePage implements
           if (MessageDialog
               .openConfirm(
                   Display.getDefault().getActiveShell(),
-                  CachePlugin.getResourceString(_UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_TITLE),
-                  CachePlugin.getResourceString(_UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_MESSAGE)))
+                  CacheMessages._UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_TITLE,
+                  CacheMessages._UI_CONFIRM_DELETE_CACHE_ENTRY_DIALOG_MESSAGE))
           {
             String[] selectedEntries = entries.getSelection();
             int numSelectedEntries = selectedEntries.length;
@@ -250,7 +228,7 @@ public class CachePreferencePage extends PreferencePage implements
 
       // Create the Clear Cache button
       clearButton = new Button(buttonComposite, SWT.PUSH);
-      clearButton.setText(CachePlugin.getResourceString(_UI_BUTTON_CLEAR_CACHE));
+      clearButton.setText(CacheMessages._UI_BUTTON_CLEAR_CACHE);
       gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_BEGINNING);
       gridData.grabExcessHorizontalSpace = true;
       clearButton.setLayoutData(gridData);
@@ -259,8 +237,8 @@ public class CachePreferencePage extends PreferencePage implements
         public void widgetSelected(SelectionEvent event)
         {
           if (MessageDialog.openConfirm(Display.getDefault().getActiveShell(),
-              CachePlugin.getResourceString(_UI_CONFIRM_CLEAR_CACHE_DIALOG_TITLE),
-              CachePlugin.getResourceString(_UI_CONFIRM_CLEAR_CACHE_DIALOG_MESSAGE)))
+              CacheMessages._UI_CONFIRM_CLEAR_CACHE_DIALOG_TITLE,
+              CacheMessages._UI_CONFIRM_CLEAR_CACHE_DIALOG_MESSAGE))
           {
             Cache cache = Cache.getInstance();
             cache.clear();

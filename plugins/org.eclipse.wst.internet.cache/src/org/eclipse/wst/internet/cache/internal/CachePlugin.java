@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2004 IBM Corporation and others.
+ * Copyright (c) 2001, 2006 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,10 +10,6 @@
  *******************************************************************************/
 
 package org.eclipse.wst.internet.cache.internal;
-
-import java.text.MessageFormat;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Preferences;
@@ -123,39 +119,6 @@ public class CachePlugin extends AbstractUIPlugin
   public static CachePlugin getDefault() 
   {
 	return plugin;
-  }
-
-  /**
-   * Returns the string from the plugin's resource bundle, or 'key' if not found.
-   * 
-   * @param key The key for which the string is requested.
-   * @return The string from the plugin's resource bundle, or 'key' if not found.
-   */
-  public static String getResourceString(String key) 
-  {
-	ResourceBundle bundle = ResourceBundle
-			.getBundle("org.eclipse.wst.internet.cache.internal.CachePluginResources");
-	try 
-	{
-	  return (bundle != null) ? bundle.getString(key) : key;
-	} 
-	catch (MissingResourceException e) 
-	{
-	  return key;
-	}
-  }
-
-  /**
-   * Returns the string from the plugin's resource bundle using the specified
-   * object, or 'key' if not found.
-   * 
-   * @param key The key for which the string is requested.
-   * @param s1 The object to insert into the string.
-   * @return The formatted string.
-   */
-  public static String getResourceString(String key, Object s1) 
-  {
-	return MessageFormat.format(getResourceString(key), new Object[] { s1 });
   }
 
   /**
