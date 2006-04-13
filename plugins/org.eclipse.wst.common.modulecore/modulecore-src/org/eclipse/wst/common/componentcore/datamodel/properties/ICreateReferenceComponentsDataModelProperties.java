@@ -30,6 +30,12 @@ public interface ICreateReferenceComponentsDataModelProperties {
 	/**
      * Optional, archive name for the dependent component, default is ""
      */
-	public static final String TARGET_COMPONENT_ARCHIVE_NAME = "ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_ARCHIVE_NAME"; //$NON-NLS-1$	
+	public static final String TARGET_COMPONENT_ARCHIVE_NAME = "ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_ARCHIVE_NAME"; //$NON-NLS-1$
+	
+	/**
+	 * Returns a Map which maps Components in the TARGET_COMPONENT_LIST list to the name Strings
+	 * that should be used when adding them to the ear.
+	 */
+	public static final String TARGET_COMPONENTS_TO_URI_MAP = "ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_TO_URI_MAP"; //$NON-NLS-1$
 	
 }
