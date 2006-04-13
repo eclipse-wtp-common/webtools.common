@@ -20,7 +20,10 @@ import java.util.logging.Level;
 
 import javax.swing.event.HyperlinkEvent;
 
+import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -67,6 +70,7 @@ import org.eclipse.wst.validation.internal.GlobalConfiguration;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
+import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;
 
 /**
@@ -244,6 +248,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 		private Label globalPrefLink = null;
 		ProjectConfiguration pagePreferences = null;
 		private boolean canOverride = false;
+		private Button addValidationBuilder = null;
 
 		private ValidatorMetaData[] oldVmd = null; // Cache the enabled validators so that, if there
     private Map oldDelegates = null; // Cache the validator delegates.
@@ -524,10 +529,10 @@ public class ValidationPropertiesPage extends PropertyPage {
 			emptyRowPlaceholder = new Label(validatorGroup, SWT.NONE);
 			emptyRowPlaceholder.setLayoutData(new GridData());
 			
-			GridData disableValidationData = new GridData(GridData.FILL_HORIZONTAL);
-			disableValidationData.horizontalSpan = 2;
+			GridData data = new GridData(GridData.FILL_HORIZONTAL);
+			data.horizontalSpan = 2;
 			disableAllValidation = new Button(validatorGroup, SWT.CHECK);
-			disableAllValidation.setLayoutData(disableValidationData);
+			disableAllValidation.setLayoutData(data);
 			disableAllValidation.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.DISABLE_VALIDATION));
 			disableAllValidation.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
@@ -536,11 +541,11 @@ public class ValidationPropertiesPage extends PropertyPage {
 					validatorsTable.setEnabled(!disableAllValidation.getSelection());
 					enableAllButton.setEnabled(!disableAllValidation.getSelection());
 					disableAllButton.setEnabled(!disableAllValidation.getSelection());
-          try {
-            updateWidgets();
-          } catch (InvocationTargetException exc) {
-            displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
-          }
+	          try {
+	            updateWidgets();
+	          } catch (InvocationTargetException exc) {
+	            displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
+	          }
 				}
 			});
 			
@@ -558,9 +563,9 @@ public class ValidationPropertiesPage extends PropertyPage {
 			validatorsTable = new Table(validatorGroup,SWT.BORDER | SWT.FULL_SELECTION);
 			TableLayout tableLayout = new TableLayout();
 			tableLayout.addColumnData(new ColumnWeightData(160, true));
-	    tableLayout.addColumnData(new ColumnWeightData(40, true));
-	    tableLayout.addColumnData(new ColumnWeightData(30, true));
-      tableLayout.addColumnData(new ColumnWeightData(40, true));
+			tableLayout.addColumnData(new ColumnWeightData(40, true));
+			tableLayout.addColumnData(new ColumnWeightData(30, true));
+			tableLayout.addColumnData(new ColumnWeightData(40, true));
 			validatorsTable.setHeaderVisible(true);
 			validatorsTable.setLinesVisible(true);
 	        validatorsTable.setLayout(tableLayout);
@@ -648,12 +653,14 @@ public class ValidationPropertiesPage extends PropertyPage {
 			});
 			PlatformUI.getWorkbench().getHelpSystem().setHelp(disableAllButton, ContextIds.VALIDATION_PROPERTIES_PAGE);
 
-			Composite maxGroup = new Composite(page, SWT.NONE);
-			GridLayout maxGroupLayout = new GridLayout();
-			maxGroupLayout.numColumns = 2;
-			maxGroup.setLayout(maxGroupLayout);
-			GridData maxGroupData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-			maxGroup.setLayoutData(maxGroupData);
+			emptyRowPlaceholder = new Label(validatorGroup, SWT.NONE);
+			emptyRowPlaceholder.setLayoutData(new GridData());
+			
+			GridData disableValidationData = new GridData(GridData.FILL_HORIZONTAL);
+			disableValidationData.horizontalSpan = 2;
+			addValidationBuilder = new Button(validatorGroup, SWT.CHECK);
+			addValidationBuilder.setLayoutData(disableValidationData);
+			addValidationBuilder.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.ADD_VALIDATION_BUILDER));
 
 			// Have to set the tab order or only the first checkbox in a Composite can
 			// be tab-ed to. (Seems to apply only to checkboxes. Have to use the arrow
@@ -846,7 +853,30 @@ public class ValidationPropertiesPage extends PropertyPage {
 				enableDependentControls(!pagePreferences.isDisableAllValidation());
 			else
 				enableDependentControls(overridePreferences);
+			setAddValidationBuilderButtonEnablement();
 			updateHelp();
+		}
+
+		private void setAddValidationBuilderButtonEnablement() {
+			try {
+				boolean builderExists = false;
+				IProjectDescription description = getProject().getDescription();
+				ICommand[] commands = description.getBuildSpec();
+				for (int i = 0; i < commands.length; i++) {
+					if (commands[i].getBuilderName().equals(ValidationPlugin.VALIDATION_BUILDER_ID))
+						builderExists = true;
+				}
+				if (builderExists) {
+					addValidationBuilder.setSelection(true);
+					addValidationBuilder.setEnabled(false);
+				} else {
+					addValidationBuilder.setSelection(false);
+					addValidationBuilder.setEnabled(true);
+				}
+
+			} catch (CoreException ce) {
+				Logger.getLogger().log(ce);
+			}
 		}
 
 		private void updateTableForDefaults() throws InvocationTargetException {
@@ -1012,12 +1042,8 @@ public class ValidationPropertiesPage extends PropertyPage {
 		 * builder. Otherwise return without doing anything.
 		 */
 		private void addBuilder() {
-			if (overrideGlobalButton.getSelection()) { // do not add the builder unless the user
-				// overrides the preferences
-				/*if (autoButton.getSelection() || valWhenBuildButton.getSelection()) {
-					ValidatorManager.addProjectBuildValidationSupport(getProject());
-				}*/
-			}
+			if (addValidationBuilder.getSelection()) 
+				ValidatorManager.addProjectBuildValidationSupport(getProject());
 		}
 
 		public Composite getControl() {

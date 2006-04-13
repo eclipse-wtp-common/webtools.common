@@ -88,6 +88,7 @@ public interface ResourceConstants {
 	/* package */static final String VBF_UI_RESCANCELLED = "VBF_UI_RESCANCELLED"; //$NON-NLS-1$
 	
 	/* package */static final String DISABLE_VALIDATION = "DISABLE_VALIDATION"; //$NON-NLS-1$
+	/* package */static final String ADD_VALIDATION_BUILDER = "ADD_VALIDATION_BUILDER"; //$NON-NLS-1$
 	static final String INFO = "INFO"; //$NON-NLS-1$
   
   String DELEGATES_DIALOG_TITLE = "DELEGATES_DIALOG_TITLE"; //$NON-NLS-1$
