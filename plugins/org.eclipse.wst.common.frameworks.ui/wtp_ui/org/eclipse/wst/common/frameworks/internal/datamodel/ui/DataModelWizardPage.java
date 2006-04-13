@@ -60,7 +60,7 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 		model.addListener(this);
 		synchHelper = initializeSynchHelper(model);
 	}
-	
+
 	/**
 	 * @return
 	 */
@@ -118,7 +118,7 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 	}
 
 	public boolean canFlipToNextPage() {
-		//TODO why is that last getNextPage() call here???
+		// TODO why is that last getNextPage() call here???
 		return isPageComplete() && ((null != wizard && wizard.getPageGroupManager().hasNextPage() || null != getNextPage()));
 	}
 
@@ -127,7 +127,7 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 	 */
 	public void setWizard(IWizard newWizard) {
 		super.setWizard(newWizard);
-		if(newWizard instanceof DataModelWizard){
+		if (newWizard instanceof DataModelWizard) {
 			wizard = (DataModelWizard) newWizard;
 		}
 	}
@@ -257,8 +257,8 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 			} else if (!warning.equals(getMessage()))
 				setMessage(warning, IMessageProvider.WARNING);
 		} else if (!error.equals(getErrorMessage()))
-			setErrorMessage(error);
-	}
+							setErrorMessage(error);
+						}
 
 	protected void setErrorStatus(Integer key, String errorMessage) {
 		status.setErrorStatus(key, errorMessage);
@@ -398,7 +398,7 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 		if (validationPropertyNames != null && (event.getFlag() == DataModelEvent.VALUE_CHG || (!isPageComplete() && event.getFlag() == DataModelEvent.VALID_VALUES_CHG))) {
 			for (int i = 0; i < validationPropertyNames.length; i++) {
 				if (validationPropertyNames[i].equals(propertyName)) {
-					validatePage();
+					validatePage(showValidationErrorsOnEnter());
 					break;
 				}
 			}
