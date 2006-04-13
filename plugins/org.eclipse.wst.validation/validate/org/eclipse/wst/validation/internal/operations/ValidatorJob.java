@@ -13,7 +13,6 @@ import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 import org.eclipse.wst.validation.internal.ResourceConstants;
 import org.eclipse.wst.validation.internal.ResourceHandler;
-import org.eclipse.wst.validation.internal.ValidationFactoryImpl;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.core.Message;
@@ -28,6 +27,7 @@ public class ValidatorJob extends Job {
 	private IProject			project;
 	private String				validatorUniqueName;
 	private IWorkbenchContext 	helper;
+	private IValidatorJob		validator;
 	
 	public ValidatorJob(String name) {
 		super(name);
@@ -36,11 +36,12 @@ public class ValidatorJob extends Job {
 
 	   
 	   
-	public ValidatorJob(String displayName, String name, IProject project, IWorkbenchContext aHelper  ){
+	public ValidatorJob( IValidatorJob validator, String displayName, String name, IProject project, IWorkbenchContext aHelper  ){
 		super(displayName);
 		validatorUniqueName = name;
 		this.project = project;
 		this.helper = aHelper;
+		this.validator = validator;
 	}
 	
 	//revisit reporter in the code  below
@@ -53,23 +54,7 @@ public class ValidatorJob extends Job {
 		IStatus status = IValidatorJob.OK_STATUS;
 		WorkbenchReporter	reporter = new WorkbenchReporter( project, monitor );
 
-		IValidatorJob	validator = null;
-
-		
-		try {
-			validator = (IValidatorJob) ValidationFactoryImpl.getInstance().getValidator( validatorUniqueName );
-		} catch (InstantiationException e1) {
-			Logger.getLogger().logError(e1);
-
-		}
-
 		ValidatorMetaData vmd = ValidationRegistryReader.getReader().getValidatorMetaData(validator);
-		
-//		try {
-//			helper = vmd.getHelper(project);
-//		} catch (InstantiationException e1) {
-//			Logger.getLogger().logError(e1);
-//		}
 		
 		Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 
@@ -170,6 +155,7 @@ public class ValidatorJob extends Job {
 			}
 			try {
 				helper.cleanup(reporter);
+				vmd.removeHelper( validator );
 			}catch (OperationCanceledException e) {
 				throw e;
 			} catch (Throwable exc) {
@@ -189,7 +175,10 @@ public class ValidatorJob extends Job {
 				status = WTPCommonPlugin.createErrorStatus(message.getText());	
 				return status;
 			} finally {
-				//helper.setProject(null);
+				helper.setProject(null);
+				vmd.removeHelper( validator );
+				helper = null;
+				validator = null;
 			}
 			//reporter.getProgressMonitor().worked(((delta == null) ? 1 : delta.length)); // One
 			//monitor.worked(((delta == null) ? 1 : delta.length)); // One

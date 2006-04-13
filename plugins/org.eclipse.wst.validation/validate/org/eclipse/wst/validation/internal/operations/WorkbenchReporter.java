@@ -183,7 +183,8 @@ public final class WorkbenchReporter implements IReporter {
 
 		String[] validatorNames = vmd.getValidatorNames();
 		try {
-			String targetObjectName = getTargetObjectName(vmd.getHelper(resource.getProject()), object);
+			//String targetObjectName = getTargetObjectName(vmd.getHelper(resource.getProject()), object);
+			String targetObjectName = getTargetObjectName( getHelper( resource.getProject(), validator), object);			
 			removeAllMessages(resource, validatorNames, targetObjectName);
 		} catch (InstantiationException exc) {
 			// Remove the vmd from the reader's list
@@ -358,11 +359,16 @@ public final class WorkbenchReporter implements IReporter {
 	// framework support IMarker.PRIORITY.
 	protected IWorkbenchContext getHelper(IValidator validator) throws InstantiationException, IllegalArgumentException {
 		ValidatorMetaData vmd = getVMD(validator);
-		IWorkbenchContext helper = vmd.getHelper(getProject());
+		IWorkbenchContext helper = vmd.getHelper( getProject(), validator );
 		return helper;
 	}
 	
-
+	protected static IWorkbenchContext getHelper(IProject project, IValidator validator) throws InstantiationException, IllegalArgumentException {
+		ValidatorMetaData vmd = getVMD(validator);
+		IWorkbenchContext helper = vmd.getHelper( project, validator );
+		return helper;
+	}
+	
 	public IProject getProject() {
 		return _project;
 	}
@@ -638,7 +644,8 @@ public final class WorkbenchReporter implements IReporter {
 
 		IWorkbenchContext helper = null;
 		try {
-			helper = vmd.getHelper(resource.getProject());
+			//helper = vmd.getHelper(resource.getProject());
+			helper = getHelper(validator);
 		} catch (InstantiationException exc) {
 			// Unlikely that an exception will be thrown, because this method is
 			// invoked by the validator, and if the validator is invoked, it's likely
@@ -681,8 +688,10 @@ public final class WorkbenchReporter implements IReporter {
 
 		IWorkbenchContext helper = null;
 		try {
-			helper = vmd.getHelper(resource.getProject());
-		} catch (InstantiationException exc) {
+			//helper = vmd.getHelper(resource.getProject());
+			helper = getHelper( resource.getProject(), validator );
+		} 
+		catch (InstantiationException exc) {
 			// Unlikely that an exception will be thrown, because this method is
 			// invoked by the validator, and if the validator is invoked, it's likely
 			// that the helper has been loaded too.

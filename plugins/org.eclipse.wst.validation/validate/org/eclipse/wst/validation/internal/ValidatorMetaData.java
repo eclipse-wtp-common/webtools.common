@@ -12,8 +12,11 @@ package org.eclipse.wst.validation.internal;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IContainer;
@@ -28,6 +31,7 @@ import org.eclipse.wst.validation.internal.operations.WorkbenchContext;
 import org.eclipse.wst.validation.internal.plugin.ValidationHelperRegistryReader;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
+import org.eclipse.wst.validation.internal.provisional.core.IValidatorJob;
 import org.osgi.framework.Bundle;
 
 /**
@@ -61,6 +65,7 @@ public class ValidatorMetaData {
 	private boolean _cannotLoad = false;
 	private boolean manualValidation = true;
 	private boolean buildValidation = true;
+	private Map helpers = Collections.synchronizedMap( new HashMap() );
 
 	/* package */ValidatorMetaData() {
 		//default
@@ -184,16 +189,6 @@ public class ValidatorMetaData {
 	//TODO just want to remember to figure out the many-temporary-objects problem if this method
 	// continues to new an IValidationContext every time - Ruth
 	public IWorkbenchContext getHelper(IProject project) throws InstantiationException {
-		if (isAsync()) {
-			IWorkbenchContext helper = ValidationRegistryReader.createHelper(_helperClassElement, _helperClassName);
-			if (helper == null) {
-				helper = new WorkbenchContext();
-				//setCannotLoad();
-				//throw new InstantiationException(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_DISABLEH, new String[]{_helperClassName, getValidatorUniqueName()}));
-			}
-			helper.setProject(project);
-			return helper;
-		}
 		if (_helper == null) {
 			_helper = ValidationRegistryReader.createHelper(_helperClassElement, _helperClassName);
 			if (_helper == null) {
@@ -202,8 +197,8 @@ public class ValidatorMetaData {
 				//throw new InstantiationException(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_DISABLEH, new String[]{_helperClassName, getValidatorUniqueName()}));
 			}
 			// Won't be using the element & name again, so clear them.
-			_helperClassElement = null;
-			_helperClassName = null;
+			//_helperClassElement = null;
+			//_helperClassName = null;
 		}
 		if ((_helper.getProject() == null) || !(_helper.getProject().equals(project))) {
 			// Initialize helper with the new project
@@ -280,7 +275,7 @@ public class ValidatorMetaData {
 			_validator = ValidationRegistryReader.createValidator(_validatorClassElement, getValidatorUniqueName());
 
 			// Since the element won't be used any more, clear it.
-			_validatorClassElement = null;
+			//_validatorClassElement = null;
 
 			if (_validator == null) {
 				setCannotLoad();
@@ -547,4 +542,48 @@ public class ValidatorMetaData {
     String targetID = getValidatorUniqueName();
     return ValidatorDelegatesRegistry.getInstance().hasDelegates(targetID);
   }
+  
+
+	public IValidator createValidator() throws InstantiationException {
+		return  ValidationRegistryReader.createValidator(_validatorClassElement, getValidatorUniqueName());
+	}
+	
+	public IWorkbenchContext createHelper(IProject project) throws InstantiationException {
+		IWorkbenchContext helper = ValidationRegistryReader.createHelper(_helperClassElement, _helperClassName);
+		if (helper == null) {
+			helper = new WorkbenchContext();
+		}
+		helper.setProject(project);
+		return helper;
+	}	  
+	
+   public void addHelper( IValidatorJob validator, IWorkbenchContext helper ){
+	   helpers.put( validator, helper );
+   }
+   
+   public void removeHelper( IValidatorJob validator ){
+	   helpers.remove( validator );
+   }
+   
+   private IWorkbenchContext getHelper( IValidatorJob validator ){
+	   return (IWorkbenchContext)helpers.get( validator );
+   }   
+   
+   public IWorkbenchContext getHelper( IProject project, IValidator validator ){
+	   
+	   if( validator instanceof IValidatorJob ){
+		   return getHelper( (IValidatorJob)validator );
+	   }
+	   else{
+		   try {
+			IWorkbenchContext helper =  getHelper( project );
+			return helper;
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	   }
+	   
+	   return null;
+   }   
 }

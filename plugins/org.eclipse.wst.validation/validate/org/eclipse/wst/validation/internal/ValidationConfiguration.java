@@ -204,11 +204,11 @@ public abstract class ValidationConfiguration {
 		 
 		if( !isDisableAllValidation() ){
 			ValidatorMetaData[] temp = new ValidatorMetaData[numberOfValidators()];
-			Iterator iterator = getValidatorMetaData().keySet().iterator();
+			Iterator iterator = getBuildEnabledValidatorsMap().keySet().iterator();
 			
 			while (iterator.hasNext()) {
 				ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
-				Boolean bvalue = (Boolean) getValidatorMetaData().get(vmd);
+				Boolean bvalue = (Boolean)(getBuildEnabledValidatorsMap().get(vmd));
 				if (bvalue.booleanValue() == true) {
 					// If the validator is enabled
 					if (vmd == null)

@@ -1591,10 +1591,10 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			}
 			
 			try {
-				workbenchcontext = vmd.getHelper( getProject() );
+				validator = vmd.createValidator();
+				workbenchcontext = vmd.createHelper( getProject() );
 				initValidateContext( delta, workbenchcontext );
-				validator = vmd.getValidator();
-				
+				vmd.addHelper((IValidatorJob)validator, workbenchcontext);				
 				checkCanceled(reporter);
 				
 			} catch (InstantiationException exc) {
@@ -1690,7 +1690,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			getLaunchedValidators().add(vmd);
 		}
 		
-		ValidatorJob validatorjob = new ValidatorJob( vmd.getValidatorDisplayName(), vmd.getValidatorUniqueName(),
+		ValidatorJob validatorjob = new ValidatorJob( validator, vmd.getValidatorDisplayName(), vmd.getValidatorUniqueName(),
 					helper.getProject(), helper );
 
 
