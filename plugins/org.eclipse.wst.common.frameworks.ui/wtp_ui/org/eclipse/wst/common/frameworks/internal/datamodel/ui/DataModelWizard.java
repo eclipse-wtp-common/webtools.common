@@ -12,9 +12,7 @@ package org.eclipse.wst.common.frameworks.internal.datamodel.ui;
 
 import java.lang.reflect.InvocationTargetException;
 
-import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -26,10 +24,7 @@ import org.eclipse.wst.common.environment.IEnvironment;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelPausibleOperation;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
-import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelImpl;
-import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelPausibleOperationImpl;
 import org.eclipse.wst.common.frameworks.internal.eclipse.ui.EclipseEnvironment;
 import org.eclipse.wst.common.frameworks.internal.ui.ErrorDialog;
 import org.eclipse.wst.common.frameworks.internal.ui.PageGroupManager;
@@ -69,7 +64,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	 * @return returns the root operation for this wizard.
 	 */
 	protected IDataModelPausibleOperation getRootOperation() {
-		return new WizardDataModelManagerOperationImpl(((DataModelImpl)getDataModel()).getRawOperation());
+		return getDataModel().getDefaultOperation();
 	}
 
 	/**
@@ -189,24 +184,29 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 
 	private IStatus runOperations() {
 		final IStatus[] status = new IStatus[1];
-		IRunnableWithProgress runnable = new IRunnableWithProgress() {
-			public void run(IProgressMonitor monitor) {
+		class CatchThrowableRunnableWithProgress implements IRunnableWithProgress {
+			public Throwable caught = null;
+
+			public void run(IProgressMonitor pm) {
 				try {
-					status[0] = rootOperation.execute(monitor, null);
-				} catch (ExecutionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					status[0] = rootOperation.execute(pm, null);
+				} catch (Throwable e) {
+					caught = e;
 				}
 			}
-		};
+		}
+		CatchThrowableRunnableWithProgress runnable = new CatchThrowableRunnableWithProgress();
+
 		try {
 			getContainer().run(runForked(), isCancelable(), runnable);
-		} catch (Throwable exc) {
-			WTPUIPlugin.log(exc);
-			ErrorDialog.openError(getShell(), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_0, new Object[]{getWindowTitle()}), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_1, new Object[]{getWindowTitle()}), exc, 0, false); //$NON-NLS-1$ //$NON-NLS-2$
-			status[0] = new Status(IStatus.ERROR, "id", 0, exc.getMessage(), exc); //$NON-NLS-1$
+		} catch (Throwable e) {
+			runnable.caught = e;
 		}
-
+		if (runnable.caught != null) {
+			Logger.getLogger().logError(runnable.caught);
+			status[0] = new Status(IStatus.ERROR, "id", 0, runnable.caught.getMessage(), runnable.caught); //$NON-NLS-1$
+			ErrorDialog.openError(getShell(), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_0, new Object[]{getWindowTitle()}), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_1, new Object[]{getWindowTitle()}), runnable.caught, 0, false);
+		}
 		return status[0];
 	}
 
@@ -325,39 +325,6 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 		rootOperation = getRootOperation();
 		rootPageGroup = createRootPageGroup();
 		pageGroupManager = new PageGroupManager(rootOperation, rootPageGroup);
-	}
-
-	private class WizardDataModelManagerOperationImpl extends DataModelPausibleOperationImpl {
-		WizardDataModelManagerOperationImpl(IDataModelOperation rootOperation) {
-			super(rootOperation);
-		}
-
-		public IStatus execute(IProgressMonitor monitor, final IAdaptable info) throws ExecutionException {
-			final IStatus[] status = new IStatus[1];
-			class CatchThrowableRunnableWithProgress implements IRunnableWithProgress {
-				public Throwable caught = null;
-
-				public void run(IProgressMonitor monitor) {
-					try {
-						status[0] = WizardDataModelManagerOperationImpl.super.execute(monitor, info);
-					} catch (Throwable e) {
-						caught = e;
-					}
-				}
-			}
-			CatchThrowableRunnableWithProgress runnable = new CatchThrowableRunnableWithProgress();
-			try {
-				getContainer().run(runForked(), isCancelable(), runnable);
-			} catch (Throwable e) {
-				runnable.caught = e;
-			}
-			if (runnable.caught != null) {
-				Logger.getLogger().logError(runnable.caught);
-				ErrorDialog.openError(getShell(), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_0, new Object[]{getWindowTitle()}), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_1, new Object[]{getWindowTitle()}), runnable.caught, 0, false); //$NON-NLS-1$ //$NON-NLS-2$
-				status[0] = new Status(IStatus.ERROR, "id", 0, runnable.caught.getMessage(), runnable.caught); //$NON-NLS-1$
-			}
-			return status[0];
-		}
 	}
 
 	public boolean needsPreviousAndNextButtons() {
