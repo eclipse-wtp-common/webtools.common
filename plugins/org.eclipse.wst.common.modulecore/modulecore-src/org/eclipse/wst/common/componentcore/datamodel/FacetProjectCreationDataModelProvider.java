@@ -235,10 +235,9 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 						IDataModel facetModel = ((FacetDataModelMap) facetDMs).getFacetDataModel(facet.getId());
 						IProjectFacetVersion oldVersion = (IProjectFacetVersion) facetModel.getProperty(IFacetDataModelProperties.FACET_VERSION);
 						IProjectFacetVersion newVersion = facet.getLatestSupportedVersion(runtime);
-						if (newVersion != null && (oldVersion == null || oldVersion.getVersionString().compareTo(newVersion.getVersionString()) > 0)) {
+						if (newVersion != null && (oldVersion == null || oldVersion.getVersionString().compareTo(newVersion.getVersionString()) > 0 || !runtime.supports(oldVersion))) {
 							facetModel.setProperty(IFacetDataModelProperties.FACET_VERSION, newVersion);
 						}
-
 					} catch (CoreException e) {
 						Logger.getLogger().logError(e);
 					}
@@ -283,12 +282,12 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 					projectFacets.add(facet);
 				}
 			}
-			Map facetActions = (Map)getProperty(FACET_ACTION_MAP);
-			for(Iterator iterator = facetActions.values().iterator(); iterator.hasNext();){
+			Map facetActions = (Map) getProperty(FACET_ACTION_MAP);
+			for (Iterator iterator = facetActions.values().iterator(); iterator.hasNext();) {
 				IFacetedProject.Action action = (IFacetedProject.Action) iterator.next();
 				projectFacets.add(action.getProjectFacetVersion().getProjectFacet());
 			}
-			
+
 			Set runtimes = RuntimeManager.getRuntimes();
 			ArrayList list = new ArrayList();
 
@@ -312,11 +311,11 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 
 			DataModelPropertyDescriptor[] descriptors = new DataModelPropertyDescriptor[list.size() + 1];
 			Iterator iterator = list.iterator();
-			for (int i = 0; i < descriptors.length -1; i++) {
+			for (int i = 0; i < descriptors.length - 1; i++) {
 				IRuntime runtime = (IRuntime) iterator.next();
 				descriptors[i] = new DataModelPropertyDescriptor(runtime, runtime.getName());
 			}
-			descriptors[descriptors.length -1] = new DataModelPropertyDescriptor(null, WTPCommonPlugin.getResourceString(WTPCommonMessages.RUNTIME_NONE, null));
+			descriptors[descriptors.length - 1] = new DataModelPropertyDescriptor(null, WTPCommonPlugin.getResourceString(WTPCommonMessages.RUNTIME_NONE, null));
 			return descriptors;
 		}
 		return super.getValidPropertyDescriptors(propertyName);
@@ -325,7 +324,7 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 	public IStatus validate(String propertyName) {
 		if (FACET_PROJECT_NAME.equals(propertyName)) {
 			IDataModel projModel = model.getNestedModel(NESTED_PROJECT_DM);
-			return projModel.validateProperty(IProjectCreationPropertiesNew.PROJECT_NAME);			
+			return projModel.validateProperty(IProjectCreationPropertiesNew.PROJECT_NAME);
 		}
 		return super.validate(propertyName);
 	}
