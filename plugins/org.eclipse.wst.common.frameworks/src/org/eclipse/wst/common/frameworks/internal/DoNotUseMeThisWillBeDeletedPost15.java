@@ -11,6 +11,13 @@
 package org.eclipse.wst.common.frameworks.internal;
 
 /**
+ * Other things to delete:
+ * 
+ * The wtpuiAction extension point and schema in org.eclipse.wst.common.frameworks.ui
+ */
+
+
+/**
  * This has been slated for removal post WTP 1.5. Do not use this class/interface/method/field
  * 
  * @deprecated
