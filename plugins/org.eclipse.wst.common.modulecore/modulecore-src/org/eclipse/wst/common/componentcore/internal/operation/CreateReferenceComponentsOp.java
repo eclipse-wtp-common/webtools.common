@@ -24,14 +24,10 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.datamodel.properties.ICreateReferenceComponentsDataModelProperties;
-import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject;
-import org.eclipse.wst.common.project.facet.core.IProjectFacet;
-import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 
@@ -89,25 +85,9 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 	}
 
 	protected String getArchiveName(IVirtualComponent comp) {
-		boolean useArchiveURI = true;
-		IFacetedProject facetedProject = null;
-		try {
-			facetedProject = ProjectFacetsManager.create(comp.getProject());
-		} catch (CoreException e) {
-			useArchiveURI = false;
-		}
-
-		if (useArchiveURI && facetedProject != null && ProjectFacetsManager.isProjectFacetDefined(IModuleConstants.JST_UTILITY_MODULE)) {
-			IProjectFacet projectFacet = ProjectFacetsManager.getProjectFacet(IModuleConstants.JST_UTILITY_MODULE);
-			useArchiveURI = projectFacet != null && facetedProject.hasProjectFacet(projectFacet);
-		}
-		if (useArchiveURI) {
-			Map map = (Map) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_TO_URI_MAP);
-			String uri = (String) map.get(comp);
-			return uri == null ? "" : uri;
-		} else {
-			return model.getStringProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_ARCHIVE_NAME);
-		}
+		Map map = (Map) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_TO_URI_MAP);
+		String uri = (String) map.get(comp);
+		return uri == null ? "" : uri; //$NON-NLS-1$
 	}
 
 
