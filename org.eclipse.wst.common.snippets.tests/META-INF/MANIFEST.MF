@@ -1,11 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Snippets Tests
+Bundle-Name: %Bundle-Name.0
 Bundle-SymbolicName: org.eclipse.wst.common.snippets.tests; singleton:=true
 Bundle-Version: 1.0.0
 Bundle-ClassPath: snippetstests.jar
 Bundle-Activator: org.eclipse.wst.common.snippets.tests.TestsPlugin
-Bundle-Vendor: Eclipse.org
+Bundle-Vendor: %Bundle-Vendor.0
 Bundle-Localization: plugin
 Export-Package: org.eclipse.wst.common.snippets.core.tests,
  org.eclipse.wst.common.snippets.tests,
