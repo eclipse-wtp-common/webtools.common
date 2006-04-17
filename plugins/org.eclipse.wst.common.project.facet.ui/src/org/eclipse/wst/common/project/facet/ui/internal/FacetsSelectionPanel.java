@@ -26,9 +26,7 @@ import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.CellEditor;
@@ -150,7 +148,6 @@ public final class FacetsSelectionPanel
     private final HashSet fixed;
     private final Set base;
     private final HashSet actions;
-    private final ArrayList presets;
     private Object oldSelection;
 
     private IStatus problems;
@@ -158,6 +155,8 @@ public final class FacetsSelectionPanel
     private final ArrayList listeners;
     private final ArrayList selectionListeners;
     private ConflictingFacetsFilter conflictingFilter;
+    
+    private final AddRemoveFacetsDataModel model;
     
     public interface IFilter 
     {
@@ -167,16 +166,17 @@ public final class FacetsSelectionPanel
     public FacetsSelectionPanel( final Composite parent,
                                  final int style,
                                  final IWizardContext context,
-                                 final Set base )
+                                 final Set base,
+                                 final AddRemoveFacetsDataModel model )
     {
         super( parent, style );
 
         this.context = context;
         this.data = new ArrayList();
+        this.model = model;
         this.fixed = new HashSet();
         this.base = ( base == null ? new HashSet() : base );
         this.actions = new HashSet();
-        this.presets = new ArrayList();
         this.oldSelection = null;
         this.problems = Status.OK_STATUS;
         this.filters = new HashSet();
@@ -257,17 +257,8 @@ public final class FacetsSelectionPanel
         
         this.presetsCombo = new Combo( this.topComposite, SWT.READ_ONLY );
         this.presetsCombo.setLayoutData( gdhfill() );
-
-        this.presetsCombo.addSelectionListener
-        (
-            new SelectionAdapter()
-            {
-                public void widgetSelected( final SelectionEvent e ) 
-                {
-                    handlePresetSelected();
-                }
-            }
-        );
+        
+        syncWithPresetsModel( this.presetsCombo );
         
         this.savePresetButton = new Button( this.topComposite, SWT.PUSH );
         this.savePresetButton.setText( Resources.saveButtonLabel );
@@ -499,6 +490,11 @@ public final class FacetsSelectionPanel
         updateValidationDisplay();
     }
     
+    public final AddRemoveFacetsDataModel getDataModel()
+    {
+        return this.model;
+    }
+    
     public boolean isSelectionValid()
     {
         return this.problems.isOK();
@@ -644,7 +640,7 @@ public final class FacetsSelectionPanel
             
             IPreset presetToUse = null;
             
-            for( Iterator itr = this.presets.iterator(); itr.hasNext(); )
+            for( Iterator itr = this.model.getPresets().iterator(); itr.hasNext(); )
             {
                 final IPreset preset = (IPreset) itr.next();
                 
@@ -658,6 +654,7 @@ public final class FacetsSelectionPanel
             if( presetToUse == null )
             {
                 setSelectedProjectFacets( defaultFacets );
+                this.model.setSelectedPreset( null );
             }
             else
             {
@@ -722,9 +719,7 @@ public final class FacetsSelectionPanel
     {
         if( preset != null )
         {
-            final int index = this.presets.indexOf( preset );
-            
-            if( index == -1 )
+            if( ! this.model.getPresets().contains( preset ) )
             {
                 IProjectFacetVersion problemFacet = null;
                 
@@ -751,8 +746,7 @@ public final class FacetsSelectionPanel
             }
             else
             {
-                this.presetsCombo.select( index + 1 );
-                handlePresetSelected();
+                this.model.setSelectedPreset( preset );
             }
         }
     }
@@ -984,8 +978,7 @@ public final class FacetsSelectionPanel
         updateValidationDisplay();
         this.runtimesPanel.refresh();
         
-        this.presetsCombo.select( 0 );
-        refreshPresetsButtons();
+        this.model.setSelectedPreset( null );
     }
 
     private void updateValidationDisplay()
@@ -1087,16 +1080,143 @@ public final class FacetsSelectionPanel
         this.tree.setCheckedElements( checked );
     }
     
+    public void syncWithPresetsModel( final Combo combo )
+    {
+        final List sortedPresets = new ArrayList();
+        
+        // Contents : model -> view
+
+        final AddRemoveFacetsDataModel.IListener modelToViewContentsListener
+            = new AddRemoveFacetsDataModel.IListener()
+        {
+            public void handleEvent()
+            {
+                synchronized( sortedPresets )
+                {
+                    sortedPresets.clear();
+                    sortedPresets.addAll( FacetsSelectionPanel.this.model.getPresets() );
+                    
+                    Collections.sort
+                    (
+                        sortedPresets,
+                        new Comparator()
+                        {
+                            public int compare( final Object p1, 
+                                                final Object p2 ) 
+                            {
+                                if( p1 == p2 )
+                                {
+                                    return 0;
+                                }
+                                else
+                                {
+                                    final String label1 = ( (IPreset) p1 ).getLabel();
+                                    final String label2 = ( (IPreset) p2 ).getLabel();
+                                    
+                                    return label1.compareTo( label2 );
+                                }
+                            }
+                        }
+                    );
+                    
+                    final IPreset selectedPreset 
+                        = FacetsSelectionPanel.this.model.getSelectedPreset();
+                    
+                    combo.removeAll();
+                    combo.add( Resources.customPreset );
+                    
+                    if( selectedPreset == null )
+                    {
+                        combo.select( 0 );
+                    }
+                    
+                    for( Iterator itr = sortedPresets.iterator(); itr.hasNext(); )
+                    {
+                        final IPreset preset = (IPreset) itr.next();
+
+                        combo.add( preset.getLabel() );
+                        
+                        if( preset == selectedPreset )
+                        {
+                            combo.select( combo.getItemCount() - 1 );
+                        }
+                    }
+                }
+            }
+        };
+
+        this.model.addListener( AddRemoveFacetsDataModel.PROP_PRESETS,
+                                modelToViewContentsListener );
+        
+        // Selection : model -> view
+        
+        this.model.addListener
+        ( 
+            AddRemoveFacetsDataModel.PROP_SELECTED_PRESET, 
+            new AddRemoveFacetsDataModel.IListener()
+            {
+                public void handleEvent()
+                {
+                    synchronized( sortedPresets )
+                    {
+                        final IPreset preset
+                            = FacetsSelectionPanel.this.model.getSelectedPreset();
+                        
+                        final int index;
+                        
+                        if( preset == null )
+                        {
+                            index = -1;
+                        }
+                        else
+                        {
+                            index = sortedPresets.indexOf( preset );
+                        }
+                        
+                        combo.select( index + 1 );
+                        
+                        handlePresetSelected();
+                    }
+                }
+            }
+        );
+        
+        // Selection : view -> model
+        
+        combo.addSelectionListener
+        (
+            new SelectionAdapter()
+            {
+                public void widgetSelected( final SelectionEvent e )
+                {
+                    synchronized( sortedPresets )
+                    {
+                        final int selection = combo.getSelectionIndex();
+                        final IPreset preset;
+                        
+                        if( selection == 0 )
+                        {
+                            preset = null;
+                        }
+                        else
+                        {
+                            preset = (IPreset) sortedPresets.get( selection - 1 );
+                        }
+                        
+                        FacetsSelectionPanel.this.model.setSelectedPreset( preset );
+                    }
+                }
+            }
+        );
+        
+        // Trigger initial UI population.
+        
+        modelToViewContentsListener.handleEvent();
+    }
+    
     private void refreshPresetsCombo()
     {
-        final int selectedPresetIndex = this.presetsCombo.getSelectionIndex();
-        
-        final IPreset selectedPreset
-            = selectedPresetIndex < 1 ? null 
-              : (IPreset) this.presets.get( selectedPresetIndex - 1 );
-        
-        this.presetsCombo.removeAll();
-        this.presets.clear();
+        final Set presets = new HashSet();
         
         for( Iterator itr1 = ProjectFacetsManager.getPresets().iterator(); 
              itr1.hasNext(); )
@@ -1148,62 +1268,26 @@ public final class FacetsSelectionPanel
             
             if( applicable )
             {
-                this.presets.add( preset );
+                presets.add( preset );
             }
         }
         
-        Collections.sort
-        (
-            this.presets,
-            new Comparator()
-            {
-                public int compare( final Object p1, 
-                                    final Object p2 ) 
-                {
-                    if( p1 == p2 )
-                    {
-                        return 0;
-                    }
-                    else
-                    {
-                        final String label1 = ( (IPreset) p1 ).getLabel();
-                        final String label2 = ( (IPreset) p2 ).getLabel();
-                        
-                        return label1.compareTo( label2 );
-                    }
-                }
-            }
-        );
-        
-        this.presetsCombo.add( Resources.customPreset );
-        
-        for( Iterator itr = this.presets.iterator(); itr.hasNext(); )
-        {
-            final IPreset preset = (IPreset) itr.next();
-            this.presetsCombo.add( preset.getLabel() );
-        }
-        
-        final int indexToSelect 
-            = this.presets.indexOf( selectedPreset ) + 1;
-        
-        this.presetsCombo.select( indexToSelect );
+        this.model.setPresets( presets );
         
         refreshPresetsButtons();
     }
     
     private void refreshPresetsButtons()
     {
-        final int selection = this.presetsCombo.getSelectionIndex();
+        final IPreset preset = this.model.getSelectedPreset();
         
-        if( selection == 0 )
+        if( preset == null )
         {
             this.savePresetButton.setEnabled( true );
             this.deletePresetButton.setEnabled( false );
         }
         else
         {
-            final IPreset preset = (IPreset) this.presets.get( selection - 1 );
-            
             this.savePresetButton.setEnabled( false );
             this.deletePresetButton.setEnabled( preset.isUserDefined() );
         }
@@ -1395,11 +1479,10 @@ public final class FacetsSelectionPanel
     
     private void handlePresetSelected()
     {
-        final int selection = this.presetsCombo.getSelectionIndex();
+        final IPreset preset = this.model.getSelectedPreset();
         
-        if( selection > 0 )
+        if( preset != null )
         {
-            final IPreset preset = (IPreset) this.presets.get( selection - 1 );
             final Set selected = new HashSet();
             
             for( Iterator itr = preset.getProjectFacets().iterator(); 
@@ -1438,43 +1521,32 @@ public final class FacetsSelectionPanel
                     refreshCategoryState( trd );
                 }
             }
+
+            updateValidationDisplay();
+            this.runtimesPanel.refresh();
         }
         
         refreshPresetsButtons();
-        updateValidationDisplay();
-        this.runtimesPanel.refresh();
     }
     
     private void handleSavePreset()
     {
-        final InputDialog dialog 
-            = new InputDialog( getShell(), Resources.savePresetDialogTitle, 
-                               Resources.savePresetDialogMessage,
-                               null, null );
+        final Set facets = getSelectedProjectFacets();
         
-        if( dialog.open() == IDialogConstants.OK_ID )
+        final IPreset preset
+            = SavePresetDialog.showDialog( getShell(), facets );
+        
+        if( preset != null )
         {
-            final String name = dialog.getValue();
-            final Set facets = getSelectedProjectFacets();
-            
-            final IPreset preset
-                = ProjectFacetsManager.definePreset( name, facets );
-            
             refreshPresetsCombo();
-            
-            final int pos = this.presets.indexOf( preset );
-            this.presetsCombo.select( pos + 1 );
-            refreshPresetsButtons();
+            this.model.setSelectedPreset( preset );
         }
     }
     
     private void handleDeletePreset()
     {
-        final int selection = this.presetsCombo.getSelectionIndex();
-        final IPreset preset = (IPreset) this.presets.get( selection - 1 );
-        
+        final IPreset preset = this.model.getSelectedPreset();
         ProjectFacetsManager.deletePreset( preset );
-        
         refreshPresetsCombo();
     }
     
@@ -1879,12 +1951,11 @@ public final class FacetsSelectionPanel
                     if( trd.getCurrentVersion() != fv )
                     {
                         trd.setCurrentVersion( fv );
-                        refresh();
+                        FacetsSelectionPanel.this.tree.update( trd, null );
                         
                         if( trd.isSelected() )
                         {
-                            FacetsSelectionPanel.this.presetsCombo.select( 0 );
-                            refreshPresetsButtons();
+                            FacetsSelectionPanel.this.model.setSelectedPreset( null );
                         }
     
                         updateValidationDisplay();

@@ -31,6 +31,7 @@ public final class Preset
 {
     private String id;
     private String label;
+    private String description;
     
     private final Set facets = new HashSet();
     
@@ -59,6 +60,16 @@ public final class Preset
     void setLabel( final String label )
     {
         this.label = label;
+    }
+    
+    public String getDescription()
+    {
+        return this.description;
+    }
+    
+    void setDescription( final String description )
+    {
+        this.description = description;
     }
     
     public Set getProjectFacets()

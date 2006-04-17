@@ -14,6 +14,7 @@ package org.eclipse.wst.common.project.facet.ui.internal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IAdapterManager;
@@ -24,6 +25,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -57,11 +59,14 @@ public final class FacetsSelectionPage
     private Set initialSelection;
     private final Set fixed;
     public FacetsSelectionPanel panel;
-    private ArrayList listeners;
-    private ArrayList runtimeListeners;
+    private List listeners;
+    private List runtimeListeners;
+    private List initialSyncWithPresetsCombos;
+    private AddRemoveFacetsDataModel model;
 
     public FacetsSelectionPage( final IWizardContext context,
-                                final Set base )
+                                final Set base,
+                                final AddRemoveFacetsDataModel model )
     {
         super( "facets.selection.page" ); //$NON-NLS-1$
 
@@ -71,13 +76,15 @@ public final class FacetsSelectionPage
 
         this.context = context;
         this.base = base;
+        this.model = model;
         this.initialPreset = null;
         this.initialSelection = null;
         this.fixed = new HashSet();
         this.listeners = new ArrayList();
         this.runtimeListeners = new ArrayList();
+        this.initialSyncWithPresetsCombos = new ArrayList();
     }
-
+    
     public void setInitialPreset( final IPreset preset )
     {
         this.initialPreset = preset;
@@ -128,6 +135,18 @@ public final class FacetsSelectionPage
     {
         return this.panel.getRuntime();
     }
+    
+    public void syncWithPresetsModel( final Combo combo )
+    {
+        if( this.initialSyncWithPresetsCombos == null )
+        {
+            this.panel.syncWithPresetsModel( combo );
+        }
+        else
+        {
+            this.initialSyncWithPresetsCombos.add( combo );
+        }
+    }
 
     public void createControl( final Composite parent )
     {
@@ -138,7 +157,7 @@ public final class FacetsSelectionPage
         
         this.panel 
             = new FacetsSelectionPanel( parent, SWT.NONE, this.context, 
-                                        this.base );
+                                        this.base, this.model );
         
         this.panel.setFixedProjectFacets( this.fixed );
         
@@ -186,6 +205,14 @@ public final class FacetsSelectionPage
                 }
             }
         );
+        
+        for( Iterator itr = this.initialSyncWithPresetsCombos.iterator(); 
+             itr.hasNext(); )
+        {
+            this.panel.syncWithPresetsModel( (Combo) itr.next() );
+        }
+        
+        this.initialSyncWithPresetsCombos = null;
         
         final IWorkbenchHelpSystem h = PlatformUI.getWorkbench().getHelpSystem();
         h.setHelp( this.panel, FacetUiHelpContextIds.FACETS_SELECTION_PAGE );

@@ -214,10 +214,18 @@ public final class ProjectFacetsManagerImpl
     public IPreset definePreset( final String name,
                                  final Set facets )
     {
-        return definePreset( name, facets, true );
+        return definePreset( name, "", facets, true ); //$NON-NLS-1$
     }
 
+    public IPreset definePreset( final String name,
+                                 final String description,
+                                 final Set facets )
+    {
+        return definePreset( name, description, facets, true );
+    }
+    
     private IPreset definePreset( final String name,
+                                  final String description,
                                   final Set facets,
                                   final boolean save )
     {
@@ -237,6 +245,7 @@ public final class ProjectFacetsManagerImpl
             
             preset.setId( id );
             preset.setLabel( name );
+            preset.setDescription( description == null ? "" : description ); //$NON-NLS-1$
             preset.addProjectFacet( facets );
             preset.setUserDefined( true );
             
@@ -1821,6 +1830,10 @@ public final class ProjectFacetsManagerImpl
             {
                 preset.setLabel( child.getValue().trim() );
             }
+            else if( childName.equals( EL_DESCRIPTION ) )
+            {
+                preset.setDescription( child.getValue().trim() );
+            }
             else if( childName.equals( ATTR_FACET ) )
             {
                 final String fid = child.getAttribute( ATTR_ID );
@@ -1844,6 +1857,11 @@ public final class ProjectFacetsManagerImpl
                 
                 preset.addProjectFacet( fv );
             }
+        }
+        
+        if( preset.getDescription() == null )
+        {
+            preset.setDescription( "" ); //$NON-NLS-1$
         }
         
         this.presets.add( id, preset );
@@ -1894,6 +1912,7 @@ public final class ProjectFacetsManagerImpl
                 {
                     final Preferences pnode = root.node( preset.getId() );
                     pnode.put( EL_LABEL, preset.getLabel() );
+                    pnode.put( EL_DESCRIPTION, preset.getDescription() );
                     
                     int counter = 1;
                     
@@ -1938,6 +1957,13 @@ public final class ProjectFacetsManagerImpl
                 {
                     break;
                 }
+
+                String description = pnode.get( EL_DESCRIPTION, null );
+                
+                if( description == null )
+                {
+                    description = ""; //$NON-NLS-1$
+                }
                 
                 final String[] fkeys = pnode.childrenNames();
                 HashSet facets = new HashSet();
@@ -1977,7 +2003,7 @@ public final class ProjectFacetsManagerImpl
 
                 if( facets != null )
                 {
-                    definePreset( label, facets, false );
+                    definePreset( label, description, facets, false );
                 }
             }
         }

@@ -212,6 +212,23 @@ public final class ProjectFacetsManager
     }
     
     /**
+     * Defines a new preset. User-defined presets are stored in the workspace. 
+     * 
+     * @param name the name of the preset
+     * @param description the description of the preset
+     * @param facets the set of project facets that the preset should contain
+     *   (element type: {@see IProjectFacetVersion})
+     * @return the preset
+     */
+    
+    public static IPreset definePreset( final String name,
+                                        final String description,
+                                        final Set facets )
+    {
+        return impl.definePreset( name, description, facets );
+    }
+
+    /**
      * Deletes a preset. Note that only user-defined presets can be deleted.
      * 
      * @param preset the preset

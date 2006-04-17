@@ -30,6 +30,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -40,6 +41,7 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action.Type;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
+import org.eclipse.wst.common.project.facet.ui.internal.AddRemoveFacetsDataModel;
 import org.eclipse.wst.common.project.facet.ui.internal.FacetUiPlugin;
 import org.eclipse.wst.common.project.facet.ui.internal.FacetsSelectionPage;
 
@@ -61,19 +63,36 @@ public class AddRemoveFacetsWizard
     protected IFacetedProject fproj;
     
     private final WizardContext context = new WizardContext(); 
-    protected FacetsSelectionPage facetsSelectionPage;
+    protected final FacetsSelectionPage facetsSelectionPage;
     private FacetPages[] facetPages = new FacetPages[ 0 ];
     private Composite pageContainer;
     
     private IRuntime initialRuntime;
+    private final AddRemoveFacetsDataModel model;
     
     public AddRemoveFacetsWizard( final IFacetedProject fproj )
     {
+        this.model = new AddRemoveFacetsDataModel();
         this.fproj = fproj;
+        
+        Set base = null;
+        
+        if( this.fproj != null )
+        {
+            base = this.fproj.getProjectFacets();
+        }
+        
+        this.facetsSelectionPage 
+            = new FacetsSelectionPage( this.context, base, this.model );
         
         setNeedsProgressMonitor( true );
         setForcePreviousAndNextButtons( true );
         setWindowTitle( Resources.wizardTitle );
+    }
+    
+    public final AddRemoveFacetsDataModel getModel()
+    {
+        return this.model;
     }
     
     public final IRuntime getRuntime()
@@ -112,16 +131,6 @@ public class AddRemoveFacetsWizard
     
     public void addPages()
     {
-        Set base = null;
-        
-        if( this.fproj != null )
-        {
-            base = this.fproj.getProjectFacets();
-        }
-        
-        this.facetsSelectionPage 
-            = new FacetsSelectionPage( this.context, base );
-        
         if( this.fproj != null )
         {
             this.facetsSelectionPage.setInitialSelection( this.fproj.getProjectFacets() );
@@ -360,6 +369,11 @@ public class AddRemoveFacetsWizard
 	public Object getConfig(IProjectFacetVersion fv, Type type, String pjname) throws CoreException{
 		return null;
 	}
+    
+    public void syncWithPresetsModel( final Combo combo )
+    {
+        this.facetsSelectionPage.syncWithPresetsModel( combo );
+    }
     
     public void dispose()
     {

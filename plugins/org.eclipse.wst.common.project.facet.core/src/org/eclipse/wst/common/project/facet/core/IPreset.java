@@ -48,6 +48,14 @@ public interface IPreset
     String getLabel();
     
     /**
+     * Returns the description of the preset.
+     * 
+     * @return the description of the preset
+     */
+    
+    String getDescription();
+    
+    /**
      * Returns the project facets that are part of this preset.
      * 
      * @return project facets that are part of this preset (element type: 

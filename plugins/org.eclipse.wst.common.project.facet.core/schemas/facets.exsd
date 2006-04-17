@@ -235,6 +235,7 @@
       <complexType>
          <sequence>
             <element ref="label"/>
+            <element ref="description" minOccurs="0" maxOccurs="1"/>
             <element name="facet">
                <complexType>
                   <attribute name="id" type="string" use="required">

@@ -5,12 +5,18 @@ org.eclipse.wst.common.project.facet.core:
 1. IActionDefinition
 2. IProjectFacetVersion.getActionDefinition( Action.Type type )
 3. ProjectFacetsManager.getActionDefinitions()
-4. ProjectFacetsManager.isActionDefined( final String id )
-5. ProjectFacetsManager.getActionDefinition( final String id )
+4. ProjectFacetsManager.isActionDefined( String id )
+5. ProjectFacetsManager.getActionDefinition( String id )
+6. ProjectFacetsManager.definePreset( String name, String description, Set facets )
+7. IPreset.getDescription()
 
 org.eclipse.wst.common.project.facet.ui:
 
 1. ProjectFacetsUiManager.getWizardPages( String actionId )
+
+org.eclipse.wst.common.project.facet.core.facets extension point
+
+1. Added <description> element to the preset definition.
 
 Deprecated API:
 
