@@ -14,13 +14,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
-import org.eclipse.core.internal.resources.Project;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -174,37 +174,22 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		return object instanceof IProject || object instanceof IFile || object instanceof IFolder;
 	}
 
-//	private void addSelected(IProject selected) {
-//		_selectedResources.put(selected, null); // whatever the values were
-//		// before, the entire project
-//		// needs to be revalidated now
-//	}
-
-//	private void addSelected(IJavaProject selected) {
-//		_selectedResources.put(selected.getProject(), null); // whatever the
-//		// values were
-//		// before, the
-//		// entire project
-//		// needs to be
-//		// revalidated now
-//	}
 
 	void addSelected(IResource selected) {
 		IProject project = selected.getProject();
 		boolean added = _selectedResources.containsKey(project);
-		List changedRes = null;
+		Set changedRes = null;
 		if (added) {
 			// If the value is null, the entire project needs to be validated
 			// anyway.
-			changedRes = (List) _selectedResources.get(project);
+			changedRes = (Set) _selectedResources.get(project);
 			if (changedRes == null) {
 				return;
 			}
 		} else {
-			changedRes = new ArrayList();
+			changedRes = new HashSet();
 		}
-		if (!changedRes.contains(selected)) {
-			changedRes.add(selected);
+		if (changedRes.add(selected)) {
 			_selectedResources.put(project, changedRes);
 		}
 	}
@@ -283,58 +268,6 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	 * @param window
 	 *            the desktop window passed by the action proxy
 	 */
-//	public void run(IAction action) {
-//		ValidateAction vaction = null;
-//		if (action instanceof ValidateAction) {
-//			vaction = (ValidateAction) action;
-//		}
-//		final Map projects = loadSelected(vaction, false);
-//		if ((projects == null) || (projects.size() == 0)) {
-//			return;
-//		}
-//		final ProgressAndTextDialog dialog = new ProgressAndTextDialog(getShell());
-//		try {
-//			IRunnableWithProgress runnable = ValidationUIPlugin.getRunnableWithProgress(new IWorkspaceRunnable() {
-//				public void run(IProgressMonitor monitor) {
-//					validate(monitor, projects, dialog);
-//				}
-//			});
-//			// validate all EJBs in this project
-//			dialog.run(true, true, runnable); // fork, cancelable.
-//		} catch (InvocationTargetException exc) {
-//			Logger logger = WTPUIPlugin.getLogger();
-//			if (logger.isLoggingLevel(Level.SEVERE)) {
-//				LogEntry entry = ValidationUIPlugin.getLogEntry();
-//				entry.setSourceID("ValidationMenuAction.run(IAction)"); //$NON-NLS-1$
-//				entry.setMessageTypeIdentifier(ResourceConstants.VBF_EXC_INTERNAL);
-//				entry.setTargetException(exc);
-//				logger.write(Level.SEVERE, entry);
-//				if (exc.getTargetException() != null) {
-//					entry.setTargetException(exc.getTargetException());
-//					logger.write(Level.SEVERE, entry);
-//				}
-//			}
-//			String internalErrorMessage = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL);
-//			dialog.addText(internalErrorMessage);
-//		} catch (InterruptedException exc) {
-//			// User cancelled validation
-//		} catch (Throwable exc) {
-//			Logger logger = WTPUIPlugin.getLogger();
-//			if (logger.isLoggingLevel(Level.SEVERE)) {
-//				LogEntry entry = ValidationUIPlugin.getLogEntry();
-//				entry.setSourceID("ValidationMenuAction.run(IAction)"); //$NON-NLS-1$
-//				entry.setMessageTypeIdentifier(ResourceConstants.VBF_EXC_INTERNAL);
-//				entry.setTargetException(exc);
-//				logger.write(Level.SEVERE, entry);
-//			}
-//			String internalErrorMessage = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL);
-//			dialog.addText(internalErrorMessage);
-//		} finally {
-//			_selectedResources.clear();
-//		}
-//	}
-	
-	
 	public void run(IAction action) {
 		// TODO: Insert dirty file check here.
 		ValidateAction vaction = null;
@@ -364,13 +297,6 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		validationop.setRule(ResourcesPlugin.getWorkspace().getRoot());
 		validationop.setUser(true);
 		validationop.schedule();
-
-
-//		try {
-//			validate(monitor, projects );
-//		}  finally {
-//			_selectedResources.clear();
-//		}
 	}
 	
 	private IStatus validate(final IProgressMonitor monitor, final Map projects) {
@@ -410,57 +336,14 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		return new Status(IStatus.OK, "org.eclipse.wst.validation", 0, "OK", null);
 	}
 	
-//	void validate(final IProgressMonitor monitor, final Map projects, ProgressAndTextDialog dialog) {
-//		boolean cancelled = false; // Was the operation cancelled?
-//		Iterator iterator = projects.keySet().iterator();
-//		while (iterator.hasNext()) {
-//			IProject project = (IProject) iterator.next();
-//			if (project == null) {
-//				continue;
-//			}
-//			try {
-//				if (cancelled) {
-//					String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_RESCANCELLED, new String[]{project.getName()});
-//					dialog.addText(message);
-//					continue;
-//				}
-//				if (!project.isOpen()) {
-//					String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_CLOSED_PROJECT, new String[]{project.getName()});
-//					dialog.addText(message);
-//					continue;
-//				}
-//				performValidation(monitor, projects, dialog, project);
-//			} catch (OperationCanceledException exc) {
-//				// When loading file deltas, if the operation has been
-//				// cancelled, then
-//				// resource.accept throws an OperationCanceledException.
-//				cancelled = true;
-//				String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_RESCANCELLED, new String[]{project.getName()});
-//				dialog.addText(message);
-//			} catch (Throwable exc) {
-//				logException(dialog, project, exc);
-//			}
-//		}
-//	}
+
 
 	/**
 	 * @param dialog
 	 * @param project
 	 * @param exc
 	 */
-//	private void logException(ProgressAndTextDialog dialog, IProject project, Throwable exc) {
-//		Logger logger = WTPUIPlugin.getLogger();
-//		if (logger.isLoggingLevel(Level.SEVERE)) {
-//			LogEntry entry = ValidationUIPlugin.getLogEntry();
-//			entry.setSourceID("ValidationMenuAction.validate"); //$NON-NLS-1$
-//			entry.setMessageTypeIdentifier(ResourceConstants.VBF_EXC_INTERNAL);
-//			entry.setTargetException(exc);
-//			logger.write(Level.SEVERE, entry);
-//		}
-//		String internalErrorMessage = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PROJECT, new String[]{project.getName()});
-//		dialog.addText(internalErrorMessage);
-//	}
-//	
+
 	private void logException(IProgressMonitor monitor, IProject project, Throwable exc) {
 		Logger logger = WTPUIPlugin.getLogger();
 		if (logger.isLoggingLevel(Level.SEVERE)) {
@@ -481,42 +364,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	 * @param project
 	 * @throws CoreException
 	 */
-//	private void performValidation(final IProgressMonitor monitor, final Map projects, ProgressAndTextDialog dialog, IProject project) throws CoreException {
-//		// Even if the "maximum number of messages" message is on
-//		// the task list,
-//		// run validation, because some messages may have been
-//		// fixed
-//		// and there may be space for more messages.
-//		List changedResources = (List) projects.get(project);
-//		IResource[] resources = null;
-//		if (changedResources != null) {
-//			resources = new IResource[changedResources.size()];
-//			changedResources.toArray(resources);
-//		}
-//		try {
-//			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
-//			if (prjp.numberOfEnabledValidators() > 0) {
-//				checkProjectConfiguration(monitor, dialog, project, resources, prjp);
-//			} else {
-//				String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_NO_VALIDATORS_ENABLED, new String[]{project.getName()});
-//				dialog.addText(message);
-//			}
-//		} catch (InvocationTargetException exc) {
-//			Logger logger = ValidationPlugin.getPlugin().getLogger();
-//			if (logger.isLoggingLevel(Level.SEVERE)) {
-//				LogEntry entry = ValidationPlugin.getLogEntry();
-//				entry.setSourceIdentifier("ValidationMenuAction::run"); //$NON-NLS-1$
-//				entry.setTargetException(exc);
-//				logger.write(Level.SEVERE, entry);
-//				if (exc.getTargetException() != null) {
-//					entry.setTargetException(exc);
-//					logger.write(Level.SEVERE, entry);
-//				}
-//			}
-//		}
-//	}
 
-	
 	private IStatus performValidation(final IProgressMonitor monitor, final Map projects,
 				 IProject project) throws CoreException {
 		// Even if the "maximum number of messages" message is on
@@ -528,7 +376,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		if ( monitor.isCanceled() )
 			return new Status(IStatus.CANCEL, "org.eclipse.wst.validation", 0, "OK", null);
 		
-		List changedResources = (List) projects.get(project);
+		Set changedResources = (Set) projects.get(project);
 		IResource[] resources = null;
 		if (changedResources != null) {
 			resources = new IResource[changedResources.size()];
@@ -567,50 +415,6 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	 * @throws InvocationTargetException
 	 * @throws CoreException
 	 */
-//	private void checkProjectConfiguration(final IProgressMonitor monitor, ProgressAndTextDialog dialog, IProject project, IResource[] resources, ProjectConfiguration prjp) throws InvocationTargetException, CoreException {
-//		boolean successful = true; // Did the operation
-//		// complete
-//		// successfully?
-//		EnabledValidatorsOperation validOp = null;
-//		if (resources == null) {
-//			validOp = new EnabledValidatorsOperation(project,prjp.runAsync());
-//		} else {
-//			validOp = new EnabledIncrementalValidatorsOperation(resources, project, prjp.runAsync());
-//		}
-//		if (validOp.isNecessary(monitor)) {
-//			
-//			ValidationOperationJob validationJob = new ValidationOperationJob("ValidationOperation");
-//			validationJob.setValidationOperation( validOp );
-//			validationJob.setUser( true );
-//			//validationJob.setRule(rule);
-//			validationJob.schedule();
-//			
-//			final IStatus stat = validationJob.getResult();
-//			if( !stat.isOK() ){
-//				successful = false;
-//			}
-//			//ResourcesPlugin.getWorkspace().run(validOp, monitor);
-//			
-//		} else {
-//			if (resources == null) {
-//				String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_PRJNEEDINPUT, new String[]{project.getName()});
-//				dialog.addText(message);
-//			} else {
-//				for (int i = 0; i < resources.length; i++) {
-//					String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_RESNEEDINPUT, new String[]{resources[i].getFullPath().toString()});
-//					dialog.addText(message);
-//				}
-//			}
-//		}
-//		if (successful) {
-//			performSucessful(dialog, project, resources);
-//		} else {
-//			String internalErrorMessage = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PROJECT, new String[]{project.getName()});
-//			dialog.addText(internalErrorMessage);
-//		}
-//	}
-
-	
 	private IStatus checkProjectConfiguration(final IProgressMonitor monitor,
 				IProject project, IResource[] resources, ProjectConfiguration prjp) throws InvocationTargetException, CoreException {
 		boolean successful = true; // Did the operation
@@ -628,8 +432,6 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		}
 		if (validOp.isNecessary(monitor)) {
 			validOp.run(monitor);
-			//ResourcesPlugin.getWorkspace().run(validOp, monitor);
-			
 		} else {
 			if (resources == null) {
 				String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_PRJNEEDINPUT, new String[]{project.getName()});
@@ -650,33 +452,13 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		return new Status(IStatus.OK, "org.eclipse.wst.validation", 0, "OK", null);
 	}
 	
-	/*public IWorkbenchContext getWorkbenchContext() {
-		if(workbenchContext == null)
-			workbenchContext = new WorkbenchContext();
-		return workbenchContext;
-	}*/
+
 
 	/**
 	 * @param dialog
 	 * @param project
 	 * @param resources
 	 */
-//	private void performSucessful(ProgressAndTextDialog dialog, IProject project, IResource[] resources) {
-//		boolean limitExceeded = ValidatorManager.getManager().wasValidationTerminated(project);
-//		if (limitExceeded) {
-//			String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_MAX_REPORTED, new String[]{project.getName()});
-//			dialog.addText(message);
-//		} else if (resources == null) {
-//			String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_PRJVALIDATED, new String[]{project.getName()});
-//			dialog.addText(message);
-//		} else {
-//			for (int i = 0; i < resources.length; i++) {
-//				String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_RESVALIDATED, new String[]{resources[i].getFullPath().toString()});
-//				dialog.addText(message);
-//			}
-//		}
-//	}
-	
 	private void performSucessful(final IProgressMonitor monitor, IProject project, IResource[] resources) {
 		boolean limitExceeded = ValidatorManager.getManager().wasValidationTerminated(project);
 		if (limitExceeded) {
@@ -858,8 +640,8 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		Iterator projectIter = projectKeys.iterator();
 		while(projectIter.hasNext())
 		{
-		  Project project = (Project)projectIter.next();
-		  List resourcesList = (List)projects.get(project);
+		  IProject project = (IProject) projectIter.next();
+		  Set resourcesList = (Set) projects.get(project);
 		  Iterator resourcesIter = resourcesList.iterator();
 		  while(resourcesIter.hasNext())
 		  {
