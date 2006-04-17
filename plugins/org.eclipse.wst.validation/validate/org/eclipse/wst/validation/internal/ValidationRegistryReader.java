@@ -24,6 +24,11 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 
+import org.eclipse.core.expressions.EvaluationContext;
+import org.eclipse.core.expressions.EvaluationResult;
+import org.eclipse.core.expressions.Expression;
+import org.eclipse.core.expressions.ExpressionConverter;
+import org.eclipse.core.expressions.ExpressionTagNames;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
@@ -924,27 +929,31 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	 * @param vmds
 	 * @param projectNatures
 	 */
-	private void calculateVmdsForNatureAndFacets(Set vmds, String[] projectNatures,IProject project) {
+	private void calculateVmdsForNatureAndFacets(Set vmds, String[] projectNatures, IProject project) {
 		Set projVmds;
 		String[] projectFacetIds = getProjectFacetIds(project);
 		Iterator allValidators = getAllValidators().iterator();
 		while (allValidators.hasNext()) {
 			ValidatorMetaData vmd = (ValidatorMetaData) allValidators.next();
-			if (containsProjectFacet(vmd, projectFacetIds)) {
+			if (containsProjectFacet(vmd, projectFacetIds) || isFacetEnabled(vmd, project)) {
 				vmds.add(vmd);
 			}
 		}
 		for (int i = 0; i < projectNatures.length; i++) {
 			String projectNatureId = projectNatures[i];
 			projVmds = (Set) _validators.get(projectNatureId);
-			if (projVmds == null) {
+			if (projVmds == null)
 				continue;
-			}
+
 			Iterator iterator = projVmds.iterator();
 			while (iterator.hasNext()) {
 				ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
 				if (!vmds.contains(vmd) && (vmd.getFacetFilters() == null || vmd.getFacetFilters().length == 0)) {
-					vmds.add(vmd);
+					if (vmd.getEnablementExpresion() == null)
+						vmds.add(vmd);
+					else if (isFacetEnabled(vmd, project))
+						vmds.add(vmd);
+
 				}
 			}
 		}
@@ -957,6 +966,19 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				if (Arrays.asList(projectFacetIds).containsAll(Arrays.asList(validatorFacets)))
 					return true;
 			}
+		}
+		return false;
+	}
+	
+	private boolean isFacetEnabled(ValidatorMetaData vmd, IProject project) {
+		try {
+			Expression expression = vmd.getEnablementExpresion();
+			if (expression != null) {
+				EvaluationResult result = vmd.getEnablementExpresion().evaluate(new EvaluationContext(null,project));
+				return result.equals(EvaluationResult.TRUE);
+			}
+		} catch (CoreException ce) {
+			Logger.getLogger().log(ce);
 		}
 		return false;
 	}
@@ -1323,13 +1345,10 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		vmd.addFilters(getFilters(element)); // validator may, or may not, have filters
 		vmd.addProjectNatureFilters(getProjectNatureFilters(element)); // validator may, or may not, specify a project nature
 		vmd.addFacetFilters(getFacetIds(element));//validator may or may not specify the facet
+		vmd.setEnablementElement(getEnablementElement(element));
 		vmd.addAggregatedValidatorNames(getAggregateValidatorsNames(element)); // if a validator
-		// aggregated another
-		// validator, it
-		// should identify
-		// the
-		// sub-validator(s)'
-		// class name
+		// aggregated another validator, it should identify
+		// the sub-validator(s)' class name
 		vmd.setValidatorDisplayName(validatorName.intern()); // validator must have a display name.
 		vmd.setValidatorUniqueName(validatorImplName.intern());
 		vmd.setPluginId(pluginId);
@@ -1360,6 +1379,18 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		}
 
 		return vmd;
+	}
+
+	private Expression getEnablementElement(IConfigurationElement element) {
+		IConfigurationElement[] enablements = element.getChildren(ExpressionTagNames.ENABLEMENT);
+		if (enablements.length == 0)
+			return null;
+		try {
+			return ExpressionConverter.getDefault().perform(enablements[0]);
+		} catch (CoreException ce) {
+			Logger.getLogger().log(ce);
+		}
+		return null;
 	}
 
 	private List getTempList() {

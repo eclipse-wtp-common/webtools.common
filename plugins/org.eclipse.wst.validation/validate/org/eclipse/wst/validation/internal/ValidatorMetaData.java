@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.expressions.Expression;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -66,6 +67,7 @@ public class ValidatorMetaData {
 	private boolean manualValidation = true;
 	private boolean buildValidation = true;
 	private Map helpers = Collections.synchronizedMap( new HashMap() );
+	private Expression enablementExpression = null;
 
 	/* package */ValidatorMetaData() {
 		//default
@@ -586,4 +588,14 @@ public class ValidatorMetaData {
 	   
 	   return null;
    }   
+   
+   public Expression getEnablementExpresion() {
+		return enablementExpression;
+	}
+
+   public void setEnablementElement(Expression enablementElement) {
+	 enablementExpression = enablementElement;
+	}
+   
+   
 }
