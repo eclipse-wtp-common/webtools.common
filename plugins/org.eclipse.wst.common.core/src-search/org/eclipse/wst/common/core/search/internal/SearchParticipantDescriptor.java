@@ -16,7 +16,7 @@ import org.eclipse.core.expressions.Expression;
 import org.eclipse.core.expressions.ExpressionConverter;
 import org.eclipse.core.expressions.ExpressionTagNames;
 import org.eclipse.core.expressions.IEvaluationContext;
-import org.eclipse.core.internal.expressions.Assert;
+import org.eclipse.core.runtime.Assert; 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.wst.common.core.search.SearchParticipant;
