@@ -167,6 +167,9 @@ public class ExtendedEcoreUtil extends EcoreUtil {
 	public static void unload(EObject root) {
 		Resource res = root.eResource();
 		EObject container = root.eContainer();
+		/* Making sure the proxy is created first before unloading */
+		if (root != null && res != null)
+			becomeProxy(root, res);
 		if (container == null)
 			if (res != null)
 				res.getContents().remove(root);
@@ -175,8 +178,7 @@ public class ExtendedEcoreUtil extends EcoreUtil {
 				if (feature != null)
 					eUnsetOrRemove(container, feature, root);
 			}
-		if (root != null && res != null)
-			becomeProxy(root, res);
+		
 	}
 
 	/**
