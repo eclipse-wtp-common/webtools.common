@@ -10,6 +10,8 @@
       </documentation>
    </annotation>
 
+   <include schemaLocation="schema://org.eclipse.core.expressions/schema/expressionLanguage.exsd"/>
+
    <element name="extension">
       <complexType>
          <sequence>
@@ -44,12 +46,13 @@
          <sequence>
             <element ref="projectNature" minOccurs="1" maxOccurs="unbounded"/>
             <element ref="filter" minOccurs="1" maxOccurs="unbounded"/>
+            <element ref="enablement"/>
             <element ref="helper"/>
             <element ref="dependentValidator" minOccurs="0" maxOccurs="1"/>
             <element ref="run"/>
             <element ref="markerId" minOccurs="0" maxOccurs="1"/>
             <element ref="facet" minOccurs="0" maxOccurs="unbounded"/>
-            <element ref="enablement" minOccurs="0" maxOccurs="1"/>
+            
          </sequence>
          <attribute name="to" type="string">
             <annotation>
@@ -245,57 +248,6 @@ This markerId element also needs a corresponding problemMarker extension to be d
       </annotation>
       <complexType>
          <attribute name="facetId" type="string">
-            <annotation>
-               <documentation>
-                  
-               </documentation>
-            </annotation>
-         </attribute>
-      </complexType>
-   </element>
-
-   <element name="enablement">
-      <complexType>
-         <sequence>
-            <element ref="or" minOccurs="1" maxOccurs="unbounded"/>
-            <element ref="and" minOccurs="1" maxOccurs="unbounded"/>
-         </sequence>
-      </complexType>
-   </element>
-
-   <element name="or">
-      <complexType>
-         <sequence>
-            <element ref="test"/>
-         </sequence>
-      </complexType>
-   </element>
-
-   <element name="and">
-      <complexType>
-         <sequence>
-            <element ref="test"/>
-         </sequence>
-      </complexType>
-   </element>
-
-   <element name="test">
-      <complexType>
-         <attribute name="property" type="string">
-            <annotation>
-               <documentation>
-                  
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="value" type="string" use="required">
-            <annotation>
-               <documentation>
-                  
-               </documentation>
-            </annotation>
-         </attribute>
-         <attribute name="version" type="string">
             <annotation>
                <documentation>
                   
