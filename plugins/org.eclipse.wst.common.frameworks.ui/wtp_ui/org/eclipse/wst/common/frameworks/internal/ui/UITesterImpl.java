@@ -17,7 +17,6 @@
 package org.eclipse.wst.common.frameworks.internal.ui;
 
 import org.eclipse.jem.util.UITester;
-import org.eclipse.ui.PlatformUI;
 
 
 /**
@@ -41,11 +40,14 @@ public class UITesterImpl implements UITester {
 	 * @see org.eclipse.wst.common.frameworks.internal.UITester#isCurrentContextUI()
 	 */
 	public boolean isCurrentContextUI() {
-		try {
-			return PlatformUI.isWorkbenchRunning() || PlatformUI.getWorkbench().isClosing();
-		} catch (RuntimeException e) {
-			return false;
-		}
+		// Because this is contributed by the UI plugin return true for now regardless of the state of the PlatformUI
+		return true;
+//		try {
+//			return PlatformUI.isWorkbenchRunning() || PlatformUI.getWorkbench().isClosing();
+//		} catch (RuntimeException e) {
+//			e.printStackTrace();
+//			return false;
+//		}
 	}
 
 }
