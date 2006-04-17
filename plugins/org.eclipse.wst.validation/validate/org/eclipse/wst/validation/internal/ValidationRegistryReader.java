@@ -974,8 +974,10 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		try {
 			Expression expression = vmd.getEnablementExpresion();
 			if (expression != null) {
-				EvaluationResult result = vmd.getEnablementExpresion().evaluate(new EvaluationContext(null,project));
-				return result.equals(EvaluationResult.TRUE);
+				EvaluationContext context = new EvaluationContext(null, project);
+				context.setAllowPluginActivation(true);
+				EvaluationResult result = expression.evaluate(context);
+				return result == EvaluationResult.TRUE;
 			}
 		} catch (CoreException ce) {
 			Logger.getLogger().log(ce);

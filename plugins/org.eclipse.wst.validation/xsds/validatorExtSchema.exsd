@@ -235,6 +235,14 @@ This markerId element also needs a corresponding problemMarker extension to be d
    </element>
 
    <element name="facet">
+      <annotation>
+         <appInfo>
+            <meta.element deprecated="true"/>
+         </appInfo>
+         <documentation>
+            This element is deprecated and enablement is the new recommended approach to filter validators based on facets.
+         </documentation>
+      </annotation>
       <complexType>
          <attribute name="facetId" type="string">
             <annotation>
