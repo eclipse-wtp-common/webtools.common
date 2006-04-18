@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +31,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.delegates.ValidatorDelegateDescriptor;
@@ -51,6 +55,11 @@ public abstract class ValidationConfiguration {
 	// disabled.
 	protected HashMap manualValidators = null;
 	protected HashMap buildValidators = null;
+	protected String USER_PREFERENCE = "USER_PREFERENCE";
+	protected String USER_MANUAL_PREFERENCE = "USER_MANUAL_PREFERENCE";
+	protected String USER_BUILD_PREFERENCE = "USER_BUILD_PREFERENCE";
+	protected String DELEGATES_PREFERENCE = "DELEGATES_PREFERENCE";
+	
   private Map _delegatesByTarget = null;
 
 	public static String getEnabledElementsAsString(Set elements) {
@@ -591,16 +600,22 @@ public abstract class ValidationConfiguration {
 	 * Save the values of these fields before the project or workspace is closed.
 	 */
 	public void store() throws InvocationTargetException {
-		if (getResource() == null) {
-			throw new InvocationTargetException(null, ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_NULLSAVE));
-		}
-		try {
-			getResource().setPersistentProperty(ConfigurationConstants.USER_PREFERENCE, serialize());
-			getResource().setPersistentProperty(ConfigurationConstants.USER_MANUAL_PREFERENCE, serializeManualSetting());
-			getResource().setPersistentProperty(ConfigurationConstants.USER_BUILD_PREFERENCE, serializeBuildSetting());
-      getResource().setPersistentProperty(ConfigurationConstants.DELEGATES_PREFERENCE, serializeDelegatesSetting());
-		} catch (CoreException exc) {
-			throw new InvocationTargetException(exc, ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SAVE, new String[]{getResource().getName()}));
+		Preferences pref = ValidationPlugin.getPlugin().getPluginPreferences();
+		if (pref != null) {
+			try {
+				OutputStream os = new ByteArrayOutputStream();
+				pref.setValue(USER_PREFERENCE, serialize());
+				pref.store(os, USER_PREFERENCE);
+				pref.setValue(USER_MANUAL_PREFERENCE, serializeManualSetting());
+				pref.store(os, USER_MANUAL_PREFERENCE);
+				pref.setValue(USER_BUILD_PREFERENCE, serializeBuildSetting());
+				pref.store(os, USER_BUILD_PREFERENCE);
+				pref.setValue(DELEGATES_PREFERENCE, serializeDelegatesSetting());
+				pref.store(os, DELEGATES_PREFERENCE);
+			} catch (IOException ie) {
+				Logger.getLogger().log(ie);
+			}
+
 		}
 	}
 
@@ -676,7 +691,7 @@ public abstract class ValidationConfiguration {
 			IMarker[] marker = getMarker();
 			if (marker == null) {
 				// either a new workspace or already migrated; proceed as normal
-				load(getResource());
+				loadPreference();
 			} else {
 				// migrate
 				load(marker);
@@ -743,27 +758,26 @@ public abstract class ValidationConfiguration {
 		return string;
 	}
 
-	protected final void load(IResource resource) throws InvocationTargetException {
+	protected void loadPreference() throws InvocationTargetException {
 		// This method will be called in one of two situations:
-		//    1. This is a new workspace and no preferences exist.
-		//    2. This is a migrated workspace and the old preferences have already been created as
+		// 1. This is a new workspace and no preferences exist.
+		// 2. This is a migrated workspace and the old preferences have already been created as
 		// persistent properties.
-		try {
-			String storedConfiguration = resource.getPersistentProperty(ConfigurationConstants.USER_PREFERENCE);
-			deserialize(storedConfiguration);
-			String storedManualConfiguration = resource.getPersistentProperty(ConfigurationConstants.USER_MANUAL_PREFERENCE);
-			deserializeManual(storedManualConfiguration);
-			String storedBuildConfiguration = resource.getPersistentProperty(ConfigurationConstants.USER_BUILD_PREFERENCE);
-			deserializeBuild(storedBuildConfiguration);
-      String storedDelegatesConfiguration = resource.getPersistentProperty(ConfigurationConstants.DELEGATES_PREFERENCE);
-      deserializeDelegates(storedDelegatesConfiguration);
-		} catch (CoreException exc) {
-			throw new InvocationTargetException(exc, ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_RETRIEVE, new String[]{getResource().getName()}));
+		Preferences prefs = ValidationPlugin.getPlugin().getPluginPreferences();
+		if (prefs != null) {
+			String storedConfig = prefs.getString(USER_PREFERENCE);
+			deserialize(storedConfig);
+			String storedManualConfig = prefs.getString(USER_MANUAL_PREFERENCE);
+			deserializeManual(storedManualConfig);
+			String storedBuildConfig = prefs.getString(USER_BUILD_PREFERENCE);
+			deserializeBuild(storedBuildConfig);
+			String storedDelegatesConfiguration = prefs.getString(DELEGATES_PREFERENCE);
+			deserializeDelegates(storedDelegatesConfiguration);
 		}
 	}
 
-	private void deserializeBuild(String storedConfiguration) throws InvocationTargetException {
-		if (storedConfiguration == null || storedConfiguration.length() == 0) {
+	protected void deserializeBuild(String storedConfiguration) throws InvocationTargetException {
+		if (storedConfiguration == null || storedConfiguration.length() == 0 || storedConfiguration.equals("default_value")) {
 			// Assume that the configuration has never been set (new workspace).
 			resetToDefault();
 			return;
@@ -774,8 +788,8 @@ public abstract class ValidationConfiguration {
 		setEnabledBuildValidators(getStringAsEnabledElementsArray(manualValidation));
 	}
 
-	private void deserializeManual(String storedConfiguration) throws InvocationTargetException {
-		if (storedConfiguration == null || storedConfiguration.length() == 0) {
+	protected void deserializeManual(String storedConfiguration) throws InvocationTargetException {
+		if (storedConfiguration == null || storedConfiguration.length() == 0 || storedConfiguration.equals("default_value")) {
 			// Assume that the configuration has never been set (new workspace).
 			resetToDefault();
 			return;
@@ -786,9 +800,9 @@ public abstract class ValidationConfiguration {
 		setEnabledManualValidators(getStringAsEnabledElementsArray(manualValidation));
 	}
 
-	private void deserializeDelegates(String storedConfiguration) throws InvocationTargetException {
+	protected void deserializeDelegates(String storedConfiguration) throws InvocationTargetException {
 
-    if (storedConfiguration == null || storedConfiguration.length() == 0) {
+    if (storedConfiguration == null || storedConfiguration.length() == 0 || storedConfiguration.equals("default_value")) {
 	    // Assume that the configuration has never been set (new workspace).
 	    resetToDefault();
 	    return;
@@ -989,7 +1003,7 @@ public abstract class ValidationConfiguration {
 	 * loadVersion() method.
 	 */
 	protected void deserialize(String storedConfiguration) throws InvocationTargetException {
-		if (storedConfiguration == null || storedConfiguration.length() == 0) {
+		if (storedConfiguration == null || storedConfiguration.length() == 0 || storedConfiguration.equals("default_value")) {
 			// Assume that the configuration has never been set (new workspace).
 			resetToDefault();
 			return;

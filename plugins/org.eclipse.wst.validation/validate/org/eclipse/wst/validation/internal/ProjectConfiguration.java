@@ -17,11 +17,15 @@ import java.util.logging.Level;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.delegates.ValidatorDelegateDescriptor;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.osgi.service.prefs.BackingStoreException;
 
 
 /**
@@ -499,7 +503,7 @@ public class ProjectConfiguration extends ValidationConfiguration {
 	 * @see org.eclipse.wst.validation.internal.operations.internal.attribute.ValidationConfiguration#deserialize(String)
 	 */
 	public void deserialize(String storedConfiguration) throws InvocationTargetException {
-		if (storedConfiguration == null) {
+		if (storedConfiguration == null || storedConfiguration.length() == 0 || storedConfiguration.equals("default_value")) {
 			resetToDefault();
 		} else if (storedConfiguration != null) {
 			int prjOverrideIndex = storedConfiguration.indexOf(ConfigurationConstants.PRJ_OVERRIDEGLOBAL);
@@ -618,4 +622,38 @@ public class ProjectConfiguration extends ValidationConfiguration {
     
     return super.getDelegateDescriptor(vmd);
   }
+  
+  public void store() throws InvocationTargetException {
+		IProject project = (IProject) getResource();
+		IScopeContext projectContext = new ProjectScope((IProject) getResource());
+		final IEclipsePreferences pref = projectContext.getNode(ValidationPlugin.PLUGIN_ID);
+		if (pref != null) {
+			try {
+				pref.put(USER_PREFERENCE, serialize());
+				pref.put(USER_MANUAL_PREFERENCE, serializeManualSetting());
+				pref.put(USER_BUILD_PREFERENCE, serializeBuildSetting());
+				pref.put(DELEGATES_PREFERENCE, serializeDelegatesSetting());
+				pref.flush();
+			} catch (BackingStoreException bse) {
+				Logger.getLogger().log(bse);
+			}
+		}
+	}
+  
+  protected void loadPreference() throws InvocationTargetException {
+		IProject project = (IProject) getResource();
+		IScopeContext projectContext = new ProjectScope(project);
+		final IEclipsePreferences prefs = projectContext.getNode(ValidationPlugin.PLUGIN_ID);
+		if (prefs != null) {
+			String projectName = project.getName();
+			String storedConfig = prefs.get(USER_PREFERENCE,"default_value");
+			deserialize(storedConfig);
+			String storedManualConfig = prefs.get(USER_MANUAL_PREFERENCE,"default_value");
+			deserializeManual(storedManualConfig);
+			String storedBuildConfig = prefs.get(USER_BUILD_PREFERENCE,"default_value");
+			deserializeBuild(storedBuildConfig);
+			String storedDelegatesConfiguration = prefs.get(DELEGATES_PREFERENCE,"default_value");
+			deserializeDelegates(storedDelegatesConfiguration);
+		}
+	}
 }
