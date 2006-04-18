@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: WST Common Core Plug-in
+Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.wst.common.core; singleton:=true
 Bundle-Version: 1.0.100.qualifier
 Bundle-Activator: org.eclipse.wst.common.core.search.SearchPlugin
@@ -14,4 +14,5 @@ Export-Package: org.eclipse.wst.common.core.search,
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.core.expressions
-Eclipse-AutoStart: true
+Eclipse-LazyStart: true
+Bundle-Vendor: %pluginProvider
