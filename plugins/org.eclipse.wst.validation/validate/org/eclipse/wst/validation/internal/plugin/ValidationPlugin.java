@@ -143,6 +143,7 @@ public class ValidationPlugin extends WTPPlugin {
 	 */
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
+		ResourcesPlugin.getWorkspace().removeResourceChangeListener( EventManager.getManager() );		
 		EventManager.getManager().shutdown();
 	}
 
