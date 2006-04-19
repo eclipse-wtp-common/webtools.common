@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.datamodel.properties.ICreateReferenceComponentsDataModelProperties;
+import org.eclipse.wst.common.componentcore.internal.resources.VirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
@@ -85,13 +86,7 @@ public class RemoveReferenceComponentOperation extends AbstractDataModelOperatio
 	}
 
 	protected void removeRefereneceInComponent(IVirtualComponent component, IVirtualReference reference) {
-		List refList = new ArrayList();
-		IVirtualReference[] refArray = component.getReferences();
-		for (int i = 0; i < refArray.length; i++) {
-			if (refArray[i].getReferencedComponent() != null && !refArray[i].getReferencedComponent().equals(reference.getReferencedComponent()))
-				refList.add(refArray[i]);
-		}
-		component.setReferences((IVirtualReference[]) refList.toArray(new IVirtualReference[refList.size()]));
+		((VirtualComponent)component.getComponent()).removeReference(reference);
 	}
 
 	public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {

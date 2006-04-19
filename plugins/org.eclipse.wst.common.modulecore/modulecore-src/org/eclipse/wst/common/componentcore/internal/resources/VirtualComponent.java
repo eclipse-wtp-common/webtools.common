@@ -429,4 +429,54 @@ public class VirtualComponent implements IVirtualComponent {
 			result[i] = ComponentCore.createComponent(handles[i]);
 		return result;
 	}
+	
+	/**
+	 * Remove the associated ReferencedComponent for the virtual reference from the workbench component 
+	 * associated with this virtual component
+	 * 
+	 * @param aReference
+	 */
+	public void removeReference(IVirtualReference aReference) {
+		StructureEdit core = null;
+		try {
+			core = StructureEdit.getStructureEditForWrite(getProject());
+			if (core == null || aReference == null)
+				return;
+			WorkbenchComponent component = core.getComponent();
+			ReferencedComponent refComponent = getWorkbenchReferencedComponent(aReference, component);
+			if (component != null && refComponent != null)
+				component.getReferencedComponents().remove(refComponent);
+		} finally {
+			if(core != null) {
+				core.saveIfNecessary(null);
+				core.dispose();
+			}
+		}	
+	}
+	
+	/**
+	 * Return the associated structure edit ReferencedComponent object for the given IVirtualReference based on the handle
+	 * and module URI.
+	 * 
+	 * @param aReference
+	 * @param core
+	 * @return ReferencedComponent
+	 */
+	protected ReferencedComponent getWorkbenchReferencedComponent(IVirtualReference aReference, WorkbenchComponent component) {
+		if (aReference == null || aReference.getReferencedComponent() == null || component == null)
+			return null;
+		List referencedComponents = component.getReferencedComponents();
+		for (int i=0; i<referencedComponents.size(); i++) {
+			ReferencedComponent ref = (ReferencedComponent) referencedComponents.get(i);
+			if (!aReference.getReferencedComponent().isBinary()) {
+				if (ref.getHandle().equals(ModuleURIUtil.fullyQualifyURI(aReference.getReferencedComponent().getProject())))
+					return ref;	
+			} 
+			else {
+				if (ref.getHandle().equals(ModuleURIUtil.archiveComponentfullyQualifyURI(aReference.getReferencedComponent().getName())))
+					return ref;
+			}	
+		}
+		return null;
+	}
 }
