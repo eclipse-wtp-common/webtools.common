@@ -385,20 +385,20 @@ public class StructureEdit implements IEditModelHandler {
 	 * 
 	 * @see org.eclipse.wst.common.componentcore.IEditModelHandler#dispose()
 	 */
-	public void dispose() {
-		
-		if (isStructuralModelSelfManaged) {
+	public void dispose() {	
+		if (isStructuralModelSelfManaged && structuralModel!=null) {
 			synchronized (structuralModel) {
-				if (!structuralModel.isDisposed()) {
+				if (!structuralModel.isDisposed())
 					structuralModel.releaseAccess(this);
-				}
-			}
-			
+			}	
 		}
-		if (dependentCores.size() > 0) {
+		if (dependentCores!=null && dependentCores.size() > 0) {
 			synchronized (dependentCores) {
-				for (Iterator cores = dependentCores.values().iterator(); cores.hasNext();)
-					((StructureEdit) cores.next()).dispose();
+				for (Iterator cores = dependentCores.values().iterator(); cores.hasNext();) {
+					StructureEdit core = (StructureEdit) cores.next();
+					if (core != null)
+						core.dispose();
+				}
 			}
 		}
 	}
@@ -763,15 +763,19 @@ public class StructureEdit implements IEditModelHandler {
 	 * @see WorkbenchComponent#getHandle()
 	 */
 	public WorkbenchComponent findComponentByURI(URI aModuleURI) throws UnresolveableURIException {
+		if (aModuleURI == null)
+			return null;
 		if(aModuleURI.scheme() == null && aModuleURI.segmentCount() == 1)
 			return getComponent();
 		ModuleURIUtil.ensureValidFullyQualifiedModuleURI(aModuleURI);
 		String projectName = aModuleURI.segment(ModuleURIUtil.ModuleURI.PROJECT_NAME_INDX);
 		/* Accessing a local module */
-		if (getProject().getName().equals(projectName)) {
+		if (getProject()!=null && getProject().getName().equals(projectName))
 			return getComponent();
-		}
-		return getDependentModuleCore(aModuleURI).getComponent();
+		StructureEdit dependentCore = getDependentModuleCore(aModuleURI);
+		if (dependentCore != null)
+			return dependentCore.getComponent();
+		return null;
 	}
 
 	/**
