@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<!-- ================================================= -->
+<!-- This is the plugin for declaring the help         -->
+<!-- contributions for using the tool.                 -->
+<!-- ================================================= -->
+
+<plugin>
+
+<extension point="org.eclipse.help.contexts">
+       <contexts file="SnippetsContexts.xml" plugin ="org.eclipse.wst.common.snippets"/>
+</extension>
+
+
+</plugin>
