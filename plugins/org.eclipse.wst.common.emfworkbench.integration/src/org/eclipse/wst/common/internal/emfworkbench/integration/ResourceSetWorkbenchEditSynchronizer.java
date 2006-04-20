@@ -29,10 +29,11 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.jobs.IJobManager;
-import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -64,14 +65,6 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 
 	protected List autoloadResourcesURIs = new ArrayList();
 
-	private static final ISchedulingRule NULL_SCHEDULING_RULE= new ISchedulingRule() {
-        public boolean contains(ISchedulingRule rule) {
-                return false;
-        }
-        public boolean isConflicting(ISchedulingRule rule) {
-                return false;
-        }
-	};
 
 
 	/**
@@ -106,7 +99,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 		Resource resource = null;
 		for (int i = 0; i < deferredRemoveResources.size(); i++) {
 			resource = (Resource) deferredRemoveResources.get(i);
-			getResourceSet().getResources().remove(resource);
+			resourceSet.getResources().remove(resource);
 			resource.unload();
 		}
 	}
@@ -124,7 +117,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 		for (int i = 0; i < deferredLoadResources.size(); i++) {
 			uri = (URI) deferredLoadResources.get(i);
 			try {
-				getResourceSet().getResource(uri, true);
+				resourceSet.getResource(uri, true);
 			} catch (WrappedException ex) {
 				Logger.getLogger().logError(ex);
 			}
@@ -132,24 +125,36 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 		}
 	}
 
-	protected void acceptDelta(IResourceChangeEvent event) {
-		IResourceDelta delta = event.getDelta();
-		// search for changes to any projects using a visitor
+	protected void acceptDelta(final IResourceChangeEvent event) {
 
-        ISchedulingRule rule = null;
-        try {
-                rule = acquireResourceRule(project);
-        		if (delta != null) {
-        			try {
-        				delta.accept(this);
-        			} catch (Exception e) {
-        				Logger.getLogger().logError(e);
-        			}
-        		}
-        } finally {
-                releaseResourceRule(rule);
-        }
+		final IResourceDelta delta = event.getDelta();
 
+		if (ResourcesPlugin.getWorkspace().isTreeLocked()) {
+			primAcceptDelta(delta, event);
+		}
+		else {
+			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+				public void run(IProgressMonitor monitor) throws CoreException {
+					primAcceptDelta(delta, event);
+				}
+			};
+			try {
+				ResourcesPlugin.getWorkspace().run(runnable, project, IWorkspace.AVOID_UPDATE, null);
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void primAcceptDelta(IResourceDelta delta, IResourceChangeEvent event) {
+		if (delta != null) {
+			try {
+				delta.accept(ResourceSetWorkbenchEditSynchronizer.this);
+			} catch (Exception e) {
+				Logger.getLogger().logError(e);
+			}
+		}
 	}
 
 	/**
@@ -159,8 +164,8 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	protected void release() {
 		if (JEMUtilPlugin.isActivated()) {
 			try {
-				if (getResourceSet() instanceof ProjectResourceSet)
-					((ProjectResourceSet) getResourceSet()).release();
+				if (resourceSet instanceof ProjectResourceSet)
+					((ProjectResourceSet) resourceSet).release();
 			} finally {
 				EMFWorkbenchContextFactory.INSTANCE.removeCachedProject(getProject());
 				dispose();
@@ -275,7 +280,8 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	}
 
 	protected Resource getResource(IFile aFile) {
-		return getResourceSet().getResource(URI.createPlatformResourceURI(aFile.getFullPath().toString()), false);
+		
+		return resourceSet.getResource(URI.createPlatformResourceURI(aFile.getFullPath().toString()), false);
 	}
 
 
@@ -356,12 +362,12 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	}
 
 	public void enableAutoload(URI uri) {
-		URI normalized = getResourceSet().getURIConverter().normalize(uri);
+		URI normalized = resourceSet.getURIConverter().normalize(uri);
 		autoloadResourcesURIs.add(normalized);
 	}
 
 	public void disableAutoload(URI uri) {
-		URI normalized = getResourceSet().getURIConverter().normalize(uri);
+		URI normalized = resourceSet.getURIConverter().normalize(uri);
 		autoloadResourcesURIs.remove(normalized);
 	}
 
@@ -374,32 +380,4 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 		getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE | IResourceChangeEvent.POST_CHANGE);
 	}
 
-	protected synchronized ResourceSet getResourceSet(){
-		return resourceSet;
-	}
-	
-	private static void releaseResourceRule(ISchedulingRule rule) {
-        if(rule == null) return;
-        IJobManager manager= Platform.getJobManager();
-        manager.endRule(rule);
-	}
-	
-	private static ISchedulingRule acquireResourceRule(IResource res) {
-	        ISchedulingRule rule = (res != null ? res : NULL_SCHEDULING_RULE);
-	        IJobManager manager= Platform.getJobManager();
-	        Job currentJob = manager.currentJob();
-	        if (currentJob != null) {
-	                ISchedulingRule currentRule = currentJob.getRule();
-	                if (currentRule != null)                                
-	                        return null;
-	        }
-	        try {
-	                manager.beginRule(rule, null);
-	        } catch (IllegalArgumentException ex){
-	                //Catching Scope exception
-	        }
-	        return rule;
-	}
-	
-	
 }
