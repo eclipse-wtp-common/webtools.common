@@ -12,15 +12,19 @@ package org.eclipse.wst.common.internal.emf.resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.notify.impl.NotificationImpl;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.wst.common.internal.emf.utilities.IDUtil;
 
 public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl implements ReferencedResource {
@@ -33,7 +37,67 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	private int editReferenceCount = 0;
 	protected boolean isNew = true;
 	protected boolean forceRefresh;
+	
+	  public static class ESynchronizedAdapterList extends EAdapterList
+	  {
 
+	    public ESynchronizedAdapterList(Notifier notifier) {
+			super(notifier);
+		}
+
+		public synchronized boolean add(Object object)
+	    {
+	    return super.add(object);
+	    }
+
+	    public synchronized void add(int index, Object object)
+	    {
+	    super.add(index, object);
+	    }
+
+	    public synchronized boolean addAll(Collection collection)
+	    {
+	    return super.addAll(collection);
+	    }
+
+	    public synchronized boolean remove(Object object)
+	    {
+	    return super.remove(object);
+	    }
+
+	    public synchronized Object remove(int index)
+	    {
+	    return super.remove(index);
+	    }
+
+	    public synchronized boolean removeAll(Collection collection)
+	    {
+	    return super.removeAll(collection);
+	    }
+
+	    public synchronized void clear()
+	    {
+	     super.clear();
+	    }
+
+
+	    public synchronized Object set(int index, Object object)
+	    {
+	    return super.set(index, object);
+	    }
+
+	    public synchronized void move(int newPosition, Object object)
+	    {
+	    super.move(newPosition, object);
+	    }
+
+	    public synchronized Object move(int newPosition, int oldPosition)
+	    {
+	    return super.move(newPosition, oldPosition);
+	    }
+	  }
+
+	 
 	/**
 	 * ReferencableXMIResourceImpl constructor comment.
 	 */
@@ -291,6 +355,7 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 			eNotify(notification);
 		}
 	}
+	
 
 	/**
 	 * @see com.ibm.etools.emf.workbench.ReferencedResource#wasReverted()
@@ -298,4 +363,21 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	public boolean wasReverted() {
 		return false;
 	}
+	
+	public EList eAdapters()
+	  {
+	    if (eAdapters == null)
+	    {
+	      eAdapters =  new ESynchronizedAdapterList(this);
+	    }
+	    return eAdapters;
+	  }
+
+
+	public void eNotify(Notification notification) {
+		synchronized (eAdapters()) {
+			super.eNotify(notification);
+		}
+	}
+
 }
