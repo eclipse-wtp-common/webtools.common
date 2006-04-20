@@ -42,7 +42,7 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 
 	protected boolean runtimeAdded = false;
-	
+
 	public FacetProjectCreationOperation() {
 		super();
 	}
@@ -75,6 +75,10 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 					}
 				}
 			}
+			Map actionsMap = (Map) model.getProperty(IFacetProjectCreationDataModelProperties.FACET_ACTION_MAP);
+			for (Iterator iterator = actionsMap.values().iterator(); iterator.hasNext();) {
+				actions.add(iterator.next());
+			}
 			if (!actions.isEmpty()) {
 				facetProj.modify(actions, monitor);
 			}
@@ -98,7 +102,7 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 			}
 			if (runtimeAdded) {
 				IRuntime runtime = (IRuntime) model.getProperty(IFacetProjectCreationDataModelProperties.FACET_RUNTIME);
-				addDefaultFacets(facetProj,runtime.getDefaultFacets( fixedFacets ));
+				addDefaultFacets(facetProj, runtime.getDefaultFacets(fixedFacets));
 			}
 
 		} catch (CoreException e) {
@@ -122,15 +126,15 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 				actions.add(new IFacetedProject.Action(Action.Type.INSTALL, facetVersion, dm));
 			}
 		}
-		
+
 		try {
 			if (!actions.isEmpty())
-				facetProj.modify(actions,null);
+				facetProj.modify(actions, null);
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	public IFacetedProject createProject(IProgressMonitor monitor) throws CoreException {
@@ -164,19 +168,19 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 				actions.add(new IFacetedProject.Action(Action.Type.INSTALL, facetVersion, dm));
 			}
 		}
-		
+
 		try {
 			if (!actions.isEmpty())
-				facetProj.modify(actions,null);
+				facetProj.modify(actions, null);
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
-	
-	public static void addDefaultFactets(IFacetedProject facetProj, IRuntime runtime) throws ExecutionException{
-	
+
+	public static void addDefaultFactets(IFacetedProject facetProj, IRuntime runtime) throws ExecutionException {
+
 		Set fixedFacets = new HashSet(), newFacetVersions = facetProj.getProjectFacets(), existingFixedFacets = facetProj.getFixedProjectFacets();
 		for (Iterator iter = newFacetVersions.iterator(); iter.hasNext();) {
 			IProjectFacetVersion facetVersion = (IProjectFacetVersion) iter.next();
@@ -192,17 +196,17 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 				fixedFacets.add(facetVersion.getProjectFacet());
 			}
 		}
-		
+
 		try {
 			fixedFacets.addAll(facetProj.getFixedProjectFacets());
 			facetProj.setFixedProjectFacets(fixedFacets);
-		
-			if (runtime != null ) {
-				addDefaultFacetsInProject(facetProj,runtime.getDefaultFacets( fixedFacets ));
+
+			if (runtime != null) {
+				addDefaultFacetsInProject(facetProj, runtime.getDefaultFacets(fixedFacets));
 			}
-		} catch(CoreException e){
+		} catch (CoreException e) {
 			Logger.getLogger().logError(e);
-			throw new ExecutionException(e.getMessage(), e);			
+			throw new ExecutionException(e.getMessage(), e);
 		}
 	}
 
