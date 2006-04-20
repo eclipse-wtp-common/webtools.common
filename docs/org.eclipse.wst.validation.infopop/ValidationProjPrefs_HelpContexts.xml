@@ -7,7 +7,7 @@
 <context id="jvpp0000">
 <description>The project validation page allows you to view or change the validation settings for a project. A validator is a tool that checks that resources conform to a specification, DTD, or some other set of rules.
 
-Each validator can apply to certain types of files, certain project facets, or both. When a validator applies to a project facet, the workbench uses that validator only on projects that have that facet. Likewise, most validators apply only to certain types of files, so the workbench uses those validators only on those types of files.
+Each validator can apply to certain types of files, certain project natures, and certain project facets. When a validator applies to a project facet or nature, the workbench uses that validator only on projects that have that facet or nature. Likewise, most validators apply only to certain types of files, so the workbench uses those validators only on those types of files.
 
 Select the <b>Override validation preferences</b> check box. Select this check box if you want to override the default validation preferences set in the workbench Preferences page.
 If the <b>Override validation preferences</b> check box is not enabled, go to <b>Window > Preferences > Validation</b> and select the <b>Allow projects to override these preference settings</b> check box.
