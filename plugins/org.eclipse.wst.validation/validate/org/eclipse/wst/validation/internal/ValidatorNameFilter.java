@@ -80,7 +80,7 @@ public class ValidatorNameFilter {
 		//return value if the fileter name extension matches the extension
 		//of the resource 
 		if (indexOfStarDot != -1) {
-			String nameExtension = name.substring(name.indexOf(".") + 1);
+			String nameExtension = name.substring(name.lastIndexOf(".") + 1);
 			return nameFilterExtension.equalsIgnoreCase(nameExtension);
 		}
 
