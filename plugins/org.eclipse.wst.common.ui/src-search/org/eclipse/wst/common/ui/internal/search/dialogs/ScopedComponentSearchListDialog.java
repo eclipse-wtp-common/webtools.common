@@ -167,7 +167,7 @@ private void scopeChangeHandler(Button b) {
 		  SearchScope scope = null;
 		  if (currentSearchScope == SCOPE_ENCLOSING_PROJECT &&
 				  currentResource != null) { 
-			  scope = new ProjectSearchScope(currentResource.getLocation());
+			  scope = new ProjectSearchScope(currentResource.getFullPath());
 		  } 
 		  else if (currentSearchScope == SCOPE_WORKSPACE){
 			  scope = new WorkspaceSearchScope();
