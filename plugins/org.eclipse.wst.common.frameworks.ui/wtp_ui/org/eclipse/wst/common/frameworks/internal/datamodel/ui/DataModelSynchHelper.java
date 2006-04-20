@@ -214,6 +214,9 @@ public class DataModelSynchHelper implements IDataModelListener {
 					try {
 						currentWidget = (Widget) propertyToWidgetHash.get(propertyName);
 						if (currentWidget != null && currentWidget != currentWidgetFromEvent) {
+							//We must hold a copy in a temp variable because setting the widget value
+							//may trigger an event that will cause this method to be called again.
+							Widget widget = currentWidget;
 							try {
 								if (currentWidget instanceof Text)
 									setWidgetValue(propertyName, flag, (Text) currentWidget);
@@ -232,7 +235,8 @@ public class DataModelSynchHelper implements IDataModelListener {
 							} finally {
 								ignoreModifyEvent = false;
 							}
-							setEnablement((Control) currentWidget, dataModel.isPropertyEnabled(propertyName));
+							//Pass the copy of the currentWidget
+							setEnablement((Control) widget, dataModel.isPropertyEnabled(propertyName));
 						}
 					} finally {
 						currentWidget = null;
