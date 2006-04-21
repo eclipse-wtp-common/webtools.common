@@ -164,7 +164,17 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 	}
 
 	public boolean exists() {
-		return false;
+		boolean exists = false;
+		java.io.File diskFile = getUnderlyingDiskFile();
+		if( diskFile != null )
+			exists = diskFile.exists();
+		
+		if( !exists ){
+			IFile utilityJar = getUnderlyingWorkbenchFile();
+			if( utilityJar != null )
+				exists =  utilityJar.exists();
+		}
+		return exists;
 	}
 
 	public IVirtualFolder getRootFolder() {
