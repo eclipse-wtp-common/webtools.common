@@ -27,6 +27,8 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -171,37 +173,6 @@ public class ComponentSearchListDialog extends Dialog {
         
         // Create Component TableViewer
         createComponentTableViewer(mainComposite);
-        componentTableViewer.getTable().addSelectionListener(new SelectionListener(){
-        	// Changing the text for the component selected and display its source
-        	// file in the box under the table viewer
-          
-        	IComponentDescriptionProvider descriptionProvider = configuration.getDescriptionProvider();        	
-			public void widgetSelected(SelectionEvent e) {				
-				run();
-			}
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-				run();
-			}
-
-			private void run() {
-				// restores the text of previous item
-				if (prevItem != null && !prevItem.isDisposed()){
-					prevItem.setText(prevItemText);
-				}
-				TableItem[] items = componentTableViewer.getTable().getSelection();
-				Object component = items[0].getData();
-
-				prevItem = items[0];
-				prevItemText = items[0].getText();
-
-				// add clarification for the first selected item
-				items[0].setText(  descriptionProvider.getName(component) + " - " + 
-    					descriptionProvider.getQualifier(component));
-
-				updateLocationView(component, descriptionProvider);
-			}
-        });
 
         configuration.createWidgetAboveQualifierBox(mainComposite);
         
@@ -258,6 +229,46 @@ public class ComponentSearchListDialog extends Dialog {
                 //updateQualifierList(qualifiers);
                 updateCanFinish();
             }
+        });
+        
+        componentTableViewer.getTable().addSelectionListener(new SelectionListener(){
+        	// Changing the text for the component selected and display its source
+        	// file in the box under the table viewer
+          
+        	IComponentDescriptionProvider descriptionProvider = configuration.getDescriptionProvider();        	
+			public void widgetSelected(SelectionEvent e) {				
+				run();
+			}
+
+			public void widgetDefaultSelected(SelectionEvent e) {
+				run();
+			}
+
+			private void run() {
+				// restores the text of previous item
+				if (prevItem != null && !prevItem.isDisposed()){
+					prevItem.setText(prevItemText);
+				}
+				TableItem[] items = componentTableViewer.getTable().getSelection();
+				Object component = items[0].getData();
+
+				prevItem = items[0];
+				prevItemText = items[0].getText();
+
+				// add clarification for the first selected item
+				items[0].setText(  descriptionProvider.getName(component) + " - " + 
+    					descriptionProvider.getQualifier(component));
+
+				updateLocationView(component, descriptionProvider);
+			}
+        });
+        
+        componentTableViewer.addDoubleClickListener(new IDoubleClickListener() {
+
+			public void doubleClick(DoubleClickEvent event) {
+				okPressed();
+			}
+        	
         });
     }
     
