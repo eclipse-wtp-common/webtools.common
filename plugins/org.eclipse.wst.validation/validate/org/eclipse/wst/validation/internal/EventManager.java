@@ -349,7 +349,8 @@ public class EventManager implements IResourceChangeListener {
 					// validator and its prerequisite plugins until they're needed.
 					if (isMigrated) {
 						prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
-						prjp.store();
+						if(!prjp.useGlobalPreference())
+							prjp.store();
 
 						ValidatorMetaData[] vmdList = prjp.getEnabledValidators();
 						// if vmdList is null, IProject has never been loaded, so nothing to clean

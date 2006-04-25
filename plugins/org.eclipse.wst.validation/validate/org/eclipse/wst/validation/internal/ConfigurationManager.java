@@ -192,7 +192,8 @@ public final class ConfigurationManager implements ConfigurationConstants {
 		try {
 			if (isMigrated(project)) {
 				ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
-				prjp.store();
+				if(!prjp.useGlobalPreference())
+					prjp.store();
 			}
 		} catch (InvocationTargetException exc) {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
