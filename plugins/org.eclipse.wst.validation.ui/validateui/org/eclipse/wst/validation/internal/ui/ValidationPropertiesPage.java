@@ -863,7 +863,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 				IProjectDescription description = getProject().getDescription();
 				ICommand[] commands = description.getBuildSpec();
 				for (int i = 0; i < commands.length; i++) {
-					if (commands[i].getBuilderName().equals(ValidationPlugin.VALIDATION_BUILDER_ID))
+					if (commands[i].getBuilderName().equals(ValidationPlugin.VALIDATION_BUILDER_ID) | isValidationBuilderEnabled(commands[i]))
 						builderExists = true;
 				}
 				if (builderExists) {
@@ -877,6 +877,16 @@ public class ValidationPropertiesPage extends PropertyPage {
 			} catch (CoreException ce) {
 				Logger.getLogger().log(ce);
 			}
+		}
+		
+		private  boolean isValidationBuilderEnabled(ICommand command) {
+			Map args = command.getArguments();
+			if(args.isEmpty())
+				return false;
+			String handle = (String)args.get("LaunchConfigHandle");
+			if(handle != null && handle.length() > 0 && handle.indexOf(ValidationPlugin.VALIDATION_BUILDER_ID) != -1)
+				return true;
+			return false;
 		}
 
 		private void updateTableForDefaults() throws InvocationTargetException {
@@ -1042,7 +1052,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 		 * builder. Otherwise return without doing anything.
 		 */
 		private void addBuilder() {
-			if (addValidationBuilder.getSelection()) 
+			if (addValidationBuilder.isEnabled() && addValidationBuilder.getSelection())
 				ValidatorManager.addProjectBuildValidationSupport(getProject());
 		}
 
