@@ -32,6 +32,8 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.Preferences.IPropertyChangeListener;
+import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.delegates.ValidatorDelegateDescriptor;
@@ -45,7 +47,7 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  * This class is populated from the multiple persistent properties, and is kept as a session
  * property while the resource is open.
  */
-public abstract class ValidationConfiguration {
+public abstract class ValidationConfiguration implements IPropertyChangeListener {
 	private IResource _resource = null;
 	private boolean disableAllValidation = getDisableAllValidation();
 	private String _version = null;
@@ -765,14 +767,33 @@ public abstract class ValidationConfiguration {
 		// persistent properties.
 		Preferences prefs = ValidationPlugin.getPlugin().getPluginPreferences();
 		if (prefs != null) {
-			String storedConfig = prefs.getString(USER_PREFERENCE);
-			deserialize(storedConfig);
-			String storedManualConfig = prefs.getString(USER_MANUAL_PREFERENCE);
-			deserializeManual(storedManualConfig);
-			String storedBuildConfig = prefs.getString(USER_BUILD_PREFERENCE);
-			deserializeBuild(storedBuildConfig);
-			String storedDelegatesConfiguration = prefs.getString(DELEGATES_PREFERENCE);
-			deserializeDelegates(storedDelegatesConfiguration);
+			deserializeAllPrefs(prefs);
+		}
+	}
+
+	/**
+	 * @param prefs
+	 * @throws InvocationTargetException
+	 */
+	private void deserializeAllPrefs(Preferences prefs) throws InvocationTargetException {
+		String storedConfig = prefs.getString(USER_PREFERENCE);
+		deserialize(storedConfig);
+		String storedManualConfig = prefs.getString(USER_MANUAL_PREFERENCE);
+		deserializeManual(storedManualConfig);
+		String storedBuildConfig = prefs.getString(USER_BUILD_PREFERENCE);
+		deserializeBuild(storedBuildConfig);
+		String storedDelegatesConfiguration = prefs.getString(DELEGATES_PREFERENCE);
+		deserializeDelegates(storedDelegatesConfiguration);
+	}
+	
+	public void propertyChange(PropertyChangeEvent event) {
+		Preferences prefs = (Preferences) event.getSource();
+		if (prefs != null && !event.getOldValue().equals(event.getNewValue())) {
+			try {
+				deserializeAllPrefs(prefs);
+			 } catch (InvocationTargetException ie) {
+				Logger.getLogger().log(ie);
+			}
 		}
 	}
 
