@@ -175,7 +175,12 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 
 	public Resource prepareProjectModulesIfNecessary() throws CoreException {
 		ModuleMigratorManager manager = ModuleMigratorManager.getManager(getProject());
-		XMIResource res = (XMIResource) getPrimaryResource();
+		XMIResource res = null;
+		
+		synchronized(ModulecorePlugin.getDefault()){
+			res = (XMIResource) getPrimaryResource();
+		}
+		
 		if (resNeedsMigrating(res)) {
 			try {
 				if (!manager.isMigrating() && !ResourcesPlugin.getWorkspace().isTreeLocked())
@@ -250,4 +255,5 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 			}
 			return resource;
 	}
+
 }

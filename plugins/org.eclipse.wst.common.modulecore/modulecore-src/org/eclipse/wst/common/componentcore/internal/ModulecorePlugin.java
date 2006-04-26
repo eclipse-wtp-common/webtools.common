@@ -47,7 +47,8 @@ public class ModulecorePlugin extends Plugin {
 	/**
 	 * This method is called upon plug-in activation
 	 */
-	public void start(BundleContext context) throws Exception {
+	public synchronized void start(BundleContext context) throws Exception {
+		
 		super.start(context);
 		IAdapterManager manager = Platform.getAdapterManager();
 		
