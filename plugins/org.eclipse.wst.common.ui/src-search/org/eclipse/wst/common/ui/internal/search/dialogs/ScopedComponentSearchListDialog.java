@@ -54,8 +54,10 @@ public class ScopedComponentSearchListDialog extends ComponentSearchListDialog
   protected Composite selectWorkingSetsGroup;
   protected Text workingSetsText;
   
+  protected static String valueForWorkingSetsText;
+  
   // working sets currently chosen by the user
-  private IWorkingSet[] workingSets;
+  private static IWorkingSet[] workingSets;
 
   public ScopedComponentSearchListDialog(Shell shell, String dialogTitle, ComponentSearchListDialogConfiguration configuration)
   {
@@ -117,6 +119,8 @@ public class ScopedComponentSearchListDialog extends ComponentSearchListDialog
     
     workingSetsText = new Text(selectWorkingSetsGroup, SWT.BORDER | SWT.READ_ONLY);
     workingSetsText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+    if (valueForWorkingSetsText != null )
+    	workingSetsText.setText(valueForWorkingSetsText);
     
     chooseButton = new Button(selectWorkingSetsGroup, SWT.NONE);
     chooseButton.setText("Choose...");
@@ -126,14 +130,14 @@ public class ScopedComponentSearchListDialog extends ComponentSearchListDialog
 			IWorkingSetSelectionDialog dialog = PlatformUI.getWorkbench().getWorkingSetManager().createWorkingSetSelectionDialog(shell, true);
 			if ( dialog.open() == Window.OK){
 				workingSets = dialog.getSelection();
-				String names = "";
+				valueForWorkingSetsText = "";
 				for (int i = 0; i < workingSets.length; i++){
-					names += workingSets[i].getLabel();
+					valueForWorkingSetsText += workingSets[i].getLabel();
 					// if not the last item, we add a comma
 					if ( i != workingSets.length - 1) 
-						names += ", ";
+						valueForWorkingSetsText += ", ";
 				}
-				workingSetsText.setText(names);
+				workingSetsText.setText(valueForWorkingSetsText);
 			}
 			// Set working sets radio button enabled, disable other buttons
 			radioButton[2].setSelection(false);
