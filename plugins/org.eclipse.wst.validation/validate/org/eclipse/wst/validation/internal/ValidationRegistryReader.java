@@ -1364,10 +1364,14 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		vmd.setValidatorClass(element); // associate the above attributes with the validator
 		vmd.addDependentValidator(getDependentValidatorValue(element));
 		String[] customMarkerIds = getMarkerIdsValue(element);
-		if(customMarkerIds != null && customMarkerIds.length > 0) {
+		if (customMarkerIds != null && customMarkerIds.length > 0) {
 			String[] qualifiedMarkerIds = new String[customMarkerIds.length];
-			for(int i = 0; i < customMarkerIds.length; i++) {
-				qualifiedMarkerIds[i] = pluginId+"."+ customMarkerIds[i];
+			for (int i = 0; i < customMarkerIds.length; i++) {
+				String markerid = customMarkerIds[i];
+				if (markerid.indexOf(pluginId) == -1) {
+					qualifiedMarkerIds[i] = pluginId + "." + customMarkerIds[i];
+				} else
+					qualifiedMarkerIds[i] = customMarkerIds[i];
 			}
 			vmd.setMarkerIds(qualifiedMarkerIds); //$NON-NLS-1$
 		}

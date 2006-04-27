@@ -579,9 +579,13 @@ public final class WorkbenchReporter implements IReporter {
 				if (messageMarkerId != null && messageMarkerId.length() > 0) {
 					String firstMarkerId = vmd.getMarkerIds()[0];
 					String pluginQualifier = firstMarkerId.substring(0, firstMarkerId.lastIndexOf("."));
-					String qualifiesMessageMarkerId = pluginQualifier + "." + messageMarkerId;
-					if (Arrays.asList(vmd.getMarkerIds()).contains(qualifiesMessageMarkerId))
-						return qualifiesMessageMarkerId;
+					String qualifiedMessageMarkerId = null;
+					if (messageMarkerId.indexOf(pluginQualifier) == -1)
+						qualifiedMessageMarkerId = pluginQualifier + "." + messageMarkerId;
+					else
+						qualifiedMessageMarkerId = messageMarkerId;
+					if (Arrays.asList(vmd.getMarkerIds()).contains(qualifiedMessageMarkerId))
+						return qualifiedMessageMarkerId;
 				}
 			}
 		}
