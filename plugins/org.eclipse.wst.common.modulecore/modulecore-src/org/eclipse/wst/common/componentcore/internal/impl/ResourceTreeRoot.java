@@ -18,12 +18,12 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.util.IPathProvider;
+import org.eclipse.wst.common.internal.emf.utilities.ExtendedEcoreUtil;
 
 /**
  * <p>
@@ -112,7 +112,7 @@ public class ResourceTreeRoot extends ResourceTreeNode {
 
 	// TODO The source tree should be attached to the project modules root, not each module.
 	public static ResourceTreeRoot getSourceResourceTreeRoot(WorkbenchComponent aModule) {
-		ResourceTreeRootAdapter resourceTreeAdapter = (ResourceTreeRootAdapter) EcoreUtil.getAdapter(aModule.eAdapters(), ResourceTreeRootAdapter.SOURCE_ADAPTER_TYPE);
+		ResourceTreeRootAdapter resourceTreeAdapter = (ResourceTreeRootAdapter) ExtendedEcoreUtil.getAdapter(aModule, aModule.eAdapters(), ResourceTreeRootAdapter.SOURCE_ADAPTER_TYPE);
 		if (resourceTreeAdapter != null)
 			return resourceTreeAdapter.getResourceTreeRoot();
 		resourceTreeAdapter = new ResourceTreeRootAdapter(ResourceTreeRootAdapter.SOURCE_TREE);
@@ -121,7 +121,7 @@ public class ResourceTreeRoot extends ResourceTreeNode {
 	}
 
 	public static ResourceTreeRoot getDeployResourceTreeRoot(WorkbenchComponent aModule) {
-		ResourceTreeRootAdapter resourceTreeAdapter = (ResourceTreeRootAdapter) EcoreUtil.getAdapter(aModule.eAdapters(), ResourceTreeRootAdapter.DEPLOY_ADAPTER_TYPE);
+		ResourceTreeRootAdapter resourceTreeAdapter = (ResourceTreeRootAdapter) ExtendedEcoreUtil.getAdapter(aModule, aModule.eAdapters(), ResourceTreeRootAdapter.DEPLOY_ADAPTER_TYPE);
 		if (resourceTreeAdapter != null)
 			return resourceTreeAdapter.getResourceTreeRoot();
 		resourceTreeAdapter = new ResourceTreeRootAdapter(ResourceTreeRootAdapter.DEPLOY_TREE);
