@@ -160,9 +160,30 @@ public class ExtendedEcoreUtil extends EcoreUtil {
 		if (!EPackage.Registry.INSTANCE.containsKey(nsPrefix))
 			EPackage.Registry.INSTANCE.put(nsPrefix, descriptor);
 	}
+	/**
+	   * Returns the adapter of the specified type.
+	 * @param anObject 
+	   * @param adapters list of adapters to search.
+	   * @param type the type of adapter.
+	   * @return an adapter from the list or null.
+	   */
+	  public static Adapter getAdapter(EObject anObject, List adapters, Object type) {
+
+		synchronized (adapters) {
+
+			for (int i = 0, size = adapters.size(); i < size; ++i) {
+				Adapter adapter = (Adapter) adapters.get(i);
+				if (adapter.isAdapterForType(type)) {
+					return adapter;
+				}
+			}
+			return null;
+		}
+	}
 
 	/**
-	 * Remove this object from it's container, and make it and all it's children proxies
+	 * Remove this object from it's container, and make it and all it's children
+	 * proxies
 	 */
 	public static void unload(EObject root) {
 		Resource res = root.eResource();

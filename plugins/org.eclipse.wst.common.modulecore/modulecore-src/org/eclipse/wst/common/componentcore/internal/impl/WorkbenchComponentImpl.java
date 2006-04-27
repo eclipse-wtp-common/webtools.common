@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchComponentImpl.java,v 1.9 2006/03/27 21:49:41 vbhadrir Exp $
+ * $Id: WorkbenchComponentImpl.java,v 1.10 2006/04/27 04:12:30 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
+import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
@@ -55,6 +56,68 @@ import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
  * @generated
  */
 public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComponent {
+	
+	
+	
+	public static class ESynchronizedAdapterList extends EAdapterList
+	  {
+	
+	    public ESynchronizedAdapterList(Notifier notifier) {
+			super(notifier);
+		}
+	
+		public boolean add(Object object)
+	    {
+	    synchronized (this) {return super.add(object);}
+	    }
+	
+	    public void add(int index, Object object)
+	    {
+	    synchronized (this) {super.add(index, object);}
+	    }
+	
+	    public boolean addAll(Collection collection)
+	    {
+	    synchronized (this) {return super.addAll(collection);}
+	    }
+	
+	    public boolean remove(Object object)
+	    {
+	    synchronized (this) {return super.remove(object);}
+	    }
+	
+	    public Object remove(int index)
+	    {
+	    synchronized (this) {return super.remove(index);}
+	    }
+	
+	    public boolean removeAll(Collection collection)
+	    {
+	    synchronized (this) {return super.removeAll(collection);}
+	    }
+	
+	    public void clear()
+	    {
+	     synchronized (this) {super.clear();};
+	    }
+	
+	
+	    public Object set(int index, Object object)
+	    {
+	    synchronized (this) {return super.set(index, object);}
+	    }
+	
+	    public void move(int newPosition, Object object)
+	    {
+	    synchronized (this) {super.move(newPosition, object);}
+	    }
+	
+	    public Object move(int newPosition, int oldPosition)
+	    {
+	    synchronized (this) {return super.move(newPosition, oldPosition);}
+	    }
+	  }
+
 	/**
 	 * The default value of the '{@link #getName() <em>Name</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -477,6 +540,21 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	public boolean exists(IPath aSourcePath, int resourceFlag) { 
 		ResourceTreeRoot resourceTreeRoot = ResourceTreeRoot.getSourceResourceTreeRoot(this);
 		return resourceTreeRoot.exists(aSourcePath, resourceFlag); 
+	}
+	public EList eAdapters()
+	  {
+	    if (eAdapters == null)
+	    {
+	      eAdapters =  new ESynchronizedAdapterList(this);
+	    }
+	    return eAdapters;
+	  }
+
+
+	public void eNotify(Notification notification) {
+		synchronized (eAdapters()) {
+			super.eNotify(notification);
+		}
 	}
 	
 	public IPath getDefaultSourceRoot() {

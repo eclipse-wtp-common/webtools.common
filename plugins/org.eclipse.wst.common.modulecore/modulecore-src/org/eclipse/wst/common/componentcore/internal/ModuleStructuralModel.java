@@ -96,6 +96,7 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	 * @see org.eclipse.wst.common.internal.emfworkbench.integration.EditModel#getPrimaryRootObject()
 	 */
 	public EObject getPrimaryRootObject() {
+		final String PROJECT_VERSION = "1.5.0";
 		try {
 			Resource res = prepareProjectModulesIfNecessary();
 			if (res == null)
@@ -116,7 +117,10 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 			if (components.size()>0) {
 				WorkbenchComponent wbComp = (WorkbenchComponent)components.get(0);
 				// Check and see if we need to clean up spurrious redundant map entries
-				cleanupWTPModules(wbComp);
+				if (!((ProjectComponents)modelRoot).getVersion().equals(PROJECT_VERSION)) {
+					((ProjectComponents)modelRoot).setVersion(PROJECT_VERSION);
+					cleanupWTPModules(wbComp);
+				}
 			}
 		}
 		return modelRoot;
@@ -172,15 +176,33 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	public WTPModulesResource  makeWTPModulesResource() {
 		return (WTPModulesResource) createResource(WTPModulesResourceFactory.WTP_MODULES_URI_OBJ);
 	}
+	/**
+	 * Subclasses can override - by default this will return the first resource referenced by the
+	 * known resource URIs for this EditModel
+	 * 
+	 * @return
+	 */
+	public Resource getPrimaryResource() {
+		// Overriden to handle loading the .component resource in new and old forms
+		// First will try to load from .settings/org.eclipse.wst.common.component
+		// Second will try to load from the old location .settings/.component
+
+		URI uri = (URI) URI.createURI(StructureEdit.MODULE_META_FILE_NAME);
+		WTPModulesResource res = (WTPModulesResource)getResource(uri);
+		if (!res.isLoaded()) {
+			removeResource(res);
+			uri = (URI) URI.createURI(".settings/.component");
+			res = (WTPModulesResource)getResource(uri);
+		}
+		return res;
+	}
 
 	public Resource prepareProjectModulesIfNecessary() throws CoreException {
 		ModuleMigratorManager manager = ModuleMigratorManager.getManager(getProject());
-		XMIResource res = null;
-		
-		synchronized(ModulecorePlugin.getDefault()){
+		XMIResource res;
+		synchronized (ModulecorePlugin.getDefault()) {
 			res = (XMIResource) getPrimaryResource();
 		}
-		
 		if (resNeedsMigrating(res)) {
 			try {
 				if (!manager.isMigrating() && !ResourcesPlugin.getWorkspace().isTreeLocked())
@@ -211,7 +233,7 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 		multiComps = false;
 		if (project==null)
 			return false;
-		boolean needsMigrating =  (!project.hasNature(FacetedProjectNature.NATURE_ID)); //|| (res!=null && !res.isLoaded() && ((WTPModulesResource)res).getRootObject() != null);
+		boolean needsMigrating = (!project.hasNature(FacetedProjectNature.NATURE_ID)) || res == null || ((res != null) && ((WTPModulesResource)res).getRootObject() == null); //|| (res!=null && !res.isLoaded() && ((WTPModulesResource)res).getRootObject() != null);
 		if (!needsMigrating) {
 			if (res instanceof TranslatorResource && ((TranslatorResource)res).getRootObject() instanceof ProjectComponents) {
 				ProjectComponents components = (ProjectComponents) ((WTPModulesResource)res).getRootObject();
@@ -255,5 +277,4 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 			}
 			return resource;
 	}
-
 }
