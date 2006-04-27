@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: Property.java,v 1.1 2005/04/04 07:05:00 cbridgha Exp $
+ * $Id: Property.java,v 1.2 2006/04/27 04:17:40 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal;
 
@@ -21,11 +21,11 @@ import org.eclipse.emf.ecore.EObject;
  * </ul>
  * </p>
  *
- * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getProperty()
+ * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getProperty()
  * @model
  * @generated
  */
-public interface Property extends EObject{
+public interface Property extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Name</b></em>' attribute.
 	 * The default value is <code>""</code>.
@@ -37,7 +37,7 @@ public interface Property extends EObject{
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Name</em>' attribute.
 	 * @see #setName(String)
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getProperty_Name()
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getProperty_Name()
 	 * @model default="" required="true"
 	 * @generated
 	 */
@@ -64,7 +64,7 @@ public interface Property extends EObject{
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Value</em>' attribute.
 	 * @see #setValue(String)
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getProperty_Value()
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getProperty_Value()
 	 * @model default="" required="true"
 	 * @generated
 	 */

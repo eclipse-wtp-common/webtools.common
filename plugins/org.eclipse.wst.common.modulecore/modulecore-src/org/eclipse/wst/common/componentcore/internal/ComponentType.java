@@ -37,11 +37,11 @@ import org.eclipse.emf.ecore.EObject;
  * </ul>
  * </p>
  *
- * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getComponentType()
+ * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getComponentType()
  * @model
  * @generated
  */
-public interface ComponentType extends EObject{
+public interface ComponentType extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Component Type Id</b></em>' attribute.
 	 * The default value is <code>""</code>.
@@ -53,7 +53,7 @@ public interface ComponentType extends EObject{
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Component Type Id</em>' attribute.
 	 * @see #setComponentTypeId(String)
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getComponentType_ComponentTypeId()
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getComponentType_ComponentTypeId()
 	 * @model default="" required="true"
 	 * @generated
 	 */
@@ -79,7 +79,7 @@ public interface ComponentType extends EObject{
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Metadata Resources</em>' attribute list.
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getComponentType_MetadataResources()
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getComponentType_MetadataResources()
 	 * @model type="org.eclipse.core.runtime.IPath" dataType="org.eclipse.wst.common.componentcore.internal.IPath"
 	 * @generated
 	 */
@@ -96,7 +96,7 @@ public interface ComponentType extends EObject{
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Version</em>' attribute.
 	 * @see #setVersion(String)
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getComponentType_Version()
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getComponentType_Version()
 	 * @model default="" required="true"
 	 * @generated
 	 */
@@ -122,7 +122,7 @@ public interface ComponentType extends EObject{
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Properties</em>' reference list.
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getComponentType_Properties()
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getComponentType_Properties()
 	 * @model type="org.eclipse.wst.common.componentcore.internal.Property"
 	 * @generated
 	 */

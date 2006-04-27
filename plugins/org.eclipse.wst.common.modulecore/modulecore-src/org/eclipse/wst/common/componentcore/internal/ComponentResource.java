@@ -1,7 +1,7 @@
 /**
  * <copyright></copyright>
  * 
- * $Id: ComponentResource.java,v 1.5 2006/03/27 21:49:39 vbhadrir Exp $
+ * $Id: ComponentResource.java,v 1.6 2006/04/27 04:17:40 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal;
 
@@ -36,11 +36,11 @@ import org.eclipse.emf.ecore.EObject;
  * </ul>
  * </p>
  *
- * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getComponentResource()
+ * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getComponentResource()
  * @model
  * @generated
  */
-public interface ComponentResource extends EObject{
+public interface ComponentResource extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Source Path</b></em>' attribute.
 	 * <!-- begin-user-doc
@@ -52,7 +52,7 @@ public interface ComponentResource extends EObject{
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Source Path</em>' attribute.
 	 * @see #setSourcePath(IPath)
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getComponentResource_SourcePath()
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getComponentResource_SourcePath()
 	 * @model dataType="org.eclipse.wst.common.componentcore.internal.IPath" required="true"
 	 * @generated
 	 */
@@ -78,7 +78,7 @@ public interface ComponentResource extends EObject{
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Runtime Path</em>' attribute.
 	 * @see #setRuntimePath(IPath)
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getComponentResource_RuntimePath()
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getComponentResource_RuntimePath()
 	 * @model dataType="org.eclipse.wst.common.componentcore.internal.IPath" required="true"
 	 * @generated
 	 */
@@ -104,7 +104,7 @@ public interface ComponentResource extends EObject{
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Exclusions</em>' attribute list.
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getComponentResource_Exclusions()
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getComponentResource_Exclusions()
 	 * @model type="java.lang.String" default=""
 	 * @generated
 	 */
@@ -121,7 +121,7 @@ public interface ComponentResource extends EObject{
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Component</em>' container reference.
 	 * @see #setComponent(WorkbenchComponent)
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getComponentResource_Component()
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getComponentResource_Component()
 	 * @see org.eclipse.wst.common.componentcore.internal.WorkbenchComponent#getResources
 	 * @model opposite="resources" required="true"
 	 * @generated
@@ -149,7 +149,7 @@ public interface ComponentResource extends EObject{
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Resource Type</em>' attribute.
 	 * @see #setResourceType(String)
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getComponentResource_ResourceType()
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getComponentResource_ResourceType()
 	 * @model default="" required="true"
 	 * @generated
 	 */

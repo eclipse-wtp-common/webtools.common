@@ -101,7 +101,7 @@ public class ModuleMigratorManager {
 			if (multiComps)
 				return (needs && multiComps);
 			else
-				return (aProj.findMember(".settings/.component") != null) && 
+				return (aProj.findMember(StructureEdit.MODULE_META_FILE_NAME) != null) && 
 						(ProjectFacetsManager.create(aProj) == null) && needs;
 			}
 		};
@@ -120,11 +120,21 @@ public class ModuleMigratorManager {
 					IFolder settingsFolder = project.getFolder(".settings");
 					if (!settingsFolder.exists())
 						settingsFolder.create(true,true,null);
-					oldfile.move(new Path(".settings/.component"),true,null);
+					oldfile.move(new Path(StructureEdit.MODULE_META_FILE_NAME),true,null);
 			} catch (CoreException e) {
 				Platform.getLog(ModulecorePlugin.getDefault().getBundle()).log(new Status(IStatus.ERROR, ModulecorePlugin.PLUGIN_ID, IStatus.ERROR, e.getMessage(), e));
 			}
-		}
+		} //else {
+//			oldfile = project.findMember(".settings/.component");
+//			if (oldfile != null && oldfile.exists()) {
+//				try {
+//						oldfile.move(new Path(StructureEdit.MODULE_META_FILE_NAME),true,null);
+//				} catch (CoreException e) {
+//					Platform.getLog(ModulecorePlugin.getDefault().getBundle()).log(new Status(IStatus.ERROR, ModulecorePlugin.PLUGIN_ID, IStatus.ERROR, e.getMessage(), e));
+//				}
+//			} 
+//			
+//		}
 	}
 	private void moveOldMetaDataFile() {
 //		WorkspaceJob job = new WorkspaceJob("Migrating metadata")

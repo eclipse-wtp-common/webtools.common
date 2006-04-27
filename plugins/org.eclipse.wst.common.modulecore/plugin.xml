@@ -30,12 +30,15 @@
             factoryClass="org.eclipse.wst.common.componentcore.internal.impl.ModuleStructuralModelFactory">
          <editModelResource
                autoload="false"
-               URI=".settings/.component"/>
+               URI=".settings/org.eclipse.wst.common.component"/>
       </editModel> 
    </extension>
 	
 	<extension point="org.eclipse.core.runtime.contentTypes">
  			<file-association
+				content-type="org.eclipse.core.runtime.xml"
+				file-names="org.eclipse.wst.common.component"/>
+			<file-association
 				content-type="org.eclipse.core.runtime.xml"
 				file-names=".component"/>
 	</extension>

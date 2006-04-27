@@ -43,11 +43,11 @@ import org.eclipse.emf.ecore.EObject;
  * </ul>
  * </p>
  *
- * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getReferencedComponent()
+ * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getReferencedComponent()
  * @model
  * @generated
  */
-public interface ReferencedComponent extends EObject{
+public interface ReferencedComponent extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Handle</b></em>' attribute.
 	 * <!-- begin-user-doc -->
@@ -58,7 +58,7 @@ public interface ReferencedComponent extends EObject{
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Handle</em>' attribute.
 	 * @see #setHandle(URI)
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getReferencedComponent_Handle()
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getReferencedComponent_Handle()
 	 * @model dataType="org.eclipse.wst.common.componentcore.internal.URI" required="true"
 	 * @generated
 	 */
@@ -83,7 +83,7 @@ public interface ReferencedComponent extends EObject{
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Runtime Path</em>' attribute.
 	 * @see #setRuntimePath(IPath)
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getReferencedComponent_RuntimePath()
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getReferencedComponent_RuntimePath()
 	 * @model dataType="org.eclipse.wst.common.componentcore.internal.IPath" required="true"
 	 * @generated
 	 */
@@ -138,7 +138,7 @@ public interface ReferencedComponent extends EObject{
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Dependent Object</em>' reference.
 	 * @see #setDependentObject(EObject)
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getReferencedComponent_DependentObject()
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getReferencedComponent_DependentObject()
 	 * @model
 	 * @generated
 	 */
@@ -164,7 +164,7 @@ public interface ReferencedComponent extends EObject{
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Archive Name</em>' attribute.
 	 * @see #setArchiveName(String)
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getReferencedComponent_ArchiveName()
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getReferencedComponent_ArchiveName()
 	 * @model
 	 * @generated
 	 */

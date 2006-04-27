@@ -35,11 +35,11 @@ import org.eclipse.emf.ecore.EObject;
  * </ul>
  * </p>
  *
- * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getWorkbenchComponent()
+ * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getWorkbenchComponent()
  * @model
  * @generated
  */
-public interface WorkbenchComponent extends EObject{
+public interface WorkbenchComponent extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Name</b></em>' attribute.
 	 * The default value is <code>""</code>.
@@ -51,7 +51,7 @@ public interface WorkbenchComponent extends EObject{
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Name</em>' attribute.
 	 * @see #setName(String)
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getWorkbenchComponent_Name()
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getWorkbenchComponent_Name()
 	 * @model default="" required="true"
 	 * @generated
 	 */
@@ -78,7 +78,7 @@ public interface WorkbenchComponent extends EObject{
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Resources</em>' containment reference list.
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getWorkbenchComponent_Resources()
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getWorkbenchComponent_Resources()
 	 * @see org.eclipse.wst.common.componentcore.internal.ComponentResource#getComponent
 	 * @model type="org.eclipse.wst.common.componentcore.internal.ComponentResource" opposite="component" containment="true"
 	 * @generated
@@ -95,7 +95,7 @@ public interface WorkbenchComponent extends EObject{
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Component Type</em>' containment reference.
 	 * @see #setComponentType(ComponentType)
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getWorkbenchComponent_ComponentType()
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getWorkbenchComponent_ComponentType()
 	 * @model containment="true" required="true"
 	 * @generated
 	 */
@@ -121,7 +121,7 @@ public interface WorkbenchComponent extends EObject{
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Referenced Components</em>' containment reference list.
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getWorkbenchComponent_ReferencedComponents()
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getWorkbenchComponent_ReferencedComponents()
 	 * @model type="org.eclipse.wst.common.componentcore.internal.ReferencedComponent" containment="true"
 	 * @generated
 	 */
@@ -137,7 +137,7 @@ public interface WorkbenchComponent extends EObject{
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Properties</em>' reference list.
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getWorkbenchComponent_Properties()
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getWorkbenchComponent_Properties()
 	 * @model type="org.eclipse.wst.common.componentcore.internal.Property"
 	 * @generated
 	 */
@@ -153,7 +153,7 @@ public interface WorkbenchComponent extends EObject{
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Metadata Resources</em>' attribute list.
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getWorkbenchComponent_MetadataResources()
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getWorkbenchComponent_MetadataResources()
 	 * @model type="org.eclipse.core.runtime.IPath" dataType="org.eclipse.wst.common.componentcore.internal.IPath"
 	 * @generated
 	 */

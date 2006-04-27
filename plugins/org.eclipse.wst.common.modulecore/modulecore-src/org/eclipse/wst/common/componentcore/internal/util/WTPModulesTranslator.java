@@ -42,6 +42,7 @@ public class WTPModulesTranslator extends RootTranslator implements WTPModulesXm
 	private static Translator[] createWTPModulesTranslator() {
 		return new Translator[] {
 				IDTranslator.INSTANCE,
+				new Translator(PROJECT_VERSION, MODULE_CORE_PKG.getProjectComponents_Version(), DOM_ATTRIBUTE), 
 				createWBModuleTranslator(MODULE_CORE_PKG.getProjectComponents_Components())
 		};
 	}

@@ -27,14 +27,15 @@ import org.eclipse.emf.ecore.EObject;
  * <ul>
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.ProjectComponents#getProjectName <em>Project Name</em>}</li>
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.ProjectComponents#getComponents <em>Components</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.componentcore.internal.ProjectComponents#getVersion <em>Version</em>}</li>
  * </ul>
  * </p>
  *
- * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getProjectComponents()
+ * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getProjectComponents()
  * @model
  * @generated
  */
-public interface ProjectComponents extends EObject{
+public interface ProjectComponents extends EObject {
 	/**
 	 * Returns the value of the '<em><b>Project Name</b></em>' attribute.
 	 * The default value is <code>""</code>.
@@ -47,7 +48,7 @@ public interface ProjectComponents extends EObject{
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Project Name</em>' attribute.
 	 * @see #setProjectName(String)
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getProjectComponents_ProjectName()
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getProjectComponents_ProjectName()
 	 * @model default="" required="true"
 	 * @generated
 	 */
@@ -72,11 +73,37 @@ public interface ProjectComponents extends EObject{
 	 * </p>
 	 * <!-- end-user-doc -->
 	 * @return the value of the '<em>Components</em>' containment reference list.
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#getProjectComponents_Components()
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getProjectComponents_Components()
 	 * @model type="org.eclipse.wst.common.componentcore.internal.WorkbenchComponent" containment="true"
 	 * @generated
 	 */
 	EList getComponents();
+
+	/**
+	 * Returns the value of the '<em><b>Version</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Version</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Version</em>' attribute.
+	 * @see #setVersion(String)
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#getProjectComponents_Version()
+	 * @model required="true"
+	 * @generated
+	 */
+	String getVersion();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.wst.common.componentcore.internal.ProjectComponents#getVersion <em>Version</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Version</em>' attribute.
+	 * @see #getVersion()
+	 * @generated
+	 */
+	void setVersion(String value);
 
 	public WorkbenchComponent findWorkbenchModule(String aDeployName);
 

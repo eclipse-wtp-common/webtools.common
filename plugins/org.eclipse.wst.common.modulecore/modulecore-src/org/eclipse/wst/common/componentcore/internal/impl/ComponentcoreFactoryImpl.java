@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentcoreFactoryImpl.java,v 1.7 2005/10/18 22:27:18 cbridgha Exp $
+ * $Id: ComponentcoreFactoryImpl.java,v 1.8 2006/04/27 04:17:40 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
@@ -11,7 +11,9 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
+import org.eclipse.emf.ecore.plugin.EcorePlugin;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.ComponentType;
 import org.eclipse.wst.common.componentcore.internal.ComponentcoreFactory;
@@ -29,6 +31,26 @@ import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
  * @generated
  */
 public class ComponentcoreFactoryImpl extends EFactoryImpl implements ComponentcoreFactory {
+	
+	/**
+	 * Creates the default factory implementation.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public static ComponentcoreFactory init() {
+		try {
+			ComponentcoreFactory theComponentcoreFactory = (ComponentcoreFactory)EPackage.Registry.INSTANCE.getEFactory("componentcore.xmi"); 
+			if (theComponentcoreFactory != null) {
+				return theComponentcoreFactory;
+			}
+		}
+		catch (Exception exception) {
+			EcorePlugin.INSTANCE.log(exception);
+		}
+		return new ComponentcoreFactoryImpl();
+	}
+
 	/**
 	 * Creates an instance of the factory.
 	 * <!-- begin-user-doc -->

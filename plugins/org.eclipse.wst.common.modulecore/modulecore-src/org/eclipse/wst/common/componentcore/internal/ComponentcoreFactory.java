@@ -2,11 +2,12 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentcoreFactory.java,v 1.1 2005/04/04 07:05:00 cbridgha Exp $
+ * $Id: ComponentcoreFactory.java,v 1.2 2006/04/27 04:17:40 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal;
 
 import org.eclipse.emf.ecore.EFactory;
+import org.eclipse.wst.common.componentcore.internal.impl.ComponentcoreFactoryImpl;
 
 /**
  * <!-- begin-user-doc -->
@@ -23,7 +24,7 @@ public interface ComponentcoreFactory extends EFactory {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	ComponentcoreFactory eINSTANCE = new org.eclipse.wst.common.componentcore.internal.impl.ComponentcoreFactoryImpl();
+	ComponentcoreFactory eINSTANCE = ComponentcoreFactoryImpl.init();
 
 	/**
 	 * Returns a new object of class '<em>Workbench Component</em>'.

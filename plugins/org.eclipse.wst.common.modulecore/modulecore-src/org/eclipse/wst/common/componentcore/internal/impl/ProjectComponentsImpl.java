@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ProjectComponentsImpl.java,v 1.2 2005/08/26 16:45:31 cbridgha Exp $
+ * $Id: ProjectComponentsImpl.java,v 1.3 2006/04/27 04:17:40 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
@@ -16,7 +16,6 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
@@ -35,6 +34,7 @@ import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
  * <ul>
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.ProjectComponentsImpl#getProjectName <em>Project Name</em>}</li>
  *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.ProjectComponentsImpl#getComponents <em>Components</em>}</li>
+ *   <li>{@link org.eclipse.wst.common.componentcore.internal.impl.ProjectComponentsImpl#getVersion <em>Version</em>}</li>
  * </ul>
  * </p>
  *
@@ -71,6 +71,26 @@ public class ProjectComponentsImpl extends EObjectImpl implements ProjectCompone
 	 */
 	protected EList components = null;
 
+	/**
+	 * The default value of the '{@link #getVersion() <em>Version</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getVersion()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String VERSION_EDEFAULT = "1.0.0";
+
+	/**
+	 * The cached value of the '{@link #getVersion() <em>Version</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getVersion()
+	 * @generated
+	 * @ordered
+	 */
+	protected String version = VERSION_EDEFAULT;
+
 	private boolean isIndexed;
 
 	private final Map modulesIndex = new HashMap();
@@ -88,7 +108,7 @@ public class ProjectComponentsImpl extends EObjectImpl implements ProjectCompone
 	 * @generated
 	 */
 	protected EClass eStaticClass() {
-		return ComponentcorePackage.eINSTANCE.getProjectComponents();
+		return ComponentcorePackage.Literals.PROJECT_COMPONENTS;
 	}
 
 	/**
@@ -123,41 +143,63 @@ public class ProjectComponentsImpl extends EObjectImpl implements ProjectCompone
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, Class baseClass, NotificationChain msgs) {
-		if (featureID >= 0) {
-			switch (eDerivedStructuralFeatureID(featureID, baseClass)) {
-				case ComponentcorePackage.PROJECT_COMPONENTS__COMPONENTS:
-					return ((InternalEList)getComponents()).basicRemove(otherEnd, msgs);
-				default:
-					return eDynamicInverseRemove(otherEnd, featureID, baseClass, msgs);
-			}
-		}
-		return eBasicSetContainer(null, featureID, msgs);
+	public String getVersion() {
+		return version;
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public Object eGet(EStructuralFeature eFeature, boolean resolve) {
-		switch (eDerivedStructuralFeatureID(eFeature)) {
+	public void setVersion(String newVersion) {
+		String oldVersion = version;
+		version = newVersion;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, ComponentcorePackage.PROJECT_COMPONENTS__VERSION, oldVersion, version));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+		switch (featureID) {
+			case ComponentcorePackage.PROJECT_COMPONENTS__COMPONENTS:
+				return ((InternalEList)getComponents()).basicRemove(otherEnd, msgs);
+		}
+		return super.eInverseRemove(otherEnd, featureID, msgs);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+		switch (featureID) {
 			case ComponentcorePackage.PROJECT_COMPONENTS__PROJECT_NAME:
 				return getProjectName();
 			case ComponentcorePackage.PROJECT_COMPONENTS__COMPONENTS:
 				return getComponents();
+			case ComponentcorePackage.PROJECT_COMPONENTS__VERSION:
+				return getVersion();
 		}
-		return eDynamicGet(eFeature, resolve);
+		return super.eGet(featureID, resolve, coreType);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void eSet(EStructuralFeature eFeature, Object newValue) {
-		switch (eDerivedStructuralFeatureID(eFeature)) {
+	public void eSet(int featureID, Object newValue) {
+		switch (featureID) {
 			case ComponentcorePackage.PROJECT_COMPONENTS__PROJECT_NAME:
 				setProjectName((String)newValue);
 				return;
@@ -165,38 +207,48 @@ public class ProjectComponentsImpl extends EObjectImpl implements ProjectCompone
 				getComponents().clear();
 				getComponents().addAll((Collection)newValue);
 				return;
+			case ComponentcorePackage.PROJECT_COMPONENTS__VERSION:
+				setVersion((String)newValue);
+				return;
 		}
-		eDynamicSet(eFeature, newValue);
+		super.eSet(featureID, newValue);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void eUnset(EStructuralFeature eFeature) {
-		switch (eDerivedStructuralFeatureID(eFeature)) {
+	public void eUnset(int featureID) {
+		switch (featureID) {
 			case ComponentcorePackage.PROJECT_COMPONENTS__PROJECT_NAME:
 				setProjectName(PROJECT_NAME_EDEFAULT);
 				return;
 			case ComponentcorePackage.PROJECT_COMPONENTS__COMPONENTS:
 				getComponents().clear();
 				return;
+			case ComponentcorePackage.PROJECT_COMPONENTS__VERSION:
+				setVersion(VERSION_EDEFAULT);
+				return;
 		}
-		eDynamicUnset(eFeature);
+		super.eUnset(featureID);
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public boolean eIsSet(EStructuralFeature eFeature) {
-		switch (eDerivedStructuralFeatureID(eFeature)) {
+	public boolean eIsSet(int featureID) {
+		switch (featureID) {
 			case ComponentcorePackage.PROJECT_COMPONENTS__PROJECT_NAME:
 				return PROJECT_NAME_EDEFAULT == null ? projectName != null : !PROJECT_NAME_EDEFAULT.equals(projectName);
 			case ComponentcorePackage.PROJECT_COMPONENTS__COMPONENTS:
 				return components != null && !components.isEmpty();
+			case ComponentcorePackage.PROJECT_COMPONENTS__VERSION:
+				return VERSION_EDEFAULT == null ? version != null : !VERSION_EDEFAULT.equals(version);
 		}
-		return eDynamicIsSet(eFeature);
+		return super.eIsSet(featureID);
 	}
 
 	/**
@@ -209,6 +261,8 @@ public class ProjectComponentsImpl extends EObjectImpl implements ProjectCompone
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (projectName: ");
 		result.append(projectName);
+		result.append(", version: ");
+		result.append(version);
 		result.append(')');
 		return result.toString();
 	}

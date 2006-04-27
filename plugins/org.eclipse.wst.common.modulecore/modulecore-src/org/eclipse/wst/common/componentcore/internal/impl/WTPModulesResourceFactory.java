@@ -12,6 +12,7 @@ package org.eclipse.wst.common.componentcore.internal.impl;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.internal.emf.resource.EMF2DOMRendererFactory;
 import org.eclipse.wst.common.internal.emf.resource.Renderer;
 import org.eclipse.wst.common.internal.emf.resource.RendererFactory;
@@ -26,8 +27,11 @@ import org.eclipse.wst.common.internal.emf.resource.TranslatorResourceFactory;
 public class WTPModulesResourceFactory extends TranslatorResourceFactory {
 	
 	
-	public static final String WTP_MODULES_SHORT_NAME = ".component"; //$NON-NLS-1$
-	public static final URI WTP_MODULES_URI_OBJ = URI.createURI(".settings/" + WTP_MODULES_SHORT_NAME);
+	public static final String WTP_MODULES_SHORT_NAME = "org.eclipse.wst.common.component"; //$NON-NLS-1$
+	public static final String OLD_WTP_MODULES_SHORT_NAME = ".component"; //$NON-NLS-1$
+	public static final URI WTP_MODULES_URI_OBJ = URI.createURI(StructureEdit.MODULE_META_FILE_NAME);
+	public static final URI OLD_WTP_MODULES_URI_OBJ = URI.createURI(".settings/.component");
+	
 
 	/**
 	 * Method registerDtds.
@@ -64,6 +68,7 @@ public class WTPModulesResourceFactory extends TranslatorResourceFactory {
 	 */
 	public static void registerWith(RendererFactory aRendererFactory) {
 		WTPResourceFactoryRegistry.INSTANCE.registerLastFileSegment(WTP_MODULES_SHORT_NAME, new WTPModulesResourceFactory(aRendererFactory));
+		WTPResourceFactoryRegistry.INSTANCE.registerLastFileSegment(OLD_WTP_MODULES_SHORT_NAME, new WTPModulesResourceFactory(aRendererFactory));
 	}
 	/**
 	 * register using the default renderer factory.

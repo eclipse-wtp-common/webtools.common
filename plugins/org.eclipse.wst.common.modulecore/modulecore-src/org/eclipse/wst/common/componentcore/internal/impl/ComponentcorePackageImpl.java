@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentcorePackageImpl.java,v 1.8 2006/03/27 21:49:41 vbhadrir Exp $
+ * $Id: ComponentcorePackageImpl.java,v 1.9 2006/04/27 04:17:40 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
@@ -105,7 +105,7 @@ public class ComponentcorePackageImpl extends EPackageImpl implements Componentc
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @see org.eclipse.emf.ecore.EPackage.Registry
-	 * @see org.eclipse.wst.common.componentcore.internal.ComponentcorePackage#eNS_URI
+	 * @see org.eclipse.wst.common.componentcore.ComponentcorePackage#eNS_URI
 	 * @see #init()
 	 * @generated
 	 */
@@ -437,6 +437,15 @@ public class ComponentcorePackageImpl extends EPackageImpl implements Componentc
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EAttribute getProjectComponents_Version() {
+		return (EAttribute)projectComponentsEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EEnum getDependencyType() {
 		return dependencyTypeEEnum;
 	}
@@ -522,6 +531,7 @@ public class ComponentcorePackageImpl extends EPackageImpl implements Componentc
 		projectComponentsEClass = createEClass(PROJECT_COMPONENTS);
 		createEAttribute(projectComponentsEClass, PROJECT_COMPONENTS__PROJECT_NAME);
 		createEReference(projectComponentsEClass, PROJECT_COMPONENTS__COMPONENTS);
+		createEAttribute(projectComponentsEClass, PROJECT_COMPONENTS__VERSION);
 
 		// Create enums
 		dependencyTypeEEnum = createEEnum(DEPENDENCY_TYPE);
@@ -592,6 +602,7 @@ public class ComponentcorePackageImpl extends EPackageImpl implements Componentc
 		initEClass(projectComponentsEClass, ProjectComponents.class, "ProjectComponents", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEAttribute(getProjectComponents_ProjectName(), ecorePackage.getEString(), "projectName", "", 1, 1, ProjectComponents.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getProjectComponents_Components(), this.getWorkbenchComponent(), null, "components", null, 0, -1, ProjectComponents.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getProjectComponents_Version(), ecorePackage.getEString(), "version", null, 1, 1, ProjectComponents.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Initialize enums and add enum literals
 		initEEnum(dependencyTypeEEnum, DependencyType.class, "DependencyType");

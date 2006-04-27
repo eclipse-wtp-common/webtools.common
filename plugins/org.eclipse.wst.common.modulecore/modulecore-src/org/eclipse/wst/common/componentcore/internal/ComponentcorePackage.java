@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ComponentcorePackage.java,v 1.7 2006/03/27 21:49:39 vbhadrir Exp $
+ * $Id: ComponentcorePackage.java,v 1.8 2006/04/27 04:17:40 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal;
 
@@ -12,6 +12,7 @@ import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.wst.common.componentcore.internal.ComponentcoreFactory;
 
 /**
  * <!-- begin-user-doc -->
@@ -24,11 +25,11 @@ import org.eclipse.emf.ecore.EReference;
  *   <li>and each data type</li>
  * </ul>
  * <!-- end-user-doc -->
- * @see org.eclipse.wst.common.componentcore.internal.ComponentcoreFactory
+ * @see org.eclipse.wst.common.componentcore.ComponentcoreFactory
  * @model kind="package"
  * @generated
  */
-public interface ComponentcorePackage extends EPackage{
+public interface ComponentcorePackage extends EPackage {
 	/**
 	 * The package name.
 	 * <!-- begin-user-doc -->
@@ -126,7 +127,7 @@ public interface ComponentcorePackage extends EPackage{
 	int WORKBENCH_COMPONENT__METADATA_RESOURCES = 5;
 
 	/**
-	 * The number of structural features of the the '<em>Workbench Component</em>' class.
+	 * The number of structural features of the '<em>Workbench Component</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -190,7 +191,7 @@ public interface ComponentcorePackage extends EPackage{
 	int COMPONENT_RESOURCE__RESOURCE_TYPE = 4;
 
 	/**
-	 * The number of structural features of the the '<em>Component Resource</em>' class.
+	 * The number of structural features of the '<em>Component Resource</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -245,7 +246,7 @@ public interface ComponentcorePackage extends EPackage{
 	int COMPONENT_TYPE__METADATA_RESOURCES = 3;
 
 	/**
-	 * The number of structural features of the the '<em>Component Type</em>' class.
+	 * The number of structural features of the '<em>Component Type</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -282,7 +283,7 @@ public interface ComponentcorePackage extends EPackage{
 	int PROPERTY__VALUE = 1;
 
 	/**
-	 * The number of structural features of the the '<em>Property</em>' class.
+	 * The number of structural features of the '<em>Property</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -346,7 +347,7 @@ public interface ComponentcorePackage extends EPackage{
 	int REFERENCED_COMPONENT__ARCHIVE_NAME = 4;
 
 	/**
-	 * The number of structural features of the the '<em>Referenced Component</em>' class.
+	 * The number of structural features of the '<em>Referenced Component</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
@@ -383,13 +384,22 @@ public interface ComponentcorePackage extends EPackage{
 	int PROJECT_COMPONENTS__COMPONENTS = 1;
 
 	/**
-	 * The number of structural features of the the '<em>Project Components</em>' class.
+	 * The feature id for the '<em><b>Version</b></em>' attribute.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int PROJECT_COMPONENTS_FEATURE_COUNT = 2;
+	int PROJECT_COMPONENTS__VERSION = 2;
+
+	/**
+	 * The number of structural features of the '<em>Project Components</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int PROJECT_COMPONENTS_FEATURE_COUNT = 3;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.wst.common.componentcore.internal.DependencyType <em>Dependency Type</em>}' enum.
@@ -747,6 +757,17 @@ public interface ComponentcorePackage extends EPackage{
 	EReference getProjectComponents_Components();
 
 	/**
+	 * Returns the meta object for the attribute '{@link org.eclipse.wst.common.componentcore.internal.ProjectComponents#getVersion <em>Version</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Version</em>'.
+	 * @see org.eclipse.wst.common.componentcore.internal.ProjectComponents#getVersion()
+	 * @see #getProjectComponents()
+	 * @generated
+	 */
+	EAttribute getProjectComponents_Version();
+
+	/**
 	 * Returns the meta object for enum '{@link org.eclipse.wst.common.componentcore.internal.DependencyType <em>Dependency Type</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -788,5 +809,310 @@ public interface ComponentcorePackage extends EPackage{
 	 * @generated
 	 */
 	ComponentcoreFactory getComponentcoreFactory();
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * Defines literals for the meta objects that represent
+	 * <ul>
+	 *   <li>each class,</li>
+	 *   <li>each feature of each class,</li>
+	 *   <li>each enum,</li>
+	 *   <li>and each data type</li>
+	 * </ul>
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	interface Literals {
+		/**
+		 * The meta object literal for the '{@link org.eclipse.wst.common.componentcore.internal.impl.WorkbenchComponentImpl <em>Workbench Component</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.wst.common.componentcore.internal.impl.WorkbenchComponentImpl
+		 * @see org.eclipse.wst.common.componentcore.internal.impl.ComponentcorePackageImpl#getWorkbenchComponent()
+		 * @generated
+		 */
+		EClass WORKBENCH_COMPONENT = eINSTANCE.getWorkbenchComponent();
+
+		/**
+		 * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute WORKBENCH_COMPONENT__NAME = eINSTANCE.getWorkbenchComponent_Name();
+
+		/**
+		 * The meta object literal for the '<em><b>Resources</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference WORKBENCH_COMPONENT__RESOURCES = eINSTANCE.getWorkbenchComponent_Resources();
+
+		/**
+		 * The meta object literal for the '<em><b>Component Type</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference WORKBENCH_COMPONENT__COMPONENT_TYPE = eINSTANCE.getWorkbenchComponent_ComponentType();
+
+		/**
+		 * The meta object literal for the '<em><b>Referenced Components</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference WORKBENCH_COMPONENT__REFERENCED_COMPONENTS = eINSTANCE.getWorkbenchComponent_ReferencedComponents();
+
+		/**
+		 * The meta object literal for the '<em><b>Properties</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference WORKBENCH_COMPONENT__PROPERTIES = eINSTANCE.getWorkbenchComponent_Properties();
+
+		/**
+		 * The meta object literal for the '<em><b>Metadata Resources</b></em>' attribute list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute WORKBENCH_COMPONENT__METADATA_RESOURCES = eINSTANCE.getWorkbenchComponent_MetadataResources();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.wst.common.componentcore.internal.impl.ComponentResourceImpl <em>Component Resource</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.wst.common.componentcore.internal.impl.ComponentResourceImpl
+		 * @see org.eclipse.wst.common.componentcore.internal.impl.ComponentcorePackageImpl#getComponentResource()
+		 * @generated
+		 */
+		EClass COMPONENT_RESOURCE = eINSTANCE.getComponentResource();
+
+		/**
+		 * The meta object literal for the '<em><b>Source Path</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute COMPONENT_RESOURCE__SOURCE_PATH = eINSTANCE.getComponentResource_SourcePath();
+
+		/**
+		 * The meta object literal for the '<em><b>Runtime Path</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute COMPONENT_RESOURCE__RUNTIME_PATH = eINSTANCE.getComponentResource_RuntimePath();
+
+		/**
+		 * The meta object literal for the '<em><b>Exclusions</b></em>' attribute list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute COMPONENT_RESOURCE__EXCLUSIONS = eINSTANCE.getComponentResource_Exclusions();
+
+		/**
+		 * The meta object literal for the '<em><b>Component</b></em>' container reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference COMPONENT_RESOURCE__COMPONENT = eINSTANCE.getComponentResource_Component();
+
+		/**
+		 * The meta object literal for the '<em><b>Resource Type</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute COMPONENT_RESOURCE__RESOURCE_TYPE = eINSTANCE.getComponentResource_ResourceType();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.wst.common.componentcore.internal.impl.ComponentTypeImpl <em>Component Type</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.wst.common.componentcore.internal.impl.ComponentTypeImpl
+		 * @see org.eclipse.wst.common.componentcore.internal.impl.ComponentcorePackageImpl#getComponentType()
+		 * @generated
+		 */
+		EClass COMPONENT_TYPE = eINSTANCE.getComponentType();
+
+		/**
+		 * The meta object literal for the '<em><b>Component Type Id</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute COMPONENT_TYPE__COMPONENT_TYPE_ID = eINSTANCE.getComponentType_ComponentTypeId();
+
+		/**
+		 * The meta object literal for the '<em><b>Version</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute COMPONENT_TYPE__VERSION = eINSTANCE.getComponentType_Version();
+
+		/**
+		 * The meta object literal for the '<em><b>Properties</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference COMPONENT_TYPE__PROPERTIES = eINSTANCE.getComponentType_Properties();
+
+		/**
+		 * The meta object literal for the '<em><b>Metadata Resources</b></em>' attribute list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute COMPONENT_TYPE__METADATA_RESOURCES = eINSTANCE.getComponentType_MetadataResources();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.wst.common.componentcore.internal.impl.PropertyImpl <em>Property</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.wst.common.componentcore.internal.impl.PropertyImpl
+		 * @see org.eclipse.wst.common.componentcore.internal.impl.ComponentcorePackageImpl#getProperty()
+		 * @generated
+		 */
+		EClass PROPERTY = eINSTANCE.getProperty();
+
+		/**
+		 * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute PROPERTY__NAME = eINSTANCE.getProperty_Name();
+
+		/**
+		 * The meta object literal for the '<em><b>Value</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute PROPERTY__VALUE = eINSTANCE.getProperty_Value();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.wst.common.componentcore.internal.impl.ReferencedComponentImpl <em>Referenced Component</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.wst.common.componentcore.internal.impl.ReferencedComponentImpl
+		 * @see org.eclipse.wst.common.componentcore.internal.impl.ComponentcorePackageImpl#getReferencedComponent()
+		 * @generated
+		 */
+		EClass REFERENCED_COMPONENT = eINSTANCE.getReferencedComponent();
+
+		/**
+		 * The meta object literal for the '<em><b>Handle</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute REFERENCED_COMPONENT__HANDLE = eINSTANCE.getReferencedComponent_Handle();
+
+		/**
+		 * The meta object literal for the '<em><b>Runtime Path</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute REFERENCED_COMPONENT__RUNTIME_PATH = eINSTANCE.getReferencedComponent_RuntimePath();
+
+		/**
+		 * The meta object literal for the '<em><b>Dependency Type</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute REFERENCED_COMPONENT__DEPENDENCY_TYPE = eINSTANCE.getReferencedComponent_DependencyType();
+
+		/**
+		 * The meta object literal for the '<em><b>Dependent Object</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference REFERENCED_COMPONENT__DEPENDENT_OBJECT = eINSTANCE.getReferencedComponent_DependentObject();
+
+		/**
+		 * The meta object literal for the '<em><b>Archive Name</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute REFERENCED_COMPONENT__ARCHIVE_NAME = eINSTANCE.getReferencedComponent_ArchiveName();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.wst.common.componentcore.internal.impl.ProjectComponentsImpl <em>Project Components</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.wst.common.componentcore.internal.impl.ProjectComponentsImpl
+		 * @see org.eclipse.wst.common.componentcore.internal.impl.ComponentcorePackageImpl#getProjectComponents()
+		 * @generated
+		 */
+		EClass PROJECT_COMPONENTS = eINSTANCE.getProjectComponents();
+
+		/**
+		 * The meta object literal for the '<em><b>Project Name</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute PROJECT_COMPONENTS__PROJECT_NAME = eINSTANCE.getProjectComponents_ProjectName();
+
+		/**
+		 * The meta object literal for the '<em><b>Components</b></em>' containment reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference PROJECT_COMPONENTS__COMPONENTS = eINSTANCE.getProjectComponents_Components();
+
+		/**
+		 * The meta object literal for the '<em><b>Version</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute PROJECT_COMPONENTS__VERSION = eINSTANCE.getProjectComponents_Version();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.wst.common.componentcore.internal.DependencyType <em>Dependency Type</em>}' enum.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.wst.common.componentcore.internal.DependencyType
+		 * @see org.eclipse.wst.common.componentcore.internal.impl.ComponentcorePackageImpl#getDependencyType()
+		 * @generated
+		 */
+		EEnum DEPENDENCY_TYPE = eINSTANCE.getDependencyType();
+
+		/**
+		 * The meta object literal for the '<em>IPath</em>' data type.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.core.runtime.IPath
+		 * @see org.eclipse.wst.common.componentcore.internal.impl.ComponentcorePackageImpl#getIPath()
+		 * @generated
+		 */
+		EDataType IPATH = eINSTANCE.getIPath();
+
+		/**
+		 * The meta object literal for the '<em>URI</em>' data type.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.eclipse.emf.common.util.URI
+		 * @see org.eclipse.wst.common.componentcore.internal.impl.ComponentcorePackageImpl#getURI()
+		 * @generated
+		 */
+		EDataType URI = eINSTANCE.getURI();
+
+	}
 
 } //ComponentcorePackage
