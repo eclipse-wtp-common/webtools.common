@@ -174,30 +174,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	 * false, return the enabled non-incremental validators.
 	 */
 	public ValidatorMetaData[] getEnabledIncrementalValidators(boolean incremental) throws InvocationTargetException {
-		
-		int count = 0;
-		ValidatorMetaData[] result = null;
-		
-		if( !isDisableAllValidation() ){
-			ValidatorMetaData[] temp = new ValidatorMetaData[numberOfValidators()];
-			Iterator iterator = getValidatorMetaData().keySet().iterator();
-			while (iterator.hasNext()) {
-				ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
-				Boolean bvalue = (Boolean) getValidatorMetaData().get(vmd);
-				if (bvalue.booleanValue() == true) {
-					// If the validator is enabled
-					if ((vmd.isIncremental() && incremental && vmd.isBuildValidation()) || (!vmd.isIncremental() && !incremental)) {
-						temp[count++] = vmd;
-					}
-				}
-			}
-	
-			result = new ValidatorMetaData[count];
-			System.arraycopy(temp, 0, result, 0, count);
-		}else{
-			result = new ValidatorMetaData[0];			
-		}
-		return result;
+		return getEnabledFullBuildValidators(false);
 	}
 
 	/**
@@ -224,8 +201,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 					// If the validator is enabled
 					if (vmd == null)
 						continue;
-					
-					if (( vmd.isBuildValidation() && vmd.isFullBuild() && fullBuild) || (!vmd.isFullBuild() && !fullBuild)) {
+					if ( vmd.isBuildValidation() ) {
 						if (!onlyReferenced || vmd.isDependentValidator())
 							temp[count++] = vmd;
 					}
@@ -236,9 +212,6 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 		}else{
 			 result = new ValidatorMetaData[0];
 		}
-
-//		ValidatorMetaData[] result = new ValidatorMetaData[count];
-//		System.arraycopy(temp, 0, result, 0, count);
 		return result;
 	}
 
