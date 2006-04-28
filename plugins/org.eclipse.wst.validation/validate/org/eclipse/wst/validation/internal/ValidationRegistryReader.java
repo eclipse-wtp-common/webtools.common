@@ -47,6 +47,7 @@ import org.eclipse.wst.validation.internal.operations.IRuleGroup;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchContext;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
+import org.osgi.framework.Bundle;
 
 /**
  * ValidationRegistryReader is a singleton who reads the plugin registry for Validator extensions.
@@ -1363,18 +1364,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		vmd.setHelperClass(element, helperImplName);
 		vmd.setValidatorClass(element); // associate the above attributes with the validator
 		vmd.addDependentValidator(getDependentValidatorValue(element));
-		String[] customMarkerIds = getMarkerIdsValue(element);
-		if (customMarkerIds != null && customMarkerIds.length > 0) {
-			String[] qualifiedMarkerIds = new String[customMarkerIds.length];
-			for (int i = 0; i < customMarkerIds.length; i++) {
-				String markerid = customMarkerIds[i];
-				if (markerid.indexOf(pluginId) == -1) {
-					qualifiedMarkerIds[i] = pluginId + "." + customMarkerIds[i];
-				} else
-					qualifiedMarkerIds[i] = customMarkerIds[i];
-			}
-			vmd.setMarkerIds(qualifiedMarkerIds); //$NON-NLS-1$
-		}
+		initializeValidatorCustomMarkers(element, pluginId, vmd);
 		
 		Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 		if (logger.isLoggingLevel(Level.FINEST)) {
@@ -1385,6 +1375,31 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		}
 
 		return vmd;
+	}
+
+	/**
+	 * @param element
+	 * @param pluginId
+	 * @param vmd
+	 */
+	private void initializeValidatorCustomMarkers(IConfigurationElement element, String pluginId, ValidatorMetaData vmd) {
+		String[] customMarkerIds = getMarkerIdsValue(element);
+		if (customMarkerIds != null && customMarkerIds.length > 0) {
+			String[] qualifiedMarkerIds = new String[customMarkerIds.length];
+			for (int i = 0; i < customMarkerIds.length; i++) {
+				String markerid = customMarkerIds[i];
+				if (markerid.lastIndexOf(".") != -1) {
+					String pluginID = markerid.substring(0, markerid.lastIndexOf("."));
+					Bundle bundle = Platform.getBundle(pluginID);
+					if (bundle == null)
+						qualifiedMarkerIds[i] = pluginId + "." + customMarkerIds[i];
+					else
+						qualifiedMarkerIds[i] = customMarkerIds[i];
+				} else
+					qualifiedMarkerIds[i] = pluginId + "." + customMarkerIds[i];
+			}
+			vmd.setMarkerIds(qualifiedMarkerIds); //$NON-NLS-1$
+		}
 	}
 
 	private Expression getEnablementElement(IConfigurationElement element) {
