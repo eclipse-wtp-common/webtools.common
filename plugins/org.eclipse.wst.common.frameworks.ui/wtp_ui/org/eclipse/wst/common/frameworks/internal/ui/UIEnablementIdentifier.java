@@ -42,8 +42,11 @@ class UIEnablementIdentifier extends EnablementIdentifier implements IIdentifier
 	 */
 	public UIEnablementIdentifier(String id, IProject project) {
 		super(id, project);
-		activityIdentifier = getActivityManager().getIdentifier(id);
-		activityIdentifier.addIdentifierListener(this);
+		IActivityManager manager = getActivityManager();
+		if (manager != null) {
+			activityIdentifier = getActivityManager().getIdentifier(id);
+			activityIdentifier.addIdentifierListener(this);
+		}
 	}
 
 	/*
@@ -67,7 +70,23 @@ class UIEnablementIdentifier extends EnablementIdentifier implements IIdentifier
 	 * @see org.eclispe.wst.common.frameworks.internal.enablement.EnablementIdentifier#getNewEnabled()
 	 */
 	protected boolean getNewEnabled() {
-		return activityIdentifier.isEnabled() && super.getNewEnabled();
+		IIdentifier identifier = getActivityIdentifier();
+		if (identifier != null)
+			return identifier.isEnabled() && super.getNewEnabled();
+		else
+			return false;
+	}
+
+	
+	protected IIdentifier getActivityIdentifier() {
+		if (activityIdentifier == null){
+			IActivityManager manager = getActivityManager();
+			if (manager != null) {
+				activityIdentifier = getActivityManager().getIdentifier(getId());
+				activityIdentifier.addIdentifierListener(this);
+			}
+		}
+		return activityIdentifier;
 	}
 
 

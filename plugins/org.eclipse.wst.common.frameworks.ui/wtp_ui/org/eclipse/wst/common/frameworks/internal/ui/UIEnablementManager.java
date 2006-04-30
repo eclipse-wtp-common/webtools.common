@@ -17,6 +17,7 @@
 package org.eclipse.wst.common.frameworks.internal.ui;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.activities.IActivityManager;
 import org.eclipse.ui.activities.IWorkbenchActivitySupport;
@@ -35,7 +36,10 @@ public class UIEnablementManager extends EnablementManager {
 	}
 
 	protected IActivityManager getActivityManager() {
-		return getActivitySupport().getActivityManager();
+		if (getActivitySupport() != null)
+			return getActivitySupport().getActivityManager();
+		else
+			return null;
 	}
 
 	/**
@@ -43,8 +47,18 @@ public class UIEnablementManager extends EnablementManager {
 	 */
 	protected IWorkbenchActivitySupport getActivitySupport() {
 		if (activitySupport == null)
-			activitySupport = PlatformUI.getWorkbench().getActivitySupport();
+			activitySupport = initActivitySupport();
 		return activitySupport;
+	}
+
+	private IWorkbenchActivitySupport initActivitySupport() {
+		IWorkbench work = null;
+		try {
+			work = PlatformUI.getWorkbench();
+		} catch (IllegalStateException ex) {
+			//Not initialized yet
+		}
+		return (work != null) ? work.getActivitySupport() : null;
 	}
 
 	/*
