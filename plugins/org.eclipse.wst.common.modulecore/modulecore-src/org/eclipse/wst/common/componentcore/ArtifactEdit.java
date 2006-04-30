@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore;
 
+import java.util.EventObject;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
@@ -527,5 +528,9 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 
 	public Object getAdapter(Class adapterType) {
 		return Platform.getAdapterManager().getAdapter(this, adapterType);
+	}
+
+	public void commandStackChanged(EventObject event) {
+		getArtifactEditModel().commandStackChanged(event);
 	}
 }
