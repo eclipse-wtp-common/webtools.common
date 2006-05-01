@@ -9,20 +9,16 @@
 
 Each validator can apply to certain types of files, certain project natures, and certain project facets. When a validator applies to a project facet or nature, the workbench uses that validator only on projects that have that facet or nature. Likewise, most validators apply only to certain types of files, so the workbench uses those validators only on those types of files.
 
-Select the <b>Override validation preferences</b> check box. Select this check box if you want to override the default validation preferences set in the workbench Preferences page.
-If the <b>Override validation preferences</b> check box is not enabled, go to <b>Window > Preferences > Validation</b> and select the <b>Allow projects to override these preference settings</b> check box.
+Select the <b>Override validation preferences</b> check box if you want to override the default validation preferences set in the workbench Preferences page. If the <b>Override validation preferences</b> check box is not enabled, go to <b>Window</b>   &gt; <b>Preferences</b>   &gt; <b>Validation</b> and select the <b>Allow projects to override these preference settings</b> check box.
 
-Select the <b>Run validation when you manually build</b> check box if you want the selected validators to run whenever you build your project.
-To enable the <b>Run validation when you manually build</b> check box, select at least one validator in the list.
+Select the <b>Suspend all validators</b> check box to prevent validation for this project.
 
-Select  the <b>Run validation automatically when you save changes to resources</b> check box if you want the selected validators to automatically run whenever you save changes to your project resources.
-To enable the <b>Run validation automatically when you save changes to resources</b> check box, select at least one validator in the list. 
+In the list of validators, select the check boxes next to each validator you want to use for this project. Each validator has a check box to specify whether it is used on manual validation or on build validation. Choose an alternate implementation for a validator by clicking the button in the <b>Settings</b> column. Not all validators have alternate implementations.
 
-Use the <b>Maximum number of validation messages</b> field to define the maximum allowable validation messages for the project.
-If the number of validation messages reported in the task list exceeds the number set in this field, validation will terminate.
 </description>
-<topic label="Validating code in enterprise applications" href="../org.eclipse.jst.j2ee.doc.user/topics/tjval.html"/>
-<topic label="Common validation errors and solutions" href="..org.eclipse.jst.j2ee.doc.user/topics/rvalerr.html"/>
+<topic href="../org.eclipse.jst.j2ee.doc.user/topics/tjval.html" label="Validating code in enterprise applications"/>
+<topic href="../org.eclipse.jst.j2ee.doc.user/topics/tjvalglobalpref.html" label="Overriding global validation preferences"/>
+<topic href="../org.eclipse.jst.j2ee.doc.user/topics/rvalerr.html" label="Common validation errors and solutions"/>
 </context>
 
 </contexts>
