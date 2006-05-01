@@ -42,8 +42,7 @@ public class ScopedComponentSearchListDialog extends ComponentSearchListDialog
   public static final String SCOPE_ENCLOSING_PROJECT = UIPlugin.getString("_UI_LABEL_ENCLOSING_PROJECT");
   public static final String SCOPE_WORKSPACE = UIPlugin.getString("_UI_LABEL_WORKSPACE");
   public static final String SCOPE_CURRENT_RESOURCE = UIPlugin.getString("_UI_LABEL_CURRENT_RESOURCE");
-  //TODO externalize to UIPlugin
-  public static final String SCOPE_WORKING_SETS = "Working Sets";
+  public static final String SCOPE_WORKING_SETS = UIPlugin.getString("_UI_LABEL_WORKING_SETS");
   
   private String currentSearchScope = SCOPE_CURRENT_RESOURCE;
   protected Button chooseButton;
