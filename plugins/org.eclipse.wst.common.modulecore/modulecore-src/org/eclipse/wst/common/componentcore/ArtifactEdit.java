@@ -335,12 +335,11 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 
 	/**
 	 * Save only if necessary. If typically a save would not occur because this edit model is
-	 * shared, the user will be prompted using the
-	 * 
-	 * @operationHandler. If the prompt returns true (the user wants to save) the entire edit model
-	 *                    will be saved. You may pass in a boolean <code>wasDirty</code> to
-	 *                    indicate whether this edit model was dirty prior to making any changes and
-	 *                    calling this method. {@link EditModel#isDirty()}
+	 * shared, the user will be prompted using the @operationHandler. 
+	 * If the prompt returns true (the user wants to save) and the model is not shared, 
+	 * the entire edit model will be saved. You may pass in a boolean <code>wasDirty</code> to
+	 * indicate whether this edit model was dirty prior to making any changes and
+	 * calling this method. {@link EditModel#isDirty()}
 	 */
 	public void saveIfNecessaryWithPrompt(IProgressMonitor monitor, IOperationHandler operationHandler, boolean wasDirty) {
 
