@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.operation;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -148,9 +149,9 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 			facetProj = ProjectFacetsManager.create(model.getStringProperty(IFacetProjectCreationDataModelProperties.FACET_PROJECT_NAME), locationPath, monitor);
 		}
 		IRuntime runtime = (IRuntime) model.getProperty(IFacetProjectCreationDataModelProperties.FACET_RUNTIME);
-		IRuntime existingRuntime = facetProj.getRuntime();
+		IRuntime existingRuntime = facetProj.getPrimaryRuntime();
 		if (runtime != null && (existingRuntime == null || !runtime.equals(existingRuntime))) {
-			facetProj.setRuntime(runtime, null);
+			facetProj.setTargetedRuntimes(Collections.singleton(runtime), null);
 			runtimeAdded = true;
 		}
 		return facetProj;
