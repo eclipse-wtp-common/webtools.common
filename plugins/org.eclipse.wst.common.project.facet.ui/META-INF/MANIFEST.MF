@@ -10,6 +10,7 @@ Bundle-Localization: plugin
 Export-Package: org.eclipse.wst.common.project.facet.ui,
  org.eclipse.wst.common.project.facet.ui.internal;x-internal:=true
 Require-Bundle: org.eclipse.ui,
+ org.eclipse.ui.forms,
  org.eclipse.ui.ide,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,

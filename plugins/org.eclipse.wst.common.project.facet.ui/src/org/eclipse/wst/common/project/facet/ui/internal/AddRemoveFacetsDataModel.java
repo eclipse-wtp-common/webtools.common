@@ -11,13 +11,8 @@
 
 package org.eclipse.wst.common.project.facet.ui.internal;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.wst.common.project.facet.core.IPreset;
@@ -27,22 +22,31 @@ import org.eclipse.wst.common.project.facet.core.IPreset;
  */
 
 public final class AddRemoveFacetsDataModel
-{
-    public static String PROP_PRESETS = "presets"; //$NON-NLS-1$
-    public static String PROP_SELECTED_PRESET = "selectedPreset"; //$NON-NLS-1$
+
+    extends AbstractDataModel
     
-    private Map listeners = new HashMap();
-    private Set presets = new HashSet();
-    private Set presetsReadOnly = null; 
-    private IPreset selectedPreset = null;
+{
+    public static String EVENT_SELECTABLE_PRESETS_CHANGED 
+        = "selectablePresetsChanged"; //$NON-NLS-1$
+    
+    public static String EVENT_SELECTED_PRESET_CHANGED 
+        = "selectedPresetChanged"; //$NON-NLS-1$
+    
+    private final Set presets;
+    private final Set presetsReadOnly; 
+    private IPreset selectedPreset;
+    private final ChangeTargetedRuntimesDataModel runtimesDataModel;
+    
+    public AddRemoveFacetsDataModel()
+    {
+        this.presets = new HashSet();
+        this.presetsReadOnly = Collections.unmodifiableSet( this.presets );
+        this.selectedPreset = null;
+        this.runtimesDataModel = new ChangeTargetedRuntimesDataModel();
+    }
     
     public synchronized Set getPresets()
     {
-        if( this.presetsReadOnly == null )
-        {
-            this.presetsReadOnly = Collections.unmodifiableSet( this.presets );
-        }
-        
         return this.presetsReadOnly;
     }
     
@@ -57,18 +61,10 @@ public final class AddRemoveFacetsDataModel
             setSelectedPreset( null );
         }
 
-        if( this.presetsReadOnly != null )
-        {
-            this.presets = new HashSet( presets );
-            this.presetsReadOnly = null;
-        }
-        else
-        {
-            this.presets.clear();
-            this.presets.addAll( presets );
-        }
+        this.presets.clear();
+        this.presets.addAll( presets );
         
-        notifyListeners( PROP_PRESETS );
+        notifyListeners( EVENT_SELECTABLE_PRESETS_CHANGED );
     }
     
     public synchronized IPreset getSelectedPreset()
@@ -85,36 +81,17 @@ public final class AddRemoveFacetsDataModel
         
         this.selectedPreset = preset;
         
-        notifyListeners( PROP_SELECTED_PRESET );
+        notifyListeners( EVENT_SELECTED_PRESET_CHANGED );
     }
     
-    public synchronized void addListener( final String property,
-                                          final IListener listener )
+    public ChangeTargetedRuntimesDataModel getTargetedRuntimesDataModel()
     {
-        List list = (List) this.listeners.get( property );
-        
-        if( list == null )
-        {
-            list = new ArrayList();
-            this.listeners.put( property, list );
-        }
-        
-        list.add( listener );
+        return this.runtimesDataModel;
     }
     
-    private void notifyListeners( final String property )
+    public void dispose()
     {
-        final List listeners = (List) this.listeners.get( property );
-        
-        for( Iterator itr = listeners.iterator(); itr.hasNext(); )
-        {
-            ( (IListener) itr.next() ).handleEvent();
-        }
+        this.runtimesDataModel.dispose();
     }
     
-    public static interface IListener
-    {
-        void handleEvent();
-    }
-
 }

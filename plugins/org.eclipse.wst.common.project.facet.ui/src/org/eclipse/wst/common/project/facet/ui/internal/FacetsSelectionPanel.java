@@ -84,6 +84,8 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.ui.IDecorationsProvider;
 import org.eclipse.wst.common.project.facet.ui.IWizardContext;
+import org.eclipse.wst.common.project.facet.ui.internal.AbstractDataModel.IDataModelListener;
+import org.eclipse.wst.common.project.facet.ui.internal.ChangeTargetedRuntimesDataModel.IRuntimeFilter;
 import org.osgi.framework.Bundle;
 
 /**
@@ -423,12 +425,15 @@ public final class FacetsSelectionPanel
 
         this.sform2.setWeights( weights2 );
         
-        this.runtimesPanel = new RuntimesPanel( this.sform1, SWT.NONE, this );
+        this.runtimesPanel 
+            = new RuntimesPanel( this.sform1, SWT.NONE, 
+                                 this.model.getTargetedRuntimesDataModel() );
+        
         this.runtimesPanel.setLayoutData( hhint( gdhfill(), 80 ) );
         
-        this.runtimesPanel.addFilter
-        (
-            new RuntimesPanel.IFilter()
+        this.model.getTargetedRuntimesDataModel().addRuntimeFilter
+        ( 
+            new IRuntimeFilter()
             {
                 public boolean check( final IRuntime runtime )
                 {
@@ -445,6 +450,57 @@ public final class FacetsSelectionPanel
                     }
                     
                     return true;
+                }
+            }
+        );
+        
+        addFilter
+        (
+            new IFilter()
+            {
+                public boolean check( final IProjectFacetVersion fv )
+                {
+                    final ChangeTargetedRuntimesDataModel dm
+                        = getDataModel().getTargetedRuntimesDataModel();
+                    
+                    for( Iterator itr = dm.getTargetedRuntimes().iterator();
+                         itr.hasNext(); )
+                    {
+                        final IRuntime r = (IRuntime) itr.next();
+                        
+                        if( ! r.supports( fv ) )
+                        {
+                            return false;
+                        }
+                    }
+                    
+                    return true;
+                }
+            }
+        );
+        
+        addProjectFacetsListener
+        (
+            new Listener()
+            {
+                public void handleEvent( final Event event )
+                {
+                    final ChangeTargetedRuntimesDataModel rdm
+                        = getDataModel().getTargetedRuntimesDataModel();
+                    
+                    rdm.refreshTargetableRuntimes();
+                }
+            }
+        );
+        
+        this.model.getTargetedRuntimesDataModel().addListener
+        ( 
+            ChangeTargetedRuntimesDataModel.EVENT_TARGETED_RUNTIMES_CHANGED,
+            new IDataModelListener()
+            {
+                public void handleEvent()
+                {
+                    refresh();                    
                 }
             }
         );
@@ -490,7 +546,7 @@ public final class FacetsSelectionPanel
         updateValidationDisplay();
     }
     
-    public final AddRemoveFacetsDataModel getDataModel()
+    public AddRemoveFacetsDataModel getDataModel()
     {
         return this.model;
     }
@@ -615,15 +671,8 @@ public final class FacetsSelectionPanel
         return action;
     }
     
-    public IRuntime getRuntime()
+    public void setDefaultFacetsForRuntime( final IRuntime runtime )
     {
-        return this.runtimesPanel.getRuntime();
-    }
-    
-    public void setRuntime( final IRuntime runtime )
-    {
-        this.runtimesPanel.setRuntime( runtime );
-        
         if( runtime != null )
         {
             final Set defaultFacets;
@@ -711,7 +760,6 @@ public final class FacetsSelectionPanel
         }
 
         refresh();
-        this.runtimesPanel.refresh();
         updateValidationDisplay();
     }
     
@@ -782,7 +830,6 @@ public final class FacetsSelectionPanel
         refresh();
         refreshPresetsCombo();
         refreshVersionsDropDown();
-        this.runtimesPanel.refresh();
         updateValidationDisplay();
     }
     
@@ -822,16 +869,6 @@ public final class FacetsSelectionPanel
         }
     }
     
-    public void addRuntimeListener( final Listener listener )
-    {
-        this.runtimesPanel.addRuntimeListener( listener );
-    }
-    
-    public void removeRuntimeListener( final Listener listener )
-    {
-        this.runtimesPanel.removeRuntimeListener( listener );
-    }
-
     public void addSelectionChangedListener( final ISelectionChangedListener listener )
     {
         this.selectionListeners.add( listener );
@@ -976,7 +1013,6 @@ public final class FacetsSelectionPanel
         }
 
         updateValidationDisplay();
-        this.runtimesPanel.refresh();
         
         this.model.setSelectedPreset( null );
     }
@@ -1086,8 +1122,7 @@ public final class FacetsSelectionPanel
         
         // Contents : model -> view
 
-        final AddRemoveFacetsDataModel.IListener modelToViewContentsListener
-            = new AddRemoveFacetsDataModel.IListener()
+        final IDataModelListener modelToViewContentsListener = new IDataModelListener()
         {
             public void handleEvent()
             {
@@ -1145,15 +1180,15 @@ public final class FacetsSelectionPanel
             }
         };
 
-        this.model.addListener( AddRemoveFacetsDataModel.PROP_PRESETS,
+        this.model.addListener( AddRemoveFacetsDataModel.EVENT_SELECTABLE_PRESETS_CHANGED,
                                 modelToViewContentsListener );
         
         // Selection : model -> view
         
         this.model.addListener
         ( 
-            AddRemoveFacetsDataModel.PROP_SELECTED_PRESET, 
-            new AddRemoveFacetsDataModel.IListener()
+            AddRemoveFacetsDataModel.EVENT_SELECTED_PRESET_CHANGED, 
+            new IDataModelListener()
             {
                 public void handleEvent()
                 {
@@ -1523,7 +1558,6 @@ public final class FacetsSelectionPanel
             }
 
             updateValidationDisplay();
-            this.runtimesPanel.refresh();
         }
         
         refreshPresetsButtons();
@@ -1959,7 +1993,6 @@ public final class FacetsSelectionPanel
                         }
     
                         updateValidationDisplay();
-                        FacetsSelectionPanel.this.runtimesPanel.refresh();
                     }
                 }
             }

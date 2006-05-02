@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.ui.internal.AddRemoveFacetsDataModel;
+import org.eclipse.wst.common.project.facet.ui.internal.AbstractDataModel.IDataModelListener;
 
 public final class PresetSelectionPanel
 
@@ -56,8 +57,8 @@ public final class PresetSelectionPanel
         
         this.model.addListener
         ( 
-            AddRemoveFacetsDataModel.PROP_SELECTED_PRESET,
-            new AddRemoveFacetsDataModel.IListener()
+            AddRemoveFacetsDataModel.EVENT_SELECTED_PRESET_CHANGED,
+            new IDataModelListener()
             {
                 public void handleEvent()
                 {

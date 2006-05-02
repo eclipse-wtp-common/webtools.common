@@ -37,7 +37,6 @@ import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
-import org.eclipse.wst.common.project.facet.ui.AddRemoveFacetsWizard;
 import org.eclipse.wst.common.project.facet.ui.FacetUiHelpContextIds;
 import org.eclipse.wst.common.project.facet.ui.IWizardContext;
 
@@ -60,8 +59,8 @@ public final class FacetsSelectionPage
     private final Set fixed;
     public FacetsSelectionPanel panel;
     private List listeners;
-    private List runtimeListeners;
     private List initialSyncWithPresetsCombos;
+    private IRuntime initialSetDefaultFacetsForRuntime;
     private AddRemoveFacetsDataModel model;
 
     public FacetsSelectionPage( final IWizardContext context,
@@ -81,8 +80,8 @@ public final class FacetsSelectionPage
         this.initialSelection = null;
         this.fixed = new HashSet();
         this.listeners = new ArrayList();
-        this.runtimeListeners = new ArrayList();
         this.initialSyncWithPresetsCombos = new ArrayList();
+        this.initialSetDefaultFacetsForRuntime = null;
     }
     
     public void setInitialPreset( final IPreset preset )
@@ -121,19 +120,16 @@ public final class FacetsSelectionPage
         this.listeners.remove( listener );
     }
     
-    public final void addRuntimeListener( final Listener listener )
+    public void setDefaultFacetsForRuntime( final IRuntime runtime )
     {
-        this.runtimeListeners.add( listener );
-    }
-    
-    public final void removeRuntimeListener( final Listener listener )
-    {
-        this.runtimeListeners.remove( listener );
-    }
-    
-    public IRuntime getSelectedRuntime()
-    {
-        return this.panel.getRuntime();
+        if( this.panel == null )
+        {
+            this.initialSetDefaultFacetsForRuntime = runtime;
+        }
+        else
+        {
+            this.panel.setDefaultFacetsForRuntime( runtime );
+        }
     }
     
     public void syncWithPresetsModel( final Combo combo )
@@ -150,18 +146,11 @@ public final class FacetsSelectionPage
 
     public void createControl( final Composite parent )
     {
-        final AddRemoveFacetsWizard wizard 
-            = (AddRemoveFacetsWizard) getWizard();
-        
-        final IRuntime initialRuntime = wizard.getRuntime();
-        
         this.panel 
             = new FacetsSelectionPanel( parent, SWT.NONE, this.context, 
                                         this.base, this.model );
         
         this.panel.setFixedProjectFacets( this.fixed );
-        
-        this.panel.setRuntime( initialRuntime );
 
         if( this.initialPreset != null )
         {
@@ -171,6 +160,11 @@ public final class FacetsSelectionPage
         if( this.initialSelection != null )
         {
             this.panel.setSelectedProjectFacets( this.initialSelection );
+        }
+        
+        if( this.initialSetDefaultFacetsForRuntime != null )
+        {
+            this.panel.setDefaultFacetsForRuntime( this.initialSetDefaultFacetsForRuntime );
         }
 
         this.panel.addSelectionChangedListener
@@ -195,17 +189,6 @@ public final class FacetsSelectionPage
             }
         );
 
-        this.panel.addRuntimeListener
-        (
-            new Listener()
-            {
-                public void handleEvent( final Event event )
-                {
-                    handleRuntimeChangedEvent( event );
-                }
-            }
-        );
-        
         for( Iterator itr = this.initialSyncWithPresetsCombos.iterator(); 
              itr.hasNext(); )
         {
@@ -253,17 +236,12 @@ public final class FacetsSelectionPage
             ( (Listener) this.listeners.get( i ) ).handleEvent( event );
         }
         
-        getContainer().updateButtons();
-    }
-
-    private void handleRuntimeChangedEvent( final Event event )
-    {
-        for( int i = 0, n = this.runtimeListeners.size(); i < n; i++ )
+        if( getContainer().getCurrentPage() != null )
         {
-            ( (Listener) this.runtimeListeners.get( i ) ).handleEvent( event );
+            getContainer().updateButtons();
         }
     }
-    
+
     public void setVisible( final boolean visible )
     {
         if( visible )

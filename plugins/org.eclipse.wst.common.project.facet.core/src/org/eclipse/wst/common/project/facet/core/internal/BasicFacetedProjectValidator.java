@@ -19,7 +19,7 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectValidator;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
-import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
+import org.eclipse.wst.common.project.facet.core.runtime.internal.UnknownRuntime;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -35,16 +35,17 @@ public final class BasicFacetedProjectValidator
         throws CoreException
         
     {
-        // Is the runtime that the project is associated with defined?
+        // Are any of the target runtimes not defined?
         
-        final String runtimeName = ( (FacetedProject) fproj ).getRuntimeName();
-        
-        if( runtimeName != null )
+        for( Iterator itr1 = fproj.getTargetedRuntimes().iterator();
+             itr1.hasNext(); )
         {
-            if( ! RuntimeManager.isRuntimeDefined( runtimeName ) )
+            final IRuntime r = (IRuntime) itr1.next();
+            
+            if( r instanceof UnknownRuntime )
             {
                 final String msg
-                    = NLS.bind( Resources.runtimeNotDefined, runtimeName );
+                    = NLS.bind( Resources.runtimeNotDefined, r.getName() );
                 
                 fproj.createErrorMarker( msg );
             }
@@ -52,15 +53,16 @@ public final class BasicFacetedProjectValidator
         
         // Is an installed facet not supported by the runtime?
         
-        final IRuntime r = fproj.getRuntime();
-        
-        if( r != null )
+        for( Iterator itr1 = fproj.getTargetedRuntimes().iterator();
+             itr1.hasNext(); )
         {
-            for( Iterator itr = fproj.getProjectFacets().iterator(); 
-                 itr.hasNext(); )
+            final IRuntime r = (IRuntime) itr1.next();
+            
+            for( Iterator itr2 = fproj.getProjectFacets().iterator(); 
+                 itr2.hasNext(); )
             {
                 final IProjectFacetVersion fv 
-                    = (IProjectFacetVersion) itr.next();
+                    = (IProjectFacetVersion) itr2.next();
                 
                 if( ! r.supports( fv ) )
                 {

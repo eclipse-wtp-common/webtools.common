@@ -79,7 +79,6 @@ public abstract class AbstractRuntime
         return res;
     }
     
-    
     public boolean supports( final IProjectFacet f )
     {
         for( Iterator itr = f.getVersions().iterator(); itr.hasNext(); )

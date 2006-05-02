@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005 - 2006 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,7 +25,6 @@ import org.eclipse.wst.common.project.facet.core.IConstraint;
 import org.eclipse.wst.common.project.facet.core.IGroup;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
-import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -126,10 +125,8 @@ public final class Constraint
                         final IConstraint c 
                             = (IConstraint) this.operands.get( i );
                         
-                        final String name = (String) c.getOperand( 0 );
-
                         final IProjectFacet rf 
-                            = ProjectFacetsManager.getProjectFacet( name );
+                            = (IProjectFacet) c.getOperand( 0 );
 
                         final VersionExpr vexpr 
                             = (VersionExpr) c.getOperand( 1 );

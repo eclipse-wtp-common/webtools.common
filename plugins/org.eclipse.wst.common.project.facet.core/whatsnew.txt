@@ -2,13 +2,19 @@ New API:
 
 org.eclipse.wst.common.project.facet.core:
 
-1. IActionDefinition
-2. IProjectFacetVersion.getActionDefinition( Action.Type type )
-3. ProjectFacetsManager.getActionDefinitions()
-4. ProjectFacetsManager.isActionDefined( String id )
-5. ProjectFacetsManager.getActionDefinition( String id )
-6. ProjectFacetsManager.definePreset( String name, String description, Set facets )
-7. IPreset.getDescription()
+1.  IActionDefinition
+2.  IProjectFacetVersion.getActionDefinition( Action.Type type )
+3.  ProjectFacetsManager.getActionDefinitions()
+4.  ProjectFacetsManager.isActionDefined( String id )
+5.  ProjectFacetsManager.getActionDefinition( String id )
+6.  ProjectFacetsManager.definePreset( String name, String description, Set facets )
+7.  IPreset.getDescription()
+8.  IFacetedProject.getTargetedRuntimes()
+9.  IFacetedProject.setTargetedRuntimes( Set runtimes, IProgressMonitor monitor )
+10. IFacetedProject.addTargetedRuntime( IRuntime runtime, IProgressMonitor monitor )
+11. IFacetedProject.removeTargetedRuntime( IRuntime runtime, IProgressMonitor monitor )
+12. IFacetedProject.getPrimaryRuntime()
+13. IFacetedProject.setPrimaryRuntime( IRuntime runtime, IProgressMonitor monitor )
 
 org.eclipse.wst.common.project.facet.ui:
 
@@ -62,4 +68,20 @@ next major release of WTP.
    
      deprecated: getWizardPages( Action.Type type, IProjectFacetVersion fv )
      new: getWizardPages( String actionId )
+
+2. The ability to for a project to target multiple runtimes has been further
+   fleshed out during this release. This meant deprecation of some existing api.
    
+   Deprecated API:
+   
+     IFacetedProject.getRuntime()
+     IFacetedProject.setRuntime( IRuntime runtime )
+     
+   Replacement API:
+   
+     IFacetedProject.getTargetedRuntimes()
+     IFacetedProject.setTargetedRuntimes( Set runtimes, IProgressMonitor monitor )
+     IFacetedProject.addTargetedRuntime( IRuntime runtime, IProgressMonitor monitor )
+     IFacetedProject.removeTargetedRuntime( IRuntime runtime, IProgressMonitor monitor )
+     IFacetedProject.getPrimaryRuntime()
+     IFacetedProject.setPrimaryRuntime( IRuntime runtime, IProgressMonitor monitor )

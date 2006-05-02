@@ -62,6 +62,17 @@
         value="org.eclipse.wst.common.project.facet.core.nature">
       </filter>
     </page>
+    <page
+      adaptable="true"
+      class="org.eclipse.wst.common.project.facet.ui.internal.RuntimesPropertyPage"
+      id="org.eclipse.wst.common.project.facet.ui.internal.RuntimesPropertyPage"
+      name="%runtimesPropertyPageLabel"
+      objectClass="org.eclipse.core.resources.IProject">
+      <filter
+        name="nature"
+        value="org.eclipse.wst.common.project.facet.core.nature">
+      </filter>
+    </page>
   </extension>
 
 </plugin>

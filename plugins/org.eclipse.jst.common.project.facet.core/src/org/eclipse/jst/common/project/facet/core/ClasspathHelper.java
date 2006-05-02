@@ -138,7 +138,7 @@ public final class ClasspathHelper
         final IFacetedProject fproj 
             = ProjectFacetsManager.create( project );
     
-        final IRuntime runtime = fproj.getRuntime();
+        final IRuntime runtime = fproj.getPrimaryRuntime();
         
         if( runtime != null )
         {

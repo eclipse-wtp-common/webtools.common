@@ -22,6 +22,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -57,6 +58,7 @@ import org.eclipse.wst.common.project.facet.core.IRuntimeChangedEvent;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
+import org.eclipse.wst.common.project.facet.core.runtime.internal.UnknownRuntime;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -105,6 +107,7 @@ public final class FacetedProject
         = ".settings/" + FacetCorePlugin.PLUGIN_ID + ".xml"; //$NON-NLS-1$ //$NON-NLS-2$
     
     private static final String EL_RUNTIME = "runtime"; //$NON-NLS-1$
+    private static final String EL_SECONDARY_RUNTIME = "secondary-runtime"; //$NON-NLS-1$
     private static final String EL_FIXED = "fixed"; //$NON-NLS-1$
     private static final String EL_INSTALLED = "installed"; //$NON-NLS-1$
     private static final String ATTR_NAME = "name"; //$NON-NLS-1$
@@ -114,7 +117,8 @@ public final class FacetedProject
     private final IProject project;
     private final CopyOnWriteSet facets;
     private final CopyOnWriteSet fixed;
-    private String runtimeName;
+    private final CopyOnWriteSet targetedRuntimes;
+    private String primaryRuntime;
     IFile f;
     private long fLastModified = -1;
     private final List listeners;
@@ -130,6 +134,7 @@ public final class FacetedProject
         this.project = project;
         this.facets = new CopyOnWriteSet();
         this.fixed = new CopyOnWriteSet();
+        this.targetedRuntimes = new CopyOnWriteSet();
         this.listeners = new ArrayList();
         
         this.f = project.getFile( FACETS_METADATA_FILE );
@@ -422,31 +427,45 @@ public final class FacetedProject
         notifyListeners();
     }
     
-    public String getRuntimeName()
-    {
-        synchronized( this.lock )
-        {
-            return this.runtimeName;
-        }
-    }
+    /**
+     * @deprecated
+     */
     
     public IRuntime getRuntime()
     {
-        synchronized( this.lock )
-        {
-            if( RuntimeManager.isRuntimeDefined( this.runtimeName ) )
-            {
-                return RuntimeManager.getRuntime( this.runtimeName );
-            }
-            else
-            {
-                return null;
-            }
-        }
+        return getPrimaryRuntime();
     }
+    
+    /**
+     * @deprecated
+     */
     
     public void setRuntime( final IRuntime runtime,
                             final IProgressMonitor monitor )
+    
+        throws CoreException
+        
+    {
+        setTargetedRuntimes( Collections.singleton( runtime ), monitor );
+    }
+    
+    public Set getTargetedRuntimes()
+    {
+        synchronized( this.lock )
+        {
+            final Set result = new HashSet();
+            
+            for( Iterator itr = this.targetedRuntimes.iterator(); itr.hasNext(); )
+            {
+                result.add( getRuntimeFromName( (String) itr.next() ) );
+            }
+            
+            return Collections.unmodifiableSet( result );
+        }
+    }
+    
+    public void setTargetedRuntimes( final Set runtimes,
+                                   final IProgressMonitor monitor )
     
         throws CoreException
         
@@ -462,7 +481,7 @@ public final class FacetedProject
                     throws CoreException
                     
                 {
-                    setRuntimeInternal( runtime, monitor );
+                    setTargetedRuntimesInternal( runtimes, monitor );
                 }
             };
             
@@ -477,28 +496,44 @@ public final class FacetedProject
         notifyListeners();
     }
     
-    private void setRuntimeInternal( final IRuntime runtime,
-                                     final IProgressMonitor monitor )
+    private void setTargetedRuntimesInternal( final Set runtimes,
+                                              final IProgressMonitor monitor )
     
         throws CoreException
         
     {
-        final IRuntime oldRuntime = getRuntime();
-        
-        if( equals( oldRuntime, runtime ) )
-        {
-            return;
-        }
-        
         if( monitor != null )
         {
-            monitor.beginTask( "", this.facets.size() ); //$NON-NLS-1$
+            monitor.beginTask( "", this.facets.size() + 1 ); //$NON-NLS-1$
         }
         
         try
         {
-            if( runtime != null )
+            if( this.targetedRuntimes.size() == runtimes.size() )
             {
+                boolean different = false;
+                
+                for( Iterator itr = runtimes.iterator(); itr.hasNext(); )
+                {
+                    final String rname = ( (IRuntime) itr.next() ).getName();
+                    
+                    if( ! this.targetedRuntimes.contains( rname ) )
+                    {
+                        different = true;
+                        break;
+                    }
+                }
+                
+                if( ! different )
+                {
+                    return;
+                }
+            }
+            
+            for( Iterator itr1 = runtimes.iterator(); itr1.hasNext(); )
+            {
+                final IRuntime runtime = (IRuntime) itr1.next();
+
                 for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
                 {
                     final IProjectFacetVersion fv 
@@ -518,19 +553,44 @@ public final class FacetedProject
                 }
             }
             
-            this.runtimeName = ( runtime == null ? null : runtime.getName() );
+            final IRuntime oldPrimary;
+            final IRuntime newPrimary;
+            
+            synchronized( this.lock )
+            {
+                this.targetedRuntimes.clear();
+                
+                for( Iterator itr = runtimes.iterator(); itr.hasNext(); )
+                {
+                    final IRuntime runtime = (IRuntime) itr.next();
+                    this.targetedRuntimes.add( runtime.getName() );
+                }
+                
+                oldPrimary = getPrimaryRuntime();
+                assignPrimaryRuntimeIfNecessary();
+                newPrimary = getPrimaryRuntime();
+            }
+            
             save();
             
-            final IRuntimeChangedEvent event 
-                = new RuntimeChangedEvent( oldRuntime, runtime );
-
-            for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
+            if( monitor != null )
             {
-                final ProjectFacetVersion fv
-                    = (ProjectFacetVersion) itr.next();
-                
-                callEventHandlers( fv, EventHandler.Type.RUNTIME_CHANGED, event,
-                                   submon( monitor, 1 ) );
+                monitor.worked( 1 );
+            }
+
+            if( ! equals( oldPrimary, newPrimary ) )
+            {
+                final IRuntimeChangedEvent event 
+                    = new RuntimeChangedEvent( oldPrimary, newPrimary );
+    
+                for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
+                {
+                    final ProjectFacetVersion fv
+                        = (ProjectFacetVersion) itr.next();
+                    
+                    callEventHandlers( fv, EventHandler.Type.RUNTIME_CHANGED, 
+                                       event, submon( monitor, 1 ) );
+                }
             }
         }
         finally
@@ -538,6 +598,337 @@ public final class FacetedProject
             if( monitor != null )
             {
                 monitor.done();
+            }
+        }
+    }
+    
+    public void addTargetedRuntime( final IRuntime runtime,
+                                  final IProgressMonitor monitor )
+    
+        throws CoreException
+        
+    {
+        beginModification();
+        
+        try
+        {
+            final IWorkspaceRunnable wr = new IWorkspaceRunnable()
+            {
+                public void run( final IProgressMonitor monitor ) 
+                
+                    throws CoreException
+                    
+                {
+                    addTargetedRuntimeInternal( runtime, monitor );
+                }
+            };
+            
+            final IWorkspace ws = ResourcesPlugin.getWorkspace();
+            ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, null );
+        }
+        finally
+        {
+            endModification();
+        }
+        
+        notifyListeners();
+    }
+    
+    private void addTargetedRuntimeInternal( final IRuntime runtime,
+                                             final IProgressMonitor monitor )
+    
+        throws CoreException
+        
+    {
+        if( monitor != null )
+        {
+            monitor.beginTask( "", 1 ); //$NON-NLS-1$
+        }
+        
+        try
+        {
+            if( runtime == null )
+            {
+                throw new NullPointerException();
+            }
+            
+            if( this.targetedRuntimes.contains( runtime.getName() ) )
+            {
+                return;
+            }
+            
+            for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
+            {
+                final IProjectFacetVersion fv 
+                    = (IProjectFacetVersion) itr.next();
+                
+                if( ! runtime.supports( fv ) )
+                {
+                    final String msg 
+                        = NLS.bind( Resources.facetNotSupported, 
+                                    runtime.getName(), fv.toString() );
+                    
+                    final IStatus st 
+                        = FacetCorePlugin.createErrorStatus( msg );
+                    
+                    throw new CoreException( st );
+                }
+            }
+            
+            synchronized( this.lock )
+            {
+                this.targetedRuntimes.add( runtime.getName() );
+            }
+            
+            save();
+            
+            if( monitor != null )
+            {
+                monitor.worked( 1 );
+            }
+        }
+        finally
+        {
+            if( monitor != null )
+            {
+                monitor.done();
+            }
+        }
+    }
+    
+    public void removeTargetedRuntime( final IRuntime runtime,
+                                     final IProgressMonitor monitor )
+    
+        throws CoreException
+        
+    {
+        beginModification();
+        
+        try
+        {
+            final IWorkspaceRunnable wr = new IWorkspaceRunnable()
+            {
+                public void run( final IProgressMonitor monitor ) 
+                
+                    throws CoreException
+                    
+                {
+                    removeTargetedRuntimeInternal( runtime, monitor );
+                }
+            };
+            
+            final IWorkspace ws = ResourcesPlugin.getWorkspace();
+            ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, null );
+        }
+        finally
+        {
+            endModification();
+        }
+        
+        notifyListeners();
+    }
+
+    private void removeTargetedRuntimeInternal( final IRuntime runtime,
+                                                final IProgressMonitor monitor )
+    
+        throws CoreException
+        
+    {
+        if( monitor != null )
+        {
+            monitor.beginTask( "", this.facets.size() + 1 ); //$NON-NLS-1$
+        }
+        
+        try
+        {
+            if( runtime == null || 
+                this.targetedRuntimes.contains( runtime.getName() ) )
+            {
+                return;
+            }
+            
+            final IRuntime oldPrimary;
+            final IRuntime newPrimary;
+            
+            synchronized( this.lock )
+            {
+                this.targetedRuntimes.remove( runtime.getName() );
+                
+                oldPrimary = getPrimaryRuntime();
+                assignPrimaryRuntimeIfNecessary();
+                newPrimary = getPrimaryRuntime();
+            }
+            
+            save();
+            
+            if( monitor != null )
+            {
+                monitor.worked( 1 );
+            }
+
+            if( ! equals( oldPrimary, newPrimary ) )
+            {
+                final IRuntimeChangedEvent event 
+                    = new RuntimeChangedEvent( oldPrimary, newPrimary );
+    
+                for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
+                {
+                    final ProjectFacetVersion fv
+                        = (ProjectFacetVersion) itr.next();
+                    
+                    callEventHandlers( fv, EventHandler.Type.RUNTIME_CHANGED, 
+                                       event, submon( monitor, 1 ) );
+                }
+            }
+        }
+        finally
+        {
+            if( monitor != null )
+            {
+                monitor.done();
+            }
+        }
+    }
+    
+    public IRuntime getPrimaryRuntime()
+    {
+        synchronized( this.lock )
+        {
+            if( this.primaryRuntime == null )
+            {
+                return null;
+            }
+            else
+            {
+                return getRuntimeFromName( this.primaryRuntime );
+            }
+        }
+    }
+    
+    public void setPrimaryRuntime( final IRuntime runtime,
+                                   final IProgressMonitor monitor )
+    
+        throws CoreException
+        
+    {
+        beginModification();
+        
+        try
+        {
+            final IWorkspaceRunnable wr = new IWorkspaceRunnable()
+            {
+                public void run( final IProgressMonitor monitor ) 
+                
+                    throws CoreException
+                    
+                {
+                    setPrimaryRuntimeInternal( runtime, monitor );
+                }
+            };
+            
+            final IWorkspace ws = ResourcesPlugin.getWorkspace();
+            ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, null );
+        }
+        finally
+        {
+            endModification();
+        }
+        
+        notifyListeners();
+    }
+    
+    private void setPrimaryRuntimeInternal( final IRuntime runtime,
+                                            final IProgressMonitor monitor )
+    
+        throws CoreException
+        
+    {
+        if( monitor != null )
+        {
+            monitor.beginTask( "", this.facets.size() + 1 ); //$NON-NLS-1$
+        }
+        
+        try
+        {
+            if( runtime == null )
+            {
+                throw new NullPointerException();
+            }
+            
+            if( equals( this.primaryRuntime, runtime.getName() ) )
+            {
+                return;
+            }
+
+            if( ! this.targetedRuntimes.contains( runtime.getName() ) )
+            {
+                final String msg = Resources.newPrimaryNotTargetRuntime;
+                final IStatus st = FacetCorePlugin.createErrorStatus( msg );
+            
+                throw new CoreException( st );
+            }
+            
+            final IRuntime oldPrimary;
+            
+            synchronized( this.lock )
+            {
+                oldPrimary = getPrimaryRuntime();
+                this.primaryRuntime = runtime.getName();
+            }
+            
+            save();
+            
+            if( monitor != null )
+            {
+                monitor.worked( 1 );
+            }
+
+            final IRuntimeChangedEvent event 
+                = new RuntimeChangedEvent( oldPrimary, runtime );
+
+            for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
+            {
+                final ProjectFacetVersion fv
+                    = (ProjectFacetVersion) itr.next();
+                
+                callEventHandlers( fv, EventHandler.Type.RUNTIME_CHANGED, 
+                                   event, submon( monitor, 1 ) );
+            }
+        }
+        finally
+        {
+            if( monitor != null )
+            {
+                monitor.done();
+            }
+        }
+    }
+    
+    private static IRuntime getRuntimeFromName( final String name )
+    {
+        if( RuntimeManager.isRuntimeDefined( name ) )
+        {
+            return RuntimeManager.getRuntime( name );
+        }
+        else
+        {
+            return new UnknownRuntime( name );
+        }
+    }
+    
+    private void assignPrimaryRuntimeIfNecessary()
+    {
+        if( this.targetedRuntimes.isEmpty() )
+        {
+            this.primaryRuntime = null;
+        }
+        else
+        {
+            if( this.primaryRuntime == null || 
+                ! this.targetedRuntimes.contains( this.primaryRuntime ) )
+            {
+                this.primaryRuntime 
+                    = (String) this.targetedRuntimes.iterator().next();
             }
         }
     }
@@ -912,12 +1303,25 @@ public final class FacetedProject
         out.print( "<faceted-project>" ); //$NON-NLS-1$
         out.print( nl );
         
-        if( this.runtimeName != null )
+        if( this.primaryRuntime != null )
         {
             out.print( "  <runtime name=\"" ); //$NON-NLS-1$
-            out.print( this.runtimeName );
+            out.print( this.primaryRuntime );
             out.print( "\"/>" ); //$NON-NLS-1$
             out.print( nl );
+        }
+        
+        for( Iterator itr = this.targetedRuntimes.iterator(); itr.hasNext(); )
+        {
+            final String name = (String) itr.next();
+            
+            if( ! name.equals( this.primaryRuntime ) )
+            {
+                out.print( "  <secondary-runtime name=\"" ); //$NON-NLS-1$
+                out.print( name );
+                out.print( "\"/>" ); //$NON-NLS-1$
+                out.print( nl );
+            }
         }
         
         for( Iterator itr = this.fixed.iterator(); itr.hasNext(); )
@@ -983,7 +1387,8 @@ public final class FacetedProject
             
             this.facets.clear();
             this.fixed.clear();
-            this.runtimeName = null;
+            this.targetedRuntimes.clear();
+            this.primaryRuntime = null;
             
             if( ! this.f.exists() )
             {
@@ -1003,7 +1408,12 @@ public final class FacetedProject
                 
                 if( name.equals( EL_RUNTIME ) )
                 {
-                    this.runtimeName = e.getAttribute( ATTR_NAME );
+                    this.primaryRuntime = e.getAttribute( ATTR_NAME );
+                    this.targetedRuntimes.add( this.primaryRuntime );
+                }
+                else if( name.equals( EL_SECONDARY_RUNTIME ) )
+                {
+                    this.targetedRuntimes.add( e.getAttribute( ATTR_NAME ) );
                 }
                 else if( name.equals( EL_FIXED ) )
                 {
@@ -1171,6 +1581,7 @@ public final class FacetedProject
         public static String illegalModificationMsg;
         public static String tracingDelegateStarting;
         public static String tracingDelegateFinished;
+        public static String newPrimaryNotTargetRuntime;
         
         static
         {

@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005 - 2006 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -40,8 +40,8 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action.Type;
-import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.ui.internal.AddRemoveFacetsDataModel;
+import org.eclipse.wst.common.project.facet.ui.internal.ChangeTargetedRuntimesDataModel;
 import org.eclipse.wst.common.project.facet.ui.internal.FacetUiPlugin;
 import org.eclipse.wst.common.project.facet.ui.internal.FacetsSelectionPage;
 
@@ -66,8 +66,6 @@ public class AddRemoveFacetsWizard
     protected final FacetsSelectionPage facetsSelectionPage;
     private FacetPages[] facetPages = new FacetPages[ 0 ];
     private Composite pageContainer;
-    
-    private IRuntime initialRuntime;
     private final AddRemoveFacetsDataModel model;
     
     public AddRemoveFacetsWizard( final IFacetedProject fproj )
@@ -80,6 +78,12 @@ public class AddRemoveFacetsWizard
         if( this.fproj != null )
         {
             base = this.fproj.getProjectFacets();
+            
+            final ChangeTargetedRuntimesDataModel rdm
+                = this.model.getTargetedRuntimesDataModel();
+            
+            rdm.setTargetedRuntimes( this.fproj.getTargetedRuntimes() );
+            rdm.setPrimaryRuntime( this.fproj.getPrimaryRuntime() );
         }
         
         this.facetsSelectionPage 
@@ -95,47 +99,12 @@ public class AddRemoveFacetsWizard
         return this.model;
     }
     
-    public final IRuntime getRuntime()
-    {
-        if( this.facetsSelectionPage.panel == null )
-        {
-            return this.initialRuntime;
-        }
-        else
-        {
-            return this.facetsSelectionPage.panel.getRuntime();
-        }
-    }
-    
-    public final void setRuntime( final IRuntime runtime )
-    {
-        if( this.facetsSelectionPage.panel == null )
-        {
-            this.initialRuntime = runtime;
-        }
-        else
-        {
-            this.facetsSelectionPage.panel.setRuntime( runtime );
-        }
-    }
-    
-    public final void addRuntimeListener( final Listener listener )
-    {
-        this.facetsSelectionPage.addRuntimeListener( listener );
-    }
-    
-    public final void removeRuntimeListener( final Listener listener )
-    {
-        this.facetsSelectionPage.removeRuntimeListener( listener );
-    }
-    
     public void addPages()
     {
         if( this.fproj != null )
         {
             this.facetsSelectionPage.setInitialSelection( this.fproj.getProjectFacets() );
             this.facetsSelectionPage.setFixedProjectFacets( this.fproj.getFixedProjectFacets());
-            setRuntime( this.fproj.getRuntime() );
         }
         
         this.facetsSelectionPage.addSelectedFacetsChangedListener
@@ -345,15 +314,24 @@ public class AddRemoveFacetsWizard
         throws CoreException
         
     {
-        monitor.beginTask( "", 2 ); //$NON-NLS-1$
+        monitor.beginTask( "", 3 ); //$NON-NLS-1$
         
         try
         {
-            this.fproj.setRuntime( this.facetsSelectionPage.getSelectedRuntime(),
-                                   new SubProgressMonitor( monitor, 1 ) );
+            final ChangeTargetedRuntimesDataModel rdm
+                = this.model.getTargetedRuntimesDataModel();
+            
+            this.fproj.setTargetedRuntimes( rdm.getTargetedRuntimes(), 
+                                          submon( monitor, 1 ) );
+            
+            if( rdm.getPrimaryRuntime() != null )
+            {
+                this.fproj.setPrimaryRuntime( rdm.getPrimaryRuntime(), 
+                                              submon( monitor, 1 ) );
+            }
             
             this.fproj.modify( this.facetsSelectionPage.getActions(), 
-                               new SubProgressMonitor( monitor, 1 ) );
+                               submon( monitor, 1 ) );
         }
         finally
         {
@@ -387,6 +365,14 @@ public class AddRemoveFacetsWizard
                 ( (IWizardPage) itr.next() ).dispose();
             }
         }
+        
+        this.model.dispose();
+    }
+    
+    private static IProgressMonitor submon( final IProgressMonitor parent,
+                                            final int ticks )
+    {
+        return new SubProgressMonitor( parent, ticks );
     }
     
     private static final class FacetPages

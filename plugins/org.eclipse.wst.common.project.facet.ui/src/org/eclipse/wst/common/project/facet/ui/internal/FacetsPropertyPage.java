@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005 - 2006 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -25,11 +25,12 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -38,14 +39,14 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
-import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.ui.AddRemoveFacetsWizard;
 
 /**
@@ -55,8 +56,8 @@ import org.eclipse.wst.common.project.facet.ui.AddRemoveFacetsWizard;
 public class FacetsPropertyPage extends PropertyPage 
 {
     private IFacetedProject project;
+    private IFacetedProjectListener projectListener;
     private TableViewer viewer;
-    private Label runtimeLabel;
 	
 	protected Control createContents(Composite parent) 
 	{
@@ -73,20 +74,39 @@ public class FacetsPropertyPage extends PropertyPage
 			{
 				return null;
 			}
+            
+            this.projectListener = new IFacetedProjectListener()
+            {
+                public void projectChanged()
+                {
+                    handleProjectChangedEvent();
+                }
+            };
+            
+            this.project.addListener( this.projectListener );
+            
 	        Composite composite = new Composite(parent, SWT.NONE);
-	        composite.setLayout(new GridLayout());
+            
+            final GridLayout layout = new GridLayout();
+            layout.marginHeight = 0;
+            layout.marginWidth = 0;
+            
+	        composite.setLayout( layout );
 	        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-			this.runtimeLabel = new Label(composite, SWT.NONE);
-	        setRuntimeLabel();
-            
-            // quick hack to get a bit of separation.
-            new Label(composite,SWT.NONE);
-
-            final Label pageLabel = new Label(composite, SWT.NONE);
-            pageLabel.setText(Resources.pageLabel);
-
 	        createTableGroup(composite);
+            
+            composite.addDisposeListener
+            (
+                new DisposeListener()
+                {
+                    public void widgetDisposed( final DisposeEvent e )
+                    {
+                        handleDisposeEvent();
+                    }
+                }
+            );
+            
 			return composite;
 		}
 		return null;
@@ -119,12 +139,7 @@ public class FacetsPropertyPage extends PropertyPage
 			            final IWizard wizard = new AddRemoveFacetsWizard( FacetsPropertyPage.this.project );
 			            final WizardDialog dialog = new WizardDialog( getShell(), wizard );
 			            
-			            if (dialog.open() == Window.OK)
-			            {
-			            	// redisplay the facets information
-                            FacetsPropertyPage.this.viewer.setInput(FacetsPropertyPage.this.project);
-			            	setRuntimeLabel();
-			            }
+			            dialog.open();
 					}
 				});
 	}
@@ -155,17 +170,35 @@ public class FacetsPropertyPage extends PropertyPage
 		
 		return viewer;
 	}
+    
+    private void handleProjectChangedEvent()
+    {
+        final Display display = this.viewer.getTable().getDisplay();
+        
+        if( ! Thread.currentThread().equals( display.getThread() ) )
+        {
+            display.syncExec
+            ( 
+                new Runnable()
+                {
+                    public void run()
+                    {
+                        handleProjectChangedEvent();
+                    }
+                }
+            );
+            
+            return;
+        }
+        
+        this.viewer.refresh();
+    }
+    
+    private void handleDisposeEvent()
+    {
+        this.project.removeListener( this.projectListener );
+    }
 
-	private void setRuntimeLabel()
-	{
-        final IRuntime runtime = this.project.getRuntime();
-        if (runtime != null)
-	        this.runtimeLabel.setText(NLS.bind(Resources.runtimeLabel, this.project.getRuntime().getName()));
-        else
-        	this.runtimeLabel.setText(Resources.runtimeText);
-        this.runtimeLabel.redraw();
-	}
-	
 	private static class FacetsLabelProvider extends LabelProvider implements ITableLabelProvider
 	{
 		static final int DESCRIPTION_FIELD = 0;
@@ -230,9 +263,6 @@ public class FacetsPropertyPage extends PropertyPage
 	
     private static final class Resources extends NLS
     {
-	    public static String pageLabel;
-	    public static String runtimeLabel;
-	    public static String runtimeText;
 	    public static String addRemoveLabel;
 	    public static String facetLabel;
 	    public static String versionLabel;

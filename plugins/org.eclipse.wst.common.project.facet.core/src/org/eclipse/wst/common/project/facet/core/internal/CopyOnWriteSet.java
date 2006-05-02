@@ -124,7 +124,8 @@ public final class CopyOnWriteSet
         
         public void remove()
         {
-            CopyOnWriteSet.this.remove( this.current );
+            copy();
+            this.itr.remove();
         }
 
         public boolean hasNext()

@@ -322,6 +322,11 @@ public interface IFacetedProject
     
         throws CoreException;
     
+    /**
+     * 
+     * @deprecated use getTargetRuntimes() and getPrimaryRuntime() instead
+     */
+    
     IRuntime getRuntime();
     
     /**
@@ -333,10 +338,129 @@ public interface IFacetedProject
      * 
      * @param monitor a progress monitor, or null if progress reporting and 
      *   cancellation are not desired
+     * @deprecated use setTargetRuntimes() and setPrimaryRuntime() instead
      */
     
     void setRuntime( IRuntime runtime,
                      IProgressMonitor monitor )
+    
+        throws CoreException;
+    
+    /**
+     * <p>Returns the set of all runtimes that this project is targeting. When a
+     * project targets a runtime, the set of facets that can be installed is
+     * limited to those supported by that runtime. When a project targets
+     * multiple runtimes, the set of applicable facets is limited to those
+     * supported by all targeted runtimes.</p>
+     * 
+     * @return the set of targeted runtimes (element type: {@see IRuntime})
+     */
+    
+    Set getTargetedRuntimes();
+    
+    /**
+     * <p>Sets the runtimes that this project will target. When a project 
+     * targets a runtime, the set of facets that can be installed is limited to 
+     * those supported by that runtime. When a project targets multiple 
+     * runtimes, the set of applicable facets is limited to those supported by 
+     * all targeted runtimes.<p>
+     * 
+     * <p>If the existing primary runtime is <code>null</code> or is not part of 
+     * the new set of targeted runtimes, the primary runtime will be reset to 
+     * one picked at random from the new set. If the new set is empty, the 
+     * primary runtime will be set to <code>null</code>.</p>
+     * 
+     * <p>This method should not be called from the UI thread as it is long-
+     * running and may trigger resource change events. Although this framework
+     * is safe, there is no guarantee that other bundles are UI-safe and the
+     * risk of UI deadlock is high.</p>
+     * 
+     * @param runtimes the new set of runtimes to target (element type: 
+     *   {@see IRuntime})
+     * @param monitor a progress monitor, or <code>null</code> if progress
+     *   reporting and cancelation are not desired
+     * @throws CoreException if the project contains one or more facets that
+     *   are not supported by all of the new runtimes; if failed for any other 
+     *   reason
+     */
+    
+    void setTargetedRuntimes( Set runtimes,
+                              IProgressMonitor monitor )
+    
+        throws CoreException;
+    
+    /**
+     * <p>Adds a new runtime to the set of runtimes targeted by this project.
+     * If the set of targeted runtimes has been empty prior to this call, this
+     * runtime will become the primary runtime</p>
+     *  
+     * <p>This method should not be called from the UI thread as it is long-
+     * running and may trigger resource change events. Although this framework
+     * is safe, there is no guarantee that other bundles are UI-safe and the
+     * risk of UI deadlock is high.</p>
+     * 
+     * @param runtime the runtime
+     * @param monitor a progress monitor, or <code>null</code> if progress
+     *   reporting and cancelation are not desired
+     * @throws CoreException if the project contains one or more facets that
+     *   are not supported by this runtime; if failed for any other reason
+     */
+    
+    void addTargetedRuntime( IRuntime runtime,
+                             IProgressMonitor monitor )
+    
+        throws CoreException;
+    
+    /**
+     * <p>Removes a runtime from the set of runtimes targeted by this project.
+     * If this runtime has been the primary runtime prior to this call, a new
+     * primary will be automatically assigned (unless the list of target
+     * runtimes becomes empty, in which case the primary runtime will be set
+     * to <code>null</code>).</p>
+     * 
+     * <p>This method should not be called from the UI thread as it is long-
+     * running and may trigger resource change events. Although this framework
+     * is safe, there is no guarantee that other bundles are UI-safe and the
+     * risk of UI deadlock is high.</p>
+     * 
+     * @param runtime the runtime to remove
+     * @param monitor a progress monitor, or <code>null</code> if progress
+     *   reporting and cancelation are not desired
+     * @throws CoreException if failed for any reason
+     */
+    
+    void removeTargetedRuntime( IRuntime runtime,
+                                IProgressMonitor monitor )
+    
+        throws CoreException;
+
+    /**
+     * <p>Returns the primary target runtime for this project. There is always
+     * a primary runtime unless the list of target runtimes is empty.</p>
+     * 
+     * @return the primary runtime, or <code>null</code>
+     */
+    
+    IRuntime getPrimaryRuntime();
+    
+    /**
+     * <p>Sets the primary target runtime for this project. The new primary has
+     * to be one of the runtimes currently targeted by the project.
+     * 
+     * <p>This method should not be called from the UI thread as it is long-
+     * running and may trigger resource change events. Although this framework
+     * is safe, there is no guarantee that other bundles are UI-safe and the
+     * risk of UI deadlock is high.</p>
+     * 
+     * @param runtime the new primary runtime
+     * @param monitor a progress monitor, or <code>null</code> if progress
+     *   reporting and cancelation are not desired
+     * @throws CoreException if the primary runtime is not one of the runtimes
+     *   currently targeted by the project; if failed for any other reason
+     */
+
+    void setPrimaryRuntime( IRuntime runtime,
+                            IProgressMonitor monitor )
     
         throws CoreException;
     
