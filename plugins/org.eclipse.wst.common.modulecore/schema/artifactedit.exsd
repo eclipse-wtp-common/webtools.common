@@ -17,21 +17,21 @@
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  a fully qualified identifier of the target extension point 
                </documentation>
             </annotation>
          </attribute>
          <attribute name="id" type="string">
             <annotation>
                <documentation>
-                  
+                  an optional identifier of the extension instance 
                </documentation>
             </annotation>
          </attribute>
          <attribute name="name" type="string">
             <annotation>
                <documentation>
-                  
+                  an optional name of the extension instance 
                </documentation>
                <appInfo>
                   <meta.attribute translatable="true"/>
@@ -46,14 +46,14 @@
          <attribute name="typeID" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  The type this artifactEdit contributes to, for example, the facet id which is associated with projects which should use this artifactEdit.
                </documentation>
             </annotation>
          </attribute>
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  The name of the actual artifact edit class implementation which extends org.eclipse.wst.common.componentcore.ArtifactEdit.
                </documentation>
             </annotation>
          </attribute>
