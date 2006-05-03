@@ -41,7 +41,6 @@ public class UITesterImpl implements UITester {
 	 * @see org.eclipse.wst.common.frameworks.internal.UITester#isCurrentContextUI()
 	 */
 	public boolean isCurrentContextUI() {
-		//TODO verify this is working properly now
 		try {
 			return PlatformUI.isWorkbenchRunning() || PlatformUI.getWorkbench().isClosing();
 		} catch (Exception e) {
