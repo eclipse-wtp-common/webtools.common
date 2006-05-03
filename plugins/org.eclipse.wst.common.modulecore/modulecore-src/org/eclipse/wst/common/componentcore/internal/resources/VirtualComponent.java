@@ -341,14 +341,27 @@ public class VirtualComponent implements IVirtualComponent {
 				if (component != null)
 					component.getReferencedComponents().add(referencedComponent);
 				referencedComponent.setArchiveName(references[i].getArchiveName());
-				
 			}
+			//clean up any old obsolete references
+			cleanUpReferences(component);	
 		} finally {
 			if(core != null) {
 				core.saveIfNecessary(null);
 				core.dispose();
 			}
 		}	
+	}
+	
+	private void cleanUpReferences(WorkbenchComponent component) {
+		List referencedComponents = component.getReferencedComponents();
+		for (Iterator iter = referencedComponents.iterator(); iter.hasNext();) {
+			ReferencedComponent referencedComponent = (ReferencedComponent) iter.next();
+			if (referencedComponent==null) 
+				continue;
+			IVirtualReference vReference = StructureEdit.createVirtualReference(this, referencedComponent);
+			if (vReference == null || vReference.getReferencedComponent() == null || !vReference.getReferencedComponent().exists())
+				component.getReferencedComponents().remove(referencedComponent); 
+		}
 	}
 	
 	public void setReferences(IVirtualReference[] references) { 
