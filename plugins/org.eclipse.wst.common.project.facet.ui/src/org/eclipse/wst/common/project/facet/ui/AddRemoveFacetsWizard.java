@@ -66,6 +66,7 @@ public class AddRemoveFacetsWizard
     protected final FacetsSelectionPage facetsSelectionPage;
     private FacetPages[] facetPages = new FacetPages[ 0 ];
     private Composite pageContainer;
+    private final List pagesToDispose = new ArrayList();
     private final AddRemoveFacetsDataModel model;
     
     public AddRemoveFacetsWizard( final IFacetedProject fproj )
@@ -359,11 +360,12 @@ public class AddRemoveFacetsWizard
         
         for( int i = 0; i < this.facetPages.length; i++ )
         {
-            for( Iterator itr = this.facetPages[ i ].pages.iterator(); 
-                 itr.hasNext(); )
-            {
-                ( (IWizardPage) itr.next() ).dispose();
-            }
+            this.pagesToDispose.addAll( this.facetPages[ i ].pages );
+        }
+        
+        for( Iterator itr = this.pagesToDispose.iterator(); itr.hasNext(); )
+        {
+            ( (IWizardPage) itr.next() ).dispose();
         }
         
         this.model.dispose();
@@ -480,7 +482,7 @@ public class AddRemoveFacetsWizard
                         = (IFacetWizardPage) itr.next();
                     
                     page.setWizard( null );
-                    page.dispose();
+                    this.pagesToDispose.add( page );
                 }
                 
                 changed = true;

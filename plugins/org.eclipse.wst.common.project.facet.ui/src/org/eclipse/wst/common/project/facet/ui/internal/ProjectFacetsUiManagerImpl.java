@@ -19,11 +19,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.osgi.util.NLS;
@@ -492,7 +494,7 @@ public final class ProjectFacetsUiManagerImpl
                 
         final String plugin = config.getContributor().getName();
         final Bundle bundle = Platform.getBundle( plugin );
-        final URL url = bundle.getEntry( path );
+        final URL url = FileLocator.find( bundle, new Path( path ), null );
         
         if( url == null )
         {

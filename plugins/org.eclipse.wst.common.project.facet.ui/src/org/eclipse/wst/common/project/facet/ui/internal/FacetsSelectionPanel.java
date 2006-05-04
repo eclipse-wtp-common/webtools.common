@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.resource.CompositeImageDescriptor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.CellEditor;
@@ -35,7 +36,6 @@ import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ICheckStateListener;
-import org.eclipse.jface.viewers.IFontProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -54,9 +54,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
@@ -65,12 +64,12 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.wst.common.project.facet.core.IActionConfig;
@@ -108,19 +107,7 @@ public final class FacetsSelectionPanel
     private static final String SASH1W2 = "sash.1.weight.2"; //$NON-NLS-1$
     private static final String SASH2W1 = "sash.2.weight.1"; //$NON-NLS-1$
     private static final String SASH2W2 = "sash.2.weight.2"; //$NON-NLS-1$
-    private static final Font FIXED_FONT;
     
-    static
-    {
-        final FontData system 
-            = Display.getCurrent().getSystemFont().getFontData()[ 0 ];
-        
-        final FontData bold 
-            = new FontData( system.getName(), system.getHeight(), SWT.BOLD );
-        
-        FIXED_FONT = new Font( Display.getCurrent(), bold );
-    }
-
     private final IDialogSettings settings;
     private final Composite topComposite;
     private final SashForm sform1;
@@ -264,7 +251,6 @@ public final class FacetsSelectionPanel
         
         this.savePresetButton = new Button( this.topComposite, SWT.PUSH );
         this.savePresetButton.setText( Resources.saveButtonLabel );
-        this.savePresetButton.setLayoutData( whint( new GridData(), 60 ) );
         
         this.savePresetButton.addSelectionListener
         (
@@ -279,7 +265,6 @@ public final class FacetsSelectionPanel
 
         this.deletePresetButton = new Button( this.topComposite, SWT.PUSH );
         this.deletePresetButton.setText( Resources.deleteButtonLabel );
-        this.deletePresetButton.setLayoutData( whint( new GridData(), 60 ) );
         
         this.deletePresetButton.addSelectionListener
         (
@@ -291,6 +276,13 @@ public final class FacetsSelectionPanel
                 }
             }
         );
+        
+        final int width 
+            = Math.max( getPreferredWidth( this.savePresetButton ), 
+                        getPreferredWidth( this.deletePresetButton ) ) + 15;
+                        
+        this.savePresetButton.setLayoutData( whint( new GridData(), width ) );
+        this.deletePresetButton.setLayoutData( whint( new GridData(), width ) );
         
         refreshPresetsCombo();
 
@@ -970,6 +962,15 @@ public final class FacetsSelectionPanel
                 if( ! checked )
                 {
                     this.tree.setChecked( el, true );
+                    
+                    final String msg 
+                        = NLS.bind( Resources.couldNotDeselectFixedFacetMessage,
+                                    trd.getProjectFacet().getLabel() );
+                    
+                    final MessageBox msgbox = new MessageBox( getShell() );
+                    msgbox.setText( Resources.couldNotDeselectFixedFacetTitle );
+                    msgbox.setMessage( msg );
+                    msgbox.open();
                 }
                 
                 return;
@@ -1818,7 +1819,7 @@ public final class FacetsSelectionPanel
 
     private final class LabelProvider
 
-        implements ITableLabelProvider, IFontProvider
+        implements ITableLabelProvider
 
     {
         private ImageRegistry imageRegistry = new ImageRegistry();
@@ -1873,13 +1874,15 @@ public final class FacetsSelectionPanel
             
             String id;
             IAdaptable obj;
+            boolean isFixed = false;
 
             if( element instanceof TableRowData )
             {
-                final IProjectFacet f
-                    = ( (TableRowData) element ).getProjectFacet();
+                final TableRowData trd = (TableRowData) element;
+                final IProjectFacet f = trd.getProjectFacet();
 
-                id = "f:" + f.getId(); //$NON-NLS-1$
+                isFixed = trd.isFixed;
+                id = ( isFixed ? "F:" : "f:" ) + f.getId(); //$NON-NLS-1$ //$NON-NLS-2$
                 obj = f;
             }
             else
@@ -1895,22 +1898,18 @@ public final class FacetsSelectionPanel
                 final IDecorationsProvider decprov
                     = (IDecorationsProvider) obj.getAdapter( IDecorationsProvider.class );
                 
-                this.imageRegistry.put( id, decprov.getIcon() );
+                ImageDescriptor imgdesc = decprov.getIcon();
+                
+                if( isFixed )
+                {
+                    imgdesc = new FixedFacetImageDescriptor( imgdesc );
+                }
+                
+                this.imageRegistry.put( id, imgdesc );
                 image = this.imageRegistry.get( id );
             }
 
             return image;
-        }
-
-        public Font getFont( final Object element )
-        {
-            if( element instanceof TableRowData &&
-                ( (TableRowData) element ).isFixed() )
-            {
-                return FIXED_FONT;
-            }
-            
-            return null;
         }
 
         public void dispose()
@@ -1928,6 +1927,39 @@ public final class FacetsSelectionPanel
         public void removeListener( ILabelProviderListener listener ) {}
     }
 
+    private static final class FixedFacetImageDescriptor 
+    
+        extends CompositeImageDescriptor 
+        
+    {
+        private static final String OVERLAY_IMG_LOCATION
+            = "images/lock.gif"; //$NON-NLS-1$
+        
+        private static final ImageData OVERLAY
+            = FacetUiPlugin.getImageDescriptor( OVERLAY_IMG_LOCATION ).getImageData();
+        
+        private final ImageData base;
+        private final Point size;
+        
+        public FixedFacetImageDescriptor( final ImageDescriptor base ) 
+        {
+            this.base = base.getImageData();
+            this.size = new Point( this.base.width, this.base.height ); 
+        }
+
+        protected void drawCompositeImage( final int width, 
+                                           final int height ) 
+        {
+            drawImage( this.base, 0, 0 );
+            drawImage( OVERLAY, 0, height - OVERLAY.height );
+        }
+
+        protected Point getSize()
+        {
+            return this.size;
+        }
+    }
+    
     private final class CellModifier
 
         implements ICellModifier
@@ -2012,23 +2044,7 @@ public final class FacetsSelectionPanel
                             final Object a,
                             final Object b )
         {
-            final Boolean fixed1 = Boolean.valueOf( getFixed( a ) );
-            final Boolean fixed2 = Boolean.valueOf( getFixed( b ) );
-            
-            final String label1 = getLabel( a );
-            final String label2 = getLabel( b );
-            
-            int res 
-                = fixed1.equals( fixed2 ) 
-                  ? 0 
-                  : ( fixed1.booleanValue() ? -1 : 1 );
-            
-            if( res == 0 )
-            {
-                res = label1.compareToIgnoreCase( label2 );
-            }
-            
-            return res;
+            return getLabel( a ).compareToIgnoreCase( getLabel( b ) );
         }
 
         private static String getLabel( final Object obj )
@@ -2040,18 +2056,6 @@ public final class FacetsSelectionPanel
             else
             {
                 return ( (ICategory) obj ).getLabel();
-            }
-        }
-        
-        private static boolean getFixed( final Object obj )
-        {
-            if( obj instanceof TableRowData )
-            {
-                return ( (TableRowData) obj ).isFixed();
-            }
-            else
-            {
-                return false;
             }
         }
     }
@@ -2176,6 +2180,8 @@ public final class FacetsSelectionPanel
         public static String showRuntimes;
         public static String hideRuntimes;
         public static String couldNotSelectPreset;
+        public static String couldNotDeselectFixedFacetTitle;
+        public static String couldNotDeselectFixedFacetMessage;
         
         static
         {

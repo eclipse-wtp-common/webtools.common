@@ -6,7 +6,7 @@
          <meta.schema plugin="org.eclipse.wst.common.project.facet.core" id="facets" name="Project Facets Extension Point"/>
       </appInfo>
       <documentation>
-         
+         This is the main extension point in the faceted project framework. It is used for defining project facets. A project facet can be thought of as a unit of functionality that the user can add to the project when the functionality is needed. 
       </documentation>
    </annotation>
 
@@ -49,12 +49,19 @@
    </element>
 
    <element name="label" type="string">
+      <annotation>
+         <documentation>
+            The localizable name that is presented to the user.
+         </documentation>
+      </annotation>
    </element>
 
    <element name="description" type="string">
-   </element>
-
-   <element name="icon" type="string">
+      <annotation>
+         <documentation>
+            The description text.
+         </documentation>
+      </annotation>
    </element>
 
    <element name="and">
@@ -159,15 +166,19 @@
          <sequence>
             <element ref="label"/>
             <element ref="description" minOccurs="0" maxOccurs="1"/>
-            <element ref="icon" minOccurs="0" maxOccurs="1"/>
             <element ref="version-comparator" minOccurs="0" maxOccurs="1"/>
             <element name="category" type="string">
+               <annotation>
+                  <documentation>
+                     Project facet can optionally belong to a category. This specifies the category id.
+                  </documentation>
+               </annotation>
             </element>
          </sequence>
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  project facet identifier
                </documentation>
             </annotation>
          </attribute>
@@ -200,11 +211,16 @@
    </element>
 
    <element name="version-comparator">
+      <annotation>
+         <documentation>
+            Specifies the version comparator for this project facet. If no version comparator is specified the default comparator will be used. The default version comparator can handle versions that are written in standard decimal notation.
+         </documentation>
+      </annotation>
       <complexType>
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  the version comparator class name
                </documentation>
                <appInfo>
                   <meta.attribute kind="java" basedOn="java.util.Comparator"/>
@@ -475,7 +491,7 @@
          <meta.section type="copyright"/>
       </appInfo>
       <documentation>
-         Copyright (c) 2005 BEA Systems, Inc. and others.&lt;br&gt;
+         Copyright (c) 2005 - 2006 BEA Systems, Inc. and others.&lt;br&gt;
 All rights reserved. This program and the accompanying materials are made 
 available under the terms of the Eclipse Public License v1.0 which accompanies 
 this distribution, and is available at &lt;a
