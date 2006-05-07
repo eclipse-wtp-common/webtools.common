@@ -27,7 +27,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.IEditModelHandler;
@@ -40,6 +39,7 @@ import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
 import org.eclipse.wst.common.componentcore.internal.util.EclipseResourceAdapter;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
+import org.eclipse.wst.common.internal.emf.utilities.ExtendedEcoreUtil;
 
 /**
  * <p>
@@ -237,7 +237,7 @@ public class StructureEdit implements IEditModelHandler {
 	 * @return The corresponding Eclipse IResource, if available.
 	 */
 	public static IResource getEclipseResource(ComponentResource aModuleResource) {
-		EclipseResourceAdapter eclipseResourceAdapter = (EclipseResourceAdapter) EcoreUtil.getAdapter(aModuleResource.eAdapters(), EclipseResourceAdapter.ADAPTER_TYPE);
+		EclipseResourceAdapter eclipseResourceAdapter = (EclipseResourceAdapter) ExtendedEcoreUtil.getAdapter(aModuleResource,aModuleResource.eAdapters(), EclipseResourceAdapter.ADAPTER_TYPE);
 		if (eclipseResourceAdapter != null)
 			return eclipseResourceAdapter.getEclipseResource();
 		eclipseResourceAdapter = new EclipseResourceAdapter();
