@@ -867,9 +867,9 @@ public class ValidationPropertiesPage extends PropertyPage {
 						builderExists = true;
 				}
 				if (builderExists) {
-					addValidationBuilder.setSelection(true);
-					addValidationBuilder.setEnabled(false);
+					addValidationBuilder.setVisible(false);
 				} else {
+					addValidationBuilder.setVisible(true);
 					addValidationBuilder.setSelection(false);
 					addValidationBuilder.setEnabled(true);
 				}
