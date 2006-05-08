@@ -4,3 +4,4 @@ build.xml
 cache.jar
 @dot
 src.zip
+javaCompiler...args
