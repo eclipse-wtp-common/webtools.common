@@ -919,4 +919,8 @@ public class StructureEdit implements IEditModelHandler {
 	protected IProject getProject() {
 		return aProject;
 	}
+	
+	public ModuleStructuralModel getModuleStructuralModel() {
+		return structuralModel;
+	}
 }

@@ -258,7 +258,7 @@ public class ArtifactEditModel extends EditModel implements IAdaptable, IFaceted
 			resourceToProcess = (Resource) theResources.get(i);
 			if (resourceToProcess == null) continue;
 			String lastSegment = resourceToProcess.getURI().lastSegment();
-			if (null != lastSegment && lastSegment.equals(IModuleConstants.COMPONENT_FILE_NAME)) continue;
+			if (null != lastSegment && lastSegment.endsWith(IModuleConstants.COMPONENT_FILE_NAME)) continue;
 			resourceResource = WorkbenchResourceHelper.getFile(resourceToProcess);
 			if (resourceResource != null) {
 				virtualResources = ComponentCore.createResources(resourceResource); 
