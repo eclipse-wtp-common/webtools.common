@@ -4,3 +4,4 @@ build.xml
 runtime
 @dot
 src.zip
+javaCompiler...args
