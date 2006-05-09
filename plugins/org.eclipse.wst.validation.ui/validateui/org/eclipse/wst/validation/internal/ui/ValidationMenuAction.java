@@ -229,6 +229,8 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	
 	private void addVisitor(IProject selected) {
 		// add the folder and its children
+		if( !selected.isAccessible() )
+			return;
 		try {
 			selected.accept(getProjectVisitor());
 		} catch (CoreException exc) {
