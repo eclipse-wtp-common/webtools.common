@@ -93,4 +93,11 @@ public interface ResourceConstants {
   
   String DELEGATES_DIALOG_TITLE = "DELEGATES_DIALOG_TITLE"; //$NON-NLS-1$
   String DELEGATES_COMBO_LABEL = "DELEGATES_COMBO_LABEL"; //$NON-NLS-1$
+  
+  	public static final String CONFIG_WS_SETTINGS="CONFIG_WS_SETTINGS";//$NON-NLS-1$
+  	public static final String VALIDATOR = "VALIDATOR"; //$NON-NLS-1$
+  	public static final String MANUAL = "MANUAL"; //$NON-NLS-1$
+  	public static final String BUILD = "BUILD"; //$NON-NLS-1$
+  	public static final String SETTINGS = "SETTINGS"; //$NON-NLS-1$
+  	
  }

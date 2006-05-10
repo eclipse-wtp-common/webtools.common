@@ -481,7 +481,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 			link.setUnderlined(true);
 			Color color = new Color(validatorGroup.getDisplay(),new RGB(0,0,255) );
 			link.setForeground(color);
-			link.setText("Configure Workspace Settings...");
+			link.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.CONFIG_WS_SETTINGS));
 			link.addHyperlinkListener(new IHyperlinkListener() {
 				public static final String DATA_NO_LINK = "PropertyAndPreferencePage.nolink"; //$NON-NLS-1$
 
