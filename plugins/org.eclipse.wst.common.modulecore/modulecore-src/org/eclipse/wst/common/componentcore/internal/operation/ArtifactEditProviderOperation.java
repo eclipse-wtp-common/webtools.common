@@ -16,16 +16,21 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jem.util.UIContextDetermination;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.ComponentCore;
+import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
 import org.eclipse.wst.common.componentcore.internal.util.ArtifactEditRegistryReader;
 import org.eclipse.wst.common.componentcore.internal.util.IArtifactEditFactory;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
+import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
+import org.eclipse.wst.common.internal.emfworkbench.validateedit.IValidateEditContext;
 
 public abstract class ArtifactEditProviderOperation extends AbstractDataModelOperation {
 	
@@ -91,7 +96,9 @@ public abstract class ArtifactEditProviderOperation extends AbstractDataModelOpe
 	public final IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		try {
 			initialize(monitor);
-			return doExecute(monitor, info);
+			if (validateEdit().isOK())
+				return doExecute(monitor, info);
+			return Status.CANCEL_STATUS;
 		} finally {
 			dispose();
 		}
@@ -103,4 +110,13 @@ public abstract class ArtifactEditProviderOperation extends AbstractDataModelOpe
 		return artifactEdit;
 	}
 
+	/**
+	 * Validate edit for resource state
+	 */
+	protected IStatus validateEdit() {
+		IStatus status = OK_STATUS;
+		IValidateEditContext validator = (IValidateEditContext) UIContextDetermination.createInstance(IValidateEditContext.CLASS_KEY);
+		return validator.validateState((EditModel)getArtifactEdit().getAdapter(ArtifactEditModel.ADAPTER_TYPE));
+		
+	}
 }

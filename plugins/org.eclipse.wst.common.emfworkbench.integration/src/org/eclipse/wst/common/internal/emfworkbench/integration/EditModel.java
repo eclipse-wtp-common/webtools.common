@@ -31,6 +31,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.command.BasicCommandStack;
 import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.common.command.CommandStackListener;
@@ -641,6 +642,8 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	 * @see ResourceStateValidator#validateState(ResourceStateValidatorPresenter)
 	 */
 	public IStatus validateState(ResourceStateValidatorPresenter presenter) throws CoreException {
+		if (presenter==null)
+			return Status.OK_STATUS;
 		return getStateValidator().validateState(presenter);
 	}
 

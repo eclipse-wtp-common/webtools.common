@@ -24,9 +24,11 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.jem.util.UIContextDetermination;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.IEditModelHandler;
@@ -40,6 +42,7 @@ import org.eclipse.wst.common.componentcore.internal.util.EclipseResourceAdapter
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.internal.emf.utilities.ExtendedEcoreUtil;
+import org.eclipse.wst.common.internal.emfworkbench.validateedit.IValidateEditContext;
 
 /**
  * <p>
@@ -350,9 +353,11 @@ public class StructureEdit implements IEditModelHandler {
 	public void save(IProgressMonitor aMonitor) {
 		if (isReadOnly)
 			throwAttemptedReadOnlyModification();
-		synchronized (structuralModel) {
-			if (!structuralModel.isDisposed())
-				structuralModel.save(aMonitor, this);
+		else if (validateEdit().isOK()) { 
+			synchronized (structuralModel) {
+				if (!structuralModel.isDisposed())
+					structuralModel.save(aMonitor, this);
+			}
 		}
 	}
 
@@ -370,9 +375,11 @@ public class StructureEdit implements IEditModelHandler {
 	public void saveIfNecessary(IProgressMonitor aMonitor) {
 		if (isReadOnly)
 			throwAttemptedReadOnlyModification();
-		synchronized (structuralModel) {
-			if (!structuralModel.isDisposed())
-				structuralModel.saveIfNecessary(aMonitor, this);
+		else if (validateEdit().isOK()) { 
+			synchronized (structuralModel) {
+				if (!structuralModel.isDisposed())
+					structuralModel.saveIfNecessary(aMonitor, this);
+			}
 		}
 	}
 
@@ -922,5 +929,13 @@ public class StructureEdit implements IEditModelHandler {
 	
 	public ModuleStructuralModel getModuleStructuralModel() {
 		return structuralModel;
+	}
+	
+	/**
+	 * Validate edit for resource state
+	 */
+	protected IStatus validateEdit() {
+		IValidateEditContext validator = (IValidateEditContext) UIContextDetermination.createInstance(IValidateEditContext.CLASS_KEY);
+		return validator.validateState(getModuleStructuralModel());
 	}
 }

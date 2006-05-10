@@ -16,18 +16,21 @@ import java.util.List;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jem.internal.util.emf.workbench.nls.EMFWorkbenchResourceHandler;
+import org.eclipse.jem.util.UIContextDetermination;
 import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.internal.operations.IOperationHandler;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelListener;
+import org.eclipse.wst.common.internal.emfworkbench.validateedit.IValidateEditContext;
 
 /**
  * Provides a Facade pattern for accessing Module Content Metamodels for Web Tools Platform flexible
@@ -314,7 +317,8 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	public void save(IProgressMonitor aMonitor) {
 		if (isReadOnly())
 			throwAttemptedReadOnlyModification();
-		artifactEditModel.save(aMonitor, this);
+		else if (validateEdit().isOK())
+			artifactEditModel.save(aMonitor, this);
 	}
 
 	/**
@@ -330,7 +334,16 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	public void saveIfNecessary(IProgressMonitor aMonitor) {
 		if (isReadOnly())
 			throwAttemptedReadOnlyModification();
-		artifactEditModel.saveIfNecessary(aMonitor, this);
+		else if (validateEdit().isOK())
+			artifactEditModel.saveIfNecessary(aMonitor, this);
+	}
+	
+	/**
+	 * Validate edit for resource state
+	 */
+	protected IStatus validateEdit() {
+		IValidateEditContext validator = (IValidateEditContext) UIContextDetermination.createInstance(IValidateEditContext.CLASS_KEY);
+		return validator.validateState(getArtifactEditModel());
 	}
 
 	/**

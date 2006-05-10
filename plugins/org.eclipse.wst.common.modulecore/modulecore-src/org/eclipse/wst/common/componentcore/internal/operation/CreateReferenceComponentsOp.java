@@ -21,13 +21,21 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jem.util.UIContextDetermination;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
+import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.datamodel.properties.ICreateReferenceComponentsDataModelProperties;
+import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
+import org.eclipse.wst.common.componentcore.internal.StructureEdit;
+import org.eclipse.wst.common.componentcore.internal.util.ComponentUtilities;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
+import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
+import org.eclipse.wst.common.internal.emfworkbench.validateedit.IValidateEditContext;
 
 public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 
@@ -37,9 +45,40 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 	}
 
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
+		if (!validateEdit().isOK())
+			return Status.CANCEL_STATUS;
 		addReferencedComponents(monitor);
 		addProjectReferences();
 		return OK_STATUS;
+	}
+	
+	/**
+	 * Validate edit for resource state
+	 */
+	protected IStatus validateEdit() {
+		IStatus status = OK_STATUS;
+		IValidateEditContext validator = (IValidateEditContext) UIContextDetermination.createInstance(IValidateEditContext.CLASS_KEY);
+		IVirtualComponent sourceComp = (IVirtualComponent) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT);
+		IProject project = sourceComp.getProject();
+		ArtifactEdit edit = null;
+		try {
+			edit = ComponentUtilities.getArtifactEditForWrite(sourceComp);
+			status = validator.validateState((EditModel)edit.getAdapter(ArtifactEditModel.ADAPTER_TYPE));
+		} finally {
+			if (edit !=null)
+				edit.dispose();
+		}
+		if (status.isOK()) {
+			StructureEdit sEdit = null;
+			try {
+				sEdit = StructureEdit.getStructureEditForWrite(project);
+				status = validator.validateState(sEdit.getModuleStructuralModel());
+			} finally {
+				if (sEdit !=null)
+					sEdit.dispose();
+			}
+		}
+		return status;
 	}
 
 	protected void addProjectReferences() {
