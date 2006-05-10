@@ -102,6 +102,16 @@
 				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
 				menubarPath="group.add" />
 		</viewerContribution>
+		<viewerContribution
+			targetID="org.eclipse.jst.jsp.core.jspfragmentsource.source.EditorContext"
+			id="org.eclipse.wst.common.snippets.actions">
+			<action
+				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				label="%Add_to_Snippets.name"
+				icon="$nl$/icons/snippets_view.gif"
+				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				menubarPath="group.add" />
+		</viewerContribution>
 		<!-- Java source Editor -->
 		<viewerContribution
 			targetID="#CompilationUnitEditorContext"
