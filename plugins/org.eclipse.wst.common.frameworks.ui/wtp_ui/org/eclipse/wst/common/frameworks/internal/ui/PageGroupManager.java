@@ -48,12 +48,11 @@ public class PageGroupManager {
 
 	private String pauseAfterExecution = null;
 
-	public PageGroupManager(IDataModelPausibleOperation rootOperation, IDMPageGroup rootPageGroup) {
-		this.rootOperation = rootOperation;
-		dataModel = rootOperation.getDataModel();
-		groupTable = new HashMap();
-		operationsRun = new HashSet();
-		pageGroupStack = new Stack();
+	public PageGroupManager(IDataModel dataModel, IDMPageGroup rootPageGroup) {
+
+		this.dataModel = dataModel;
+		this.groupTable = new HashMap();
+		this.pageGroupStack = new Stack();
 		this.rootPageGroup = rootPageGroup;
 
 
@@ -66,6 +65,11 @@ public class PageGroupManager {
 			// Find all the page groups that follow this root page group.
 			loadExtendedPages(rootPageGroup);
 		}
+	}
+
+	public PageGroupManager(IDataModelPausibleOperation rootOperation, IDMPageGroup rootPageGroup) {
+		this(rootOperation.getDataModel(), rootPageGroup);
+		this.operationsRun = new HashSet();
 
 		rootOperation.addOperationListener(new IDataModelPausibleOperationListener() {
 			public int notify(IDataModelPausibleOperationEvent event) {
@@ -82,14 +86,11 @@ public class PageGroupManager {
 								return IDataModelPausibleOperationListener.PAUSE;
 							}
 						}
-						
 						break;
-
 				}
 				return IDataModelPausibleOperationListener.CONTINUE;
 			}
 		});
-
 	}
 
 	public void addGroupAfter(String pageGroupID, IDMPageGroup pageInsertGroup) {
@@ -114,10 +115,12 @@ public class PageGroupManager {
 			pageFound = findNextPage(true);
 		} catch (Throwable exc) {
 			Logger.getLogger().logError(exc);
-			try {
-				rootOperation.rollBack(null, null);
-			} catch (ExecutionException e) {
-				Logger.getLogger().logError(e);
+			if (rootOperation != null) {
+				try {
+					rootOperation.rollBack(null, null);
+				} catch (ExecutionException e) {
+					Logger.getLogger().logError(e);
+				}
 			}
 			pageFound = false;
 		}
@@ -144,11 +147,13 @@ public class PageGroupManager {
 		boolean foundPreviousPage = findPreviousPageInGroup();
 
 		while (!foundPreviousPage && !pageGroupStack.empty()) {
-			if (topEntry.ranOperations) {
-				try {
-					rootOperation.rollBack(null, null);
-				} catch (ExecutionException e) {
-					Logger.getLogger().logError(e);
+			if (rootOperation != null) {
+				if (topEntry.ranOperations) {
+					try {
+						rootOperation.rollBack(null, null);
+					} catch (ExecutionException e) {
+						Logger.getLogger().logError(e);
+					}
 				}
 			}
 
@@ -245,18 +250,16 @@ public class PageGroupManager {
 
 				// If this group requires an operation and it has not already been run
 				// then we need to run it.
-				if (runOperations && requiresOperationsId != null && !operationsRun.contains(requiresOperationsId)) {
+				if (rootOperation != null && runOperations && requiresOperationsId != null && !operationsRun.contains(requiresOperationsId)) {
 					pauseAfterExecution = requiresOperationsId;
-					IStatus status = null; 
-					
+					IStatus status = null;
 					try {
 						status = rootOperation.resume(null, null);
 					} catch (ExecutionException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						Logger.getLogger().logError(e);
 					}
-
 					nextStackEntry.ranOperations = true;
+
 					if (status.getSeverity() == IStatus.ERROR) {
 						// TODO need a better error feedback mechanism here.
 						throw new IllegalArgumentException(status.getMessage());
@@ -275,13 +278,10 @@ public class PageGroupManager {
 		return pageFound;
 	}
 
-
-
 	private void saveStackInfo() {
 		if (!pageGroupStack.empty()) {
 			savedTopEntry = new StackEntry((StackEntry) pageGroupStack.peek());
 		}
-
 		savedStackSize = pageGroupStack.size();
 	}
 
@@ -557,6 +557,5 @@ public class PageGroupManager {
 				}
 			}
 		}
-
 	}
 }

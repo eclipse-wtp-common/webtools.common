@@ -189,6 +189,11 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 
 			public void run(IProgressMonitor pm) {
 				try {
+					if (rootOperation == null) {
+						//This will be the typical case because most wizards will
+						//not initialize the root operation during init.
+						rootOperation = getRootOperation();
+					}
 					status[0] = rootOperation.execute(pm, null);
 				} catch (Throwable e) {
 					caught = e;
@@ -322,9 +327,23 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	}
 
 	private void init() {
-		rootOperation = getRootOperation();
 		rootPageGroup = createRootPageGroup();
-		pageGroupManager = new PageGroupManager(rootOperation, rootPageGroup);
+		if (needsToRunOperationsBeforeFinish()) {
+			rootOperation = getRootOperation();
+			pageGroupManager = new PageGroupManager(rootOperation, rootPageGroup);
+		} else {
+			pageGroupManager = new PageGroupManager(getDataModel(), rootPageGroup);
+		}
+	}
+	
+	/**
+	 * Subclasses should override to return true if they require the running
+	 * of the operation during page turning.
+	 * 
+	 * @return A boolean defaulted to false.
+	 */
+	protected boolean needsToRunOperationsBeforeFinish() {
+		return false;
 	}
 
 	public boolean needsPreviousAndNextButtons() {
