@@ -13,35 +13,42 @@ package org.eclipse.wst.common.componentcore;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelEvent;
-import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelListener;
 
-public class GlobalComponentChangeNotifier implements EditModelListener {
+public class GlobalComponentChangeNotifier extends AdapterImpl implements GlobalComponentChangeListener {
 
 	private static GlobalComponentChangeNotifier instance;
 
 	private List listeners;
 	private List removedListeners = new ArrayList();
 	private boolean isNotifing = false;
-
-
+	private static final int EMF_EVENT = 0;
+	private static final int EDIT_EVENT = 1;
+	
 	public static GlobalComponentChangeNotifier getInstance() {
 		if (instance == null) {
 			instance = new GlobalComponentChangeNotifier();
 		}
 		return instance;
 	}
-
-	public void editModelChanged(EditModelEvent anEvent) {
-		notifyListeners(anEvent);
+	
+	public void notifyChanged(Notification notification) {
+		notifyListeners(EMF_EVENT, notification);
 	}
 
-	public void addListener(EditModelListener aListener) {
+	
+	public void editModelChanged(EditModelEvent anEvent) {
+		notifyListeners(EDIT_EVENT, anEvent);
+	}
+
+	public void addListener(GlobalComponentChangeListener aListener) {
 		if (aListener != null && !getListeners().contains(aListener))
 			getListeners().add(aListener);
 	}
 
-	public synchronized boolean removeListener(EditModelListener aListener) {
+	public synchronized boolean removeListener(GlobalComponentChangeListener aListener) {
 		if (aListener != null) {
 			if (isNotifing)
 				return removedListeners.add(aListener);
@@ -50,13 +57,13 @@ public class GlobalComponentChangeNotifier implements EditModelListener {
 		return false;
 	}
 
-	protected java.util.List getListeners() {
+	private java.util.List getListeners() {
 		if (listeners == null)
 			listeners = new ArrayList();
 		return listeners;
 	}
 
-	protected void notifyListeners(EditModelEvent anEvent) {
+	private void notifyListeners(int eventKind, Object anEvent) {
 		if (listeners == null)
 			return;
 		boolean oldIsNotifying = isNotifing;
@@ -66,9 +73,17 @@ public class GlobalComponentChangeNotifier implements EditModelListener {
 		try {
 			List list = getListeners();
 			for (int i = 0; i < list.size(); i++) {
-				EditModelListener listener = (EditModelListener) list.get(i);
-				if (!removedListeners.contains(listener))
-					listener.editModelChanged(anEvent);
+				GlobalComponentChangeListener listener = (GlobalComponentChangeListener) list.get(i);
+				if (!removedListeners.contains(listener)){
+					switch(eventKind){
+						case EMF_EVENT:
+							listener.notifyChanged((Notification)anEvent);
+							break;
+						case EDIT_EVENT:
+							listener.editModelChanged((EditModelEvent)anEvent);
+							break;
+					}
+				}
 			}
 		} finally {
 			synchronized (this) {

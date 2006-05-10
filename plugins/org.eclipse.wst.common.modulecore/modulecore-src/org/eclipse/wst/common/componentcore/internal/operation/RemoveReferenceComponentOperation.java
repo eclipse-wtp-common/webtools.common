@@ -89,12 +89,4 @@ public class RemoveReferenceComponentOperation extends AbstractDataModelOperatio
 		((VirtualComponent)component.getComponent()).removeReference(reference);
 	}
 
-	public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-		return null;
-	}
-
-	public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-		return null;
-	}
-
 }
