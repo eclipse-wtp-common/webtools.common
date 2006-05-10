@@ -16,7 +16,7 @@ package org.eclipse.wst.common.snippets.internal.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
+import com.ibm.icu.util.StringTokenizer;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
