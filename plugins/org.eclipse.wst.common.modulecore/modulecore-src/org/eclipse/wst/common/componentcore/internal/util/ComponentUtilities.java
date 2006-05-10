@@ -293,7 +293,7 @@ public class ComponentUtilities {
 		if( archiveName != null && archiveName != "" ){ //$NON-NLS-1$
 			uri = reference.getRuntimePath() + "/" + reference.getArchiveName(); //$NON-NLS-1$
 		}else{
-			uri = reference.getReferencedComponent().getProject().getName() + ".jar"; //$NON-NLS-1$
+			uri = reference.getRuntimePath() + "/" + reference.getReferencedComponent().getProject().getName() + ".jar"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return uri;
 	}
