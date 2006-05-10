@@ -52,10 +52,10 @@
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  Specifies the class name of the delegate validator. The class must implement IValidator.
+                  Specifies the class name of the delegate validator. The class must implement IValidatorJob.
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.wst.validation.internal.provisional.core.IValidator"/>
+                  <meta.attribute kind="java" basedOn="org.eclipse.wst.validation.internal.provisional.core.IValidatorJob"/>
                </appInfo>
             </annotation>
          </attribute>
@@ -104,7 +104,7 @@
          <meta.section type="apiInfo"/>
       </appInfo>
       <documentation>
-         A delegate validator will have to implement the IValidator interface.
+         A delegate validator will have to implement the IValidatorJob interface.
 The target validator, the one who will delegate its implementation to a delegate validator will have to extend org.eclipse.wst.validation.delegates.BaseDelegatingValidator.
       </documentation>
    </annotation>
