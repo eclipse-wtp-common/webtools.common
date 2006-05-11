@@ -18,21 +18,21 @@
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
-                  a fully qualified identifier of the target extension point
+                  A fully qualified identifier of the target extension point.
                </documentation>
             </annotation>
          </attribute>
          <attribute name="id" type="string">
             <annotation>
                <documentation>
-                  an optional identifier of the extension instance
+                  An optional identifier of the extension instance.
                </documentation>
             </annotation>
          </attribute>
          <attribute name="name" type="string">
             <annotation>
                <documentation>
-                  an optional name of the extension instance
+                  An optional name of the extension instance.
                </documentation>
             </annotation>
          </attribute>
@@ -40,6 +40,11 @@
    </element>
 
    <element name="default-facets">
+      <annotation>
+         <documentation>
+            Used to specify which facets (and which versions of those facets) should be selected by default when a runtime that includes the specified runtime component is selected. Multiple extensions referring to the same runtime component (type and version) will be merged. This allows a party not affiliated with the runtime vendor to specify that a certain additional facet should be preselected when the runtime containing the specified runtime component is selected.
+         </documentation>
+      </annotation>
       <complexType>
          <sequence>
             <element ref="runtime-component"/>
@@ -58,14 +63,14 @@
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
-                  runtime component type id
+                  Runtime component type id.
                </documentation>
             </annotation>
          </attribute>
          <attribute name="version" type="string" use="required">
             <annotation>
                <documentation>
-                  Specifies the match expression for the runtime component version. The expression should be of the form "2.2,2.5,[3.0-5.3],(7.3", where the comas function as an OR. Brackets and parenthesis are used as part of the range notation. A bracket means inclusive while a parenthesis means exclusive.
+                  Specifies the match expression for the runtime component version. The expression should be of the form &quot;2.2,2.5,[3.0-5.3],(7.3&quot;, where the comas function as an OR. Brackets and parenthesis are used as part of the range notation. A bracket means inclusive while a parenthesis means exclusive.
                </documentation>
             </annotation>
          </attribute>
@@ -82,14 +87,14 @@
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
-                  project facet id
+                  The project facet id.
                </documentation>
             </annotation>
          </attribute>
          <attribute name="version" type="string" use="required">
             <annotation>
                <documentation>
-                  project facet version
+                  The project facet version.
                </documentation>
             </annotation>
          </attribute>
@@ -137,7 +142,7 @@
          <meta.section type="copyright"/>
       </appInfo>
       <documentation>
-         Copyright (c) 2005 BEA Systems, Inc. and others.&lt;br&gt;
+         Copyright (c) 2005-2006 BEA Systems, Inc. and others.&lt;br&gt;
 All rights reserved. This program and the accompanying materials are made 
 available under the terms of the Eclipse Public License v1.0 which accompanies 
 this distribution, and is available at &lt;a

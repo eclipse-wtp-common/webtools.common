@@ -6,7 +6,7 @@
          <meta.schema plugin="org.eclipse.wst.common.project.facet.core" id="validators" name="Faceted Project Validators Extension Point"/>
       </appInfo>
       <documentation>
-         
+         Used for declaring faceted project validators. 
       </documentation>
    </annotation>
 
@@ -18,7 +18,7 @@
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
-                  a fully qualified identifier of the target extension point
+                  A fully qualified identifier of the target extension point.
                </documentation>
             </annotation>
          </attribute>
@@ -50,6 +50,11 @@
    </element>
 
    <element name="validator">
+      <annotation>
+         <documentation>
+            Declares a faceted project validator. The validator can be restricted to projects containing specific facets.
+         </documentation>
+      </annotation>
       <complexType>
          <choice>
             <element ref="facet" minOccurs="0" maxOccurs="unbounded"/>
@@ -57,7 +62,7 @@
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  The validator class name. Has to implement org.eclipse.wst.common.project.facet.core.IFacetedProjectValidator interface.
                </documentation>
                <appInfo>
                   <meta.attribute kind="java" basedOn="org.eclipse.wst.common.project.facet.core.IFacetedProjectValidator"/>
