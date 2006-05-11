@@ -97,11 +97,11 @@ public class ModuleMigratorManager {
 
 			private boolean needsComponentMigration(IProject aProj,boolean multiComps) throws CoreException {
 				
-			boolean needs = !migrated.contains(aProj);
+			boolean needs = true;
 			if (multiComps)
 				return (needs && multiComps);
 			else
-				return (aProj.findMember(StructureEdit.MODULE_META_FILE_NAME) != null) && 
+				return ((aProj.findMember(StructureEdit.MODULE_META_FILE_NAME) != null) || (aProj.findMember(".settings/.component") != null)) && 
 						(ProjectFacetsManager.create(aProj) == null) && needs;
 			}
 		};

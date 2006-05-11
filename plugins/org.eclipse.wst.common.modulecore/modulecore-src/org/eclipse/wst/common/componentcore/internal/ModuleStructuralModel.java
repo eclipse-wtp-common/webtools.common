@@ -211,8 +211,9 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 		}
 		if (resNeedsMigrating(res)) {
 			try {
-				if (!manager.isMigrating() && !ResourcesPlugin.getWorkspace().isTreeLocked())
+				if (!manager.isMigrating() && !ResourcesPlugin.getWorkspace().isTreeLocked()) {
 					manager.migrateOldMetaData(getProject(),multiComps);
+				}
 			} catch (CoreException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
