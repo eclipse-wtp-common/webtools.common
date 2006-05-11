@@ -174,7 +174,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	 * false, return the enabled non-incremental validators.
 	 */
 	public ValidatorMetaData[] getEnabledIncrementalValidators(boolean incremental) throws InvocationTargetException {
-		return getEnabledFullBuildValidators(false);
+		return getEnabledFullBuildValidators(incremental);
 	}
 
 	/**
@@ -193,6 +193,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 		if( !isDisableAllValidation() ){
 			ValidatorMetaData[] temp = new ValidatorMetaData[numberOfValidators()];
 			Iterator iterator = getBuildEnabledValidatorsMap().keySet().iterator();
+
 			
 			while (iterator.hasNext()) {
 				ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();

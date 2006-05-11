@@ -76,6 +76,8 @@ public class GlobalConfiguration extends ValidationConfiguration {
 	public void resetToDefault()  throws InvocationTargetException {
 		setDisableAllValidation(getDisableValidationDefault());
 		setEnabledValidators(getEnabledValidatorsDefault());
+		setEnabledManualValidators(getManualEnabledValidators());
+		setEnabledBuildValidators(getBuildEnabledValidators());
 		setCanProjectsOverride(getCanProjectsOverrideDefault());
 		setSaveAutomatically(getSaveAutomaticallyDefault());
     setDefaultDelegates(getValidators());
