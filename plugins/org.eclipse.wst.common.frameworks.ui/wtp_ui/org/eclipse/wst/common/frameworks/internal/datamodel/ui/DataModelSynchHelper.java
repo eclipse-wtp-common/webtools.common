@@ -218,6 +218,7 @@ public class DataModelSynchHelper implements IDataModelListener {
 							//may trigger an event that will cause this method to be called again.
 							Widget widget = currentWidget;
 							try {
+								ignoreModifyEvent = true;
 								if (currentWidget instanceof Text)
 									setWidgetValue(propertyName, flag, (Text) currentWidget);
 								else if (currentWidget instanceof Combo) {
