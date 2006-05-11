@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ResourceSetWorkbenchSynchronizer.java,v $$
- *  $$Revision: 1.2 $$  $$Date: 2005/02/15 23:04:14 $$ 
+ *  $$Revision: 1.3 $$  $$Date: 2006/05/11 17:42:38 $$ 
  */
 
 package org.eclipse.jem.util.emf.workbench;
@@ -79,10 +79,11 @@ public class ResourceSetWorkbenchSynchronizer implements IResourceChangeListener
 		currentProjectDelta = null;
 		if ((currentEventType == IResourceChangeEvent.PRE_CLOSE || currentEventType == IResourceChangeEvent.PRE_DELETE)
 				&& event.getResource().equals(getProject())) {
-			release();
 			notifyExtendersOfClose();
+			release();
 		}
 	}
+
 
 	protected void notifyExtendersIfNecessary() {
 		if (currentEventType != IResourceChangeEvent.POST_CHANGE || extenders == null || currentProjectDelta == null)
