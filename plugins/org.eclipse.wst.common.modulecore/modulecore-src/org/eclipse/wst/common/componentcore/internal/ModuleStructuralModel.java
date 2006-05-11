@@ -195,6 +195,10 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 			removeResource(res);
 			uri = (URI) URI.createURI(".settings/.component");
 			res = (WTPModulesResource)getResource(uri);
+			if (res == null || !res.isLoaded()) {
+				removeResource(res);
+				res = null;
+			}
 		}
 		return res;
 	}
