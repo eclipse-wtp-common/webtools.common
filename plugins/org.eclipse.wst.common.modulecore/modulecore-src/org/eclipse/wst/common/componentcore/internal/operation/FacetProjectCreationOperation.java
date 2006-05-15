@@ -123,7 +123,7 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 				IDataModel dm = DataModelFactory.createDataModel(new FacetInstallDataModelProvider());
 				dm.setProperty(IFacetDataModelProperties.FACET_ID, facetVersion.getProjectFacet().getId());
 				dm.setProperty(IFacetDataModelProperties.FACET_PROJECT_NAME, facetProj.getProject().getName());
-				dm.setProperty(IFacetDataModelProperties.FACET_VERSION_STR, facetVersion.getVersionString()); //$NON-NLS-1$
+				dm.setProperty(IFacetDataModelProperties.FACET_VERSION_STR, facetVersion.getVersionString());
 				actions.add(new IFacetedProject.Action(Action.Type.INSTALL, facetVersion, dm));
 			}
 		}
@@ -132,10 +132,8 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 			if (!actions.isEmpty())
 				facetProj.modify(actions, null);
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getLogger().logError(e);
 		}
-
 	}
 
 	public IFacetedProject createProject(IProgressMonitor monitor) throws CoreException {
@@ -165,7 +163,7 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 				IDataModel dm = DataModelFactory.createDataModel(new FacetInstallDataModelProvider());
 				dm.setProperty(IFacetDataModelProperties.FACET_ID, facetVersion.getProjectFacet().getId());
 				dm.setProperty(IFacetDataModelProperties.FACET_PROJECT_NAME, facetProj.getProject().getName());
-				dm.setProperty(IFacetDataModelProperties.FACET_VERSION_STR, facetVersion.getVersionString()); //$NON-NLS-1$
+				dm.setProperty(IFacetDataModelProperties.FACET_VERSION_STR, facetVersion.getVersionString()); 
 				actions.add(new IFacetedProject.Action(Action.Type.INSTALL, facetVersion, dm));
 			}
 		}
@@ -174,10 +172,8 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 			if (!actions.isEmpty())
 				facetProj.modify(actions, null);
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getLogger().logError(e);
 		}
-
 	}
 
 	public static void addDefaultFactets(IFacetedProject facetProj, IRuntime runtime) throws ExecutionException {
