@@ -368,12 +368,6 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 		return super.isSharedForWrite() || renderer.isSharedForWrite();
 	}
 
-	public boolean isLoaded() {
-		synchronized (this) {
-			return super.isLoaded();
-		}
-	}
-
 	public void load(Map options) throws IOException {
 		synchronized (this) {
 			if (isLoaded)
