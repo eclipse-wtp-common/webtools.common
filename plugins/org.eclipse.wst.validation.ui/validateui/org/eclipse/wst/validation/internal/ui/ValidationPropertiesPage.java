@@ -108,10 +108,12 @@ public class ValidationPropertiesPage extends PropertyPage {
 		public abstract boolean performOk() throws InvocationTargetException;
 
 		public boolean performDefaults() throws InvocationTargetException;
-
+		
 		public Composite getControl();
 
 		public abstract void dispose();
+
+		public abstract boolean performCancel();
 	}
 
 	public class InvalidPage implements IValidationPage {
@@ -169,6 +171,10 @@ public class ValidationPropertiesPage extends PropertyPage {
 			messageLabel.dispose();
 			//			layout.dispose();
 			composite.dispose();
+		}
+
+		public boolean performCancel() {
+			return true;
 		}
 	}
 
@@ -231,6 +237,10 @@ public class ValidationPropertiesPage extends PropertyPage {
 			//			data.dispose();
 			composite.dispose();
 		}
+
+		public boolean performCancel() {
+			return true;
+		}
 	}
 
 	public class ValidatorListPage implements IValidationPage {
@@ -240,7 +250,9 @@ public class ValidationPropertiesPage extends PropertyPage {
 		Label messageLabel = null;
 		TableViewer validatorList = null;
 		Button overrideGlobalButton = null;
+		boolean existingOverrideGlobalVal = false;
 		Button disableAllValidation = null;
+		boolean existingDisableAllValidation = false;
 		private Button enableAllButton = null;
 		private Button disableAllButton = null;
 		Label emptyRowPlaceholder = null;
@@ -437,6 +449,9 @@ public class ValidationPropertiesPage extends PropertyPage {
       oldDelegates =  new HashMap(pagePreferences.getDelegatingValidators());
 
 			createPage(parent);
+			
+			existingOverrideGlobalVal = overrideGlobalButton.getSelection();
+			existingDisableAllValidation = disableAllValidation.getSelection();
 		}
 		
 		private void setupTableColumns(Table table, TableViewer viewer) {
@@ -1071,6 +1086,12 @@ public class ValidationPropertiesPage extends PropertyPage {
 			overrideGlobalButton.dispose();
 			page.dispose();
 		}
+
+		public boolean performCancel() {
+			pagePreferences.setDoesProjectOverride(existingOverrideGlobalVal);
+			pagePreferences.setDisableAllValidation(existingDisableAllValidation);
+			return true;
+		}
 	}
 
 	/**
@@ -1160,6 +1181,11 @@ public class ValidationPropertiesPage extends PropertyPage {
 		} catch (Throwable exc) {
 			displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
 		}
+	}
+	
+	public boolean performCancel() {
+		_pageImpl.performCancel();
+		return true;
 	}
 
 	/**
