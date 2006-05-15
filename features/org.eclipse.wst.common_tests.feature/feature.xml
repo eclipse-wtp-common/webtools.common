@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.wst.common_tests.feature"
-      label="WST Common Feature Tests"
+      label="%featureName"
       version="1.5.0.qualifier"
-      provider-name="Eclipse.org">
+      provider-name="%providerName">
 
    <description>
       %description
    </description>
 
-   <license url="license.html">
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license url="%licenseURL">
       %license
    </license>
 
    <url>
-      <update label="Web Tools Platform (WTP) Updates" url="http://download.eclipse.org/webtools/updates/"/>
+      <update label="%updateSiteName" url="http://download.eclipse.org/webtools/updates/"/>
    </url>
 
    <requires>
