@@ -22,6 +22,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.Resource.Internal;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 
@@ -123,12 +124,18 @@ public class ExtendedEcoreUtil extends EcoreUtil {
 		return null;
 	}
 
+	/**
+	 * @deprecated No longer needed.
+	 */
 	public static void addLoadingTag(Resource resource) {
-		resource.eAdapters().add(IsLoadingDetector.INSTANCE);
+		//resource.eAdapters().add(IsLoadingDetector.INSTANCE);
 	}
 
+	/**
+	 * @deprecated No longer needed.
+	 */
 	public static void removeLoadingTag(Resource resource) {
-		resource.eAdapters().remove(IsLoadingDetector.INSTANCE);
+		//resource.eAdapters().remove(IsLoadingDetector.INSTANCE);
 	}
 
 	/**
@@ -140,13 +147,10 @@ public class ExtendedEcoreUtil extends EcoreUtil {
 	 * 
 	 * @see addLoadingTag(Resource)
 	 * @see removeLoadingTag(Resource)
-	 *  
+	 *  @deprecated use {@link Resource.Internal#isLoading()}
 	 */
 	public static boolean isLoading(Resource resource) {
-		if (resource != null) {
-			return resource.eAdapters().contains(IsLoadingDetector.INSTANCE);
-		}
-		return false;
+		return resource != null ? ((Resource.Internal)resource).isLoaded() : false; 
 	}
 
 	public static Adapter createAdapterForLoading(Adapter targetAdapter, EObject targetObject) {

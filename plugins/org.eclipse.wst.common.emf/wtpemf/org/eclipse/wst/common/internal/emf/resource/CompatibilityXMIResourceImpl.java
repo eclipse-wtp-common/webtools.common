@@ -168,14 +168,12 @@ public class CompatibilityXMIResourceImpl extends XMIResourceImpl implements Com
 	 *      java.util.Map)
 	 */
 	public final void doLoad(InputStream inputStream, Map options) throws IOException {
-		ExtendedEcoreUtil.addLoadingTag(this);
-		try {
-			basicDoLoad(inputStream, options);
-		} finally {
-			ExtendedEcoreUtil.removeLoadingTag(this);
-		}
+		basicDoLoad(inputStream, options);
 	}
 
+	/**
+	 * @deprecated Use {@link #doLoad(InputStream, Map)} instead.
+	 */
 	protected void basicDoLoad(InputStream inputStream, Map options) throws IOException {
 		super.doLoad(inputStream, options);
 	}
