@@ -166,6 +166,8 @@ public final class FacetsSelectionPage
         {
             this.panel.setDefaultFacetsForRuntime( this.initialSetDefaultFacetsForRuntime );
         }
+        
+        setPageComplete( this.panel.isSelectionValid() );
 
         this.panel.addSelectionChangedListener
         (

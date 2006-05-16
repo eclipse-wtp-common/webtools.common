@@ -1252,7 +1252,7 @@ public final class ProjectFacetsManagerImpl
         
         fv.setProjectFacet( f );
         fv.setVersionString( ver );
-        fv.setPlugin( config.getContributor().getName() );
+        fv.setPluginId( config.getContributor().getName() );
         
         final IConfigurationElement[] children = config.getChildren();
         

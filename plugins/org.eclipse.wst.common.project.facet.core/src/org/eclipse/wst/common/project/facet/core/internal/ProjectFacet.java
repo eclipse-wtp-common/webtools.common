@@ -133,10 +133,17 @@ public final class ProjectFacet
         throws VersionFormatException, CoreException
         
     {
-        final Comparator comp = getVersionComparator( true, VERSION_ADAPTER );
-        final Object max = Collections.max( this.versions, comp );
-        
-        return (IProjectFacetVersion) max;
+        if( this.versions.size() > 0 )
+        {
+            final Comparator comp = getVersionComparator( true, VERSION_ADAPTER );
+            final Object max = Collections.max( this.versions, comp );
+            
+            return (IProjectFacetVersion) max;
+        }
+        else
+        {
+            return null;
+        }
     }
     
     public IProjectFacetVersion getLatestSupportedVersion( final IRuntime r )

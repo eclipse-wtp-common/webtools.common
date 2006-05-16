@@ -22,9 +22,11 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -117,6 +119,7 @@ public final class FacetedProject
     private final IProject project;
     private final CopyOnWriteSet facets;
     private final CopyOnWriteSet fixed;
+    private final Map unknownFacets = new HashMap();
     private final CopyOnWriteSet targetedRuntimes;
     private String primaryRuntime;
     IFile f;
@@ -446,7 +449,11 @@ public final class FacetedProject
         throws CoreException
         
     {
-        setTargetedRuntimes( Collections.singleton( runtime ), monitor );
+        final Set runtimes
+            = runtime == null 
+              ? Collections.EMPTY_SET : Collections.singleton( runtime );
+        
+        setTargetedRuntimes( runtimes, monitor );
     }
     
     public Set getTargetedRuntimes()
@@ -1387,6 +1394,7 @@ public final class FacetedProject
             
             this.facets.clear();
             this.fixed.clear();
+            this.unknownFacets.clear();
             this.targetedRuntimes.clear();
             this.primaryRuntime = null;
             
@@ -1418,19 +1426,16 @@ public final class FacetedProject
                 else if( name.equals( EL_FIXED ) )
                 {
                     final String id = e.getAttribute( ATTR_FACET );
+                    final IProjectFacet f;
                     
-                    if( ! ProjectFacetsManager.isProjectFacetDefined( id ) )
+                    if( ProjectFacetsManager.isProjectFacetDefined( id ) )
                     {
-                        final String msg
-                            = NLS.bind( Resources.facetNotDefined, id );
-                        
-                        final IStatus st = FacetCorePlugin.createErrorStatus( msg );
-                        
-                        throw new CoreException( st );
+                        f = ProjectFacetsManager.getProjectFacet( id );
                     }
-                    
-                    final IProjectFacet f
-                        = ProjectFacetsManager.getProjectFacet( id );
+                    else
+                    {
+                        f = createUnknownFacet( id );
+                    }
                     
                     this.fixed.add( f );
                 }
@@ -1439,36 +1444,67 @@ public final class FacetedProject
                     final String id = e.getAttribute( ATTR_FACET );
                     final String version = e.getAttribute( ATTR_VERSION );
                     
-                    if( ! ProjectFacetsManager.isProjectFacetDefined( id ) )
+                    final IProjectFacet f;
+                    
+                    if( ProjectFacetsManager.isProjectFacetDefined( id ) )
                     {
-                        final String msg
-                            = NLS.bind( Resources.facetNotDefined, id );
-                        
-                        final IStatus st = FacetCorePlugin.createErrorStatus( msg );
-                        
-                        throw new CoreException( st );
+                        f = ProjectFacetsManager.getProjectFacet( id );
+                    }
+                    else
+                    {
+                        f = createUnknownFacet( id );
                     }
                     
-                    final IProjectFacet f
-                        = ProjectFacetsManager.getProjectFacet( id );
+                    final IProjectFacetVersion fv;
                     
-                    if( ! f.hasVersion( version ) )
+                    if( f.hasVersion( version ) )
                     {
-                        final String msg
-                            = NLS.bind( Resources.facetVersionNotDefined, id,
-                                        version );
-                        
-                        final IStatus st = FacetCorePlugin.createErrorStatus( msg );
-                        
-                        throw new CoreException( st );
+                        fv = f.getVersion( version );
                     }
-                    
-                    final IProjectFacetVersion fv = f.getVersion( version );
-                    
+                    else
+                    {
+                        fv = createUnknownFacetVersion( f, version );
+                    }
+                        
                     this.facets.add( fv );
                 }
             }
         }
+    }
+    
+    private ProjectFacet createUnknownFacet( final String id )
+    {
+        ProjectFacet f = (ProjectFacet) this.unknownFacets.get( id );
+        
+        if( f == null )
+        {
+            f = new ProjectFacet();
+            f.setId( id );
+            f.setLabel( id );
+            
+            this.unknownFacets.put( id, f );
+        }
+        
+        return f;
+    }
+    
+    private ProjectFacetVersion createUnknownFacetVersion( final IProjectFacet f,
+                                                           final String version )
+    {
+        final ProjectFacetVersion fv;
+        
+        if( f.hasVersion( version ) )
+        {
+            fv = (ProjectFacetVersion) f.getVersion( version );
+        }
+        else
+        {
+            fv = new ProjectFacetVersion();
+            fv.setProjectFacet( (ProjectFacet) f );
+            fv.setVersionString( version );
+        }
+        
+        return fv;
     }
     
     private static Element parse( final File f )

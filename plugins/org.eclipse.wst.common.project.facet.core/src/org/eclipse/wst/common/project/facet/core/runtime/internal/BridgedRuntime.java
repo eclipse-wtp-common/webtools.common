@@ -65,6 +65,11 @@ public final class BridgedRuntime
 
     public synchronized boolean supports( final IProjectFacetVersion fv )
     {
+        if( fv.getPluginId() == null )
+        {
+            return true;
+        }
+        
         final List comp = this.stub.getRuntimeComponents();
         
         if( this.supported == null || ! this.composition.equals( comp ) )

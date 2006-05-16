@@ -48,6 +48,16 @@ public interface IProjectFacetVersion
     String getVersionString();
     
     /**
+     * Returns the id of the plugin that defines this project facet version. 
+     * This method will return <code>null</code> if this version is not defined. 
+     * 
+     * @return the id of the plugin that defines this project facet version, or
+     *   <code>null</code>
+     */
+    
+    String getPluginId();
+    
+    /**
      * Returns the constraint that has to be satisfied prior to installing this
      * project facet.
      * 

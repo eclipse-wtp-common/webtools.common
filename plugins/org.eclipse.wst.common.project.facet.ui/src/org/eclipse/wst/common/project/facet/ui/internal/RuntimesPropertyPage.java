@@ -192,7 +192,11 @@ public class RuntimesPropertyPage extends PropertyPage
                             = RuntimesPropertyPage.this.project;
                         
                         fpj.setTargetedRuntimes( targeted, null );
-                        fpj.setPrimaryRuntime( primary, null );
+                        
+                        if( primary != null )
+                        {
+                            fpj.setPrimaryRuntime( primary, null );
+                        }
                     }
                     catch( CoreException e )
                     {

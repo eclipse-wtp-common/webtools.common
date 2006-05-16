@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -545,7 +546,7 @@ public final class FacetsSelectionPanel
     
     public boolean isSelectionValid()
     {
-        return this.problems.isOK();
+        return ( this.problems.getSeverity() != IStatus.ERROR );
     }
     
     public Set getActions()
@@ -723,19 +724,27 @@ public final class FacetsSelectionPanel
 
     public void setSelectedProjectFacets( final Set sel )
     {
+        final List toCheck = new ArrayList();
+        final List needsCategoryRefresh = new ArrayList();
+        
         for( Iterator itr = sel.iterator(); itr.hasNext(); )
         {
             final IProjectFacetVersion fv 
                 = (IProjectFacetVersion) itr.next();
             
             final IProjectFacet f = fv.getProjectFacet();
-            final TableRowData trd = findTableRowData( f );
+            final TableRowData trd = findTableRowData( f, true );
 
+            if( fv.getPluginId() == null )
+            {
+                trd.addUnknownVersion( fv );
+            }
+            
             trd.setSelected( true );
             trd.setCurrentVersion( fv );
-
-            this.tree.setChecked( trd, true );
-            refreshCategoryState( trd );
+            
+            toCheck.add( trd );
+            needsCategoryRefresh.add( trd );
         }
         
         for( Iterator itr = this.data.iterator(); itr.hasNext(); )
@@ -745,13 +754,19 @@ public final class FacetsSelectionPanel
             if( trd.isSelected() && ! sel.contains( trd.getCurrentVersion() ) )
             {
                 trd.setSelected( false );
-
-                this.tree.setChecked( trd, false );
-                refreshCategoryState( trd );
+                needsCategoryRefresh.add( trd );
             }
         }
 
         refresh();
+        
+        this.tree.setCheckedElements( toCheck.toArray() );
+        
+        for( Iterator itr = needsCategoryRefresh.iterator(); itr.hasNext(); )
+        {
+            refreshCategoryState( (TableRowData) itr.next() );
+        }
+        
         updateValidationDisplay();
     }
     
@@ -803,7 +818,7 @@ public final class FacetsSelectionPanel
         for( Iterator itr = fixed.iterator(); itr.hasNext(); )
         {
             final IProjectFacet f = (IProjectFacet) itr.next();
-            final TableRowData trd = findTableRowData( f );
+            final TableRowData trd = findTableRowData( f, true );
             
             this.fixed.add( f );
             trd.setFixed( true );
@@ -1086,7 +1101,7 @@ public final class FacetsSelectionPanel
         this.actions.removeAll( toremove );
         this.actions.addAll( toadd );
         
-        this.problems = ProjectFacetsManager.check( this.base, this.actions );
+        this.problems = calculateProblems();
         this.problemsView.refresh();
 
         if( this.problems.isOK() )
@@ -1105,6 +1120,46 @@ public final class FacetsSelectionPanel
         }
 
         notifyProjectFacetsListeners();
+    }
+    
+    private IStatus calculateProblems()
+    {
+        IStatus st = ProjectFacetsManager.check( this.base, this.actions );
+        
+        for( Iterator itr = this.base.iterator(); itr.hasNext(); )
+        {
+            final IProjectFacetVersion fv = (IProjectFacetVersion) itr.next();
+            final IProjectFacet f = fv.getProjectFacet();
+            
+            String msg = null; 
+            
+            if( f.getPluginId() == null )
+            {
+                msg = NLS.bind( Resources.facetNotFound, f.getId() );
+            }
+            else if( fv.getPluginId() == null )
+            {
+                msg = NLS.bind( Resources.facetVersionNotFound, f.getId(), 
+                                fv.getVersionString() );
+            }
+            
+            if( msg != null )
+            {
+                final IStatus sub
+                    = new Status( IStatus.WARNING, FacetUiPlugin.PLUGIN_ID, 0,
+                                  msg, null );
+                
+                final IStatus[] existing = st.getChildren();
+                final IStatus[] modified = new IStatus[ existing.length + 1 ];
+                System.arraycopy( existing, 0, modified, 0, existing.length );
+                modified[ existing.length ] = sub;
+                
+                st = new MultiStatus( FacetUiPlugin.PLUGIN_ID, 0, modified, 
+                                      "", null ); //$NON-NLS-1$
+            }
+        }
+        
+        return st;
     }
     
     private void refresh()
@@ -1429,8 +1484,14 @@ public final class FacetsSelectionPanel
 
         return false;
     }
-
+    
     private TableRowData findTableRowData( final IProjectFacet f )
+    {
+        return findTableRowData( f, false );
+    }
+
+    private TableRowData findTableRowData( final IProjectFacet f,
+                                           final boolean createIfNecessary )
     {
         for( int i = 0, n = this.data.size(); i < n; i++ )
         {
@@ -1439,6 +1500,20 @@ public final class FacetsSelectionPanel
             if( trd.getProjectFacet() == f )
             {
                 return trd;
+            }
+        }
+        
+        if( createIfNecessary )
+        {
+            try
+            {
+                final TableRowData trd = new TableRowData( f );
+                this.data.add( trd );
+                return trd;
+            }
+            catch( CoreException e )
+            {
+                FacetUiPlugin.log( e );
             }
         }
 
@@ -1659,6 +1734,37 @@ public final class FacetsSelectionPanel
             }
 
             return list;
+        }
+        
+        public void addUnknownVersion( final IProjectFacetVersion fv )
+        {
+            try
+            {
+                final Comparator c = this.f.getVersionComparator();
+                boolean added = false;
+                
+                for( int i = 0, n = this.versions.size(); i < n; i++ )
+                {
+                    final IProjectFacetVersion x 
+                        = (IProjectFacetVersion) this.versions.get( i );
+                    
+                    if( c.compare( x.getVersionString(), fv.getVersionString() ) < 0 )
+                    {
+                        this.versions.add( i, fv );
+                        added = true;
+                        break;
+                    }
+                }
+                
+                if( ! added )
+                {
+                    this.versions.add( fv );
+                }
+            }
+            catch( CoreException e )
+            {
+                FacetUiPlugin.log( e );
+            }
         }
 
         public IProjectFacetVersion getCurrentVersion()
@@ -2083,13 +2189,20 @@ public final class FacetsSelectionPanel
 
     {
         private Image errorImage;
+        private Image warningImage;
 
         public ProblemsLabelProvider()
         {
             final Bundle bundle = Platform.getBundle( FacetUiPlugin.PLUGIN_ID );
-            final URL url = bundle.getEntry( "images/error.gif" ); //$NON-NLS-1$
+            
+            URL url = bundle.getEntry( "images/error.gif" ); //$NON-NLS-1$
 
             this.errorImage
+                = ImageDescriptor.createFromURL( url ).createImage();
+
+            url = bundle.getEntry( "images/warning.gif" ); //$NON-NLS-1$
+
+            this.warningImage
                 = ImageDescriptor.createFromURL( url ).createImage();
         }
 
@@ -2102,7 +2215,16 @@ public final class FacetsSelectionPanel
         public Image getColumnImage( final Object element,
                                      final int column )
         {
-            return this.errorImage;
+            final IStatus st = (IStatus) element;
+            
+            if( st.getSeverity() == IStatus.ERROR )
+            {
+                return this.errorImage;
+            }
+            else
+            {
+                return this.warningImage;
+            }
         }
 
         public boolean isLabelProperty( final Object obj,
@@ -2114,6 +2236,7 @@ public final class FacetsSelectionPanel
         public void dispose()
         {
             this.errorImage.dispose();
+            this.warningImage.dispose();
         }
 
         public void addListener( final ILabelProviderListener listener ) {}
@@ -2182,6 +2305,8 @@ public final class FacetsSelectionPanel
         public static String couldNotSelectPreset;
         public static String couldNotDeselectFixedFacetTitle;
         public static String couldNotDeselectFixedFacetMessage;
+        public static String facetNotFound;
+        public static String facetVersionNotFound;
         
         static
         {

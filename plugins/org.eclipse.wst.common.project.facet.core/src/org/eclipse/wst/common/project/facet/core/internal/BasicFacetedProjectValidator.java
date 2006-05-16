@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectValidator;
+import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.internal.UnknownRuntime;
@@ -74,6 +75,30 @@ public final class BasicFacetedProjectValidator
                 }
             }
         }
+        
+        // Does the project contain any unknown facets or versions?
+        
+        for( Iterator itr = fproj.getProjectFacets().iterator(); itr.hasNext(); )
+        {
+            final IProjectFacetVersion fv = (IProjectFacetVersion) itr.next();
+            final IProjectFacet f = fv.getProjectFacet();
+            
+            if( f.getPluginId() == null )
+            {
+                final String msg 
+                    = NLS.bind( Resources.facetNotFound, f.getId() );
+                
+                fproj.createWarningMarker( msg );
+            }
+            else if( fv.getPluginId() == null )
+            {
+                final String msg
+                    = NLS.bind( Resources.facetVersionNotFound, f.getId(),
+                                fv.getVersionString() );
+                
+                fproj.createWarningMarker( msg );
+            }
+        }
     }
     
     private static final class Resources
@@ -83,6 +108,8 @@ public final class BasicFacetedProjectValidator
     {
         public static String runtimeNotDefined;
         public static String facetNotSupported;
+        public static String facetNotFound;
+        public static String facetVersionNotFound;
         
         static
         {

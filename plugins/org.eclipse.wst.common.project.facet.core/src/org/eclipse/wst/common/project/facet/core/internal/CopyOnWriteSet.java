@@ -99,12 +99,17 @@ public final class CopyOnWriteSet
         return this.baseReadOnly;
     }
     
-    private void copy()
+    private boolean copy()
     {
         if( this.baseReadOnly != null )
         {
             this.base = new HashSet( this.base );
             this.baseReadOnly = null;
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
     
@@ -124,8 +129,14 @@ public final class CopyOnWriteSet
         
         public void remove()
         {
-            copy();
-            this.itr.remove();
+            if( copy() )
+            {
+                CopyOnWriteSet.this.base.remove( this.current );
+            }
+            else
+            {
+                this.itr.remove();
+            }
         }
 
         public boolean hasNext()

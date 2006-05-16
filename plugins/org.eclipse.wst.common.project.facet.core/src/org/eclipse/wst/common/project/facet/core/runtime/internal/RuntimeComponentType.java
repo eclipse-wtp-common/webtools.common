@@ -90,10 +90,17 @@ public final class RuntimeComponentType
         throws VersionFormatException, CoreException
         
     {
-        final Comparator comp = getVersionComparator( true, VERSION_ADAPTER );
-        final Object max = Collections.max( this.versions, comp );
-        
-        return (IRuntimeComponentVersion) max;
+        if( this.versions.size() > 0 )
+        {
+            final Comparator comp = getVersionComparator( true, VERSION_ADAPTER );
+            final Object max = Collections.max( this.versions, comp );
+            
+            return (IRuntimeComponentVersion) max;
+        }
+        else
+        {
+            return null;
+        }
     }
     
     public Object getAdapter( final Class type )

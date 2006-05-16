@@ -71,6 +71,11 @@ public final class Runtime
 
     public synchronized boolean supports( final IProjectFacetVersion fv )
     {
+        if( fv.getPluginId() == null )
+        {
+            return true;
+        }
+        
         if( this.supported == null )
         {
             this.supported = RuntimeManagerImpl.getSupportedFacets( this.components );

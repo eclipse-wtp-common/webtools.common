@@ -90,7 +90,12 @@ public final class ProjectFacetVersion
         this.constraint = constraint;
     }
     
-    void setPlugin( final String plugin )
+    public String getPluginId()
+    {
+        return this.plugin;
+    }
+    
+    void setPluginId( final String plugin )
     {
         this.plugin = plugin;
     }
@@ -192,7 +197,7 @@ public final class ProjectFacetVersion
         {
             final IProjectFacet f = (IProjectFacet) itr.next();
             
-            if( f.getVersions().contains( this ) )
+            if( this.facet == f )
             {
                 return true;
             }

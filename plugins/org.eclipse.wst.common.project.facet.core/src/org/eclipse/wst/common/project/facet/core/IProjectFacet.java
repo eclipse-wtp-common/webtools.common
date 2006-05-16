@@ -46,9 +46,11 @@ public interface IProjectFacet
     String getId();
     
     /**
-     * Returns the id of the plugin that defines this project facet.
+     * Returns the id of the plugin that defines this project facet. This method
+     * will return <code>null</code> if this facet is not defined. 
      * 
-     * @return the id of the plugin that defines this project facet
+     * @return the id of the plugin that defines this project facet, or
+     *   <code>null</code>
      */
     
     String getPluginId();
