@@ -451,7 +451,7 @@ private class ValidatorListPage implements IValidationPage {
 		TableColumn validatorColumn = new TableColumn(table, SWT.NONE);
         validatorColumn.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.VALIDATOR));
         validatorColumn.setResizable(false);
-        validatorColumn.setWidth(240);
+        validatorColumn.setWidth(280);
         TableColumn manualColumn = new TableColumn(table, SWT.NONE);
         manualColumn.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.MANUAL));
         manualColumn.setResizable(false);
