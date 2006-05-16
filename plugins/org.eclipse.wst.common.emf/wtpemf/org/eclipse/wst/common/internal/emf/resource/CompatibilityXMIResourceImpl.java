@@ -21,7 +21,6 @@ import org.eclipse.emf.ecore.xmi.XMLHelper;
 import org.eclipse.emf.ecore.xmi.XMLLoad;
 import org.eclipse.emf.ecore.xmi.XMLSave;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
-import org.eclipse.wst.common.internal.emf.utilities.ExtendedEcoreUtil;
 import org.eclipse.wst.common.internal.emf.utilities.IDUtil;
 
 
