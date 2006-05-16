@@ -35,6 +35,8 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.MenuAdapter;
+import org.eclipse.swt.events.MenuEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -49,6 +51,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
@@ -571,6 +575,11 @@ private class ValidatorListPage implements IValidationPage {
 
       public void mouseDown(MouseEvent e)
       {
+        if (e.button != 1)
+        {
+          return;
+        }
+        
         TableItem tableItem = validatorsTable.getItem(new Point(e.x, e.y));
         if (tableItem == null || tableItem.isDisposed())
         {
@@ -606,8 +615,11 @@ private class ValidatorListPage implements IValidationPage {
         columnClicked(columnNumber);          
       }});
     
-		
-		enableAllButton = new Button(validatorGroup, SWT.PUSH);
+    
+    
+    validatorsTable.setMenu(createContextMenu());
+
+    enableAllButton = new Button(validatorGroup, SWT.PUSH);
 		enableAllButton.setLayoutData(new GridData());
 		enableAllButton.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.PREF_BUTTON_ENABLEALL));
 		enableAllButton.addSelectionListener(new SelectionAdapter() {
@@ -643,7 +655,7 @@ private class ValidatorListPage implements IValidationPage {
 		// Have to set the tab order or only the first checkbox in a Composite can
 		// be tab-ed to. (Seems to apply only to checkboxes. Have to use the arrow
 		// key to navigate the checkboxes.)
-		validatorGroup.setTabList(new Control[]{overrideButton, /*valWhenBuildButton, valWhenAutoBuildButton,*/ validatorList.getTable(), enableAllButton, disableAllButton});
+		validatorGroup.setTabList(new Control[]{overrideButton, disableAllValidation, saveButton, validatorList.getTable(), enableAllButton, disableAllButton});
 
 		updateWidgets();
 
@@ -652,6 +664,43 @@ private class ValidatorListPage implements IValidationPage {
 		return composite;
 	}
   
+  protected Menu createContextMenu()
+  {
+    final Menu menu = new Menu(validatorsTable.getShell(), SWT.POP_UP);
+    final MenuItem manualItem = new MenuItem (menu, SWT.CHECK);
+    manualItem.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.PREF_MNU_MANUAL));
+    final MenuItem buildItem = new MenuItem (menu, SWT.CHECK);
+    buildItem.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.PREF_MNU_BUILD));
+    final MenuItem settingsItem = new MenuItem (menu, SWT.PUSH);
+    settingsItem.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.PREF_MNU_SETTINGS));
+    
+    class MenuItemListener extends SelectionAdapter
+    {
+      public void widgetSelected(SelectionEvent e)
+      {
+        MenuItem menuItem = (MenuItem) e.getSource();
+        int index = menu.indexOf(menuItem) + 1;
+        columnClicked(index);
+      }   
+    }
+    MenuItemListener listener = new MenuItemListener();
+    manualItem.addSelectionListener(listener);
+    buildItem.addSelectionListener(listener);
+    settingsItem.addSelectionListener(listener);
+
+    menu.addMenuListener(new MenuAdapter() {
+      public void menuShown(MenuEvent e)
+      {
+        IStructuredSelection selection = (IStructuredSelection) validatorList.getSelection();
+        ValidatorMetaData vmd = (ValidatorMetaData) selection.getFirstElement();
+        manualItem.setSelection(vmd.isManualValidation());
+        buildItem.setSelection(vmd.isBuildValidation());
+        settingsItem.setEnabled(vmd.isDelegating());
+      }});
+    
+    return menu;
+  }
+
   protected void columnClicked(int columnToEdit)
   {
     IStructuredSelection selection = (IStructuredSelection) validatorList.getSelection();

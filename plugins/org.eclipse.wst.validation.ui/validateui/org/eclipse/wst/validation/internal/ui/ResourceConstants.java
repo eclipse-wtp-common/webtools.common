@@ -68,7 +68,10 @@ public interface ResourceConstants {
 	/* package */static final String PREF_BUTTON_OVERRIDE = "PREF_BUTTON_OVERRIDE"; //$NON-NLS-1$
 	/* package */static final String PREF_BUTTON_FULL = "PREF_BUTTON_FULL"; //$NON-NLS-1$
 	/* package */static final String PREF_LBL_MAXMSGS = "PREF_LBL_MAXMSGS"; //$NON-NLS-1$
-	/* package */static final String PROP_BUTTON_OVERRIDE = "PROP_BUTTON_OVERRIDE"; //$NON-NLS-1$
+  /* package */static final String PREF_MNU_MANUAL = "PREF_MNU_MANUAL"; //$NON-NLS-1$
+  /* package */static final String PREF_MNU_BUILD = "PREF_MNU_BUILD"; //$NON-NLS-1$
+  /* package */static final String PREF_MNU_SETTINGS = "PREF_MNU_SETTINGS"; //$NON-NLS-1$
+  /* package */static final String PROP_BUTTON_OVERRIDE = "PROP_BUTTON_OVERRIDE"; //$NON-NLS-1$
 	/* package */static final String PROP_BUTTON_FULL = "PROP_BUTTON_FULL"; //$NON-NLS-1$
 	/* package */static final String PROP_BUTTON_SELECTALL = "PROP_BUTTON_SELECTALL"; //$NON-NLS-1$
 	/* package */static final String PROP_BUTTON_DESELECTALL = "PROP_BUTTON_DESELECTALL"; //$NON-NLS-1$

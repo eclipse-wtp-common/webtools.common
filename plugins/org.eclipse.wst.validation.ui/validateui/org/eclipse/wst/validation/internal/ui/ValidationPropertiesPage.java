@@ -1242,4 +1242,11 @@ public class ValidationPropertiesPage extends PropertyPage {
 	protected Button getDefaultsButton() {
 		return super.getDefaultsButton();
 	}
+	
+	 public void mouseDown(MouseEvent e) {
+		if (e.button != 1) {
+			return;
+		}
+	}
+
 }
