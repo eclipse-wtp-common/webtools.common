@@ -688,7 +688,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 			// Have to set the tab order or only the first checkbox in a Composite can
 			// be tab-ed to. (Seems to apply only to checkboxes. Have to use the arrow
 			// key to navigate the checkboxes.)
-			validatorGroup.setTabList(new Control[]{overrideGlobalButton, validatorList.getTable(), enableAllButton, disableAllButton});
+			validatorGroup.setTabList(new Control[]{overrideGlobalButton,disableAllValidation, validatorList.getTable(), enableAllButton, disableAllButton});
 
 			updateWidgets();
 
