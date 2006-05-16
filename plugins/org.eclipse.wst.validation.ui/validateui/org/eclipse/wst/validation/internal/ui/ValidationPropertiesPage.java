@@ -38,6 +38,8 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.MenuAdapter;
+import org.eclipse.swt.events.MenuEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -54,6 +56,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
@@ -598,6 +602,10 @@ public class ValidationPropertiesPage extends PropertyPage {
 
         public void mouseDown(MouseEvent e)
         {
+          if (e.button != 1) {
+            return;
+          }
+
           // Handles mouse clicks in the table.
           TableItem tableItem = validatorsTable.getItem(new Point(e.x, e.y));
           if (tableItem == null || tableItem.isDisposed())
@@ -634,7 +642,7 @@ public class ValidationPropertiesPage extends PropertyPage {
           columnClicked(columnNumber);          
         }});
       
-	        
+      validatorsTable.setMenu(createContextMenu());
 			
 			validatorList.setInput(pagePreferences.getValidators());
 			
@@ -801,6 +809,43 @@ public class ValidationPropertiesPage extends PropertyPage {
 			}
 		}
 
+    protected Menu createContextMenu()
+    {
+      final Menu menu = new Menu(validatorsTable.getShell(), SWT.POP_UP);
+      final MenuItem manualItem = new MenuItem (menu, SWT.CHECK);
+      manualItem.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.PREF_MNU_MANUAL));
+      final MenuItem buildItem = new MenuItem (menu, SWT.CHECK);
+      buildItem.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.PREF_MNU_BUILD));
+      final MenuItem settingsItem = new MenuItem (menu, SWT.PUSH);
+      settingsItem.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.PREF_MNU_SETTINGS));
+      
+      class MenuItemListener extends SelectionAdapter
+      {
+        public void widgetSelected(SelectionEvent e)
+        {
+          MenuItem menuItem = (MenuItem) e.getSource();
+          int index = menu.indexOf(menuItem) + 1;
+          columnClicked(index);
+        }   
+      }
+      MenuItemListener listener = new MenuItemListener();
+      manualItem.addSelectionListener(listener);
+      buildItem.addSelectionListener(listener);
+      settingsItem.addSelectionListener(listener);
+
+      menu.addMenuListener(new MenuAdapter() {
+        public void menuShown(MenuEvent e)
+        {
+          IStructuredSelection selection = (IStructuredSelection) validatorList.getSelection();
+          ValidatorMetaData vmd = (ValidatorMetaData) selection.getFirstElement();
+          manualItem.setSelection(vmd.isManualValidation());
+          buildItem.setSelection(vmd.isBuildValidation());
+          settingsItem.setEnabled(vmd.isDelegating());
+        }});
+      
+      return menu;
+    }
+    
     protected void columnClicked(int columnToEdit)
     {
       IStructuredSelection selection = (IStructuredSelection) validatorList.getSelection();
@@ -1242,11 +1287,4 @@ public class ValidationPropertiesPage extends PropertyPage {
 	protected Button getDefaultsButton() {
 		return super.getDefaultsButton();
 	}
-	
-	 public void mouseDown(MouseEvent e) {
-		if (e.button != 1) {
-			return;
-		}
-	}
-
 }

@@ -107,7 +107,7 @@ public class DelegatingValidatorPreferencesDialog extends Dialog
     comboLabel.setLayoutData(new GridData());
     comboLabel.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.DELEGATES_COMBO_LABEL));
     
-    Combo combo = new Combo(group, SWT.NONE);
+    Combo combo = new Combo(group, SWT.READ_ONLY);
     GridData comboGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
     combo.setLayoutData(comboGridData);
 
