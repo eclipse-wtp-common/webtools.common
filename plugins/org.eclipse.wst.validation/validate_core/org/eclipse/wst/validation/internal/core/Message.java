@@ -164,11 +164,23 @@ public class Message implements IMessage {
 				bundle = ResourceBundle.getBundle(getBundleName(), locale, classLoader);
 			}
 		} catch (MissingResourceException e) {
-			e.printStackTrace();
+			//try to  load the bundle from the validation framework plugin
+			bundle = getFrameworkBundle(locale);
 		}
 		return bundle;
 	}
 
+	private ResourceBundle getFrameworkBundle(Locale locale) {
+		ResourceBundle bundle = null;
+		try {
+			bundle = ResourceBundle.getBundle(getBundleName(), locale, this.getClass().getClassLoader());
+			
+		} catch (MissingResourceException e) {
+			e.printStackTrace();
+		}
+		return bundle;
+	}
+	
 	/**
 	 * @see IMessage#getBundleName()
 	 */
