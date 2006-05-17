@@ -193,7 +193,7 @@ class TimerQueue implements Runnable {
 
 	synchronized void start() {
 		if (running) {
-			throw new RuntimeException(WTPCommonUIResourceHandler.TimerQueue_ERROR_0); //$NON-NLS-1$
+			throw new RuntimeException(WTPCommonUIResourceHandler.TimerQueue_ERROR_0);
 		}
 		Thread timerThread = new Thread(this, "TimerQueue");//$NON-NLS-1$
 		try {

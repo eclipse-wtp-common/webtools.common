@@ -120,8 +120,8 @@ public class DMWizardPageExtensionManager {
 				return;
 			}
 			if (!parentElement.allowsExtendedPagesAfter()) {
-				Logger.getLogger().logError(WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WizardPageExtensionManager_UI_0, new Object[]{parentElement.getPageID()})); //$NON-NLS-1$
-				Logger.getLogger().logError(WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WizardPageExtensionManager_UI_1, new Object[]{newElement.getPageID()})); //$NON-NLS-1$
+				Logger.getLogger().logError(WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WizardPageExtensionManager_UI_0, new Object[]{parentElement.getPageID()}));
+				Logger.getLogger().logError(WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WizardPageExtensionManager_UI_1, new Object[]{newElement.getPageID()}));
 				return;
 			}
 			TreeSet set = (TreeSet) pageMap.get(parentElement);
@@ -196,7 +196,7 @@ public class DMWizardPageExtensionManager {
 		for (Iterator iter = treeSet.iterator(); iter.hasNext();) {
 			DMWizardPageElement element = (DMWizardPageElement) iter.next();
 			if (alreadyVistedList.contains(element)) {
-				Logger.getLogger().logError(WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WizardPageExtensionManager_UI_2, new Object[]{element.getPageID(), DMWizardPageElement.ATT_PAGE_INSERTION_ID})); //$NON-NLS-1$
+				Logger.getLogger().logError(WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WizardPageExtensionManager_UI_2, new Object[]{element.getPageID(), DMWizardPageElement.ATT_PAGE_INSERTION_ID})); 
 				return;
 			}
 			if (allPageElementsList.contains(element)) {
@@ -250,7 +250,7 @@ public class DMWizardPageExtensionManager {
 		}
 		if (insertNotFound) {
 			Logger logger = Logger.getLogger();
-			logger.logError(WTPCommonUIResourceHandler.WizardPageExtensionManager_UI_3); //$NON-NLS-1$
+			logger.logError(WTPCommonUIResourceHandler.WizardPageExtensionManager_UI_3);
 		}
 
 	}
@@ -259,7 +259,7 @@ public class DMWizardPageExtensionManager {
 		Logger logger = Logger.getLogger();
 		for (int i = 0; i < nonSyncedPageElementList.size(); i++) {
 			DMWizardPageElement element = (DMWizardPageElement) nonSyncedPageElementList.get(i);
-			logger.logError(WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WizardPageExtensionManager_UI_4, new Object[]{element.pageInsertionID, element.getPageID(), element.pluginID})); //$NON-NLS-1$
+			logger.logError(WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WizardPageExtensionManager_UI_4, new Object[]{element.pageInsertionID, element.getPageID(), element.pluginID}));
 		}
 		nonSyncedPageElementList.clear();
 

@@ -188,7 +188,7 @@ public class Timer {
 	 */
 	public void setDelay(int delay) {
 		if (delay < 0) {
-			String msg = WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.Timer_UI_0, new Object[]{Integer.toString(delay)}); //$NON-NLS-1$
+			String msg = WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.Timer_UI_0, new Object[]{Integer.toString(delay)});
 			throw new IllegalArgumentException(msg);
 		}
 		this.delay = delay;
@@ -202,7 +202,7 @@ public class Timer {
 	 */
 	public void setInitialDelay(int initialDelay) {
 		if (initialDelay < 0) {
-			String msg = WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.Timer_UI_1, new Object[]{Integer.toString(initialDelay)}); //$NON-NLS-1$
+			String msg = WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.Timer_UI_1, new Object[]{Integer.toString(initialDelay)});
 			throw new IllegalArgumentException(msg);
 		}
 		this.initialDelay = initialDelay;

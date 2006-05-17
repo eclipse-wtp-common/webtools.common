@@ -67,7 +67,7 @@ public class DMWizardPageElement extends AbstractRegistryDescriptor implements C
     
     if( idList != null )
     {
-      String[] dataModelIDs = idList.split( " *");
+      String[] dataModelIDs = idList.split( " *"); //$NON-NLS-1$
     
       for( int index = 0; index < dataModelIDs.length; index++ )
       {

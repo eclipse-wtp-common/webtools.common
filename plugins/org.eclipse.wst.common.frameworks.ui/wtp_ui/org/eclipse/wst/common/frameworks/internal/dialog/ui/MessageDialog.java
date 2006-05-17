@@ -482,7 +482,7 @@ public class MessageDialog extends Dialog
     StringBuffer sb = new StringBuffer();
     for (int i = 0; i < nesting; i++)
     {
-      sb.append("  ");
+      sb.append("  "); //$NON-NLS-1$
     }
     sb.append(status.getMessage());
     list.add(sb.toString());
@@ -500,7 +500,7 @@ public class MessageDialog extends Dialog
     }
         
     String    tabChars    = repeat( ' ', nesting * 2 );
-    String    messageLine = tabChars + status.getMessage() + System.getProperty("line.separator");
+    String    messageLine = tabChars + status.getMessage() + System.getProperty("line.separator"); //$NON-NLS-1$
     Throwable except      = status.getException();
     
     text.append( messageLine );
@@ -511,7 +511,7 @@ public class MessageDialog extends Dialog
       
       for( int index = 0; index < trace.length; index++ )
       {
-        text.append( tabChars + "    " + trace[index] + System.getProperty("line.separator") );
+        text.append( tabChars + "    " + trace[index] + System.getProperty("line.separator") ); //$NON-NLS-1$ //$NON-NLS-2$
       }
     }
     

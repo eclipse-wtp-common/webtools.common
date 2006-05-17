@@ -130,7 +130,7 @@ public class WTPProjectUtilities {
 			newNatures[newsize++] = prevNatures[i];
 		}
 		if (!matchfound)
-			throw new CoreException(new Status(IStatus.ERROR, WTPCommonPlugin.PLUGIN_ID, 0, "The nature id " + natureId + " does not exist on the project " + project.getName(), null)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			throw new CoreException(new Status(IStatus.ERROR, WTPCommonPlugin.PLUGIN_ID, 0, "The nature id " + natureId + " does not exist on the project " + project.getName(), null)); //$NON-NLS-1$ //$NON-NLS-2$
 		String[] temp = newNatures;
 		newNatures = new String[newsize];
 		System.arraycopy(temp, 0, newNatures, 0, newsize);

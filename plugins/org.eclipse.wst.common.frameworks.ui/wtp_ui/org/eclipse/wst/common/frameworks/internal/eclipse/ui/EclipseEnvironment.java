@@ -44,8 +44,8 @@ public class EclipseEnvironment implements IEnvironment
     uriFactory_      = new SimpleURIFactory();
     statusHandler_   = statusHandler;
     
-    uriFactory_.registerScheme( "platform", eclipseScheme );
-    uriFactory_.registerScheme( "file", fileScheme );
+    uriFactory_.registerScheme( "platform", eclipseScheme ); //$NON-NLS-1$
+    uriFactory_.registerScheme( "file", fileScheme ); //$NON-NLS-1$
   }
   
   /**

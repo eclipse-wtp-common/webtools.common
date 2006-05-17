@@ -59,7 +59,7 @@ public abstract class WTPPlugin extends Plugin implements IMsgLogger {
 	}
 	public static boolean isPlatformCaseSensitive() {
 		return Platform.OS_MACOSX.equals(Platform.getOS()) ? false : new
-				java.io.File("a").compareTo(new java.io.File("A")) != 0;
+				java.io.File("a").compareTo(new java.io.File("A")) != 0;  //$NON-NLS-1$//$NON-NLS-2$
 	}
 
 	public abstract String getPluginID();

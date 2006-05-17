@@ -123,7 +123,7 @@ public class WTPUIPlugin extends AbstractUIPlugin {
     
     public static void log( final Throwable e )
     {
-        final String msg = e.getMessage() + "";
+        final String msg = e.getMessage() + ""; //$NON-NLS-1$
         log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, e ) );
     }
 
