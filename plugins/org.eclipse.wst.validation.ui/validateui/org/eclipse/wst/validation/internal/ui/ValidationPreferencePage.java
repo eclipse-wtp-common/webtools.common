@@ -35,6 +35,8 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.MenuAdapter;
 import org.eclipse.swt.events.MenuEvent;
 import org.eclipse.swt.events.MouseAdapter;
@@ -618,6 +620,16 @@ private class ValidatorListPage implements IValidationPage {
     
     
     validatorsTable.setMenu(createContextMenu());
+    validatorsTable.addFocusListener(new FocusAdapter(){
+
+      public void focusGained(FocusEvent e)
+      {
+        super.focusGained(e);
+        if (validatorsTable.getSelectionCount() == 0)
+        {
+          validatorsTable.select(0);
+        }
+      }});
 
     enableAllButton = new Button(validatorGroup, SWT.PUSH);
 		enableAllButton.setLayoutData(new GridData());
