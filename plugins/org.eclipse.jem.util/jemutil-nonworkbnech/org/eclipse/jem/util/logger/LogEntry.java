@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2005 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
+ * Copyright (c) 2005, 2006 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 /*
  *  $RCSfile: LogEntry.java,v $
- *  $Revision: 1.4 $  $Date: 2006/01/20 19:30:40 $ 
+ *  $Revision: 1.5 $  $Date: 2006/05/17 20:13:45 $ 
  */
 package org.eclipse.jem.util.logger;
 
