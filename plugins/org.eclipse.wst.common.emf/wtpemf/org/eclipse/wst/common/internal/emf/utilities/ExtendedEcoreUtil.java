@@ -253,7 +253,7 @@ public class ExtendedEcoreUtil extends EcoreUtil {
 	public static void checkProxy(EObject object) throws DanglingHREFException {
 		if (object == null || !object.eIsProxy())
 			return;
-		String msg = WFTUtilsResourceHandler.getString(WFTUtilsResourceHandler.DANGLING_HREF_ERROR_, new Object[]{((InternalEObject) object).eProxyURI()}); //$NON-NLS-1$
+		String msg = WFTUtilsResourceHandler.getString(WFTUtilsResourceHandler.DANGLING_HREF_ERROR_, new Object[]{((InternalEObject) object).eProxyURI()});
 		throw new DanglingHREFException(msg);
 	}
 

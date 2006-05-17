@@ -42,8 +42,8 @@ public class AdapterFactoryDescriptor extends AbstractRegistryDescriptor impleme
 
 		packageURI = element.getAttribute(AdapterFactoryRegistry.PACKAGE_URI);
 		id = element.getAttribute(AdapterFactoryRegistry.ID);
-		Assert.isNotNull(packageURI, EMFWorkbenchEditResourceHandler.AdapterFactoryDescriptor_ERROR_0); //$NON-NLS-1$
-		Assert.isNotNull(id, EMFWorkbenchEditResourceHandler.getString(EMFWorkbenchEditResourceHandler.AdapterFactoryDescriptor_ERROR_1, new Object[]{element.getDeclaringExtension().getNamespace()})); //$NON-NLS-1$
+		Assert.isNotNull(packageURI, EMFWorkbenchEditResourceHandler.AdapterFactoryDescriptor_ERROR_0);
+		Assert.isNotNull(id, EMFWorkbenchEditResourceHandler.getString(EMFWorkbenchEditResourceHandler.AdapterFactoryDescriptor_ERROR_1, new Object[]{element.getDeclaringExtension().getNamespace()}));
 
 		readViewIDs();
 		this.loadOrder = loadOrderCounter++;

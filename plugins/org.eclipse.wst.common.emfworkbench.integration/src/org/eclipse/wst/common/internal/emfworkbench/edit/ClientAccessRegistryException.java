@@ -75,7 +75,7 @@ public class ClientAccessRegistryException extends RuntimeException {
 				}
 				processed = true;
 			}
-			s.println(EMFWorkbenchEditResourceHandler.getString(EMFWorkbenchEditResourceHandler.ClientAccessRegistryException_UI_0, new Object[]{new Integer(baseSet.size()).toString()})); //$NON-NLS-1$
+			s.println(EMFWorkbenchEditResourceHandler.getString(EMFWorkbenchEditResourceHandler.ClientAccessRegistryException_UI_0, new Object[]{new Integer(baseSet.size()).toString()}));
 
 			for (Iterator possibleCulpritsItr = baseSet.iterator(); possibleCulpritsItr.hasNext();) {
 				snapshot = (Snapshot) possibleCulpritsItr.next();
@@ -129,7 +129,7 @@ public class ClientAccessRegistryException extends RuntimeException {
 
 	public String toString() {
 		StringBuffer result = new StringBuffer(super.toString()).append("\r\n"); //$NON-NLS-1$
-		result.append(EMFWorkbenchEditResourceHandler.getString(EMFWorkbenchEditResourceHandler.ClientAccessRegistryException_UI_1, new Object[]{getType()})); //$NON-NLS-1$
+		result.append(EMFWorkbenchEditResourceHandler.getString(EMFWorkbenchEditResourceHandler.ClientAccessRegistryException_UI_1, new Object[]{getType()}));
 		//		if (this.badReferenceLocation != null) {
 		//			result.append("The invalid access occurred somewhere in the following stack
 		// trace.").append("\n");

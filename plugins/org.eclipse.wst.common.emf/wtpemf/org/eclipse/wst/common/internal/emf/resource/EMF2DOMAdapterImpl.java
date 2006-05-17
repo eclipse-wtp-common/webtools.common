@@ -1165,7 +1165,7 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	}
 
 	protected void handleInvalidMultiNodes(String nodeName) {
-		throw new IllegalStateException(WFTUtilsResourceHandler.getString(WFTUtilsResourceHandler.EMF2DOMAdapterImpl_ERROR_0, new Object[]{nodeName})); //$NON-NLS-1$
+		throw new IllegalStateException(WFTUtilsResourceHandler.getString(WFTUtilsResourceHandler.EMF2DOMAdapterImpl_ERROR_0, new Object[]{nodeName}));
 	}
 
 	/**

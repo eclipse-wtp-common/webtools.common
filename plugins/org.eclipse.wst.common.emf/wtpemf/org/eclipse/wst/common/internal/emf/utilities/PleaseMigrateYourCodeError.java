@@ -20,6 +20,6 @@ public class PleaseMigrateYourCodeError extends Error {
 
 	//TODO Delete me
 	public PleaseMigrateYourCodeError() {
-		super(WFTUtilsResourceHandler.PleaseMigrateYourCodeError_ERROR_0); //$NON-NLS-1$
+		super(WFTUtilsResourceHandler.PleaseMigrateYourCodeError_ERROR_0);
 	}
 }

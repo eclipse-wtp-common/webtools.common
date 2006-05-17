@@ -26,7 +26,7 @@ import org.eclipse.emf.ecore.EcorePackage;
  * @author: Administrator
  */
 public class DefaultFeatureValueConverter implements FeatureValueConverter {
-	private static final String FAILED_CONVERSION_PATTERN = WFTUtilsResourceHandler.Failed_to_convert__0__to___ERROR_; //$NON-NLS-1$ = "Failed to convert {0} to {1}."
+	private static final String FAILED_CONVERSION_PATTERN = WFTUtilsResourceHandler.Failed_to_convert__0__to___ERROR_;
 
 	/**
 	 * DefaultFeatureValueConverter constructor comment.
@@ -45,7 +45,7 @@ public class DefaultFeatureValueConverter implements FeatureValueConverter {
 			return Boolean.valueOf((String) aValue);
 		if (aValue instanceof Boolean)
 			return aValue;
-		return failedToConvert(aValue, WFTUtilsResourceHandler.Boolean_UI_); //$NON-NLS-1$ = "Boolean"
+		return failedToConvert(aValue, WFTUtilsResourceHandler.Boolean_UI_);
 	}
 
 	/**
@@ -58,7 +58,7 @@ public class DefaultFeatureValueConverter implements FeatureValueConverter {
 			return Byte.valueOf((String) aValue);
 		if (aValue instanceof Byte)
 			return aValue;
-		return failedToConvert(aValue, WFTUtilsResourceHandler.Byte_UI_); //$NON-NLS-1$ = "Byte"
+		return failedToConvert(aValue, WFTUtilsResourceHandler.Byte_UI_);
 	}
 
 	/**
@@ -71,7 +71,7 @@ public class DefaultFeatureValueConverter implements FeatureValueConverter {
 			return new Character(((String) aValue).charAt(0));
 		if (aValue instanceof Character)
 			return aValue;
-		return failedToConvert(aValue, WFTUtilsResourceHandler.Character_UI_); //$NON-NLS-1$ = "Character"
+		return failedToConvert(aValue, WFTUtilsResourceHandler.Character_UI_);
 	}
 
 	/**
@@ -89,7 +89,7 @@ public class DefaultFeatureValueConverter implements FeatureValueConverter {
 		}
 		if (aValue instanceof Double)
 			return aValue;
-		return failedToConvert(aValue, WFTUtilsResourceHandler.Double_UI_); //$NON-NLS-1$ = "Double"
+		return failedToConvert(aValue, WFTUtilsResourceHandler.Double_UI_);
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class DefaultFeatureValueConverter implements FeatureValueConverter {
 			literal = (EEnumLiteral) aValue;
 
 		if (literal == null)
-			return failedToConvert(aValue, WFTUtilsResourceHandler.Enumeration_UI_); //$NON-NLS-1$ = "Enumeration"
+			return failedToConvert(aValue, WFTUtilsResourceHandler.Enumeration_UI_);
 
 		return literal.getInstance();
 	}
@@ -128,7 +128,7 @@ public class DefaultFeatureValueConverter implements FeatureValueConverter {
 		}
 		if (aValue instanceof Float)
 			return aValue;
-		return failedToConvert(aValue, WFTUtilsResourceHandler.Float_UI_); //$NON-NLS-1$ = "Float"
+		return failedToConvert(aValue, WFTUtilsResourceHandler.Float_UI_);
 	}
 
 	/**
@@ -146,7 +146,7 @@ public class DefaultFeatureValueConverter implements FeatureValueConverter {
 		}
 		if (aValue instanceof Integer)
 			return aValue;
-		return failedToConvert(aValue, WFTUtilsResourceHandler.Integer_UI_); //$NON-NLS-1$ = "Integer"
+		return failedToConvert(aValue, WFTUtilsResourceHandler.Integer_UI_);
 	}
 
 	/**
@@ -173,7 +173,7 @@ public class DefaultFeatureValueConverter implements FeatureValueConverter {
 		}
 		if (aValue instanceof Long)
 			return aValue;
-		return failedToConvert(aValue, WFTUtilsResourceHandler.Long_UI_); //$NON-NLS-1$ = "Long"
+		return failedToConvert(aValue, WFTUtilsResourceHandler.Long_UI_);
 	}
 
 	/**
@@ -184,7 +184,7 @@ public class DefaultFeatureValueConverter implements FeatureValueConverter {
 	protected Object convertToMofObject(Object aValue) {
 		if (aValue instanceof EObject)
 			return aValue;
-		return failedToConvert(aValue, WFTUtilsResourceHandler.MofObject_UI_); //$NON-NLS-1$ = "MofObject"
+		return failedToConvert(aValue, WFTUtilsResourceHandler.MofObject_UI_);
 	}
 
 	/**
@@ -202,7 +202,7 @@ public class DefaultFeatureValueConverter implements FeatureValueConverter {
 		}
 		if (aValue instanceof Short)
 			return aValue;
-		return failedToConvert(aValue, WFTUtilsResourceHandler.Short_UI_); //$NON-NLS-1$ = "Short"
+		return failedToConvert(aValue, WFTUtilsResourceHandler.Short_UI_);
 	}
 
 	/**

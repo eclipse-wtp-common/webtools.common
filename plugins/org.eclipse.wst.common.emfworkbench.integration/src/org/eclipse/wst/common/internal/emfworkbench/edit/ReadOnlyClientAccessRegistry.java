@@ -29,7 +29,7 @@ public class ReadOnlyClientAccessRegistry extends ClientAccessRegistry {
 		if (!registry.containsKey(accessorKey)) {
 			this.registry.put(accessorKey, null);
 		} else
-			throw new ClientAccessRegistryException(EMFWorkbenchEditResourceHandler.ClientAccessRegistry_ERROR_0, accessorKey); //$NON-NLS-1$
+			throw new ClientAccessRegistryException(EMFWorkbenchEditResourceHandler.ClientAccessRegistry_ERROR_0, accessorKey);
 	}
 
 	public synchronized void release(Object accessorKey) {
