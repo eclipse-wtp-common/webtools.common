@@ -223,6 +223,11 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 			IFile file = getProject().getFile(archivePath);
 			if(file.exists())
 				loc  = file.getLocation();
+			else {
+				file = ResourcesPlugin.getWorkspace().getRoot().getFile(archivePath);
+				if(file.exists())
+					loc = file.getLocation();
+			}
 			
 			// this is not a file on the local filesystem
 			if(loc == null)  
