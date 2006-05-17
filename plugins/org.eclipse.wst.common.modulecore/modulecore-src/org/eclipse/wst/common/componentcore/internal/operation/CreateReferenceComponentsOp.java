@@ -131,15 +131,16 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 
 
 	private boolean srcComponentContainsReference(IVirtualComponent sourceComp, IVirtualComponent comp) {
-		if (sourceComp == null || comp == null)
-			return false;
-		IVirtualReference[] existingReferences = sourceComp.getReferences();
-		if (existingReferences != null) {
-			for (int i = 0; i < existingReferences.length; i++) {
-				if (existingReferences[i] != null && existingReferences[i].getReferencedComponent() != null) {
-					if (existingReferences[i].getReferencedComponent().getProject() != null && comp.getProject() != null) {
-						if (existingReferences[i].getReferencedComponent().getProject().equals(comp.getProject()))
-							return true;
+		if ((sourceComp != null && sourceComp.getProject() != null) && (comp != null && comp.getProject() != null)) {
+		
+			IVirtualReference[] existingReferences = sourceComp.getReferences();
+			IVirtualComponent referencedComponent = null;
+			if (existingReferences != null) {
+				for (int i = 0; i < existingReferences.length; i++) {
+					if (existingReferences[i] != null ) {
+						referencedComponent = existingReferences[i].getReferencedComponent();	
+						if (referencedComponent != null && referencedComponent.equals(comp)  ) 
+								return true;
 					}
 				}
 			}

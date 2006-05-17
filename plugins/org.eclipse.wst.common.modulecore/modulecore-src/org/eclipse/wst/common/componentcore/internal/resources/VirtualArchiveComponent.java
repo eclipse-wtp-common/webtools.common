@@ -24,10 +24,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.jem.util.logger.proxy.Logger;
-import org.eclipse.wst.common.componentcore.UnresolveableURIException;
-import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
@@ -197,7 +193,9 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 	public boolean equals(Object anOther) {
 		if (anOther instanceof VirtualArchiveComponent) {
 			VirtualArchiveComponent otherComponent = (VirtualArchiveComponent) anOther;
-			return getProject().equals(otherComponent.getProject()) && getName().equals(otherComponent.getName());
+			return getProject().equals(otherComponent.getProject()) && 
+					getName().equals(otherComponent.getName()) && 
+					isBinary() == otherComponent.isBinary();
 		}
 		return false;
 	}
@@ -217,19 +215,24 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 
 	public File getUnderlyingDiskFile() {
 		String osPath = "";
+		IPath loc = null;
 		if (getArchiveType().equals(VirtualArchiveComponent.VARARCHIVETYPE)) {
 			IPath resolvedpath = (IPath) getAdapter(VirtualArchiveComponent.ADAPTER_TYPE);
 			osPath = resolvedpath.toOSString();
-		} else {
-			String fileString = null;
-			try {
-				String name = "[" + getProject().getFullPath() + "]:" + getName();
-				fileString = ModuleURIUtil.getArchiveName(URI.createURI(name));
-			} catch (UnresolveableURIException e) {
-				Logger.getLogger().logError(e);
+		} else if(!archivePath.isAbsolute()) {
+			IFile file = getProject().getFile(archivePath);
+			if(file.exists())
+				loc  = file.getLocation();
+			
+			// this is not a file on the local filesystem
+			if(loc == null)  
+				return null;
+			else {
+				osPath = loc.toOSString();
 			}
-			IPath path = new Path(fileString);
-			osPath = path.toOSString();
+			
+		} else {
+			osPath = archivePath.toOSString();
 		}
 		File diskFile = new File(osPath);
 		return diskFile;

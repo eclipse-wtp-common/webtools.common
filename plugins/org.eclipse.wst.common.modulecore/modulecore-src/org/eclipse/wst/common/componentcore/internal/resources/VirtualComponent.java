@@ -400,7 +400,10 @@ public class VirtualComponent implements IVirtualComponent {
 	public boolean equals(Object anOther) { 
 		if(anOther instanceof IVirtualComponent) {
 			IVirtualComponent otherComponent = (IVirtualComponent) anOther;
-			return getProject()!=null && getProject().equals(otherComponent.getProject()) && getName().equals(otherComponent.getName());
+			return getProject() !=null && 
+					getProject().equals(otherComponent.getProject()) && 
+					getName().equals(otherComponent.getName()) && 
+					isBinary() == otherComponent.isBinary();
 		}
 		return false;
 	}
