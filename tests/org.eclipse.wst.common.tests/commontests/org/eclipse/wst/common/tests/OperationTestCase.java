@@ -10,6 +10,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -17,6 +18,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.datamodel.IWorkspaceRunnableWithStatus;
@@ -29,6 +31,8 @@ import org.eclipse.wst.common.frameworks.internal.datamodel.IWorkspaceRunnableWi
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public abstract class OperationTestCase extends BaseTestCase {
+
+	public static final String VALIDATOR_JOB_FAMILY = "validators";
 
 	public static String fileSep = System.getProperty("file.separator"); //$NON-NLS-1$
 
@@ -207,5 +211,15 @@ public abstract class OperationTestCase extends BaseTestCase {
 		if (status.isOK()) {
 			Assert.assertTrue("DataModel should be invalid:" + status.getMessage(), false); //$NON-NLS-1$
 		}
+	}
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		// Wait for all validation jobs to end before ending test....
+		IProject[] projects = ProjectUtility.getAllProjects();
+		for (int i = 0; i < projects.length; i++) {
+			IProject project = projects[i];
+			Platform.getJobManager().join(project.getName() + VALIDATOR_JOB_FAMILY,null);
+		}
+		
 	}
 }
