@@ -76,6 +76,12 @@ public class ArtifactEditOperationDataModelProvider extends AbstractDataModelPro
 		}
 		return module;
 	}
+	public boolean propertySet(String propertyName, Object propertyValue) {
+		boolean notify = super.propertySet(propertyName, propertyValue);
+		if (COMPONENT_NAME.equals(propertyName))
+			setProperty(PROJECT_NAME, propertyValue);
+		return notify;
+	}
 
 	public ArtifactEdit getArtifactEditForRead() {
 		WorkbenchComponent module = getWorkbenchModule();
