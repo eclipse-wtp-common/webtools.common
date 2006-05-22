@@ -40,6 +40,7 @@ public interface ICreateReferenceComponentsDataModelProperties {
 	 */
 	public static final String TARGET_COMPONENT_LIST = "ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT"; //$NON-NLS-1$
 
+	//TODO this should be a map
 	/**
 	 * Optional, deploy path for the dependent component, default is "/"
 	 */

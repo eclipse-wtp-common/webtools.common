@@ -8,7 +8,7 @@
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.wst.common.componentcore;
+package org.eclipse.wst.common.componentcore.internal;
 
 import java.util.ArrayList;
 import java.util.List;

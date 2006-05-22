@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.emf.common.command.BasicCommandStack;
 import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -25,6 +26,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jem.internal.util.emf.workbench.nls.EMFWorkbenchResourceHandler;
 import org.eclipse.jem.util.UIContextDetermination;
 import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
+import org.eclipse.wst.common.componentcore.internal.BinaryComponentHelper;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.internal.operations.IOperationHandler;
@@ -68,7 +70,9 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	private boolean isReadOnly;
 	private boolean isArtifactEditModelSelfManaged;
 
-
+	private boolean isBinary;
+	private BinaryComponentHelper binaryComponentHelper;
+	
 	/**
 	 * 
 	 */
@@ -100,11 +104,14 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 *         model
 	 */
 	public static ArtifactEdit getArtifactEditForRead(IVirtualComponent aModule) {
+		if(aModule.isBinary()){
+			return new ArtifactEdit(aModule);
+		}
 		if (isValidEditableModule(aModule)) {
 			IProject project = aModule.getProject();
 			ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(project);
 			return new ArtifactEdit(nature, aModule, true);
-		}
+		} 
 		return null;
 	}
 
@@ -129,7 +136,7 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 *         underlying content model
 	 */
 	public static ArtifactEdit getArtifactEditForWrite(IVirtualComponent aModule) {
-		if (isValidEditableModule(aModule)) {
+		if (!aModule.isBinary() && isValidEditableModule(aModule)) {
 			IProject project = aModule.getProject();
 			ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(project);
 			return new ArtifactEdit(nature, aModule, false);
@@ -209,12 +216,11 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 		if (aModule == null)
 			return false;
 		if (ModuleURIUtil.fullyQualifyURI(aModule.getProject()) == null)
-			return false;
-		/* and the containing project must be resolveable and accessible */
-		IProject project = aModule.getProject();
-		if (project == null || !project.isAccessible())
-			return false;
-		
+				return false;
+			/* and the containing project must be resolveable and accessible */
+			IProject project = aModule.getProject();
+			if (project == null || !project.isAccessible())
+				return false;
 		return true;
 	}
 
@@ -230,6 +236,23 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 		artifactEditModel = anArtifactEditModel;
 		isReadOnly = artifactEditModel.isReadOnly();
 		isArtifactEditModelSelfManaged = false;
+	}
+
+	
+	protected ArtifactEdit(IVirtualComponent aBinaryModule){
+		if(!aBinaryModule.isBinary()){
+			throw new RuntimeException("This constructor is only for binary components.");
+		}
+		binaryComponentHelper = initBinaryComponentHelper(aBinaryModule);
+		artifactEditModel = null;
+		isReadOnly = true;
+		isBinary = true;
+		isArtifactEditModelSelfManaged = true;
+		
+	}
+	
+	protected BinaryComponentHelper initBinaryComponentHelper(IVirtualComponent binaryModule) {
+		return null;
 	}
 
 	/**
@@ -410,7 +433,9 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 * @see org.eclipse.wst.common.componentcore.IEditModelHandler#dispose()
 	 */
 	public void dispose() {
-		if (isArtifactEditModelSelfManaged && artifactEditModel != null)
+		if(isBinary()){
+			binaryComponentHelper.releaseAccess(this);
+		} else if (isArtifactEditModelSelfManaged && artifactEditModel != null)
 			artifactEditModel.releaseAccess(this);
 	}
 
@@ -423,6 +448,9 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 * @return The root object of the underlying model
 	 */
 	public EObject getContentModelRoot() {
+		if(isBinary()){
+		   return binaryComponentHelper.getPrimaryRootObject();
+		} 
 		return artifactEditModel.getPrimaryRootObject();
 	}
 
@@ -435,8 +463,12 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 *            A non-null EditModelListener
 	 */
 	public void addListener(EditModelListener listener) {
-		if (artifactEditModel!=null && listener!=null)
-			artifactEditModel.addListener(listener);
+		if(isBinary()){
+			
+		} else {
+			if (artifactEditModel!=null && listener!=null)
+				artifactEditModel.addListener(listener);
+		}
 	}
 
 	/**
@@ -449,7 +481,10 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 *           
 	 */
 	public void removeListener(EditModelListener listener) {
-		artifactEditModel.removeListener(listener);
+		if(isBinary()){
+		} else {
+			artifactEditModel.removeListener(listener);
+		}
 	}
 
 	/**
@@ -463,6 +498,9 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 * @return
 	 */
 	public boolean hasEditModel(EditModel editModel) {
+		if(isBinary()){
+			return false;
+		}
 		return artifactEditModel == editModel;
 	}
 	/**
@@ -470,7 +508,9 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 * @return IProject - returns the project of the underlying workbench component.
 	 */
 	public IProject getProject() {
-		
+		if(isBinary()){
+			return null;
+		}
 		return getArtifactEditModel().getProject();
 	}
 	/**
@@ -478,7 +518,9 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 * @return IVirtualComponent - returns the underlying workbench component.
 	 */
 	public IVirtualComponent getComponent() {
-		
+		if(isBinary()){
+			return binaryComponentHelper.getComponent();
+		}
 		return getArtifactEditModel().getVirtualComponent();
 	}
 
@@ -486,13 +528,23 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 * @return The underlying managed edit model
 	 */
 	protected ArtifactEditModel getArtifactEditModel() {
+		if(isBinary()){
+			throwAttemptedBinaryEditModelAccess();
+		}
 		return artifactEditModel;
+	}
+	
+	protected BinaryComponentHelper getBinaryComponentHelper() {
+		return binaryComponentHelper;
 	}
 	
 	/**
 	 * @return The EMF command stack managed by the underlying editmodel
 	 */
 	public CommandStack getCommandStack() {
+		if(isBinary()){
+			return new BasicCommandStack();
+		}
 		return artifactEditModel.getCommandStack();
 	}
 	/**
@@ -500,12 +552,18 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 * @deprecated Use ((ArtifactEditModel)getAdapter(ArtifactEditModel.ADAPTER_TYPE)).deleteResource(aResource);
 	 */
 	public void deleteResource(Resource aResource) {
+		if(isBinary()){
+			throwAttemptedBinaryEditModelAccess();
+		}
 		artifactEditModel.deleteResource(aResource);
 	}
 	/**
 	 * @return The isDirty flag based the underlying editmodel's list of resources.
 	 */
 	public boolean isDirty() {
+		if(isBinary()){
+			return false;
+		}
 		return artifactEditModel.isDirty();
 	}
 
@@ -513,8 +571,16 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 		throw new IllegalStateException("Attempt to modify an ArtifactEdit instance facade that was loaded as read-only.");
 	}
 
+	protected void throwAttemptedBinaryEditModelAccess() {
+		throw new IllegalStateException("Attempt to modify an ArtifactEdit instance facade that was loaded as binary.");
+	}
+	
 	public boolean isReadOnly() {
 		return isReadOnly;
+	}
+
+	public boolean isBinary() {
+		return isBinary;
 	}
 	
 	/**
@@ -522,11 +588,15 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 * if they are not already.
 	 */
 	public void forceLoadKnownResources() {
-		List uris = getArtifactEditModel().getKnownResourceUris();
-		URI uri = null;
-		for (int i = 0; i < uris.size(); i++) {
-			uri = (URI) uris.get(i);
-			getArtifactEditModel().getResource(uri);
+		if(isBinary()){
+		
+		} else {
+			List uris = getArtifactEditModel().getKnownResourceUris();
+			URI uri = null;
+			for (int i = 0; i < uris.size(); i++) {
+				uri = (URI) uris.get(i);
+				getArtifactEditModel().getResource(uri);
+			}
 		}
 	}
 	
@@ -535,6 +605,9 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 * @deprecated Use ((ArtifactEditModel)getAdapter(ArtifactEditModel.ADAPTER_TYPE)).getResource(aResource);
 	 */
 	public Resource getResource(URI aUri) {
+		if(isBinary()){
+			return binaryComponentHelper.getResource(aUri);
+		}
 		return getArtifactEditModel().getResource(aUri);
 	}
 
