@@ -11,7 +11,6 @@
 package org.eclipse.wst.common.frameworks.internal.datamodel;
 
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModelPausibleOperationEvent;
 
 public class DataModelPausibleOperationEventImpl implements IDataModelPausibleOperationEvent {
 

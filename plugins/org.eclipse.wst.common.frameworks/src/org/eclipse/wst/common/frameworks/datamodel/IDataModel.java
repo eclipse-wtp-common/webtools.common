@@ -99,7 +99,7 @@ public interface IDataModel {
 	 * 
 	 * @return the default operation
 	 */
-	public IDataModelPausibleOperation getDefaultOperation();
+	public IDataModelOperation getDefaultOperation();
 
 	/**
 	 * <p>

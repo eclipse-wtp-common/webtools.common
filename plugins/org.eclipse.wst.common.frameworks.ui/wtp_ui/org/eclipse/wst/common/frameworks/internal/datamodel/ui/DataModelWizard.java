@@ -23,8 +23,8 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.wst.common.environment.IEnvironment;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModelPausibleOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
+import org.eclipse.wst.common.frameworks.internal.datamodel.IDataModelPausibleOperation;
 import org.eclipse.wst.common.frameworks.internal.eclipse.ui.EclipseEnvironment;
 import org.eclipse.wst.common.frameworks.internal.ui.ErrorDialog;
 import org.eclipse.wst.common.frameworks.internal.ui.PageGroupManager;
@@ -64,7 +64,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	 * @return returns the root operation for this wizard.
 	 */
 	protected IDataModelPausibleOperation getRootOperation() {
-		return getDataModel().getDefaultOperation();
+		return (IDataModelPausibleOperation)getDataModel().getDefaultOperation();
 	}
 
 	/**

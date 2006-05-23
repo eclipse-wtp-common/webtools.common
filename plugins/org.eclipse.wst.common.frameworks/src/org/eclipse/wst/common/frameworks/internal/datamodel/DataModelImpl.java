@@ -30,7 +30,6 @@ import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelPropertyDescriptor;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelListener;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModelPausibleOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
@@ -454,7 +453,7 @@ public final class DataModelImpl implements IDataModel, IDataModelListener {
 		return providerOp;
 	}
 
-	public IDataModelPausibleOperation getDefaultOperation() {
+	public IDataModelOperation getDefaultOperation() {
 		return new DataModelPausibleOperationImpl(getRawOperation());
 	}
 
