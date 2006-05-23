@@ -19,10 +19,10 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModelPausibleOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModelPausibleOperationEvent;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModelPausibleOperationListener;
+import org.eclipse.wst.common.frameworks.internal.datamodel.IDataModelPausibleOperation;
+import org.eclipse.wst.common.frameworks.internal.datamodel.IDataModelPausibleOperationEvent;
+import org.eclipse.wst.common.frameworks.internal.datamodel.IDataModelPausibleOperationListener;
 
 public class ExtendedOperationTests extends TestCase {
 
@@ -159,14 +159,14 @@ public class ExtendedOperationTests extends TestCase {
 		boolean shouldRollBack = false;
 
 		// Check regular executions
-		IDataModelPausibleOperation op = dm.getDefaultOperation();
+		IDataModelPausibleOperation op = (IDataModelPausibleOperation)dm.getDefaultOperation();
 		checkExecution(op, forwardExpectedResults, null, shouldRollBack);
 		checkUndo(op, undoExpectedResults, null);
 		checkRedo(op, forwardExpectedResults, null);
 		checkUndo(op, undoExpectedResults, null);
 
 		// Check executions with pausing & resuming
-		op = dm.getDefaultOperation();
+		op = (IDataModelPausibleOperation)dm.getDefaultOperation();
 		op.addOperationListener(pauseListener);
 		checkExecution(op, forwardExpectedResults, expectedPauseOrder, shouldRollBack);
 		checkUndo(op, undoExpectedResults, undoExpectedResults);
@@ -174,7 +174,7 @@ public class ExtendedOperationTests extends TestCase {
 		checkUndo(op, undoExpectedResults, undoExpectedResults);
 
 		// Check executions with pausing, resuming & rolling back.
-		op = dm.getDefaultOperation();
+		op = (IDataModelPausibleOperation)dm.getDefaultOperation();
 		op.addOperationListener(pauseListener);
 		shouldRollBack = true;
 		checkExecution(op, forwardExpectedResults, expectedPauseOrder, shouldRollBack);
