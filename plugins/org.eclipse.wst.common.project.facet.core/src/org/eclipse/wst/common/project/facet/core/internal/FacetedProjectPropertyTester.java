@@ -13,6 +13,7 @@ package org.eclipse.wst.common.project.facet.core.internal;
 
 import org.eclipse.core.expressions.PropertyTester;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
@@ -35,7 +36,18 @@ public final class FacetedProjectPropertyTester
     {
         try
         {
-            final IProject pj = (IProject) receiver;
+            if( ! ( receiver instanceof IResource ) )
+            {
+                return false;
+            }
+            
+            final IProject pj = ( (IResource) receiver ).getProject();
+            
+            if( pj == null )
+            {
+                return false;
+            }
+            
             final IFacetedProject fpj = ProjectFacetsManager.create( pj );
             
             if( fpj == null || value == null || ! ( value instanceof String ) )

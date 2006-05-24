@@ -71,7 +71,7 @@
   <extension point="org.eclipse.core.expressions.propertyTesters">
     <propertyTester
       id="org.eclipse.wst.common.project.facet.core.internal.FacetedProjectPropertyTester"
-      type="org.eclipse.core.resources.IProject"
+      type="org.eclipse.core.resources.IResource"
       namespace="org.eclipse.wst.common.project.facet.core"
       properties="projectFacet"
       class="org.eclipse.wst.common.project.facet.core.internal.FacetedProjectPropertyTester">
