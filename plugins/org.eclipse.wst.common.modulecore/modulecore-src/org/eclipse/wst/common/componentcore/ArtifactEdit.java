@@ -72,6 +72,7 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 
 	private boolean isBinary;
 	private BinaryComponentHelper binaryComponentHelper;
+	private final IProject project;
 	
 	/**
 	 * 
@@ -79,7 +80,7 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	protected ArtifactEdit() {
 		super();
 		artifactEditModel = null;
-		// TODO Auto-generated constructor stub
+		project = null;
 	}
 
 	/**
@@ -236,6 +237,8 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 		artifactEditModel = anArtifactEditModel;
 		isReadOnly = artifactEditModel.isReadOnly();
 		isArtifactEditModelSelfManaged = false;
+		
+		project = anArtifactEditModel.getProject();
 	}
 
 	
@@ -248,6 +251,7 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 		isReadOnly = true;
 		isBinary = true;
 		isArtifactEditModelSelfManaged = true;
+		project = null;
 		
 	}
 	
@@ -273,6 +277,7 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 			artifactEditModel = aNature.getArtifactEditModelForWrite(ModuleURIUtil.fullyQualifyURI(aModule.getProject()), this);
 		isReadOnly = toAccessAsReadOnly;
 		isArtifactEditModelSelfManaged = true;
+		project = aNature.getProject();
 	}
 
 	/**
@@ -324,6 +329,8 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 			artifactEditModel = nature.getArtifactEditModelForWrite(componentURI, this, projectType);
 		isReadOnly = toAccessAsReadOnly;
 		isArtifactEditModelSelfManaged = true;
+		
+		project = aProject;
 	}
 
 
@@ -511,7 +518,7 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 		if(isBinary()){
 			return null;
 		}
-		return getArtifactEditModel().getProject();
+		return project;
 	}
 	/**
 	 * 
