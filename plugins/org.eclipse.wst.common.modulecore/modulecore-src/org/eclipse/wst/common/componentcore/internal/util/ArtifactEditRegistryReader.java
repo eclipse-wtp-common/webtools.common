@@ -16,12 +16,14 @@
  */
 package org.eclipse.wst.common.componentcore.internal.util;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.ISafeRunnable;
+import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jem.util.RegistryReader;
 import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
@@ -35,69 +37,89 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
  * Generation - Code and Comments
  */
 public class ArtifactEditRegistryReader extends RegistryReader {
-	/**
-	 * @param registry
-	 * @param plugin
-	 * @param extensionPoint
-	 */
-	Hashtable typeRegistry = new Hashtable();
+
 	static final String ARTIFACT_EDIT_EXTENSION_POINT = "artifactedit"; //$NON-NLS-1$
 	static final String ARTIFACTEDIT = "artifactedit"; //$NON-NLS-1$
 	static final String TYPE = "typeID"; //$NON-NLS-1$
 	static final String ARTIFACTEDITCLASS = "class"; //$NON-NLS-1$
-	private static ArtifactEditRegistryReader instance;
+	
+	private static final ArtifactEditRegistryReader instance = new ArtifactEditRegistryReader();
+	
+	private final Map/*<String, ArtifactEditDescriptor>*/ descriptors = new HashMap();
+	
+	private final Map/*<ArtifactEditDescriptor, IArtifactEditFactory>*/ instances = new HashMap();
 	
 	/**
 	 * @return Returns the instance.
 	 */
 	public static ArtifactEditRegistryReader instance() {
-		if (instance == null) {
-			instance = new ArtifactEditRegistryReader();
-			instance.readRegistry();
-		}
+		/* already initialized and registry read by the time the class initializes */
 		return instance;
 	}
 	
 	public ArtifactEditRegistryReader() {
 		super(ModulecorePlugin.PLUGIN_ID, ARTIFACT_EDIT_EXTENSION_POINT);
+		SafeRunner.run(new ISafeRunnable() {
+
+			public void handleException(Throwable exception) { 
+				ModulecorePlugin.logError(0, exception.getMessage(), exception);
+			}
+
+			public void run() throws Exception {
+				readRegistry();				
+			}
+			
+		});
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
 	 * @see org.eclipse.wst.common.frameworks.internal.RegistryReader#readElement(org.eclipse.core.runtime.IConfigurationElement)
 	 */
 	public boolean readElement(IConfigurationElement element) {
-		if (!element.getName().equals(ARTIFACTEDIT))
-			return false;
-
-		IArtifactEditFactory staticCaller = null;
-		String typeID = null;
-		try {
-			typeID = element.getAttribute(TYPE);
-			staticCaller = (IArtifactEditFactory) element.createExecutableExtension(ARTIFACTEDITCLASS);
+		if (ARTIFACTEDIT.equals(element.getName())) {
 			
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			/* Because the only instance of this type is created from a static singleton 
+			 * field, and the registry is initialized in the constructor of this type, 
+			 * other threads cannot compete with readElement() for access to <i>descriptors</i> 
+			 */
+			String type = element.getAttribute(TYPE);
+			if(type != null)
+				descriptors.put(element.getAttribute(TYPE), new ArtifactEditDescriptor(element));
+			else 
+				ModulecorePlugin.logError(0, "No type attribute is specified for " + //$NON-NLS-1$
+										ModulecorePlugin.PLUGIN_ID + "." + ARTIFACT_EDIT_EXTENSION_POINT +  //$NON-NLS-1$ 
+										" extension in "  + element.getDeclaringExtension().getNamespaceIdentifier(), null);  //$NON-NLS-1$
+			return true;
 		}
-		if (staticCaller != null)
-			addArtifactEdit(typeID,staticCaller);
-		return true;
-	}
-
-	private void addArtifactEdit(String typeID, IArtifactEditFactory staticCaller) {
-		typeRegistry.put(typeID,staticCaller);
+		return false;
 	}
 	
-	public IArtifactEditFactory getArtifactEdit(String typeID) {
-		return (IArtifactEditFactory)typeRegistry.get(typeID);
-	}
+	public synchronized IArtifactEditFactory getArtifactEdit(String typeID) {
+		
+		ArtifactEditDescriptor descriptor = (ArtifactEditDescriptor) descriptors.get(typeID);
+		IArtifactEditFactory factory = null;
+		
+		if(descriptor != null) {  
+			
+			factory = (IArtifactEditFactory) instances.get(descriptor);
+			
+			if(factory == null) {
+				
+				if((factory = descriptor.createFactory()) != null) {
+					instances.put(descriptor, factory);
+				} else {
+					descriptors.remove(descriptor);
+				} 
+			} 
+		}
+		return factory;			
+	} 
 	
+	// TODO Don't like this because it's going to cycle every project facet for each project
 	public IArtifactEditFactory getArtifactEdit(IProject project) {
 		try {
 			IFacetedProject facetedProject = ProjectFacetsManager.create(project);
-			Iterator keys = typeRegistry.keySet().iterator();
+			Iterator keys = descriptors.keySet().iterator();
 			while (keys.hasNext()) {
 				String typeID = (String) keys.next();
 				try {
@@ -112,6 +134,51 @@ public class ArtifactEditRegistryReader extends RegistryReader {
 			//Just return null
 		}
 		return null;
+	} 
+	
+	public class ArtifactEditDescriptor {
+		
+		private final IConfigurationElement element;
+		private final String type;
+
+		public ArtifactEditDescriptor(IConfigurationElement configElement) {
+			element = configElement;
+			type = element.getAttribute(TYPE);
+		}
+		
+		/**
+		 * Create and return an {@link IArtifactEditFactory} for the given descriptor or 
+		 * <b>null</b> if there are problems instantiating the extension.
+		 * @return An {@link IArtifactEditFactory} for the given descriptor or 
+		 * <b>null</b> if there are problems instantiating the extension.
+		 */
+		public IArtifactEditFactory createFactory() {
+			
+			final IArtifactEditFactory[] factory = new IArtifactEditFactory[1];
+			
+			SafeRunner.run(new ISafeRunnable() {
+
+				public void handleException(Throwable exception) {
+					ModulecorePlugin.logError(0, exception.getMessage(), exception); 
+				}
+
+				public void run() throws Exception {
+					factory[0] = (IArtifactEditFactory) element.createExecutableExtension(ARTIFACTEDITCLASS); 
+				}
+				
+			});
+			
+			return factory[0]; 
+		}
+
+		/**
+		 * 
+		 * @return The type id of this ArtifactEdit definition 
+		 */
+		public String getType() {
+			return type;
+		} 
+		
 	}
 
 }
