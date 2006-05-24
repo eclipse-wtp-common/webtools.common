@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005, 2006 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,6 +41,7 @@ public final class VersionExpr
     private static final int SM2_ESCAPE = 2;
     
     private final Versionable versionable;
+    private final Comparator comparator;
     private final List subexprs;
     private final String usedInPlugin;
     
@@ -62,6 +63,7 @@ public final class VersionExpr
         
     {
         this.versionable = versionable;
+        this.comparator = versionable.getVersionComparator();
         this.subexprs = new ArrayList();
         this.usedInPlugin = usedInPlugin;
         
@@ -348,7 +350,7 @@ public final class VersionExpr
         }
     }
     
-    private IVersion parseVersion( final String str )
+    private String parseVersion( final String str )
     
         throws CoreException
         
@@ -364,7 +366,7 @@ public final class VersionExpr
         }
         else
         {
-            return this.versionable.getVersionInternal( str );
+            return this.versionable.getVersionInternal( str ).getVersionString();
         }
     }
     
@@ -372,6 +374,11 @@ public final class VersionExpr
     
         throws CoreException
         
+    {
+        return evaluate( ver.getVersionString() );
+    }
+    
+    public boolean evaluate( final String ver )
     {
         for( Iterator itr = this.subexprs.iterator(); itr.hasNext(); )
         {
@@ -421,7 +428,7 @@ public final class VersionExpr
         if( isSingleVersionMatch() || isSimpleAllowNewer() )
         {
             final Range range = (Range) this.subexprs.get( 0 );
-            return range.startVersion.getVersionString();
+            return range.startVersion;
         }
         else
         {
@@ -450,12 +457,11 @@ public final class VersionExpr
             
             if( r.isSingleVersion() )
             {
-                return r.startVersion.getVersionString();
+                return r.startVersion;
             }
             else if( r.endVersion == null && r.includesStartVersion )
             {
-                return NLS.bind( Resources.versionOrNewer, 
-                                 r.startVersion.getVersionString() );
+                return NLS.bind( Resources.versionOrNewer, r.startVersion );
             }
         }
         else
@@ -491,7 +497,7 @@ public final class VersionExpr
                         }
                     }
                     
-                    buf.append( r.startVersion.getVersionString() );
+                    buf.append( r.startVersion );
                 }
                 
                 return buf.toString();
@@ -511,32 +517,26 @@ public final class VersionExpr
         return new CoreException( st );
     }
     
-    private static final class Range
+    private final class Range
     {
-        public IVersion startVersion = null;
+        public String startVersion = null;
         public boolean includesStartVersion = false;
-        public IVersion endVersion = null;
+        public String endVersion = null;
         public boolean includesEndVersion = false;
         
         public boolean isSingleVersion()
         {
-            return this.startVersion == this.endVersion &&
+            return this.startVersion.equals( this.endVersion ) &&
                    this.includesStartVersion == this.includesEndVersion == true;
         }
         
-        public boolean evaluate( final IVersion version )
-        
-            throws CoreException
-            
+        public boolean evaluate( final String version )
         {
-            final Comparator comp 
-                = version.getVersionable().getVersionComparator();
+            final Comparator comp = VersionExpr.this.comparator;
         
             if( this.startVersion != null )
             {
-                final int res 
-                    = comp.compare( version.getVersionString(), 
-                                    this.startVersion.getVersionString() );
+                final int res = comp.compare( version, this.startVersion ); 
                 
                 if( ! ( res > 0 || ( res == 0 && this.includesStartVersion ) ) )
                 {
@@ -546,9 +546,7 @@ public final class VersionExpr
             
             if( this.endVersion != null )
             {
-                final int res 
-                    = comp.compare( version.getVersionString(), 
-                                    this.endVersion.getVersionString() );
+                final int res = comp.compare( version, this.endVersion );
                 
                 if( ! ( res < 0 || ( res == 0 && this.includesEndVersion ) ) )
                 {
@@ -561,10 +559,10 @@ public final class VersionExpr
         
         public String toString()
         {
-            if( this.startVersion == this.endVersion &&
+            if( this.startVersion.equals( this.endVersion ) &&
                 this.includesStartVersion == this.includesEndVersion == true )
             {
-                return this.startVersion.getVersionString();
+                return this.startVersion;
             }
             else
             {
@@ -573,7 +571,7 @@ public final class VersionExpr
                 if( this.startVersion != null )
                 {
                     buf.append( this.includesStartVersion ? '[' : '(' );
-                    buf.append( this.startVersion.getVersionString() );
+                    buf.append( this.startVersion );
                 }
                 
                 if( this.endVersion != null )
@@ -583,7 +581,7 @@ public final class VersionExpr
                         buf.append( '-' );
                     }
                     
-                    buf.append( this.endVersion.getVersionString() );
+                    buf.append( this.endVersion );
                     buf.append( this.includesEndVersion ? ']' : ')' );
                 }
                 

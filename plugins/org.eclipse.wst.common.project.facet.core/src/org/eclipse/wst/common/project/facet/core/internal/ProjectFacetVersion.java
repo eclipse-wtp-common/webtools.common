@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005, 2006 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,25 +11,19 @@
 
 package org.eclipse.wst.common.project.facet.core.internal;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdapterManager;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.wst.common.project.facet.core.IActionConfig;
-import org.eclipse.wst.common.project.facet.core.IActionConfigFactory;
 import org.eclipse.wst.common.project.facet.core.IActionDefinition;
 import org.eclipse.wst.common.project.facet.core.IConstraint;
-import org.eclipse.wst.common.project.facet.core.IDelegate;
 import org.eclipse.wst.common.project.facet.core.IGroup;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.IVersionExpr;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
-import org.osgi.framework.Bundle;
 
 /**
  * The implementation of the <code>IProjectFacetVersion</code> interface.
@@ -46,7 +40,6 @@ public final class ProjectFacetVersion
     private String version;
     private IConstraint constraint;
     private String plugin;
-    private final HashMap delegates = new HashMap();
     
     ProjectFacetVersion() {}
     
@@ -100,6 +93,24 @@ public final class ProjectFacetVersion
         this.plugin = plugin;
     }
     
+    public boolean supports( final Set base,
+                             final Action.Type type )
+    {
+        try
+        {
+            return ( getActionDefinitionInternal( base, type ) != null );
+        }
+        catch( CoreException e )
+        {
+            FacetCorePlugin.log( e );
+            return false;
+        }
+    }
+    
+    /**
+     * @deprecated
+     */
+    
     public boolean supports( final Action.Type type )
     {
         try
@@ -113,13 +124,132 @@ public final class ProjectFacetVersion
         }
     }
     
+    public Set getActionDefinitions()
+    {
+        return this.facet.getActionDefinitions( this );
+    }
+    
+    public Set getActionDefinitions( final Action.Type type )
+    {
+        final Set result = new HashSet();
+        
+        for( Iterator itr = getActionDefinitions().iterator(); itr.hasNext(); )
+        {
+            final IActionDefinition def = (IActionDefinition) itr.next();
+            
+            if( def.getActionType() == type )
+            {
+                result.add( def );
+            }
+        }
+
+        if( result.size() > 1 && type != Action.Type.VERSION_CHANGE )
+        {
+            final String msg
+                = Resources.bind( Resources.multipleActionDefinitions,
+                                  this.facet.getId(), this.version,
+                                  type.toString() );
+            
+            FacetCorePlugin.logWarning( msg, true );
+        }
+        
+        return result;
+    }
+    
+    public IActionDefinition getActionDefinition( final Set base,
+                                                  final Action.Type type )
+    
+        throws CoreException
+        
+    {
+        final IActionDefinition def = getActionDefinitionInternal( base, type );
+        
+        if( def == null )
+        {
+            final String msg 
+                = NLS.bind( Resources.actionNotSupported, toString(), 
+                            type.toString() );
+            
+            throw new CoreException( FacetCorePlugin.createErrorStatus( msg ) );
+        }
+        
+        return def;
+    }
+    
+    private IActionDefinition getActionDefinitionInternal( final Set base,
+                                                           final Action.Type type )
+    
+        throws CoreException
+        
+    {
+        final Set definitions = getActionDefinitions( type );
+        
+        if( definitions.size() > 0 )
+        {
+            if( type == Action.Type.VERSION_CHANGE )
+            {
+                String fromVersion = null;
+                
+                for( Iterator itr = base.iterator(); itr.hasNext(); )
+                {
+                    final IProjectFacetVersion x = (IProjectFacetVersion) itr.next();
+                    
+                    if( x.getProjectFacet() == this.facet )
+                    {
+                        fromVersion = x.getVersionString();
+                        break;
+                    }
+                }
+                
+                if( fromVersion != null )
+                {
+                    for( Iterator itr = definitions.iterator(); itr.hasNext(); )
+                    {
+                        final IActionDefinition def = (IActionDefinition) itr.next();
+                        
+                        final IVersionExpr vexpr 
+                            = (IVersionExpr) def.getProperty( IActionDefinition.PROP_FROM_VERSIONS );
+                        
+                        if( vexpr == null || vexpr.evaluate( fromVersion ) )
+                        {
+                            return def;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                return (IActionDefinition) definitions.iterator().next();
+            }
+        }
+
+        return null;
+    }
+    
+    /**
+     * @deprecated
+     */
+    
     public IActionDefinition getActionDefinition( final Action.Type type )
     
         throws CoreException
         
     {
-        return this.facet.getActionDefinition( this, type );
+        final Set definitions = getActionDefinitions( type );
+        
+        if( definitions.size() == 0 )
+        {
+            return null;
+        }
+        else
+        {
+            return (IActionDefinition) definitions.iterator().next();
+        }
     }
+    
+    /**
+     * @deprecated
+     */
     
     public Object createActionConfig( final Action.Type type,
                                       final String pjname )
@@ -136,50 +266,21 @@ public final class ProjectFacetVersion
             throw new CoreException( FacetCorePlugin.createErrorStatus( msg ) );
         }
         
-        final ActionDefinition def
-            = this.facet.getActionDefinition( this, type );
+        final IActionDefinition def = getActionDefinition( type );
         
-        if( def == null || def.getConfigFactoryClassName() == null )
+        if( def == null )
         {
             return null;
         }
         else
         {
-            final String clname = def.getConfigFactoryClassName();
-            final Object temp = create( clname );
-            
-            if( ! ( temp instanceof IActionConfigFactory ) )
-            {
-                final String msg
-                    = NLS.bind( Resources.notInstanceOf, clname,
-                                IActionConfigFactory.class.getName() );
-                
-                throw new CoreException( FacetCorePlugin.createErrorStatus( msg ) );
-            }
-            
-            final Object config = ( (IActionConfigFactory) temp ).create();
-            
-            IActionConfig cfg = null;
-            
-            if( config instanceof IActionConfig )
-            {
-                cfg = (IActionConfig) config;
-            }
-            else
-            {
-                final IAdapterManager m = Platform.getAdapterManager();
-                cfg = (IActionConfig) m.loadAdapter( config, IActionConfig.class.getName() );
-            }
-            
-            if( cfg != null )
-            {
-                cfg.setProjectName( pjname );
-                cfg.setVersion( this );
-            }
-            
-            return config;
+            return def.createConfigObject( this, pjname );
         }
     }
+    
+    /**
+     * @deprecated
+     */
     
     public boolean isSameActionConfig( final Action.Type type,
                                        final IProjectFacetVersion fv )
@@ -187,8 +288,7 @@ public final class ProjectFacetVersion
         throws CoreException
         
     {
-        return this.facet.getActionDefinition( fv, type )
-               == this.facet.getActionDefinition( this, type );
+        return ( (ProjectFacetVersion) fv ).getActionDefinition( type ) == getActionDefinition( type );
     }
     
     public boolean isValidFor( final Set fixed )
@@ -360,64 +460,6 @@ public final class ProjectFacetVersion
         }
     }
     
-    IDelegate getDelegate( final Action.Type type )
-    
-        throws CoreException
-        
-    {
-        Object delegate = this.delegates.get( type );
-        
-        if( delegate == null )
-        {
-            final ActionDefinition def
-                = this.facet.getActionDefinition( this, type );
-            
-            if( def == null )
-            {
-                return null;
-            }
-            
-            final String clname = def.getDelegateClassName();
-            delegate = create( clname );
-            
-            if( ! ( delegate instanceof IDelegate ) )
-            {
-                final String msg
-                    = NLS.bind( Resources.notInstanceOf, clname,
-                                IDelegate.class.getName() );
-                
-                throw new CoreException( FacetCorePlugin.createErrorStatus( msg ) );
-            }
-            
-            this.delegates.put( type, delegate );
-        }
-        
-        return (IDelegate) delegate;
-    }
-    
-    private Object create( final String clname )
-    
-        throws CoreException
-        
-    {
-        final Bundle bundle = Platform.getBundle( this.plugin );
-        
-        try
-        {
-            final Class cl = bundle.loadClass( clname );
-            return cl.newInstance();
-        }
-        catch( Exception e )
-        {
-            final String msg
-                = NLS.bind( Resources.failedToCreate, clname );
-            
-            final IStatus st = FacetCorePlugin.createErrorStatus( msg, e );
-            
-            throw new CoreException( st );
-        }
-    }
-    
     public String toString()
     {
         return this.facet.getLabel() + " " + this.version; //$NON-NLS-1$
@@ -429,13 +471,20 @@ public final class ProjectFacetVersion
         
     {
         public static String actionNotSupported;
-        public static String notInstanceOf;
-        public static String failedToCreate;
+        public static String multipleActionDefinitions;
         
         static
         {
             initializeMessages( ProjectFacetVersion.class.getName(), 
                                 Resources.class );
+        }
+        
+        public static String bind( final String template,
+                                   final Object arg1,
+                                   final Object arg2,
+                                   final Object arg3 )
+        {
+            return NLS.bind( template, new Object[] { arg1, arg2, arg3 } );
         }
     }
 

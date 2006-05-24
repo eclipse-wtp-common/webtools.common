@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005 - 2006 BEA Systems, Inc.
+ * Copyright (c) 2005, 2006 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -395,17 +395,7 @@ public class AddRemoveFacetsWizard
         
         // Get the set of actions and sort them.
         
-        final Set base;
-        
-        if( this.fproj == null )
-        {
-            base = Collections.EMPTY_SET;
-        }
-        else
-        {
-            base = this.fproj.getProjectFacets();
-        }
-        
+        final Set base = getBaseFacets();
         final Set actions = this.facetsSelectionPage.getActions();
         final ArrayList sortedActions = new ArrayList( actions );
         ProjectFacetsManager.sort( base, sortedActions );
@@ -428,7 +418,7 @@ public class AddRemoveFacetsWizard
                 
                 try
                 {
-                    actiondef = fv.getActionDefinition( action.getType() );
+                    actiondef = fv.getActionDefinition( base, action.getType() );
                 }
                 catch( CoreException e )
                 {
@@ -514,6 +504,18 @@ public class AddRemoveFacetsWizard
         
         return null;
     }
+    
+    private Set getBaseFacets()
+    {
+        if( this.fproj == null )
+        {
+            return Collections.EMPTY_SET;
+        }
+        else
+        {
+            return this.fproj.getProjectFacets();
+        }
+    }
 
     /**
      * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -566,7 +568,9 @@ public class AddRemoveFacetsWizard
 		public Object getConfig(IProjectFacetVersion fv, Type type, String pjname) throws CoreException {
 			Object config = AddRemoveFacetsWizard.this.getConfig(fv, type, pjname);
 			if (null == config) {
-				config = fv.createActionConfig(type, pjname);
+                final Set base = getBaseFacets();
+                final IActionDefinition def = fv.getActionDefinition( base, type );
+                config = def.createConfigObject( fv, pjname );
 			}
 			return config;
 		}

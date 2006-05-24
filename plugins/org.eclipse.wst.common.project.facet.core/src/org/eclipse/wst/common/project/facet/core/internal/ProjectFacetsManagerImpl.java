@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005, 2006 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -69,8 +69,10 @@ public final class ProjectFacetsManagerImpl
     private static final String ATTR_FACET = "facet"; //$NON-NLS-1$
     private static final String ATTR_GROUP = "group"; //$NON-NLS-1$
     private static final String ATTR_ID = "id"; //$NON-NLS-1$
+    private static final String ATTR_NAME = "name"; //$NON-NLS-1$
     private static final String ATTR_SOFT = "soft"; //$NON-NLS-1$
     private static final String ATTR_TYPE = "type"; //$NON-NLS-1$
+    private static final String ATTR_VALUE = "value"; //$NON-NLS-1$
     private static final String ATTR_VERSION = "version"; //$NON-NLS-1$
     private static final String EL_ACTION = "action"; //$NON-NLS-1$
     private static final String EL_CATEGORY = "category"; //$NON-NLS-1$
@@ -85,6 +87,7 @@ public final class ProjectFacetsManagerImpl
     private static final String EL_PRESET = "preset"; //$NON-NLS-1$
     private static final String EL_PROJECT_FACET = "project-facet"; //$NON-NLS-1$
     private static final String EL_PROJECT_FACET_VERSION = "project-facet-version"; //$NON-NLS-1$
+    private static final String EL_PROPERTY = "property"; //$NON-NLS-1$
     private static final String EL_TEMPLATE = "template"; //$NON-NLS-1$
     private static final String EL_VERSION_COMPARATOR = "version-comparator"; //$NON-NLS-1$
     
@@ -508,7 +511,7 @@ public final class ProjectFacetsManagerImpl
         {
             final Action action = (Action) itr.next();
             
-            if( ! action.getProjectFacetVersion().supports( action.getType() ) )
+            if( ! action.getProjectFacetVersion().supports( base, action.getType() ) )
             {
                 final ValidationProblem.Type ptype;
                 
@@ -1049,6 +1052,7 @@ public final class ProjectFacetsManagerImpl
         }
         
         final Map fvToConstraint = new HashMap();
+        final Map fvToActions = new HashMap();
         
         for( int i = 0, n = cfgels.size(); i < n; i++ )
         {
@@ -1057,7 +1061,7 @@ public final class ProjectFacetsManagerImpl
             
             if( config.getName().equals( EL_PROJECT_FACET_VERSION ) )
             {
-                readProjectFacetVersion( config, fvToConstraint );
+                readProjectFacetVersion( config, fvToConstraint, fvToActions );
             }
         }
         
@@ -1072,6 +1076,22 @@ public final class ProjectFacetsManagerImpl
                 = (IConfigurationElement) entry.getValue();
             
             readConstraint( config, fv );
+        }
+        
+        for( Iterator itr1 = fvToActions.entrySet().iterator(); itr1.hasNext(); )
+        {
+            final Map.Entry entry = (Map.Entry) itr1.next();
+            final ProjectFacetVersion fv = (ProjectFacetVersion) entry.getKey();
+            final List actions = (List) entry.getValue();
+            
+            for( Iterator itr2 = actions.iterator(); itr2.hasNext(); )
+            {
+                final IConfigurationElement config 
+                    = (IConfigurationElement) itr2.next();
+                
+                readAction( config, (ProjectFacet) fv.getProjectFacet(), 
+                            fv.getVersionString() );
+            }
         }
 
         for( int i = 0, n = cfgels.size(); i < n; i++ )
@@ -1221,7 +1241,8 @@ public final class ProjectFacetsManagerImpl
     }
     
     private void readProjectFacetVersion( final IConfigurationElement config,
-                                          final Map fvToConstraint )
+                                          final Map fvToConstraint,
+                                          final Map fvToActions )
     {
         final String fid = config.getAttribute( ATTR_FACET );
 
@@ -1253,6 +1274,9 @@ public final class ProjectFacetsManagerImpl
         fv.setProjectFacet( f );
         fv.setVersionString( ver );
         fv.setPluginId( config.getContributor().getName() );
+        
+        final List actions = new ArrayList();
+        fvToActions.put( fv, actions );
         
         final IConfigurationElement[] children = config.getChildren();
         
@@ -1287,6 +1311,10 @@ public final class ProjectFacetsManagerImpl
                 
                 group.addMember( fv );
             }
+            else if( childName.equals( EL_ACTION ) )
+            {
+                actions.add( child );
+            }
         }
         
         f.addVersion( fv );
@@ -1298,11 +1326,7 @@ public final class ProjectFacetsManagerImpl
             final IConfigurationElement child = children[ i ];
             final String childName = child.getName();
             
-            if( childName.equals( EL_ACTION ) )
-            {
-                readAction( child, f, ver );
-            }
-            else if( childName.equals( EL_EVENT_HANDLER ) )
+            if( childName.equals( EL_EVENT_HANDLER ) )
             {
                 readEventHandler( child, f, ver );
             }
@@ -1344,6 +1368,8 @@ public final class ProjectFacetsManagerImpl
     {
         final String pluginId = config.getContributor().getName();
         final ActionDefinition def = new ActionDefinition();
+        
+        def.setPluginId( pluginId );
         
         final String type = config.getAttribute( ATTR_TYPE );
         
@@ -1423,14 +1449,84 @@ public final class ProjectFacetsManagerImpl
                 
                 def.setDelegateClassName( clname );
             }
+            else if( childName.equals( EL_PROPERTY ) )
+            {
+                final String name = child.getAttribute( ATTR_NAME );
+
+                if( name == null )
+                {
+                    reportMissingAttribute( config, ATTR_NAME );
+                    return;
+                }
+
+                final String value = child.getAttribute( ATTR_VALUE );
+                
+                if( value == null )
+                {
+                    reportMissingAttribute( config, ATTR_VALUE );
+                    return;
+                }
+                
+                if( name.equals( IActionDefinition.PROP_FROM_VERSIONS ) )
+                {
+                    if( def.getActionType() != Action.Type.VERSION_CHANGE )
+                    {
+                        final String msg
+                            = NLS.bind( Resources.propertyNotApplicable, name,
+                                        def.getActionType().name() );
+                        
+                        FacetCorePlugin.logWarning( msg );
+                    }
+                    
+                    try
+                    {
+                        final VersionExpr vexpr 
+                            = new VersionExpr( f, value, pluginId );
+                        
+                        def.setProperty( name, vexpr );
+                    }
+                    catch( CoreException e )
+                    {
+                        FacetCorePlugin.log( e );
+                        return;
+                    }
+                }
+                else
+                {
+                    final String msg
+                        = NLS.bind( Resources.unknownProperty, name ) +
+                          NLS.bind( Resources.usedInPlugin, pluginId );
+                    
+                    FacetCorePlugin.logWarning( msg );
+                }
+            }
         }
         
         String id = config.getAttribute( ATTR_ID );
         
         if( id == null )
         {
-            id = f.getId() + "#" + version + "#" //$NON-NLS-1$ //$NON-NLS-2$ 
-                 + def.getActionType().name();
+            final StringBuffer buf = new StringBuffer();
+            
+            buf.append( f.getId() );
+            buf.append( '#' );
+            buf.append( version );
+            buf.append( '#' );
+            buf.append( def.getActionType().name() );
+            
+            for( Iterator itr = def.getProperties().entrySet().iterator(); 
+                 itr.hasNext(); )
+            {
+                final Map.Entry entry = (Map.Entry) itr.next();
+                
+                buf.append( '#' );
+                buf.append( (String) entry.getKey() );
+                buf.append( '=' );
+                buf.append( entry.getValue().toString() );
+                
+            }
+            
+            id = buf.toString();
         }
         
         def.setId( id );
@@ -2112,6 +2208,8 @@ public final class ProjectFacetsManagerImpl
         public static String invalidConflictsConstraint;
         public static String deprecatedRuntimeChangedAction;
         public static String tracingActionSorting;
+        public static String unknownProperty;
+        public static String propertyNotApplicable;
         
         static
         {

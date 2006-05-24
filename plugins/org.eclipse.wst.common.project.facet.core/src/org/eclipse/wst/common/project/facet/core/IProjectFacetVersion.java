@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005, 2006 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -72,19 +72,64 @@ public interface IProjectFacetVersion
      * action type. For instance, some project facets may not be uninstallable, 
      * in which case they will not support <code>Action.Type.UNINSTALL</code>.
      * 
+     * @param base the set of facets currently installed in the project that
+     *   the desired action type would be executed against (element type:
+     *   {@see IProjectFacetVersion})
+     * @param type action type
+     * @return <code>true</code> if and only if this project facet supports the 
+     *   provided action type
+     */
+    
+    boolean supports( Set base,
+                      Action.Type type );
+    
+    /**
+     * Determines whether this project facet version supports a particular 
+     * action type. For instance, some project facets may not be uninstallable, 
+     * in which case they will not support <code>Action.Type.UNINSTALL</code>.
+     * 
      * @param type action type
      * @return <code>true</code> if this project facet supports the provided 
      *   action type, <code>false</code> otherwise
+     * @deprecated use {@link supports( Set, Action.Type)} instead
      */
     
     boolean supports( Action.Type type );
     
     /**
+     * Returns all of the action definitions for this project facet version.
+     * 
+     * @return all of the action definitions for this project facet version
+     *   (element type: {@link IActionDefinition})
+     */
+    
+    Set getActionDefinitions();
+    
+    /**
+     * Returns the action definitions corresponding to a particular action type
+     * over this project facet version. For <code>INSTALL</code> and
+     * <code>UNINSTALL</code> action types, this method will return a set of
+     * length 0 or 1. For <code>VERSION_CHANGE</code> action type, the returned
+     * set may contain more than one item as there may exist multiple action
+     * definitions for converting from various versions.
+     * 
+     * @param type action type
+     * @return a set containing action definitions corresponding to a particular
+     *   action type over this project facet version 
+     *   (element type: {@link IActionDefinition})
+     */
+    
+    Set getActionDefinitions( Action.Type type );
+    
+    /**
      * Returns the action definition corresponding to a particular action type
-     * over this project facet version. The {@link supports( Action.Type )} 
+     * over this project facet version. The {@link supports( Set, Action.Type )} 
      * method can be used to check whether the action is supported prior to
      * calling this method.
      * 
+     * @param base the set of facets currently installed in the project that
+     *   the desired action type would be executed against (element type:
+     *   {@see IProjectFacetVersion})
      * @param type action type
      * @return the action definition corresponding to a particular action type
      *   over this project facet version
@@ -92,7 +137,8 @@ public interface IProjectFacetVersion
      *   provided action type
      */
     
-    IActionDefinition getActionDefinition( Action.Type type )
+    IActionDefinition getActionDefinition( Set base,
+                                           Action.Type type )
     
         throws CoreException;
     
@@ -108,12 +154,21 @@ public interface IProjectFacetVersion
      * @throws CoreException if this project facet version does not support the
      *   specified action type or if failed while creating the action config
      *   object
+     * @deprecated this method will not behave correctly in presence of multiple
+     * action definitions of the same type as can be the case with VERSION_CHANGE
+     * actions; instead use IActionDefinition.createConfigObject()
      */
     
     Object createActionConfig( Action.Type type,
                                String pjname )
     
         throws CoreException;
+    
+    /**
+     * @deprecated this method will not behave correctly in presence of multiple
+     * action definitions of the same type as can be the case with VERSION_CHANGE
+     * actions; instead compare appropriate IActionDefinition objects directly 
+     */
     
     boolean isSameActionConfig( Action.Type type,
                                 IProjectFacetVersion fv )

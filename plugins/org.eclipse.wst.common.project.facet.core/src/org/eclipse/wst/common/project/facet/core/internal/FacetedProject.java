@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005, 2006 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -50,6 +50,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IActionConfig;
+import org.eclipse.wst.common.project.facet.core.IActionDefinition;
 import org.eclipse.wst.common.project.facet.core.IDelegate;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectListener;
@@ -298,8 +299,10 @@ public final class FacetedProject
                 
                 if( config == null )
                 {
-                    config = fv.createActionConfig( action.getType(), 
-                                                    this.project.getName() );
+                    final IActionDefinition def 
+                        = fv.getActionDefinition( this.facets, action.getType() );
+                    
+                    config = def.createConfigObject( fv, this.project.getName() );
                     
                     if( config != null )
                     {
@@ -347,10 +350,14 @@ public final class FacetedProject
                 final ProjectFacetVersion fv 
                     = (ProjectFacetVersion) action.getProjectFacetVersion();
                 
+                final IActionDefinition def 
+                    = fv.getActionDefinition( this.facets, type );
+                
                 callEventHandlers( fv, getPreEventHandlerType( type ), 
                                    action.getConfig(), submon( monitor, 10 ) );
                 
-                final IDelegate delegate = fv.getDelegate( type );
+                final IDelegate delegate 
+                    = ( (ActionDefinition) def ).getDelegate();
                 
                 if( delegate == null )
                 {
@@ -1386,88 +1393,104 @@ public final class FacetedProject
     {
         synchronized( this.lock )
         {
+            if( this.isBeingModified )
+            {
+                return;
+            }
+            
             if( this.f.exists() && 
                 this.f.getLocation().toFile().lastModified() == this.fLastModified )
             {
                 return;
             }
             
-            this.facets.clear();
-            this.fixed.clear();
-            this.unknownFacets.clear();
-            this.targetedRuntimes.clear();
-            this.primaryRuntime = null;
+            beginModification();
             
-            if( ! this.f.exists() )
+            try
             {
-                this.fLastModified = -1;
-                return;
-            }
-            
-            this.fLastModified = this.f.getLocation().toFile().lastModified();
-            
-            final Element root = parse( this.f.getLocation().toFile() );
-            final Element[] elements = children( root );
-            
-            for( int i = 0; i < elements.length; i++ )
-            {
-                final Element e = elements[ i ];
-                final String name = e.getNodeName();
+                this.facets.clear();
+                this.fixed.clear();
+                this.unknownFacets.clear();
+                this.targetedRuntimes.clear();
+                this.primaryRuntime = null;
                 
-                if( name.equals( EL_RUNTIME ) )
+                if( ! this.f.exists() )
                 {
-                    this.primaryRuntime = e.getAttribute( ATTR_NAME );
-                    this.targetedRuntimes.add( this.primaryRuntime );
+                    this.fLastModified = -1;
+                    return;
                 }
-                else if( name.equals( EL_SECONDARY_RUNTIME ) )
+                
+                this.fLastModified = this.f.getLocation().toFile().lastModified();
+                
+                final Element root = parse( this.f.getLocation().toFile() );
+                final Element[] elements = children( root );
+                
+                for( int i = 0; i < elements.length; i++ )
                 {
-                    this.targetedRuntimes.add( e.getAttribute( ATTR_NAME ) );
-                }
-                else if( name.equals( EL_FIXED ) )
-                {
-                    final String id = e.getAttribute( ATTR_FACET );
-                    final IProjectFacet f;
+                    final Element e = elements[ i ];
+                    final String name = e.getNodeName();
                     
-                    if( ProjectFacetsManager.isProjectFacetDefined( id ) )
+                    if( name.equals( EL_RUNTIME ) )
                     {
-                        f = ProjectFacetsManager.getProjectFacet( id );
+                        this.primaryRuntime = e.getAttribute( ATTR_NAME );
+                        this.targetedRuntimes.add( this.primaryRuntime );
                     }
-                    else
+                    else if( name.equals( EL_SECONDARY_RUNTIME ) )
                     {
-                        f = createUnknownFacet( id );
+                        this.targetedRuntimes.add( e.getAttribute( ATTR_NAME ) );
                     }
-                    
-                    this.fixed.add( f );
-                }
-                else if( name.equals( EL_INSTALLED ) )
-                {
-                    final String id = e.getAttribute( ATTR_FACET );
-                    final String version = e.getAttribute( ATTR_VERSION );
-                    
-                    final IProjectFacet f;
-                    
-                    if( ProjectFacetsManager.isProjectFacetDefined( id ) )
+                    else if( name.equals( EL_FIXED ) )
                     {
-                        f = ProjectFacetsManager.getProjectFacet( id );
-                    }
-                    else
-                    {
-                        f = createUnknownFacet( id );
-                    }
-                    
-                    final IProjectFacetVersion fv;
-                    
-                    if( f.hasVersion( version ) )
-                    {
-                        fv = f.getVersion( version );
-                    }
-                    else
-                    {
-                        fv = createUnknownFacetVersion( f, version );
-                    }
+                        final String id = e.getAttribute( ATTR_FACET );
+                        final IProjectFacet f;
                         
-                    this.facets.add( fv );
+                        if( ProjectFacetsManager.isProjectFacetDefined( id ) )
+                        {
+                            f = ProjectFacetsManager.getProjectFacet( id );
+                        }
+                        else
+                        {
+                            f = createUnknownFacet( id );
+                        }
+                        
+                        this.fixed.add( f );
+                    }
+                    else if( name.equals( EL_INSTALLED ) )
+                    {
+                        final String id = e.getAttribute( ATTR_FACET );
+                        final String version = e.getAttribute( ATTR_VERSION );
+                        
+                        final IProjectFacet f;
+                        
+                        if( ProjectFacetsManager.isProjectFacetDefined( id ) )
+                        {
+                            f = ProjectFacetsManager.getProjectFacet( id );
+                        }
+                        else
+                        {
+                            f = createUnknownFacet( id );
+                        }
+                        
+                        final IProjectFacetVersion fv;
+                        
+                        if( f.hasVersion( version ) )
+                        {
+                            fv = f.getVersion( version );
+                        }
+                        else
+                        {
+                            fv = createUnknownFacetVersion( f, version );
+                        }
+                            
+                        this.facets.add( fv );
+                    }
                 }
+                
+                notifyListeners();
+            }
+            finally
+            {
+                endModification();
             }
         }
     }

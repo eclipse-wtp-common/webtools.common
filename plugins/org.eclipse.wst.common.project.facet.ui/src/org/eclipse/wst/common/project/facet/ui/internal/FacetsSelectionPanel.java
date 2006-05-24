@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005, 2006 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -605,7 +605,7 @@ public final class FacetsSelectionPanel
         {
             Object config = null;
             
-            if( fv.supports( type ) )
+            if( fv.supports( this.base, type ) )
             {
                 try
                 {
@@ -618,7 +618,10 @@ public final class FacetsSelectionPanel
                         final IProjectFacetVersion current
                             = action.getProjectFacetVersion();
                         
-                        if( fv.isSameActionConfig( type, current ) )
+                        if( fv.supports( this.base, type ) &&
+                            current.supports( this.base, type ) &&
+                            fv.getActionDefinition( this.base, type )
+                              == current.getActionDefinition( this.base, type ) )
                         {
                             config = action.getConfig();
                             
@@ -1087,12 +1090,9 @@ public final class FacetsSelectionPanel
                     
                     if( f1.getProjectFacet() == f2.getProjectFacet() )
                     {
-                        if( f2.supports( Action.Type.VERSION_CHANGE ) )
-                        {
-                            toremove.add( action1 );
-                            toremove.add( action2 );
-                            toadd.add( createAction( old, Action.Type.VERSION_CHANGE, f2 ) );
-                        }
+                        toremove.add( action1 );
+                        toremove.add( action2 );
+                        toadd.add( createAction( old, Action.Type.VERSION_CHANGE, f2 ) );
                     }
                 }
             }

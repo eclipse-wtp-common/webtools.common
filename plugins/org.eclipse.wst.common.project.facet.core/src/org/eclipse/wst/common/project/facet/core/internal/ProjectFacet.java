@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005, 2006 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,14 +14,16 @@ package org.eclipse.wst.common.project.facet.core.internal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.common.project.facet.core.IActionDefinition;
 import org.eclipse.wst.common.project.facet.core.ICategory;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.VersionFormatException;
@@ -186,37 +188,17 @@ public final class ProjectFacet
         return this.label;
     }
     
-    ActionDefinition getActionDefinition( final IProjectFacetVersion fv,
-                                          final Action.Type type )
-    
-        throws CoreException
-        
+    Set getActionDefinitions( final IProjectFacetVersion fv )
     {
-        ActionDefinition result = null;
+        final Set result = new HashSet();
         
         for( Iterator itr = this.actionDefinitions.iterator(); itr.hasNext(); )
         {
-            final ActionDefinition def = (ActionDefinition) itr.next();
+            final IActionDefinition def = (IActionDefinition) itr.next();
             
-            if( def.getActionType() == type && 
-                ( (VersionExpr) def.getVersionExpr() ).evaluate( (IVersion) fv ) )
+            if( def.getVersionExpr().evaluate( fv.getVersionString() ) )
             {
-                if( result == null )
-                {
-                    result = def;
-                }
-                else
-                {
-                    final String msg
-                        = Resources.bind( Resources.multipleActionDefinitions,
-                                          fv.getProjectFacet().getId(),
-                                          fv.getVersionString(),
-                                          type.toString() );
-                    
-                    FacetCorePlugin.log( msg );
-
-                    break;
-                }
+                result.add( def );
             }
         }
         
@@ -265,20 +247,11 @@ public final class ProjectFacet
         
     {
         public static String versionNotFound;
-        public static String multipleActionDefinitions;
         
         static
         {
             initializeMessages( ProjectFacet.class.getName(), 
                                 Resources.class );
-        }
-        
-        public static String bind( final String template,
-                                   final Object arg1,
-                                   final Object arg2,
-                                   final Object arg3 )
-        {
-            return NLS.bind( template, new Object[] { arg1, arg2, arg3 } );
         }
     }
     

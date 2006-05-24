@@ -397,6 +397,7 @@
          <sequence>
             <element ref="config-factory" minOccurs="0" maxOccurs="1"/>
             <element ref="delegate"/>
+            <element ref="property" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="type" use="required">
             <annotation>
@@ -539,6 +540,36 @@
       </complexType>
    </element>
 
+   <element name="property">
+      <annotation>
+         <documentation>
+            Specifies an action property.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="name" use="required">
+            <annotation>
+               <documentation>
+                  The name of the property.
+               </documentation>
+            </annotation>
+            <simpleType>
+               <restriction base="string">
+                  <enumeration value="from.versions">
+                  </enumeration>
+               </restriction>
+            </simpleType>
+         </attribute>
+         <attribute name="value" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The value of the property.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
    <annotation>
       <appInfo>
          <meta.section type="since"/>
@@ -580,7 +611,7 @@
          <meta.section type="copyright"/>
       </appInfo>
       <documentation>
-         Copyright (c) 2005-2006 BEA Systems, Inc. and others.&lt;br&gt;
+         Copyright (c) 2005, 2006 BEA Systems, Inc. and others.&lt;br&gt;
 All rights reserved. This program and the accompanying materials are made 
 available under the terms of the Eclipse Public License v1.0 which accompanies 
 this distribution, and is available at &lt;a
