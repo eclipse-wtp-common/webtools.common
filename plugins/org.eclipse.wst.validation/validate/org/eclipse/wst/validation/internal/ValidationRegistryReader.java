@@ -164,8 +164,9 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		ValidatorNameFilter[] projNatureIds = vmd.getProjectNatureFilters();
 		String[] facetFilters = vmd.getFacetFilters();
 		if (projNatureIds == null) {
-			if(facetFilters == null) 
+			if (facetFilters == null && vmd.getEnablementExpresion() == null) {
 				add(UNKNOWN_PROJECT, vmd);
+			}
 		} else {
 			boolean noneIncluded = true; // assume that the validator does not include any project
 			// natures
