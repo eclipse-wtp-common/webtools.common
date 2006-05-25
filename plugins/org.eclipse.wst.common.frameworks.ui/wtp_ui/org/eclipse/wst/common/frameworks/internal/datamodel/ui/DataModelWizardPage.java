@@ -254,6 +254,15 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 			if (warning == null) {
 				if (getMessage() != null && getMessageType() == IMessageProvider.WARNING)
 					setMessage(null, IMessageProvider.WARNING);
+				else {
+					String info = status.getLastInfoMsg();
+					if (info == null) {
+						if (getMessage() != null && getMessageType() == IMessageProvider.INFORMATION)
+							setMessage(null, IMessageProvider.INFORMATION);
+					} else if (!info.equals(getMessage())) {
+						setMessage(info, IMessageProvider.INFORMATION);
+					}
+				}
 			} else if (!warning.equals(getMessage()))
 				setMessage(warning, IMessageProvider.WARNING);
 		} else if (!error.equals(getErrorMessage()))
@@ -266,6 +275,10 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 
 	protected void setWarningStatus(Integer key, String warningMessage) {
 		status.setWarningStatus(key, warningMessage);
+	}
+	
+	protected void setInfoStatus(Integer key, String infoMessage) {
+		status.setInfoStatus(key, infoMessage);
 	}
 
 	protected void setOKStatus(Integer key) {
@@ -352,6 +365,9 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 					break;
 				case IStatus.WARNING :
 					setWarningStatus(validationKey, message);
+					break;
+				case IStatus.INFO :
+					setInfoStatus(validationKey, message);
 					break;
 			}
 		}

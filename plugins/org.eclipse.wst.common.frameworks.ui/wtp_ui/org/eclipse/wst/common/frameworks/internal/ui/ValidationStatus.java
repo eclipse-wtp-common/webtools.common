@@ -25,11 +25,16 @@ import org.eclipse.swt.widgets.Control;
  * @author: Administrator
  */
 public class ValidationStatus {
+
+	// TODO make all these vars private and change errMsgs & errStatus to maps so the same methods
+	// can be used as with warnings & info
 	Hashtable errMsgs = new Hashtable();
 	Hashtable errStatus = new Hashtable();
 	Hashtable tControls = new Hashtable();
 	Map warnMsgs;
 	Map warnStatus;
+	Map infoMsgs;
+	Map infoStatus;
 
 	/**
 	 * ValidationStatus constructor comment.
@@ -43,7 +48,7 @@ public class ValidationStatus {
 	 * lower key errors will be returned first.
 	 */
 	public String getLastErrMsg() {
-
+		//TODO once ivars are changed to maps, pass this to getLastMsg()
 		Enumeration e = errStatus.keys();
 		String[] errs = new String[errStatus.size()];
 		for (int i = 0; i < errs.length; i++)
@@ -75,29 +80,49 @@ public class ValidationStatus {
 		return warnStatus;
 	}
 
-	/*
-	 * Look for any warning. If there is more than one, return warnings according to their key.
-	 * i.e., lower key errors will be returned first.
-	 */
+	private Map getInfoMsgs() {
+		if (infoMsgs == null)
+			infoMsgs = new HashMap();
+		return infoMsgs;
+	}
+
+	private Map getInfoStatusMap() {
+		if (infoStatus == null)
+			infoStatus = new HashMap();
+		return infoStatus;
+	}
+
 	public String getLastWarningMsg() {
-		if (warnStatus == null)
+		return getLastMsg(warnStatus, warnMsgs);
+	}
+
+	public String getLastInfoMsg() {
+		return getLastMsg(infoStatus, infoMsgs);
+	}
+
+	/*
+	 * Look for any status. If there is more than one, return status according to their key. i.e.,
+	 * lower key status will be returned first.
+	 */
+	private String getLastMsg(Map statusMap, Map msgMap) {
+		if (statusMap == null)
 			return null;
-		Iterator e = warnStatus.keySet().iterator();
-		String[] warns = new String[warnStatus.size()];
-		for (int i = 0; i < warns.length; i++)
-			warns[i] = null;
+		Iterator e = statusMap.keySet().iterator();
+		String[] infos = new String[statusMap.size()];
+		for (int i = 0; i < infos.length; i++)
+			infos[i] = null;
 		boolean foundOne = false;
 		while (e.hasNext()) {
 			Integer key = (Integer) e.next();
-			if (!((Boolean) warnStatus.get(key)).booleanValue()) {
-				warns[key.intValue() % warns.length] = (String) warnMsgs.get(key);
+			if (!((Boolean) statusMap.get(key)).booleanValue()) {
+				infos[key.intValue() % infos.length] = (String) msgMap.get(key);
 				foundOne = true;
 			}
 		}
 		if (foundOne)
-			for (int i = 0; i < warns.length; i++)
-				if (warns[i] != null)
-					return warns[i];
+			for (int i = 0; i < infos.length; i++)
+				if (infos[i] != null)
+					return infos[i];
 		return null;
 	}
 
@@ -150,6 +175,11 @@ public class ValidationStatus {
 		getWarningStatusMap().put(key, new Boolean(false));
 	}
 
+	public void setInfoStatus(Integer key, String msg) {
+		getInfoMsgs().put(key, msg);
+		getInfoStatusMap().put(key, new Boolean(false));
+	}
+
 	public void setOKStatus(Integer key) {
 		errMsgs.put(key, ""); //$NON-NLS-1$
 		errStatus.put(key, new Boolean(true));
@@ -157,6 +187,10 @@ public class ValidationStatus {
 			warnMsgs.put(key, ""); //$NON-NLS-1$
 		if (warnStatus != null)
 			warnStatus.put(key, new Boolean(true));
+		if (infoMsgs != null)
+			infoMsgs.put(key, ""); //$NON-NLS-1$
+		if (infoStatus != null)
+			infoStatus.put(key, new Boolean(true));
 	}
 
 	public void setStatus(Integer key, boolean ok, String msg) {
