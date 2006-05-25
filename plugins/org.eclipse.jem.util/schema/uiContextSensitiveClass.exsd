@@ -6,7 +6,19 @@
          <meta.schema plugin="org.eclipse.jem.util" id="uiContextSensitiveClass" name="UI Context Sensitive Class"/>
       </appInfo>
       <documentation>
-         Edit models provide a framework for managing a set of EMF resources within a unit of work.  For example, a workspace operation may affect a change to multiple EMF resources. Edit models provide basic services such as loads, saves (when necessary), and validate edit for the managed resources.  Edit models are reference counted, therefore a single instance of an edit model can be shared by more than one operation or editor.  By declaring an edit model, a plugin provider enables other components to contribute resources to be managed by that edit model.
+         Components are often designed in such a way that the &quot;Headless&quot; or non-graphical portions are separate from the Graphical User Interface (GUI) portions. Sometimes this is done to follow good design principles, other times there is a specific use case for doing so. When plugins follow this practice because they must vary their behavior based on whether they are running in a headless environment or a graphical environment, they often need to choose the correct implementation of a particular type. The org.eclipse.jem.util.uiContextSensitiveClass extension point provided by the JEM component solves exactly this problem.
+&lt;p&gt;    
+To use the extension point, you must provide two extensions that are linked by a key. The key is a unique String-based value that you will later use to instanitate your class.
+&lt;p&gt;
+The first usage of the extension specifies your key, and the Headless context, and the class that should be instantiated for this (key, context) pair. This means in the headless environment this class will be instantiated when requested.
+&lt;p&gt;
+The second extension specifies the UI context and the same key, but a different implementation designed for graphical environments. This means in the UI environment this other class will be instantiated when requested.
+&lt;p&gt;
+The actual request is done in your code via:
+&lt;pre&gt;
+IMyInterface instance = (IMyInterface) UIContextDetermination.createInstance(&quot;myKey&quot;);
+&lt;/pre&gt;
+where &lt;code&gt;&quot;myKey&quot;&lt;/code&gt; is the key used on both extensions. It will then choose either the UI or the Headless extension depending upon the context.
       </documentation>
    </annotation>
 
@@ -63,7 +75,7 @@
          <attribute name="context" use="required">
             <annotation>
                <documentation>
-                  One of &quot;UI&quot; or &quot;Headless&quot;
+                  One of &quot;UI&quot; or &quot;Headless&quot; This is case-sensitive. It must match exactly as shown here.
                </documentation>
             </annotation>
             <simpleType>
@@ -92,17 +104,38 @@
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         &lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;extension&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;id=&quot;context.Sensitive.Class.workingCopyManager&quot;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;name=&quot;Working&amp;nbsp;Copy&amp;nbsp;Manager&amp;nbsp;-&amp;nbsp;UI&amp;nbsp;Context&amp;nbsp;Class&quot;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;point=&quot;com.ibm.wtp.common.ui.ContextSensitiveClass&quot;&amp;gt;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;uiContextSensitiveClass&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;context=&quot;UI&quot;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;key=&quot;workingCopyManager&quot;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;className=&quot;com.ibm.wtp.common.ui.WTPUIWorkingCopyManager&quot;&amp;gt;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;/uiContextSensitiveClass&amp;gt;&lt;br&gt;
-&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;lt;/extension&amp;gt;&lt;br&gt;
+         Usage for the UI context:
+&lt;pre&gt;
+   &lt;extension
+       id=&quot;context.Sensitive.Class.workingCopyManager&quot;
+       name=&quot;Working Copy Manager - UI Context Class&quot;
+       point=&quot;org.eclipse.jem.util.ContextSensitiveClass&quot;&gt;
+     &lt;uiContextSensitiveClass
+       context=&quot;UI&quot;
+       key=&quot;workingCopyManager&quot;
+       className=&quot;com.ibm.wtp.common.ui.WTPUIWorkingCopyManager&quot;/&gt;
+   &lt;/extension&gt;
+&lt;/pre&gt;
+&lt;br&gt;
+Usage for the Headless context:
+&lt;pre&gt;
+   &lt;extension
+       id=&quot;context.Sensitive.Class.workingCopyManager&quot;
+       name=&quot;Working Copy Manager - Headless Context Class&quot;
+       point=&quot;org.eclipse.jem.util.ContextSensitiveClass&quot;&gt;
+     &lt;uiContextSensitiveClass
+         context=&quot;Headless&quot;
+         key=&quot;workingCopyManager&quot;
+         className=&quot;com.ibm.wtp.common.ui.WTPHeadlessWorkingCopyManager&quot;/&gt;
+   &lt;/extension&gt;
+&lt;/pre&gt;
+&lt;br&gt;
+And finally the retrieval of the class for the current context:
+
+&lt;pre&gt;
+IWorkingCopyManager manager = (IWorkingCopyManager) UIContextDetermination.createInstance(&quot;workingCopyManager&quot;);
+&lt;/pre&gt;
+
       </documentation>
    </annotation>
 
