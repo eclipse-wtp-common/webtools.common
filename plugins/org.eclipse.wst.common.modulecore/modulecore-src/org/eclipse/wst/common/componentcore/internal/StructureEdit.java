@@ -376,10 +376,8 @@ public class StructureEdit implements IEditModelHandler {
 		if (isReadOnly)
 			throwAttemptedReadOnlyModification();
 		else if (validateEdit().isOK()) { 
-			synchronized (structuralModel) {
 				if (!structuralModel.isDisposed())
 					structuralModel.saveIfNecessary(aMonitor, this);
-			}
 		}
 	}
 
