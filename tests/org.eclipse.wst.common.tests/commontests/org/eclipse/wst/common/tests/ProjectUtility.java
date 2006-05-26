@@ -139,7 +139,7 @@ public class ProjectUtility {
 			ResourcesPlugin.getWorkspace().run(runnable, null);
 		} catch (CoreException ce) {
 		}
-        verifyNoProjects();
+        //verifyNoProjects();
     }
     /**
 	 * Return the absolute path Strings to the files based on the fileSuffix and
