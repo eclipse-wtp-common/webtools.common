@@ -75,7 +75,7 @@ public class ComponentSearchListDialog extends Dialog {
     private Text textFilter;
     protected TableViewer componentTableViewer;
     
-    protected String fileLocationLabel = "Declaration Location:";
+    protected String fileLocationLabel = UIPlugin.getString("_UI_LABEL_DECLARATION_LOCATION");
     protected ViewForm fileLocationView;    
     protected CLabel locationLabel;
 
@@ -155,7 +155,7 @@ public class ComponentSearchListDialog extends Dialog {
         if (handler != null)
         {  
            newButton = new Button(filterLabelAndText, SWT.NONE);
-           newButton.setText("New...");  
+           newButton.setText(UIPlugin.getString("_UI_LABEL_New"));  
            newButton.addSelectionListener(new SelectionListener()
            {
 

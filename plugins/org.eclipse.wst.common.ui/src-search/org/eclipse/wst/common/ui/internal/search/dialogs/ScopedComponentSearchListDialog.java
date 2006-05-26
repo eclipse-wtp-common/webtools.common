@@ -122,7 +122,7 @@ public class ScopedComponentSearchListDialog extends ComponentSearchListDialog
     	workingSetsText.setText(valueForWorkingSetsText);
     
     chooseButton = new Button(selectWorkingSetsGroup, SWT.NONE);
-    chooseButton.setText("Choose...");
+    chooseButton.setText(UIPlugin.getString("_UI_LABEL_CHOOSE"));
     chooseButton.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
 			Shell shell = getShell();
