@@ -3,7 +3,6 @@
 	<name>org.eclipse.wst.common.tests</name>
 	<comment></comment>
 	<projects>
-		<project>org.apache.xerces</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
