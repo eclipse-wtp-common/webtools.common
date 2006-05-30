@@ -671,6 +671,7 @@ private class ValidatorListPage implements IValidationPage {
 
 		updateWidgets();
 
+		applyDialogFont(composite);
 		composite.setSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 
 		return composite;

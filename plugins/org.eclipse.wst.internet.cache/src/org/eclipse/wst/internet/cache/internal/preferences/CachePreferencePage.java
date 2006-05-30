@@ -255,6 +255,7 @@ public class CachePreferencePage extends PreferencePage implements
       //TODO: Log error
     }
     setPreferenceWidgets();
+    applyDialogFont(composite);
 
     return composite;
   }
