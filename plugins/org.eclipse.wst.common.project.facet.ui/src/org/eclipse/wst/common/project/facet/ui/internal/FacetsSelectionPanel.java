@@ -669,10 +669,10 @@ public final class FacetsSelectionPanel
     
     public void setDefaultFacetsForRuntime( final IRuntime runtime )
     {
+        final Set defaultFacets;
+        
         if( runtime != null )
         {
-            final Set defaultFacets;
-            
             try
             {
                 defaultFacets = runtime.getDefaultFacets( this.fixed );
@@ -682,29 +682,47 @@ public final class FacetsSelectionPanel
                 FacetUiPlugin.log( e );
                 return;
             }
+        }
+        else
+        {
+            defaultFacets = new HashSet();
             
-            IPreset presetToUse = null;
-            
-            for( Iterator itr = this.model.getPresets().iterator(); itr.hasNext(); )
+            try
             {
-                final IPreset preset = (IPreset) itr.next();
-                
-                if( preset.getProjectFacets().equals( defaultFacets ) )
+                for( Iterator itr = this.fixed.iterator(); itr.hasNext(); )
                 {
-                    presetToUse = preset;
-                    break;
+                    final IProjectFacet f = (IProjectFacet) itr.next();
+                    defaultFacets.add( f.getLatestVersion() );
                 }
             }
+            catch( CoreException e )
+            {
+                FacetUiPlugin.log( e );
+                return;
+            }
+        }
             
-            if( presetToUse == null )
+        IPreset presetToUse = null;
+        
+        for( Iterator itr = this.model.getPresets().iterator(); itr.hasNext(); )
+        {
+            final IPreset preset = (IPreset) itr.next();
+            
+            if( preset.getProjectFacets().equals( defaultFacets ) )
             {
-                setSelectedProjectFacets( defaultFacets );
-                this.model.setSelectedPreset( null );
+                presetToUse = preset;
+                break;
             }
-            else
-            {
-                selectPreset( presetToUse );
-            }
+        }
+        
+        if( presetToUse == null )
+        {
+            setSelectedProjectFacets( defaultFacets );
+            this.model.setSelectedPreset( null );
+        }
+        else
+        {
+            selectPreset( presetToUse );
         }
     }
     
