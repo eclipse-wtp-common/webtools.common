@@ -180,7 +180,7 @@ public class SearchEngine implements ISearchOptions
 	{
 		SearchParticipant[] participants =
 			getApplicableParticipants(pattern, searchOptions);
-        System.out.println("participants = " + participants.length);
+        //System.out.println("participants = " + participants.length);
 		search(pattern, requestor, participants, scope, searchOptions, monitor);
 	}
 
