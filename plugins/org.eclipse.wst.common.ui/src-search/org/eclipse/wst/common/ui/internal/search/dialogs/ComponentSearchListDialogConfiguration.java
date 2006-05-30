@@ -26,10 +26,15 @@ public class ComponentSearchListDialogConfiguration
   {
     this.dialog = dialog;
   }
+
+  public void createWidgetAtTop(Composite parent)
+  {    
+  }    
   
   public void createWidgetAboveQualifierBox(Composite parent)
   {    
   }
+  
   public void createWidgetBelowQualifierBox(Composite parent)
   {    
   }

@@ -121,6 +121,7 @@ public class ComponentSearchListDialog extends Dialog {
         gData.heightHint = 500;
         gData.widthHint = 400;
         
+        configuration.createWidgetAboveQualifierBox(mainComposite);        
         // Subclasses may use this Composite to add desired widgets
         //topComposite = new Composite(mainComposite, SWT.NONE);
         //topComposite.setLayoutData(new GridData());
