@@ -18,6 +18,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.impl.EClassImpl;
+import org.eclipse.emf.edit.command.SetCommand;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.internal.emf.utilities.FeatureValueConversionException;
 import org.eclipse.wst.common.internal.emf.utilities.FeatureValueConverter;
@@ -101,7 +102,7 @@ public class ModifierHelper {
 	public void doUnsetValue() {
 		shouldUnsetValue = true;
 		if (value != null && feature != null && !feature.isMany())
-			setValue(null);
+			setValue(SetCommand.UNSET_VALUE);
 	}
 
 	/**
