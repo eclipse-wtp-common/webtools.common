@@ -25,6 +25,7 @@ import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelProvider;
 import org.eclipse.wst.common.frameworks.internal.datamodel.IDataModelPausibleOperation;
+import org.eclipse.wst.common.frameworks.internal.dialog.ui.WarningDialog;
 import org.eclipse.wst.common.frameworks.internal.eclipse.ui.EclipseEnvironment;
 import org.eclipse.wst.common.frameworks.internal.ui.ErrorDialog;
 import org.eclipse.wst.common.frameworks.internal.ui.PageGroupManager;
@@ -170,6 +171,8 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 				if (st.getSeverity() == IStatus.ERROR) {
 					WTPUIPlugin.log(st);
 					ErrorDialog.openError(getShell(), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_0, new Object[]{getWindowTitle()}), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_1, new Object[]{getWindowTitle()}), new CoreException(st), 0, false);
+				} else if(st.getSeverity() == IStatus.WARNING){
+					WarningDialog.openWarning(getShell(), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_2, new Object[]{getWindowTitle()}), st.getMessage(), st, IStatus.WARNING);
 				}
 
 				postPerformFinish();
@@ -274,7 +277,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 	 * @return
 	 */
 	protected boolean runForked() {
-		return false;
+		return true;
 	}
 
 	public void setDataModel(IDataModel model) {
