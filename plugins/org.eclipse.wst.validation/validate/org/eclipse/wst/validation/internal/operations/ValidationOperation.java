@@ -26,12 +26,18 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.QualifiedName;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.internal.operations.IHeadlessRunnableWithProgress;
@@ -42,6 +48,7 @@ import org.eclipse.wst.validation.internal.ReferencialFileValidatorRegistryReade
 import org.eclipse.wst.validation.internal.RegistryConstants;
 import org.eclipse.wst.validation.internal.ResourceConstants;
 import org.eclipse.wst.validation.internal.ResourceHandler;
+import org.eclipse.wst.validation.internal.TaskListUtility;
 import org.eclipse.wst.validation.internal.TimeEntry;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
@@ -1699,6 +1706,51 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			schedulingRule = new EmptySchedulingRule();
 			validatorjob.setRule( schedulingRule );
 		}
+		QualifiedName validatorKey = new QualifiedName(null, "Validator"); //$NON-NLS-1$
+		validatorjob.setProperty( validatorKey, validator );
+		validatorjob.addJobChangeListener(
+					new JobChangeAdapter(){
+						
+						public void done(IJobChangeEvent event){
+							Job job = event.getJob();
+							QualifiedName validatorKey = new QualifiedName(null, "Validator"); //$NON-NLS-1$
+							IValidatorJob validator = (IValidatorJob)job.getProperty( validatorKey );
+							ValidatorManager mgr = ValidatorManager.getManager();
+							final ArrayList list = mgr.getMessages(validator);							
+							
+							IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+							    public void run(IProgressMonitor monitor) throws CoreException {
+
+							    	Iterator it = list.iterator();
+									while( it.hasNext() ){
+										MessageInfo info = (MessageInfo)it.next();
+										try {
+										TaskListUtility.addTask( info.getMessageOwnerId(), info.getResource(),
+													info.getLocation(), info.getMsg().getId(), info.getText(),
+													info.getMsg().getSeverity(), info.getTargetObjectName(),
+													info.getMsg().getGroupName(), info.getMsg().getOffset(), info.getMsg().getLength());
+										
+										} catch (CoreException exc) {
+											Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
+											if (logger.isLoggingLevel(Level.SEVERE)) {
+												LogEntry entry = ValidationPlugin.getLogEntry();
+												entry.setTargetException(exc);
+												logger.write(Level.SEVERE, entry);
+											}
+										}										
+									}
+							    }
+							};
+							try {
+								ResourcesPlugin.getWorkspace().run(runnable, null, IWorkspace.AVOID_UPDATE, null);
+							} catch (CoreException e) {
+							   e.printStackTrace();
+							}
+							mgr.clearMessages( validator );
+							validator = null;
+						}
+					}
+		);
 		validatorjob.schedule();		
 		
 	}

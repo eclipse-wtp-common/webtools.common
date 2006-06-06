@@ -31,6 +31,7 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 import org.eclipse.wst.validation.internal.provisional.core.IReporter;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
+import org.eclipse.wst.validation.internal.provisional.core.IValidatorJob;
 
 /**
  * IValidator instances will interact with an instance of this class, but should never cast that
@@ -564,7 +565,10 @@ public final class WorkbenchReporter implements IReporter {
 		}
 
 		ValidatorManager mgr = ValidatorManager.getManager();
-		addMessage(resource, validator.getClass(), message, getTargetObjectName(helper, message), getLocation(helper, message),getMarkerId(vmd,message));
+		if( validator instanceof IValidatorJob ){
+			cacheMessage( (IValidatorJob)validator, resource, validator.getClass(), message, getTargetObjectName(helper, message), getLocation(helper, message), getMarkerId(vmd, message) );
+		}else
+			addMessage(resource, validator.getClass(), message, getTargetObjectName(helper, message), getLocation(helper, message),getMarkerId(vmd,message));
 	}
 
 	/**
@@ -718,5 +722,27 @@ public final class WorkbenchReporter implements IReporter {
 		String[] validatorNames = vmd.getValidatorNames();
 		String targetObjectName = getTargetObjectName(helper, obj);
 		removeMessageSubset(resource, validatorNames, targetObjectName, groupName);
+	}
+	
+	private static void cacheMessage( IValidatorJob validator,
+				IResource resource,
+				Class clazz, IMessage message,
+				String targetObjectName,
+				String location,
+				String markerId ){
+		
+		if ((clazz == null) || (message == null) || (resource == null)) {
+			return;
+		}
+		ClassLoader cl = null;
+		if (cl == null) {
+			cl = clazz.getClassLoader();
+		}
+		String text = message.getText(cl);
+		MessageInfo msgInfo = new MessageInfo(getUniqueId(clazz), resource, location,
+					text, targetObjectName, markerId, message );
+
+		ValidatorManager mgr = ValidatorManager.getManager();
+		mgr.cacheMessage( validator, msgInfo );
 	}
 }

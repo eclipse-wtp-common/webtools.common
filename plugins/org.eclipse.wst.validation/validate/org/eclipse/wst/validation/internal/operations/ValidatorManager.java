@@ -11,10 +11,13 @@
 package org.eclipse.wst.validation.internal.operations;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -37,6 +40,7 @@ import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
+import org.eclipse.wst.validation.internal.provisional.core.IValidatorJob;
 
 /**
  * A centralised class for accessing validation metadata.
@@ -59,6 +63,7 @@ public final class ValidatorManager {
 	private boolean _suspendAllValidation = false;
 	private static Class _messageLimitOwner = null;
 	private String[] _internalOwners = null;
+	private Map validatorMsgs = Collections.synchronizedMap( new HashMap() );	
 	
 	/**
 	 * ValidatorManager constructor comment.
@@ -1097,5 +1102,28 @@ public final class ValidatorManager {
 
 		_internalOwners = tempInternalOwners;
 	}
-
+	
+	public void cacheMessage(IValidatorJob validator, MessageInfo info){
+		ArrayList list = (ArrayList) validatorMsgs.get(validator);
+		if( list == null ){
+			list = new ArrayList();
+			validatorMsgs.put(validator, list);
+		}
+		list.add(info);
+	}
+	
+	public ArrayList getMessages(IValidatorJob validator){
+		ArrayList list = (ArrayList) validatorMsgs.get(validator);
+		if( list == null )
+			list = new ArrayList();		
+		return list;
+	}
+	
+	public void clearMessages(IValidatorJob validator){
+		ArrayList list = (ArrayList) validatorMsgs.get(validator);
+		if( list != null ){
+			list.clear();
+		}
+		validatorMsgs.remove( validator );
+	}	
 }

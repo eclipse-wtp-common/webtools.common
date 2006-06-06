@@ -178,7 +178,6 @@ public class ValidatorJob extends Job {
 				helper.setProject(null);
 				vmd.removeHelper( validator );
 				helper = null;
-				validator = null;
 				reporter = null;
 			}
 			//reporter.getProgressMonitor().worked(((delta == null) ? 1 : delta.length)); // One
