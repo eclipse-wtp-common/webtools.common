@@ -22,11 +22,11 @@ import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
-import org.eclipse.wst.common.componentcore.internal.resources.VirtualComponent;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualFile;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualFolder;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualResource;
+import org.eclipse.wst.common.componentcore.internal.util.ComponentImplRegistryReader;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualContainer;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
@@ -64,7 +64,7 @@ public class ComponentCore {
 	public static IVirtualComponent createComponent(IProject aProject) {
 		if (!ModuleCoreNature.isFlexibleProject(aProject))
 			return null;
-		return new VirtualComponent(aProject, new Path("/")); //$NON-NLS-1$
+		return ComponentImplRegistryReader.instance().createComponent(aProject);
 	}
 
 	/**

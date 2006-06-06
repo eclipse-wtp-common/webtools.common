@@ -46,6 +46,9 @@ public class VirtualComponent implements IVirtualComponent {
 	private int flag = 0;
 	
 
+	protected VirtualComponent(){
+	}
+	
 	public VirtualComponent(IProject aProject, IPath aRuntimePath) {
 		componentProject = aProject;
 		runtimePath = aRuntimePath;
