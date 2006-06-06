@@ -81,10 +81,10 @@ public class SearchEngine implements ISearchOptions
 		if (monitor != null)
 			monitor.beginTask(Messages.engine_searching, 100);
 
+        SearchDocumentSet set = new SearchDocumentSetImpl();
 		try
 		{
 			// requestor.beginReporting();
-            SearchDocumentSet set = new SearchDocumentSetImpl();
             SearchScope[] scopeArray = new SearchScope[participants.length];
 			for (int i = 0, l = participants == null ? 0 : participants.length; i < l; i++)
 			{
@@ -143,10 +143,11 @@ public class SearchEngine implements ISearchOptions
                 {
                   // requestor.exitParticipant(participant);
                   participant.doneSearching(pattern, searchOptions);
-                }                
+                }         
             }    
 		} finally
 		{
+            set.dispose();
 			// requestor.endReporting();
 			if (monitor != null)
 				monitor.done();

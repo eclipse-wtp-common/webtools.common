@@ -13,6 +13,7 @@ package org.eclipse.wst.common.core.search.internal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -79,5 +80,32 @@ public class SearchDocumentSetImpl extends SearchDocumentSet
         documentPathMap.put(document.getPath(), document);
 	}
 
+    
+    public void dispose()
+    {
+      try
+      {
+      for (Iterator i = documentMap.values().iterator(); i.hasNext(); )
+      {
+        Object o = i.next();
+        if (o instanceof List)
+        {  
+          for (Iterator j = ((List)o).iterator(); j.hasNext(); )
+          {
+            Object o2 = j.next();
+            if (o2 instanceof SearchDocument)
+            {  
+               SearchDocument searchDocument = (SearchDocument)o2;
+               searchDocument.dispose();
+            }   
+          }          
+        }       
+      }
+      }
+      catch (Exception e)
+      {
+        e.printStackTrace();
+      }
+    }
 
 }

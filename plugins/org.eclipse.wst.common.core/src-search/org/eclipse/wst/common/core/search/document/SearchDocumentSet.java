@@ -28,5 +28,6 @@ public abstract class SearchDocumentSet
   public abstract SearchDocument getSearchDocument(String resourcePath, String participantId);
   public abstract SearchDocument[] getSearchDocuments(String participantId);
   public abstract void putSearchDocument(String participantId, SearchDocument document);
-  public abstract SearchDocument _tempGetSearchDocumetn(String resourcePath); 
+  public abstract SearchDocument _tempGetSearchDocumetn(String resourcePath);
+  public abstract void dispose();
 }

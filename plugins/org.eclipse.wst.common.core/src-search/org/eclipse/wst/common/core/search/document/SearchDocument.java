@@ -113,5 +113,8 @@ public abstract class SearchDocument
 	} 
 	
 	public abstract void putEntry(Entry entry);
-
+    
+    public void dispose()
+    {      
+    }
 }
