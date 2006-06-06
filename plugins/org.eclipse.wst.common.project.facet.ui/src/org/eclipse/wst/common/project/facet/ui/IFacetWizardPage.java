@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005, 2006 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,9 @@ package org.eclipse.wst.common.project.facet.ui;
 import org.eclipse.jface.wizard.IWizardPage;
 
 /**
+ * This interface is implemented by the wizard pages associated with project
+ * facet actions.
+ * 
  * <p><i>This class is part of an interim API that is still under development 
  * and expected to change significantly before reaching stability. It is being 
  * made available at this early stage to solicit feedback from pioneering 
@@ -28,7 +31,33 @@ public interface IFacetWizardPage
     extends IWizardPage
     
 {
-    void setWizardContext( final IWizardContext context );
-    void setConfig( final Object config );
+    /**
+     * The framework will call this method in order to provide the wizard
+     * context to the wizard page. The wizard context can be used to find out
+     * about other actions being configured by the wizard.
+     * 
+     * @param context the wizard context
+     */
+    
+    void setWizardContext( IWizardContext context );
+    
+    /**
+     * The framework will call this method in order to provide the action config
+     * object that the wizard page should save user selection into. The
+     * populated config object will then be passed to the action delegate.
+     * 
+     * @param config the action config object
+     */
+    
+    void setConfig( Object config );
+    
+    /**
+     * This method is called after the user has pressed the <code>Finish</code>
+     * button. It allows the wizard page to transfer user selection into the
+     * config object. Alternative, instead of using this method, the wizard
+     * page could update the model on the fly as the user is making changes.
+     */
+
     void transferStateToConfig();
+    
 }

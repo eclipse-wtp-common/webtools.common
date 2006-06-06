@@ -3,7 +3,7 @@
 <schema targetNamespace="org.eclipse.wst.common.project.facet.ui">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.eclipse.wst.common.project.facet.ui" id="wizard" name="Project Facet Wizard Pages Extension Point"/>
+         <meta.schema plugin="org.eclipse.wst.common.project.facet.ui" id="wizardPages" name="Project Facet Wizard Pages Extension Point"/>
       </appInfo>
       <documentation>
          Used for associating wizard pages with a project facet action. For instance, wizard pages can be associated with the action of installing facet Abc or uninstalling facet FooBar.
