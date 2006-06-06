@@ -41,8 +41,9 @@ public class WTPCommonUIResourceHandler extends NLS {
 	public static String IActionWTPOperation_UI_0;
 	public static String MasterDescriptor_ERROR_2;
 	public static String Name_;
-	public static String WTPWizard_UI_1;
 	public static String WTPWizard_UI_0;
+	public static String WTPWizard_UI_1;
+	public static String WTPWizard_UI_2;
 	public static String Browse_;
 	public static String ExtendableWizard_UI_0;
 	public static String ExtendedWizardPage_ERROR_1;
