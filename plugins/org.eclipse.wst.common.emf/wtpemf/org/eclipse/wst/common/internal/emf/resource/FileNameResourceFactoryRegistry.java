@@ -8,8 +8,8 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.internal.emf.resource;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -18,11 +18,10 @@ import org.eclipse.wst.common.internal.emf.utilities.DefaultOverridableResourceF
 
 
 public abstract class FileNameResourceFactoryRegistry extends DefaultOverridableResourceFactoryRegistry {
-	//We are using two lists instead of a Map because we need to iterate
-	//the list of simpleFileNames quite a lot.
-	protected List simpleFileNames;
-	protected List simpleFileNameFactories;
 
+	private Map/*<String shortName, ResourceFactoryDescriptor>*/ descriptors = new HashMap(); 
+	private Map/*<ResourceFactoryDescriptor, Resource.Factory>*/ factories = new HashMap();
+	
 	public FileNameResourceFactoryRegistry() {
 		super();
 	}
@@ -33,58 +32,57 @@ public abstract class FileNameResourceFactoryRegistry extends DefaultOverridable
 	 * @see org.eclipse.emf.ecore.resource.impl.ResourceFactoryRegistryImpl#getFactory(URI)
 	 */
 	protected Object getFileNameFactory(URI uri) {
-		if (simpleFileNames != null) {
-			String fileName = uri.lastSegment();
-			if (fileName != null) {
-				String key;
-				for (int i = 0; i < simpleFileNames.size(); i++) {
-					key = (String) simpleFileNames.get(i);
-					if (fileName.equals(key))
-						return simpleFileNameFactories.get(i);
-				}
-			}
+
+		if(uri != null) {
+			ResourceFactoryDescriptor descriptor = getDescriptor(uri);
+			
+			if(descriptor != null) {
+				return getFactory(descriptor);	
+			}	
 		}
 		return null;
+		
 	}
 
-	public Resource.Factory getFactory(URI uri) {
-		Object resourceFactory = getFileNameFactory(uri);
-		if (resourceFactory == null)
+	public synchronized Resource.Factory getFactory(URI uri) {
+
+		Resource.Factory resourceFactory = null;
+		if(uri != null && uri.lastSegment() != null) {
+			ResourceFactoryDescriptor descriptor = getDescriptor(uri);
+			
+			if(descriptor != null) {
+				resourceFactory = getFactory(descriptor);	
+			}	
+		}
+		if(resourceFactory == null)
 			resourceFactory = super.getFactory(uri);
-		return (Resource.Factory) resourceFactory;
+		return resourceFactory; 
 	}
 
 	/**
 	 * Register a file name representing the last segment of a URI with the corresponding
 	 * Resource.Factory.
 	 */
-	public void registerLastFileSegment(String aSimpleFileName, Resource.Factory aFactory) {
+	public synchronized void registerLastFileSegment(String aSimpleFileName, Resource.Factory aFactory) {
 		URI uri = URI.createURI(aSimpleFileName);
-		String lastSegment = uri.lastSegment();
-		int index = getFileNameIndexForAdd(lastSegment);
-		setFileName(lastSegment, index);
-		setFileNameFactory(aFactory, index);
+		String lastSegment = uri.lastSegment(); 
+		addDescriptor(new StaticResourceFactoryDescriptor(lastSegment, aFactory));		
+	} 
+
+	protected final synchronized ResourceFactoryDescriptor getDescriptor(URI uri) {
+		return (ResourceFactoryDescriptor) descriptors.get(uri.lastSegment());
 	}
 
-	private int getFileNameIndexForAdd(String aSimpleFileName) {
-		if (simpleFileNames != null) {
-			int i = simpleFileNames.indexOf(aSimpleFileName);
-			if (i > -1)
-				return i;
-			return simpleFileNames.size();
+	protected final synchronized Resource.Factory getFactory(ResourceFactoryDescriptor descriptor) {  
+		Resource.Factory factory = (Factory) factories.get(descriptor);
+		if(factory == null) {
+			factories.put(descriptor, (factory = descriptor.createFactory()));
 		}
-		return 0;
+		return factory;
 	}
 
-	private void setFileNameFactory(Factory aFactory, int index) {
-		if (simpleFileNameFactories == null)
-			simpleFileNameFactories = new ArrayList();
-		simpleFileNameFactories.add(index, aFactory);
+	protected final void addDescriptor(ResourceFactoryDescriptor descriptor) { 
+		descriptors.put(descriptor.getShortSegment(), descriptor);
 	}
-
-	private void setFileName(String aSimpleFileName, int index) {
-		if (simpleFileNames == null)
-			simpleFileNames = new ArrayList();
-		simpleFileNames.add(index, aSimpleFileName);
-	}
+ 
 }

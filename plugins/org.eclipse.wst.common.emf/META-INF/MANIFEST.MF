@@ -7,7 +7,7 @@ Bundle-Activator: org.eclipse.wst.common.internal.emf.plugin.EcoreUtilitiesPlugi
 Bundle-Vendor: %pluginProvider
 Bundle-Localization: plugin
 Export-Package: org.eclipse.wst.common.internal.emf.plugin;x-internal:=true,
- org.eclipse.wst.common.internal.emf.resource;x-internal:=true,
+ org.eclipse.wst.common.internal.emf.resource;x-friends:="org.eclipse.wst.common.modulecore",
  org.eclipse.wst.common.internal.emf.utilities;x-internal:=true
 Require-Bundle: org.eclipse.emf.ecore.xmi,
  org.eclipse.wst.common.frameworks,
