@@ -71,7 +71,7 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 		
 		if(LOG_WARNINGS) {
 			/* the third entry in the array is this stack frame, we walk back from there. */
-			StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+			StackTraceElement[] stackTrace = (new Exception()).getStackTrace();
 			if(stackTrace.length > 4) {
 				StringBuffer warningMessage = new StringBuffer("WTPResourceFactoryRegistry.registerLastFileSegment() was called explicitly from " + stackTrace[3]);
 				warningMessage.append("\nThis happened around: \n");
