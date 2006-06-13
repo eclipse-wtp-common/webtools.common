@@ -198,7 +198,11 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 				}
 			} else if (event.getPropertyName().equals(FACET_RUNTIME)) {
 				if (containsValue(event.getDataModel())) {
-					getDataModel().setProperty(FACET_RUNTIME, event.getProperty());
+					if (event.getFlag() == IDataModel.VALID_VALUES_CHG) {
+						getDataModel().notifyPropertyChange(FACET_RUNTIME, IDataModel.VALID_VALUES_CHG);
+					} else {
+						getDataModel().setProperty(FACET_RUNTIME, event.getProperty());
+					}
 				} else {
 					event.getDataModel().removeListener(this);
 				}
