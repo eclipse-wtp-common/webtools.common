@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.util;
 
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -36,9 +36,9 @@ public class ComponentImplRegistryReader extends RegistryReader {
 
 	private static final ComponentImplRegistryReader instance = new ComponentImplRegistryReader();
 
-	private final Map/* <String, ComponentImplDescriptor> */descriptors = new HashMap();
+	private final Map/* <String, ComponentImplDescriptor> */descriptors = new Hashtable();
 
-	private final Map/* <ArtifactEditDescriptor, IComponentImplFactory> */instances = new HashMap();
+	private final Map/* <ComponentImplDescriptor, IComponentImplFactory> */instances = new Hashtable();
 
 	/**
 	 * @return Returns the instance.
@@ -86,7 +86,7 @@ public class ComponentImplRegistryReader extends RegistryReader {
 		return false;
 	}
 
-	private synchronized IComponentImplFactory getComponentImplFactory(String typeID) {
+	private IComponentImplFactory getComponentImplFactory(String typeID) {
 
 		ComponentImplDescriptor descriptor = (ComponentImplDescriptor) descriptors.get(typeID);
 		IComponentImplFactory factory = null;
