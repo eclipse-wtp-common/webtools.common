@@ -134,4 +134,8 @@ public class DependencyGraphManager {
 		constructIfNecessary();
 		return DependencyGraph.getInstance();
 	}
+	
+	public void forceRefresh() {
+		buildDependencyGraph();
+	}
 }
