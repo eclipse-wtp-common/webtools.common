@@ -1,2 +1,3 @@
 org.eclipse.wst.common.project.facet.core/delegate/calls = false
 org.eclipse.wst.common.project.facet.core/actionSorting = false
+org.eclipse.wst.common.project.facet.core/activation = false

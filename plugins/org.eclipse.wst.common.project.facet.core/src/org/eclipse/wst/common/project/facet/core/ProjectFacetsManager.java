@@ -39,7 +39,7 @@ import org.eclipse.wst.common.project.facet.core.internal.ProjectFacetsManagerIm
 public final class ProjectFacetsManager 
 {
     private static ProjectFacetsManagerImpl impl 
-        = new ProjectFacetsManagerImpl();
+        = FacetedProjectFramework.getProjectFacetsManagerImpl();
     
     private ProjectFacetsManager() {}
     

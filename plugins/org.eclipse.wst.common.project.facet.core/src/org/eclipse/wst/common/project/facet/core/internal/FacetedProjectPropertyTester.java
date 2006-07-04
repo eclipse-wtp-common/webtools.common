@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005, 2006 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,10 +15,7 @@ import org.eclipse.core.expressions.PropertyTester;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject;
-import org.eclipse.wst.common.project.facet.core.IProjectFacet;
-import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
-import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -48,49 +45,24 @@ public final class FacetedProjectPropertyTester
                 return false;
             }
             
-            final IFacetedProject fpj = ProjectFacetsManager.create( pj );
-            
-            if( fpj == null || value == null || ! ( value instanceof String ) )
-            {
-                return false;
-            }
-            
             final String val = (String) value;
             final int colon = val.indexOf( ':' );
             
             final String fid;
-            final String vexprstr;
+            final String vexpr;
             
             if( colon == -1 || colon == val.length() - 1 )
             {
                 fid = val;
-                vexprstr = null;
+                vexpr = null;
             }
             else
             {
                 fid = val.substring( 0, colon );
-                vexprstr = val.substring( colon + 1 );
+                vexpr = val.substring( colon + 1 );
             }
             
-            if( ProjectFacetsManager.isProjectFacetDefined( fid ) )
-            {
-                final IProjectFacet f 
-                    = ProjectFacetsManager.getProjectFacet( fid );
-                
-                final IProjectFacetVersion fv = fpj.getInstalledVersion( f );
-                
-                if( fv != null )
-                {
-                    if( vexprstr == null )
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return f.getVersions( vexprstr ).contains( fv );
-                    }
-                }
-            }
+            return FacetedProjectFramework.hasProjectFacet( pj, fid, vexpr );
         }
         catch( CoreException e )
         {

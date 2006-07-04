@@ -15,8 +15,12 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.wizard.IWizard;
@@ -182,21 +186,34 @@ public class RuntimesPropertyPage extends PropertyPage
         if( ! this.project.getTargetedRuntimes().equals( primary ) ||
             ! equals( this.project.getPrimaryRuntime(), primary ) )
         {
+            final IWorkspaceRunnable wr = new IWorkspaceRunnable()
+            {
+                public void run( final IProgressMonitor monitor )
+                
+                    throws CoreException
+                    
+                {
+                    final IFacetedProject fpj 
+                        = RuntimesPropertyPage.this.project;
+                    
+                    fpj.setTargetedRuntimes( targeted, null );
+                    
+                    if( primary != null )
+                    {
+                        fpj.setPrimaryRuntime( primary, null );
+                    }
+                }
+            };
+            
             final Runnable op = new Runnable()
             {
                 public void run()
                 {
+                    final IWorkspace ws = ResourcesPlugin.getWorkspace();
+                    
                     try
                     {
-                        final IFacetedProject fpj 
-                            = RuntimesPropertyPage.this.project;
-                        
-                        fpj.setTargetedRuntimes( targeted, null );
-                        
-                        if( primary != null )
-                        {
-                            fpj.setPrimaryRuntime( primary, null );
-                        }
+                        ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, null );
                     }
                     catch( CoreException e )
                     {

@@ -64,7 +64,7 @@ public interface IConstraint
         
         public static Type valueOf( final String name )
         {
-            return (Type) items.get( name );
+            return (Type) items.get( name.toLowerCase() );
         }
         
         public String name()

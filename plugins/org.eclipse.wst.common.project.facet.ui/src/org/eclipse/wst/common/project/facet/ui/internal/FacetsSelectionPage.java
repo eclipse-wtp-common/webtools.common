@@ -281,6 +281,11 @@ public final class FacetsSelectionPage
         }
         
         super.setVisible( visible );
+        
+        if( visible )
+        {
+            this.panel.setFocus();
+        }
     }
 
     private static final class Resources

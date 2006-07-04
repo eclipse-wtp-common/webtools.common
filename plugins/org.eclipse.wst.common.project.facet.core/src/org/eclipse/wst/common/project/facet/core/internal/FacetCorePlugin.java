@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005, 2006 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,11 +15,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 import org.osgi.framework.Bundle;
 
 /**
@@ -27,36 +28,36 @@ import org.osgi.framework.Bundle;
  */
 
 public final class FacetCorePlugin 
-
-    extends Plugin 
-    
 {
-    public static final String PLUGIN_ID 
-        = "org.eclipse.wst.common.project.facet.core"; //$NON-NLS-1$
+    public static final String PLUGIN_ID = FacetedProjectFramework.PLUGIN_ID;
     
     private static final String TRACING_ACTION_SORTING
         = PLUGIN_ID + "/actionSorting"; //$NON-NLS-1$
+
+    private static final String TRACING_FRAMEWORK_ACTIVATION
+        = PLUGIN_ID + "/activation"; //$NON-NLS-1$
     
-    private static FacetCorePlugin plugin;
     private static final Set messagesLogged = new HashSet();
     
-    public FacetCorePlugin() 
-    {
-        super();
-        plugin = this;
-    }
-    
-    public static FacetCorePlugin getInstance()
-    {
-        return plugin;
-    }
+    private static final ILog platformLog
+        = Platform.getLog( Platform.getBundle( PLUGIN_ID ) );
     
     public static boolean isTracingActionSorting()
     {
-        final String optionValue
-            = Platform.getDebugOption( TRACING_ACTION_SORTING );
+        return checkDebugOption( TRACING_ACTION_SORTING );
+    }
+    
+    public static boolean isTracingFrameworkActivation()
+    {
+        return checkDebugOption( TRACING_FRAMEWORK_ACTIVATION );
+    }
+    
+    private static boolean checkDebugOption( final String debugOption )
+    {
+        final String optionValue = Platform.getDebugOption( debugOption );
         
-        return optionValue == null ? false : optionValue.equals( "true" ); //$NON-NLS-1$
+        return optionValue == null 
+               ? false : Boolean.valueOf( optionValue ).equals( Boolean.TRUE );
     }
     
     public static void log( final Exception e )
@@ -67,7 +68,7 @@ public final class FacetCorePlugin
 
     public static void log( final IStatus status )
     {
-        getInstance().getLog().log( status );
+        platformLog.log( status );
     }
     
     public static void log( final String msg )

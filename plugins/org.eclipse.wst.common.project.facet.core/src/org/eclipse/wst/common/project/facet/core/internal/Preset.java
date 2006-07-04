@@ -97,4 +97,9 @@ public final class Preset
         this.isUserDefined = isUserDefined;
     }
     
+    public String toString()
+    {
+        return this.id;
+    }
+    
 }

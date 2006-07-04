@@ -124,7 +124,7 @@ public final class FacetedProject
     private final CopyOnWriteSet targetedRuntimes;
     private String primaryRuntime;
     IFile f;
-    private long fLastModified = -1;
+    private long fModificationStamp = -1;
     private final List listeners;
     private final Object lock = new Object();
     private boolean isBeingModified = false;
@@ -237,28 +237,28 @@ public final class FacetedProject
         throws CoreException
         
     {
-        beginModification();
-        
-        try
+        final IWorkspaceRunnable wr = new IWorkspaceRunnable()
         {
-            final IWorkspaceRunnable wr = new IWorkspaceRunnable()
-            {
-                public void run( final IProgressMonitor monitor ) 
+            public void run( final IProgressMonitor monitor ) 
+            
+                throws CoreException
                 
-                    throws CoreException
-                    
+            {
+                beginModification();
+                
+                try
                 {
                     modifyInternal( actions, monitor );
                 }
-            };
-            
-            final IWorkspace ws = ResourcesPlugin.getWorkspace();
-            ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, monitor );
-        }
-        finally
-        {
-            endModification();
-        }
+                finally
+                {
+                    endModification();
+                }
+            }
+        };
+        
+        final IWorkspace ws = ResourcesPlugin.getWorkspace();
+        ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, monitor );
         
         notifyListeners();
     }
@@ -405,16 +405,16 @@ public final class FacetedProject
         throws CoreException
         
     {
-        beginModification();
-        
-        try
+        final IWorkspaceRunnable wr = new IWorkspaceRunnable()
         {
-            final IWorkspaceRunnable wr = new IWorkspaceRunnable()
-            {
-                public void run( final IProgressMonitor monitor ) 
+            public void run( final IProgressMonitor monitor ) 
+            
+                throws CoreException
                 
-                    throws CoreException
-                    
+            {
+                beginModification();
+                
+                try
                 {
                     synchronized( FacetedProject.this.lock )
                     {
@@ -424,15 +424,15 @@ public final class FacetedProject
                         
                     save();
                 }
-            };
-            
-            final IWorkspace ws = ResourcesPlugin.getWorkspace();
-            ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, null );
-        }
-        finally
-        {
-            endModification();
-        }
+                finally
+                {
+                    endModification();
+                }
+            }
+        };
+        
+        final IWorkspace ws = ResourcesPlugin.getWorkspace();
+        ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, null );
         
         notifyListeners();
     }
@@ -479,33 +479,33 @@ public final class FacetedProject
     }
     
     public void setTargetedRuntimes( final Set runtimes,
-                                   final IProgressMonitor monitor )
+                                     final IProgressMonitor monitor )
     
         throws CoreException
         
     {
-        beginModification();
-        
-        try
+        final IWorkspaceRunnable wr = new IWorkspaceRunnable()
         {
-            final IWorkspaceRunnable wr = new IWorkspaceRunnable()
-            {
-                public void run( final IProgressMonitor monitor ) 
+            public void run( final IProgressMonitor monitor ) 
+            
+                throws CoreException
                 
-                    throws CoreException
-                    
+            {
+                beginModification();
+                
+                try
                 {
                     setTargetedRuntimesInternal( runtimes, monitor );
                 }
-            };
-            
-            final IWorkspace ws = ResourcesPlugin.getWorkspace();
-            ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, null );
-        }
-        finally
-        {
-            endModification();
-        }
+                finally
+                {
+                    endModification();
+                }
+            }
+        };
+        
+        final IWorkspace ws = ResourcesPlugin.getWorkspace();
+        ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, null );
         
         notifyListeners();
     }
@@ -617,33 +617,33 @@ public final class FacetedProject
     }
     
     public void addTargetedRuntime( final IRuntime runtime,
-                                  final IProgressMonitor monitor )
+                                    final IProgressMonitor monitor )
     
         throws CoreException
         
     {
-        beginModification();
-        
-        try
+        final IWorkspaceRunnable wr = new IWorkspaceRunnable()
         {
-            final IWorkspaceRunnable wr = new IWorkspaceRunnable()
-            {
-                public void run( final IProgressMonitor monitor ) 
+            public void run( final IProgressMonitor monitor ) 
+            
+                throws CoreException
                 
-                    throws CoreException
-                    
+            {
+                beginModification();
+                
+                try
                 {
                     addTargetedRuntimeInternal( runtime, monitor );
                 }
-            };
-            
-            final IWorkspace ws = ResourcesPlugin.getWorkspace();
-            ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, null );
-        }
-        finally
-        {
-            endModification();
-        }
+                finally
+                {
+                    endModification();
+                }
+            }
+        };
+        
+        final IWorkspace ws = ResourcesPlugin.getWorkspace();
+        ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, null );
         
         notifyListeners();
     }
@@ -716,28 +716,28 @@ public final class FacetedProject
         throws CoreException
         
     {
-        beginModification();
-        
-        try
+        final IWorkspaceRunnable wr = new IWorkspaceRunnable()
         {
-            final IWorkspaceRunnable wr = new IWorkspaceRunnable()
-            {
-                public void run( final IProgressMonitor monitor ) 
+            public void run( final IProgressMonitor monitor ) 
+            
+                throws CoreException
                 
-                    throws CoreException
-                    
+            {
+                beginModification();
+                
+                try
                 {
                     removeTargetedRuntimeInternal( runtime, monitor );
                 }
-            };
-            
-            final IWorkspace ws = ResourcesPlugin.getWorkspace();
-            ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, null );
-        }
-        finally
-        {
-            endModification();
-        }
+                finally
+                {
+                    endModification();
+                }
+            }
+        };
+        
+        final IWorkspace ws = ResourcesPlugin.getWorkspace();
+        ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, null );
         
         notifyListeners();
     }
@@ -825,28 +825,28 @@ public final class FacetedProject
         throws CoreException
         
     {
-        beginModification();
-        
-        try
+        final IWorkspaceRunnable wr = new IWorkspaceRunnable()
         {
-            final IWorkspaceRunnable wr = new IWorkspaceRunnable()
-            {
-                public void run( final IProgressMonitor monitor ) 
+            public void run( final IProgressMonitor monitor ) 
+            
+                throws CoreException
                 
-                    throws CoreException
-                    
+            {
+                beginModification();
+                
+                try
                 {
                     setPrimaryRuntimeInternal( runtime, monitor );
                 }
-            };
-            
-            final IWorkspace ws = ResourcesPlugin.getWorkspace();
-            ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, null );
-        }
-        finally
-        {
-            endModification();
-        }
+                finally
+                {
+                    endModification();
+                }
+            }
+        };
+        
+        final IWorkspace ws = ResourcesPlugin.getWorkspace();
+        ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, null );
         
         notifyListeners();
     }
@@ -1383,7 +1383,7 @@ public final class FacetedProject
             this.f.create( in, true, null );
         }
         
-        this.fLastModified = this.f.getLocation().toFile().lastModified();
+        this.fModificationStamp = this.f.getModificationStamp();
     }
 
     public void refresh()
@@ -1399,7 +1399,7 @@ public final class FacetedProject
             }
             
             if( this.f.exists() && 
-                this.f.getLocation().toFile().lastModified() == this.fLastModified )
+                this.f.getModificationStamp() == this.fModificationStamp )
             {
                 return;
             }
@@ -1416,11 +1416,11 @@ public final class FacetedProject
                 
                 if( ! this.f.exists() )
                 {
-                    this.fLastModified = -1;
+                    this.fModificationStamp = -1;
                     return;
                 }
                 
-                this.fLastModified = this.f.getLocation().toFile().lastModified();
+                this.fModificationStamp = this.f.getModificationStamp();
                 
                 final Element root = parse( this.f.getLocation().toFile() );
                 final Element[] elements = children( root );
