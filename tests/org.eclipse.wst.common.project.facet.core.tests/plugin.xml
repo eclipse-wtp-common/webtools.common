@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+
+<plugin>
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.facets">
+    
+    <category id="cat1">
+      <label>Category 1</label>
+      <description>This is the category description.</description>
+    </category>
+
+    <project-facet id="facet1">
+      <label>Facet 1</label>
+      <description>This is the description of facet1.</description>
+    </project-facet>
+    
+    <project-facet-version facet="facet1" version="1.0">
+      <action type="install">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet1InstallDelegate"/>
+      </action>
+      <action type="uninstall">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet1UninstallDelegate"/>
+      </action>
+      <action type="version-change">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet1VersionChangeDelegate"/>
+      </action>
+    </project-facet-version>
+    
+    <project-facet-version facet="facet1" version="1.2">
+      <action type="install">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet1InstallDelegate"/>
+      </action>
+      <action type="uninstall">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet1UninstallDelegate"/>
+      </action>
+      <action type="version-change">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet1VersionChangeDelegate"/>
+      </action>
+    </project-facet-version>
+    
+    <project-facet-version facet="facet1" version="1.2.1"/>
+    <project-facet-version facet="facet1" version="1.3"/>
+    <project-facet-version facet="facet1" version="2.0"/>
+
+    <action facet="facet1" version="[1.2.1-2.0]" type="install">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet1InstallDelegate"/>
+    </action>
+    
+    <action facet="facet1" version="[1.2.1-2.0]" type="uninstall">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet1UninstallDelegate"/>
+    </action>
+    
+    <action facet="facet1" version="[1.2.1-2.0]" type="version-change">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet1VersionChangeDelegate"/>
+    </action>
+    
+    <project-facet id="facet2">
+      <version-comparator class="org.eclipse.wst.common.project.facet.core.tests.support.CustomVersionComparator"/>
+      <category>cat1</category>
+    </project-facet>
+    
+    <project-facet-version facet="facet2" version="3.5">
+      <constraint>
+        <requires facet="facet1" version="1.0"/>
+      </constraint>
+    </project-facet-version>
+    
+    <project-facet-version facet="facet2" version="3.5#a">
+      <constraint>
+        <and>
+          <requires facet="facet1" version="[1.2-1.3)"/>
+        </and>
+      </constraint>
+    </project-facet-version>
+    
+    <project-facet-version facet="facet2" version="4.7">
+      <constraint>
+        <or>
+          <requires facet="facet1" version="[1.3"/>
+        </or>
+      </constraint>
+    </project-facet-version>
+    
+    <project-facet-version facet="facet2" version="4.7#b">
+      <constraint>
+        <or>
+          <requires facet="facet1" version="1.3"/>
+          <requires facet="facet1" version="2.0"/>
+        </or>
+      </constraint>
+    </project-facet-version>
+        
+    <project-facet-version facet="facet2" version="4.7#c">
+      <constraint>
+        <and>
+          <or>
+            <requires facet="facet1" version="1.2.1"/>
+            <requires facet="facet1" version="1.3"/>
+            <requires facet="facet1" version="2.0"/>
+          </or>
+          <conflicts facet="facet3a"/>
+          <conflicts facet="facet3b" version="1.0"/>
+          <conflicts group="group1"/>
+        </and>
+      </constraint>
+      <group-member id="group1"/>
+    </project-facet-version>
+    
+    <project-facet id="facet2ext">
+      <category>cat1</category>
+    </project-facet>
+    
+    <project-facet-version facet="facet2ext" version="1.0"/>
+
+    <category id="cat2"/>
+    
+    <project-facet id="facet3a">
+      <category>cat2</category>
+    </project-facet>
+    
+    <project-facet-version facet="facet3a" version="1.0"/>
+    <project-facet-version facet="facet3a" version="2.0"/>
+
+    <project-facet id="facet3b">
+      <category>cat2</category>
+    </project-facet>
+    
+    <project-facet-version facet="facet3b" version="1.0"/>
+    <project-facet-version facet="facet3b" version="2.0"/>
+    
+    <project-facet id="facet3c">
+      <category>cat2</category>
+    </project-facet>
+    
+    <project-facet-version facet="facet3c" version="1.0">
+      <group-member id="group1"/>
+    </project-facet-version>
+
+    <project-facet-version facet="facet3c" version="2.0">
+      <group-member id="group1"/>
+    </project-facet-version>
+
+    <preset id="preset1">
+      <label>Preset 1</label>
+      <description>This is the description for the first preset.</description>
+      <facet id="facet1" version="2.0"/>
+      <facet id="facet2" version="3.5#a"/>
+      <facet id="facet2ext" version="1.0"/>
+    </preset>
+
+    <preset id="preset2">
+      <facet id="facet3a" version="1.0"/>
+      <facet id="facet3b" version="1.0"/>
+      <facet id="facet3c" version="1.0"/>
+    </preset>
+    
+  </extension>
+
+</plugin>
