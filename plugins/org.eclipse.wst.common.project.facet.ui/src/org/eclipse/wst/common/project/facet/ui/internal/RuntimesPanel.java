@@ -392,7 +392,7 @@ public final class RuntimesPanel
     private void handleRuntimeSelectionChanged()
     {
         final IRuntime r = getSelection();
-
+        
         if( r == null )
         {
             if( this.runtimeComponents.getInput() != null )
@@ -411,10 +411,7 @@ public final class RuntimesPanel
                 this.runtimeComponents.getTable().setEnabled( true );
                 this.runtimeComponents.setInput( r );
             }
-        }
-        
-        if( r != null )
-        {
+            
             if( this.runtimes.getChecked( r ) && 
                 this.model.getPrimaryRuntime() != null && 
                 ! this.model.getPrimaryRuntime().equals( r ) &&

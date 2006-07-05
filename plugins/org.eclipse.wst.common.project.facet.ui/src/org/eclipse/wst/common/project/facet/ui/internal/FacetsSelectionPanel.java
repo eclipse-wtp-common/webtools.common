@@ -856,7 +856,6 @@ public final class FacetsSelectionPanel
         this.filters.add( this.conflictingFilter );
 
         refresh();
-        refreshVersionsDropDown();
         updateValidationDisplay();
     }
     
@@ -865,7 +864,6 @@ public final class FacetsSelectionPanel
         this.filters.add( filter );
         
         refresh();
-        refreshVersionsDropDown();
     }
 
     public void removeFilter( final IFilter filter )
@@ -873,7 +871,6 @@ public final class FacetsSelectionPanel
         this.filters.remove( filter );
         
         refresh();
-        refreshVersionsDropDown();
     }
     
     public boolean setFocus()
@@ -1191,6 +1188,7 @@ public final class FacetsSelectionPanel
         this.tree.refresh();
         this.tree.setCheckedElements( checked );
         refreshPresetsCombo();
+        refreshVersionsDropDown();
     }
     
     public void syncWithPresetsModel( final Combo combo )
