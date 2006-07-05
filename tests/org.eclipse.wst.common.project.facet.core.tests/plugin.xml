@@ -121,6 +121,18 @@
     
     <project-facet-version facet="facet3a" version="1.0"/>
     <project-facet-version facet="facet3a" version="2.0"/>
+    
+    <action facet="facet3a" version="[1.0-2.0]" type="install">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet3aInstallDelegate"/>
+    </action>
+
+    <action facet="facet3a" version="[1.0-2.0]" type="uninstall">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet3aUninstallDelegate"/>
+    </action>
+    
+    <action facet="facet3a" version="[1.0-2.0]" type="version-change">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.Facet3aVersionChangeDelegate"/>
+    </action>
 
     <project-facet id="facet3b">
       <category>cat2</category>

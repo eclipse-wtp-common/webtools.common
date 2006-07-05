@@ -15,6 +15,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -856,20 +858,58 @@ public final class ProjectFacetsManagerImpl
             unsorted = new ArrayList( actions );
         }
         
-        // Step 1 : Pre-sort all uninstall actions to the front of the list.
+        // Step 1 : Pre-sort all uninstall actions to the front of the list. 
+        //          Within that order, sort actions based on facet id. The
+        //          secondary sort assures a stable sort order among actions on
+        //          unrelated facets.
         
-        for( int i = 0, j = 0; j < count; j++ )
+        final Comparator comp = new Comparator()
         {
-            final Action action = (Action) actions.get( j );
-            
-            if( action.getType() == Action.Type.UNINSTALL && i != j )
+            public int compare( final Object obj1, 
+                                final Object obj2 )
             {
-                actions.set( j, actions.get( i ) );
-                actions.set( i, action );
-                i++;
-                steps++;
+                final Action a1 = (Action) obj1;
+                final Action a2 = (Action) obj2;
+                
+                int res = compare( a1.getType(), a2.getType() );
+                
+                if( res == 0 )
+                {
+                    final String fid1 
+                        = a1.getProjectFacetVersion().getProjectFacet().getId();
+                    
+                    final String fid2 
+                        = a2.getProjectFacetVersion().getProjectFacet().getId();
+                    
+                    res = fid1.compareTo( fid2 );
+                }
+                
+                return res;
             }
-        }
+            
+            private int compare( final Action.Type t1,
+                                 final Action.Type t2 )
+            {
+                if( t1 == t2 )
+                {
+                    return 0;
+                }
+                else if( t1 == Action.Type.UNINSTALL )
+                {
+                    return -1;
+                }
+                else if( t2 == Action.Type.UNINSTALL )
+                {
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        };
+        
+        Collections.sort( actions, comp );
         
         // Step 2 : Sort based on the constraints.
         
