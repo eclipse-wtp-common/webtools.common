@@ -11,15 +11,13 @@
 
 package org.eclipse.wst.common.project.facet.core.internal;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1364,8 +1362,19 @@ public final class FacetedProject
         out.print( "</faceted-project>" ); //$NON-NLS-1$
         out.print( nl );
         
-        final InputStream in 
-            = new ByteArrayInputStream( w.getBuffer().toString().getBytes() );
+        final byte[] bytes;
+        
+        try
+        {
+            bytes = w.getBuffer().toString().getBytes( "UTF-8" ); //$NON-NLS-1$
+        }
+        catch( UnsupportedEncodingException e )
+        {
+            // Unexpected. All JVMs are supposed to support UTF-8.
+            throw new RuntimeException( e );
+        }
+        
+        final InputStream in = new ByteArrayInputStream( bytes );
         
         if( this.f.exists() )
         {
@@ -1560,27 +1569,13 @@ public final class FacetedProject
             throw new RuntimeException( e );
         }
 
-        InputStream in = null;
-
         try
         {
-            in = new BufferedInputStream( new FileInputStream( f ) );
-            return docbuilder.parse( in ).getDocumentElement();
+            return docbuilder.parse( f ).getDocumentElement();
         }
         catch( Exception e )
         {
             throw new RuntimeException( e );
-        }
-        finally
-        {
-            if( in != null )
-            {
-                try
-                {
-                    in.close();
-                }
-                catch( IOException e ) {}
-            }
         }
     }
     
