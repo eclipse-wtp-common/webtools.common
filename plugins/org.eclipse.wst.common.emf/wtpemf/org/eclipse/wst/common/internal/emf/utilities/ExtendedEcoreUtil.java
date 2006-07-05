@@ -149,7 +149,7 @@ public class ExtendedEcoreUtil extends EcoreUtil {
 	 *  @deprecated use {@link Resource.Internal#isLoading()}
 	 */
 	public static boolean isLoading(Resource resource) {
-		return resource != null ? ((Resource.Internal)resource).isLoaded() : false; 
+		return resource != null ? ((Resource.Internal)resource).isLoading() : false; 
 	}
 
 	public static Adapter createAdapterForLoading(Adapter targetAdapter, EObject targetObject) {
