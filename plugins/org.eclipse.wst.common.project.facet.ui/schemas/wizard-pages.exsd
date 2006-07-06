@@ -96,7 +96,19 @@
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         
+         &lt;p&gt;The following example associates wizard pages with install and uninstall actions of facet1.&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;extension point=&quot;org.eclipse.wst.common.project.facet.ui.wizardPages&quot;&gt;
+  &lt;wizard-pages action=&quot;facet1.install&quot;&gt;
+    &lt;page class=&quot;com.mycorp.Facet1InstallPage1&quot;/&gt;
+    &lt;page class=&quot;com.mycorp.Facet1InstallPage2&quot;/&gt;
+  &lt;/wizard-pages&gt;
+  &lt;wizard-pages action=&quot;facet1.uninstall&quot;&gt;
+    &lt;page class=&quot;com.mycorp.Facet1UninstallPage&quot;/&gt;
+  &lt;/wizard-pages&gt;
+&lt;/extension&gt;
+&lt;/pre&gt;
       </documentation>
    </annotation>
 

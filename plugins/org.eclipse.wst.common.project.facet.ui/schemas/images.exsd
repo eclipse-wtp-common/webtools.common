@@ -94,7 +94,15 @@
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         
+         &lt;p&gt;The following example associates images with two facets and a category.&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;extension point=&quot;org.eclipse.wst.common.project.facet.ui.images&quot;&gt;
+  &lt;image facet=&quot;facet1&quot; path=&quot;icons/facet1.gif&quot;/&gt;
+  &lt;image facet=&quot;facet2&quot; path=&quot;icons/facet2.gif&quot;/&gt;
+  &lt;image category=&quot;category1&quot; path=&quot;icons/category1.gif&quot;/&gt;
+&lt;/extension&gt;
+&lt;/pre&gt;
       </documentation>
    </annotation>
 

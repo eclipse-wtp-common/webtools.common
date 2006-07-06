@@ -584,7 +584,62 @@
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         
+         &lt;p&gt;The following example illustrates the various facilities exposed by this extension point. This example is taken from the &lt;i&gt;Building Project Facets&lt;/i&gt; tutorial.&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;extension point=&quot;org.eclipse.wst.common.project.facet.core.facets&quot;&gt;
+
+  &lt;category id=&quot;formgen.category&quot;&gt;
+    &lt;label&gt;FormGen&lt;/label&gt;
+    &lt;description&gt;Enables generation of HTML forms based on XML definition files.&lt;/description&gt;
+  &lt;/category&gt;
+
+  &lt;project-facet id=&quot;formgen.core&quot;&gt;
+    &lt;label&gt;FormGen Core&lt;/label&gt;
+    &lt;description&gt;
+      Enables generation of HTML forms based on XML definition files.
+    &lt;/description&gt;
+    &lt;category&gt;formgen.category&lt;/category&gt;
+  &lt;/project-facet&gt;
+
+  &lt;project-facet-version facet=&quot;formgen.core&quot; version=&quot;1.0&quot;&gt;
+    &lt;constraint&gt;
+      &lt;requires facet=&quot;jst.web&quot; version=&quot;2.2,2.3,2.4&quot;/&gt;
+    &lt;/constraint&gt;
+    &lt;action type=&quot;INSTALL&quot; id=&quot;formgen.core.install&quot;&gt;
+      &lt;config-factory class=&quot;com.formgen.eclipse.FormGenCoreFacetInstallConfig$Factory&quot;/&gt;
+      &lt;delegate class=&quot;com.formgen.eclipse.FormGenCoreFacetInstallDelegate&quot;/&gt;
+    &lt;/action&gt;
+  &lt;/project-facet-version&gt;
+
+  &lt;project-facet id=&quot;formgen.ext&quot;&gt;
+    &lt;label&gt;FormGen Extensions&lt;/label&gt;
+    &lt;description&gt;
+      Enables additional FormGen widgets.
+    &lt;/description&gt;
+    &lt;category&gt;formgen.category&lt;/category&gt;
+  &lt;/project-facet&gt;
+
+  &lt;project-facet-version facet=&quot;formgen.ext&quot; version=&quot;1.0&quot;&gt;
+    &lt;constraint&gt;
+      &lt;requires facet=&quot;formgen.core&quot; version=&quot;1.0&quot;/&gt;
+    &lt;/constraint&gt;
+    &lt;action type=&quot;INSTALL&quot;&gt;
+      &lt;delegate class=&quot;com.formgen.eclipse.FormGenExtFacetInstallDelegate&quot;/&gt;
+    &lt;/action&gt;
+  &lt;/project-facet-version&gt;
+
+  &lt;preset id=&quot;formgen.preset&quot;&gt;
+    &lt;label&gt;FormGen Web Project&lt;/label&gt;
+    &lt;description&gt;Creates a web project with FormGen functionality.&lt;/description&gt;
+    &lt;facet id=&quot;jst.java&quot; version=&quot;5.0&quot;/&gt;
+    &lt;facet id=&quot;jst.web&quot; version=&quot;2.2&quot;/&gt;
+    &lt;facet id=&quot;formgen.core&quot; version=&quot;1.0&quot;/&gt;
+    &lt;facet id=&quot;formgen.ext&quot; version=&quot;1.0&quot;/&gt;
+  &lt;/preset&gt;
+  
+&lt;/extension&gt;
+&lt;/pre&gt;
       </documentation>
    </annotation>
 

@@ -115,7 +115,29 @@
          <meta.section type="examples"/>
       </appInfo>
       <documentation>
-         
+         &lt;p&gt;The following example declares facet1 (version 1.3) and facet2 (version 5.0) as default facets for runtime component MyRuntimeComponent.&lt;/p&gt; 
+
+&lt;pre&gt;
+&lt;extension point=&quot;org.eclipse.wst.common.project.facet.core.defaultFacets&quot;&gt;
+  &lt;default-facets&gt;
+    &lt;runtime-component id=&quot;MyRuntimeComponent&quot;/&gt;
+    &lt;facet id=&quot;facet1&quot; version=&quot;1.3&quot;/&gt;
+    &lt;facet id=&quot;facet2&quot; version=&quot;5.0&quot;/&gt;
+  &lt;/validator&gt;
+&lt;/extension&gt;
+&lt;/pre&gt;
+
+&lt;p&gt;Multiple plugins can contribute to the set of the default facets for a given runtime component. If the following example is combined with the first one, there will be three default facets associated with MyRuntimeComponent.&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;extension point=&quot;org.eclipse.wst.common.project.facet.core.defaultFacets&quot;&gt;
+  &lt;default-facets&gt;
+    &lt;runtime-component id=&quot;MyRuntimeComponent&quot;/&gt;
+    &lt;facet id=&quot;facet3&quot; version=&quot;1.2&quot;/&gt;
+  &lt;/validator&gt;
+&lt;/extension&gt;
+&lt;/pre&gt;
+
       </documentation>
    </annotation>
 
