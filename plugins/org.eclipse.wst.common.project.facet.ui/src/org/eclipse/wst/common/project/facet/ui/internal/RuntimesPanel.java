@@ -446,8 +446,6 @@ public final class RuntimesPanel
         final Set untargetable = new HashSet( this.model.getAllRuntimes() );
         untargetable.removeAll( this.model.getTargetableRuntimes() );
         
-        this.runtimes.setGrayedElements( untargetable.toArray() );
-
         this.runtimes.setCheckedElements( this.model.getTargetedRuntimes().toArray() );
     }
     
@@ -531,8 +529,8 @@ public final class RuntimesPanel
             
             final IRuntimeComponentType rct = rc.getRuntimeComponentType();
             
-            final boolean isPrimary
-                = getDataModel().getPrimaryRuntime().equals( r );
+            final IRuntime primary = getDataModel().getPrimaryRuntime();
+            final boolean isPrimary = primary != null && primary.equals( r );
             
             final String imgid
                 = ( isPrimary ? "p:" : "s" ) //$NON-NLS-1$ //$NON-NLS-2$
@@ -558,8 +556,6 @@ public final class RuntimesPanel
 
             if( getDataModel().getTargetableRuntimes().contains( r ) )
             {
-                RuntimesPanel.this.runtimes.setGrayed( r, false );
-                
                 if( RuntimesPanel.this.model.getTargetedRuntimes().contains( r ) )
                 {
                     RuntimesPanel.this.runtimes.setChecked( r, true );
@@ -573,7 +569,6 @@ public final class RuntimesPanel
             }
             else
             {
-                RuntimesPanel.this.runtimes.setGrayed( r, true );
                 RuntimesPanel.this.runtimes.setChecked( r, false );
                 
                 final String greyedId = rct.getId() + "##greyed##"; //$NON-NLS-1$
