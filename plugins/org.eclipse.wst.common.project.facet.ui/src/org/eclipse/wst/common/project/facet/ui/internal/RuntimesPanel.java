@@ -17,12 +17,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.jface.resource.CompositeImageDescriptor;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IColorProvider;
-import org.eclipse.jface.viewers.IFontProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -39,15 +40,14 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
@@ -507,23 +507,14 @@ public final class RuntimesPanel
     
     private final class LabelProvider
 
-        implements ILabelProvider, IFontProvider, IColorProvider
+        implements ILabelProvider, IColorProvider
     
     {
         private final ImageRegistry imageRegistry;
-        private final Font boldFont;
         
         public LabelProvider()
         {
             this.imageRegistry = new ImageRegistry();
-            
-            final FontData system 
-                = Display.getCurrent().getSystemFont().getFontData()[ 0 ];
-        
-            final FontData bold 
-                = new FontData( system.getName(), system.getHeight(), SWT.BOLD );
-            
-            this.boldFont = new Font( Display.getCurrent(), bold );
         }
         
         public String getText( final Object element )
@@ -540,15 +531,29 @@ public final class RuntimesPanel
             
             final IRuntimeComponentType rct = rc.getRuntimeComponentType();
             
-            Image image = this.imageRegistry.get( rct.getId() );
+            final boolean isPrimary
+                = getDataModel().getPrimaryRuntime().equals( r );
+            
+            final String imgid
+                = ( isPrimary ? "p:" : "s" ) //$NON-NLS-1$ //$NON-NLS-2$
+                  + rct.getId();
+            
+            Image image = this.imageRegistry.get( imgid );
             
             if( image == null )
             {
                 final IDecorationsProvider decprov
                     = (IDecorationsProvider) rct.getAdapter( IDecorationsProvider.class );
                 
-                this.imageRegistry.put( rct.getId(), decprov.getIcon() );
-                image = this.imageRegistry.get( rct.getId() );
+                ImageDescriptor imgdesc = decprov.getIcon();
+                
+                if( isPrimary )
+                {
+                    imgdesc = new PrimaryRuntimeImageDescriptor( imgdesc );
+                }
+                
+                this.imageRegistry.put( imgid, imgdesc );
+                image = this.imageRegistry.get( imgid );
             }
 
             if( getDataModel().getTargetableRuntimes().contains( r ) )
@@ -584,18 +589,6 @@ public final class RuntimesPanel
             }
         }
         
-        public Font getFont( final Object element )
-        {
-            final IRuntime primary = getDataModel().getPrimaryRuntime();
-            
-            if( primary != null && primary.equals( element ) )
-            {
-                return this.boldFont;
-            }
-            
-            return null;
-        }
-        
         public Color getForeground( final Object element )
         {
             if( ! getDataModel().getTargetableRuntimes().contains( element ) )
@@ -616,7 +609,6 @@ public final class RuntimesPanel
         public void dispose()
         {
             this.imageRegistry.dispose();
-            this.boldFont.dispose();
         }
 
         public boolean isLabelProperty( final Object element, 
@@ -741,6 +733,39 @@ public final class RuntimesPanel
 
         public void addListener( final ILabelProviderListener listener ) {}
         public void removeListener( final ILabelProviderListener listener ) {}
+    }
+    
+    private static final class PrimaryRuntimeImageDescriptor 
+    
+        extends CompositeImageDescriptor 
+        
+    {
+        private static final String OVERLAY_IMG_LOCATION
+            = "images/primary-runtime-overlay.gif"; //$NON-NLS-1$
+        
+        private static final ImageData OVERLAY
+            = FacetUiPlugin.getImageDescriptor( OVERLAY_IMG_LOCATION ).getImageData();
+        
+        private final ImageData base;
+        private final Point size;
+        
+        public PrimaryRuntimeImageDescriptor( final ImageDescriptor base ) 
+        {
+            this.base = base.getImageData();
+            this.size = new Point( this.base.width, this.base.height ); 
+        }
+    
+        protected void drawCompositeImage( final int width, 
+                                           final int height ) 
+        {
+            drawImage( this.base, 0, 0 );
+            drawImage( OVERLAY, 0, height - OVERLAY.height );
+        }
+    
+        protected Point getSize()
+        {
+            return this.size;
+        }
     }
 
     private static final GridData gdfill()
