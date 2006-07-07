@@ -200,6 +200,8 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 				if (containsValue(event.getDataModel())) {
 					if (event.getFlag() == IDataModel.VALID_VALUES_CHG) {
 						getDataModel().notifyPropertyChange(FACET_RUNTIME, IDataModel.VALID_VALUES_CHG);
+					} else if(event.getFlag() == IDataModel.ENABLE_CHG) {
+						getDataModel().notifyPropertyChange(FACET_RUNTIME, IDataModel.ENABLE_CHG);
 					} else {
 						getDataModel().setProperty(FACET_RUNTIME, event.getProperty());
 					}
