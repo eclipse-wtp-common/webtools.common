@@ -71,14 +71,14 @@
          <attribute name="icon" type="string">
             <annotation>
                <documentation>
-                  
+                  Optional path to an icon image.
                </documentation>
             </annotation>
          </attribute>
          <attribute name="url" type="string">
             <annotation>
                <documentation>
-                  
+                  Optional url for the function group.
                </documentation>
             </annotation>
          </attribute>

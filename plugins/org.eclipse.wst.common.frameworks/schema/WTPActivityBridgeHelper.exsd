@@ -6,7 +6,7 @@
          <meta.schema plugin="org.eclipse.wst.common.frameworks" id="WTPActivityBridgeHelper" name="WTP Activity Bridge Helper"/>
       </appInfo>
       <documentation>
-         
+         This is used to declare an activity bridge helper which is useful when enabling capabilities.
       </documentation>
    </annotation>
 
@@ -44,7 +44,7 @@
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  fully qualified class name for the WTPActivityBridgeHelper class
                </documentation>
             </annotation>
          </attribute>

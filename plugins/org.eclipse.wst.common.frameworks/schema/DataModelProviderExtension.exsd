@@ -6,7 +6,7 @@
          <meta.schema plugin="org.eclipse.wst.common.frameworks" id="DataModelProviderExtension" name="Data Model Provider"/>
       </appInfo>
       <documentation>
-         
+         This can be used to extend an existing data model provider with a custom data model provider.
       </documentation>
    </annotation>
 
@@ -49,14 +49,14 @@
          <attribute name="id" type="string">
             <annotation>
                <documentation>
-                  
+                  an optional identifier for the data model provider extension
                </documentation>
             </annotation>
          </attribute>
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  required fully qualified classname of the data model provider to extend
                </documentation>
             </annotation>
          </attribute>
@@ -68,14 +68,14 @@
          <attribute name="providerType" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  the type the data model provider defines
                </documentation>
             </annotation>
          </attribute>
          <attribute name="providerID" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  required identifier for the defined type
                </documentation>
             </annotation>
          </attribute>
@@ -87,14 +87,14 @@
          <attribute name="providerType" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  fully qualified type the data model provider implements
                </documentation>
             </annotation>
          </attribute>
          <attribute name="providerID" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  required identifier for the implemented type
                </documentation>
             </annotation>
          </attribute>

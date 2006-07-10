@@ -6,7 +6,7 @@
          <meta.schema plugin="org.eclipse.wst.common.frameworks.ui" id="wizardPageGroup" name="Extendable Wizard Page"/>
       </appInfo>
       <documentation>
-         Edit model editors represent the multi page editors that can be used to edit a collection of EMF resources.  By declaring an edit model editor, the plugin provider allows the framework to generically obtain the edit model used by the editor.
+         This allows you to add an data model wizard page to a predefined extensable data model wizard.
       </documentation>
    </annotation>
 
@@ -58,7 +58,7 @@
          <attribute name="allowsExtendedPagesAfter" type="string">
             <annotation>
                <documentation>
-                  
+                  optional setting to specify whether this page allows extended pages after itself, default it true
                </documentation>
             </annotation>
          </attribute>
@@ -72,7 +72,7 @@
          <attribute name="pageGroupID" type="string">
             <annotation>
                <documentation>
-                  
+                  optional setting for the page group ID
                </documentation>
             </annotation>
          </attribute>

@@ -6,7 +6,7 @@
          <meta.schema plugin="org.eclipse.wst.common.frameworks" id="OperationExtension" name="Operation Extension"/>
       </appInfo>
       <documentation>
-         
+         This is the methodology for extending an existing operation by adding either a pre operation to be executed prior, or a post operation to be executed after the original operation.
       </documentation>
    </annotation>
 
@@ -46,21 +46,21 @@
          <attribute name="preOperationClass" type="string">
             <annotation>
                <documentation>
-                  
+                  optional fully qualified name of the pre-operation class
                </documentation>
             </annotation>
          </attribute>
          <attribute name="postOperationClass" type="string">
             <annotation>
                <documentation>
-                  
+                  optional fully qualified name of the post-operation class
                </documentation>
             </annotation>
          </attribute>
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  required id of the operation to extend
                </documentation>
             </annotation>
          </attribute>

@@ -6,7 +6,7 @@
          <meta.schema plugin="org.eclipse.wst.common.frameworks.ui" id="DataModelWizardExtension" name="Data Model Wizard Extension"/>
       </appInfo>
       <documentation>
-         
+         An extension to a specific Data Model Wizard.
       </documentation>
    </annotation>
 
@@ -47,14 +47,14 @@
          <attribute name="id" type="string">
             <annotation>
                <documentation>
-                  
+                  an optional identifier of the data model wizard extension instance
                </documentation>
             </annotation>
          </attribute>
          <attribute name="class" type="string">
             <annotation>
                <documentation>
-                  
+                  the fully qualified classname of the data model wizard class implementation
                </documentation>
             </annotation>
          </attribute>

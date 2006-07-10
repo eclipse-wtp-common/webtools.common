@@ -6,7 +6,7 @@
          <meta.schema plugin="org.eclipse.wst.common.frameworks.ui" id="extendableWizard" name="Extendable Wizard"/>
       </appInfo>
       <documentation>
-         Edit model editors represent the multi page editors that can be used to edit a collection of EMF resources.  By declaring an edit model editor, the plugin provider allows the framework to generically obtain the edit model used by the editor.
+         This declares a data model wizard as a valid extendable wizard.
       </documentation>
    </annotation>
 
@@ -44,7 +44,7 @@
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  A required id for the data model wizard instance to be extended
                </documentation>
             </annotation>
          </attribute>

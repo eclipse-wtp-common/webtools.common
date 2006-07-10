@@ -90,21 +90,21 @@
          <attribute name="alwaysExecute" type="boolean">
             <annotation>
                <documentation>
-                  
+                  optional setting to determine execution context
                </documentation>
             </annotation>
          </attribute>
          <attribute name="overrideId" type="string">
             <annotation>
                <documentation>
-                  
+                  optional setting to define an overridable id
                </documentation>
             </annotation>
          </attribute>
          <attribute name="id" type="string">
             <annotation>
                <documentation>
-                  
+                  optional identification for operation instance
                </documentation>
             </annotation>
          </attribute>
@@ -171,14 +171,14 @@
          <attribute name="name" type="string">
             <annotation>
                <documentation>
-                  
+                  fully qualified name of the object class
                </documentation>
             </annotation>
          </attribute>
          <attribute name="adaptable" type="string">
             <annotation>
                <documentation>
-                  
+                  optional setting to specify the object class as adaptable
                </documentation>
             </annotation>
          </attribute>
@@ -199,14 +199,14 @@
          <attribute name="value" type="string">
             <annotation>
                <documentation>
-                  
+                  optional setting for the value of a specific object state
                </documentation>
             </annotation>
          </attribute>
          <attribute name="name" type="string">
             <annotation>
                <documentation>
-                  
+                  optional setting for an object state name to check the selected object&apos;s value is matching with
                </documentation>
             </annotation>
          </attribute>
