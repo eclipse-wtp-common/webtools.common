@@ -8,3 +8,6 @@ Require-Bundle: org.junit,
  org.eclipse.wst.common.project.facet.core,
  org.eclipse.core.runtime,
  org.eclipse.core.resources
+Export-Package: org.eclipse.wst.common.project.facet.core.tests,
+ org.eclipse.wst.common.project.facet.core.tests.support
+Bundle-ClassPath: tests.jar
