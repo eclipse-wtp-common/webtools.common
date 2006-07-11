@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -32,6 +33,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
+import org.eclipse.wst.validation.internal.GlobalConfiguration;
 import org.eclipse.wst.validation.internal.InternalValidatorManager;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
 import org.eclipse.wst.validation.internal.TaskListUtility;
@@ -588,8 +590,12 @@ public final class ValidatorManager {
 	 */
 	protected Set getEnabledValidators(IProject project) {
 		try {
+			ValidatorMetaData[] vmds = null;
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
-			ValidatorMetaData[] vmds = prjp.getEnabledValidators();
+			if(!prjp.useGlobalPreference()) 
+			   vmds = prjp.getEnabledValidators();
+			else
+			   vmds = getStateOfProjectLevelValidatorsFromGlobal(prjp);
 			return InternalValidatorManager.wrapInSet(vmds);
 		} catch (InvocationTargetException exc) {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
@@ -607,6 +613,29 @@ public final class ValidatorManager {
 			return Collections.EMPTY_SET;
 		}
 	}
+
+	private ValidatorMetaData[] getStateOfProjectLevelValidatorsFromGlobal(ProjectConfiguration prjp) throws InvocationTargetException {
+		List enabledGlobalValidatorsForProject = new ArrayList();
+		GlobalConfiguration gf = ConfigurationManager.getManager().getGlobalConfiguration();
+		List allProjectValidator = getAllValidatorUniqueNames(prjp.getValidators());
+		ValidatorMetaData[] vmd = gf.getBuildEnabledValidators();
+		for(int i = 0; i < vmd.length; i++) {
+			if(allProjectValidator.contains(vmd[i].getValidatorUniqueName())) {
+				enabledGlobalValidatorsForProject.add(vmd[i]);
+			}
+	   }
+		return (ValidatorMetaData[]) enabledGlobalValidatorsForProject.toArray(new ValidatorMetaData[enabledGlobalValidatorsForProject.size()]);
+	}
+	
+	private List getAllValidatorUniqueNames(ValidatorMetaData[] metaData) {
+		List names = new ArrayList();
+		for(int i = 0; i < metaData.length; i++) {
+			names.add(metaData[i].getValidatorUniqueName());
+		}
+		return names;
+	}
+	
+	
 
 	protected Set getManualEnabledValidators(IProject project) {
 		try {

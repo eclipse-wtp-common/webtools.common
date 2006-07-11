@@ -69,7 +69,7 @@ public class ProjectConfiguration extends ValidationConfiguration {
 	/**
 	 * Return the ValidationConfiguration to use, whether global or project.
 	 */
-	protected boolean useGlobalPreference() {
+	public boolean useGlobalPreference() {
 		try {
 			GlobalConfiguration gp = ConfigurationManager.getManager().getGlobalConfiguration();
 			if (gp == null) {
