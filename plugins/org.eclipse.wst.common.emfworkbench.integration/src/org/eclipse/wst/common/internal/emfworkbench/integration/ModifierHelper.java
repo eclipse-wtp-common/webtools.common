@@ -101,8 +101,8 @@ public class ModifierHelper {
 	//Calling this will cause the value to be removed or unset from the owner.
 	public void doUnsetValue() {
 		shouldUnsetValue = true;
-		if (value != null && feature != null && !feature.isMany())
-			setValue(SetCommand.UNSET_VALUE);
+		if (value != SetCommand.UNSET_VALUE && feature != null && !feature.isMany())
+			primSetValue(SetCommand.UNSET_VALUE);
 	}
 
 	/**
