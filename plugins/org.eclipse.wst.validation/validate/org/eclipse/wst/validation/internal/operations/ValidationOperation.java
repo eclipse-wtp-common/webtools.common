@@ -1704,8 +1704,8 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		ISchedulingRule schedulingRule = validator.getSchedulingRule(helper);
 		if( schedulingRule == null ){
 			schedulingRule = new EmptySchedulingRule();
-			validatorjob.setRule( schedulingRule );
 		}
+		validatorjob.setRule( schedulingRule );		
 		QualifiedName validatorKey = new QualifiedName(null, "Validator"); //$NON-NLS-1$
 		validatorjob.setProperty( validatorKey, validator );
 		validatorjob.addJobChangeListener(
