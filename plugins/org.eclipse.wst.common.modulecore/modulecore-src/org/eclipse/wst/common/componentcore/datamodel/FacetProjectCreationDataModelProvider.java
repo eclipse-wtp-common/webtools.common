@@ -11,6 +11,8 @@
 package org.eclipse.wst.common.componentcore.datamodel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -321,6 +323,16 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 				IRuntime runtime = (IRuntime) iterator.next();
 				descriptors[i] = new DataModelPropertyDescriptor(runtime, runtime.getName());
 			}
+			if(descriptors.length > 2){
+				Arrays.sort(descriptors, 0, descriptors.length - 2, new Comparator() {
+					public int compare(Object arg0, Object arg1) {
+						DataModelPropertyDescriptor d1 = (DataModelPropertyDescriptor)arg0;
+						DataModelPropertyDescriptor d2 = (DataModelPropertyDescriptor)arg1;
+						return d1.getPropertyDescription().compareTo(d2.getPropertyDescription());
+					}
+				});
+			}
+			
 			descriptors[descriptors.length - 1] = new DataModelPropertyDescriptor(null, WTPCommonPlugin.getResourceString(WTPCommonMessages.RUNTIME_NONE, null));
 			return descriptors;
 		}
