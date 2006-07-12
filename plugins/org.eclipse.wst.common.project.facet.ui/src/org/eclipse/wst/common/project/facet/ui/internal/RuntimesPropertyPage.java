@@ -57,12 +57,6 @@ public class RuntimesPropertyPage extends PropertyPage
     private ChangeTargetedRuntimesDataModel model;
     private RuntimesPanel panel;
     
-    public void createControl( final Composite parent )
-    {
-        super.createControl( parent );
-        this.getDefaultsButton().setText( Resources.restoreButtonLabel );
-    }
-    
     protected Control createContents( final Composite parent ) 
     {
         final IAdaptable element = getElement();
@@ -299,7 +293,6 @@ public class RuntimesPropertyPage extends PropertyPage
         public static String errDlgTitle;
         public static String hint;
         public static String addRemoveLinkLabel;
-        public static String restoreButtonLabel;
         
         static
         {
