@@ -314,7 +314,7 @@ public final class ProjectFacetVersion
                 final IProjectFacetVersion fv 
                     = (IProjectFacetVersion) itr2.next();
                 
-                if( ! ( this.conflictsWith( fv ) || fv.conflictsWith( this ) ) )
+                if( ! conflictsWith( fv ) )
                 {
                     conflictsWithAllVersions = false;
                     break;
@@ -342,7 +342,8 @@ public final class ProjectFacetVersion
         }
         else
         {
-            return conflictsWith( fv, getConstraint() );
+            return conflictsWith( fv, getConstraint() ) || 
+                   conflictsWith( this, fv.getConstraint() );
         }
     }
     
@@ -422,7 +423,7 @@ public final class ProjectFacetVersion
         
             if( soft )
             {
-                return true;
+                return false;
             }
             else
             {

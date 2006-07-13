@@ -20,6 +20,7 @@ public class AllTests
         suite.addTest( BasicFacetActionTests.suite() );
         suite.addTest( FacetActionSortTests.suite() );
         suite.addTest( ProjectChangeReactionTests.suite() );
+        suite.addTest( FacetConstraintsTests.suite() );
         
         return suite;
     }

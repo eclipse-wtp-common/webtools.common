@@ -169,4 +169,47 @@
     
   </extension>
 
+  <!-- Facet Constraint Tests -->
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.facets">
+  
+    <project-facet id="fct_f1"/>
+    
+    <project-facet-version facet="fct_f1" version="1.0">
+      <constraint>
+        <conflicts facet="fct_f2"/>
+      </constraint>
+    </project-facet-version>
+    
+    <project-facet id="fct_f2"/>
+    
+    <project-facet-version facet="fct_f2" version="1.0">
+      <constraint>
+        <conflicts facet="fct_f4"/>
+      </constraint>
+    </project-facet-version>
+  
+    <project-facet id="fct_f3"/>
+    
+    <project-facet-version facet="fct_f3" version="1.0">
+      <constraint>
+        <requires facet="fct_f2" version="1.0"/>
+      </constraint>
+    </project-facet-version>
+
+    <project-facet id="fct_f4"/>
+    
+    <project-facet-version facet="fct_f4" version="1.0">
+    </project-facet-version>
+  
+    <project-facet id="fct_f5"/>
+    
+    <project-facet-version facet="fct_f5" version="1.0">
+      <constraint>
+        <requires facet="fct_f2" version="1.0" soft="true"/>
+      </constraint>
+    </project-facet-version>
+
+  </extension>
+
 </plugin>
