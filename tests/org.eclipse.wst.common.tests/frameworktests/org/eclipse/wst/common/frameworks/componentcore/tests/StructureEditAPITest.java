@@ -8,7 +8,10 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.componentcore.ComponentCore;
-import org.eclipse.wst.common.componentcore.UnresolveableURIException;
+import org.eclipse.wst.common.componentcore.ModuleCoreNature;
+import org.eclipse.wst.common.componentcore.internal.ComponentResource;
+import org.eclipse.wst.common.componentcore.internal.ComponentType;
+import org.eclipse.wst.common.componentcore.internal.ProjectComponents;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.frameworks.componentcore.virtualpath.tests.TestWorkspace;
@@ -23,8 +26,6 @@ public class StructureEditAPITest extends TestCase {
 	private Path zipFilePath = new Path("TestData" + fileSep + "TestArtifactEdit.zip");
 	private IProject project;
 	
-
-
 	// /This should be extracted out, dont have time, just trying to get coverage
 	// for m4 integration....
 
@@ -33,62 +34,35 @@ public class StructureEditAPITest extends TestCase {
 		project = TestWorkspace.getTargetProject();
 	}
 
-
 	public IProject getTargetProject() {
 		return ResourcesPlugin.getWorkspace().getRoot().getProject(PROJECT_NAME);
 	}
 
-
-
-	public void testGetStructureEditForRead() {
+	public void testGetStructureEditForRead() throws Exception {
 		StructureEdit moduleCore = null;
 
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(project);
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
 			assertNotNull(moduleCore);
-
+		} finally {
+			moduleCore.dispose();
 		}
 	}
 
-	public void testGetStructureEditForWrite() {
+	public void testGetStructureEditForWrite() throws Exception{
 		StructureEdit moduleCore = null;
 
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
 			assertNotNull(moduleCore);
-
+		} finally {
+			moduleCore.dispose();
 		}
 	}
 
-	public void testGetModuleCoreNature() {
-		StructureEdit moduleCore = null;
-
-		try {
-			moduleCore = StructureEdit.getStructureEditForRead(project);
-			try {
-				moduleCore.getModuleCoreNature(moduleURI);
-			} catch (UnresolveableURIException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
-			assertNotNull(moduleCore);
-
-		}
+	public void testGetModuleCoreNature() throws Exception{
+		ModuleCoreNature nature = StructureEdit.getModuleCoreNature(moduleURI);
+		assertNotNull(nature);
 	}
 
 	/*
@@ -99,42 +73,22 @@ public class StructureEditAPITest extends TestCase {
 
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(project);
-			WorkbenchComponent wbComponent = moduleCore.getComponent();
-			moduleCore.getContainingProject(wbComponent);
-
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
 			assertNotNull(moduleCore);
-
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
+			assertNotNull(wbComponent);
+			IProject aProject = StructureEdit.getContainingProject(wbComponent);
+			assertNotNull(aProject);
+		} finally {
+			moduleCore.dispose();
 		}
 	}
 
 	/*
 	 * Class under test for IProject getContainingProject(URI)
 	 */
-	public void testGetContainingProjectURI() {
-		StructureEdit moduleCore = null;
-
-		try {
-			moduleCore = StructureEdit.getStructureEditForRead(project);
-			try {
-				moduleCore.getContainingProject(moduleURI);
-			} catch (UnresolveableURIException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
-			assertNotNull(moduleCore);
-
-		}
+	public void testGetContainingProjectURI() throws Exception {
+		IProject aProject = StructureEdit.getContainingProject(moduleURI);
+		assertNotNull(aProject);
 	}
 
 	/**
@@ -199,24 +153,17 @@ public class StructureEditAPITest extends TestCase {
 	/**
 	 * 
 	 */
-	public void testGetDeployedName() {
+	public void testGetDeployedName() throws Exception{
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(project);
-			WorkbenchComponent wbComponent = moduleCore.getComponent();
-			
-			try {
-				StructureEdit.getDeployedName(moduleURI);
-			} catch (UnresolveableURIException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
 			assertNotNull(moduleCore);
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
+			assertNotNull(wbComponent);
+			String deployName = StructureEdit.getDeployedName(moduleURI);
+			assertNotNull(deployName);
+		} finally {
+			moduleCore.dispose();
 		}
 	}
 
@@ -227,18 +174,15 @@ public class StructureEditAPITest extends TestCase {
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(project);
-			WorkbenchComponent wbComponent = moduleCore.getComponent();
-			
-			StructureEdit.getComponentType(ComponentCore.createComponent(project,wbComponent.getName()));
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
 			assertNotNull(moduleCore);
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
+			assertNotNull(wbComponent);
+			ComponentType type = StructureEdit.getComponentType(ComponentCore.createComponent(project,wbComponent.getName()));
+			assertNotNull(type);
+		} finally {
+			moduleCore.dispose();
 		}
 	}
-
 
 	public void testSave() {
 
@@ -246,33 +190,22 @@ public class StructureEditAPITest extends TestCase {
 
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			moduleCore.save(new NullProgressMonitor());
-
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
 			assertNotNull(moduleCore);
-
+			moduleCore.save(new NullProgressMonitor());
+		} finally {
+			moduleCore.dispose();
 		}
 	}
-
 
 	public void testSaveIfNecessary() {
 		StructureEdit moduleCore = null;
 
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			moduleCore.saveIfNecessary(new NullProgressMonitor());
-
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
 			assertNotNull(moduleCore);
-
+			moduleCore.saveIfNecessary(new NullProgressMonitor());
+		} finally {
+			moduleCore.dispose();
 		}
 	}
 
@@ -281,15 +214,10 @@ public class StructureEditAPITest extends TestCase {
 
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			moduleCore.prepareProjectComponentsIfNecessary();
-
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
 			assertNotNull(moduleCore);
-
+			moduleCore.prepareProjectComponentsIfNecessary();
+		} finally {
+			moduleCore.dispose();
 		}
 	}
 
@@ -298,15 +226,11 @@ public class StructureEditAPITest extends TestCase {
 
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			moduleCore.getComponentModelRoot();
-
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
 			assertNotNull(moduleCore);
-
+			ProjectComponents projectComponents = moduleCore.getComponentModelRoot();
+			assertNotNull(projectComponents);
+		} finally {
+			moduleCore.dispose();
 		}
 	}
 
@@ -315,16 +239,13 @@ public class StructureEditAPITest extends TestCase {
 
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
+			assertNotNull(moduleCore);
 			WorkbenchComponent wbComponent = moduleCore.getComponent();
-			moduleCore.getSourceContainers(wbComponent);
+			ComponentResource[] containers = moduleCore.getSourceContainers(wbComponent);
+			assertNotNull(containers);
 
 		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
-			assertNotNull(moduleCore);
-
+			moduleCore.dispose();
 		}
 	}
 
@@ -333,16 +254,14 @@ public class StructureEditAPITest extends TestCase {
 
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			WorkbenchComponent wbComponent = moduleCore.getComponent();
-			moduleCore.getWorkbenchModules();
-
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
 			assertNotNull(moduleCore);
-
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
+			assertNotNull(wbComponent);
+			WorkbenchComponent[] components = moduleCore.getWorkbenchModules();
+			assertNotNull(components);
+			assertTrue(components.length > 0);
+		} finally {
+			moduleCore.dispose();
 		}
 	}
 
@@ -352,16 +271,13 @@ public class StructureEditAPITest extends TestCase {
 
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			WorkbenchComponent wbComponent = moduleCore.getComponent();
-			moduleCore.createWorkbenchModule("test");
-
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
 			assertNotNull(moduleCore);
-
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
+			assertNotNull(wbComponent);
+			wbComponent = moduleCore.createWorkbenchModule("test");
+			assertNotNull(wbComponent);
+		} finally {
+			moduleCore.dispose();
 		}
 	}
 
@@ -371,16 +287,13 @@ public class StructureEditAPITest extends TestCase {
 
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			WorkbenchComponent wbComponent = moduleCore.getComponent();
-			moduleCore.createWorkbenchModuleResource(project.getFile("WebModule1/NewFolder"));
-
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
 			assertNotNull(moduleCore);
-
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
+			assertNotNull(wbComponent);
+			ComponentResource resource = moduleCore.createWorkbenchModuleResource(project.getFile("WebModule1/NewFolder"));
+			assertNotNull(resource);
+		} finally {
+			moduleCore.dispose();
 		}
 	}
 
@@ -389,16 +302,13 @@ public class StructureEditAPITest extends TestCase {
 
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			WorkbenchComponent wbComponent = moduleCore.getComponent();
-			moduleCore.createModuleType(EDIT_MODEL_ID);
-
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
 			assertNotNull(moduleCore);
-
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
+			assertNotNull(wbComponent);
+			ComponentType type = moduleCore.createModuleType(EDIT_MODEL_ID);
+			assertNotNull(type);
+		} finally {
+			moduleCore.dispose();
 		}
 	}
 
@@ -406,68 +316,49 @@ public class StructureEditAPITest extends TestCase {
 	/*
 	 * Class under test for ComponentResource[] findResourcesByRuntimePath(URI, URI)
 	 */
-	public void testFindResourcesByRuntimePathURIURI() {
+	public void testFindResourcesByRuntimePathURIURI() throws Exception{
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			WorkbenchComponent wbComponent = moduleCore.getComponent();
-			try {
-				moduleCore.findResourcesByRuntimePath(moduleURI);
-			} catch (UnresolveableURIException e) {
-				e.printStackTrace();
-			}
-
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
 			assertNotNull(moduleCore);
-
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
+			assertNotNull(wbComponent);
+			ComponentResource[] resources = moduleCore.findResourcesByRuntimePath(moduleURI);
+			assertNotNull(resources);
+			assertTrue(resources.length > 0);
+		} finally {
+			moduleCore.dispose();
 		}
 	}
 
 	/*
 	 * Class under test for ComponentResource[] findResourcesByRuntimePath(URI)
 	 */
-	public void testFindResourcesByRuntimePathURI() {
+	public void testFindResourcesByRuntimePathURI() throws Exception{
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			WorkbenchComponent wbComponent = moduleCore.getComponent();
-			try {
-				moduleCore.findResourcesByRuntimePath(moduleURI, moduleURI);
-			} catch (UnresolveableURIException e) {
-				e.printStackTrace();
-			}
-
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
 			assertNotNull(moduleCore);
-
+			WorkbenchComponent wbComponent = moduleCore.getComponent();
+			assertNotNull(wbComponent);
+			ComponentResource[] resources = moduleCore.findResourcesByRuntimePath(moduleURI, moduleURI);
+			assertNotNull(resources);
+			assertTrue(resources.length > 0);
+		} finally {
+			moduleCore.dispose();
 		}
 	}
 
-	public void testFindResourcesBySourcePath() {
+	public void testFindResourcesBySourcePath() throws Exception {
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			try {
-				moduleCore.findResourcesBySourcePath(moduleURI);
-			} catch (UnresolveableURIException e) {
-				e.printStackTrace();
-			}
-
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
 			assertNotNull(moduleCore);
-
+			ComponentResource[] resources = moduleCore.findResourcesBySourcePath(moduleURI);
+			assertNotNull(resources);
+			assertTrue(resources.length > 0);
+		} finally {
+			moduleCore.dispose();
 		}
 	}
 
@@ -475,50 +366,34 @@ public class StructureEditAPITest extends TestCase {
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			moduleCore.getComponent();
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
 			assertNotNull(moduleCore);
-
+			WorkbenchComponent wbComponent =  moduleCore.getComponent();
+			assertNotNull(wbComponent);
+		} finally {
+			moduleCore.dispose();
 		}
 	}
 
-	public void testFindComponentByURI() {
+	public void testFindComponentByURI() throws Exception {
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForWrite(project);
-			try {
-				moduleCore.findComponentByURI(moduleURI);
-			} catch (UnresolveableURIException e) {
-				e.printStackTrace();
-			}
-
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
 			assertNotNull(moduleCore);
-
+			WorkbenchComponent wbComponent = moduleCore.findComponentByURI(moduleURI);
+			assertNotNull(wbComponent);
+		} finally {
+			moduleCore.dispose();
 		}
-
 	}
 
 	public void testIsLocalDependency() {
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(project);
+			assertNotNull(moduleCore);
 			moduleCore.isLocalDependency(null);
 		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
-			assertNotNull(moduleCore);
-
+			moduleCore.dispose();
 		}
 	}
 
@@ -526,14 +401,11 @@ public class StructureEditAPITest extends TestCase {
 		StructureEdit moduleCore = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(project);
-			moduleCore.getFirstModule();
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-
-			}
 			assertNotNull(moduleCore);
-
+			WorkbenchComponent wbComponent =  moduleCore.getFirstModule();
+			assertNotNull(wbComponent);
+		} finally {
+			moduleCore.dispose();
 		}
 	}
 
@@ -541,6 +413,5 @@ public class StructureEditAPITest extends TestCase {
 		StructureEdit moduleCore = null;
 		URI uri = StructureEdit.createComponentURI(project, "testComp");
 		assertNotNull(uri);
-
 	}
 }
