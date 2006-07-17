@@ -105,7 +105,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 
 	protected class ResourceAdapter extends AdapterImpl {
 		public void notifyChanged(Notification notification) {
-			if (notification.getEventType() == Notification.SET && notification.getFeatureID(null) == Resource.RESOURCE__IS_LOADED) {
+			if (!isDisposing() && notification.getEventType() == Notification.SET && notification.getFeatureID(null) == Resource.RESOURCE__IS_LOADED) {
 				resourceIsLoadedChanged((Resource) notification.getNotifier(), notification.getOldBooleanValue(), notification.getNewBooleanValue());
 			}
 		}
@@ -127,13 +127,6 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 		processPreloadResources();
 	}
 
-
-//	private ClientAccessRegistry initializeRegistry(Object read) {
-//
-//		return null;
-//	}
-
-
 	public EditModel(String editModelID, EMFWorkbenchContext context, boolean readOnly, boolean accessUnknownResourcesAsReadOnly) {
 		this(editModelID, context, readOnly);
 		this.accessAsReadForUnKnownURIs = accessUnknownResourcesAsReadOnly;
@@ -146,21 +139,24 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 		return editModelID;
 	}
 
-	/**
-	 * Insert the method's description here. Creation date: (9/27/2001 10:25:43 PM)
-	 * 
-	 * @return boolean
-	 */
 	public boolean isDisposing() {
 		return disposing;
 	}
 
 	public void dispose() {
+		startDispose();
+		doDispose();
+	}
+
+	private void startDispose() {
 		synchronized (this) {
-			if (disposing || isDisposed())
+			if (disposing || disposed)
 				return;
 			disposing = true;
 		}
+	}
+
+	private void doDispose() {
 		try {
 			releaseResources();
 
@@ -173,11 +169,13 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 			releasePreloadResources();
 			releaseIdentifiers();
 
-			emfContext = null;
-			listeners = null;
-			removedListeners = null;
-			resources = null;
-			project = null;
+			synchronized (this) {
+				emfContext = null;
+				listeners = null;
+				removedListeners = null;
+				resources = null;
+				project = null;
+			}
 		} catch (RuntimeException re) {
 			re.printStackTrace();
 		} finally {
@@ -294,22 +292,29 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 		if (listeners == null)
 			return;
 		boolean oldIsNotifying = isNotifing;
+		List changeList = null;
+		List removeList = null;
 		synchronized (this) {
 			isNotifing = true;
+			changeList = listeners;
+			removeList = removedListeners;
 		}
 		try {
-			List list = getListeners();
-			for (int i = 0; i < list.size(); i++) {
-				EditModelListener listener = (EditModelListener) list.get(i);
-				if (!removedListeners.contains(listener))
-					listener.editModelChanged(anEvent);
+			if(changeList != null){
+				for (int i = 0; i < changeList.size(); i++) {
+					EditModelListener listener = (EditModelListener) changeList.get(i);
+					if (!removeList.contains(listener))
+						listener.editModelChanged(anEvent);
+				}
 			}
 		} finally {
-			synchronized (this) {
-				isNotifing = oldIsNotifying;
-				if (!isNotifing && removedListeners != null && !removedListeners.isEmpty()) {
-					listeners.removeAll(removedListeners);
-					removedListeners.clear();
+			if(!disposing){
+				synchronized (this) {
+					isNotifing = oldIsNotifying;
+					if (!isNotifing && listeners != null && removedListeners != null && !removedListeners.isEmpty()) {
+						listeners.removeAll(removedListeners);
+						removedListeners.clear();
+					}
 				}
 			}
 		}
@@ -678,7 +683,9 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 			int eventCode = newValue ? EditModelEvent.LOADED_RESOURCE : EditModelEvent.UNLOADED_RESOURCE;
 			EditModelEvent evt = new EditModelEvent(eventCode, this);
 			evt.addResource(aResource);
-			notifyListeners(evt);
+			if(!disposing){
+				notifyListeners(evt);
+			}
 		}
 	}
 
@@ -970,10 +977,15 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 		registry.release(accessorKey);
 
 		if (!isDisposing()) {
+			boolean shouldDispose = false;
 			synchronized (this) {
-				if (registry.size() == 0) {
-					dispose();
+				shouldDispose = registry.size() == 0;
+				if(shouldDispose){
+					startDispose();
 				}
+			}
+			if(shouldDispose){
+				doDispose();
 			}
 		}
 	}
