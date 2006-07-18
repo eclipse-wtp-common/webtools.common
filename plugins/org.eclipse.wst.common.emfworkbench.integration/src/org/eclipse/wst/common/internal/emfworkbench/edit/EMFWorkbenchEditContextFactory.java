@@ -16,10 +16,16 @@
  */
 package org.eclipse.wst.common.internal.emfworkbench.edit;
 
+import java.util.Hashtable;
+import java.util.Map;
+
+import org.eclipse.core.internal.jobs.LockManager;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.jem.internal.util.emf.workbench.EMFWorkbenchContextFactory;
 import org.eclipse.jem.util.emf.workbench.EMFWorkbenchContextBase;
+import org.eclipse.jem.util.emf.workbench.IEMFContextContributor;
 import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.ResourceSetWorkbenchEditSynchronizer;
@@ -31,6 +37,8 @@ import org.eclipse.wst.common.internal.emfworkbench.integration.ResourceSetWorkb
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class EMFWorkbenchEditContextFactory extends EMFWorkbenchContextFactory {
+	
+	
 	/**
 	 *  
 	 */
@@ -44,5 +52,51 @@ public class EMFWorkbenchEditContextFactory extends EMFWorkbenchContextFactory {
 
 	public ResourceSetWorkbenchSynchronizer createSynchronizer(ResourceSet aResourceSet, IProject aProject) {
 		return new ResourceSetWorkbenchEditSynchronizer(aResourceSet, aProject);
+	}
+	
+	protected static LockManager lockManager = new LockManager();
+	protected static Map projectLocks = new Hashtable();
+
+	protected static ILock getProjectLockObject(IProject aProject){
+		if(null == aProject){
+			return null;
+		}
+		Integer hashCode = new Integer(aProject.hashCode());
+		synchronized (projectLocks) {
+			ILock lock = (ILock)projectLocks.get(hashCode);
+			if(lock == null){
+				lock = lockManager.newLock();
+				projectLocks.put(hashCode, lock);
+			}
+			return lock;
+		}
+	}
+	
+	public EMFWorkbenchContextBase createEMFContext(IProject aProject, IEMFContextContributor contributor) {
+		ILock lock = getProjectLockObject(aProject);
+		try{
+			if(null != lock){
+				lock.acquire();
+			}
+			return super.createEMFContext(aProject, contributor);
+		} finally{
+			if(null != lock){
+				lock.release();
+			}
+		}
+	}
+	
+	protected EMFWorkbenchContextBase getCachedEMFContext(IProject aProject) {
+		ILock lock = getProjectLockObject(aProject);
+		try{
+			if(null != lock){
+				lock.acquire();
+			}
+			return super.getCachedEMFContext(aProject);
+		} finally{
+			if(null != lock){
+				lock.release();
+			}
+		}
 	}
 }
