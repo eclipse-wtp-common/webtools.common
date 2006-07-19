@@ -259,7 +259,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 		ValidatorMetaData[] enabledValidators = prjp.getEnabledFullBuildValidators(true, onlyDependentValidators);
 		if ((enabledValidators != null) && (enabledValidators.length > 0)) {
 			Set enabledValidatorsSet = InternalValidatorManager.wrapInSet(enabledValidators);
-			EnabledValidatorsOperation op = new EnabledValidatorsOperation(getProject(), enabledValidatorsSet,false);
+			EnabledValidatorsOperation op = new EnabledValidatorsOperation(getProject(), enabledValidatorsSet, true);
 			op.run(monitor);
 		}
 	}

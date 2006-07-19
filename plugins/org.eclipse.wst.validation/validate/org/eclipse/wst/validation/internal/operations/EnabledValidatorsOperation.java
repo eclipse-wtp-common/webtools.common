@@ -59,9 +59,9 @@ public class EnabledValidatorsOperation extends ValidatorSubsetOperation {
 	 * 
 	 * IProject must exist and be open.
 	 * 
-	 * If async is true, the validation will run all thread-safe validators in the background
-	 * validation thread, and all other validators in the main thread. If async is false, all
-	 * validators will run in in the main thread.
+	 * If async is true, the validation will run all validators implementing IValidatorJob interface 
+	 * in the background validation thread, if async is false, it would run in the main thread. 
+	 * All validators implementing IValidator interface will run in in the main thread regardless of this flag.
 	 */
 	public EnabledValidatorsOperation(IProject project, boolean async) {
 		this(project, RegistryConstants.ATT_RULE_GROUP_DEFAULT, DEFAULT_FORCE, async);
@@ -72,9 +72,9 @@ public class EnabledValidatorsOperation extends ValidatorSubsetOperation {
 	 * 
 	 * IProject must exist and be open.
 	 * 
-	 * If async is true, the validation will run all thread-safe validators in the background
-	 * validation thread, and all other validators in the main thread. If async is false, all
-	 * validators will run in in the main thread.
+	 * If async is true, the validation will run all validators implementing IValidatorJob interface 
+	 * in the background validation thread, if async is false, it would run in the main thread. 
+	 * All validators implementing IValidator interface will run in in the main thread regardless of this flag.
 	 */
 	public EnabledValidatorsOperation(IProject project, IWorkbenchContext aWorkbenchContext, boolean async) {
 		this(project, aWorkbenchContext, RegistryConstants.ATT_RULE_GROUP_DEFAULT, DEFAULT_FORCE, async);
@@ -85,9 +85,9 @@ public class EnabledValidatorsOperation extends ValidatorSubsetOperation {
 	 * 
 	 * IProject must exist and be open.
 	 * 
-	 * If async is true, the validation will run all thread-safe validators in the background
-	 * validation thread, and all other validators in the main thread. If async is false, all
-	 * validators will run in in the main thread.
+	 * If async is true, the validation will run all validators implementing IValidatorJob interface 
+	 * in the background validation thread, if async is false, it would run in the main thread. 
+	 * All validators implementing IValidator interface will run in in the main thread regardless of this flag.
 	 */
 	public EnabledValidatorsOperation(IProject project, IWorkbenchContext aWorkbenchContext, int ruleGroup, boolean force, boolean async) {
 		this(project, aWorkbenchContext, ValidatorManager.getManager().getEnabledValidators(project), ruleGroup, force, async);
@@ -99,9 +99,9 @@ public class EnabledValidatorsOperation extends ValidatorSubsetOperation {
 	 * 
 	 * IProject must exist and be open.
 	 * 
-	 * If async is true, the validation will run all thread-safe validators in the background
-	 * validation thread, and all other validators in the main thread. If async is false, all
-	 * validators will run in in the main thread.
+	 * If async is true, the validation will run all validators implementing IValidatorJob interface 
+	 * in the background validation thread, if async is false, it would run in the main thread. 
+	 * All validators implementing IValidator interface will run in in the main thread regardless of this flag.
 	 */
 	public EnabledValidatorsOperation(IProject project, int ruleGroup, boolean force, boolean async) {
 		this(project, ValidatorManager.getManager().getEnabledValidators(project), ruleGroup, force, async);
@@ -112,9 +112,9 @@ public class EnabledValidatorsOperation extends ValidatorSubsetOperation {
 	 * 
 	 * IProject must exist and be open.
 	 * 
-	 * If async is true, the validation will run all thread-safe validators in the background
-	 * validation thread, and all other validators in the main thread. If async is false, all
-	 * validators will run in in the main thread.
+	 * If async is true, the validation will run all validators implementing IValidatorJob interface 
+	 * in the background validation thread, if async is false, it would run in the main thread. 
+	 * All validators implementing IValidator interface will run in in the main thread regardless of this flag.
 	 */
 	protected EnabledValidatorsOperation(IProject project, Set enabledValidators, boolean async) {
 		this(project, enabledValidators, RegistryConstants.ATT_RULE_GROUP_DEFAULT, DEFAULT_FORCE, async); 
@@ -126,9 +126,9 @@ public class EnabledValidatorsOperation extends ValidatorSubsetOperation {
 	 * 
 	 * IProject must exist and be open.
 	 * 
-	 * If async is true, the validation will run all thread-safe validators in the background
-	 * validation thread, and all other validators in the main thread. If async is false, all
-	 * validators will run in in the main thread.
+	 * If async is true, the validation will run all validators implementing IValidatorJob interface 
+	 * in the background validation thread, if async is false, it would run in the main thread. 
+	 * All validators implementing IValidator interface will run in in the main thread regardless of this flag.
 	 */
 	protected EnabledValidatorsOperation(IProject project,IWorkbenchContext aWorkbenchContext, Set enabledValidators, boolean async) {
 		this(project,aWorkbenchContext, enabledValidators, RegistryConstants.ATT_RULE_GROUP_DEFAULT, DEFAULT_FORCE, async); 
@@ -140,9 +140,9 @@ public class EnabledValidatorsOperation extends ValidatorSubsetOperation {
 	 * 
 	 * IProject must exist and be open.
 	 * 
-	 * If async is true, the validation will run all thread-safe validators in the background
-	 * validation thread, and all other validators in the main thread. If async is false, all
-	 * validators will run in in the main thread.
+	 * If async is true, the validation will run all validators implementing IValidatorJob interface 
+	 * in the background validation thread, if async is false, it would run in the main thread. 
+	 * All validators implementing IValidator interface will run in in the main thread regardless of this flag.
 	 */
 	protected EnabledValidatorsOperation(IProject project, Set enabledValidators, int ruleGroup, boolean force, boolean async) {
 		super(project, force, ruleGroup, async);
@@ -154,9 +154,9 @@ public class EnabledValidatorsOperation extends ValidatorSubsetOperation {
 	 * 
 	 * IProject must exist and be open.
 	 * 
-	 * If async is true, the validation will run all thread-safe validators in the background
-	 * validation thread, and all other validators in the main thread. If async is false, all
-	 * validators will run in in the main thread.
+	 * If async is true, the validation will run all validators implementing IValidatorJob interface 
+	 * in the background validation thread, if async is false, it would run in the main thread. 
+	 * All validators implementing IValidator interface will run in in the main thread regardless of this flag.
 	 */
 	protected EnabledValidatorsOperation(IProject project, IWorkbenchContext aWorkbenchContext, Set enabledValidators, int ruleGroup, boolean force, boolean async) {
 		super(project,aWorkbenchContext,force, ruleGroup, async);

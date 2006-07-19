@@ -10,9 +10,21 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal.core;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.logging.Level;
+
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jem.util.logger.LogEntry;
+import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.validation.internal.TaskListUtility;
+import org.eclipse.wst.validation.internal.operations.MessageInfo;
+import org.eclipse.wst.validation.internal.operations.ValidatorManager;
+import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IReporter;
 import org.eclipse.wst.validation.internal.provisional.core.IValidationContext;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
+import org.eclipse.wst.validation.internal.provisional.core.IValidatorJob;
 
 
 
@@ -86,8 +98,37 @@ public class ValidatorLauncher {
 		if ((helper.getURIs() == null) || (helper.getURIs().length == 0)) {
 			reporter.removeAllMessages(validator);
 		}
+		if( validator instanceof IValidatorJob ){
+			((IValidatorJob)validator).validateInJob(helper, reporter);
+		}else{
+			validator.validate(helper, reporter);
+		}
+		if( validator instanceof IValidatorJob ){
+			//the  validators who have implemented IValidatorJob but are running synchronously
+			//would log messages now ...
+			ValidatorManager mgr = ValidatorManager.getManager();
+			final ArrayList list = mgr.getMessages((IValidatorJob)validator);
 
-		validator.validate(helper, reporter);
+	    	Iterator it = list.iterator();
+			while( it.hasNext() ){
+				MessageInfo info = (MessageInfo)it.next();
+				try {
+				TaskListUtility.addTask( info.getMessageOwnerId(), info.getResource(),
+							info.getLocation(), info.getMsg().getId(), info.getText(),
+							info.getMsg().getSeverity(), info.getTargetObjectName(),
+							info.getMsg().getGroupName(), info.getMsg().getOffset(), info.getMsg().getLength());
+				
+				} catch (CoreException exc) {
+					Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
+					if (logger.isLoggingLevel(Level.SEVERE)) {
+						LogEntry entry = ValidationPlugin.getLogEntry();
+						entry.setTargetException(exc);
+						logger.write(Level.SEVERE, entry);
+					}
+				}										
+			}
+			mgr.clearMessages( (IValidatorJob)validator );
+		}
 		validator.cleanup(reporter);
 
 	}

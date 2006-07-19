@@ -29,11 +29,11 @@ import org.eclipse.wst.validation.internal.RegistryConstants;
 public class ManualValidatorsOperation extends ValidatorSubsetOperation {
 
 	public ManualValidatorsOperation(IProject project) {
-		super(project, DEFAULT_FORCE, RegistryConstants.ATT_RULE_GROUP_DEFAULT, false);
+		super(project, DEFAULT_FORCE, RegistryConstants.ATT_RULE_GROUP_DEFAULT, true);
 		setEnabledValidators(ValidatorManager.getManager().getManualEnabledValidators(project));
 	}	
 	public ManualValidatorsOperation(IProject project, Object[] changedResources) {
-		super(project, shouldForce(changedResources), RegistryConstants.ATT_RULE_GROUP_DEFAULT, false);
+		super(project, shouldForce(changedResources), RegistryConstants.ATT_RULE_GROUP_DEFAULT, true);
 		setEnabledValidators(ValidatorManager.getManager().getManualEnabledValidators(project));
 	}	
 }

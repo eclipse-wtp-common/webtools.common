@@ -574,14 +574,22 @@ public class ValidatorMetaData {
    public IWorkbenchContext getHelper( IProject project, IValidator validator ){
 	   
 	   if( validator instanceof IValidatorJob ){
-		   return getHelper( (IValidatorJob)validator );
+		   IWorkbenchContext helper = getHelper( (IValidatorJob)validator );
+		   if( helper == null ){
+			   try{
+				helper =  getHelper( project );
+				return helper;
+			   }catch (InstantiationException e) {
+					e.printStackTrace();
+				}			   
+		   }
+	   	return helper;
 	   }
 	   else{
 		   try {
 			IWorkbenchContext helper =  getHelper( project );
 			return helper;
 			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 	   }
