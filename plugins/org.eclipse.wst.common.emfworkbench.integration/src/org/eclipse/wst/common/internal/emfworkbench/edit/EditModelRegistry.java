@@ -46,6 +46,8 @@ public class EditModelRegistry extends RegistryReader {
 	
 
 	public static final String EDIT_MODEL_ELEMENT = "editModel"; //$NON-NLS-1$
+	public static final String EDIT_MODEL_RESOURCE_EXTENSION = "resourceExtension"; //$NON-NLS-1$
+	public static final String EDIT_MODEL_RESOURCE_EXTENSION_NAME = "name"; //$NON-NLS-1$
 	public static final String EDIT_MODEL_ID_ATTR = "editModelID"; //$NON-NLS-1$
 	public static final String FACTORY_CLASS_ATTR = "factoryClass"; //$NON-NLS-1$
 	public static final String PARENT_MODEL_ATTR = "parentModelID"; //$NON-NLS-1$
@@ -107,7 +109,7 @@ public class EditModelRegistry extends RegistryReader {
 	public Collection getEditModelResources(String editModelID) {
 		Collection resources = new TreeSet();
 
-		EditModelInfo nextEditModelInfo = (EditModelInfo) factoryConfigurations.get(editModelID);
+		EditModelInfo nextEditModelInfo = getEditModelInfoById(editModelID);
 
 		String parentModelID = null;
 		Map visitedEditModels = new HashMap();
@@ -117,13 +119,37 @@ public class EditModelRegistry extends RegistryReader {
 				throw new IllegalStateException(EMFWorkbenchEditResourceHandler.getString(EMFWorkbenchEditResourceHandler.EditModelRegistry_ERROR_0, new Object[]{editModelID}));
 			visitedEditModels.put(parentModelID, null);
 			resources.addAll(getAllEditModelResources(parentModelID));
-			nextEditModelInfo = (EditModelInfo) factoryConfigurations.get(parentModelID);
+			nextEditModelInfo = getEditModelInfoById(parentModelID);
 		}
 
 		/* Get the resources for the actual edit model id */
 		resources.addAll(getAllEditModelResources(editModelID));
 
 		return resources;
+	}
+	
+	public Collection getEditModelExtensions(String editModelID) { 
+		Collection extensions = new TreeSet();
+		
+		EditModelInfo nextEditModelInfo = getEditModelInfoById(editModelID);
+
+		String parentModelID = null;
+		Map visitedEditModels = new HashMap();
+		/* collect the resources from the parents */
+		while(nextEditModelInfo != null && (parentModelID = nextEditModelInfo.getParentModelID()) != null) {
+			if(visitedEditModels.containsKey(parentModelID)) 
+				throw new IllegalStateException(EMFWorkbenchEditResourceHandler.getString(EMFWorkbenchEditResourceHandler.EditModelRegistry_ERROR_0,new Object [] {editModelID})); 
+			else 
+				visitedEditModels.put(parentModelID, null);
+			
+			extensions.addAll(getAllEditModelExtensions(parentModelID));
+			nextEditModelInfo = getEditModelInfoById(parentModelID);
+		}
+		
+		/* Get the resources for the actual edit model id */
+		extensions.addAll(getAllEditModelExtensions(editModelID));
+		
+		return extensions;
 	}
 	
 	public IEditModelFactory findEditModelFactoryByKey(Object editModelID) {
@@ -166,10 +192,20 @@ public class EditModelRegistry extends RegistryReader {
 		resources.addAll(getExtendedEditModelResources(editModelID));
 		return resources;
 	}
+	
+	protected Collection getAllEditModelExtensions(String editModelID) {
+		Collection resources = new ArrayList();
+		resources.addAll(getLocalEditModelExtensions(editModelID));
+		return resources;
+	}
 
-	protected Collection getLocalEditModelResources(String editModelID) {
-		EditModelInfo editMdlInfo = (EditModelInfo) factoryConfigurations.get(editModelID);
-		return (editMdlInfo != null) ? editMdlInfo.getEditModelResources() : Collections.EMPTY_LIST;
+	protected Collection getLocalEditModelResources(String editModelID) { 
+		EditModelInfo editMdlInfo = getEditModelInfoById(editModelID);
+  		return (editMdlInfo != null) ? editMdlInfo.getEditModelResources() : Collections.EMPTY_LIST; 
+	}
+	protected Collection getLocalEditModelExtensions(String editModelID) { 
+		EditModelInfo editMdlInfo = getEditModelInfoById(editModelID);
+  		return (editMdlInfo != null) ? editMdlInfo.getEditModelExtensions() : Collections.EMPTY_LIST; 
 	}
 
 	protected Collection getExtendedEditModelResources(String editModelID) {
@@ -185,7 +221,7 @@ public class EditModelRegistry extends RegistryReader {
 	 */
 	protected IEditModelFactory getEditModelFactoryByKey(Object editModelID) {
 		IEditModelFactory factory = null;
-		EditModelInfo editMdlInfo = (EditModelInfo) factoryConfigurations.get(editModelID);
+		EditModelInfo editMdlInfo = getEditModelInfoById(editModelID);
 		if (editMdlInfo != null)
 			factory = editMdlInfo.getEditModelFactory();
 		else
@@ -194,7 +230,27 @@ public class EditModelRegistry extends RegistryReader {
 		return factory;
 	}
 	
-	
+	/**
+     * @param editModelID
+     * @return
+     */
+    protected EditModelInfo getEditModelInfoById(Object editModelID) {
+        waitForInitializationIfNecessary();
+        return (EditModelInfo) factoryConfigurations.get(editModelID);
+    }
+    
+    /**
+     * If we are not initialized, block until the INSTANCE is released ( from getInstance())
+     */
+    private void waitForInitializationIfNecessary() {
+        /* We only need to acquire the semaphore (INSTANCE), we do not need 
+         * to execute anything in this block. If the Registry is not initailized,
+         * then it will block until the semaphore is released (from getInstance()),
+         * and then release it and return immediately. 
+         */
+		if(!isInitialized()) 
+		    synchronized(INSTANCE) { }
+    }
 
 	public class EditModelInfo {
 
@@ -203,6 +259,7 @@ public class EditModelRegistry extends RegistryReader {
 
 		private IEditModelFactory factory = null;
 		private List editModelResources = null;
+		private List editModelExtensions = null;
 
 		private String parentModelID = null;
 
@@ -223,20 +280,26 @@ public class EditModelRegistry extends RegistryReader {
 		}
 
 		public IEditModelFactory getEditModelFactory() {
+//			 Do not block if the factory is not null
 			if (this.factory == null) {
-				if (this.configurationElement != null) {
-					try {
-						this.factory = (IEditModelFactory) this.configurationElement.createExecutableExtension(FACTORY_CLASS_ATTR);
-						String loadUnknownResourceAsReadOnly = this.configurationElement.getAttribute(LOAD_UNKNOWN_RESOURCES_ATTR);
-						Boolean value = loadUnknownResourceAsReadOnly != null ? Boolean.valueOf(loadUnknownResourceAsReadOnly) : Boolean.FALSE;
-						this.factory.setLoadKnownResourcesAsReadOnly(value.booleanValue());
-						discardConfigurationElementIfNecessary();
-					} catch (CoreException e) {
-						Logger.getLogger(EMFWorkbenchEditPlugin.ID).logError(e);
+			  synchronized (this) {
+			      // another thread could have already initialized the factory
+			      // while this thread was waiting to enter the sync block
+			      if(this.factory == null) {
+					if (this.configurationElement != null) {
+						try {
+							this.factory = (IEditModelFactory) this.configurationElement.createExecutableExtension(FACTORY_CLASS_ATTR);
+							Boolean value = Boolean.valueOf(this.configurationElement.getAttribute(LOAD_UNKNOWN_RESOURCES_ATTR));
+							this.factory.setLoadKnownResourcesAsReadOnly(value.booleanValue());
+							discardConfigurationElementIfNecessary();
+						} catch (CoreException e) {
+							Logger.getLogger(EMFWorkbenchEditPlugin.ID).logError(e);
+						}
+					} else {
+						Logger.getLogger().logError(EMFWorkbenchEditResourceHandler.EditModelRegistry_ERROR_1);
 					}
-				} else {
-					Logger.getLogger().logError(EMFWorkbenchEditResourceHandler.EditModelRegistry_ERROR_1);
-				}
+			      }
+			    }
 			}
 			return this.factory;
 		}
@@ -249,9 +312,19 @@ public class EditModelRegistry extends RegistryReader {
 					editModelResources = new ArrayList();
 
 					IConfigurationElement[] resources = configurationElement.getChildren(EditModelResource.EDIT_MODEL_RESOURCE_ELEMENT);
-					for (int j = 0; j < resources.length; j++)
+					for (int j = 0; j < resources.length; j++) {
 						editModelResources.add(new EditModelResource(resources[j]));
-
+					}
+					IConfigurationElement[] resExtensions = configurationElement.getChildren(EDIT_MODEL_RESOURCE_EXTENSION);
+					if (resExtensions == null || resExtensions.length == 0) {
+						editModelExtensions = Collections.EMPTY_LIST;
+					} else {
+						editModelExtensions = new ArrayList();
+						for (int i = 0; i < resExtensions.length; i++) {
+							String extension = resExtensions[i].getAttribute(EDIT_MODEL_RESOURCE_EXTENSION_NAME);
+							editModelExtensions.add(extension);
+						}
+					}
 					discardConfigurationElementIfNecessary();
 				} else {
 					editModelResources = Collections.EMPTY_LIST;
@@ -275,6 +348,12 @@ public class EditModelRegistry extends RegistryReader {
 		 */
 		public String getParentModelID() {
 			return parentModelID;
+		}
+		
+		public List getEditModelExtensions() {
+			/* this method is guarded */
+			initializeResources();
+			return editModelExtensions;
 		}
 
 	}

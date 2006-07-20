@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
@@ -22,6 +23,8 @@ import org.eclipse.emf.ecore.xmi.XMLLoad;
 import org.eclipse.emf.ecore.xmi.XMLSave;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 import org.eclipse.wst.common.internal.emf.utilities.IDUtil;
+import org.eclipse.wst.common.internal.emf.utilities.ResourceIsLoadingAdapter;
+import org.eclipse.wst.common.internal.emf.utilities.ResourceIsLoadingAdapterFactory;
 
 
 public class CompatibilityXMIResourceImpl extends XMIResourceImpl implements CompatibilityXMIResource {
@@ -234,4 +237,102 @@ public class CompatibilityXMIResourceImpl extends XMIResourceImpl implements Com
 			idToEObjectMap.remove(eObjectToIDMap.remove(eObject));
 		}
 	}
+	
+	public void load(Map options) throws IOException {
+
+        ResourceIsLoadingAdapter adapter = null;
+        if (isLoaded) {
+            adapter = ResourceIsLoadingAdapter.findAdapter(this);
+            if (adapter != null) 
+                adapter.waitForResourceToLoad();
+            return;
+        }
+        synchronized (this) {            
+            adapter = ResourceIsLoadingAdapter.findAdapter(this);
+            if (adapter == null && !isLoaded) 
+                addSynchronizationLoadingAdapter();
+        }
+        if(adapter != null)
+            adapter.waitForResourceToLoad();
+        else {
+            try {
+                super.load(options);
+            } catch(IOException ioe) {
+                removeLoadingSynchronizationAdapter();
+                throw ioe;
+            } catch(RuntimeException re) {
+                removeLoadingSynchronizationAdapter();
+                throw re;
+            } catch(Error e) {
+                removeLoadingSynchronizationAdapter();
+                throw e;
+            }
+        }
+    }
+	
+	  /**
+     * 
+     */
+    private void addSynchronizationLoadingAdapter() {
+        if (ResourceIsLoadingAdapter.findAdapter(this) == null)
+            eAdapters().add(ResourceIsLoadingAdapterFactory.INSTANCE.createResourceIsLoadingAdapter());
+    }
+
+    /**
+     * 
+     */
+    private void removeLoadingSynchronizationAdapter() {
+        ResourceIsLoadingAdapter adapter = ResourceIsLoadingAdapter.findAdapter(this);
+        if (adapter != null) {
+            adapter.forceRelease();
+            eAdapters().remove(adapter);
+        }
+    }
+
+    /**
+     * Case 1: LOAD RESOURCE FROM DISK this.isLoaded == false AND isLoaded ==
+     * true (which means we entered the load() method, but have not completed
+     * the load), and we're loading from a resource on disk, then we add the
+     * adapter Case 2: RESOURCE CREATION (NOT A LOAD) Case 4: RESOURCE CREATION,
+     * UNLOADED, NEW CONTENTS (NOT A LOAD) Resource is created but not from a
+     * resource on disk, so contents is null AND not empty, so no adapter: THIS
+     * IS NOT A LOAD Case 3: RESOURCE HAS BEEN UNLOADED, BEING RELOADED FROM
+     * DISK Contents is NOT null, but it is Empty and the resource is being
+     * loaded from disk. We must add the adapter.
+     * 
+     */
+    public boolean isResourceBeingLoaded(boolean isLoaded) {
+        return (!this.isLoaded && isLoaded) && (contents == null || contents.isEmpty());
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.emf.ecore.resource.Resource#getContents()
+     */
+    public EList getContents() {
+        waitForResourceToLoadIfNecessary();
+        return super.getContents();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.emf.ecore.resource.impl.ResourceImpl#isLoaded()
+     */
+    public boolean isLoaded() {
+        waitForResourceToLoadIfNecessary();
+        return super.isLoaded();
+    }
+
+    /**
+     * 
+     */
+    protected final void waitForResourceToLoadIfNecessary() {
+        ResourceIsLoadingAdapter loadingAdapter = ResourceIsLoadingAdapter.findAdapter(this);
+        if (loadingAdapter != null) loadingAdapter.waitForResourceToLoad();
+    }
+
+
+
 }

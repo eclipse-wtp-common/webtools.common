@@ -115,6 +115,7 @@ public class ComponentImplRegistryReader extends RegistryReader {
 	protected IComponentImplFactory findFactoryForProject(IProject project){
 		try {
 			IFacetedProject facetedProject = ProjectFacetsManager.create(project);
+			if (facetedProject == null) return null;
 			Iterator keys = descriptors.keySet().iterator();
 			while (keys.hasNext()) {
 				String typeID = (String) keys.next();

@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.emf.common.notify.Adapter;
+import org.eclipse.emf.common.notify.impl.BasicNotifierImpl.EAdapterList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.EAttribute;
@@ -172,16 +173,15 @@ public class ExtendedEcoreUtil extends EcoreUtil {
 	   */
 	  public static Adapter getAdapter(EObject anObject, List adapters, Object type) {
 
-		synchronized (adapters) {
-
-			for (int i = 0, size = adapters.size(); i < size; ++i) {
-				Adapter adapter = (Adapter) adapters.get(i);
-				if (adapter.isAdapterForType(type)) {
+		  	Object [] adaptArray = ((EAdapterList)adapters).data();
+		  	if (adaptArray == null) return null;
+			for (int i = 0; i < adaptArray.length; i++) {
+				Adapter adapter = (Adapter) adaptArray[i];
+				if (adapter != null && adapter.isAdapterForType(type)) {
 					return adapter;
 				}
 			}
 			return null;
-		}
 	}
 
 	/**

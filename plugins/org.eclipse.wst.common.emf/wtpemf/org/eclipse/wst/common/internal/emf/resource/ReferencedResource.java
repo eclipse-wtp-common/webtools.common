@@ -18,6 +18,18 @@ public interface ReferencedResource extends Resource, CompatibilityXMIResource {
 	public static final String DELETED_ERROR_MSG = "This resource has been deleted and can no longer be used."; //$NON-NLS-1$
 
 	public static final int RESOURCE_WAS_SAVED = 601;
+	
+	/**
+	 * A flag used to indicate a ReferencedResource is about
+	 * to save.
+	 */
+	public static final int RESOURCE_ABOUT_TO_SAVE = 602;
+	
+	/**
+	 * A flag used to indicate a ReferencedResource has failed
+	 * to save.
+	 */
+	public static final int RESOURCE_SAVE_FAILED = 603;
 
 	/**
 	 * Access this resource for read only. This call increments the use read count of this resource.

@@ -72,11 +72,11 @@ public class ResourceStateValidatorImpl implements ResourceStateValidator {
 	 * they would like to refresh with the contents on disk if we are dirty.
 	 */
 	public void checkActivation(ResourceStateValidatorPresenter presenter) throws CoreException {
-		//checkConsistency(presenter);
+		checkConsistency(presenter);
 	}
 
 	public void lostActivation(ResourceStateValidatorPresenter presenter) throws CoreException {
-		//checkConsistency(presenter);
+		checkConsistency(presenter);
 	}
 
 	public boolean checkSave(ResourceStateValidatorPresenter presenter) throws CoreException {
@@ -329,8 +329,8 @@ public class ResourceStateValidatorImpl implements ResourceStateValidator {
 		Object ctx = presenter != null ? presenter.getValidateEditContext() : null;
 		IStatus result = ResourcesPlugin.getWorkspace().validateEdit(files, ctx);
 		cacheValidateState(result, roResources, nonResROFiles);
-//		if (!result.isOK())
-//			checkConsistency(presenter);
+		if (!result.isOK())
+			checkConsistency(presenter);
 		return result;
 	}
 

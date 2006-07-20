@@ -18,9 +18,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
@@ -32,10 +35,13 @@ import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeRoot;
 import org.eclipse.wst.common.componentcore.internal.impl.WTPModulesResource;
 import org.eclipse.wst.common.componentcore.internal.impl.WTPModulesResourceFactory;
+import org.eclipse.wst.common.frameworks.internal.SaveFailedException;
 import org.eclipse.wst.common.internal.emf.resource.ReferencedResource;
 import org.eclipse.wst.common.internal.emf.resource.TranslatorResource;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
+import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidator;
+import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidatorPresenter;
 import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectNature;
 /**
  * Manages the underlying Module Structural Metamodel.
@@ -176,6 +182,19 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	
 	public WTPModulesResource  makeWTPModulesResource() {
 		return (WTPModulesResource) createResource(WTPModulesResourceFactory.WTP_MODULES_URI_OBJ);
+	}
+	protected void runSaveOperation(IWorkspaceRunnable runnable, IProgressMonitor monitor) throws SaveFailedException {
+		try {
+			ResourcesPlugin.getWorkspace().run(runnable, null,IWorkspace.AVOID_UPDATE,monitor);
+		} catch (CoreException e) {
+			throw new SaveFailedException(e);
+		}
+	}
+	/**
+	 * @see ResourceStateValidator#checkActivation(ResourceStateValidatorPresenter)
+	 */
+	public void checkActivation(ResourceStateValidatorPresenter presenter) throws CoreException {
+		// Do nothing for now...
 	}
 	/**
 	 * Subclasses can override - by default this will return the first resource referenced by the

@@ -64,7 +64,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	protected List deferredLoadResources = new ArrayList();
 
 	protected List autoloadResourcesURIs = new ArrayList();
-
+	protected List autoloadResourcesExts = new ArrayList();
 
 
 	/**
@@ -233,7 +233,12 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	 */
 	protected boolean addedResource(IFile aFile) {
 		//Process resource as a refresh.
-		return processResource(aFile, false);
+		URI uri = URI.createPlatformResourceURI(aFile.getFullPath().toString());
+		if ((autoloadResourcesURIs.contains(uri)) || (autoloadResourcesExts.contains(aFile.getFileExtension()))) {
+			deferredLoadResources.add(uri);
+			return true;
+		}
+		return false;
 	}
 
 	protected boolean processResource(IFile aFile, boolean isRemove) {
@@ -252,8 +257,6 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 				deferredRemoveResources.add(resource);
 			else if (resource.isLoaded() && !(WorkbenchResourceHelper.isReferencedResource(resource) && WorkbenchResourceHelper.isConsistent((ReferencedResource)resource)))
 				deferredUnloadResources.add(resource);
-			else if (autoloadResourcesURIs.contains(resource.getURI()))
-				deferredLoadResources.add(resource.getURI());
 		}
 		return false;
 	}
@@ -378,6 +381,13 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	 */
 	protected void initialize() {
 		getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE | IResourceChangeEvent.POST_CHANGE);
+	}
+	public void enableAutoload(String extension) {
+		autoloadResourcesExts.add(extension);
+		
+	}
+	public void disableAutoload(String extension) {
+		autoloadResourcesExts.remove(extension);
 	}
 
 }

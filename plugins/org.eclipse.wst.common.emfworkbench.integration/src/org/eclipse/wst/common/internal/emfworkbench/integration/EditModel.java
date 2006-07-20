@@ -45,6 +45,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.jem.internal.util.emf.workbench.nls.EMFWorkbenchResourceHandler;
 import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
 import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.internal.ISaveHandler;
 import org.eclipse.wst.common.frameworks.internal.SaveFailedException;
 import org.eclipse.wst.common.frameworks.internal.SaveHandlerHeadless;
@@ -81,6 +82,8 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	private final boolean readOnly;
 	// These are the current resource uris we need to track
 	protected List knownResourceUris;
+	//These are the current resource extensions to track
+	protected List knownResourceExtensions;
 	// This is a subset of the known resource uris, which we have requested be autoloaded
 	protected List preloadResourceUris;
 	// This is a map of identifiers to resources that we need to listen to in order to listen for
@@ -207,6 +210,10 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 			for (int i = 0; i < preloadResourceUris.size(); i++) {
 				URI uri = (URI) preloadResourceUris.get(i);
 				sync.disableAutoload(uri);
+			}
+			for (int i = 0; i < knownResourceExtensions.size(); i++) {
+				String ext = (String) knownResourceExtensions.get(i);
+				sync.disableAutoload(ext);
 			}
 		}
 	}
@@ -533,18 +540,33 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 			res = (EditModelResource) iter.next();
 			addEditModelResource(res);
 		}
-
+		Collection resourceExtensions = EditModelRegistry.getInstance().getEditModelExtensions(getEditModelID());
+		if (resourceExtensions.isEmpty()) {
+			knownResourceExtensions = Collections.EMPTY_LIST;
+		} else {
+			knownResourceExtensions.addAll(resourceExtensions);
+			Iterator it = resourceExtensions.iterator();
+			ResourceSetWorkbenchEditSynchronizer sync = (ResourceSetWorkbenchEditSynchronizer) getEmfContext().getResourceSet().getSynchronizer();
+			while (it.hasNext()) {
+				String extension = (String)iter.next();
+				sync.enableAutoload(extension);
+			}
+		}
 	}
 
 	private void addEditModelResource(EditModelResource res) {
 		boolean enabled = false;
-		if (res.isCore()) {
-			enabled = true;
-		} else {
-			IEnablementIdentifier identifier = res.getEnablementIdentifier(getProject());
-			registerInterest(identifier, res);
-			enabled = identifier.isEnabled();
-		}
+		try {
+			if (res.isCore()) {
+				enabled = true;
+			} else {
+				IEnablementIdentifier identifier = res.getEnablementIdentifier(getProject());
+				registerInterest(identifier, res);
+				enabled = identifier.isEnabled();
+			}
+		} catch(RuntimeException re) {
+	        Logger.getLogger().logWarning(re);
+	    } 
 		if (enabled) {
 			URI uri = res.getURI();
 			knownResourceUris.add(uri);

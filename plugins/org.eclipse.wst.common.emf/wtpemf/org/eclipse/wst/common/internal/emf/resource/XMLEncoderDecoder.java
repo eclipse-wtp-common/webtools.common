@@ -35,7 +35,7 @@ public class XMLEncoderDecoder {
 	 * 16-bit encodings this will be 0xFFFF. Characters that are not printable will be escaped using
 	 * character references.
 	 */
-	private int _lastPrintable = 0x7E;
+	private int _lastPrintable = 0xFFFE;
 
 	protected static XMLEncoderDecoder _singleton;
 

@@ -24,6 +24,7 @@ import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.internal.emf.utilities.StringUtil;
 import org.xml.sax.EntityResolver;
 
@@ -149,16 +150,24 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	}
 
 	public void save(Map options) throws IOException {
-		if (renderer.useStreamsForIO()) {
-			super.save(options);
-		}
-		else {
-			// we cast to OutputStream, in preparation for 3.2 code base,
-			// where this doSave call is ambiguous with just "null". 
-			doSave((OutputStream) null, options);
-			notifySaved();
-		}
-	}
+        if (renderer.useStreamsForIO()) {
+            super.save(options);
+        } else {
+            notifyAboutToSave();
+            try {
+                doSave((OutputStream)null, options);
+                notifySaved();
+            } catch (Exception e) {
+                 notifySaveFailed();
+                if (e instanceof IOException)
+                    throw (IOException) e;
+                else
+                    Logger.getLogger().write(e);
+            }
+            notifySaved();
+        }
+    }
+
 
 	/**
 	 * @see com.ibm.etools.xmi.helpers.CompatibilityXMIResourceImpl#doSave(OutputStream,
@@ -224,6 +233,7 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	}
 
 	public EList getContents() {
+		waitForResourceToLoadIfNecessary();
 		if (contents == null) {
 			initializeContents();
 		}

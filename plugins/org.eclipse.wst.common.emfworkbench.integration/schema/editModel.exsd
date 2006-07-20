@@ -103,6 +103,23 @@
          </attribute>
       </complexType>
    </element>
+   
+   <element name="resourceExtension">
+      <annotation>
+         <documentation>
+            This allows registration of files for autoloading according to file extension.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  The file extension itself (&quot;myxmi&quot;)
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
 
    <annotation>
       <appInfo>

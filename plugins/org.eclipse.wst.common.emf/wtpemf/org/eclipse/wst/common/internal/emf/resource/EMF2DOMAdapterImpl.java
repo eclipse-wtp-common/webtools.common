@@ -406,7 +406,7 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 		}
 
 		// Remove any remaining adapters.
-		for (; i < mofChildren.size();) {
+		for (; i < mofChildren.size(); i++) {
 			removeMOFValue((EObject) mofChildren.get(i), map);
 		}
 
@@ -802,13 +802,15 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 
 		EMF2DOMAdapter adapter = primGetExistingAdapter(node);
 
-		if (adapter != null && adapter.isMOFProxy()) {
-			removeDOMAdapter(node, adapter);
-			adapter.getTarget().eAdapters().remove(adapter);
-			adapter = null;
-		}
-
-		if (adapter == null) {
+		if (adapter != null) {
+			if (adapter.isMOFProxy() || adapter.getTarget() == null) {
+				removeDOMAdapter(node, adapter);
+				if (adapter.getTarget() != null) {
+					adapter.getTarget().eAdapters().remove(adapter);
+				}
+				adapter = null;
+			}
+		} else {
 			adapter = primCreateAdapter(node, childMap);
 		}
 		return adapter;

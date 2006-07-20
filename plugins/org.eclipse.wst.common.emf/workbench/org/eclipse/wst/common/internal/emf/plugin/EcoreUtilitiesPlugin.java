@@ -17,7 +17,9 @@
 package org.eclipse.wst.common.internal.emf.plugin;
 
 import org.eclipse.core.runtime.Plugin;
+import org.eclipse.wst.common.internal.emf.ResourceSynchronizedIsLoadingAdapterFactory;
 import org.eclipse.wst.common.internal.emf.resource.RendererFactory;
+import org.eclipse.wst.common.internal.emf.utilities.ResourceIsLoadingAdapterFactory;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -46,5 +48,7 @@ public class EcoreUtilitiesPlugin extends Plugin {
 		RendererFactory.setDefaultHandler(PluginRendererFactoryDefaultHandler.INSTANCE);
 		PackageURIMapReader reader = new PackageURIMapReader();
 		reader.processExtensions();
+		//use a synchronized loading adapter factory
+		ResourceIsLoadingAdapterFactory.INSTANCE = new ResourceSynchronizedIsLoadingAdapterFactory();
 	}
 }

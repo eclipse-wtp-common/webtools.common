@@ -25,6 +25,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.internal.emf.utilities.IDUtil;
 
 public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl implements ReferencedResource {
@@ -337,25 +338,48 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	 * @see Resource#save(Object)
 	 */
 	public void save(Map options) throws IOException {
-		super.save(options);
-		notifySaved();
+		notifyAboutToSave();
+        try {
+            super.save(options);
+        } catch (Exception e) {
+            notifySaveFailed();
+            if (e instanceof IOException)
+                throw (IOException) e;
+            else
+                Logger.getLogger().write(e);
+        }
+        notifySaved();
 	}
 
 	protected void notifySaved() {
+		notifySaveEvent(RESOURCE_WAS_SAVED);
+	}
+	
+	protected void notifyAboutToSave() {
+        notifySaveEvent(RESOURCE_ABOUT_TO_SAVE);
+    }
+	
+	protected void notifySaveFailed() {
+        notifySaveEvent(RESOURCE_SAVE_FAILED);
+    }
+	
+	private void notifySaveEvent(int eventType) {
 		if (eNotificationRequired()) {
-			Notification notification = new NotificationImpl(RESOURCE_WAS_SAVED, this, this) {
-				public Object getNotifier() {
-					return ReferencedXMIResourceImpl.this;
-				}
-
-				public int getFeatureID(Class expectedClass) {
-					return RESOURCE_WAS_SAVED;
-				}
+		  Notification notification =
+			new NotificationImpl(eventType, this, this)
+			{
+			  public Object getNotifier()
+			  {
+				return ReferencedXMIResourceImpl.this;
+			  }
+			  public int getFeatureID(Class expectedClass)
+			  {
+				return eventType;
+			  }
 			};
 			eNotify(notification);
 		}
-	}
-	
+	}	
 
 	/**
 	 * @see com.ibm.etools.emf.workbench.ReferencedResource#wasReverted()
@@ -373,11 +397,5 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	    return eAdapters;
 	  }
 
-
-	public void eNotify(Notification notification) {
-		synchronized (eAdapters()) {
-			super.eNotify(notification);
-		}
-	}
 
 }

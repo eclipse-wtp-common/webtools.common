@@ -21,10 +21,11 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.Notifier;
@@ -39,6 +40,7 @@ import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 import org.eclipse.jem.util.emf.workbench.WorkbenchURIConverter;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jem.util.plugin.JEMUtilPlugin;
 import org.eclipse.wst.common.internal.emf.resource.ReferencedResource;
 import org.eclipse.wst.common.internal.emf.resource.ReferencedXMIFactoryImpl;
@@ -70,9 +72,11 @@ public class WorkbenchResourceHelper extends WorkbenchResourceHelperBase {
 	 */
 	private static class FileAdapter extends AdapterImpl {
 		public static final Object ADAPTER_KEY = FileAdapter.class.getName();
+		private static final long delay = 6000;
 		private IFile file;
 		private long synchronizationStamp;
 		protected ResourceSet previousResourceSet;
+		private ILock saveLock;
 		public static final int FILE_NOT_LOADED = 0;
 		public static final int FILE_INACCESSIBLE = -1;
 
@@ -91,13 +95,60 @@ public class WorkbenchResourceHelper extends WorkbenchResourceHelperBase {
 					else
 						handleUnloaded();
 					break;
-				case ReferencedResource.RESOURCE_WAS_SAVED :
-					handleSaved();
-					break;
+				case ReferencedResource.RESOURCE_ABOUT_TO_SAVE:
+	                handleAboutToSave();
+	                break;
+	            case ReferencedResource.RESOURCE_WAS_SAVED:
+	                handleSaved();
+	                break;
+	            case ReferencedResource.RESOURCE_SAVE_FAILED:
+	                handleSaveFailed();
+	                break;
 				case Resource.RESOURCE__URI :
 					handleURIChanged();
 			}
 		}
+		
+		private void handleSaveFailed() {
+            releaseSaveLock();
+
+        }
+
+        private void handleAboutToSave() {
+            aquireSaveLock();
+        }
+
+        private void aquireSaveLock() {
+  /*          System.out.println("FileName: " + getFile().getName());
+            System.out.println("aquiredSaveLock: " + Thread.currentThread().getName());
+            System.out.println("Depth" + getSaveLock().getDepth());
+            System.out.println();*/
+            getSaveLock().acquire();
+
+        }
+
+        private boolean aquireSaveLock(long delay) throws InterruptedException {
+/*            System.out.println("FileName: " + getFile().getName());
+            System.out.println("aquiredSaveLock with delay: " + Thread.currentThread().getName());
+            System.out.println("Depth" + getSaveLock().getDepth());
+            System.out.println();*/
+            return getSaveLock().acquire(delay);
+
+        }
+
+        private void releaseSaveLock() {
+    /*        System.out.println("FileName: " + getFile().getName());
+            System.out.println("releasedSaveLock: " + Thread.currentThread().getName());
+            System.out.println("Depth" + getSaveLock().getDepth());*/
+            getSaveLock().release();
+
+        }
+
+        private ILock getSaveLock() {
+            if (saveLock == null)
+                saveLock = Platform.getJobManager().newLock();
+            return saveLock;
+        }
 
 		/**
 		 *  
@@ -153,15 +204,35 @@ public class WorkbenchResourceHelper extends WorkbenchResourceHelperBase {
 		 * @see ReferencedResource#isConsistent()
 		 */
 		public boolean isConsistent() {
-			if (getFile() == null || !getFile().isAccessible())
+			//This checks for the case where the resource hasn't finished saving fo the first time
+			if(!getResource().isLoaded())
 				return true;
-			if (!getFile().isSynchronized(IResource.DEPTH_ZERO))
-				return false;
-			if (synchronizationStamp == FILE_NOT_LOADED)
-				return true;
-			return synchronizationStamp == computeModificationStamp(getFile());
+            boolean hasLocked = false;
+            try {
+                hasLocked = aquireSaveLock(delay);
+            } catch (InterruptedException e) {
+                Logger.getLogger().write(e);
+            }
+            boolean result = false;
+            try {
 
-		}
+                if (getFile() == null || !getFile().isAccessible())
+                    result = true;
+                else {
+                    if (!getFile().isSynchronized(IFile.DEPTH_ZERO))
+                        result = false;
+                    else {
+                        result = synchronizationStamp == computeModificationStamp(getFile());
+                    }
+                }
+            } catch (Exception e) {
+                Logger.getLogger().write(e);
+            } finally {
+                if (hasLocked)
+                    releaseSaveLock();
+            }
+            return result;
+        }
 
 		public void cacheSynchronizationStamp() {
 			setSynchronizationStamp(computeModificationStamp(getFile()));
