@@ -152,33 +152,34 @@ public class ValidatorJob extends Job {
 				message.setParams(msgParm);				
 				status = WTPCommonPlugin.createErrorStatus(message.getText());
 				return status;
-			}
-			try {
-				helper.cleanup(reporter);
-				vmd.removeHelper( validator );
-			}catch (OperationCanceledException e) {
-				throw e;
-			} catch (Throwable exc) {
-				if (logger.isLoggingLevel(Level.SEVERE)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("ValidatorJob.run()"); //$NON-NLS-1$
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-				String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
-				Message message = ValidationPlugin.getMessage();
-				message.setSeverity(IMessage.NORMAL_SEVERITY);
-				message.setId(ResourceConstants.VBF_EXC_RUNTIME);
-				message.setParams(msgParm);
-				reporter.addMessage(validator, message);
-
-				status = WTPCommonPlugin.createErrorStatus(message.getText());	
-				return status;
 			} finally {
-				helper.setProject(null);
-				vmd.removeHelper( validator );
-				helper = null;
-				reporter = null;
+				try {
+					helper.cleanup(reporter);
+					vmd.removeHelper( validator );
+				}catch (OperationCanceledException e) {
+					throw e;
+				} catch (Throwable exc) {
+					if (logger.isLoggingLevel(Level.SEVERE)) {
+						LogEntry entry = ValidationPlugin.getLogEntry();
+						entry.setSourceID("ValidatorJob.run()"); //$NON-NLS-1$
+						entry.setTargetException(exc);
+						logger.write(Level.SEVERE, entry);
+					}
+					String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
+					Message message = ValidationPlugin.getMessage();
+					message.setSeverity(IMessage.NORMAL_SEVERITY);
+					message.setId(ResourceConstants.VBF_EXC_RUNTIME);
+					message.setParams(msgParm);
+					reporter.addMessage(validator, message);
+	
+					status = WTPCommonPlugin.createErrorStatus(message.getText());	
+					return status;
+				} finally {
+					helper.setProject(null);
+					vmd.removeHelper( validator );
+					helper = null;
+					reporter = null;
+				}
 			}
 			//reporter.getProgressMonitor().worked(((delta == null) ? 1 : delta.length)); // One
 			//monitor.worked(((delta == null) ? 1 : delta.length)); // One
