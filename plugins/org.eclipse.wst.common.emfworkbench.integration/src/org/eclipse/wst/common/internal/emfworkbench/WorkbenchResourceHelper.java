@@ -119,27 +119,32 @@ public class WorkbenchResourceHelper extends WorkbenchResourceHelperBase {
         }
 
         private void aquireSaveLock() {
-  /*          System.out.println("FileName: " + getFile().getName());
-            System.out.println("aquiredSaveLock: " + Thread.currentThread().getName());
-            System.out.println("Depth" + getSaveLock().getDepth());
-            System.out.println();*/
+//            System.out.println("FileName: " + getFile().getName() + " " +getFile());
+//            System.out.println("aquiredSaveLock: " + Thread.currentThread().getName());
+//            System.out.println("Depth" + getSaveLock().getDepth());
+//            System.out.println("Instance:"+getSaveLock().hashCode());
+//            new Exception().printStackTrace(System.out);
             getSaveLock().acquire();
 
         }
 
         private boolean aquireSaveLock(long delay) throws InterruptedException {
-/*            System.out.println("FileName: " + getFile().getName());
-            System.out.println("aquiredSaveLock with delay: " + Thread.currentThread().getName());
-            System.out.println("Depth" + getSaveLock().getDepth());
-            System.out.println();*/
+//            System.out.println("FileName: " + getFile().getName()  + " " +getFile());
+//            System.out.println("aquiredSaveLock with delay: " + Thread.currentThread().getName());
+//            System.out.println("Depth" + getSaveLock().getDepth());
+//            System.out.println("Instance:"+getSaveLock().hashCode());
+//            new Exception().printStackTrace(System.out);
+            
             return getSaveLock().acquire(delay);
 
         }
 
         private void releaseSaveLock() {
-    /*        System.out.println("FileName: " + getFile().getName());
-            System.out.println("releasedSaveLock: " + Thread.currentThread().getName());
-            System.out.println("Depth" + getSaveLock().getDepth());*/
+//            System.out.println("FileName: " + getFile().getName()  + " " +getFile());
+//            System.out.println("releasedSaveLock: " + Thread.currentThread().getName());
+//            System.out.println("Depth" + getSaveLock().getDepth());
+//            System.out.println("Instance:"+getSaveLock().hashCode());
+//            new Exception().printStackTrace(System.out);
             getSaveLock().release();
 
         }
@@ -261,6 +266,7 @@ public class WorkbenchResourceHelper extends WorkbenchResourceHelperBase {
 
 		public void handleSaved() {
 			cacheSynchronizationStamp();
+			releaseSaveLock();
 		}
 	}
 
