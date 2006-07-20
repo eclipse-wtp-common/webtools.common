@@ -194,7 +194,7 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	 * @see ResourceStateValidator#checkActivation(ResourceStateValidatorPresenter)
 	 */
 	public void checkActivation(ResourceStateValidatorPresenter presenter) throws CoreException {
-		// Do nothing for now...
+		super.checkActivation(presenter);
 	}
 	/**
 	 * Subclasses can override - by default this will return the first resource referenced by the
