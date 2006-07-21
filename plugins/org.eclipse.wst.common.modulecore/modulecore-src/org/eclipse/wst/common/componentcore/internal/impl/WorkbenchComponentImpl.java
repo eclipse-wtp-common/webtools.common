@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchComponentImpl.java,v 1.12 2006/05/22 21:22:50 cbridgha Exp $
+ * $Id: WorkbenchComponentImpl.java,v 1.13 2006/07/21 18:36:56 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
@@ -34,7 +34,6 @@ import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.ComponentType;
 import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
-import org.eclipse.wst.common.componentcore.internal.GlobalComponentChangeNotifier;
 import org.eclipse.wst.common.componentcore.internal.Property;
 import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
@@ -207,7 +206,6 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	 */
 	protected WorkbenchComponentImpl() {
 		super();
-		eAdapters().add(GlobalComponentChangeNotifier.getInstance());
 	}
 
 	private IPath getFirstRootSource() {

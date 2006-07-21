@@ -77,7 +77,6 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	private boolean multiComps;
 	public ModuleStructuralModel(String editModelID, EMFWorkbenchContext context, boolean readOnly) {
         super(editModelID, context, readOnly);
-        addListener(GlobalComponentChangeNotifier.getInstance());
     }
     /**
 	 * Release each of the referenced resources.
@@ -113,9 +112,7 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 			e.printStackTrace();
 		}
 		EObject modelRoot = null;
-		synchronized (this) {
-			modelRoot = super.getPrimaryRootObject();
-		}
+		modelRoot = super.getPrimaryRootObject();
 		if (modelRoot != null) {
 			// if the workspace tree is locked we cannot try to change the .component resource
 			if (ResourcesPlugin.getWorkspace().isTreeLocked())
