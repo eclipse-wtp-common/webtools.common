@@ -14,10 +14,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.componentcore.ComponentCore;
+import org.eclipse.wst.common.componentcore.internal.util.ComponentUtilities;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
@@ -37,7 +42,9 @@ public class DependencyGraphManager {
 	}
 
 	private static DependencyGraphManager INSTANCE = null;
+	private static final String MANIFEST_URI = "META-INF/MANIFEST.MF";
 	private HashMap wtpModuleTimeStamps = null;
+	private HashMap manifestTimeStamps = null;
 	
 	private DependencyGraphManager() {
 		super();
@@ -55,10 +62,50 @@ public class DependencyGraphManager {
 	}
 	
 	private void constructIfNecessary() {
-		if (moduleTimeStampsChanged()) 
+		if (moduleTimeStampsChanged() || manifestTimeStampsChanged()) 
 			buildDependencyGraph();
 	}
 	
+	private boolean manifestTimeStampsChanged() {
+		HashMap workspaceTimeStamps = collectManifestTimeStamps();
+		if (getManifestTimeStamps().equals(workspaceTimeStamps))
+			return false;
+		return true;
+	}
+
+	private HashMap getManifestTimeStamps() {
+		if (wtpModuleTimeStamps == null)
+			wtpModuleTimeStamps = new HashMap();
+		return wtpModuleTimeStamps;
+	}
+
+	private HashMap collectManifestTimeStamps() {
+		HashMap timeStamps = new HashMap();
+		IProject[] projects = ProjectUtilities.getAllProjects();
+		for (int i=0; i<projects.length; i++) {
+			IFile manifestFile = null;
+			if (projects[i]==null || !projects[i].isAccessible())
+				continue;
+			manifestFile = getManifestFile(projects[i]);
+			if (manifestFile != null) {
+				Long currentTimeStamp = new Long(manifestFile.getLocalTimeStamp());
+				timeStamps.put(projects[i],currentTimeStamp);
+			}
+		}
+		return timeStamps;
+	}
+	private IFile getManifestFile(IProject p) {
+		IVirtualComponent component = ComponentCore.createComponent(p);
+		try {
+			IFile file = ComponentUtilities.findFile(component, new Path(MANIFEST_URI));
+			if (file != null)
+				return file;
+		} catch (CoreException ce) {
+			Logger.getLogger().log(ce);
+		}
+		return null;
+	}
+
 	private boolean moduleTimeStampsChanged() {
 		HashMap workspaceTimeStamps = collectModuleTimeStamps();
 		if (getWtpModuleTimeStamps().equals(workspaceTimeStamps))
@@ -129,12 +176,19 @@ public class DependencyGraphManager {
 			return false;
 		Long currentTimeStamp = new Long(wtpModulesFile.getLocalTimeStamp());
 		getWtpModuleTimeStamps().put(project,currentTimeStamp);
+		//		 Get the MANIFEST file for the given project
+		IResource manifestFile = getManifestFile(project);
+
+		if (manifestFile==null)
+			return false;
+		getManifestTimeStamps().put(project,currentTimeStamp);
 		return true;
 	}
 	
 	private void cleanDependencyGraph() {
 		DependencyGraph.getInstance().clear();
 		getWtpModuleTimeStamps().clear();
+		getManifestTimeStamps().clear();
 	}
 
 	/**
