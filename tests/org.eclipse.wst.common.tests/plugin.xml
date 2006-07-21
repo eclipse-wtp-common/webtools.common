@@ -25,6 +25,7 @@
       <import plugin="org.eclipse.wst.common.tests.collector" export="true"/>
       <import plugin="org.eclipse.jem.util" />
       <import plugin="org.eclipse.wst.common.environment"/>
+      <import plugin="org.eclipse.wst.common.emf"/>
    </requires>
    <extension-point id="DataModelVerifier" name="Data Model Verifier Factory Extension" schema="schema/dataModelVerifier.exsd"/>
 

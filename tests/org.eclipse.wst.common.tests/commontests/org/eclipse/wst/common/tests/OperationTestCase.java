@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.datamodel.IWorkspaceRunnableWithStatus;
+import org.eclipse.wst.common.internal.emf.resource.RendererFactory;
 
 
 /**
@@ -48,6 +49,8 @@ public abstract class OperationTestCase extends BaseTestCase {
 			// TODO: handle exception
 		} catch (Throwable th) {
 			// TODO: handle error in a better way
+		} finally {
+			RendererFactory.getDefaultRendererFactory().setValidating(false);
 		}
 		// LogUtility.getInstance().resetLogging();
 	}
