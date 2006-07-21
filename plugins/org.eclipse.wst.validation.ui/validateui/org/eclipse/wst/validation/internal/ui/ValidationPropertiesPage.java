@@ -267,6 +267,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 		ProjectConfiguration pagePreferences = null;
 		private boolean canOverride = false;
 		private Button addValidationBuilder = null;
+		private Color color = null;
 
 		private ValidatorMetaData[] oldVmd = null; // Cache the enabled validators so that, if there
     private Map oldDelegates = null; // Cache the validator delegates.
@@ -500,7 +501,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 			layout.horizontalSpan = 2;
 			link.setLayoutData(layout);
 			link.setUnderlined(true);
-			Color color = new Color(validatorGroup.getDisplay(),new RGB(0,0,255) );
+			color = new Color(validatorGroup.getDisplay(),new RGB(0,0,255) );
 			link.setForeground(color);
 			link.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.CONFIG_WS_SETTINGS));
 			link.addHyperlinkListener(new IHyperlinkListener() {
@@ -1142,6 +1143,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 			emptyRowPlaceholder.dispose();
 			overrideGlobalButton.dispose();
 			page.dispose();
+			color.dispose();
 		}
 
 		public boolean performCancel() {
