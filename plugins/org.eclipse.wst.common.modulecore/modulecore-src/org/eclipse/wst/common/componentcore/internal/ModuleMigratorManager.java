@@ -52,17 +52,8 @@ public class ModuleMigratorManager {
 		return manager;
 	}
 	private void migrateComponentsIfNecessary(IProject project, boolean multiComps) {
-		if (multiComps) {
-			setupAndMigrateComponentProject(project);
-		} else {
-	        	  
-	        	  IProject[] projects = WorkbenchResourceHelper.getWorkspace().getRoot().getProjects();
-			      for (int i = 0; i < projects.length; i++) {
-						IProject proj = projects[i];
-						setupAndMigrateComponentProject(proj);
-			      }
-		}
-						
+		
+		setupAndMigrateComponentProject(project);
 		
 	}
 	private void setupAndMigrateComponentProject(IProject proj) {
@@ -101,12 +92,12 @@ public class ModuleMigratorManager {
 			if (multiComps)
 				return (needs && multiComps);
 			else
-				return ((aProj.findMember(StructureEdit.MODULE_META_FILE_NAME) != null) || (aProj.findMember(".settings/.component") != null)) && 
+				return ((aProj.findMember(StructureEdit.MODULE_META_FILE_NAME) == null) && (aProj.findMember(".settings/.component") == null)) || 
 						(ProjectFacetsManager.create(aProj) == null) && needs;
 			}
 		};
 		
-		ResourcesPlugin.getWorkspace().run(workspaceRunnable, null,IWorkspace.AVOID_UPDATE,null);
+		ResourcesPlugin.getWorkspace().run(workspaceRunnable, aProject,IWorkspace.AVOID_UPDATE,null);
 		
 		
 		
@@ -124,45 +115,25 @@ public class ModuleMigratorManager {
 			} catch (CoreException e) {
 				Platform.getLog(ModulecorePlugin.getDefault().getBundle()).log(new Status(IStatus.ERROR, ModulecorePlugin.PLUGIN_ID, IStatus.ERROR, e.getMessage(), e));
 			}
-		} //else {
-//			oldfile = project.findMember(".settings/.component");
-//			if (oldfile != null && oldfile.exists()) {
-//				try {
-//						oldfile.move(new Path(StructureEdit.MODULE_META_FILE_NAME),true,null);
-//				} catch (CoreException e) {
-//					Platform.getLog(ModulecorePlugin.getDefault().getBundle()).log(new Status(IStatus.ERROR, ModulecorePlugin.PLUGIN_ID, IStatus.ERROR, e.getMessage(), e));
-//				}
-//			} 
-//			
-//		}
+		} 
 	}
 	private void moveOldMetaDataFile() {
-//		WorkspaceJob job = new WorkspaceJob("Migrating metadata")
-//	      {
-//	        
-//	        public IStatus runInWorkspace(IProgressMonitor monitor)
-//	        {
-	          try
-	          {
-	        	IProject[] projects = WorkbenchResourceHelper.getWorkspace().getRoot().getProjects();
-	      		for (int i = 0; i < projects.length; i++) {
-	      			IProject project = projects[i];
-	      			if (!moved.contains(project))
-		      			moveMetaDataFile(project);
-	      				IFolder depFolder = project.getFolder(".deployables");
-	      				if (depFolder.exists())
-	      					depFolder.delete(true,null);
-		      			project.refreshLocal(IResource.DEPTH_INFINITE,null);
-		      			moved.add(project);
-	      			}
-	      		
-	          } catch (Exception e) {
-	          }
-//	          return Status.OK_STATUS;
-//	        }
-//	      };
-//	      job.setRule(ResourcesPlugin.getWorkspace().getRuleFactory().buildRule());
-//	      job.schedule();
+
+		try {
+			IProject[] projects = WorkbenchResourceHelper.getWorkspace().getRoot().getProjects();
+			for (int i = 0; i < projects.length; i++) {
+				IProject project = projects[i];
+				if (!moved.contains(project))
+					moveMetaDataFile(project);
+				IFolder depFolder = project.getFolder(".deployables");
+				if (depFolder.exists())
+					depFolder.delete(true, null);
+				project.refreshLocal(IResource.DEPTH_INFINITE, null);
+				moved.add(project);
+			}
+
+		} catch (Exception e) {
+		}
 	}
 	protected boolean isMigrating() {
 		return migrating;

@@ -74,6 +74,7 @@ import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectNature;
 public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	
 	public static final String MODULE_CORE_ID = "moduleCoreId"; //$NON-NLS-1$ 
+	private static final String PROJECT_VERSION_1_5 = "1.5.0";
 	private boolean multiComps;
 	public ModuleStructuralModel(String editModelID, EMFWorkbenchContext context, boolean readOnly) {
         super(editModelID, context, readOnly);
@@ -102,7 +103,7 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	 * @see org.eclipse.wst.common.internal.emfworkbench.integration.EditModel#getPrimaryRootObject()
 	 */
 	public EObject getPrimaryRootObject() {
-		final String PROJECT_VERSION = "1.5.0";
+		
 		try {
 			Resource res = prepareProjectModulesIfNecessary();
 			if (res == null)
@@ -121,13 +122,16 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 			if (components.size()>0) {
 				WorkbenchComponent wbComp = (WorkbenchComponent)components.get(0);
 				// Check and see if we need to clean up spurrious redundant map entries
-				if (!((ProjectComponents)modelRoot).getVersion().equals(PROJECT_VERSION)) {
-					((ProjectComponents)modelRoot).setVersion(PROJECT_VERSION);
+				if (!isVersion15(modelRoot)) {
+					((ProjectComponents)modelRoot).setVersion(PROJECT_VERSION_1_5);
 					cleanupWTPModules(wbComp);
 				}
 			}
 		}
 		return modelRoot;
+	}
+	private boolean isVersion15(EObject modelRoot){
+		return ((ProjectComponents)modelRoot).getVersion().equals(PROJECT_VERSION_1_5);
 	}
     
 	/**
@@ -191,7 +195,7 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	 * @see ResourceStateValidator#checkActivation(ResourceStateValidatorPresenter)
 	 */
 	public void checkActivation(ResourceStateValidatorPresenter presenter) throws CoreException {
-		//super.checkActivation(presenter);
+		super.checkActivation(presenter);
 	}
 	/**
 	 * Subclasses can override - by default this will return the first resource referenced by the
@@ -227,6 +231,8 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 				if (!manager.isMigrating() && !ResourcesPlugin.getWorkspace().isTreeLocked()) {
 					manager.migrateOldMetaData(getProject(),multiComps);
 				}
+				else if ((getProject().findMember(StructureEdit.MODULE_META_FILE_NAME) == null) && (getProject().findMember(".settings/.component") == null))
+					return null;
 			} catch (CoreException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
