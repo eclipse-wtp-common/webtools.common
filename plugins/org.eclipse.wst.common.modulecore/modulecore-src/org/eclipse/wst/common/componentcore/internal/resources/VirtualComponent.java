@@ -196,6 +196,20 @@ public class VirtualComponent implements IVirtualComponent {
         }
 	}
 	
+	public void clearMetaProperties() {
+		StructureEdit core = null;
+        try {
+            core = StructureEdit.getStructureEditForWrite(getProject());
+            WorkbenchComponent component = core.getComponent(); 
+            component.getProperties().clear();
+        } finally {
+            if(core != null){
+            	core.saveIfNecessary(null);
+                core.dispose();
+            }
+        }
+	}
+	
 	public void setMetaProperty(String key, String value) {
         StructureEdit core = null;
         try {
