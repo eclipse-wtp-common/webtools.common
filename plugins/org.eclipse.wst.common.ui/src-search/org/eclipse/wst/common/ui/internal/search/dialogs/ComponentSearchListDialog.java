@@ -106,6 +106,7 @@ public class ComponentSearchListDialog extends Dialog {
     
 	public void create() {
         super.create();
+        getButton(IDialogConstants.OK_ID).setEnabled(false);
         setTextFilterFocus();
     }
     
@@ -242,7 +243,8 @@ public class ComponentSearchListDialog extends Dialog {
 			}
 
 			public void widgetDefaultSelected(SelectionEvent e) {
-				run();
+        // bug 144548 - unnecessary
+        // run();
 			}
 
 			private void run() {
