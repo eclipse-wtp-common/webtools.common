@@ -31,7 +31,6 @@ import org.eclipse.wst.common.componentcore.datamodel.properties.IProjectMigrato
 import org.eclipse.wst.common.frameworks.datamodel.DataModelFactory;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.datamodel.IWorkspaceRunnableWithStatus;
-import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 public class ModuleMigratorManager {
@@ -76,7 +75,7 @@ public class ModuleMigratorManager {
 					if (aProj.isAccessible() && ModuleCoreNature.isFlexibleProject(aProj)) {
 						if (aProj.findMember(".wtpmodules") != null) {
 							if (!moved.contains(aProj))
-								moveOldMetaDataFile();
+								moveOldMetaDataFile(aProj);
 						} else moved.add(aProj);
 						if (needsComponentMigration(aProj,multiComps))
 							migrateComponentsIfNecessary(aProj,multiComps);
@@ -97,7 +96,7 @@ public class ModuleMigratorManager {
 			}
 		};
 		
-		ResourcesPlugin.getWorkspace().run(workspaceRunnable, aProject,IWorkspace.AVOID_UPDATE,null);
+		ResourcesPlugin.getWorkspace().run(workspaceRunnable, null,IWorkspace.AVOID_UPDATE,null);
 		
 		
 		
@@ -117,12 +116,9 @@ public class ModuleMigratorManager {
 			}
 		} 
 	}
-	private void moveOldMetaDataFile() {
+	private void moveOldMetaDataFile(IProject project) {
 
 		try {
-			IProject[] projects = WorkbenchResourceHelper.getWorkspace().getRoot().getProjects();
-			for (int i = 0; i < projects.length; i++) {
-				IProject project = projects[i];
 				if (!moved.contains(project))
 					moveMetaDataFile(project);
 				IFolder depFolder = project.getFolder(".deployables");
@@ -130,12 +126,11 @@ public class ModuleMigratorManager {
 					depFolder.delete(true, null);
 				project.refreshLocal(IResource.DEPTH_INFINITE, null);
 				moved.add(project);
-			}
 
 		} catch (Exception e) {
 		}
 	}
-	protected boolean isMigrating() {
+	public boolean isMigrating() {
 		return migrating;
 	}
 

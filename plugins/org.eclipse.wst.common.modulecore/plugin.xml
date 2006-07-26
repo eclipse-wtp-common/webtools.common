@@ -41,6 +41,9 @@
 			<file-association
 				content-type="org.eclipse.core.runtime.xml"
 				file-names=".component"/>
+			<file-association
+				content-type="org.eclipse.core.runtime.xml"
+				file-names=".wtpmodules"/>
 	</extension>
 
 	<extension point="org.eclipse.team.core.ignore">
@@ -70,5 +73,63 @@
       <adapter type="org.eclipse.wst.common.project.facet.core.IActionConfig"/>
     </factory>
   </extension>
+  
+  <extension
+         id="ModuleCoreValidator"
+         name="ModuleCore Validator"
+         point="org.eclipse.wst.validation.validator">
+      <validator>
+      	<projectNature
+               id="org.eclipse.wst.common.modulecore.ModuleCoreNature">
+         </projectNature>
+         <filter
+               objectClass="org.eclipse.core.resources.IFile"
+               caseSensitive="false"
+               nameFilter="*.wtpmodules">
+         </filter>
+         <filter
+               objectClass="org.eclipse.core.resources.IFile"
+               caseSensitive="false"
+               nameFilter="*.component">
+         </filter>
+		   <markerId
+               	   markerIdValue="ModuleCoreValidatorMarker">
+         </markerId>
+         <helper      
+               class="org.eclipse.wst.common.componentcore.internal.ModuleCoreValidatorHelper">
+         </helper>
+         <run
+               class="org.eclipse.wst.common.componentcore.internal.ModuleCoreValidator">
+         </run>
+      </validator>
+   </extension>
+
+<extension
+         id="ModuleCoreValidatorMarker"
+         name="ModuleCore Validation Marker"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.wst.validation.problemmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+      <attribute
+            name="owner">
+      </attribute>
+      <attribute
+            name="validationSeverity">
+      </attribute>
+      <attribute
+            name="targetObject">
+      </attribute>
+      <attribute
+            name="groupName">
+      </attribute>
+      <attribute
+            name="messageId">
+      </attribute>
+</extension>
+  
    
 </plugin>
