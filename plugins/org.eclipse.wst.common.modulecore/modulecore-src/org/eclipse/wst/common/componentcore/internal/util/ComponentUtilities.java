@@ -96,6 +96,15 @@ public class ComponentUtilities {
 		return null;
 	}
 
+	public static ArtifactEdit getArtifactEditForRead(IVirtualComponent comp, String type) {
+		if (comp != null) {
+			ArtifactEditRegistryReader reader = ArtifactEditRegistryReader.instance();
+			IArtifactEditFactory factory = reader.getArtifactEdit(type);
+			if (factory != null)
+				return factory.createArtifactEditForRead(comp);
+		}
+		return null;
+	}
 
 
 	public static IFile findFile(IVirtualComponent comp, IPath aPath) throws CoreException {
