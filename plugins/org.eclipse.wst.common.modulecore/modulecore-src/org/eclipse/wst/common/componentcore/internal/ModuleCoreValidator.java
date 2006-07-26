@@ -65,7 +65,7 @@ public class ModuleCoreValidator implements IValidatorJob {
 			IProject proj = (IProject) helper
 					.loadModel(ModuleCoreValidatorHelper.MODULECORE, null);
 			try {
-				if (proj.hasNature(ModuleCoreNature.MODULE_NATURE_ID)) {
+				if (proj.isAccessible() && proj.hasNature(ModuleCoreNature.MODULE_NATURE_ID)) {
 					if (needsMigrating(proj))
 						_reporter.addMessage(this, new Message("modulecore",
 								IMessage.HIGH_SEVERITY,

@@ -1762,6 +1762,8 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 						}
 					}
 		);
+		validatorjob.setPriority(Job.DECORATE);
+		validatorjob.setSystem(true);
 		validatorjob.schedule();		
 		
 	}
