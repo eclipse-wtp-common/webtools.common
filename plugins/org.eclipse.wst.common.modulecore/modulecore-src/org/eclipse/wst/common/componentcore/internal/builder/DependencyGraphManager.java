@@ -146,6 +146,8 @@ public class DependencyGraphManager {
 			cleanDependencyGraph();
 			for (int i=0; i<referencesToAdd.size(); i++) {
 				DependencyReference ref = (DependencyReference) referencesToAdd.get(i);
+				if (ref.targetProject == null || ref.componentProject == null || ref.targetProject.equals(ref.componentProject))
+					continue;
 				DependencyGraph.getInstance().addReference(ref.targetProject,ref.componentProject);
 				if (!timeStampsUpdated.contains(ref.componentProject)) {
 					addTimeStamp(ref.componentProject);
