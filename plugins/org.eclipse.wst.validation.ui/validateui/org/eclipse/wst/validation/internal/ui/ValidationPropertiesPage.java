@@ -465,7 +465,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 			TableColumn validatorColumn = new TableColumn(table, SWT.NONE);
 	        validatorColumn.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.VALIDATOR));
 	        validatorColumn.setResizable(false);
-	        validatorColumn.setWidth(240);
+	        validatorColumn.setWidth(320);
 	        TableColumn manualColumn = new TableColumn(table, SWT.NONE);
 	        manualColumn.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.MANUAL));
 	        manualColumn.setResizable(false);
@@ -473,11 +473,11 @@ public class ValidationPropertiesPage extends PropertyPage {
 	        TableColumn buildColumn = new TableColumn(table, SWT.NONE);
 	        buildColumn.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.BUILD));
 	        buildColumn.setResizable(false);
-	        buildColumn.setWidth(30);
+	        buildColumn.setWidth(40);
           TableColumn settingsColumn = new TableColumn(table, SWT.NONE);
           settingsColumn.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.SETTINGS));
           settingsColumn.setResizable(false);
-          settingsColumn.setWidth(40);
+          settingsColumn.setWidth(50);
 	    }
 
 		/**
