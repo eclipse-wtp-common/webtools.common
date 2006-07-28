@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005 - 2006 BEA Systems, Inc.
+ * Copyright (c) 2005, 2006 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -66,7 +66,6 @@ public final class RuntimesPanel
 
 {
     private static final Object NO_RUNTIME_SELECTED_PLACEHOLDER = new Object();
-    private static final Color COLOR_GRAY = new Color( null, 160, 160, 164 );
     
     private final ChangeTargetedRuntimesDataModel model;
     private boolean showAllRuntimesSetting;
@@ -78,6 +77,8 @@ public final class RuntimesPanel
     private final TableViewer runtimeComponents;
     private IRuntime currentPrimaryRuntime;
     private final List listeners;
+    private Color colorGray;
+    private Color colorManila;
     
     public RuntimesPanel( final Composite parent,
                           final int style,
@@ -93,11 +94,11 @@ public final class RuntimesPanel
             {
                 public void widgetDisposed( final DisposeEvent e )
                 {
-                    removeDataModelListeners();
+                    handleWidgetDisposed();
                 }
             }
         );
-
+        
         // Bind to the data model.
         
         this.model = model;
@@ -151,6 +152,11 @@ public final class RuntimesPanel
         );
         
         this.showAllRuntimesSetting = false;
+
+        // Initialize the colors.
+        
+        this.colorGray = new Color( null, 160, 160, 164 );
+        this.colorManila = new Color( null, 255, 255, 206 );
 
         // Layout the panel.
         
@@ -233,7 +239,7 @@ public final class RuntimesPanel
         
         this.runtimeComponents = new TableViewer( this, SWT.BORDER );
         this.runtimeComponents.getTable().setLayoutData( hhint( gdhfill(), 50 ) );
-        this.runtimeComponents.getTable().setBackground( new Color( null, 255, 255, 206 ) );
+        this.runtimeComponents.getTable().setBackground( this.colorManila );
         this.runtimeComponents.setContentProvider( new RuntimeComponentsContentProvider() );
         this.runtimeComponents.setLabelProvider( new RuntimeComponentsLabelProvider() );
         
@@ -438,6 +444,14 @@ public final class RuntimesPanel
     {
         this.model.setPrimaryRuntime( getSelection() );
     }
+
+    private void handleWidgetDisposed()
+    {
+        removeDataModelListeners();
+        
+        this.colorGray.dispose();
+        this.colorManila.dispose();
+    }
     
     private void refresh()
     {
@@ -588,7 +602,7 @@ public final class RuntimesPanel
         {
             if( ! getDataModel().getTargetableRuntimes().contains( element ) )
             {
-                return COLOR_GRAY;
+                return RuntimesPanel.this.colorGray;
             }
             else
             {
