@@ -129,7 +129,15 @@
       <attribute
             name="messageId">
       </attribute>
-</extension>
+</extension> 
+
+   <!-- Register the nature id with the EMFNature -->
+   <extension
+         point="org.eclipse.jem.util.nature_registration">
+      <nature
+            id="org.eclipse.wst.common.modulecore.ModuleCoreNature">
+      </nature>
+   </extension> 
   
    
 </plugin>
