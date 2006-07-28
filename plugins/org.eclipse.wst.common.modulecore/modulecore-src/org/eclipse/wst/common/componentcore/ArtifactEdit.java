@@ -455,10 +455,11 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 * @return The root object of the underlying model
 	 */
 	public EObject getContentModelRoot() {
-		if(isBinary()){
+		if(isBinary())
 		   return binaryComponentHelper.getPrimaryRootObject();
-		} 
-		return artifactEditModel.getPrimaryRootObject();
+		if (artifactEditModel!=null)
+			return artifactEditModel.getPrimaryRootObject();
+		return null;
 	}
 
 	/**
@@ -489,7 +490,7 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 */
 	public void removeListener(EditModelListener listener) {
 		if(isBinary()){
-		} else {
+		} else if (artifactEditModel!=null) {
 			artifactEditModel.removeListener(listener);
 		}
 	}
