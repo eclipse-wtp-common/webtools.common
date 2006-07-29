@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.wst.common_core.feature"
-      label="org.eclipse.wst.common_core.feature"
-      version="1.0.0">
-
+      label="WST Common Core Feature"
+      version="1.0.3.qualifier"
+      provider-name="Eclipse.org">
+ 
    <description>
       %description
    </description>
@@ -11,6 +12,10 @@
    <license url="license.html">
       %license
    </license>
+
+   <url>
+      <update label="Web Tools Platform (WTP) Updates" url="http://download.eclipse.org/webtools/updates/"/>
+   </url>
 
    <requires>
       <import feature="org.eclipse.jem" version="1.1.0.1" match="equivalent"/>
@@ -81,13 +86,6 @@
 
    <plugin
          id="org.eclipse.wst.validation"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.wst.common.core"
          download-size="0"
          install-size="0"
          version="0.0.0"

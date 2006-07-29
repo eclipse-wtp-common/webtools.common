@@ -585,7 +585,7 @@ public final class WorkbenchReporter implements IReporter {
 				//do nothing here, a message is already logged by now 
 			}
 		}
-	
+
 		addMessage(resource, validator.getClass(), message, getTargetObjectName(helper, message), getLocation(helper, message),vmd.getMarkerId());
 	}
 

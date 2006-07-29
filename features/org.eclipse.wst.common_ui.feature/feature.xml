@@ -2,7 +2,8 @@
 <feature
       id="org.eclipse.wst.common_ui.feature"
       label="org.eclipse.wst.common_ui.feature"
-      version="1.0.0">
+      version="1.0.202.qualifier"
+      provider-name="Eclipse.org">
 
    <description>
       %description
@@ -12,13 +13,17 @@
       %license
    </license>
 
+   <url>
+      <update label="Web Tools Platform (WTP) Updates" url="http://download.eclipse.org/webtools/updates/"/>
+   </url>
+
    <includes
          id="org.eclipse.wst.common_userdoc.feature"
          version="0.0.0"/>
 
    <requires>
       <import feature="org.eclipse.gef" version="3.1.1" match="equivalent"/>
-      <import feature="org.eclipse.wst.common_core.feature" version="1.0.0" match="equivalent"/>
+      <import feature="org.eclipse.wst.common_core.feature" version="1.0.2" match="equivalent"/>
    </requires>
 
    <plugin
@@ -90,7 +95,7 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
    <plugin
          id="org.eclipse.wst.internet.proxy.infopop"
          download-size="0"
@@ -107,6 +112,20 @@
 
    <plugin
          id="org.eclipse.wst.validation.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.wst.command.env.infopop"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.wst.validation.infopop"
          download-size="0"
          install-size="0"
          version="0.0.0"

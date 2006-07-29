@@ -120,4 +120,21 @@ public class WTPUIPlugin extends AbstractUIPlugin {
 	public ResourceBundle getResourceBundle() {
 		return resourceBundle;
 	}
+    
+    public static void log( final Throwable e )
+    {
+        final String msg = e.getMessage() + "";
+        log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, e ) );
+    }
+
+    public static void log( final IStatus status )
+    {
+        getDefault().getLog().log( status );
+    }
+    
+    public static void log( final String msg )
+    {
+        log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, null ) );
+    }
+    
 }

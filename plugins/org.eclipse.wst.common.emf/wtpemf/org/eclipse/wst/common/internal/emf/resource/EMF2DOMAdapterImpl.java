@@ -125,8 +125,6 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	protected void initChildTranslators() {
 
 		List children = new ArrayList();
-		// TODO come up with translator extension mechanism
-		//children.add(AnnotationsTranslator.INSTANCE);
 		children.addAll(Arrays.asList(fTranslator.getChildren(getTarget(), fRenderer.getVersionID())));
 
 		VariableTranslatorFactory factory = fTranslator.getVariableTranslatorFactory();

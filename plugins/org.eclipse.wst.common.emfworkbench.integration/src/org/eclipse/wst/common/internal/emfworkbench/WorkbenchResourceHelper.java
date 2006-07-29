@@ -73,6 +73,8 @@ public class WorkbenchResourceHelper extends WorkbenchResourceHelperBase {
 		private IFile file;
 		private long synchronizationStamp;
 		protected ResourceSet previousResourceSet;
+		public static final int FILE_NOT_LOADED = 0;
+		public static final int FILE_INACCESSIBLE = -1;
 
 		public boolean isAdapterForType(Object type) {
 			return ADAPTER_KEY.equals(type);
@@ -102,14 +104,14 @@ public class WorkbenchResourceHelper extends WorkbenchResourceHelperBase {
 		 */
 		private void handleURIChanged() {
 			file = null;
-			synchronizationStamp = 0;
+			synchronizationStamp = FILE_NOT_LOADED;
 		}
 
 		public IFile getFile() {
 			//First test to see if we should reset the file.
 			if (file != null && (!file.isAccessible() || previousResourceSet != getResourceSet())) {
 				file = null;
-				synchronizationStamp = 0;
+				synchronizationStamp = FILE_NOT_LOADED;
 			}
 			if (file == null) {
 				if (isPlatformResourceURI(getURI())) {
@@ -117,6 +119,9 @@ public class WorkbenchResourceHelper extends WorkbenchResourceHelperBase {
 				} else {
 					//we should not be here anymore.
 					file = internalGetFile(getResource());
+				}
+				if(null!= file && !file.isAccessible()){
+					synchronizationStamp = FILE_INACCESSIBLE;
 				}
 				previousResourceSet = getResourceSet();
 			}
@@ -152,7 +157,7 @@ public class WorkbenchResourceHelper extends WorkbenchResourceHelperBase {
 				return true;
 			if (!getFile().isSynchronized(IResource.DEPTH_ZERO))
 				return false;
-			if (synchronizationStamp == 0)
+			if (synchronizationStamp == FILE_NOT_LOADED)
 				return true;
 			return synchronizationStamp == computeModificationStamp(getFile());
 
@@ -176,7 +181,7 @@ public class WorkbenchResourceHelper extends WorkbenchResourceHelperBase {
 
 		public void handleUnloaded() {
 			file = null;
-			synchronizationStamp = 0;
+			synchronizationStamp = FILE_NOT_LOADED;
 		}
 
 		public void handleLoaded() {
@@ -222,7 +227,7 @@ public class WorkbenchResourceHelper extends WorkbenchResourceHelperBase {
 
 	public static long getSynchronizationStamp(ReferencedResource res) {
 		FileAdapter adapter = getFileAdapter(res);
-		return adapter == null ? 0 : adapter.getSynchronizationStamp();
+		return adapter == null ? FileAdapter.FILE_NOT_LOADED : adapter.getSynchronizationStamp();
 	}
 
 	public static void setSynhronizationStamp(ReferencedResource res, long stamp) {
@@ -244,7 +249,7 @@ public class WorkbenchResourceHelper extends WorkbenchResourceHelperBase {
 	public static void cacheSynchronizationStamp(ReferencedResource refResource) {
 		if (refResource != null) {
 			FileAdapter adapter = getFileAdapter(refResource);
-			if (adapter != null && adapter.getSynchronizationStamp() <= 0)
+			if (adapter != null && adapter.getSynchronizationStamp() <= FileAdapter.FILE_NOT_LOADED)
 				adapter.setSynchronizationStamp(computeModificationStamp(refResource));
 		}
 	}
@@ -255,12 +260,15 @@ public class WorkbenchResourceHelper extends WorkbenchResourceHelperBase {
 
 	public static long computeModificationStamp(ReferencedResource resource) {
 		FileAdapter adapter = getFileAdapter(resource);
-		return adapter == null ? 0 : computeModificationStamp(adapter.getFile());
+		return adapter == null ? FileAdapter.FILE_NOT_LOADED : computeModificationStamp(adapter.getFile());
 	}
 
 	public static long computeModificationStamp(IFile file) {
 		if (file == null)
-			return 0;
+			return FileAdapter.FILE_NOT_LOADED;
+		if(!file.isAccessible()){
+			return FileAdapter.FILE_INACCESSIBLE;
+		}
 		long currentStamp = file.getModificationStamp();
 		IPath path = file.getLocation();
 		if (path != null)

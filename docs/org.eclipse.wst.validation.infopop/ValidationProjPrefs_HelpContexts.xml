@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS type="org.eclipse.help.contexts"?>
+
+<contexts>
+	<!-- Validation settings for project -->
+
+<context id="jvpp0000">
+<description>The project validation page allows you to view or change the validation settings for a project. A validator is a tool that checks that resources conform to a specification, DTD, or some other set of rules.
+
+Select the <b>Override validation preferences</b> check box. Select this check box if you want to override the default validation preferences set in the workbench Preferences page.
+If the <b>Override validation preferences</b> check box is not enabled, go to <b>Window > Preferences > Validation</b> and select the <b>Allow projects to override these preference settings</b> check box.
+
+Select the <b>Run validation when you manually build</b> check box if you want the selected validators to run whenever you build your project.
+To enable the <b>Run validation when you manually build</b> check box, select at least one validator in the list.
+
+Select  the <b>Run validation automatically when you save changes to resources</b> check box if you want the selected validators to automatically run whenever you save changes to your project resources.
+To enable the <b>Run validation automatically when you save changes to resources</b> check box, select at least one validator in the list. 
+
+Use the <b>Maximum number of validation messages</b> field to define the maximum allowable validation messages for the project.
+If the number of validation messages reported in the task list exceeds the number set in this field, validation will terminate.
+</description>
+<topic label="Validating code in enterprise applications" href="../org.eclipse.jst.j2ee.doc.user/topics/tjval.html"/>
+<topic label="Common validation errors and solutions" href="..org.eclipse.jst.j2ee.doc.user/topics/rvalerr.html"/>
+</context>
+
+</contexts>

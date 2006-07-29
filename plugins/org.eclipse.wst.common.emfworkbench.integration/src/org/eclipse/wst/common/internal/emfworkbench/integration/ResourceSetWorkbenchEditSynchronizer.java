@@ -29,6 +29,11 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -120,12 +125,32 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 		}
 	}
 
-	protected void acceptDelta(IResourceChangeEvent event) {
-		IResourceDelta delta = event.getDelta();
-		// search for changes to any projects using a visitor
+	protected void acceptDelta(final IResourceChangeEvent event) {
+
+		final IResourceDelta delta = event.getDelta();
+
+		if (ResourcesPlugin.getWorkspace().isTreeLocked()) {
+			primAcceptDelta(delta, event);
+		}
+		else {
+			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+				public void run(IProgressMonitor monitor) throws CoreException {
+					primAcceptDelta(delta, event);
+				}
+			};
+			try {
+				ResourcesPlugin.getWorkspace().run(runnable, project, IWorkspace.AVOID_UPDATE, null);
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void primAcceptDelta(IResourceDelta delta, IResourceChangeEvent event) {
 		if (delta != null) {
 			try {
-				delta.accept(this);
+				delta.accept(ResourceSetWorkbenchEditSynchronizer.this);
 			} catch (Exception e) {
 				Logger.getLogger().logError(e);
 			}
@@ -222,9 +247,10 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 				} else
 					return false;
 			}
+			
 			if (isRemove)
 				deferredRemoveResources.add(resource);
-			else if (resource.isLoaded())
+			else if (resource.isLoaded() && !(WorkbenchResourceHelper.isReferencedResource(resource) && WorkbenchResourceHelper.isConsistent((ReferencedResource)resource)))
 				deferredUnloadResources.add(resource);
 			else if (autoloadResourcesURIs.contains(resource.getURI()))
 				deferredLoadResources.add(resource.getURI());
@@ -254,6 +280,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	}
 
 	protected Resource getResource(IFile aFile) {
+		
 		return resourceSet.getResource(URI.createPlatformResourceURI(aFile.getFullPath().toString()), false);
 	}
 
