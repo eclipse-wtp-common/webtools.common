@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.wst.common_ui.feature"
       label="org.eclipse.wst.common_ui.feature"
-      version="1.0.201.qualifier"
+      version="1.0.202.qualifier"
       provider-name="Eclipse.org">
 
    <description>
@@ -116,14 +116,14 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
    <plugin
          id="org.eclipse.wst.command.env.infopop"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
    <plugin
          id="org.eclipse.wst.validation.infopop"
          download-size="0"
