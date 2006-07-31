@@ -232,14 +232,36 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	 * @post Return true if a <code>Resource</code> was queued up to be reloaded.
 	 */
 	protected boolean addedResource(IFile aFile) {
-		//Process resource as a refresh.
-		URI uri = URI.createPlatformResourceURI(aFile.getFullPath().toString());
-		if ((autoloadResourcesURIs.contains(uri)) || (autoloadResourcesExts.contains(aFile.getFileExtension()))) {
-			deferredLoadResources.add(uri);
-			return true;
-		}
-		return false;
-	}
+        boolean didProcess = false;
+        Resource resource = getResource(aFile);
+        if ((resource != null) || (recentlySavedFiles.contains(resource))){
+                /*
+                 * The IFile was just added to the workspace but we have a resource
+                 * in memory.  Need to decide if it should be unloaded.
+                 */
+                if (resource.isModified()) {
+                        if (WorkbenchResourceHelper.isReferencedResource(resource)) {
+                                ReferencedResource refRes = (ReferencedResource) resource;
+                                if (refRes.shouldForceRefresh()) {
+                                        deferredUnloadResources.add(resource);
+                                        didProcess = true;
+                                }
+                        }
+                } else {
+                        /*Unload if found and is not modified.*/
+                        deferredUnloadResources.add(resource);
+                        didProcess = true;
+                }
+        } else {                
+                //Process resource as a refresh.
+                URI uri = URI.createPlatformResourceURI(aFile.getFullPath().toString());
+                if ((autoloadResourcesURIs.contains(uri)) || (autoloadResourcesExts.contains(aFile.getFileExtension()))) {
+                        deferredLoadResources.add(uri);
+                        didProcess = true;
+                }
+        }
+        return didProcess;
+}
 
 	protected boolean processResource(IFile aFile, boolean isRemove) {
 		Resource resource = getResource(aFile);
