@@ -52,7 +52,6 @@ import org.eclipse.wst.validation.internal.TaskListUtility;
 import org.eclipse.wst.validation.internal.TimeEntry;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
-import org.eclipse.wst.validation.internal.core.EmptySchedulingRule;
 import org.eclipse.wst.validation.internal.core.IFileDelta;
 import org.eclipse.wst.validation.internal.core.ValidationException;
 import org.eclipse.wst.validation.internal.core.ValidatorLauncher;
@@ -1707,9 +1706,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 
 
 		ISchedulingRule schedulingRule = validator.getSchedulingRule(helper);
-		if( schedulingRule == null ){
-			schedulingRule = new EmptySchedulingRule();
-		}
 		validatorjob.setRule( schedulingRule );		
 		QualifiedName validatorKey = new QualifiedName(null, "Validator"); //$NON-NLS-1$
 		validatorjob.setProperty( validatorKey, validator );
