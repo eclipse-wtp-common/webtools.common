@@ -23,7 +23,7 @@ import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualFile;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualResource;
-import org.eclipse.wst.common.componentcore.internal.util.ComponentImplRegistryReader;
+import org.eclipse.wst.common.componentcore.internal.util.ComponentImplManager;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualContainer;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
@@ -61,7 +61,7 @@ public class ComponentCore {
 	public static IVirtualComponent createComponent(IProject aProject) {
 		if (!ModuleCoreNature.isFlexibleProject(aProject))
 			return null;
-		return ComponentImplRegistryReader.instance().createComponent(aProject);
+		return ComponentImplManager.instance().createComponent(aProject);
 	}
 
 	/**
@@ -91,7 +91,7 @@ public class ComponentCore {
 	 * @see IVirtualContainer#create(int, IProgressMonitor)
 	 */
 	public static IVirtualComponent createArchiveComponent(IProject aProject, String aComponentName) {
-		return ComponentImplRegistryReader.instance().createArchiveComponent(aProject, aComponentName);
+		return ComponentImplManager.instance().createArchiveComponent(aProject, aComponentName);
 	}
 
 	/**
@@ -109,7 +109,7 @@ public class ComponentCore {
 	 * @see IVirtualResource#createLink(IPath, int, IProgressMonitor)
 	 */
 	public static IVirtualFolder createFolder(IProject aProject, IPath aRuntimePath) {
-		return ComponentImplRegistryReader.instance().createFolder(aProject, aRuntimePath);
+		return ComponentImplManager.instance().createFolder(aProject, aRuntimePath);
 	}
 
 	/**

@@ -45,6 +45,8 @@ public abstract class VirtualResource implements IVirtualResource {
 	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 	private IVirtualComponent component;
 	private String resourceType;
+	
+	private final ResourceTimestampMappings mapping = new ResourceTimestampMappings();
 
 
 	protected VirtualResource(IProject aComponentProject, IPath aRuntimePath) {
@@ -110,55 +112,37 @@ public abstract class VirtualResource implements IVirtualResource {
 	}
 
 	public IPath[] getProjectRelativePaths() {
-		StructureEdit moduleCore = null;
-		try {
-			moduleCore = StructureEdit.getStructureEditForRead(getProject());
-			if (moduleCore !=null) {
-				WorkbenchComponent aComponent = moduleCore.getComponent();
-				if (aComponent != null) {
-					ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(aComponent);
-					// still need some sort of loop here to search subpieces of the runtime path.
-					ComponentResource[] componentResources = null;
-	
-					if (root != null) {
-						IPath[] estimatedPaths = null;
-						IPath searchPath = null;
-						do {
-							searchPath = (searchPath == null) ? getRuntimePath() : searchPath.removeLastSegments(1);
-							componentResources = root.findModuleResources(searchPath, ResourceTreeNode.CREATE_NONE);
-							estimatedPaths = findBestMatches(componentResources);
-						} while (estimatedPaths.length==0 && canSearchContinue(componentResources, searchPath));
-						if (estimatedPaths==null || estimatedPaths.length==0)
-							return new IPath[] {getRuntimePath()};
-						return estimatedPaths;
-					}
-				}
+ 
+		WorkbenchComponent aComponent = getReadOnlyComponent();
+		if (aComponent != null) {
+			ResourceTreeRoot root = ResourceTreeRoot.getDeployResourceTreeRoot(aComponent);
+			// still need some sort of loop here to search subpieces of the runtime path.
+			ComponentResource[] componentResources = null;
+
+			if (root != null) {
+				IPath[] estimatedPaths = null;
+				IPath searchPath = null;
+				do {
+					searchPath = (searchPath == null) ? getRuntimePath() : searchPath.removeLastSegments(1);
+					componentResources = root.findModuleResources(searchPath, ResourceTreeNode.CREATE_NONE);
+					estimatedPaths = findBestMatches(componentResources);
+				} while (estimatedPaths.length==0 && canSearchContinue(componentResources, searchPath));
+				if (estimatedPaths==null || estimatedPaths.length==0)
+					return new IPath[] {getRuntimePath()};
+				return estimatedPaths;
 			}
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-			}
-		}
+		} 
+ 
 		return new IPath[] {getRuntimePath()};
 	}
 
-	public IPath getProjectRelativePath() {
-		StructureEdit moduleCore = null;
-		if (getRuntimePath().equals(new Path("/"))) {
-			try {
-				moduleCore = StructureEdit.getStructureEditForRead(getProject());
-				if (moduleCore != null) {
-					WorkbenchComponent aComponent = moduleCore.getComponent();
-					if (aComponent != null) {
-						if (((WorkbenchComponentImpl) aComponent).getDefaultSourceRoot() != null)
-							return ((WorkbenchComponentImpl) aComponent).getDefaultSourceRoot();
-					}
-				}
-			} finally {
-				if (moduleCore != null) {
-					moduleCore.dispose();
-				}
-			}
+	public IPath getProjectRelativePath() { 
+		if (getRuntimePath().equals(new Path("/"))) { 
+			WorkbenchComponent aComponent = getReadOnlyComponent();
+			if (aComponent != null) {
+				if (((WorkbenchComponentImpl) aComponent).getDefaultSourceRoot() != null)
+					return ((WorkbenchComponentImpl) aComponent).getDefaultSourceRoot();
+			} 
 		}
 		return getProjectRelativePaths()[0];
 	}
@@ -257,39 +241,25 @@ public abstract class VirtualResource implements IVirtualResource {
 	}
 
 	public void setResourceType(String aResourceType) {
-		resourceType = aResourceType;
-		StructureEdit moduleCore = null;
-		try {
-			moduleCore = StructureEdit.getStructureEditForRead(getProject());
-			WorkbenchComponent aComponent = moduleCore.getComponent();
-			ComponentResource[] resources = aComponent.findResourcesByRuntimePath(getRuntimePath());
-			for (int i = 0; i < resources.length; i++) {
-				resources[i].setResourceType(aResourceType);
-			}
-		} finally {
-			if (moduleCore != null) {
-				moduleCore.dispose();
-			}
+		resourceType = aResourceType; 
+		WorkbenchComponent aComponent = getReadOnlyComponent();
+		ComponentResource[] resources = aComponent.findResourcesByRuntimePath(getRuntimePath());
+		for (int i = 0; i < resources.length; i++) {
+			resources[i].setResourceType(aResourceType);
 		}
+		 
 	}
 
 	// TODO Fetch the resource type from the model.
 	public String getResourceType() {
-		if (null == resourceType) {
-			StructureEdit moduleCore = null;
-			try {
-				moduleCore = StructureEdit.getStructureEditForRead(getProject());
-				WorkbenchComponent aComponent = moduleCore.getComponent();
-				ComponentResource[] resources = aComponent.findResourcesByRuntimePath(getRuntimePath());
-				for (int i = 0; i < resources.length; i++) {
-					resourceType = resources[i].getResourceType();
-					return resourceType;
-				}
-			} finally {
-				if (moduleCore != null) {
-					moduleCore.dispose();
-				}
+		if (null == resourceType) { 
+			WorkbenchComponent aComponent = getReadOnlyComponent();
+			ComponentResource[] resources = aComponent.findResourcesByRuntimePath(getRuntimePath());
+			for (int i = 0; i < resources.length; i++) {
+				resourceType = resources[i].getResourceType();
+				return resourceType;
 			}
+			 
 		}
 		resourceType = ""; //$NON-NLS-1$
 		return resourceType;
@@ -334,5 +304,25 @@ public abstract class VirtualResource implements IVirtualResource {
 				moduleCore.dispose();
 			}
 		}
+	}
+	
+	protected final WorkbenchComponent getReadOnlyComponent() {
+		if(!mapping.hasChanged(getProject()) && mapping.hasCacheData(getProject()))
+			return (WorkbenchComponent) mapping.getData(getProject());
+		
+		StructureEdit moduleCore = null;
+		WorkbenchComponent component = null;
+		try {
+			moduleCore = StructureEdit.getStructureEditForRead(getProject());
+			component = moduleCore.getComponent();
+			mapping.mark(getProject(), component);
+		} finally {
+			if (moduleCore != null) { 
+				moduleCore.dispose();
+			}
+		}
+		return component;
+		
+			
 	}
 }

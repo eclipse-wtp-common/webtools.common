@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jem.util.RegistryReader;
 import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
+import org.eclipse.wst.common.componentcore.internal.resources.ResourceTimestampMappings;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualComponent;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualFolder;
@@ -31,29 +32,30 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
-public class ComponentImplRegistryReader extends RegistryReader {
+public class ComponentImplManager  {
 
 	private static final String COMPONENT_IMPL_EXTENSION_POINT = "componentimpl"; //$NON-NLS-1$
-	private static final String COMPONENT_IMPL = "componentimpl"; //$NON-NLS-1$
-	private static final String TYPE = "typeID"; //$NON-NLS-1$
-	private static final String CLASS = "class"; //$NON-NLS-1$
+	private static final String TAG_COMPONENT_IMPL = "componentimpl"; //$NON-NLS-1$
+	private static final String ATT_TYPE = "typeID"; //$NON-NLS-1$
+	private static final String ATT_CLASS = "class"; //$NON-NLS-1$
 
-	private static final ComponentImplRegistryReader instance = new ComponentImplRegistryReader();
+	private static final ComponentImplManager instance = new ComponentImplManager();
+	private static final Object LOAD_FAILED = new Object();
 
-	private final Map/* <String, ComponentImplDescriptor> */descriptors = new Hashtable();
+	private final Map/* <String, ComponentImplDescriptor> */ descriptors = new Hashtable();
 
-	private final Map/* <ComponentImplDescriptor, IComponentImplFactory> */instances = new Hashtable();
+	private final Map/* <ComponentImplDescriptor, IComponentImplFactory> */ instances = new Hashtable();
+	private final ResourceTimestampMappings factoryMap = new ResourceTimestampMappings();
 
 	/**
 	 * @return Returns the instance.
 	 */
-	public static ComponentImplRegistryReader instance() {
+	public static ComponentImplManager instance() {
 		/* already initialized and registry read by the time the class initializes */
 		return instance;
 	}
 
-	public ComponentImplRegistryReader() {
-		super(ModulecorePlugin.PLUGIN_ID, COMPONENT_IMPL_EXTENSION_POINT);
+	public ComponentImplManager() {
 		SafeRunner.run(new ISafeRunnable() {
 
 			public void handleException(Throwable exception) {
@@ -61,34 +63,12 @@ public class ComponentImplRegistryReader extends RegistryReader {
 			}
 
 			public void run() throws Exception {
-				readRegistry();
+				new ComponentImplRegistryReader().readRegistry();
 			}
 
 		});
 	}
 
-	/**
-	 * @see org.eclipse.wst.common.frameworks.internal.RegistryReader#readElement(org.eclipse.core.runtime.IConfigurationElement)
-	 */
-	public boolean readElement(IConfigurationElement element) {
-		if (COMPONENT_IMPL.equals(element.getName())) {
-
-			/*
-			 * Because the only instance of this type is created from a static singleton field, and
-			 * the registry is initialized in the constructor of this type, other threads cannot
-			 * compete with readElement() for access to <i>descriptors</i>
-			 */
-			String type = element.getAttribute(TYPE);
-			if (type != null)
-				descriptors.put(element.getAttribute(TYPE), new ComponentImplDescriptor(element));
-			else
-				ModulecorePlugin.logError(0, "No type attribute is specified for " + //$NON-NLS-1$
-							ModulecorePlugin.PLUGIN_ID + "." + COMPONENT_IMPL_EXTENSION_POINT + //$NON-NLS-1$ 
-							" extension in " + element.getDeclaringExtension().getNamespaceIdentifier(), null); //$NON-NLS-1$
-			return true;
-		}
-		return false;
-	}
 
 	private IComponentImplFactory getComponentImplFactory(String typeID) {
 
@@ -110,10 +90,20 @@ public class ComponentImplRegistryReader extends RegistryReader {
 		}
 		return factory;
 	}
-	
-	// TODO Don't like this because it's going to cycle every project facet for each project
-	protected IComponentImplFactory findFactoryForProject(IProject project){
+	 
+	private IComponentImplFactory findFactoryForProject(IProject project){
 		try {
+			IComponentImplFactory factory = null;		
+			
+			if( !factoryMap.hasChanged(project) ) {				
+
+				if( factoryMap.hasCacheError(project))
+					return null;
+				
+				if( factoryMap.hasCacheData(project)) 
+					return (IComponentImplFactory) factoryMap.getData(project);
+			} 
+			
 			IFacetedProject facetedProject = ProjectFacetsManager.create(project);
 			if (facetedProject == null) return null;
 			Iterator keys = descriptors.keySet().iterator();
@@ -122,8 +112,9 @@ public class ComponentImplRegistryReader extends RegistryReader {
 				try {
 					IProjectFacet projectFacet = ProjectFacetsManager.getProjectFacet(typeID);
 					if (projectFacet != null && facetedProject.hasProjectFacet(projectFacet)){
-						IComponentImplFactory factory = getComponentImplFactory(typeID);
+						factory = getComponentImplFactory(typeID);
 						if(null != factory){
+							factoryMap.mark(project, factory);
 							return factory;
 						}
 					}
@@ -131,11 +122,14 @@ public class ComponentImplRegistryReader extends RegistryReader {
 					continue;
 				}
 			}
+			
 		} catch (Exception e) {
-			// Just return null
+			ModulecorePlugin.logError(0, "Returning null factory for project: " + project, e); //$NON-NLS-1$
+			factoryMap.markError(project);
 		}
 		return null;
 	}
+	 
 	
 	
 	public IVirtualFolder createFolder(IProject aProject, IPath aRuntimePath){
@@ -181,7 +175,7 @@ public class ComponentImplRegistryReader extends RegistryReader {
 
 		public ComponentImplDescriptor(IConfigurationElement configElement) {
 			element = configElement;
-			type = element.getAttribute(TYPE);
+			type = element.getAttribute(ATT_TYPE);
 		}
 
 		/**
@@ -202,7 +196,7 @@ public class ComponentImplRegistryReader extends RegistryReader {
 				}
 
 				public void run() throws Exception {
-					factory[0] = (IComponentImplFactory) element.createExecutableExtension(CLASS);
+					factory[0] = (IComponentImplFactory) element.createExecutableExtension(ATT_CLASS);
 				}
 
 			});
@@ -218,6 +212,36 @@ public class ComponentImplRegistryReader extends RegistryReader {
 			return type;
 		}
 
+	}
+	
+	private class ComponentImplRegistryReader extends RegistryReader {
+
+		public ComponentImplRegistryReader() {
+			super(ModulecorePlugin.PLUGIN_ID, COMPONENT_IMPL_EXTENSION_POINT);
+		} 
+
+		/**
+		 * @see org.eclipse.wst.common.frameworks.internal.RegistryReader#readElement(org.eclipse.core.runtime.IConfigurationElement)
+		 */
+		public boolean readElement(IConfigurationElement element) {
+			if (TAG_COMPONENT_IMPL.equals(element.getName())) {
+
+				/*
+				 * Because the only instance of this type is created from a static singleton field, and
+				 * the registry is initialized in the constructor of this type, other threads cannot
+				 * compete with readElement() for access to <i>descriptors</i>
+				 */
+				String type = element.getAttribute(ATT_TYPE);
+				if (type != null)
+					descriptors.put(element.getAttribute(ATT_TYPE), new ComponentImplDescriptor(element));
+				else
+					ModulecorePlugin.logError(0, "No type attribute is specified for " + //$NON-NLS-1$
+								ModulecorePlugin.PLUGIN_ID + "." + COMPONENT_IMPL_EXTENSION_POINT + //$NON-NLS-1$ 
+								" extension in " + element.getDeclaringExtension().getNamespaceIdentifier(), null); //$NON-NLS-1$
+				return true;
+			}
+			return false;
+		}
 	}
 
 }
