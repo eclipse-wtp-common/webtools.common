@@ -17,10 +17,13 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
+import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualFile;
+import org.eclipse.wst.common.componentcore.internal.resources.VirtualFolder;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualResource;
 import org.eclipse.wst.common.componentcore.internal.util.ComponentImplRegistryReader;
@@ -91,7 +94,7 @@ public class ComponentCore {
 	 * @see IVirtualContainer#create(int, IProgressMonitor)
 	 */
 	public static IVirtualComponent createArchiveComponent(IProject aProject, String aComponentName) {
-		return ComponentImplRegistryReader.instance().createArchiveComponent(aProject, aComponentName);
+		return new VirtualArchiveComponent(aProject, aComponentName, new Path("/")); //$NON-NLS-1$
 	}
 
 	/**
@@ -109,7 +112,7 @@ public class ComponentCore {
 	 * @see IVirtualResource#createLink(IPath, int, IProgressMonitor)
 	 */
 	public static IVirtualFolder createFolder(IProject aProject, IPath aRuntimePath) {
-		return ComponentImplRegistryReader.instance().createFolder(aProject, aRuntimePath);
+		return new VirtualFolder(aProject, aRuntimePath);
 	}
 
 	/**
@@ -178,7 +181,7 @@ public class ComponentCore {
 					if (aResource.getType() == IResource.FILE)
 						foundResources.add(new VirtualFile(proj, resources[i].getRuntimePath()));
 					else
-						foundResources.add(ComponentCore.createFolder(proj, resources[i].getRuntimePath()));
+						foundResources.add(new VirtualFolder(proj, resources[i].getRuntimePath()));
 				}
 			}
 		} catch (UnresolveableURIException e) {

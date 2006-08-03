@@ -267,6 +267,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 		ProjectConfiguration pagePreferences = null;
 		private boolean canOverride = false;
 		private Button addValidationBuilder = null;
+		private Color color = null;
 
 		private ValidatorMetaData[] oldVmd = null; // Cache the enabled validators so that, if there
     private Map oldDelegates = null; // Cache the validator delegates.
@@ -462,21 +463,21 @@ public class ValidationPropertiesPage extends PropertyPage {
 		
 		private void setupTableColumns(Table table, TableViewer viewer) {
 			TableColumn validatorColumn = new TableColumn(table, SWT.NONE);
-	        validatorColumn.setText("Validator");
+	        validatorColumn.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.VALIDATOR));
 	        validatorColumn.setResizable(false);
-	        validatorColumn.setWidth(240);
+	        validatorColumn.setWidth(320);
 	        TableColumn manualColumn = new TableColumn(table, SWT.NONE);
-	        manualColumn.setText("Manual");
+	        manualColumn.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.MANUAL));
 	        manualColumn.setResizable(false);
 	        manualColumn.setWidth(40);
 	        TableColumn buildColumn = new TableColumn(table, SWT.NONE);
-	        buildColumn.setText("Build");
+	        buildColumn.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.BUILD));
 	        buildColumn.setResizable(false);
-	        buildColumn.setWidth(30);
+	        buildColumn.setWidth(40);
           TableColumn settingsColumn = new TableColumn(table, SWT.NONE);
-          settingsColumn.setText("Settings");
+          settingsColumn.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.SETTINGS));
           settingsColumn.setResizable(false);
-          settingsColumn.setWidth(40);
+          settingsColumn.setWidth(50);
 	    }
 
 		/**
@@ -500,7 +501,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 			layout.horizontalSpan = 2;
 			link.setLayoutData(layout);
 			link.setUnderlined(true);
-			Color color = new Color(validatorGroup.getDisplay(),new RGB(0,0,255) );
+			color = new Color(validatorGroup.getDisplay(),new RGB(0,0,255) );
 			link.setForeground(color);
 			link.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.CONFIG_WS_SETTINGS));
 			link.addHyperlinkListener(new IHyperlinkListener() {
@@ -1142,6 +1143,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 			emptyRowPlaceholder.dispose();
 			overrideGlobalButton.dispose();
 			page.dispose();
+			color.dispose();
 		}
 
 		public boolean performCancel() {

@@ -126,45 +126,63 @@ public class ExtensibleURIResolver implements URIResolver
 	  // so return null;
 	  if(systemId == null)
 	    return null;
-		String result = systemId;
-		// normalize the URI
-		URI systemURI = URI.createURI(systemId);
-		if (systemURI.isRelative())
-		{
-			baseLocation = baseLocation.replace('\\','/');
-			URI baseURI = URI.createURI(baseLocation);
-			try
-			{
-			  result = systemURI.resolve(baseURI).toString();
-			}
-			catch (IllegalArgumentException e) {
-				Bundle bundle = URIResolverPlugin.getInstance().getBundle();
-				IStatus statusObj = null;
-				java.net.URI baseURI2 = null;
-				try {
-					baseURI2 = java.net.URI.create(baseLocation);
-				}
-				catch (IllegalArgumentException e2) {
-					if(logExceptions) {
-					    statusObj = new Status(IStatus.ERROR, bundle.getSymbolicName(), IStatus.ERROR, "Problem in creating java.net.URI in ExtensibleURIResolver:" + e2.getMessage(), e2); //$NON-NLS-1$
-					    Platform.getLog(bundle).log(statusObj);
-					}
-				}
-				try {
-					if(baseURI2 != null) {
-						java.net.URI resultURI = baseURI2.resolve(systemId);
-						result = resultURI.toString();
-					}
-				}
-				catch (IllegalArgumentException e2) {
-					if(logExceptions) {
-					    statusObj = new Status(IStatus.ERROR, bundle.getSymbolicName(), IStatus.ERROR, "Problem in resolving with java.net.URI in ExtensibleURIResolver:" + e2.getMessage(), null); //$NON-NLS-1$
-					    Platform.getLog(bundle).log(statusObj);
-					}
-				}
-			}
-		}
-		return result;
+	  String result = systemId;
+      
+      // cs : sometimes normalizing the URI will cause an exception to get thrown
+      // for example the 'bad' version of the URI below ...
+      //
+      //   good = "jar:/resource/project-name/WebContent/WEB-INF/lib/generator.jar!/META-INF/schema/config.dtd"
+      //   bad  = "jar:/resource/project-name/WebContent/WEB-INF/lib/generator.jar/META-INF/schema/config.dtd"
+      //
+      // Here we enclose the normalization in a try/catch block with the assumption that the caller
+      // (i.e. the 'resolve' method) isn't interested in handling this exception.        
+	  try
+	  {
+	    // normalize the URI
+	    URI systemURI = URI.createURI(systemId);
+	    if (systemURI.isRelative())
+	    {
+	      baseLocation = baseLocation.replace('\\','/');
+	      URI baseURI = URI.createURI(baseLocation);
+          
+          // TODO (cs) we should add more comments to explain this in a bit more detail
+	      try
+	      {
+	        result = systemURI.resolve(baseURI).toString();
+	      }
+	      catch (IllegalArgumentException e) {
+	        Bundle bundle = URIResolverPlugin.getInstance().getBundle();
+	        IStatus statusObj = null;
+	        java.net.URI baseURI2 = null;
+	        try {
+	          baseURI2 = java.net.URI.create(baseLocation);
+	        }
+	        catch (IllegalArgumentException e2) {
+	          if(logExceptions) {
+	            statusObj = new Status(IStatus.ERROR, bundle.getSymbolicName(), IStatus.ERROR, "Problem in creating java.net.URI in ExtensibleURIResolver:" + e2.getMessage(), e2); //$NON-NLS-1$
+	            Platform.getLog(bundle).log(statusObj);
+	          }
+	        }
+	        try {
+	          if(baseURI2 != null) {
+	            java.net.URI resultURI = baseURI2.resolve(systemId);
+	            result = resultURI.toString();
+	          }
+	        }
+	        catch (IllegalArgumentException e2) {
+	          if(logExceptions) {
+	            statusObj = new Status(IStatus.ERROR, bundle.getSymbolicName(), IStatus.ERROR, "Problem in resolving with java.net.URI in ExtensibleURIResolver:" + e2.getMessage(), null); //$NON-NLS-1$
+	            Platform.getLog(bundle).log(statusObj);
+	          }
+	        }
+	      }
+	    }
+	  }
+	  catch (Exception e)
+	  {     
+        // just eat the exception and return back the original systemId
+	  }
+	  return result;
 	}
 
   protected IFile computeFile(String baseLocation)

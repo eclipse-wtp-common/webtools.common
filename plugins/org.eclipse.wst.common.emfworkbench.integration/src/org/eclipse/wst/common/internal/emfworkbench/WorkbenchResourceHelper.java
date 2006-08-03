@@ -72,7 +72,7 @@ public class WorkbenchResourceHelper extends WorkbenchResourceHelperBase {
 	 */
 	private static class FileAdapter extends AdapterImpl {
 		public static final Object ADAPTER_KEY = FileAdapter.class.getName();
-		private static final long delay = 6000;
+		private static final long delay = 30;
 		private IFile file;
 		private long synchronizationStamp;
 		protected ResourceSet previousResourceSet;

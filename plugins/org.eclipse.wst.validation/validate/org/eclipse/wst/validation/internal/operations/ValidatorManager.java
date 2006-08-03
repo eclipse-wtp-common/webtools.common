@@ -66,6 +66,7 @@ public final class ValidatorManager {
 	private static Class _messageLimitOwner = null;
 	private String[] _internalOwners = null;
 	private Map validatorMsgs = Collections.synchronizedMap( new HashMap() );	
+	private Set problemValidators = new HashSet();	
 	
 	/**
 	 * ValidatorManager constructor comment.
@@ -1154,5 +1155,11 @@ public final class ValidatorManager {
 			list.clear();
 		}
 		validatorMsgs.remove( validator );
-	}	
+	}
+
+	
+	public Set getProblemValidators() {
+		return problemValidators;
+	}
+	
 }

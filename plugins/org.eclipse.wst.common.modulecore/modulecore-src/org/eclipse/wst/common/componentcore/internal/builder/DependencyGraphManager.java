@@ -10,9 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.builder;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -23,18 +21,6 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 
 public class DependencyGraphManager {
-	
-	private class DependencyReference {
-		
-		public IProject componentProject;
-		public IProject targetProject;
-		
-		public DependencyReference(IProject target, IProject component) {
-			super();
-			componentProject=component;
-			targetProject=target;
-		}
-	}
 
 	private static DependencyGraphManager INSTANCE = null;
 	private HashMap wtpModuleTimeStamps = null;
@@ -43,9 +29,11 @@ public class DependencyGraphManager {
 		super();
 	}
 	
-	public synchronized static final DependencyGraphManager getInstance() {
-		if (INSTANCE == null)
+	public static final DependencyGraphManager getInstance() {
+		if (INSTANCE == null) {
 			INSTANCE = new DependencyGraphManager();
+			INSTANCE.constructIfNecessary();
+		}
 		return INSTANCE;
 	}
 	
@@ -55,8 +43,13 @@ public class DependencyGraphManager {
 	}
 	
 	private void constructIfNecessary() {
-		if (moduleTimeStampsChanged()) 
-			buildDependencyGraph();
+		// Block other clients here while we are building
+		synchronized (this) {
+			if (moduleTimeStampsChanged()) {
+				cleanDependencyGraph();
+				buildDependencyGraph();
+			}
+		}
 	}
 	
 	private boolean moduleTimeStampsChanged() {
@@ -82,49 +75,33 @@ public class DependencyGraphManager {
 	}
 	
 	private void buildDependencyGraph() {
-		// Process and collect dependency references to add
-		List referencesToAdd = new ArrayList();
 		IProject[] projects = ProjectUtilities.getAllProjects();
 		for (int k=0; k<projects.length; k++) {
-			if (!projects[k].isAccessible() || projects[k].findMember(IModuleConstants.COMPONENT_FILE_PATH)==null) 
+			
+			if (!projects[k].isAccessible() || !addTimeStamp(projects[k])) 
 				continue;
 			IVirtualComponent component= ComponentCore.createComponent(projects[k]);
 			if (component == null) continue;
-			referencesToAdd.addAll(getDependencyReferences(component));
-		}
-		
-		//Update the actual graph and block other threads here
-		synchronized (this) {
-			List timeStampsUpdated = new ArrayList();
-			cleanDependencyGraph();
-			for (int i=0; i<referencesToAdd.size(); i++) {
-				DependencyReference ref = (DependencyReference) referencesToAdd.get(i);
-				DependencyGraph.getInstance().addReference(ref.targetProject,ref.componentProject);
-				if (!timeStampsUpdated.contains(ref.componentProject)) {
-					addTimeStamp(ref.componentProject);
-					timeStampsUpdated.add(ref.componentProject);
-				}
-			}
+			addDependencyReference(component);
 		}
 	}
 	
-	private List getDependencyReferences(IVirtualComponent component) {
-		List refs = new ArrayList();
+	private void addDependencyReference(IVirtualComponent component) {
 		IProject componentProject = component.getProject();
 		IVirtualReference[] depRefs = component.getReferences();
 		for(int i = 0; i<depRefs.length; i++){
 			IVirtualComponent targetComponent = depRefs[i].getReferencedComponent();
 			if (targetComponent!=null) {
 				IProject targetProject = targetComponent.getProject();
-				refs.add(new DependencyReference(targetProject,componentProject));
+				DependencyGraph.getInstance().addReference(targetProject,componentProject);
 			}	
 		}
-		return refs;
+		
 	}
 	
 	private boolean addTimeStamp(IProject project) {
 		// Get the .component file for the given project
-		IResource wtpModulesFile = project.findMember(IModuleConstants.COMPONENT_FILE_PATH);
+		IResource wtpModulesFile = project.findMember(IModuleConstants.COMPONENT_FILE_PATH); //$NON-NLS-1$
 		if (wtpModulesFile==null)
 			return false;
 		Long currentTimeStamp = new Long(wtpModulesFile.getLocalTimeStamp());

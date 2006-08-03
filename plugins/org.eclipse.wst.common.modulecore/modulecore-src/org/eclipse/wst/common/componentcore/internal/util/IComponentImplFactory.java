@@ -11,16 +11,10 @@
 package org.eclipse.wst.common.componentcore.internal.util;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
-import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 
 public interface IComponentImplFactory {
 
-	public IVirtualComponent createComponent(IProject aProject);
-	
-	public IVirtualFolder createFolder(IProject aProject, IPath aRuntimePath);
-	
-	public IVirtualComponent createArchiveComponent(IProject aProject, String archiveLocation, IPath aRuntimePath);
+	public IVirtualComponent createComponent(IProject project);
 
 }

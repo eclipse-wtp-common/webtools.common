@@ -11,8 +11,6 @@
 package org.eclipse.wst.common.componentcore.datamodel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -202,8 +200,6 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 				if (containsValue(event.getDataModel())) {
 					if (event.getFlag() == IDataModel.VALID_VALUES_CHG) {
 						getDataModel().notifyPropertyChange(FACET_RUNTIME, IDataModel.VALID_VALUES_CHG);
-					} else if(event.getFlag() == IDataModel.ENABLE_CHG) {
-						getDataModel().notifyPropertyChange(FACET_RUNTIME, IDataModel.ENABLE_CHG);
 					} else {
 						getDataModel().setProperty(FACET_RUNTIME, event.getProperty());
 					}
@@ -323,16 +319,6 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 				IRuntime runtime = (IRuntime) iterator.next();
 				descriptors[i] = new DataModelPropertyDescriptor(runtime, runtime.getName());
 			}
-			if(descriptors.length > 2){
-				Arrays.sort(descriptors, 0, descriptors.length - 2, new Comparator() {
-					public int compare(Object arg0, Object arg1) {
-						DataModelPropertyDescriptor d1 = (DataModelPropertyDescriptor)arg0;
-						DataModelPropertyDescriptor d2 = (DataModelPropertyDescriptor)arg1;
-						return d1.getPropertyDescription().compareTo(d2.getPropertyDescription());
-					}
-				});
-			}
-			
 			descriptors[descriptors.length - 1] = new DataModelPropertyDescriptor(null, WTPCommonPlugin.getResourceString(WTPCommonMessages.RUNTIME_NONE, null));
 			return descriptors;
 		}

@@ -16,17 +16,13 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jem.util.RegistryReader;
 import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
-import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualComponent;
-import org.eclipse.wst.common.componentcore.internal.resources.VirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
-import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
@@ -110,12 +106,11 @@ public class ComponentImplRegistryReader extends RegistryReader {
 		}
 		return factory;
 	}
-	
+
 	// TODO Don't like this because it's going to cycle every project facet for each project
-	protected IComponentImplFactory findFactoryForProject(IProject project){
+	public IVirtualComponent createComponent(IProject project) {
 		try {
 			IFacetedProject facetedProject = ProjectFacetsManager.create(project);
-			if (facetedProject == null) return null;
 			Iterator keys = descriptors.keySet().iterator();
 			while (keys.hasNext()) {
 				String typeID = (String) keys.next();
@@ -124,7 +119,7 @@ public class ComponentImplRegistryReader extends RegistryReader {
 					if (projectFacet != null && facetedProject.hasProjectFacet(projectFacet)){
 						IComponentImplFactory factory = getComponentImplFactory(typeID);
 						if(null != factory){
-							return factory;
+							return factory.createComponent(project);
 						}
 					}
 				} catch (Exception e) {
@@ -132,48 +127,11 @@ public class ComponentImplRegistryReader extends RegistryReader {
 				}
 			}
 		} catch (Exception e) {
-			// Just return null
-		}
-		return null;
-	}
-	
-	
-	public IVirtualFolder createFolder(IProject aProject, IPath aRuntimePath){
-		try {
-			IComponentImplFactory factory = findFactoryForProject(aProject);
-			if(null != factory){
-				return factory.createFolder(aProject, aRuntimePath);
-			}
-		} catch (Exception e) {
-			// Just return a default folder
-		}
-		return new VirtualFolder(aProject, aRuntimePath);
-	}
-
-	public IVirtualComponent createComponent(IProject project) {
-		try {
-			IComponentImplFactory factory = findFactoryForProject(project);
-			if(null != factory){
-				return factory.createComponent(project);
-			}
-		} catch (Exception e) {
 			// Just return a default component
 		}
 		return new VirtualComponent(project, new Path("/")); //$NON-NLS-1$
 	}
 
-	public IVirtualComponent createArchiveComponent(IProject aProject, String aComponentName) {
-		try {
-			IComponentImplFactory factory = findFactoryForProject(aProject);
-			if(null != factory){
-				return factory.createArchiveComponent(aProject, aComponentName, new Path("/")); //$NON-NLS-1$
-			}
-		} catch (Exception e) {
-			// Just return a default archive component
-		}
-		return new VirtualArchiveComponent(aProject, aComponentName, new Path("/")); //$NON-NLS-1$
-	}
-	
 	private class ComponentImplDescriptor {
 
 		private final IConfigurationElement element;

@@ -212,7 +212,7 @@ public abstract class VirtualResource implements IVirtualResource {
 	//returns null if the folder is already the root folder
 	public IVirtualContainer getParent() {
 		if (getRuntimePath().segmentCount() >= 1)
-			return ComponentCore.createFolder(getProject(), getRuntimePath().removeLastSegments(1));
+			return new VirtualFolder(getProject(), getRuntimePath().removeLastSegments(1));
 		return null;
 	}
 

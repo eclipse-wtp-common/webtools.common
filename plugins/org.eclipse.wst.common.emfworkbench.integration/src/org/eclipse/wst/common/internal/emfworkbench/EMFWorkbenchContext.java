@@ -131,6 +131,7 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 			editModel = createEditModelForRead(editModelID, params);
 			synchronized (editModel) {
 				cacheEditModel(editModel, params);
+				EditModelLeastUsedCache.INSTANCE.access(editModel);
 				editModel.access(accessorKey);
 			}
 		} else {
@@ -139,6 +140,7 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 					editModel = createEditModelForRead(editModelID, params);
 					cacheEditModel(editModel, params);
 				}
+				EditModelLeastUsedCache.INSTANCE.access(editModel);
 				editModel.access(accessorKey);
 			}
 		}
@@ -219,7 +221,9 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 	protected void discardAllEditModels() {
 		synchronized (readOnlyModels) {
 			synchronized (editableModels) {
-				discardModels(readOnlyModels.values());
+				Collection readOnly = readOnlyModels.values();
+				EditModelLeastUsedCache.INSTANCE.removeAllCached(readOnly);
+				discardModels(readOnly);
 				discardModels(editableModels.values());
 			}
 		}
