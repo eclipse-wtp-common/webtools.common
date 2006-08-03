@@ -839,8 +839,17 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		
 			while( iterator.hasNext() ){
 				vmd = (ValidatorMetaData) iterator.next();
+				IValidator valInstance = null;
 				try {
-					if( isFork() && vmd.getValidator() instanceof IValidatorJob ){
+					valInstance = vmd.getValidator();
+				} catch (InstantiationException e1) {
+					if(!ValidatorManager.getManager().getProblemValidators().contains(vmd)) {
+						ValidatorManager.getManager().getProblemValidators().add(vmd);
+						System.out.println(e1.getMessage());
+					}
+				}
+				
+					if( isFork() && (valInstance != null) && valInstance instanceof IValidatorJob ){
 						try {
 							delta = getFileDeltas(reporter.getProgressMonitor(), vmd);
 						} catch (CoreException e) {
@@ -850,17 +859,8 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 						if( willRun ){
 							jobValidators.add( vmd );
 						}
-					}else{
+					}else if (valInstance != null){
 						validators.add( vmd );
-					}
-				} catch (InstantiationException e) {
-					Logger.getLogger().logError(e);
-					if (logger.isLoggingLevel(Level.SEVERE)) {
-						LogEntry entry = ValidationPlugin.getLogEntry();
-						entry.setSourceID("ValidationOperation.validate(WorkbenchReporter)"); //$NON-NLS-1$
-						entry.setTargetException(e);
-						logger.write(Level.SEVERE, entry);
-					}				
 				}
 			}
 			if( jobValidators.size() > 0 ){
