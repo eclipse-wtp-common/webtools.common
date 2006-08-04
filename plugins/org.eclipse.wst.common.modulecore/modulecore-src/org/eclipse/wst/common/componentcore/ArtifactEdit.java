@@ -490,7 +490,7 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 */
 	public void removeListener(EditModelListener listener) {
 		if(isBinary()){
-		} else if (artifactEditModel!=null) {
+		} else if (artifactEditModel!=null && !artifactEditModel.isDisposed()) {
 			artifactEditModel.removeListener(listener);
 		}
 	}
