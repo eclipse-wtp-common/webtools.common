@@ -49,6 +49,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IActionDefinition;
 import org.eclipse.wst.common.project.facet.core.ICategory;
 import org.eclipse.wst.common.project.facet.core.IConstraint;
+import org.eclipse.wst.common.project.facet.core.IDefaultVersionProvider;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectTemplate;
 import org.eclipse.wst.common.project.facet.core.IGroup;
@@ -74,6 +75,7 @@ public final class ProjectFacetsManagerImpl
     private static final String ATTR_GROUP = "group"; //$NON-NLS-1$
     private static final String ATTR_ID = "id"; //$NON-NLS-1$
     private static final String ATTR_NAME = "name"; //$NON-NLS-1$
+    private static final String ATTR_PROVIDER = "provider"; //$NON-NLS-1$
     private static final String ATTR_SOFT = "soft"; //$NON-NLS-1$
     private static final String ATTR_TYPE = "type"; //$NON-NLS-1$
     private static final String ATTR_VALUE = "value"; //$NON-NLS-1$
@@ -82,6 +84,7 @@ public final class ProjectFacetsManagerImpl
     private static final String EL_CATEGORY = "category"; //$NON-NLS-1$
     private static final String EL_CONFIG_FACTORY = "config-factory"; //$NON-NLS-1$
     private static final String EL_CONSTRAINT = "constraint"; //$NON-NLS-1$
+    private static final String EL_DEFAULT_VERSION = "default-version"; //$NON-NLS-1$
     private static final String EL_DELEGATE = "delegate"; //$NON-NLS-1$
     private static final String EL_DESCRIPTION = "description"; //$NON-NLS-1$
     private static final String EL_EVENT_HANDLER = "event-handler"; //$NON-NLS-1$
@@ -1203,6 +1206,17 @@ public final class ProjectFacetsManagerImpl
             final IConfigurationElement config
                 = (IConfigurationElement) cfgels.get( i );
             
+            if( config.getName().equals( EL_PROJECT_FACET ) )
+            {
+                readDefaultVersionInfo( config );
+            }
+        }
+
+        for( int i = 0, n = cfgels.size(); i < n; i++ )
+        {
+            final IConfigurationElement config
+                = (IConfigurationElement) cfgels.get( i );
+            
             if( config.getName().equals( EL_PRESET ) )
             {
                 readPreset( config );
@@ -1279,7 +1293,7 @@ public final class ProjectFacetsManagerImpl
         final ProjectFacet descriptor = new ProjectFacet();
         descriptor.setId( id );
         descriptor.setPluginId( config.getContributor().getName() );
-
+        
         final IConfigurationElement[] children = config.getChildren();
         
         for( int i = 0; i < children.length; i++ )
@@ -1340,6 +1354,7 @@ public final class ProjectFacetsManagerImpl
         {
             descriptor.setDescription( "" ); //$NON-NLS-1$
         }
+        
         
         this.facets.add( id, descriptor );
     }
@@ -1433,6 +1448,91 @@ public final class ProjectFacetsManagerImpl
             if( childName.equals( EL_EVENT_HANDLER ) )
             {
                 readEventHandler( child, f, ver );
+            }
+        }
+    }
+    
+    private void readDefaultVersionInfo( final IConfigurationElement config )
+    {
+        final String id = config.getAttribute( ATTR_ID );
+
+        if( id == null || ! isProjectFacetDefined( id ) )
+        {
+            // The error should have already been reported, don't need to log
+            // this again.
+            
+            return;
+        }
+        
+        final ProjectFacet f = (ProjectFacet) getProjectFacet( id );
+        boolean defaultVersionSpecified = false;
+
+        final IConfigurationElement[] children = config.getChildren();
+        
+        for( int i = 0; i < children.length; i++ )
+        {
+            final IConfigurationElement child = children[ i ];
+            final String childName = child.getName();
+            
+            if( childName.equals( EL_DEFAULT_VERSION ) )
+            {
+                final String clname = child.getAttribute( ATTR_PROVIDER );
+                
+                if( clname != null )
+                {
+                    try
+                    {
+                        final Class type = IDefaultVersionProvider.class;
+                        
+                        final IDefaultVersionProvider defaultVersionProvider
+                            = (IDefaultVersionProvider) 
+                                FacetCorePlugin.instantiate( f.getPluginId(),
+                                                             clname, type );
+                        
+                        f.setDefaultVersionProvider( defaultVersionProvider );
+                        defaultVersionSpecified = true;
+                    }
+                    catch( CoreException e )
+                    {
+                        FacetCorePlugin.log( e );
+                    }
+                }
+                else
+                {
+                    final String version = child.getAttribute( ATTR_VERSION );
+                    
+                    if( version != null )
+                    {
+                        if( f.hasVersion( version ) )
+                        {
+                            f.setDefaultVersion( f.getVersion( version ) );
+                            defaultVersionSpecified = true;
+                        }
+                        else
+                        {
+                            final String msg 
+                                = f.createVersionNotFoundErrMsg( version );
+                            
+                            FacetCorePlugin.log( msg );
+                        }
+                    }
+                    else
+                    {
+                        reportMissingAttribute( config, ATTR_VERSION );
+                    }
+                }
+            }
+        }
+        
+        if( ! defaultVersionSpecified )
+        {
+            try
+            {
+                f.setDefaultVersion( f.getLatestVersion() );
+            }
+            catch( Exception e )
+            {
+                FacetCorePlugin.log( e );
             }
         }
     }

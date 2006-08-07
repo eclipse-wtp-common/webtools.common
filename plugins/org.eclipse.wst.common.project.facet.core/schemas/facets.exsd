@@ -209,6 +209,7 @@
                   </documentation>
                </annotation>
             </element>
+            <element ref="default-version" minOccurs="0" maxOccurs="1"/>
          </sequence>
          <attribute name="id" type="string" use="required">
             <annotation>
@@ -565,6 +566,33 @@
                <documentation>
                   The value of the property.
                </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="default-version">
+      <annotation>
+         <documentation>
+            Used to provide the facet version that should be selected by default. If a default version is not specified, the latest version will be used. Note that if a runtime is selected, the runtime can override this default with a version best suited for that runtime. The default can be specified either statically by using the &lt;code&gt;version&lt;/code&gt; attribute or dynamically by implementing the &lt;code&gt;org.eclipse.wst.common.project.facet.core.IDefaultVersionProvider&lt;/code&gt; interface and using the &lt;code&gt;provider&lt;/code&gt; attribute.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="version" type="string">
+            <annotation>
+               <documentation>
+                  Specifies the version that should be used as the default. This attribute is ignored if the &lt;code&gt;provider&lt;/code&gt; attribute is specified.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="provider" type="string">
+            <annotation>
+               <documentation>
+                  Specifies the version provider that will be consulted in order to determine the default version. If this attribute is used, the &lt;code&gt;version&lt;/code&gt; attribute will be ignored if present.
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="org.eclipse.wst.common.project.facet.core.IDefaultVersionProvider"/>
+               </appInfo>
             </annotation>
          </attribute>
       </complexType>

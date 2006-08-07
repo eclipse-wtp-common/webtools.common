@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IActionDefinition;
 import org.eclipse.wst.common.project.facet.core.ICategory;
+import org.eclipse.wst.common.project.facet.core.IDefaultVersionProvider;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.VersionFormatException;
@@ -56,6 +57,8 @@ public final class ProjectFacet
     private ICategory category;
     private final List actionDefinitions = new ArrayList();
     private final List eventHandlers = new ArrayList();
+    private IProjectFacetVersion defaultVersion;
+    private IDefaultVersionProvider defaultVersionProvider;
     
     ProjectFacet() {}
     
@@ -167,6 +170,71 @@ public final class ProjectFacet
         return null;
     }
     
+    public IProjectFacetVersion getDefaultVersion()
+    {
+        IProjectFacetVersion defver = null;
+        
+        if( this.defaultVersionProvider != null )
+        {
+            try
+            {
+                defver = this.defaultVersionProvider.getDefaultVersion();
+            }
+            catch( Exception e )
+            {
+                FacetCorePlugin.log( e );
+            }
+            
+            if( defver != null )
+            {
+                if( defver.getProjectFacet() != this )
+                {
+                    final String msg
+                        = NLS.bind( Resources.versionProviderReturnedWrongVersion,
+                                    this.id );
+                    
+                    FacetCorePlugin.log( msg );
+
+                    defver = null;
+                }
+            }
+            
+            if( defver == null )
+            {
+                try
+                {
+                    defver = getLatestVersion();
+                }
+                catch( CoreException e )
+                {
+                    FacetCorePlugin.log( e );
+                }
+                catch( VersionFormatException e )
+                {
+                    FacetCorePlugin.log( e );
+                }
+            }
+            
+            return defver;
+        }
+        else
+        {
+            return this.defaultVersion;
+        }
+    }
+    
+    void setDefaultVersion( IProjectFacetVersion fv )
+    {
+        this.defaultVersion = fv;
+        this.defaultVersionProvider = null;
+    }
+    
+    void setDefaultVersionProvider( IDefaultVersionProvider provider )
+    {
+        this.defaultVersion = null;
+        this.defaultVersionProvider = provider;
+    }
+    
     protected IVersionAdapter getVersionAdapter()
     {
         return VERSION_ADAPTER;
@@ -247,6 +315,7 @@ public final class ProjectFacet
         
     {
         public static String versionNotFound;
+        public static String versionProviderReturnedWrongVersion;
         
         static
         {

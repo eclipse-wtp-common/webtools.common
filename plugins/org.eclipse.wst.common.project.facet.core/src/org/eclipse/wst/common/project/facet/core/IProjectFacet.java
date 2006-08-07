@@ -128,6 +128,17 @@ public interface IProjectFacet
     IProjectFacetVersion getLatestSupportedVersion( IRuntime runtime )
     
         throws CoreException;
+    
+    /**
+     * Returns the facet version that should be selected by default. If the
+     * default version is not explicitly specified in the facet definition, the
+     * latest version (as specified by {@see getLatestVersion()} method) will
+     * be returned. 
+     * 
+     * @return the facet version that should be selected by default
+     */
+    
+    IProjectFacetVersion getDefaultVersion();
 
     /**
      * Returns a sorted list containing the descriptors of all versions of this 

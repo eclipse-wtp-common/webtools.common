@@ -687,18 +687,10 @@ public final class FacetsSelectionPanel
         {
             defaultFacets = new HashSet();
             
-            try
+            for( Iterator itr = this.fixed.iterator(); itr.hasNext(); )
             {
-                for( Iterator itr = this.fixed.iterator(); itr.hasNext(); )
-                {
-                    final IProjectFacet f = (IProjectFacet) itr.next();
-                    defaultFacets.add( f.getLatestVersion() );
-                }
-            }
-            catch( CoreException e )
-            {
-                FacetUiPlugin.log( e );
-                return;
+                final IProjectFacet f = (IProjectFacet) itr.next();
+                defaultFacets.add( f.getDefaultVersion() );
             }
         }
             
@@ -1727,7 +1719,7 @@ public final class FacetsSelectionPanel
         {
             this.f = f;
             this.versions = f.getSortedVersions( false );
-            this.current = f.getLatestVersion();
+            this.current = f.getDefaultVersion();
             this.isSelected = false;
             this.isFixed = false;
         }
