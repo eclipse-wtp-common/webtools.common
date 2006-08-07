@@ -212,4 +212,71 @@
 
   </extension>
 
+  <!-- Default Version Tests -->
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.facets">
+  
+    <project-facet id="dvt_f1"/>
+    
+    <project-facet-version facet="dvt_f1" version="1.0"/>
+    <project-facet-version facet="dvt_f1" version="2.0"/>
+    <project-facet-version facet="dvt_f1" version="3.0"/>
+    <project-facet-version facet="dvt_f1" version="4.0"/>
+
+    <project-facet id="dvt_f2">
+      <default-version version="2.0"/>
+    </project-facet>
+    
+    <project-facet-version facet="dvt_f2" version="1.0"/>
+    <project-facet-version facet="dvt_f2" version="2.0"/>
+    <project-facet-version facet="dvt_f2" version="3.0"/>
+    <project-facet-version facet="dvt_f2" version="4.0"/>
+
+    <project-facet id="dvt_f3">
+      <default-version provider="org.eclipse.wst.common.project.facet.core.tests.DefaultVersionTests$FacetDvtF3DefaultVersionProvider"/>
+    </project-facet>
+    
+    <project-facet-version facet="dvt_f3" version="1.0"/>
+    <project-facet-version facet="dvt_f3" version="2.0"/>
+    <project-facet-version facet="dvt_f3" version="3.0"/>
+    <project-facet-version facet="dvt_f3" version="4.0"/>
+
+    <project-facet id="dvt_f4">
+      <default-version provider="org.eclipse.wst.common.project.facet.core.tests.DefaultVersionTests$FacetDvtF3DefaultVersionProvider"/>
+    </project-facet>
+    
+    <project-facet-version facet="dvt_f4" version="1.0"/>
+    <project-facet-version facet="dvt_f4" version="2.0"/>
+    <project-facet-version facet="dvt_f4" version="3.0"/>
+    <project-facet-version facet="dvt_f4" version="4.0"/>
+
+    <project-facet id="dvt_f5">
+      <default-version provider="org.eclipse.wst.common.project.facet.core.tests.DefaultVersionTests$FacetDvtF5DefaultVersionProvider"/>
+    </project-facet>
+    
+    <project-facet-version facet="dvt_f5" version="1.0"/>
+    <project-facet-version facet="dvt_f5" version="2.0"/>
+    <project-facet-version facet="dvt_f5" version="3.0"/>
+    <project-facet-version facet="dvt_f5" version="4.0"/>
+
+    <project-facet id="dvt_f6">
+      <default-version provider="org.eclipse.wst.common.project.facet.core.tests.DefaultVersionTests$FacetDvtF6DefaultVersionProvider"/>
+    </project-facet>
+    
+    <project-facet-version facet="dvt_f6" version="1.0"/>
+    <project-facet-version facet="dvt_f6" version="2.0"/>
+    <project-facet-version facet="dvt_f6" version="3.0"/>
+    <project-facet-version facet="dvt_f6" version="4.0"/>
+
+    <project-facet id="dvt_f7">
+      <default-version version="5.0"/>
+    </project-facet>
+    
+    <project-facet-version facet="dvt_f7" version="1.0"/>
+    <project-facet-version facet="dvt_f7" version="2.0"/>
+    <project-facet-version facet="dvt_f7" version="3.0"/>
+    <project-facet-version facet="dvt_f7" version="4.0"/>
+
+  </extension>
+
 </plugin>

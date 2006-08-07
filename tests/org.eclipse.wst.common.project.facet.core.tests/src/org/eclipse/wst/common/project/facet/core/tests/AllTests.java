@@ -21,6 +21,7 @@ public class AllTests
         suite.addTest( FacetActionSortTests.suite() );
         suite.addTest( ProjectChangeReactionTests.suite() );
         suite.addTest( FacetConstraintsTests.suite() );
+        suite.addTest( DefaultVersionTests.suite() );
         
         return suite;
     }
