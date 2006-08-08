@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.wst.common_ui.feature.source"
-      label="WST Common UI Feature Source"
-      version="1.5.0.qualifier"
-      provider-name="Eclipse.org">
+      label="%featureName"
+      version="1.5.1.qualifier"
+      provider-name="%providerName">
 
    <description>
       %description
@@ -13,14 +13,13 @@
       %copyright
    </copyright>
 
-   <license url="license.html">
+   <license url="%licenseURL">
       %license
    </license>
-   
-   <url>
-      <update label="Web Tools Platform (WTP) Updates" url="http://download.eclipse.org/webtools/updates/"/>
-   </url>
 
+   <url>
+      <update label="%updateSiteName" url="http://download.eclipse.org/webtools/updates/"/>
+   </url>
 
    <includes
          id="org.eclipse.wst.common_core.feature"
@@ -28,8 +27,6 @@
 
    <includes
          id="org.eclipse.wst.common_core.feature.source"
-         download-size="0"
-         install-size="0"
          version="0.0.0"/>
 
    <plugin
