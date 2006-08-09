@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: UIContextDetermination.java,v $$
- *  $$Revision: 1.3 $$  $$Date: 2005/05/18 21:58:34 $$ 
+ *  $$Revision: 1.4 $$  $$Date: 2006/08/09 15:38:22 $$ 
  */
 package org.eclipse.jem.util;
 import java.util.HashMap;
@@ -37,7 +37,7 @@ public class UIContextDetermination {
 
 	public static final int HEADLESS_CONTEXT = 102;
 
-	public static final int UI_CONTEXT = 100;
+	public static final int UI_CONTEXT = 101;
 
 	private static Map cachedExtensions = null;
 
@@ -174,7 +174,8 @@ public class UIContextDetermination {
 			if (element.getName().equals(UI_TESTER_ELEMENT)) {
 				result = true;
 				try {
-					if (canCreateExecutableExtension(element)) {
+					// Don't bother running tester it if we already processed one extension that returned true.
+					if (currentContext != UI_CONTEXT && canCreateExecutableExtension(element)) {
 						UITester tester = (UITester) element.createExecutableExtension(UI_TESTER_CLASSNAME_ATTR);
 						if (tester.isCurrentContextUI())
 							currentContext = UI_CONTEXT;
