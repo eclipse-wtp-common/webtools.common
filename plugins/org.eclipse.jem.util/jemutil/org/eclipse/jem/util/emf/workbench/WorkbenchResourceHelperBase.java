@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: WorkbenchResourceHelperBase.java,v $$
- *  $$Revision: 1.4 $$  $$Date: 2005/10/14 20:57:31 $$ 
+ *  $$Revision: 1.5 $$  $$Date: 2006/08/09 15:40:22 $$ 
  */
 package org.eclipse.jem.util.emf.workbench;
 
@@ -624,7 +624,7 @@ public class WorkbenchResourceHelperBase {
 		return primIsResourceNotFound(excep);
 	}
 
-	private static boolean primIsResourceNotFound(Exception excep) {
+	private static boolean primIsResourceNotFound(Throwable excep) {
 		if (excep instanceof CoreException) {
 			IStatus status = ((CoreException) excep).getStatus();
 			return status.getCode() == IResourceStatus.RESOURCE_NOT_FOUND && ResourcesPlugin.PI_RESOURCES.equals(status.getPlugin());
@@ -640,7 +640,7 @@ public class WorkbenchResourceHelperBase {
 	 * @since 1.0.0
 	 */
 	public static boolean isResourceNotFound(Resource.IOWrappedException wrappedEx) {
-		return primIsResourceNotFound(wrappedEx.getWrappedException());
+		return primIsResourceNotFound(wrappedEx.getCause());
 	}
 
 	/**
