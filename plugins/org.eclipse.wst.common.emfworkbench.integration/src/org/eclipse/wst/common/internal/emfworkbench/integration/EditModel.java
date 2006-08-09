@@ -1,13 +1,11 @@
-/*******************************************************************************
- * Copyright (c) 2003, 2005 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+/***************************************************************************************************
+ * Copyright (c) 2003, 2005 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
+ * 
+ * Contributors: IBM Corporation - initial API and implementation
+ **************************************************************************************************/
 package org.eclipse.wst.common.internal.emfworkbench.integration;
 
 
@@ -28,9 +26,13 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.command.BasicCommandStack;
 import org.eclipse.emf.common.command.CommandStack;
@@ -75,14 +77,14 @@ import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateVa
 public class EditModel implements CommandStackListener, ResourceStateInputProvider, ResourceStateValidator, IEnablementIdentifierListener {
 
 	protected BasicCommandStack commandStack;
-	protected List listeners;
-	protected List removedListeners = new ArrayList();
+	protected final ListenerList listeners = new ListenerList();
+
 	private Map params;
 	private final String editModelID;
 	private final boolean readOnly;
 	// These are the current resource uris we need to track
 	protected List knownResourceUris;
-	//These are the current resource extensions to track
+	// These are the current resource extensions to track
 	protected List knownResourceExtensions;
 	// This is a subset of the known resource uris, which we have requested be autoloaded
 	protected List preloadResourceUris;
@@ -152,11 +154,9 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	}
 
 	private void startDispose() {
-		synchronized (this) {
-			if (disposing || disposed)
-				return;
-			disposing = true;
-		}
+		if (disposing || disposed)
+			return;
+		disposing = true;
 	}
 
 	private void doDispose() {
@@ -172,13 +172,9 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 			releasePreloadResources();
 			releaseIdentifiers();
 
-			synchronized (this) {
-				emfContext = null;
-				listeners = null;
-				removedListeners = null;
-				resources = null;
-				project = null;
-			}
+			emfContext = null;
+			resources = null;
+			project = null;
 		} catch (RuntimeException re) {
 			re.printStackTrace();
 		} finally {
@@ -262,7 +258,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	 * Returns true if there are any listeners
 	 */
 	public boolean hasListeners() {
-		return !getListeners().isEmpty();
+		return !listeners.isEmpty();
 	}
 
 	/** ** END Command Stack Manipulation *** */
@@ -275,19 +271,8 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	 * @aListener to the list of listeners.
 	 */
 	public void addListener(EditModelListener aListener) {
-		if (aListener != null && !getListeners().contains(aListener))
-			getListeners().add(aListener);
-	}
-
-	/**
-	 * Insert the method's description here. Creation date: (4/11/2001 4:42:58 PM)
-	 * 
-	 * @return java.util.List
-	 */
-	protected java.util.List getListeners() {
-		if (listeners == null)
-			listeners = new ArrayList();
-		return listeners;
+		if (aListener != null)
+			listeners.add(aListener);
 	}
 
 	/**
@@ -295,35 +280,14 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	 * 
 	 * @anEvent.
 	 */
-	protected void notifyListeners(EditModelEvent anEvent) {
-		if (listeners == null)
-			return;
-		boolean oldIsNotifying = isNotifing;
-		List changeList = null;
-		List removeList = null;
-		synchronized (this) {
-			isNotifing = true;
-			changeList = listeners;
-			removeList = removedListeners;
-		}
-		try {
-			if(changeList != null){
-				for (int i = 0; i < changeList.size(); i++) {
-					EditModelListener listener = (EditModelListener) changeList.get(i);
-					if (!removeList.contains(listener))
-						listener.editModelChanged(anEvent);
-				}
-			}
-		} finally {
-			if(!disposing){
-				synchronized (this) {
-					isNotifing = oldIsNotifying;
-					if (!isNotifing && listeners != null && removedListeners != null && !removedListeners.isEmpty()) {
-						listeners.removeAll(removedListeners);
-						removedListeners.clear();
-					}
-				}
-			}
+	protected void notifyListeners(final EditModelEvent anEvent) {
+		
+		NotifyRunner notifier = new NotifyRunner(anEvent); 
+		
+		Object[] notifyList = listeners.getListeners(); 
+		for (int i = 0; i < notifyList.length; i++) {
+			notifier.setListener( (EditModelListener) notifyList[i] );
+			SafeRunner.run(notifier);
 		}
 	}
 
@@ -332,13 +296,9 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	 * 
 	 * @aListener from the list of listeners.
 	 */
-	public synchronized boolean removeListener(EditModelListener aListener) {
-		if (aListener != null) {
-			if (isNotifing)
-				return removedListeners.add(aListener);
-			return getListeners().remove(aListener);
-		}
-		return false;
+	public boolean removeListener(EditModelListener aListener) {
+		listeners.remove(aListener);
+		return true;
 	}
 
 	/** ** END Listeners *** */
@@ -410,8 +370,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 			getSaveHandler().handleSaveFailed(ex, monitor);
 		} catch (Exception ex) {
 			ex.printStackTrace();
-		}
-		finally {
+		} finally {
 			getSaveHandler().release();
 		}
 	}
@@ -492,7 +451,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 
 	protected void runSaveOperation(IWorkspaceRunnable runnable, IProgressMonitor monitor) throws SaveFailedException {
 		try {
-			ResourcesPlugin.getWorkspace().run(runnable, getProject(),IWorkspace.AVOID_UPDATE,monitor);
+			ResourcesPlugin.getWorkspace().run(runnable, getProject(), IWorkspace.AVOID_UPDATE, monitor);
 		} catch (CoreException e) {
 			throw new SaveFailedException(e);
 		}
@@ -548,7 +507,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 			Iterator it = resourceExtensions.iterator();
 			ResourceSetWorkbenchEditSynchronizer sync = (ResourceSetWorkbenchEditSynchronizer) getEmfContext().getResourceSet().getSynchronizer();
 			while (it.hasNext()) {
-				String extension = (String)iter.next();
+				String extension = (String) iter.next();
 				sync.enableAutoload(extension);
 			}
 		}
@@ -564,9 +523,9 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 				registerInterest(identifier, res);
 				enabled = identifier.isEnabled();
 			}
-		} catch(RuntimeException re) {
-	        Logger.getLogger().logWarning(re);
-	    } 
+		} catch (RuntimeException re) {
+			Logger.getLogger().logWarning(re);
+		}
 		if (enabled) {
 			URI uri = res.getURI();
 			knownResourceUris.add(uri);
@@ -669,7 +628,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	 * @see ResourceStateValidator#validateState(ResourceStateValidatorPresenter)
 	 */
 	public IStatus validateState(ResourceStateValidatorPresenter presenter) throws CoreException {
-		if (presenter==null)
+		if (presenter == null)
 			return Status.OK_STATUS;
 		return getStateValidator().validateState(presenter);
 	}
@@ -705,7 +664,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 			int eventCode = newValue ? EditModelEvent.LOADED_RESOURCE : EditModelEvent.UNLOADED_RESOURCE;
 			EditModelEvent evt = new EditModelEvent(eventCode, this);
 			evt.addResource(aResource);
-			if(!disposing){
+			if (!disposing) {
 				notifyListeners(evt);
 			}
 		}
@@ -1000,13 +959,11 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 
 		if (!isDisposing()) {
 			boolean shouldDispose = false;
-			synchronized (this) {
-				shouldDispose = registry.size() == 0;
-				if(shouldDispose){
-					startDispose();
-				}
+			shouldDispose = registry.size() == 0;
+			if (shouldDispose) {
+				startDispose();
 			}
-			if(shouldDispose){
+			if (shouldDispose) {
 				doDispose();
 			}
 		}
@@ -1620,4 +1577,31 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	public void setParams(Map params) {
 		this.params = params;
 	}
+	
+	public class NotifyRunner implements ISafeRunnable { 
+		
+		private final EditModelEvent event;
+		private EditModelListener listener;
+		
+		public NotifyRunner(EditModelEvent event) {
+			Assert.isNotNull(event);
+			this.event = event;
+		}
+		
+		
+		public void setListener(EditModelListener listener) {
+			this.listener = listener;
+		}
+
+		public void handleException(Throwable exception) { 
+			EMFWorkbenchEditPlugin.getDefault().getLog().log(new Status(IStatus.ERROR, EMFWorkbenchEditPlugin.ID, 0, exception.getMessage(), exception));
+			
+		}
+
+		public void run() throws Exception {
+			if(listener != null)
+				listener.editModelChanged(event); 
+		}
+		
+	};
 }

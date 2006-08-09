@@ -65,9 +65,7 @@ public class ComposedEditModel extends EditModel implements EditModelListener {
 			notifyListeners(new EditModelEvent(EditModelEvent.PRE_DISPOSE, this));
 		releasePreloadResources();
 		releaseIdentifiers();
-		emfContext = null;
-		listeners = null;
-		removedListeners = null;
+		emfContext = null; 
 		resources = null;
 		disposing = false;
 		project = null;
