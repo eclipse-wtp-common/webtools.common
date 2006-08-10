@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.common.componentcore.ComponentCore;
+import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.internal.ComponentcoreFactory;
 import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
 import org.eclipse.wst.common.componentcore.internal.DependencyType;
@@ -83,63 +84,10 @@ public class VirtualComponent implements IVirtualComponent {
 	}
 	
 	public boolean exists() { 
-		StructureEdit core = null;
 		IProject project = getProject();
-		try {
-			if (project != null && getName() != null) {
-				core = StructureEdit.getStructureEditForRead(project);
-				if(core == null){
-					return false;
-				}
-				WorkbenchComponent component = core.getComponent(); 
-				return component != null;
-			}
-		} finally {
-			if(core != null)
-				core.dispose();
-		}
-		return false;
+		return ModuleCoreNature.isFlexibleProject(project);
 	}
 	
-//	public String getComponentTypeId() {
-//		if (null == componentTypeId) {
-//			StructureEdit core = null;
-//			try {
-//				if (getProject() == null || getName() == null)
-//					return null;
-//				core = StructureEdit.getStructureEditForRead(getProject());
-//				if (core == null)
-//					return null;
-//				WorkbenchComponent component = core.getComponent();
-//				ComponentType cType = component == null ? null : component.getComponentType();
-//				componentTypeId = cType == null ? null : cType.getComponentTypeId();
-//			} finally {
-//				if (core != null)
-//					core.dispose();
-//			}
-//		}
-//		return componentTypeId;
-//	}
-
-//	public void setComponentTypeId(String aComponentTypeId) {
-//
-//		StructureEdit core = null;
-//		try {
-//			core = StructureEdit.getStructureEditForWrite(getProject());
-//			WorkbenchComponent component = core.getComponent(); 
-//			ComponentType cType = component.getComponentType();
-//			if(cType == null) {
-//				cType = ComponentcorePackage.eINSTANCE.getComponentcoreFactory().createComponentType();
-//				component.setComponentType(cType);
-//			}
-//			cType.setComponentTypeId(aComponentTypeId);
-//		} finally {
-//			if(core != null) {
-//				core.saveIfNecessary(null);
-//				core.dispose();
-//			}
-//		}
-//	}
 
 	public Properties getMetaProperties() {
         StructureEdit core = null;
