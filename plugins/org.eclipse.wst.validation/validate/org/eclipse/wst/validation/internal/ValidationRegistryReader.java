@@ -12,14 +12,12 @@ package org.eclipse.wst.validation.internal;
 
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
@@ -89,8 +87,6 @@ public final class ValidationRegistryReader implements RegistryConstants {
 
 	private static final String UNKNOWN_PROJECT = "UNKNOWN"; //$NON-NLS-1$ // This 'project nature id' is used as a key to get the validators which can run on a project type which hasn't been explicitly filtered in or out by any validator.
 	private static final String EXCLUDED_PROJECT = "EXCLUDED"; //$NON-NLS-1$ // This 'project nature id' is used as a key to get the validators which are excluded on certain projects.
-
-	private List _tempList = null; // list for temporary values. Retrieve and use via the
 	
 	public HashMap projectValidationMetaData = null;
 
@@ -1048,16 +1044,9 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			// nothing needs to be removed from the list
 			return;
 		}
-
-		// First of all, clone the Set because we need to remove entries
-		// from it, and we can't alter the set while we're iterating over
-		// it.
-		List tempList = getTempList();
-		clone(vmds, tempList);
-
 		for (int i = 0; i < projectNatures.length; i++) {
 			String nature = projectNatures[i];
-			Iterator iterator = tempList.iterator();
+			Iterator iterator = vmds.iterator();
 			while (iterator.hasNext()) {
 				ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
 				ValidatorNameFilter[] natureFilters = vmd.getProjectNatureFilters();
@@ -1069,7 +1058,8 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				for (int j = 0; j < natureFilters.length; j++) {
 					ValidatorNameFilter pn = natureFilters[j];
 					if (nature.equals(pn.getNameFilter()) && !pn.isInclude()) {
-						vmds.remove(vmd);
+						iterator.remove();
+						break;
 					}
 				}
 			}
@@ -1413,18 +1403,6 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			Logger.getLogger().log(ce);
 		}
 		return null;
-	}
-
-	private List getTempList() {
-		// Return a list for temporary use
-		if (_tempList == null) {
-			_tempList = new ArrayList();
-		} else {
-			// Prepare list for use
-			_tempList.clear();
-		}
-
-		return _tempList;
 	}
 
 	/**
