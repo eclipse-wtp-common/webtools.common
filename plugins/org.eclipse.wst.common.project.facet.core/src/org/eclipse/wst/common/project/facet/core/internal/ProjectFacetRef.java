@@ -118,6 +118,10 @@ public final class ProjectFacetRef
             return NLS.bind( Resources.allowNewer, this.f.getLabel(),
                              this.vexpr.getFirstVersion() );
         }
+        else if( this.vexpr.isWildcard() )
+        {
+            return NLS.bind( Resources.wildcard, this.f.getLabel() );
+        }
         else
         {
             return NLS.bind( Resources.versionExpr, this.f.getLabel(),
@@ -132,6 +136,7 @@ public final class ProjectFacetRef
     {
         public static String exactVersion;
         public static String allowNewer;
+        public static String wildcard;
         public static String versionExpr;
         
         static

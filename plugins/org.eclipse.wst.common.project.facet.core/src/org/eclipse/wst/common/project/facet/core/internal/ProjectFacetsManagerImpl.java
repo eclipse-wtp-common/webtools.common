@@ -56,6 +56,7 @@ import org.eclipse.wst.common.project.facet.core.IGroup;
 import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.IVersionExpr;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
@@ -1555,12 +1556,11 @@ public final class ProjectFacetsManagerImpl
             return;
         }
         
-        final String ver = config.getAttribute( ATTR_VERSION );
+        String ver = config.getAttribute( ATTR_VERSION );
 
         if( ver == null )
         {
-            reportMissingAttribute( config, ATTR_VERSION );
-            return;
+            ver = IVersionExpr.WILDCARD_SYMBOL;
         }
         
         readAction( config, f, ver );
@@ -1767,12 +1767,11 @@ public final class ProjectFacetsManagerImpl
             return;
         }
         
-        final String ver = config.getAttribute( ATTR_VERSION );
+        String ver = config.getAttribute( ATTR_VERSION );
 
         if( ver == null )
         {
-            reportMissingAttribute( config, ATTR_VERSION );
-            return;
+            ver = IVersionExpr.WILDCARD_SYMBOL;
         }
         
         readEventHandler( config, f, ver );
@@ -1925,20 +1924,19 @@ public final class ProjectFacetsManagerImpl
                 return null;
             }
 
-            final String vexprstr = root.getAttribute( ATTR_VERSION );
+            final IProjectFacet f = getProjectFacet( fid );
             
-            if( vexprstr == null )
+            String vexprstr = root.getAttribute( ATTR_VERSION );
+            
+            if( vexprstr == null || vexprstr.trim().length() == 0 )
             {
-                reportMissingAttribute( root, ATTR_VERSION );
-                return null;
+                vexprstr = IVersionExpr.WILDCARD_SYMBOL;
             }
-            
-            final IProjectFacet f;
+
             final VersionExpr vexpr;
-            
+
             try
             {
-                f = getProjectFacet( fid );
                 vexpr = new VersionExpr( f, vexprstr, pluginId );
             }
             catch( CoreException e )

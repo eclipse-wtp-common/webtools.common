@@ -210,6 +210,25 @@
       </constraint>
     </project-facet-version>
 
+    <project-facet id="fct_f6"/>
+    
+    <project-facet-version facet="fct_f6" version="1.0"/>
+    <project-facet-version facet="fct_f6" version="2.3"/>
+    <project-facet-version facet="fct_f6" version="3.7"/>
+    <project-facet-version facet="fct_f6" version="4.0"/>
+    <project-facet-version facet="fct_f6" version="4.5"/>
+    
+    <project-facet id="fct_f7"/>
+    
+    <project-facet-version facet="fct_f7" version="1.0">
+      <constraint>
+        <requires facet="fct_f6"/>
+      </constraint>
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+
   </extension>
 
   <!-- Default Version Tests -->

@@ -449,8 +449,12 @@ public final class ConstraintDisplayDialog
             final StringBuffer bodyLabelText = new StringBuffer();
             
             bodyLabelText.append( f.getLabel() );
-            bodyLabelText.append( ' ' );
-            bodyLabelText.append( vexpr.toDisplayString() );
+            
+            if( ! vexpr.toString().equals( IVersionExpr.WILDCARD_SYMBOL ) )
+            {
+                bodyLabelText.append( ' ' );
+                bodyLabelText.append( vexpr.toDisplayString() );
+            }
             
             final Label bodyLabel = new Label();
             bodyLabel.setText( bodyLabelText.toString() );

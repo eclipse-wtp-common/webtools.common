@@ -1,5 +1,10 @@
 package org.eclipse.wst.common.project.facet.core.tests;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -28,6 +33,16 @@ public class FacetConstraintsTests
     private static IProjectFacet f5;
     private static IProjectFacetVersion f5v10;
     
+    private static IProjectFacet f6;
+    private static IProjectFacetVersion f6v10;
+    private static IProjectFacetVersion f6v23;
+    private static IProjectFacetVersion f6v37;
+    private static IProjectFacetVersion f6v40;
+    private static IProjectFacetVersion f6v45;
+
+    private static IProjectFacet f7;
+    private static IProjectFacetVersion f7v10;
+    
     static
     {
         f1 = ProjectFacetsManager.getProjectFacet( "fct_f1" );
@@ -44,6 +59,16 @@ public class FacetConstraintsTests
 
         f5 = ProjectFacetsManager.getProjectFacet( "fct_f5" );
         f5v10 = f5.getVersion( "1.0" );
+
+        f6 = ProjectFacetsManager.getProjectFacet( "fct_f6" );
+        f6v10 = f6.getVersion( "1.0" );
+        f6v23 = f6.getVersion( "2.3" );
+        f6v37 = f6.getVersion( "3.7" );
+        f6v40 = f6.getVersion( "4.0" );
+        f6v45 = f6.getVersion( "4.5" );
+
+        f7 = ProjectFacetsManager.getProjectFacet( "fct_f7" );
+        f7v10 = f7.getVersion( "1.0" );
     }
     
     private FacetConstraintsTests( final String name )
@@ -65,6 +90,7 @@ public class FacetConstraintsTests
         suite.addTest( new FacetConstraintsTests( "testIndirectConflict6" ) );
         suite.addTest( new FacetConstraintsTests( "testIndirectConflict7" ) );
         suite.addTest( new FacetConstraintsTests( "testIndirectConflict8" ) );
+        suite.addTest( new FacetConstraintsTests( "testRequiresWithNoVersion" ) );
         
         return suite;
     }
@@ -137,4 +163,33 @@ public class FacetConstraintsTests
         assertFalse( f5v10.conflictsWith( f4v10 ) );
     }
     
+    /**
+     * Tests the following constraint:
+     * 
+     * <pre>
+     *   &lt;requires facet="fct_f6"/&gt;
+     * </pre>
+     */
+    
+    public void testRequiresWithNoVersion()
+    {
+        assertFalse( f7v10.getConstraint().check( Collections.EMPTY_SET ).isOK() );
+        assertTrue( f7v10.getConstraint().check( asSet( f6v10 ) ).isOK() );
+        assertTrue( f7v10.getConstraint().check( asSet( f6v23 ) ).isOK() );
+        assertTrue( f7v10.getConstraint().check( asSet( f6v37 ) ).isOK() );
+        assertTrue( f7v10.getConstraint().check( asSet( f6v40 ) ).isOK() );
+        assertTrue( f7v10.getConstraint().check( asSet( f6v45 ) ).isOK() );
+    }
+    
+    private static Set asSet( final Object obj )
+    {
+        return asSet( new Object[] { obj } );
+    }
+
+    private static Set asSet( final Object[] array )
+    {
+        final HashSet set = new HashSet();
+        set.addAll( Arrays.asList( array ) );
+        return set;
+    }
 }

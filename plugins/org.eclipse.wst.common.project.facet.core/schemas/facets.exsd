@@ -110,7 +110,7 @@
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="version" type="string" use="required">
+         <attribute name="version" type="string">
             <annotation>
                <documentation>
                   Specifies the match expression for the facet version. The expression should be of the form &quot;2.2,2.5,[3.0-5.3],(7.3&quot;, where the comas function as an OR. Brackets and parenthesis are used as part of the range notation. A bracket means inclusive while a parenthesis means exclusive.

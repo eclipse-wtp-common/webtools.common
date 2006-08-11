@@ -21,6 +21,14 @@ package org.eclipse.wst.common.project.facet.core;
 public interface IVersionExpr
 {
     /**
+     * Contains the symbol used to represent the wildcard. The wildcard matches
+     * any version. Note that it is not possible to use the wildcard to match
+     * part of the version string. 
+     */
+    
+    static final String WILDCARD_SYMBOL = "*"; //$NON-NLS-1$
+    
+    /**
      * Evaluates the version expression against the specified version. Returns
      * <code>true</code> if and only if the version expression matches the
      * specified version.
