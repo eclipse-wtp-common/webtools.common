@@ -12,9 +12,9 @@ package org.eclipse.wst.common.componentcore.datamodel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -36,7 +36,6 @@ import org.eclipse.wst.common.frameworks.internal.operations.IProjectCreationPro
 import org.eclipse.wst.common.frameworks.internal.operations.ProjectCreationDataModelProviderNew;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
@@ -46,6 +45,15 @@ import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
 
 public class FacetProjectCreationDataModelProvider extends AbstractDataModelProvider implements IFacetProjectCreationDataModelProperties {
 
+	/**
+	 * Type java.util.Collection. This is a smallest Collection of
+	 * IProjectFacets that are absolutely required by this project type. This
+	 * Collection will be used to filter runtimes. This property is not meant to
+	 * be exposed to clients. Subclasses should initialize this Collection in
+	 * their init() methods
+	 */
+	protected static final String REQUIRED_FACETS_COLLECTION = "FacetProjectCreationDataModelProvider.REQUIRED_FACETS_COLLECTION";
+	
 	public FacetProjectCreationDataModelProvider() {
 		super();
 	}
@@ -56,6 +64,7 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 		names.add(FACET_DM_MAP);
 		names.add(FACET_ACTION_MAP);
 		names.add(FACET_RUNTIME);
+		names.add(REQUIRED_FACETS_COLLECTION);
 		return names;
 	}
 
@@ -264,6 +273,10 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 			Object obj = new FacetActionMapImpl();
 			setProperty(FACET_ACTION_MAP, obj);
 			return obj;
+		} else if(REQUIRED_FACETS_COLLECTION.equals(propertyName)){
+			Collection c = new ArrayList();
+			setProperty(REQUIRED_FACETS_COLLECTION, c);
+			return c;
 		}
 		return super.getDefaultProperty(propertyName);
 	}
@@ -281,35 +294,20 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 
 	public DataModelPropertyDescriptor[] getValidPropertyDescriptors(String propertyName) {
 		if (FACET_RUNTIME.equals(propertyName)) {
-			Set projectFacets = new HashSet();
-			Map facetDMs = (Map) getProperty(FACET_DM_MAP);
-			for (Iterator iterator = facetDMs.values().iterator(); iterator.hasNext();) {
-				IDataModel facetDataModel = (IDataModel) iterator.next();
-				if (facetDataModel.getBooleanProperty(IFacetDataModelProperties.SHOULD_EXECUTE)) {
-					IProjectFacet facet = ProjectFacetsManager.getProjectFacet((String) facetDataModel.getProperty(IFacetDataModelProperties.FACET_ID));
-					projectFacets.add(facet);
-				}
-			}
-			Map facetActions = (Map) getProperty(FACET_ACTION_MAP);
-			for (Iterator iterator = facetActions.values().iterator(); iterator.hasNext();) {
-				IFacetedProject.Action action = (IFacetedProject.Action) iterator.next();
-				projectFacets.add(action.getProjectFacetVersion().getProjectFacet());
-			}
-
+			Collection projectFacets = (Collection)getProperty(REQUIRED_FACETS_COLLECTION);
 			Set runtimes = RuntimeManager.getRuntimes();
 			ArrayList list = new ArrayList();
 
 			for (Iterator it = runtimes.iterator(); it.hasNext();) {
 				IRuntime rt = (IRuntime) it.next();
 
-				// add this runtime in the list only if this runtime supports all of the facets
-				// in the project
-
+				// add this runtime in the list only if it supports all of the required facets
 				boolean supportsFactet = true;
 				for (Iterator facetIt = projectFacets.iterator(); facetIt.hasNext();) {
 					IProjectFacet facet = (IProjectFacet) facetIt.next();
 					if (!rt.supports(facet)) {
 						supportsFactet = false;
+						break;
 					}
 				}
 				if (supportsFactet) {
