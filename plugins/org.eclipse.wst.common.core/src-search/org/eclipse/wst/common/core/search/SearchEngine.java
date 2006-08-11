@@ -137,7 +137,16 @@ public class SearchEngine implements ISearchOptions
                             { participant.getDescription() }));
                 // a search document set should contain enough info to reduce the search scope even further 
                 // before finding precize locations
-                participant.locateMatches(set, pattern, scopeArray[i], requestor, searchOptions, subMonitor);
+                
+                // the scope could be null if the partcipant barfed and exeption in the first loop 
+                if (scopeArray[i] != null)
+                {  
+                  participant.locateMatches(set, pattern, scopeArray[i], requestor, searchOptions, subMonitor);
+                }  
+                }
+                catch (Exception e)
+                {
+                  
                 }
                 finally
                 {
