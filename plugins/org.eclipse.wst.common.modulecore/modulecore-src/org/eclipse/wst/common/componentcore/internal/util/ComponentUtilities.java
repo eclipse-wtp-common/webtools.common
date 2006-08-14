@@ -263,11 +263,11 @@ public class ComponentUtilities {
 	public static String getServerContextRoot(IProject project) {		
 		
 		if(!ContextRootMapping.hasChanged(project)) {
-			if(ContextRootMapping.hasCacheData(project))
-				return (String) ContextRootMapping.getData(project);
-			else if(ContextRootMapping.hasCacheError(project))
-				return null;
-			
+			/*Simply return the cached data*/
+			String data = null;
+			if(!ContextRootMapping.hasCacheError(project) && ContextRootMapping.hasCacheData(project))
+				data = (String) ContextRootMapping.getData(project);
+			return data;
 		}
 		
 		StructureEdit moduleCore = null;
