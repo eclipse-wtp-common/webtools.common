@@ -17,6 +17,7 @@ import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -33,6 +34,7 @@ public class SelectSingleFileDialog extends TitleAreaDialog
 {            
   protected SelectSingleFileView selectSingleFileView; 
   protected Button okButton;
+  protected Image image;
  
   public SelectSingleFileDialog(Shell parentShell, IStructuredSelection selection, boolean isFileMandatory) 
   {
@@ -86,8 +88,9 @@ public class SelectSingleFileDialog extends TitleAreaDialog
   public void create()
   {
     super.create();
-    selectSingleFileView.setVisibleHelper(true);   
-	  setTitleImage(WorkbenchImages.getImageDescriptor(IDEInternalWorkbenchImages.IMG_DLGBAN_SAVEAS_DLG).createImage());
+    selectSingleFileView.setVisibleHelper(true);
+    image = WorkbenchImages.getImageDescriptor(IDEInternalWorkbenchImages.IMG_DLGBAN_SAVEAS_DLG).createImage();
+    setTitleImage(image);
   }
 
   public void createFilterCombo(Composite composite)
@@ -111,5 +114,14 @@ public class SelectSingleFileDialog extends TitleAreaDialog
   
   public void createFilterControl(Composite composite)
   { 
+  }
+
+  public boolean close()
+  {
+    if (image != null)
+    {
+      image.dispose();
+    }
+    return super.close();
   }
 }
