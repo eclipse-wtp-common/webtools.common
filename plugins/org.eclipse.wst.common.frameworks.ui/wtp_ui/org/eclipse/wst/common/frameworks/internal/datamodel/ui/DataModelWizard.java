@@ -11,6 +11,8 @@
 package org.eclipse.wst.common.frameworks.internal.datamodel.ui;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -297,6 +299,17 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 
 	public void dispose() {
 		super.dispose();
+		if (null != rootPageGroup) {
+			List pages = rootPageGroup.getPages(dataModel);
+			for (Iterator it = pages.iterator(); it.hasNext();)
+			{
+				Object page = it.next();
+				if (page instanceof IWizardPage)
+				{
+					((IWizardPage)page).dispose();
+				}
+			}
+		}
 		if (null != dataModel) {
 			dataModel.dispose();
 		}
