@@ -22,6 +22,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -33,6 +34,7 @@ import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.jem.util.emf.workbench.nature.EMFNature;
 import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
 import org.eclipse.wst.common.componentcore.internal.ModuleStructuralModel;
+import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.impl.ArtifactEditModelFactory;
@@ -40,6 +42,7 @@ import org.eclipse.wst.common.componentcore.internal.impl.ComponentCoreURIConver
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleStructuralModelFactory;
 import org.eclipse.wst.common.componentcore.internal.impl.WTPResourceFactoryRegistry;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
+import org.eclipse.wst.common.componentcore.internal.util.ModuleCoreMessages;
 import org.eclipse.wst.common.internal.emfworkbench.edit.EditModelRegistry;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelNature;
@@ -337,13 +340,15 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 						if (editModel !=null)
 							return editModel;
 					}
-				} catch (Exception e) {
+				} catch (IllegalArgumentException e) {
+					// Ignore exceptions that come from ProjectFacetsManager
 					continue;
+				} catch (Exception e) {
+					ModulecorePlugin.logError(Status.ERROR, ModuleCoreMessages.Acquiring_ArtifactEdit_For_Read_Exception, e);
 				}
 			}
-			
 		} catch (Exception e){
-			//Return null
+			ModulecorePlugin.logError(Status.ERROR, ModuleCoreMessages.Acquiring_ArtifactEdit_For_Read_Exception, e);
 		}
 		return null;
 	}
@@ -421,13 +426,15 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 						if (editModel !=null)
 							return editModel;
 					}
-				} catch (Exception e) {
+				} catch (IllegalArgumentException e) {
+					// Ignore exceptions that come from ProjectFacetsManager
 					continue;
+				} catch (Exception e) {
+					ModulecorePlugin.logError(Status.ERROR, ModuleCoreMessages.Acquiring_ArtifactEdit_For_Write_Exception, e);
 				}
 			}
-			
 		} catch (Exception e){
-			//Return null
+			ModulecorePlugin.logError(Status.ERROR, ModuleCoreMessages.Acquiring_ArtifactEdit_For_Write_Exception, e);
 		}
 		return null;
 	}
