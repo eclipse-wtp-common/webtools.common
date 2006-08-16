@@ -3,6 +3,7 @@
 <plugin>
 
      <extension-point id="packageURIMap" name="%PackageURIMap" schema="schema/packageURIMap.exsd"/>
+     <extension-point id="translatorExtension" name="translatorExtension" schema="schema/translatorExtension.exsd"/>
 
 <!-- Need to register the Ecore specific package mappings -->
    <extension

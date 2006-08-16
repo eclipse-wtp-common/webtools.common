@@ -30,6 +30,7 @@ import org.osgi.framework.BundleContext;
  */
 public class EcoreUtilitiesPlugin extends Plugin {
 	public static final String ID = "org.eclipse.wst.common.emf"; //$NON-NLS-1$
+	public static final String TRANSLATOR_EXTENSTION_POINT = "translatorExtension"; //$NON-NLS-1$
 
 	/**
 	 * @param descriptor

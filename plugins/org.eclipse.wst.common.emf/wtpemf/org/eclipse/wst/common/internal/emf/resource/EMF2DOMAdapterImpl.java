@@ -33,6 +33,7 @@ import org.eclipse.wst.common.internal.emf.utilities.ExtendedEcoreUtil;
 import org.eclipse.wst.common.internal.emf.utilities.FeatureValueConversionException;
 import org.eclipse.wst.common.internal.emf.utilities.Revisit;
 import org.eclipse.wst.common.internal.emf.utilities.StringUtil;
+import org.eclipse.wst.common.internal.emf.utilities.TranslatorService;
 import org.eclipse.wst.common.internal.emf.utilities.WFTUtilsResourceHandler;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -123,8 +124,13 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	}
 
 	protected void initChildTranslators() {
-
 		List children = new ArrayList();
+		// Get extended child translators
+		Translator[] extendedChildren = TranslatorService.getInstance().getTranslators();
+        for (int i = 0; i < extendedChildren.length; i++) {
+        	if (extendedChildren[i] != null)
+            	children.add(extendedChildren[i]);
+        }
 		children.addAll(Arrays.asList(fTranslator.getChildren(getTarget(), fRenderer.getVersionID())));
 
 		VariableTranslatorFactory factory = fTranslator.getVariableTranslatorFactory();
