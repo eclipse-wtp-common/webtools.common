@@ -12,12 +12,12 @@ package org.eclipse.wst.common.ui.internal.search.dialogs;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.wst.common.ui.internal.UIPlugin;
+import org.eclipse.wst.common.ui.internal.Messages;
 
 public class ComponentSearchListDialogConfiguration
 {
-  private String filterLabelText = UIPlugin.getString("_UI_LABEL_COMPONENT_NAME");
-  private String listLabelText = UIPlugin.getString("_UI_LABEL_COMPONENTS");  
+  private String filterLabelText = Messages._UI_LABEL_COMPONENT_NAME;
+  private String listLabelText = Messages._UI_LABEL_COMPONENTS;
   private IComponentSearchListProvider searchListProvider; 
   private IComponentDescriptionProvider descriptionProvider;
   private INewComponentHandler newComponentHandler;

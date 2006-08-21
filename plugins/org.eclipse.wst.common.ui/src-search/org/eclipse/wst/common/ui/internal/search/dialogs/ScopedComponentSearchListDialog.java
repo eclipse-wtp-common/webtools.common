@@ -32,17 +32,17 @@ import org.eclipse.wst.common.core.search.scope.ProjectSearchScope;
 import org.eclipse.wst.common.core.search.scope.SearchScope;
 import org.eclipse.wst.common.core.search.scope.WorkingSetSearchScope;
 import org.eclipse.wst.common.core.search.scope.WorkspaceSearchScope;
-import org.eclipse.wst.common.ui.internal.UIPlugin;
+import org.eclipse.wst.common.ui.internal.Messages;
 
 public class ScopedComponentSearchListDialog extends ComponentSearchListDialog
 {
-  protected final static String DEFAULT_NAME_FIELD_TITLE = UIPlugin.getString("_UI_LABEL_COMPONENT_NAME");
-  protected final static String DEFAULT_LIST_TITLE = UIPlugin.getString("_UI_LABEL_MATCHING_COMPONENTS");
-  public static final String SCOPE_SPECIFIED_FILE = UIPlugin.getString("_UI_LABEL_SPECIFIED_FILE");
-  public static final String SCOPE_ENCLOSING_PROJECT = UIPlugin.getString("_UI_LABEL_ENCLOSING_PROJECT");
-  public static final String SCOPE_WORKSPACE = UIPlugin.getString("_UI_LABEL_WORKSPACE");
-  public static final String SCOPE_CURRENT_RESOURCE = UIPlugin.getString("_UI_LABEL_CURRENT_RESOURCE");
-  public static final String SCOPE_WORKING_SETS = UIPlugin.getString("_UI_LABEL_WORKING_SETS");
+  protected final static String DEFAULT_NAME_FIELD_TITLE = Messages._UI_LABEL_COMPONENT_NAME;
+  protected final static String DEFAULT_LIST_TITLE = Messages._UI_LABEL_MATCHING_COMPONENTS;
+  public static final String SCOPE_SPECIFIED_FILE = Messages._UI_LABEL_SPECIFIED_FILE;
+  public static final String SCOPE_ENCLOSING_PROJECT = Messages._UI_LABEL_ENCLOSING_PROJECT;
+  public static final String SCOPE_WORKSPACE = Messages._UI_LABEL_WORKSPACE;
+  public static final String SCOPE_CURRENT_RESOURCE = Messages._UI_LABEL_CURRENT_RESOURCE;
+  public static final String SCOPE_WORKING_SETS = Messages._UI_LABEL_WORKING_SETS;
   
   private String currentSearchScope = SCOPE_CURRENT_RESOURCE;
   protected Button chooseButton;
@@ -88,7 +88,7 @@ public class ScopedComponentSearchListDialog extends ComponentSearchListDialog
     // gridLayout.marginLeft = 2;
     group.setLayout(gridLayout);
     group.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-    group.setText(UIPlugin.getString("_UI_LABEL_SEARCH_SCOPE"));
+    group.setText(Messages._UI_LABEL_SEARCH_SCOPE);
     ScopeChangeListener scopeChangeListener = new ScopeChangeListener();
     radioButton[0] = new Button(group, SWT.RADIO);
     radioButton[0].setText(SCOPE_WORKSPACE);
@@ -122,7 +122,7 @@ public class ScopedComponentSearchListDialog extends ComponentSearchListDialog
     	workingSetsText.setText(valueForWorkingSetsText);
     
     chooseButton = new Button(selectWorkingSetsGroup, SWT.NONE);
-    chooseButton.setText(UIPlugin.getString("_UI_LABEL_CHOOSE"));
+    chooseButton.setText(Messages._UI_LABEL_CHOOSE);
     chooseButton.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
 			Shell shell = getShell();

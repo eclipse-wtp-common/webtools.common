@@ -46,6 +46,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.wizards.datatransfer.FileSystemImportWizard;
+import org.eclipse.wst.common.ui.internal.Messages;
 import org.eclipse.wst.common.ui.internal.UIPlugin;
 
     
@@ -81,7 +82,7 @@ public class SelectSingleFileView
     composite.setLayout(new GridLayout());
     composite.setLayoutData(new GridData(GridData.FILL_BOTH));
 	Label label = new Label(composite, SWT.NONE);
-	label.setText(UIPlugin.getResourceString("_UI_LABEL_SOURCE_FILES"));
+	label.setText(Messages._UI_LABEL_SOURCE_FILES);
     createSourceViewer(composite);
 	  createFilterControl(composite);   
     createImportButton(composite);  
@@ -151,7 +152,7 @@ public void setListener(Listener listener)
   protected void createImportButton(Composite parent)
   {   
     importButton = new Button(parent, SWT.NONE);
-    importButton.setText(UIPlugin.getResourceString("_UI_IMPORT_BUTTON"));
+    importButton.setText(Messages._UI_IMPORT_BUTTON);
     
     GridData gridData = new GridData();    
     gridData.horizontalAlignment = GridData.CENTER;
@@ -188,7 +189,7 @@ public void setListener(Listener listener)
         }
       }
     });                  
-    importButton.setToolTipText(UIPlugin.getResourceString("_UI_IMPORT_BUTTON_TOOL_TIP"));
+    importButton.setToolTipText(Messages._UI_IMPORT_BUTTON_TOOL_TIP);
   } 
 
   public IFile getFile()

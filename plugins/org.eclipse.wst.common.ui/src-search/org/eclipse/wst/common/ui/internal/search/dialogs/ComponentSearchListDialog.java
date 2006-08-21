@@ -58,7 +58,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.wst.common.core.search.scope.SearchScope;
-import org.eclipse.wst.common.ui.internal.UIPlugin;
+import org.eclipse.wst.common.ui.internal.Messages;
 
 
 public class ComponentSearchListDialog extends Dialog {
@@ -75,7 +75,7 @@ public class ComponentSearchListDialog extends Dialog {
     private Text textFilter;
     protected TableViewer componentTableViewer;
     
-    protected String fileLocationLabel = UIPlugin.getString("_UI_LABEL_DECLARATION_LOCATION");
+    protected String fileLocationLabel = Messages._UI_LABEL_DECLARATION_LOCATION;
     protected ViewForm fileLocationView;    
     protected CLabel locationLabel;
 
@@ -157,7 +157,7 @@ public class ComponentSearchListDialog extends Dialog {
         if (handler != null)
         {  
            newButton = new Button(filterLabelAndText, SWT.NONE);
-           newButton.setText(UIPlugin.getString("_UI_LABEL_New"));  
+           newButton.setText(Messages._UI_LABEL_New);  
            newButton.addSelectionListener(new SelectionListener()
            {
 
@@ -180,7 +180,7 @@ public class ComponentSearchListDialog extends Dialog {
         
         // Create Qualifier List widget
         Label qualifierLabel = new Label(mainComposite, SWT.NONE);
-        qualifierLabel.setText(UIPlugin.getString("_UI_LABEL_QUALIFIER"));
+        qualifierLabel.setText(Messages._UI_LABEL_QUALIFIER);
 		qualifierLabel.setText(fileLocationLabel);
 
         fileLocationView = new ViewForm(mainComposite, SWT.BORDER | SWT.FLAT );

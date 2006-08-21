@@ -23,7 +23,7 @@ import org.eclipse.core.resources.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.model.*;
 import org.eclipse.ui.wizards.datatransfer.*;
-import org.eclipse.wst.common.ui.internal.UIPlugin;
+import org.eclipse.wst.common.ui.internal.Messages;
 
 
 // Page to specify the source files
@@ -159,7 +159,7 @@ public class SelectMultiFilePage extends WizardPage {
 
   private void createLabels(Composite pageContent) {
     Label label = new Label(pageContent, SWT.LEFT);
-    label.setText(UIPlugin.getResourceString("_UI_LABEL_SOURCE_FILES"));
+    label.setText(Messages._UI_LABEL_SOURCE_FILES);
 
     GridData data = new GridData();
     data.horizontalAlignment = GridData.FILL;
@@ -167,7 +167,7 @@ public class SelectMultiFilePage extends WizardPage {
     label.setLayoutData(data);
 
     label = new Label(pageContent, SWT.LEFT);
-    label.setText(UIPlugin.getResourceString("_UI_LABEL_SELECTED_FILES"));
+    label.setText(Messages._UI_LABEL_SELECTED_FILES);
   }
 
   public boolean checkIfFileInTarget(IFile fileToCheck) {
@@ -236,36 +236,33 @@ public class SelectMultiFilePage extends WizardPage {
     buttonPanel.setLayoutData(gridData);
 
     addButton = new Button(buttonPanel, SWT.PUSH);
-    addButton.setText(UIPlugin.getResourceString("_UI_ADD_BUTTON"));
+    addButton.setText(Messages._UI_ADD_BUTTON);
     gridData = new GridData();
     gridData.horizontalAlignment = GridData.FILL;
     gridData.verticalAlignment = GridData.CENTER;
     addButton.setLayoutData(gridData);
     addButton.addSelectionListener(new ButtonSelectListener());
-    addButton.setToolTipText(
-        UIPlugin.getResourceString("_UI_ADD_BUTTON_TOOL_TIP"));
+    addButton.setToolTipText(Messages._UI_ADD_BUTTON_TOOL_TIP);
     addButton.setEnabled(false);
 
     removeButton = new Button(buttonPanel, SWT.PUSH);
-    removeButton.setText(UIPlugin.getResourceString("_UI_REMOVE_BUTTON"));
+    removeButton.setText(Messages._UI_REMOVE_BUTTON);
     gridData = new GridData();
     gridData.horizontalAlignment = GridData.FILL;
     gridData.verticalAlignment = GridData.CENTER;
     removeButton.setLayoutData(gridData);
     removeButton.addSelectionListener(new ButtonSelectListener());
-    removeButton.setToolTipText(
-        UIPlugin.getResourceString("_UI_REMOVE_BUTTON_TOOL_TIP"));
+    removeButton.setToolTipText(Messages._UI_REMOVE_BUTTON_TOOL_TIP);
     removeButton.setEnabled(false);
 
     removeAllButton = new Button(buttonPanel, SWT.PUSH);
-    removeAllButton.setText(UIPlugin.getResourceString("_UI_REMOVE_ALL_BUTTON"));
+    removeAllButton.setText(Messages._UI_REMOVE_ALL_BUTTON);
     gridData = new GridData();
     gridData.horizontalAlignment = GridData.FILL;
     gridData.verticalAlignment = GridData.CENTER;
     removeAllButton.setLayoutData(gridData);
     removeAllButton.addSelectionListener(new ButtonSelectListener());
-    removeAllButton.setToolTipText(
-        UIPlugin.getResourceString("_UI_REMOVE_ALL_BUTTON_TOOL_TIP"));
+    removeAllButton.setToolTipText(Messages._UI_REMOVE_ALL_BUTTON_TOOL_TIP);
     removeAllButton.setEnabled(false);
   }
 
@@ -293,7 +290,7 @@ public class SelectMultiFilePage extends WizardPage {
 
   void createImportButton(Composite parent) {
     importButton = new Button(parent, SWT.PUSH);
-    importButton.setText(UIPlugin.getResourceString("_UI_IMPORT_BUTTON"));
+    importButton.setText(Messages._UI_IMPORT_BUTTON);
     
     GridData gridData = new GridData();
     gridData.horizontalAlignment = GridData.CENTER;
@@ -314,8 +311,7 @@ public class SelectMultiFilePage extends WizardPage {
         sourceFileViewer.refresh();
       }
     });
-    importButton.setToolTipText(
-        UIPlugin.getResourceString("_UI_IMPORT_BUTTON_TOOL_TIP"));
+    importButton.setToolTipText(Messages._UI_IMPORT_BUTTON_TOOL_TIP);
   }
 
   public void addSelectedFilesToTargetList() {

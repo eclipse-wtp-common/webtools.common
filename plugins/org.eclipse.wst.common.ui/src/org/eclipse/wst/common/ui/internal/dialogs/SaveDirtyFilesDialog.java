@@ -27,7 +27,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ListDialog;
-import org.eclipse.wst.common.ui.internal.UIPlugin;
+import org.eclipse.wst.common.ui.internal.Messages;
 /**
  * A generic save files dialog. The bulk of the code for this dialog was taken
  * from the JDT refactoring support in
@@ -85,10 +85,10 @@ public class SaveDirtyFilesDialog extends ListDialog
   public SaveDirtyFilesDialog(Shell parent)
   {
     super(parent);
-    setTitle(UIPlugin.getResourceString("SaveFilesDialog_save_all_resources"));
+    setTitle(Messages.SaveFilesDialog_save_all_resources);
     setAddCancelButton(true);
     setLabelProvider(createDialogLabelProvider());
-    setMessage(UIPlugin.getResourceString("SaveFilesDialog_must_save"));
+    setMessage(Messages.SaveFilesDialog_must_save);
     setContentProvider(new ListContentProvider());
   }
 
