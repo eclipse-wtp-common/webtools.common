@@ -9,14 +9,32 @@
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel;
+
 /**
  * <p>
- * IDataModelProperties provides the base interface for all Data Model Properties interfaces.
- * The interface itself can be used to access an instance of the IDataModel and IDataModelProvider which will be registered
- * against with the interface.  IDataModels are not meant to be instantiated directly, rather they are built from an
- * IDataModelProvider. In this way the user will call to the DataModelFactory passing in the interface,
- * which will return the correct IDataModel. 
+ * IDataModelProperties provides the base interface for all Data Model
+ * Properties interfaces. Sub interface classes (e.g.
+ * <code>some.company.IFooDataModelProperties.class</code>) should be used to
+ * create instances of IDataModels using the
+ * {@link DataModelFactory#createDataModel(Class)} method. In order for this
+ * mechanism to work, the backing {@link IDataModelProvider} class must be
+ * registerd to support the sub IDataModelProperties interface in one of two
+ * ways. This registration should be performed by the model developer.
  * </p>
+ * <p>
+ * The first way to register the correct {@link IDataModelProvider} class is for
+ * the interface to define a public static final Class _provider_class field
+ * which is set to the {@link IDataModelProvider} class, e.g.
+ * </p>
+ * <p>
+ * <code>public static final Class _provider_class = some.company.FooDataModelProvider.class</code>
+ * </p>
+ * The mechanism is recommended whenever the {@link IDataModelProperties} and
+ * {@link IDataModelProvider} classes are both defined in the same plugin scope.
+ * A second mechanism using the DataModelProviderExtension extension point is
+ * available when the {@link IDataModelProvider} class is definend outside the
+ * {@link IDataModelProperties} plugin scope.
+ * 
  * <p>
  * This interface is not intended to be implemented by clients.
  * </p>

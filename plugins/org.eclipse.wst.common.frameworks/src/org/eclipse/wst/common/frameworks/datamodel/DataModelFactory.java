@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.datamodel;
 
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelExtensionReader;
 import org.eclipse.wst.common.frameworks.internal.datamodel.DataModelImpl;
 
@@ -77,16 +78,42 @@ public class DataModelFactory {
 
 	/**
 	 * <p>
-	 * Looks up the appropriate IDataModelProvider using the name of the specified class. This
-	 * method is equavalent to <code>createDataModel(dataModelProviderClassID.getName())</code>.
+	 * Builds an {@link IDataModel} using the specified Class. This Class will
+	 * normally be a sub interface of {@link IDataModelProperties}. If the
+	 * Class it is an {@link IDataModelProperties}.class then this method will
+	 * attempt to use the {@link IDataModelProperties#_provider_class} field to
+	 * load the {@link IDataModelProvider} with which to back the
+	 * {@link IDataModel}. If this fails, or if the Class is not an interface,
+	 * then this method is equavalent to
+	 * <code>createDataModel(aClass.getName())</code>.
 	 * </p>
 	 * 
-	 * @param dataModelProviderClass
-	 *            the class whose name is the id of the IDataModelProvider
+	 * @param aClass
+	 *            an {@link IDataModelProperties}.class or the class whose name
+	 *            is the id of the IDataModelProvider
 	 * @return a new IDataModel
 	 */
-	public static IDataModel createDataModel(Class dataModelProviderClass) {
-		return createDataModel(dataModelProviderClass.getName());
+	public static IDataModel createDataModel(Class aClass) {
+		if(aClass.isInterface()){
+				try{
+					Class clazz = (Class)aClass.getField("_provider_class").get(null);
+					if(clazz != null){
+						IDataModelProvider provider = (IDataModelProvider)clazz.newInstance();
+						return createDataModel(provider);
+					}
+				} catch (NoSuchFieldException e) {
+					//ignore; the interface may not have defined the field and is relying on extensions.
+				} catch (IllegalArgumentException e) {
+					Logger.getLogger().logError(e);
+				} catch (SecurityException e) {
+					Logger.getLogger().logError(e);
+				} catch (IllegalAccessException e) {
+					Logger.getLogger().logError(e);
+				} catch (InstantiationException e) {
+					Logger.getLogger().logError(e);
+				}  
+		}
+		return createDataModel(aClass.getName());
 	}
 
 	/**
