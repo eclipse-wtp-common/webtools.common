@@ -20,10 +20,12 @@ import org.eclipse.wst.common.componentcore.internal.StructureEdit;
  */
 public interface IModuleConstants {
 	
+	public static final String DOT_SETTINGS =  ".settings"; //$NON-NLS-1$
+	
 	public final static String COMPONENT_FILE_NAME = ".component"; //$NON-NLS-1$
-	public final static Path COMPONENT_FILE_PATH = new Path(StructureEdit.MODULE_META_FILE_NAME); //$NON-NLS-1$
+	public final static Path COMPONENT_FILE_PATH = new Path(StructureEdit.MODULE_META_FILE_NAME);
     public final static String WTPMODULE_FILE_NAME = ".wtpmodules"; //$NON-NLS-1$
-	public final static Path WTPMODULE_FILE_PATH = new Path(WTPMODULE_FILE_NAME); //$NON-NLS-1$
+	public final static Path WTPMODULE_FILE_PATH = new Path(WTPMODULE_FILE_NAME);
 	public final static String MODULE_PLUG_IN_ID = "org.eclipse.wst.common.modulecore"; //$NON-NLS-1$
 	public final static String MODULE_NATURE_ID = "org.eclipse.wst.common.modulecore.ModuleCoreNature"; //$NON-NLS-1$
 
