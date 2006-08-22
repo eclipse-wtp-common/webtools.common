@@ -14,11 +14,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.core.internal.content.ContentTypeManager;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.content.IContentType;
+import org.eclipse.core.runtime.content.IContentTypeManager;
 
 /**
  * Scope that has filterers files based on content types. It can limit other
@@ -77,8 +78,8 @@ public class ContentTypeSearchScope extends SearchScopeImpl
 								.hasNext();)
 						{
 							String contentId = (String) iter.next();
-							IContentType supportedContentType = ContentTypeManager
-									.getInstance().getContentType(contentId);
+							IContentTypeManager contentTypeManager = Platform.getContentTypeManager();
+							IContentType supportedContentType = contentTypeManager.getContentType(contentId);
 							if (supportedContentType != null)
 							{
 								if (contentType.isKindOf(supportedContentType))
