@@ -10,8 +10,10 @@
  *******************************************************************************/
 package org.eclipse.wst.internet.cache.internal;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Hashtable;
@@ -153,7 +155,48 @@ public class LicenseAcceptanceDialog extends IconAndMessageDialog
 	  final Browser browser = new Browser(licenseTextComposite, SWT.BORDER);
 	  gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 	  //gd.heightHint = 400;
-	  browser.setUrl(licenseURL);
+	  
+	  // The browser widget has problems loading files stored in jars
+	  // so we read from the jar and set the browser text ourselves.
+	  // See bug 154721.
+	  if(licenseURL.startsWith("jar:"))
+	  {
+		  InputStream licenseStream = null;
+		  InputStreamReader isreader = null;
+		  BufferedReader breader = null;
+		  try
+		  {
+		  URL browserURL = new URL(licenseURL);
+		  licenseStream = browserURL.openStream();
+		  isreader = new InputStreamReader(licenseStream);
+		  breader = new BufferedReader(isreader);
+		  String str;
+		  StringBuffer sb = new StringBuffer();
+		  while((str = breader.readLine())!=null){
+		      sb.append(str);
+		  }
+		  browser.setText(sb.toString());
+		  }
+		  finally
+		  {
+			  if(licenseStream != null)
+			  {
+				  licenseStream.close();
+			  }
+			  if(isreader != null)
+			  {
+				  isreader.close();
+			  }
+			  if(breader != null)
+			  {
+				  breader.close();
+			  }
+		  }
+	  }
+	  else
+	  {
+		  browser.setUrl(licenseURL);
+	  }
 	  browser.setLayoutData(gd);
 	  browser.addProgressListener(new ProgressListener(){
 
