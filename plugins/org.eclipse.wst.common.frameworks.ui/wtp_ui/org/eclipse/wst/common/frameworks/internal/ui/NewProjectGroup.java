@@ -103,10 +103,10 @@ public class NewProjectGroup implements IProjectCreationPropertiesNew {
 		projectGroup.setLayout(layout);
 		projectGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		projectGroup.setFont(font);
-		projectGroup.setText(IDEWorkbenchMessages.WizardNewProjectCreationPage_projectContentsLabel);
+		projectGroup.setText(InternalCommonWorkbenchMessages.WizardNewProjectCreationPage_projectContentsLabel);
 
 		final Button useDefaultsButton = new Button(projectGroup, SWT.CHECK | SWT.RIGHT);
-		useDefaultsButton.setText(IDEWorkbenchMessages.WizardNewProjectCreationPage_useDefaultLabel);
+		useDefaultsButton.setText(InternalCommonWorkbenchMessages.WizardNewProjectCreationPage_useDefaultLabel);
 		useDefaultsButton.setFont(font);
 		synchHelper.synchCheckbox(useDefaultsButton, USE_DEFAULT_LOCATION, null);
 
@@ -122,7 +122,7 @@ public class NewProjectGroup implements IProjectCreationPropertiesNew {
 		// location label
 		final Label locationLabel = new Label(projectGroup, SWT.NONE);
 		locationLabel.setFont(font);
-		locationLabel.setText(IDEWorkbenchMessages.WizardNewProjectCreationPage_locationLabel);
+		locationLabel.setText(InternalCommonWorkbenchMessages.WizardNewProjectCreationPage_locationLabel);
 
 		// project location entry field
 		locationPathField = new Text(projectGroup, SWT.BORDER);
