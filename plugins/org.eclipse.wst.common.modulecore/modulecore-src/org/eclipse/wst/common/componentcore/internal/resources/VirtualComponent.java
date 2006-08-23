@@ -37,6 +37,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
+import org.eclipse.wst.common.frameworks.internal.HashUtil;
 
 
 public class VirtualComponent implements IVirtualComponent {
@@ -51,6 +52,9 @@ public class VirtualComponent implements IVirtualComponent {
 	}
 	
 	public VirtualComponent(IProject aProject, IPath aRuntimePath) {
+		if(aProject == null){
+			throw new NullPointerException();
+		}
 		componentProject = aProject;
 		runtimePath = aRuntimePath;
 		rootFolder = ComponentCore.createFolder(componentProject, new Path("/")); //$NON-NLS-1$
@@ -361,14 +365,20 @@ public class VirtualComponent implements IVirtualComponent {
 		}	
 	}
 
+	public int hashCode() {
+		int hash = HashUtil.SEED;
+		hash = HashUtil.hash(hash, getProject().getName());
+		hash = HashUtil.hash(hash, getName());
+		hash = HashUtil.hash(hash, isBinary());
+		return hash;
+	}
 	
 	public boolean equals(Object anOther) { 
 		if(anOther instanceof IVirtualComponent) {
 			IVirtualComponent otherComponent = (IVirtualComponent) anOther;
-			return getProject() !=null && 
-					getProject().equals(otherComponent.getProject()) && 
-					getName().equals(otherComponent.getName()) && 
-					isBinary() == otherComponent.isBinary();
+			return getProject().equals(otherComponent.getProject()) && 
+				   getName().equals(otherComponent.getName()) && 
+				   isBinary() == otherComponent.isBinary();
 		}
 		return false;
 	}
@@ -492,5 +502,9 @@ public class VirtualComponent implements IVirtualComponent {
 			if(core != null)
 				core.dispose();
 		}		
+	}
+	
+	public String toString() {
+		return componentProject.toString();
 	}
 }

@@ -28,6 +28,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
+import org.eclipse.wst.common.frameworks.internal.HashUtil;
 
 
 public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
@@ -56,6 +57,9 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 
 
 	public VirtualArchiveComponent(IProject aComponentProject,String archiveLocation, IPath aRuntimePath) {
+		if(aComponentProject == null){
+			throw new NullPointerException();
+		}
 		componentProject = aComponentProject;
 		runtimePath = aRuntimePath;
 
@@ -190,6 +194,14 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 		return archiveType;
 	}
 
+	public int hashCode() {
+		int hash = HashUtil.SEED;
+		hash = HashUtil.hash(hash, getProject().getName());
+		hash = HashUtil.hash(hash, getName());
+		hash = HashUtil.hash(hash, isBinary());
+		return hash;
+	}
+	
 	public boolean equals(Object anOther) {
 		if (anOther instanceof VirtualArchiveComponent) {
 			VirtualArchiveComponent otherComponent = (VirtualArchiveComponent) anOther;
@@ -243,4 +255,11 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 		return diskFile;
 	}
 
+	public String toString() {
+		if(archivePath != null){
+			return componentProject + " " +archivePath;
+		}
+		return super.toString();
+	}
+	
 }
