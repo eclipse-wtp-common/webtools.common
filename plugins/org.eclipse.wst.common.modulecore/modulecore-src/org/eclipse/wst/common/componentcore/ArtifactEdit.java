@@ -620,6 +620,8 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	}
 
 	public Object getAdapter(Class adapterType) {
+		if (adapterType == ArtifactEditModel.class)
+			return getArtifactEditModel();
 		return Platform.getAdapterManager().getAdapter(this, adapterType);
 	}
 
