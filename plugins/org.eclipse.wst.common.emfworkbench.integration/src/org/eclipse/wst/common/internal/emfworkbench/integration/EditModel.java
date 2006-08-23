@@ -148,39 +148,45 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 		return disposing;
 	}
 
+	
+	/**
+	 * Subclasses should not override this method. This method will be made
+	 * final in the next release. Subclasses should override doDispose() as
+	 * necessary to dispose any additional artifacts.
+	 */
 	public void dispose() {
-		startDispose();
-		doDispose();
-	}
-
-	private void startDispose() {
-		if (disposing || disposed)
-			return;
-		disposing = true;
-	}
-
-	private void doDispose() {
 		try {
+			if (disposing || disposed)
+				return;
+			disposing = true;
+		
+			if (hasListeners())
+				notifyListeners(new EditModelEvent(EditModelEvent.PRE_DISPOSE, this));
+			
 			releaseResources();
 
 			if (commandStack != null)
 				commandStack.removeCommandStackListener(this);
-			if (hasListeners())
-				notifyListeners(new EditModelEvent(EditModelEvent.PRE_DISPOSE, this));
 			if (getEmfContext() != null)
 				getEmfContext().removeEditModel(this, isReadOnly());
 			releasePreloadResources();
 			releaseIdentifiers();
-
+			doDispose();
+		} catch (RuntimeException re) {
+			Logger.getLogger().logError(re);
+		} finally {
 			emfContext = null;
 			resources = null;
 			project = null;
-		} catch (RuntimeException re) {
-			re.printStackTrace();
-		} finally {
 			disposed = true;
 			disposing = false;
 		}
+	}
+
+	/**
+	 * Subclasses should override as necessary
+	 */
+	protected void doDispose() {
 	}
 
 	protected void releaseIdentifiers() {
@@ -660,13 +666,11 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	}
 
 	protected void resourceIsLoadedChanged(Resource aResource, boolean oldValue, boolean newValue) {
-		if (!isReverting && hasListeners()) {
+		if (!isReverting && !disposing && hasListeners()) {
 			int eventCode = newValue ? EditModelEvent.LOADED_RESOURCE : EditModelEvent.UNLOADED_RESOURCE;
 			EditModelEvent evt = new EditModelEvent(eventCode, this);
 			evt.addResource(aResource);
-			if (!disposing) {
-				notifyListeners(evt);
-			}
+			notifyListeners(evt);
 		}
 	}
 
@@ -961,10 +965,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 			boolean shouldDispose = false;
 			shouldDispose = registry.size() == 0;
 			if (shouldDispose) {
-				startDispose();
-			}
-			if (shouldDispose) {
-				doDispose();
+				dispose();
 			}
 		}
 	}

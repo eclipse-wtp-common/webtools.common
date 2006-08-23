@@ -57,20 +57,21 @@ public class ComposedEditModel extends EditModel implements EditModelListener {
 			cachedKeys.add(newKey);
 	}
 
-	public void dispose() {
-		disposing = true;
-		if (commandStack != null)
-			commandStack.removeCommandStackListener(this);
-		if (hasListeners())
-			notifyListeners(new EditModelEvent(EditModelEvent.PRE_DISPOSE, this));
-		releasePreloadResources();
-		releaseIdentifiers();
-		emfContext = null; 
-		resources = null;
-		disposing = false;
-		project = null;
-		cachedKeys = new ArrayList();
-	}
+	// Is this necessary anymore?  The only diff seems to be it doesn't release resources
+//	public void dispose() {
+//		disposing = true;
+//		if (commandStack != null)
+//			commandStack.removeCommandStackListener(this);
+//		if (hasListeners())
+//			notifyListeners(new EditModelEvent(EditModelEvent.PRE_DISPOSE, this));
+//		releasePreloadResources();
+//		releaseIdentifiers();
+//		emfContext = null; 
+//		resources = null;
+//		disposing = false;
+//		project = null;
+//		cachedKeys = new ArrayList();
+//	}
 
 	public EditModel.Reference addChild(String editModelID, Map params, Object accessorKey) {
 		return addChild(editModelID, params, ComposedAccessorKey.getComposedAccessorKey(accessorKey, this));

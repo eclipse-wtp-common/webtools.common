@@ -412,4 +412,10 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 		autoloadResourcesExts.remove(extension);
 	}
 
+	public void dispose() {
+		super.dispose();
+		currentProjectDelta = null;
+		extenders = null;
+	}
+
 }

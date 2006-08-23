@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.impl.PlatformURLModuleConnection;
@@ -304,15 +305,15 @@ public class ArtifactEditModel extends EditModel implements IAdaptable, IFaceted
 		
 	}
 	
-	public void dispose() {
+	protected void doDispose() {
 		//Remove the listener from the faceted project
 		try {
 			IFacetedProject facetProj = ProjectFacetsManager.create(getComponentProject());
 			if (facetProj != null)
 				facetProj.removeListener(this);
 		} catch (Exception e) {
-			e.printStackTrace();
+			Logger.getLogger().logError(e);
 		}
-		super.dispose();
+		super.doDispose();
 	}
 }
