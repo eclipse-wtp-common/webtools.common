@@ -19,7 +19,7 @@ Export-Package: org.eclipse.jem.internal.util.emf.workbench;x-friends:="org.ecli
 Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.2.0,4.0.0)",
  org.eclipse.core.resources;bundle-version="[3.2.0,4.0.0)",
  org.eclipse.emf.ecore;bundle-version="[2.2.0,3.0.0)",
- org.eclipse.emf.ecore.xmi;bundle-version="[3.2.0,4.0.0)",
+ org.eclipse.emf.ecore.xmi;bundle-version="[2.2.0,3.0.0)",
  org.eclipse.perfmsr.core;resolution:=optional,
  com.ibm.icu;bundle-version="[3.4.4.1,4.0.0)"
 Eclipse-LazyStart: true
