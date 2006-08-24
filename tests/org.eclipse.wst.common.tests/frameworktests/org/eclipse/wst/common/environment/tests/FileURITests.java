@@ -102,19 +102,25 @@ public class FileURITests extends TestCase
   
   private void deleteFiles( File directory )
   {
-    File[] children = directory.listFiles();
-    
-    for( int index = 0; index < children.length; index++ )
-    {
-      File child = children[index];
-      
-      if( child.isDirectory() )
-      {
-        deleteFiles( child );
-      }
-      
-      child.delete();
-    }
+	if (directory != null) {
+			File[] children = directory.listFiles();
+
+			/*
+			 * If 'directory' is not a directory, directory.listFiles can
+			 * return null.
+			 */
+			if (children != null) {
+				for (int index = 0; index < children.length; index++) {
+					File child = children[index];
+
+					if (child.isDirectory()) {
+						deleteFiles(child);
+					}
+
+					child.delete();
+				}
+			}
+		}
   }
   
   private String getTmpFileURL( String fileName )
