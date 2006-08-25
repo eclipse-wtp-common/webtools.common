@@ -61,7 +61,7 @@ public class RemoveReferenceComponentOperation extends AbstractDataModelOperatio
 			IVirtualReference ref = sourceComp.getReference(comp.getName());
 			if( ref != null && ref.getReferencedComponent() != null && ref.getReferencedComponent().isBinary()){
 				removeRefereneceInComponent(sourceComp, ref);
-			}else{
+			}else if(ref != null){
 				if (Arrays.asList(comp.getReferencingComponents()).contains(sourceComp)) {
 					
 					String deployPath = model.getStringProperty( ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH );
