@@ -121,7 +121,7 @@
          <attribute name="class" type="string">
             <annotation>
                <documentation>
-                  An implementor of org.eclipse.wst.common.snippets.ui.ISnippetsInsertion, it controls most of the interaction between the Snippets view and the rest of the workbench.  It may be asked to insert the item into an editor by itself or provide information to control the Snippets view&apos;s drag and drop behavior.  When one is not specified, org.eclipse.wst.common.snippets.insertions.VariableInsertion will be used.  It provides querying for user-supplied values for variables and a simple text preview pane when inserting text into an editor.  For drag and drop, it provides a SWT Transfer type that is usually associated with org.eclipse.wst.common.snippets.dnd.VariableTextDropAction.  This drop action class will open the same variable querying and preview capable dialog when the OS-level drag and drop operation is completed.
+                  An implementor of org.eclipse.wst.common.snippets.ui.ISnippetInsertion, although subclassing org.eclipse.wst.common.snippets.ui.DefaultSnippetInsertion is encouraged.  It controls most of the interaction between the Snippets view and the rest of the workbench.  It may be asked to insert the item into an editor by itself or provide information to control the Snippets view&apos;s drag and drop behavior.  When one is not specified, org.eclipse.wst.common.snippets.ui.DefaultSnippetInsertion will be used.  It provides querying for user-supplied values for variables and a simple text preview pane when inserting text into an editor.
                </documentation>
             </annotation>
          </attribute>
