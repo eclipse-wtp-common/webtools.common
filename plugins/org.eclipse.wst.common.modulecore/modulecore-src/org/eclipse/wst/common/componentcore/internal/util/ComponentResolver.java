@@ -12,6 +12,7 @@
 package org.eclipse.wst.common.componentcore.internal.util;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 
 import org.eclipse.core.resources.IFile;
@@ -33,6 +34,7 @@ public class ComponentResolver implements URIResolverExtension {
 	private static final String FILE_PROTOCOL = "file:///"; //$NON-NLS-1$
 	private static final String FILE_PROTOCOL2 = "file://"; //$NON-NLS-1$
 	private static final String ROOT_PATH_STRING = Path.ROOT.toString(); //$NON-NLS-1$
+	private static final String HTTP_PROTOCOL = "http:"; //$NON-NLS-1$
 
 	/**
 	 * Various resolvers disagree on how many preceding slashes should
@@ -46,8 +48,24 @@ public class ComponentResolver implements URIResolverExtension {
 	 */
 	private IFile recalculateFile(String uri) {
 		IFile file = null;
-		if (uri != null) {
-			String location = null;
+		String location = null;
+
+		long time0 = -1;
+		if (uri.startsWith(HTTP_PROTOCOL)) {
+			if (_DEBUG)
+				time0 = System.currentTimeMillis();
+			IFile files[] = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI(URI.create(uri));
+			for (int i = 0; i < files.length && file == null; i++) {
+				if (files[i].isAccessible()) {
+					file = files[i];
+				}
+			}
+			if (_DEBUG)
+				System.out.println("\"" + uri + "\" findFilesForLocationURI:" + (System.currentTimeMillis() - time0));
+			if (_DEBUG)
+				time0 = System.currentTimeMillis();
+		}
+		else {
 			if (uri.startsWith(FILE_PROTOCOL)) {
 				location = uri.substring(FILE_PROTOCOL.length());
 			}
@@ -65,6 +83,8 @@ public class ComponentResolver implements URIResolverExtension {
 				}
 			}
 		}
+		if (_DEBUG)
+			System.out.println("\"" + location + "\" findFilesForLocation:" + (System.currentTimeMillis() - time0));
 		return file;
 	}
 
@@ -76,16 +96,24 @@ public class ComponentResolver implements URIResolverExtension {
 		 * Check for a system reference; without one, there's no point in
 		 * continuing.
 		 */
-		if (systemId == null) {
+		if (systemId == null || systemId.length() == 0) {
 			if (_DEBUG) {
 				System.out.println(" (no system reference)"); //$NON-NLS-1$
 			}
 			return null;
 		}
+
 		/* Recompute the IFile, if needed, from the base location. */
-		if (file == null && baseLocation != null) {
+		if (file == null) {
+			if (baseLocation == null || baseLocation.length() == 0) {
+				if (_DEBUG) {
+					System.out.println(" (no base location or file given)"); //$NON-NLS-1$
+				}
+				return null;
+			}
 			file = recalculateFile(baseLocation);
 		}
+		
 		/*
 		 * If a workspace IFile is (still) not the base point of reference,
 		 * don't continue.
@@ -102,7 +130,7 @@ public class ComponentResolver implements URIResolverExtension {
 			URL testURL = new URL(systemId);
 			if (testURL != null) {
 				if (_DEBUG) {
-					System.out.println(" (reference is a URL)"); //$NON-NLS-1$
+					System.out.println(" (reference is already a URL)"); //$NON-NLS-1$
 				}
 				return null;
 			}
@@ -124,7 +152,7 @@ public class ComponentResolver implements URIResolverExtension {
 		boolean prependFilePrefix2 = baseLocation.startsWith(FILE_PROTOCOL2) && baseLocation.length() > 8;
 
 		String resolvedPath = null;
-		
+
 		IVirtualResource[] virtualResources = null;
 		try {
 			virtualResources = ComponentCore.createResources(file);
