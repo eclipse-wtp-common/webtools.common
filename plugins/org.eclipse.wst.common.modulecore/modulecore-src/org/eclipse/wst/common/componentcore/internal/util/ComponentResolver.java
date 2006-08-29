@@ -40,7 +40,7 @@ public class ComponentResolver implements URIResolverExtension {
 	 * Various resolvers disagree on how many preceding slashes should
 	 * actually be used. On Win32, 2 slashes results in a URL object where the
 	 * volume is stripped out of the file path as the host name, but on Unix 2
-	 * is the correct number. On Win32. java.io.File.toURL adds only 1 slash,
+	 * is the correct number. On Win32, java.io.File.toURL adds only 1 slash,
 	 * and on Unix it adds 2.
 	 * 
 	 * @param uri
@@ -51,19 +51,19 @@ public class ComponentResolver implements URIResolverExtension {
 		String location = null;
 
 		long time0 = -1;
+		if (_DEBUG)
+			time0 = System.currentTimeMillis();
 		if (uri.startsWith(HTTP_PROTOCOL)) {
-			if (_DEBUG)
-				time0 = System.currentTimeMillis();
 			IFile files[] = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI(URI.create(uri));
 			for (int i = 0; i < files.length && file == null; i++) {
 				if (files[i].isAccessible()) {
 					file = files[i];
 				}
 			}
-			if (_DEBUG)
+			if (_DEBUG) {
 				System.out.println("\"" + uri + "\" findFilesForLocationURI:" + (System.currentTimeMillis() - time0));
-			if (_DEBUG)
 				time0 = System.currentTimeMillis();
+			}
 		}
 		else {
 			if (uri.startsWith(FILE_PROTOCOL)) {
@@ -92,9 +92,10 @@ public class ComponentResolver implements URIResolverExtension {
 		if (_DEBUG) {
 			System.out.print("ComponentResolver: resolve \"[{" + publicId + "}{" + systemId + "}]\" from \"" + baseLocation + "\""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		}
+		// argument sanity checks
 		/*
 		 * Check for a system reference; without one, there's no point in
-		 * continuing.
+		 * continuing (we can't resolve just a public identifier).
 		 */
 		if (systemId == null || systemId.length() == 0) {
 			if (_DEBUG) {
@@ -106,6 +107,10 @@ public class ComponentResolver implements URIResolverExtension {
 		/* Recompute the IFile, if needed, from the base location. */
 		if (file == null) {
 			if (baseLocation == null || baseLocation.length() == 0) {
+				/*
+				 * We can't proceed if we lack both an IFile and a system
+				 * reference
+				 */
 				if (_DEBUG) {
 					System.out.println(" (no base location or file given)"); //$NON-NLS-1$
 				}
@@ -113,7 +118,7 @@ public class ComponentResolver implements URIResolverExtension {
 			}
 			file = recalculateFile(baseLocation);
 		}
-		
+
 		/*
 		 * If a workspace IFile is (still) not the base point of reference,
 		 * don't continue.
