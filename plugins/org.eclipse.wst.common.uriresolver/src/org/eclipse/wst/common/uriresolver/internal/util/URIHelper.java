@@ -28,7 +28,38 @@ public class URIHelper
   protected static final String FILE_PROTOCOL = "file:";
   protected static final String PLATFORM_RESOURCE_PROTOCOL = "platform:/resource/";
   protected static final String PROTOCOL_PATTERN = ":"; 
-
+  
+  
+  public static String ensureURIProtocolFormat(String uri) {
+	  String protocol = getProtocol(uri);
+	  if (protocol.equals(FILE_PROTOCOL)) {
+		  return ensureFileURIProtocolFormat(uri);
+	  } else {
+		  return uri;
+	  }
+  }
+  
+  
+  /**
+   * This method takes a file URI in String format and ensures the protocol is followed by three slashes.
+   * For example, files "file:D:/XXX", "file:/D:/XXX" and "file://D:/XXX" are corrected to:
+   * "file:///D:/XXX".
+   * If the input is not a file URI (does not start with "file:"), the String is returned unmodified.
+   */
+  public static String ensureFileURIProtocolFormat(String uri) {
+      if (uri.startsWith(FILE_PROTOCOL) && !uri.startsWith(FILE_PROTOCOL + "///")) //$NON-NLS-1$
+      {
+      	if (uri.startsWith(FILE_PROTOCOL + "//")) {
+      		uri = FILE_PROTOCOL + "/" + uri.substring(FILE_PROTOCOL.length()); //$NON-NLS-1$
+      	} else if (uri.startsWith(FILE_PROTOCOL + "/")) {
+      		uri = FILE_PROTOCOL + "//" + uri.substring(FILE_PROTOCOL.length()); //$NON-NLS-1$
+      	} else {
+      		uri = FILE_PROTOCOL + "///" + uri.substring(FILE_PROTOCOL.length()); //$NON-NLS-1$
+      	}
+      }
+     return uri;
+  }
+  
   public static String normalize(String uri)
   {                           
     if (uri != null)
