@@ -206,7 +206,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 						executionMap |= 0x10;
 					return referenced;
 				}
-				EnabledIncrementalValidatorsOperation operation = new EnabledIncrementalValidatorsOperation(project, delta, false);
+				EnabledIncrementalValidatorsOperation operation = new EnabledIncrementalValidatorsOperation(project, delta, true);
 				operation.run(monitor);
 			}
 			return referenced;

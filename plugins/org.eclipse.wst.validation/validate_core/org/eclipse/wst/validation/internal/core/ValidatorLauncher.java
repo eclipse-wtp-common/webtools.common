@@ -129,7 +129,6 @@ public class ValidatorLauncher {
 			}
 			mgr.clearMessages( (IValidatorJob)validator );
 		}
-		validator.cleanup(reporter);
 
 	}
 	
