@@ -226,11 +226,14 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 	}
 
 	public File getUnderlyingDiskFile() {
-		String osPath = "";
+		String osPath = null;
 		IPath loc = null;
 		if (getArchiveType().equals(VirtualArchiveComponent.VARARCHIVETYPE)) {
-			IPath resolvedpath = (IPath) getAdapter(VirtualArchiveComponent.ADAPTER_TYPE);
-			osPath = resolvedpath.toOSString();
+			Object adapted = getAdapter(VirtualArchiveComponent.ADAPTER_TYPE);
+			if (adapted instanceof IPath) {
+				IPath resolvedpath = (IPath) adapted;
+				osPath = resolvedpath.toOSString();
+			} 
 		} else if(!archivePath.isAbsolute()) {
 			IFile file = getProject().getFile(archivePath);
 			if(file.exists())
@@ -240,17 +243,14 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 				if(file.exists())
 					loc = file.getLocation();
 			}
-			
-			// this is not a file on the local filesystem
-			if(loc == null)  
-				return null;
-			else {
+			// this is a file on the local filesystem
+			if(loc != null)  
 				osPath = loc.toOSString();
-			}
-			
 		} else {
 			osPath = archivePath.toOSString();
 		}
+		if (osPath==null || osPath.length()==0)
+			return null;
 		File diskFile = new File(osPath);
 		return diskFile;
 	}
