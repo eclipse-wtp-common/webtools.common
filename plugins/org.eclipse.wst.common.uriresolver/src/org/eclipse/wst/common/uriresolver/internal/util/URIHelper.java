@@ -30,6 +30,16 @@ public class URIHelper
   protected static final String PROTOCOL_PATTERN = ":"; 
   
   
+  public static String ensureURIProtocolFormat(String uri) {
+	  String protocol = getProtocol(uri);
+	  if (protocol.equals(FILE_PROTOCOL)) {
+		  return ensureFileURIProtocolFormat(uri);
+	  } else {
+		  return uri;
+	  }
+  }
+  
+  
   /**
    * This method takes a file URI in String format and ensures the protocol is followed by three slashes.
    * For example, files "file:D:/XXX", "file:/D:/XXX" and "file://D:/XXX" are corrected to:
