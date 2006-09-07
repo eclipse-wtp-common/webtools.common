@@ -323,8 +323,17 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		return getArtifactEditModelForRead(aModuleURI, anAccessorKey, null);
 	}
 	
-	public ArtifactEditModel getArtifactEditModelForRead(URI aModuleURI, Object anAccessorKey, String projectType) {
-		Map params = new HashMap();
+	/**
+	 * @param aModuleURI - used to lookup project
+	 * @param anAccessorKey - used to set client accessor
+	 * @param projectType - used to determine editmodel factory
+	 * @param params - passed for specialized processing in factory
+	 * @return ArtifactEditModel instance
+	 */
+	public ArtifactEditModel getArtifactEditModelForRead(URI aModuleURI, Object anAccessorKey, String projectType, Map params) {
+		
+		if (params == null)
+			params = new HashMap();
 		params.put(ArtifactEditModelFactory.PARAM_MODULE_URI, aModuleURI);
 		if (projectType !=null)
 			return (ArtifactEditModel) getEditModelForRead(projectType, anAccessorKey, params);
@@ -351,6 +360,11 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 			ModulecorePlugin.logError(Status.ERROR, ModuleCoreMessages.Acquiring_ArtifactEdit_For_Read_Exception, e);
 		}
 		return null;
+	}
+	
+	public ArtifactEditModel getArtifactEditModelForRead(URI aModuleURI, Object anAccessorKey, String projectType) {
+		Map params = new HashMap();
+		return getArtifactEditModelForRead(aModuleURI, anAccessorKey, projectType, params);
 	}
 
 	/**
@@ -409,8 +423,17 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	public ArtifactEditModel getArtifactEditModelForWrite(URI aModuleURI, Object anAccessorKey) {
 		return getArtifactEditModelForWrite(aModuleURI, anAccessorKey, null);
 	}
-	public ArtifactEditModel getArtifactEditModelForWrite(URI aModuleURI, Object anAccessorKey, String projectType) {
-		Map params = new HashMap();
+	/**
+	 * @param aModuleURI - used to lookup project
+	 * @param anAccessorKey - used to set client accessor
+	 * @param projectType - used to determine editmodel factory
+	 * @param params - passed for specialized processing in factory
+	 * @return ArtifactEditModel instance
+	 */
+	public ArtifactEditModel getArtifactEditModelForWrite(URI aModuleURI, Object anAccessorKey, String projectType, Map params) {
+		
+		if (params == null)
+			params = new HashMap();
 		params.put(ArtifactEditModelFactory.PARAM_MODULE_URI, aModuleURI);
 		if (projectType != null)
 			return  (ArtifactEditModel) getEditModelForWrite(projectType, anAccessorKey, params);
@@ -437,6 +460,10 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 			ModulecorePlugin.logError(Status.ERROR, ModuleCoreMessages.Acquiring_ArtifactEdit_For_Write_Exception, e);
 		}
 		return null;
+	}
+	public ArtifactEditModel getArtifactEditModelForWrite(URI aModuleURI, Object anAccessorKey, String projectType) {
+		Map params = new HashMap();
+		return getArtifactEditModelForWrite(aModuleURI, anAccessorKey, projectType, params);
 	}
 
 	public String getNatureID() {
