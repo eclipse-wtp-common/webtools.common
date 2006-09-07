@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -30,7 +31,13 @@ import org.eclipse.jem.util.logger.proxy.Logger;
  */
 public class ProjectUtility {
     public static IProject[] getAllProjects() {
-        return ResourcesPlugin.getWorkspace().getRoot().getProjects();
+    	IProject[] projects = new IProject[0];
+    	try {
+        projects =  ResourcesPlugin.getWorkspace().getRoot().getProjects();
+    	} catch (AssertionFailedException ex) {
+    		// Catch Malformed tree exception that occurs from time to time...
+    	}
+    	return projects;
     }
     public static boolean projectExists(String projectName) {
         return getProject(projectName) != null;
