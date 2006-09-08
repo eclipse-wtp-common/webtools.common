@@ -52,7 +52,9 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 	 * be exposed to clients. Subclasses should initialize this Collection in
 	 * their init() methods
 	 */
-	protected static final String REQUIRED_FACETS_COLLECTION = "FacetProjectCreationDataModelProvider.REQUIRED_FACETS_COLLECTION";
+	public static final String REQUIRED_FACETS_COLLECTION = "FacetProjectCreationDataModelProvider.REQUIRED_FACETS_COLLECTION";
+	
+	public static final String FORCE_VERSION_COMPLIANCE = "FacetProjectCreationDataModelProvider.FORCE_VERSION_COMPLIANCE";
 	
 	public FacetProjectCreationDataModelProvider() {
 		super();
@@ -65,6 +67,7 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 		names.add(FACET_ACTION_MAP);
 		names.add(FACET_RUNTIME);
 		names.add(REQUIRED_FACETS_COLLECTION);
+		names.add(FORCE_VERSION_COMPLIANCE);
 		return names;
 	}
 
@@ -242,21 +245,23 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 				}
 			}
 			if (runtime != null) {
-				Map facetDMs = (Map) getProperty(FACET_DM_MAP);
-
-				for (Iterator iterator = facetDMs.values().iterator(); iterator.hasNext();) {
-					IDataModel facetDataModel = (IDataModel) iterator.next();
-					IProjectFacet facet = ProjectFacetsManager.getProjectFacet((String) facetDataModel.getProperty(IFacetDataModelProperties.FACET_ID));
-
-					try {
-						IDataModel facetModel = ((FacetDataModelMap) facetDMs).getFacetDataModel(facet.getId());
-						IProjectFacetVersion oldVersion = (IProjectFacetVersion) facetModel.getProperty(IFacetDataModelProperties.FACET_VERSION);
-						IProjectFacetVersion newVersion = facet.getLatestSupportedVersion(runtime);
-						if (newVersion != null && (oldVersion == null || oldVersion.getVersionString().compareTo(newVersion.getVersionString()) > 0 || !runtime.supports(oldVersion))) {
-							facetModel.setProperty(IFacetDataModelProperties.FACET_VERSION, newVersion);
+				if(getBooleanProperty(FORCE_VERSION_COMPLIANCE)){
+					Map facetDMs = (Map) getProperty(FACET_DM_MAP);
+	
+					for (Iterator iterator = facetDMs.values().iterator(); iterator.hasNext();) {
+						IDataModel facetDataModel = (IDataModel) iterator.next();
+						IProjectFacet facet = ProjectFacetsManager.getProjectFacet((String) facetDataModel.getProperty(IFacetDataModelProperties.FACET_ID));
+	
+						try {
+							IDataModel facetModel = ((FacetDataModelMap) facetDMs).getFacetDataModel(facet.getId());
+							IProjectFacetVersion oldVersion = (IProjectFacetVersion) facetModel.getProperty(IFacetDataModelProperties.FACET_VERSION);
+							IProjectFacetVersion newVersion = facet.getLatestSupportedVersion(runtime);
+							if (newVersion != null && (oldVersion == null || oldVersion.getVersionString().compareTo(newVersion.getVersionString()) > 0 || !runtime.supports(oldVersion))) {
+								facetModel.setProperty(IFacetDataModelProperties.FACET_VERSION, newVersion);
+							}
+						} catch (CoreException e) {
+							Logger.getLogger().logError(e);
 						}
-					} catch (CoreException e) {
-						Logger.getLogger().logError(e);
 					}
 				}
 			}
@@ -277,6 +282,8 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 			Collection c = new ArrayList();
 			setProperty(REQUIRED_FACETS_COLLECTION, c);
 			return c;
+		} else if(FORCE_VERSION_COMPLIANCE.equals(propertyName)){
+			return Boolean.TRUE;
 		}
 		return super.getDefaultProperty(propertyName);
 	}

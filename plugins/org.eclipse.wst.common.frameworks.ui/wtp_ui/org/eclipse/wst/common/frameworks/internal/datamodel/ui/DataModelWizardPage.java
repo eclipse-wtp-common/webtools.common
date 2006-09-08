@@ -403,6 +403,20 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 		isFirstTimeToPage = b;
 	}
 
+	private boolean gotDataModelWizard = false;
+	private DataModelWizard dataModelWizard = null;
+	protected DataModelWizard getDataModelWizard(){
+		if(!gotDataModelWizard){
+			gotDataModelWizard = true;
+			IWizard wizard = getWizard();
+			if(wizard instanceof DataModelWizard){
+				dataModelWizard = (DataModelWizard)wizard;
+			}
+		}
+		return dataModelWizard;
+	}
+	
+	
 	/*
 	 * If a property changes that we want to validate, force validation on this page.
 	 * 
@@ -410,12 +424,15 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 	 *      java.lang.Object, java.lang.Object)
 	 */
 	public void propertyChanged(DataModelEvent event) {
-		String propertyName = event.getPropertyName();
-		if (validationPropertyNames != null && (event.getFlag() == DataModelEvent.VALUE_CHG || (!isPageComplete() && event.getFlag() == DataModelEvent.VALID_VALUES_CHG))) {
-			for (int i = 0; i < validationPropertyNames.length; i++) {
-				if (validationPropertyNames[i].equals(propertyName)) {
-					validatePage(showValidationErrorsOnEnter());
-					break;
+		DataModelWizard w = getDataModelWizard();
+		if(w == null || !w.isExecuting()){
+			String propertyName = event.getPropertyName();
+			if (validationPropertyNames != null && (event.getFlag() == DataModelEvent.VALUE_CHG || (!isPageComplete() && event.getFlag() == DataModelEvent.VALID_VALUES_CHG))) {
+				for (int i = 0; i < validationPropertyNames.length; i++) {
+					if (validationPropertyNames[i].equals(propertyName)) {
+						validatePage(showValidationErrorsOnEnter());
+						break;
+					}
 				}
 			}
 		}
