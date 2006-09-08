@@ -34,6 +34,8 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.common.util.WrappedException;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -125,25 +127,53 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 		}
 	}
 
+	private ILock lock;
+	private static final long delay = 30;
+	
+    private ILock getLock() {
+        if (lock == null)
+            lock = Platform.getJobManager().newLock();
+        return lock;
+    }
+    
+    private void releaseLock() {
+        getLock().release();
+    }
+    private boolean aquireLock() throws InterruptedException{
+    	return getLock().acquire(delay);
+    }
+    
 	protected void acceptDelta(final IResourceChangeEvent event) {
 
-		final IResourceDelta delta = event.getDelta();
-
-		if (ResourcesPlugin.getWorkspace().isTreeLocked()) {
-			primAcceptDelta(delta, event);
-		}
-		else {
-			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
-				public void run(IProgressMonitor monitor) throws CoreException {
-					primAcceptDelta(delta, event);
-				}
-			};
-			try {
-				ResourcesPlugin.getWorkspace().run(runnable, project, IWorkspace.AVOID_UPDATE, null);
-			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		boolean hasLocked = false;
+		try {
+			hasLocked = aquireLock();
+		} catch (InterruptedException e) {
+			Logger.getLogger().write(e);
+		}		
+		
+		try{
+			final IResourceDelta delta = event.getDelta();
+	
+			if (ResourcesPlugin.getWorkspace().isTreeLocked()) {
+				primAcceptDelta(delta, event);
 			}
+			else {
+				IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+					public void run(IProgressMonitor monitor) throws CoreException {
+						primAcceptDelta(delta, event);
+					}
+				};
+				try {
+					ResourcesPlugin.getWorkspace().run(runnable, project, IWorkspace.AVOID_UPDATE, null);
+				} catch (CoreException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}finally{
+			if( hasLocked )
+				releaseLock();
 		}
 	}
 
