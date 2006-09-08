@@ -39,7 +39,6 @@ import org.eclipse.wst.common.componentcore.internal.operation.CreateReferenceCo
 import org.eclipse.wst.common.componentcore.internal.operation.RemoveReferenceComponentOperation;
 import org.eclipse.wst.common.componentcore.internal.operation.RemoveReferenceComponentsDataModelProvider;
 import org.eclipse.wst.common.componentcore.internal.resources.ResourceTimestampMappings;
-import org.eclipse.wst.common.componentcore.internal.resources.VirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
@@ -143,7 +142,7 @@ public class ComponentUtilities {
 				components.add(wbComp);
 			}
 		}
-		VirtualComponent[] temp = (VirtualComponent[]) components.toArray(new VirtualComponent[components.size()]);
+		IVirtualComponent[] temp = (IVirtualComponent[]) components.toArray(new IVirtualComponent[components.size()]);
 		return temp;
 	}
 	

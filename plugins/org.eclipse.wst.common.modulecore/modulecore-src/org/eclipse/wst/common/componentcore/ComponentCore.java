@@ -59,8 +59,9 @@ public class ComponentCore {
 	 * @see IVirtualContainer#create(int, IProgressMonitor)
 	 */
 	public static IVirtualComponent createComponent(IProject aProject) {
-		if (!ModuleCoreNature.isFlexibleProject(aProject))
+		if (aProject == null || !aProject.isAccessible()){
 			return null;
+		}
 		return ComponentImplManager.instance().createComponent(aProject);
 	}
 

@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.componentcore.ComponentCore;
+import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
 import org.eclipse.wst.common.componentcore.internal.util.ComponentUtilities;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
@@ -86,7 +87,7 @@ public class DependencyGraphManager {
 			IFile manifestFile = null;
 			if (projects[i]==null || !projects[i].isAccessible())
 				continue;
-			manifestFile = getManifestFile(projects[i]);
+			manifestFile = getTimeStampFile(projects[i]);
 			if (manifestFile != null) {
 				Long currentTimeStamp = new Long(manifestFile.getLocalTimeStamp());
 				timeStamps.put(projects[i],currentTimeStamp);
@@ -94,14 +95,27 @@ public class DependencyGraphManager {
 		}
 		return timeStamps;
 	}
-	private IFile getManifestFile(IProject p) {
+	
+	/**
+	 * This returns the file used for time stamp purposes.  Typically this will be the manifest file.
+	 * @param p
+	 * @return
+	 */
+	private IFile getTimeStampFile(IProject p) {
 		IVirtualComponent component = ComponentCore.createComponent(p);
-		try {
-			IFile file = ComponentUtilities.findFile(component, new Path(MANIFEST_URI));
-			if (file != null)
-				return file;
-		} catch (CoreException ce) {
-			Logger.getLogger().log(ce);
+		if(null == component){
+			return null;
+		}
+		if(component.isBinary()){
+			return ((VirtualArchiveComponent)component).getUnderlyingWorkbenchFile();
+		} else {
+			try {
+				IFile file = ComponentUtilities.findFile(component, new Path(MANIFEST_URI));
+				if (file != null)
+					return file;
+			} catch (CoreException ce) {
+				Logger.getLogger().log(ce);
+			}
 		}
 		return null;
 	}
@@ -179,7 +193,7 @@ public class DependencyGraphManager {
 		Long currentTimeStamp = new Long(wtpModulesFile.getLocalTimeStamp());
 		getWtpModuleTimeStamps().put(project,currentTimeStamp);
 		//		 Get the MANIFEST file for the given project
-		IResource manifestFile = getManifestFile(project);
+		IResource manifestFile = getTimeStampFile(project);
 
 		if (manifestFile==null)
 			return false;

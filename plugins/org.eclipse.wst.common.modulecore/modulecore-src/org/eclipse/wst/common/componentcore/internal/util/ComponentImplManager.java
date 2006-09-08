@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jem.util.RegistryReader;
+import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.componentcore.internal.resources.ResourceTimestampMappings;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualArchiveComponent;
@@ -34,6 +35,8 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 public class ComponentImplManager  {
 
+	private static final String NO_FACETS = "NONE";//$NON-NLS-1$
+	
 	private static final String COMPONENT_IMPL_EXTENSION_POINT = "componentimpl"; //$NON-NLS-1$
 	private static final String TAG_COMPONENT_IMPL = "componentimpl"; //$NON-NLS-1$
 	private static final String ATT_TYPE = "typeID"; //$NON-NLS-1$
@@ -105,10 +108,17 @@ public class ComponentImplManager  {
 			} 
 			
 			IFacetedProject facetedProject = ProjectFacetsManager.create(project);
-			if (facetedProject == null) return null;
+			if (facetedProject == null){
+				factory = getComponentImplFactory(NO_FACETS);
+				factoryMap.mark(project, factory);
+				return factory;
+			}
 			Iterator keys = descriptors.keySet().iterator();
 			while (keys.hasNext()) {
 				String typeID = (String) keys.next();
+				if(typeID.equals(NO_FACETS)){
+					continue;
+				}
 				try {
 					IProjectFacet projectFacet = ProjectFacetsManager.getProjectFacet(typeID);
 					if (projectFacet != null && facetedProject.hasProjectFacet(projectFacet)){
@@ -152,6 +162,9 @@ public class ComponentImplManager  {
 			}
 		} catch (Exception e) {
 			// Just return a default component
+		}
+		if (!ModuleCoreNature.isFlexibleProject(project)){
+			return null;
 		}
 		return new VirtualComponent(project, new Path("/")); //$NON-NLS-1$
 	}
