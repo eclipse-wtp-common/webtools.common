@@ -340,20 +340,22 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		try {
 			IProject aProject = StructureEdit.getContainingProject(aModuleURI);
 			IFacetedProject facetedProject = ProjectFacetsManager.create(aProject);
-			String[] editModelIDs = EditModelRegistry.getInstance().getRegisteredEditModelIDs();
-			for (int i=0; i<editModelIDs.length; i++) {
-				try {
-					IProjectFacet facet = ProjectFacetsManager.getProjectFacet(editModelIDs[i]);
-					if (facet != null && facetedProject.hasProjectFacet(facet)) {
-						ArtifactEditModel editModel = (ArtifactEditModel) getEditModelForRead(editModelIDs[i], anAccessorKey, params);
-						if (editModel !=null)
-							return editModel;
+			if (facetedProject != null) {
+				String[] editModelIDs = EditModelRegistry.getInstance().getRegisteredEditModelIDs();
+				for (int i=0; i<editModelIDs.length; i++) {
+					try {
+						IProjectFacet facet = ProjectFacetsManager.getProjectFacet(editModelIDs[i]);
+						if (facet != null && facetedProject.hasProjectFacet(facet)) {
+							ArtifactEditModel editModel = (ArtifactEditModel) getEditModelForRead(editModelIDs[i], anAccessorKey, params);
+							if (editModel !=null)
+								return editModel;
+						}
+					} catch (IllegalArgumentException e) {
+						// Ignore exceptions that come from ProjectFacetsManager
+						continue;
+					} catch (Exception e) {
+						ModulecorePlugin.logError(Status.ERROR, ModuleCoreMessages.Acquiring_ArtifactEdit_For_Read_Exception, e);
 					}
-				} catch (IllegalArgumentException e) {
-					// Ignore exceptions that come from ProjectFacetsManager
-					continue;
-				} catch (Exception e) {
-					ModulecorePlugin.logError(Status.ERROR, ModuleCoreMessages.Acquiring_ArtifactEdit_For_Read_Exception, e);
 				}
 			}
 		} catch (Exception e){
@@ -440,20 +442,22 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		try {
 			IProject aProject = StructureEdit.getContainingProject(aModuleURI);
 			IFacetedProject facetedProject = ProjectFacetsManager.create(aProject);
-			String[] editModelIDs = EditModelRegistry.getInstance().getRegisteredEditModelIDs();
-			for (int i=0; i<editModelIDs.length; i++) {
-				try {
-					IProjectFacet facet = ProjectFacetsManager.getProjectFacet(editModelIDs[i]);
-					if (facet != null && facetedProject.hasProjectFacet(facet)) {
-						ArtifactEditModel editModel = (ArtifactEditModel) getEditModelForWrite(editModelIDs[i], anAccessorKey, params);
-						if (editModel !=null)
-							return editModel;
+			if (facetedProject != null) {
+				String[] editModelIDs = EditModelRegistry.getInstance().getRegisteredEditModelIDs();
+				for (int i=0; i<editModelIDs.length; i++) {
+					try {
+						IProjectFacet facet = ProjectFacetsManager.getProjectFacet(editModelIDs[i]);
+						if (facet != null && facetedProject.hasProjectFacet(facet)) {
+							ArtifactEditModel editModel = (ArtifactEditModel) getEditModelForWrite(editModelIDs[i], anAccessorKey, params);
+							if (editModel !=null)
+								return editModel;
+						}
+					} catch (IllegalArgumentException e) {
+						// Ignore exceptions that come from ProjectFacetsManager
+						continue;
+					} catch (Exception e) {
+						ModulecorePlugin.logError(Status.ERROR, ModuleCoreMessages.Acquiring_ArtifactEdit_For_Write_Exception, e);
 					}
-				} catch (IllegalArgumentException e) {
-					// Ignore exceptions that come from ProjectFacetsManager
-					continue;
-				} catch (Exception e) {
-					ModulecorePlugin.logError(Status.ERROR, ModuleCoreMessages.Acquiring_ArtifactEdit_For_Write_Exception, e);
 				}
 			}
 		} catch (Exception e){
