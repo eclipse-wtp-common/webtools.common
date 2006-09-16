@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.wst.common_ui.feature"
       label="%featureName"
-      version="1.6.0.qualifier"
+      version="1.5.0.qualifier"
       provider-name="%providerName">
 
    <description>
@@ -13,7 +13,7 @@
       %copyright
    </copyright>
 
-   <license url="%licenseURL">
+   <license url="license.html">
       %license
    </license>
 
