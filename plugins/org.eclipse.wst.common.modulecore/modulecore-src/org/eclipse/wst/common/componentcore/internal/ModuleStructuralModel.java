@@ -18,11 +18,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -73,6 +76,8 @@ import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectNature;
 */ 
 public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	
+	private static final String R0_7_MODULE_META_FILE_NAME = ".component";
+	private static final String R1_MODULE_META_FILE_NAME = ".settings/.component";
 	public static final String MODULE_CORE_ID = "moduleCoreId"; //$NON-NLS-1$ 
 	private static final String PROJECT_VERSION_1_5 = "1.5.0";
 	private boolean useOldFormat = false;
@@ -182,6 +187,10 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	}
 	public Resource prepareProjectModulesIfNecessary() throws CoreException {
 		XMIResource res;
+		if (!isComponentSynchronizedOrNull()) {
+			//Return if component file is out of sync from workspace
+			return null;
+		}
 		res = (XMIResource) getPrimaryResource();
 		if (res != null && resNeedsMigrating(res) && !useOldFormat)
 			return null;
@@ -195,6 +204,27 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 		return res;
 	}
 	
+	/**
+	 * This methods checks the status of the component file, and first checks for existance, then if its locally synchronized
+	 * @return boolean
+	 */
+	private boolean isComponentSynchronizedOrNull() {
+		IFile componentFile = getProject().getFile(StructureEdit.MODULE_META_FILE_NAME);
+		IPath componentFileLocation = componentFile.getLocation();
+		if (componentFileLocation != null && !componentFileLocation.toFile().exists()) {
+			componentFile = getProject().getFile(R1_MODULE_META_FILE_NAME);
+			componentFileLocation = componentFile.getLocation();
+			if (componentFileLocation != null && !componentFileLocation.toFile().exists()) {
+				componentFile = getProject().getFile(R0_7_MODULE_META_FILE_NAME);
+				componentFileLocation = componentFile.getLocation();
+				if (componentFileLocation != null && !componentFileLocation.toFile().exists()) 
+					return true;
+			}
+		}
+		if (componentFileLocation == null)
+			return true;
+		else return componentFile.isSynchronized(IResource.DEPTH_ZERO);
+	}
 	public WTPModulesResource  makeWTPModulesResource() {
 		return (WTPModulesResource) createResource(WTPModulesResourceFactory.WTP_MODULES_URI_OBJ);
 	}
@@ -221,16 +251,16 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 		// Overriden to handle loading the .component resource in new and old forms
 		// First will try to load from .settings/org.eclipse.wst.common.component
 		// Second will try to load from the old location(s) .settings/.component or .component
-
+		
 		URI uri = (URI) URI.createURI(StructureEdit.MODULE_META_FILE_NAME);
 		WTPModulesResource res = (WTPModulesResource)getResource(uri);
 		if (res == null || !res.isLoaded()) {
 			removeResource(res);
-			uri = (URI) URI.createURI(".settings/.component");
+			uri = (URI) URI.createURI(R1_MODULE_META_FILE_NAME);
 			res = (WTPModulesResource)getResource(uri);
 			if (res == null || !res.isLoaded()) {
 				removeResource(res);
-				uri = (URI) URI.createURI(".component");
+				uri = (URI) URI.createURI(R0_7_MODULE_META_FILE_NAME);
 				res = (WTPModulesResource)getResource(uri);
 				if (res == null || !res.isLoaded()) {
 					removeResource(res);
