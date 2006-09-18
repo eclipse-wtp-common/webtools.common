@@ -4,10 +4,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 import junit.framework.TestCase;
 
@@ -16,6 +19,7 @@ public abstract class AbstractTests
     extends TestCase
     
 {
+    protected static final String DEFAULT_TEST_PROJECT_NAME = "testProject";
     protected static final IWorkspace ws = ResourcesPlugin.getWorkspace();
     protected final Set resourcesToCleanup = new HashSet();
     
@@ -40,5 +44,27 @@ public abstract class AbstractTests
     {
         this.resourcesToCleanup.add( resource );
     }
+    
+    protected IFacetedProject createFacetedProject()
+    
+        throws CoreException
+        
+    {
+        return createFacetedProject( DEFAULT_TEST_PROJECT_NAME );
+    }
+    
+    protected IFacetedProject createFacetedProject( final String name )
 
+        throws CoreException
+        
+    {
+        assertFalse( ws.getRoot().getProject( name ).exists() );
+        final IFacetedProject fpj = ProjectFacetsManager.create( name, null, null );
+        final IProject pj = fpj.getProject();
+        assertTrue( pj.exists() );
+        addResourceToCleanup( pj );
+        
+        return fpj;
+    }
+    
 }

@@ -19,6 +19,7 @@ public class AllTests
         suite.addTest( ProjectCreationTests.suite() );
         suite.addTest( BasicFacetActionTests.suite() );
         suite.addTest( FacetActionSortTests.suite() );
+        suite.addTest( FacetActionsTests.suite() );
         suite.addTest( ProjectChangeReactionTests.suite() );
         suite.addTest( FacetConstraintsTests.suite() );
         suite.addTest( DefaultVersionTests.suite() );
