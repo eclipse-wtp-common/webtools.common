@@ -209,13 +209,10 @@ private class ScopeChangeListener extends SelectionAdapter
   {
     public void widgetSelected(SelectionEvent e)
     {
-      if (e.widget instanceof Button)       
-      {        
-        Button b = (Button) e.widget;
-        if (b.getSelection())
-        {  
-          scopeChangeHandler(b);
-        }  
+      if (e.widget instanceof Button)
+      {
+    	Button b = (Button) e.widget;
+        scopeChangeHandler(b);
       }
     }
   }
