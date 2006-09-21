@@ -13,6 +13,7 @@ package org.eclipse.wst.common.project.facet.core.internal;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
@@ -40,6 +41,7 @@ public final class ProjectFacetVersion
     private String version;
     private IConstraint constraint;
     private String plugin;
+    private Map/*<IProjectFacetVersion,int>*/ compTable = null;
     
     ProjectFacetVersion() {}
     
@@ -91,6 +93,11 @@ public final class ProjectFacetVersion
     void setPluginId( final String plugin )
     {
         this.plugin = plugin;
+    }
+    
+    void setComparisonTable( final Map compTable )
+    {
+        this.compTable = compTable;
     }
     
     public boolean supports( final Set base,
@@ -188,7 +195,7 @@ public final class ProjectFacetVersion
         {
             if( type == Action.Type.VERSION_CHANGE )
             {
-                String fromVersion = null;
+                IProjectFacetVersion fromVersion = null;
                 
                 for( Iterator itr = base.iterator(); itr.hasNext(); )
                 {
@@ -196,7 +203,7 @@ public final class ProjectFacetVersion
                     
                     if( x.getProjectFacet() == this.facet )
                     {
-                        fromVersion = x.getVersionString();
+                        fromVersion = x;
                         break;
                     }
                 }
@@ -210,7 +217,7 @@ public final class ProjectFacetVersion
                         final IVersionExpr vexpr 
                             = (IVersionExpr) def.getProperty( IActionDefinition.PROP_FROM_VERSIONS );
                         
-                        if( vexpr == null || vexpr.evaluate( fromVersion ) )
+                        if( vexpr == null || vexpr.check( fromVersion ) )
                         {
                             return def;
                         }
@@ -390,27 +397,19 @@ public final class ProjectFacetVersion
             {
                 final IProjectFacet f = (IProjectFacet) firstOperand;
                 
-                final VersionExpr vexpr
+                final IVersionExpr vexpr
                     = op.getOperands().size() == 2 
-                      ? (VersionExpr) op.getOperand( 1 ) : null;
+                      ? (IVersionExpr) op.getOperand( 1 ) : null;
                 
-                try
+                if( fv.getProjectFacet() == f )
                 {
-                    if( fv.getProjectFacet() == f )
+                    if( vexpr == null || vexpr.check( fv ) )
                     {
-                        if( vexpr == null || vexpr.evaluate( (IVersion ) fv ) )
-                        {
-                            return true;
-                        }
+                        return true;
                     }
-                    
-                    return false;
                 }
-                catch( CoreException e )
-                {
-                    FacetCorePlugin.log( e );
-                    return false;
-                }
+                
+                return false;
             }
         }
         else if( op.getType() == IConstraint.Type.REQUIRES )
@@ -461,6 +460,37 @@ public final class ProjectFacetVersion
         }
     }
     
+    public int compareTo( final Object obj )
+    {
+        if( obj == this )
+        {
+            return 0;
+        }
+        else
+        {
+            // Cause the ClassCastException to be thrown if obj is not a
+            // instance of IProjectFacetVersion.
+            
+            final IProjectFacetVersion fv = (IProjectFacetVersion) obj;
+            final Integer result = (Integer) this.compTable.get( fv );
+            
+            if( result == null )
+            {
+                final String msg
+                    = Resources.bind( Resources.cannotCompareVersionsOfDifferentFacets,
+                                      this.facet.getId(), this.version,
+                                      fv.getProjectFacet().getId(), 
+                                      fv.getVersionString() );
+                
+                throw new RuntimeException( msg );
+            }
+            else
+            {
+                return result.intValue();
+            }
+        }
+    }
+    
     public String toString()
     {
         return this.facet.getLabel() + " " + this.version; //$NON-NLS-1$
@@ -473,6 +503,7 @@ public final class ProjectFacetVersion
     {
         public static String actionNotSupported;
         public static String multipleActionDefinitions;
+        public static String cannotCompareVersionsOfDifferentFacets;
         
         static
         {
@@ -486,6 +517,15 @@ public final class ProjectFacetVersion
                                    final Object arg3 )
         {
             return NLS.bind( template, new Object[] { arg1, arg2, arg3 } );
+        }
+
+        public static String bind( final String template,
+                                   final Object arg1,
+                                   final Object arg2,
+                                   final Object arg3,
+                                   final Object arg4 )
+        {
+            return NLS.bind( template, new Object[] { arg1, arg2, arg3, arg4 } );
         }
     }
 

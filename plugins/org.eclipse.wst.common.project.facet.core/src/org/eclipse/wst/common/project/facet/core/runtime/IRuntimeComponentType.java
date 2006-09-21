@@ -17,7 +17,6 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.wst.common.project.facet.core.VersionFormatException;
 
 /**
  * Represents the type of a runtime component. A runtime instance is composed of
@@ -107,7 +106,6 @@ public interface IRuntimeComponentType
      * @param ascending whether versions should be sorted in ascending order
      * @return a sorted list containing all of the versions of this runtime 
      *   component type (element type: {@see IRuntimeComponentVersion})
-     * @throws VersionFormatException if failed while parsing a version string
      */
     
     List getSortedVersions( boolean ascending )

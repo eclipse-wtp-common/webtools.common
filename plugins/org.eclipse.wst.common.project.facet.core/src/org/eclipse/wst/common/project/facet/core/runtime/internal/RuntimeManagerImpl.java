@@ -13,6 +13,7 @@ package org.eclipse.wst.common.project.facet.core.runtime.internal;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -30,10 +31,10 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IListener;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.IVersionExpr;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.VersionFormatException;
 import org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin;
-import org.eclipse.wst.common.project.facet.core.internal.IVersion;
 import org.eclipse.wst.common.project.facet.core.internal.IndexedSet;
 import org.eclipse.wst.common.project.facet.core.internal.ProjectFacetsManagerImpl;
 import org.eclipse.wst.common.project.facet.core.internal.VersionExpr;
@@ -499,6 +500,8 @@ public final class RuntimeManagerImpl
                 readRuntimeComponentVersion( config );
             }
         }
+        
+        calculateVersionComparisonTables();
 
         for( int i = 0, n = cfgels.size(); i < n; i++ )
         {
@@ -600,6 +603,77 @@ public final class RuntimeManagerImpl
         rcv.setPluginId( config.getContributor().getName() );
         
         rct.addVersion( rcv );
+    }
+    
+    /**
+     * Pre-computes the tables that describe how versions of runtime components
+     * compare to each other. This allows the IRuntimeComponentVersion.compareTo() 
+     * operation, which is called rather frequently, to be reduced to a hash 
+     * table lookup instead of having to do a parse and comparison of two 
+     * version strings.
+     */
+    
+    private static void calculateVersionComparisonTables()
+    {
+        for( Iterator itr = runtimeComponentTypes.iterator(); itr.hasNext(); )
+        {
+            final IRuntimeComponentType rct = (IRuntimeComponentType) itr.next();
+            final Set setOfVersions = rct.getVersions();
+
+            try
+            {
+                final Comparator comp = rct.getVersionComparator();
+                
+                final RuntimeComponentVersion[] versions 
+                    = new RuntimeComponentVersion[ setOfVersions.size() ];
+                
+                setOfVersions.toArray( versions );
+                
+                final Map[] compTables = new Map[ versions.length ];
+                
+                for( int i = 0; i < compTables.length; i++ )
+                {
+                    compTables[ i ] = new HashMap();
+                }
+                
+                for( int i = 0; i < versions.length; i++ )
+                {
+                    final IRuntimeComponentVersion iVer = versions[ i ];
+                    final String iVerStr = iVer.getVersionString();
+                    final Map iCompTable = compTables[ i ];
+                    
+                    for( int j = i + 1; j < versions.length; j++ )
+                    {
+                        final IRuntimeComponentVersion jVer = versions[ j ];
+                        final String jVerStr = jVer.getVersionString();
+                        final Map jCompTable = compTables[ j ];
+                        
+                        final int result = comp.compare( iVerStr, jVerStr );
+                        
+                        iCompTable.put( jVer, new Integer( result ) );
+                        jCompTable.put( iVer, new Integer( result * -1 ) );
+                    }
+                }
+                
+                for( int i = 0; i < versions.length; i++ )
+                {
+                    versions[ i ].setComparisonTable( compTables[ i ] );
+                }
+            }
+            catch( Exception e )
+            {
+                // The failure here is due to the problem loading the provided
+                // version comparator or due to the problem comparing the
+                // version string. In either case, we log the exception and
+                // remove all traces of this runtime component type from the 
+                // system to keep a faulty runtime component type from dragging
+                // down the entire system.
+                
+                FacetCorePlugin.log( e );
+                
+                itr.remove();
+            }
+        }
     }
     
     private static void readAdapter( final IConfigurationElement config )
@@ -1050,10 +1124,10 @@ public final class RuntimeManagerImpl
             
             if( this.runtimeComponents.containsKey( rct ) )
             {
-                final VersionExpr expr 
-                    = (VersionExpr) this.runtimeComponents.get( rct );
+                final IVersionExpr expr 
+                    = (IVersionExpr) this.runtimeComponents.get( rct );
                 
-                if( expr != null && ! expr.evaluate( (IVersion) rcv ) )
+                if( expr != null && ! expr.check( rcv ) )
                 {
                     return Collections.EMPTY_SET;
                 }
@@ -1070,7 +1144,7 @@ public final class RuntimeManagerImpl
             {
                 final Map.Entry entry = (Map.Entry) itr1.next();
                 final IProjectFacet f = (IProjectFacet) entry.getKey();
-                final VersionExpr expr = (VersionExpr) entry.getValue();
+                final IVersionExpr expr = (IVersionExpr) entry.getValue();
                 
                 for( Iterator itr2 = f.getVersions().iterator(); 
                      itr2.hasNext(); )
@@ -1078,7 +1152,7 @@ public final class RuntimeManagerImpl
                     final IProjectFacetVersion fv 
                         = (IProjectFacetVersion) itr2.next();
                     
-                    if( expr == null || expr.evaluate( (IVersion) fv ) )
+                    if( expr == null || expr.check( fv ) )
                     {
                         result.add( fv );
                     }
@@ -1092,7 +1166,7 @@ public final class RuntimeManagerImpl
     private static final class DefaultFacetsEntry
     {
         public IRuntimeComponentType rct;
-        public VersionExpr rcvexpr;
+        public IVersionExpr rcvexpr;
         public final Set facets = new HashSet();
         
         public boolean match( final IRuntimeComponentVersion rcv )
@@ -1106,7 +1180,7 @@ public final class RuntimeManagerImpl
             }
             else
             {
-                return this.rcvexpr.evaluate( (IVersion) rcv );
+                return this.rcvexpr.check( rcv );
             }
         }
     }

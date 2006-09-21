@@ -298,6 +298,19 @@ public final class BasicTests
         assertTrue( comp.compare( "1.2.1", "1.2.1" ) == 0 );
         assertTrue( comp.compare( "2.0", "2.0" ) == 0 );
         
+        assertTrue( f1v10.compareTo( f1v12 ) < 0 );
+        assertTrue( f1v12.compareTo( f1v121 ) < 0 );
+        assertTrue( f1v121.compareTo( f1v20 ) < 0 );
+        
+        assertTrue( f1v12.compareTo( f1v10 ) > 0 );
+        assertTrue( f1v121.compareTo( f1v12 ) > 0 );
+        assertTrue( f1v20.compareTo( f1v121 ) > 0 );
+        
+        assertTrue( f1v10.compareTo( f1v10 ) == 0 );
+        assertTrue( f1v12.compareTo( f1v12 ) == 0 );
+        assertTrue( f1v121.compareTo( f1v121 ) == 0 );
+        assertTrue( f1v20.compareTo( f1v20 ) == 0 );
+
         assertEquals( f1.getLatestVersion(), f1v20 );
         
         final List asc = f1.getSortedVersions( true );
@@ -341,6 +354,19 @@ public final class BasicTests
         assertTrue( comp.compare( "3.5#a", "3.5#a" ) == 0 );
         assertTrue( comp.compare( "4.7", "4.7" ) == 0 );
         assertTrue( comp.compare( "4.7#b", "4.7#b" ) == 0 );
+
+        assertTrue( f2v35.compareTo( f2v47 ) < 0 );
+        assertTrue( f2v35.compareTo( f2v35a ) < 0 );
+        assertTrue( f2v47c.compareTo( f2v47b ) < 0 );
+        
+        assertTrue( f2v47.compareTo( f2v35 ) > 0 );
+        assertTrue( f2v35a.compareTo( f2v35 ) > 0 );
+        assertTrue( f2v47b.compareTo( f2v47c ) > 0 );
+        
+        assertTrue( f2v35.compareTo( f2v35 ) == 0 );
+        assertTrue( f2v35a.compareTo( f2v35a ) == 0 );
+        assertTrue( f2v47.compareTo( f2v47 ) == 0 );
+        assertTrue( f2v47b.compareTo( f2v47b ) == 0 );
         
         assertEquals( f2.getLatestVersion(), f2v47b );
         
@@ -672,44 +698,4 @@ public final class BasicTests
         return set;
     }
 
-    private static List asList( final Object obj )
-    {
-        return asList( new Object[] { obj } );
-    }
-
-    private static List asList( final Object obj1,
-                                final Object obj2 )
-    {
-        return asList( new Object[] { obj1, obj2 } );
-    }
-
-    private static List asList( final Object obj1,
-                                final Object obj2,
-                                final Object obj3 )
-    {
-        return asList( new Object[] { obj1, obj2, obj3 } );
-    }
-
-    private static List asList( final Object obj1,
-                                final Object obj2,
-                                final Object obj3,
-                                final Object obj4 )
-    {
-        return asList( new Object[] { obj1, obj2, obj3, obj4 } );
-    }
-
-    private static List asList( final Object obj1,
-                                final Object obj2,
-                                final Object obj3,
-                                final Object obj4,
-                                final Object obj5 )
-    {
-        return asList( new Object[] { obj1, obj2, obj3, obj4, obj5 } );
-    }
-    
-    private static List asList( final Object[] array )
-    {
-        return Arrays.asList( array );
-    }
-    
 }

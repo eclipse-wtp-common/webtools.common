@@ -115,15 +115,23 @@ public interface IProjectFacet
     IProjectFacetVersion getVersion( String version );
     
     /**
-     * Returns the latest version of the project facet as specified by the 
-     * version comparator.
+     * Returns the latest version of the project facet that exists.
      * 
      * @return returns the latest version of the project facet
      */
     
     IProjectFacetVersion getLatestVersion()
     
-        throws VersionFormatException, CoreException;
+    	throws VersionFormatException, CoreException;
+
+    /**
+     * Returns the latest version of the project facet that is supported by the
+     * given runtime.
+     * 
+     * @param runtime the runtime
+     * @return returns the latest version of the project facet that is supported
+     *   by the given runtime
+     */
     
     IProjectFacetVersion getLatestSupportedVersion( IRuntime runtime )
     
@@ -148,7 +156,6 @@ public interface IProjectFacet
      *   ascending order
      * @return a sorted list containing the descriptors of all versions of this 
      *   project facet (element type: {@see IProjectFacetVersion})
-     * @throws VersionFormatException if failed while parsing a version string
      */
     
     List getSortedVersions( boolean ascending )

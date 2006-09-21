@@ -157,9 +157,7 @@ public final class ProjectFacetsManagerImpl
         readMetadata();
         readUserPresets();
         
-        final IWorkspace ws = ResourcesPlugin.getWorkspace();
-        final IResourceChangeListener ls = new ResourceChangeListener();
-        ws.addResourceChangeListener( ls, IResourceChangeEvent.POST_CHANGE );
+        ( new ResourceChangeListener() ).register();
         
         if( FacetCorePlugin.isTracingFrameworkActivation() )
         {
@@ -1158,6 +1156,8 @@ public final class ProjectFacetsManagerImpl
             }
         }
         
+        calculateVersionComparisonTables( fvToConstraint, fvToActions );
+        
         for( Iterator itr = fvToConstraint.entrySet().iterator(); 
              itr.hasNext(); )
         {
@@ -1449,6 +1449,90 @@ public final class ProjectFacetsManagerImpl
             if( childName.equals( EL_EVENT_HANDLER ) )
             {
                 readEventHandler( child, f, ver );
+            }
+        }
+    }
+    
+    /**
+     * Pre-computes the tables that describe how versions of a facet compare
+     * to each other. This allows the IProjectFacetVersion.compareTo() operation,
+     * which is called rather frequently, to be reduced to a hash table lookup
+     * instead of having to do a parse and comparison of two version strings.
+     */
+    
+    private void calculateVersionComparisonTables( final Map fvToConstraint,
+                                                   final Map fvToActions )
+    {
+        for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
+        {
+            final IProjectFacet f = (IProjectFacet) itr.next();
+            final Set setOfVersions = f.getVersions();
+
+            try
+            {
+                final Comparator comp = f.getVersionComparator();
+                
+                final ProjectFacetVersion[] versions 
+                    = new ProjectFacetVersion[ setOfVersions.size() ];
+                
+                setOfVersions.toArray( versions );
+                
+                final Map[] compTables = new Map[ versions.length ];
+                
+                for( int i = 0; i < compTables.length; i++ )
+                {
+                    compTables[ i ] = new HashMap();
+                }
+                
+                for( int i = 0; i < versions.length; i++ )
+                {
+                    final IProjectFacetVersion iVer = versions[ i ];
+                    final String iVerStr = iVer.getVersionString();
+                    final Map iCompTable = compTables[ i ];
+                    
+                    for( int j = i + 1; j < versions.length; j++ )
+                    {
+                        final IProjectFacetVersion jVer = versions[ j ];
+                        final String jVerStr = jVer.getVersionString();
+                        final Map jCompTable = compTables[ j ];
+                        
+                        final int result = comp.compare( iVerStr, jVerStr );
+                        
+                        iCompTable.put( jVer, new Integer( result ) );
+                        jCompTable.put( iVer, new Integer( result * -1 ) );
+                    }
+                }
+                
+                for( int i = 0; i < versions.length; i++ )
+                {
+                    versions[ i ].setComparisonTable( compTables[ i ] );
+                }
+            }
+            catch( Exception e )
+            {
+                // The failure here is due to the problem loading the provided
+                // version comparator or due to the problem comparing the
+                // version string. In either case, we log the exception and
+                // remove all traces of this facet from the system to keep a
+                // faulty facet from dragging down the entire framework.
+                
+                FacetCorePlugin.log( e );
+                
+                itr.remove();
+                
+                final Category category = (Category) f.getCategory();
+                
+                if( category != null )
+                {
+                    category.removeProjectFacet( f );
+                }
+                
+                for( Iterator itr2 = setOfVersions.iterator(); itr.hasNext(); )
+                {
+                    final IProjectFacetVersion fv = (IProjectFacetVersion) itr2.next();
+                    fvToConstraint.remove( fv );
+                    fvToActions.remove( fv );
+                }
             }
         }
     }
@@ -2361,6 +2445,12 @@ public final class ProjectFacetsManagerImpl
         implements IResourceChangeListener
         
     {
+        public void register()
+        {
+            final IWorkspace ws = ResourcesPlugin.getWorkspace();
+            ws.addResourceChangeListener( this, IResourceChangeEvent.POST_CHANGE );
+        }
+        
         public void resourceChanged( final IResourceChangeEvent event )
         {
             final IResourceDelta delta = event.getDelta();
@@ -2389,7 +2479,6 @@ public final class ProjectFacetsManagerImpl
                 }
             }
         }
-        
     }
 
     public static final class Resources

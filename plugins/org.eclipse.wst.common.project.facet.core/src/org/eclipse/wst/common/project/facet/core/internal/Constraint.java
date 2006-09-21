@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.osgi.util.NLS;
@@ -25,6 +24,7 @@ import org.eclipse.wst.common.project.facet.core.IConstraint;
 import org.eclipse.wst.common.project.facet.core.IGroup;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.IVersionExpr;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -151,7 +151,7 @@ public final class Constraint
         else if( this.type == Type.REQUIRES )
         {
             final IProjectFacet rf = (IProjectFacet) this.operands.get( 0 );
-            final VersionExpr vexpr = (VersionExpr) this.operands.get( 1 );
+            final IVersionExpr vexpr = (IVersionExpr) this.operands.get( 1 );
             
             final boolean soft
                 = ( (Boolean) this.operands.get( 2 ) ).booleanValue();
@@ -167,16 +167,9 @@ public final class Constraint
                     
                     if( fv.getProjectFacet() == rf )
                     {
-                        try
+                        if( vexpr.check( fv ) )
                         {
-                            if( vexpr.evaluate( (IVersion) fv ) )
-                            {
-                                found = true;
-                            }
-                        }
-                        catch( CoreException e )
-                        {
-                            FacetCorePlugin.log( e );
+                            found = true;
                         }
                         
                         break;
@@ -229,9 +222,9 @@ public final class Constraint
             {
                 final IProjectFacet f = (IProjectFacet) firstOperand;
                 
-                final VersionExpr vexpr
+                final IVersionExpr vexpr
                     = this.operands.size() == 2 
-                      ? (VersionExpr) this.operands.get( 1 ) : null;
+                      ? (IVersionExpr) this.operands.get( 1 ) : null;
                       
                 for( Iterator itr = facets.iterator(); itr.hasNext(); )
                 {
@@ -240,25 +233,16 @@ public final class Constraint
                     
                     if( fver.getProjectFacet() == f )
                     {
-                        try
+                        if( vexpr == null || vexpr.check( fver ) )
                         {
-                            if( vexpr == null 
-                                || vexpr.evaluate( (IVersion) fver ) )
-                            {
-                                final ValidationProblem.Type t 
-                                    = ValidationProblem.Type.CONFLICTS;
-                                        
-                                final ValidationProblem problem
-                                    = new ValidationProblem( t, this.fv, fver );
-                                
-                                result.add( problem );
-                                
-                                break;
-                            }
-                        }
-                        catch( CoreException e )
-                        {
-                            FacetCorePlugin.log( e );
+                            final ValidationProblem.Type t 
+                                = ValidationProblem.Type.CONFLICTS;
+                                    
+                            final ValidationProblem problem
+                                = new ValidationProblem( t, this.fv, fver );
+                            
+                            result.add( problem );
+                            
                             break;
                         }
                     }

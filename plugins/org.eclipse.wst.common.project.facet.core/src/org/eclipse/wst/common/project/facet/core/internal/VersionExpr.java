@@ -12,7 +12,6 @@
 package org.eclipse.wst.common.project.facet.core.internal;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -42,7 +41,6 @@ public final class VersionExpr
     private static final int SM2_ESCAPE = 2;
     
     private final Versionable versionable;
-    private final Comparator comparator;
     private final List subexprs;
     private final String usedInPlugin;
     
@@ -64,7 +62,6 @@ public final class VersionExpr
         
     {
         this.versionable = versionable;
-        this.comparator = versionable.getVersionComparator();
         this.subexprs = new ArrayList();
         this.usedInPlugin = usedInPlugin;
         
@@ -371,7 +368,7 @@ public final class VersionExpr
         }
     }
     
-    private String parseVersion( final String str )
+    private IVersion parseVersion( final String str )
     
         throws CoreException
         
@@ -387,19 +384,11 @@ public final class VersionExpr
         }
         else
         {
-            return this.versionable.getVersionInternal( str ).getVersionString();
+            return this.versionable.getVersionInternal( str );
         }
     }
     
-    public boolean evaluate( final IVersion ver )
-    
-        throws CoreException
-        
-    {
-        return evaluate( ver.getVersionString() );
-    }
-    
-    public boolean evaluate( final String ver )
+    public boolean check( final Comparable ver )
     {
         for( Iterator itr = this.subexprs.iterator(); itr.hasNext(); )
         {
@@ -412,6 +401,19 @@ public final class VersionExpr
         return false;
     }
     
+    public boolean evaluate( final String ver )
+    {
+        try
+        {
+            return check( parseVersion( ver ) );
+        }
+        catch( CoreException e )
+        {
+            FacetCorePlugin.log( e );
+            return false;
+        }
+    }
+    
     public boolean isSingleVersionMatch()
     {
         if( this.subexprs.size() == 1 )
@@ -422,7 +424,7 @@ public final class VersionExpr
             {
                 final Range range = (Range) subExpr;
                 
-                if( range.startVersion == range.endVersion &&
+                if( range.startVersion.equals( range.endVersion ) &&
                     range.includesStartVersion == range.includesEndVersion == true )
                 {
                     return true;
@@ -465,7 +467,7 @@ public final class VersionExpr
         if( isSingleVersionMatch() || isSimpleAllowNewer() )
         {
             final Range range = (Range) this.subexprs.get( 0 );
-            return range.startVersion;
+            return range.startVersion.getVersionString();
         }
         else
         {
@@ -498,11 +500,12 @@ public final class VersionExpr
                 
                 if( r.isSingleVersion() )
                 {
-                    return r.startVersion;
+                    return r.startVersion.getVersionString();
                 }
                 else if( r.endVersion == null && r.includesStartVersion )
                 {
-                    return NLS.bind( Resources.versionOrNewer, r.startVersion );
+                    return NLS.bind( Resources.versionOrNewer, 
+                                     r.startVersion.getVersionString() );
                 }
             }
         }
@@ -541,7 +544,7 @@ public final class VersionExpr
                     }
                 }
                 
-                buf.append( r.startVersion );
+                buf.append( r.startVersion.getVersionString() );
             }
             
             return buf.toString();
@@ -562,7 +565,7 @@ public final class VersionExpr
     
     private static interface ISubExpr
     {
-        boolean evaluate( String version );
+        boolean evaluate( Comparable version );
     }
     
     private final class Range
@@ -570,9 +573,9 @@ public final class VersionExpr
         implements ISubExpr
         
     {
-        public String startVersion = null;
+        public IVersion startVersion = null;
         public boolean includesStartVersion = false;
-        public String endVersion = null;
+        public IVersion endVersion = null;
         public boolean includesEndVersion = false;
         
         public boolean isSingleVersion()
@@ -581,13 +584,11 @@ public final class VersionExpr
                    this.includesStartVersion == this.includesEndVersion == true;
         }
         
-        public boolean evaluate( final String version )
+        public boolean evaluate( final Comparable version )
         {
-            final Comparator comp = VersionExpr.this.comparator;
-        
             if( this.startVersion != null )
             {
-                final int res = comp.compare( version, this.startVersion ); 
+                final int res = version.compareTo( this.startVersion );
                 
                 if( ! ( res > 0 || ( res == 0 && this.includesStartVersion ) ) )
                 {
@@ -597,7 +598,7 @@ public final class VersionExpr
             
             if( this.endVersion != null )
             {
-                final int res = comp.compare( version, this.endVersion );
+                final int res = version.compareTo( this.endVersion );
                 
                 if( ! ( res < 0 || ( res == 0 && this.includesEndVersion ) ) )
                 {
@@ -613,7 +614,7 @@ public final class VersionExpr
             if( this.startVersion.equals( this.endVersion ) &&
                 this.includesStartVersion == this.includesEndVersion == true )
             {
-                return this.startVersion;
+                return this.startVersion.getVersionString();
             }
             else
             {
@@ -622,7 +623,7 @@ public final class VersionExpr
                 if( this.startVersion != null )
                 {
                     buf.append( this.includesStartVersion ? '[' : '(' );
-                    buf.append( this.startVersion );
+                    buf.append( this.startVersion.getVersionString() );
                 }
                 
                 if( this.endVersion != null )
@@ -632,7 +633,7 @@ public final class VersionExpr
                         buf.append( '-' );
                     }
                     
-                    buf.append( this.endVersion );
+                    buf.append( this.endVersion.getVersionString() );
                     buf.append( this.includesEndVersion ? ']' : ')' );
                 }
                 
@@ -646,7 +647,7 @@ public final class VersionExpr
         implements ISubExpr
         
     {
-        public boolean evaluate( final String version )
+        public boolean evaluate( final Comparable version )
         {
             return true;
         }

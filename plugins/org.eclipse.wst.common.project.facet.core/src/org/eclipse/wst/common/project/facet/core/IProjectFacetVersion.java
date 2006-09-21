@@ -30,6 +30,9 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
  */
 
 public interface IProjectFacetVersion
+
+    extends Comparable
+    
 {
     /**
      * Returns the project facet descriptor.

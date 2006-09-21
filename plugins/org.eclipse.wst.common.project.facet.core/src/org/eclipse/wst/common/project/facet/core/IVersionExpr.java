@@ -33,11 +33,17 @@ public interface IVersionExpr
      * <code>true</code> if and only if the version expression matches the
      * specified version.
      * 
-     * @param version the version string to check against the version expression
+     * @param version the version object to check against the version expression
      * @return <code>true</code> if and only if the version expression matches
      *   the specified version
      */
     
+    boolean check( Comparable version );
+    
+    /**
+     * @deprecated use the check method instead
+     */
+     
     boolean evaluate( String version );
     
     /**

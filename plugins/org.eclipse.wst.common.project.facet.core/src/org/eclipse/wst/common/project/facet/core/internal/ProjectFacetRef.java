@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.IVersionExpr;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 /**
@@ -34,10 +35,10 @@ public final class ProjectFacetRef
     private final VersionExpr vexpr;
     
     public ProjectFacetRef( final IProjectFacet f,
-                            final VersionExpr vexpr )
+                            final IVersionExpr vexpr )
     {
         this.f = f;
-        this.vexpr = vexpr;
+        this.vexpr = (VersionExpr) vexpr;
     }
     
     public boolean check( final Set facets )
@@ -53,7 +54,7 @@ public final class ProjectFacetRef
             {
                 if( this.vexpr != null )
                 {
-                    return this.vexpr.evaluate( (IVersion) fv );
+                    return this.vexpr.check( fv );
                 }
                 else
                 {

@@ -13,13 +13,11 @@ package org.eclipse.wst.common.project.facet.core.internal;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IActionDefinition;
@@ -27,7 +25,6 @@ import org.eclipse.wst.common.project.facet.core.ICategory;
 import org.eclipse.wst.common.project.facet.core.IDefaultVersionProvider;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
-import org.eclipse.wst.common.project.facet.core.VersionFormatException;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 
 /**
@@ -42,14 +39,6 @@ public final class ProjectFacet
     implements IProjectFacet 
     
 {
-    private static final IVersionAdapter VERSION_ADAPTER = new IVersionAdapter()
-    {
-        public String adapt( final Object obj )
-        {
-            return ( (IProjectFacetVersion) obj ).getVersionString();
-        }
-    };
-    
     private String id;
     private String plugin;
     private String label;
@@ -134,15 +123,10 @@ public final class ProjectFacet
     }
 
     public IProjectFacetVersion getLatestVersion()
-    
-        throws VersionFormatException, CoreException
-        
     {
         if( this.versions.size() > 0 )
         {
-            final Comparator comp = getVersionComparator( true, VERSION_ADAPTER );
-            final Object max = Collections.max( this.versions, comp );
-            
+            final Object max = Collections.max( this.versions );
             return (IProjectFacetVersion) max;
         }
         else
@@ -152,9 +136,6 @@ public final class ProjectFacet
     }
     
     public IProjectFacetVersion getLatestSupportedVersion( final IRuntime r )
-    
-        throws CoreException
-        
     {
         for( Iterator itr = getSortedVersions( false ).iterator(); 
              itr.hasNext(); )
@@ -201,18 +182,7 @@ public final class ProjectFacet
             
             if( defver == null )
             {
-                try
-                {
-                    defver = getLatestVersion();
-                }
-                catch( CoreException e )
-                {
-                    FacetCorePlugin.log( e );
-                }
-                catch( VersionFormatException e )
-                {
-                    FacetCorePlugin.log( e );
-                }
+                defver = getLatestVersion();
             }
             
             return defver;
@@ -233,11 +203,6 @@ public final class ProjectFacet
     {
         this.defaultVersion = null;
         this.defaultVersionProvider = provider;
-    }
-    
-    protected IVersionAdapter getVersionAdapter()
-    {
-        return VERSION_ADAPTER;
     }
     
     public Object getAdapter( final Class type )
@@ -264,7 +229,7 @@ public final class ProjectFacet
         {
             final IActionDefinition def = (IActionDefinition) itr.next();
             
-            if( def.getVersionExpr().evaluate( fv.getVersionString() ) )
+            if( def.getVersionExpr().check( fv ) )
             {
                 result.add( def );
             }
@@ -287,17 +252,10 @@ public final class ProjectFacet
         {
             final EventHandler h = (EventHandler) itr.next();
             
-            try
+            if( h.getType() == type &&
+                h.getVersionExpr().check( fv ) )
             {
-                if( h.getType() == type &&
-                    h.getVersionExpr().evaluate( (IVersion) fv ) )
-                {
-                    res.add( h );
-                }
-            }
-            catch( CoreException e )
-            {
-                FacetCorePlugin.log( e.getStatus() );
+                res.add( h );
             }
         }
         

@@ -12,12 +12,9 @@
 package org.eclipse.wst.common.project.facet.core.runtime.internal;
 
 import java.util.Collections;
-import java.util.Comparator;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.wst.common.project.facet.core.VersionFormatException;
 import org.eclipse.wst.common.project.facet.core.internal.Versionable;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentType;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentVersion;
@@ -32,14 +29,6 @@ public final class RuntimeComponentType
     implements IRuntimeComponentType
     
 {
-    private static final IVersionAdapter VERSION_ADAPTER = new IVersionAdapter()
-    {
-        public String adapt( final Object obj )
-        {
-            return ( (IRuntimeComponentVersion) obj ).getVersionString();
-        }
-    };
-
     private String id;
     private String plugin;
     
@@ -86,15 +75,10 @@ public final class RuntimeComponentType
     }
 
     public IRuntimeComponentVersion getLatestVersion()
-    
-        throws VersionFormatException, CoreException
-        
     {
         if( this.versions.size() > 0 )
         {
-            final Comparator comp = getVersionComparator( true, VERSION_ADAPTER );
-            final Object max = Collections.max( this.versions, comp );
-            
+            final Object max = Collections.max( this.versions );
             return (IRuntimeComponentVersion) max;
         }
         else
@@ -108,11 +92,6 @@ public final class RuntimeComponentType
         return Platform.getAdapterManager().loadAdapter( this, type.getName() );
     }
 
-    protected IVersionAdapter getVersionAdapter()
-    {
-        return VERSION_ADAPTER;
-    }
-    
     public String createVersionNotFoundErrMsg( final String verstr )
     {
         return NLS.bind( RuntimeManagerImpl.Resources.runtimeComponentVersionNotDefined,

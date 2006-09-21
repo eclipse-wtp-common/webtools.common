@@ -24,7 +24,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.DefaultVersionComparator;
-import org.eclipse.wst.common.project.facet.core.VersionFormatException;
 import org.osgi.framework.Bundle;
 
 /**
@@ -59,7 +58,7 @@ public abstract class Versionable
         {
             final IVersion ver = (IVersion) itr.next();
             
-            if( prepared.evaluate( ver ) )
+            if( prepared.check( ver ) )
             {
                 result.add( ver );
             }
@@ -79,28 +78,32 @@ public abstract class Versionable
     }
 
     public List getSortedVersions( final boolean ascending )
-    
-        throws VersionFormatException, CoreException
-        
     {
+        Comparator comp;
+        
+        if( ascending )
+        {
+            comp = null;
+        }
+        else
+        {
+            comp = new Comparator()
+            {
+                public int compare( final Object obj1,
+                                    final Object obj2 )
+                {
+                    return ( (Comparable) obj1 ).compareTo( obj2 ) * -1;
+                }
+            };
+        }
+
         final ArrayList list = new ArrayList( this.versions );
-        final IVersionAdapter adapter = getVersionAdapter();
-              
-        Collections.sort( list, getVersionComparator( ascending, adapter ) );
+        Collections.sort( list, comp );
         
         return list;
     }
     
     public Comparator getVersionComparator()
-    
-        throws CoreException
-        
-    {
-        return getVersionComparator( true, null );
-    }
-    
-    protected Comparator getVersionComparator( final boolean ascending,
-                                               final IVersionAdapter adapter )
     
         throws CoreException
         
@@ -140,36 +143,6 @@ public abstract class Versionable
             comp = this.versionComparator;
         }
         
-        if( adapter != null )
-        {
-            final Comparator base = comp;
-            
-            comp = new Comparator()
-            {
-                public int compare( final Object obj1, 
-                                    final Object obj2 ) 
-                {
-                    final String ver1 = adapter.adapt( obj1 );
-                    final String ver2 = adapter.adapt( obj2 );
-                    return base.compare( ver1, ver2 );
-                }
-            };
-        }
-        
-        if( ! ascending )
-        {
-            final Comparator base = comp;
-            
-            comp = new Comparator()
-            {
-                public int compare( final Object obj1,
-                                    final Object obj2 )
-                {
-                    return base.compare( obj1, obj2 ) * -1;
-                }
-            };
-        }
-        
         return comp;
     }
     
@@ -180,13 +153,6 @@ public abstract class Versionable
     
     public abstract String createVersionNotFoundErrMsg( String verstr );
     
-    protected abstract IVersionAdapter getVersionAdapter();
-    
-    protected static interface IVersionAdapter
-    {
-        String adapt( Object obj );
-    }
-
     private static final class Resources
     
         extends NLS

@@ -87,6 +87,11 @@ public final class Category
         this.facets.add( f );
     }
     
+    void removeProjectFacet( final IProjectFacet f )
+    {
+        this.facets.remove( f );
+    }
+    
     public Object getAdapter( final Class type )
     {
         return Platform.getAdapterManager().loadAdapter( this, type.getName() );

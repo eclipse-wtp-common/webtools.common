@@ -1,6 +1,5 @@
 package org.eclipse.wst.common.project.facet.core.tests;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -8,7 +7,6 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;

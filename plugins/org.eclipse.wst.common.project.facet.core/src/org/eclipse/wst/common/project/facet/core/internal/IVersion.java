@@ -16,6 +16,9 @@ package org.eclipse.wst.common.project.facet.core.internal;
  */
 
 public abstract interface IVersion
+
+    extends Comparable
+    
 {
     String getVersionString();
     Versionable getVersionable();
