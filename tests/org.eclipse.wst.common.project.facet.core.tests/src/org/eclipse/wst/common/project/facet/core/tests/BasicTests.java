@@ -573,7 +573,7 @@ public final class BasicTests
         checkConstraint( c2, IConstraint.Type.REQUIRES, f1, "2.0", Boolean.FALSE );
         
         c1 = (IConstraint) root.getOperand( 1 );
-        checkConstraint( c1, IConstraint.Type.CONFLICTS, f3a );
+        checkConstraint( c1, IConstraint.Type.CONFLICTS, f3a, "*" );
         
         c1 = (IConstraint) root.getOperand( 2 );
         checkConstraint( c1, IConstraint.Type.CONFLICTS, f3b, "1.0" );

@@ -396,14 +396,11 @@ public final class ProjectFacetVersion
             else
             {
                 final IProjectFacet f = (IProjectFacet) firstOperand;
-                
-                final IVersionExpr vexpr
-                    = op.getOperands().size() == 2 
-                      ? (IVersionExpr) op.getOperand( 1 ) : null;
+                final IVersionExpr vexpr = (IVersionExpr) op.getOperand( 1 );
                 
                 if( fv.getProjectFacet() == f )
                 {
-                    if( vexpr == null || vexpr.check( fv ) )
+                    if( vexpr.check( fv ) )
                     {
                         return true;
                     }
@@ -414,44 +411,64 @@ public final class ProjectFacetVersion
         }
         else if( op.getType() == IConstraint.Type.REQUIRES )
         {
-            final IProjectFacet rf = (IProjectFacet) op.getOperand( 0 );
-            final VersionExpr vexpr = (VersionExpr) op.getOperand( 1 );
-            
-            final boolean soft
-                = ( (Boolean) op.getOperand( 2 ) ).booleanValue();
+            final Boolean soft
+                = (Boolean) op.getOperand( op.getOperands().size() - 1 );
         
-            if( soft )
+            if( soft.equals( Boolean.TRUE ) )
             {
                 return false;
             }
             else
             {
-                boolean conflictsWithAllVersions = true;
+                final Object firstOperand = op.getOperand( 0 );
+                boolean conflictsWithAll = true;
                 
-                try
+                if( firstOperand instanceof IGroup )
                 {
-                    final String vexprstr = vexpr.toString();
+                    final IGroup group = (IGroup) firstOperand;
                     
-                    for( Iterator itr = rf.getVersions( vexprstr ).iterator();
-                         itr.hasNext(); )
+                    for( Iterator itr = group.getMembers().iterator(); itr.hasNext(); )
                     {
-                        final IProjectFacetVersion rfv 
+                        final IProjectFacetVersion member
                             = (IProjectFacetVersion) itr.next();
                         
-                        if( ! rfv.conflictsWith( fv ) )
+                        if( ! member.conflictsWith( fv ) )
                         {
-                            conflictsWithAllVersions = false;
+                            conflictsWithAll = false;
                             break;
                         }
                     }
                 }
-                catch( CoreException e )
+                else
                 {
-                    FacetCorePlugin.log( e );
-                    return false;
+                    final IProjectFacet rf = (IProjectFacet) firstOperand;
+                    final VersionExpr vexpr = (VersionExpr) op.getOperand( 1 );
+                    
+                    try
+                    {
+                        final String vexprstr = vexpr.toString();
+                        
+                        for( Iterator itr = rf.getVersions( vexprstr ).iterator();
+                             itr.hasNext(); )
+                        {
+                            final IProjectFacetVersion rfv 
+                                = (IProjectFacetVersion) itr.next();
+                            
+                            if( ! rfv.conflictsWith( fv ) )
+                            {
+                                conflictsWithAll = false;
+                                break;
+                            }
+                        }
+                    }
+                    catch( CoreException e )
+                    {
+                        FacetCorePlugin.log( e );
+                        return false;
+                    }
                 }
-            
-                return conflictsWithAllVersions;
+                
+                return conflictsWithAll;
             }
         }
         else

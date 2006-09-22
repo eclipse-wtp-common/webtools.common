@@ -228,6 +228,62 @@
         <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
       </action>
     </project-facet-version>
+    
+    <project-facet id="fct_f8"/>
+    
+    <project-facet-version facet="fct_f8" version="1.0">
+      <group-member id="fct_g1"/>
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+          
+    <project-facet-version facet="fct_f8" version="2.0">
+      <group-member id="fct_g1"/>
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+    
+    <project-facet-version facet="fct_f8" version="3.0">
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+    
+    <project-facet id="fct_f9"/>
+    
+    <project-facet-version facet="fct_f9" version="1.0">
+      <group-member id="fct_g1"/>
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+    
+    <project-facet id="fct_f10"/>
+
+    <project-facet-version facet="fct_f10" version="1.0">
+      <constraint>
+        <requires group="fct_g1"/>
+      </constraint>
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+
+    <project-facet-version facet="fct_f10" version="2.0">
+      <constraint>
+        <requires group="fct_g1" soft="true"/>
+      </constraint>
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+    
+    <group id="fct_g1">
+      <label>FCT Group 1</label>
+      <description>This is the description.</description>
+    </group>
 
   </extension>
 

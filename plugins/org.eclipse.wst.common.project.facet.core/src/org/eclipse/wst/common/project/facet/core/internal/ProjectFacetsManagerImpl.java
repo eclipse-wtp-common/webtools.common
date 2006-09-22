@@ -90,6 +90,7 @@ public final class ProjectFacetsManagerImpl
     private static final String EL_DESCRIPTION = "description"; //$NON-NLS-1$
     private static final String EL_EVENT_HANDLER = "event-handler"; //$NON-NLS-1$
     private static final String EL_FIXED = "fixed"; //$NON-NLS-1$
+    private static final String EL_GROUP = "group"; //$NON-NLS-1$
     private static final String EL_GROUP_MEMBER = "group-member"; //$NON-NLS-1$
     private static final String EL_LABEL = "label"; //$NON-NLS-1$
     private static final String EL_PRESET = "preset"; //$NON-NLS-1$
@@ -1234,6 +1235,17 @@ public final class ProjectFacetsManagerImpl
                 readTemplate( config );
             }
         }
+
+        for( int i = 0, n = cfgels.size(); i < n; i++ )
+        {
+            final IConfigurationElement config
+                = (IConfigurationElement) cfgels.get( i );
+            
+            if( config.getName().equals( EL_GROUP ) )
+            {
+                readGroup( config );
+            }
+        }
     }
     
     private void readCategory( final IConfigurationElement config )
@@ -1998,36 +2010,12 @@ public final class ProjectFacetsManagerImpl
                 operands[ i ] = operand;
             }
         }
-        else if( type == IConstraint.Type.REQUIRES )
+        else if( type == IConstraint.Type.REQUIRES ||
+                 type == IConstraint.Type.CONFLICTS )
         {
+            final String gid = root.getAttribute( ATTR_GROUP );
             final String fid = root.getAttribute( ATTR_FACET );
-            
-            if( fid == null )
-            {
-                reportMissingAttribute( root, ATTR_FACET );
-                return null;
-            }
-
-            final IProjectFacet f = getProjectFacet( fid );
-            
             String vexprstr = root.getAttribute( ATTR_VERSION );
-            
-            if( vexprstr == null || vexprstr.trim().length() == 0 )
-            {
-                vexprstr = IVersionExpr.WILDCARD_SYMBOL;
-            }
-
-            final VersionExpr vexpr;
-
-            try
-            {
-                vexpr = new VersionExpr( f, vexprstr, pluginId );
-            }
-            catch( CoreException e )
-            {
-                FacetCorePlugin.log( e );
-                return null;
-            }
             
             final String softStr = root.getAttribute( ATTR_SOFT );
             Boolean soft = Boolean.FALSE;
@@ -2037,18 +2025,14 @@ public final class ProjectFacetsManagerImpl
                 soft = Boolean.TRUE;
             }
             
-            operands = new Object[] { f, vexpr, soft };
-        }
-        else if( type == IConstraint.Type.CONFLICTS )
-        {
-            final String gid = root.getAttribute( ATTR_GROUP );
-            final String fid = root.getAttribute( ATTR_FACET );
-            final String vexprstr = root.getAttribute( ATTR_VERSION );
-            
             if( gid != null && ( fid != null || vexprstr != null ) )
             {
-                final String msg
-                    = NLS.bind( Resources.invalidConflictsConstraint, pluginId );
+                final String template
+                    = type == IConstraint.Type.REQUIRES
+                      ? Resources.invalidRequiresConstraint
+                      : Resources.invalidConflictsConstraint;
+                
+                final String msg = NLS.bind( template, pluginId );
                 
                 FacetCorePlugin.logError( msg, true );
                 return null;
@@ -2065,7 +2049,16 @@ public final class ProjectFacetsManagerImpl
                     return null;
                 }
                 
-                operands = new Object[] { getGroup( gid ) };
+                final IGroup group = getGroup( gid );
+                
+                if( type == IConstraint.Type.REQUIRES )
+                {
+                    operands = new Object[] { group, soft };
+                }
+                else
+                {
+                    operands = new Object[] { group };
+                }
             }
             else if( fid != null )
             {
@@ -2076,10 +2069,12 @@ public final class ProjectFacetsManagerImpl
                 {
                     f = getProjectFacet( fid );
                     
-                    if( vexprstr != null )
+                    if( vexprstr == null || vexprstr.trim().length() == 0 )
                     {
-                        vexpr = new VersionExpr( f, vexprstr, pluginId );
+                        vexprstr = IVersionExpr.WILDCARD_SYMBOL;
                     }
+                    
+                    vexpr = new VersionExpr( f, vexprstr, pluginId );
                 }
                 catch( CoreException e )
                 {
@@ -2087,9 +2082,9 @@ public final class ProjectFacetsManagerImpl
                     return null;
                 }
                 
-                if( vexpr == null )
+                if( type == IConstraint.Type.REQUIRES )
                 {
-                    operands = new Object[] { f };
+                    operands = new Object[] { f, vexpr, soft };
                 }
                 else
                 {
@@ -2252,6 +2247,41 @@ public final class ProjectFacetsManagerImpl
         }
         
         this.presets.add( id, preset );
+    }
+
+    private void readGroup( final IConfigurationElement config )
+    {
+        final String id = config.getAttribute( ATTR_ID );
+
+        if( id == null )
+        {
+            reportMissingAttribute( config, ATTR_ID );
+            return;
+        }
+        
+        if( ! isGroupDefined( id ) )
+        {
+            return;
+        }
+        
+        final Group group = (Group) getGroup( id );
+
+        final IConfigurationElement[] children = config.getChildren();
+        
+        for( int i = 0; i < children.length; i++ )
+        {
+            final IConfigurationElement child = children[ i ];
+            final String childName = child.getName();
+            
+            if( childName.equals( EL_LABEL ) )
+            {
+                group.setLabel( child.getValue().trim() );
+            }
+            else if( childName.equals( EL_DESCRIPTION ) )
+            {
+                group.setDescription( child.getValue().trim() );
+            }
+        }
     }
     
     static void reportMissingAttribute( final IConfigurationElement el,
@@ -2501,6 +2531,7 @@ public final class ProjectFacetsManagerImpl
         public static String usedInConstraint;
         public static String invalidActionType;
         public static String invalidEventHandlerType;
+        public static String invalidRequiresConstraint;
         public static String invalidConflictsConstraint;
         public static String deprecatedRuntimeChangedAction;
         public static String tracingActionSorting;

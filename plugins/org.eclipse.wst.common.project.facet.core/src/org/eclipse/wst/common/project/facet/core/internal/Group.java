@@ -30,6 +30,8 @@ public final class Group
     
 {
     private String id = null;
+    private String label = null;
+    private String description = ""; //$NON-NLS-1$
     
     private final Set members = new HashSet();
     
@@ -46,6 +48,31 @@ public final class Group
     void setId( final String id )
     {
         this.id = id;
+        
+        if( this.label == null )
+        {
+            this.label = id;
+        }
+    }
+    
+    public String getLabel()
+    {
+        return this.label;
+    }
+    
+    void setLabel( final String label )
+    {
+        this.label = label;
+    }
+    
+    public String getDescription()
+    {
+        return this.description;
+    }
+    
+    void setDescription( final String description )
+    {
+        this.description = description;
     }
     
     public Set getMembers()
@@ -60,7 +87,7 @@ public final class Group
     
     public String toString()
     {
-        return this.id;
+        return getLabel();
     }
 
 }

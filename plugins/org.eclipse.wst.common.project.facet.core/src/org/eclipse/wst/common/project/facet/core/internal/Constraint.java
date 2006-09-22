@@ -150,44 +150,64 @@ public final class Constraint
         }
         else if( this.type == Type.REQUIRES )
         {
-            final IProjectFacet rf = (IProjectFacet) this.operands.get( 0 );
-            final IVersionExpr vexpr = (IVersionExpr) this.operands.get( 1 );
-            
-            final boolean soft
-                = ( (Boolean) this.operands.get( 2 ) ).booleanValue();
-            
-            if( ! soft || validateSoftDeps )
+            final Boolean soft
+                = ( (Boolean) this.operands.get( this.operands.size() - 1 ) );
+        
+            if( ! soft.equals( Boolean.TRUE ) || validateSoftDeps )
             {
-                boolean found = false;
+                final Object firstOperand = this.operands.get( 0 );
                 
-                for( Iterator itr = facets.iterator(); itr.hasNext(); )
+                if( firstOperand instanceof IGroup )
                 {
-                    final IProjectFacetVersion fv 
-                        = (IProjectFacetVersion) itr.next();
+                    final IGroup group = (IGroup) firstOperand;
                     
-                    if( fv.getProjectFacet() == rf )
+                    if( ! containsAny( facets, group.getMembers() ) )
                     {
-                        if( vexpr.check( fv ) )
-                        {
-                            found = true;
-                        }
+                        final ValidationProblem.Type ptype
+                            = ValidationProblem.Type.REQUIRES_GROUP;
                         
-                        break;
+                        final ValidationProblem problem
+                            = new ValidationProblem( ptype, this.fv, group );
+                        
+                        result.add( problem );
                     }
                 }
-                
-                if( ! found )
+                else
                 {
-                    final ValidationProblem.Type ptype 
-                        = ValidationProblem.Type.REQUIRES;
+                    final IProjectFacet rf = (IProjectFacet) firstOperand;
+                    final IVersionExpr vexpr = (IVersionExpr) this.operands.get( 1 );
                     
-                    final ProjectFacetRef fref 
-                        = new ProjectFacetRef( rf, vexpr );
+                    boolean found = false;
                     
-                    final ValidationProblem problem
-                        = new ValidationProblem( ptype, this.fv, fref ); 
+                    for( Iterator itr = facets.iterator(); itr.hasNext(); )
+                    {
+                        final IProjectFacetVersion fv 
+                            = (IProjectFacetVersion) itr.next();
+                        
+                        if( fv.getProjectFacet() == rf )
+                        {
+                            if( vexpr.check( fv ) )
+                            {
+                                found = true;
+                            }
+                            
+                            break;
+                        }
+                    }
                     
-                    result.add( problem );
+                    if( ! found )
+                    {
+                        final ValidationProblem.Type ptype 
+                            = ValidationProblem.Type.REQUIRES;
+                        
+                        final ProjectFacetRef fref 
+                            = new ProjectFacetRef( rf, vexpr );
+                        
+                        final ValidationProblem problem
+                            = new ValidationProblem( ptype, this.fv, fref ); 
+                        
+                        result.add( problem );
+                    }
                 }
             }
         }
@@ -268,6 +288,20 @@ public final class Constraint
         }
         
         return true;
+    }
+    
+    private static boolean containsAny( final Collection a,
+                                        final Collection b )
+    {
+        for( Iterator itr = a.iterator(); itr.hasNext(); )
+        {
+            if( b.contains( itr.next() ) )
+            {
+                return true;
+            }
+        }
+        
+        return false;
     }
     
     static MultiStatus createMultiStatus()

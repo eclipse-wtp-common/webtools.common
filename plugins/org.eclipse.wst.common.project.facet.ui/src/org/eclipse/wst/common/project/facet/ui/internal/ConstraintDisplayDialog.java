@@ -429,9 +429,8 @@ public final class ConstraintDisplayDialog
     {
         public RequiresConstraintFigure( final IConstraint constraint )
         {
-            final IProjectFacet f = (IProjectFacet) constraint.getOperand( 0 );
-            final IVersionExpr vexpr = (IVersionExpr) constraint.getOperand( 1 );
-            final Boolean soft = (Boolean) constraint.getOperand( 2 );
+            final Boolean soft 
+                = (Boolean) constraint.getOperand( constraint.getOperands().size() - 1 );
             
             setLayoutManager( new ToolbarLayout() );
             setBackgroundColor( new Color( null, 255, 255, 255 ) );
@@ -442,18 +441,33 @@ public final class ConstraintDisplayDialog
             
             final Label headerLabel = new Label();
             headerLabel.setFont( BOLD_FONT );
-            headerLabel.setText( Resources.requiresOperator );
             headerLabel.setBorder( new MarginBorder( 2 ) );
             add( headerLabel );
             
             final StringBuffer bodyLabelText = new StringBuffer();
+            final Object firstOperand = constraint.getOperand( 0 );
             
-            bodyLabelText.append( f.getLabel() );
-            
-            if( ! vexpr.toString().equals( IVersionExpr.WILDCARD_SYMBOL ) )
+            if( firstOperand instanceof IGroup )
             {
-                bodyLabelText.append( ' ' );
-                bodyLabelText.append( vexpr.toDisplayString() );
+                final IGroup group = (IGroup) firstOperand;
+                
+                headerLabel.setText( Resources.requiresGroupMemberOperator );
+                bodyLabelText.append( group.toString() );
+            }
+            else
+            {
+                final IProjectFacet f = (IProjectFacet) firstOperand;
+                final IVersionExpr vexpr = (IVersionExpr) constraint.getOperand( 1 );
+    
+                headerLabel.setText( Resources.requiresFacetOperator );
+                
+                bodyLabelText.append( f.getLabel() );
+                
+                if( ! vexpr.toString().equals( IVersionExpr.WILDCARD_SYMBOL ) )
+                {
+                    bodyLabelText.append( ' ' );
+                    bodyLabelText.append( vexpr.toDisplayString() );
+                }
             }
             
             final Label bodyLabel = new Label();
@@ -522,7 +536,8 @@ public final class ConstraintDisplayDialog
         public static String pressEscToClose;
         public static String andOperator;
         public static String orOperator;
-        public static String requiresOperator;
+        public static String requiresFacetOperator;
+        public static String requiresGroupMemberOperator;
         public static String conflictsWithGroupOperator;
         public static String conflictsWithFacetOperator;
         

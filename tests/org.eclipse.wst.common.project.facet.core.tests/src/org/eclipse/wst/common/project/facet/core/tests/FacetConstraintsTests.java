@@ -21,9 +21,6 @@ public class FacetConstraintsTests
     private static IProjectFacet f1;
     private static IProjectFacetVersion f1v10;
     
-    private static IProjectFacet f2;
-    private static IProjectFacetVersion f2v10;
-    
     private static IProjectFacet f3;
     private static IProjectFacetVersion f3v10;
 
@@ -42,14 +39,23 @@ public class FacetConstraintsTests
 
     private static IProjectFacet f7;
     private static IProjectFacetVersion f7v10;
+
+    private static IProjectFacet f8;
+    private static IProjectFacetVersion f8v10;
+    private static IProjectFacetVersion f8v20;
+    private static IProjectFacetVersion f8v30;
+    
+    private static IProjectFacet f9;
+    private static IProjectFacetVersion f9v10;
+    
+    private static IProjectFacet f10;
+    private static IProjectFacetVersion f10v10;
+    private static IProjectFacetVersion f10v20;
     
     static
     {
         f1 = ProjectFacetsManager.getProjectFacet( "fct_f1" );
         f1v10 = f1.getVersion( "1.0" );
-
-        f2 = ProjectFacetsManager.getProjectFacet( "fct_f2" );
-        f2v10 = f2.getVersion( "1.0" );
 
         f3 = ProjectFacetsManager.getProjectFacet( "fct_f3" );
         f3v10 = f3.getVersion( "1.0" );
@@ -69,6 +75,18 @@ public class FacetConstraintsTests
 
         f7 = ProjectFacetsManager.getProjectFacet( "fct_f7" );
         f7v10 = f7.getVersion( "1.0" );
+
+        f8 = ProjectFacetsManager.getProjectFacet( "fct_f8" );
+        f8v10 = f8.getVersion( "1.0" );
+        f8v20 = f8.getVersion( "2.0" );
+        f8v30 = f8.getVersion( "3.0" );
+
+        f9 = ProjectFacetsManager.getProjectFacet( "fct_f9" );
+        f9v10 = f9.getVersion( "1.0" );
+
+        f10 = ProjectFacetsManager.getProjectFacet( "fct_f10" );
+        f10v10 = f10.getVersion( "1.0" );
+        f10v20 = f10.getVersion( "2.0" );
     }
     
     private FacetConstraintsTests( final String name )
@@ -91,6 +109,8 @@ public class FacetConstraintsTests
         suite.addTest( new FacetConstraintsTests( "testIndirectConflict7" ) );
         suite.addTest( new FacetConstraintsTests( "testIndirectConflict8" ) );
         suite.addTest( new FacetConstraintsTests( "testRequiresWithNoVersion" ) );
+        suite.addTest( new FacetConstraintsTests( "testGroupRequires" ) );
+        suite.addTest( new FacetConstraintsTests( "testGroupRequiresSoft" ) );
         
         return suite;
     }
@@ -163,12 +183,10 @@ public class FacetConstraintsTests
         assertFalse( f5v10.conflictsWith( f4v10 ) );
     }
     
-    /**
+    /*
      * Tests the following constraint:
      * 
-     * <pre>
-     *   &lt;requires facet="fct_f6"/&gt;
-     * </pre>
+     *   <requires facet="fct_f6"/>
      */
     
     public void testRequiresWithNoVersion()
@@ -179,6 +197,38 @@ public class FacetConstraintsTests
         assertTrue( f7v10.getConstraint().check( asSet( f6v37 ) ).isOK() );
         assertTrue( f7v10.getConstraint().check( asSet( f6v40 ) ).isOK() );
         assertTrue( f7v10.getConstraint().check( asSet( f6v45 ) ).isOK() );
+    }
+    
+    /*
+     * Tests the "requires any group member" constraint:
+     * 
+     *   <requires group="fct_g1"/>
+     */
+    
+    public void testGroupRequires()
+    {
+        assertFalse( f10v10.getConstraint().check( Collections.EMPTY_SET ).isOK() );
+        assertTrue( f10v10.getConstraint().check( asSet( f8v10 ) ).isOK() );
+        assertTrue( f10v10.getConstraint().check( asSet( f8v20 ) ).isOK() );
+        assertFalse( f10v10.getConstraint().check( asSet( f8v30 ) ).isOK() );
+        assertTrue( f10v10.getConstraint().check( asSet( f9v10 ) ).isOK() );
+        assertFalse( f10v10.getConstraint().check( asSet( f1v10 ) ).isOK() );
+    }
+
+    /*
+     * Tests the soft version of the "requires any group member" constraint:
+     * 
+     *   <requires group="fct_g1" soft="true"/>
+     */
+    
+    public void testGroupRequiresSoft()
+    {
+        assertTrue( f10v20.getConstraint().check( Collections.EMPTY_SET ).isOK() );
+        assertTrue( f10v20.getConstraint().check( asSet( f8v10 ) ).isOK() );
+        assertTrue( f10v20.getConstraint().check( asSet( f8v20 ) ).isOK() );
+        assertTrue( f10v20.getConstraint().check( asSet( f8v30 ) ).isOK() );
+        assertTrue( f10v20.getConstraint().check( asSet( f9v10 ) ).isOK() );
+        assertTrue( f10v20.getConstraint().check( asSet( f1v10 ) ).isOK() );
     }
     
     private static Set asSet( final Object obj )

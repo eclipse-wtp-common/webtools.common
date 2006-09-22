@@ -33,6 +33,9 @@ public final class ValidationProblem
         
         public static final Type REQUIRES_ONE_OF_TWO
             = new Type( Resources.requiresOneOfTwo );
+        
+        public static final Type REQUIRES_GROUP
+            = new Type( Resources.requiresGroup );
 
         public static final Type CONFLICTS 
             = new Type( Resources.oneof );
@@ -168,6 +171,7 @@ public final class ValidationProblem
     {
         public static String requires;
         public static String requiresOneOfTwo;
+        public static String requiresGroup;
         public static String oneof;
         public static String complex;
         public static String installNotSupported;

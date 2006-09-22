@@ -11,6 +11,11 @@
    </annotation>
 
    <element name="extension">
+      <annotation>
+         <documentation>
+            (no description available)
+         </documentation>
+      </annotation>
       <complexType>
          <choice>
             <element ref="project-facet"/>
@@ -20,6 +25,7 @@
             <element ref="template"/>
             <element ref="action"/>
             <element ref="event-handler"/>
+            <element ref="group"/>
          </choice>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -99,11 +105,18 @@
    <element name="requires">
       <annotation>
          <documentation>
-            A facet constraint operator that is used to declare a dependency of one facet on another. This operator will return true if the dependency is satisfied.
+            A facet constraint operator that is used to declare a dependency of one facet on another facet or any member of a group of facets. This operator will return true if the dependency is satisfied. Note that the group attribute should not be used together with the facet and version attributes.
          </documentation>
       </annotation>
       <complexType>
-         <attribute name="facet" type="string" use="required">
+         <attribute name="group" type="string">
+            <annotation>
+               <documentation>
+                  The id of the facet group that this facet is declaring a dependency on. Any member of the group will satisfy the dependency. This attribute should not be used in conjunction with the facet and version attributes.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="facet" type="string">
             <annotation>
                <documentation>
                   The id of the facet.
@@ -593,6 +606,27 @@
                <appInfo>
                   <meta.attribute kind="java" basedOn="org.eclipse.wst.common.project.facet.core.IDefaultVersionProvider"/>
                </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="group">
+      <annotation>
+         <documentation>
+            Describes a project facet group. A group is a named collection of project facet versions. It is used primarily as a parameter to the &quot;requires&quot; and &quot;conflicts&quot; constraints and allows a level of indirection where a facet does not need to know about all the members of the group. A given project facet version can belong to several groups. Groups are created automatically when used in the &quot;group-member&quot; element, so an explicit group declaration is optional. However, it does allow a label and a description to be associated with the group.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="label"/>
+            <element ref="description" minOccurs="0" maxOccurs="1"/>
+         </sequence>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Group identifier.
+               </documentation>
             </annotation>
          </attribute>
       </complexType>
