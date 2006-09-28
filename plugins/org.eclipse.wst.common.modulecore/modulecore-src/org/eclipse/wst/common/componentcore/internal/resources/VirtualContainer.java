@@ -92,7 +92,7 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 							switch (platformResource.getType()) {
 								case IResource.FOLDER :
 								case IResource.PROJECT :
-									return new VirtualFolder(getProject(), getRuntimePath().append(aPath));
+									return ComponentCore.createFolder(getProject(), getRuntimePath().append(aPath));
 								case IResource.FILE :
 									return new VirtualFile(getProject(), getRuntimePath().append(aPath));
 							}
@@ -118,7 +118,7 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 	 * @see IContainer#getFolder(org.eclipse.core.runtime.IPath)
 	 */
 	public IVirtualFolder getFolder(IPath aPath) {
-		return new VirtualFolder(getProject(), getRuntimePath().append(aPath));
+		return ComponentCore.createFolder(getProject(), getRuntimePath().append(aPath));
 	}
 
 	/**
@@ -132,7 +132,7 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 	 * @see IFolder#getFolder(java.lang.String)
 	 */
 	public IVirtualFolder getFolder(String name) {
-		return new VirtualFolder(getProject(), getRuntimePath().append(name));
+		return ComponentCore.createFolder(getProject(), getRuntimePath().append(name));
 	}
 
 	/**
@@ -188,7 +188,7 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 									if (child instanceof IFile) {
 										virtualResources.add(new VirtualFile(getProject(), newRuntimePath, (IFile) child));
 									} else {
-										virtualResources.add(new VirtualFolder(getProject(), newRuntimePath));
+										virtualResources.add(ComponentCore.createFolder(getProject(), newRuntimePath));
 									}
 								}
 							}
@@ -202,12 +202,12 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 							if (realResource != null) {
 								IPath newRuntimePath = getRuntimePath().append(localName);
 								if (fullRuntimePath.segmentCount() > getRuntimePath().segmentCount() + 1) {	// not a direct child
-									virtualResources.add(new VirtualFolder(getProject(), newRuntimePath));
+									virtualResources.add(ComponentCore.createFolder(getProject(), newRuntimePath));
 								} else {
 									if (realResource instanceof IFile) {
 										virtualResources.add(new VirtualFile(getProject(), newRuntimePath, (IFile) realResource));
 									} else {
-										virtualResources.add(new VirtualFolder(getProject(), newRuntimePath));
+										virtualResources.add(ComponentCore.createFolder(getProject(), newRuntimePath));
 									}
 								}
 							}

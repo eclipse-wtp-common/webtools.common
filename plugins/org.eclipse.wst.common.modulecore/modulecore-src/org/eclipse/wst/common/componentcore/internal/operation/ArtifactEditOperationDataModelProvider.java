@@ -43,7 +43,7 @@ public class ArtifactEditOperationDataModelProvider extends AbstractDataModelPro
 
 	public IProject getTargetProject() {
 		String projectName = (String) model.getProperty(IArtifactEditOperationDataModelProperties.PROJECT_NAME);
-		if (projectName != null)
+		if (projectName != null && projectName.length() > 0)
 			return ProjectUtilities.getProject(projectName);
 		return null;
 	}

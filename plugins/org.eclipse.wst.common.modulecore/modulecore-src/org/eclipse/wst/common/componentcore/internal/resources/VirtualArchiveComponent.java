@@ -28,6 +28,7 @@ import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
+import org.eclipse.wst.common.frameworks.internal.HashUtil;
 
 
 public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
@@ -56,6 +57,9 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 
 
 	public VirtualArchiveComponent(IProject aComponentProject,String archiveLocation, IPath aRuntimePath) {
+		if(aComponentProject == null){
+			throw new NullPointerException();
+		}
 		componentProject = aComponentProject;
 		runtimePath = aRuntimePath;
 
@@ -190,6 +194,14 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 		return archiveType;
 	}
 
+	public int hashCode() {
+		int hash = HashUtil.SEED;
+		hash = HashUtil.hash(hash, getProject().getName());
+		hash = HashUtil.hash(hash, getName());
+		hash = HashUtil.hash(hash, isBinary());
+		return hash;
+	}
+	
 	public boolean equals(Object anOther) {
 		if (anOther instanceof VirtualArchiveComponent) {
 			VirtualArchiveComponent otherComponent = (VirtualArchiveComponent) anOther;
@@ -214,11 +226,14 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 	}
 
 	public File getUnderlyingDiskFile() {
-		String osPath = "";
+		String osPath = null;
 		IPath loc = null;
 		if (getArchiveType().equals(VirtualArchiveComponent.VARARCHIVETYPE)) {
-			IPath resolvedpath = (IPath) getAdapter(VirtualArchiveComponent.ADAPTER_TYPE);
-			osPath = resolvedpath.toOSString();
+			Object adapted = getAdapter(VirtualArchiveComponent.ADAPTER_TYPE);
+			if (adapted instanceof IPath) {
+				IPath resolvedpath = (IPath) adapted;
+				osPath = resolvedpath.toOSString();
+			} 
 		} else if(!archivePath.isAbsolute()) {
 			IFile file = getProject().getFile(archivePath);
 			if(file.exists())
@@ -228,19 +243,23 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 				if(file.exists())
 					loc = file.getLocation();
 			}
-			
-			// this is not a file on the local filesystem
-			if(loc == null)  
-				return null;
-			else {
+			// this is a file on the local filesystem
+			if(loc != null)  
 				osPath = loc.toOSString();
-			}
-			
 		} else {
 			osPath = archivePath.toOSString();
 		}
+		if (osPath==null || osPath.length()==0)
+			return null;
 		File diskFile = new File(osPath);
 		return diskFile;
 	}
 
+	public String toString() {
+		if(archivePath != null){
+			return componentProject + " " +archivePath;
+		}
+		return super.toString();
+	}
+	
 }

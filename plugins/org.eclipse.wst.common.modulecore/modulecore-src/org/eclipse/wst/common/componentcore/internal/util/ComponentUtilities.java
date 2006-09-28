@@ -38,7 +38,7 @@ import org.eclipse.wst.common.componentcore.internal.operation.CreateReferenceCo
 import org.eclipse.wst.common.componentcore.internal.operation.CreateReferenceComponentsOp;
 import org.eclipse.wst.common.componentcore.internal.operation.RemoveReferenceComponentOperation;
 import org.eclipse.wst.common.componentcore.internal.operation.RemoveReferenceComponentsDataModelProvider;
-import org.eclipse.wst.common.componentcore.internal.resources.VirtualComponent;
+import org.eclipse.wst.common.componentcore.internal.resources.ResourceTimestampMappings;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
@@ -48,6 +48,8 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
 
 public class ComponentUtilities {
+	
+	private static final ResourceTimestampMappings ContextRootMapping = new ResourceTimestampMappings();
 
 	/**
 	 * Ensure the container is not read-only.
@@ -96,6 +98,15 @@ public class ComponentUtilities {
 		return null;
 	}
 
+	public static ArtifactEdit getArtifactEditForRead(IVirtualComponent comp, String type) {
+		if (comp != null) {
+			ArtifactEditRegistryReader reader = ArtifactEditRegistryReader.instance();
+			IArtifactEditFactory factory = reader.getArtifactEdit(type);
+			if (factory != null)
+				return factory.createArtifactEditForRead(comp);
+		}
+		return null;
+	}
 
 
 	public static IFile findFile(IVirtualComponent comp, IPath aPath) throws CoreException {
@@ -131,7 +142,7 @@ public class ComponentUtilities {
 				components.add(wbComp);
 			}
 		}
-		VirtualComponent[] temp = (VirtualComponent[]) components.toArray(new VirtualComponent[components.size()]);
+		IVirtualComponent[] temp = (IVirtualComponent[]) components.toArray(new IVirtualComponent[components.size()]);
 		return temp;
 	}
 	
@@ -248,14 +259,24 @@ public class ComponentUtilities {
 	 * 
 	 * @return String value of the context root for runtime of the associated module
 	 */
-	public static String getServerContextRoot(IProject project) {
+	public static String getServerContextRoot(IProject project) {		
+		
+		if(!ContextRootMapping.hasChanged(project)) {
+			/*Simply return the cached data*/
+			String data = null;
+			if(!ContextRootMapping.hasCacheError(project) && ContextRootMapping.hasCacheData(project))
+				data = (String) ContextRootMapping.getData(project);
+			return data;
+		}
 		
 		StructureEdit moduleCore = null;
 		WorkbenchComponent wbComponent = null;
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(project);
-			if (moduleCore == null || moduleCore.getComponent() == null)
+			if (moduleCore == null || moduleCore.getComponent() == null) {
+				ContextRootMapping.markError(project);
 				return null;
+			}
 			wbComponent = moduleCore.getComponent();
 		} finally {
 			if (moduleCore != null) {
@@ -266,9 +287,11 @@ public class ComponentUtilities {
 		for (int i = 0; i < existingProps.size(); i++) {
 			Property prop = (Property) existingProps.get(i);
 			if(prop.getName().equals(IModuleConstants.CONTEXTROOT)){
+				ContextRootMapping.mark(project, prop.getValue());
 				return prop.getValue();
 			}
-		}			
+		}		
+		ContextRootMapping.markError(project);
 		// If all else fails...
 		return null;
 	}
