@@ -911,8 +911,9 @@ public class StructureEdit implements IEditModelHandler {
 	 * 
 	 */
 	public WorkbenchComponent getComponent() {
-		if (getWorkbenchModules().length > 0)
-			return getWorkbenchModules()[0];
+		WorkbenchComponent[] comps = getWorkbenchModules();
+		if (comps.length > 0)
+			return comps[0];
 		return null;
 	}
 

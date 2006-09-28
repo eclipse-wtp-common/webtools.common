@@ -12,6 +12,7 @@ package org.eclipse.wst.common.componentcore;
 
 import java.util.EventObject;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IAdaptable;
@@ -300,13 +301,29 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 * Creates an instance facade for the given {@see WorkbenchComponent}.
 	 * </p>
 	 * 
-	 * @param aNature
-	 *            A non-null {@see ModuleCoreNature}&nbsp;for an accessible project
-	 * @param aModule
-	 *            A non-null {@see WorkbenchComponent}&nbsp;pointing to a module from the given
-	 *            {@see ModuleCoreNature}
+	 * @param aProject
+	 * @param toAccessAsReadOnly
+	 * @param forCreate
+	 * @param projectType
+	 * @throws IllegalArgumentException
 	 */
 	protected ArtifactEdit(IProject aProject, boolean toAccessAsReadOnly, boolean forCreate, String projectType) throws IllegalArgumentException {
+		
+		this(aProject,toAccessAsReadOnly,forCreate,projectType,null);
+	}
+	/**
+	 * <p>
+	 * Creates an instance facade for the given {@see WorkbenchComponent}.
+	 * </p>
+	 * 
+	 * @param aProject
+	 * @param toAccessAsReadOnly
+	 * @param forCreate
+	 * @param projectType - Used to pass specific editModel edit (Used to lookup factory)
+	 * @param editModelParams - Properties that can be used to create cacheKey on editModelFactory
+	 * @throws IllegalArgumentException
+	 */
+	protected ArtifactEdit(IProject aProject, boolean toAccessAsReadOnly, boolean forCreate, String projectType, Map editModelParams) throws IllegalArgumentException {
 
 		if (aProject == null || !aProject.isAccessible())
 			throw new IllegalArgumentException("Invalid project: " + aProject);
@@ -324,9 +341,9 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 		URI componentURI = ModuleURIUtil.fullyQualifyURI(aProject);
 
 		if (toAccessAsReadOnly)
-			artifactEditModel = nature.getArtifactEditModelForRead(componentURI, this, projectType);
+			artifactEditModel = nature.getArtifactEditModelForRead(componentURI, this, projectType, editModelParams);
 		else
-			artifactEditModel = nature.getArtifactEditModelForWrite(componentURI, this, projectType);
+			artifactEditModel = nature.getArtifactEditModelForWrite(componentURI, this, projectType, editModelParams);
 		isReadOnly = toAccessAsReadOnly;
 		isArtifactEditModelSelfManaged = true;
 		
@@ -455,10 +472,11 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 * @return The root object of the underlying model
 	 */
 	public EObject getContentModelRoot() {
-		if(isBinary()){
+		if(isBinary())
 		   return binaryComponentHelper.getPrimaryRootObject();
-		} 
-		return artifactEditModel.getPrimaryRootObject();
+		if (artifactEditModel!=null)
+			return artifactEditModel.getPrimaryRootObject();
+		return null;
 	}
 
 	/**
@@ -489,7 +507,7 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 */
 	public void removeListener(EditModelListener listener) {
 		if(isBinary()){
-		} else {
+		} else if (artifactEditModel!=null && !artifactEditModel.isDisposed()) {
 			artifactEditModel.removeListener(listener);
 		}
 	}
@@ -619,6 +637,8 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	}
 
 	public Object getAdapter(Class adapterType) {
+		if (adapterType == ArtifactEditModel.class)
+			return getArtifactEditModel();
 		return Platform.getAdapterManager().getAdapter(this, adapterType);
 	}
 

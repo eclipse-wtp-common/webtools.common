@@ -22,6 +22,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -33,6 +34,7 @@ import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
 import org.eclipse.jem.util.emf.workbench.nature.EMFNature;
 import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
 import org.eclipse.wst.common.componentcore.internal.ModuleStructuralModel;
+import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.impl.ArtifactEditModelFactory;
@@ -40,6 +42,7 @@ import org.eclipse.wst.common.componentcore.internal.impl.ComponentCoreURIConver
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleStructuralModelFactory;
 import org.eclipse.wst.common.componentcore.internal.impl.WTPResourceFactoryRegistry;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
+import org.eclipse.wst.common.componentcore.internal.util.ModuleCoreMessages;
 import org.eclipse.wst.common.internal.emfworkbench.edit.EditModelRegistry;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelNature;
@@ -320,32 +323,50 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 		return getArtifactEditModelForRead(aModuleURI, anAccessorKey, null);
 	}
 	
-	public ArtifactEditModel getArtifactEditModelForRead(URI aModuleURI, Object anAccessorKey, String projectType) {
-		Map params = new HashMap();
+	/**
+	 * @param aModuleURI - used to lookup project
+	 * @param anAccessorKey - used to set client accessor
+	 * @param projectType - used to determine editmodel factory
+	 * @param params - passed for specialized processing in factory
+	 * @return ArtifactEditModel instance
+	 */
+	public ArtifactEditModel getArtifactEditModelForRead(URI aModuleURI, Object anAccessorKey, String projectType, Map params) {
+		
+		if (params == null)
+			params = new HashMap();
 		params.put(ArtifactEditModelFactory.PARAM_MODULE_URI, aModuleURI);
 		if (projectType !=null)
 			return (ArtifactEditModel) getEditModelForRead(projectType, anAccessorKey, params);
 		try {
 			IProject aProject = StructureEdit.getContainingProject(aModuleURI);
 			IFacetedProject facetedProject = ProjectFacetsManager.create(aProject);
-			String[] editModelIDs = EditModelRegistry.getInstance().getRegisteredEditModelIDs();
-			for (int i=0; i<editModelIDs.length; i++) {
-				try {
-					IProjectFacet facet = ProjectFacetsManager.getProjectFacet(editModelIDs[i]);
-					if (facet != null && facetedProject.hasProjectFacet(facet)) {
-						ArtifactEditModel editModel = (ArtifactEditModel) getEditModelForRead(editModelIDs[i], anAccessorKey, params);
-						if (editModel !=null)
-							return editModel;
+			if (facetedProject != null) {
+				String[] editModelIDs = EditModelRegistry.getInstance().getRegisteredEditModelIDs();
+				for (int i=0; i<editModelIDs.length; i++) {
+					try {
+						IProjectFacet facet = ProjectFacetsManager.getProjectFacet(editModelIDs[i]);
+						if (facet != null && facetedProject.hasProjectFacet(facet)) {
+							ArtifactEditModel editModel = (ArtifactEditModel) getEditModelForRead(editModelIDs[i], anAccessorKey, params);
+							if (editModel !=null)
+								return editModel;
+						}
+					} catch (IllegalArgumentException e) {
+						// Ignore exceptions that come from ProjectFacetsManager
+						continue;
+					} catch (Exception e) {
+						ModulecorePlugin.logError(Status.ERROR, ModuleCoreMessages.Acquiring_ArtifactEdit_For_Read_Exception, e);
 					}
-				} catch (Exception e) {
-					continue;
 				}
 			}
-			
 		} catch (Exception e){
-			//Return null
+			ModulecorePlugin.logError(Status.ERROR, ModuleCoreMessages.Acquiring_ArtifactEdit_For_Read_Exception, e);
 		}
 		return null;
+	}
+	
+	public ArtifactEditModel getArtifactEditModelForRead(URI aModuleURI, Object anAccessorKey, String projectType) {
+		Map params = new HashMap();
+		return getArtifactEditModelForRead(aModuleURI, anAccessorKey, projectType, params);
 	}
 
 	/**
@@ -404,32 +425,49 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	public ArtifactEditModel getArtifactEditModelForWrite(URI aModuleURI, Object anAccessorKey) {
 		return getArtifactEditModelForWrite(aModuleURI, anAccessorKey, null);
 	}
-	public ArtifactEditModel getArtifactEditModelForWrite(URI aModuleURI, Object anAccessorKey, String projectType) {
-		Map params = new HashMap();
+	/**
+	 * @param aModuleURI - used to lookup project
+	 * @param anAccessorKey - used to set client accessor
+	 * @param projectType - used to determine editmodel factory
+	 * @param params - passed for specialized processing in factory
+	 * @return ArtifactEditModel instance
+	 */
+	public ArtifactEditModel getArtifactEditModelForWrite(URI aModuleURI, Object anAccessorKey, String projectType, Map params) {
+		
+		if (params == null)
+			params = new HashMap();
 		params.put(ArtifactEditModelFactory.PARAM_MODULE_URI, aModuleURI);
 		if (projectType != null)
 			return  (ArtifactEditModel) getEditModelForWrite(projectType, anAccessorKey, params);
 		try {
 			IProject aProject = StructureEdit.getContainingProject(aModuleURI);
 			IFacetedProject facetedProject = ProjectFacetsManager.create(aProject);
-			String[] editModelIDs = EditModelRegistry.getInstance().getRegisteredEditModelIDs();
-			for (int i=0; i<editModelIDs.length; i++) {
-				try {
-					IProjectFacet facet = ProjectFacetsManager.getProjectFacet(editModelIDs[i]);
-					if (facet != null && facetedProject.hasProjectFacet(facet)) {
-						ArtifactEditModel editModel = (ArtifactEditModel) getEditModelForWrite(editModelIDs[i], anAccessorKey, params);
-						if (editModel !=null)
-							return editModel;
+			if (facetedProject != null) {
+				String[] editModelIDs = EditModelRegistry.getInstance().getRegisteredEditModelIDs();
+				for (int i=0; i<editModelIDs.length; i++) {
+					try {
+						IProjectFacet facet = ProjectFacetsManager.getProjectFacet(editModelIDs[i]);
+						if (facet != null && facetedProject.hasProjectFacet(facet)) {
+							ArtifactEditModel editModel = (ArtifactEditModel) getEditModelForWrite(editModelIDs[i], anAccessorKey, params);
+							if (editModel !=null)
+								return editModel;
+						}
+					} catch (IllegalArgumentException e) {
+						// Ignore exceptions that come from ProjectFacetsManager
+						continue;
+					} catch (Exception e) {
+						ModulecorePlugin.logError(Status.ERROR, ModuleCoreMessages.Acquiring_ArtifactEdit_For_Write_Exception, e);
 					}
-				} catch (Exception e) {
-					continue;
 				}
 			}
-			
 		} catch (Exception e){
-			//Return null
+			ModulecorePlugin.logError(Status.ERROR, ModuleCoreMessages.Acquiring_ArtifactEdit_For_Write_Exception, e);
 		}
 		return null;
+	}
+	public ArtifactEditModel getArtifactEditModelForWrite(URI aModuleURI, Object anAccessorKey, String projectType) {
+		Map params = new HashMap();
+		return getArtifactEditModelForWrite(aModuleURI, anAccessorKey, projectType, params);
 	}
 
 	public String getNatureID() {
