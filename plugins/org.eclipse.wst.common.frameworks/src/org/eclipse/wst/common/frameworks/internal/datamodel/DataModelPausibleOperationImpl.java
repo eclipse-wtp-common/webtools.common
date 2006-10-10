@@ -385,8 +385,9 @@ public class DataModelPausibleOperationImpl extends WrappedOperation implements 
 					if (null == this.getStatus()) {
 						this.setStatus(Status.OK_STATUS);
 					}
-				} catch (Throwable e) {
+				} catch (Exception e) {
 					this.setStatus(new Status(IStatus.ERROR, WTPCommonPlugin.PLUGIN_ID, 0, WTPResourceHandler.getString("25", new Object[]{operation.getClass().getName()}), e)); //$NON-NLS-1$
+					WTPCommonPlugin.getDefault().getLogger().logError(e);
 				}
 			}
 		};

@@ -328,8 +328,9 @@ public class VirtualComponent implements IVirtualComponent {
 			if (referencedComponent==null) 
 				continue;
 			IVirtualReference vReference = StructureEdit.createVirtualReference(this, referencedComponent);
-			if (vReference == null || vReference.getReferencedComponent() == null || !vReference.getReferencedComponent().exists())
-				component.getReferencedComponents().remove(referencedComponent); 
+			if (vReference == null || vReference.getReferencedComponent() == null || !vReference.getReferencedComponent().exists()){
+				iter.remove();
+			}
 		}
 	}
 	
