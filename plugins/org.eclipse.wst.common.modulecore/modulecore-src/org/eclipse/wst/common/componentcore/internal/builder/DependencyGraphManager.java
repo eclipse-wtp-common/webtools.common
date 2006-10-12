@@ -12,6 +12,7 @@ package org.eclipse.wst.common.componentcore.internal.builder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -69,15 +70,15 @@ public class DependencyGraphManager {
 	
 	private boolean manifestTimeStampsChanged() {
 		HashMap workspaceTimeStamps = collectManifestTimeStamps();
-		if (getManifestTimeStamps().equals(workspaceTimeStamps))
+		if (timestampsMatch(getManifestTimeStamps(),workspaceTimeStamps))
 			return false;
 		return true;
 	}
 
 	private HashMap getManifestTimeStamps() {
-		if (wtpModuleTimeStamps == null)
-			wtpModuleTimeStamps = new HashMap();
-		return wtpModuleTimeStamps;
+		if (manifestTimeStamps == null)
+			manifestTimeStamps = new HashMap();
+		return manifestTimeStamps;
 	}
 
 	private HashMap collectManifestTimeStamps() {
@@ -88,7 +89,7 @@ public class DependencyGraphManager {
 			if (projects[i]==null || !projects[i].isAccessible())
 				continue;
 			manifestFile = getTimeStampFile(projects[i]);
-			if (manifestFile != null) {
+			if (manifestFile != null && manifestFile.exists() && ComponentCore.createComponent(projects[i]) != null) {
 				Long currentTimeStamp = new Long(manifestFile.getLocalTimeStamp());
 				timeStamps.put(projects[i],currentTimeStamp);
 			}
@@ -122,9 +123,14 @@ public class DependencyGraphManager {
 
 	private boolean moduleTimeStampsChanged() {
 		HashMap workspaceTimeStamps = collectModuleTimeStamps();
-		if (getWtpModuleTimeStamps().equals(workspaceTimeStamps))
+		if (timestampsMatch(getWtpModuleTimeStamps(),workspaceTimeStamps))
 			return false;
 		return true;
+	}
+
+	private boolean timestampsMatch(HashMap savedTimeStamps, HashMap workspaceTimeStamps) {
+		return savedTimeStamps.equals(workspaceTimeStamps);
+		
 	}
 	
 	private HashMap collectModuleTimeStamps() {
@@ -134,7 +140,7 @@ public class DependencyGraphManager {
 			if (projects[i]==null || !projects[i].isAccessible())
 				continue;
 			IResource wtpModulesFile = projects[i].findMember(IModuleConstants.COMPONENT_FILE_PATH); //$NON-NLS-1$
-			if (wtpModulesFile != null) {
+			if (wtpModulesFile != null && wtpModulesFile.exists() && ComponentCore.createComponent(projects[i]) != null) {
 				Long currentTimeStamp = new Long(wtpModulesFile.getLocalTimeStamp());
 				timeStamps.put(projects[i],currentTimeStamp);
 			}
@@ -145,28 +151,31 @@ public class DependencyGraphManager {
 	private void buildDependencyGraph() {
 		// Process and collect dependency references to add
 		List referencesToAdd = new ArrayList();
+		List componentProjects = new ArrayList();
 		IProject[] projects = ProjectUtilities.getAllProjects();
+		
 		for (int k=0; k<projects.length; k++) {
 			if (!projects[k].isAccessible() || projects[k].findMember(IModuleConstants.COMPONENT_FILE_PATH)==null) 
 				continue;
 			IVirtualComponent component= ComponentCore.createComponent(projects[k]);
 			if (component == null) continue;
 			referencesToAdd.addAll(getDependencyReferences(component));
+			componentProjects.add(projects[k]);
 		}
 		
-		//Update the actual graph and block other threads here
+		//Update the actual graph/timestamps and block other threads here
 		synchronized (this) {
-			List timeStampsUpdated = new ArrayList();
 			cleanDependencyGraph();
+			for (Iterator iter = componentProjects.iterator(); iter.hasNext();) {
+				IProject proj = (IProject) iter.next();
+				//For All projects (regardless if involved in references), update timestamps
+				addTimeStamp(proj);
+			}
 			for (int i=0; i<referencesToAdd.size(); i++) {
 				DependencyReference ref = (DependencyReference) referencesToAdd.get(i);
 				if (ref.targetProject == null || ref.componentProject == null || ref.targetProject.equals(ref.componentProject))
 					continue;
 				DependencyGraph.getInstance().addReference(ref.targetProject,ref.componentProject);
-				if (!timeStampsUpdated.contains(ref.componentProject)) {
-					addTimeStamp(ref.componentProject);
-					timeStampsUpdated.add(ref.componentProject);
-				}
 			}
 		}
 	}
@@ -197,6 +206,7 @@ public class DependencyGraphManager {
 
 		if (manifestFile==null)
 			return false;
+		currentTimeStamp = new Long(manifestFile.getLocalTimeStamp());
 		getManifestTimeStamps().put(project,currentTimeStamp);
 		return true;
 	}
