@@ -90,7 +90,7 @@ public class DependencyGraphManager {
 				continue;
 			manifestFile = getTimeStampFile(projects[i]);
 			if (manifestFile != null && manifestFile.exists() && ComponentCore.createComponent(projects[i]) != null) {
-				Long currentTimeStamp = new Long(manifestFile.getLocalTimeStamp());
+				Long currentTimeStamp = new Long(manifestFile.getModificationStamp());
 				timeStamps.put(projects[i],currentTimeStamp);
 			}
 		}
@@ -141,7 +141,7 @@ public class DependencyGraphManager {
 				continue;
 			IResource wtpModulesFile = projects[i].findMember(IModuleConstants.COMPONENT_FILE_PATH); //$NON-NLS-1$
 			if (wtpModulesFile != null && wtpModulesFile.exists() && ComponentCore.createComponent(projects[i]) != null) {
-				Long currentTimeStamp = new Long(wtpModulesFile.getLocalTimeStamp());
+				Long currentTimeStamp = new Long(wtpModulesFile.getModificationStamp());
 				timeStamps.put(projects[i],currentTimeStamp);
 			}
 		}
@@ -199,14 +199,14 @@ public class DependencyGraphManager {
 		IResource wtpModulesFile = project.findMember(IModuleConstants.COMPONENT_FILE_PATH);
 		if (wtpModulesFile==null)
 			return false;
-		Long currentTimeStamp = new Long(wtpModulesFile.getLocalTimeStamp());
+		Long currentTimeStamp = new Long(wtpModulesFile.getModificationStamp());
 		getWtpModuleTimeStamps().put(project,currentTimeStamp);
 		//		 Get the MANIFEST file for the given project
 		IResource manifestFile = getTimeStampFile(project);
 
 		if (manifestFile==null)
 			return false;
-		currentTimeStamp = new Long(manifestFile.getLocalTimeStamp());
+		currentTimeStamp = new Long(manifestFile.getModificationStamp());
 		getManifestTimeStamps().put(project,currentTimeStamp);
 		return true;
 	}
