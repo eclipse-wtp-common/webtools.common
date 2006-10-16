@@ -160,7 +160,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		ValidatorNameFilter[] projNatureIds = vmd.getProjectNatureFilters();
 		String[] facetFilters = vmd.getFacetFilters();
 		if (projNatureIds == null) {
-			if (facetFilters == null) {
+			if (facetFilters == null && vmd.getEnablementExpresion() == null) {
 				add(UNKNOWN_PROJECT, vmd);
 			}
 		} else {
@@ -885,7 +885,33 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			Set projVmds = null;
 			if ((projectNatures == null) || (projectNatures.length == 0)) {
 				executionMap |= 0x4;
-				clone(getValidatorMetaDataUnknownProject(), vmds);
+				
+				// Also include the validators which are enabled through enablement
+				// expression for this project.
+				// Note that the API isFacetEnabled(vmd, project) works properly 
+				// only when the plugin containing the property tester is activated.
+				// forcePluginActivation="true" may be needed in the declaration of 
+				// the enablement in the validator extension point.
+		        // <enablement>
+		        //  <test forcePluginActivation="true" property="foo.testProperty"/>
+		        // </enablement> 
+				
+				Set validatorsWithEnablementExpression = new HashSet();
+				Iterator allValidators = getAllValidators().iterator();
+				while (allValidators.hasNext()) {
+					ValidatorMetaData vmd = (ValidatorMetaData) allValidators.next();
+					if (isFacetEnabled(vmd, project)) {
+						validatorsWithEnablementExpression.add(vmd);
+					}
+				}
+				if(validatorsWithEnablementExpression.size() > 0 ){
+					validatorsWithEnablementExpression.addAll( getValidatorMetaDataUnknownProject());
+					clone(validatorsWithEnablementExpression, vmds);
+				}
+				else
+					clone(getValidatorMetaDataUnknownProject(), vmds);
+
+
 			} else {
 				executionMap |= 0x8;
 				if (logger.isLoggingLevel(Level.FINEST)) {
