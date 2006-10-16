@@ -31,9 +31,11 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.QualifiedName;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
@@ -83,8 +85,25 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	// operation will not
 	// fork.
 	protected static final boolean DEFAULT_FORCE = true; // By default, run the
+	protected static final String VALIDATIONLAUNCHERMSG = "Waiting for build"; // By default, run the
 	// operation whether
 	// or not it needs to
+	
+	class ValidationLauncherJob extends Job {
+	    private Job validationJob;
+	    public ValidationLauncherJob(Job validationJob) {
+	            super(ResourceHandler.getExternalizedMessage("VBF_VALIDATION_JOB_MSG"));
+	            
+	            setSystem(true);
+	            setRule(ResourcesPlugin.getWorkspace().getRoot());
+	            this.validationJob= validationJob;
+	    }
+	    protected IStatus run(IProgressMonitor monitor) {
+	    		validationJob.schedule();
+	            return Status.OK_STATUS;
+	    }
+	}
+	
 	/**
 	 * @deprecated Will be removed in Milestone 3. Use DEFAULT_ASYNC
 	 */
@@ -1669,6 +1688,9 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 
 	}
 	
+	
+
+	
 	private void initValidateContext(IFileDelta[] delta, IWorkbenchContext context ) {
 		 if (context instanceof WorkbenchContext) {
 			 ((WorkbenchContext)context).setValidationFileURIs(new ArrayList());
@@ -1749,6 +1771,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 							    }
 							};
 							try {
+								
 								ResourcesPlugin.getWorkspace().run(runnable, null, IWorkspace.AVOID_UPDATE, null);
 							} catch (CoreException e) {
 							   e.printStackTrace();
@@ -1759,9 +1782,12 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 					}
 		);
 		validatorjob.setPriority(Job.DECORATE);
-		validatorjob.schedule();		
+
+		ValidationLauncherJob validationLauncherJob = new ValidationLauncherJob(validatorjob);
+		validationLauncherJob.schedule();
+		
+		//validatorjob.schedule();		
 		
 	}
-	
-	
+		
 }

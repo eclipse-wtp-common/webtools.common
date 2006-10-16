@@ -104,7 +104,9 @@ public interface ResourceConstants {
 	public static final String VBF_STATUS_START_REMOVING_OLD_MESSAGES = "VBF_STATUS_START_REMOVING_OLD_MESSAGES"; //$NON-NLS-1$ 
 	public static final String VBF_STATUS_FINISH_REMOVING_OLD_MESSAGES = "VBF_STATUS_FINISH_REMOVING_OLD_MESSAGES"; //$NON-NLS-1$ 
 
-	public static final String VBF_TASK_WARN_MESSAGE_LIMIT_VAL = "VBF_TASK_WARN_MESSAGE_LIMIT_VAL"; //$NON-NLS-1$ 
+	public static final String VBF_TASK_WARN_MESSAGE_LIMIT_VAL = "VBF_TASK_WARN_MESSAGE_LIMIT_VAL"; //$NON-NLS-1$
+	
+	public static final String VBF_VALIDATION_JOB_MSG = "VBF_VALIDATION_JOB_MSG"; //$NON-NLS-1$
 
 	public static final String VBF_EXC_DISABLEV = "VBF_EXC_DISABLEV"; //$NON-NLS-1$ 
 	public static final String VBF_EXC_DISABLEH = "VBF_EXC_DISABLEH"; //$NON-NLS-1$ 
