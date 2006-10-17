@@ -15,6 +15,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.Notifier;
@@ -125,12 +126,16 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 
 	protected void initChildTranslators() {
 		List children = new ArrayList();
-		// Get extended child translators
-		Translator[] extendedChildren = TranslatorService.getInstance().getTranslators();
-        for (int i = 0; i < extendedChildren.length; i++) {
-        	if (extendedChildren[i] != null)
-            	children.add(extendedChildren[i]);
-        }
+		
+		// Get extended child translators if in OSGI mode
+		if (Platform.isRunning()) {
+			Translator[] extendedChildren = TranslatorService.getInstance().getTranslators();
+	        for (int i = 0; i < extendedChildren.length; i++) {
+	        	if (extendedChildren[i] != null)
+	            	children.add(extendedChildren[i]);
+	        }
+		}
+		
 		children.addAll(Arrays.asList(fTranslator.getChildren(getTarget(), fRenderer.getVersionID())));
 
 		VariableTranslatorFactory factory = fTranslator.getVariableTranslatorFactory();

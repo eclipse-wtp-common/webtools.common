@@ -320,8 +320,10 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 		setForceRefresh(false);
 		setModified(false); //dcb - this is required to ensure that resources without files are
 		// marked as not modified.
-		if (readReferenceCount == 0 && editReferenceCount == 0)
-			resetAsNew();
+		if (readReferenceCount == 0 && editReferenceCount == 0) {
+			getResourceSet().getResources().remove(this);
+		}
+			
 	}
 
 

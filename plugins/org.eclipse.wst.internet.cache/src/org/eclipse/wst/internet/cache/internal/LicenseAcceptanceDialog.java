@@ -155,8 +155,7 @@ public class LicenseAcceptanceDialog extends IconAndMessageDialog
 	  final Browser browser = new Browser(licenseTextComposite, SWT.BORDER);
 	  gd = new GridData(SWT.FILL, SWT.FILL, true, true);
 	  //gd.heightHint = 400;
-	  
-	  // The browser widget has problems loading files stored in jars
+//	 The browser widget has problems loading files stored in jars
 	  // so we read from the jar and set the browser text ourselves.
 	  // See bug 154721.
 	  if(licenseURL.startsWith("jar:"))

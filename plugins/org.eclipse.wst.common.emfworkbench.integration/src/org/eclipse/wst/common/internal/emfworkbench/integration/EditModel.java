@@ -457,7 +457,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 
 	protected void runSaveOperation(IWorkspaceRunnable runnable, IProgressMonitor monitor) throws SaveFailedException {
 		try {
-			ResourcesPlugin.getWorkspace().run(runnable, getProject(), IWorkspace.AVOID_UPDATE, monitor);
+			ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, monitor);
 		} catch (CoreException e) {
 			throw new SaveFailedException(e);
 		}

@@ -126,25 +126,29 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 	 * @see J2EEEditModel
 	 */
 	public final EditModel getEditModelForRead(String editModelID, Object accessorKey, Map params) {
-		EditModel editModel = getExistingEditModel(editModelID, params, true);
-		if (null == editModel) {
-			editModel = createEditModelForRead(editModelID, params);
-			synchronized (editModel) {
-				cacheEditModel(editModel, params);
-				EditModelLeastUsedCache.INSTANCE.access(editModel);
-				editModel.access(accessorKey);
-			}
-		} else {
-			synchronized (editModel) {
-				if (editModel.isDisposed() || editModel.isDisposing()) {
-					editModel = createEditModelForRead(editModelID, params);
+		try {
+			EditModel editModel = getExistingEditModel(editModelID, params, true);
+			if (null == editModel) {
+				editModel = createEditModelForRead(editModelID, params);
+				synchronized (editModel) {
 					cacheEditModel(editModel, params);
+					EditModelLeastUsedCache.getInstance().access(editModel);
+					editModel.access(accessorKey);
 				}
-				EditModelLeastUsedCache.INSTANCE.access(editModel);
-				editModel.access(accessorKey);
+			} else {
+				synchronized (editModel) {
+					if (editModel.isDisposed() || editModel.isDisposing()) {
+						editModel = createEditModelForRead(editModelID, params);
+						cacheEditModel(editModel, params);
+					}
+					EditModelLeastUsedCache.getInstance().access(editModel);
+					editModel.access(accessorKey);
+				}
 			}
+			return editModel;
+		} finally {
+			EditModelLeastUsedCache.getInstance().optimizeLRUSizeIfNecessary();
 		}
-		return editModel;
 	}
 
 	/**
@@ -222,7 +226,7 @@ public class EMFWorkbenchContext extends EMFWorkbenchContextBase implements ISyn
 		synchronized (readOnlyModels) {
 			synchronized (editableModels) {
 				Collection readOnly = readOnlyModels.values();
-				EditModelLeastUsedCache.INSTANCE.removeAllCached(readOnly);
+				EditModelLeastUsedCache.getInstance().removeAllCached(readOnly);
 				discardModels(readOnly);
 				discardModels(editableModels.values());
 			}
