@@ -1,12 +1,13 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <project
 	name="testsuite"
 	default="run"
 	basedir=".">
-	<!-- The property ${eclipse-home} should be passed into this script -->
-	<!-- Set a meaningful default value for when it is not. -->
-	<!-- <property name="eclipse-home" value="${basedir}\..\.." /> -->
+    <!-- The following properties should be passed into this script -->
+    <!-- ${eclipse-home}   -->
+    <!-- ${buildDirectory}  -->
+    <!-- ${buildLabel}        -->
 
 	<echo message="basedir ${basedir}" />
 	<echo message="eclipse place ${eclipse-home}" />
@@ -18,7 +19,9 @@
 	<property
 		name="library-file"
 		value="${eclipse-home}/plugins/org.eclipse.test_3.1.0/library.xml" />
-
+    <property
+        name="workspace"
+        value="${eclipse-home}/junitworkspaces/${plugin-name}" />
 	<!-- This target holds all initialization code that needs to be done for -->
 	<!-- all tests that are to be run. Initialization for individual tests -->
 	<!-- should be done within the body of the suite target. -->
@@ -27,25 +30,27 @@
 		<delete>
 			<fileset
 				dir="${eclipse-home}"
-				includes="org.eclipse.wst.common.snippets.tests.*xml" />
+                includes="${plugin-name}.*xml" />
 		</delete>
+        <!-- make directory, in case path doesn't exist yet -->
+        <mkdir dir="${workspace}" />
+        <!--  but delete to make sure fresh contents-->
+        <delete
+            dir="${workspace}"
+            quiet="true" />
+
 	</target>
 
 	<!-- This target defines the tests that need to be run. -->
 	<target name="suite">
-		<property
-			name="wst-folder"
-			value="${eclipse-home}/wst_folder" />
-		<delete
-			dir="${wst-folder}"
-			quiet="true" />
+
 		<ant
 			target="ui-test"
 			antfile="${library-file}"
 			dir="${eclipse-home}">
 			<property
 				name="data-dir"
-				value="${wst-folder}" />
+                value="${workspace}" />
 			<property
 				name="plugin-name"
 				value="${plugin-name}" />
@@ -56,12 +61,19 @@
 				name="plugin-path"
 				value="${eclipse-home}/plugins/${plugin-name}" />
 		</ant>
+
+        <copy
+            failonerror="false"
+            file="${workspace}/.metadata/.log"
+            tofile="${buildDirectory}/${buildLabel}/testResults/consolelogs/${plugin-name}.log" />
+
 	</target>
 
 	<!-- This target holds code to cleanup the testing environment after -->
 	<!-- after all of the tests have been run. You can use this target to -->
 	<!-- delete temporary files that have been created. -->
 	<target name="cleanup">
+        <!-- usually no need to delete workspace until next run, and leaving it allows inspection -->
 		<!--<delete dir="${workspace}" quiet="true" />-->
 	</target>
 
@@ -76,12 +88,11 @@
 			dir="${eclipse-home}">
 			<property
 				name="includes"
-				value="org.eclipse.wst.common.snippets.tests.*xml" />
+                value="${plugin-name}.*xml" />
 			<property
 				name="output-file"
 				value="${plugin-name}.xml" />
 		</ant>
-		<!--		<emailResults resultsFile="${build-results-home}/${plugin-name}.xml" addresslist="david_williams@us.ibm.com" /> -->
 	</target>
 
 </project>
