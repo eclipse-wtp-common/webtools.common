@@ -23,7 +23,6 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.util.Assert;
 import org.eclipse.jface.util.DelegatingDragAdapter;
 import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
@@ -37,7 +36,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.search.internal.ui.SearchMessages;
 import org.eclipse.search.internal.ui.SearchPlugin;
-import org.eclipse.search.internal.ui.SearchPreferencePage;
 import org.eclipse.search.internal.ui.text.EditorOpener;
 import org.eclipse.search.internal.ui.text.FileLabelProvider;
 import org.eclipse.search.internal.ui.text.IFileSearchContentProvider;
@@ -128,7 +126,9 @@ public class SearchResultPage extends AbstractTextSearchViewPage implements IAda
 		// TODO
 		//fSortByNameAction= new SortAction(SearchMessages.FileSearchPage_sort_name_label, this, FileLabelProvider.SHOW_LABEL_PATH); 
 		//fSortByPathAction= new SortAction(SearchMessages.FileSearchPage_sort_path_label, this, FileLabelProvider.SHOW_PATH_LABEL); 
-
+        // cs : I've comment this code out for now.  We need to review the changes to the base class and react accordingly.
+		// Even more importantly we need to discuss with the base guys to get API lined up for this (see bug 163177).
+		/*
 		fPropertyChangeListener= new IPropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent event) {
 				if (SearchPreferencePage.LIMIT_TABLE.equals(event.getProperty()) || SearchPreferencePage.LIMIT_TABLE_TO.equals(event.getProperty()))
@@ -139,7 +139,7 @@ public class SearchResultPage extends AbstractTextSearchViewPage implements IAda
 			}
 		};
 		SearchPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(fPropertyChangeListener);
-		
+		*/
 }
 	
 	public StructuredViewer getViewer() {

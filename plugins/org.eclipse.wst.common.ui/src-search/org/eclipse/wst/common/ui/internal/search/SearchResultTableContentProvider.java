@@ -13,7 +13,6 @@ package org.eclipse.wst.common.ui.internal.search;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.search.internal.ui.SearchPreferencePage;
 import org.eclipse.search.internal.ui.text.IFileSearchContentProvider;
 import org.eclipse.search.ui.text.AbstractTextSearchResult;
 
@@ -35,12 +34,15 @@ public class SearchResultTableContentProvider implements IStructuredContentProvi
 	public Object[] getElements(Object inputElement) {
 		if (inputElement instanceof SearchResult) {
 			Object[] elements= ((SearchResult)inputElement).getElements();
+   	        // cs : I've comment this code out for now.  We need to review the changes to the base class and react accordingly.
+			// Even more importantly we need to discuss with the base guys to get API lined up for this (see bug 163177).
+			/*
 			int tableLimit= SearchPreferencePage.getTableLimit();
 			if (SearchPreferencePage.isTableLimited() && elements.length > tableLimit) {
 				Object[] shownElements= new Object[tableLimit];
 				System.arraycopy(elements, 0, shownElements, 0, tableLimit);
 				return shownElements;
-			}
+			}*/
 			return elements;
 		}
 		return EMPTY_ARR;
@@ -54,13 +56,15 @@ public class SearchResultTableContentProvider implements IStructuredContentProvi
 	
 	public void elementsChanged(Object[] updatedElements) {
 		TableViewer viewer= getViewer();
-		boolean tableLimited= SearchPreferencePage.isTableLimited();
+	    // cs : I've comment 'tableLimited' related code out for now.  We need to review the changes to the base class and react accordingly.
+		// Even more importantly we need to discuss with the base guys to get API lined up for this (see bug 163177).
+		//boolean tableLimited= SearchPreferencePage.isTableLimited();
 		for (int i= 0; i < updatedElements.length; i++) {
 			if (fResult.getMatchCount(updatedElements[i]) > 0) {
 				if (viewer.testFindItem(updatedElements[i]) != null)
 					viewer.update(updatedElements[i], null);
 				else {
-					if (!tableLimited || viewer.getTable().getItemCount() < SearchPreferencePage.getTableLimit())
+					//if (!tableLimited || viewer.getTable().getItemCount() < SearchPreferencePage.getTableLimit())
 						viewer.add(updatedElements[i]);
 				}
 			} else
