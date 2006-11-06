@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005 - 2006 BEA Systems, Inc.
+ * Copyright (c) 2005 - 2006 BEA Systems, Inc. and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *    Karl Lum - initial API and implementation
+ *	  David Schneider, david.schneider@unisys.com - [142500] WTP properties pages fonts don't follow Eclipse preferences
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.ui.internal;
@@ -20,6 +21,7 @@ import java.util.List;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -106,7 +108,7 @@ public class FacetsPropertyPage extends PropertyPage
                     }
                 }
             );
-            
+    	    Dialog.applyDialogFont(parent);
 			return composite;
 		}
 		return null;
