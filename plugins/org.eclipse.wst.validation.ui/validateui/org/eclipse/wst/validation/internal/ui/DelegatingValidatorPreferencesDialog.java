@@ -7,6 +7,7 @@
  *
  * Contributors:
  * IBM Corporation - initial API and implementation
+ * David Schneider, david.schneider@unisys.com - [142500] WTP properties pages fonts don't follow Eclipse preferences
  *******************************************************************************/
 
 package org.eclipse.wst.validation.internal.ui;
@@ -138,6 +139,7 @@ public class DelegatingValidatorPreferencesDialog extends Dialog
     Label endSeparator = new Label(parent, SWT.SEPARATOR | SWT.HORIZONTAL);
     GridData endSeparatorData = new GridData(SWT.FILL, SWT.CENTER, true, false); 
     endSeparator.setLayoutData(endSeparatorData);
+    Dialog.applyDialogFont(parent);
     
     return parent;
   }
