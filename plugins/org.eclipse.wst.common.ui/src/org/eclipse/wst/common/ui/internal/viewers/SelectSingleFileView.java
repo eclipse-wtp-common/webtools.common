@@ -22,6 +22,7 @@ import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -33,6 +34,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -41,6 +43,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.model.WorkbenchContentProvider;
@@ -48,6 +52,7 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.wizards.datatransfer.FileSystemImportWizard;
 import org.eclipse.wst.common.ui.internal.Messages;
 import org.eclipse.wst.common.ui.internal.UIPlugin;
+import org.eclipse.wst.common.ui.internal.dialogs.SelectSingleFileDialog;
 
     
 
@@ -81,11 +86,56 @@ public class SelectSingleFileView
     Composite composite = new Composite(parent, SWT.NONE);
     composite.setLayout(new GridLayout());
     composite.setLayoutData(new GridData(GridData.FILL_BOTH));
-	Label label = new Label(composite, SWT.NONE);
-	label.setText(Messages._UI_LABEL_SOURCE_FILES);
+
+    Composite smallComposite = new Composite(composite, SWT.NONE);
+    smallComposite.setLayoutData(new GridData(GridData.FILL, GridData.HORIZONTAL_ALIGN_FILL, true, false));
+    GridLayout gridLayout = new GridLayout(2, false);
+    gridLayout.marginHeight = 0;
+    smallComposite.setLayout(gridLayout);
+    
+    Label label = new Label(smallComposite, SWT.NONE);
+	label.setText(Messages._UI_LABEL_SOURCE_FILES);	
+	label.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING, GridData.END, false, false));
+
+    //Collapse and Expand all buttons
+    ToolBar toolBar = new ToolBar(smallComposite, SWT.FLAT);
+    toolBar.setLayoutData(new GridData(GridData.END, GridData.END, true, false));
+    
+    ToolItem toolItem = new ToolItem(toolBar, SWT.NONE);
+    ImageDescriptor imageDescriptor = ImageDescriptor.createFromFile(SelectSingleFileDialog.class, "/../icons/expandAll.gif");
+    Image image = imageDescriptor.createImage();
+    toolItem.setImage(image);
+    toolItem.setToolTipText(Messages._UI_POPUP_EXPAND_ALL);
+    toolItem.addSelectionListener(new SelectionListener(){
+    	
+	public void widgetDefaultSelected(SelectionEvent e) {
+	}
+
+	public void widgetSelected(SelectionEvent e) {
+		sourceFileViewer.expandAll();
+		
+	}});
+    
+    
+    toolItem = new ToolItem(toolBar, SWT.NONE);
+    imageDescriptor = ImageDescriptor.createFromFile(SelectSingleFileDialog.class, "/../icons/collapseAll.gif");
+    image = imageDescriptor.createImage();
+    toolItem.setImage(image);
+    toolItem.setToolTipText(Messages._UI_POPUP_COLLAPSE_ALL);
+    toolItem.addSelectionListener(new SelectionListener(){
+
+	public void widgetDefaultSelected(SelectionEvent e) {
+	}
+
+	public void widgetSelected(SelectionEvent e) {
+		sourceFileViewer.collapseAll();
+		
+	}});
+
     createSourceViewer(composite);
-	  createFilterControl(composite);   
+    createFilterControl(composite);   
     createImportButton(composite);  
+    sourceFileViewer.getTree().setFocus();
     return composite;
   }
 
@@ -321,7 +371,7 @@ public void setListener(Listener listener)
        	  sourceFileViewer.addFilter((ViewerFilter)i.next());
       }
       sourceFileViewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
-      sourceFileViewer.expandToLevel(2);
+      sourceFileViewer.expandToLevel(1);
 
       if (defaultSelection != null) 
       {

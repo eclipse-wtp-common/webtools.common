@@ -38,7 +38,8 @@ public class SelectSingleFileDialog extends TitleAreaDialog
  
   public SelectSingleFileDialog(Shell parentShell, IStructuredSelection selection, boolean isFileMandatory) 
   {
-    super(parentShell);                      
+    super(parentShell);   
+    setShellStyle(getShellStyle() | SWT.RESIZE);
     if (selection == null)
     {
       selection = new StructuredSelection();
