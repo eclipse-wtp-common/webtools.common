@@ -278,9 +278,11 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
                                 }
                         }
                 } else {
-                        /*Unload if found and is not modified.*/
+                        /*Unload if found and is not modified but inconsistent.*/
+                	if (resource.isLoaded() && WorkbenchResourceHelper.isReferencedResource(resource) && !WorkbenchResourceHelper.isConsistent((ReferencedResource)resource)) {
                         deferredUnloadResources.add(resource);
                         didProcess = true;
+                	}
                 }
         } else {                
                 //Process resource as a refresh.
@@ -307,7 +309,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 			
 			if (isRemove)
 				deferredRemoveResources.add(resource);
-			else if (resource.isLoaded() && !(WorkbenchResourceHelper.isReferencedResource(resource) && WorkbenchResourceHelper.isConsistent((ReferencedResource)resource)))
+			else if (resource.isLoaded() && WorkbenchResourceHelper.isReferencedResource(resource) && !WorkbenchResourceHelper.isConsistent((ReferencedResource)resource))
 				deferredUnloadResources.add(resource);
 		}
 		return false;
