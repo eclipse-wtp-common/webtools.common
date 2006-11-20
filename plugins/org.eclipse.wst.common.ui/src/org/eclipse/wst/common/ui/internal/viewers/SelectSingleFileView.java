@@ -52,7 +52,6 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.wizards.datatransfer.FileSystemImportWizard;
 import org.eclipse.wst.common.ui.internal.Messages;
 import org.eclipse.wst.common.ui.internal.UIPlugin;
-import org.eclipse.wst.common.ui.internal.dialogs.SelectSingleFileDialog;
 
     
 
@@ -102,7 +101,7 @@ public class SelectSingleFileView
     toolBar.setLayoutData(new GridData(GridData.END, GridData.END, true, false));
     
     ToolItem toolItem = new ToolItem(toolBar, SWT.NONE);
-    ImageDescriptor imageDescriptor = ImageDescriptor.createFromFile(SelectSingleFileDialog.class, "/../icons/expandAll.gif");
+    ImageDescriptor imageDescriptor = UIPlugin.getDefault().getImageDescriptor("icons/expandAll.gif");
     Image image = imageDescriptor.createImage();
     toolItem.setImage(image);
     toolItem.setToolTipText(Messages._UI_POPUP_EXPAND_ALL);
@@ -118,7 +117,7 @@ public class SelectSingleFileView
     
     
     toolItem = new ToolItem(toolBar, SWT.NONE);
-    imageDescriptor = ImageDescriptor.createFromFile(SelectSingleFileDialog.class, "/../icons/collapseAll.gif");
+    imageDescriptor = UIPlugin.getDefault().getImageDescriptor("icons/collapseAll.gif");
     image = imageDescriptor.createImage();
     toolItem.setImage(image);
     toolItem.setToolTipText(Messages._UI_POPUP_COLLAPSE_ALL);
