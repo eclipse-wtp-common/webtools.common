@@ -198,9 +198,12 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	}
 
 	protected String shortClassName(Object o) {
-		String cn = o.getClass().getName();
-		int i = cn.lastIndexOf('.');
-		return cn.substring(i + 1, cn.length());
+		if (o != null) {
+			String cn = o.getClass().getName();
+			int i = cn.lastIndexOf('.');
+			return cn.substring(i + 1, cn.length());
+		}
+		return null;
 	}
 
 	/*
