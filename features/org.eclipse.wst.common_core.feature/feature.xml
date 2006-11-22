@@ -21,11 +21,6 @@
       <update label="%updateSiteName" url="http://download.eclipse.org/webtools/updates/"/>
    </url>
 
-   <requires>
-      <import feature="org.eclipse.jem" version="1.2" match="equivalent"/>
-      <import feature="org.eclipse.emf" version="2.2" match="equivalent"/>
-   </requires>
-
    <plugin
          id="org.eclipse.wst.common.emfworkbench.integration"
          download-size="0"

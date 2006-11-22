@@ -26,10 +26,6 @@
          id="org.eclipse.wst.common_core.feature"
          version="0.0.0"/>
 
-   <requires>
-      <import feature="org.eclipse.gef" version="3.2" match="equivalent"/>
-   </requires>
-
    <plugin
          id="org.eclipse.wst.command.env.ui"
          download-size="0"
