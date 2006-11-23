@@ -11,7 +11,6 @@
 package org.eclipse.wst.common.frameworks.datamodel;
 
 import org.eclipse.core.commands.operations.IUndoableOperation;
-import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.wst.common.environment.IEnvironment;
 
@@ -73,7 +72,7 @@ public interface IDataModelOperation extends IUndoableOperation {
 	/**
 	 * <p>
 	 * Returns the ISchedulingRule used for executing this job using
-	 * {@link IWorkspace#run(org.eclipse.core.resources.IWorkspaceRunnable, ISchedulingRule, int, org.eclipse.core.runtime.IProgressMonitor)}.
+	 * {@link org.eclipse.core.resources.IWorkspace#run(org.eclipse.core.resources.IWorkspaceRunnable, ISchedulingRule, int, org.eclipse.core.runtime.IProgressMonitor)}.
 	 * If <code>null</code> is returned, then IWorkspace.getRoot() is used as the ISchedulingRule
 	 * during execution.
 	 * </p>
@@ -81,7 +80,7 @@ public interface IDataModelOperation extends IUndoableOperation {
 	 * @return the ISchedulingRule
 	 * 
 	 * @see #getOperationExecutionFlags()
-	 * @see IWorkspace#run(org.eclipse.core.resources.IWorkspaceRunnable, ISchedulingRule, int,
+	 * @see org.eclipse.core.resources.IWorkspace#run(org.eclipse.core.resources.IWorkspaceRunnable, ISchedulingRule, int,
 	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public ISchedulingRule getSchedulingRule();
@@ -89,13 +88,13 @@ public interface IDataModelOperation extends IUndoableOperation {
 	/**
 	 * <p>
 	 * Returns the OperationExecutionFlags used for executing this Operation as a workspace job.
-	 * {@link IWorkspace#run(org.eclipse.core.resources.IWorkspaceRunnable, ISchedulingRule, int, org.eclipse.core.runtime.IProgressMonitor)}.
+	 * {@link org.eclipse.core.resources.IWorkspace#run(org.eclipse.core.resources.IWorkspaceRunnable, ISchedulingRule, int, org.eclipse.core.runtime.IProgressMonitor)}.
 	 * </p>
 	 * 
 	 * @return the OperationExecutionFlags
 	 * 
 	 * @see #getSchedulingRule()
-	 * @see IWorkspace#run(org.eclipse.core.resources.IWorkspaceRunnable, ISchedulingRule, int,
+	 * @seeorg.eclipse.core.resources.IWorkspace#run(org.eclipse.core.resources.IWorkspaceRunnable, ISchedulingRule, int,
 	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public int getOperationExecutionFlags();

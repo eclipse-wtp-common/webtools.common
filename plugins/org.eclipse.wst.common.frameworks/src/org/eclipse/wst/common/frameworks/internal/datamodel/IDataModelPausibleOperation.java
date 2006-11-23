@@ -11,17 +11,15 @@
 package org.eclipse.wst.common.frameworks.internal.datamodel;
 
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
 
 /**
  * <p>
  * IDataModelManagerOperation is an IDataModelOperation returned from
- * {@link IDataModel#getDefaultOperation()}. This Operation wraps the IDataModelOperation returned
+ * {@linkorg.eclipse.wst.common.frameworks.datamodel.IDataModel#getDefaultOperation()}. This Operation wraps the IDataModelOperation returned
  * from the IDatModelProvider backing the IDataModel that created it.
  * </p>
  * <p>
@@ -95,7 +93,7 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModelOperation;
  * This interface is not intended to be implemented by clients.
  * </p>
  * 
- * @see IDataModel#getDefaultOperation()
+ * @seeorg.eclipse.wst.common.frameworks.datamodel.IDataModel#getDefaultOperation()
  * 
  * @since 1.5
  */
@@ -107,7 +105,7 @@ public interface IDataModelPausibleOperation extends IDataModelOperation {
 	 * state it may only be executed.
 	 * </p>
 	 * 
-	 * @see IUndoableOperation#execute(IProgressMonitor, IAdaptable)
+	 * @see org.eclipse.core.commands.operations.IUndoableOperation#execute(IProgressMonitor, IAdaptable)
 	 */
 	public static final int NOT_STARTED = 0;
 	/**
@@ -116,7 +114,7 @@ public interface IDataModelPausibleOperation extends IDataModelOperation {
 	 * may only be paused by an {@link IDataModelPausibleOperationListener}.
 	 * </p>
 	 * 
-	 * @see IUndoableOperation#execute(IProgressMonitor, IAdaptable)
+	 * @see org.eclipse.core.commands.operations.IUndoableOperation#execute(IProgressMonitor, IAdaptable)
 	 * @see IDataModelPausibleOperationListener
 	 */
 	public static final int RUNNING_EXECUTE = 1;
@@ -136,7 +134,7 @@ public interface IDataModelPausibleOperation extends IDataModelOperation {
 	 * may only be paused by an {@link IDataModelPausibleOperationListener}.
 	 * </p>
 	 * 
-	 * @see IUndoableOperation#undo(IProgressMonitor, IAdaptable)
+	 * @see org.eclipse.core.commands.operations.IUndoableOperation#undo(IProgressMonitor, IAdaptable)
 	 * @see IDataModelPausibleOperationListener
 	 */
 	public static final int RUNNING_UNDO = 3;
@@ -146,7 +144,7 @@ public interface IDataModelPausibleOperation extends IDataModelOperation {
 	 * may only be paused by an {@link IDataModelPausibleOperationListener}.
 	 * </p>
 	 * 
-	 * @see IUndoableOperation#redo(IProgressMonitor, IAdaptable)
+	 * @see org.eclipse.core.commands.operations.IUndoableOperation#redo(IProgressMonitor, IAdaptable)
 	 * @see IDataModelPausibleOperationListener
 	 */
 	public static final int RUNNING_REDO = 4;
@@ -169,7 +167,7 @@ public interface IDataModelPausibleOperation extends IDataModelOperation {
 	 * </p>
 	 * 
 	 * @see #resume(IProgressMonitor, IAdaptable)
-	 * @see IUndoableOperation#execute(IProgressMonitor, IAdaptable)
+	 * @see org.eclipse.core.commands.operations.IUndoableOperation#execute(IProgressMonitor, IAdaptable)
 	 */
 	public static final int PAUSED_ROLLBACK = 6;
 	/**
@@ -196,7 +194,7 @@ public interface IDataModelPausibleOperation extends IDataModelOperation {
 	 * state it may only be undone.
 	 * </p>
 	 * 
-	 * @see IUndoableOperation#undo(IProgressMonitor, IAdaptable)
+	 * @see org.eclipse.core.commands.operations.IUndoableOperation#undo(IProgressMonitor, IAdaptable)
 	 */
 	public static final int COMPLETE_EXECUTE = 9;
 	/**
@@ -205,7 +203,7 @@ public interface IDataModelPausibleOperation extends IDataModelOperation {
 	 * state it may only be executed.
 	 * </p>
 	 * 
-	 * @see IUndoableOperation#execute(IProgressMonitor, IAdaptable)
+	 * @see org.eclipse.core.commands.operations.IUndoableOperation#execute(IProgressMonitor, IAdaptable)
 	 */
 	public static final int COMPLETE_ROLLBACK = 10;
 	/**
@@ -214,7 +212,7 @@ public interface IDataModelPausibleOperation extends IDataModelOperation {
 	 * it may only be redone.
 	 * </p>
 	 * 
-	 * @see IUndoableOperation#redo(IProgressMonitor, IAdaptable)
+	 * @see org.eclipse.core.commands.operations.IUndoableOperation#redo(IProgressMonitor, IAdaptable)
 	 */
 	public static final int COMPLETE_UNDO = 11;
 	/**
@@ -223,7 +221,7 @@ public interface IDataModelPausibleOperation extends IDataModelOperation {
 	 * it may only be udone.
 	 * </p>
 	 * 
-	 * @see IUndoableOperation#undo(IProgressMonitor, IAdaptable)
+	 * @see org.eclipse.core.commands.operations.IUndoableOperation#undo(IProgressMonitor, IAdaptable)
 	 */
 	public static final int COMPLETE_REDO = 12;
 
