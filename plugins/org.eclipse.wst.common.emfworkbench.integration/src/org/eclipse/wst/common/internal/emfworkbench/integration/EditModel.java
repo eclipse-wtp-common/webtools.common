@@ -35,7 +35,6 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.command.BasicCommandStack;
-import org.eclipse.emf.common.command.CommandStack;
 import org.eclipse.emf.common.command.CommandStackListener;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
@@ -232,7 +231,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 	}
 
 	/**
-	 * This is called with the {@link CommandStack}'s state has changed.
+	 * This is called with the {@linkorg.eclipse.emf.common.command.CommandStack}'s state has changed.
 	 */
 	public void commandStackChanged(java.util.EventObject event) {
 		if (dirtyModelEvent == null)
