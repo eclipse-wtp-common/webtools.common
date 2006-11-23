@@ -16,7 +16,6 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.wst.common.core.search.pattern.SearchPattern;
 
 /**
  * A search match represents the result of a search query.
@@ -30,7 +29,7 @@ import org.eclipse.wst.common.core.search.pattern.SearchPattern;
  * (repeatedly) as the API evolves.
  * </p>
  * 
- * @see SearchEngine#search(SearchPattern, SearchParticipant[], ISearchScope,
+ * @see SearchEngine#search(org.eclipse.wst.common.core.search.pattern.SearchPattern, SearchParticipant[], ISearchScope,
  *      SearchRequestor, org.eclipse.core.runtime.IProgressMonitor)
  */
 public class SearchMatch implements IAdaptable

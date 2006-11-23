@@ -12,7 +12,6 @@
 package org.eclipse.wst.common.core.search.document;
 
 import org.eclipse.wst.common.core.search.SearchParticipant;
-import org.eclipse.wst.common.core.search.SearchRequestor;
 
 /**
  * A search document encapsulates a content to be searched in. A search
@@ -38,7 +37,7 @@ import org.eclipse.wst.common.core.search.SearchRequestor;
  * that it can not process, e.g. Java, then XML participant would create
  * SearchDocument for that fragment which contains Java compilation unit, and
  * pass it to the Java search participant. Passing its own
- * {@link SearchRequestor} this participant can then map the match positions
+ * {@link org.eclipse.wst.common.core.search.SearchRequestor} this participant can then map the match positions
  * back to the original contents, create its own matches and report them to the
  * original requestor.
  * </p>
