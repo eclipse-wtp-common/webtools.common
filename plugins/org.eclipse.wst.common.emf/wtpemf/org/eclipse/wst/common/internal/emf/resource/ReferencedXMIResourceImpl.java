@@ -24,7 +24,6 @@ import org.eclipse.emf.common.notify.impl.NotificationImpl;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.internal.emf.utilities.IDUtil;
 
@@ -331,13 +330,14 @@ public class ReferencedXMIResourceImpl extends CompatibilityXMIResourceImpl impl
 	 * The resource has been unloaded, and there are no references. Treat the resource like a new
 	 * Resource
 	 */
-	private void resetAsNew() {
-		readReferenceCount = 1;
-		isNew = true;
-	}
+	// never used
+//	private void resetAsNew() {
+//		readReferenceCount = 1;
+//		isNew = true;
+//	}
 
 	/**
-	 * @see Resource#save(Object)
+	 * @see org.eclipse.emf.ecore.resource.Resource#save(Object)
 	 */
 	public void save(Map options) throws IOException {
 		notifyAboutToSave();

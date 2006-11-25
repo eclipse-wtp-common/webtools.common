@@ -28,7 +28,8 @@ public class TranslatorService {
 	/**
 	 * Static empty array used when no extensions found
 	 */
-	private static final Translator[] NO_TRANSLATORS = new Translator[0];
+	// never used
+	//private static final Translator[] NO_TRANSLATORS = new Translator[0];
 	
 	/**
 	 * Singleton instance of the Translator service
