@@ -16,11 +16,11 @@ import java.util.HashMap;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.util.Assert;
 import org.eclipse.jface.util.DelegatingDragAdapter;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
@@ -36,7 +36,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.search.internal.ui.SearchMessages;
 import org.eclipse.search.internal.ui.SearchPlugin;
-import org.eclipse.search.internal.ui.text.EditorOpener;
 import org.eclipse.search.internal.ui.text.FileLabelProvider;
 import org.eclipse.search.internal.ui.text.IFileSearchContentProvider;
 import org.eclipse.search.internal.ui.text.ResourceTransferDragAdapter;
@@ -110,7 +109,8 @@ public class SearchResultPage extends AbstractTextSearchViewPage implements IAda
 	private SortAction fSortByNameAction;
 	private SortAction fSortByPathAction;
 	
-	private EditorOpener fEditorOpener= new EditorOpener();
+	// never used
+	//private EditorOpener fEditorOpener= new EditorOpener();
 
 		
 	private static final String[] SHOW_IN_TARGETS= new String[] { IPageLayout.ID_RES_NAV };

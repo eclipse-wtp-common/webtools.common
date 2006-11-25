@@ -66,7 +66,10 @@ public class SelectMultiFilePage extends WizardPage {
     pageContent.setLayout(layout);
     pageContent.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-    GridData outerFrameGridData = (GridData) pageContent.getLayoutData();
+    // variable never used ... is pageContent.getLayoutData() needed?
+    //GridData outerFrameGridData = (GridData) 
+    pageContent.getLayoutData();
+    
     //		outerFrameGridData.horizontalAlignment = GridData.HORIZONTAL_ALIGN_FILL;
     //		outerFrameGridData.verticalAlignment = GridData.VERTICAL_ALIGN_FILL;
 
@@ -273,7 +276,7 @@ public class SelectMultiFilePage extends WizardPage {
       }
 
       public void widgetSelected(SelectionEvent event) {
-        java.util.List list;
+        
         if (selectedListBox.getSelectionCount() > 0)
           setRemoveButtonEnabled(true);
         else

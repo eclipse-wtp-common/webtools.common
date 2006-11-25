@@ -220,8 +220,7 @@ public class TableNavigator extends TableCursor
 
     public void addPaintListener(StructuredViewer viewer)
     {
-      final StructuredViewer tableViewer = viewer;
-
+     
       addPaintListener(new PaintListener() 
       {
          public void paintControl(PaintEvent e)
@@ -239,7 +238,6 @@ public class TableNavigator extends TableCursor
                   if (!row.isDisposed())
                   {
                      String newText = row.getText(getColumn());
-                     TableItem cursorRow = getRow();
                      if (!newText.equals(cellText) || !(row.getImage(col) == cellImage)) 
                      {
                        redraw();
