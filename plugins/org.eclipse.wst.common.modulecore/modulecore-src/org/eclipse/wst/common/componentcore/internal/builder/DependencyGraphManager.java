@@ -59,8 +59,16 @@ public class DependencyGraphManager {
 	}
 	
 	public void construct(IProject project) {
-		if (project!=null && project.isAccessible() && project.findMember(IModuleConstants.COMPONENT_FILE_PATH) !=null) //$NON-NLS-1$
+		if (project!=null && project.isAccessible() && getComponentFile(project) !=null) //$NON-NLS-1$
 			constructIfNecessary();
+	}
+
+	private IResource getComponentFile(IProject project) {
+		IResource componentFile = project.findMember(IModuleConstants.COMPONENT_FILE_PATH);
+		if (componentFile == null)
+			componentFile = project.findMember(IModuleConstants.R1_MODULE_META_FILE_PATH);
+		return componentFile;
+		
 	}
 	
 	private void constructIfNecessary() {
@@ -139,7 +147,7 @@ public class DependencyGraphManager {
 		for (int i=0; i<projects.length; i++) {
 			if (projects[i]==null || !projects[i].isAccessible())
 				continue;
-			IResource wtpModulesFile = projects[i].findMember(IModuleConstants.COMPONENT_FILE_PATH); //$NON-NLS-1$
+			IResource wtpModulesFile = getComponentFile(projects[i]); //$NON-NLS-1$
 			if (wtpModulesFile != null && wtpModulesFile.exists() && ComponentCore.createComponent(projects[i]) != null) {
 				Long currentTimeStamp = new Long(wtpModulesFile.getModificationStamp());
 				timeStamps.put(projects[i],currentTimeStamp);
@@ -155,7 +163,7 @@ public class DependencyGraphManager {
 		IProject[] projects = ProjectUtilities.getAllProjects();
 		
 		for (int k=0; k<projects.length; k++) {
-			if (!projects[k].isAccessible() || projects[k].findMember(IModuleConstants.COMPONENT_FILE_PATH)==null) 
+			if (!projects[k].isAccessible() || getComponentFile(projects[k])==null) 
 				continue;
 			IVirtualComponent component= ComponentCore.createComponent(projects[k]);
 			if (component == null) continue;
@@ -196,7 +204,7 @@ public class DependencyGraphManager {
 	
 	private boolean addTimeStamp(IProject project) {
 		// Get the .component file for the given project
-		IResource wtpModulesFile = project.findMember(IModuleConstants.COMPONENT_FILE_PATH);
+		IResource wtpModulesFile = getComponentFile(project);
 		if (wtpModulesFile==null)
 			return false;
 		Long currentTimeStamp = new Long(wtpModulesFile.getModificationStamp());
