@@ -11,8 +11,8 @@
 package org.eclipse.wst.common.componentcore.internal.impl;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -47,9 +47,9 @@ public class ResourceTreeNode {
 	 */
 	public static final int CREATE_RESOURCE_ALWAYS = 0x2;
 
-	private final Set moduleResources = Collections.synchronizedSet(new HashSet());	
-	private final Map children = Collections.synchronizedMap(new HashMap());
-	private final Map transientChildResources = Collections.synchronizedMap(new HashMap());
+	private final Set moduleResources = Collections.synchronizedSet(new LinkedHashSet());	
+	private final Map children = Collections.synchronizedMap(new LinkedHashMap());
+	private final Map transientChildResources = Collections.synchronizedMap(new LinkedHashMap());
 	private static final ComponentResource[] NO_MODULE_RESOURCES = new ComponentResource[]{};
 	private IPathProvider pathProvider;
 //	private ResourceTreeNode parent;
@@ -170,13 +170,13 @@ public class ResourceTreeNode {
 	private Set findModuleResourcesSet(IPath aFullPath, IPath aPath, int creationFlags) {
 
 		if (aPath.segmentCount() == 0) {
-			Set resources = aggregateResources(new HashSet());
+			Set resources = aggregateResources(new LinkedHashSet());
 			return resources;
 		}
 		ResourceTreeNode child = findChild(aPath.segment(0), creationFlags);
 		if (child == null)
 			return findMatchingVirtualPathsSet(aFullPath, aPath, creationFlags);
-		Set foundResources = new HashSet();
+		Set foundResources = new LinkedHashSet();
 		foundResources.addAll(child.findModuleResourcesSet(aFullPath, aPath.removeFirstSegments(1), creationFlags));
 		foundResources.addAll(findMatchingVirtualPathsSet(aFullPath, aPath, creationFlags));
 		return foundResources;
@@ -188,7 +188,7 @@ public class ResourceTreeNode {
 			ComponentResource moduleResource = null;
 			IResource eclipseResource = null;
 			IContainer eclipseContainer = null;
-			Set resultSet = new HashSet();
+			Set resultSet = new LinkedHashSet();
 			for (Iterator resourceIter = moduleResources.iterator(); resourceIter.hasNext();) {
 				moduleResource = (ComponentResource) resourceIter.next();
 				if(moduleResource.getRuntimePath() != null && moduleResource.eResource() != null) {
