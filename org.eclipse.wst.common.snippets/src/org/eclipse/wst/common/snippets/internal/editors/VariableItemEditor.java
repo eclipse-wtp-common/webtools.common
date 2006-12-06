@@ -309,7 +309,16 @@ public class VariableItemEditor implements ISnippetEditor {
 		// hook into content assist)
 		final SourceViewer sourceViewer = new SourceViewer(parent, null, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 		sourceViewer.setEditable(true);
-		sourceViewer.setDocument(new Document(fItem.getContentString()));
+		
+		// Update EOLs bug 80231
+		String systemEOL = System.getProperty("line.separator"); //$NON-NLS-1$
+		String text = StringUtils.replace(fItem.getContentString(), "\r\n", "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		text = StringUtils.replace(text, "\r", "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		if (!"\n".equals(systemEOL) && systemEOL != null) { //$NON-NLS-1$
+			text = StringUtils.replace(text, "\n", systemEOL); //$NON-NLS-1$
+		}
+		sourceViewer.setDocument(new Document(text));
+		
 		final SourceViewerConfiguration sourceViewerConfiguration = new ItemEditorSourceViewerConfiguration();
 		sourceViewer.configure(sourceViewerConfiguration);
 		content = sourceViewer.getTextWidget();
@@ -506,7 +515,12 @@ public class VariableItemEditor implements ISnippetEditor {
 	}
 
 	public void updateItem() {
-		fItem.setContentString(content.getText());
+		String text = content.getText();
+		// Update related to bug 80231
+		text = StringUtils.replace(text, "\r\n", "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		text = StringUtils.replace(text, "\r", "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		fItem.setContentString(text);
+		
 		ISnippetVariable[] variables = fItem.getVariables();
 		for (int i = 0; i < variables.length; i++) {
 			fItem.removeVariable(variables[i]);

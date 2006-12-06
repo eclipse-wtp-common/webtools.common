@@ -114,7 +114,7 @@ public class AddToSnippetsEditorActionDelegate implements IEditorActionDelegate,
 				selectedText = getDocument().get(selection.getOffset(), selection.getLength());
 
 				SnippetPaletteItem item = (SnippetPaletteItem) new SnippetPaletteItemFactory().createNewEntry(fEditorPart.getSite().getShell(), drawer);
-				item.setDescription(StringUtils.firstLineOf(selectedText) + " ..."); //$NON-NLS-1$
+				item.setDescription(StringUtils.firstLineOf(selectedText).trim() + "..."); //$NON-NLS-1$
 				item.setContentString(selectedText);
 
 				IViewPart snippets = fEditorPart.getEditorSite().getPage().showView(SnippetsPlugin.NAMES.VIEW_ID); //$NON-NLS-1$

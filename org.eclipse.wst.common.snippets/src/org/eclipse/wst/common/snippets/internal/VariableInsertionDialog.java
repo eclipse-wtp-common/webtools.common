@@ -288,7 +288,7 @@ public class VariableInsertionDialog extends Dialog {
 	}
 
 	protected void prepareText() {
-		// this is horribly inefficient
+		// this could be horribly inefficient
 		String text = fItem.getContentString();
 		ISnippetVariable[] variables = fItem.getVariables();
 		for (int i = 0; i < variables.length; i++) {
@@ -298,6 +298,14 @@ public class VariableInsertionDialog extends Dialog {
 
 		// remove all cursor markers
 		text = StringUtils.replace(text, "${cursor}", ""); //$NON-NLS-1$ //$NON-NLS-2$
+
+		// Update EOLs (bug 80231)
+		String systemEOL = System.getProperty("line.separator"); //$NON-NLS-1$
+		text = StringUtils.replace(text, "\r\n", "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		text = StringUtils.replace(text, "\r", "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+		if (!"\n".equals(systemEOL) && systemEOL != null) { //$NON-NLS-1$
+			text = StringUtils.replace(text, "\n", systemEOL); //$NON-NLS-1$
+		}
 
 		setPreparedText(text);
 	}

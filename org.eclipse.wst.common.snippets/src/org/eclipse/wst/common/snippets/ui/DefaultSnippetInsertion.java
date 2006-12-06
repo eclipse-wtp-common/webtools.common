@@ -169,6 +169,8 @@ public class DefaultSnippetInsertion implements ISnippetInsertion {
 		else {
 			insertString = StringUtils.replace(fItem.getContentString(), "${cursor}", ""); //$NON-NLS-1$ //$NON-NLS-2$
 		}
+		if (insertString == null)
+			insertString = "";
 		return insertString;
 	}
 
