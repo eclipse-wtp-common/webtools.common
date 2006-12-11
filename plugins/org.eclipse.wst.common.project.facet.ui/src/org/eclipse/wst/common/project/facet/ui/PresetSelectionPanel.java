@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.wst.common.project.facet.core.IPreset;
-import org.eclipse.wst.common.project.facet.ui.internal.AddRemoveFacetsDataModel;
+import org.eclipse.wst.common.project.facet.ui.internal.ModifyFacetedProjectDataModel;
 import org.eclipse.wst.common.project.facet.ui.internal.AbstractDataModel.IDataModelListener;
 
 public final class PresetSelectionPanel
@@ -33,11 +33,11 @@ public final class PresetSelectionPanel
     private final Group group;
     private final Combo presetsCombo;
     private final Label descLabel;
-    private final AddRemoveFacetsDataModel model;
+    private final ModifyFacetedProjectDataModel model;
     
     public PresetSelectionPanel( final Composite parent,
                                  final int style,
-                                 final AddRemoveFacetsDataModel model )
+                                 final ModifyFacetedProjectDataModel model )
     {
         super( parent, style );
         
@@ -70,7 +70,7 @@ public final class PresetSelectionPanel
         
         this.model.addListener
         ( 
-            AddRemoveFacetsDataModel.EVENT_SELECTED_PRESET_CHANGED,
+            ModifyFacetedProjectDataModel.EVENT_SELECTED_PRESET_CHANGED,
             new IDataModelListener()
             {
                 public void handleEvent()

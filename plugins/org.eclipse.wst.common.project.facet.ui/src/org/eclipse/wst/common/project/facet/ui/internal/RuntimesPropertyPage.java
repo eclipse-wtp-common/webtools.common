@@ -46,7 +46,7 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
-import org.eclipse.wst.common.project.facet.ui.AddRemoveFacetsWizard;
+import org.eclipse.wst.common.project.facet.ui.ModifyFacetedProjectWizard;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -142,12 +142,12 @@ public class RuntimesPropertyPage extends PropertyPage
             
             hint.setLayoutData( gd );
             
-            final Hyperlink addRemoveLink = new Hyperlink( composite, SWT.NONE );
-            addRemoveLink.setForeground( parent.getDisplay().getSystemColor( SWT.COLOR_DARK_BLUE ) );
-            addRemoveLink.setUnderlined( true );
-            addRemoveLink.setText( Resources.addRemoveLinkLabel );
+            final Hyperlink uninstallFacetsLink = new Hyperlink( composite, SWT.NONE );
+            uninstallFacetsLink.setForeground( parent.getDisplay().getSystemColor( SWT.COLOR_DARK_BLUE ) );
+            uninstallFacetsLink.setUnderlined( true );
+            uninstallFacetsLink.setText( Resources.uninstallFacetsLinkLabel );
             
-            addRemoveLink.addHyperlinkListener
+            uninstallFacetsLink.addHyperlinkListener
             (
                 new HyperlinkAdapter() 
                 {
@@ -240,7 +240,7 @@ public class RuntimesPropertyPage extends PropertyPage
     
     private void performAddRemoveFacets()
     {
-        final IWizard wizard = new AddRemoveFacetsWizard( this.project );
+        final IWizard wizard = new ModifyFacetedProjectWizard( this.project );
         final WizardDialog dialog = new WizardDialog( getShell(), wizard );
         
         dialog.open();     
@@ -295,7 +295,7 @@ public class RuntimesPropertyPage extends PropertyPage
     {
         public static String errDlgTitle;
         public static String hint;
-        public static String addRemoveLinkLabel;
+        public static String uninstallFacetsLinkLabel;
         
         static
         {

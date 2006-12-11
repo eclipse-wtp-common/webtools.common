@@ -38,7 +38,7 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 public abstract class FacetedProjectWizard 
 
-    extends AddRemoveFacetsWizard 
+    extends ModifyFacetedProjectWizard 
     implements INewWizard
     
 {

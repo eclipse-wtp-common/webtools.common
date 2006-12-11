@@ -2229,8 +2229,33 @@ public final class ProjectFacetsManagerImpl
                     return;
                 }
                 
-                final IProjectFacetVersion fv
-                    = getProjectFacet( fid ).getVersion( fver );
+                if( ! isProjectFacetDefined( fid ) )
+                {
+                    final String msg
+                        = Resources.bind( Resources.presetUsesUnknownFacet, id, 
+                                          config.getContributor().getName(), 
+                                          fid );
+                    
+                    FacetCorePlugin.logError( msg );
+                    
+                    return;
+                }
+                
+                final IProjectFacet f = getProjectFacet( fid );
+                
+                if( ! f.hasVersion( fver ) )
+                {
+                    final String msg
+                        = Resources.bind( Resources.presetUsesUnknownFacetVersion, 
+                                          id, config.getContributor().getName(),
+                                          fid, fver );
+                    
+                    FacetCorePlugin.logError( msg );
+                    
+                    return;
+                }
+                
+                final IProjectFacetVersion fv = f.getVersion( fver );
                 
                 preset.addProjectFacet( fv );
             }
@@ -2526,6 +2551,8 @@ public final class ProjectFacetsManagerImpl
         public static String actionAlreadyDefined;
         public static String groupNotDefined;
         public static String presetNotDefined;
+        public static String presetUsesUnknownFacet;
+        public static String presetUsesUnknownFacetVersion;
         public static String templateNotDefined;
         public static String usedInPlugin;
         public static String usedInConstraint;

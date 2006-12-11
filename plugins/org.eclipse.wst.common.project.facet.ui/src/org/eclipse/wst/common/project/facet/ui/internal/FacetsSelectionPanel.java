@@ -148,7 +148,7 @@ public final class FacetsSelectionPanel
     private final ArrayList selectionListeners;
     private ConflictingFacetsFilter conflictingFilter;
     
-    private final AddRemoveFacetsDataModel model;
+    private final ModifyFacetedProjectDataModel model;
     
     public interface IFilter 
     {
@@ -159,7 +159,7 @@ public final class FacetsSelectionPanel
                                  final int style,
                                  final IWizardContext context,
                                  final Set base,
-                                 final AddRemoveFacetsDataModel model )
+                                 final ModifyFacetedProjectDataModel model )
     {
         super( parent, style );
 
@@ -542,7 +542,7 @@ public final class FacetsSelectionPanel
         Dialog.applyDialogFont(parent);
     }
     
-    public AddRemoveFacetsDataModel getDataModel()
+    public ModifyFacetedProjectDataModel getDataModel()
     {
         return this.model;
     }
@@ -1250,14 +1250,14 @@ public final class FacetsSelectionPanel
             }
         };
 
-        this.model.addListener( AddRemoveFacetsDataModel.EVENT_SELECTABLE_PRESETS_CHANGED,
+        this.model.addListener( ModifyFacetedProjectDataModel.EVENT_SELECTABLE_PRESETS_CHANGED,
                                 modelToViewContentsListener );
         
         // Selection : model -> view
         
         this.model.addListener
         ( 
-            AddRemoveFacetsDataModel.EVENT_SELECTED_PRESET_CHANGED, 
+            ModifyFacetedProjectDataModel.EVENT_SELECTED_PRESET_CHANGED, 
             new IDataModelListener()
             {
                 public void handleEvent()

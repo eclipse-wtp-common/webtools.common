@@ -19,6 +19,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 
 /**
@@ -463,6 +464,19 @@ public interface IFacetedProject
                             IProgressMonitor monitor )
     
         throws CoreException;
+    
+    /**
+     * Peforms a variety of consistency checks over the faceted project. The
+     * result of the validation is returned as a status object. 
+     *
+     * @param monitor a progress monitor, or <code>null</code> if progress
+     *    reporting and cancellation are not desired
+     * @return a status object with code <code>IStatus.OK</code> if this
+     *   faceted project is valid, otherwise a status object indicating what is 
+     *   wrong with it
+     */
+    
+    IStatus validate( IProgressMonitor monitor );
     
     IMarker createErrorMarker( String message )
     

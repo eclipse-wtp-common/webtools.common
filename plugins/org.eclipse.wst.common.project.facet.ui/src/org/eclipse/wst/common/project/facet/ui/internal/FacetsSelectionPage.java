@@ -61,11 +61,11 @@ public final class FacetsSelectionPage
     private List listeners;
     private List initialSyncWithPresetsCombos;
     private IRuntime initialSetDefaultFacetsForRuntime;
-    private AddRemoveFacetsDataModel model;
+    private ModifyFacetedProjectDataModel model;
 
     public FacetsSelectionPage( final IWizardContext context,
                                 final Set base,
-                                final AddRemoveFacetsDataModel model )
+                                final ModifyFacetedProjectDataModel model )
     {
         super( "facets.selection.page" ); //$NON-NLS-1$
 

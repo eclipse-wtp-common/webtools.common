@@ -13,10 +13,10 @@
    <element name="extension">
       <complexType>
          <choice>
-            <element ref="runtime-component-type"/>
-            <element ref="runtime-component-version"/>
-            <element ref="adapter"/>
-            <element ref="supported"/>
+            <element ref="runtime-component-type" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="runtime-component-version" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="adapter" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="supported" minOccurs="0" maxOccurs="unbounded"/>
          </choice>
          <attribute name="point" type="string" use="required">
             <annotation>

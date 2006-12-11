@@ -13,6 +13,7 @@ package org.eclipse.wst.common.project.facet.core.internal;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
@@ -43,6 +44,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -65,6 +67,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -127,6 +130,7 @@ public final class FacetedProject
     private final Object lock = new Object();
     private boolean isBeingModified = false;
     private Thread modifierThread = null;
+    private Exception parsingException;
     
     FacetedProject( final IProject project )
     
@@ -138,6 +142,7 @@ public final class FacetedProject
         this.fixed = new CopyOnWriteSet();
         this.targetedRuntimes = new CopyOnWriteSet();
         this.listeners = new ArrayList();
+        this.parsingException = null;
         
         this.f = project.getFile( FACETS_METADATA_FILE );
         
@@ -350,6 +355,34 @@ public final class FacetedProject
                 
                 final IActionDefinition def 
                     = fv.getActionDefinition( this.facets, type );
+                
+                if( monitor != null )
+                {
+                    final String subTaskDescriptionTemplate;
+                    
+                    if( type == Action.Type.INSTALL )
+                    {
+                        subTaskDescriptionTemplate = Resources.taskInstallingFacet; 
+                    }
+                    else if( type == Action.Type.UNINSTALL )
+                    {
+                        subTaskDescriptionTemplate = Resources.taskUninstallingFacet;
+                    }
+                    else if( type == Action.Type.VERSION_CHANGE )
+                    {
+                        subTaskDescriptionTemplate = Resources.taskChangingFacetVersion;
+                    }
+                    else
+                    {
+                        throw new IllegalStateException();
+                    }
+                    
+                    final String subTaskDescription
+                        = NLS.bind( subTaskDescriptionTemplate,
+                                    fv.getProjectFacet().getLabel() );
+                    
+                    monitor.subTask( subTaskDescription );
+                }
                 
                 callEventHandlers( fv, getPreEventHandlerType( type ), 
                                    action.getConfig(), submon( monitor, 10 ) );
@@ -945,6 +978,171 @@ public final class FacetedProject
         }
     }
     
+    public IStatus validate( final IProgressMonitor monitor )
+    {
+        synchronized( this.lock )
+        {
+            if( monitor != null )
+            {
+                monitor.beginTask( Resources.taskValidatingFacetedProject, 5 );
+            }
+            
+            try
+            {
+                final List errors = new ArrayList();
+                final List warnings = new ArrayList(); 
+                
+                // Check for parsing problems.
+                
+                if( this.parsingException != null )
+                {
+                    if( this.parsingException instanceof SAXException )
+                    {
+                        final String msg 
+                            = NLS.bind( Resources.metadataFileCorrupted, 
+                                        this.f.getFullPath().toString() );
+                        
+                        errors.add( msg );
+                    }
+                    else
+                    {
+                        final String msg 
+                            = NLS.bind( Resources.couldNotReadMetadataFile, 
+                                        this.f.getFullPath().toString() );
+                        
+                        errors.add( msg );
+                    }
+                }
+                
+                if( monitor != null )
+                {
+                    monitor.worked( 1 );
+                }
+                
+                // Are any of the target runtimes not defined?
+                
+                for( Iterator itr1 = getTargetedRuntimes().iterator();
+                     itr1.hasNext(); )
+                {
+                    final IRuntime r = (IRuntime) itr1.next();
+                    
+                    if( r instanceof UnknownRuntime )
+                    {
+                        final String msg
+                            = NLS.bind( Resources.runtimeNotDefined, r.getName() );
+                        
+                        errors.add( msg );
+                    }
+                }
+                
+                if( monitor != null )
+                {
+                    monitor.worked( 1 );
+                }
+                
+                // Is an installed facet not supported by the runtime?
+                
+                for( Iterator itr1 = getTargetedRuntimes().iterator();
+                     itr1.hasNext(); )
+                {
+                    final IRuntime r = (IRuntime) itr1.next();
+                    
+                    for( Iterator itr2 = getProjectFacets().iterator(); 
+                         itr2.hasNext(); )
+                    {
+                        final IProjectFacetVersion fv 
+                            = (IProjectFacetVersion) itr2.next();
+                        
+                        if( ! r.supports( fv ) )
+                        {
+                            final String msg
+                                = NLS.bind( Resources.facetNotSupportedByTarget, 
+                                            fv.toString(), r.getName() );
+                            
+                            errors.add( msg );
+                        }
+                    }
+                }
+                
+                if( monitor != null )
+                {
+                    monitor.worked( 1 );
+                }
+                
+                // Does the project contain any unknown facets or versions?
+                
+                for( Iterator itr = getProjectFacets().iterator(); 
+                     itr.hasNext(); )
+                {
+                    final IProjectFacetVersion fv = (IProjectFacetVersion) itr.next();
+                    final IProjectFacet f = fv.getProjectFacet();
+                    
+                    if( f.getPluginId() == null )
+                    {
+                        final String msg 
+                            = NLS.bind( Resources.installedFacetNotFound, f.getId() );
+                        
+                        warnings.add( msg );
+                    }
+                    else if( fv.getPluginId() == null )
+                    {
+                        final String msg
+                            = NLS.bind( Resources.installedFacetVersionNotFound, 
+                                        f.getId(), fv.getVersionString() );
+
+                        warnings.add( msg );
+                    }
+                }
+                
+                if( monitor != null )
+                {
+                    monitor.worked( 1 );
+                }
+                
+                // Compile the result.
+                
+                if( errors.isEmpty() && warnings.isEmpty() )
+                {
+                    return Status.OK_STATUS;
+                }
+                else
+                {
+                    final String msg 
+                        = NLS.bind( Resources.projectValidationFailed, 
+                                    this.project.getName() );
+                    
+                    final IStatus[] starray 
+                        = new IStatus[ errors.size() + warnings.size() ];
+                    
+                    for( int i = 0, n = errors.size(); i < n; i++ )
+                    {
+                        starray[ i ] 
+                            = new Status( IStatus.ERROR, FacetCorePlugin.PLUGIN_ID,
+                                          (String) errors.get( i ) );
+                    }
+                    
+                    for( int i = 0, n = warnings.size(), offset = errors.size(); 
+                         i < n; i++ )
+                    {
+                        starray[ i ] 
+                            = new Status( IStatus.WARNING, FacetCorePlugin.PLUGIN_ID,
+                                          (String) warnings.get( i + offset ) );
+                    }
+                    
+                    return new MultiStatus( FacetCorePlugin.PLUGIN_ID, -1,
+                                            starray, msg, null );
+                }
+            }
+            finally
+            {
+                if( monitor != null )
+                {
+                    monitor.done();
+                }
+            }
+        }
+    }
+    
     public IMarker createErrorMarker( final String message )
     
         throws CoreException
@@ -1393,6 +1591,7 @@ public final class FacetedProject
         }
         
         this.fModificationStamp = this.f.getModificationStamp();
+        this.parsingException = null;
     }
 
     public void refresh()
@@ -1431,7 +1630,21 @@ public final class FacetedProject
                 
                 this.fModificationStamp = this.f.getModificationStamp();
                 
-                final Element root = parse( this.f.getLocation().toFile() );
+                final Element root;
+                
+                try
+                {
+                    root = parse( this.f.getLocation().toFile() );
+                    this.parsingException = null;
+                }
+                catch( Exception e )
+                {
+                    this.parsingException = e;
+                    notifyListeners();
+                    
+                    return;
+                }
+                
                 final Element[] elements = children( root );
                 
                 for( int i = 0; i < elements.length; i++ )
@@ -1540,6 +1753,9 @@ public final class FacetedProject
     }
     
     private static Element parse( final File f )
+    
+        throws IOException, SAXException
+        
     {
         final DocumentBuilder docbuilder;
         
@@ -1569,14 +1785,7 @@ public final class FacetedProject
             throw new RuntimeException( e );
         }
 
-        try
-        {
-            return docbuilder.parse( f ).getDocumentElement();
-        }
-        catch( Exception e )
-        {
-            throw new RuntimeException( e );
-        }
+        return docbuilder.parse( f ).getDocumentElement();
     }
     
     private Element[] children( final Element element )
@@ -1636,6 +1845,23 @@ public final class FacetedProject
         public static String tracingDelegateStarting;
         public static String tracingDelegateFinished;
         public static String newPrimaryNotTargetRuntime;
+        
+        // Task Descriptions
+        
+        public static String taskValidatingFacetedProject;
+        public static String taskInstallingFacet;
+        public static String taskUninstallingFacet;
+        public static String taskChangingFacetVersion;
+        
+        // Validation Messages
+        
+        public static String projectValidationFailed;
+        public static String metadataFileCorrupted;
+        public static String couldNotReadMetadataFile;
+        public static String runtimeNotDefined;
+        public static String facetNotSupportedByTarget;
+        public static String installedFacetNotFound;
+        public static String installedFacetVersionNotFound;
         
         static
         {

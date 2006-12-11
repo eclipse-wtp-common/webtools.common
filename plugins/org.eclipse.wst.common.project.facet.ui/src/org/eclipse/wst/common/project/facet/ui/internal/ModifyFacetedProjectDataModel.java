@@ -21,7 +21,7 @@ import org.eclipse.wst.common.project.facet.core.IPreset;
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
-public final class AddRemoveFacetsDataModel
+public final class ModifyFacetedProjectDataModel
 
     extends AbstractDataModel
     
@@ -37,7 +37,7 @@ public final class AddRemoveFacetsDataModel
     private IPreset selectedPreset;
     private final ChangeTargetedRuntimesDataModel runtimesDataModel;
     
-    public AddRemoveFacetsDataModel()
+    public ModifyFacetedProjectDataModel()
     {
         this.presets = new HashSet();
         this.presetsReadOnly = Collections.unmodifiableSet( this.presets );

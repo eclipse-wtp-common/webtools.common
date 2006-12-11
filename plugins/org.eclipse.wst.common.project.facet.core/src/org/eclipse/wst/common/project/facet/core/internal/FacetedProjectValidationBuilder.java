@@ -26,7 +26,11 @@ import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectValidator;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
@@ -63,28 +67,81 @@ public final class FacetedProjectValidationBuilder
         throws CoreException
         
     {
-        final IProject proj = getProject();
-        final IFacetedProject fproj = ProjectFacetsManager.create( proj );
-        
-        proj.deleteMarkers( IFacetedProjectValidator.BASE_MARKER_ID, true, 
-                            IResource.DEPTH_INFINITE );
-        
-        for( Iterator itr = validators.iterator(); itr.hasNext(); )
+        if( monitor != null )
         {
-            final ValidatorDefinition def = (ValidatorDefinition) itr.next();
-            
-            if( def.isApplicable( fproj.getProjectFacets() ) )
-            {
-                final IFacetedProjectValidator validator = def.getValidator();
-                
-                if( validator != null )
-                {
-                    validator.validate( fproj );
-                }
-            }
+            monitor.beginTask( Resources.taskDescription, 3 );
         }
         
-        return new IProject[0];
+        try
+        {
+            final IProject proj = getProject();
+            final IFacetedProject fproj = ProjectFacetsManager.create( proj );
+            
+            // Delete existing problem markers.
+            
+            proj.deleteMarkers( IFacetedProjectValidator.BASE_MARKER_ID, true, 
+                                IResource.DEPTH_INFINITE );
+            
+            worked( monitor, 1 );
+            
+            // Perform basic validation.
+            
+            final IStatus st = fproj.validate( submon( monitor, 1 ) );
+            
+            if( ! st.isOK() )
+            {
+                final IStatus[] problems = st.getChildren();
+                
+                for( int i = 0; i < problems.length; i++ )
+                {
+                    final IStatus problem = problems[ i ];
+                    final int severity = problem.getSeverity();
+                    final String message = problem.getMessage();
+                    
+                    if( severity == IStatus.ERROR )
+                    {
+                        fproj.createErrorMarker( message );
+                    }
+                    else if( severity == IStatus.WARNING )
+                    {
+                        fproj.createWarningMarker( message );
+                    }
+                }
+            }
+            
+            // Call the registered validators.
+            
+            for( Iterator itr = validators.iterator(); itr.hasNext(); )
+            {
+                if( monitor != null && monitor.isCanceled() )
+                {
+                    throw new OperationCanceledException();
+                }
+                
+                final ValidatorDefinition def = (ValidatorDefinition) itr.next();
+                
+                if( def.isApplicable( fproj.getProjectFacets() ) )
+                {
+                    final IFacetedProjectValidator validator = def.getValidator();
+                    
+                    if( validator != null )
+                    {
+                        validator.validate( fproj );
+                    }
+                }
+            }
+            
+            worked( monitor, 1 );
+            
+            return new IProject[0];
+        }
+        finally
+        {
+            if( monitor != null )
+            {
+                monitor.done();
+            }
+        }
     }
     
     private static void readMetadata()
@@ -164,6 +221,33 @@ public final class FacetedProjectValidationBuilder
         }
     }
     
+    private static SubProgressMonitor submon( final IProgressMonitor parent,
+                                              final int ticks )
+    {
+        if( parent == null )
+        {
+            return null;
+        }
+        else
+        {
+            return new SubProgressMonitor( parent, ticks );
+        }
+    }
+    
+    private static void worked( final IProgressMonitor monitor,
+                                final int ticks )
+    {
+        if( monitor != null )
+        {
+            monitor.worked( ticks );
+            
+            if( monitor.isCanceled() )
+            {
+                throw new OperationCanceledException();
+            }
+        }
+    }
+    
     private static final class ValidatorDefinition
     {
         public String plugin;
@@ -208,4 +292,17 @@ public final class FacetedProjectValidationBuilder
         }
     }
             
+    private static final class Resources
+    
+        extends NLS
+        
+    {
+        public static String taskDescription;
+        
+        static
+        {
+            initializeMessages( FacetedProjectValidationBuilder.class.getName(), 
+                                Resources.class );
+        }
+    }
 }

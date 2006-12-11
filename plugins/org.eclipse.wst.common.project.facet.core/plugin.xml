@@ -54,12 +54,6 @@
     <persistent value="true"/>
   </extension>
   
-  <extension
-    point="org.eclipse.wst.common.project.facet.core.validators">
-    <validator 
-      class="org.eclipse.wst.common.project.facet.core.internal.BasicFacetedProjectValidator"/>
-  </extension>    
-
   <extension point="org.eclipse.core.runtime.adapters">
     <factory 
       class="org.eclipse.wst.common.project.facet.core.internal.FacetedProjectAdapter" 
