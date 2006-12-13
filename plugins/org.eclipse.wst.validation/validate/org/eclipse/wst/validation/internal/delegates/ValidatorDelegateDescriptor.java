@@ -30,11 +30,6 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 public class ValidatorDelegateDescriptor
 {
   /**
-   * The instance of the validator refered to by this descriptor.
-   */
-  private IValidator delegate;
-
-  /**
    * The platform configuration element describing this delegate.
    */
   private IConfigurationElement delegateConfiguration;
@@ -117,21 +112,15 @@ public class ValidatorDelegateDescriptor
    */
   public IValidator getValidator() throws ValidationException
   {
-    if (delegate != null)
-    {
-      return delegate;
-    }
-
     try
     {
-      delegate = (IValidator) delegateConfiguration.createExecutableExtension(ValidatorDelegatesRegistryReader.CLASS_ATTRIBUTE);
+      IValidator delegate = (IValidator) delegateConfiguration.createExecutableExtension(ValidatorDelegatesRegistryReader.CLASS_ATTRIBUTE);
+      return delegate;
     }
     catch (CoreException e)
     {
       String delegatingValidatorName = ValidationRegistryReader.getReader().getValidatorMetaData(getTargetID()).getValidatorDisplayName();
       throw new ValidationException(new LocalizedMessage(IMessage.HIGH_SEVERITY, ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_CANNOT_INSTANTIATE_DELEGATE, new String[] { getName(), delegatingValidatorName })));
     }
-
-    return delegate;
   }
 }

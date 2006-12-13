@@ -41,6 +41,7 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import org.eclipse.wst.validation.internal.delegates.ValidatorDelegatesRegistry;
 import org.eclipse.wst.validation.internal.operations.IRuleGroup;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchContext;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
@@ -1501,6 +1502,12 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		for (int i = 0; i < extensions.length; i++) {
 			readExtension(extensions[i]);
 		}
+    
+    // Force the delegate validators registry to be read early to avoid
+    // the non-synchronized singleton issue which occurs when two delegating
+    // validators race to load the registry.
+    
+    ValidatorDelegatesRegistry.getInstance();
 	}
 
 	public IValidator getValidator(String validatorClassName) throws InstantiationException {
