@@ -14,11 +14,13 @@
  */
 package org.eclipse.wst.common.internal.emf.utilities;
 
+import org.eclipse.emf.common.notify.Adapter;
+
 /**
  * Interface that exposes the clone method, for objects that need to generically copy other
  * cloneable objects
  */
-public interface CloneablePublic extends Cloneable {
+public interface CloneablePublic extends Cloneable, Adapter.Internal {
 	Object clone();
 
 }

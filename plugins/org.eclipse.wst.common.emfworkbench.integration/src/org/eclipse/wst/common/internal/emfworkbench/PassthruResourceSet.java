@@ -47,7 +47,7 @@ public class PassthruResourceSet extends ProjectResourceSetImpl {
 				return false;
 			ResourceSet set = WorkbenchResourceHelperBase.getResourceSet(((Resource) object).getURI());
 			if (set != null)
-				return set.getResources().add(object);
+				return set.getResources().add((Resource)object);
 
 			return super.add(object);
 		}

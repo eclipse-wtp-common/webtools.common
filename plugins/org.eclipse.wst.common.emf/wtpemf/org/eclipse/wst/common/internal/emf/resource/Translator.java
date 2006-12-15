@@ -628,7 +628,7 @@ public class Translator {
 	 */
 	public void setMOFValue(Resource res, Object value) {
 		if (res != null && value != null)
-			res.getContents().add(value);
+			res.getContents().add((EObject)value);
 	}
 
 	public void removeMOFValue(Notifier owner, Object value) {

@@ -10,6 +10,7 @@ package org.eclipse.wst.common.internal.emf.resource;
 
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 
 public class RootTranslator extends Translator {
@@ -28,7 +29,7 @@ public class RootTranslator extends Translator {
 	 * @see com.ibm.etools.emf2xml.impl.Translator#setMOFValue(Notifier, Object, int)
 	 */
 	public void setMOFValue(Notifier owner, Object value, int newIndex) {
-		((Resource) owner).getContents().add(newIndex, value);
+		((Resource) owner).getContents().add(newIndex, (EObject)value);
 	}
 
 	/**
@@ -46,7 +47,7 @@ public class RootTranslator extends Translator {
 	 */
 	public void setMOFValue(Resource res, Object value) {
 		if (res != null && value != null)
-			res.getContents().add(value);
+			res.getContents().add((EObject)value);
 	}
 
 	/*
