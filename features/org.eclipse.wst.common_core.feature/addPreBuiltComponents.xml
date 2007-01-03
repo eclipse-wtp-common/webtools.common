@@ -1,0 +1,57 @@
+<!-- ===================================================================== -->
+<!-- Callbacks to use when building this feature                		   -->
+<!--                                                                       -->
+<!-- build.properties must have a line that says                           -->
+<!--   customBuildCallbacks=addPreBuiltComponents.xml                      -->
+<!-- ===================================================================== -->
+<project name="addPreBuiltComponents" default="noDefault">
+    <!-- 
+    	Note to be cross-platform, "environment variables" are only appropriate for 
+        some variables, e.g. ones we set, since properties are case sensitive, even if 
+        the environment variables on your operating system are not, e.g. it will 
+        be ${env.Path} not ${env.PATH} on Windows -->
+    <property environment="env" />
+    
+	
+	<!-- ===================================================================== -->
+	<!-- Steps to do before the target gather.bin.parts                        -->
+	<!-- Available parameters :                                                -->
+	<!--  destination.temp.folder - the directory plugins will be collected to -->
+	<!--  feature.directory - the directory containing the resulting feature   -->
+	<!-- ===================================================================== -->
+	<target name="pre.gather.bin.parts">
+	    <!-- copy our known, pre-built, usually third party pre-reqs into this feature -->
+	    <echo message="Current basedir during callback: ${basedir}" />
+	    <echo message="Current destination.temp.folder during callback: ${destination.temp.folder}" />
+        <copy
+            todir="${destination.temp.folder}"
+            overwrite="true">
+            <fileset dir="${env.BUILD_HOME}/prebuilt/eclipse/plugins/" includes="org.eclipse.jem*/**" />
+        </copy>
+        <copy
+            todir="${destination.temp.folder}"
+            overwrite="true">
+            <fileset dir="${env.BUILD_HOME}/prebuilt/eclipse/plugins/" includes="com.ibm.etools.emf.event*/**" />
+        </copy>
+	</target>
+	
+	<!-- ===================================================================== -->
+	<!-- Steps to do after the target gather.bin.parts                         -->
+	<!-- Available parameters :                                                -->
+	<!--  destination.temp.folder - the directory plugins will be collected to -->
+	<!--  feature.directory - the directory containing the resulting feature   -->
+	<!-- ===================================================================== -->
+	<target name="post.gather.bin.parts">
+	</target>
+
+    
+    
+	<!-- ===================================================================== -->
+	<!-- No Default target                                                        -->
+	<!-- ===================================================================== -->
+	<target name="noDefault">
+		<echo message="This file must be called with explicit targets" />
+	</target>
+
+    
+</project>
