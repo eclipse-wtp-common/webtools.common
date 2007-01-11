@@ -44,7 +44,8 @@ public class FacetInstallDataModelProvider extends FacetDataModelProvider implem
 			return version.getVersionString();
 		} else if (FACET_VERSION.equals(propertyName)) {
 			DataModelPropertyDescriptor[] validVersions = getValidPropertyDescriptors(FACET_VERSION);
-			return validVersions[validVersions.length - 1].getPropertyValue();
+			IProjectFacetVersion version = ProjectFacetsManager.getProjectFacet(getStringProperty(FACET_ID)).getDefaultVersion();
+			return version;
 		}
 		return super.getDefaultProperty(propertyName);
 	}
