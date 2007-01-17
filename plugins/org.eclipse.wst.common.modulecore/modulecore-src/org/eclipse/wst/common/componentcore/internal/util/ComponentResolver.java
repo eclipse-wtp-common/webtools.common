@@ -13,6 +13,7 @@ package org.eclipse.wst.common.componentcore.internal.util;
 
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.eclipse.core.resources.IFile;
@@ -142,6 +143,20 @@ public class ComponentResolver implements URIResolverExtension {
 		}
 		catch (MalformedURLException e) {
 			// Continue resolving
+		}
+
+		/* Check for a URI without a scheme, but with a host */
+		try
+		{
+			URI uri = new URI(systemId);
+			if ((uri.getScheme() == null) && (uri.getHost() != null))
+			{
+				return null;
+			}
+		}
+		catch (URISyntaxException use)
+		{
+			// do nothing- we need to check to see if this is a local file
 		}
 
 		/* Check for a system file name as the system reference. */
