@@ -1005,7 +1005,6 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				return result == EvaluationResult.TRUE;
 			}
 		} catch (CoreException ce) {
-			Logger.getLogger().log(ce);
 		}
 		return false;
 	}
@@ -1023,7 +1022,6 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				return projectFacetIds;
 			}
 		} catch (CoreException ce) {
-			Logger.getLogger().log(ce);
 		}
 
 		return null;
