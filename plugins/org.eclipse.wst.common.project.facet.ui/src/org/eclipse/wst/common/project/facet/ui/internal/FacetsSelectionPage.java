@@ -112,12 +112,18 @@ public final class FacetsSelectionPage
 
     public void addSelectedFacetsChangedListener( final Listener listener )
     {
-        this.listeners.add( listener );
+        synchronized( this.listeners )
+        {
+            this.listeners.add( listener );
+        }
     }
 
     public void removeSelectedFacetsChangedListener( final Listener listener )
     {
-        this.listeners.remove( listener );
+        synchronized( this.listeners )
+        {
+            this.listeners.remove( listener );
+        }
     }
     
     public void setDefaultFacetsForRuntime( final IRuntime runtime )
@@ -233,9 +239,23 @@ public final class FacetsSelectionPage
     {
         setPageComplete( this.panel.isSelectionValid() );
 
-        for( int i = 0, n = this.listeners.size(); i < n; i++ )
+        final List copyOfListenersList = new ArrayList();
+        
+        synchronized( this.listeners )
         {
-            ( (Listener) this.listeners.get( i ) ).handleEvent( event );
+            copyOfListenersList.addAll( this.listeners );
+        }
+
+        for( int i = 0, n = copyOfListenersList.size(); i < n; i++ )
+        {
+            try
+            {
+                ( (Listener) copyOfListenersList.get( i ) ).handleEvent( event );
+            }
+            catch( Exception e )
+            {
+                FacetUiPlugin.log( e );
+            }
         }
         
         if( getContainer().getCurrentPage() != null )
