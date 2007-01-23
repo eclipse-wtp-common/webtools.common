@@ -23,13 +23,13 @@ package org.eclipse.wst.common.frameworks.datamodel;
  * </p>
  * <p>
  * The first way to register the correct {@link IDataModelProvider} class is for
- * the interface to define a public static final Class _provider_class field
+ * the interface to define a public static Class _provider_class field
  * which is set to the {@link IDataModelProvider} class, e.g.
  * </p>
  * <p>
  * <code>public static final Class _provider_class = some.company.FooDataModelProvider.class</code>
  * </p>
- * The mechanism is recommended whenever the {@link IDataModelProperties} and
+ * The above mechanism is recommended whenever the {@link IDataModelProperties} and
  * {@link IDataModelProvider} classes are both defined in the same plugin scope.
  * A second mechanism using the DataModelProviderExtension extension point is
  * available when the {@link IDataModelProvider} class is definend outside the
