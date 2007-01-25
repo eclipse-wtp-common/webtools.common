@@ -11,7 +11,9 @@
 package org.eclipse.wst.common.componentcore.internal.impl;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -122,11 +124,17 @@ public class ComponentCoreURIConverter extends CompatibilityWorkbenchURIConverte
 			
 			if (aFile != null) {
 				IVirtualComponent component = ComponentCore.createComponent(getContainingProject());
+				
 				if (component != null) {
 					IProject fileProject = getContainingProject();
-					//If it is not in the same project then just return the URI as is.
-					if (resourceSetSynchronizer.getProject() == fileProject)
-						return getArchiveRelativeURI(aFile,component.getRootFolder().getUnderlyingFolder());
+					
+					if (resourceSetSynchronizer.getProject() == fileProject){
+						List list = Arrays.asList(component.getRootFolder().getUnderlyingFolders());
+						IPath path = WorkbenchResourceHelperBase.getPathFromContainers(list, aFile.getFullPath());
+						if (path != null)
+							return URI.createURI(path.toString());
+						return null;
+					}
 				} else
 					return super.deNormalize(uri);
 			}
@@ -147,6 +155,7 @@ public class ComponentCoreURIConverter extends CompatibilityWorkbenchURIConverte
 		return null;
 	}
 
+	
 	
 	protected IProject getContainingProject() {
 		return containingProject;
