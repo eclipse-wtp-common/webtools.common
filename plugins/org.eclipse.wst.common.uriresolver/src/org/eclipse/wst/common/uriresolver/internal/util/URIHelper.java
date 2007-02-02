@@ -525,39 +525,4 @@ public class URIHelper
     }
     return result;
   }
-  
-  
-  public static String URIToLocation(String uri) {
-		String location = "";
-		if (uri != null) {
-			if (uri.startsWith("file:")) {
-				location = org.eclipse.wst.common.uriresolver.internal.URI.createURI(uri).toFileString();
-				if (location != null && (location.startsWith("///") || location.startsWith("\\\\\\"))) {
-					location = location.substring(3);
-				}
-			} else if (uri.startsWith("platform:/resource/")) {
-				location = uri.substring("platform:/resource/".length());
-			} else {
-				location = URIHelper.removeProtocol(uri);
-			}
-		}
-	return location;
-  }
-  
-  public static String LocationToURI(String location) {
-	  String uri = "";
-		if (!URIHelper.hasProtocol(location)) {
-			uri = URIHelper.isAbsolute(location) ? org.eclipse.wst.common.uriresolver.internal.URI.createFileURI(location).toString() : URIHelper.prependPlatformResourceProtocol(location);
-		}
-
-		if (uri.startsWith("file:") && uri.indexOf(':', "file:".length()) != -1) {
-			uri = URIHelper.ensureFileURIProtocolFormat(uri);
-		}
-		
-		uri = uri.replace('\\', '/');
-		
-		return uri;
-  }
-  
-  
 }
