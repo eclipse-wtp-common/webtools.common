@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS type="org.eclipse.help.contexts"?>
+
+<contexts>
+	<!-- Eclipse Validation preferences -->
+<context id="jvgp0000">
+<description>The validation preferences page allows you to view or change the default validation settings for all workbench projects. A validator is a tool that checks that resources conform to a specification, DTD, or some other set of rules.
+
+Each validator can apply to certain types of files, certain project natures, and certain project facets. When a validator applies to a project facet or nature, the workbench uses that validator only on projects that have that facet or nature. Likewise, most validators apply only to certain types of files, so the workbench uses those validators only on those types of files.
+
+Select the <b>Allow projects to override these preference settings</b> check box if you want to allow individual projects to set their own validation preferences. To configure new validation settings for an individual project, select the project in the Navigator view, right-click and select <b>Properties</b>   &gt; <b>Validation</b> .
+
+Select the <b>Suspend all validators</b> check box to prevent validation at the global level. If you select this check box, you can still enable validation at the project level.
+
+Select the <b>Save all modified resources automatically prior to validating</b> check box if you want to save any resources you have modified before the validation begins.
+
+In the list of validators, select the check boxes next to each validator you want to use at the global level. Each validator has a check box to specify whether it is used on manual validation or on build validation. Choose an alternate implementation for a validator by clicking the button in the <b>Settings</b> column. Not all validators have alternate implementations.
+
+</description>
+<topic href="../org.eclipse.jst.j2ee.doc.user/topics/tjval.html" label="Validating code in enterprise applications"/>
+<topic href="../org.eclipse.jst.j2ee.doc.user/topics/tjvalglobalpref.html" label="Overriding global validation preferences"/>
+<topic href="../org.eclipse.jst.j2ee.doc.user/topics/rvalerr.html" label="Common validation errors and solutions"/>
+</context>
+
+</contexts>
