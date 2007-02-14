@@ -252,15 +252,15 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 		// First will try to load from .settings/org.eclipse.wst.common.component
 		// Second will try to load from the old location(s) .settings/.component or .component
 		
-		URI uri = (URI) URI.createURI(StructureEdit.MODULE_META_FILE_NAME);
+		URI uri = URI.createURI(StructureEdit.MODULE_META_FILE_NAME);
 		WTPModulesResource res = (WTPModulesResource)getResource(uri);
 		if (res == null || !res.isLoaded()) {
 			removeResource(res);
-			uri = (URI) URI.createURI(R1_MODULE_META_FILE_NAME);
+			uri = URI.createURI(R1_MODULE_META_FILE_NAME);
 			res = (WTPModulesResource)getResource(uri);
 			if (res == null || !res.isLoaded()) {
 				removeResource(res);
-				uri = (URI) URI.createURI(R0_7_MODULE_META_FILE_NAME);
+				uri = URI.createURI(R0_7_MODULE_META_FILE_NAME);
 				res = (WTPModulesResource)getResource(uri);
 				if (res == null || !res.isLoaded()) {
 					removeResource(res);

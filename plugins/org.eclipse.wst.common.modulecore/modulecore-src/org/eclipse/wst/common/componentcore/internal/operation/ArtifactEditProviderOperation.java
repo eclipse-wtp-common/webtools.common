@@ -114,7 +114,6 @@ public abstract class ArtifactEditProviderOperation extends AbstractDataModelOpe
 	 * Validate edit for resource state
 	 */
 	protected IStatus validateEdit() {
-		IStatus status = OK_STATUS;
 		IValidateEditContext validator = (IValidateEditContext) UIContextDetermination.createInstance(IValidateEditContext.CLASS_KEY);
 		return validator.validateState((EditModel)getArtifactEdit().getAdapter(ArtifactEditModel.ADAPTER_TYPE));
 		

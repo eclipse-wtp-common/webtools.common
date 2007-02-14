@@ -43,7 +43,7 @@ public class ComponentImplManager  {
 	private static final String ATT_CLASS = "class"; //$NON-NLS-1$
 
 	private static final ComponentImplManager instance = new ComponentImplManager();
-	private static final Object LOAD_FAILED = new Object();
+//	private static final Object LOAD_FAILED = new Object();
 
 	private final Map/* <String, ComponentImplDescriptor> */ descriptors = new Hashtable();
 

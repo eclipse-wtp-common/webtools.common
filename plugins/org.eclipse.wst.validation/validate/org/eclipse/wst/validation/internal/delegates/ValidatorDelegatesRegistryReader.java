@@ -83,9 +83,9 @@ class ValidatorDelegatesRegistryReader
 
     if (elementName.equals(DELEGATE_ELEMENT))
     {
-      String delegateID = (String) element.getAttribute(CLASS_ATTRIBUTE);
-      String delegateName = (String) element.getAttribute(NAME_ATTRIBUTE);
-      String targetValidatorID = (String) element.getAttribute(TARGET_ATTRIBUTE);
+      String delegateID = element.getAttribute(CLASS_ATTRIBUTE);
+      String delegateName = element.getAttribute(NAME_ATTRIBUTE);
+      String targetValidatorID = element.getAttribute(TARGET_ATTRIBUTE);
 
       ValidatorDelegateDescriptor descriptor = new ValidatorDelegateDescriptor(delegateID, element, delegateName, targetValidatorID);
 

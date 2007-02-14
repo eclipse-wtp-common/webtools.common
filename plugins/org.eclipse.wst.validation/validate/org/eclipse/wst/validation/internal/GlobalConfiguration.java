@@ -126,7 +126,7 @@ public class GlobalConfiguration extends ValidationConfiguration {
 
 			IMarker rootMarker = marker[0]; // getMarker() has already checked that there's a marker
 			// in the array
-			ValidatorMetaData[] enabledValidators = null;
+//			ValidatorMetaData[] enabledValidators = null;
 //			String enabledValidatorsString = (String) getValue(rootMarker, ConfigurationConstants.ENABLED_VALIDATORS);
 //			if (enabledValidatorsString == null) {
 //				enabledValidators = ConfigurationConstants.DEFAULT_ENABLED_VALIDATORS;
@@ -139,8 +139,8 @@ public class GlobalConfiguration extends ValidationConfiguration {
 			setEnabledManualValidators(getStringAsEnabledElementsArray(enabledManualValidators));
 			String enabledBuildValidators = (String) getValue(rootMarker, ConfigurationConstants.ENABLED_BUILD_VALIDATORS);
 			setEnabledManualValidators(getStringAsEnabledElementsArray(enabledBuildValidators));
-			if (enabledManualValidators.equals(null) || enabledBuildValidators.equals(null)) 
-				enabledValidators = ConfigurationConstants.DEFAULT_ENABLED_VALIDATORS;
+//			if (enabledManualValidators.equals(null) || enabledBuildValidators.equals(null)) 
+//				enabledValidators = ConfigurationConstants.DEFAULT_ENABLED_VALIDATORS;
 			setCanProjectsOverride(getValue(rootMarker, ConfigurationConstants.PREF_PROJECTS_CAN_OVERRIDE, PREF_PROJECTS_CAN_OVERRIDE_DEFAULT));
 			root.getWorkspace().deleteMarkers(marker);
 		} catch (CoreException exc) {

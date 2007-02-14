@@ -25,8 +25,6 @@ import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.internal.emfworkbench.edit.EditModelRegistry;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject;
-import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 /**
  * <p>
@@ -61,7 +59,6 @@ public class ArtifactEditAdapterFactory implements IAdapterFactory {
 				Map params = new HashMap();
 				params.put(ArtifactEditModelFactory.PARAM_MODULE_URI, componentURI);
 				try {
-					IFacetedProject facetedProject = ProjectFacetsManager.create(aProject);
 					String[] editModelIDs = EditModelRegistry.getInstance().getRegisteredEditModelIDs();
 					for (int i=0; i<editModelIDs.length; i++) {
 						try {

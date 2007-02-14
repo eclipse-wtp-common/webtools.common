@@ -40,7 +40,6 @@ import org.eclipse.wst.validation.internal.TaskListUtility;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
-import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 import org.eclipse.wst.validation.internal.provisional.core.IValidatorJob;
 
@@ -1012,45 +1011,45 @@ public final class ValidatorManager {
 		return null;
 	}
 
-	/**
-	 * Return true if the given IMarker is a "limit was exceeded" message, false otherwise.
-	 */
-	private boolean isLimitMessage(IMarker marker) {
-		if (marker == null) {
-			return false;
-		}
+//	/**
+//	 * Return true if the given IMarker is a "limit was exceeded" message, false otherwise.
+//	 */
+//	private boolean isLimitMessage(IMarker marker) {
+//		if (marker == null) {
+//			return false;
+//		}
+//
+//		return TaskListUtility.isOwner(marker, WorkbenchReporter.getUniqueId(getMessageLimitOwner()));
+//	}
 
-		return TaskListUtility.isOwner(marker, WorkbenchReporter.getUniqueId(getMessageLimitOwner()));
-	}
-
-	/**
-	 * Return all of the IMarkers on the IProject excluding the "limit was exceeded" message. If
-	 * there are no markers, return null.
-	 */
-	private IMarker[] getValidationTasksWithoutLimitMessage(IProject project) {
-		IMarker[] allTasks = TaskListUtility.getValidationTasks(project, IMessage.ALL_MESSAGES);
-		if ((allTasks == null) || (allTasks.length == 0)) {
-			return null;
-		}
-
-		// Don't check if the limit message exists because
-		// any interaction with markers is costly. Since the
-		// interaction has to be done at least once, make that
-		// single occasion in the for loop below.
-		IMarker[] validatorMessages = new IMarker[allTasks.length];
-		int count = 0; // how many markers have been added to the result array?
-		for (int i = 0; i < allTasks.length; i++) {
-			IMarker marker = allTasks[i];
-			if (isLimitMessage(marker)) {
-				continue;
-			}
-			validatorMessages[count++] = marker;
-		}
-
-		IMarker[] result = new IMarker[count];
-		System.arraycopy(validatorMessages, 0, result, 0, count);
-		return result;
-	}
+//	/**
+//	 * Return all of the IMarkers on the IProject excluding the "limit was exceeded" message. If
+//	 * there are no markers, return null.
+//	 */
+//	private IMarker[] getValidationTasksWithoutLimitMessage(IProject project) {
+//		IMarker[] allTasks = TaskListUtility.getValidationTasks(project, IMessage.ALL_MESSAGES);
+//		if ((allTasks == null) || (allTasks.length == 0)) {
+//			return null;
+//		}
+//
+//		// Don't check if the limit message exists because
+//		// any interaction with markers is costly. Since the
+//		// interaction has to be done at least once, make that
+//		// single occasion in the for loop below.
+//		IMarker[] validatorMessages = new IMarker[allTasks.length];
+//		int count = 0; // how many markers have been added to the result array?
+//		for (int i = 0; i < allTasks.length; i++) {
+//			IMarker marker = allTasks[i];
+//			if (isLimitMessage(marker)) {
+//				continue;
+//			}
+//			validatorMessages[count++] = marker;
+//		}
+//
+//		IMarker[] result = new IMarker[count];
+//		System.arraycopy(validatorMessages, 0, result, 0, count);
+//		return result;
+//	}
 
 	/**
 	 * This method should be called only by the validation framework. Return true if the message was

@@ -364,7 +364,7 @@ public class ProjectConfiguration extends ValidationConfiguration {
 
 			IMarker prjMarker = marker[0]; // getProjectMarker() has already checked that there's a
 			// marker in the array
-			GlobalConfiguration gp = ConfigurationManager.getManager().getGlobalConfiguration();
+//			GlobalConfiguration gp = ConfigurationManager.getManager().getGlobalConfiguration();
 
 //			String enabledValStr = (String) getValue(prjMarker, ConfigurationConstants.ENABLED_VALIDATORS);
 //			ValidatorMetaData[] enabledVal = null;
@@ -379,10 +379,11 @@ public class ProjectConfiguration extends ValidationConfiguration {
 			ValidatorMetaData[] enabledBuildVal = null;
 			String enabledManualValStr = (String) getValue(prjMarker, ConfigurationConstants.ENABLED_MANUAL_VALIDATORS);
 			String enabledBuildValStr = (String) getValue(prjMarker, ConfigurationConstants.ENABLED_BUILD_VALIDATORS);
-			ValidatorMetaData[] enabledVal = null;
-			if (enabledManualValStr.equals(null) || enabledBuildValStr.equals(null)) {
-				enabledVal = gp.getEnabledValidators();
-			} else {
+//			ValidatorMetaData[] enabledVal = null;
+//			if (enabledManualValStr.equals(null) || enabledBuildValStr.equals(null)) {
+//				enabledVal = gp.getEnabledValidators();
+//			} else {
+			if (!enabledManualValStr.equals(null) && !enabledBuildValStr.equals(null)) {
 				enabledManaualVal = getStringAsEnabledElementsArray(enabledManualValStr);
 				setEnabledManualValidators(enabledManaualVal);
 				enabledBuildVal = getStringAsEnabledElementsArray(enabledManualValStr);
@@ -402,7 +403,6 @@ public class ProjectConfiguration extends ValidationConfiguration {
 			} else {
 				setDoesProjectOverride(boolVal.booleanValue());
 			}
-			boolean override = doesProjectOverride();
 
 			getResource().getWorkspace().deleteMarkers(marker);
 		} catch (CoreException exc) {
@@ -625,7 +625,7 @@ public class ProjectConfiguration extends ValidationConfiguration {
   
   public void store() throws InvocationTargetException {
 		IProject project = (IProject) getResource();
-		IScopeContext projectContext = new ProjectScope((IProject) getResource());
+		IScopeContext projectContext = new ProjectScope(project);
 		final IEclipsePreferences pref = projectContext.getNode(ValidationPlugin.PLUGIN_ID);
 		if (pref != null) {
 			try {
@@ -645,7 +645,6 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		IScopeContext projectContext = new ProjectScope(project);
 		final IEclipsePreferences prefs = projectContext.getNode(ValidationPlugin.PLUGIN_ID);
 		if (prefs != null) {
-			String projectName = project.getName();
 			String storedConfig = prefs.get(USER_PREFERENCE,"default_value");
 			deserialize(storedConfig);
 			String storedManualConfig = prefs.get(USER_MANUAL_PREFERENCE,"default_value");

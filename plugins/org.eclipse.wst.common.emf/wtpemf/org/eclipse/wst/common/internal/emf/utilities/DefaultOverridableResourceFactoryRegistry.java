@@ -47,7 +47,7 @@ public class DefaultOverridableResourceFactoryRegistry extends ResourceFactoryRe
 				if (resourceFactory == null) {
 					resourceFactory = delegatedGetFactory(uri);
 					if (resourceFactory == GLOBAL_FACTORY) {
-						resourceFactory = (Factory) extensionToFactoryMap.get(Resource.Factory.Registry.DEFAULT_EXTENSION);
+						resourceFactory = extensionToFactoryMap.get(Resource.Factory.Registry.DEFAULT_EXTENSION);
 						if (resourceFactory == null)
 							resourceFactory = GLOBAL_FACTORY;
 					}

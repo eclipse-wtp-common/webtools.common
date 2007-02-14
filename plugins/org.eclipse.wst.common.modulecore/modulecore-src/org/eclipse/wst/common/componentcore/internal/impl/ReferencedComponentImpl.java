@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: ReferencedComponentImpl.java,v 1.3 2006/03/27 21:49:41 vbhadrir Exp $
+ * $Id: ReferencedComponentImpl.java,v 1.4 2007/02/14 16:00:52 jsholl Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
@@ -217,7 +217,7 @@ public class ReferencedComponentImpl extends EObjectImpl implements ReferencedCo
 	public EObject getDependentObject() {
 		if (dependentObject != null && dependentObject.eIsProxy()) {
 			EObject oldDependentObject = dependentObject;
-			dependentObject = (EObject)eResolveProxy((InternalEObject)dependentObject);
+			dependentObject = eResolveProxy((InternalEObject)dependentObject);
 			if (dependentObject != oldDependentObject) {
 				if (eNotificationRequired())
 					eNotify(new ENotificationImpl(this, Notification.RESOLVE, ComponentcorePackage.REFERENCED_COMPONENT__DEPENDENT_OBJECT, oldDependentObject, dependentObject));

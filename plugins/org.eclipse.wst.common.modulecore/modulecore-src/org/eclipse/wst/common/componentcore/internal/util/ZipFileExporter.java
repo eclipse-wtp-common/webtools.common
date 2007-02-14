@@ -28,7 +28,6 @@ import org.eclipse.core.runtime.Path;
  */
 public class ZipFileExporter {
 	private ZipOutputStream outputStream;
-	private StringBuffer manifestContents;
 
 	private boolean useCompression = true;
 

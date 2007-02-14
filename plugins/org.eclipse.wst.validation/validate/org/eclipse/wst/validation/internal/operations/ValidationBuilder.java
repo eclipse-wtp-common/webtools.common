@@ -162,8 +162,8 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			delta = getDelta(project);
 			boolean doFullBuild = (kind == FULL_BUILD);
-			boolean doAutoBuild = ((delta != null) && (kind == AUTO_BUILD));
-			boolean doIncrementalBuild = ((delta != null) && (kind == INCREMENTAL_BUILD));
+//			boolean doAutoBuild = ((delta != null) && (kind == AUTO_BUILD));
+//			boolean doIncrementalBuild = ((delta != null) && (kind == INCREMENTAL_BUILD));
 //			if ((doFullBuild || doIncrementalBuild) && !prjp.isBuildValidate()) {
 //				// Is a build validation about to be invoked? If so, does the
 //				// user want build validation to run?

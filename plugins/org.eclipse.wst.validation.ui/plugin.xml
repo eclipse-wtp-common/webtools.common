@@ -43,8 +43,6 @@
    <extension
          point="org.eclipse.ui.propertyPages">
       <page
-            adaptable="true"
-            objectClass="org.eclipse.core.resources.IProject"
             name="%VBF_TITLE_PROPERTIES"
             class="org.eclipse.wst.validation.internal.ui.ValidationPropertiesPage"
             id="ValidationPropertiesPage">

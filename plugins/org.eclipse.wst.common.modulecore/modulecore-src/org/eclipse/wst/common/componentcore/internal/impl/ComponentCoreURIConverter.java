@@ -17,7 +17,6 @@ import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
@@ -26,7 +25,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
 import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 import org.eclipse.wst.common.componentcore.ComponentCore;
-import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
@@ -41,7 +39,7 @@ import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
 public class ComponentCoreURIConverter extends CompatibilityWorkbenchURIConverterImpl {
 	
 	private IProject containingProject;
-	private IFolder archiveRoot;
+//	private IFolder archiveRoot;
 	/**
 	 *  
 	 */
@@ -98,7 +96,7 @@ public class ComponentCoreURIConverter extends CompatibilityWorkbenchURIConverte
 	private URI newPlatformURI(URI aNewURI) {
 		
 		try {
-			String componentName = StructureEdit.getDeployedName(aNewURI);
+//			String componentName = StructureEdit.getDeployedName(aNewURI);
 			IVirtualComponent component = ComponentCore.createComponent(containingProject);
 
 			URI deployPathSegment = ModuleURIUtil.trimToDeployPathSegment(aNewURI);

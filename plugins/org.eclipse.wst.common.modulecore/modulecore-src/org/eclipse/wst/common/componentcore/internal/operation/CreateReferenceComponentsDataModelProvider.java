@@ -12,7 +12,6 @@ package org.eclipse.wst.common.componentcore.internal.operation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,7 +30,6 @@ public class CreateReferenceComponentsDataModelProvider extends AbstractDataMode
 		propertyNames.add(SOURCE_COMPONENT);
 		propertyNames.add(TARGET_COMPONENT_LIST);
 		propertyNames.add(TARGET_COMPONENTS_DEPLOY_PATH);
-		propertyNames.add(TARGET_COMPONENT_ARCHIVE_NAME);
 		propertyNames.add(TARGET_COMPONENTS_TO_URI_MAP);
 		return propertyNames;
 	}
@@ -51,12 +49,6 @@ public class CreateReferenceComponentsDataModelProvider extends AbstractDataMode
 			return new ArrayList();
 		else if (propertyName.equals(TARGET_COMPONENTS_DEPLOY_PATH)){
 			return "/"; //$NON-NLS-1$
-		} else if (propertyName.equals(TARGET_COMPONENT_ARCHIVE_NAME)){
-			List components = (List) getProperty(TARGET_COMPONENT_LIST);
-			if(components.size() == 0){
-				Map map = (Map)getProperty(TARGET_COMPONENTS_TO_URI_MAP);
-				map.put(components.get(0), getProperty(propertyName));	
-			}
 		}
 		return super.getDefaultProperty(propertyName);
 	}

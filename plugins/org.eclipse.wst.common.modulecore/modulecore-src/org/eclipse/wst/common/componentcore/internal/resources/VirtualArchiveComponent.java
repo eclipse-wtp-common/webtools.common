@@ -16,7 +16,6 @@ import java.util.Properties;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
@@ -39,16 +38,16 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 
 	private static final IVirtualReference[] NO_REFERENCES = new VirtualReference[0];
 	private static final IVirtualComponent[] NO_COMPONENTS = new VirtualComponent[0];
-	private static final IResource[] NO_RESOURCES = null;
+//	private static final IResource[] NO_RESOURCES = null;
 	private static final IVirtualResource[] NO_VIRTUAL_RESOURCES = null;
 	private static final Properties NO_PROPERTIES = new Properties();
 	private static final IPath[] NO_PATHS = new Path[0];
 
-	private IPath runtimePath;
+//	private IPath runtimePath;
 	private IProject componentProject;
-	private IVirtualFolder rootFolder;
+//	private IVirtualFolder rootFolder;
 	private int flag = 1;
-	private String archiveLocation;
+//	private String archiveLocation;
 
 
 	private IPath archivePath;
@@ -61,7 +60,7 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 			throw new NullPointerException();
 		}
 		componentProject = aComponentProject;
-		runtimePath = aRuntimePath;
+//		runtimePath = aRuntimePath;
 
 		String archivePathString = archiveLocation.substring(4, archiveLocation.length());
 		archiveType	= archiveLocation.substring(0, archiveLocation.length() - archivePathString.length() -1);

@@ -25,7 +25,6 @@ public class ValidatorJob extends Job {
 
 
 	private IProject			project;
-	private String				validatorUniqueName;
 	private IWorkbenchContext 	helper;
 	private IValidatorJob		validator;
 	
@@ -38,7 +37,6 @@ public class ValidatorJob extends Job {
 	   
 	public ValidatorJob( IValidatorJob validator, String displayName, String name, IProject project, IWorkbenchContext aHelper  ){
 		super(displayName);
-		validatorUniqueName = name;
 		this.project = project;
 		this.helper = aHelper;
 		this.validator = validator;
@@ -122,7 +120,7 @@ public class ValidatorJob extends Job {
 				entry.setTargetException(exc);
 				logger.write(Level.SEVERE, entry);
 				IStatus stat = new Status(IStatus.ERROR,
-			    		      ValidationPlugin.getPlugin().PLUGIN_ID, 0, "", exc );
+			    		      ValidationPlugin.PLUGIN_ID, 0, "", exc );
 					logger.write(Level.SEVERE, stat);
 				
 			}

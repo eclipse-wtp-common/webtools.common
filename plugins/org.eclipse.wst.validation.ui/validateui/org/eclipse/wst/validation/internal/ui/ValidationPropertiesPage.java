@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import javax.swing.event.HyperlinkEvent;
-
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -74,7 +72,6 @@ import org.eclipse.ui.forms.events.IHyperlinkListener;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
-import org.eclipse.wst.validation.internal.GlobalConfiguration;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
@@ -265,7 +262,6 @@ public class ValidationPropertiesPage extends PropertyPage {
 		private Button disableAllButton = null;
 		Label emptyRowPlaceholder = null;
 		private Table validatorsTable;
-		private Label globalPrefLink = null;
 		ProjectConfiguration pagePreferences = null;
 		private boolean canOverride = false;
 		private Button addValidationBuilder = null;
@@ -439,7 +435,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 
 		public ValidatorListPage(Composite parent) throws InvocationTargetException {
 			ConfigurationManager prefMgr = ConfigurationManager.getManager();
-			ValidatorManager vMgr = ValidatorManager.getManager();
+			// ValidatorManager vMgr = ValidatorManager.getManager();
 
 			pagePreferences = prefMgr.getProjectConfiguration(getProject()); // This
 			// represents the values on the page that haven't been persisted yet.
@@ -508,9 +504,6 @@ public class ValidationPropertiesPage extends PropertyPage {
 			link.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.CONFIG_WS_SETTINGS));
 			link.addHyperlinkListener(new IHyperlinkListener() {
 				public static final String DATA_NO_LINK = "PropertyAndPreferencePage.nolink"; //$NON-NLS-1$
-
-				public void hyperlinkUpdate(HyperlinkEvent e) {
-				}
 
 				public void linkEntered(org.eclipse.ui.forms.events.HyperlinkEvent e) {
 				}
@@ -1043,7 +1036,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 				// Do NOT set the table's help back to what it was.
 				// Only if auto-validate is enabled should the page go back.
 				boolean doesProjectSupportBuildValidation = ValidatorManager.doesProjectSupportBuildValidation(getProject());
-				GlobalConfiguration gp = ConfigurationManager.getManager().getGlobalConfiguration();
+				// GlobalConfiguration gp = ConfigurationManager.getManager().getGlobalConfiguration();
 				//boolean isPrefAuto = gp.isAutoValidate();
 				//boolean isPrefManual = gp.isBuildValidate();
 				if (doesProjectSupportBuildValidation) {

@@ -57,7 +57,7 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
 	public static URI resolve(URI aModuleResourceRuntimePath) throws IOException {
 		try {
 			IProject componentProject = StructureEdit.getContainingProject(aModuleResourceRuntimePath);
-			String componentName = ModuleURIUtil.getDeployedName(aModuleResourceRuntimePath);
+			//String componentName = ModuleURIUtil.getDeployedName(aModuleResourceRuntimePath);
 			URI runtimeURI = ModuleURIUtil.trimToDeployPathSegment(aModuleResourceRuntimePath);
 			IPath runtimePath = new Path(runtimeURI.path());
 			IVirtualComponent component = ComponentCore.createComponent(componentProject);
@@ -71,11 +71,10 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
 		 
 	}
 
-	private static URI normalizeToWorkspaceRelative(IProject project, IPath sourcePath, URI moduleResourceDeployPath) throws UnresolveableURIException {
-		String projectName = project.getName();
-		return URI.createURI(projectName + '/' + sourcePath.toString());
-	
-	}
+//	private static URI normalizeToWorkspaceRelative(IProject project, IPath sourcePath, URI moduleResourceDeployPath) throws UnresolveableURIException {
+//		String projectName = project.getName();
+//		return URI.createURI(projectName + '/' + sourcePath.toString());
+//	}
 
 	/*
 	 * (non-Javadoc)

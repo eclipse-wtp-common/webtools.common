@@ -21,7 +21,6 @@ import org.eclipse.wst.common.componentcore.internal.IComponentProjectMigrator;
 import org.eclipse.wst.common.componentcore.internal.ProjectMigratorRegistry;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 
 public class ProjectMigratorDataModelOperation extends AbstractDataModelOperation {
 
@@ -30,7 +29,6 @@ public class ProjectMigratorDataModelOperation extends AbstractDataModelOperatio
 	}
 	
 	public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
-		IFacetedProject facetProj;
 		try {
 			IProject proj = ProjectUtilities.getProject(model.getStringProperty(IProjectMigratorDataModelProperties.PROJECT_NAME));
 			IComponentProjectMigrator[] migrators = ProjectMigratorRegistry.getInstance().getProjectMigrators();
@@ -43,7 +41,5 @@ public class ProjectMigratorDataModelOperation extends AbstractDataModelOperatio
 		}
 		return OK_STATUS;
 	}
-
-	
 
 }

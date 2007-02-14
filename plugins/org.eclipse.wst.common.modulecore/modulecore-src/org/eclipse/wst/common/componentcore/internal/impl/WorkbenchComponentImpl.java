@@ -2,15 +2,13 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchComponentImpl.java,v 1.13 2006/07/21 18:36:56 cbridgha Exp $
+ * $Id: WorkbenchComponentImpl.java,v 1.14 2007/02/14 16:00:52 jsholl Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
@@ -187,14 +185,14 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 	 */
 	protected EList metadataResources = null;
 
-	private final Map resourceIndexByDeployPath = new HashMap();
-	private final Map resourceIndexBySourcePath = new HashMap();
+//	private final Map resourceIndexByDeployPath = new HashMap();
+//	private final Map resourceIndexBySourcePath = new HashMap();
 
-	private boolean isIndexedByDeployPath;
+//	private boolean isIndexedByDeployPath;
 
-	private boolean isIndexedBySourcePath;
+//	private boolean isIndexedBySourcePath;
 
-	private static final ComponentResource[] NO_MODULE_RESOURCES = new ComponentResource[0];
+//	private static final ComponentResource[] NO_MODULE_RESOURCES = new ComponentResource[0];
 
 	private URI handle;
 	
@@ -254,7 +252,7 @@ public class WorkbenchComponentImpl extends EObjectImpl implements WorkbenchComp
 		// TODO A more advanced adapter should be applied to keep the handle up to date.
 		if (eResource() != null) {
 			URI resourceURI = eResource().getURI();
-			String safeDeployedName = getName() != null ? getName() : ""; //$NON-NLS-1$
+//			String safeDeployedName = getName() != null ? getName() : ""; //$NON-NLS-1$
 			if (resourceURI != null && resourceURI.segmentCount() >= 2)
 				setHandle(computeHandle());
 		}

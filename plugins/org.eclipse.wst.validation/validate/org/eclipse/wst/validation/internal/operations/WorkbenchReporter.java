@@ -564,7 +564,6 @@ public final class WorkbenchReporter implements IReporter {
 			return;
 		}
 
-		ValidatorManager mgr = ValidatorManager.getManager();
 		if( validator instanceof IValidatorJob ){
 			cacheMessage( (IValidatorJob)validator, resource, validator.getClass(), message, getTargetObjectName(helper, message), getLocation(helper, message), getMarkerId(vmd, message) );
 		}else

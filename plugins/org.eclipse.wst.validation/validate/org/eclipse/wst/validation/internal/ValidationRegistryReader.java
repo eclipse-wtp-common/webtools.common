@@ -883,7 +883,6 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			// or if this project nature has no validators configured
 			// on it, return the validators which are configured on all
 			// projects.
-			Set projVmds = null;
 			if ((projectNatures == null) || (projectNatures.length == 0)) {
 				executionMap |= 0x4;
 				

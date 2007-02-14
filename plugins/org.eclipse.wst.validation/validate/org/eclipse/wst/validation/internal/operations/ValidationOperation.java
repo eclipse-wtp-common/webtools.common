@@ -32,7 +32,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
@@ -811,7 +810,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 					while (it.hasNext()) {
 						ValidatorMetaData data = (ValidatorMetaData) it.next();
 						if (data.isApplicableTo(refFile)) {
-							IValidator validator = (IValidator)data.getValidator();
+							IValidator validator = data.getValidator();
 							validator.validate(data.getHelper(project),reporter);
 							validatedFiles.add(refFile);
 						}
@@ -846,7 +845,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		IValidator validator = null;
 		ValidatorMetaData vmd = null;
 		Iterator iterator = null;
-		WorkbenchReporter nullReporter = new WorkbenchReporter(getProject(), new NullProgressMonitor());
+//		WorkbenchReporter nullReporter = new WorkbenchReporter(getProject(), new NullProgressMonitor());
 		final Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 		IFileDelta[] delta = null;
 		
@@ -998,7 +997,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 //				} else {
 //					internalValidate(reporter, validator, vmd, context, delta);
 //				}
-				internalValidate(reporter, (IValidator)validator, vmd, context, delta);
+				internalValidate(reporter, validator, vmd, context, delta);
 				}
 		} catch (OperationCanceledException exc) {
 			handleOperationCancelledValidateException(reporter, validator, vmd, iterator, logger, exc);
@@ -1513,12 +1512,12 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		}
 	}
 
-	private Runnable wrapInRunnable(final WorkbenchReporter reporter, final IValidator validator, final ValidatorMetaData vmd, final IWorkbenchContext helper, final IFileDelta[] delta, final Iterator iterator) {
-		// Need to create a new Runnable each time because several Runnable
-		// instances may exist at the same time.
-		Runnable runnable = new ProjectRunnable(reporter, validator, vmd, helper, delta, iterator);
-		return runnable;
-	}
+//	private Runnable wrapInRunnable(final WorkbenchReporter reporter, final IValidator validator, final ValidatorMetaData vmd, final IWorkbenchContext helper, final IFileDelta[] delta, final Iterator iterator) {
+//		// Need to create a new Runnable each time because several Runnable
+//		// instances may exist at the same time.
+//		Runnable runnable = new ProjectRunnable(reporter, validator, vmd, helper, delta, iterator);
+//		return runnable;
+//	}
 
 	/*
 	 * // For convenience, keep this method in the class but commented out. // When async needs to

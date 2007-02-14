@@ -35,13 +35,13 @@ public class ModuleCoreValidator implements IValidatorJob {
 			// First will try to load from .settings/org.eclipse.wst.common.component
 			// Second will try to load from the old location(s) .settings/.component or .component
 
-			URI uri = (URI) URI.createURI(StructureEdit.MODULE_META_FILE_NAME);
+			URI uri = URI.createURI(StructureEdit.MODULE_META_FILE_NAME);
 			WTPModulesResource res = (WTPModulesResource)WorkbenchResourceHelper.getOrCreateResource(uri, getResourceSet(project));
 			if (res == null || !res.isLoaded()) {
-				uri = (URI) URI.createURI(".settings/.component");
+				uri = URI.createURI(".settings/.component");
 				res = (WTPModulesResource)WorkbenchResourceHelper.getOrCreateResource(uri, getResourceSet(project));
 				if (res == null || !res.isLoaded()) {
-					uri = (URI) URI.createURI(".wtpmodules");
+					uri = URI.createURI(".wtpmodules");
 					res = (WTPModulesResource)WorkbenchResourceHelper.getOrCreateResource(uri, getResourceSet(project));
 					if (res == null || !res.isLoaded()) {
 						res = null;

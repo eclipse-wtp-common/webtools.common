@@ -9,7 +9,7 @@ import org.eclipse.core.runtime.jobs.Job;
 public class ValidationJob extends Job {
 
 
-	private Map projects = null;
+	private Map projects;
 	public ValidationJob(String name) {
 		super(name);
 	}
@@ -23,5 +23,9 @@ public class ValidationJob extends Job {
 	protected IStatus run(IProgressMonitor monitor) {
 
 		return null;
+	}
+	
+	protected Map getProjects() {
+		return projects;
 	}
 }
