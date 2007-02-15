@@ -19,6 +19,7 @@ package org.eclipse.wst.common.snippets.core;
  * <p>
  * Clients are not intended to implement this interface.
  * </p>
+ * 
  * @since 1.0
  */
 
@@ -50,6 +51,14 @@ public interface ISnippetsEntry {
 	 *         is enabled
 	 */
 	String[] getFilters();
+
+
+	/**
+	 * @since 2.0
+	 * @return the ID supplied when contributing this entry into the Snippets
+	 *         model
+	 */
+	String getId();
 
 	/**
 	 * @return the label to display for this item
