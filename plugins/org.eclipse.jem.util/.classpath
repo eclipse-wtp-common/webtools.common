@@ -5,6 +5,5 @@
 	<classpathentry kind="src" path="jemutil-nonworkbnech"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry sourcepath="org.eclipse.perfmsr.core.stub/perfmsr.jar" kind="lib" path="org.eclipse.perfmsr.core.stub/perfmsr.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
