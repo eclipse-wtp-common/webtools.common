@@ -1205,20 +1205,17 @@ public class ValidationPropertiesPage extends PropertyPage {
 	 * Returns the highlighted item in the workbench.
 	 */
 	public IProject getProject() {
-		IAdaptable selectedElement = getElement();
+		IAdaptable 	selectedElement = getElement();		
+		if (selectedElement == null) 		
+			return null;			
+		if (selectedElement instanceof IResource) 	
+			return ((IResource) selectedElement).getProject();		
 
-		if (selectedElement == null) {
-			return null;
-		}
-
-		if (selectedElement instanceof IProject) {
-			return (IProject) selectedElement;
-		}
-		Object adaptedObject = selectedElement.getAdapter(IResource.class);
-		if (adaptedObject instanceof IProject)
-			return (IProject)adaptedObject;
-
+		Object adaptedObject = selectedElement.getAdapter(IResource.class);	
+		if (adaptedObject instanceof IResource)			
+			return ((IResource) adaptedObject).getProject();	
 		return null;
+		
 	}
 
 	protected void noDefaultAndApplyButton() {
