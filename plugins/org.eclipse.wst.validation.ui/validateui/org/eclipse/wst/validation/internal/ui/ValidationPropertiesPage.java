@@ -23,7 +23,6 @@ import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jface.dialogs.Dialog;
@@ -1204,19 +1203,17 @@ public class ValidationPropertiesPage extends PropertyPage {
 	 * Returns the highlighted item in the workbench.
 	 */
 	public IProject getProject() {
+		Object element = getElement();
 
-
-		IAdaptable selectedElement = getElement();
-		if (selectedElement == null)
+		if (element == null) {
 			return null;
-		if (selectedElement instanceof IProject)
-			return (IProject) selectedElement;
+		}
 
-		Object adaptedObject = selectedElement.getAdapter(IProject.class);
-		if (adaptedObject instanceof IProject)
-			return (IProject) adaptedObject;
+		if (element instanceof IProject) {
+			return (IProject) element;
+		}
+
 		return null;
-
 	}
 
 	protected void noDefaultAndApplyButton() {
