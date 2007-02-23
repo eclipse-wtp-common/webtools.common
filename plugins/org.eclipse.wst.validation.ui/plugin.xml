@@ -46,6 +46,9 @@
             name="%VBF_TITLE_PROPERTIES"
             class="org.eclipse.wst.validation.internal.ui.ValidationPropertiesPage"
             id="ValidationPropertiesPage">
+         <enabledWhen>
+	         <adapt type="org.eclipse.core.resources.IProject"/>
+         </enabledWhen>
       </page>
    </extension>
 
