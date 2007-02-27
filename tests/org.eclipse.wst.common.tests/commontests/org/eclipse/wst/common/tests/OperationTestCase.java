@@ -128,7 +128,7 @@ public abstract class OperationTestCase extends BaseTestCase {
 			if (checkLog)
 				LogUtility.getInstance().resetLogging();
 			//verifyValidDataModel(dataModel);
-			dataModel.getDefaultOperation().execute(new NullProgressMonitor(), null);
+			IStatus operationStatus = dataModel.getDefaultOperation().execute(new NullProgressMonitor(), null);
 			// TODO Verification to be fixed to use IDataModel
 			// verifyDataModel(dataModel);
 			if (waitForBuildToComplete) {
@@ -136,6 +136,11 @@ public abstract class OperationTestCase extends BaseTestCase {
 				while (!listener.isBuildComplete()) {
 					Thread.sleep(3000);// do nothing till all the jobs are completeled
 				}
+			}
+			// bug 173933 - runAndVerify() fails to check return IStatus
+			if (operationStatus.getSeverity() == IStatus.ERROR)
+			{
+				Assert.fail(operationStatus.getMessage());
 			}
 			if (checkTasks && (errorOKList == null || errorOKList.isEmpty())) {
 				checkTasksList();
