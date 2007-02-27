@@ -19,10 +19,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.wst.common.componentcore.datamodel.FacetProjectCreationDataModelProvider;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IFlexibleProjectCreationDataModelProperties;
-import org.eclipse.wst.common.componentcore.internal.ProjectComponents;
-import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
@@ -35,7 +32,7 @@ import org.eclipse.wst.common.frameworks.internal.WTPProjectUtilities;
  * 
  * @deprecated
  * 
- * @see FacetProjectCreationDataModelProvider
+ * @see org.eclipse.wst.common.componentcore.datamodel.FacetProjectCreationDataModelProvider
  */
 public class FlexibleProjectCreationOperation extends AbstractDataModelOperation implements DoNotUseMeThisWillBeDeletedPost15{
 
@@ -68,18 +65,7 @@ public class FlexibleProjectCreationOperation extends AbstractDataModelOperation
         op.execute(monitor, null);
     }
     
-    private void createInitialWTPModulesFile() {
-    	StructureEdit moduleCore = null;
-		try {
-			IProject containingProject = getProject();
-			moduleCore = StructureEdit.getStructureEditForWrite(containingProject);
-			moduleCore.prepareProjectComponentsIfNecessary(); 
-			ProjectComponents projectModules = moduleCore.getComponentModelRoot();
-			moduleCore.saveIfNecessary(null); 
-		} finally {
-			if(moduleCore != null)
-				moduleCore.dispose();
-		}     
+    private void createInitialWTPModulesFile() {     
     }
     
     protected IProject getProject() {

@@ -10,32 +10,27 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.datamodel.properties;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.internal.DoNotUseMeThisWillBeDeletedPost15;
 
 public interface ICreateReferenceComponentsDataModelProperties {
 
 	/**
 	 * <p>
-	 * This required property is the {@link IVirtualComponent} which will reference the
-	 * {@link IVirtualComponent}s specified by {@link #TARGET_COMPONENT_LIST}.
+	 * This required property is the {@link org.eclipse.wst.common.componentcore.resources.IVirtualComponent} which will reference the
+	 * {@link org.eclipse.wst.common.componentcore.resources.IVirtualComponent}s specified by {@link #TARGET_COMPONENT_LIST}.
 	 * </p>
 	 * <p>
-	 * For example, if {@link IVirtualComponent}s A, B, and C exist and references are required
+	 * For example, if {@link org.eclipse.wst.common.componentcore.resources.IVirtualComponent}s A, B, and C exist and references are required
 	 * from A to B and A to C, then {@link #SOURCE_COMPONENT} should be set to A, and
-	 * {@link #TARGET_COMPONENT_LIST} should be set to a {@link List} containing B and C.
+	 * {@link #TARGET_COMPONENT_LIST} should be set to a {@link java.util.List} containing B and C.
 	 * </p>
 	 */
 	public static final String SOURCE_COMPONENT = "ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT"; //$NON-NLS-1$
 
 	/**
 	 * <p>
-	 * This required property is the {@link List} containing the {@link IVirtualComponent}s that
-	 * will be referenced from the {@link IVirtualComponent} specified by {@link #SOURCE_COMPONENT}.
+	 * This required property is the {@link java.util.List} containing the {@link org.eclipse.wst.common.componentcore.resources.IVirtualComponent}s that
+	 * will be referenced from the {@link org.eclipse.wst.common.componentcore.resources.IVirtualComponent} specified by {@link #SOURCE_COMPONENT}.
 	 * </p>
 	 */
 	public static final String TARGET_COMPONENT_LIST = "ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT"; //$NON-NLS-1$
@@ -56,11 +51,11 @@ public interface ICreateReferenceComponentsDataModelProperties {
 
 	/**
 	 * <p>
-	 * This optional property is the {@link Map} containing keys of {@link IVirtualComponent}s and
+	 * This optional property is the {@link java.util.Map} containing keys of {@link org.eclipse.wst.common.componentcore.resources.IVirtualComponent}s and
 	 * values of {@link String}s. This map is used to specify the String which should be used by
-	 * the {@link IVirtualComponent} specified by the {@link #SOURCE_COMPONENT} property to lookup
-	 * the keyed {@link IVirtualComponent}. The {@link Set} of {@link IVirtualComponent}s in the
-	 * keys of this {@link Map} should have the same contents as the {@link List}.
+	 * the {@link org.eclipse.wst.common.componentcore.resources.IVirtualComponent} specified by the {@link #SOURCE_COMPONENT} property to lookup
+	 * the keyed {@link org.eclipse.wst.common.componentcore.resources.IVirtualComponent}. The {@link java.util.Set} of {@link org.eclipse.wst.common.componentcore.resources.IVirtualComponent}s in the
+	 * keys of this {@link java.util.Map} should have the same contents as the {@link java.util.List}.
 	 * </p>
 	 */
 	public static final String TARGET_COMPONENTS_TO_URI_MAP = "ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_TO_URI_MAP"; //$NON-NLS-1$

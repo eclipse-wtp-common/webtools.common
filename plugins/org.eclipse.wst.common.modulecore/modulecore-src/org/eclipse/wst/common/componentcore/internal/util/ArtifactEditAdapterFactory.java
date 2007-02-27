@@ -19,7 +19,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
-import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.componentcore.internal.impl.ArtifactEditModelFactory;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
@@ -34,9 +33,9 @@ import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
  * Adapts {@see ArtifactEditModel} to an {@see ArtifactEdit) 
  * instance facade, if possible. The following class is 
  * registered with the Platform Adapter Manager in 
- * {@see ModulecorePlugin#start(BundleContext)}
+ * {@see org.eclipse.wst.common.componentcore.internal.ModulecorePlugin#start(BundleContext)}
  * </p>
- * @see ModulecorePlugin
+ * @see org.eclipse.wst.common.componentcore.internal.ModulecorePlugin
  */
 public class ArtifactEditAdapterFactory implements IAdapterFactory {
 

@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -42,7 +41,7 @@ public class VirtualFile extends VirtualResource implements IVirtualFile {
 	}
 
 	/**
-	 * @see IFolder#createLink(org.eclipse.core.runtime.IPath, int,
+	 * @see org.eclipse.core.resources.IFolder#createLink(org.eclipse.core.runtime.IPath, int,
 	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public void createLink(IPath aProjectRelativeLocation, int updateFlags, IProgressMonitor monitor) throws CoreException {

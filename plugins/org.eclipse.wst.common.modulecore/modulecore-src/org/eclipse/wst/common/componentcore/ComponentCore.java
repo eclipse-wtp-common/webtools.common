@@ -16,7 +16,6 @@ import java.util.List;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.common.componentcore.internal.ComponentResource;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
@@ -25,7 +24,6 @@ import org.eclipse.wst.common.componentcore.internal.resources.VirtualReference;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualResource;
 import org.eclipse.wst.common.componentcore.internal.util.ComponentImplManager;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
-import org.eclipse.wst.common.componentcore.resources.IVirtualContainer;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
@@ -56,7 +54,7 @@ public class ComponentCore {
 	 *            A valid, accessible project to contain the component
 	 * @return A handle to an IVirtualComponent that may or may not exist or
 	 *         null if passed project does not contain ModuleCoreNature.
-	 * @see IVirtualContainer#create(int, IProgressMonitor)
+	 * @see org.eclipse.core.runtime.IProgressMonitor#create(int, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public static IVirtualComponent createComponent(IProject aProject) {
 		if (aProject == null || !aProject.isAccessible()){
@@ -75,7 +73,7 @@ public class ComponentCore {
 	 * @return A handle to an IVirtualComponent that may or may not exist or
 	 *         null if passed project does not contain ModuleCoreNature.
 	 * @deprecated
-	 * @see IVirtualContainer#create(int, IProgressMonitor)
+	 * @see org.eclipse.core.runtime.IProgressMonitor#create(int, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public static IVirtualComponent createComponent(IProject aProject, String aName) {
 		return createComponent(aProject);
@@ -89,7 +87,7 @@ public class ComponentCore {
 	 *            lib/&lt;Absolute path of a jar&gt; or
 	 *            var/&lt;CLASSPATH_VARIABLE/library namer&gt;
 	 * @return A handle to an IVirtualComponent that may or may not exist.
-	 * @see IVirtualContainer#create(int, IProgressMonitor)
+	 * @see org.eclipse.core.runtime.IProgressMonitor#create(int, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public static IVirtualComponent createArchiveComponent(IProject aProject, String aComponentName) {
 		return ComponentImplManager.instance().createArchiveComponent(aProject, aComponentName);
@@ -106,8 +104,8 @@ public class ComponentCore {
 	 *            The runtime path of the IVirtualFolder to return.
 	 * @return An IVirtualFolder contained by the specified component with the
 	 *         given runtime path
-	 * @see IVirtualContainer#create(int, IProgressMonitor)
-	 * @see IVirtualResource#createLink(IPath, int, IProgressMonitor)
+	 * @see org.eclipse.core.runtime.IProgressMonitor#create(int, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see IVirtualResource#createLink(IPath, int, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public static IVirtualFolder createFolder(IProject aProject, IPath aRuntimePath) {
 		return ComponentImplManager.instance().createFolder(aProject, aRuntimePath);
@@ -127,7 +125,7 @@ public class ComponentCore {
 	 *            The runtime path of the IVirtualFolder to return.
 	 * @return An IVirtualFile contained by the specified component with the
 	 *         given runtime path
-	 * @see IVirtualResource#createLink(IPath, int, IProgressMonitor)
+	 * @see IVirtualResource#createLink(IPath, int, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public static IVirtualFile createFile(IProject aProject, IPath aRuntimePath) {
 		return new VirtualFile(aProject, aRuntimePath);
@@ -145,7 +143,7 @@ public class ComponentCore {
 	 *            A valid, existing IVirtualComponent
 	 * @return An IVirtualReference that captures the relationship between
 	 *         aComponent and aReferencedComponent.
-	 * @see IVirtualReference#create(int, IProgressMonitor)
+	 * @see IVirtualReference#create(int, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public static IVirtualReference createReference(IVirtualComponent aComponent, IVirtualComponent aReferencedComponent) {
 		return new VirtualReference(aComponent, aReferencedComponent);

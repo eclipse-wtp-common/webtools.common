@@ -31,12 +31,10 @@ import org.eclipse.jem.util.emf.workbench.EMFWorkbenchContextBase;
 import org.eclipse.jem.util.emf.workbench.ISynchronizerExtender;
 import org.eclipse.jem.util.emf.workbench.ProjectResourceSet;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
-import org.eclipse.jem.util.emf.workbench.nature.EMFNature;
 import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
 import org.eclipse.wst.common.componentcore.internal.ModuleStructuralModel;
 import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
-import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.impl.ArtifactEditModelFactory;
 import org.eclipse.wst.common.componentcore.internal.impl.ComponentCoreURIConverter;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleStructuralModelFactory;
@@ -137,8 +135,8 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
  * @see org.eclipse.wst.common.componentcore.internal.StructureEdit#getStructureEditForRead(IProject)
  * @see org.eclipse.wst.common.componentcore.internal.StructureEdit#getStructureEditForWrite(IProject)
  * @see org.eclipse.wst.common.componentcore.ArtifactEdit
- * @see org.eclipse.wst.common.componentcore.ArtifactEdit#getArtifactEditForRead(WorkbenchComponent)
- * @see org.eclipse.wst.common.componentcore.ArtifactEdit#getArtifactEditForWrite(WorkbenchComponent)
+ * @see org.eclipse.wst.common.componentcore.ArtifactEdit#getArtifactEditForRead(org.eclipse.wst.common.componentcore.internal.WorkbenchComponent)
+ * @see org.eclipse.wst.common.componentcore.ArtifactEdit#getArtifactEditForWrite(org.eclipse.wst.common.componentcore.internal.WorkbenchComponent)
  * @plannedfor 1.0
  */
 public class ModuleCoreNature extends EditModelNature implements IProjectNature, IModuleConstants, ISynchronizerExtender {
@@ -270,8 +268,8 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	/**
 	 * <p>
 	 * Returns an {@see ArtifactEditModel}&nbsp; to work with the underlying content of an
-	 * individual {@see WorkbenchComponent}&nbsp; contained in the project. {@see ArtifactEditModel}s
-	 * are used to manipulate the content models for individual {@see WorkbenchComponent}s. In
+	 * individual {@see org.eclipse.wst.common.componentcore.internal.WorkbenchComponent}&nbsp; contained in the project. {@see ArtifactEditModel}s
+	 * are used to manipulate the content models for individual {@see org.eclipse.wst.common.componentcore.internal.WorkbenchComponent}s. In
 	 * general, a content model will contain an EMF representation of the module's relevant
 	 * deployment descriptor, and possibly other EMF resources as well.
 	 * </p>
@@ -296,7 +294,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	 * <code>WebEdit editFacade = WebEdit.getWebEditForRead(aWorkbenchModule);</code>
 	 * </p>
 	 * <p>
-	 * If a particular Edit Facade is not applicable to the supplied {@see WorkbenchComponent}, then
+	 * If a particular Edit Facade is not applicable to the supplied {@see org.eclipse.wst.common.componentcore.internal.WorkbenchComponent}, then
 	 * <b>null </b> will be returned.
 	 * </p>
 	 * 
@@ -317,7 +315,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	 *            {@see ModuleStructuralModel}.
 	 * @return
 	 * @see ArtifactEdit
-	 * @see ArtifactEdit#getArtifactEditForRead(WorkbenchComponent)
+	 * @see ArtifactEdit#getArtifactEditForRead(org.eclipse.wst.common.componentcore.internal.WorkbenchComponent)
 	 */
 	public ArtifactEditModel getArtifactEditModelForRead(URI aModuleURI, Object anAccessorKey) {
 		return getArtifactEditModelForRead(aModuleURI, anAccessorKey, null);
@@ -372,8 +370,8 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	/**
 	 * <p>
 	 * Returns an {@see ArtifactEditModel}&nbsp; to work with the underlying content of an
-	 * individual {@see WorkbenchComponent}&nbsp; contained in the project. {@see ArtifactEditModel}s
-	 * are used to manipulate the content models for individual {@see WorkbenchComponent}s. In
+	 * individual {@see org.eclipse.wst.common.componentcore.internal.WorkbenchComponent}&nbsp; contained in the project. {@see ArtifactEditModel}s
+	 * are used to manipulate the content models for individual {@see org.eclipse.wst.common.componentcore.internal.WorkbenchComponent}s. In
 	 * general, a content model will contain an EMF representation of the module's relevant
 	 * deployment descriptor, and possibly other EMF resources as well.
 	 * </p>
@@ -399,7 +397,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	 * <code>WebEdit editFacade = WebEdit.getWebEditForWrite(aWorkbenchModule);</code>
 	 * </p>
 	 * <p>
-	 * If a particular Edit Facade is not applicable to the supplied {@see WorkbenchComponent}, then
+	 * If a particular Edit Facade is not applicable to the supplied {@see org.eclipse.wst.common.componentcore.internal.WorkbenchComponent}, then
 	 * <b>null </b> will be returned.
 	 * </p>
 	 * 
@@ -420,7 +418,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	 *            {@see ModuleStructuralModel}.
 	 * @return
 	 * @see ArtifactEdit
-	 * @see ArtifactEdit#getArtifactEditForRead(WorkbenchComponent)
+	 * @see ArtifactEdit#getArtifactEditForRead(org.eclipse.wst.common.componentcore.internal.WorkbenchComponent)
 	 */
 	public ArtifactEditModel getArtifactEditModelForWrite(URI aModuleURI, Object anAccessorKey) {
 		return getArtifactEditModelForWrite(aModuleURI, anAccessorKey, null);
@@ -500,7 +498,7 @@ public class ModuleCoreNature extends EditModelNature implements IProjectNature,
 	}
 	
 	/**
-	 * @see EMFNature.primConfigure
+	 * @see org.eclipse.jem.util.emf.workbench.nature.EMFNature.primConfigure
 	 */
 	protected void primConfigure() throws CoreException {
 		super.primConfigure();

@@ -43,7 +43,6 @@ import org.eclipse.wst.common.internal.emf.resource.ReferencedResource;
 import org.eclipse.wst.common.internal.emf.resource.TranslatorResource;
 import org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
-import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidator;
 import org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidatorPresenter;
 import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectNature;
 /**
@@ -236,7 +235,7 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 		}
 	}
 	/**
-	 * @see ResourceStateValidator#checkActivation(ResourceStateValidatorPresenter)
+	 * @see org.eclipse.wst.common.internal.emfworkbench.validateedit.ResourceStateValidator#checkActivation(ResourceStateValidatorPresenter)
 	 */
 	public void checkActivation(ResourceStateValidatorPresenter presenter) throws CoreException {
 		super.checkActivation(presenter);

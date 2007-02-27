@@ -18,7 +18,6 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -122,14 +121,14 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 	}
 
 	/**
-	 * @see IFolder#getFile(java.lang.String)
+	 * @see org.eclipse.core.resources.IFolder#getFile(java.lang.String)
 	 */
 	public IVirtualFile getFile(String name) {
 		return new VirtualFile(getProject(), getRuntimePath().append(name));
 	}
 
 	/**
-	 * @see IFolder#getFolder(java.lang.String)
+	 * @see org.eclipse.core.resources.IFolder#getFolder(java.lang.String)
 	 */
 	public IVirtualFolder getFolder(String name) {
 		return ComponentCore.createFolder(getProject(), getRuntimePath().append(name));
@@ -240,7 +239,7 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 	}
 
 	/**
-	 * @see IFolder#createLink(org.eclipse.core.runtime.IPath, int,
+	 * @see org.eclipse.core.resources.IFolder#createLink(org.eclipse.core.runtime.IPath, int,
 	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public void createLink(IPath aProjectRelativeLocation, int updateFlags, IProgressMonitor monitor) throws CoreException {
