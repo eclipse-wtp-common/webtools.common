@@ -236,6 +236,7 @@ public class ModuleCoreAPIFVTTest extends TestCase {
 	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 * 
 	 */
+/* Bug 160101	
 	public void testCreateLink() throws Exception {
 
 		IVirtualComponent component = ComponentCore.createComponent(TestWorkspace.getTargetProject(), TestWorkspace.WEB_MODULE_2_NAME);
@@ -277,7 +278,7 @@ public class ModuleCoreAPIFVTTest extends TestCase {
 		}
 
 	}
-
+*/
 	/**
 	 * <p>
 	 * All methods lised in the "see" clauses are tested by this method.
