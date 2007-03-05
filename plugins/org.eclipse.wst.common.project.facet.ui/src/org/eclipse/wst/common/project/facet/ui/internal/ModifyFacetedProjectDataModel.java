@@ -1,12 +1,12 @@
 /******************************************************************************
- * Copyright (c) 2006 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.ui.internal;
@@ -32,20 +32,20 @@ public final class ModifyFacetedProjectDataModel
     public static String EVENT_SELECTED_PRESET_CHANGED 
         = "selectedPresetChanged"; //$NON-NLS-1$
     
-    private final Set presets;
-    private final Set presetsReadOnly; 
+    private final Set<IPreset> presets;
+    private final Set<IPreset> presetsReadOnly; 
     private IPreset selectedPreset;
     private final ChangeTargetedRuntimesDataModel runtimesDataModel;
     
     public ModifyFacetedProjectDataModel()
     {
-        this.presets = new HashSet();
+        this.presets = new HashSet<IPreset>();
         this.presetsReadOnly = Collections.unmodifiableSet( this.presets );
         this.selectedPreset = null;
         this.runtimesDataModel = new ChangeTargetedRuntimesDataModel();
     }
     
-    public synchronized Set getPresets()
+    public synchronized Set<IPreset> getPresets()
     {
         return this.presetsReadOnly;
     }
@@ -53,7 +53,7 @@ public final class ModifyFacetedProjectDataModel
     // TODO: Remove this. Presets should be auto-computed by the data-model.
     // The user should not be allowed to set the list of presets.
     
-    public synchronized void setPresets( final Set presets )
+    public synchronized void setPresets( final Set<IPreset> presets )
     {
         if( this.selectedPreset != null && 
             ! presets.contains( this.selectedPreset ) )

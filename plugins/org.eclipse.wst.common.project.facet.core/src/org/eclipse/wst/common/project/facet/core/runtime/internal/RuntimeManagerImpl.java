@@ -1,22 +1,23 @@
 /******************************************************************************
- * Copyright (c) 2005, 2006 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core.runtime.internal;
+
+import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.instantiate;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,13 +32,13 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IListener;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
-import org.eclipse.wst.common.project.facet.core.IVersionExpr;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.VersionFormatException;
 import org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin;
-import org.eclipse.wst.common.project.facet.core.internal.IndexedSet;
-import org.eclipse.wst.common.project.facet.core.internal.ProjectFacetsManagerImpl;
-import org.eclipse.wst.common.project.facet.core.internal.VersionExpr;
+import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectFrameworkImpl;
+import org.eclipse.wst.common.project.facet.core.internal.ProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.internal.util.IndexedSet;
+import org.eclipse.wst.common.project.facet.core.internal.util.VersionExpr;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeBridge;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
@@ -71,21 +72,21 @@ public final class RuntimeManagerImpl
 
     private static final String ANY = "any"; //$NON-NLS-1$
     
-    private static final IndexedSet runtimeComponentTypes;
-    private static final IndexedSet runtimes;
-    private static final List mappings;
-    private static final Map bridges;
-    private static final List defaultFacets;
-    private static final Set listeners;
+    private static final IndexedSet<String,IRuntimeComponentType> runtimeComponentTypes;
+    private static final IndexedSet<String,IRuntime> runtimes;
+    private static final List<Mapping> mappings;
+    private static final Map<String,IRuntimeBridge> bridges;
+    private static final List<DefaultFacetsEntry> defaultFacets;
+    private static final Set<IListener> listeners;
     
     static
     {
-        runtimeComponentTypes = new IndexedSet();
-        runtimes = new IndexedSet();
-        mappings = new ArrayList();
-        bridges = new HashMap();
-        defaultFacets = new ArrayList();
-        listeners = new HashSet();
+        runtimeComponentTypes = new IndexedSet<String,IRuntimeComponentType>();
+        runtimes = new IndexedSet<String,IRuntime>();
+        mappings = new ArrayList<Mapping>();
+        bridges = new HashMap<String,IRuntimeBridge>();
+        defaultFacets = new ArrayList<DefaultFacetsEntry>();
+        listeners = new HashSet<IListener>();
         
         readMetadata();
         readBridgesExtensions();
@@ -94,7 +95,7 @@ public final class RuntimeManagerImpl
     
     private RuntimeManagerImpl() {}
     
-    public static Set getRuntimeComponentTypes()
+    public static Set<IRuntimeComponentType> getRuntimeComponentTypes()
     {
         return runtimeComponentTypes.getUnmodifiable();
     }
@@ -106,8 +107,7 @@ public final class RuntimeManagerImpl
     
     public static IRuntimeComponentType getRuntimeComponentType( final String id )
     {
-        final IRuntimeComponentType rc 
-            = (IRuntimeComponentType) runtimeComponentTypes.get( id );
+        final IRuntimeComponentType rc = runtimeComponentTypes.get( id );
         
         if( rc == null )
         {
@@ -121,7 +121,7 @@ public final class RuntimeManagerImpl
     }
     
     public static IRuntimeComponent createRuntimeComponent( final IRuntimeComponentVersion rcv,
-                                                            final Map properties )
+                                                            final Map<String,String> properties )
     {
         final RuntimeComponent rc = new RuntimeComponent();
         
@@ -129,44 +129,39 @@ public final class RuntimeManagerImpl
         
         if( properties != null )
         {
-            for( Iterator itr = properties.entrySet().iterator(); 
-                 itr.hasNext(); )
+            for( Map.Entry<String,String> entry : properties.entrySet() )
             {
-                final Map.Entry entry = (Map.Entry) itr.next();
-                
-                rc.setProperty( (String) entry.getKey(), 
-                                (String) entry.getValue() );
+                rc.setProperty( entry.getKey(), entry.getValue() );
             }
         }
         
         return rc;
     }
     
-    public static Set getRuntimes()
+    public static Set<IRuntime> getRuntimes()
     {
         synchronized( runtimes )
         {
             bridge();
-            return (Set) runtimes.clone();
+            return new HashSet<IRuntime>( runtimes );
         }
     }
     
-    public static Set getRuntimes( final Set facets )
+    public static Set<IRuntime> getRuntimes( final Set<IProjectFacetVersion> facets )
     {
         synchronized( runtimes )
         {
             bridge();
             
-            final HashSet result = new HashSet();
+            final Set<IRuntime> result = new HashSet<IRuntime>();
             
-            for( Iterator itr1 = runtimes.iterator(); itr1.hasNext(); )
+            for( IRuntime r : runtimes )
             {
-                final IRuntime r = (IRuntime) itr1.next();
                 boolean supports = true;
                 
-                for( Iterator itr2 = facets.iterator(); itr2.hasNext(); )
+                for( IProjectFacetVersion fv : facets )
                 {
-                    if( ! r.supports( (IProjectFacetVersion) itr2.next() ) )
+                    if( ! r.supports( fv ) )
                     {
                         supports = false;
                         break;
@@ -198,7 +193,7 @@ public final class RuntimeManagerImpl
         {
             bridge();
             
-            final IRuntime runtime = (IRuntime) runtimes.get( name );
+            final IRuntime runtime = runtimes.get( name );
             
             if( runtime == null )
             {
@@ -211,8 +206,8 @@ public final class RuntimeManagerImpl
     }
     
     public static IRuntime defineRuntime( final String name,
-                                          final List components,
-                                          final Map properties )
+                                          final List<IRuntimeComponent> components,
+                                          final Map<String,String> properties )
     {
         synchronized( runtimes )
         {
@@ -220,20 +215,16 @@ public final class RuntimeManagerImpl
             
             r.setName( name );
             
-            for( Iterator itr = components.iterator(); itr.hasNext(); )
+            for( IRuntimeComponent rc : components )
             {
-                r.addRuntimeComponent( (IRuntimeComponent) itr.next() );
+                r.addRuntimeComponent( rc );
             }
             
             if( properties != null )
             {
-                for( Iterator itr = properties.entrySet().iterator(); 
-                     itr.hasNext(); )
+                for( Map.Entry<String,String> entry : properties.entrySet() )
                 {
-                    final Map.Entry entry = (Map.Entry) itr.next();
-                    
-                    r.setProperty( (String) entry.getKey(), 
-                                   (String) entry.getValue() );
+                    r.setProperty( entry.getKey(), entry.getValue() );
                 }
             }
             
@@ -274,11 +265,11 @@ public final class RuntimeManagerImpl
     
     private static void notifyRuntimeListeners()
     {
-        for( Iterator itr = listeners.iterator(); itr.hasNext(); )
+        for( IListener listener : listeners )
         {
             try
             {
-                ( (IListener) itr.next() ).handle();
+                listener.handle();
             }
             catch( Exception e )
             {
@@ -287,18 +278,14 @@ public final class RuntimeManagerImpl
         }
     }
     
-    static Set getSupportedFacets( final List composition )
+    static Set<IProjectFacetVersion> getSupportedFacets( final List<IRuntimeComponent> composition )
     {
-        final Set result = new HashSet();
+        final Set<IProjectFacetVersion> result = new HashSet<IProjectFacetVersion>();
         
-        for( Iterator itr1 = composition.iterator(); itr1.hasNext(); )
+        for( IRuntimeComponent rc : composition )
         {
-            final IRuntimeComponent rc = (IRuntimeComponent) itr1.next();
-            
-            for( Iterator itr2 = mappings.iterator(); itr2.hasNext(); )
+            for( Mapping m : mappings )
             {
-                final Mapping m = (Mapping) itr2.next();
-                
                 try
                 {
                     result.addAll( m.getSupportedFacets( rc ) );                    
@@ -317,14 +304,12 @@ public final class RuntimeManagerImpl
         return result;
     }
     
-    static Set getDefaultFacets( final IRuntimeComponentVersion rcv )
+    static Set<IProjectFacetVersion> getDefaultFacets( final IRuntimeComponentVersion rcv )
     {
-        final Set result = new HashSet();
+        final Set<IProjectFacetVersion> result = new HashSet<IProjectFacetVersion>();
         
-        for( Iterator itr = defaultFacets.iterator(); itr.hasNext(); )
+        for( DefaultFacetsEntry dfe : defaultFacets )
         {
-            final DefaultFacetsEntry dfe = (DefaultFacetsEntry) itr.next();
-            
             try
             {
                 if( dfe.match( rcv ) )
@@ -345,24 +330,21 @@ public final class RuntimeManagerImpl
     {
         boolean modified = false;
         
-        for( Iterator itr1 = bridges.entrySet().iterator(); itr1.hasNext(); )
+        for( Map.Entry<String,IRuntimeBridge> entry : bridges.entrySet() )
         {
-            final Map.Entry entry = (Map.Entry) itr1.next();
-            final String brid = (String) entry.getKey();
-            final IRuntimeBridge br = (IRuntimeBridge) entry.getValue();
+            final String brid = entry.getKey();
+            final IRuntimeBridge br = entry.getValue();
             
             // Find the runtimes belonging to this bridge that are currently
             // in the system.
             
-            final HashMap existing = new HashMap();
+            final Map<String,BridgedRuntime> existing = new HashMap<String,BridgedRuntime>();
             
-            for( Iterator itr2 = runtimes.iterator(); itr2.hasNext(); )
+            for( IRuntime r : runtimes )
             {
-                final Object obj = itr2.next();
-                
-                if( obj instanceof BridgedRuntime )
+                if( r instanceof BridgedRuntime )
                 {
-                    final BridgedRuntime bridged = (BridgedRuntime) obj;
+                    final BridgedRuntime bridged = (BridgedRuntime) r;
                     
                     if( bridged.getBridgeId().equals( brid ) )
                     {
@@ -373,7 +355,7 @@ public final class RuntimeManagerImpl
             
             // Get the new set of exported runtimes.
             
-            final Set exported;
+            final Set<String> exported;
             
             try
             {
@@ -383,10 +365,9 @@ public final class RuntimeManagerImpl
             {
                 FacetCorePlugin.log( e );
                 
-                for( Iterator itr2 = existing.values().iterator(); 
-                     itr2.hasNext(); )
+                for( BridgedRuntime r : existing.values() )
                 {
-                    runtimes.remove( ( (IRuntime) itr2 ).getName() );
+                    runtimes.remove( r.getName() );
                     modified = true;
                 }
                 
@@ -395,10 +376,8 @@ public final class RuntimeManagerImpl
             
             // Remove the absolete entries.
             
-            for( Iterator itr2 = existing.values().iterator(); itr2.hasNext(); )
+            for( BridgedRuntime r : existing.values() )
             {
-                final BridgedRuntime r = (BridgedRuntime) itr2.next();
-                
                 if( ! exported.contains( r.getNativeRuntimeId() ) )
                 {
                     runtimes.delete( r.getName() );
@@ -408,10 +387,8 @@ public final class RuntimeManagerImpl
             
             // Create the new entries.
             
-            for( Iterator itr2 = exported.iterator(); itr2.hasNext(); )
+            for( String id : exported )
             {
-                final String id = (String) itr2.next();
-                
                 if( ! existing.containsKey( id ) )
                 {
                     try
@@ -465,36 +442,26 @@ public final class RuntimeManagerImpl
             throw new RuntimeException( "Extension point not found!" ); //$NON-NLS-1$
         }
         
-        final ArrayList cfgels = new ArrayList();
-        final IExtension[] extensions = point.getExtensions();
+        final List<IConfigurationElement> cfgels = new ArrayList<IConfigurationElement>();
         
-        for( int i = 0; i < extensions.length; i++ )
+        for( IExtension extension : point.getExtensions() )
         {
-            final IConfigurationElement[] elements 
-                = extensions[ i ].getConfigurationElements();
-            
-            for( int j = 0; j < elements.length; j++ )
+            for( IConfigurationElement cfgel : extension.getConfigurationElements() )
             {
-                cfgels.add( elements[ j ] );
+                cfgels.add( cfgel );
             }
         }
         
-        for( int i = 0, n = cfgels.size(); i < n; i++ )
+        for( IConfigurationElement config : cfgels )
         {
-            final IConfigurationElement config
-                = (IConfigurationElement) cfgels.get( i );
-            
             if( config.getName().equals( EL_RUNTIME_COMPONENT_TYPE ) )
             {
                 readRuntimeComponentType( config );
             }
         }
 
-        for( int i = 0, n = cfgels.size(); i < n; i++ )
+        for( IConfigurationElement config : cfgels )
         {
-            final IConfigurationElement config
-                = (IConfigurationElement) cfgels.get( i );
-            
             if( config.getName().equals( EL_RUNTIME_COMPONENT_VERSION ) )
             {
                 readRuntimeComponentVersion( config );
@@ -503,22 +470,16 @@ public final class RuntimeManagerImpl
         
         calculateVersionComparisonTables();
 
-        for( int i = 0, n = cfgels.size(); i < n; i++ )
+        for( IConfigurationElement config : cfgels )
         {
-            final IConfigurationElement config
-                = (IConfigurationElement) cfgels.get( i );
-            
             if( config.getName().equals( EL_ADAPTER ) )
             {
                 readAdapter( config );
             }
         }
 
-        for( int i = 0, n = cfgels.size(); i < n; i++ )
+        for( IConfigurationElement config : cfgels )
         {
-            final IConfigurationElement config
-                = (IConfigurationElement) cfgels.get( i );
-            
             if( config.getName().equals( EL_SUPPORTED ) )
             {
                 readMapping( config );
@@ -615,38 +576,37 @@ public final class RuntimeManagerImpl
     
     private static void calculateVersionComparisonTables()
     {
-        for( Iterator itr = runtimeComponentTypes.iterator(); itr.hasNext(); )
+        final List<IRuntimeComponentType> badRuntimeComponentTypes 
+            = new ArrayList<IRuntimeComponentType>();
+        
+        for( IRuntimeComponentType rct : runtimeComponentTypes )
         {
-            final IRuntimeComponentType rct = (IRuntimeComponentType) itr.next();
-            final Set setOfVersions = rct.getVersions();
-
             try
             {
-                final Comparator comp = rct.getVersionComparator();
+                final Comparator<String> comp = rct.getVersionComparator();
                 
-                final RuntimeComponentVersion[] versions 
-                    = new RuntimeComponentVersion[ setOfVersions.size() ];
+                final List<IRuntimeComponentVersion> versions 
+                    = new ArrayList<IRuntimeComponentVersion>( rct.getVersions() );
                 
-                setOfVersions.toArray( versions );
+                final Map<IRuntimeComponentVersion,Map<IRuntimeComponentVersion,Integer>> compTables
+                    = new HashMap<IRuntimeComponentVersion,Map<IRuntimeComponentVersion,Integer>>();
                 
-                final Map[] compTables = new Map[ versions.length ];
-                
-                for( int i = 0; i < compTables.length; i++ )
+                for( IRuntimeComponentVersion rcv : versions )
                 {
-                    compTables[ i ] = new HashMap();
+                    compTables.put( rcv, new HashMap<IRuntimeComponentVersion,Integer>() );
                 }
                 
-                for( int i = 0; i < versions.length; i++ )
+                for( int i = 0, n = versions.size(); i < n; i++ )
                 {
-                    final IRuntimeComponentVersion iVer = versions[ i ];
+                    final IRuntimeComponentVersion iVer = versions.get( i );
                     final String iVerStr = iVer.getVersionString();
-                    final Map iCompTable = compTables[ i ];
+                    final Map<IRuntimeComponentVersion,Integer> iCompTable = compTables.get( iVer );
                     
-                    for( int j = i + 1; j < versions.length; j++ )
+                    for( int j = i + 1; j < n; j++ )
                     {
-                        final IRuntimeComponentVersion jVer = versions[ j ];
+                        final IRuntimeComponentVersion jVer = versions.get( j );
                         final String jVerStr = jVer.getVersionString();
-                        final Map jCompTable = compTables[ j ];
+                        final Map<IRuntimeComponentVersion,Integer> jCompTable = compTables.get( jVer );
                         
                         final int result = comp.compare( iVerStr, jVerStr );
                         
@@ -655,9 +615,11 @@ public final class RuntimeManagerImpl
                     }
                 }
                 
-                for( int i = 0; i < versions.length; i++ )
+                for( Map.Entry<IRuntimeComponentVersion,Map<IRuntimeComponentVersion,Integer>> entry
+                     : compTables.entrySet() )
                 {
-                    versions[ i ].setComparisonTable( compTables[ i ] );
+                    final RuntimeComponentVersion rcv = (RuntimeComponentVersion) entry.getKey();
+                    rcv.setComparisonTable( entry.getValue() );
                 }
             }
             catch( Exception e )
@@ -670,9 +632,13 @@ public final class RuntimeManagerImpl
                 // down the entire system.
                 
                 FacetCorePlugin.log( e );
-                
-                itr.remove();
+                badRuntimeComponentTypes.add( rct );
             }
+        }
+        
+        for( IRuntimeComponentType rct : badRuntimeComponentTypes )
+        {
+            runtimeComponentTypes.remove( rct );
         }
     }
     
@@ -681,7 +647,7 @@ public final class RuntimeManagerImpl
         IRuntimeComponentType rctype = null;
         IRuntimeComponentVersion rcversion = null;
         String factory = null;
-        final List types = new ArrayList();
+        final List<String> types = new ArrayList<String>();
         
         final IConfigurationElement[] children = config.getChildren();
         
@@ -761,7 +727,7 @@ public final class RuntimeManagerImpl
             }
         }
         
-        final Set versions;
+        final Set<IRuntimeComponentVersion> versions;
         
         if( rcversion == null )
         {
@@ -774,14 +740,13 @@ public final class RuntimeManagerImpl
         
         final String plugin = config.getContributor().getName();
         
-        for( Iterator itr1 = versions.iterator(); itr1.hasNext(); )
+        for( IRuntimeComponentVersion rcv : versions )
         {
-            final RuntimeComponentVersion rcv
-                = (RuntimeComponentVersion) itr1.next();
+            final RuntimeComponentVersion v = (RuntimeComponentVersion) rcv;
             
-            for( Iterator itr2 = types.iterator(); itr2.hasNext(); )
+            for( String type : types )
             {
-                rcv.addAdapterFactory( (String) itr2.next(), plugin, factory );
+                v.addAdapterFactory( type, plugin, factory );
             }
         }
     }
@@ -806,13 +771,14 @@ public final class RuntimeManagerImpl
                 }
                 
                 final String v = child.getAttribute( ATTR_VERSION );
-                VersionExpr expr = null;
+                VersionExpr<ProjectFacetVersion> expr = null;
                 
                 if( v != null )
                 {
                     try
                     {
-                        expr = new VersionExpr( f, v, config.getContributor().getName() );
+                        final String pluginId = config.getContributor().getName();
+                        expr = new VersionExpr<ProjectFacetVersion>( f, v, pluginId );
                     }
                     catch( CoreException e )
                     {
@@ -836,16 +802,14 @@ public final class RuntimeManagerImpl
                     }
                     
                     final String v = child.getAttribute( ATTR_VERSION );
-                    VersionExpr expr = null;
+                    VersionExpr<RuntimeComponentVersion> expr = null;
                     
                     if( v != null )
                     {
                         try
                         {
-                            final String pluginId 
-                                = config.getContributor().getName();
-                            
-                            expr = new VersionExpr( rct, v, pluginId );
+                            final String pluginId = config.getContributor().getName();
+                            expr = new VersionExpr<RuntimeComponentVersion>( rct, v, pluginId );
                         }
                         catch( CoreException e )
                         {
@@ -875,25 +839,18 @@ public final class RuntimeManagerImpl
             throw new RuntimeException( "Extension point not found!" ); //$NON-NLS-1$
         }
         
-        final ArrayList cfgels = new ArrayList();
-        final IExtension[] extensions = point.getExtensions();
+        final List<IConfigurationElement> cfgels = new ArrayList<IConfigurationElement>();
         
-        for( int i = 0; i < extensions.length; i++ )
+        for( IExtension extension : point.getExtensions() )
         {
-            final IConfigurationElement[] elements 
-                = extensions[ i ].getConfigurationElements();
-            
-            for( int j = 0; j < elements.length; j++ )
+            for( IConfigurationElement cfgel : extension.getConfigurationElements() )
             {
-                cfgels.add( elements[ j ] );
+                cfgels.add( cfgel );
             }
         }
-        
-        for( int i = 0, n = cfgels.size(); i < n; i++ )
+
+        for( IConfigurationElement config : cfgels )
         {
-            final IConfigurationElement config
-                = (IConfigurationElement) cfgels.get( i );
-            
             if( config.getName().equals( EL_BRIDGE ) )
             {
                 final String id = config.getAttribute( ATTR_ID );
@@ -914,12 +871,11 @@ public final class RuntimeManagerImpl
                 
                 final String pluginId = config.getContributor().getName();
                 
-                final Object br;
+                final IRuntimeBridge br;
                 
                 try
                 {
-                    br = FacetCorePlugin.instantiate( pluginId, clname,
-                                                      IRuntimeBridge.class );
+                    br = instantiate( pluginId, clname, IRuntimeBridge.class );
                 }
                 catch( CoreException e )
                 {
@@ -945,25 +901,18 @@ public final class RuntimeManagerImpl
             throw new RuntimeException( "Extension point not found!" ); //$NON-NLS-1$
         }
         
-        final ArrayList cfgels = new ArrayList();
-        final IExtension[] extensions = point.getExtensions();
+        final List<IConfigurationElement> cfgels = new ArrayList<IConfigurationElement>();
         
-        for( int i = 0; i < extensions.length; i++ )
+        for( IExtension extension : point.getExtensions() )
         {
-            final IConfigurationElement[] elements 
-                = extensions[ i ].getConfigurationElements();
-            
-            for( int j = 0; j < elements.length; j++ )
+            for( IConfigurationElement cfgel : extension.getConfigurationElements() )
             {
-                cfgels.add( elements[ j ] );
+                cfgels.add( cfgel );
             }
         }
-        
-        for( int i = 0, n = cfgels.size(); i < n; i++ )
+
+        for( IConfigurationElement config : cfgels )
         {
-            final IConfigurationElement config
-                = (IConfigurationElement) cfgels.get( i );
-            
             if( config.getName().equals( EL_DEFAULT_FACETS ) )
             {
                 readDefaultFacets( config );
@@ -999,7 +948,7 @@ public final class RuntimeManagerImpl
                         final String pluginId 
                             = config.getContributor().getName();
                         
-                        dfe.rcvexpr = new VersionExpr( dfe.rct, v, pluginId );
+                        dfe.rcvexpr = new VersionExpr<RuntimeComponentVersion>( dfe.rct, v, pluginId );
                     }
                     catch( CoreException e )
                     {
@@ -1028,7 +977,7 @@ public final class RuntimeManagerImpl
                 if( ! f.hasVersion( ver ) )
                 {
                     String msg
-                        = NLS.bind( ProjectFacetsManagerImpl.Resources.facetVersionNotDefined,
+                        = NLS.bind( FacetedProjectFrameworkImpl.Resources.facetVersionNotDefined,
                                     f.getId(), ver );
                     
                     msg += NLS.bind( Resources.usedInPlugin, 
@@ -1088,7 +1037,7 @@ public final class RuntimeManagerImpl
         
         if( ! ProjectFacetsManager.isProjectFacetDefined( id ) )
         {
-            ProjectFacetsManagerImpl.reportMissingFacet( id, config.getContributor().getName() );
+            FacetedProjectFrameworkImpl.reportMissingFacet( id, config.getContributor().getName() );
             return null;
         }
         
@@ -1108,13 +1057,13 @@ public final class RuntimeManagerImpl
     
     private static final class Mapping
     {
-        // IProjectFacet -> VersionMatchExpr
-        public final Map facets = new HashMap();
+        public final Map<IProjectFacet,VersionExpr<ProjectFacetVersion>> facets 
+            = new HashMap<IProjectFacet,VersionExpr<ProjectFacetVersion>>();
         
-        // IRuntimeComponentType -> VersionExpr
-        public final Map runtimeComponents = new HashMap();
+        public final Map<IRuntimeComponentType,VersionExpr<RuntimeComponentVersion>> runtimeComponents 
+            = new HashMap<IRuntimeComponentType,VersionExpr<RuntimeComponentVersion>>();
         
-        private Set getSupportedFacets( final IRuntimeComponent rc )
+        private Set<IProjectFacetVersion> getSupportedFacets( final IRuntimeComponent rc )
         
             throws CoreException
             
@@ -1124,34 +1073,28 @@ public final class RuntimeManagerImpl
             
             if( this.runtimeComponents.containsKey( rct ) )
             {
-                final IVersionExpr expr 
-                    = (IVersionExpr) this.runtimeComponents.get( rct );
+                final VersionExpr<RuntimeComponentVersion> expr = this.runtimeComponents.get( rct );
                 
                 if( expr != null && ! expr.check( rcv ) )
                 {
-                    return Collections.EMPTY_SET;
+                    return Collections.emptySet();
                 }
             }
             else if( ! this.runtimeComponents.isEmpty() )
             {
-                return Collections.EMPTY_SET;
+                return Collections.emptySet();
             }
             
-            final Set result = new HashSet();
+            final Set<IProjectFacetVersion> result = new HashSet<IProjectFacetVersion>();
             
-            for( Iterator itr1 = this.facets.entrySet().iterator(); 
-                 itr1.hasNext(); )
+            for( Map.Entry<IProjectFacet,VersionExpr<ProjectFacetVersion>> entry 
+                 : this.facets.entrySet() )
             {
-                final Map.Entry entry = (Map.Entry) itr1.next();
-                final IProjectFacet f = (IProjectFacet) entry.getKey();
-                final IVersionExpr expr = (IVersionExpr) entry.getValue();
+                final IProjectFacet f = entry.getKey();
+                final VersionExpr<ProjectFacetVersion> expr = entry.getValue();
                 
-                for( Iterator itr2 = f.getVersions().iterator(); 
-                     itr2.hasNext(); )
+                for( IProjectFacetVersion fv : f.getVersions() )
                 {
-                    final IProjectFacetVersion fv 
-                        = (IProjectFacetVersion) itr2.next();
-                    
                     if( expr == null || expr.check( fv ) )
                     {
                         result.add( fv );
@@ -1166,8 +1109,8 @@ public final class RuntimeManagerImpl
     private static final class DefaultFacetsEntry
     {
         public IRuntimeComponentType rct;
-        public IVersionExpr rcvexpr;
-        public final Set facets = new HashSet();
+        public VersionExpr<RuntimeComponentVersion> rcvexpr;
+        public final Set<IProjectFacetVersion> facets = new HashSet<IProjectFacetVersion>();
         
         public boolean match( final IRuntimeComponentVersion rcv )
         

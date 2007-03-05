@@ -1,9 +1,19 @@
+/******************************************************************************
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Konstantin Komissarchik
+ ******************************************************************************/
+
 package org.eclipse.wst.common.project.facet.ui.internal;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +59,10 @@ import org.eclipse.wst.common.project.facet.core.IGroup;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IVersionExpr;
 
+/**
+ * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
+ */
+
 public final class ConstraintDisplayDialog
 
     extends Dialog
@@ -88,7 +102,11 @@ public final class ConstraintDisplayDialog
     {
         final Canvas canvas = new Canvas( parent, SWT.NONE );
         canvas.setLayoutData( new GridData( SWT.FILL, SWT.FILL, true, true ) );
-        canvas.setBackground( new Color( null, 255, 255, 206 ) );
+        
+        final Color infoBackgroundColor
+            = parent.getDisplay().getSystemColor( SWT.COLOR_INFO_BACKGROUND );
+        
+        canvas.setBackground( infoBackgroundColor );
         
         final LightweightSystem lws = new LightweightSystem( canvas );
         final Figure outer = new Figure();
@@ -155,10 +173,9 @@ public final class ConstraintDisplayDialog
                     parentCon.setTargetAnchor( new EllipseAnchor( node ) );
                 }
                 
-                for( Iterator itr = constraint.getOperands().iterator(); 
-                     itr.hasNext(); )
+                for( Object operand : constraint.getOperands() )
                 {
-                    final IConstraint child = (IConstraint) itr.next();
+                    final IConstraint child = (IConstraint) operand;
                     final PolylineConnection childEdge = new PolylineConnection();
                     container.add( childEdge );
                     childEdge.setSourceAnchor( new EllipseAnchor( node ) );
@@ -216,6 +233,7 @@ public final class ConstraintDisplayDialog
             return result.getSize();        
         }
 
+        @SuppressWarnings( "unchecked" )
         public void layout( final IFigure container )
         {
             if( this.laidout > 5 )
@@ -226,38 +244,34 @@ public final class ConstraintDisplayDialog
             // Create the graph.
             
             final DirectedGraph graph = new DirectedGraph();
-            final Map nodes = new HashMap();
+            final Map<IFigure,Node> nodes = new HashMap<IFigure,Node>();
             
-            for( Iterator itr = container.getChildren().iterator(); 
-                 itr.hasNext(); )
+            for( Object child : container.getChildren() )
             {
-                final IFigure child = (IFigure) itr.next();
+                final IFigure childFigure = (IFigure) child;
                 
-                if( ! ( child instanceof PolylineConnection ) )
+                if( ! ( childFigure instanceof PolylineConnection ) )
                 {
-                    final Node node = new Node( child );
-                    final Dimension size = child.getPreferredSize();
+                    final Node node = new Node( childFigure );
+                    final Dimension size = childFigure.getPreferredSize();
                     node.height = size.height;
                     node.width = size.width;
                     graph.nodes.add( node );
-                    nodes.put( child, node );
+                    nodes.put( childFigure, node );
                 }
             }
             
-            for( Iterator itr = container.getChildren().iterator(); 
-                 itr.hasNext(); )
+            for( Object child : container.getChildren() )
             {
-                final Object child = itr.next();
-                
                 if( child instanceof PolylineConnection )
                 {
                     final PolylineConnection cn = (PolylineConnection) child;
                     
                     final IFigure source = cn.getSourceAnchor().getOwner();
-                    final Node sourceNode = (Node) nodes.get( source );
+                    final Node sourceNode = nodes.get( source );
                     
                     final IFigure target = cn.getTargetAnchor().getOwner();
-                    final Node targetNode = (Node) nodes.get( target );
+                    final Node targetNode = nodes.get( target );
                     
                     final Edge edge = new Edge( cn, sourceNode, targetNode );
                     graph.edges.add( edge );
@@ -270,9 +284,9 @@ public final class ConstraintDisplayDialog
             
             // Layout nodes based on the results of the graph layout.
 
-            for( Iterator itr = graph.nodes.iterator(); itr.hasNext(); )
+            for( Object obj : graph.nodes )
             {
-                final Node node = (Node) itr.next();
+                final Node node = (Node) obj;
                 final IFigure figure = (IFigure) node.data;
                 
                 final Rectangle bounds 
@@ -283,9 +297,9 @@ public final class ConstraintDisplayDialog
                 figure.setBounds( bounds );
             }
 
-            for( Iterator itr = graph.edges.iterator(); itr.hasNext(); )
+            for( Object obj : graph.edges )
             {
-                final Edge edge = (Edge) itr.next();
+                final Edge edge = (Edge) obj;
                 final PolylineConnection cn = (PolylineConnection) edge.data;
                 
                 if( edge.vNodes == null )
@@ -294,12 +308,11 @@ public final class ConstraintDisplayDialog
                 }
                 else
                 {
-                    final List bends = new ArrayList();
+                    final List<AbsoluteBendpoint> bends = new ArrayList<AbsoluteBendpoint>();
                     
-                    for( Iterator itr2 = edge.vNodes.iterator(); 
-                         itr2.hasNext(); )
+                    for( Object obj2 : edge.vNodes )
                     {
-                        final Node vn = (Node) itr2.next();
+                        final Node vn = (Node) obj2;
                         
                         if( edge.isFeedback() )
                         {

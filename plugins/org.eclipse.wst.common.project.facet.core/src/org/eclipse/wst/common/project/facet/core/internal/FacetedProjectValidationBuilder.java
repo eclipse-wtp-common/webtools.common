@@ -1,18 +1,22 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core.internal;
 
+import static org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin.PLUGIN_ID;
+import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.findExtensions;
+import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.getTopLevelElements;
+import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.instantiate;
+
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,17 +26,14 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtension;
-import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectValidator;
+import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 /**
@@ -47,17 +48,18 @@ public final class FacetedProjectValidationBuilder
     public static final String BUILDER_ID
         = FacetCorePlugin.PLUGIN_ID + ".builder"; //$NON-NLS-1$
 
-    public static final String VALIDATORS_EXTENSION_ID = "validators"; //$NON-NLS-1$
+    private static final String EXTENSION_POINT_ID = "validators"; //$NON-NLS-1$
     
     private static final String EL_VALIDATOR = "validator"; //$NON-NLS-1$
     private static final String EL_FACET = "facet"; //$NON-NLS-1$
     private static final String ATTR_CLASS = "class"; //$NON-NLS-1$
 
-    private static final List validators = new ArrayList();
+    private static final List<ValidatorDefinition> validators 
+        = new ArrayList<ValidatorDefinition>();
     
     static
     {
-        readMetadata();
+        readExtensions();
     }
     
     protected IProject[] build( final int kind, 
@@ -111,14 +113,12 @@ public final class FacetedProjectValidationBuilder
             
             // Call the registered validators.
             
-            for( Iterator itr = validators.iterator(); itr.hasNext(); )
+            for( ValidatorDefinition def : validators )
             {
                 if( monitor != null && monitor.isCanceled() )
                 {
                     throw new OperationCanceledException();
                 }
-                
-                final ValidatorDefinition def = (ValidatorDefinition) itr.next();
                 
                 if( def.isApplicable( fproj.getProjectFacets() ) )
                 {
@@ -144,38 +144,11 @@ public final class FacetedProjectValidationBuilder
         }
     }
     
-    private static void readMetadata()
+    private static void readExtensions()
     {
-        final IExtensionRegistry registry = Platform.getExtensionRegistry();
-        
-        final IExtensionPoint point 
-            = registry.getExtensionPoint( FacetCorePlugin.PLUGIN_ID, 
-                                          VALIDATORS_EXTENSION_ID );
-        
-        if( point == null )
+        for( IConfigurationElement config 
+            : getTopLevelElements( findExtensions( PLUGIN_ID, EXTENSION_POINT_ID ) ) )
         {
-            throw new RuntimeException( "Extension point not found!" ); //$NON-NLS-1$
-        }
-        
-        final ArrayList cfgels = new ArrayList();
-        final IExtension[] extensions = point.getExtensions();
-        
-        for( int i = 0; i < extensions.length; i++ )
-        {
-            final IConfigurationElement[] elements 
-                = extensions[ i ].getConfigurationElements();
-            
-            for( int j = 0; j < elements.length; j++ )
-            {
-                cfgels.add( elements[ j ] );
-            }
-        }
-        
-        for( int i = 0, n = cfgels.size(); i < n; i++ )
-        {
-            final IConfigurationElement config
-                = (IConfigurationElement) cfgels.get( i );
-            
             if( config.getName().equals( EL_VALIDATOR ) )
             {
                 ValidatorDefinition def = new ValidatorDefinition();
@@ -185,7 +158,7 @@ public final class FacetedProjectValidationBuilder
 
                 if( def.className == null )
                 {
-                    ProjectFacetsManagerImpl.reportMissingAttribute( config, ATTR_CLASS );
+                    FacetedProjectFrameworkImpl.reportMissingAttribute( config, ATTR_CLASS );
                     continue;
                 }
                 
@@ -253,17 +226,15 @@ public final class FacetedProjectValidationBuilder
         public String plugin;
         public String className;
         public IFacetedProjectValidator validator;
-        public final List constraints = new ArrayList();
+        public final List<ProjectFacetRef> constraints = new ArrayList<ProjectFacetRef>();
         
-        public boolean isApplicable( final Set facets )
+        public boolean isApplicable( final Set<IProjectFacetVersion> facets )
         
             throws CoreException
             
         {
-            for( Iterator itr = this.constraints.iterator(); itr.hasNext(); )
+            for( ProjectFacetRef ref : this.constraints )
             {
-                final ProjectFacetRef ref = (ProjectFacetRef) itr.next();
-                
                 if( ! ref.check( facets ) )
                 {
                     return false;
@@ -280,12 +251,8 @@ public final class FacetedProjectValidationBuilder
         {
             if( this.validator == null )
             {
-                final Object instance
-                    = FacetCorePlugin.instantiate( this.plugin, 
-                                                   this.className, 
-                                                   IFacetedProjectValidator.class );
-            
-                this.validator = (IFacetedProjectValidator) instance;
+                this.validator
+                    = instantiate( this.plugin, this.className, IFacetedProjectValidator.class );
             }
             
             return this.validator;

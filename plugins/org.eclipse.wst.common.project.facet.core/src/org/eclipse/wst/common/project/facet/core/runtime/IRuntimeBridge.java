@@ -1,12 +1,12 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core.runtime;
@@ -21,12 +21,6 @@ import org.eclipse.core.runtime.CoreException;
  * The interface implemented by extensions wishing to expose runtimes defined
  * through other means to the project facets framework.
  * 
- * <p><i>This class is part of an interim API that is still under development 
- * and expected to change significantly before reaching stability. It is being 
- * made available at this early stage to solicit feedback from pioneering 
- * adopters on the understanding that any code that uses this API will almost 
- * certainly be broken (repeatedly) as the API evolves.</i></p>
- * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
@@ -40,11 +34,10 @@ public interface IRuntimeBridge
      * call will be the original name provided by this method call. 
      * 
      * @return the set of names for runtimes that this bridge wants to export
-     *   (element type: {@see String})
      * @throws CoreException if failed while bridging
      */
     
-    Set getExportedRuntimeNames()
+    Set<String> getExportedRuntimeNames()
         
         throws CoreException;
     
@@ -79,11 +72,10 @@ public interface IRuntimeBridge
          * consoluted in order and the first one capable of performing the o
          * peation wins.
          *  
-         * @return the runtime components that comprise this runtime (element 
-         *   type: {@see IRuntimeComponent})
+         * @return the runtime components that comprise this runtime
          */
         
-        List getRuntimeComponents();
+        List<IRuntimeComponent> getRuntimeComponents();
         
         /**
          * Returns the properties associated with this runtime component. The
@@ -94,7 +86,7 @@ public interface IRuntimeBridge
          *   {@see String}, value type: {@see String})
          */
         
-        Map getProperties();
+        Map<String,String> getProperties();
     }
     
 }

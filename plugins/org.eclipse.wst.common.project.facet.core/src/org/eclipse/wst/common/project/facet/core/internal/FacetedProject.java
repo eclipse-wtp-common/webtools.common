@@ -1,15 +1,20 @@
 /******************************************************************************
- * Copyright (c) 2005, 2006 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core.internal;
+
+import static org.eclipse.wst.common.project.facet.core.internal.util.ProgressMonitorUtil.beginTask;
+import static org.eclipse.wst.common.project.facet.core.internal.util.ProgressMonitorUtil.done;
+import static org.eclipse.wst.common.project.facet.core.internal.util.ProgressMonitorUtil.submon;
+import static org.eclipse.wst.common.project.facet.core.internal.util.ProgressMonitorUtil.worked;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -23,10 +28,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -47,18 +52,26 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IActionConfig;
 import org.eclipse.wst.common.project.facet.core.IActionDefinition;
 import org.eclipse.wst.common.project.facet.core.IDelegate;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
-import org.eclipse.wst.common.project.facet.core.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectValidator;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
-import org.eclipse.wst.common.project.facet.core.IRuntimeChangedEvent;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
+import org.eclipse.wst.common.project.facet.core.events.ITargetedRuntimesChangedEvent;
+import org.eclipse.wst.common.project.facet.core.events.internal.FixedFacetsChangedEvent;
+import org.eclipse.wst.common.project.facet.core.events.internal.LegacyListenerAdapter;
+import org.eclipse.wst.common.project.facet.core.events.internal.ListenerRegistry;
+import org.eclipse.wst.common.project.facet.core.events.internal.PrimaryRuntimeChangedEvent;
+import org.eclipse.wst.common.project.facet.core.events.internal.ProjectFacetActionEvent;
+import org.eclipse.wst.common.project.facet.core.events.internal.ProjectModifiedEvent;
+import org.eclipse.wst.common.project.facet.core.events.internal.TargetedRuntimesChangedEvent;
+import org.eclipse.wst.common.project.facet.core.internal.util.ObjectReference;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
 import org.eclipse.wst.common.project.facet.core.runtime.internal.UnknownRuntime;
@@ -119,14 +132,16 @@ public final class FacetedProject
     private static final String ATTR_VERSION = "version"; //$NON-NLS-1$
 
     private final IProject project;
-    private final CopyOnWriteSet facets;
-    private final CopyOnWriteSet fixed;
-    private final Map unknownFacets = new HashMap();
-    private final CopyOnWriteSet targetedRuntimes;
+    private final Set<IProjectFacetVersion> facets;
+    private final Set<IProjectFacetVersion> facetsReadOnly;
+    private final Set<IProjectFacet> fixed;
+    private final Set<IProjectFacet> fixedReadOnly;
+    private final Map<String,ProjectFacet> unknownFacets;
+    private final Set<String> targetedRuntimes;
     private String primaryRuntime;
     IFile f;
     private long fModificationStamp = -1;
-    private final List listeners;
+    private final ListenerRegistry listeners;
     private final Object lock = new Object();
     private boolean isBeingModified = false;
     private Thread modifierThread = null;
@@ -138,10 +153,13 @@ public final class FacetedProject
         
     {
         this.project = project;
-        this.facets = new CopyOnWriteSet();
-        this.fixed = new CopyOnWriteSet();
-        this.targetedRuntimes = new CopyOnWriteSet();
-        this.listeners = new ArrayList();
+        this.facets = new CopyOnWriteArraySet<IProjectFacetVersion>();
+        this.facetsReadOnly = Collections.unmodifiableSet( this.facets );
+        this.fixed = new CopyOnWriteArraySet<IProjectFacet>();
+        this.fixedReadOnly = Collections.unmodifiableSet( this.fixed );
+        this.unknownFacets = new HashMap<String,ProjectFacet>();
+        this.targetedRuntimes = new CopyOnWriteArraySet<String>();
+        this.listeners = new ListenerRegistry();
         this.parsingException = null;
         
         this.f = project.getFile( FACETS_METADATA_FILE );
@@ -154,11 +172,11 @@ public final class FacetedProject
         return this.project;
     }
     
-    public Set getProjectFacets()
+    public Set<IProjectFacetVersion> getProjectFacets()
     {
         synchronized( this.lock )
         {
-            return this.facets.getReadOnlySet();
+            return this.facetsReadOnly;
         }
     }
     
@@ -166,11 +184,8 @@ public final class FacetedProject
     {
         synchronized( this.lock )
         {
-            for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
+            for( IProjectFacetVersion fv : this.facets )
             {
-                final IProjectFacetVersion fv 
-                    = (IProjectFacetVersion) itr.next();
-                
                 if( fv.getProjectFacet() == f )
                 {
                     return true;
@@ -193,11 +208,8 @@ public final class FacetedProject
     {
         synchronized( this.lock )
         {
-            for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
+            for( IProjectFacetVersion fv : this.facets )
             {
-                final IProjectFacetVersion fv 
-                    = (IProjectFacetVersion) itr.next();
-                
                 if( fv.getProjectFacet() == f )
                 {
                     return fv;
@@ -234,12 +246,14 @@ public final class FacetedProject
         modify( Collections.singleton( action ), monitor );
     }
     
-    public void modify( final Set actions,
+    public void modify( final Set<Action> actions,
                         final IProgressMonitor monitor )
     
         throws CoreException
         
     {
+        final ObjectReference<Boolean> result = new ObjectReference<Boolean>( true );
+        
         final IWorkspaceRunnable wr = new IWorkspaceRunnable()
         {
             public void run( final IProgressMonitor monitor ) 
@@ -251,7 +265,7 @@ public final class FacetedProject
                 
                 try
                 {
-                    modifyInternal( actions, monitor );
+                    result.set( modifyInternal( actions, monitor ) );
                 }
                 finally
                 {
@@ -263,24 +277,23 @@ public final class FacetedProject
         final IWorkspace ws = ResourcesPlugin.getWorkspace();
         ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, monitor );
         
-        notifyListeners();
+        if( result.get() )
+        {
+            notifyListeners( new ProjectModifiedEvent( this ) );
+        }
     }
         
-    private void modifyInternal( final Set actions,
-                                 final IProgressMonitor monitor )
+    private boolean modifyInternal( final Set<Action> actions,
+                                    final IProgressMonitor monitor )
     
         throws CoreException
         
     {
-        if( monitor != null )
-        {
-            monitor.beginTask( "", actions.size() * 100 ); //$NON-NLS-1$
-        }
+        beginTask( monitor, "", actions.size() * 100 ); //$NON-NLS-1$
         
         try
         {
-            final IStatus st 
-                = ProjectFacetsManager.check( this.facets, actions );
+            final IStatus st = ProjectFacetsManager.check( this.facets, actions );
             
             if( ! st.isOK() )
             {
@@ -289,14 +302,14 @@ public final class FacetedProject
             
             // Sort the actions into the order of execution.
             
-            final List copy = new ArrayList( actions );
+            final List<Action> copy = new ArrayList<Action>( actions );
             ProjectFacetsManager.sort( this.facets, copy );
             
             // Update and check the action configs.
             
             for( int i = 0, n = copy.size(); i < n; i++ )
             {
-                Action action = (Action) copy.get( i );
+                Action action = copy.get( i );
                 final IProjectFacetVersion fv = action.getProjectFacetVersion();
                 Object config = action.getConfig();
                 
@@ -345,16 +358,14 @@ public final class FacetedProject
             
             // Execute the actions.
             
-            for( Iterator itr = copy.iterator(); itr.hasNext(); )
+            for( Action action : copy )
             {
-                final Action action = (Action) itr.next();
                 final Action.Type type = action.getType();
                 
                 final ProjectFacetVersion fv 
                     = (ProjectFacetVersion) action.getProjectFacetVersion();
                 
-                final IActionDefinition def 
-                    = fv.getActionDefinition( this.facets, type );
+                final IActionDefinition def = fv.getActionDefinition( this.facets, type );
                 
                 if( monitor != null )
                 {
@@ -378,24 +389,24 @@ public final class FacetedProject
                     }
                     
                     final String subTaskDescription
-                        = NLS.bind( subTaskDescriptionTemplate,
-                                    fv.getProjectFacet().getLabel() );
+                        = NLS.bind( subTaskDescriptionTemplate, fv.getProjectFacet().getLabel() );
                     
                     monitor.subTask( subTaskDescription );
                 }
                 
-                callEventHandlers( fv, getPreEventHandlerType( type ), 
-                                   action.getConfig(), submon( monitor, 10 ) );
+                final IFacetedProjectEvent preEvent
+                    = new ProjectFacetActionEvent( this, getPreEventType( type ), fv, 
+                                                   action.getConfig() );
+                                                  
+                notifyListeners( preEvent );
+                worked( monitor, 10 );
                 
                 final IDelegate delegate 
                     = ( (ActionDefinition) def ).getDelegate();
                 
                 if( delegate == null )
                 {
-                    if( monitor != null )
-                    {
-                        monitor.worked( 80 );
-                    }
+                    worked( monitor, 80 );
                 }
                 else
                 {
@@ -410,32 +421,37 @@ public final class FacetedProject
                 
                 save();
 
-                callEventHandlers( fv, getPostEventHandlerType( type ), 
-                                   action.getConfig(), submon( monitor, 10 ) );
+                final IFacetedProjectEvent postEvent
+                    = new ProjectFacetActionEvent( this, getPostEventType( type ), fv,
+                                                   action.getConfig() );
+                
+                notifyListeners( postEvent );
+                worked( monitor, 10 );
             }
+            
+            return true;
         }
         finally
         {
-            if( monitor != null )
-            {
-                monitor.done();
-            }
+            done( monitor );
         }
     }
     
-    public Set getFixedProjectFacets()
+    public Set<IProjectFacet> getFixedProjectFacets()
     {
         synchronized( this.lock )
         {
-            return this.fixed.getReadOnlySet();
+            return this.fixedReadOnly;
         }
     }
     
-    public void setFixedProjectFacets( final Set facets )
+    public void setFixedProjectFacets( final Set<IProjectFacet> facets )
     
         throws CoreException
         
     {
+        final ObjectReference<Boolean> result = new ObjectReference<Boolean>( true );
+        
         final IWorkspaceRunnable wr = new IWorkspaceRunnable()
         {
             public void run( final IProgressMonitor monitor ) 
@@ -447,13 +463,7 @@ public final class FacetedProject
                 
                 try
                 {
-                    synchronized( FacetedProject.this.lock )
-                    {
-                        FacetedProject.this.fixed.clear();
-                        FacetedProject.this.fixed.addAll( facets );
-                    }
-                        
-                    save();
+                    result.set( setFixedProjectFacetsInternal( facets, monitor ) );
                 }
                 finally
                 {
@@ -464,8 +474,50 @@ public final class FacetedProject
         
         final IWorkspace ws = ResourcesPlugin.getWorkspace();
         ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, null );
+
+        if( result.get() )
+        {
+            notifyListeners( new ProjectModifiedEvent( this ) );
+        }
+    }
+    
+    private boolean setFixedProjectFacetsInternal( final Set<IProjectFacet> facets,
+                                                   final IProgressMonitor monitor )
+    
+        throws CoreException
         
-        notifyListeners();
+    {
+        beginTask( monitor, "", 2 ); //$NON-NLS-1$
+        
+        try
+        {
+            Set<IProjectFacet> oldFixedFacets = null;
+            
+            synchronized( FacetedProject.this.lock )
+            {
+                if( equals( this.fixed, facets ) )
+                {
+                    return false;
+                }
+                
+                oldFixedFacets = new HashSet<IProjectFacet>( this.fixed );
+                
+                this.fixed.clear();
+                this.fixed.addAll( facets );
+            }
+                
+            save();
+            worked( monitor, 1 );
+
+            notifyListeners( new FixedFacetsChangedEvent( this, oldFixedFacets, facets ) );
+            worked( monitor, 1 );
+            
+            return true;
+        }
+        finally
+        {
+            done( monitor );
+        }
     }
     
     /**
@@ -481,6 +533,7 @@ public final class FacetedProject
      * @deprecated
      */
     
+    @SuppressWarnings( "unchecked" )
     public void setRuntime( final IRuntime runtime,
                             final IProgressMonitor monitor )
     
@@ -494,27 +547,29 @@ public final class FacetedProject
         setTargetedRuntimes( runtimes, monitor );
     }
     
-    public Set getTargetedRuntimes()
+    public Set<IRuntime> getTargetedRuntimes()
     {
         synchronized( this.lock )
         {
-            final Set result = new HashSet();
+            final Set<IRuntime> result = new HashSet<IRuntime>();
             
-            for( Iterator itr = this.targetedRuntimes.iterator(); itr.hasNext(); )
+            for( String rname : this.targetedRuntimes )
             {
-                result.add( getRuntimeFromName( (String) itr.next() ) );
+                result.add( getRuntimeFromName( rname ) );
             }
             
             return Collections.unmodifiableSet( result );
         }
     }
     
-    public void setTargetedRuntimes( final Set runtimes,
+    public void setTargetedRuntimes( final Set<IRuntime> runtimes,
                                      final IProgressMonitor monitor )
     
         throws CoreException
         
     {
+        final ObjectReference<Boolean> result = new ObjectReference<Boolean>( true );
+        
         final IWorkspaceRunnable wr = new IWorkspaceRunnable()
         {
             public void run( final IProgressMonitor monitor ) 
@@ -526,7 +581,7 @@ public final class FacetedProject
                 
                 try
                 {
-                    setTargetedRuntimesInternal( runtimes, monitor );
+                    result.set( setTargetedRuntimesInternal( runtimes, monitor ) );
                 }
                 finally
                 {
@@ -538,78 +593,73 @@ public final class FacetedProject
         final IWorkspace ws = ResourcesPlugin.getWorkspace();
         ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, null );
         
-        notifyListeners();
+        if( result.get() )
+        {
+            notifyListeners( new ProjectModifiedEvent( this ) );
+        }
     }
     
-    private void setTargetedRuntimesInternal( final Set runtimes,
-                                              final IProgressMonitor monitor )
+    private boolean setTargetedRuntimesInternal( final Set<IRuntime> runtimes,
+                                                 final IProgressMonitor monitor )
     
         throws CoreException
         
     {
-        if( monitor != null )
-        {
-            monitor.beginTask( "", this.facets.size() + 1 ); //$NON-NLS-1$
-        }
+        beginTask( monitor, "", 2 ); //$NON-NLS-1$
         
         try
         {
-            if( this.targetedRuntimes.size() == runtimes.size() )
-            {
-                boolean different = false;
-                
-                for( Iterator itr = runtimes.iterator(); itr.hasNext(); )
-                {
-                    final String rname = ( (IRuntime) itr.next() ).getName();
-                    
-                    if( ! this.targetedRuntimes.contains( rname ) )
-                    {
-                        different = true;
-                        break;
-                    }
-                }
-                
-                if( ! different )
-                {
-                    return;
-                }
-            }
-            
-            for( Iterator itr1 = runtimes.iterator(); itr1.hasNext(); )
-            {
-                final IRuntime runtime = (IRuntime) itr1.next();
-
-                for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
-                {
-                    final IProjectFacetVersion fv 
-                        = (IProjectFacetVersion) itr.next();
-                    
-                    if( ! runtime.supports( fv ) )
-                    {
-                        final String msg 
-                            = NLS.bind( Resources.facetNotSupported, 
-                                        runtime.getName(), fv.toString() );
-                        
-                        final IStatus st 
-                            = FacetCorePlugin.createErrorStatus( msg );
-                        
-                        throw new CoreException( st );
-                    }
-                }
-            }
-            
+            final Set<IRuntime> oldRuntimes;
+            final Set<IRuntime> newRuntimes;
             final IRuntime oldPrimary;
             final IRuntime newPrimary;
             
             synchronized( this.lock )
             {
+                if( this.targetedRuntimes.size() == runtimes.size() )
+                {
+                    boolean different = false;
+                    
+                    for( IRuntime r : runtimes )
+                    {
+                        if( ! this.targetedRuntimes.contains( r.getName() ) )
+                        {
+                            different = true;
+                            break;
+                        }
+                    }
+                    
+                    if( ! different )
+                    {
+                        return false;
+                    }
+                }
+                
+                for( IRuntime runtime : runtimes )
+                {
+                    for( IProjectFacetVersion fv : this.facets )
+                    {
+                        if( ! runtime.supports( fv ) )
+                        {
+                            final String msg 
+                                = NLS.bind( Resources.facetNotSupported, runtime.getLocalizedName(), 
+                                            fv.toString() );
+                            
+                            throw new CoreException( FacetCorePlugin.createErrorStatus( msg ) );
+                        }
+                    }
+                }
+                
+                oldRuntimes = new HashSet<IRuntime>( getTargetedRuntimes() );
+                
                 this.targetedRuntimes.clear();
                 
-                for( Iterator itr = runtimes.iterator(); itr.hasNext(); )
+                for( IRuntime runtime : runtimes )
                 {
-                    final IRuntime runtime = (IRuntime) itr.next();
                     this.targetedRuntimes.add( runtime.getName() );
                 }
+                
+                newRuntimes = new HashSet<IRuntime>( getTargetedRuntimes() );
                 
                 oldPrimary = getPrimaryRuntime();
                 assignPrimaryRuntimeIfNecessary();
@@ -617,33 +667,25 @@ public final class FacetedProject
             }
             
             save();
+            worked( monitor, 1 );
             
-            if( monitor != null )
-            {
-                monitor.worked( 1 );
-            }
-
+            final ITargetedRuntimesChangedEvent targetedRuntimesChangedEvent
+                = new TargetedRuntimesChangedEvent( this, oldRuntimes, newRuntimes );
+            
+            notifyListeners( targetedRuntimesChangedEvent );
+            
             if( ! equals( oldPrimary, newPrimary ) )
             {
-                final IRuntimeChangedEvent event 
-                    = new RuntimeChangedEvent( oldPrimary, newPrimary );
-    
-                for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
-                {
-                    final ProjectFacetVersion fv
-                        = (ProjectFacetVersion) itr.next();
-                    
-                    callEventHandlers( fv, EventHandler.Type.RUNTIME_CHANGED, 
-                                       event, submon( monitor, 1 ) );
-                }
+                notifyListeners( new PrimaryRuntimeChangedEvent( this, oldPrimary, newPrimary ) );
             }
+            
+            worked( monitor, 1 );
+            
+            return true;
         }
         finally
         {
-            if( monitor != null )
-            {
-                monitor.done();
-            }
+            done( monitor );
         }
     }
     
@@ -653,188 +695,22 @@ public final class FacetedProject
         throws CoreException
         
     {
-        final IWorkspaceRunnable wr = new IWorkspaceRunnable()
-        {
-            public void run( final IProgressMonitor monitor ) 
-            
-                throws CoreException
-                
-            {
-                beginModification();
-                
-                try
-                {
-                    addTargetedRuntimeInternal( runtime, monitor );
-                }
-                finally
-                {
-                    endModification();
-                }
-            }
-        };
-        
-        final IWorkspace ws = ResourcesPlugin.getWorkspace();
-        ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, null );
-        
-        notifyListeners();
-    }
-    
-    private void addTargetedRuntimeInternal( final IRuntime runtime,
-                                             final IProgressMonitor monitor )
-    
-        throws CoreException
-        
-    {
-        if( monitor != null )
-        {
-            monitor.beginTask( "", 1 ); //$NON-NLS-1$
-        }
-        
-        try
-        {
-            if( runtime == null )
-            {
-                throw new NullPointerException();
-            }
-            
-            if( this.targetedRuntimes.contains( runtime.getName() ) )
-            {
-                return;
-            }
-            
-            for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
-            {
-                final IProjectFacetVersion fv 
-                    = (IProjectFacetVersion) itr.next();
-                
-                if( ! runtime.supports( fv ) )
-                {
-                    final String msg 
-                        = NLS.bind( Resources.facetNotSupported, 
-                                    runtime.getName(), fv.toString() );
-                    
-                    final IStatus st 
-                        = FacetCorePlugin.createErrorStatus( msg );
-                    
-                    throw new CoreException( st );
-                }
-            }
-            
-            synchronized( this.lock )
-            {
-                this.targetedRuntimes.add( runtime.getName() );
-            }
-            
-            save();
-            
-            if( monitor != null )
-            {
-                monitor.worked( 1 );
-            }
-        }
-        finally
-        {
-            if( monitor != null )
-            {
-                monitor.done();
-            }
-        }
+        final Set<IRuntime> runtimes = new HashSet<IRuntime>( getTargetedRuntimes() );
+        runtimes.add( runtime );
+        setTargetedRuntimes( runtimes, monitor );
     }
     
     public void removeTargetedRuntime( final IRuntime runtime,
-                                     final IProgressMonitor monitor )
+                                       final IProgressMonitor monitor )
     
         throws CoreException
         
     {
-        final IWorkspaceRunnable wr = new IWorkspaceRunnable()
-        {
-            public void run( final IProgressMonitor monitor ) 
-            
-                throws CoreException
-                
-            {
-                beginModification();
-                
-                try
-                {
-                    removeTargetedRuntimeInternal( runtime, monitor );
-                }
-                finally
-                {
-                    endModification();
-                }
-            }
-        };
-        
-        final IWorkspace ws = ResourcesPlugin.getWorkspace();
-        ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, null );
-        
-        notifyListeners();
+        final Set<IRuntime> runtimes = new HashSet<IRuntime>( getTargetedRuntimes() );
+        runtimes.remove( runtime );
+        setTargetedRuntimes( runtimes, monitor );
     }
 
-    private void removeTargetedRuntimeInternal( final IRuntime runtime,
-                                                final IProgressMonitor monitor )
-    
-        throws CoreException
-        
-    {
-        if( monitor != null )
-        {
-            monitor.beginTask( "", this.facets.size() + 1 ); //$NON-NLS-1$
-        }
-        
-        try
-        {
-            if( runtime == null || 
-                this.targetedRuntimes.contains( runtime.getName() ) )
-            {
-                return;
-            }
-            
-            final IRuntime oldPrimary;
-            final IRuntime newPrimary;
-            
-            synchronized( this.lock )
-            {
-                this.targetedRuntimes.remove( runtime.getName() );
-                
-                oldPrimary = getPrimaryRuntime();
-                assignPrimaryRuntimeIfNecessary();
-                newPrimary = getPrimaryRuntime();
-            }
-            
-            save();
-            
-            if( monitor != null )
-            {
-                monitor.worked( 1 );
-            }
-
-            if( ! equals( oldPrimary, newPrimary ) )
-            {
-                final IRuntimeChangedEvent event 
-                    = new RuntimeChangedEvent( oldPrimary, newPrimary );
-    
-                for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
-                {
-                    final ProjectFacetVersion fv
-                        = (ProjectFacetVersion) itr.next();
-                    
-                    callEventHandlers( fv, EventHandler.Type.RUNTIME_CHANGED, 
-                                       event, submon( monitor, 1 ) );
-                }
-            }
-        }
-        finally
-        {
-            if( monitor != null )
-            {
-                monitor.done();
-            }
-        }
-    }
-    
     public IRuntime getPrimaryRuntime()
     {
         synchronized( this.lock )
@@ -856,6 +732,8 @@ public final class FacetedProject
         throws CoreException
         
     {
+        final ObjectReference<Boolean> result = new ObjectReference<Boolean>( true );
+        
         final IWorkspaceRunnable wr = new IWorkspaceRunnable()
         {
             public void run( final IProgressMonitor monitor ) 
@@ -867,7 +745,7 @@ public final class FacetedProject
                 
                 try
                 {
-                    setPrimaryRuntimeInternal( runtime, monitor );
+                    result.set( setPrimaryRuntimeInternal( runtime, monitor ) );
                 }
                 finally
                 {
@@ -879,19 +757,19 @@ public final class FacetedProject
         final IWorkspace ws = ResourcesPlugin.getWorkspace();
         ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, null );
         
-        notifyListeners();
+        if( result.get() )
+        {
+            notifyListeners( new ProjectModifiedEvent( this ) );
+        }
     }
     
-    private void setPrimaryRuntimeInternal( final IRuntime runtime,
-                                            final IProgressMonitor monitor )
+    private boolean setPrimaryRuntimeInternal( final IRuntime runtime,
+                                               final IProgressMonitor monitor )
     
         throws CoreException
         
     {
-        if( monitor != null )
-        {
-            monitor.beginTask( "", this.facets.size() + 1 ); //$NON-NLS-1$
-        }
+        beginTask( monitor, "", 2 ); //$NON-NLS-1$
         
         try
         {
@@ -902,7 +780,7 @@ public final class FacetedProject
             
             if( equals( this.primaryRuntime, runtime.getName() ) )
             {
-                return;
+                return false;
             }
 
             if( ! this.targetedRuntimes.contains( runtime.getName() ) )
@@ -922,30 +800,16 @@ public final class FacetedProject
             }
             
             save();
+            worked( monitor, 1 );
             
-            if( monitor != null )
-            {
-                monitor.worked( 1 );
-            }
-
-            final IRuntimeChangedEvent event 
-                = new RuntimeChangedEvent( oldPrimary, runtime );
-
-            for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
-            {
-                final ProjectFacetVersion fv
-                    = (ProjectFacetVersion) itr.next();
-                
-                callEventHandlers( fv, EventHandler.Type.RUNTIME_CHANGED, 
-                                   event, submon( monitor, 1 ) );
-            }
+            notifyListeners( new PrimaryRuntimeChangedEvent( this, oldPrimary, runtime ) );
+            worked( monitor, 1 );
+            
+            return true;
         }
         finally
         {
-            if( monitor != null )
-            {
-                monitor.done();
-            }
+            done( monitor );
         }
     }
     
@@ -972,8 +836,7 @@ public final class FacetedProject
             if( this.primaryRuntime == null || 
                 ! this.targetedRuntimes.contains( this.primaryRuntime ) )
             {
-                this.primaryRuntime 
-                    = (String) this.targetedRuntimes.iterator().next();
+                this.primaryRuntime = this.targetedRuntimes.iterator().next();
             }
         }
     }
@@ -982,15 +845,12 @@ public final class FacetedProject
     {
         synchronized( this.lock )
         {
-            if( monitor != null )
-            {
-                monitor.beginTask( Resources.taskValidatingFacetedProject, 5 );
-            }
+            beginTask( monitor, Resources.taskValidatingFacetedProject, 5 );
             
             try
             {
-                final List errors = new ArrayList();
-                final List warnings = new ArrayList(); 
+                final List<String> errors = new ArrayList<String>();
+                final List<String> warnings = new ArrayList<String>(); 
                 
                 // Check for parsing problems.
                 
@@ -1014,67 +874,44 @@ public final class FacetedProject
                     }
                 }
                 
-                if( monitor != null )
-                {
-                    monitor.worked( 1 );
-                }
+                worked( monitor, 1 );
                 
                 // Are any of the target runtimes not defined?
                 
-                for( Iterator itr1 = getTargetedRuntimes().iterator();
-                     itr1.hasNext(); )
+                for( IRuntime r : getTargetedRuntimes() )
                 {
-                    final IRuntime r = (IRuntime) itr1.next();
-                    
                     if( r instanceof UnknownRuntime )
                     {
-                        final String msg
-                            = NLS.bind( Resources.runtimeNotDefined, r.getName() );
-                        
+                        final String msg = NLS.bind( Resources.runtimeNotDefined, r.getName() );
                         errors.add( msg );
                     }
                 }
                 
-                if( monitor != null )
-                {
-                    monitor.worked( 1 );
-                }
+                worked( monitor, 1 );
                 
                 // Is an installed facet not supported by the runtime?
                 
-                for( Iterator itr1 = getTargetedRuntimes().iterator();
-                     itr1.hasNext(); )
+                for( IRuntime r : getTargetedRuntimes() )
                 {
-                    final IRuntime r = (IRuntime) itr1.next();
-                    
-                    for( Iterator itr2 = getProjectFacets().iterator(); 
-                         itr2.hasNext(); )
+                    for( IProjectFacetVersion fv : getProjectFacets() )
                     {
-                        final IProjectFacetVersion fv 
-                            = (IProjectFacetVersion) itr2.next();
-                        
                         if( ! r.supports( fv ) )
                         {
                             final String msg
-                                = NLS.bind( Resources.facetNotSupportedByTarget, 
-                                            fv.toString(), r.getName() );
+                                = NLS.bind( Resources.facetNotSupportedByTarget, fv.toString(), 
+                                            r.getLocalizedName() );
                             
                             errors.add( msg );
                         }
                     }
                 }
                 
-                if( monitor != null )
-                {
-                    monitor.worked( 1 );
-                }
+                worked( monitor, 1 );
                 
                 // Does the project contain any unknown facets or versions?
                 
-                for( Iterator itr = getProjectFacets().iterator(); 
-                     itr.hasNext(); )
+                for( IProjectFacetVersion fv : getProjectFacets() )
                 {
-                    final IProjectFacetVersion fv = (IProjectFacetVersion) itr.next();
                     final IProjectFacet f = fv.getProjectFacet();
                     
                     if( f.getPluginId() == null )
@@ -1094,10 +931,7 @@ public final class FacetedProject
                     }
                 }
                 
-                if( monitor != null )
-                {
-                    monitor.worked( 1 );
-                }
+                worked( monitor, 1 );
                 
                 // Compile the result.
                 
@@ -1118,7 +952,7 @@ public final class FacetedProject
                     {
                         starray[ i ] 
                             = new Status( IStatus.ERROR, FacetCorePlugin.PLUGIN_ID,
-                                          (String) errors.get( i ) );
+                                          errors.get( i ) );
                     }
                     
                     for( int i = 0, n = warnings.size(), offset = errors.size(); 
@@ -1126,7 +960,7 @@ public final class FacetedProject
                     {
                         starray[ i ] 
                             = new Status( IStatus.WARNING, FacetCorePlugin.PLUGIN_ID,
-                                          (String) warnings.get( i + offset ) );
+                                          warnings.get( i + offset ) );
                     }
                     
                     return new MultiStatus( FacetCorePlugin.PLUGIN_ID, -1,
@@ -1135,10 +969,7 @@ public final class FacetedProject
             }
             finally
             {
-                if( monitor != null )
-                {
-                    monitor.done();
-                }
+                done( monitor );
             }
         }
     }
@@ -1206,48 +1037,50 @@ public final class FacetedProject
         return m;
     }
     
-    public void addListener( final IFacetedProjectListener listener )
+    public void addListener( final IFacetedProjectListener listener,
+                             final IFacetedProjectEvent.Type... types )
     {
-        synchronized( this.listeners )
-        {
-            this.listeners.add( listener );
-        }
+        this.listeners.addListener( listener, types );
     }
     
     public void removeListener( final IFacetedProjectListener listener )
     {
-        synchronized( this.listeners )
-        {
-            this.listeners.remove( listener );
-        }
+        this.listeners.removeListener( listener );
     }
     
-    private void notifyListeners()
+    private void notifyListeners( final IFacetedProjectEvent event )
     {
-        // Copy the list of listeners in order to avoid holding the monitor
-        // while calling the listeners. This is done to avoid potential 
-        // deadlocks.
-        
-        final Object[] copy;
-        
-        synchronized( this.listeners )
+        this.listeners.notifyListeners( event );
+        FacetedProjectFrameworkImpl.getInstance().getListenerRegistry().notifyListeners( event );
+    }
+    
+    /**
+     * @deprecated
+     */
+    
+    public void addListener( final org.eclipse.wst.common.project.facet.core.IFacetedProjectListener listener )
+    {
+        this.listeners.addListener( new LegacyListenerAdapter( listener ), 
+                                    IFacetedProjectEvent.Type.PROJECT_MODIFIED );
+    }
+    
+    /**
+     * @deprecated
+     */
+    
+    public void removeListener( final org.eclipse.wst.common.project.facet.core.IFacetedProjectListener listener )
+    {
+        for( IFacetedProjectListener x 
+             : this.listeners.getListeners( IFacetedProjectEvent.Type.PROJECT_MODIFIED ) )
         {
-            copy = this.listeners.toArray();
-        }
-        
-        for( int i = 0; i < copy.length; i++ )
-        {
-            try
+            if( x instanceof LegacyListenerAdapter &&
+                ( (LegacyListenerAdapter) x ).getLegacyListener() == listener )
             {
-                ( (IFacetedProjectListener) copy[ i ] ).projectChanged();
-            }
-            catch( Exception e )
-            {
-                FacetCorePlugin.log( e );
+                removeListener( x );
             }
         }
     }
-    
+
     private void beginModification()
     
         throws CoreException
@@ -1287,19 +1120,19 @@ public final class FacetedProject
         }
     }
     
-    private EventHandler.Type getPreEventHandlerType( final Action.Type t )
+    private static IFacetedProjectEvent.Type getPreEventType( final Action.Type t )
     {
         if( t == Action.Type.INSTALL )
         {
-            return EventHandler.Type.PRE_INSTALL;
+            return IFacetedProjectEvent.Type.PRE_INSTALL;
         }
         else if( t == Action.Type.UNINSTALL )
         {
-            return EventHandler.Type.PRE_UNINSTALL;
+            return IFacetedProjectEvent.Type.PRE_UNINSTALL;
         }
         else if( t == Action.Type.VERSION_CHANGE )
         {
-            return EventHandler.Type.PRE_VERSION_CHANGE;
+            return IFacetedProjectEvent.Type.PRE_VERSION_CHANGE;
         }
         else
         {
@@ -1307,19 +1140,19 @@ public final class FacetedProject
         }
     }
     
-    private EventHandler.Type getPostEventHandlerType( final Action.Type t )
+    private static IFacetedProjectEvent.Type getPostEventType( final Action.Type t )
     {
         if( t == Action.Type.INSTALL )
         {
-            return EventHandler.Type.POST_INSTALL;
+            return IFacetedProjectEvent.Type.POST_INSTALL;
         }
         else if( t == Action.Type.UNINSTALL )
         {
-            return EventHandler.Type.POST_UNINSTALL;
+            return IFacetedProjectEvent.Type.POST_UNINSTALL;
         }
         else if( t == Action.Type.VERSION_CHANGE )
         {
-            return EventHandler.Type.POST_VERSION_CHANGE;
+            return IFacetedProjectEvent.Type.POST_VERSION_CHANGE;
         }
         else
         {
@@ -1327,59 +1160,6 @@ public final class FacetedProject
         }
     }
 
-    private void callEventHandlers( final IProjectFacetVersion fv,
-                                    final EventHandler.Type type,
-                                    final Object config,
-                                    final IProgressMonitor monitor )
-    
-        throws CoreException
-        
-    {
-        final ProjectFacet f = (ProjectFacet) fv.getProjectFacet();
-        final List handlers = f.getEventHandlers( fv, type );
-        
-        if( monitor != null )
-        {
-            monitor.beginTask( "", handlers.size() ); //$NON-NLS-1$
-        }
-        
-        try
-        {
-            for( Iterator itr = handlers.iterator(); itr.hasNext(); )
-            {
-                final EventHandler h = (EventHandler) itr.next();
-                IDelegate delegate = null;
-                
-                try
-                {
-                    delegate = h.getDelegate();
-                }
-                catch( CoreException e )
-                {
-                    FacetCorePlugin.log( e.getStatus() );
-                }
-                
-                if( delegate != null )
-                {
-                    callDelegate( fv, delegate, config, type,
-                                  submon( monitor, 1 ) );
-                }
-                
-                if( monitor != null )
-                {
-                    monitor.worked( 1 );
-                }
-            }
-        }
-        finally
-        {
-            if( monitor != null )
-            {
-                monitor.done();
-            }
-        }
-    }
-    
     private void callDelegate( final IProjectFacetVersion fv,
                                final IDelegate delegate,
                                final Object config,
@@ -1419,29 +1199,19 @@ public final class FacetedProject
         {
             final String msg;
             
-            if( context == Action.Type.INSTALL ||
-                context == EventHandler.Type.PRE_INSTALL ||
-                context == EventHandler.Type.POST_INSTALL )
+            if( context == Action.Type.INSTALL )
             {
                 msg = NLS.bind( Resources.failedOnInstall, fv );
             }
-            else if( context == Action.Type.UNINSTALL ||
-                     context == EventHandler.Type.PRE_UNINSTALL ||
-                     context == EventHandler.Type.POST_UNINSTALL )
+            else if( context == Action.Type.UNINSTALL )
             {
                 msg = NLS.bind( Resources.failedOnUninstall, fv );
             }
-            else if( context == Action.Type.VERSION_CHANGE ||
-                     context == EventHandler.Type.PRE_VERSION_CHANGE ||
-                     context == EventHandler.Type.POST_VERSION_CHANGE )
+            else if( context == Action.Type.VERSION_CHANGE )
             {
                 msg = NLS.bind( Resources.failedOnVersionChange, 
                                 fv.getProjectFacet().getLabel(), 
                                 fv.getVersionString() );
-            }
-            else if( context == EventHandler.Type.RUNTIME_CHANGED )
-            {
-                msg = NLS.bind( Resources.failedOnRuntimeChanged, fv );
             }
             else
             {
@@ -1482,14 +1252,11 @@ public final class FacetedProject
         }
         else if( type == Action.Type.VERSION_CHANGE )
         {
-            for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
+            for( IProjectFacetVersion x : this.facets )
             {
-                final IProjectFacetVersion x 
-                    = (IProjectFacetVersion) itr.next();
-                
                 if( x.getProjectFacet() == fv.getProjectFacet() )
                 {
-                    itr.remove();
+                    this.facets.remove( x );
                     break;
                 }
             }
@@ -1521,10 +1288,8 @@ public final class FacetedProject
             out.print( nl );
         }
         
-        for( Iterator itr = this.targetedRuntimes.iterator(); itr.hasNext(); )
+        for( String name : this.targetedRuntimes )
         {
-            final String name = (String) itr.next();
-            
             if( ! name.equals( this.primaryRuntime ) )
             {
                 out.print( "  <secondary-runtime name=\"" ); //$NON-NLS-1$
@@ -1534,21 +1299,16 @@ public final class FacetedProject
             }
         }
         
-        for( Iterator itr = this.fixed.iterator(); itr.hasNext(); )
+        for( IProjectFacet f : this.fixed )
         {
-            final IProjectFacet f = (IProjectFacet) itr.next();
-            
             out.print( "  <fixed facet=\"" ); //$NON-NLS-1$
             out.print( f.getId() );
             out.print( "\"/>" ); //$NON-NLS-1$
             out.print( nl );
         }
         
-        for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
+        for( IProjectFacetVersion fv : this.facets )
         {
-            final IProjectFacetVersion fv
-                = (IProjectFacetVersion) itr.next();
-            
             out.print( "  <installed facet=\"" ); //$NON-NLS-1$
             out.print( fv.getProjectFacet().getId() );
             out.print( "\" version=\"" ); //$NON-NLS-1$
@@ -1625,101 +1385,104 @@ public final class FacetedProject
                 if( ! this.f.exists() )
                 {
                     this.fModificationStamp = -1;
-                    return;
                 }
-                
-                this.fModificationStamp = this.f.getModificationStamp();
-                
-                final Element root;
-                
-                try
+                else
                 {
-                    root = parse( this.f.getLocation().toFile() );
-                    this.parsingException = null;
-                }
-                catch( Exception e )
-                {
-                    this.parsingException = e;
-                    notifyListeners();
+                    this.fModificationStamp = this.f.getModificationStamp();
                     
-                    return;
-                }
-                
-                final Element[] elements = children( root );
-                
-                for( int i = 0; i < elements.length; i++ )
-                {
-                    final Element e = elements[ i ];
-                    final String name = e.getNodeName();
+                    Element root = null;
                     
-                    if( name.equals( EL_RUNTIME ) )
+                    try
                     {
-                        this.primaryRuntime = e.getAttribute( ATTR_NAME );
-                        this.targetedRuntimes.add( this.primaryRuntime );
+                        root = parse( this.f.getLocation().toFile() );
+                        this.parsingException = null;
                     }
-                    else if( name.equals( EL_SECONDARY_RUNTIME ) )
+                    catch( Exception e )
                     {
-                        this.targetedRuntimes.add( e.getAttribute( ATTR_NAME ) );
+                        this.parsingException = e;
                     }
-                    else if( name.equals( EL_FIXED ) )
+                    
+                    if( this.parsingException == null )
                     {
-                        final String id = e.getAttribute( ATTR_FACET );
-                        final IProjectFacet f;
+                        final Element[] elements = children( root );
                         
-                        if( ProjectFacetsManager.isProjectFacetDefined( id ) )
+                        for( int i = 0; i < elements.length; i++ )
                         {
-                            f = ProjectFacetsManager.getProjectFacet( id );
-                        }
-                        else
-                        {
-                            f = createUnknownFacet( id );
-                        }
-                        
-                        this.fixed.add( f );
-                    }
-                    else if( name.equals( EL_INSTALLED ) )
-                    {
-                        final String id = e.getAttribute( ATTR_FACET );
-                        final String version = e.getAttribute( ATTR_VERSION );
-                        
-                        final IProjectFacet f;
-                        
-                        if( ProjectFacetsManager.isProjectFacetDefined( id ) )
-                        {
-                            f = ProjectFacetsManager.getProjectFacet( id );
-                        }
-                        else
-                        {
-                            f = createUnknownFacet( id );
-                        }
-                        
-                        final IProjectFacetVersion fv;
-                        
-                        if( f.hasVersion( version ) )
-                        {
-                            fv = f.getVersion( version );
-                        }
-                        else
-                        {
-                            fv = createUnknownFacetVersion( f, version );
-                        }
+                            final Element e = elements[ i ];
+                            final String name = e.getNodeName();
                             
-                        this.facets.add( fv );
+                            if( name.equals( EL_RUNTIME ) )
+                            {
+                                this.primaryRuntime = e.getAttribute( ATTR_NAME );
+                                this.targetedRuntimes.add( this.primaryRuntime );
+                            }
+                            else if( name.equals( EL_SECONDARY_RUNTIME ) )
+                            {
+                                this.targetedRuntimes.add( e.getAttribute( ATTR_NAME ) );
+                            }
+                            else if( name.equals( EL_FIXED ) )
+                            {
+                                final String id = e.getAttribute( ATTR_FACET );
+                                final IProjectFacet f;
+                                
+                                if( ProjectFacetsManager.isProjectFacetDefined( id ) )
+                                {
+                                    f = ProjectFacetsManager.getProjectFacet( id );
+                                }
+                                else
+                                {
+                                    f = createUnknownFacet( id );
+                                }
+                                
+                                this.fixed.add( f );
+                            }
+                            else if( name.equals( EL_INSTALLED ) )
+                            {
+                                final String id = e.getAttribute( ATTR_FACET );
+                                final String version = e.getAttribute( ATTR_VERSION );
+                                
+                                final IProjectFacet f;
+                                
+                                if( ProjectFacetsManager.isProjectFacetDefined( id ) )
+                                {
+                                    f = ProjectFacetsManager.getProjectFacet( id );
+                                }
+                                else
+                                {
+                                    f = createUnknownFacet( id );
+                                }
+                                
+                                final IProjectFacetVersion fv;
+                                
+                                if( f.hasVersion( version ) )
+                                {
+                                    fv = f.getVersion( version );
+                                }
+                                else
+                                {
+                                    fv = createUnknownFacetVersion( f, version );
+                                }
+                                    
+                                this.facets.add( fv );
+                            }
+                        }
                     }
                 }
-                
-                notifyListeners();
             }
             finally
             {
                 endModification();
             }
         }
+
+        // If we got here, the project was changed. All of the no-op checks return early.
+        
+        notifyListeners( new ProjectModifiedEvent( this ) );
     }
     
     private ProjectFacet createUnknownFacet( final String id )
     {
-        ProjectFacet f = (ProjectFacet) this.unknownFacets.get( id );
+        ProjectFacet f = this.unknownFacets.get( id );
         
         if( f == null )
         {
@@ -1790,7 +1553,7 @@ public final class FacetedProject
     
     private Element[] children( final Element element )
     {
-        final List list = new ArrayList();
+        final List<Element> list = new ArrayList<Element>();
         final NodeList nl = element.getChildNodes();
         
         for( int i = 0, n = nl.getLength(); i < n; i++ )
@@ -1799,17 +1562,11 @@ public final class FacetedProject
             
             if( node.getNodeType() == Node.ELEMENT_NODE )
             {
-                list.add( node );
+                list.add( (Element) node );
             }
         }
         
-        return (Element[]) list.toArray( new Element[ list.size() ] );
-    }
-    
-    private static IProgressMonitor submon( final IProgressMonitor parent,
-                                            final int ticks )
-    {
-        return ( parent == null ? null : new SubProgressMonitor( parent, ticks ) );
+        return list.toArray( new Element[ list.size() ] );
     }
     
     private static boolean equals( final Object obj1,
@@ -1837,7 +1594,6 @@ public final class FacetedProject
         public static String failedOnInstall;
         public static String failedOnUninstall;
         public static String failedOnVersionChange;
-        public static String failedOnRuntimeChanged;
         public static String facetNotDefined;
         public static String facetVersionNotDefined;
         public static String facetNotSupported;

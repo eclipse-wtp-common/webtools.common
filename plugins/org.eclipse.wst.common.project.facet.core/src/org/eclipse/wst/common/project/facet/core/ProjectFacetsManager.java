@@ -1,12 +1,12 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core;
@@ -20,37 +20,29 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
-import org.eclipse.wst.common.project.facet.core.internal.ProjectFacetsManagerImpl;
+import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectFrameworkImpl;
 
 /**
  * This is the entry point to the project facet framework API. From here, you 
  * can (among other things) list available project facets and create instances 
  * of {@see IFacetedProject}.
  * 
- * <p><i>This class is part of an interim API that is still under development 
- * and expected to change significantly before reaching stability. It is being 
- * made available at this early stage to solicit feedback from pioneering 
- * adopters on the understanding that any code that uses this API will almost 
- * certainly be broken (repeatedly) as the API evolves.</i></p>
- * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
 public final class ProjectFacetsManager 
 {
-    private static ProjectFacetsManagerImpl impl 
-        = FacetedProjectFramework.getProjectFacetsManagerImpl();
+    private static FacetedProjectFrameworkImpl impl = FacetedProjectFrameworkImpl.getInstance();
     
     private ProjectFacetsManager() {}
     
     /**
      * Returns all of the available project facets.
      * 
-     * @return a set containing all of the available project facets (element 
-     *   type: {@link IProjectFacet})
+     * @return a set containing all of the available project facets
      */
     
-    public static Set getProjectFacets()
+    public static Set<IProjectFacet> getProjectFacets()
     {
         return impl.getProjectFacets();
     }
@@ -85,10 +77,10 @@ public final class ProjectFacetsManager
      * Returns all of the available project facet action definitions.
      * 
      * @return a set containing all of the available project facets action
-     *   definitions (element type: {@link IActionDefinition})
+     *   definitions
      */
     
-    public static Set getActionDefinitions()
+    public static Set<IActionDefinition> getActionDefinitions()
     {
         return impl.getActionDefinitions();
     }
@@ -123,11 +115,10 @@ public final class ProjectFacetsManager
     /**
      * Returns all of the categories.
      * 
-     * @return a set containing all of the categories (element type: {@link 
-     *   ICategory})
+     * @return a set containing all of the categories
      */
     
-    public static Set getCategories()
+    public static Set<ICategory> getCategories()
     {
         return impl.getCategories();
     }
@@ -161,11 +152,10 @@ public final class ProjectFacetsManager
     /**
      * Returns all of the presets.
      * 
-     * @return a set conaining all of the presets (element type: 
-     *   {@link IPreset})
+     * @return a set conaining all of the presets
      */
     
-    public static Set getPresets()
+    public static Set<IPreset> getPresets()
     {
         return impl.getPresets();
     }
@@ -201,12 +191,11 @@ public final class ProjectFacetsManager
      * 
      * @param name the name of the preset
      * @param facets the set of project facets that the preset should contain
-     *   (element type: {@see IProjectFacetVersion})
      * @return the preset
      */
     
     public static IPreset definePreset( final String name,
-                                        final Set facets )
+                                        final Set<IProjectFacetVersion> facets )
     {
         return impl.definePreset( name, facets );
     }
@@ -217,13 +206,12 @@ public final class ProjectFacetsManager
      * @param name the name of the preset
      * @param description the description of the preset
      * @param facets the set of project facets that the preset should contain
-     *   (element type: {@see IProjectFacetVersion})
      * @return the preset
      */
     
     public static IPreset definePreset( final String name,
                                         final String description,
-                                        final Set facets )
+                                        final Set<IProjectFacetVersion> facets )
     {
         return impl.definePreset( name, description, facets );
     }
@@ -244,11 +232,10 @@ public final class ProjectFacetsManager
     /**
      * Returns all of the faceted project templates.
      * 
-     * @return a set conaining all of the faceted project templates (element 
-     *   type: {@link IFacetedProjectTemplate})
+     * @return a set conaining all of the faceted project templates
      */
     
-    public static Set getTemplates()
+    public static Set<IFacetedProjectTemplate> getTemplates()
     {
         return impl.getTemplates();
     }
@@ -282,10 +269,10 @@ public final class ProjectFacetsManager
     /**
      * Returns all of the groups.
      * 
-     * @return a set containing all of the groups (element type: {@link IGroup})
+     * @return a set containing all of the groups
      */
     
-    public static Set getGroups()
+    public static Set<IGroup> getGroups()
     {
         return impl.getGroups();
     }
@@ -316,7 +303,7 @@ public final class ProjectFacetsManager
         return impl.getGroup( id );
     }
     
-    public static Set getFacetedProjects()
+    public static Set<IFacetedProject> getFacetedProjects()
     
         throws CoreException
         
@@ -324,7 +311,7 @@ public final class ProjectFacetsManager
         return impl.getFacetedProjects();
     }
 
-    public static Set getFacetedProjects( final IProjectFacet f )
+    public static Set<IFacetedProject> getFacetedProjects( final IProjectFacet f )
     
         throws CoreException
         
@@ -332,7 +319,7 @@ public final class ProjectFacetsManager
         return impl.getFacetedProjects( f );
     }
 
-    public static Set getFacetedProjects( final IProjectFacetVersion fv )
+    public static Set<IFacetedProject> getFacetedProjects( final IProjectFacetVersion fv )
     
         throws CoreException
         
@@ -418,16 +405,14 @@ public final class ProjectFacetsManager
      * problems that are found.
      *
      * @param base the set of project facets that the actions will be applied to
-     *   (element type: {@link IProjectFacetVersion})
-     * @param actions the set of actions to evaluate (element type: {@link 
-     *   Action})
+     * @param actions the set of actions to evaluate
      * @return a status object with severity of {@see IStatus#OK} if all of the
      *   constraints were satisfied or otherwise a {@see MultiStatus} composed
      *   of {@see ValidationProblem} status objects
      */
     
-    public static IStatus check( final Set base,
-                                 final Set actions )
+    public static IStatus check( final Set<IProjectFacetVersion> base,
+                                 final Set<Action> actions )
     {
         return impl.check( base, actions );
     }
@@ -437,13 +422,11 @@ public final class ProjectFacetsManager
      * that project facet constraints are not violated.
      * 
      * @param base the set of project facets that the actions will be applied to
-     *   (element type: {@link IProjectFacetVersion})
-     * @param actions the list of actions to sort (element type: {@link 
-     *   Action}); this list will be modified
+     * @param actions the list of actions to sort; this list will be modified
      */
     
-    public static void sort( final Set base,
-                             final List actions )
+    public static void sort( final Set<IProjectFacetVersion> base,
+                             final List<IFacetedProject.Action> actions )
     {
         impl.sort( base, actions );
     }

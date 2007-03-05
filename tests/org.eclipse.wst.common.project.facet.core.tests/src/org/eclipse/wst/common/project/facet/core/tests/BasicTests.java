@@ -1,12 +1,22 @@
+/******************************************************************************
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Konstantin Komissarchik
+ ******************************************************************************/
+
 package org.eclipse.wst.common.project.facet.core.tests;
 
+import static org.eclipse.wst.common.project.facet.core.tests.support.TestUtils.asSet;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -20,6 +30,10 @@ import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+
+/**
+ * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
+ */
 
 public final class BasicTests
 
@@ -115,6 +129,7 @@ public final class BasicTests
         suite.addTest( new BasicTests( "testDefaultVersionComparator" ) );
         suite.addTest( new BasicTests( "testCustomVersionComparator" ) );
         suite.addTest( new BasicTests( "testVersionExpressions" ) );
+        suite.addTest( new BasicTests( "testVersionExpressionsWithUnknownVersions" ) );
         suite.addTest( new BasicTests( "testConstraints" ) );
         suite.addTest( new BasicTests( "testConstraintApi" ) );
         
@@ -275,12 +290,13 @@ public final class BasicTests
         assertFalse( preset2.isUserDefined() );
     }
     
+    @SuppressWarnings( "unchecked" )
     public void testDefaultVersionComparator()
     
         throws CoreException
         
     {
-        final Comparator comp = f1.getVersionComparator();
+        final Comparator<String> comp = f1.getVersionComparator();
         
         assertEquals( comp.getClass().getName(), 
                       "org.eclipse.wst.common.project.facet.core.DefaultVersionComparator" );
@@ -332,12 +348,13 @@ public final class BasicTests
         assertEquals( desc.get( 4 ), f1v10 );
     }
 
+    @SuppressWarnings( "unchecked" )
     public void testCustomVersionComparator()
     
         throws CoreException
         
     {
-        final Comparator comp = f2.getVersionComparator();
+        final Comparator<String> comp = f2.getVersionComparator();
         
         assertEquals( comp.getClass().getName(), 
                       "org.eclipse.wst.common.project.facet.core.tests.support.CustomVersionComparator" );
@@ -428,6 +445,27 @@ public final class BasicTests
                       asSet( f1v10, f1v121, f1v13, f1v20 ) );
     }
     
+    /**
+     * Tests the cases where version expressions make references to facet versions that don't
+     * actually exist.
+     * 
+     * @throws CoreException
+     */
+    
+    public void testVersionExpressionsWithUnknownVersions()
+    
+        throws CoreException
+        
+    {
+        assertEquals( f1.getVersions( "[0.5-1.2]" ), asSet( f1v10, f1v12 ) );
+        assertEquals( f1.getVersions( "[1.2.2-2.0]" ), asSet( f1v13, f1v20 ) );
+        assertEquals( f1.getVersions( "[0.5-10.0)" ), asSet( f1v10, f1v12, f1v121, f1v13, f1v20 ) );
+        assertEquals( f1.getVersions( "[10.0-25]" ), Collections.emptySet() );
+        assertEquals( f1.getVersions( "3.0,4.5" ), Collections.emptySet() );
+        assertEquals( f1.getVersions( "5.7" ), Collections.emptySet() );
+    }
+    
+    @SuppressWarnings( "unchecked" )
     public void testConstraints()
     {
         /*
@@ -436,7 +474,7 @@ public final class BasicTests
          * <requires facet="facet1" version="1.0"/>
          */ 
 
-        assertFalse( f2v35.getConstraint().check( Collections.EMPTY_SET  ).isOK() );
+        assertFalse( f2v35.getConstraint().check( Collections.EMPTY_SET ).isOK() );
         assertTrue( f2v35.getConstraint().check( asSet( f1v10 ) ).isOK() );
         assertFalse( f2v35.getConstraint().check( asSet( f1v12 ) ).isOK() );
         assertFalse( f2v35.getConstraint().check( asSet( f1v121 ) ).isOK() );
@@ -630,7 +668,7 @@ public final class BasicTests
         final int count = c.getOperands().size();
         assertEquals( count, expectedOperands.length );
         
-        final List list = new ArrayList();
+        final List<Object> list = new ArrayList<Object>();
         
         for( int i = 0; i < count; i++ )
         {
@@ -656,46 +694,4 @@ public final class BasicTests
         assertEquals( c.getOperands(), list );
     }
     
-    private static Set asSet( final Object obj )
-    {
-        return asSet( new Object[] { obj } );
-    }
-
-    private static Set asSet( final Object obj1,
-                              final Object obj2 )
-    {
-        return asSet( new Object[] { obj1, obj2 } );
-    }
-
-    private static Set asSet( final Object obj1,
-                              final Object obj2,
-                              final Object obj3 )
-    {
-        return asSet( new Object[] { obj1, obj2, obj3 } );
-    }
-
-    private static Set asSet( final Object obj1,
-                              final Object obj2,
-                              final Object obj3,
-                              final Object obj4 )
-    {
-        return asSet( new Object[] { obj1, obj2, obj3, obj4 } );
-    }
-
-    private static Set asSet( final Object obj1,
-                              final Object obj2,
-                              final Object obj3,
-                              final Object obj4,
-                              final Object obj5 )
-    {
-        return asSet( new Object[] { obj1, obj2, obj3, obj4, obj5 } );
-    }
-    
-    private static Set asSet( final Object[] array )
-    {
-        final HashSet set = new HashSet();
-        set.addAll( Arrays.asList( array ) );
-        return set;
-    }
-
 }

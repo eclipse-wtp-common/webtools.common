@@ -1,29 +1,30 @@
 /******************************************************************************
- * Copyright (c) 2005, 2006 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.ui.internal;
+
+import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.findExtensions;
+import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.getTopLevelElements;
+import static org.eclipse.wst.common.project.facet.ui.internal.FacetUiPlugin.PLUGIN_ID;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtension;
-import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -36,6 +37,7 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.internal.ProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
+import org.eclipse.wst.common.project.facet.ui.IFacetWizardPage;
 import org.osgi.framework.Bundle;
 
 /**
@@ -59,13 +61,13 @@ public final class ProjectFacetsUiManagerImpl
     private static final String ATTR_FACET = "facet"; //$NON-NLS-1$
     private static final String ATTR_ACTION = "action"; //$NON-NLS-1$
 
-    private static final HashMap wizardPages;
+    private static final Map<String,WizardPagesInfo> wizardPages;
     
     /**
      * Maps either IProjectFacet or IRuntimeComponentType to an ImageDescriptor.
      */
     
-    private static final HashMap icons = new HashMap();
+    private static final Map<Object,ImageDescriptor> icons = new HashMap<Object,ImageDescriptor>();
     private static ImageDescriptor defaultIcon;
     
     static
@@ -75,7 +77,7 @@ public final class ProjectFacetsUiManagerImpl
         ProjectFacetsManager.getProjectFacets();
         RuntimeManager.getRuntimeComponentTypes();
         
-        wizardPages = new HashMap();
+        wizardPages = new HashMap<String,WizardPagesInfo>();
         
         final Bundle bundle = Platform.getBundle( FacetUiPlugin.PLUGIN_ID );
         final URL url = bundle.getEntry( "images/unknown.gif" ); //$NON-NLS-1$
@@ -90,24 +92,20 @@ public final class ProjectFacetsUiManagerImpl
     
     public static ImageDescriptor getIcon( final Object obj )
     {
-        final ImageDescriptor imgdesc = (ImageDescriptor) icons.get( obj );
+        final ImageDescriptor imgdesc = icons.get( obj );
         return imgdesc != null ? imgdesc : defaultIcon;
     }
     
-    /**
-     * @return (element type: {@see IFacetWizardPage})
-     */
-    
-    public static List getWizardPages( final String actionId )
+    public static List<IFacetWizardPage> getWizardPages( final String actionId )
     {
-        final WizardPagesInfo info = (WizardPagesInfo) wizardPages.get( actionId );
+        final WizardPagesInfo info = wizardPages.get( actionId );
         
         if( info != null )
         {
             return getWizardPages( info.plugin, info.pages );
         }
         
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     /**
@@ -134,16 +132,16 @@ public final class ProjectFacetsUiManagerImpl
         return Collections.EMPTY_LIST;
     }
 
-    private static List getWizardPages( final String plugin,
-                                        final List clnames )
+    private static List<IFacetWizardPage> getWizardPages( final String plugin,
+                                                          final List<String> clnames )
     {
-        final List pages = new ArrayList();
+        final List<IFacetWizardPage> pages = new ArrayList<IFacetWizardPage>();
         
-        for( Iterator itr = clnames.iterator(); itr.hasNext(); )
+        for( String clname : clnames )
         {
             try
             {
-                pages.add( create( plugin, (String) itr.next() ) );
+                pages.add( (IFacetWizardPage) create( plugin, clname ) );
             }
             catch( CoreException e )
             {
@@ -180,58 +178,36 @@ public final class ProjectFacetsUiManagerImpl
     
     private static void readWizardPagesExtensions()
     {
-        final IExtensionRegistry registry = Platform.getExtensionRegistry();
-        
-        final IExtensionPoint point 
-            = registry.getExtensionPoint( FacetUiPlugin.PLUGIN_ID, 
-                                          WIZARD_PAGES_EXTENSION_ID );
-        
-        if( point == null )
+        for( IConfigurationElement config
+             : getTopLevelElements( findExtensions( PLUGIN_ID, WIZARD_PAGES_EXTENSION_ID ) ) )
         {
-            throw new RuntimeException( "Extension point not found!" ); //$NON-NLS-1$
-        }
-        
-        final IExtension[] extensions = point.getExtensions();
-        
-        for( int i = 0; i < extensions.length; i++ )
-        {
-            final IConfigurationElement[] elements 
-                = extensions[ i ].getConfigurationElements();
+            final String ename = config.getName();
             
-            for( int j = 0; j < elements.length; j++ )
+            if( ename.equals( EL_WIZARD_PAGES ) )
             {
-                final IConfigurationElement config = elements[ j ];
-                final String ename = config.getName();
-                
-                if( ename.equals( EL_WIZARD_PAGES ) )
-                {
-                    final String action = config.getAttribute( ATTR_ACTION );
+                final String action = config.getAttribute( ATTR_ACTION );
 
-                    if( action == null )
-                    {
-                        reportMissingAttribute( config, ATTR_ACTION );
-                        return;
-                    }
+                if( action == null )
+                {
+                    reportMissingAttribute( config, ATTR_ACTION );
+                    return;
+                }
+                
+                final String pluginId = config.getContributor().getName();
+                
+                if( ProjectFacetsManager.isActionDefined( action ) )
+                {
+                    final WizardPagesInfo pagesInfo = new WizardPagesInfo();
                     
-                    final String pluginId = config.getContributor().getName();
+                    pagesInfo.plugin = pluginId;
+                    pagesInfo.pages = readPageList( config );
                     
-                    if( ProjectFacetsManager.isActionDefined( action ) )
-                    {
-                        final WizardPagesInfo pagesInfo = new WizardPagesInfo();
-                        
-                        pagesInfo.plugin = pluginId;
-                        pagesInfo.pages = readPageList( config );
-                        
-                        wizardPages.put( action, pagesInfo );
-                    }
-                    else
-                    {
-                        final String msg
-                            = NLS.bind( Resources.actionNotDefined, pluginId,
-                                        action );
-                        
-                        FacetUiPlugin.logError( msg );
-                    }
+                    wizardPages.put( action, pagesInfo );
+                }
+                else
+                {
+                    final String msg = NLS.bind( Resources.actionNotDefined, pluginId, action );
+                    FacetUiPlugin.logError( msg );
                 }
             }
         }
@@ -239,37 +215,19 @@ public final class ProjectFacetsUiManagerImpl
     
     private static void readWizardPagesExtensionsOld()
     {
-        final IExtensionRegistry registry = Platform.getExtensionRegistry();
-        
-        final IExtensionPoint point 
-            = registry.getExtensionPoint( FacetUiPlugin.PLUGIN_ID, 
-                                          WIZARD_PAGES_EXTENSION_ID_OLD );
-        
-        if( point == null )
+        for( IConfigurationElement config
+            : getTopLevelElements( findExtensions( PLUGIN_ID, WIZARD_PAGES_EXTENSION_ID_OLD ) ) )
         {
-            throw new RuntimeException( "Extension point not found!" ); //$NON-NLS-1$
-        }
-        
-        final IExtension[] extensions = point.getExtensions();
-        
-        for( int i = 0; i < extensions.length; i++ )
-        {
-            final IConfigurationElement[] elements 
-                = extensions[ i ].getConfigurationElements();
+            final String ename = config.getName();
             
-            for( int j = 0; j < elements.length; j++ )
+            if( ename.equals( EL_WIZARD_PAGES ) )
             {
-                final IConfigurationElement config = elements[ j ];
-                final String ename = config.getName();
-                
-                if( ename.equals( EL_WIZARD_PAGES ) )
-                {
-                    readWizardPagesOld( config );
-                }
+                readWizardPagesOld( config );
             }
         }
     }
     
+    @SuppressWarnings( "deprecation" )
     private static void readWizardPagesOld( final IConfigurationElement config )
     {
         final String pluginId = config.getContributor().getName();
@@ -367,9 +325,9 @@ public final class ProjectFacetsUiManagerImpl
         }
     }
 
-    private static List readPageList( final IConfigurationElement config )
+    private static List<String> readPageList( final IConfigurationElement config )
     {
-        final ArrayList list = new ArrayList();
+        final List<String> list = new ArrayList<String>();
         final IConfigurationElement[] children = config.getChildren();
         
         for( int i = 0; i < children.length; i++ )
@@ -396,120 +354,96 @@ public final class ProjectFacetsUiManagerImpl
     
     private static void readImagesExtensions()
     {
-        final IExtensionRegistry registry = Platform.getExtensionRegistry();
-        
-        final IExtensionPoint point 
-            = registry.getExtensionPoint( FacetUiPlugin.PLUGIN_ID, 
-                                          IMAGES_EXTENSION_ID );
-        
-        if( point == null )
+        for( IConfigurationElement config
+            : getTopLevelElements( findExtensions( PLUGIN_ID, IMAGES_EXTENSION_ID ) ) )
         {
-            throw new RuntimeException( "Extension point not found!" ); //$NON-NLS-1$
-        }
-        
-        final IExtension[] extensions = point.getExtensions();
-        
-        for( int i = 0; i < extensions.length; i++ )
-        {
-            final IConfigurationElement[] elements 
-                = extensions[ i ].getConfigurationElements();
+            final String ename = config.getName();
             
-            for( int j = 0; j < elements.length; j++ )
+            if( ename.equals( EL_IMAGE ) )
             {
-                final IConfigurationElement config = elements[ j ];
-                final String ename = config.getName();
+                final String fid = config.getAttribute( ATTR_FACET );
+                final String cid = config.getAttribute( ATTR_CATEGORY );
+                final String rct = config.getAttribute( ATTR_RUNTIME_COMPONENT_TYPE );
                 
-                if( ename.equals( EL_IMAGE ) )
+                final Object target;
+                
+                if( fid != null )
                 {
-                    readImage( config );
+                    if( ! ProjectFacetsManager.isProjectFacetDefined( fid ) )
+                    {
+                        final String msg
+                            = NLS.bind( Resources.facetNotDefined, 
+                                        config.getContributor().getName(), fid );
+                        
+                        FacetUiPlugin.log( msg );
+                        
+                        break;
+                    }
+                    
+                    target = ProjectFacetsManager.getProjectFacet( fid );
+                }
+                else if( cid != null )
+                {
+                    if( ! ProjectFacetsManager.isCategoryDefined( cid ) )
+                    {
+                        final String msg
+                            = NLS.bind( Resources.categoryNotDefined, 
+                                        config.getContributor().getName(), fid );
+                        
+                        FacetUiPlugin.log( msg );
+                        
+                        break;
+                    }
+                    
+                    target = ProjectFacetsManager.getCategory( cid );
+                }
+                else if( rct != null )
+                {
+                    if( ! RuntimeManager.isRuntimeComponentTypeDefined( rct ) )
+                    {
+                        final String msg
+                            = NLS.bind( Resources.runtimeComponentTypeNotDefined, 
+                                        config.getContributor().getName(), rct );
+                        
+                        FacetUiPlugin.log( msg );
+                        
+                        break;
+                    }
+                    
+                    target = RuntimeManager.getRuntimeComponentType( rct );
+                }
+                else
+                {
+                    reportMissingAttribute( config, ATTR_FACET );
+                    break;
+                }
+                
+                final String path = config.getAttribute( ATTR_PATH );
+                
+                if( path == null )
+                {
+                    reportMissingAttribute( config, ATTR_PATH );
+                }
+                        
+                final String plugin = config.getContributor().getName();
+                final Bundle bundle = Platform.getBundle( plugin );
+                final URL url = FileLocator.find( bundle, new Path( path ), null );
+                
+                if( url == null )
+                {
+                    final String msg
+                        = NLS.bind( Resources.iconNotFound, plugin, path );
+                    
+                    FacetUiPlugin.log( msg );
+                }
+                else
+                {
+                    final ImageDescriptor imgdesc
+                        = ImageDescriptor.createFromURL( url );
+                    
+                    icons.put( target, imgdesc );
                 }
             }
-        }
-    }
-    
-    private static void readImage( final IConfigurationElement config )
-    {
-        final String fid = config.getAttribute( ATTR_FACET );
-        final String cid = config.getAttribute( ATTR_CATEGORY );
-        final String rct = config.getAttribute( ATTR_RUNTIME_COMPONENT_TYPE );
-        
-        final Object target;
-        
-        if( fid != null )
-        {
-            if( ! ProjectFacetsManager.isProjectFacetDefined( fid ) )
-            {
-                final String msg
-                    = NLS.bind( Resources.facetNotDefined, 
-                                config.getContributor().getName(), fid );
-                
-                FacetUiPlugin.log( msg );
-                
-                return;
-            }
-            
-            target = ProjectFacetsManager.getProjectFacet( fid );
-        }
-        else if( cid != null )
-        {
-            if( ! ProjectFacetsManager.isCategoryDefined( cid ) )
-            {
-                final String msg
-                    = NLS.bind( Resources.categoryNotDefined, 
-                                config.getContributor().getName(), fid );
-                
-                FacetUiPlugin.log( msg );
-                
-                return;
-            }
-            
-            target = ProjectFacetsManager.getCategory( cid );
-        }
-        else if( rct != null )
-        {
-            if( ! RuntimeManager.isRuntimeComponentTypeDefined( rct ) )
-            {
-                final String msg
-                    = NLS.bind( Resources.runtimeComponentTypeNotDefined, 
-                                config.getContributor().getName(), rct );
-                
-                FacetUiPlugin.log( msg );
-                
-                return;
-            }
-            
-            target = RuntimeManager.getRuntimeComponentType( rct );
-        }
-        else
-        {
-            reportMissingAttribute( config, ATTR_FACET );
-            return;
-        }
-        
-        final String path = config.getAttribute( ATTR_PATH );
-        
-        if( path == null )
-        {
-            reportMissingAttribute( config, ATTR_PATH );
-        }
-                
-        final String plugin = config.getContributor().getName();
-        final Bundle bundle = Platform.getBundle( plugin );
-        final URL url = FileLocator.find( bundle, new Path( path ), null );
-        
-        if( url == null )
-        {
-            final String msg
-                = NLS.bind( Resources.iconNotFound, plugin, path );
-            
-            FacetUiPlugin.log( msg );
-        }
-        else
-        {
-            final ImageDescriptor imgdesc
-                = ImageDescriptor.createFromURL( url );
-            
-            icons.put( target, imgdesc );
         }
     }
     
@@ -528,7 +462,7 @@ public final class ProjectFacetsUiManagerImpl
     private static class WizardPagesInfo
     {
         public String plugin;
-        public List pages;
+        public List<String> pages;
     }
 
     private static final class Resources

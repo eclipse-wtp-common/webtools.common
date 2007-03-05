@@ -1,12 +1,12 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core.runtime.internal;
@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeBridge;
+import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -31,8 +32,8 @@ public final class BridgedRuntime
     private final String bridgeId;
     private final String nativeRuntimeId;
     private final IRuntimeBridge.IStub stub;
-    private Set supported;
-    private List composition;
+    private Set<IProjectFacetVersion> supported;
+    private List<IRuntimeComponent> composition;
     
     BridgedRuntime( final String bridgeId,
                     final String nativeRuntimeId,
@@ -53,12 +54,19 @@ public final class BridgedRuntime
         return this.nativeRuntimeId;
     }
     
-    public List getRuntimeComponents()
+    public List<IRuntimeComponent> getRuntimeComponents()
     {
-        return Collections.unmodifiableList( this.stub.getRuntimeComponents() );
+        final List<IRuntimeComponent> components = this.stub.getRuntimeComponents();
+        
+        for( IRuntimeComponent rc : components )
+        {
+            ( (RuntimeComponent) rc ).setRuntime( this );
+        }
+        
+        return Collections.unmodifiableList( components );
     }
     
-    public Map getProperties()
+    public Map<String,String> getProperties()
     {
         return Collections.unmodifiableMap( this.stub.getProperties() );
     }
@@ -70,7 +78,7 @@ public final class BridgedRuntime
             return true;
         }
         
-        final List comp = this.stub.getRuntimeComponents();
+        final List<IRuntimeComponent> comp = getRuntimeComponents();
         
         if( this.supported == null || ! this.composition.equals( comp ) )
         {

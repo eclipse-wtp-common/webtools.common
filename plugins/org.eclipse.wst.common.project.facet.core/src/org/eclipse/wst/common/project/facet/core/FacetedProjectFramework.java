@@ -1,16 +1,33 @@
+/******************************************************************************
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Konstantin Komissarchik
+ ******************************************************************************/
+
 package org.eclipse.wst.common.project.facet.core;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
+import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectFrameworkImpl;
 import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectNature;
-import org.eclipse.wst.common.project.facet.core.internal.ProjectFacetsManagerImpl;
+
+/**
+ * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
+ */
 
 public final class FacetedProjectFramework
 {
     public static final String PLUGIN_ID 
         = "org.eclipse.wst.common.project.facet.core"; //$NON-NLS-1$
     
-    private static ProjectFacetsManagerImpl impl = null;
+    private static FacetedProjectFrameworkImpl impl = null;
     
     private FacetedProjectFramework() { }
     
@@ -108,18 +125,51 @@ public final class FacetedProjectFramework
         return false;
     }
     
+    /**
+     * Adds a faceted project listener that will be notified when the selected events in the faceted
+     * project life cycle occur. The listener will apply to all faceted projects that exist in the
+     * workspace now and in the future (until the listener is removed or the workspace is closed).
+     * 
+     * @param listener the faceted project listener
+     * @param types the types of the events to listen for
+     * @throws IllegalArgumentException if <code>listener</code> parameter is <code>null</code> or
+     *   the <code>types</code> parameter is <code>null</code> or empty.
+     * @see removeListener(IFacetedProjectListener)
+     * @see IFacetedProject.addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])
+     * @see IFacetedProject.removeListener(IFacetedProjectListener)
+     */
+    
+    public static void addListener( final IFacetedProjectListener listener,
+                                    final IFacetedProjectEvent.Type... types )
+    {
+        initialize();
+        impl.addListener( listener, types );
+    }
+    
+    /**
+     * Removes the faceted project listener that was previously registered using the
+     * {@see addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])} method. If the
+     * specified listener is not present in the listener registry, this call will be ignored.
+     * 
+     * @param listener the faceted project listener
+     * @throws IllegalArgumentException if <code>listener</code> parameter is <code>null</code>
+     * @see addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])
+     * @see IFacetedProject.addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])
+     * @see IFacetedProject.removeListener(IFacetedProjectListener)
+     */
+    
+    public static void removeListener( final IFacetedProjectListener listener )
+    {
+        initialize();
+        impl.removeListener( listener );
+    }
+    
     private static synchronized void initialize()
     {
         if( impl == null )
         {
-            impl = new ProjectFacetsManagerImpl();
+            impl = FacetedProjectFrameworkImpl.getInstance();
         }
     }
     
-    static ProjectFacetsManagerImpl getProjectFacetsManagerImpl()
-    {
-        initialize();
-        return impl;
-    }
-
 }

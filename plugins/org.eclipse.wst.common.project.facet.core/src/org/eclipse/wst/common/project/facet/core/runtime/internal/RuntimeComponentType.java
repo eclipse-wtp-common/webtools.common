@@ -1,21 +1,19 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core.runtime.internal;
 
-import java.util.Collections;
-
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.wst.common.project.facet.core.internal.Versionable;
+import org.eclipse.wst.common.project.facet.core.internal.util.Versionable;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentType;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentVersion;
 
@@ -25,7 +23,7 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentVersio
 
 public final class RuntimeComponentType
 
-    extends Versionable
+    extends Versionable<IRuntimeComponentVersion>
     implements IRuntimeComponentType
     
 {
@@ -55,36 +53,6 @@ public final class RuntimeComponentType
     void addVersion( final IRuntimeComponentVersion ver )
     {
         this.versions.add( ver.getVersionString(), ver );
-    }
-
-    public IRuntimeComponentVersion getVersion( final String version )
-    {
-        final IRuntimeComponentVersion rcv
-            = (IRuntimeComponentVersion) this.versions.get( version );
-        
-        if( rcv == null )
-        {
-            final String msg
-                = NLS.bind( RuntimeManagerImpl.Resources.runtimeComponentVersionNotDefined,
-                            this.id, version );
-            
-            throw new IllegalArgumentException( msg );
-        }
-        
-        return rcv;
-    }
-
-    public IRuntimeComponentVersion getLatestVersion()
-    {
-        if( this.versions.size() > 0 )
-        {
-            final Object max = Collections.max( this.versions );
-            return (IRuntimeComponentVersion) max;
-        }
-        else
-        {
-            return null;
-        }
     }
     
     public Object getAdapter( final Class type )

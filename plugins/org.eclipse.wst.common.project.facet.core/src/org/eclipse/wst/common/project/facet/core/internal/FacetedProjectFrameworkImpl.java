@@ -1,15 +1,19 @@
 /******************************************************************************
- * Copyright (c) 2005, 2006 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core.internal;
+
+import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.findOptionalElement;
+import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.findRequiredAttribute;
+import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.instantiate;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -19,7 +23,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -58,6 +61,14 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.IVersionExpr;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
+import org.eclipse.wst.common.project.facet.core.events.internal.EventsExtensionPoint;
+import org.eclipse.wst.common.project.facet.core.events.internal.LegacyEventHandlerAdapter;
+import org.eclipse.wst.common.project.facet.core.events.internal.ListenerRegistry;
+import org.eclipse.wst.common.project.facet.core.internal.util.IndexedSet;
+import org.eclipse.wst.common.project.facet.core.internal.util.VersionExpr;
+import org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.InvalidExtensionException;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
@@ -67,10 +78,11 @@ import org.osgi.service.prefs.Preferences;
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
-public final class ProjectFacetsManagerImpl
+public final class FacetedProjectFrameworkImpl
 {
     private static final String EXTENSION_ID = "facets"; //$NON-NLS-1$
 
+    private static final String ATTR_CATEGORY = "category"; //$NON-NLS-1$
     private static final String ATTR_CLASS = "class"; //$NON-NLS-1$
     private static final String ATTR_FACET = "facet"; //$NON-NLS-1$
     private static final String ATTR_GROUP = "group"; //$NON-NLS-1$
@@ -93,6 +105,7 @@ public final class ProjectFacetsManagerImpl
     private static final String EL_GROUP = "group"; //$NON-NLS-1$
     private static final String EL_GROUP_MEMBER = "group-member"; //$NON-NLS-1$
     private static final String EL_LABEL = "label"; //$NON-NLS-1$
+    private static final String EL_MEMBER = "member"; //$NON-NLS-1$
     private static final String EL_PRESET = "preset"; //$NON-NLS-1$
     private static final String EL_PROJECT_FACET = "project-facet"; //$NON-NLS-1$
     private static final String EL_PROJECT_FACET_VERSION = "project-facet-version"; //$NON-NLS-1$
@@ -100,17 +113,21 @@ public final class ProjectFacetsManagerImpl
     private static final String EL_TEMPLATE = "template"; //$NON-NLS-1$
     private static final String EL_VERSION_COMPARATOR = "version-comparator"; //$NON-NLS-1$
     
-    private static final Set facetsReportedMissing = new HashSet();
+    private static final String DEFAULT_DESCRIPTION = ""; //$NON-NLS-1$
     
-    private final IndexedSet facets;
-    private final IndexedSet actions;
-    private final IndexedSet categories;
-    private final IndexedSet presets;
-    private final IndexedSet templates;
-    private final IndexedSet groups;
-    private final Map projects;
+    private static FacetedProjectFrameworkImpl instance = null;
+    private static final Set<String> facetsReportedMissing = new HashSet<String>();
     
-    public ProjectFacetsManagerImpl()
+    private final IndexedSet<String,IProjectFacet> facets;
+    private final IndexedSet<String,IActionDefinition> actions;
+    private final IndexedSet<String,ICategory> categories;
+    private final IndexedSet<String,IPreset> presets;
+    private final IndexedSet<String,IFacetedProjectTemplate> templates;
+    private final IndexedSet<String,IGroup> groups;
+    private final Map<String,FacetedProject> projects;
+    private final ListenerRegistry listeners;
+    
+    private FacetedProjectFrameworkImpl()
     {
         long activationStart = 0;
         
@@ -147,15 +164,17 @@ public final class ProjectFacetsManagerImpl
             activationStart = System.currentTimeMillis();
         }
         
-        this.facets = new IndexedSet();
-        this.actions = new IndexedSet();
-        this.categories = new IndexedSet();
-        this.presets = new IndexedSet();
-        this.templates = new IndexedSet();
-        this.groups = new IndexedSet();
-        this.projects = new HashMap();
+        this.facets = new IndexedSet<String,IProjectFacet>();
+        this.actions = new IndexedSet<String,IActionDefinition>();
+        this.categories = new IndexedSet<String,ICategory>();
+        this.presets = new IndexedSet<String,IPreset>();
+        this.templates = new IndexedSet<String,IFacetedProjectTemplate>();
+        this.groups = new IndexedSet<String,IGroup>();
+        this.projects = new HashMap<String,FacetedProject>();
+        this.listeners = new ListenerRegistry();
         
         readMetadata();
+        EventsExtensionPoint.processExtensions( this );
         readUserPresets();
         
         ( new ResourceChangeListener() ).register();
@@ -173,7 +192,17 @@ public final class ProjectFacetsManagerImpl
         }
     }
     
-    public Set getProjectFacets()
+    public synchronized static FacetedProjectFrameworkImpl getInstance()
+    {
+        if( instance == null )
+        {
+            instance = new FacetedProjectFrameworkImpl();
+        }
+        
+        return instance;
+    }
+    
+    public Set<IProjectFacet> getProjectFacets()
     {
         return this.facets.getUnmodifiable();
     }
@@ -185,8 +214,7 @@ public final class ProjectFacetsManagerImpl
     
     public IProjectFacet getProjectFacet( final String id )
     {
-        final IProjectFacet f 
-            = (IProjectFacet) this.facets.get( id );
+        final IProjectFacet f = this.facets.get( id );
         
         if( f == null )
         {
@@ -197,7 +225,7 @@ public final class ProjectFacetsManagerImpl
         return f;
     }
     
-    public Set getActionDefinitions()
+    public Set<IActionDefinition> getActionDefinitions()
     {
         return this.actions.getUnmodifiable();
     }
@@ -209,8 +237,7 @@ public final class ProjectFacetsManagerImpl
     
     public IActionDefinition getActionDefinition( final String id )
     {
-        final IActionDefinition adef
-            = (IActionDefinition) this.actions.get( id );
+        final IActionDefinition adef = this.actions.get( id );
         
         if( adef == null )
         {
@@ -221,7 +248,7 @@ public final class ProjectFacetsManagerImpl
         return adef;
     }
     
-    public Set getCategories()
+    public Set<ICategory> getCategories()
     {
         return this.categories.getUnmodifiable();
     }
@@ -233,8 +260,7 @@ public final class ProjectFacetsManagerImpl
     
     public ICategory getCategory( final String id )
     {
-        final ICategory category 
-            = (ICategory) this.categories.get( id );
+        final ICategory category = this.categories.get( id );
         
         if( category == null )
         {
@@ -245,7 +271,7 @@ public final class ProjectFacetsManagerImpl
         return category;
     }
     
-    public Set getPresets()
+    public Set<IPreset> getPresets()
     {
         return this.presets.getUnmodifiable();
     }
@@ -257,7 +283,7 @@ public final class ProjectFacetsManagerImpl
     
     public IPreset getPreset( final String id )
     {
-        final IPreset preset = (IPreset) this.presets.get( id );
+        final IPreset preset = this.presets.get( id );
         
         if( preset == null )
         {
@@ -269,21 +295,21 @@ public final class ProjectFacetsManagerImpl
     }
     
     public IPreset definePreset( final String name,
-                                 final Set facets )
+                                 final Set<IProjectFacetVersion> facets )
     {
         return definePreset( name, "", facets, true ); //$NON-NLS-1$
     }
 
     public IPreset definePreset( final String name,
                                  final String description,
-                                 final Set facets )
+                                 final Set<IProjectFacetVersion> facets )
     {
         return definePreset( name, description, facets, true );
     }
     
     private IPreset definePreset( final String name,
                                   final String description,
-                                  final Set facets,
+                                  final Set<IProjectFacetVersion> facets,
                                   final boolean save )
     {
         synchronized( this.presets )
@@ -337,7 +363,7 @@ public final class ProjectFacetsManagerImpl
         }
     }
     
-    public Set getTemplates()
+    public Set<IFacetedProjectTemplate> getTemplates()
     {
         return this.templates.getUnmodifiable();
     }
@@ -349,8 +375,7 @@ public final class ProjectFacetsManagerImpl
     
     public IFacetedProjectTemplate getTemplate( final String id )
     {
-        final IFacetedProjectTemplate template 
-            = (IFacetedProjectTemplate) this.templates.get( id );
+        final IFacetedProjectTemplate template = this.templates.get( id );
         
         if( template == null )
         {
@@ -361,7 +386,7 @@ public final class ProjectFacetsManagerImpl
         return template;
     }
     
-    public Set getGroups()
+    public Set<IGroup> getGroups()
     {
         return this.groups.getUnmodifiable();
     }
@@ -373,7 +398,7 @@ public final class ProjectFacetsManagerImpl
     
     public IGroup getGroup( final String id )
     {
-        final IGroup group = (IGroup) this.groups.get( id );
+        final IGroup group = this.groups.get( id );
         
         if( group == null )
         {
@@ -384,7 +409,7 @@ public final class ProjectFacetsManagerImpl
         return group;
     }
 
-    public Set getFacetedProjects()
+    public Set<IFacetedProject> getFacetedProjects()
     
         throws CoreException
         
@@ -392,7 +417,7 @@ public final class ProjectFacetsManagerImpl
         return getFacetedProjects( null, null );
     }
 
-    public Set getFacetedProjects( final IProjectFacet f )
+    public Set<IFacetedProject> getFacetedProjects( final IProjectFacet f )
     
         throws CoreException
         
@@ -400,7 +425,7 @@ public final class ProjectFacetsManagerImpl
         return getFacetedProjects( f, null );
     }
 
-    public Set getFacetedProjects( final IProjectFacetVersion fv )
+    public Set<IFacetedProject> getFacetedProjects( final IProjectFacetVersion fv )
     
         throws CoreException
         
@@ -408,8 +433,8 @@ public final class ProjectFacetsManagerImpl
         return getFacetedProjects( null, fv );
     }
 
-    private Set getFacetedProjects( final IProjectFacet f,
-                                    final IProjectFacetVersion fv )
+    private Set<IFacetedProject> getFacetedProjects( final IProjectFacet f,
+                                                     final IProjectFacetVersion fv )
     
         throws CoreException
         
@@ -417,7 +442,7 @@ public final class ProjectFacetsManagerImpl
         final IProject[] all 
             = ResourcesPlugin.getWorkspace().getRoot().getProjects();
         
-        final Set result = new HashSet();
+        final Set<IFacetedProject> result = new HashSet<IFacetedProject>();
         
         for( int i = 0; i < all.length; i++ )
         {
@@ -451,8 +476,7 @@ public final class ProjectFacetsManagerImpl
         {
             synchronized( this.projects )
             {
-                FacetedProject fproj 
-                    = (FacetedProject) this.projects.get( project.getName() );
+                FacetedProject fproj = this.projects.get( project.getName() );
                 
                 if( fproj == null )
                 {
@@ -554,17 +578,31 @@ public final class ProjectFacetsManagerImpl
         }
     }
     
-    public IStatus check( final Set base,
-                          final Set actions )
+    public void addListener( final IFacetedProjectListener listener,
+                             final IFacetedProjectEvent.Type... types )
+    {
+        this.listeners.addListener( listener, types );
+    }
+    
+    public void removeListener( final IFacetedProjectListener listener )
+    {
+        this.listeners.removeListener( listener );
+    }
+    
+    ListenerRegistry getListenerRegistry()
+    {
+        return this.listeners;
+    }
+    
+    public IStatus check( final Set<IProjectFacetVersion> base,
+                          final Set<Action> actions )
     {
         MultiStatus result = Constraint.createMultiStatus();
         
         // Verify that all of the actions are supported.
         
-        for( Iterator itr = actions.iterator(); itr.hasNext(); )
+        for( Action action : actions )
         {
-            final Action action = (Action) itr.next();
-            
             if( ! action.getProjectFacetVersion().supports( base, action.getType() ) )
             {
                 final ValidationProblem.Type ptype;
@@ -601,32 +639,25 @@ public final class ProjectFacetsManagerImpl
         // batch. The only exception is an uninstall of a previosly-installed
         // version followed by an install of a new version.
         
-        final Map facetToActionsMap = new HashMap();
+        final Map<IProjectFacet,Set<Action>> facetToActionsMap 
+            = new HashMap<IProjectFacet,Set<Action>>();
         
-        for( Iterator itr = actions.iterator(); itr.hasNext(); )
+        for( Action action : actions )
         {
-            final Action action = (Action) itr.next();
-            
-            final IProjectFacet f
-                = action.getProjectFacetVersion().getProjectFacet();
-            
-            Set group = (Set) facetToActionsMap.get( f );
+            final IProjectFacet f = action.getProjectFacetVersion().getProjectFacet();
+            Set<Action> group = facetToActionsMap.get( f );
             
             if( group == null )
             {
-                group = new HashSet();
+                group = new HashSet<Action>();
                 facetToActionsMap.put( f, group );
             }
             
             group.add( action );
         }
         
-        for( Iterator itr1 = facetToActionsMap.entrySet().iterator(); 
-             itr1.hasNext(); )
+        for( Set<Action> group : facetToActionsMap.values() )
         {
-            final Map.Entry entry = (Map.Entry) itr1.next();
-            final Set group = (Set) entry.getValue();
-            
             if( group.size() > 1 )
             {
                 boolean bad = true;
@@ -636,10 +667,8 @@ public final class ProjectFacetsManagerImpl
                     Action install = null;
                     Action uninstall = null;
                     
-                    for( Iterator itr2 = group.iterator(); itr2.hasNext(); )
+                    for( Action action : group )
                     {
-                        final Action action = (Action) itr2.next();
-                        
                         if( action.getType() == Action.Type.INSTALL )
                         {
                             install = action;
@@ -679,9 +708,8 @@ public final class ProjectFacetsManagerImpl
         // haven't been installed. Also check for attempts to install a facet
         // that's already installed.
         
-        for( Iterator itr1 = actions.iterator(); itr1.hasNext(); )
+        for( Action action : actions )
         {
-            final Action action = (Action) itr1.next();
             final IProjectFacetVersion fv = action.getProjectFacetVersion();
             final IProjectFacet f = fv.getProjectFacet();
 
@@ -698,11 +726,8 @@ public final class ProjectFacetsManagerImpl
             {
                 IProjectFacetVersion existing = null;
                 
-                for( Iterator itr2 = base.iterator(); itr2.hasNext(); )
+                for( IProjectFacetVersion temp : base )
                 {
-                    final IProjectFacetVersion temp
-                        = (IProjectFacetVersion) itr2.next();
-                    
                     if( temp.getProjectFacet() == f )
                     {
                         existing = temp;
@@ -710,13 +735,11 @@ public final class ProjectFacetsManagerImpl
                     }
                 }
                 
-                if( action.getType() == Action.Type.VERSION_CHANGE && 
-                    existing == null )
+                if( action.getType() == Action.Type.VERSION_CHANGE && existing == null )
                 {
                     ptype = ValidationProblem.Type.CANNOT_CHANGE_VERSION;
                 }
-                else if( action.getType() == Action.Type.INSTALL &&
-                         existing != null )
+                else if( action.getType() == Action.Type.INSTALL && existing != null )
                 {
                     ptype = ValidationProblem.Type.FACET_ALREADY_INSTALLED;
                 }
@@ -738,12 +761,10 @@ public final class ProjectFacetsManagerImpl
         
         // Apply all the uninstall actions.
         
-        final Set all = new HashSet( base );
+        final Set<IProjectFacetVersion> all = new HashSet<IProjectFacetVersion>( base );
         
-        for( Iterator itr = actions.iterator(); itr.hasNext(); )
+        for( Action action : actions )
         {
-            final Action action = (Action) itr.next();
-            
             if( action.getType() == Action.Type.UNINSTALL )
             {
                 apply( all, action );
@@ -752,10 +773,8 @@ public final class ProjectFacetsManagerImpl
         
         // Apply all the install and version change actions.
         
-        for( Iterator itr = actions.iterator(); itr.hasNext(); )
+        for( Action action : actions )
         {
-            final Action action = (Action) itr.next();
-            
             if( action.getType() != Action.Type.UNINSTALL )
             {
                 apply( all, action );
@@ -764,11 +783,8 @@ public final class ProjectFacetsManagerImpl
         
         // Check the contrains on all of the facets.
         
-        for( Iterator itr = all.iterator(); itr.hasNext(); )
+        for( IProjectFacetVersion fv : all )
         {
-            final IProjectFacetVersion fv
-                = (IProjectFacetVersion) itr.next();
-            
             final IConstraint constraint = fv.getConstraint();
             
             if( constraint != null )
@@ -784,29 +800,25 @@ public final class ProjectFacetsManagerImpl
         
         // Eliminate symmetric conflicts problem entries.
         
-        final Set problems = new HashSet();
+        final Set<IStatus> problems = new HashSet<IStatus>();
         IStatus[] children = result.getChildren();
         
-        for( int i = 0; i < children.length; i++ )
+        for( IStatus child : children )
         {
-            problems.add( children[ i ] );
+            problems.add( child );
         }
         
-        final Set toremove = new HashSet();
-        
-        for( Iterator itr = problems.iterator(); itr.hasNext(); )
+        final Set<IStatus> toremove = new HashSet<IStatus>();
+
+        for( IStatus problem : problems )
         {
-            final ValidationProblem problem = (ValidationProblem) itr.next();
-            
-            if( toremove.contains( problem ) )
+            if( ! toremove.contains( problem ) )
             {
-                itr.remove();
-            }
-            else
-            {
-                if( problem.getType() == ValidationProblem.Type.CONFLICTS )
+                final ValidationProblem valprob = (ValidationProblem) problem;
+                
+                if( valprob.getType() == ValidationProblem.Type.CONFLICTS )
                 {
-                    final Object[] p = problem.getParameters();
+                    final Object[] p = valprob.getParameters();
                     
                     final ValidationProblem reverse
                         = new ValidationProblem( ValidationProblem.Type.CONFLICTS,
@@ -817,11 +829,10 @@ public final class ProjectFacetsManagerImpl
             }
         }
         
-        if( children.length != problems.size() )
+        if( toremove.size() > 0 )
         {
-            children 
-                = (IStatus[]) problems.toArray( new IStatus[ problems.size() ] );
-            
+            problems.removeAll( toremove );
+            children = problems.toArray( new IStatus[ problems.size() ] );
             result = Constraint.createMultiStatus( children );
         }
         
@@ -830,8 +841,8 @@ public final class ProjectFacetsManagerImpl
         return result;
     }
     
-    public void sort( final Set base,
-                      final List actions )
+    public void sort( final Set<IProjectFacetVersion> base,
+                      final List<Action> actions )
     {
         final int count = actions.size();
         
@@ -843,7 +854,7 @@ public final class ProjectFacetsManagerImpl
         // Before sorting, check that the constraints can be met. Otherwise
         // the sort algorithm will not terminate.
         
-        final IStatus st = check( base, new HashSet( actions ) );
+        final IStatus st = check( base, new HashSet<Action>( actions ) );
         
         if( ! st.isOK() )
         {
@@ -853,12 +864,12 @@ public final class ProjectFacetsManagerImpl
         
         // Initialize tracing.
         
-        List unsorted = null;
+        List<Action> unsorted = null;
         int steps = 0;
         
         if( FacetCorePlugin.isTracingActionSorting() )
         {
-            unsorted = new ArrayList( actions );
+            unsorted = new ArrayList<Action>( actions );
         }
         
         // Step 1 : Pre-sort all uninstall actions to the front of the list. 
@@ -866,14 +877,11 @@ public final class ProjectFacetsManagerImpl
         //          secondary sort assures a stable sort order among actions on
         //          unrelated facets.
         
-        final Comparator comp = new Comparator()
+        final Comparator<Action> comp = new Comparator<Action>()
         {
-            public int compare( final Object obj1, 
-                                final Object obj2 )
+            public int compare( final Action a1, 
+                                final Action a2 )
             {
-                final Action a1 = (Action) obj1;
-                final Action a2 = (Action) obj2;
-                
                 int res = compare( a1.getType(), a2.getType() );
                 
                 if( res == 0 )
@@ -916,11 +924,11 @@ public final class ProjectFacetsManagerImpl
         
         // Step 2 : Sort based on the constraints.
         
-        final HashSet fnl = new HashSet( base );
+        final Set<IProjectFacetVersion> fnl = new HashSet<IProjectFacetVersion>( base );
         
-        for( Iterator itr = actions.iterator(); itr.hasNext(); )
+        for( Action action : actions )
         {
-            apply( fnl, (Action) itr.next() );
+            apply( fnl, action );
         }
         
         boolean makeAnotherPass = true;
@@ -929,11 +937,11 @@ public final class ProjectFacetsManagerImpl
         {
             makeAnotherPass = false;
             
-            HashSet state = new HashSet( base );
+            Set<IProjectFacetVersion> state = new HashSet<IProjectFacetVersion>( base );
             
             for( int i = 0; i < count; )
             {
-                final Action action = (Action) actions.get( i );
+                final Action action = actions.get( i );
                 final Action.Type type = action.getType();
                 final IProjectFacetVersion fv = action.getProjectFacetVersion();
                 final IConstraint constraint = fv.getConstraint();
@@ -985,7 +993,7 @@ public final class ProjectFacetsManagerImpl
         }
     }
     
-    static void apply( final Set facets,
+    static void apply( final Set<IProjectFacetVersion> facets,
                        final Action action )
     {
         final Action.Type type = action.getType();
@@ -1001,14 +1009,11 @@ public final class ProjectFacetsManagerImpl
         }
         else if( type == Action.Type.VERSION_CHANGE )
         {
-            for( Iterator itr = facets.iterator(); itr.hasNext(); )
+            for( IProjectFacetVersion x : facets )
             {
-                final IProjectFacetVersion x 
-                    = (IProjectFacetVersion) itr.next();
-                
                 if( x.getProjectFacet() == fv.getProjectFacet() )
                 {
-                    itr.remove();
+                    facets.remove( x );
                     break;
                 }
             }
@@ -1068,10 +1073,10 @@ public final class ProjectFacetsManagerImpl
         }
     }
     
-    private static void moveToFront( final List actions,
+    private static void moveToFront( final List<Action> actions,
                                      final int index )
     {
-        final Action action = (Action) actions.get( index );
+        final Action action = actions.get( index );
         
         for( int i = index; i > 0; i-- )
         {
@@ -1081,10 +1086,10 @@ public final class ProjectFacetsManagerImpl
         actions.set( 0, action );
     }
     
-    private static void moveToEnd( final List actions,
+    private static void moveToEnd( final List<Action> actions,
                                    final int index )
     {
-        final Action action = (Action) actions.get( index );
+        final Action action = actions.get( index );
         
         for( int i = index + 1, n = actions.size(); i < n; i++ )
         {
@@ -1107,50 +1112,47 @@ public final class ProjectFacetsManagerImpl
             throw new RuntimeException( "Extension point not found!" ); //$NON-NLS-1$
         }
         
-        final ArrayList cfgels = new ArrayList();
-        final IExtension[] extensions = point.getExtensions();
+        final List<IConfigurationElement> cfgels = new ArrayList<IConfigurationElement>();
         
-        for( int i = 0; i < extensions.length; i++ )
+        for( IExtension extension : point.getExtensions() )
         {
-            final IConfigurationElement[] elements 
-                = extensions[ i ].getConfigurationElements();
-            
-            for( int j = 0; j < elements.length; j++ )
+            for( IConfigurationElement cfgel : extension.getConfigurationElements() )
             {
-                cfgels.add( elements[ j ] );
+                cfgels.add( cfgel );
             }
         }
         
-        for( int i = 0, n = cfgels.size(); i < n; i++ )
+        for( IConfigurationElement config : cfgels )
         {
-            final IConfigurationElement config
-                = (IConfigurationElement) cfgels.get( i );
-            
             if( config.getName().equals( EL_CATEGORY ) )
             {
                 readCategory( config );
             }
         }
         
-        for( int i = 0, n = cfgels.size(); i < n; i++ )
+        for( IConfigurationElement config : cfgels )
         {
-            final IConfigurationElement config
-                = (IConfigurationElement) cfgels.get( i );
-            
             if( config.getName().equals( EL_PROJECT_FACET ) )
             {
-                readProjectFacet( config );
+                try
+                {
+                    readProjectFacet( config );
+                }
+                catch( InvalidExtensionException e )
+                {
+                    // Continue. The problem has been reported in the log.
+                }
             }
         }
         
-        final Map fvToConstraint = new HashMap();
-        final Map fvToActions = new HashMap();
+        final Map<ProjectFacetVersion,IConfigurationElement> fvToConstraint 
+            = new HashMap<ProjectFacetVersion,IConfigurationElement>();
         
-        for( int i = 0, n = cfgels.size(); i < n; i++ )
+        final Map<ProjectFacetVersion,List<IConfigurationElement>> fvToActions 
+            = new HashMap<ProjectFacetVersion,List<IConfigurationElement>>();
+        
+        for( IConfigurationElement config : cfgels )
         {
-            final IConfigurationElement config
-                = (IConfigurationElement) cfgels.get( i );
-            
             if( config.getName().equals( EL_PROJECT_FACET_VERSION ) )
             {
                 readProjectFacetVersion( config, fvToConstraint, fvToActions );
@@ -1159,40 +1161,24 @@ public final class ProjectFacetsManagerImpl
         
         calculateVersionComparisonTables( fvToConstraint, fvToActions );
         
-        for( Iterator itr = fvToConstraint.entrySet().iterator(); 
-             itr.hasNext(); )
+        for( Map.Entry<ProjectFacetVersion,IConfigurationElement> x : fvToConstraint.entrySet() )
         {
-            final Map.Entry entry = (Map.Entry) itr.next();
-            
-            final ProjectFacetVersion fv = (ProjectFacetVersion) entry.getKey();
-            
-            final IConfigurationElement config 
-                = (IConfigurationElement) entry.getValue();
-            
-            readConstraint( config, fv );
+            readConstraint( x.getValue(), x.getKey() );
         }
         
-        for( Iterator itr1 = fvToActions.entrySet().iterator(); itr1.hasNext(); )
+        for( Map.Entry<ProjectFacetVersion,List<IConfigurationElement>> x : fvToActions.entrySet() )
         {
-            final Map.Entry entry = (Map.Entry) itr1.next();
-            final ProjectFacetVersion fv = (ProjectFacetVersion) entry.getKey();
-            final List actions = (List) entry.getValue();
+            final ProjectFacetVersion fv = x.getKey();
+            final List<IConfigurationElement> actions = x.getValue();
             
-            for( Iterator itr2 = actions.iterator(); itr2.hasNext(); )
+            for( IConfigurationElement config : actions )
             {
-                final IConfigurationElement config 
-                    = (IConfigurationElement) itr2.next();
-                
-                readAction( config, (ProjectFacet) fv.getProjectFacet(), 
-                            fv.getVersionString() );
+                readAction( config, (ProjectFacet) fv.getProjectFacet(), fv.getVersionString() );
             }
         }
 
-        for( int i = 0, n = cfgels.size(); i < n; i++ )
+        for( IConfigurationElement config : cfgels )
         {
-            final IConfigurationElement config
-                = (IConfigurationElement) cfgels.get( i );
-            
             if( config.getName().equals( EL_ACTION ) )
             {
                 readAction( config );
@@ -1203,44 +1189,32 @@ public final class ProjectFacetsManagerImpl
             }
         }
         
-        for( int i = 0, n = cfgels.size(); i < n; i++ )
+        for( IConfigurationElement config : cfgels )
         {
-            final IConfigurationElement config
-                = (IConfigurationElement) cfgels.get( i );
-            
             if( config.getName().equals( EL_PROJECT_FACET ) )
             {
                 readDefaultVersionInfo( config );
             }
         }
 
-        for( int i = 0, n = cfgels.size(); i < n; i++ )
+        for( IConfigurationElement config : cfgels )
         {
-            final IConfigurationElement config
-                = (IConfigurationElement) cfgels.get( i );
-            
             if( config.getName().equals( EL_PRESET ) )
             {
                 readPreset( config );
             }
         }
         
-        for( int i = 0, n = cfgels.size(); i < n; i++ )
+        for( IConfigurationElement config : cfgels )
         {
-            final IConfigurationElement config
-                = (IConfigurationElement) cfgels.get( i );
-            
             if( config.getName().equals( EL_TEMPLATE ) )
             {
                 readTemplate( config );
             }
         }
 
-        for( int i = 0, n = cfgels.size(); i < n; i++ )
+        for( IConfigurationElement config : cfgels )
         {
-            final IConfigurationElement config
-                = (IConfigurationElement) cfgels.get( i );
-            
             if( config.getName().equals( EL_GROUP ) )
             {
                 readGroup( config );
@@ -1294,87 +1268,71 @@ public final class ProjectFacetsManagerImpl
     }
     
     private void readProjectFacet( final IConfigurationElement config )
+    
+        throws InvalidExtensionException
+        
     {
-        final String id = config.getAttribute( ATTR_ID );
+        final ProjectFacet f = new ProjectFacet();
+        f.setId( findRequiredAttribute( config, ATTR_ID ) );
+        f.setPluginId( config.getContributor().getName() );
+        
+        final IConfigurationElement elLabel = findOptionalElement( config, EL_LABEL );
+        f.setLabel( elLabel != null ? elLabel.getValue().trim() : f.getId() );
+        
+        final IConfigurationElement elDesc = findOptionalElement( config, EL_DESCRIPTION );
+        f.setDescription( elDesc != null ? elDesc.getValue().trim() : DEFAULT_DESCRIPTION );
 
-        if( id == null )
+        final IConfigurationElement elComp = findOptionalElement( config, EL_VERSION_COMPARATOR );
+        
+        if( elComp != null )
         {
-            reportMissingAttribute( config, ATTR_ID );
-            return;
+            f.setVersionComparator( findRequiredAttribute( elComp, ATTR_CLASS ) );
         }
         
-        final ProjectFacet descriptor = new ProjectFacet();
-        descriptor.setId( id );
-        descriptor.setPluginId( config.getContributor().getName() );
+        String catname = null;
         
-        final IConfigurationElement[] children = config.getChildren();
+        final IConfigurationElement elMember = findOptionalElement( config, EL_MEMBER );
         
-        for( int i = 0; i < children.length; i++ )
+        if( elMember != null )
         {
-            final IConfigurationElement child = children[ i ];
-            final String childName = child.getName();
+            catname = findRequiredAttribute( elMember, ATTR_CATEGORY );
+        }
+        
+        // ## DEPRECATED : 2.0 ##
+        {
+            final IConfigurationElement elCategory = findOptionalElement( config, EL_CATEGORY );
             
-            if( childName.equals( EL_LABEL ) )
+            if( elCategory != null )
             {
-                descriptor.setLabel( child.getValue().trim() );
-            }
-            else if( childName.equals( EL_DESCRIPTION ) )
-            {
-                descriptor.setDescription( child.getValue().trim() );
-            }
-            else if( childName.equals( EL_VERSION_COMPARATOR ) )
-            {
-                final String clname = child.getAttribute( ATTR_CLASS );
-                
-                if( clname == null )
-                {
-                    reportMissingAttribute( child, ATTR_CLASS );
-                    return;
-                }
-                
-                descriptor.setVersionComparator( clname );
-            }
-            else if( childName.equals( EL_CATEGORY ) )
-            {
-                final String catname = child.getValue().trim();
-                
-                final Category category 
-                    = (Category) this.categories.get( catname );
-                
-                if( category == null )
-                {
-                    final String msg
-                        = NLS.bind( Resources.categoryNotDefined, catname ) +
-                          NLS.bind( Resources.usedInPlugin, 
-                                    child.getContributor().getName() );
-                    
-                    FacetCorePlugin.log( msg );
-                    
-                    return;
-                }
-                
-                descriptor.setCategory( category );
-                category.addProjectFacet( descriptor );
+                catname = elCategory.getValue().trim();
             }
         }
         
-        if( descriptor.getLabel() == null )
+        if( catname != null )
         {
-            descriptor.setLabel( id );
+            if( isCategoryDefined( catname ) )
+            {
+                final Category category = (Category) getCategory( catname );
+                
+                f.setCategory( category );
+                category.addProjectFacet( f );
+            }
+            else
+            {
+                final String msg
+                    = NLS.bind( Resources.categoryNotDefined, catname ) +
+                      NLS.bind( Resources.usedInPlugin, config.getContributor().getName() );
+                
+                FacetCorePlugin.log( msg );
+            }
         }
         
-        if( descriptor.getDescription() == null )
-        {
-            descriptor.setDescription( "" ); //$NON-NLS-1$
-        }
-        
-        
-        this.facets.add( id, descriptor );
+        this.facets.add( f.getId(), f );
     }
     
     private void readProjectFacetVersion( final IConfigurationElement config,
-                                          final Map fvToConstraint,
-                                          final Map fvToActions )
+                                          final Map<ProjectFacetVersion,IConfigurationElement> fvToConstraint,
+                                          final Map<ProjectFacetVersion,List<IConfigurationElement>> fvToActions )
     {
         final String fid = config.getAttribute( ATTR_FACET );
 
@@ -1407,7 +1365,7 @@ public final class ProjectFacetsManagerImpl
         fv.setVersionString( ver );
         fv.setPluginId( config.getContributor().getName() );
         
-        final List actions = new ArrayList();
+        final List<IConfigurationElement> actions = new ArrayList<IConfigurationElement>();
         fvToActions.put( fv, actions );
         
         final IConfigurationElement[] children = config.getChildren();
@@ -1472,41 +1430,39 @@ public final class ProjectFacetsManagerImpl
      * instead of having to do a parse and comparison of two version strings.
      */
     
-    private void calculateVersionComparisonTables( final Map fvToConstraint,
-                                                   final Map fvToActions )
+    private void calculateVersionComparisonTables( final Map<ProjectFacetVersion,IConfigurationElement> fvToConstraint,
+                                                   final Map<ProjectFacetVersion,List<IConfigurationElement>> fvToActions )
     {
-        for( Iterator itr = this.facets.iterator(); itr.hasNext(); )
+        final List<IProjectFacet> badFacets = new ArrayList<IProjectFacet>();
+        
+        for( IProjectFacet f : this.facets )
         {
-            final IProjectFacet f = (IProjectFacet) itr.next();
-            final Set setOfVersions = f.getVersions();
-
             try
             {
-                final Comparator comp = f.getVersionComparator();
+                final Comparator<String> comp = f.getVersionComparator();
                 
-                final ProjectFacetVersion[] versions 
-                    = new ProjectFacetVersion[ setOfVersions.size() ];
+                final List<IProjectFacetVersion> versions 
+                    = new ArrayList<IProjectFacetVersion>( f.getVersions() );
                 
-                setOfVersions.toArray( versions );
+                final Map<IProjectFacetVersion,Map<IProjectFacetVersion,Integer>> compTables
+                    = new HashMap<IProjectFacetVersion,Map<IProjectFacetVersion,Integer>>();
                 
-                final Map[] compTables = new Map[ versions.length ];
-                
-                for( int i = 0; i < compTables.length; i++ )
+                for( IProjectFacetVersion fv : versions )
                 {
-                    compTables[ i ] = new HashMap();
+                    compTables.put( fv, new HashMap<IProjectFacetVersion,Integer>() );
                 }
                 
-                for( int i = 0; i < versions.length; i++ )
+                for( int i = 0, n = versions.size(); i < n; i++ )
                 {
-                    final IProjectFacetVersion iVer = versions[ i ];
+                    final IProjectFacetVersion iVer = versions.get( i );
                     final String iVerStr = iVer.getVersionString();
-                    final Map iCompTable = compTables[ i ];
+                    final Map<IProjectFacetVersion,Integer> iCompTable = compTables.get( iVer );
                     
-                    for( int j = i + 1; j < versions.length; j++ )
+                    for( int j = i + 1; j < n; j++ )
                     {
-                        final IProjectFacetVersion jVer = versions[ j ];
+                        final IProjectFacetVersion jVer = versions.get( j );
                         final String jVerStr = jVer.getVersionString();
-                        final Map jCompTable = compTables[ j ];
+                        final Map<IProjectFacetVersion,Integer> jCompTable = compTables.get( jVer );
                         
                         final int result = comp.compare( iVerStr, jVerStr );
                         
@@ -1515,9 +1471,11 @@ public final class ProjectFacetsManagerImpl
                     }
                 }
                 
-                for( int i = 0; i < versions.length; i++ )
+                for( Map.Entry<IProjectFacetVersion,Map<IProjectFacetVersion,Integer>> entry
+                     : compTables.entrySet() )
                 {
-                    versions[ i ].setComparisonTable( compTables[ i ] );
+                    final ProjectFacetVersion fv = (ProjectFacetVersion) entry.getKey();
+                    fv.setComparisonTable( entry.getValue() );
                 }
             }
             catch( Exception e )
@@ -1529,22 +1487,25 @@ public final class ProjectFacetsManagerImpl
                 // faulty facet from dragging down the entire framework.
                 
                 FacetCorePlugin.log( e );
-                
-                itr.remove();
-                
-                final Category category = (Category) f.getCategory();
-                
-                if( category != null )
-                {
-                    category.removeProjectFacet( f );
-                }
-                
-                for( Iterator itr2 = setOfVersions.iterator(); itr.hasNext(); )
-                {
-                    final IProjectFacetVersion fv = (IProjectFacetVersion) itr2.next();
-                    fvToConstraint.remove( fv );
-                    fvToActions.remove( fv );
-                }
+                badFacets.add( f );
+            }
+        }
+        
+        for( IProjectFacet f : badFacets )
+        {
+            this.facets.remove( f );
+            
+            final Category category = (Category) f.getCategory();
+            
+            if( category != null )
+            {
+                category.removeProjectFacet( f );
+            }
+            
+            for( IProjectFacetVersion fv : f.getVersions() )
+            {
+                fvToConstraint.remove( fv );
+                fvToActions.remove( fv );
             }
         }
     }
@@ -1579,12 +1540,8 @@ public final class ProjectFacetsManagerImpl
                 {
                     try
                     {
-                        final Class type = IDefaultVersionProvider.class;
-                        
                         final IDefaultVersionProvider defaultVersionProvider
-                            = (IDefaultVersionProvider) 
-                                FacetCorePlugin.instantiate( f.getPluginId(),
-                                                             clname, type );
+                            = instantiate( f.getPluginId(), clname, IDefaultVersionProvider.class );
                         
                         f.setDefaultVersionProvider( defaultVersionProvider );
                         defaultVersionSpecified = true;
@@ -1607,10 +1564,7 @@ public final class ProjectFacetsManagerImpl
                         }
                         else
                         {
-                            final String msg 
-                                = f.createVersionNotFoundErrMsg( version );
-                            
-                            FacetCorePlugin.log( msg );
+                            FacetCorePlugin.log( f.createVersionNotFoundErrMsg( version ) );
                         }
                     }
                     else
@@ -1710,7 +1664,7 @@ public final class ProjectFacetsManagerImpl
         
         try
         {
-            def.setVersionExpr( new VersionExpr( f, version, pluginId ) );
+            def.setVersionExpr( new VersionExpr<ProjectFacetVersion>( f, version, pluginId ) );
         }
         catch( CoreException e )
         {
@@ -1781,7 +1735,7 @@ public final class ProjectFacetsManagerImpl
                     try
                     {
                         final VersionExpr vexpr 
-                            = new VersionExpr( f, value, pluginId );
+                            = new VersionExpr<ProjectFacetVersion>( f, value, pluginId );
                         
                         def.setProperty( name, vexpr );
                     }
@@ -1813,17 +1767,13 @@ public final class ProjectFacetsManagerImpl
             buf.append( version );
             buf.append( '#' );
             buf.append( def.getActionType().name() );
-            
-            for( Iterator itr = def.getProperties().entrySet().iterator(); 
-                 itr.hasNext(); )
+
+            for( Map.Entry<String,Object> entry : def.getProperties().entrySet() )
             {
-                final Map.Entry entry = (Map.Entry) itr.next();
-                
                 buf.append( '#' );
-                buf.append( (String) entry.getKey() );
+                buf.append( entry.getKey() );
                 buf.append( '=' );
                 buf.append( entry.getValue().toString() );
-                
             }
             
             id = buf.toString();
@@ -1872,14 +1822,16 @@ public final class ProjectFacetsManagerImpl
         
         readEventHandler( config, f, ver );
     }
+    
+    /**
+     * Support for a deprecated extension point.
+     */
 
     private void readEventHandler( final IConfigurationElement config,
                                    final ProjectFacet f,
                                    final String version )
     {
-        final EventHandler h = new EventHandler();
         final String pluginId = config.getContributor().getName();
-        h.setPluginId( pluginId );
         
         final String type = config.getAttribute( ATTR_TYPE );
         
@@ -1889,18 +1841,18 @@ public final class ProjectFacetsManagerImpl
             return;
         }
         
-        if( type.equals( "runtime-changed" ) ) //$NON-NLS-1$
+        final IFacetedProjectEvent.Type t;
+        
+        if( type.equals( "runtime-changed" ) || type.equals( "RUNTIME_CHANGED" )) //$NON-NLS-1$ //$NON-NLS-2$
         {
-            // Backwards compatibility of deprecated functionality.
-            
-            h.setType( EventHandler.Type.RUNTIME_CHANGED );
+            t = IFacetedProjectEvent.Type.PRIMARY_RUNTIME_CHANGED;
         }
         else
         {
-            h.setType( EventHandler.Type.valueOf( type ) );
+            t = IFacetedProjectEvent.Type.valueOf( type );
         }
         
-        if( h.getType() == null )
+        if( t == null )
         {
             final String msg
                 = NLS.bind( Resources.invalidEventHandlerType, type ) +
@@ -1911,15 +1863,19 @@ public final class ProjectFacetsManagerImpl
             return;
         }
         
+        final IVersionExpr vexpr;
+        
         try
         {
-            h.setVersionExpr( new VersionExpr( f, version, pluginId ) );
+            vexpr = new VersionExpr<ProjectFacetVersion>( f, version, pluginId );
         }
         catch( CoreException e )
         {
             FacetCorePlugin.log( e );
             return;
         }
+        
+        String delegateClassName = null;
 
         final IConfigurationElement[] children = config.getChildren();
         
@@ -1938,24 +1894,27 @@ public final class ProjectFacetsManagerImpl
                     return;
                 }
                 
-                h.setDelegate( clname );
+                delegateClassName = clname;
             }
         }
         
-        if( ! h.hasDelegate() )
+        if( delegateClassName == null )
         {
             reportMissingElement( config, EL_DELEGATE );
             return;
         }
         
-        f.addEventHandler( h );
+        final LegacyEventHandlerAdapter adapter
+            = new LegacyEventHandlerAdapter( f, vexpr, pluginId, delegateClassName );
+        
+        addListener( adapter, t );
     }
     
     private void readConstraint( final IConfigurationElement config,
                                  final ProjectFacetVersion fv )
     {
         final IConfigurationElement[] ops = config.getChildren();
-        final ArrayList parsed = new ArrayList();
+        final List<IConstraint> parsed = new ArrayList<IConstraint>();
         
         for( int j = 0; j < ops.length; j++ )
         {
@@ -1969,7 +1928,7 @@ public final class ProjectFacetsManagerImpl
         
         if( parsed.size() == 1 )
         {
-            fv.setConstraint( (IConstraint) parsed.get( 0 ) );
+            fv.setConstraint( parsed.get( 0 ) );
         }
         else if( parsed.size() > 1 )
         {
@@ -2346,10 +2305,8 @@ public final class ProjectFacetsManagerImpl
                 root.node( children[ i ] ).removeNode();
             }
             
-            for( Iterator itr = this.presets.iterator(); itr.hasNext(); )
+            for( IPreset preset : this.presets )
             {
-                final IPreset preset = (IPreset) itr.next();
-                
                 if( preset.isUserDefined() )
                 {
                     final Preferences pnode = root.node( preset.getId() );
@@ -2358,17 +2315,12 @@ public final class ProjectFacetsManagerImpl
                     
                     int counter = 1;
                     
-                    for( Iterator itr2 = preset.getProjectFacets().iterator(); 
-                         itr2.hasNext(); )
+                    for( IProjectFacetVersion fv : preset.getProjectFacets() )
                     {
-                        final IProjectFacetVersion f
-                            = (IProjectFacetVersion) itr2.next();
+                        final Preferences fnode = pnode.node( String.valueOf( counter ) );
                         
-                        final Preferences fnode 
-                            = pnode.node( String.valueOf( counter ) );
-                        
-                        fnode.put( ATTR_ID, f.getProjectFacet().getId() );
-                        fnode.put( ATTR_VERSION, f.getVersionString() );
+                        fnode.put( ATTR_ID, fv.getProjectFacet().getId() );
+                        fnode.put( ATTR_VERSION, fv.getVersionString() );
                         
                         counter++;
                     }
@@ -2408,7 +2360,7 @@ public final class ProjectFacetsManagerImpl
                 }
                 
                 final String[] fkeys = pnode.childrenNames();
-                HashSet facets = new HashSet();
+                Set<IProjectFacetVersion> facets = new HashSet<IProjectFacetVersion>();
                 
                 for( int j = 0; j < fkeys.length; j++ )
                 {
@@ -2465,14 +2417,12 @@ public final class ProjectFacetsManagerImpl
         return pluginRoot.node( "user.presets" ); //$NON-NLS-1$
     }
     
-    private static String toString( final Collection collection )
+    private static String toString( final Collection<? extends Object> collection )
     {
         final StringBuffer buf = new StringBuffer();
         
-        for( Iterator itr = collection.iterator(); itr.hasNext(); )
+        for( Object obj : collection )
         {
-            final Object obj = itr.next();
-            
             if( buf.length() > 0 )
             {
                 buf.append( ", " ); //$NON-NLS-1$
@@ -2510,15 +2460,11 @@ public final class ProjectFacetsManagerImpl
         {
             final IResourceDelta delta = event.getDelta();
             
-            synchronized( ProjectFacetsManagerImpl.this.projects )
+            synchronized( FacetedProjectFrameworkImpl.this.projects )
             {
-                for( Iterator itr = ProjectFacetsManagerImpl.this.projects.values().iterator(); 
-                     itr.hasNext(); )
+                for( FacetedProject fproj : FacetedProjectFrameworkImpl.this.projects.values() )
                 {
-                    final FacetedProject fproj = (FacetedProject) itr.next();
-                    
-                    final IResourceDelta subdelta 
-                        = delta.findMember( fproj.f.getFullPath() );
+                    final IResourceDelta subdelta = delta.findMember( fproj.f.getFullPath() );
                     
                     if( subdelta != null )
                     {
@@ -2569,7 +2515,7 @@ public final class ProjectFacetsManagerImpl
         
         static
         {
-            initializeMessages( ProjectFacetsManagerImpl.class.getName(), 
+            initializeMessages( FacetedProjectFrameworkImpl.class.getName(), 
                                 Resources.class );
         }
         

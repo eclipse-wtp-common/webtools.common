@@ -1,15 +1,17 @@
 /******************************************************************************
- * Copyright (c) 2005, 2006 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core.internal;
+
+import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.instantiate;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,11 +45,17 @@ public final class ActionDefinition
     private IProjectFacet facet;
     private IVersionExpr versionMatchExpr;
     private Action.Type type;
-    private final Map properties = new HashMap();
-    private final Map propertiesReadOnly = Collections.unmodifiableMap( this.properties );
+    private final Map<String,Object> properties;
+    private final Map<String,Object> propertiesReadOnly;
     private String delegateClassName;
-    private IDelegate delegate = null;
+    private IDelegate delegate;
     private String configFactoryClassName;
+    
+    ActionDefinition()
+    {
+        this.properties = new HashMap<String,Object>();
+        this.propertiesReadOnly = Collections.unmodifiableMap( this.properties );
+    }
     
     public String getId()
     {
@@ -79,6 +87,7 @@ public final class ActionDefinition
         return this.versionMatchExpr;
     }
     
+    @SuppressWarnings( "unchecked" )
     void setVersionExpr( final IVersionExpr expr )
     {
         this.versionMatchExpr = expr;
@@ -94,7 +103,7 @@ public final class ActionDefinition
         this.type = type;
     }
     
-    public Map getProperties()
+    public Map<String,Object> getProperties()
     {
         return this.propertiesReadOnly;
     }
@@ -123,9 +132,8 @@ public final class ActionDefinition
         else
         {
             final Object factory 
-                = FacetCorePlugin.instantiate( this.pluginId, 
-                                               this.configFactoryClassName, 
-                                               IActionConfigFactory.class );
+                = instantiate( this.pluginId, this.configFactoryClassName, 
+                               IActionConfigFactory.class );
             
             final Object config = ( (IActionConfigFactory) factory ).create();
             
@@ -169,9 +177,7 @@ public final class ActionDefinition
         if( this.delegate == null )
         {
             final Object obj 
-                = FacetCorePlugin.instantiate( this.pluginId, 
-                                               this.delegateClassName, 
-                                               IDelegate.class );
+                = instantiate( this.pluginId, this.delegateClassName, IDelegate.class );
             
             this.delegate = (IDelegate) obj;
         }

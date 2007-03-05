@@ -1,12 +1,12 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core.runtime.internal;
@@ -19,7 +19,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin;
+import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentType;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentVersion;
@@ -34,17 +36,21 @@ public final class RuntimeComponent
     
 {
     private RuntimeComponentVersion rcv;
-    
-    private final Map properties = new HashMap();
-    
-    private final Map propertiesReadOnly 
-        = Collections.unmodifiableMap( this.properties );
+    private IRuntime runtime;
+    private final Map<String,String> properties;
+    private final Map<String,String> propertiesReadOnly;
     
     /**
      * This class should not be instantiated outside this package.
      */
 
-    RuntimeComponent() {}
+    RuntimeComponent() 
+    {
+        this.rcv = null;
+        this.runtime = null;
+        this.properties = new HashMap<String,String>();
+        this.propertiesReadOnly = Collections.unmodifiableMap( this.properties );
+    }
 
     public IRuntimeComponentType getRuntimeComponentType()
     {
@@ -60,15 +66,35 @@ public final class RuntimeComponent
     {
         this.rcv = (RuntimeComponentVersion) rcv;
     }
+    
+    public IRuntime getRuntime()
+    {
+        return this.runtime;
+    }
+    
+    void setRuntime( final IRuntime runtime )
+    {
+        if( runtime == null )
+        {
+            throw new IllegalArgumentException();
+        }
+        
+        if( this.runtime != null && ! this.runtime.equals( runtime ) )
+        {
+            throw new IllegalStateException( Resources.runtimeAlreadySet );
+        }
+        
+        this.runtime = runtime;
+    }
 
-    public Map getProperties()
+    public Map<String,String> getProperties()
     {
         return this.propertiesReadOnly;
     }
 
     public String getProperty( final String key )
     {
-        return (String) this.properties.get( key );
+        return this.properties.get( key );
     }
     
     void setProperty( final String key,
@@ -109,9 +135,7 @@ public final class RuntimeComponent
         if( obj instanceof RuntimeComponent )
         {
             final RuntimeComponent rc = (RuntimeComponent) obj;
-            
-            return this.rcv == rc.rcv && 
-                   this.properties.equals( rc.properties );
+            return this.rcv == rc.rcv && this.properties.equals( rc.properties );
         }
         
         return false;
@@ -126,4 +150,18 @@ public final class RuntimeComponent
     {
         return this.rcv.toString();
     }
+
+    private static final class Resources
+    
+        extends NLS
+        
+    {
+        public static String runtimeAlreadySet;
+        
+        static
+        {
+            initializeMessages( RuntimeComponent.class.getName(), Resources.class );
+        }
+    }
+    
 }

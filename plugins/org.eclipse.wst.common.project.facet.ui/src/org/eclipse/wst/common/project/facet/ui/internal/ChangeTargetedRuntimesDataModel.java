@@ -1,15 +1,29 @@
+/******************************************************************************
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Konstantin Komissarchik
+ ******************************************************************************/
+
 package org.eclipse.wst.common.project.facet.ui.internal;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.eclipse.wst.common.project.facet.core.IListener;
-import org.eclipse.wst.common.project.facet.core.internal.CopyOnWriteSet;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
+
+/**
+ * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
+ */
 
 public final class ChangeTargetedRuntimesDataModel
 
@@ -33,20 +47,20 @@ public final class ChangeTargetedRuntimesDataModel
         boolean check( IRuntime runtime );
     }
 
-    private final List filters;
-    private final CopyOnWriteSet targetableRuntimes;
-    private final CopyOnWriteSet targetedRuntimes;
+    private final List<IRuntimeFilter> filters;
+    private final Set<IRuntime> targetableRuntimes;
+    private final Set<IRuntime> targetedRuntimes;
     private IRuntime primaryRuntime;
     private IListener runtimeManagerListener;
 
     public ChangeTargetedRuntimesDataModel()
     {
-        this.filters = new ArrayList();
+        this.filters = new ArrayList<IRuntimeFilter>();
         
-        this.targetableRuntimes = new CopyOnWriteSet();
+        this.targetableRuntimes = new CopyOnWriteArraySet<IRuntime>();
         this.targetableRuntimes.addAll( getAllRuntimes() );
         
-        this.targetedRuntimes = new CopyOnWriteSet();
+        this.targetedRuntimes = new CopyOnWriteArraySet<IRuntime>();
         
         this.primaryRuntime = null;
         
@@ -74,30 +88,26 @@ public final class ChangeTargetedRuntimesDataModel
         refreshTargetableRuntimes();
     }
     
-    public synchronized Set getAllRuntimes()
+    public synchronized Set<IRuntime> getAllRuntimes()
     {
         return RuntimeManager.getRuntimes();
     }
     
-    public synchronized Set getTargetableRuntimes()
+    public synchronized Set<IRuntime> getTargetableRuntimes()
     {
         return this.targetableRuntimes;
     }
     
     public synchronized void refreshTargetableRuntimes()
     {
-        final Set result = new HashSet();
+        final Set<IRuntime> result = new HashSet<IRuntime>();
         
-        for( Iterator itr1 = getAllRuntimes().iterator(); itr1.hasNext(); )
+        for( IRuntime r : getAllRuntimes() )
         {
-            final IRuntime r = (IRuntime) itr1.next();
-            
             boolean ok = true;
-            
-            for( Iterator itr2 = this.filters.iterator(); itr2.hasNext(); )
+
+            for( IRuntimeFilter filter : this.filters )
             {
-                final IRuntimeFilter filter = (IRuntimeFilter) itr2.next();
-                
                 if( ! filter.check( r ) )
                 {
                     ok = false;
@@ -117,20 +127,19 @@ public final class ChangeTargetedRuntimesDataModel
             this.targetableRuntimes.addAll( result );
             notifyListeners( EVENT_TARGETABLE_RUNTIMES_CHANGED );
             
-            boolean modified = false;
+            final List<IRuntime> toRemove = new ArrayList<IRuntime>();
             
-            for( Iterator itr = this.targetedRuntimes.iterator(); itr.hasNext(); )
+            for( IRuntime r : this.targetedRuntimes )
             {
-                final IRuntime r = (IRuntime) itr.next();
-                
                 if( ! this.targetableRuntimes.contains( r ) )
                 {
-                    itr.remove();
-                    modified = true;
+                    toRemove.add( r );
                 }
             }
             
-            if( modified )
+            this.targetedRuntimes.removeAll( toRemove );
+            
+            if( ! toRemove.isEmpty() )
             {
                 notifyListeners( EVENT_TARGETED_RUNTIMES_CHANGED );
                 
@@ -143,21 +152,19 @@ public final class ChangeTargetedRuntimesDataModel
         }
     }
     
-    public synchronized Set getTargetedRuntimes()
+    public synchronized Set<IRuntime> getTargetedRuntimes()
     {
         return this.targetedRuntimes;
     }
     
-    public synchronized void setTargetedRuntimes( final Set runtimes )
+    public synchronized void setTargetedRuntimes( final Set<IRuntime> runtimes )
     {
         if( ! this.targetedRuntimes.equals( runtimes ) )
         {
             this.targetedRuntimes.clear();
             
-            for( Iterator itr = runtimes.iterator(); itr.hasNext(); )
+            for( IRuntime r : runtimes )
             {
-                final IRuntime r = (IRuntime) itr.next();
-                
                 if( this.targetableRuntimes.contains( r ) )
                 {
                     this.targetedRuntimes.add( r );
@@ -247,8 +254,7 @@ public final class ChangeTargetedRuntimesDataModel
             // Pick one to be the primary. No special semantics as to which 
             // one.
             
-            this.primaryRuntime 
-                = (IRuntime) this.targetedRuntimes.iterator().next();
+            this.primaryRuntime = this.targetedRuntimes.iterator().next();
         }
         
         notifyListeners( EVENT_PRIMARY_RUNTIME_CHANGED );

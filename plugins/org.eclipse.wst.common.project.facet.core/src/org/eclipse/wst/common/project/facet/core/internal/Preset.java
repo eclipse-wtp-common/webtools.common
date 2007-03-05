@@ -1,12 +1,12 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core.internal;
@@ -32,15 +32,16 @@ public final class Preset
     private String id;
     private String label;
     private String description;
-    
-    private final Set facets = new HashSet();
-    
-    private final Set facetsReadOnly 
-        = Collections.unmodifiableSet( this.facets );
-    
+    private final Set<IProjectFacetVersion> facets;
+    private final Set<IProjectFacetVersion> facetsReadOnly;
     private boolean isUserDefined = false;
     
-    Preset() {}
+    Preset() 
+    {
+        this.facets = new HashSet<IProjectFacetVersion>();
+        this.facetsReadOnly = Collections.unmodifiableSet( this.facets );
+        this.isUserDefined = false;
+    }
     
     public String getId()
     {
@@ -72,7 +73,7 @@ public final class Preset
         this.description = description;
     }
     
-    public Set getProjectFacets()
+    public Set<IProjectFacetVersion> getProjectFacets()
     {
         return this.facetsReadOnly;
     }
@@ -82,7 +83,7 @@ public final class Preset
         this.facets.add( fv );
     }
     
-    void addProjectFacet( final Set facets )
+    void addProjectFacet( final Set<IProjectFacetVersion> facets )
     {
         this.facets.addAll( facets );
     }

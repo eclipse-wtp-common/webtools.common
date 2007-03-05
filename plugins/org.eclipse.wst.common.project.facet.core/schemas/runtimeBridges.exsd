@@ -11,6 +11,11 @@
    </annotation>
 
    <element name="extension">
+      <annotation>
+         <documentation>
+            (no description available)
+         </documentation>
+      </annotation>
       <complexType>
          <choice>
             <element ref="bridge"/>
@@ -40,6 +45,11 @@
    </element>
 
    <element name="bridge">
+      <annotation>
+         <documentation>
+            (no description available)
+         </documentation>
+      </annotation>
       <complexType>
          <attribute name="id" type="string" use="required">
             <annotation>
@@ -66,7 +76,7 @@
          <meta.section type="since"/>
       </appInfo>
       <documentation>
-         &lt;b&gt;This extension point is part of an interim API that is still under development and expected to change significantly before reaching stability. It is being made available at this early stage to solicit feedback from pioneering adopters on the understanding that any code that uses this API will almost certainly be broken (repeatedly) as the API evolves.&lt;/b&gt;
+         
       </documentation>
    </annotation>
 

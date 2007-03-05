@@ -1,23 +1,34 @@
 /******************************************************************************
- * Copyright (c) 2005, 2006 BEA Systems, Inc. and others.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
- *	  David Schneider, david.schneider@unisys.com - [142500] WTP properties pages fonts don't follow Eclipse preferences
+ *    Konstantin Komissarchik - initial implementation and ongoing maintenance
+ *    David Schneider, david.schneider@unisys.com - [142500] WTP properties pages fonts don't follow Eclipse preferences
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.ui.internal;
 
+import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gd;
+import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdfill;
+import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhalign;
+import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhfill;
+import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhhint;
+import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdwhint;
+import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gl;
+import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.glmargins;
+import static org.eclipse.wst.common.project.facet.ui.internal.util.SwtUtil.getPreferredWidth;
+
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.resource.CompositeImageDescriptor;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -49,14 +60,15 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentType;
 import org.eclipse.wst.common.project.facet.ui.IDecorationsProvider;
 import org.eclipse.wst.common.project.facet.ui.IRuntimeComponentLabelProvider;
 import org.eclipse.wst.common.project.facet.ui.internal.AbstractDataModel.IDataModelListener;
+import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -75,12 +87,12 @@ public final class RuntimesPanel
     private final CheckboxTableViewer runtimes;
     private final Button showAllRuntimesCheckbox;
     private final Button makePrimaryButton;
+    private final Button newRuntimeButton;
     private final Label runtimeComponentsLabel;
     private final TableViewer runtimeComponents;
     private IRuntime currentPrimaryRuntime;
-    private final List listeners;
+    private final List<IDataModelListener> listeners;
     private Color colorGray;
-    private Color colorManila;
     
     public RuntimesPanel( final Composite parent,
                           final int style,
@@ -88,7 +100,7 @@ public final class RuntimesPanel
     {
         super( parent, style );
         
-        this.listeners = new ArrayList();
+        this.listeners = new ArrayList<IDataModelListener>();
         
         addDisposeListener
         ( 
@@ -158,7 +170,6 @@ public final class RuntimesPanel
         // Initialize the colors.
         
         this.colorGray = new Color( null, 160, 160, 164 );
-        this.colorManila = new Color( null, 255, 255, 206 );
 
         // Layout the panel.
         
@@ -216,12 +227,16 @@ public final class RuntimesPanel
             }
         );
         
-        this.makePrimaryButton = new Button( this, SWT.PUSH );
-        this.makePrimaryButton.setText( Resources.makePrimaryLabel );
-        GridData gd = halign( new GridData(), GridData.END );
-        gd = whint( gd, getPreferredWidth( this.makePrimaryButton ) + 15 );
-        this.makePrimaryButton.setLayoutData( gd );
+        final Composite buttons = new Composite( this, SWT.NONE );
+        buttons.setLayoutData( gdhalign( gd(), GridData.END ) );
+        buttons.setLayout( glmargins( gl( 2 ), 0, 0 ) );
         
+        GridData gd;
+        
+        this.makePrimaryButton = new Button( buttons, SWT.PUSH );
+        this.makePrimaryButton.setText( Resources.makePrimaryLabel );
+        gd = gdwhint( gd(), getPreferredWidth( this.makePrimaryButton ) + 15 );
+        this.makePrimaryButton.setLayoutData( gd );
         this.makePrimaryButton.setEnabled( false );
         
         this.makePrimaryButton.addSelectionListener
@@ -235,13 +250,32 @@ public final class RuntimesPanel
             }
         );
         
+        this.newRuntimeButton = new Button( buttons, SWT.PUSH );
+        this.newRuntimeButton.setText( Resources.newRuntimeButtonLabel );
+        gd = gdwhint( gd(), getPreferredWidth( this.newRuntimeButton ) + 15 );
+        this.newRuntimeButton.setLayoutData( gd );
+
+        this.newRuntimeButton.addSelectionListener
+        (
+            new SelectionAdapter()
+            {
+                public void widgetSelected( final SelectionEvent e )
+                {
+                    handleNewRuntimeButtonSelected();
+                }
+            }
+        );
+        
         this.runtimeComponentsLabel = new Label( this, SWT.NONE );
         this.runtimeComponentsLabel.setText( Resources.runtimeCompositionLabel );
         this.runtimeComponentsLabel.setLayoutData( gdhfill() );
         
+        final Color infoBackgroundColor
+            = parent.getDisplay().getSystemColor( SWT.COLOR_INFO_BACKGROUND );
+        
         this.runtimeComponents = new TableViewer( this, SWT.BORDER );
-        this.runtimeComponents.getTable().setLayoutData( hhint( gdhfill(), 50 ) );
-        this.runtimeComponents.getTable().setBackground( this.colorManila );
+        this.runtimeComponents.getTable().setLayoutData( gdhhint( gdhfill(), 50 ) );
+        this.runtimeComponents.getTable().setBackground( infoBackgroundColor );
         this.runtimeComponents.setContentProvider( new RuntimeComponentsContentProvider() );
         this.runtimeComponents.setLabelProvider( new RuntimeComponentsLabelProvider() );
         
@@ -251,7 +285,8 @@ public final class RuntimesPanel
         
         refresh();
         this.currentPrimaryRuntime = this.model.getPrimaryRuntime();
-	    Dialog.applyDialogFont(parent);
+        
+	    Dialog.applyDialogFont( parent );
     }
     
     public ChangeTargetedRuntimesDataModel getDataModel()
@@ -322,13 +357,10 @@ public final class RuntimesPanel
             return;
         }
         
-        final Set targeted = this.model.getTargetedRuntimes();
+        final Set<IRuntime> targeted = this.model.getTargetedRuntimes();
         
-        for( Iterator itr = this.model.getTargetableRuntimes().iterator(); 
-             itr.hasNext(); )
+        for( IRuntime r : this.model.getTargetableRuntimes() )
         {
-            final IRuntime r = (IRuntime) itr.next();
-            
             if( targeted.contains( r ) )
             {
                 if( ! this.runtimes.getChecked( r ) )
@@ -447,20 +479,54 @@ public final class RuntimesPanel
     {
         this.model.setPrimaryRuntime( getSelection() );
     }
+    
+    @SuppressWarnings( "unchecked" )
+    private void handleNewRuntimeButtonSelected()
+    {
+        final String SERVER_UI_PLUGIN_ID = "org.eclipse.wst.server.ui"; //$NON-NLS-1$
+        final String CLASS_NAME = "org.eclipse.wst.server.ui.internal.ServerUIPlugin"; //$NON-NLS-1$
+        final String METHOD_NAME = "showNewRuntimeWizard"; //$NON-NLS-1$
+        
+        final Bundle serverUiBundle = Platform.getBundle( SERVER_UI_PLUGIN_ID );
+        
+        if( serverUiBundle == null )
+        {
+            this.newRuntimeButton.setEnabled( false );
+            return;
+        }
+
+        try
+        {
+            final Class serverUiPluginClass = serverUiBundle.loadClass( CLASS_NAME );
+            
+            final Method method
+                = serverUiPluginClass.getMethod( METHOD_NAME, Shell.class, String.class );
+            
+            final Object result = method.invoke( null, getShell(), null );
+            
+            if( result.equals( true ) )
+            {
+                this.model.refreshTargetableRuntimes();
+            }
+        }
+        catch( Exception e )
+        {
+            FacetUiPlugin.log( e );
+        }
+    }
 
     private void handleWidgetDisposed()
     {
         removeDataModelListeners();
         
         this.colorGray.dispose();
-        this.colorManila.dispose();
     }
     
     private void refresh()
     {
         this.runtimes.refresh();
 
-        final Set untargetable = new HashSet( this.model.getAllRuntimes() );
+        final Set<IRuntime> untargetable = new HashSet<IRuntime>( this.model.getAllRuntimes() );
         untargetable.removeAll( this.model.getTargetableRuntimes() );
         
         this.runtimes.setCheckedElements( this.model.getTargetedRuntimes().toArray() );
@@ -490,9 +556,9 @@ public final class RuntimesPanel
     
     private void removeDataModelListeners()
     {
-        for( Iterator itr = this.listeners.iterator(); itr.hasNext(); )
+        for( IDataModelListener listener : this.listeners )
         {
-            this.model.removeListener( (IDataModelListener) itr.next() );
+            this.model.removeListener( listener );
         }
     }
     
@@ -534,16 +600,14 @@ public final class RuntimesPanel
         
         public String getText( final Object element )
         {
-            return ( (IRuntime) element ).getName();
+            return ( (IRuntime) element ).getLocalizedName();
         }
 
         public Image getImage( final Object element )
         {
             final IRuntime r = (IRuntime) element;
             
-            final IRuntimeComponent rc 
-                = (IRuntimeComponent) r.getRuntimeComponents().get( 0 );
-            
+            final IRuntimeComponent rc = r.getRuntimeComponents().get( 0 );
             final IRuntimeComponentType rct = rc.getRuntimeComponentType();
             
             final IRuntime primary = getDataModel().getPrimaryRuntime();
@@ -645,7 +709,7 @@ public final class RuntimesPanel
             final IRuntime r1 = (IRuntime) a;
             final IRuntime r2 = (IRuntime) b;
             
-            return r1.getName().compareToIgnoreCase( r2.getName() );
+            return r1.getLocalizedName().compareToIgnoreCase( r2.getLocalizedName() );
         }
     }
     
@@ -780,42 +844,6 @@ public final class RuntimesPanel
         }
     }
 
-    private static final GridData gdfill()
-    {
-        return new GridData( SWT.FILL, SWT.FILL, true, true );
-    }
-    
-    private static final GridData gdhfill()
-    {
-        return new GridData( GridData.FILL_HORIZONTAL );
-    }
-    
-    private static final GridData whint( final GridData gd,
-                                         final int width )
-    {
-        gd.widthHint = width;
-        return gd;
-    }
-
-    private static final GridData hhint( final GridData gd,
-                                         final int height )
-    {
-        gd.heightHint = height;
-        return gd;
-    }
-    
-    private static final GridData halign( final GridData gd,
-                                          final int alignment )
-    {
-        gd.horizontalAlignment = alignment;
-        return gd;
-    }
-
-    private static final int getPreferredWidth( final Control control )
-    {
-        return control.computeSize( SWT.DEFAULT, SWT.DEFAULT ).x;
-    }
-
     private static final class Resources
     
         extends NLS
@@ -824,6 +852,7 @@ public final class RuntimesPanel
         public static String runtimesLabel;
         public static String runtimeCompositionLabel;
         public static String makePrimaryLabel;
+        public static String newRuntimeButtonLabel;
         public static String showAllRuntimes;
         public static String noRuntimeSelectedLabel;
         

@@ -1,12 +1,12 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core;
@@ -18,12 +18,6 @@ import java.util.Set;
  * set of project facets. Presets can be defined by plugin writers through the
  * supplied extension point as well as by end users. When a user preset is
  * created, the metadata describing it is stored in the workspace.
- * 
- * <p><i>This class is part of an interim API that is still under development 
- * and expected to change significantly before reaching stability. It is being 
- * made available at this early stage to solicit feedback from pioneering 
- * adopters on the understanding that any code that uses this API will almost 
- * certainly be broken (repeatedly) as the API evolves.</i></p>
  * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
@@ -58,11 +52,10 @@ public interface IPreset
     /**
      * Returns the project facets that are part of this preset.
      * 
-     * @return project facets that are part of this preset (element type: 
-     *   {@link IProjectFacetVersion})
+     * @return project facets that are part of this preset
      */
 
-    Set getProjectFacets();
+    Set<IProjectFacetVersion> getProjectFacets();
     
     /**
      * Indicates whether the preset is user defined. A user-defined preset is

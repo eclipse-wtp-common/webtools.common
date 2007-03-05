@@ -1,12 +1,12 @@
 /******************************************************************************
- * Copyright (c) 2005, 2006 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core.internal;
@@ -14,14 +14,11 @@ package org.eclipse.wst.common.project.facet.core.internal;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
-import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -37,7 +34,7 @@ public final class FacetCorePlugin
     private static final String TRACING_FRAMEWORK_ACTIVATION
         = PLUGIN_ID + "/activation"; //$NON-NLS-1$
     
-    private static final Set messagesLogged = new HashSet();
+    private static final Set<String> messagesLogged = new HashSet<String>();
     
     private static final ILog platformLog
         = Platform.getLog( Platform.getBundle( PLUGIN_ID ) );
@@ -121,57 +118,6 @@ public final class FacetCorePlugin
                                              final Exception e )
     {
         return new Status( IStatus.ERROR, FacetCorePlugin.PLUGIN_ID, 0, msg, e );
-    }
-    
-    public static Object instantiate( final String pluginId,
-                                      final String clname,
-                                      final Class interfc )
-    
-        throws CoreException
-        
-    {
-        final Bundle bundle = Platform.getBundle( pluginId );
-        
-        final Object obj;
-        
-        try
-        {
-            final Class cl = bundle.loadClass( clname );
-            obj = cl.newInstance();
-        }
-        catch( Exception e )
-        {
-            final String msg
-                = NLS.bind( Resources.failedToCreate, clname );
-            
-            throw new CoreException( createErrorStatus( msg, e ) );
-        }
-        
-        if( ! interfc.isAssignableFrom( obj.getClass() ) )
-        {
-            final String msg
-                = NLS.bind( Resources.doesNotImplement, clname, 
-                            interfc.getClass().getName() );
-            
-            throw new CoreException( createErrorStatus( msg ) );
-        }
-        
-        return obj;
-    }
-    
-    private static final class Resources
-    
-        extends NLS
-        
-    {
-        public static String failedToCreate;
-        public static String doesNotImplement;
-        
-        static
-        {
-            initializeMessages( FacetCorePlugin.class.getName(), 
-                                Resources.class );
-        }
     }
     
 }

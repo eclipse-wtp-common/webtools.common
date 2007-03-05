@@ -1,3 +1,14 @@
+/******************************************************************************
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Konstantin Komissarchik
+ ******************************************************************************/
+
 package org.eclipse.wst.common.project.facet.core.tests.support;
 
 import java.io.ByteArrayInputStream;
@@ -6,14 +17,17 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+
+/**
+ * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
+ */
 
 public class TestUtils
 {
@@ -118,86 +132,11 @@ public class TestUtils
         boolean check();
     }
     
-    public static Set asSet( final Object obj )
+    public static <T> Set<T> asSet( final T... objects )
     {
-        return asSet( new Object[] { obj } );
-    }
-
-    public static Set asSet( final Object obj1,
-                             final Object obj2 )
-    {
-        return asSet( new Object[] { obj1, obj2 } );
-    }
-
-    public static Set asSet( final Object obj1,
-                             final Object obj2,
-                             final Object obj3 )
-    {
-        return asSet( new Object[] { obj1, obj2, obj3 } );
-    }
-
-    public static Set asSet( final Object obj1,
-                             final Object obj2,
-                             final Object obj3,
-                             final Object obj4 )
-    {
-        return asSet( new Object[] { obj1, obj2, obj3, obj4 } );
-    }
-
-    public static Set asSet( final Object obj1,
-                             final Object obj2,
-                             final Object obj3,
-                             final Object obj4,
-                             final Object obj5 )
-    {
-        return asSet( new Object[] { obj1, obj2, obj3, obj4, obj5 } );
-    }
-    
-    public static Set asSet( final Object[] array )
-    {
-        final HashSet set = new HashSet();
-        set.addAll( Arrays.asList( array ) );
+        final Set<T> set = new LinkedHashSet<T>();
+        set.addAll( Arrays.asList( objects ) );
         return set;
     }
-
-    public static List asList( final Object obj )
-    {
-        return asList( new Object[] { obj } );
-    }
-
-    public static List asList( final Object obj1,
-                               final Object obj2 )
-    {
-        return asList( new Object[] { obj1, obj2 } );
-    }
-
-    public static List asList( final Object obj1,
-                               final Object obj2,
-                               final Object obj3 )
-    {
-        return asList( new Object[] { obj1, obj2, obj3 } );
-    }
-
-    public static List asList( final Object obj1,
-                               final Object obj2,
-                               final Object obj3,
-                               final Object obj4 )
-    {
-        return asList( new Object[] { obj1, obj2, obj3, obj4 } );
-    }
-
-    public static List asList( final Object obj1,
-                               final Object obj2,
-                               final Object obj3,
-                               final Object obj4,
-                               final Object obj5 )
-    {
-        return asList( new Object[] { obj1, obj2, obj3, obj4, obj5 } );
-    }
     
-    public static List asList( final Object[] array )
-    {
-        return Arrays.asList( array );
-    }
-
 }

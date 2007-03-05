@@ -1,15 +1,15 @@
 /******************************************************************************
- * Copyright (c) 2005, 2006 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
-package org.eclipse.wst.common.project.facet.core.internal;
+package org.eclipse.wst.common.project.facet.core.internal.util;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -18,13 +18,15 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.common.project.facet.core.IVersion;
 import org.eclipse.wst.common.project.facet.core.IVersionExpr;
+import org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
-public final class VersionExpr
+public final class VersionExpr<T extends IVersion>
 
     implements IVersionExpr
     
@@ -40,10 +42,11 @@ public final class VersionExpr
     private static final int SM2_VERSION_CONTINUING = 1;
     private static final int SM2_ESCAPE = 2;
     
-    private final Versionable versionable;
-    private final List subexprs;
+    private final Versionable<T> versionable;
+    private final List<ISubExpr> subexprs;
     private final String usedInPlugin;
     
+    @SuppressWarnings( "unchecked" )
     public VersionExpr( final Object versionable,
                         final String expr,
                         final String usedInPlugin )
@@ -51,10 +54,10 @@ public final class VersionExpr
         throws CoreException
         
     {
-        this( (Versionable) versionable, expr, usedInPlugin );
+        this( (Versionable<T>) versionable, expr, usedInPlugin );
     }
     
-    public VersionExpr( final Versionable versionable,
+    public VersionExpr( final Versionable<T> versionable,
                         final String expr,
                         final String usedInPlugin )
     
@@ -62,7 +65,7 @@ public final class VersionExpr
         
     {
         this.versionable = versionable;
-        this.subexprs = new ArrayList();
+        this.subexprs = new ArrayList<ISubExpr>();
         this.usedInPlugin = usedInPlugin;
         
         int state = SM1_START;
@@ -369,30 +372,22 @@ public final class VersionExpr
     }
     
     private IVersion parseVersion( final String str )
-    
-        throws CoreException
-        
     {
-        if( ! this.versionable.hasVersion( str ) )
+        if( this.versionable.hasVersion( str ) )
         {
-            final String msg 
-                = this.versionable.createVersionNotFoundErrMsg( str );
-            
-            final IStatus st = FacetCorePlugin.createErrorStatus( msg );
-            
-            throw new CoreException( st );
+            return this.versionable.getVersion( str );
         }
         else
         {
-            return this.versionable.getVersionInternal( str );
+            return new UnknownVersion<T>( this.versionable, str );
         }
     }
     
-    public boolean check( final Comparable ver )
+    public boolean check( final IVersion ver )
     {
-        for( Iterator itr = this.subexprs.iterator(); itr.hasNext(); )
+        for( ISubExpr subexpr : this.subexprs )
         {
-            if( ( (ISubExpr) itr.next() ).evaluate( ver ) )
+            if( subexpr.evaluate( ver ) )
             {
                 return true;
             }
@@ -403,22 +398,14 @@ public final class VersionExpr
     
     public boolean evaluate( final String ver )
     {
-        try
-        {
-            return check( parseVersion( ver ) );
-        }
-        catch( CoreException e )
-        {
-            FacetCorePlugin.log( e );
-            return false;
-        }
+        return check( parseVersion( ver ) );
     }
     
     public boolean isSingleVersionMatch()
     {
         if( this.subexprs.size() == 1 )
         {
-            final ISubExpr subExpr = (ISubExpr) this.subexprs.get( 0 );
+            final ISubExpr subExpr = this.subexprs.get( 0 );
             
             if( subExpr instanceof Range )
             {
@@ -439,7 +426,7 @@ public final class VersionExpr
     {
         if( this.subexprs.size() == 1 )
         {
-            final ISubExpr subExpr = (ISubExpr) this.subexprs.get( 0 );
+            final ISubExpr subExpr = this.subexprs.get( 0 );
             
             if( subExpr instanceof Range )
             {
@@ -479,10 +466,10 @@ public final class VersionExpr
     {
         final StringBuffer buf = new StringBuffer();
         
-        for( Iterator itr = this.subexprs.iterator(); itr.hasNext(); )
+        for( ISubExpr subexpr : this.subexprs )
         {
             if( buf.length() > 0 ) buf.append( ',' );
-            buf.append( itr.next().toString() );
+            buf.append( subexpr.toString() );
         }
         
         return buf.toString();
@@ -492,7 +479,7 @@ public final class VersionExpr
     {
         if( this.subexprs.size() == 1 )
         {
-            final ISubExpr subexpr = (ISubExpr) this.subexprs.get( 0 );
+            final ISubExpr subexpr = this.subexprs.get( 0 );
             
             if( subexpr instanceof Range )
             {
@@ -512,10 +499,8 @@ public final class VersionExpr
 
         boolean onlySingleVersions = true;
         
-        for( Iterator itr = this.subexprs.iterator(); itr.hasNext(); )
+        for( ISubExpr subexpr : this.subexprs )
         {
-            final ISubExpr subexpr = (ISubExpr) itr.next();
-            
             if( ! ( subexpr instanceof Range ) || 
                 ! ( (Range) subexpr ).isSingleVersion() )
             {
@@ -527,8 +512,8 @@ public final class VersionExpr
         if( onlySingleVersions )
         {
             final StringBuffer buf = new StringBuffer();
-            
-            for( Iterator itr = this.subexprs.iterator(); itr.hasNext(); )
+
+            for( Iterator<ISubExpr> itr = this.subexprs.iterator(); itr.hasNext(); )
             {
                 final Range r = (Range) itr.next();
                 
@@ -565,10 +550,10 @@ public final class VersionExpr
     
     private static interface ISubExpr
     {
-        boolean evaluate( Comparable version );
+        boolean evaluate( IVersion version );
     }
     
-    private final class Range
+    private static final class Range
     
         implements ISubExpr
         
@@ -584,7 +569,8 @@ public final class VersionExpr
                    this.includesStartVersion == this.includesEndVersion == true;
         }
         
-        public boolean evaluate( final Comparable version )
+        @SuppressWarnings( "unchecked" )
+        public boolean evaluate( final IVersion version )
         {
             if( this.startVersion != null )
             {
@@ -647,7 +633,7 @@ public final class VersionExpr
         implements ISubExpr
         
     {
-        public boolean evaluate( final Comparable version )
+        public boolean evaluate( final IVersion version )
         {
             return true;
         }

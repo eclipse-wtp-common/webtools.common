@@ -1,12 +1,12 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core;
@@ -20,18 +20,14 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 
 /**
  * This interface is used for manipulating the set of facets installed on a
  * project. Use {@see ProjectFacetsManager#create(IProject)} to get an instance 
  * of this interface.
- *  
- * <p><i>This class is part of an interim API that is still under development 
- * and expected to change significantly before reaching stability. It is being 
- * made available at this early stage to solicit feedback from pioneering 
- * adopters on the understanding that any code that uses this API will almost 
- * certainly be broken (repeatedly) as the API evolves.</i></p>
  * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
@@ -41,30 +37,20 @@ public interface IFacetedProject
     /**
      * Represents a single action such as installing or uninstalling a project
      * facet.
-     *  
-     * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
      */
     
     static final class Action
     {
         /**
          * The action type enumeration.
-         *  
-         * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
          */
         
         public static final class Type
         {
-            private static final Map items = new HashMap();
-            
-            public static final Type INSTALL 
-                = new Type( "INSTALL" ); //$NON-NLS-1$
-            
-            public static final Type UNINSTALL 
-                = new Type( "UNINSTALL" ); //$NON-NLS-1$
-            
-            public static final Type VERSION_CHANGE 
-                = new Type( "VERSION_CHANGE" ); //$NON-NLS-1$
+            private static final Map<String,Type> items = new HashMap<String,Type>();
+            public static final Type INSTALL = new Type( "INSTALL" ); //$NON-NLS-1$
+            public static final Type UNINSTALL = new Type( "UNINSTALL" ); //$NON-NLS-1$
+            public static final Type VERSION_CHANGE = new Type( "VERSION_CHANGE" ); //$NON-NLS-1$
             
             static
             {
@@ -85,7 +71,7 @@ public interface IFacetedProject
             
             public static Type valueOf( final String name )
             {
-                return (Type) items.get( name );
+                return items.get( name );
             }
             
             public String name()
@@ -202,10 +188,9 @@ public interface IFacetedProject
      * Returns the set of project facets currently installed on this project.
      * 
      * @return the set of project facets currently installed on this project 
-     *   (element type: {@see IProjectFacetVersion})
      */
     
-    Set getProjectFacets();
+    Set<IProjectFacetVersion> getProjectFacets();
     
     /**
      * Determines whether any version of the specified project facet is 
@@ -294,7 +279,7 @@ public interface IFacetedProject
      * @throws CoreException if anything goes wrong while applying actions
      */
     
-    void modify( Set actions,
+    void modify( Set<Action> actions,
                  IProgressMonitor monitor )
     
         throws CoreException;
@@ -303,23 +288,21 @@ public interface IFacetedProject
      * Returns the set of fixed project facets for this project. Fixed facets 
      * cannot be uninstalled, but the installed version can be changed.
      * 
-     * @return the set of fixed project facets for this project (element type:
-     *   {@see IProjectFacet})
+     * @return the set of fixed project facets for this project
      */
     
-    Set getFixedProjectFacets();
+    Set<IProjectFacet> getFixedProjectFacets();
     
     /**
      * Sets the set of fixed project facets for this project. Fixed facets 
      * cannot be uninstalled, but the installed version can be changed.
      * 
-     * @param facets the set of project facets to mark as fixed (element type:
-     *   {@see IProjectFacet})
+     * @param facets the set of project facets to mark as fixed
      * @throws CoreException if failed while updating the set of fixed project
      *   facets
      */
 
-    void setFixedProjectFacets( Set facets )
+    void setFixedProjectFacets( Set<IProjectFacet> facets )
     
         throws CoreException;
     
@@ -354,10 +337,10 @@ public interface IFacetedProject
      * multiple runtimes, the set of applicable facets is limited to those
      * supported by all targeted runtimes.</p>
      * 
-     * @return the set of targeted runtimes (element type: {@see IRuntime})
+     * @return the set of targeted runtimes
      */
     
-    Set getTargetedRuntimes();
+    Set<IRuntime> getTargetedRuntimes();
     
     /**
      * <p>Sets the runtimes that this project will target. When a project 
@@ -376,8 +359,7 @@ public interface IFacetedProject
      * is safe, there is no guarantee that other bundles are UI-safe and the
      * risk of UI deadlock is high.</p>
      * 
-     * @param runtimes the new set of runtimes to target (element type: 
-     *   {@see IRuntime})
+     * @param runtimes the new set of runtimes to target
      * @param monitor a progress monitor, or <code>null</code> if progress
      *   reporting and cancelation are not desired
      * @throws CoreException if the project contains one or more facets that
@@ -385,7 +367,7 @@ public interface IFacetedProject
      *   reason
      */
     
-    void setTargetedRuntimes( Set runtimes,
+    void setTargetedRuntimes( Set<IRuntime> runtimes,
                               IProgressMonitor monitor )
     
         throws CoreException;
@@ -496,7 +478,46 @@ public interface IFacetedProject
     
         throws CoreException;
     
-    void addListener( IFacetedProjectListener listener );
+    /**
+     * Adds a faceted project listener that will be notified when the selected events in the faceted
+     * project life cycle occur. The listener will apply only to this project.
+     * 
+     * @param listener the faceted project listener
+     * @param types the types of the events to listen for
+     * @throws IllegalArgumentException if <code>listener</code> parameter is <code>null</code> or
+     *   the <code>types</code> parameter is <code>null</code> or empty.
+     * @see removeListener(IFacetedProjectListener)
+     * @see FacetedProjectFramework.addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])
+     * @see FacetedProjectFramework.removeListener(IFacetedProjectListener)
+     */
+    
+    void addListener( IFacetedProjectListener listener,
+                      IFacetedProjectEvent.Type... types );
+    
+    /**
+     * Removes the faceted project listener that was previously registered using the
+     * {@see addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])} method. If the
+     * specified listener is not present in the listener registry, this call will be ignored.
+     * 
+     * @param listener the faceted project listener
+     * @throws IllegalArgumentException if <code>listener</code> parameter is <code>null</code>
+     * @see addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])
+     * @see FacetedProjectFramework.addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])
+     * @see FacetedProjectFramework.removeListener(IFacetedProjectListener)
+     */
+    
     void removeListener( IFacetedProjectListener listener );
+    
+    /**
+     * @deprecated
+     */
+    
+    void addListener( org.eclipse.wst.common.project.facet.core.IFacetedProjectListener listener );
+    
+    /**
+     * @deprecated
+     */
+    
+    void removeListener( org.eclipse.wst.common.project.facet.core.IFacetedProjectListener listener );
     
 }

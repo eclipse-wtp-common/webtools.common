@@ -1,12 +1,12 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core.runtime;
@@ -16,15 +16,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.wst.common.project.facet.core.IListener;
+import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.runtime.internal.RuntimeManagerImpl;
 
 /**
- * <p><i>This class is part of an interim API that is still under development 
- * and expected to change significantly before reaching stability. It is being 
- * made available at this early stage to solicit feedback from pioneering 
- * adopters on the understanding that any code that uses this API will almost 
- * certainly be broken (repeatedly) as the API evolves.</i></p>
- * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
@@ -35,11 +30,10 @@ public final class RuntimeManager
     /**
      * Returns all of the available runtime component types.
      * 
-     * @return all of the available runtime component types (element type: 
-     *   {@link IRuntimeComponentType})
+     * @return all of the available runtime component types
      */
     
-    public static Set getRuntimeComponentTypes()
+    public static Set<IRuntimeComponentType> getRuntimeComponentTypes()
     {
         return RuntimeManagerImpl.getRuntimeComponentTypes();
     }
@@ -76,10 +70,10 @@ public final class RuntimeManager
     /**
      * Returns all of the defined runtimes.
      * 
-     * @return all of the defined runtimes (element type: {@link IRuntime})
+     * @return all of the defined runtimes
      */
     
-    public static Set getRuntimes()
+    public static Set<IRuntime> getRuntimes()
     {
         return RuntimeManagerImpl.getRuntimes();
     }
@@ -87,13 +81,11 @@ public final class RuntimeManager
     /**
      * Returns the runtimes that support all of the specified facets.
      * 
-     * @param facets the facets that need to be supported (element type: 
-     *   {@link IProjectFacetVersion})
-     * @return the runtimes that support all of the specified facets (element 
-     *   type: {@link IRuntime})
+     * @param facets the facets that need to be supported
+     * @return the runtimes that support all of the specified facets
      */
     
-    public static Set getRuntimes( final Set facets )
+    public static Set<IRuntime> getRuntimes( final Set<IProjectFacetVersion> facets )
     {
         return RuntimeManagerImpl.getRuntimes( facets );
     }
@@ -129,16 +121,14 @@ public final class RuntimeManager
      * Defines a new runtime.
      * 
      * @param name the runtime name
-     * @param components the list of runtime componenets (element type: 
-     *   {@see IRuntimeComponent})
-     * @param properties the runtime properties (key type: {@see String}, value
-     *   type: {@see String})
+     * @param components the list of runtime componenets
+     * @param properties the runtime properties
      * @return the new runtime
      */
     
     public static IRuntime defineRuntime( final String name,
-                                          final List components,
-                                          final Map properties )
+                                          final List<IRuntimeComponent> components,
+                                          final Map<String,String> properties )
     {
         return RuntimeManagerImpl.defineRuntime( name, components, properties );
     }
@@ -159,13 +149,12 @@ public final class RuntimeManager
      * conjunction with the {@see defineRuntime(String,List,Map)} method.
      * 
      * @param rcv the runtime component version
-     * @param properties the runtime component properties (key type:
-     *   {@see String}, value type: {@see String})
+     * @param properties the runtime component properties
      * @return the new runtime component
      */
     
     public static IRuntimeComponent createRuntimeComponent( final IRuntimeComponentVersion rcv,
-                                                            final Map properties )
+                                                            final Map<String,String> properties )
     {
         return RuntimeManagerImpl.createRuntimeComponent( rcv, properties );
     }

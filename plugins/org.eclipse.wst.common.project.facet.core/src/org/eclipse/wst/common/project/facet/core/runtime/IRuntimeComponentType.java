@@ -1,12 +1,12 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core.runtime;
@@ -21,12 +21,6 @@ import org.eclipse.core.runtime.IAdaptable;
 /**
  * Represents the type of a runtime component. A runtime instance is composed of
  * multiple runtime components, each of which has a type and a version.
- * 
- * <p><i>This class is part of an interim API that is still under development 
- * and expected to change significantly before reaching stability. It is being 
- * made available at this early stage to solicit feedback from pioneering 
- * adopters on the understanding that any code that uses this API will almost 
- * certainly be broken (repeatedly) as the API evolves.</i></p>
  * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
@@ -55,13 +49,12 @@ public interface IRuntimeComponentType
     /**
      * Returns all of the versions of this runtime component type.
      * 
-     * @return all of the versions of this runtime component type (element
-     *   type: {@see IRuntimeComponentVersion})
+     * @return all of the versions of this runtime component type
      */
     
-    Set getVersions();
+    Set<IRuntimeComponentVersion> getVersions();
     
-    Set getVersions( String expr )
+    Set<IRuntimeComponentVersion> getVersions( String expr )
     
         throws CoreException;
     
@@ -105,10 +98,10 @@ public interface IRuntimeComponentType
      * 
      * @param ascending whether versions should be sorted in ascending order
      * @return a sorted list containing all of the versions of this runtime 
-     *   component type (element type: {@see IRuntimeComponentVersion})
+     *   component type
      */
     
-    List getSortedVersions( boolean ascending )
+    List<IRuntimeComponentVersion> getSortedVersions( boolean ascending )
     
         throws CoreException;
     
@@ -120,7 +113,7 @@ public interface IRuntimeComponentType
      * @return the version comparator specified for this runtime component type
      */
     
-    Comparator getVersionComparator()
+    Comparator<String> getVersionComparator()
     
         throws CoreException;
     

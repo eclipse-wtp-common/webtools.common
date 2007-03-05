@@ -57,7 +57,7 @@
     
     <project-facet id="facet2">
       <version-comparator class="org.eclipse.wst.common.project.facet.core.tests.support.CustomVersionComparator"/>
-      <category>cat1</category>
+      <member category="cat1"/>
     </project-facet>
     
     <project-facet-version facet="facet2" version="3.5">
@@ -108,7 +108,7 @@
     </project-facet-version>
     
     <project-facet id="facet2ext">
-      <category>cat1</category>
+      <member category="cat1"/>
     </project-facet>
     
     <project-facet-version facet="facet2ext" version="1.0"/>
@@ -116,7 +116,7 @@
     <category id="cat2"/>
     
     <project-facet id="facet3a">
-      <category>cat2</category>
+      <member category="cat2"/>
     </project-facet>
     
     <project-facet-version facet="facet3a" version="1.0"/>
@@ -135,14 +135,14 @@
     </action>
 
     <project-facet id="facet3b">
-      <category>cat2</category>
+      <member category="cat2"/>
     </project-facet>
     
     <project-facet-version facet="facet3b" version="1.0"/>
     <project-facet-version facet="facet3b" version="2.0"/>
     
     <project-facet id="facet3c">
-      <category>cat2</category>
+      <member category="cat2"/>
     </project-facet>
     
     <project-facet-version facet="facet3c" version="1.0">
@@ -223,6 +223,15 @@
     <project-facet-version facet="fct_f7" version="1.0">
       <constraint>
         <requires facet="fct_f6"/>
+      </constraint>
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+
+    <project-facet-version facet="fct_f7" version="2.0">
+      <constraint>
+        <requires facet="fct_f6" version="[5.0-6.5)"/>
       </constraint>
       <action type="INSTALL">
         <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
@@ -372,6 +381,110 @@
       </action>
     </project-facet-version>
     
+  </extension>
+  
+  <!-- UI Tests -->
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.facets">
+  
+    <project-facet id="ui_long_label1">
+      <label>This facet has a really really rather long label</label>
+      <description>And a short description.</description>
+    </project-facet> 
+  
+    <project-facet-version facet="ui_long_label1" version="1.0">
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+
+    <category id="ui_long_label_category">
+      <label>Category for facets with long labels</label>
+    </category>
+
+    <project-facet id="ui_long_label2">
+      <label>This facet has a really really rather long label</label>
+      <member category="ui_long_label_category"/>
+    </project-facet> 
+  
+    <project-facet-version facet="ui_long_label2" version="1.2.3.4.5.6.7.8.9">
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+
+    <project-facet-version facet="ui_long_label2" version="9.8.7.6.5.4.3.2.1">
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+    
+  </extension>
+  
+  <!-- EventDeliveryTests -->
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.facets">
+  
+    <project-facet id="edt_f1"/>
+    <project-facet-version facet="edt_f1" version="1.0"/>
+    <project-facet-version facet="edt_f1" version="2.0"/>
+    <action facet="edt_f1" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    <action facet="edt_f1" type="UNINSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    <action facet="edt_f1" type="VERSION_CHANGE">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+
+    <project-facet id="edt_f2"/>
+    <project-facet-version facet="edt_f2" version="1.1"/>
+    <project-facet-version facet="edt_f2" version="2.1"/>
+    <action facet="edt_f2" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    <action facet="edt_f2" type="UNINSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    <action facet="edt_f2" type="VERSION_CHANGE">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    
+    <project-facet id="edt_f3"/>
+    <project-facet-version facet="edt_f3" version="1.2"/>
+    <project-facet-version facet="edt_f3" version="2.2"/>
+    <action facet="edt_f3" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    <action facet="edt_f3" type="UNINSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    <action facet="edt_f3" type="VERSION_CHANGE">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+
+    <project-facet id="edt_f4"/>
+    <project-facet-version facet="edt_f4" version="1.3"/>
+    <project-facet-version facet="edt_f4" version="2.3"/>
+    <action facet="edt_f4" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    <action facet="edt_f4" type="UNINSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    <action facet="edt_f4" type="VERSION_CHANGE">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+    
+  </extension>
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.listeners">
+    <listener 
+      class="org.eclipse.wst.common.project.facet.core.tests.EventDeliveryTests$FullExtensionBasedListener"/>
+    <listener 
+      class="org.eclipse.wst.common.project.facet.core.tests.EventDeliveryTests$PartialExtensionBasedListener"
+      eventTypes="PRE_INSTALL,FIXED_FACETS_CHANGED"/>
   </extension>
 
 </plugin>

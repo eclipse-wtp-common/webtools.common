@@ -1,7 +1,22 @@
+/******************************************************************************
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Konstantin Komissarchik
+ ******************************************************************************/
+
 package org.eclipse.wst.common.project.facet.core.tests;
+
+import static java.util.Arrays.asList;
+import static org.eclipse.wst.common.project.facet.core.tests.support.TestUtils.asSet;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -11,8 +26,12 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
-import org.eclipse.wst.common.project.facet.core.tests.support.TestUtils;
 
+/**
+ * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
+ */
+
+@SuppressWarnings( "unused" )
 public class FacetActionSortTests
 
     extends TestCase
@@ -115,13 +134,13 @@ public class FacetActionSortTests
         final Action a1 = new Action( Action.Type.INSTALL, f1v12, null );
         final Action a2 = new Action( Action.Type.UNINSTALL, f3av10, null );
         
-        final ArrayList actions = new ArrayList();
+        final List<Action> actions = new ArrayList<Action>();
         
         actions.add( a2 );
         actions.add( a1 );
         
-        ProjectFacetsManager.sort( TestUtils.asSet( f3av10 ), actions );
-        assertEquals( actions, TestUtils.asList( a2, a1 ) );
+        ProjectFacetsManager.sort( asSet( f3av10 ), actions );
+        assertEquals( actions, asList( a2, a1 ) );
     }
     
     /**
@@ -135,13 +154,13 @@ public class FacetActionSortTests
         final Action a1 = new Action( Action.Type.INSTALL, f1v12, null );
         final Action a2 = new Action( Action.Type.UNINSTALL, f3av10, null );
         
-        final ArrayList actions = new ArrayList();
+        final List<Action> actions = new ArrayList<Action>();
         
         actions.add( a1 );
         actions.add( a2 );
         
-        ProjectFacetsManager.sort( TestUtils.asSet( f3av10 ), actions );
-        assertEquals( actions, TestUtils.asList( a2, a1 ) );
+        ProjectFacetsManager.sort( asSet( f3av10 ), actions );
+        assertEquals( actions, asList( a2, a1 ) );
     }
 
     /**
@@ -149,18 +168,19 @@ public class FacetActionSortTests
      * This is the control test case. The input is already in the correct order. 
      */
     
+    @SuppressWarnings( "unchecked" )
     public void testSortStability1()
     {
         final Action a1 = new Action( Action.Type.INSTALL, f1v12, null );
         final Action a2 = new Action( Action.Type.INSTALL, f3av10, null );
         
-        final ArrayList actions = new ArrayList();
+        final List<Action> actions = new ArrayList<Action>();
         
         actions.add( a1 );
         actions.add( a2 );
         
         ProjectFacetsManager.sort( Collections.EMPTY_SET, actions );
-        assertEquals( actions, TestUtils.asList( a1, a2 ) );
+        assertEquals( actions, asList( a1, a2 ) );
     }
 
     /**
@@ -168,18 +188,19 @@ public class FacetActionSortTests
      * The input facets are in the reverse order.
      */
     
+    @SuppressWarnings( "unchecked" )
     public void testSortStability2()
     {
         final Action a1 = new Action( Action.Type.INSTALL, f1v12, null );
         final Action a2 = new Action( Action.Type.INSTALL, f3av10, null );
         
-        final ArrayList actions = new ArrayList();
+        final List<Action> actions = new ArrayList<Action>();
         
         actions.add( a2 );
         actions.add( a1 );
         
         ProjectFacetsManager.sort( Collections.EMPTY_SET, actions );
-        assertEquals( actions, TestUtils.asList( a1, a2 ) );
+        assertEquals( actions, asList( a1, a2 ) );
     }
     
 }

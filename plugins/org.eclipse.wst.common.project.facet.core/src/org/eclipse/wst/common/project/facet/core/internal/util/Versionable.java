@@ -1,21 +1,20 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
-package org.eclipse.wst.common.project.facet.core.internal;
+package org.eclipse.wst.common.project.facet.core.internal.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -24,40 +23,45 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.DefaultVersionComparator;
+import org.eclipse.wst.common.project.facet.core.IVersion;
+import org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin;
 import org.osgi.framework.Bundle;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
-public abstract class Versionable
+public abstract class Versionable<T extends IVersion>
 {
-    private static final Comparator DEFAULT_VERSION_COMPARATOR
+    private static final Comparator<String> DEFAULT_VERSION_COMPARATOR
         = new DefaultVersionComparator();
 
-    protected final IndexedSet versions = new IndexedSet();
+    protected final IndexedSet<String,T> versions;
     private String versionComparatorClass;
-    private Comparator versionComparator;
+    private Comparator<String> versionComparator;
+    
+    public Versionable()
+    {
+        this.versions = new IndexedSet<String,T>();
+    }
     
     public abstract String getPluginId();
     
-    public Set getVersions()
+    public Set<T> getVersions()
     {
         return this.versions.getUnmodifiable();
     }
     
-    public Set getVersions( final String expr )
+    public Set<T> getVersions( final String expr )
     
         throws CoreException
         
     {
-        final VersionExpr prepared = new VersionExpr( this, expr, null );
-        final Set result = new HashSet();
-            
-        for( Iterator itr = this.versions.iterator(); itr.hasNext(); )
+        final VersionExpr<T> prepared = new VersionExpr<T>( this, expr, null );
+        final Set<T> result = new HashSet<T>();
+         
+        for( T ver : this.versions )
         {
-            final IVersion ver = (IVersion) itr.next();
-            
             if( prepared.check( ver ) )
             {
                 result.add( ver );
@@ -67,9 +71,29 @@ public abstract class Versionable
         return result;
     }
     
-    public IVersion getVersionInternal( final String version )
+    public T getVersion( final String version )
     {
-        return (IVersion) this.versions.get( version );
+        final T ver = this.versions.get( version );
+        
+        if( ver == null )
+        {
+            throw new IllegalArgumentException( createVersionNotFoundErrMsg( version ) );
+        }
+        
+        return ver;
+    }
+    
+    @SuppressWarnings( "unchecked" )
+    public T getLatestVersion()
+    {
+        if( this.versions.size() > 0 )
+        {
+            return Collections.max( this.versions );
+        }
+        else
+        {
+            return null;
+        }
     }
     
     public boolean hasVersion( final String version )
@@ -77,9 +101,9 @@ public abstract class Versionable
         return this.versions.containsKey( version );
     }
 
-    public List getSortedVersions( final boolean ascending )
+    public List<T> getSortedVersions( final boolean ascending )
     {
-        Comparator comp;
+        Comparator<T> comp;
         
         if( ascending )
         {
@@ -87,28 +111,30 @@ public abstract class Versionable
         }
         else
         {
-            comp = new Comparator()
+            comp = new Comparator<T>()
             {
-                public int compare( final Object obj1,
-                                    final Object obj2 )
+                @SuppressWarnings( "unchecked" )
+                public int compare( final T ver1,
+                                    final T ver2 )
                 {
-                    return ( (Comparable) obj1 ).compareTo( obj2 ) * -1;
+                    return ver1.compareTo( ver2 ) * -1;
                 }
             };
         }
 
-        final ArrayList list = new ArrayList( this.versions );
+        final List<T> list = new ArrayList<T>( this.versions );
         Collections.sort( list, comp );
         
         return list;
     }
     
-    public Comparator getVersionComparator()
+    @SuppressWarnings( "unchecked" )
+    public Comparator<String> getVersionComparator()
     
         throws CoreException
         
     {
-        Comparator comp;
+        Comparator<String> comp;
         
         if( this.versionComparatorClass == null )
         {
@@ -125,7 +151,7 @@ public abstract class Versionable
                     final Class cl 
                         = bundle.loadClass( this.versionComparatorClass );
                     
-                    this.versionComparator = (Comparator) cl.newInstance();
+                    this.versionComparator = (Comparator<String>) cl.newInstance();
                 }
                 catch( Exception e )
                 {

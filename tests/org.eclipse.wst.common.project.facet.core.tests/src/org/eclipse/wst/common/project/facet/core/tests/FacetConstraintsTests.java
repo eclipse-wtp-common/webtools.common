@@ -1,9 +1,19 @@
+/******************************************************************************
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Konstantin Komissarchik
+ ******************************************************************************/
+
 package org.eclipse.wst.common.project.facet.core.tests;
 
-import java.util.Arrays;
+import static org.eclipse.wst.common.project.facet.core.tests.support.TestUtils.asSet;
+
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -12,6 +22,10 @@ import junit.framework.TestSuite;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+
+/**
+ * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
+ */
 
 public class FacetConstraintsTests
 
@@ -39,6 +53,7 @@ public class FacetConstraintsTests
 
     private static IProjectFacet f7;
     private static IProjectFacetVersion f7v10;
+    private static IProjectFacetVersion f7v20;
 
     private static IProjectFacet f8;
     private static IProjectFacetVersion f8v10;
@@ -75,6 +90,7 @@ public class FacetConstraintsTests
 
         f7 = ProjectFacetsManager.getProjectFacet( "fct_f7" );
         f7v10 = f7.getVersion( "1.0" );
+        f7v20 = f7.getVersion( "2.0" );
 
         f8 = ProjectFacetsManager.getProjectFacet( "fct_f8" );
         f8v10 = f8.getVersion( "1.0" );
@@ -109,6 +125,7 @@ public class FacetConstraintsTests
         suite.addTest( new FacetConstraintsTests( "testIndirectConflict7" ) );
         suite.addTest( new FacetConstraintsTests( "testIndirectConflict8" ) );
         suite.addTest( new FacetConstraintsTests( "testRequiresWithNoVersion" ) );
+        suite.addTest( new FacetConstraintsTests( "testRequiresWithUnknownVersion" ) );
         suite.addTest( new FacetConstraintsTests( "testGroupRequires" ) );
         suite.addTest( new FacetConstraintsTests( "testGroupRequiresSoft" ) );
         
@@ -189,6 +206,7 @@ public class FacetConstraintsTests
      *   <requires facet="fct_f6"/>
      */
     
+    @SuppressWarnings( "unchecked" )
     public void testRequiresWithNoVersion()
     {
         assertFalse( f7v10.getConstraint().check( Collections.EMPTY_SET ).isOK() );
@@ -200,11 +218,29 @@ public class FacetConstraintsTests
     }
     
     /*
+     * Tests the following constraint that specifies versions that don't exist:
+     * 
+     *   <requires facet="fct_f6" version="[5.0-6.5)"/>
+     */
+    
+    @SuppressWarnings( "unchecked" )
+    public void testRequiresWithUnknownVersion()
+    {
+        assertFalse( f7v20.getConstraint().check( Collections.EMPTY_SET ).isOK() );
+        assertFalse( f7v20.getConstraint().check( asSet( f6v10 ) ).isOK() );
+        assertFalse( f7v20.getConstraint().check( asSet( f6v23 ) ).isOK() );
+        assertFalse( f7v20.getConstraint().check( asSet( f6v37 ) ).isOK() );
+        assertFalse( f7v20.getConstraint().check( asSet( f6v40 ) ).isOK() );
+        assertFalse( f7v20.getConstraint().check( asSet( f6v45 ) ).isOK() );
+    }
+    
+    /*
      * Tests the "requires any group member" constraint:
      * 
      *   <requires group="fct_g1"/>
      */
     
+    @SuppressWarnings( "unchecked" )
     public void testGroupRequires()
     {
         assertFalse( f10v10.getConstraint().check( Collections.EMPTY_SET ).isOK() );
@@ -221,6 +257,7 @@ public class FacetConstraintsTests
      *   <requires group="fct_g1" soft="true"/>
      */
     
+    @SuppressWarnings( "unchecked" )
     public void testGroupRequiresSoft()
     {
         assertTrue( f10v20.getConstraint().check( Collections.EMPTY_SET ).isOK() );
@@ -230,16 +267,5 @@ public class FacetConstraintsTests
         assertTrue( f10v20.getConstraint().check( asSet( f9v10 ) ).isOK() );
         assertTrue( f10v20.getConstraint().check( asSet( f1v10 ) ).isOK() );
     }
-    
-    private static Set asSet( final Object obj )
-    {
-        return asSet( new Object[] { obj } );
-    }
 
-    private static Set asSet( final Object[] array )
-    {
-        final HashSet set = new HashSet();
-        set.addAll( Arrays.asList( array ) );
-        return set;
-    }
 }

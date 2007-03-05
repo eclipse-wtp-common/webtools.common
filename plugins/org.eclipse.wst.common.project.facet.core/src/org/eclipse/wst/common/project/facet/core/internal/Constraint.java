@@ -1,12 +1,12 @@
 /******************************************************************************
- * Copyright (c) 2005 - 2006 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core.internal;
@@ -14,7 +14,6 @@ package org.eclipse.wst.common.project.facet.core.internal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
@@ -37,7 +36,7 @@ public final class Constraint
 {
     private final IProjectFacetVersion fv;
     private final Type type;
-    private final List operands;
+    private final List<Object> operands;
     
     Constraint( final IProjectFacetVersion fv,
                 final Type type,
@@ -46,7 +45,7 @@ public final class Constraint
         this.fv = fv;
         this.type = type;
         
-        final ArrayList temp = new ArrayList();
+        final List<Object> temp = new ArrayList<Object>();
         
         for( int i = 0; i < operands.length; i++ )
         {
@@ -61,7 +60,7 @@ public final class Constraint
         return this.type;
     }
     
-    public List getOperands()
+    public List<Object> getOperands()
     {
         return this.operands;
     }
@@ -71,24 +70,22 @@ public final class Constraint
         return this.operands.get( index );
     }
     
-    public IStatus check( final Collection facets )
+    public IStatus check( final Collection<IProjectFacetVersion> facets )
     {
         return check( facets, false );
     }
     
-    public IStatus check( final Collection facets,
+    public IStatus check( final Collection<IProjectFacetVersion> facets,
                           final boolean validateSoftDeps )
     {
         final MultiStatus result = createMultiStatus(); 
         
         if( this.type == Type.AND )
         {
-            for( Iterator itr = this.operands.iterator(); itr.hasNext(); )
+            for( Object operand : this.operands )
             {
-                final IConstraint operand 
-                    = (IConstraint) itr.next();
-                
-                final IStatus st = operand.check( facets, validateSoftDeps );
+                final IConstraint childConstraint = (IConstraint) operand;
+                final IStatus st = childConstraint.check( facets, validateSoftDeps );
                 
                 if( st.getSeverity() != IStatus.OK )
                 {
@@ -100,12 +97,11 @@ public final class Constraint
         {
             boolean someBranchWorks = false;
             
-            for( Iterator itr = this.operands.iterator(); itr.hasNext();  )
+            for( Object operand : this.operands )
             {
-                final IConstraint operand
-                    = (IConstraint) itr.next();
+                final IConstraint childConstraint = (IConstraint) operand;
                 
-                if( operand.check( facets, validateSoftDeps ).isOK() )
+                if( childConstraint.check( facets, validateSoftDeps ).isOK() )
                 {
                     someBranchWorks = true;
                     break;
@@ -122,14 +118,9 @@ public final class Constraint
                     
                     for( int i = 0; i < 2; i++ )
                     {
-                        final IConstraint c 
-                            = (IConstraint) this.operands.get( i );
-                        
-                        final IProjectFacet rf 
-                            = (IProjectFacet) c.getOperand( 0 );
-
-                        final VersionExpr vexpr 
-                            = (VersionExpr) c.getOperand( 1 );
+                        final IConstraint c = (IConstraint) this.operands.get( i );
+                        final IProjectFacet rf = (IProjectFacet) c.getOperand( 0 );
+                        final IVersionExpr vexpr = (IVersionExpr) c.getOperand( 1 );
                         
                         frefs[ i ] = new ProjectFacetRef( rf, vexpr );
                     }
@@ -179,11 +170,8 @@ public final class Constraint
                     
                     boolean found = false;
                     
-                    for( Iterator itr = facets.iterator(); itr.hasNext(); )
+                    for( IProjectFacetVersion fv : facets )
                     {
-                        final IProjectFacetVersion fv 
-                            = (IProjectFacetVersion) itr.next();
-                        
                         if( fv.getProjectFacet() == rf )
                         {
                             if( vexpr.check( fv ) )
@@ -197,13 +185,10 @@ public final class Constraint
                     
                     if( ! found )
                     {
-                        final ValidationProblem.Type ptype 
-                            = ValidationProblem.Type.REQUIRES;
+                        final ValidationProblem.Type ptype = ValidationProblem.Type.REQUIRES;
+                        final ProjectFacetRef fref = new ProjectFacetRef( rf, vexpr );
                         
-                        final ProjectFacetRef fref 
-                            = new ProjectFacetRef( rf, vexpr );
-                        
-                        final ValidationProblem problem
+                        final ValidationProblem problem 
                             = new ValidationProblem( ptype, this.fv, fref ); 
                         
                         result.add( problem );
@@ -219,12 +204,8 @@ public final class Constraint
             {
                 final IGroup group = (IGroup) firstOperand;
             
-                for( Iterator itr = group.getMembers().iterator(); 
-                     itr.hasNext(); )
+                for( IProjectFacetVersion member : group.getMembers() )
                 {
-                    final IProjectFacetVersion member
-                        = (IProjectFacetVersion) itr.next();
-                    
                     if( member.getProjectFacet() != this.fv.getProjectFacet() && 
                         facets.contains( member ) )
                     {
@@ -243,14 +224,10 @@ public final class Constraint
                 final IProjectFacet f = (IProjectFacet) firstOperand;
                 
                 final IVersionExpr vexpr
-                    = this.operands.size() == 2 
-                      ? (IVersionExpr) this.operands.get( 1 ) : null;
-                      
-                for( Iterator itr = facets.iterator(); itr.hasNext(); )
+                    = this.operands.size() == 2 ? (IVersionExpr) this.operands.get( 1 ) : null;
+                
+                for( IProjectFacetVersion fver : facets )
                 {
-                    final IProjectFacetVersion fver 
-                        = (IProjectFacetVersion) itr.next();
-                    
                     if( fver.getProjectFacet() == f )
                     {
                         if( vexpr == null || vexpr.check( fver ) )
@@ -279,9 +256,9 @@ public final class Constraint
     
     private boolean containsOnlyRequires()
     {
-        for( Iterator itr = this.operands.iterator(); itr.hasNext(); )
+        for( Object operand : this.operands )
         {
-            if( ( (IConstraint) itr.next() ).getType() != Type.REQUIRES )
+            if( ( (IConstraint) operand ).getType() != Type.REQUIRES )
             {
                 return false;
             }
@@ -290,12 +267,12 @@ public final class Constraint
         return true;
     }
     
-    private static boolean containsAny( final Collection a,
-                                        final Collection b )
+    private static boolean containsAny( final Collection<? extends Object> a,
+                                        final Collection<? extends Object> b )
     {
-        for( Iterator itr = a.iterator(); itr.hasNext(); )
+        for( Object x : a )
         {
-            if( b.contains( itr.next() ) )
+            if( b.contains( x ) )
             {
                 return true;
             }

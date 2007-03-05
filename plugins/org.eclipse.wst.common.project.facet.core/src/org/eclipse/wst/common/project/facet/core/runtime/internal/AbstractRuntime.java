@@ -1,19 +1,18 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core.runtime.internal;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,6 +33,8 @@ public abstract class AbstractRuntime
     implements IRuntime
     
 {
+    private static final String PROP_LOCALIZED_NAME = "localized-name"; //$NON-NLS-1$
+    
     private String name;
     
     /**
@@ -47,6 +48,18 @@ public abstract class AbstractRuntime
         return this.name;
     }
     
+    public final String getLocalizedName()
+    {
+        String localizedName = getProperty( PROP_LOCALIZED_NAME );
+        
+        if( localizedName == null )
+        {
+            localizedName = getName();
+        }
+        
+        return localizedName;
+    }
+    
     final void setName( final String name )
     {
         this.name = name;
@@ -54,7 +67,7 @@ public abstract class AbstractRuntime
 
     public final String getProperty( final String key )
     {
-        return (String) getProperties().get( key );
+        return getProperties().get( key );
     }
     
     public final Object getAdapter( final Class adapter )
@@ -64,10 +77,9 @@ public abstract class AbstractRuntime
         
         if( res == null )
         {
-            for( Iterator itr = getRuntimeComponents().iterator(); 
-                 itr.hasNext(); )
+            for( IRuntimeComponent rc : getRuntimeComponents() )
             {
-                res = ( (IRuntimeComponent) itr.next() ).getAdapter( adapter );
+                res = rc.getAdapter( adapter );
                 
                 if( res != null )
                 {
@@ -81,9 +93,9 @@ public abstract class AbstractRuntime
     
     public boolean supports( final IProjectFacet f )
     {
-        for( Iterator itr = f.getVersions().iterator(); itr.hasNext(); )
+        for( IProjectFacetVersion fv : f.getVersions() )
         {
-            if( supports( (IProjectFacetVersion) itr.next() ) )
+            if( supports( fv ) )
             {
                 return true;
             }
@@ -92,25 +104,22 @@ public abstract class AbstractRuntime
         return false;
     }
     
-    public Set getDefaultFacets( final Set fixed )
+    public Set<IProjectFacetVersion> getDefaultFacets( final Set<IProjectFacet> fixed )
     
         throws CoreException
         
     {
         // 1. Get the complete list.
         
-        final Map facets = new HashMap();
+        final Map<IProjectFacet,IProjectFacetVersion> facets 
+            = new HashMap<IProjectFacet,IProjectFacetVersion>();
         
-        for( Iterator itr1 = getRuntimeComponents().iterator(); itr1.hasNext(); )
+        for( IRuntimeComponent rc : getRuntimeComponents() )
         {
-            final IRuntimeComponent rc = (IRuntimeComponent) itr1.next();
             final IRuntimeComponentVersion rcv = rc.getRuntimeComponentVersion();
-            
-            for( Iterator itr2 = RuntimeManagerImpl.getDefaultFacets( rcv ).iterator();
-                 itr2.hasNext(); )
+
+            for( IProjectFacetVersion fv : RuntimeManagerImpl.getDefaultFacets( rcv ) )
             {
-                final IProjectFacetVersion fv = (IProjectFacetVersion) itr2.next();
-                
                 if( ! facets.containsKey( fv.getProjectFacet() ) )
                 {
                     facets.put( fv.getProjectFacet(), fv );
@@ -120,27 +129,32 @@ public abstract class AbstractRuntime
         
         // 2. Remove the facets that conflict with fixed facets.
         
-        for( Iterator itr = facets.values().iterator(); itr.hasNext(); )
+        final Set<IProjectFacet> toRemove = new HashSet<IProjectFacet>();
+        
+        for( IProjectFacetVersion fv : facets.values() )
         {
-            if( ! ( (IProjectFacetVersion) itr.next() ).isValidFor( fixed ) )
+            if( ! fv.isValidFor( fixed ) )
             {
-                itr.remove();
+                toRemove.add( fv.getProjectFacet() );
             }
+        }
+        
+        for( IProjectFacet f : toRemove )
+        {
+            facets.remove( f );
         }
         
         // 3. Make sure that the result includes all of the fixed facets.
         
-        Map toadd = null;
+        Map<IProjectFacet,IProjectFacetVersion> toadd = null;
         
-        for( Iterator itr = fixed.iterator(); itr.hasNext(); )
+        for( IProjectFacet f : fixed )
         {
-            final IProjectFacet f = (IProjectFacet) itr.next();
-            
             if( ! facets.containsKey( f ) )
             {
                 if( toadd == null )
                 {
-                    toadd = new HashMap();
+                    toadd = new HashMap<IProjectFacet,IProjectFacetVersion>();
                 }
                 
                 toadd.put( f, f.getLatestSupportedVersion( this ) );
@@ -154,7 +168,7 @@ public abstract class AbstractRuntime
         
         // 4. Return the result.
         
-        return new HashSet( facets.values() );
+        return new HashSet<IProjectFacetVersion>( facets.values() );
     }
 
     public final boolean equals( final Object obj )

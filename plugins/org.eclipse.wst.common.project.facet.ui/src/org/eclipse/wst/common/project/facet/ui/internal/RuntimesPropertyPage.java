@@ -1,18 +1,17 @@
 /******************************************************************************
- * Copyright (c) 2006 BEA Systems, Inc. and others.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
- *	  David Schneider, david.schneider@unisys.com - [142500] WTP properties pages fonts don't follow Eclipse preferences
+ *    Konstantin Komissarchik - initial implementation and ongoing maintenance
+ *    David Schneider, david.schneider@unisys.com - [142500] WTP properties pages fonts don't follow Eclipse preferences
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.ui.internal;
 
-import java.util.Iterator;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
@@ -89,15 +88,10 @@ public class RuntimesPropertyPage extends PropertyPage
                 {
                     public boolean check( final IRuntime runtime )
                     {
-                        final IFacetedProject fpj 
-                            = RuntimesPropertyPage.this.project;
+                        final IFacetedProject fpj = RuntimesPropertyPage.this.project;
                         
-                        for( Iterator itr = fpj.getProjectFacets().iterator();
-                             itr.hasNext(); )
+                        for( IProjectFacetVersion fv : fpj.getProjectFacets() )
                         {
-                            final IProjectFacetVersion fv
-                                = (IProjectFacetVersion) itr.next();
-                            
                             if( ! runtime.supports( fv ) )
                             {
                                 return false;
@@ -169,7 +163,8 @@ public class RuntimesPropertyPage extends PropertyPage
                 }
             );
             
-    	    Dialog.applyDialogFont(parent);
+    	    Dialog.applyDialogFont( parent );
+            
             return composite;
         }
         return null;
@@ -177,7 +172,7 @@ public class RuntimesPropertyPage extends PropertyPage
     
     public boolean performOk() 
     {
-        final Set targeted = this.model.getTargetedRuntimes();
+        final Set<IRuntime> targeted = this.model.getTargetedRuntimes();
         final IRuntime primary = this.model.getPrimaryRuntime();
         
         if( ! this.project.getTargetedRuntimes().equals( primary ) ||
@@ -190,9 +185,7 @@ public class RuntimesPropertyPage extends PropertyPage
                     throws CoreException
                     
                 {
-                    final IFacetedProject fpj 
-                        = RuntimesPropertyPage.this.project;
-                    
+                    final IFacetedProject fpj = RuntimesPropertyPage.this.project;
                     fpj.setTargetedRuntimes( targeted, null );
                     
                     if( primary != null )
@@ -250,7 +243,7 @@ public class RuntimesPropertyPage extends PropertyPage
     {
         this.model.refreshTargetableRuntimes();
         
-        final Set targetedRuntimes = this.project.getTargetedRuntimes();
+        final Set<IRuntime> targetedRuntimes = this.project.getTargetedRuntimes();
         this.model.setTargetedRuntimes( targetedRuntimes );
         
         final IRuntime primaryRuntime = this.project.getPrimaryRuntime();

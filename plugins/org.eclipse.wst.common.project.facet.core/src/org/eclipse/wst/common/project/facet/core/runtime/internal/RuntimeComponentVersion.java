@@ -1,26 +1,28 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core.runtime.internal;
 
+import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.instantiate;
+
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin;
-import org.eclipse.wst.common.project.facet.core.internal.IVersion;
-import org.eclipse.wst.common.project.facet.core.internal.ProjectFacetVersion;
-import org.eclipse.wst.common.project.facet.core.internal.Versionable;
+import org.eclipse.wst.common.project.facet.core.IVersion;
+import org.eclipse.wst.common.project.facet.core.internal.util.UnknownVersion;
+import org.eclipse.wst.common.project.facet.core.internal.util.Versionable;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentType;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentVersion;
 
@@ -30,14 +32,14 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentVersio
 
 public final class RuntimeComponentVersion
 
-    implements IRuntimeComponentVersion, IVersion
+    implements IRuntimeComponentVersion
     
 {
     private String plugin;
     private IRuntimeComponentType type;
     private String version;
-    private final HashMap adapterFactories = new HashMap();
-    private Map/*<IRuntimeComponentVersion,int>*/ compTable = null;
+    private final Map<String,Object> adapterFactories = new HashMap<String,Object>();
+    private Map<IRuntimeComponentVersion,Integer> compTable = null;
     
     public String getPluginId()
     {
@@ -91,10 +93,7 @@ public final class RuntimeComponentVersion
             if( factory instanceof PluginAndClass )
             {
                 final PluginAndClass ref = (PluginAndClass) factory;
-                
-                factory = FacetCorePlugin.instantiate( ref.plugin, ref.clname,
-                                                       IAdapterFactory.class );
-
+                factory = instantiate( ref.plugin, ref.clname, IAdapterFactory.class );
                 this.adapterFactories.put( type.getName(), factory );
             }
             
@@ -112,7 +111,7 @@ public final class RuntimeComponentVersion
         }
     }
     
-    void setComparisonTable( final Map compTable )
+    void setComparisonTable( final Map<IRuntimeComponentVersion,Integer> compTable )
     {
         this.compTable = compTable;
     }
@@ -123,15 +122,11 @@ public final class RuntimeComponentVersion
         {
             return 0;
         }
-        else
+        else if( obj instanceof IRuntimeComponentVersion )
         {
-            // Cause the ClassCastException to be thrown if obj is not a
-            // instance of IRuntimeComponentVersion.
-            
             final IRuntimeComponentVersion rcv = (IRuntimeComponentVersion) obj;
-            final Integer result = (Integer) this.compTable.get( rcv );
             
-            if( result == null )
+            if( rcv.getRuntimeComponentType() != this.type )
             {
                 final String msg
                     = Resources.bind( Resources.cannotCompareVersionsOfDifferentTypes,
@@ -141,11 +136,26 @@ public final class RuntimeComponentVersion
                 
                 throw new RuntimeException( msg );
             }
-            else
+            
+            return this.compTable.get( rcv ).intValue();
+        }
+        else if( obj instanceof UnknownVersion )
+        {
+            try
             {
-                return result.intValue();
+                final Comparator<String> comp = this.type.getVersionComparator();
+                return comp.compare( this.version, ( (IVersion) obj ).getVersionString() );
+            }
+            catch( CoreException e )
+            {
+                throw new RuntimeException( e );
             }
         }
+        else
+        {
+            throw new IllegalArgumentException();
+        }
+        
     }
     
     public String toString()
@@ -175,8 +185,7 @@ public final class RuntimeComponentVersion
         
         static
         {
-            initializeMessages( ProjectFacetVersion.class.getName(), 
-                                Resources.class );
+            initializeMessages( RuntimeComponentVersion.class.getName(), Resources.class );
         }
         
         public static String bind( final String template,

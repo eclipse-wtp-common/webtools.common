@@ -3,14 +3,16 @@ Bundle-ManifestVersion: 2
 Bundle-Vendor: %providerName
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.eclipse.wst.common.project.facet.core; singleton:=true
-Bundle-Version: 1.1.100.qualifier
+Bundle-Version: 1.2.0.qualifier
 Bundle-ClassPath: .
 Bundle-Localization: plugin
 Export-Package: org.eclipse.wst.common.project.facet.core,
- org.eclipse.wst.common.project.facet.core.internal;x-internal:=true,
- org.eclipse.wst.common.project.facet.core.runtime,
- org.eclipse.wst.common.project.facet.core.runtime.internal;x-internal:=true
+ org.eclipse.wst.common.project.facet.core.events,
+ org.eclipse.wst.common.project.facet.core.internal;x-friends:="org.eclipse.wst.common.project.facet.ui",
+ org.eclipse.wst.common.project.facet.core.internal.util;x-friends:="org.eclipse.wst.common.project.facet.ui",
+ org.eclipse.wst.common.project.facet.core.runtime
 Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.2.0,4.0)",
  org.eclipse.core.resources;bundle-version="[3.2.0,4.0)",
  org.eclipse.core.expressions;bundle-version="[3.2.0,4.0)"
 Eclipse-LazyStart: true
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

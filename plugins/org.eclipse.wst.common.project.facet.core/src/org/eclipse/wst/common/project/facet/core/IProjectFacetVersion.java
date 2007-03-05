@@ -1,12 +1,12 @@
 /******************************************************************************
- * Copyright (c) 2005, 2006 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core;
@@ -20,18 +20,12 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
  * Contains metadata that describes a specific version of a project facet. This 
  * interface is not intended to be implemented by by clients.
  * 
- * <p><i>This class is part of an interim API that is still under development 
- * and expected to change significantly before reaching stability. It is being 
- * made available at this early stage to solicit feedback from pioneering 
- * adopters on the understanding that any code that uses this API will almost 
- * certainly be broken (repeatedly) as the API evolves.</i></p>
- * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
 public interface IProjectFacetVersion
 
-    extends Comparable
+    extends Comparable, IVersion
     
 {
     /**
@@ -76,14 +70,13 @@ public interface IProjectFacetVersion
      * in which case they will not support <code>Action.Type.UNINSTALL</code>.
      * 
      * @param base the set of facets currently installed in the project that
-     *   the desired action type would be executed against (element type:
-     *   {@see IProjectFacetVersion})
+     *   the desired action type would be executed against
      * @param type action type
      * @return <code>true</code> if and only if this project facet supports the 
      *   provided action type
      */
     
-    boolean supports( Set base,
+    boolean supports( Set<IProjectFacetVersion> base,
                       Action.Type type );
     
     /**
@@ -103,10 +96,9 @@ public interface IProjectFacetVersion
      * Returns all of the action definitions for this project facet version.
      * 
      * @return all of the action definitions for this project facet version
-     *   (element type: {@link IActionDefinition})
      */
     
-    Set getActionDefinitions();
+    Set<IActionDefinition> getActionDefinitions();
     
     /**
      * Returns the action definitions corresponding to a particular action type
@@ -119,10 +111,9 @@ public interface IProjectFacetVersion
      * @param type action type
      * @return a set containing action definitions corresponding to a particular
      *   action type over this project facet version 
-     *   (element type: {@link IActionDefinition})
      */
     
-    Set getActionDefinitions( Action.Type type );
+    Set<IActionDefinition> getActionDefinitions( Action.Type type );
     
     /**
      * Returns the action definition corresponding to a particular action type
@@ -131,8 +122,7 @@ public interface IProjectFacetVersion
      * calling this method.
      * 
      * @param base the set of facets currently installed in the project that
-     *   the desired action type would be executed against (element type:
-     *   {@see IProjectFacetVersion})
+     *   the desired action type would be executed against
      * @param type action type
      * @return the action definition corresponding to a particular action type
      *   over this project facet version
@@ -140,7 +130,7 @@ public interface IProjectFacetVersion
      *   provided action type
      */
     
-    IActionDefinition getActionDefinition( Set base,
+    IActionDefinition getActionDefinition( Set<IProjectFacetVersion> base,
                                            Action.Type type )
     
         throws CoreException;
@@ -184,12 +174,12 @@ public interface IProjectFacetVersion
      * to see whether this facet or any of its dependencies are in conflict with
      * any of the fixed facets.
      * 
-     * @param fixed the set of fixed facets (element type: {@see IProjectFacet})
+     * @param fixed the set of fixed facets
      * @return <code>true</code> if this facet version is valid for the projects
      *   that have the provided set of fixed facets
      */
     
-    boolean isValidFor( Set fixed );
+    boolean isValidFor( Set<IProjectFacet> fixed );
     
     boolean conflictsWith( IProjectFacetVersion fv );
     

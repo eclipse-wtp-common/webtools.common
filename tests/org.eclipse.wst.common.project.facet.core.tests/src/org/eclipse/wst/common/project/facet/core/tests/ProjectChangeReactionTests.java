@@ -1,4 +1,20 @@
+/******************************************************************************
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Konstantin Komissarchik
+ ******************************************************************************/
+
 package org.eclipse.wst.common.project.facet.core.tests;
+
+import static org.eclipse.wst.common.project.facet.core.tests.support.TestUtils.asSet;
+import static org.eclipse.wst.common.project.facet.core.tests.support.TestUtils.readFromFile;
+import static org.eclipse.wst.common.project.facet.core.tests.support.TestUtils.waitForCondition;
+import static org.eclipse.wst.common.project.facet.core.tests.support.TestUtils.writeToFile;
 
 import java.io.IOException;
 
@@ -12,9 +28,13 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
-import org.eclipse.wst.common.project.facet.core.tests.support.TestUtils;
 import org.eclipse.wst.common.project.facet.core.tests.support.TestUtils.ICondition;
 
+/**
+ * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
+ */
+
+@SuppressWarnings( "unused" )
 public final class ProjectChangeReactionTests
 
     extends AbstractTests
@@ -85,7 +105,7 @@ public final class ProjectChangeReactionTests
         assertTrue( this.fpj.getProject().exists() );
         
         this.fpj.installProjectFacet( f1v12, null, null );
-        assertEquals( this.fpj.getProjectFacets(), TestUtils.asSet( f1v12 ) );
+        assertEquals( this.fpj.getProjectFacets(), asSet( f1v12 ) );
         
         this.mdfile = this.pj.getFile( METADATA_FILE );
     }
@@ -97,7 +117,7 @@ public final class ProjectChangeReactionTests
     {
         this.pj.delete( true, null );
         
-        TestUtils.waitForCondition( createNoFacetsCondition( this.fpj ) );
+        waitForCondition( createNoFacetsCondition( this.fpj ) );
         assertNull( ProjectFacetsManager.create( this.pj ) );
     }
 
@@ -108,7 +128,7 @@ public final class ProjectChangeReactionTests
     {
         this.mdfile.delete( true, null );
 
-        TestUtils.waitForCondition( createNoFacetsCondition( this.fpj ) );
+        waitForCondition( createNoFacetsCondition( this.fpj ) );
     }
 
     public void testReactionToMetadataFileChange()
@@ -118,21 +138,21 @@ public final class ProjectChangeReactionTests
     {
         String contents;
         
-        contents = TestUtils.readFromFile( this.mdfile );
+        contents = readFromFile( this.mdfile );
         contents = contents.replaceFirst( "1.2", "2.0" );
-        TestUtils.writeToFile( this.mdfile, contents );
+        writeToFile( this.mdfile, contents );
         
-        TestUtils.waitForCondition( createFacetCondition( this.fpj, f1v20 ) );
+        waitForCondition( createFacetCondition( this.fpj, f1v20 ) );
         
         contents = contents.replaceFirst( "2.0", "1.2.1" );
-        TestUtils.writeToFile( this.mdfile, contents );
+        writeToFile( this.mdfile, contents );
         
-        TestUtils.waitForCondition( createFacetCondition( this.fpj, f1v121 ) );
+        waitForCondition( createFacetCondition( this.fpj, f1v121 ) );
         
         contents = contents.replaceFirst( "<installed facet=\"facet1\" version=\"1.2.1\"/>", "" );
-        TestUtils.writeToFile( this.mdfile, contents );
+        writeToFile( this.mdfile, contents );
         
-        TestUtils.waitForCondition( createNoFacetsCondition( this.fpj ) );
+        waitForCondition( createNoFacetsCondition( this.fpj ) );
     }
     
     private static ICondition createNoFacetsCondition( final IFacetedProject fpj )

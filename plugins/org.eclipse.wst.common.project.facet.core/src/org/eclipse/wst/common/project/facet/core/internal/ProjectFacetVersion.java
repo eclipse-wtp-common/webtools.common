@@ -1,18 +1,18 @@
 /******************************************************************************
- * Copyright (c) 2005, 2006 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core.internal;
 
+import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,8 +23,11 @@ import org.eclipse.wst.common.project.facet.core.IConstraint;
 import org.eclipse.wst.common.project.facet.core.IGroup;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.IVersion;
 import org.eclipse.wst.common.project.facet.core.IVersionExpr;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
+import org.eclipse.wst.common.project.facet.core.internal.util.UnknownVersion;
+import org.eclipse.wst.common.project.facet.core.internal.util.Versionable;
 
 /**
  * The implementation of the <code>IProjectFacetVersion</code> interface.
@@ -34,14 +37,14 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 
 public final class ProjectFacetVersion 
 
-    implements IProjectFacetVersion, IVersion 
+    implements IProjectFacetVersion
     
 {
     private ProjectFacet facet;
     private String version;
     private IConstraint constraint;
     private String plugin;
-    private Map/*<IProjectFacetVersion,int>*/ compTable = null;
+    private Map<IProjectFacetVersion,Integer> compTable = null;
     
     ProjectFacetVersion() {}
     
@@ -65,7 +68,7 @@ public final class ProjectFacetVersion
         this.version = version;
     }
     
-    public Versionable getVersionable()
+    public Versionable<IProjectFacetVersion> getVersionable()
     {
         return this.facet;
     }
@@ -95,12 +98,12 @@ public final class ProjectFacetVersion
         this.plugin = plugin;
     }
     
-    void setComparisonTable( final Map compTable )
+    void setComparisonTable( final Map<IProjectFacetVersion,Integer> compTable )
     {
         this.compTable = compTable;
     }
     
-    public boolean supports( final Set base,
+    public boolean supports( final Set<IProjectFacetVersion> base,
                              final Action.Type type )
     {
         try
@@ -131,19 +134,17 @@ public final class ProjectFacetVersion
         }
     }
     
-    public Set getActionDefinitions()
+    public Set<IActionDefinition> getActionDefinitions()
     {
         return this.facet.getActionDefinitions( this );
     }
     
-    public Set getActionDefinitions( final Action.Type type )
+    public Set<IActionDefinition> getActionDefinitions( final Action.Type type )
     {
-        final Set result = new HashSet();
+        final Set<IActionDefinition> result = new HashSet<IActionDefinition>();
         
-        for( Iterator itr = getActionDefinitions().iterator(); itr.hasNext(); )
+        for( IActionDefinition def : getActionDefinitions() )
         {
-            final IActionDefinition def = (IActionDefinition) itr.next();
-            
             if( def.getActionType() == type )
             {
                 result.add( def );
@@ -163,7 +164,7 @@ public final class ProjectFacetVersion
         return result;
     }
     
-    public IActionDefinition getActionDefinition( final Set base,
+    public IActionDefinition getActionDefinition( final Set<IProjectFacetVersion> base,
                                                   final Action.Type type )
     
         throws CoreException
@@ -183,13 +184,13 @@ public final class ProjectFacetVersion
         return def;
     }
     
-    private IActionDefinition getActionDefinitionInternal( final Set base,
+    private IActionDefinition getActionDefinitionInternal( final Set<IProjectFacetVersion> base,
                                                            final Action.Type type )
     
         throws CoreException
         
     {
-        final Set definitions = getActionDefinitions( type );
+        final Set<IActionDefinition> definitions = getActionDefinitions( type );
         
         if( definitions.size() > 0 )
         {
@@ -197,10 +198,8 @@ public final class ProjectFacetVersion
             {
                 IProjectFacetVersion fromVersion = null;
                 
-                for( Iterator itr = base.iterator(); itr.hasNext(); )
+                for( IProjectFacetVersion x : base )
                 {
-                    final IProjectFacetVersion x = (IProjectFacetVersion) itr.next();
-                    
                     if( x.getProjectFacet() == this.facet )
                     {
                         fromVersion = x;
@@ -210,10 +209,8 @@ public final class ProjectFacetVersion
                 
                 if( fromVersion != null )
                 {
-                    for( Iterator itr = definitions.iterator(); itr.hasNext(); )
+                    for( IActionDefinition def : definitions )
                     {
-                        final IActionDefinition def = (IActionDefinition) itr.next();
-                        
                         final IVersionExpr vexpr 
                             = (IVersionExpr) def.getProperty( IActionDefinition.PROP_FROM_VERSIONS );
                         
@@ -226,7 +223,7 @@ public final class ProjectFacetVersion
             }
             else
             {
-                return (IActionDefinition) definitions.iterator().next();
+                return definitions.iterator().next();
             }
         }
 
@@ -237,6 +234,7 @@ public final class ProjectFacetVersion
      * @deprecated
      */
     
+    @SuppressWarnings( "unchecked" )
     public IActionDefinition getActionDefinition( final Action.Type type )
     
         throws CoreException
@@ -298,29 +296,22 @@ public final class ProjectFacetVersion
         return ( (ProjectFacetVersion) fv ).getActionDefinition( type ) == getActionDefinition( type );
     }
     
-    public boolean isValidFor( final Set fixed )
+    public boolean isValidFor( final Set<IProjectFacet> fixed )
     {
-        for( Iterator itr = fixed.iterator(); itr.hasNext(); )
+        for( IProjectFacet f : fixed )
         {
-            final IProjectFacet f = (IProjectFacet) itr.next();
-            
             if( this.facet == f )
             {
                 return true;
             }
         }
         
-        for( Iterator itr1 = fixed.iterator(); itr1.hasNext(); )
+        for( IProjectFacet f : fixed )
         {
-            final IProjectFacet f = (IProjectFacet) itr1.next();
-            
             boolean conflictsWithAllVersions = true;
-            
-            for( Iterator itr2 = f.getVersions().iterator(); itr2.hasNext(); )
+
+            for( IProjectFacetVersion fv : f.getVersions() )
             {
-                final IProjectFacetVersion fv 
-                    = (IProjectFacetVersion) itr2.next();
-                
                 if( ! conflictsWith( fv ) )
                 {
                     conflictsWithAllVersions = false;
@@ -359,9 +350,9 @@ public final class ProjectFacetVersion
     {
         if( op.getType() == IConstraint.Type.AND )
         {
-            for( Iterator itr = op.getOperands().iterator(); itr.hasNext(); )
+            for( Object operand : op.getOperands() )
             {
-                if( conflictsWith( fv, (IConstraint) itr.next() ) )
+                if( conflictsWith( fv, (IConstraint) operand ) )
                 {
                     return true;
                 }
@@ -373,9 +364,9 @@ public final class ProjectFacetVersion
         {
             boolean allBranchesConflict = true;
             
-            for( Iterator itr = op.getOperands().iterator(); itr.hasNext(); )
+            for( Object operand : op.getOperands() )
             {
-                if( ! conflictsWith( fv, (IConstraint) itr.next() ) )
+                if( ! conflictsWith( fv, (IConstraint) operand ) )
                 {
                     allBranchesConflict = false;
                     break;
@@ -427,11 +418,8 @@ public final class ProjectFacetVersion
                 {
                     final IGroup group = (IGroup) firstOperand;
                     
-                    for( Iterator itr = group.getMembers().iterator(); itr.hasNext(); )
+                    for( IProjectFacetVersion member : group.getMembers() )
                     {
-                        final IProjectFacetVersion member
-                            = (IProjectFacetVersion) itr.next();
-                        
                         if( ! member.conflictsWith( fv ) )
                         {
                             conflictsWithAll = false;
@@ -442,18 +430,14 @@ public final class ProjectFacetVersion
                 else
                 {
                     final IProjectFacet rf = (IProjectFacet) firstOperand;
-                    final VersionExpr vexpr = (VersionExpr) op.getOperand( 1 );
+                    final IVersionExpr vexpr = (IVersionExpr) op.getOperand( 1 );
                     
                     try
                     {
                         final String vexprstr = vexpr.toString();
                         
-                        for( Iterator itr = rf.getVersions( vexprstr ).iterator();
-                             itr.hasNext(); )
+                        for( IProjectFacetVersion rfv : rf.getVersions( vexprstr ) )
                         {
-                            final IProjectFacetVersion rfv 
-                                = (IProjectFacetVersion) itr.next();
-                            
                             if( ! rfv.conflictsWith( fv ) )
                             {
                                 conflictsWithAll = false;
@@ -483,15 +467,11 @@ public final class ProjectFacetVersion
         {
             return 0;
         }
-        else
+        else if( obj instanceof IProjectFacetVersion )
         {
-            // Cause the ClassCastException to be thrown if obj is not a
-            // instance of IProjectFacetVersion.
-            
             final IProjectFacetVersion fv = (IProjectFacetVersion) obj;
-            final Integer result = (Integer) this.compTable.get( fv );
             
-            if( result == null )
+            if( fv.getProjectFacet() != this.facet )
             {
                 final String msg
                     = Resources.bind( Resources.cannotCompareVersionsOfDifferentFacets,
@@ -501,10 +481,24 @@ public final class ProjectFacetVersion
                 
                 throw new RuntimeException( msg );
             }
-            else
+            
+            return this.compTable.get( fv ).intValue();
+        }
+        else if( obj instanceof UnknownVersion )
+        {
+            try
             {
-                return result.intValue();
+                final Comparator<String> comp = this.facet.getVersionComparator();
+                return comp.compare( this.version, ( (IVersion) obj ).getVersionString() );
             }
+            catch( CoreException e )
+            {
+                throw new RuntimeException( e );
+            }
+        }
+        else
+        {
+            throw new IllegalArgumentException();
         }
     }
     

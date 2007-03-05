@@ -1,9 +1,13 @@
 /******************************************************************************
- * Copyright (c) 2005, 2006 BEA Systems, Inc. and others.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Karl Lum - initial implementation
+ *    Konstantin Komissarchik - ongoing maintenance
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.ui.internal;
@@ -11,7 +15,6 @@ package org.eclipse.wst.common.project.facet.ui.internal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
@@ -228,39 +231,47 @@ public class FacetsPropertyPage extends PropertyPage
         }
     }
     
-    private static class FacetsContentProvider implements IStructuredContentProvider
+    private static class FacetsContentProvider
+    
+        implements IStructuredContentProvider
+        
     {
-        public Object[] getElements(Object inputElement)
+        public Object[] getElements( final Object inputElement )
         {
-            if (inputElement instanceof IFacetedProject)
+            if( inputElement instanceof IFacetedProject )
             {
-                final IFacetedProject project = (IFacetedProject)inputElement;
-                final List facets = new ArrayList();
-                for (Iterator it = project.getProjectFacets().iterator(); it.hasNext();)
-                {
-                    facets.add(it.next());
-                }
-                Collections.sort(facets, new Comparator()
-                        {
-                            public int compare( final Object p1, final Object p2 ) 
-                            {
-                                if( p1 == p2 )
-                                {
-                                    return 0;
-                                }
-                                else
-                                {
-                                    final String label1 = ((IProjectFacetVersion)p1).getProjectFacet().getLabel();
-                                    final String label2 = ((IProjectFacetVersion)p2).getProjectFacet().getLabel();
-                                    
-                                    return label1.compareTo( label2 );
-                                }
-                            }
-                        });
+                final IFacetedProject project = (IFacetedProject) inputElement;
+                
+                final List<IProjectFacetVersion> facets
+                    = new ArrayList<IProjectFacetVersion>( project.getProjectFacets() );
 
-                return facets.toArray(new IProjectFacetVersion[0]);
+                Collections.sort
+                (
+                    facets, 
+                    new Comparator<IProjectFacetVersion>()
+                    {
+                        public int compare( final IProjectFacetVersion fv1, 
+                                            final IProjectFacetVersion fv2 ) 
+                        {
+                            if( fv1 == fv2 )
+                            {
+                                return 0;
+                            }
+                            else
+                            {
+                                final String label1 = fv1.getProjectFacet().getLabel();
+                                final String label2 = fv2.getProjectFacet().getLabel();
+                                
+                                return label1.compareTo( label2 );
+                            }
+                        }
+                    }
+                );
+
+                return facets.toArray( new IProjectFacetVersion[ facets.size() ] );
             }
-            return new String[0];
+            
+            return new String[ 0 ];
         }
 
         public void dispose(){}

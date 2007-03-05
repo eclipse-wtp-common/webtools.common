@@ -1,25 +1,30 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
-package org.eclipse.wst.common.project.facet.core.internal;
+package org.eclipse.wst.common.project.facet.core.events.internal;
+
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
-public abstract interface IVersion
+public final class ProjectModifiedEvent
 
-    extends Comparable
+    extends FacetedProjectEvent
     
 {
-    String getVersionString();
-    Versionable getVersionable();
+    public ProjectModifiedEvent( IFacetedProject project )
+    {
+        super( project, Type.PROJECT_MODIFIED );
+    }
+    
 }

@@ -1,12 +1,12 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core.runtime.internal;
@@ -30,17 +30,17 @@ public final class Runtime
     extends AbstractRuntime
     
 {
-    private final List components = new ArrayList();
+    private final List<IRuntimeComponent> components = new ArrayList<IRuntimeComponent>();
     
-    private final List componentsReadOnly 
+    private final List<IRuntimeComponent> componentsReadOnly 
         = Collections.unmodifiableList( this.components );
     
-    private final Map properties = new HashMap();
+    private final Map<String,String> properties = new HashMap<String,String>();
     
-    private final Map propertiesReadOnly
+    private final Map<String,String> propertiesReadOnly
         = Collections.unmodifiableMap( this.properties );
     
-    private Set supported = null;
+    private Set<IProjectFacetVersion> supported = null;
     
     /**
      * This class should not be instantiated outside this package.
@@ -48,17 +48,18 @@ public final class Runtime
     
     Runtime() {}
     
-    public List getRuntimeComponents()
+    public List<IRuntimeComponent> getRuntimeComponents()
     {
         return this.componentsReadOnly;
     }
     
     void addRuntimeComponent( final IRuntimeComponent component )
     {
+        ( (RuntimeComponent) component ).setRuntime( this );
         this.components.add( component );
     }
 
-    public Map getProperties()
+    public Map<String,String> getProperties()
     {
         return this.propertiesReadOnly;
     }

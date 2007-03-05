@@ -1,20 +1,18 @@
 /******************************************************************************
- * Copyright (c) 2005, 2006 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core.internal;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -25,6 +23,7 @@ import org.eclipse.wst.common.project.facet.core.ICategory;
 import org.eclipse.wst.common.project.facet.core.IDefaultVersionProvider;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.internal.util.Versionable;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 
 /**
@@ -35,7 +34,7 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 
 public final class ProjectFacet 
 
-    extends Versionable
+    extends Versionable<IProjectFacetVersion>
     implements IProjectFacet 
     
 {
@@ -44,12 +43,14 @@ public final class ProjectFacet
     private String label;
     private String description;
     private ICategory category;
-    private final List actionDefinitions = new ArrayList();
-    private final List eventHandlers = new ArrayList();
+    private final List<IActionDefinition> actionDefinitions;
     private IProjectFacetVersion defaultVersion;
     private IDefaultVersionProvider defaultVersionProvider;
     
-    ProjectFacet() {}
+    ProjectFacet() 
+    {
+        this.actionDefinitions = new ArrayList<IActionDefinition>();
+    }
     
     public String getId() 
     {
@@ -101,47 +102,15 @@ public final class ProjectFacet
         this.category = category;
     }
     
-    public IProjectFacetVersion getVersion( final String version )
+    void addVersion( final IProjectFacetVersion ver )
     {
-        final IProjectFacetVersion fv
-            = (IProjectFacetVersion) this.versions.get( version );
-        
-        if( fv == null )
-        {
-            final String msg 
-                = NLS.bind( Resources.versionNotFound, this.getId(), version );
-            
-            throw new IllegalArgumentException( msg );
-        }
-        
-        return fv;
-    }
-    
-    void addVersion( final IProjectFacetVersion version )
-    {
-        this.versions.add( version.getVersionString(), version );
-    }
-
-    public IProjectFacetVersion getLatestVersion()
-    {
-        if( this.versions.size() > 0 )
-        {
-            final Object max = Collections.max( this.versions );
-            return (IProjectFacetVersion) max;
-        }
-        else
-        {
-            return null;
-        }
+        this.versions.add( ver.getVersionString(), ver );
     }
     
     public IProjectFacetVersion getLatestSupportedVersion( final IRuntime r )
     {
-        for( Iterator itr = getSortedVersions( false ).iterator(); 
-             itr.hasNext(); )
+        for( IProjectFacetVersion fv : getSortedVersions( false ) )
         {
-            final IProjectFacetVersion fv = (IProjectFacetVersion) itr.next();
-            
             if( r.supports( fv ) )
             {
                 return fv;
@@ -212,7 +181,7 @@ public final class ProjectFacet
     
     public String createVersionNotFoundErrMsg( final String verstr )
     {
-        return NLS.bind( ProjectFacetsManagerImpl.Resources.facetVersionNotDefined,
+        return NLS.bind( FacetedProjectFrameworkImpl.Resources.facetVersionNotDefined,
                          this.id, verstr );
     }
     
@@ -221,14 +190,12 @@ public final class ProjectFacet
         return this.label;
     }
     
-    Set getActionDefinitions( final IProjectFacetVersion fv )
+    Set<IActionDefinition> getActionDefinitions( final IProjectFacetVersion fv )
     {
-        final Set result = new HashSet();
+        final Set<IActionDefinition> result = new HashSet<IActionDefinition>();
         
-        for( Iterator itr = this.actionDefinitions.iterator(); itr.hasNext(); )
+        for( IActionDefinition def : this.actionDefinitions )
         {
-            final IActionDefinition def = (IActionDefinition) itr.next();
-            
             if( def.getVersionExpr().check( fv ) )
             {
                 result.add( def );
@@ -243,36 +210,11 @@ public final class ProjectFacet
         this.actionDefinitions.add( actionDefinition );
     }
     
-    List getEventHandlers( final IProjectFacetVersion fv,
-                           final EventHandler.Type type )
-    {
-        final List res = new ArrayList();
-        
-        for( Iterator itr = this.eventHandlers.iterator(); itr.hasNext(); )
-        {
-            final EventHandler h = (EventHandler) itr.next();
-            
-            if( h.getType() == type &&
-                h.getVersionExpr().check( fv ) )
-            {
-                res.add( h );
-            }
-        }
-        
-        return res;
-    }
-    
-    void addEventHandler( final EventHandler h )
-    {
-        this.eventHandlers.add( h );
-    }
-    
     public static final class Resources
     
         extends NLS
         
     {
-        public static String versionNotFound;
         public static String versionProviderReturnedWrongVersion;
         
         static

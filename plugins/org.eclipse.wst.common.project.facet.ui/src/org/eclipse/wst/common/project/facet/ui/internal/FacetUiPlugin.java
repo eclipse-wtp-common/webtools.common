@@ -1,12 +1,12 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.ui.internal;
@@ -32,7 +32,7 @@ public final class FacetUiPlugin
         = "org.eclipse.wst.common.project.facet.ui"; //$NON-NLS-1$
     
     private static FacetUiPlugin plugin;
-    private static final Set messagesLogged = new HashSet();
+    private static final Set<String> messagesLogged = new HashSet<String>();
     
     public FacetUiPlugin() 
     {
@@ -52,7 +52,7 @@ public final class FacetUiPlugin
     
     public static void log( final Exception e )
     {
-        final String msg = e.getMessage();
+        final String msg = e.getMessage() + ""; //$NON-NLS-1$
         log( new Status( IStatus.ERROR, PLUGIN_ID, IStatus.OK, msg, e ) );
     }
 

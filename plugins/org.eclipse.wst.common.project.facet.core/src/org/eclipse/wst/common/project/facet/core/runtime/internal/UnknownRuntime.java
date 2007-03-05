@@ -1,12 +1,12 @@
 /******************************************************************************
- * Copyright (c) 2006 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core.runtime.internal;
@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
 
 /**
  * Used to represent a runtime that's referenced by a project, but is not
@@ -34,14 +35,14 @@ public final class UnknownRuntime
         setName( name );
     }
     
-    public Map getProperties()
+    public Map<String,String> getProperties()
     {
-        return Collections.EMPTY_MAP;
+        return Collections.emptyMap();
     }
 
-    public List getRuntimeComponents()
+    public List<IRuntimeComponent> getRuntimeComponents()
     {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     public boolean supports( final IProjectFacetVersion fv )

@@ -1,12 +1,12 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core.internal;
@@ -30,11 +30,15 @@ public final class FacetedProjectTemplate
 {
     private String id;
     private String label;
-    private final Set fixed = new HashSet();
-    private final Set fixedReadOnly = Collections.unmodifiableSet( this.fixed );
+    private final Set<IProjectFacet> fixed;
+    private final Set<IProjectFacet> fixedReadOnly;
     private IPreset preset;
     
-    FacetedProjectTemplate() {}
+    FacetedProjectTemplate() 
+    {
+        this.fixed = new HashSet<IProjectFacet>();
+        this.fixedReadOnly = Collections.unmodifiableSet( this.fixed );
+    }
     
     public String getId()
     {
@@ -56,7 +60,7 @@ public final class FacetedProjectTemplate
         this.label = label;
     }
 
-    public Set getFixedProjectFacets()
+    public Set<IProjectFacet> getFixedProjectFacets()
     {
         return this.fixedReadOnly;
     }

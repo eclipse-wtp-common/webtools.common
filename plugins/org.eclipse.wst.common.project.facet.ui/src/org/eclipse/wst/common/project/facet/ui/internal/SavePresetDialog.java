@@ -1,17 +1,16 @@
 /******************************************************************************
- * Copyright (c) 2006 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik - initial implementation and ongoing maintenance
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.ui.internal;
 
-import java.util.Iterator;
 import java.util.Set;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -35,6 +34,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wst.common.project.facet.core.IPreset;
+import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 /**
@@ -64,7 +64,7 @@ public final class SavePresetDialog
     }
     
     public static IPreset showDialog( final Shell shell,
-                                      final Set facets )
+                                      final Set<IProjectFacetVersion> facets )
     {
         final SavePresetDialog dialog = new SavePresetDialog( shell );
         
@@ -184,11 +184,8 @@ public final class SavePresetDialog
         
         if( this.name.length() > 0 )
         {
-            for( Iterator itr = ProjectFacetsManager.getPresets().iterator();
-                 itr.hasNext(); )
+            for( IPreset preset : ProjectFacetsManager.getPresets() )
             {
-                final IPreset preset = (IPreset) itr.next();
-                
                 if( preset.getLabel().equals( this.name ) )
                 {
                     conflictDetected = true;

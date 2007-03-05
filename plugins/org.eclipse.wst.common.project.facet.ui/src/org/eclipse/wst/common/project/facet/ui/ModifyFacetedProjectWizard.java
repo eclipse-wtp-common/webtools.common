@@ -1,20 +1,25 @@
 /******************************************************************************
- * Copyright (c) 2005, 2006 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.ui;
 
+import static org.eclipse.wst.common.project.facet.core.internal.util.ProgressMonitorUtil.beginTask;
+import static org.eclipse.wst.common.project.facet.core.internal.util.ProgressMonitorUtil.done;
+import static org.eclipse.wst.common.project.facet.core.internal.util.ProgressMonitorUtil.subTask;
+import static org.eclipse.wst.common.project.facet.core.internal.util.ProgressMonitorUtil.submon;
+import static org.eclipse.wst.common.project.facet.core.internal.util.ProgressMonitorUtil.worked;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -24,7 +29,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.IWizardPage;
@@ -35,23 +39,19 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.wst.common.project.facet.core.IActionDefinition;
+import org.eclipse.wst.common.project.facet.core.ICategory;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action.Type;
-import org.eclipse.wst.common.project.facet.ui.internal.ModifyFacetedProjectDataModel;
+import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.ui.internal.ChangeTargetedRuntimesDataModel;
 import org.eclipse.wst.common.project.facet.ui.internal.FacetUiPlugin;
 import org.eclipse.wst.common.project.facet.ui.internal.FacetsSelectionPage;
+import org.eclipse.wst.common.project.facet.ui.internal.ModifyFacetedProjectDataModel;
 
 /**
- * <p><i>This class is part of an interim API that is still under development 
- * and expected to change significantly before reaching stability. It is being 
- * made available at this early stage to solicit feedback from pioneering 
- * adopters on the understanding that any code that uses this API will almost 
- * certainly be broken (repeatedly) as the API evolves.</i></p>
- * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
@@ -66,15 +66,17 @@ public class ModifyFacetedProjectWizard
     protected final FacetsSelectionPage facetsSelectionPage;
     private FacetPages[] facetPages = new FacetPages[ 0 ];
     private Composite pageContainer;
-    private final List pagesToDispose = new ArrayList();
+    private final List<IWizardPage> pagesToDispose = new ArrayList<IWizardPage>();
     private final ModifyFacetedProjectDataModel model;
+    private final List<Runnable> delayedActions;
     
     public ModifyFacetedProjectWizard( final IFacetedProject fproj )
     {
         this.model = new ModifyFacetedProjectDataModel();
+        this.delayedActions = new ArrayList<Runnable>();;
         this.fproj = fproj;
         
-        Set base = null;
+        Set<IProjectFacetVersion> base = null;
         
         if( this.fproj != null )
         {
@@ -129,7 +131,7 @@ public class ModifyFacetedProjectWizard
 
     public IWizardPage[] getPages()
     {
-        final ArrayList list = new ArrayList();
+        final List<IWizardPage> list = new ArrayList<IWizardPage>();
         
         list.add( this.facetsSelectionPage );
         
@@ -138,7 +140,7 @@ public class ModifyFacetedProjectWizard
             list.addAll( this.facetPages[ i ].pages );
         }
         
-        return (IWizardPage[]) list.toArray( new IWizardPage[ 0 ] );
+        return list.toArray( new IWizardPage[ list.size() ] );
     }
     
     public IWizardPage getPage( final String pageName )
@@ -236,17 +238,16 @@ public class ModifyFacetedProjectWizard
         super.createPageControls( container );
         this.pageContainer = container;
         handleSelectedFacetsChangedEvent();
+        executeDelayedActions();
     }
     
     public boolean performFinish() 
     {
         for( int i = 0; i < this.facetPages.length; i++ )
         {
-            final FacetPages fp = this.facetPages[ i ];
-            
-            for( Iterator itr = fp.pages.iterator(); itr.hasNext(); )
+            for( IFacetWizardPage fp : this.facetPages[ i ].pages )
             {
-                ( (IFacetWizardPage) itr.next() ).transferStateToConfig();
+                fp.transferStateToConfig();
             }
         }
         
@@ -315,30 +316,81 @@ public class ModifyFacetedProjectWizard
         throws CoreException
         
     {
-        monitor.beginTask( "", 3 ); //$NON-NLS-1$
+        beginTask( monitor, "", 20 ); //$NON-NLS-1$
         
         try
         {
-            monitor.subTask( Resources.taskConfiguringRuntimes );
+            // Figure out whether we can set runtimes before applying facet actions. This is better
+            // for performance reasons, but may not work if the project contains facets that are
+            // not supported by the new runtime. You can get into this situation if the user tries
+            // to simultaneously uninstall a facet and select a different runtime. The fallback
+            // solution for this situation is to set the targeted runtimes to an empty list first,
+            // then apply the facet actions, and then set the targeted runtimes to the new list.
+            // This is more drastic than necessary in all situations, but it is not clear that
+            // implementing additional optimizations is necessary either.
             
-            final ChangeTargetedRuntimesDataModel rdm
-                = this.model.getTargetedRuntimesDataModel();
+            final ChangeTargetedRuntimesDataModel rdm = this.model.getTargetedRuntimesDataModel();
+            boolean canSetRuntimesFirst = true;
             
-            this.fproj.setTargetedRuntimes( rdm.getTargetedRuntimes(), 
-                                            submon( monitor, 1 ) );
-            
-            if( rdm.getPrimaryRuntime() != null )
+            for( IProjectFacetVersion fv : this.fproj.getProjectFacets() )
             {
-                this.fproj.setPrimaryRuntime( rdm.getPrimaryRuntime(), 
-                                              submon( monitor, 1 ) );
+                for( IRuntime r : rdm.getTargetedRuntimes() )
+                {
+                    if( ! r.supports( fv ) )
+                    {
+                        canSetRuntimesFirst = false;
+                        break;
+                    }
+                }
+                
+                if( ! canSetRuntimesFirst )
+                {
+                    break;
+                }
             }
             
-            this.fproj.modify( this.facetsSelectionPage.getActions(), 
-                               submon( monitor, 1 ) );
+            subTask( monitor, Resources.taskConfiguringRuntimes );
+            
+            if( canSetRuntimesFirst )
+            {
+                this.fproj.setTargetedRuntimes( rdm.getTargetedRuntimes(), submon( monitor, 2 ) );
+                
+                if( rdm.getPrimaryRuntime() != null )
+                {
+                    this.fproj.setPrimaryRuntime( rdm.getPrimaryRuntime(), submon( monitor, 2 ) );
+                }
+                else
+                {
+                    worked( monitor, 2 );
+                }
+            }
+            else
+            {
+                final Set<IRuntime> emptySet = Collections.emptySet();
+                this.fproj.setTargetedRuntimes( emptySet, submon( monitor, 2 ) );
+            }
+            
+            this.fproj.modify( this.facetsSelectionPage.getActions(), submon( monitor, 16 ) );
+            
+            if( ! canSetRuntimesFirst )
+            {
+                subTask( monitor, Resources.taskConfiguringRuntimes );
+                
+                this.fproj.setTargetedRuntimes( rdm.getTargetedRuntimes(), submon( monitor, 1 ) );
+                
+                if( rdm.getPrimaryRuntime() != null )
+                {
+                    this.fproj.setPrimaryRuntime( rdm.getPrimaryRuntime(), submon( monitor, 1 ) );
+                }
+                else
+                {
+                    worked( monitor, 1 );
+                }
+            }
         }
         finally
         {
-            monitor.done();
+            done( monitor );
         }
     }
     
@@ -356,6 +408,27 @@ public class ModifyFacetedProjectWizard
         this.facetsSelectionPage.syncWithPresetsModel( combo );
     }
     
+    public void setCategoryExpandedState( final ICategory category,
+                                          final boolean expanded )
+    {
+        if( this.facetsSelectionPage != null && this.facetsSelectionPage.panel != null )
+        {
+            this.facetsSelectionPage.panel.setCategoryExpandedState( category, true );
+        }
+        else
+        {
+            final Runnable action = new Runnable()
+            {
+                public void run()
+                {
+                    setCategoryExpandedState( category, expanded );
+                }
+            };
+            
+            this.delayedActions.add( action );
+        }
+    }
+    
     public void dispose()
     {
         super.dispose();
@@ -365,24 +438,18 @@ public class ModifyFacetedProjectWizard
             this.pagesToDispose.addAll( this.facetPages[ i ].pages );
         }
         
-        for( Iterator itr = this.pagesToDispose.iterator(); itr.hasNext(); )
+        for( IWizardPage page : this.pagesToDispose )
         {
-            ( (IWizardPage) itr.next() ).dispose();
+            page.dispose();
         }
         
         this.model.dispose();
     }
     
-    private static IProgressMonitor submon( final IProgressMonitor parent,
-                                            final int ticks )
-    {
-        return new SubProgressMonitor( parent, ticks );
-    }
-    
     private static final class FacetPages
     {
         public Action action;
-        public List pages;
+        public List<IFacetWizardPage> pages;
     }
     
     private void handleSelectedFacetsChangedEvent()
@@ -397,20 +464,19 @@ public class ModifyFacetedProjectWizard
         
         // Get the set of actions and sort them.
         
-        final Set base = getBaseFacets();
-        final Set actions = this.facetsSelectionPage.getActions();
-        final ArrayList sortedActions = new ArrayList( actions );
+        final Set<IProjectFacetVersion> base = getBaseFacets();
+        final Set<Action> actions = this.facetsSelectionPage.getActions();
+        final List<Action> sortedActions = new ArrayList<Action>( actions );
         ProjectFacetsManager.sort( base, sortedActions );
         
         // Recalculate the sequence of wizard pages.
         
-        final ArrayList newFacetPages = new ArrayList();
+        final List<FacetPages> newFacetPages = new ArrayList<FacetPages>();
         final boolean[] markers = new boolean[ this.facetPages.length ];
         boolean changed = false;
         
-        for( Iterator itr1 = sortedActions.iterator(); itr1.hasNext(); )
+        for( Action action : sortedActions )
         {
-            final Action action = (Action) itr1.next();
             final IProjectFacetVersion fv = action.getProjectFacetVersion();
             FacetPages fp = findFacetPages( action, markers );
             
@@ -428,7 +494,7 @@ public class ModifyFacetedProjectWizard
                     continue;
                 }
                 
-                final List pages
+                final List<IFacetWizardPage> pages
                     = ProjectFacetsUiManager.getWizardPages( actiondef.getId() );
                 
                 if( ! pages.isEmpty() )
@@ -437,11 +503,8 @@ public class ModifyFacetedProjectWizard
                     fp.action = action;
                     fp.pages = pages;
                     
-                    for( Iterator itr2 = fp.pages.iterator(); itr2.hasNext(); )
+                    for( IFacetWizardPage page : fp.pages )
                     {
-                        final IFacetWizardPage page 
-                            = (IFacetWizardPage) itr2.next();
-                        
                         page.setWizard( this );
                         page.setWizardContext( this.context );
                         page.setConfig( action.getConfig() );
@@ -467,12 +530,8 @@ public class ModifyFacetedProjectWizard
         {
             if( ! markers[ i ] )
             {
-                for( Iterator itr = this.facetPages[ i ].pages.iterator();
-                     itr.hasNext(); )
+                for( IFacetWizardPage page : this.facetPages[ i ].pages )
                 {
-                    final IFacetWizardPage page 
-                        = (IFacetWizardPage) itr.next();
-                    
                     page.setWizard( null );
                     this.pagesToDispose.add( page );
                 }
@@ -507,15 +566,30 @@ public class ModifyFacetedProjectWizard
         return null;
     }
     
-    private Set getBaseFacets()
+    private Set<IProjectFacetVersion> getBaseFacets()
     {
         if( this.fproj == null )
         {
-            return Collections.EMPTY_SET;
+            return Collections.emptySet();
         }
         else
         {
             return this.fproj.getProjectFacets();
+        }
+    }
+    
+    private void executeDelayedActions()
+    {
+        for( Runnable r : this.delayedActions )
+        {
+            try
+            {
+                r.run();
+            }
+            catch( Exception e )
+            {
+                FacetUiPlugin.log( e );
+            }
         }
     }
 
@@ -533,7 +607,7 @@ public class ModifyFacetedProjectWizard
             return ModifyFacetedProjectWizard.this.getProjectName();
         }
 
-        public Set getSelectedProjectFacets()
+        public Set<IProjectFacetVersion> getSelectedProjectFacets()
         {
             return ModifyFacetedProjectWizard.this.facetsSelectionPage.getSelectedProjectFacets();
         }
@@ -543,7 +617,7 @@ public class ModifyFacetedProjectWizard
             return getSelectedProjectFacets().contains( fv );
         }
 
-        public Set getActions()
+        public Set<Action> getActions()
         {
             final FacetsSelectionPage page
                 = ModifyFacetedProjectWizard.this.facetsSelectionPage;
@@ -554,10 +628,8 @@ public class ModifyFacetedProjectWizard
         public Action getAction( final Action.Type type,
                                  final IProjectFacetVersion f )
         {
-            for( Iterator itr = getActions().iterator(); itr.hasNext(); )
+            for( Action action : getActions() )
             {
-                final Action action = (Action) itr.next();
-                
                 if( action.getType() == type && action.getProjectFacetVersion() == f )
                 {
                     return action;
@@ -570,7 +642,7 @@ public class ModifyFacetedProjectWizard
 		public Object getConfig(IProjectFacetVersion fv, Type type, String pjname) throws CoreException {
 			Object config = ModifyFacetedProjectWizard.this.getConfig(fv, type, pjname);
 			if (null == config) {
-                final Set base = getBaseFacets();
+                final Set<IProjectFacetVersion> base = getBaseFacets();
                 final IActionDefinition def = fv.getActionDefinition( base, type );
                 config = def.createConfigObject( fv, pjname );
 			}

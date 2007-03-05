@@ -1,12 +1,12 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2005-2007 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik - initial API and implementation
+ *    Konstantin Komissarchik
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core;
@@ -14,6 +14,7 @@ package org.eclipse.wst.common.project.facet.core;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.StringTokenizer;
 
 /**
@@ -21,29 +22,23 @@ import java.util.StringTokenizer;
  * specified. The default version comparator can handle version strings using 
  * the standard decimal notation. It can also be subclassed to modify the 
  * separators that are used or to provide custom parsing for a version segment.
- *
- * <p><i>This class is part of an interim API that is still under development 
- * and expected to change significantly before reaching stability. It is being 
- * made available at this early stage to solicit feedback from pioneering 
- * adopters on the understanding that any code that uses this API will almost 
- * certainly be broken (repeatedly) as the API evolves.</i></p>
  * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
 public class DefaultVersionComparator
 
-    implements Comparator
+    implements Comparator<String>
     
 {
-    public final int compare( final Object obj1,
-                              final Object obj2 )
+    public final int compare( final String obj1,
+                              final String obj2 )
     
         throws VersionFormatException
         
     {
-        final Comparable[] parsed1 = parse( (String) obj1 );
-        final Comparable[] parsed2 = parse( (String) obj2 );
+        final Comparable<Object>[] parsed1 = parse( obj1 );
+        final Comparable<Object>[] parsed2 = parse( obj2 );
         
         for( int i = 0; i < parsed1.length && i < parsed2.length; i++ )
         {
@@ -92,9 +87,9 @@ public class DefaultVersionComparator
      * @throws VersionFormatException if encountered an error while parsing
      */
     
-    protected Comparable parse( final String version,
-                                final String segment,
-                                final int position )
+    protected Comparable<? extends Object> parse( final String version,
+                                                  final String segment,
+                                                  final int position )
     
         throws VersionFormatException
         
@@ -123,9 +118,10 @@ public class DefaultVersionComparator
      * @return an array containing the parsed representation of the version
      */
     
-    private Comparable[] parse( final String ver )
+    @SuppressWarnings( "unchecked" )
+    private Comparable<Object>[] parse( final String ver )
     {
-        final ArrayList segments = new ArrayList();
+        final List<String> segments = new ArrayList<String>();
         
         for( StringTokenizer t = new StringTokenizer( ver, getSeparators() );
              t.hasMoreTokens(); )
@@ -137,7 +133,7 @@ public class DefaultVersionComparator
         
         for( int i = 0, n = segments.size(); i < n; i++ )
         {
-            parsed[ i ] = parse( ver, (String) segments.get( i ), i );
+            parsed[ i ] = parse( ver, segments.get( i ), i );
         }
         
         return parsed;

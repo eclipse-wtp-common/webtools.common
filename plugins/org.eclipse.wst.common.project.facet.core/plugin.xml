@@ -27,6 +27,8 @@
     id="validators"
     name="Faceted Project Validators Extension Point"
     schema="schemas/validators.exsd"/>
+    
+  <extension-point id="listeners" name="%extPointListeners" schema="schemas/listeners.exsd"/>
   
   <extension
     id="nature"
