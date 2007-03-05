@@ -292,7 +292,7 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 		if (FACET_RUNTIME.equals(propertyName)) {
 			IRuntime runtime = (IRuntime) getProperty(propertyName);
 			if (null != runtime) {
-				return new DataModelPropertyDescriptor(runtime, runtime.getName());
+				return new DataModelPropertyDescriptor(runtime, runtime.getLocalizedName());
 			}
 			return new DataModelPropertyDescriptor(null, WTPCommonPlugin.getResourceString(WTPCommonMessages.RUNTIME_NONE, null));
 		}
@@ -326,7 +326,7 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 			Iterator iterator = list.iterator();
 			for (int i = 0; i < descriptors.length - 1; i++) {
 				IRuntime runtime = (IRuntime) iterator.next();
-				descriptors[i] = new DataModelPropertyDescriptor(runtime, runtime.getName());
+				descriptors[i] = new DataModelPropertyDescriptor(runtime, runtime.getLocalizedName());
 			}
 			if(descriptors.length > 2){
 				Arrays.sort(descriptors, 0, descriptors.length - 2, new Comparator() {
