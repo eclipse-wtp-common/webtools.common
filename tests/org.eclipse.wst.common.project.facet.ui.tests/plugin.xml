@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+
+<plugin>
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.facets">
+    
+    <category id="ui.category">
+      <label>UI Test Category</label>
+      <description>This is the category description.</description>
+    </category>
+
+    <project-facet id="ui.f1">
+      <label>Facet 1</label>
+      <description>This is the description of facet1.</description>
+      <member category="ui.category"/>
+    </project-facet>
+
+    <project-facet-version facet="ui.f1" version="1.0">
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+
+    <project-facet id="ui.f2">
+      <label>Facet 2</label>
+      <description>This is the description of facet2.</description>
+      <member category="ui.category"/>
+    </project-facet>
+
+    <project-facet-version facet="ui.f2" version="1.0">
+      <action type="INSTALL">
+        <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+      </action>
+    </project-facet-version>
+    
+    <template id="ui.base.wizard.template">
+      <label>Faceted Project</label>
+    </template>
+    
+  </extension>
+
+   <extension point="org.eclipse.ui.newWizards">
+      <wizard 
+        name="Faceted Project Test Wizard"
+        id="org.eclipse.wst.common.project.facet.ui.tests.TestProjectWizard"
+        class="org.eclipse.wst.common.project.facet.ui.tests.TestProjectWizard"
+        icon="images/unknown.gif"
+        project="true">
+        <description>
+          This wizard is used to test the Faceted Project Wizard.
+        </description>
+        <selection class="org.eclipse.core.resources.IResource"/>
+      </wizard>
+   </extension>
+
+</plugin>
