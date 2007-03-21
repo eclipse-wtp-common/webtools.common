@@ -35,7 +35,11 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 	public static final Class ADAPTER_TYPE = VirtualArchiveComponent.class;
 	public static final String LIBARCHIVETYPE = "lib";
 	public static final String VARARCHIVETYPE = "var";
-
+	/**
+	 * VirtualArchiveComponent type for VirtualArchiveComponents that represent classpath component dependencies.
+	 */
+	public static final String CLASSPATHARCHIVETYPE = "cpe"; //$NON-NLS-1
+	
 	private static final IVirtualReference[] NO_REFERENCES = new VirtualReference[0];
 	private static final IVirtualComponent[] NO_COMPONENTS = new VirtualComponent[0];
 //	private static final IResource[] NO_RESOURCES = null;
@@ -255,7 +259,7 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 		File diskFile = new File(osPath);
 		return diskFile;
 	}
-
+	
 	public String toString() {
 		if(archivePath != null){
 			return componentProject + " " +archivePath;
