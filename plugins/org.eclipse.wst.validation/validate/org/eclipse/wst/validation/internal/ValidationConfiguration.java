@@ -1057,7 +1057,41 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	public int numberOfManualEnabledValidators() throws InvocationTargetException {
 		return getManualEnabledValidators().length;
 	}
+	
+	public void enableSingleValidator(ValidatorMetaData  vmd){
+		Map all = getValidatorMetaData();
+		all.put(vmd, Boolean.TRUE);
+	}
+	
+	
+	public void disableSingleValidator(ValidatorMetaData  vmd){
+		Map all = getValidatorMetaData();
+		all.put(vmd, Boolean.FALSE);
+	}
+	
+	public void enableSingleManualValidator(ValidatorMetaData  vmd){
+		Map manVal = getManualEnabledValidatorsMap();
+		manVal.put(vmd, Boolean.TRUE);
+	}
+	
+	
+	public void disableSingleManualValidator(ValidatorMetaData  vmd){
+		Map manVal = getManualEnabledValidatorsMap();
+		manVal.put(vmd, Boolean.FALSE);
+	}
 
+	
+	public void enableSingleBuildValidator(ValidatorMetaData  vmd){
+		Map buildVal = getBuildEnabledValidatorsMap();
+		buildVal.put(vmd, Boolean.TRUE);
+	}
+	
+	
+	public void disableSingleBuildValidator(ValidatorMetaData  vmd){
+		Map buildVal = getBuildEnabledValidatorsMap();
+		buildVal.put(vmd, Boolean.FALSE);
+	}
+	
   /**
    * Provides the delegate validator descriptor of the validator delegate configured 
    * for the given delegating validator in the context of this configuration. 

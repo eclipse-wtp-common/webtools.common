@@ -86,6 +86,88 @@ public final class ValidatorManager {
 		setEnabledValidators(currentProject, EMPTY_SET, monitor);
 	}
 
+	public void enableValidator(String validatorId) {
+
+		try {
+			ValidatorMetaData vmd = ValidationRegistryReader.getReader()
+					.getValidatorMetaData(validatorId);
+			GlobalConfiguration gf = ConfigurationManager.getManager()
+					.getGlobalConfiguration();
+			gf.enableSingleValidator(vmd);
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
+	
+	public void disableValidator(String validatorId){
+
+		try {
+			ValidatorMetaData vmd = ValidationRegistryReader.getReader()
+					.getValidatorMetaData(validatorId);
+			GlobalConfiguration gf = ConfigurationManager.getManager()
+					.getGlobalConfiguration();
+			gf.disableSingleValidator(vmd);
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
+	
+	public void enableValidator(String validatorId, IProject project, boolean manualValidation, boolean buildValidation) {
+
+		
+		try {
+			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
+			prjp.setDoesProjectOverride(true);
+			ValidatorMetaData vmd = ValidationRegistryReader.getReader()
+					.getValidatorMetaData(validatorId);
+			
+			if(manualValidation){
+				prjp.enableSingleManualValidator(vmd);
+			} 
+			if (buildValidation){
+				prjp.enableSingleBuildValidator(vmd);
+			}
+			prjp.store();
+			
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
+	
+	public void disableValidator(String validatorId, IProject project, boolean manualValidation, boolean buildValidation){
+
+		try {
+			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
+			prjp.setDoesProjectOverride(true);
+			ValidatorMetaData vmd = ValidationRegistryReader.getReader()
+					.getValidatorMetaData(validatorId);
+			
+			if(manualValidation){
+				prjp.disableSingleManualValidator(vmd);
+			} 
+			if (buildValidation){
+				prjp.disableSingleBuildValidator(vmd);
+			}
+			prjp.store();
+			
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
+	
+	
 	/**
 	 * Given an IProject, if the IProject does not support build validation, add the validation
 	 * builder to the project description so that the project can support bulid validation.
