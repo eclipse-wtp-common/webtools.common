@@ -103,10 +103,12 @@ public abstract class OperationTestCase extends BaseTestCase {
 	}
 
 	public static void runAndVerify(IDataModel dataModel, boolean checkTasks, boolean checkLog, List errorOKList, boolean reportIfExpectedErrorNotFound, boolean waitForBuildToComplete) throws Exception {
-		runAndVerify(dataModel, checkTasks, checkLog, errorOKList, reportIfExpectedErrorNotFound, waitForBuildToComplete, false);
+		// XXX note, waitForBuildToComplete is being ignored
+		runAndVerify(dataModel, checkTasks, checkLog, errorOKList, reportIfExpectedErrorNotFound, false, false);
 	}
 	public static void runDataModel(IDataModel dataModel, boolean checkTasks, boolean checkLog, List errorOKList, boolean reportIfExpectedErrorNotFound, boolean waitForBuildToComplete) throws Exception {
-		runDataModel(dataModel, checkTasks, checkLog, errorOKList, reportIfExpectedErrorNotFound, waitForBuildToComplete, false);
+		// XXX note, waitForBuildToComplete is being ignored
+		runDataModel(dataModel, checkTasks, checkLog, errorOKList, reportIfExpectedErrorNotFound, false, false);
 	}
 
 	/**
