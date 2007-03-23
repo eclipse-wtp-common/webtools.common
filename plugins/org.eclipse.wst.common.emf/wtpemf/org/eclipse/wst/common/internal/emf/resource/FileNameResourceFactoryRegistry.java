@@ -69,7 +69,7 @@ public abstract class FileNameResourceFactoryRegistry extends DefaultOverridable
 		addDescriptor(new StaticResourceFactoryDescriptor(lastSegment, aFactory));		
 	} 
 
-	protected final synchronized ResourceFactoryDescriptor getDescriptor(URI uri) {
+	protected synchronized ResourceFactoryDescriptor getDescriptor(URI uri) {
 		return (ResourceFactoryDescriptor) descriptors.get(uri.lastSegment());
 	}
 
@@ -81,7 +81,7 @@ public abstract class FileNameResourceFactoryRegistry extends DefaultOverridable
 		return factory;
 	}
 
-	protected final void addDescriptor(ResourceFactoryDescriptor descriptor) { 
+	protected void addDescriptor(ResourceFactoryDescriptor descriptor) { 
 		descriptors.put(descriptor.getShortSegment(), descriptor);
 	}
  

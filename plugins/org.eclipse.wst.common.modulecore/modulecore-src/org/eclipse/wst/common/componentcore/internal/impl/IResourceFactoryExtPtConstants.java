@@ -20,6 +20,8 @@ public interface IResourceFactoryExtPtConstants {
 	String ATT_CLASS = "class"; //$NON-NLS-1$
 	
 	String ATT_SHORT_SEGMENT = "shortSegment"; //$NON-NLS-1$ 
+	
+	String ATT_VERSION = "version"; //$NON-NLS-1$ 
 		
 
 }

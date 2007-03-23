@@ -93,6 +93,7 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 	private class ConfigurationResourceFactoryDescriptor extends ResourceFactoryDescriptor  implements IResourceFactoryExtPtConstants {
 		
 		private String shortSegment;
+		private String version;
 		private final IConfigurationElement element; 
 		
 		public ConfigurationResourceFactoryDescriptor(IConfigurationElement ext) throws CoreException {
@@ -109,7 +110,7 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 										"The shortSegment attribute of " + TAG_RESOURCE_FACTORY + //$NON-NLS-1$ 
 										" must specify a valid, non-null, non-empty value in " +   //$NON-NLS-1$
 										element.getNamespaceIdentifier(), null));
-			
+			version = element.getAttribute(ATT_VERSION);
 		} 
 
 		public boolean isEnabledFor(URI fileURI) {
@@ -172,4 +173,46 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 			}	
 		}
 	}
+	private class WTPResourceFactoryRegistryKey { 
+ 		
+		public String version;
+		public String shortName;
+		public WTPResourceFactoryRegistryKey() {
+			super();
+		}
+		@Override
+		public boolean equals(Object arg0) {
+			
+			if (arg0 instanceof WTPResourceFactoryRegistryKey) {
+				WTPResourceFactoryRegistryKey key = (WTPResourceFactoryRegistryKey) arg0;
+				return key.version.equals(version) && key.shortName.equals(shortName);
+			}
+			return false;
+		}
+		@Override
+		public int hashCode() {
+			
+			return version.hashCode() & shortName.hashCode();
+		}
+		
+	}
+
+
+	@Override
+	protected void addDescriptor(ResourceFactoryDescriptor descriptor) {
+		// TODO Auto-generated method stub
+		super.addDescriptor(descriptor);
+	}
+
+	@Override
+	protected synchronized ResourceFactoryDescriptor getDescriptor(URI uri) {
+		
+//		WTPResourceFactoryRegistryKey key = new WTPResourceFactoryRegistryKey();
+//		key.shortName = uri.lastSegment();
+//		key.version = J2EEFileUtil.getFastSpecVersion(uri);
+		
+		
+		
+		return super.getDescriptor(uri);
+		}
 }

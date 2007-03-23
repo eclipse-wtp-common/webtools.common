@@ -45,7 +45,7 @@
    <element name="resourceFactory">
       <annotation>
          <documentation>
-            Associates a short name (e.g. &quot;web.xml&quot;) with the appropriate Resource.Factory to create the Resource type when loading files of the declared shortname. 
+            Associates a short name (e.g. &quot;web.xml&quot;) with the appropriate Resource.Factory to create the Resource type when loading files of the declared shortname.
          </documentation>
       </annotation>
       <complexType>
@@ -63,6 +63,13 @@
             <annotation>
                <documentation>
                   Declares the short segment of a filename that the resource factory applies to (e.g. &quot;web.xml&quot;).
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="version" type="string">
+            <annotation>
+               <documentation>
+                  An optional version identifier to differentiate file versions
                </documentation>
             </annotation>
          </attribute>
