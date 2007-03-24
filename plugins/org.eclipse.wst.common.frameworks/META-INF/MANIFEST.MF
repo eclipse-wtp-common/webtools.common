@@ -22,3 +22,4 @@ Require-Bundle: org.eclipse.core.resources;bundle-version="[3.2.0,4.0.0)",
  org.eclipse.wst.common.environment;bundle-version="[1.0.100,1.1.0)";visibility:=reexport,
  org.eclipse.emf.ecore;bundle-version="[2.2.0,2.4.0)"
 Eclipse-LazyStart: true
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
