@@ -180,7 +180,6 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 		public WTPResourceFactoryRegistryKey() {
 			super();
 		}
-		@Override
 		public boolean equals(Object arg0) {
 			
 			if (arg0 instanceof WTPResourceFactoryRegistryKey) {
@@ -189,7 +188,6 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 			}
 			return false;
 		}
-		@Override
 		public int hashCode() {
 			
 			return version.hashCode() & shortName.hashCode();
@@ -198,13 +196,11 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 	}
 
 
-	@Override
 	protected void addDescriptor(ResourceFactoryDescriptor descriptor) {
 		// TODO Auto-generated method stub
 		super.addDescriptor(descriptor);
 	}
 
-	@Override
 	protected synchronized ResourceFactoryDescriptor getDescriptor(URI uri) {
 		
 //		WTPResourceFactoryRegistryKey key = new WTPResourceFactoryRegistryKey();
