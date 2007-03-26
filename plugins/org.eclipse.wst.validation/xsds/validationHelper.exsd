@@ -47,7 +47,7 @@
          <attribute name="helperClass" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  The class must implement org.eclipse.wst.validation.internal.IProjectValidationHelper.
                </documentation>
             </annotation>
          </attribute>

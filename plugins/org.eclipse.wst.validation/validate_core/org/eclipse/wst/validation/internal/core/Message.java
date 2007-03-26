@@ -59,17 +59,17 @@ import org.eclipse.wst.validation.internal.provisional.core.IMessage;
  * ]
  */
 public class Message implements IMessage {
-	private String id = null;
-	private String[] params = null;
+	private String id;
+	private String[] params;
 	private int severity = MessageFilter.ANY_SEVERITY;
-	private Object targetObject = null;
-	private String bundleName = null;
-	private String groupName = null;
+	private Object targetObject;
+	private String bundleName;
+	private String groupName;
 	private int lineNumber = IMessage.LINENO_UNSET;
 	private int length = IMessage.OFFSET_UNSET;
 	private int offset = IMessage.OFFSET_UNSET;
 	private HashMap messageAttributes;
-	private String markerId = null;
+	private String markerId;
 
 	/**
 	 * <p>

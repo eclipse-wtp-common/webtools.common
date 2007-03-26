@@ -50,8 +50,8 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidatorJob;
  */
 public final class ValidatorManager {
 	public static final String VALIDATOR_JOB_FAMILY = "validators";	 //$NON-NLS-1$	
-	private static ValidatorManager inst = null;
-	private static IResourceUtil _resourceUtil = null; // a common utility, different whether or not
+	private static ValidatorManager inst;
+	private static IResourceUtil _resourceUtil; // a common utility, different whether or not
 	// WSAD is running in headless or UI mode,
 	// which can retrieve the line number of some
 	// MOF objects.
@@ -60,16 +60,13 @@ public final class ValidatorManager {
 	private static final Set EMPTY_SET = Collections.EMPTY_SET; // an empty set, provided for
 	// convenience, so that we only
 	// construct one empty set once.
-	private Set _suspendedProjects = null;
+	private Set _suspendedProjects;
 	private boolean _suspendAllValidation = false;
-	private static Class _messageLimitOwner = null;
-	private String[] _internalOwners = null;
+	private static Class _messageLimitOwner;
+	private String[] _internalOwners;
 	private Map validatorMsgs = Collections.synchronizedMap( new HashMap() );	
 	private Set problemValidators = new HashSet();	
 	
-	/**
-	 * ValidatorManager constructor comment.
-	 */
 	private ValidatorManager() {
 		super();
 		_suspendedProjects = new HashSet();

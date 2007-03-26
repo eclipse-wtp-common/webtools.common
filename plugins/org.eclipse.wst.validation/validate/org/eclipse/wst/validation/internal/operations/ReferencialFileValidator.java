@@ -20,10 +20,14 @@ import java.util.List;
 
 /**
  * @author vijayb
- * 
- * To change the template for this generated type comment go to Window - Preferences - Java - Code
- * Generation - Code and Comments
  */
 public interface ReferencialFileValidator {
+	
+	/**
+	 * Answer the referenced files.
+	 * 
+	 * @param inputFiles
+	 * @return a list of IFile's.
+	 */
 	public List getReferencedFile(List inputFiles);
 }

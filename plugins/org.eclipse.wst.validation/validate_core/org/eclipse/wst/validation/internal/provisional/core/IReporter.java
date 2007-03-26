@@ -12,9 +12,6 @@ package org.eclipse.wst.validation.internal.provisional.core;
 
 import java.util.List;
 
-
-
-
 /*
  * CCM - Reporter is now passed locale-independent messages.
  *       Messages should only be translated to a locale upon access.
@@ -63,7 +60,7 @@ public interface IReporter {
 	 *  to handle a MessageLimitException? Seems to me that this is a validation framework
 	 *  specific issue and that client validators shouldn't know about this at all. ]
 	 */
-	public abstract void addMessage(IValidator origin, IMessage message);
+	abstract void addMessage(IValidator origin, IMessage message);
 
 	/**
 	 * <p>
@@ -83,14 +80,14 @@ public interface IReporter {
 	 *            message The message to be displayed to the user.
 	 *                       
 	 */
-	public abstract void displaySubtask(IValidator validator, IMessage message);
+	abstract void displaySubtask(IValidator validator, IMessage message);
 
 	/**
 	 * @return the message access interface to this reporter, or null if message access is not
 	 * supported.
 	 *     
 	 */
-	public List getMessages();
+	List getMessages();
 
 	/**
 	 * <p>
@@ -103,7 +100,7 @@ public interface IReporter {
 	 * @return true if the user cancelled validation, and false otherwise.
 	 *  
 	 */
-	public abstract boolean isCancelled();
+	abstract boolean isCancelled();
 
 	/**
 	 * <p>
@@ -116,7 +113,7 @@ public interface IReporter {
 	 * @param origin
 	 * 			originator validator of the message.  
 	 */
-	public abstract void removeAllMessages(IValidator origin);
+	abstract void removeAllMessages(IValidator origin);
 
 	/**
 	 * Remove all validation messages, entered by the identified validator, pertaining to the Object
@@ -135,7 +132,7 @@ public interface IReporter {
 	 * when adding the message as problem marker.
 	 * 
  	 */
-	public abstract void removeAllMessages(IValidator origin, Object object);
+	abstract void removeAllMessages(IValidator origin, Object object);
 
 	/**
 	 * To support removal of a subset of validation messages, an IValidator may assign group names
@@ -160,5 +157,5 @@ public interface IReporter {
 	 * @param groupName
 	 * 			name of the group to which the message belongs. 
 	 */
-	public void removeMessageSubset(IValidator validator, Object obj, String groupName);
+	void removeMessageSubset(IValidator validator, Object obj, String groupName);
 }

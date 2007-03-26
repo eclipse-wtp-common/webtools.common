@@ -30,11 +30,11 @@ public class ValidatorTypeFilter {
 	// class/interface identified by this fully-qualified
 	// Java string.
 
-	/* package */ValidatorTypeFilter() {
+	ValidatorTypeFilter() {
 		//default
 	}
 
-	/* package */ValidatorTypeFilter(String mustImplementClass) {
+	ValidatorTypeFilter(String mustImplementClass) {
 		setMustImplementClass(mustImplementClass);
 	}
 
@@ -42,14 +42,14 @@ public class ValidatorTypeFilter {
 	 * Type filters are allowed only for certain types of classes. This method returns the name of
 	 * the class which this type must implement before it can be a filter.
 	 */
-	/* package */String getMustImplementClass() {
+	String getMustImplementClass() {
 		return _mustImplementClass;
 	}
 
 	/**
 	 * Return the type filter as a java.lang.Class object.
 	 */
-	/* package */Class getTypeFilterClass() {
+	Class getTypeFilterClass() {
 		return _typeFilterClass;
 	}
 
@@ -71,7 +71,7 @@ public class ValidatorTypeFilter {
 	/**
 	 * Checks if filterClass is a parent (interface or superclass) of objectClass.
 	 */
-	/* package */boolean isInstance(Class objectClass, Class filterClass) {
+	boolean isInstance(Class objectClass, Class filterClass) {
 		// The java.lang.Class.isInstance call doesn't check interfaces fully.
 		// i.e., if I have two interfaces, A and B, and B extends A but
 		// doesn't implement A, then the isInstance call will return false.
@@ -96,7 +96,7 @@ public class ValidatorTypeFilter {
 	 * Type filters are allowed only for certain types of classes. This method sets the name of the
 	 * class which this type must implement before it can be a filter.
 	 */
-	/* package */void setMustImplementClass(String className) {
+	void setMustImplementClass(String className) {
 		_mustImplementClass = className;
 	}
 
@@ -104,7 +104,7 @@ public class ValidatorTypeFilter {
 	 * If the filter implements the mustImplementClass (in ValidatorFilter's case, IResource), then
 	 * this is a valid filter, and store the filter value.
 	 */
-	/* package */void setTypeFilter(String filter) {
+	void setTypeFilter(String filter) {
 		Class filterClass = null;
 		Class mustImplementClass = null;
 

@@ -51,7 +51,7 @@
          <attribute name="handlerClass" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  The class must implement the IValidationSelectionHandler interface.
                </documentation>
             </annotation>
          </attribute>

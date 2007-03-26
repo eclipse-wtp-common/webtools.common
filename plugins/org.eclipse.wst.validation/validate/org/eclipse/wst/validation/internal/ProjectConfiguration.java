@@ -32,11 +32,9 @@ import org.osgi.service.prefs.BackingStoreException;
  * This class represents the Project Preferences as set on the Project's Validation Properties page.
  */
 public class ProjectConfiguration extends ValidationConfiguration {
-	/* package */static final boolean PRJ_OVERRIDEGLOBAL_DEFAULT = false; // If the user has never
-	// set
-	// a preference before, this
-	// is the override default
-	// (on)
+	
+	/** false - If the user has never set a preference before, this is the override default */
+	static final boolean PRJ_OVERRIDEGLOBAL_DEFAULT = false; 
 	private boolean _doesProjectOverride = getDoesProjectOverrideDefault();
 
 	/**

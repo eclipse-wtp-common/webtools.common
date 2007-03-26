@@ -43,13 +43,10 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  * build validation enabled.
  */
 public class ValidationBuilder extends IncrementalProjectBuilder {
-	public static final int NO_DELTA_CHANGE = -1; // Since IResourceConstants
+	public static final int NO_DELTA_CHANGE = -1;
 	protected List referencedProjects;
 	protected IWorkbenchContext workbenchContext = null;
 
-	// doesn't have a "no delta"
-	// flag, let this constant be
-	// the flag.
 	public ValidationBuilder() {
 		super();
 	}
@@ -134,10 +131,6 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 
 	}
 
-	/**
-	 * @param referencedProjects
-	 * @return
-	 */
 	private IProject[] getReferencedProjects() {
 		IProject[] refProjArray = new IProject[referencedProjects.size()];
 		for (int i = 0; i < referencedProjects.size(); i++) {
@@ -228,10 +221,6 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 		}
 	}
 
-	/**
-	 * @param referenced
-	 * @return
-	 */
 	private boolean isReferencedProjectInDelta(IProject[] referenced) {
 		IProject p = null;
 		for (int i = 0; i < referenced.length; i++) {
@@ -243,10 +232,6 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 		return false;
 	}
 
-	/**
-	 * @param monitor
-	 * @param prjp
-	 */
 	private void performFullBuildForReferencedProjectChanged(IProgressMonitor monitor, ProjectConfiguration prjp) throws InvocationTargetException {
 		performFullBuild(monitor, prjp, true);
 	}

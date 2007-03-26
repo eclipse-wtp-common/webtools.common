@@ -72,21 +72,18 @@ import org.eclipse.wst.validation.internal.provisional.core.MessageLimitExceptio
  * This operation is not intended to be subclassed outside of the validation framework.
  */
 public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadlessRunnableWithProgress {
-	public static final int NO_DELTA_CHANGE = -1; // Since IResourceConstants
-	// doesn't have a "no delta"
-	// flag, let this constant be
-	// the flag.
+	// Since IResourceConstants don't have a "no delta" flag, let this constant be the flag.
+	public static final int NO_DELTA_CHANGE = -1; 
 	private static final String DELTA_AS_STRING = "IFileDelta[{0}] '{'{1}'}'"; //$NON-NLS-1$
 	private static final String COMMA = ", "; //$NON-NLS-1$
+	
 	protected static final boolean DEFAULT_ASYNC = true; // For the deprecated
 	// constructors, by
 	// default the
 	// operation will not
 	// fork.
-	protected static final boolean DEFAULT_FORCE = true; // By default, run the
-	protected static final String VALIDATIONLAUNCHERMSG = "Waiting for build"; // By default, run the
-	// operation whether
-	// or not it needs to
+	protected static final boolean DEFAULT_FORCE = true;
+	protected static final String VALIDATIONLAUNCHERMSG = "Waiting for build"; 
 	
 	class ValidationLauncherJob extends Job {
 	    private Job validationJob;
@@ -680,9 +677,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		}
 	}
 
-	/**
-	 * @param reporter
-	 */
 	private void validateReferencialFiles(WorkbenchReporter reporter) {
 		ReferencialFileValidatorRegistryReader reader = ReferencialFileValidatorRegistryReader.getInstance();
 		if (reader != null) {
@@ -705,6 +699,8 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	private void refFileValidateFileDelta(WorkbenchReporter reporter, ReferencialFileValidator refFileValidator) {
 		IResourceDelta[] resourceDelta = _delta.getAffectedChildren(IResourceDelta.ADDED | IResourceDelta.CHANGED | IResourceDelta.REMOVED);
 		List inputFiles = new ArrayList();
+		
+		// A list of IFile's
 		List referencingFiles = new ArrayList();
 		if (resourceDelta != null && resourceDelta.length > 0) {
 			for (int i = 0; i < resourceDelta.length; i++) {
@@ -1006,9 +1002,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		}
 	}
 
-	/**
-	 * 
-	 */
 	private void releaseCachedMaps() {
 		if (ValidationRegistryReader.getReader().projectValidationMetaData != null) {
 			ValidationRegistryReader.getReader().projectValidationMetaData.clear();

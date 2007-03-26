@@ -48,34 +48,35 @@ import java.util.Locale;
  * ]
  */
 public interface IMessage {
-	public static final int OFFSET_UNSET = -1; // see getLength(), getOffset()
-	public static final int LINENO_UNSET = 0;
+	int OFFSET_UNSET = -1; // see getLength(), getOffset()
+	int LINENO_UNSET = 0;
+	
 	/**
 	 * Typically used to specify error messages.
 	 */
-	public static final int HIGH_SEVERITY = 0x0001;
+	int HIGH_SEVERITY = 0x0001;
 	/**
 	 * Typically used to specify warning messages.
 	 */
-	public static final int NORMAL_SEVERITY = 0x0002;
+	int NORMAL_SEVERITY = 0x0002;
 	/**
 	 * Typically used to specify information messages.
 	 */
-	public static final int LOW_SEVERITY = 0x0004;
+	int LOW_SEVERITY = 0x0004;
 	/**
 	 * Specify high (error) and normal (warning) messages. Typically used with a MessageFilter, to
 	 * filter out information messages.
 	 */
-	public static final int ERROR_AND_WARNING = HIGH_SEVERITY | NORMAL_SEVERITY;
+	int ERROR_AND_WARNING = HIGH_SEVERITY | NORMAL_SEVERITY;
 	/**
 	 * Specify all types of messages. Typically used with a MessageFilter.
 	 */
-	public static final int ALL_MESSAGES = ERROR_AND_WARNING | LOW_SEVERITY;
+	int ALL_MESSAGES = ERROR_AND_WARNING | LOW_SEVERITY;
 
 	/**
 	 * @return the name of the bundle which this message is contained in.
 	 */
-	public String getBundleName();
+	String getBundleName();
 
 	/**
 	 * <p>
@@ -85,7 +86,7 @@ public interface IMessage {
 	 * </p>
 	 * @return the name of the group to which the message belongs.
 	 */
-	public String getGroupName();
+	String getGroupName();
 
 	/**
 	 * <p>
@@ -96,7 +97,7 @@ public interface IMessage {
 	 * </p>
 	 * @return the id of the message
 	 */
-	public java.lang.String getId();
+	String getId();
 
 	/**
 	 * @return the length of the problem area, starting from the offset. If unset, value =
@@ -104,7 +105,7 @@ public interface IMessage {
 	 * 
 	 * @see #getOffset()
 	 */
-	public int getLength();
+	int getLength();
 
 	/**
 	 * <p>
@@ -116,7 +117,7 @@ public interface IMessage {
 	 * @return line number of the location of the problem.
 	 * 
 	 */
-	public int getLineNumber();
+	int getLineNumber();
 
 	/**
 	 * <p>
@@ -128,7 +129,7 @@ public interface IMessage {
 	 * 
 	 * @return offset of the message
 	 */
-	public int getOffset();
+	int getOffset();
 
 	/**
 	 * <p>
@@ -138,7 +139,7 @@ public interface IMessage {
 	 * 
 	 * @return parameters of the message
 	 */
-	public java.lang.String[] getParams();
+	String[] getParams();
 
 	/**
 	 * <p>
@@ -151,7 +152,7 @@ public interface IMessage {
 	 * 
 	 * @return the severity level of the message
 	 */
-	public int getSeverity();
+	int getSeverity();
 
 	/**
 	 * <p>
@@ -162,13 +163,13 @@ public interface IMessage {
 	 * 
 	 * @return the target object for the message
 	 */
-	public Object getTargetObject();
+	Object getTargetObject();
 
 	/**
 	 * @return a text representation of this message formatted in the default Locale, with the
 	 * bundle loaded by the default ClassLoader.
 	 */
-	public java.lang.String getText();
+	String getText();
 
 	/**
 	 * @param classLoader 
@@ -177,7 +178,7 @@ public interface IMessage {
 	 * @return a text representation of this message formatted in the default locale, with the
 	 * bundle loaded by the specified ClassLoader.
 	 */
-	public java.lang.String getText(ClassLoader classLoader);
+	String getText(ClassLoader classLoader);
 
 	/**
 	 * @param locale
@@ -186,7 +187,7 @@ public interface IMessage {
 	 * @return a text representation of this message formatted in the specified locale, with the
 	 * bundle loaded by the default ClassLoader.
 	 */
-	public java.lang.String getText(Locale locale);
+	String getText(Locale locale);
 
 	/**
 	 * @param locale
@@ -197,7 +198,7 @@ public interface IMessage {
 	 * @return a text representation of this message formatted in the specified locale, with the
 	 * bundle loaded by the specified ClassLoader.
 	 */
-	public java.lang.String getText(Locale locale, ClassLoader classLoader);
+	String getText(Locale locale, ClassLoader classLoader);
 	
 	/**
 	 * Provides a way to store some additional attributes that a message would like to store
@@ -207,7 +208,7 @@ public interface IMessage {
 	 * @return an Object basically the value associated with the object name.
 	 */
 	
-	public Object getAttribute(String attributeName);
+	 Object getAttribute(String attributeName);
 	
 	/**
 	 * Set the attributeName and value as key value pair
@@ -224,7 +225,7 @@ public interface IMessage {
 	 * @param bundleName 
 	 * 			Name of the bundle which contains the message.
 	 */
-	public void setBundleName(String bundleName);
+	void setBundleName(String bundleName);
 
 	/**
 	 * <p>
@@ -236,7 +237,7 @@ public interface IMessage {
 	 * @param name
 	 * 			Name of the group.
 	 */
-	public void setGroupName(String name);
+	void setGroupName(String name);
 
 	/**
 	 * <p>
@@ -249,7 +250,7 @@ public interface IMessage {
 	 * @param newId
 	 *            Id of the message.
 	 */
-	public void setId(java.lang.String newId);
+	void setId(String newId);
 
 	/**
 	 * <p>
@@ -262,7 +263,7 @@ public interface IMessage {
 	 * @param length 
 	 *			sets the length 		
 	 */
-	public void setLength(int length);
+	void setLength(int length);
 
 	/**
 	 * <p>
@@ -273,7 +274,7 @@ public interface IMessage {
 	 * @param lineNumber 
 	 *			sets the line no. 	
 	 */
-	public void setLineNo(int lineNumber);
+	void setLineNo(int lineNumber);
 
 	/**
 	 * <p>
@@ -285,7 +286,7 @@ public interface IMessage {
 	 * @param offset 
 	 *			sets the offset of the message.
 	 */
-	public void setOffset(int offset);
+	void setOffset(int offset);
 
 	/**
 	 * <p>
@@ -302,7 +303,7 @@ public interface IMessage {
 	 * @param newParams
 	 *            parameters of the message.
 	 */
-	public void setParams(java.lang.String[] newParams);
+	void setParams(String[] newParams);
 
 	/**
 	 * Sets the severity level of the message. One of SeverityEnum constants.
@@ -314,7 +315,7 @@ public interface IMessage {
 	 * @param newSeverity
 	 *            severity level of the message
 	 */
-	public void setSeverity(int newSeverity);
+	void setSeverity(int newSeverity);
 
 	/**
 	 * <p>
@@ -327,21 +328,21 @@ public interface IMessage {
 	 * @param obj
 	 *         The object that has the problem.
 	 */
-	public void setTargetObject(Object obj);
+	void setTargetObject(Object obj);
 	
 	/**
 	 * return all the attributes of a Message object
 	 * @return
 	 */
-	public HashMap getAttributes();
+	HashMap getAttributes();
 	
 	/**
 	 * return the marker id if one is set on this object when created
 	 */
-	public String getMarkerId();
+	String getMarkerId();
 	
 	/**
 	 * set the marker id on a Message object
 	 */
-	 public void setMarkerId(String markerId);
+	 void setMarkerId(String markerId);
 }

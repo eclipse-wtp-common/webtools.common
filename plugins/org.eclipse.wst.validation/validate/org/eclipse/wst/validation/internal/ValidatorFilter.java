@@ -12,26 +12,24 @@ package org.eclipse.wst.validation.internal;
 
 import org.eclipse.core.resources.IResource;
 
-
-
 /**
  * This class represents the plugin.xml tags, for a validator, for both name filters and type
  * filters. i.e., if an object has name filter and type filter specified, the filter filters out
  * objects which are not both of that type and named like the filter.
  */
 public class ValidatorFilter {
-	private ValidatorNameFilter _nameFilter = null;
-	private ValidatorTypeFilter _typeFilter = null;
-	private ValidatorActionFilter _actionFilter = null;
+	private ValidatorNameFilter _nameFilter;
+	private ValidatorTypeFilter _typeFilter;
+	private ValidatorActionFilter _actionFilter;
 
-	/* package */ValidatorFilter() {
+	ValidatorFilter() {
 		super();
 		_nameFilter = new ValidatorNameFilter();
 		_typeFilter = new ValidatorTypeFilter();
 		_actionFilter = new ValidatorActionFilter();
 	}
 
-	/* package */ValidatorFilter(String mustImplementClass) {
+	ValidatorFilter(String mustImplementClass) {
 		this();
 		_nameFilter = new ValidatorNameFilter();
 		_typeFilter.setMustImplementClass(mustImplementClass);
@@ -48,7 +46,7 @@ public class ValidatorFilter {
 	 * e.g. if the name filter is "*.java", and this resource is "readme.txt", this method will
 	 * return false. If the resource is named "readme.java", this method will return true.
 	 */
-	/* package */boolean isApplicableName(IResource resource) {
+	boolean isApplicableName(IResource resource) {
 		return _nameFilter.isApplicableName(resource);
 	}
 
@@ -58,7 +56,7 @@ public class ValidatorFilter {
 	 * e.g. if the type filter is "IFile", and this resource is "IProject", this method will return
 	 * false. If the resource is an IFile, this method will return true.
 	 */
-	/* package */boolean isApplicableType(IResource resource) {
+	boolean isApplicableType(IResource resource) {
 		return _typeFilter.isApplicableType(resource);
 	}
 
@@ -69,7 +67,7 @@ public class ValidatorFilter {
 	/**
 	 * Sets the name filter.
 	 */
-	/* package */void setNameFilter(String filter, String isCaseSensitiveString) {
+	void setNameFilter(String filter, String isCaseSensitiveString) {
 		_nameFilter.setNameFilter(filter);
 		if(filter != null)
 			  _nameFilter.setNameFilterExtension(getFilterExt(filter));
@@ -84,7 +82,7 @@ public class ValidatorFilter {
 	/**
 	 * Sets the type filter.
 	 */
-	/* package */void setTypeFilter(String filter) {
+	void setTypeFilter(String filter) {
 		_typeFilter.setTypeFilter(filter);
 	}
 

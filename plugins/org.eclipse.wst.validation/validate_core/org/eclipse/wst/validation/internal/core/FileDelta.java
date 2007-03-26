@@ -24,8 +24,8 @@ package org.eclipse.wst.validation.internal.core;
  *   a typical client would need to create one of these.]
  */
 public class FileDelta implements IFileDelta {
-	private int fileDelta = 0;
-	private String fileName = null;
+	private int fileDelta;
+	private String fileName;
 
 	/**
 	 * <p>

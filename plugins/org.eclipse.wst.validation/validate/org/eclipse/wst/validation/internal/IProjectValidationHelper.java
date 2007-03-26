@@ -13,6 +13,9 @@ package org.eclipse.wst.validation.internal;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 
+/**
+ * ValidatorHelper extensions must implement this interface.
+ */
 public interface IProjectValidationHelper {
 	
 	public IContainer[] getOutputContainers(IProject project);

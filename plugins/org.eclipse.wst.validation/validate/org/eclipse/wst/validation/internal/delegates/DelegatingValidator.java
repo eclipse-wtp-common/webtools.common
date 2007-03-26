@@ -52,9 +52,6 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidatorJob;
  */
 public class DelegatingValidator implements IDelegatingValidator
 {
-  /**
-   * Default constructor.
-   */
   public DelegatingValidator()
   {
   }

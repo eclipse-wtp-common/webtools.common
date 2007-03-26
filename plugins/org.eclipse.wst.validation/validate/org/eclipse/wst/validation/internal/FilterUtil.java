@@ -182,18 +182,8 @@ public final class FilterUtil {
 	 * filterIn is false, check if the resources are filtered in by the validator (recommended).
 	 */
 	public static Map getFileDeltas(Set enabledValidators, Object[] changedResources, boolean filterIn) {
-		return getFileDeltas(enabledValidators, changedResources, IFileDelta.CHANGED, filterIn); // by
-		// default,
-		// assume
-		// that
-		// the
-		// resources
-		// have
-		// changed,
-		// not
-		// added
-		// or
-		// deleted
+		// by default assume that the resources have changed, i.e. not added or deleted
+		return getFileDeltas(enabledValidators, changedResources, IFileDelta.CHANGED, filterIn); 
 	}
 
 	/**
@@ -201,16 +191,8 @@ public final class FilterUtil {
 	 * IFileDelta wrapper around the changed Object[], with each delta of type deltaType.
 	 */
 	public static Map getFileDeltas(Set enabledValidators, Object[] changedResources, int ifileDeltaType) {
-		return getFileDeltas(enabledValidators, changedResources, ifileDeltaType, false); // by
-		// default,
-		// check
-		// if the
-		// Object[]
-		// are
-		// filtered
-		// in by
-		// the
-		// validator
+		// by default check if the Objects are filtered in by the validator
+		return getFileDeltas(enabledValidators, changedResources, ifileDeltaType, false); 
 	}
 
 	/**
@@ -635,12 +617,7 @@ public final class FilterUtil {
 
 					// We don't need to filter out anything, because a full validation
 					// is about to be performed.
-					filterOut(getProgressMonitor(), _vmdDeltas, res, IResourceDelta.CHANGED, true); // true
-					// -
-					// this
-					// is a
-					// full
-					// build
+					filterOut(getProgressMonitor(), _vmdDeltas, res, IResourceDelta.CHANGED, true);
 
 					return true; // visit the resource's children as well
 				}

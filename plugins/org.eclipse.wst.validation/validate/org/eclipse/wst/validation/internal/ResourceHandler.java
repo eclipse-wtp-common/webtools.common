@@ -21,8 +21,6 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 /**
  * This class retrieves the Strings from the .properties file appropriate for the machine's Locale.
- * 
- *  
  */
 public class ResourceHandler {
 	//TODO Make this class final once the public ResourceHandler has been deleted.

@@ -51,8 +51,8 @@ public final class WorkbenchReporter implements IReporter {
 	public static final String DEFAULT_LOCATION = ""; //$NON-NLS-1$
 	public static final int NO_MESSAGE_LIMIT = -1;
 
-	private IProject _project = null;
-	private IProgressMonitor _monitor = null;
+	private IProject _project;
+	private IProgressMonitor _monitor;
 
 	public static void addMessage(IResource resource, Class messageOwner, IMessage message) {
 		addMessage(resource, messageOwner, null, message); // null ClassLoader = use the default
@@ -570,9 +570,6 @@ public final class WorkbenchReporter implements IReporter {
 			addMessage(resource, validator.getClass(), message, getTargetObjectName(helper, message), getLocation(helper, message),getMarkerId(vmd,message));
 	}
 
-	/**
-	 * @param vmd
-	 */
 	private String getMarkerId(ValidatorMetaData vmd, IMessage message) {
 		if (vmd.getMarkerIds() != null) {
 			if (vmd.getMarkerIds().length == 1)
@@ -595,9 +592,6 @@ public final class WorkbenchReporter implements IReporter {
 		return null;
 	}
 
-	/**
-	 * @param exc
-	 */
 	private void logDisabledValidator(IllegalArgumentException exc) {
 		// Even the IValidator is invalid. Unfortunately, can't disable the
 		// validator because it can't be found by the registry reader.

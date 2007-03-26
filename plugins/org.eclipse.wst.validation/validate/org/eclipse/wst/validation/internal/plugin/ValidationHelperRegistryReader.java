@@ -19,15 +19,17 @@ import org.eclipse.wst.validation.internal.IProjectValidationHelper;
 
 public class ValidationHelperRegistryReader extends RegistryReader {
 
+	/** validationHelper - extension point name. */
 	public static final String VALIDATION_HELPER = "validationHelper"; //$NON-NLS-1$
+	
 	static final String ATT_ID = "id"; //$NON-NLS-1$ 
+	
+	/** helperClass - class that implements the extension. */
 	static final String ATT_HELPER_CLASS = "helperClass"; //$NON-NLS-1$
+	
 	private static ValidationHelperRegistryReader INSTANCE = null;
 	private List validationHelpers = null;
 	
-	/**
-	 * Default constructor
-	 */
 	public ValidationHelperRegistryReader() {
 		super(ValidationPlugin.PLUGIN_ID, VALIDATION_HELPER);
 	}

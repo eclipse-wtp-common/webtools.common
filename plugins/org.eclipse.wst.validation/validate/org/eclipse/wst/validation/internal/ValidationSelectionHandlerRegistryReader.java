@@ -1,18 +1,3 @@
-/*
- * Created on Nov 23, 2004
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
-package org.eclipse.wst.validation.internal;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.jem.util.RegistryReader;
-import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
-
 /*******************************************************************************
  * Copyright (c) 2001, 2004 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
@@ -23,18 +8,27 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  * Contributors:
  * IBM Corporation - initial API and implementation
  *******************************************************************************/
+package org.eclipse.wst.validation.internal;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.jem.util.RegistryReader;
+import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+
 public class ValidationSelectionHandlerRegistryReader extends RegistryReader {
 
 	public static final String VALIDATION_SELECTION_HANDLER = "validationSelectionHandler"; //$NON-NLS-1$
 	static final String ATT_ID = "id"; //$NON-NLS-1$ 
-	static final String ATT_HANDLER_CLASS = "handlerClass"; //$NON-NLS-1$
-	static final String ATT_SELECTION_TYPE = "selectionType"; //$NON-NLS-1$
-	private static ValidationSelectionHandlerRegistryReader INSTANCE = null;
-	private List validationSelectionHandlers = null;
 	
-	/**
-	 * Default constructor
-	 */
+	/** handlerClass - */
+	static final String ATT_HANDLER_CLASS = "handlerClass"; //$NON-NLS-1$
+	
+	static final String ATT_SELECTION_TYPE = "selectionType"; //$NON-NLS-1$
+	private static ValidationSelectionHandlerRegistryReader INSTANCE;
+	private List validationSelectionHandlers;
+	
 	public ValidationSelectionHandlerRegistryReader() {
 		super(ValidationPlugin.PLUGIN_ID, VALIDATION_SELECTION_HANDLER);
 	}

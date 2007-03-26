@@ -20,21 +20,21 @@
          <attribute name="point" type="string" use="required">
             <annotation>
                <documentation>
-                  a fully qualified identifier of the target extension point
+                  A fully qualified identifier of the target extension point
                </documentation>
             </annotation>
          </attribute>
          <attribute name="id" type="string" use="required">
             <annotation>
                <documentation>
-                  an optional identifier of the extension instance
+                  An optional identifier of the extension instance
                </documentation>
             </annotation>
          </attribute>
          <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
-                  an optional name of the extension instance
+                  An optional name of the extension instance
                </documentation>
             </annotation>
          </attribute>
@@ -52,7 +52,6 @@
             <element ref="run"/>
             <element ref="markerId" minOccurs="0" maxOccurs="1"/>
             <element ref="facet" minOccurs="0" maxOccurs="unbounded"/>
-            
          </sequence>
          <attribute name="to" type="string">
             <annotation>

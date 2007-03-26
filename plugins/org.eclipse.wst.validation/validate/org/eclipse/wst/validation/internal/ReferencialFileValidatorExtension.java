@@ -22,23 +22,25 @@ import org.eclipse.wst.validation.internal.operations.ReferencialFileValidator;
 
 /**
  * @author vijayb
- * 
- * To change the template for this generated type comment go to Window - Preferences - Java - Code
- * Generation - Code and Comments
  */
 public class ReferencialFileValidatorExtension {
 	private String id = null;
 	private ReferencialFileValidator instance;
 	private boolean errorCondition = false;
 	private IConfigurationElement element;
+	
+	/** referencialFileValidator */
 	public static final String REF_FILE_VALIDATOR_EXTENSION = "referencialFileValidator"; //$NON-NLS-1$
+	
+	/** run */
 	public static final String RUN = "run"; //$NON-NLS-1$
+	
+	/** id */
 	public static final String ATT_ID = "id"; //$NON-NLS-1$
+	
+	/** class */
 	public static final String ATT_CLASS = "class"; //$NON-NLS-1$
 
-	/**
-	 *  
-	 */
 	public ReferencialFileValidatorExtension() {
 		super();
 	}
@@ -46,7 +48,7 @@ public class ReferencialFileValidatorExtension {
 	public ReferencialFileValidator getInstance() {
 		try {
 			if (instance == null && !errorCondition)
-				instance = (ReferencialFileValidator) element.createExecutableExtension("run"); //$NON-NLS-1$
+				instance = (ReferencialFileValidator) element.createExecutableExtension(RUN);
 		} catch (Throwable e) {
 			Logger.getLogger().logError(e);
 			errorCondition = true;

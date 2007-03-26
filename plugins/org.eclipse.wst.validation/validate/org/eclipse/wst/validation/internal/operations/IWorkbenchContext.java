@@ -15,9 +15,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.wst.validation.internal.provisional.core.IProjectValidationContext;
 
-
-
-
 /**
  * In the eclipse environment, not only does the IValidationContext need to be able to load the MOF model, it
  * also needs to load items from the eclipse workbench. This interface should be extended by
@@ -30,7 +27,7 @@ public interface IWorkbenchContext extends IProjectValidationContext {
 	 * 
 	 * If the cleanup is a long-running operation, subtask messages should be sent to the IReporter.
 	 */
-	public void cleanup(WorkbenchReporter reporter);
+	void cleanup(WorkbenchReporter reporter);
 
 	/**
 	 * When the IProject is closing, perform any cleanup that needs to be done. When this method is
@@ -38,7 +35,7 @@ public interface IWorkbenchContext extends IProjectValidationContext {
 	 * resources. If you do not allocate resources in your helper, then this method should be a
 	 * no-op.
 	 */
-	public void closing();
+	void closing();
 
 	/**
 	 * When the IProject is being deleted, perform any cleanup that needs to be done. When this
@@ -46,7 +43,7 @@ public interface IWorkbenchContext extends IProjectValidationContext {
 	 * those resources. If you do not allocate resources in your helper, then this method should be
 	 * a no-op.
 	 */
-	public void deleting();
+	void deleting();
 
 	/**
 	 * Given an Object, if the object has a corresponding IFile in the workbench, return the IFile.
@@ -68,7 +65,7 @@ public interface IWorkbenchContext extends IProjectValidationContext {
 	 * 
 	 * @deprecated Implement getResource(Object) instead.
 	 */
-	public IFile getFile(Object object);
+	IFile getFile(Object object);
 
 	/**
 	 * Given an Object, if the object has a corresponding IResource in the workbench, return the
@@ -88,7 +85,7 @@ public interface IWorkbenchContext extends IProjectValidationContext {
 	 * If this method returns null, then the WorkbenchReporter will add the message to the IProject
 	 * instead of an IResource.
 	 */
-	public IResource getResource(Object object);
+	IResource getResource(Object object);
 
 	/**
 	 * Given an IMessage's target object, return the line number, of the IFile, which the target
@@ -99,7 +96,7 @@ public interface IWorkbenchContext extends IProjectValidationContext {
 	 * Line numbers are valid only for IFile types; if the resource is not an IFile, then a text
 	 * description of the location must be returned.
 	 */
-	public String getLocation(Object object);
+	String getLocation(Object object);
 
 	/**
 	 * Return the name of the resource, without the project-specific information in front.
@@ -126,13 +123,13 @@ public interface IWorkbenchContext extends IProjectValidationContext {
 	 * particular type of resource, and the resource should not be included in the array of
 	 * IFileDelta objects in the IValidator's "validate" method.
 	 */
-	public String getPortableName(IResource resource);
+	String getPortableName(IResource resource);
 
 	/**
 	 * Return the IProject which is about to be validated. Each IWorkbenchContext knows how to
 	 * traverse a certain type of IProject, for example, an EJB project or a web project.
 	 */
-	public IProject getProject();
+	IProject getProject();
 
 	/**
 	 * When an IValidator associates a target object with an IMessage, the WorkbenchReporter
@@ -148,7 +145,7 @@ public interface IWorkbenchContext extends IProjectValidationContext {
 	 * identify a particular object must be returned. The id needs to be unique only within one
 	 * particular IValidator.
 	 */
-	public String getTargetObjectName(Object object);
+	String getTargetObjectName(Object object);
 
 	/**
 	 * Whether full or incremental validation is running, this method will be called, by the
@@ -156,13 +153,13 @@ public interface IWorkbenchContext extends IProjectValidationContext {
 	 * IValidationContext can receive notification that one of the resources, which validation will run on, is
 	 * being filtered in.
 	 */
-	public void registerResource(IResource resource);
+	void registerResource(IResource resource);
 
 	/**
 	 * This method is called by the Validation Framework, to initialize the IWorkbenchContext so that
 	 * it can gather information from the current project.
 	 */
-	public void setProject(IProject project);
+	void setProject(IProject project);
 
 	/**
 	 * Notifies this IWorkbenchContext that the Validation Framework is shutting down. There will be
@@ -172,5 +169,5 @@ public interface IWorkbenchContext extends IProjectValidationContext {
 	 * shut down. This method will be called once for every IProject in the workbench. The IProject
 	 * may, or may not, be closed.
 	 */
-	public void shutdown();
+	void shutdown();
 }

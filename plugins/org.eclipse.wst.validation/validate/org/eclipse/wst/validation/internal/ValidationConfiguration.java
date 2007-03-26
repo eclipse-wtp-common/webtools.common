@@ -48,21 +48,21 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  * property while the resource is open.
  */
 public abstract class ValidationConfiguration implements IPropertyChangeListener {
-	private IResource _resource = null;
+	private IResource _resource;
 	private boolean disableAllValidation = getDisableAllValidation();
-	private String _version = null;
-	private Map _validators = null; // Map of all validators (ValidatorMetaData) configured on the
+	private String _version;
+	private Map _validators; // Map of all validators (ValidatorMetaData) configured on the
 	// project or installed globally. The value is a Boolean; TRUE
 	// means that the VMD is enabled, FALSE means that the VMD is
 	// disabled.
-	protected HashMap manualValidators = null;
-	protected HashMap buildValidators = null;
+	protected HashMap manualValidators;
+	protected HashMap buildValidators;
 	protected String USER_PREFERENCE = "USER_PREFERENCE";
 	protected String USER_MANUAL_PREFERENCE = "USER_MANUAL_PREFERENCE";
 	protected String USER_BUILD_PREFERENCE = "USER_BUILD_PREFERENCE";
 	protected String DELEGATES_PREFERENCE = "DELEGATES_PREFERENCE";
 	
-  private Map _delegatesByTarget = null;
+  private Map _delegatesByTarget;
 
 	public static String getEnabledElementsAsString(Set elements) {
 		if (elements == null) {

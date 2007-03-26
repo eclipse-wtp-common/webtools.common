@@ -27,20 +27,14 @@ import org.eclipse.core.runtime.CoreException;
 
 /**
  * @author vijayb
- * 
- * To change the template for this generated type comment go to Window - Preferences - Java - Code
- * Generation - Code and Comments
  */
 public class ReferencialFileValidatorHelper {
-	/**
-	 *  
-	 */
 	public ReferencialFileValidatorHelper() {
 		super();
 	}
 
 	/**
-	 * return a list of all files contained in project to infinite depth
+	 * Return a list of all files contained in project to infinite depth
 	 */
 	public static List getAllProjectFiles(IProject project) {
 		List result = new ArrayList();

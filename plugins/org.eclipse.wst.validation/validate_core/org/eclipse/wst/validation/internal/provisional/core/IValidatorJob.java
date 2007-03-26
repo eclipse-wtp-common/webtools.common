@@ -25,7 +25,7 @@ import org.eclipse.wst.validation.internal.core.ValidationException;
 
 public interface IValidatorJob extends IValidator{
 
-	public static IStatus OK_STATUS = new Status(IStatus.OK, "org.eclipse.wst.validation", 0, "OK", null); //$NON-NLS-1$ //$NON-NLS-2$
+	IStatus OK_STATUS = new Status(IStatus.OK, "org.eclipse.wst.validation", 0, "OK", null); //$NON-NLS-1$ //$NON-NLS-2$
 	
 
 
@@ -42,7 +42,7 @@ public interface IValidatorJob extends IValidator{
 	 * @param helper will not be null,
 	 *		loads an object.
 	 */
-	public IStatus validateInJob(IValidationContext helper, IReporter reporter) throws ValidationException;
+	IStatus validateInJob(IValidationContext helper, IReporter reporter) throws ValidationException;
 
 	/**
 	 * Get the scheduling rule, which the framework applies to the Validator job, 
@@ -50,5 +50,5 @@ public interface IValidatorJob extends IValidator{
 	 *		loads an object.
 	 * @return
 	 */
-	public ISchedulingRule getSchedulingRule(IValidationContext helper);
+	ISchedulingRule getSchedulingRule(IValidationContext helper);
 }

@@ -31,9 +31,6 @@ public class ValidatorJob extends Job {
 	public ValidatorJob(String name) {
 		super(name);
 	}
-
-
-	   
 	   
 	public ValidatorJob( IValidatorJob validator, String displayName, String name, IProject project, IWorkbenchContext aHelper  ){
 		super(displayName);

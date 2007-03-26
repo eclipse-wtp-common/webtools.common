@@ -25,9 +25,9 @@ import org.eclipse.wst.validation.internal.provisional.core.IMessage;
  * </p>
  */
 public class ValidationException extends Exception {
-	private Throwable _lowLevelException = null;
-	private IMessage _message = null;
-	private ClassLoader _loader = null;
+	private Throwable _lowLevelException;
+	private IMessage _message;
+	private ClassLoader _loader;
 	private final static long serialVersionUID = -3387516993124229949L;
 
 

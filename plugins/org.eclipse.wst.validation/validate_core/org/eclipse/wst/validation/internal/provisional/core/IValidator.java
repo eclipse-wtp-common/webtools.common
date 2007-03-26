@@ -44,7 +44,7 @@ public interface IValidator{
 	 * [issue: LM - Is the cleanup method necessary? Can the framework put a requirement that client validators 'clean up'
 	 *  before returning from the validate method? ] 
 	 */
-	public void cleanup(IReporter reporter);
+	void cleanup(IReporter reporter);
 
 	/**
 	 * This is the method which performs the validation on the objects. <br>
@@ -67,5 +67,5 @@ public interface IValidator{
 	 * domain of another API to manage manage incremental file changes and triggering validations accordingly. 
 	 * Do we have a current use case in WTP where the validator does anything more validate a file from the changedFiles list?]
 	 */
-	public void validate(IValidationContext helper, IReporter reporter) throws ValidationException;
+	void validate(IValidationContext helper, IReporter reporter) throws ValidationException;
 }

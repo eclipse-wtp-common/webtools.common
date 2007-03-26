@@ -26,7 +26,7 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  * This class represents the global Preferences as set on the Validation Preferences page.
  */
 public class GlobalConfiguration extends ValidationConfiguration {
-	/* package */static final boolean PREF_PROJECTS_CAN_OVERRIDE_DEFAULT = true;
+	static final boolean PREF_PROJECTS_CAN_OVERRIDE_DEFAULT = true;
 	static final boolean PREF_SAVE_AUTOMATICALLY_DEFAULT = false;
 
 	private boolean _canProjectsOverride = getCanProjectsOverrideDefault();

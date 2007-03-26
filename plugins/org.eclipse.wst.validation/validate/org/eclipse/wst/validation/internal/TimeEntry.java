@@ -19,11 +19,11 @@ import org.eclipse.jem.util.logger.LogEntry;
  * instance and reuse it. The text in this class is never translated.
  */
 public class TimeEntry extends LogEntry {
-	private String _toolName = null;
-	private String _details = null;
-	private String _projectName = null;
-	private String _sourceId = null;
-	private int _executionMap = 0x0;
+	private String _toolName;
+	private String _details;
+	private String _projectName;
+	private String _sourceId;
+	private int _executionMap;
 
 	public TimeEntry() {
 		super();

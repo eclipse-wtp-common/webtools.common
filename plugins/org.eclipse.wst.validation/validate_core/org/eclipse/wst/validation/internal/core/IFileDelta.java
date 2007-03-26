@@ -26,9 +26,15 @@ package org.eclipse.wst.validation.internal.core;
  *  or something along those lines to better capture its use. ]
  */
 public interface IFileDelta {
-	public static final int ADDED = 1;   // the file has been added
-	public static final int CHANGED = 2; // the file has been changed
-	public static final int DELETED = 3; // the file has been deleted
+	
+	/** 1 - the file has been added */
+	int ADDED = 1;
+	
+	/** 2 - the file has been changed */
+	int CHANGED = 2;
+	
+	/** 3 - the file has been deleted */
+	int DELETED = 3;
 
 	/**
 	 * <p>
@@ -42,7 +48,7 @@ public interface IFileDelta {
 	 *  to be validated. Can you provide a use case where the type of change is needed for
 	 *  validation? ]
 	 */
-	public int getDeltaType();
+	int getDeltaType();
 
 	/**
 	 * <p>
@@ -55,5 +61,5 @@ public interface IFileDelta {
 	 * [issue: LM - Following my comments above this method should be renamed to getArtifactName or
 	 *  something that follows along with the interface rename. ]
 	 */
-	public String getFileName();
+	String getFileName();
 }

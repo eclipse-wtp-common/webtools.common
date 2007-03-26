@@ -30,8 +30,6 @@ import org.eclipse.wst.validation.internal.operations.WorkbenchReporter;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 
-/**
- */
 public final class InternalValidatorManager {
 	private static InternalValidatorManager _inst = null;
 	private static final String OP_GROUP = "ValidationOperation"; //$NON-NLS-1$ // when the ValidationOperation

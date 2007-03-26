@@ -20,8 +20,8 @@ import org.eclipse.core.resources.IResource;
  * this class would store the "*.*", and provide the wildcard matching functionality.
  */
 public class ValidatorNameFilter {
-	private String _nameFilter = null;
-	private String nameFilterExtension = null;
+	private String _nameFilter;
+	private String nameFilterExtension;
 	private boolean _include = true; // by default, filter in the IFile specified
 	private final static String WILDCARD = "*"; //$NON-NLS-1$
 	private boolean _isCaseSensitive = true; // by default, the filter name is case-sensitive
@@ -29,29 +29,29 @@ public class ValidatorNameFilter {
 	/**
 	 * Insert the method's description here. Creation date: (12/4/00 11:08:41 AM)
 	 */
-	/* package */ValidatorNameFilter() {
+	ValidatorNameFilter() {
 		//default
 	}
 
 	/**
 	 * Get the filter, as specified in plugin.xml
 	 */
-	/* package */String getNameFilter() {
+	String getNameFilter() {
 		return _nameFilter;
 	}
 
-	/* package */boolean isCaseSensitive() {
+	boolean isCaseSensitive() {
 		return _isCaseSensitive;
 	}
 
-	/* package */boolean isInclude() {
+	boolean isInclude() {
 		return _include;
 	}
 
 	/**
 	 * Return true if the given resource is both applicable and include="true".
 	 */
-	/* package */boolean isApplicableTo(IResource resource) {
+	boolean isApplicableTo(IResource resource) {
 		return (isApplicableName(resource) && isInclude());
 	}
 	
@@ -91,7 +91,7 @@ public class ValidatorNameFilter {
 		return verifyNameMatch(_nameFilter, name);
 	}
 
-	/* package */void setInclude(String includeValue) {
+	void setInclude(String includeValue) {
 		if (includeValue != null) {
 			setInclude(Boolean.valueOf(includeValue).booleanValue());
 		}
@@ -104,11 +104,11 @@ public class ValidatorNameFilter {
 	/**
 	 * Set the filter, as specified in plugin.xml
 	 */
-	/* package */void setNameFilter(String filter) {
+	void setNameFilter(String filter) {
 		_nameFilter = filter;
 	}
 
-	/* package */void setCaseSensitive(String isCaseSensitiveString) {
+	void setCaseSensitive(String isCaseSensitiveString) {
 		if (isCaseSensitiveString != null) {
 			// only change the value from the default if the case-sensitive attribute is defined
 			_isCaseSensitive = Boolean.valueOf(isCaseSensitiveString).booleanValue();
@@ -127,7 +127,7 @@ public class ValidatorNameFilter {
 	 * 
 	 * The only filter wildcard allowed is '*'.
 	 */
-	/* package */static boolean verifyNameMatch(final String filter, String name) {
+	static boolean verifyNameMatch(final String filter, String name) {
 		/*
 		 * There are eight possible wildcard combinations, given that a wildcard may, if present, be
 		 * at the beginning, middle, or end of a name; or any combination of those positions. i.e.,

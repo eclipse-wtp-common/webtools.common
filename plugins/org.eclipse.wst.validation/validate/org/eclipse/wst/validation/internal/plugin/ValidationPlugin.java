@@ -25,10 +25,10 @@ import org.osgi.framework.BundleContext;
 public class ValidationPlugin extends WTPPlugin {
 	public static final String VALIDATION_PROP_FILE_NAME = "validate_base"; //$NON-NLS-1$
 	public static final String PLUGIN_ID = "org.eclipse.wst.validation"; //$NON-NLS-1$
-	private static ValidationPlugin _plugin = null;
-	private static TimeEntry _tEntry = null;
-	private static LogEntry _entry = null;
-	private static Message _message = null;
+	private static ValidationPlugin _plugin;
+	private static TimeEntry _tEntry;
+	private static LogEntry _entry;
+	private static Message _message;
 	public static final String VALIDATION_BUILDER_ID = PLUGIN_ID + ".validationbuilder"; //$NON-NLS-1$// plugin id of the validation builder
 	public static final String VALIDATOR_EXT_PT_ID = "validator"; //$NON-NLS-1$// extension point declaration of the validator 
 

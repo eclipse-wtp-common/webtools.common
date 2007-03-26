@@ -37,14 +37,12 @@ import org.eclipse.wst.validation.internal.provisional.core.IMessage;
  * symbolic model name.
  */
 public class WorkbenchContext implements IWorkbenchContext {
-	private IProject _project = null;
-	private Hashtable _modelRegistry = null;
-//	private static final IContainer[] NO_CONTAINERS = new IContainer[0];
+	private IProject _project;
+	private Hashtable _modelRegistry;
 	private int _ruleGroup = RegistryConstants.ATT_RULE_GROUP_DEFAULT;
-	public List validationFileURIs = null; 
+	public List validationFileURIs; 
 	public static final String GET_PROJECT_FILES = "getAllFiles"; //$NON-NLS-1$
 	public static final String GET_FILE = "getFile"; //$NON-NLS-1$
-//	private static final IContainer[] NO_CONTAINERS = new IContainer[0];
 	public static final String VALIDATION_MARKER = "com.ibm.etools.validation.problemmarker"; //$NON-NLS-1$
 	public static final String VALIDATION_MARKER_OWNER = "owner";  //$NON-NLS-1$
 

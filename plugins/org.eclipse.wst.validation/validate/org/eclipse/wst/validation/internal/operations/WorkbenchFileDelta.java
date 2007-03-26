@@ -20,8 +20,8 @@ import org.eclipse.wst.validation.internal.core.IFileDelta;
  * with the FileDelta.
  */
 public class WorkbenchFileDelta extends FileDelta {
-	private IResource _resource = null;
-	private Object _changedResource = null;
+	private IResource _resource;
+	private Object _changedResource;
 
 	private static final String FILE_NAME = "FILE NAME:"; //$NON-NLS-1$
 	private static final String DELTA = "  DELTA: "; //$NON-NLS-1$

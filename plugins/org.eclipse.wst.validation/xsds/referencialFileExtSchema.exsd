@@ -59,7 +59,7 @@
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
-                  
+                  This class must implement org.eclipse.wst.validation.internal.operations.ReferencialFileValidator. 
                </documentation>
             </annotation>
          </attribute>

@@ -49,7 +49,7 @@ public interface IValidationContext {
 	 * </p>
 	 * @plannedfor 1.0
 	 */
-	public Object loadModel(String symbolicName);
+	Object loadModel(String symbolicName);
 
 	/**
 	 * <p>
@@ -72,13 +72,13 @@ public interface IValidationContext {
 	 * providing getProperty() and setProperty() methods on the class to allow contextual information to be 
 	 * supplied and queried in a generic manner.]
 	 */
-	public Object loadModel(String symbolicName, Object[] parms);
+	Object loadModel(String symbolicName, Object[] parms);
 	
 	/**
 	 * @return a string array with the list of URI's that need to be validated in the
 	 * case of Incremental build
 	 */
 	
-	public String[] getURIs();
+	String[] getURIs();
 
 }

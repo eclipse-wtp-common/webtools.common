@@ -26,8 +26,6 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidationContext;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 import org.eclipse.wst.validation.internal.provisional.core.IValidatorJob;
 
-
-
 /**
  * <p>
  * This singleton launches the validation on a single validator. Clients should call this class's
@@ -35,12 +33,8 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidatorJob;
  * </p>
  */
 public class ValidatorLauncher {
-	private static ValidatorLauncher _launcher = null;
+	private static ValidatorLauncher _launcher;
 
-	
-	/**
-	 * Default constructor 
-	 */
 	private ValidatorLauncher() {
 		//Default constructor
 	}

@@ -41,35 +41,35 @@ import org.osgi.framework.Bundle;
  * ValidatorMetaData; it is for use by the base framework only.
  */
 public class ValidatorMetaData {
-	private ValidatorFilter[] _filters = null;
-	private ValidatorNameFilter[] _projectNatureFilters = null;
-	private String[] facetFilters = null;
-	private IValidator _validator = null;
-	private IWorkbenchContext _helper = null;
-	private String _validatorDisplayName = null;
-	private String _validatorUniqueName = null;
-	private String[] _aggregatedValidators = null;
-	private String[] _validatorNames = null;
-	private String _pluginId = null;
+	private ValidatorFilter[] _filters;
+	private ValidatorNameFilter[] _projectNatureFilters;
+	private String[] facetFilters;
+	private IValidator _validator;
+	private IWorkbenchContext _helper;
+	private String _validatorDisplayName;
+	private String _validatorUniqueName;
+	private String[] _aggregatedValidators;
+	private String[] _validatorNames;
+	private String _pluginId;
 	private boolean _supportsIncremental = RegistryConstants.ATT_INCREMENTAL_DEFAULT;
 	private boolean _supportsFullBuild = RegistryConstants.ATT_FULLBUILD_DEFAULT;
-	private Logger _logger = null;
+	private Logger _logger;
 	private boolean _isEnabledByDefault = RegistryConstants.ATT_ENABLED_DEFAULT;
-	private MigrationMetaData _migrationMetaData = null;
+	private MigrationMetaData _migrationMetaData;
 	private int _ruleGroup = RegistryConstants.ATT_RULE_GROUP_DEFAULT;
 	private boolean _async = RegistryConstants.ATT_ASYNC_DEFAULT;
 	private boolean dependentValidator = RegistryConstants.DEP_VAL_VALUE_DEFAULT;
-	private String[] markerIds = null;
-	private String _helperClassName = null;
-	private IConfigurationElement _helperClassElement = null;
-	private IConfigurationElement _validatorClassElement = null;
+	private String[] markerIds;
+	private String _helperClassName;
+	private IConfigurationElement _helperClassElement;
+	private IConfigurationElement _validatorClassElement;
 	private boolean _cannotLoad = false;
 	private boolean manualValidation = true;
 	private boolean buildValidation = true;
 	private Map helpers = Collections.synchronizedMap( new HashMap() );
-	private Expression enablementExpression = null;
+	private Expression enablementExpression;
 
-	/* package */ValidatorMetaData() {
+	ValidatorMetaData() {
 		//default
 	}
 
@@ -78,21 +78,21 @@ public class ValidatorMetaData {
 	 * example, if the EJB Validator instantiated another validator, and started its validate
 	 * method, then that instantiated class' name should be in this list.
 	 */
-	/* package */void addAggregatedValidatorNames(String[] val) {
+	void addAggregatedValidatorNames(String[] val) {
 		_aggregatedValidators = val;
 	}
 
 	/**
 	 * Add the name/type filter pair(s).
 	 */
-	/* package */void addFilters(ValidatorFilter[] filters) {
+	void addFilters(ValidatorFilter[] filters) {
 		_filters = filters;
 	}
 
 	/**
 	 * Add the project nature filter(s).
 	 */
-	/* package */void addProjectNatureFilters(ValidatorNameFilter[] filters) {
+	void addProjectNatureFilters(ValidatorNameFilter[] filters) {
 		_projectNatureFilters = filters;
 	}
 	
@@ -260,7 +260,7 @@ public class ValidatorMetaData {
 	/**
 	 * Return the filters which identify which project(s) this validator may run on.
 	 */
-	/* package */ValidatorNameFilter[] getProjectNatureFilters() {
+	ValidatorNameFilter[] getProjectNatureFilters() {
 		return _projectNatureFilters;
 	}
 
@@ -324,7 +324,7 @@ public class ValidatorMetaData {
 	/**
 	 * Return true if the resource passes the name/type filters for this validator.
 	 */
-	/* package */boolean isApplicableTo(IResource resource, int resourceDelta, ValidatorFilter[] filters) {
+	boolean isApplicableTo(IResource resource, int resourceDelta, ValidatorFilter[] filters) {
 		// Are any of the filters satisfied? (i.e., OR them, not AND them.)
 		if (checkIfValidSourceFile(resource)) {
 			for (int i = 0; i < filters.length; i++) {
@@ -420,49 +420,49 @@ public class ValidatorMetaData {
 		return _async;
 	}
 
-	/* package */void setHelperClass(IConfigurationElement element, String helperClassName) {
+	void setHelperClass(IConfigurationElement element, String helperClassName) {
 		_helperClassElement = element;
 		_helperClassName = helperClassName;
 	}
 
-	/* package */void setEnabledByDefault(boolean enabledByDefault) {
+	void setEnabledByDefault(boolean enabledByDefault) {
 		_isEnabledByDefault = enabledByDefault;
 	}
 
-	/* package */void setIncremental(boolean isIncremental) {
+	void setIncremental(boolean isIncremental) {
 		_supportsIncremental = isIncremental;
 	}
 
-	/* package */void setFullBuild(boolean fullBuild) {
+	void setFullBuild(boolean fullBuild) {
 		_supportsFullBuild = fullBuild;
 	}
 
-	/* package */void setAsync(boolean isAsync) {
+	void setAsync(boolean isAsync) {
 		_async = isAsync;
 	}
 
-	/* package */void setMigrationMetaData(MigrationMetaData mmd) {
+	void setMigrationMetaData(MigrationMetaData mmd) {
 		_migrationMetaData = mmd;
 	}
 
-	/* package */void setRuleGroup(int ruleGroup) {
+	void setRuleGroup(int ruleGroup) {
 		_ruleGroup = ruleGroup;
 	}
 
-	/* package */void setValidatorClass(IConfigurationElement element) {
+	void setValidatorClass(IConfigurationElement element) {
 		_validatorClassElement = element;
 		// validator class name == validatorUniqueName
 	}
 
-	/* package */void setValidatorDisplayName(String validatorName) {
+	void setValidatorDisplayName(String validatorName) {
 		_validatorDisplayName = validatorName;
 	}
 
-	/* package */void setValidatorUniqueName(String validatorUniqueName) {
+	void setValidatorUniqueName(String validatorUniqueName) {
 		_validatorUniqueName = validatorUniqueName;
 	}
 
-	/* package */void setPluginId(String validatorPluginId) {
+	void setPluginId(String validatorPluginId) {
 		_pluginId = validatorPluginId;
 	}
 

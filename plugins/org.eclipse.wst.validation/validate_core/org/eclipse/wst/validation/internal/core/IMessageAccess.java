@@ -31,7 +31,7 @@ public interface IMessageAccess {
 	 *            messages".
 	 * @return List list of messages related to the target object
 	 */
-	public abstract List getMessages(MessageFilter filter);
+	abstract List getMessages(MessageFilter filter);
 
 	/**
 	 * @param filter
@@ -43,5 +43,5 @@ public interface IMessageAccess {
 	 * @return List a list of messages related to the target object, translated into the specified
 	 * locale.
 	 */
-	public abstract List getMessagesAsText(MessageFilter filter, Locale targetLocale);
+	abstract List getMessagesAsText(MessageFilter filter, Locale targetLocale);
 }

@@ -27,19 +27,11 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 /**
  * @author vijayb
- * 
- * To change the template for this generated type comment go to Window - Preferences - Java - Code
- * Generation - Code and Comments
  */
 public class ReferencialFileValidatorRegistryReader extends RegistryReader {
 	static ReferencialFileValidatorRegistryReader instance = null;
 	protected List referencialFileValidationExtensions;
 
-	/**
-	 * @param arg0
-	 * @param arg1
-	 * @param arg2
-	 */
 	public ReferencialFileValidatorRegistryReader() {
 		super(ValidationPlugin.PLUGIN_ID, "referencialFileValidator"); //$NON-NLS-1$
 	}
@@ -60,12 +52,12 @@ public class ReferencialFileValidatorRegistryReader extends RegistryReader {
 	/**
 	 * Sets the extension point.
 	 * 
-	 * @param extensions
+	 * @param newExtension
 	 *            The extensions to set
 	 */
 	protected void addExtension(IConfigurationElement newExtension) {
 
-    	//add to the list of post validator extesions only if the ext is not added yet
+    	//add to the list of post validator extensions only if the extension is not added yet
     	boolean containsExt = true;
     	List extensions = getReferencialFileValidationExtensions();
     	Iterator it = extensions.iterator();
@@ -83,7 +75,7 @@ public class ReferencialFileValidatorRegistryReader extends RegistryReader {
 	/**
 	 * Sets the extension point.
 	 * 
-	 * @param extensions
+	 * @param newExtension
 	 *            The extensions to set
 	 */
 	protected void addExtensionPoint(ReferencialFileValidatorExtension newExtension) {
@@ -106,9 +98,7 @@ public class ReferencialFileValidatorRegistryReader extends RegistryReader {
 	}
 
 	/**
-	 * Gets the instance.
-	 * 
-	 * @return Returns a EJBCodegenHandlerExtensionReader
+	 * Gets the singleton instance.
 	 */
 	public static ReferencialFileValidatorRegistryReader getInstance() {
 		if (instance == null) {
