@@ -174,7 +174,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	 * false, return the enabled non-incremental validators.
 	 */
 	public ValidatorMetaData[] getEnabledIncrementalValidators(boolean incremental) throws InvocationTargetException {
-		return getEnabledFullBuildValidators(incremental);
+		return getEnabledFullBuildValidators(!incremental);
 	}
 
 	/**
