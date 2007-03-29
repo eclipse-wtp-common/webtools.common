@@ -63,9 +63,13 @@ public class StructureEditStressTest extends TestCase {
 		        	Property prop = ComponentcoreFactory.eINSTANCE.createProperty();
 		        	prop.setName("Job " + System.currentTimeMillis());
 		        	prop.setValue("Blah");
-		      		moduleCore.getComponent().getProperties().add(prop);
-		      		System.out.println(prop.getName());
-		      		moduleCore.saveIfNecessary(null);
+		        	if (moduleCore != null) {
+		        		if (moduleCore.getComponent() != null) {
+		        			moduleCore.getComponent().getProperties().add(prop);
+		        			System.out.println(prop.getName());
+		        			moduleCore.saveIfNecessary(null);
+		        		}
+		        	}
 		          }
 		          catch (Exception e)
 		          {
