@@ -44,14 +44,15 @@
    <element name="validator">
       <complexType>
          <sequence>
-            <element ref="projectNature" minOccurs="1" maxOccurs="unbounded"/>
-            <element ref="filter" minOccurs="1" maxOccurs="unbounded"/>
-            <element ref="enablement"/>
+            <element ref="projectNature" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="filter" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="enablement" minOccurs="0" maxOccurs="unbounded"/>/>
             <element ref="helper"/>
             <element ref="dependentValidator" minOccurs="0" maxOccurs="1"/>
             <element ref="run"/>
             <element ref="markerId" minOccurs="0" maxOccurs="1"/>
             <element ref="facet" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="contentTypeBinding" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="to" type="string">
             <annotation>
@@ -90,6 +91,30 @@
          </attribute>
       </complexType>
    </element>
+   
+   
+   <element name="contentTypeBinding">
+      <annotation>
+         <appInfo>
+            <meta.element labelAttribute="contentTypeId"/>
+         </appInfo>
+         <documentation>
+            Advertises that the containing editor understands the given content type and is suitable for editing files of that type.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="contentTypeId" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The content type identifier. This is an ID defined by the &apos;org.eclipse.core.runtime.contentTypes&apos; extension point.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+   
+   
+   
 
    <element name="filter">
       <complexType>

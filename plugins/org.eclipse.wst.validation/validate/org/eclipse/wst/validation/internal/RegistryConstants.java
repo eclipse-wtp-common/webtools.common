@@ -33,6 +33,15 @@ public interface RegistryConstants {
 	 */ 
 	String TAG_FILTER = "filter"; //$NON-NLS-1$
 	
+	/**
+	 * identifies a filter -- type and/or name -- used to filter out resources which are not to be validated. (i.e., if the resource doesn't pass this filter test, don't validate it.)
+	 */
+	String TAG_CONTENTTYPE = "contentTypeBinding"; //$NON-NLS-1$ 
+	
+	/**
+	 *  identifies a type
+	 */
+	String ATT_CONTENTTYPEID = "contentTypeId"; //$NON-NLS-1$ 
 	/** helper - IValidationContext which loads the MOF model for the IValidator */ 
 	String TAG_HELPER_CLASS = "helper"; //$NON-NLS-1$
 	

@@ -11,6 +11,11 @@
 package org.eclipse.wst.validation.internal;
 
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,10 +26,16 @@ import java.util.Set;
 
 import org.eclipse.core.expressions.Expression;
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.QualifiedName;
+import org.eclipse.core.runtime.content.IContentDescription;
+import org.eclipse.core.runtime.content.IContentType;
+import org.eclipse.core.runtime.content.IContentTypeManager;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.delegates.ValidatorDelegatesRegistry;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchContext;
@@ -49,6 +60,7 @@ public class ValidatorMetaData {
 	private String _validatorDisplayName;
 	private String _validatorUniqueName;
 	private String[] _aggregatedValidators;
+    private String[] contentTypeIds = null;
 	private String[] _validatorNames;
 	private String _pluginId;
 	private boolean _supportsIncremental = RegistryConstants.ATT_INCREMENTAL_DEFAULT;
@@ -324,18 +336,33 @@ public class ValidatorMetaData {
 	/**
 	 * Return true if the resource passes the name/type filters for this validator.
 	 */
-	boolean isApplicableTo(IResource resource, int resourceDelta, ValidatorFilter[] filters) {
+	boolean isApplicableTo(IResource resource, int resourceDelta,
+			ValidatorFilter[] filters) {
 		// Are any of the filters satisfied? (i.e., OR them, not AND them.)
 		if (checkIfValidSourceFile(resource)) {
 			for (int i = 0; i < filters.length; i++) {
 				ValidatorFilter filter = filters[i];
-				if (filter.isApplicableType(resource) &&
-					filter.isApplicableName(resource) &&
-					filter.isApplicableAction(resourceDelta)){
+				if (filter.isApplicableType(resource)
+						&& filter.isApplicableName(resource)
+						&& filter.isApplicableAction(resourceDelta)) {
 					return true;
-                }
+				}
 
 			}
+		}
+		if (getContentTypeIds() != null) {
+			IContentDescription description = null;
+			try {
+				if (resource.getType() == IResource.FILE)
+					description = ((IFile) resource).getContentDescription();
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if (description == null)
+				return false;
+			if (isApplicableContentType(description))
+				return true;
 		}
 		return false;
 	}
@@ -613,6 +640,27 @@ public class ValidatorMetaData {
    public void setEnablementElement(Expression enablementElement) {
 	 enablementExpression = enablementElement;
 	}
-   
+
+public String[] getContentTypeIds() {
+	return contentTypeIds;
+}
+
+public void setContentTypeIds(String[] contentTypeIds) {
+	this.contentTypeIds = contentTypeIds;
+}
+
+ 
+private boolean isApplicableContentType(IContentDescription desc){
+	
+	IContentType ct = desc.getContentType();
+	String[] applicableContentTypes = getContentTypeIds();
+	if (applicableContentTypes != null) {
+		for (int i = 0; i < applicableContentTypes.length; i ++){
+			if(applicableContentTypes[i].equals(ct.getId()))
+				return true;
+		}
+	}
+	return false;
+}
    
 }

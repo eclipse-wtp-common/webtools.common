@@ -389,6 +389,20 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		}
 		return names;
 	}
+	
+	private String[] getContentTypeBindings(IConfigurationElement element){
+		IConfigurationElement[] bindings = element.getChildren(TAG_CONTENTTYPE);
+		if(bindings.length == 0)
+			return null;
+		String[] cTypeIDs = new String[bindings.length];
+		for (int i = 0; i < bindings.length; i ++){
+			
+			cTypeIDs[i] = bindings[i].getAttribute(ATT_CONTENTTYPEID);
+		}
+		
+		return cTypeIDs;
+		
+	}
 
 	/**
 	 * Given an IConfigurationElement from plugin.xml, if it has any filter tags, construct the
@@ -1379,6 +1393,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		vmd.setHelperClass(element, helperImplName);
 		vmd.setValidatorClass(element); // associate the above attributes with the validator
 		vmd.addDependentValidator(getDependentValidatorValue(element));
+		vmd.setContentTypeIds(getContentTypeBindings(element));
 		initializeValidatorCustomMarkers(element, pluginId, vmd);
 		
 		Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
