@@ -10,6 +10,10 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.impl;
 
+import java.util.Iterator;
+import java.util.Set;
+
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -17,6 +21,8 @@ import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.core.runtime.content.IContentDescription;
+import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jem.util.RegistryReader;
@@ -24,6 +30,7 @@ import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.internal.emf.resource.FileNameResourceFactoryRegistry;
 import org.eclipse.wst.common.internal.emf.resource.ResourceFactoryDescriptor;
 import org.eclipse.wst.common.internal.emf.utilities.DefaultOverridableResourceFactoryRegistry;
+import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
 
 /**
  * <p>
@@ -86,6 +93,13 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 		super.registerLastFileSegment(aSimpleFileName, aFactory);
 		
 	}  
+	private WTPResourceFactoryRegistryKey getKey(ResourceFactoryDescriptor descriptor) {
+		WTPResourceFactoryRegistryKey key = new WTPResourceFactoryRegistryKey();
+		key.shortName = descriptor.getShortSegment();
+		key.type = descriptor.getContentType();
+		key.isDefault = descriptor.isDefault();
+		return key;
+	}
 	
 	/**
 	 * Declares a subclass to create Resource.Factory(ies) from an extension. 
@@ -93,7 +107,8 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 	private class ConfigurationResourceFactoryDescriptor extends ResourceFactoryDescriptor  implements IResourceFactoryExtPtConstants {
 		
 		private String shortSegment;
-		private String version;
+		private IContentType contentType;
+		private boolean isDefault = true;
 		private final IConfigurationElement element; 
 		
 		public ConfigurationResourceFactoryDescriptor(IConfigurationElement ext) throws CoreException {
@@ -110,7 +125,16 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 										"The shortSegment attribute of " + TAG_RESOURCE_FACTORY + //$NON-NLS-1$ 
 										" must specify a valid, non-null, non-empty value in " +   //$NON-NLS-1$
 										element.getNamespaceIdentifier(), null));
-			version = element.getAttribute(ATT_VERSION);
+			if ("false".equals(element.getAttribute(ATT_ISDEFAULT)))
+					isDefault = false;
+			
+			IConfigurationElement[] bindings = element.getChildren(TAG_CONTENTTYPE);
+			if (bindings.length > 0) {
+				String contentTypeId = null;
+				contentTypeId = bindings[0].getAttribute(ATT_CONTENTTYPEID);			
+				if (contentTypeId != null)
+					contentType = Platform.getContentTypeManager().getContentType(contentTypeId);
+				}
 		} 
 
 		public boolean isEnabledFor(URI fileURI) {
@@ -142,7 +166,30 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 
 		public String getShortSegment() {
 			return shortSegment;
+		}
+
+		public IContentType getContentType() {
+			
+			return contentType;
+		}
+
+		public boolean isDefault() {
+			return isDefault;
 		}  
+		public int hashCode() {
+			if (getContentType() != null)
+				return getShortSegment().hashCode() & getContentType().hashCode();
+			else return super.hashCode();
+		}
+		
+		public boolean equals(Object o) {
+			if(o instanceof ResourceFactoryDescriptor && getContentType() != null)
+				return (getShortSegment().equals(((ResourceFactoryDescriptor)o).getShortSegment()) &&
+						getContentType().equals(((ResourceFactoryDescriptor)o).getContentType()));
+			else if (((ResourceFactoryDescriptor)o).getContentType() != null) return false;
+				
+			return super.equals(o);
+		}
 	}  
 	 
 	
@@ -175,40 +222,51 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 	}
 	private class WTPResourceFactoryRegistryKey { 
  		
-		public String version;
 		public String shortName;
+		public IContentType type;
+		public boolean isDefault = true;
 		public WTPResourceFactoryRegistryKey() {
 			super();
 		}
-		public boolean equals(Object arg0) {
-			
-			if (arg0 instanceof WTPResourceFactoryRegistryKey) {
-				WTPResourceFactoryRegistryKey key = (WTPResourceFactoryRegistryKey) arg0;
-				return key.version.equals(version) && key.shortName.equals(shortName);
-			}
-			return false;
-		}
-		public int hashCode() {
-			
-			return version.hashCode() & shortName.hashCode();
-		}
+		
 		
 	}
 
 
 	protected void addDescriptor(ResourceFactoryDescriptor descriptor) {
-		// TODO Auto-generated method stub
-		super.addDescriptor(descriptor);
+		getDescriptors().put(getKey(descriptor), descriptor);
 	}
 
 	protected synchronized ResourceFactoryDescriptor getDescriptor(URI uri) {
 		
-//		WTPResourceFactoryRegistryKey key = new WTPResourceFactoryRegistryKey();
-//		key.shortName = uri.lastSegment();
-//		key.version = J2EEFileUtil.getFastSpecVersion(uri);
-		
-		
-		
+		Set keys = getDescriptors().keySet();
+		IFile file = WorkbenchResourceHelper.getPlatformFile(uri);
+		IContentDescription fileDesc = null;
+		if (file != null && file.exists()) {
+			try {
+				fileDesc = file.getContentDescription();
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+			WTPResourceFactoryRegistryKey key = (WTPResourceFactoryRegistryKey) iterator.next();
+			if (key.shortName.equals(uri.lastSegment())) {
+				ResourceFactoryDescriptor desc = (ResourceFactoryDescriptor)getDescriptors().get(key);
+				if (fileDesc == null) {
+					if (key.type == null) return desc;
+					else if (desc.isDefault()) 
+						return desc;
+				}
+				//Allow the contentType discrimination to take place
+				if ((key.type != null) && (fileDesc != null) && (fileDesc.getContentType().equals(key.type)))
+					return desc;
+				if ((fileDesc != null) && (desc.isDefault()))
+					return desc;
+			}
+		}
+		// Ok no content type match - go to super
 		return super.getDescriptor(uri);
 		}
 }

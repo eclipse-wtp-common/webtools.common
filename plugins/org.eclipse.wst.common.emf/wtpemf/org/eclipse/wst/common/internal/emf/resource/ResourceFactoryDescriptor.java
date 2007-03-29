@@ -10,6 +10,7 @@
  *******************************************************************************/ 
 package org.eclipse.wst.common.internal.emf.resource;
 
+import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 
@@ -24,7 +25,31 @@ public abstract class ResourceFactoryDescriptor {
 	 */
 	public abstract boolean isEnabledFor(URI fileURI);
 	
-
+	/**
+	 * The contentType is one optional way that a ResourceFactory
+	 * might apply to a URI. Clients should call {@link isEnabledFor} 
+	 * instead of comparing the content Types when searching for an
+	 * applicable descriptor from a set.  
+	 * 
+	 * <p><b>Subclasses may return null.(optional)</b></p>
+	 *  
+	 * @return The content type that this descriptor is applicable to.
+	 */
+	public IContentType getContentType(){
+		return null;
+	}
+	
+	/**
+	 * In the case where more than one factory is defined for the same fileName, 
+	 * and creation is passed a uri only a default factory is needed
+	 * 
+	 *  
+	 * @return The boolean describing the default factory
+	 */
+	public boolean isDefault(){
+		return true;
+	}
+	
 	/**
 	 * The short segment is one possible way that a ResourceFactory
 	 * might apply to a URI. Clients should call {@link isEnabledFor} 

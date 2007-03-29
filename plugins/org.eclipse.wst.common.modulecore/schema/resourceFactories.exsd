@@ -49,6 +49,9 @@
          </documentation>
       </annotation>
       <complexType>
+         <sequence>
+            <element ref="contentTypeBinding" minOccurs="0" maxOccurs="1"/>
+         </sequence>
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
@@ -66,10 +69,30 @@
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="version" type="string">
+         <attribute name="isDefault" type="boolean" use="default" value="true">
             <annotation>
                <documentation>
-                  An optional version identifier to differentiate file versions
+                  If multiple factories are declared for the same fileName - then the &quot;default&quot; is used.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="contentTypeBinding">
+      <annotation>
+         <appInfo>
+            <meta.element labelAttribute="contentTypeId"/>
+         </appInfo>
+         <documentation>
+            Advertises that the containing editor understands the given content type and is suitable for editing files of that type.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="contentTypeId" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The content type identifier. This is an ID defined by the &apos;org.eclipse.core.runtime.contentTypes&apos; extension point.
                </documentation>
             </annotation>
          </attribute>

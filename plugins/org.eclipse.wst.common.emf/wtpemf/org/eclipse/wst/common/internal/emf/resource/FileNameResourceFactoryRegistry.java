@@ -72,6 +72,9 @@ public abstract class FileNameResourceFactoryRegistry extends DefaultOverridable
 	protected synchronized ResourceFactoryDescriptor getDescriptor(URI uri) {
 		return (ResourceFactoryDescriptor) descriptors.get(uri.lastSegment());
 	}
+	protected synchronized Map getDescriptors() {
+		return descriptors;
+	}
 
 	protected final synchronized Resource.Factory getFactory(ResourceFactoryDescriptor descriptor) {  
 		Resource.Factory factory = (Factory) factories.get(descriptor);

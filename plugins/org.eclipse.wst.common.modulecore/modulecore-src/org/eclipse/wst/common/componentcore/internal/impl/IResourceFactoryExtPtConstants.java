@@ -21,7 +21,11 @@ public interface IResourceFactoryExtPtConstants {
 	
 	String ATT_SHORT_SEGMENT = "shortSegment"; //$NON-NLS-1$ 
 	
-	String ATT_VERSION = "version"; //$NON-NLS-1$ 
+	String TAG_CONTENTTYPE = "contentTypeBinding"; //$NON-NLS-1$ 
+	
+	String ATT_CONTENTTYPEID = "contentTypeId"; //$NON-NLS-1$ 
+	
+	String ATT_ISDEFAULT = "isDefault"; //$NON-NLS-1$ 
 		
 
 }
