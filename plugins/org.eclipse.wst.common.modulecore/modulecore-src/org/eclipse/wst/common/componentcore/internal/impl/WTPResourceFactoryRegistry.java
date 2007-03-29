@@ -250,6 +250,7 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 				e.printStackTrace();
 			}
 		}
+		ResourceFactoryDescriptor defaultDesc = null;
 		for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
 			WTPResourceFactoryRegistryKey key = (WTPResourceFactoryRegistryKey) iterator.next();
 			if (key.shortName.equals(uri.lastSegment())) {
@@ -263,10 +264,13 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 				if ((key.type != null) && (fileDesc != null) && (fileDesc.getContentType().equals(key.type)))
 					return desc;
 				if ((fileDesc != null) && (desc.isDefault()))
-					return desc;
+					defaultDesc = desc;
 			}
 		}
+		
 		// Ok no content type match - go to super
-		return super.getDescriptor(uri);
+		if (defaultDesc != null)
+			return defaultDesc;
+		else return super.getDescriptor(uri);
 		}
 }
