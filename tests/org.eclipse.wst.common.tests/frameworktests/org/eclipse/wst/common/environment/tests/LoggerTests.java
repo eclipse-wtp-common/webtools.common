@@ -61,7 +61,15 @@ public class LoggerTests extends TestCase
     IEnvironment environment = EnvironmentService.getEclipseConsoleEnvironment();
     ILog         logger      = environment.getLog();
     
-    assertTrue( "Logging enabled", !logger.isEnabled() );
+	//assertTrue("Logging enabled", !logger.isEnabled());
+	// We may or may not be called with the -debug option, 
+	// so we can not test for it, but we can write an appropriate 
+	// message, to help interpret results, if needed.
+	if (logger.isEnabled()) {
+		System.out.println(" Logging is enabled");
+	} else {
+		System.out.println(" Logging is is not enabled");			
+	}
     assertTrue( "Logging feature enabled", !logger.isEnabled( "bad option" ) );
     
     logger.log( ILog.ERROR, 0, this, "test logger", Status.CANCEL_STATUS );
