@@ -12,6 +12,7 @@
 package org.eclipse.wst.common.project.facet.core.internal;
 
 import static org.eclipse.wst.common.project.facet.core.internal.util.FileUtil.validateEdit;
+import static org.eclipse.wst.common.project.facet.core.internal.util.XmlUtil.*;
 import static org.eclipse.wst.common.project.facet.core.internal.util.ProgressMonitorUtil.beginTask;
 import static org.eclipse.wst.common.project.facet.core.internal.util.ProgressMonitorUtil.done;
 import static org.eclipse.wst.common.project.facet.core.internal.util.ProgressMonitorUtil.submon;
@@ -1284,7 +1285,7 @@ public final class FacetedProject
         if( this.primaryRuntime != null )
         {
             out.print( "  <runtime name=\"" ); //$NON-NLS-1$
-            out.print( this.primaryRuntime );
+            out.print( escape( this.primaryRuntime ) );
             out.print( "\"/>" ); //$NON-NLS-1$
             out.print( nl );
         }
@@ -1294,7 +1295,7 @@ public final class FacetedProject
             if( ! name.equals( this.primaryRuntime ) )
             {
                 out.print( "  <secondary-runtime name=\"" ); //$NON-NLS-1$
-                out.print( name );
+                out.print( escape( name ) );
                 out.print( "\"/>" ); //$NON-NLS-1$
                 out.print( nl );
             }
@@ -1303,7 +1304,7 @@ public final class FacetedProject
         for( IProjectFacet f : this.fixed )
         {
             out.print( "  <fixed facet=\"" ); //$NON-NLS-1$
-            out.print( f.getId() );
+            out.print( escape( f.getId() ) );
             out.print( "\"/>" ); //$NON-NLS-1$
             out.print( nl );
         }
@@ -1311,9 +1312,9 @@ public final class FacetedProject
         for( IProjectFacetVersion fv : this.facets )
         {
             out.print( "  <installed facet=\"" ); //$NON-NLS-1$
-            out.print( fv.getProjectFacet().getId() );
+            out.print( escape( fv.getProjectFacet().getId() ) );
             out.print( "\" version=\"" ); //$NON-NLS-1$
-            out.print( fv.getVersionString() );
+            out.print( escape( fv.getVersionString() ) );
             out.print( "\"/>" ); //$NON-NLS-1$
             out.print( nl );
         }
