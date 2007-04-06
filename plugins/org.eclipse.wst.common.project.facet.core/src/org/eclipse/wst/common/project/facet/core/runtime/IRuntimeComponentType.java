@@ -19,9 +19,17 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 
 /**
- * Represents the type of a runtime component. A runtime instance is composed of
- * multiple runtime components, each of which has a type and a version.
+ * Represents the type of a runtime component. A runtime instance is composed of  multiple runtime 
+ * components, each of which has a type and a version.
  * 
+ * <p>This interface is not intended to be implemented outside of this framework. Runtime component
+ * types are declared using <code>org.eclipse.wst.common.project.facet.core.runtimes</code>
+ * extension point. Once declared, client code can get access to <code>IRuntimeComponentType</code> 
+ * objects by using methods on the {@see RuntimeManager} class.</p>  
+ *
+ * @see RuntimeManager.getRuntimeComponentTypes()
+ * @see RuntimeManager.getRuntimeComponentType(String)
+ * @see RuntimeManager.isRuntimeComponentTypeDefined(String)
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 

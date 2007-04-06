@@ -14,9 +14,21 @@ package org.eclipse.wst.common.project.facet.core.runtime;
 import org.eclipse.wst.common.project.facet.core.IVersion;
 
 /**
- * Represents a version of a runtime component. A runtime instance is composed 
- * of multiple runtime components, each of which has a type and a version.
+ * Represents a version of a runtime component. A runtime instance is composed of multiple runtime 
+ * components, each of which has a type and a version.
  * 
+ * <p>This interface is not intended to be implemented outside of this framework. Runtime component
+ * versions are declared using <code>org.eclipse.wst.common.project.facet.core.runtimes</code>
+ * extension point. Once declared, client code can get access to 
+ * <code>IRuntimeComponentVersion</code> objects by using methods on the 
+ * {@see IRuntimeComponentType} class.</p>  
+ *
+ * @see IRuntimeComponentType.getVersions()
+ * @see IRuntimeComponentType.getVersions(String)
+ * @see IRuntimeComponentType.getVersion(String)
+ * @see IRuntimeComponentType.hasVersion(String)
+ * @see IRuntimeComponentType.getLatestVersion()
+ * @see IRuntimeComponentType.getSortedVersions(boolean)
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 

@@ -21,9 +21,17 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 
 /**
- * Represents a configured instance of a runtime. A runtime instance is composed
- * of multiple runtime components.
+ * Represents a configured instance of a runtime. A runtime instance is composed of multiple 
+ * runtime components. 
  * 
+ * <p>This interface is not intended to be implemented outside of this framework. Client code can 
+ * get access to <code>IRuntime</code> objects by using methods on the {@see RuntimeManager} 
+ * class.</p>  
+ * 
+ * @see RuntimeManager.getRuntimes()
+ * @see RuntimeManager.getRuntime(String)
+ * @see RuntiemManager.isRuntimeDefined(String)
+ * @see RuntimeManager.defineRuntime(String,List<IRuntimeComponent>,Map<String,String>)
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 

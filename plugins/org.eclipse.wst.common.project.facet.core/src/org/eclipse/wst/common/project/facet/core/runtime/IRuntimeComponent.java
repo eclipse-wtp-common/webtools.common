@@ -16,9 +16,15 @@ import java.util.Map;
 import org.eclipse.core.runtime.IAdaptable;
 
 /**
- * Represents a configured instance of a runtime component type and version. A
- * runtime insance is composed of multiple runtime components.
+ * Represents a configured instance of a runtime component type and version. A runtime instance is 
+ * composed of multiple runtime components.
  * 
+ * <p>This interface is not intended to be implemented outside of this framework. Client code can 
+ * get access to <code>IRuntimeComponent</code> objects by using methods on the 
+ * {@see IRuntime} and {@see RuntimeManager} classes.</p>  
+ * 
+ * @see IRuntime.getRuntimeComponents()
+ * @see RuntimeManager.createRuntimeComponent(IRuntimeComponentVersion,Map<String,String>) 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
