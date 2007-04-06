@@ -11,6 +11,8 @@
 
 package org.eclipse.wst.common.project.facet.core.internal;
 
+import static org.eclipse.wst.common.project.facet.core.internal.util.FileUtil.FILE_DOT_PROJECT;
+import static org.eclipse.wst.common.project.facet.core.internal.util.FileUtil.validateEdit;
 import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.findOptionalElement;
 import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.findRequiredAttribute;
 import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.instantiate;
@@ -513,12 +515,14 @@ public final class FacetedProjectFrameworkImpl
                 ! project.isNatureEnabled( FacetedProjectNature.NATURE_ID ) && 
                 convertIfNecessary )
             {
-                IProjectDescription description = project.getDescription();
-                String[] prevNatures = description.getNatureIds();
-                String[] newNatures = new String[ prevNatures.length + 1 ];
+                final IProjectDescription description = project.getDescription();
+                final String[] prevNatures = description.getNatureIds();
+                final String[] newNatures = new String[ prevNatures.length + 1 ];
                 System.arraycopy( prevNatures, 0, newNatures, 0, prevNatures.length );
                 newNatures[ prevNatures.length ] = FacetedProjectNature.NATURE_ID;
                 description.setNatureIds( newNatures );
+                
+                validateEdit( project.getFile( FILE_DOT_PROJECT ) );
                 
                 project.setDescription( description, submon( monitor, 1 ) );
             }

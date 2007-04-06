@@ -11,6 +11,7 @@
 
 package org.eclipse.wst.common.project.facet.core.internal;
 
+import static org.eclipse.wst.common.project.facet.core.internal.util.FileUtil.validateEdit;
 import static org.eclipse.wst.common.project.facet.core.internal.util.ProgressMonitorUtil.beginTask;
 import static org.eclipse.wst.common.project.facet.core.internal.util.ProgressMonitorUtil.done;
 import static org.eclipse.wst.common.project.facet.core.internal.util.ProgressMonitorUtil.submon;
@@ -1336,6 +1337,7 @@ public final class FacetedProject
         
         if( this.f.exists() )
         {
+            validateEdit( this.f );
             this.f.setContents( in, true, false, null );
         }
         else
