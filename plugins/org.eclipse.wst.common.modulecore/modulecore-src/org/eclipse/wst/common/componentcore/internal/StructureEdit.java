@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.jem.util.UIContextDetermination;
@@ -42,6 +43,7 @@ import org.eclipse.wst.common.componentcore.internal.util.EclipseResourceAdapter
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.internal.emf.utilities.ExtendedEcoreUtil;
+import org.eclipse.wst.common.internal.emfworkbench.edit.EMFWorkbenchEditContextFactory;
 import org.eclipse.wst.common.internal.emfworkbench.validateedit.IValidateEditContext;
 
 /**
@@ -438,10 +440,21 @@ public class StructureEdit implements IEditModelHandler {
 	 */
 	public ProjectComponents getComponentModelRoot() {
 		ProjectComponents comps = null;
-		synchronized(structuralModel){
-		if (!structuralModel.isDisposed())
-			comps = (ProjectComponents) structuralModel.getPrimaryRootObject();
+		ILock lock = EMFWorkbenchEditContextFactory.getProjectLockObject(structuralModel.getProject());
+		try{
+			if(null != lock){
+				lock.acquire();
+			}
+			synchronized(structuralModel){
+				if (!structuralModel.isDisposed())
+					comps = (ProjectComponents) structuralModel.getPrimaryRootObject();
+			}
+		} finally{
+			if(null != lock){
+				lock.release();
+			}
 		}
+		
 		return comps;
 	}
 
