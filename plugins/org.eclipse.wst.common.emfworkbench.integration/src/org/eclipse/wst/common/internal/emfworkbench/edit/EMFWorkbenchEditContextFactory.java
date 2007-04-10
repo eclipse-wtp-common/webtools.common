@@ -57,7 +57,7 @@ public class EMFWorkbenchEditContextFactory extends EMFWorkbenchContextFactory {
 	protected static LockManager lockManager = new LockManager();
 	protected static Map projectLocks = new Hashtable();
 
-	protected static ILock getProjectLockObject(IProject aProject){
+	public static ILock getProjectLockObject(IProject aProject){
 		if(null == aProject){
 			return null;
 		}
