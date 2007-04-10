@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $RCSfile: Logger.java,v $
- *  $Revision: 1.8 $  $Date: 2006/05/17 20:13:45 $ 
+ *  $Revision: 1.9 $  $Date: 2007/04/10 01:09:36 $ 
  */
 package org.eclipse.jem.util.logger.proxy;
 
@@ -195,7 +195,7 @@ public class Logger {
 		
 		try {
 			fLineSeperator = System.getProperty("line.separator"); // Diff on Win/Unix/Mac //$NON-NLS-1$
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			fLineSeperator = "\n"; //$NON-NLS-1$
 		}
 	}

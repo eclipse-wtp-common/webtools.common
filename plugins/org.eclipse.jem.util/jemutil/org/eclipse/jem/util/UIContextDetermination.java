@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: UIContextDetermination.java,v $$
- *  $$Revision: 1.4 $$  $$Date: 2006/08/09 15:38:22 $$ 
+ *  $$Revision: 1.5 $$  $$Date: 2007/04/10 01:09:36 $$ 
  */
 package org.eclipse.jem.util;
 import java.util.HashMap;
@@ -180,7 +180,7 @@ public class UIContextDetermination {
 						if (tester.isCurrentContextUI())
 							currentContext = UI_CONTEXT;
 					}
-				} catch (Throwable t) {
+				} catch (Exception t) {
 					Logger.getLogger().log("UIContextDetermination is proceeding in HEADLESS mode"); //$NON-NLS-1$
 				}
 			}

@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $RCSfile: AbstractWorkBenchRenderer.java,v $
- *  $Revision: 1.5 $  $Date: 2005/12/14 21:24:26 $ 
+ *  $Revision: 1.6 $  $Date: 2007/04/10 01:09:36 $ 
  */
 package org.eclipse.jem.util.logger.proxyrender;
 
@@ -189,7 +189,7 @@ public abstract class AbstractWorkBenchRenderer implements ILogRenderer2 {
 				return WORKBENCH_DESCRIPTION;
 			} else
 				return NOLOG_DESCRIPTION;
-		} catch (Throwable t) {
+		} catch (Exception t) {
 			return NOLOG_DESCRIPTION;
 		}
 	}
