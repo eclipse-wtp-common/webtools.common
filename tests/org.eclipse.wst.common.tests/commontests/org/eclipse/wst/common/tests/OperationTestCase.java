@@ -47,8 +47,6 @@ public abstract class OperationTestCase extends BaseTestCase {
 			deleteAllProjects();
 		} catch (Exception e) {
 			// TODO: handle exception
-		} catch (Throwable th) {
-			// TODO: handle error in a better way
 		} finally {
 			RendererFactory.getDefaultRendererFactory().setValidating(false);
 		}

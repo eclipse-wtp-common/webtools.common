@@ -30,7 +30,7 @@ public class TestOperation extends AbstractDataModelOperation {
 				monitor.subTask("part " + index + " of 5 complete."); //$NON-NLS-1$ //$NON-NLS-2$
 				Thread.sleep(1000);
 			}
-		} catch (Throwable exc) {
+		} catch (Exception exc) {
 			throw new ExecutionException("execute threw and exception ", exc); //$NON-NLS-1$
 		}
 
