@@ -9,8 +9,8 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 /*
- *  $RCSfile: PerformanceMonitorUtil.java,v $
- *  $Revision: 1.7 $  $Date: 2005/08/24 21:10:34 $ 
+
+
  */
 package org.eclipse.jem.util;
 import java.util.EventObject;

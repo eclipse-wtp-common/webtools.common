@@ -9,8 +9,8 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 /*
- *  $RCSfile: PresentPerformanceMonitor.java,v $
- *  $Revision: 1.5 $  $Date: 2005/08/24 21:10:34 $ 
+
+
  */
 package org.eclipse.jem.util;
 import org.eclipse.perfmsr.core.IPerformanceMonitor;

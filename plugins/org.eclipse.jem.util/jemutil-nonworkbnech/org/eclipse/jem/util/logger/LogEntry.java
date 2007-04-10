@@ -9,8 +9,8 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 /*
- *  $RCSfile: LogEntry.java,v $
- *  $Revision: 1.5 $  $Date: 2006/05/17 20:13:45 $ 
+
+
  */
 package org.eclipse.jem.util.logger;
 

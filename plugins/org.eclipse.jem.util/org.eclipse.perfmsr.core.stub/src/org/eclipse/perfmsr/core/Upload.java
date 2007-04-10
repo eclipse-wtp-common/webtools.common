@@ -9,8 +9,8 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 /*
- *  $RCSfile: Upload.java,v $
- *  $Revision: 1.2 $  $Date: 2005/02/15 23:06:47 $ 
+
+
  */
 package org.eclipse.perfmsr.core;
  

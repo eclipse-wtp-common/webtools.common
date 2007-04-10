@@ -9,8 +9,8 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 /*
- *  $RCSfile: AbstractWorkBenchRenderer.java,v $
- *  $Revision: 1.6 $  $Date: 2007/04/10 01:09:36 $ 
+
+
  */
 package org.eclipse.jem.util.logger.proxyrender;
 

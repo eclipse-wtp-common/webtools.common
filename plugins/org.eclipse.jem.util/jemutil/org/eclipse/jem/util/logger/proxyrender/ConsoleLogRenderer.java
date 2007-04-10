@@ -9,8 +9,8 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 /*
- *  $RCSfile: ConsoleLogRenderer.java,v $
- *  $Revision: 1.2 $  $Date: 2005/02/15 23:04:14 $ 
+
+
  */
 package org.eclipse.jem.util.logger.proxyrender;
 

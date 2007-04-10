@@ -9,8 +9,8 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 /*
- *  $RCSfile: Logger.java,v $
- *  $Revision: 1.9 $  $Date: 2007/04/10 01:09:36 $ 
+
+
  */
 package org.eclipse.jem.util.logger.proxy;
 

@@ -9,8 +9,8 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 /*
- *  $RCSfile: CharacterUtil.java,v $
- *  $Revision: 1.1 $  $Date: 2006/02/24 17:32:14 $ 
+
+
  */
 package org.eclipse.jem.util;
 

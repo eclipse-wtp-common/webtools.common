@@ -9,8 +9,8 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 /*
- *  $RCSfile: ILogRenderer.java,v $
- *  $Revision: 1.2 $  $Date: 2005/02/15 23:05:54 $ 
+
+
  */
 package org.eclipse.jem.util.logger.proxy;
 
