@@ -320,7 +320,7 @@ public final class FilterUtil {
 
 		try {
 			helper.registerResource(resource);
-		} catch (Throwable exc) {
+		} catch (Exception exc) {
 			// How to log this????
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {

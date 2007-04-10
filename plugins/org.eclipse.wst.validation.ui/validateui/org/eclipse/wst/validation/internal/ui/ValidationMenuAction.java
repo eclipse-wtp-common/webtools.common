@@ -334,7 +334,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 				cancelled = true;
 				String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_RESCANCELLED, new String[]{project.getName()});
 				monitor.setTaskName(message);
-			} catch (Throwable exc) {
+			} catch (Exception exc) {
 				logException(monitor, project, exc);
 			}
 		}

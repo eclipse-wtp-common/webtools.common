@@ -207,7 +207,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 			logInvocationTargetException(logger, exc);
 			executionMap |= 0x20;
 			return referenced;
-		} catch (Throwable exc) {
+		} catch (Exception exc) {
 			logBuildError(logger, exc);
 			executionMap |= 0x40;
 			return referenced;

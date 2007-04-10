@@ -1042,7 +1042,7 @@ protected Control createContents(Composite parent) {
 			} catch (InvocationTargetException exc) {
 				_pageImpl = new InvalidPage(parent);
 				displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
-			} catch (Throwable exc) {
+			} catch (Exception exc) {
 				_pageImpl = new InvalidPage(parent);
 				displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
 			}
@@ -1050,7 +1050,7 @@ protected Control createContents(Composite parent) {
 	} catch (InvocationTargetException exc) {
 		_pageImpl = new InvalidPage(parent);
 		displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
-	} catch (Throwable exc) {
+	} catch (Exception exc) {
 		_pageImpl = new InvalidPage(parent);
 		displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
 	}
@@ -1083,7 +1083,7 @@ protected void performDefaults() {
 		_pageImpl.performDefaults();
 	} catch (InvocationTargetException exc) {
 		displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
-	} catch (Throwable exc) {
+	} catch (Exception exc) {
 		displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
 	}
 }
@@ -1100,7 +1100,7 @@ public boolean performOk() {
 	} catch (InvocationTargetException exc) {
 		displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
 		return false;
-	} catch (Throwable exc) {
+	} catch (Exception exc) {
 		displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
 		return false;
 	}
@@ -1117,7 +1117,7 @@ public void dispose() {
 		if (_pageImpl != null) {
 			_pageImpl.dispose();
 		}
-	} catch (Throwable exc) {
+	} catch (Exception exc) {
 		displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE), ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE), exc);
 	}
 }

@@ -110,7 +110,7 @@ public class ValidatorJob extends Job {
 			if (exc.getAssociatedMessage() != null) {
 				reporter.addMessage(validator, exc.getAssociatedMessage());
 			}
-		} catch (Throwable exc) {
+		} catch (Exception exc) {
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
 				entry.setSourceID("ValidatorJob.run()"); //$NON-NLS-1$
@@ -132,7 +132,7 @@ public class ValidatorJob extends Job {
 				validator.cleanup(reporter);
 			} catch (OperationCanceledException e) {
 				throw e;
-			} catch (Throwable exc) {
+			} catch (Exception exc) {
 				if (logger.isLoggingLevel(Level.SEVERE)) {
 					LogEntry entry = ValidationPlugin.getLogEntry();
 					entry.setSourceID("ValidatorJob.run()"); //$NON-NLS-1$
@@ -153,7 +153,7 @@ public class ValidatorJob extends Job {
 					vmd.removeHelper( validator );
 				}catch (OperationCanceledException e) {
 					throw e;
-				} catch (Throwable exc) {
+				} catch (Exception exc) {
 					if (logger.isLoggingLevel(Level.SEVERE)) {
 						LogEntry entry = ValidationPlugin.getLogEntry();
 						entry.setSourceID("ValidatorJob.run()"); //$NON-NLS-1$

@@ -99,7 +99,7 @@ public class EventManager implements IResourceChangeListener {
 						}
 
 						continue;
-					} catch (Throwable exc) {
+					} catch (Exception exc) {
 						// If there is a problem with this particular helper, log the error and
 						// continue
 						// with the next validator.
@@ -170,7 +170,7 @@ public class EventManager implements IResourceChangeListener {
 						}
 
 						continue;
-					} catch (Throwable exc) {
+					} catch (Exception exc) {
 						// If there is a problem with this particular helper, log the error and
 						// continue
 						// with the next validator.
@@ -363,7 +363,7 @@ public class EventManager implements IResourceChangeListener {
 								if (helper != null) {
 									try {
 										helper.shutdown();
-									} catch (Throwable exc) {
+									} catch (Exception exc) {
 										// Since we're shutting down, ignore the exception.
 									}
 								}
@@ -385,7 +385,7 @@ public class EventManager implements IResourceChangeListener {
 					}
 				}
 			}
-		} catch (Throwable exc) {
+		} catch (Exception exc) {
 			// Since we're shutting down, ignore the exception.
 		}
 	}

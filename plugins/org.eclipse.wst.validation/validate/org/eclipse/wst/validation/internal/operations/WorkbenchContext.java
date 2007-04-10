@@ -290,7 +290,7 @@ public class WorkbenchContext implements IWorkbenchContext {
 		}
 		try {
 			return util.getLineNo(object);
-		} catch (Throwable exc) {
+		} catch (Exception exc) {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();

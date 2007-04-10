@@ -649,7 +649,7 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 		try {
 			removeDOMChild(parentNode, childNode, false);
 			parentNode.insertBefore(childNode, insertBeforeNode);
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -686,7 +686,7 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 			if (removeAdapter)
 				removeAdapters(childNode);
 			parentNode.removeChild(childNode);
-		} catch (Throwable e) { 
+		} catch (Exception e) { 
 			e.printStackTrace();
 		}
 	}

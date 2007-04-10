@@ -113,7 +113,7 @@ public class PageGroupManager {
 
 		try {
 			pageFound = findNextPage(true);
-		} catch (Throwable exc) {
+		} catch (Exception exc) {
 			Logger.getLogger().logError(exc);
 			if (rootOperation != null) {
 				try {
@@ -390,7 +390,7 @@ public class PageGroupManager {
 
 				try {
 					newPageId = pageGroupEntry.getPageHandler().getNextPage(pageId, expectedId);
-				} catch (Throwable exc) {
+				} catch (Exception exc) {
 					Logger.getLogger().logError(exc);
 				}
 
@@ -411,7 +411,7 @@ public class PageGroupManager {
 
 			try {
 				nextGroupID = pageGroupEntry.getPageGroupHandler().getNextPageGroup(afterId, groupIDList);
-			} catch (Throwable exc) {
+			} catch (Exception exc) {
 				Logger.getLogger().logError(exc);
 			}
 
@@ -490,7 +490,7 @@ public class PageGroupManager {
 			try {
 				pageHandler = pageGroup.getPageHandler(dataModel);
 				pageGroupHandler = pageGroup.getPageGroupHandler(dataModel);
-			} catch (Throwable exc) {
+			} catch (Exception exc) {
 				Logger.getLogger().logError(exc);
 			}
 

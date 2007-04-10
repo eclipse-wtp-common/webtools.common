@@ -110,7 +110,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			// Once all of the validators have been read, the caches of the
 			// validators need to be updated.
 			buildCache();
-		} catch (Throwable exc) {
+		} catch (Exception exc) {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
@@ -500,7 +500,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		IWorkbenchContext wh = null;
 		try {
 			wh = (IWorkbenchContext) element.createExecutableExtension(TAG_HELPER_CLASS);
-		} catch (Throwable exc) {
+		} catch (Exception exc) {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
@@ -521,7 +521,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		IValidator validator = null;
 		try {
 			validator = (IValidator) element.createExecutableExtension(TAG_RUN_CLASS);
-		} catch (Throwable exc) {
+		} catch (Exception exc) {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();

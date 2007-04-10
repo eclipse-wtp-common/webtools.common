@@ -229,7 +229,7 @@ public class Cache
 		  }
 
 	  }
-	  catch(Throwable t)
+	  catch(Exception t)
 	  {
 		  // Put the entry in the uncached list so the resolution work will not be performed again.
       // TODO: Add in a timeout for the non-located uris.

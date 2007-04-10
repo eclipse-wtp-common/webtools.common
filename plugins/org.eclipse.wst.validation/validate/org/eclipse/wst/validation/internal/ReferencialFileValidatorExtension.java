@@ -49,7 +49,7 @@ public class ReferencialFileValidatorExtension {
 		try {
 			if (instance == null && !errorCondition)
 				instance = (ReferencialFileValidator) element.createExecutableExtension(RUN);
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			Logger.getLogger().logError(e);
 			errorCondition = true;
 		}

@@ -1102,7 +1102,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		} catch (OperationCanceledException exc) {
 			// This is handled in the validate(WorkbenchReporter) method.
 			throw exc;
-		}catch (Throwable exc) {
+		}catch (Exception exc) {
 			// If there is a problem with this particular validator, log the
 			// error and continue
 			// with the next validator.
@@ -1204,7 +1204,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			}
 		} catch (OperationCanceledException exc) {
 			throw exc;
-		} catch (Throwable exc) {
+		} catch (Exception exc) {
 			// If there is a problem with this particular validator, log the
 			// error and continue
 			// with the next validator.
@@ -1374,7 +1374,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			if (exc.getAssociatedMessage() != null) {
 				reporter.addMessage(validator, exc.getAssociatedMessage());
 			}
-		} catch (Throwable exc) {
+		} catch (Exception exc) {
 			// If there is a problem with this particular validator, log the
 			// error and continue
 			// with the next validator.
@@ -1412,7 +1412,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				throw e;
 			} catch (OperationCanceledException e) {
 				throw e;
-			} catch (Throwable exc) {
+			} catch (Exception exc) {
 				// If a runtime exception has occured, e.g. NullPointer or
 				// ClassCast, display it with the "A runtime exception has
 				// occurred " messsage.
@@ -1449,7 +1449,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				throw e;
 			} catch (OperationCanceledException e) {
 				throw e;
-			} catch (Throwable exc) {
+			} catch (Exception exc) {
 				// If a runtime exception has occured, e.g. NullPointer or
 				// ClassCast, display it with the "A runtime exception has
 				// occurred " messsage.

@@ -289,7 +289,7 @@ public final class WorkbenchReporter implements IReporter {
 		String location = null;
 		try {
 			location = helper.getLocation(targetObject);
-		} catch (Throwable exc) {
+		} catch (Exception exc) {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
@@ -317,7 +317,7 @@ public final class WorkbenchReporter implements IReporter {
 		String targetObjectName = null;
 		try {
 			targetObjectName = helper.getTargetObjectName(targetObject);
-		} catch (Throwable exc) {
+		} catch (Exception exc) {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
@@ -456,7 +456,7 @@ public final class WorkbenchReporter implements IReporter {
 						entry.setTargetException(exc);
 						logger.write(Level.SEVERE, entry);
 					}
-				} catch (Throwable exc) {
+				} catch (Exception exc) {
 					Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 					if (logger.isLoggingLevel(Level.SEVERE)) {
 						LogEntry entry = ValidationPlugin.getLogEntry();

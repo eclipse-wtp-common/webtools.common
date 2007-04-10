@@ -674,7 +674,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 			}
 		} catch (InvocationTargetException exc) {
 			throw exc;
-		} catch (Throwable exc) {
+		} catch (Exception exc) {
 			String resourceName = (getResource() == null) ? "null" : getResource().getName(); //$NON-NLS-1$
 			throw new InvocationTargetException(exc, ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_RETRIEVE, new String[]{resourceName}));
 		}

@@ -186,7 +186,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 
 				postPerformFinish();
 			}
-		} catch (Throwable exc) {
+		} catch (Exception exc) {
 			WTPUIPlugin.log(exc);
 			ErrorDialog.openError(getShell(), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_0, new Object[]{getWindowTitle()}), WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WTPWizard_UI_1, new Object[]{getWindowTitle()}), exc, 0, false);
 		} finally {

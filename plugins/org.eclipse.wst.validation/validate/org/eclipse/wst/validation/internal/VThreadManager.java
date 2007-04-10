@@ -63,7 +63,7 @@ public class VThreadManager {
 							job.run();
 							getJobs().setActive(false);
 						}
-					} catch (Throwable exc) {
+					} catch (Exception exc) {
 						// This exception is added as FINE instead of SEVERE because it's not
 						// improbable
 						// that an exception will be thrown

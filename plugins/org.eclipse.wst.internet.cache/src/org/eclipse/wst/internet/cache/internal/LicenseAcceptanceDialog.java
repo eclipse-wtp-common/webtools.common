@@ -229,7 +229,7 @@ public class LicenseAcceptanceDialog extends IconAndMessageDialog
 	  
 	  licenseText2.setText(CacheMessages._UI_CACHE_DIALOG_LICENSE_STATEMENT2);
 	}
-	catch(Throwable e)
+	catch(Exception e)
 	{
 	  // The browser throws an exception on platforms that do not support it. 
 	  // In this case we need to create an external browser.
