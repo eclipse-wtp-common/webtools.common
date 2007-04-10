@@ -30,6 +30,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -144,23 +147,68 @@ public class ModuleStructuralModel extends EditModel implements IAdaptable {
 	 * @param wbComp
 	 */
 	public void cleanupWTPModules(WorkbenchComponent wbComp) {
-		ModuleStructuralModel model = new ModuleStructuralModel(getEditModelID(),getEmfContext(),false);
-		if (wbComp == null || model == null)
+		if (wbComp == null)
 			return;
-		try {
-			model.access(this);
-			ResourceTreeRoot root = ResourceTreeRoot.getSourceResourceTreeRoot(wbComp);
-			List rootResources = getModuleResources(root);
-			// Only if we need to do a clean, do we clear, add all required root resource mappings, and save
-			if (!(wbComp.getResources().containsAll(rootResources) && wbComp.getResources().size()==rootResources.size())) {
+		ResourceTreeRoot root = ResourceTreeRoot.getSourceResourceTreeRoot(wbComp);
+		List rootResources = getModuleResources(root);
+		// Only if we need to do a clean, do we clear, add all required root resource mappings, and save
+		if (!(wbComp.getResources().containsAll(rootResources) && wbComp.getResources().size()==rootResources.size())) {
+			final ModuleStructuralModel model = new ModuleStructuralModel(getEditModelID(),getEmfContext(),false);
+			if(model == null){
+				return;
+			}
+			boolean jobScheduled = false;
+			try {
+				final Object key = new Object();
+				model.access(key);
+				
 				wbComp.getResources().clear();
 				wbComp.getResources().addAll(rootResources);
-				model.save(this);
+				URI uri = wbComp.eResource().getURI();
+				//need to get this resource into the model
+				Resource resource = model.getResource(uri);
+				//need to manually dirty this resource in order for it to save.
+				resource.setModified(true);
+				//this job is necessary to avoid the deadlock in 
+				//https://bugs.eclipse.org/bugs/show_bug.cgi?id=181253
+				class SaveJob extends Job {
+					
+					public SaveJob() {
+						super("Save ModuleStructuralModel Job");
+					}
+					
+					protected IStatus run(IProgressMonitor monitor) {
+						try {
+							model.save(key);
+							return OK_STATUS;
+						} finally {
+							disposeOnce();
+						}
+					}
+					
+					private boolean disposedAlready = false;
+					
+					public void disposeOnce(){
+						if(!disposedAlready){
+							disposedAlready = true;
+							model.dispose();
+						}
+					}
+				};
+				final SaveJob saveJob = new SaveJob();
+				saveJob.addJobChangeListener(new JobChangeAdapter(){
+					public void done(IJobChangeEvent event) {
+						saveJob.disposeOnce();
+					}
+				});
+				saveJob.setSystem(true);
+				saveJob.schedule();
+				jobScheduled = true;
+			} finally {
+				if (!jobScheduled && model != null)
+					model.dispose();
 			}
-		} finally {
-			if (model != null)
-				model.dispose();
-		}
+		} 
 	}
     
 	/**
