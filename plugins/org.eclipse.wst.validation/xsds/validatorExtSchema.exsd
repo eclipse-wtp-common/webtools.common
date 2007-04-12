@@ -99,7 +99,7 @@
             <meta.element labelAttribute="contentTypeId"/>
          </appInfo>
          <documentation>
-            Advertises that the containing editor understands the given content type and is suitable for editing files of that type.
+                        Associates a particular content type with the current validator, and enables the validator to be run on resources of the specified content type.
          </documentation>
       </annotation>
       <complexType>
