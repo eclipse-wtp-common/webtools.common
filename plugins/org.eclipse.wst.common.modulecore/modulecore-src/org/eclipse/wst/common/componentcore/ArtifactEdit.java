@@ -332,7 +332,8 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 
 		if (nature == null)
 			throw new IllegalArgumentException("Project does not have ModuleCoreNature: " + aProject);
-
+		if (!validProjectVersion(aProject))
+			throw new IllegalArgumentException("ArtifactEdit API not valid for JEE version project: " + aProject);
 		IVirtualComponent component = ComponentCore.createComponent(aProject);
 		if (component == null)
 			throw new IllegalArgumentException("Invalid component handle: " + aProject);
@@ -350,6 +351,10 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 		project = aProject;
 	}
 
+
+	protected boolean validProjectVersion(IProject project2) {
+		return true;
+	}
 
 	/**
 	 * <p>
