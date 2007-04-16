@@ -85,7 +85,6 @@ public abstract class OperationTestCase extends BaseTestCase {
 
 	public static void runDataModel(IDataModel dataModel, boolean checkTasks, boolean checkLog) throws Exception {
 		OperationTestCase.runDataModel(dataModel, checkTasks, checkLog, null, true, false);
-		
 	}
 
 	public static void runAndVerify(IDataModel dataModel, boolean checkTasks, boolean checkLog) throws Exception {
@@ -101,12 +100,11 @@ public abstract class OperationTestCase extends BaseTestCase {
 	}
 
 	public static void runAndVerify(IDataModel dataModel, boolean checkTasks, boolean checkLog, List errorOKList, boolean reportIfExpectedErrorNotFound, boolean waitForBuildToComplete) throws Exception {
-		// XXX note, waitForBuildToComplete is being ignored
-		runAndVerify(dataModel, checkTasks, checkLog, errorOKList, reportIfExpectedErrorNotFound, false, false);
+		runAndVerify(dataModel, checkTasks, checkLog, errorOKList, reportIfExpectedErrorNotFound, waitForBuildToComplete, false);
 	}
+	
 	public static void runDataModel(IDataModel dataModel, boolean checkTasks, boolean checkLog, List errorOKList, boolean reportIfExpectedErrorNotFound, boolean waitForBuildToComplete) throws Exception {
-		// XXX note, waitForBuildToComplete is being ignored
-		runDataModel(dataModel, checkTasks, checkLog, errorOKList, reportIfExpectedErrorNotFound, false, false);
+		runDataModel(dataModel, checkTasks, checkLog, errorOKList, reportIfExpectedErrorNotFound, waitForBuildToComplete, false);
 	}
 
 	/**
