@@ -115,7 +115,7 @@
 
     <category id="cat2"/>
     
-    <project-facet id="facet3a">
+    <project-facet id="facet3a"> <!-- Tests a facet with no description. -->
       <member category="cat2"/>
     </project-facet>
     
@@ -136,6 +136,7 @@
 
     <project-facet id="facet3b">
       <member category="cat2"/>
+      <description></description> <!-- Tests a facet with an empty description. -->
     </project-facet>
     
     <project-facet-version facet="facet3b" version="1.0"/>

@@ -154,6 +154,27 @@ public final class PluginUtil
         }
     }
     
+    public static String getElementValue( final IConfigurationElement el,
+                                          final String defaultValue )
+    {
+        if( el != null )
+        {
+            String text = el.getValue();
+            
+            if( text != null )
+            {
+                text = text.trim();
+                
+                if( text.length() > 0 )
+                {
+                    return text;
+                }
+            }
+        }
+        
+        return defaultValue;
+    }
+    
     @SuppressWarnings( "unchecked" )
     public static <T> T instantiate( final String pluginId,
                                      final String clname,

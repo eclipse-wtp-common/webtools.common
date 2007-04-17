@@ -15,6 +15,7 @@ import static org.eclipse.wst.common.project.facet.core.internal.util.FileUtil.F
 import static org.eclipse.wst.common.project.facet.core.internal.util.FileUtil.validateEdit;
 import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.findOptionalElement;
 import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.findRequiredAttribute;
+import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.getElementValue;
 import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.instantiate;
 
 import java.io.PrintWriter;
@@ -176,6 +177,7 @@ public final class FacetedProjectFrameworkImpl
         this.listeners = new ListenerRegistry();
         
         readMetadata();
+        
         EventsExtensionPoint.processExtensions( this );
         readUserPresets();
         
@@ -1130,7 +1132,14 @@ public final class FacetedProjectFrameworkImpl
         {
             if( config.getName().equals( EL_CATEGORY ) )
             {
-                readCategory( config );
+                try
+                {
+                    readCategory( config );
+                }
+                catch( InvalidExtensionException e )
+                {
+                    // Continue. The problem has been reported in the log.
+                }
             }
         }
         
@@ -1205,7 +1214,14 @@ public final class FacetedProjectFrameworkImpl
         {
             if( config.getName().equals( EL_PRESET ) )
             {
-                readPreset( config );
+                try
+                {
+                    readPreset( config );
+                }
+                catch( InvalidExtensionException e )
+                {
+                    // Continue. The problem has been reported in the log.
+                }
             }
         }
         
@@ -1213,7 +1229,14 @@ public final class FacetedProjectFrameworkImpl
         {
             if( config.getName().equals( EL_TEMPLATE ) )
             {
-                readTemplate( config );
+                try
+                {
+                    readTemplate( config );
+                }
+                catch( InvalidExtensionException e )
+                {
+                    // Continue. The problem has been reported in the log.
+                }
             }
         }
 
@@ -1221,54 +1244,34 @@ public final class FacetedProjectFrameworkImpl
         {
             if( config.getName().equals( EL_GROUP ) )
             {
-                readGroup( config );
+                try
+                {
+                    readGroup( config );
+                }
+                catch( InvalidExtensionException e )
+                {
+                    // Continue. The problem has been reported in the log.
+                }
             }
         }
     }
     
     private void readCategory( final IConfigurationElement config )
+    
+        throws InvalidExtensionException
+        
     {
         final Category category = new Category();
+        category.setId( findRequiredAttribute( config, ATTR_ID ) );
         category.setPluginId( config.getContributor().getName() );
-        
-        final String id = config.getAttribute( ATTR_ID );
 
-        if( id == null )
-        {
-            reportMissingAttribute( config, ATTR_ID );
-            return;
-        }
-
-        category.setId( id );
-
-        final IConfigurationElement[] children = config.getChildren();
+        final IConfigurationElement elLabel = findOptionalElement( config, EL_LABEL );
+        category.setLabel( getElementValue( elLabel, category.getId() ) );
         
-        for( int i = 0; i < children.length; i++ )
-        {
-            final IConfigurationElement child = children[ i ];
-            final String childName = child.getName();
-            
-            if( childName.equals( EL_LABEL ) )
-            {
-                category.setLabel( child.getValue().trim() );
-            }
-            else if( childName.equals( EL_DESCRIPTION ) )
-            {
-                category.setDescription( child.getValue().trim() );
-            }
-        }
+        final IConfigurationElement elDesc = findOptionalElement( config, EL_DESCRIPTION );
+        category.setDescription( getElementValue( elDesc, DEFAULT_DESCRIPTION ) );
         
-        if( category.getLabel() == null )
-        {
-            category.setLabel( category.getId() );
-        }
-        
-        if( category.getDescription() == null )
-        {
-            category.setDescription( "" ); //$NON-NLS-1$
-        }
-        
-        this.categories.add( id, category );
+        this.categories.add( category.getId(), category );
     }
     
     private void readProjectFacet( final IConfigurationElement config )
@@ -1281,10 +1284,10 @@ public final class FacetedProjectFrameworkImpl
         f.setPluginId( config.getContributor().getName() );
         
         final IConfigurationElement elLabel = findOptionalElement( config, EL_LABEL );
-        f.setLabel( elLabel != null ? elLabel.getValue().trim() : f.getId() );
+        f.setLabel( getElementValue( elLabel, f.getId() ) );
         
         final IConfigurationElement elDesc = findOptionalElement( config, EL_DESCRIPTION );
-        f.setDescription( elDesc != null ? elDesc.getValue().trim() : DEFAULT_DESCRIPTION );
+        f.setDescription( getElementValue( elDesc, DEFAULT_DESCRIPTION ) );
 
         final IConfigurationElement elComp = findOptionalElement( config, EL_VERSION_COMPARATOR );
         
@@ -1308,7 +1311,7 @@ public final class FacetedProjectFrameworkImpl
             
             if( elCategory != null )
             {
-                catname = elCategory.getValue().trim();
+                catname = getElementValue( elCategory, null );
             }
         }
         
@@ -2074,18 +2077,15 @@ public final class FacetedProjectFrameworkImpl
     }
     
     private void readTemplate( final IConfigurationElement config )
+    
+        throws InvalidExtensionException
+        
     {
         final FacetedProjectTemplate template = new FacetedProjectTemplate();
+        template.setId( findRequiredAttribute( config, ATTR_ID ) );
         
-        final String id = config.getAttribute( ATTR_ID );
-
-        if( id == null )
-        {
-            reportMissingAttribute( config, ATTR_ID );
-            return;
-        }
-
-        template.setId( id );
+        final IConfigurationElement elLabel = findOptionalElement( config, EL_LABEL );
+        template.setLabel( getElementValue( elLabel, template.getId() ) );
 
         final IConfigurationElement[] children = config.getChildren();
         
@@ -2094,11 +2094,7 @@ public final class FacetedProjectFrameworkImpl
             final IConfigurationElement child = children[ i ];
             final String childName = child.getName();
             
-            if( childName.equals( EL_LABEL ) )
-            {
-                template.setLabel( child.getValue().trim() );
-            }
-            else if( childName.equals( EL_FIXED ) )
+            if( childName.equals( EL_FIXED ) )
             {
                 final String fid = child.getAttribute( ATTR_FACET );
                 
@@ -2142,22 +2138,22 @@ public final class FacetedProjectFrameworkImpl
             }
         }
         
-        this.templates.add( id, template );
+        this.templates.add( template.getId(), template );
     }
     
     private void readPreset( final IConfigurationElement config )
+    
+        throws InvalidExtensionException
+        
     {
         final Preset preset = new Preset();
+        preset.setId( findRequiredAttribute( config, ATTR_ID ) );
         
-        final String id = config.getAttribute( ATTR_ID );
-
-        if( id == null )
-        {
-            reportMissingAttribute( config, ATTR_ID );
-            return;
-        }
-
-        preset.setId( id );
+        final IConfigurationElement elLabel = findOptionalElement( config, EL_LABEL );
+        preset.setLabel( getElementValue( elLabel, preset.getId() ) );
+        
+        final IConfigurationElement elDesc = findOptionalElement( config, EL_DESCRIPTION );
+        preset.setDescription( getElementValue( elDesc, DEFAULT_DESCRIPTION ) );
 
         final IConfigurationElement[] children = config.getChildren();
         
@@ -2166,15 +2162,7 @@ public final class FacetedProjectFrameworkImpl
             final IConfigurationElement child = children[ i ];
             final String childName = child.getName();
             
-            if( childName.equals( EL_LABEL ) )
-            {
-                preset.setLabel( child.getValue().trim() );
-            }
-            else if( childName.equals( EL_DESCRIPTION ) )
-            {
-                preset.setDescription( child.getValue().trim() );
-            }
-            else if( childName.equals( ATTR_FACET ) )
+            if( childName.equals( ATTR_FACET ) )
             {
                 final String fid = child.getAttribute( ATTR_ID );
                 
@@ -2195,9 +2183,8 @@ public final class FacetedProjectFrameworkImpl
                 if( ! isProjectFacetDefined( fid ) )
                 {
                     final String msg
-                        = Resources.bind( Resources.presetUsesUnknownFacet, id, 
-                                          config.getContributor().getName(), 
-                                          fid );
+                        = Resources.bind( Resources.presetUsesUnknownFacet, preset.getId(), 
+                                          config.getContributor().getName(), fid );
                     
                     FacetCorePlugin.logError( msg );
                     
@@ -2209,9 +2196,8 @@ public final class FacetedProjectFrameworkImpl
                 if( ! f.hasVersion( fver ) )
                 {
                     final String msg
-                        = Resources.bind( Resources.presetUsesUnknownFacetVersion, 
-                                          id, config.getContributor().getName(),
-                                          fid, fver );
+                        = Resources.bind( Resources.presetUsesUnknownFacetVersion, preset.getId(),
+                                          config.getContributor().getName(), fid, fver );
                     
                     FacetCorePlugin.logError( msg );
                     
@@ -2224,28 +2210,15 @@ public final class FacetedProjectFrameworkImpl
             }
         }
         
-        if( preset.getLabel() == null )
-        {
-            preset.setLabel( preset.getId() );
-        }
-        
-        if( preset.getDescription() == null )
-        {
-            preset.setDescription( "" ); //$NON-NLS-1$
-        }
-        
-        this.presets.add( id, preset );
+        this.presets.add( preset.getId(), preset );
     }
 
     private void readGroup( final IConfigurationElement config )
+    
+        throws InvalidExtensionException
+        
     {
-        final String id = config.getAttribute( ATTR_ID );
-
-        if( id == null )
-        {
-            reportMissingAttribute( config, ATTR_ID );
-            return;
-        }
+        final String id = findRequiredAttribute( config, ATTR_ID );
         
         if( ! isGroupDefined( id ) )
         {
@@ -2253,23 +2226,12 @@ public final class FacetedProjectFrameworkImpl
         }
         
         final Group group = (Group) getGroup( id );
-
-        final IConfigurationElement[] children = config.getChildren();
         
-        for( int i = 0; i < children.length; i++ )
-        {
-            final IConfigurationElement child = children[ i ];
-            final String childName = child.getName();
-            
-            if( childName.equals( EL_LABEL ) )
-            {
-                group.setLabel( child.getValue().trim() );
-            }
-            else if( childName.equals( EL_DESCRIPTION ) )
-            {
-                group.setDescription( child.getValue().trim() );
-            }
-        }
+        final IConfigurationElement elLabel = findOptionalElement( config, EL_LABEL );
+        group.setLabel( getElementValue( elLabel, group.getId() ) );
+        
+        final IConfigurationElement elDesc = findOptionalElement( config, EL_DESCRIPTION );
+        group.setDescription( getElementValue( elDesc, DEFAULT_DESCRIPTION ) );
     }
     
     static void reportMissingAttribute( final IConfigurationElement el,
