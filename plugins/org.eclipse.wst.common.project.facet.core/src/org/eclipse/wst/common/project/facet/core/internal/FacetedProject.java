@@ -549,6 +549,32 @@ public final class FacetedProject
         setTargetedRuntimes( runtimes, monitor );
     }
     
+    public boolean isTargetable( final IRuntime runtime )
+    {
+        for( IProjectFacetVersion fv : getProjectFacets() )
+        {
+            if( ! runtime.supports( fv ) )
+            {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+    public boolean isTargeted( final IRuntime runtime )
+    {
+        for( IRuntime r : getTargetedRuntimes() )
+        {
+            if( r.getName().equals( runtime.getName() ) )
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
     public Set<IRuntime> getTargetedRuntimes()
     {
         synchronized( this.lock )

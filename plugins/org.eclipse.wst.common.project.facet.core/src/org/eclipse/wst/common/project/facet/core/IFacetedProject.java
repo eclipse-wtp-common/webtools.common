@@ -331,6 +331,30 @@ public interface IFacetedProject
         throws CoreException;
     
     /**
+     * Determines whether this project (in it's current state) can be targeted to the provided
+     * runtime. This determination is made by looking at the facets that are currently installed
+     * and checking them against the set of facets known to be supported by the provided runtime.
+     * 
+     * @param runtime the runtime to check
+     * @return <code>true</code> if this project can target the provided runtime and
+     *   <code>false</code> otherwise
+     * @since WTP 2.0
+     */
+    
+    boolean isTargetable( IRuntime runtime );
+    
+    /**
+     * Checks whether this project currently targets the specified runtime. 
+     * 
+     * @param runtime the runtime to check
+     * @return <code>true</code> if this project currently targets the specified runtime and
+     *   <code>false</code> otherwise
+     * @since WTP 2.0
+     */
+    
+    boolean isTargeted( IRuntime runtime );
+    
+    /**
      * <p>Returns the set of all runtimes that this project is targeting. When a
      * project targets a runtime, the set of facets that can be installed is
      * limited to those supported by that runtime. When a project targets
