@@ -12,7 +12,10 @@
 package org.eclipse.wst.common.project.facet.core.internal.util;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 
 /**
  * Contains utility functions for dealing with files.
@@ -29,13 +32,13 @@ public final class FileUtil
         throws CoreException
         
     {
-        /*final IWorkspace ws = ResourcesPlugin.getWorkspace();
+        final IWorkspace ws = ResourcesPlugin.getWorkspace();
         final IStatus st = ws.validateEdit( files, IWorkspace.VALIDATE_PROMPT );
         
         if( st.getSeverity() == IStatus.ERROR )
         {
             throw new CoreException( st );
-        }*/
+        }
     }
 
     private FileUtil() {}
