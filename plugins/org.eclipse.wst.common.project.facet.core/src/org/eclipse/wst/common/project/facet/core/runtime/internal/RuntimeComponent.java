@@ -79,7 +79,7 @@ public final class RuntimeComponent
             throw new IllegalArgumentException();
         }
         
-        if( this.runtime != null && ! this.runtime.equals( runtime ) )
+        if( this.runtime != null )
         {
             throw new IllegalStateException( Resources.runtimeAlreadySet );
         }
