@@ -32,9 +32,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
@@ -604,7 +607,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	protected boolean handleFilesToSave(Map projects)
 	{
 	  List fileList = getIFiles(projects);
-      IEditorPart[] dirtyEditors = SaveFilesHelper.getDirtyEditors(fileList);
+      final IEditorPart[] dirtyEditors = SaveFilesHelper.getDirtyEditors(fileList);
       if(dirtyEditors == null || dirtyEditors.length == 0)
     	return true;
       boolean saveAutomatically = false;
@@ -622,16 +625,33 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	    sfDialog = new SaveFilesDialog(ValidationUIPlugin.getPlugin().getWorkbench().getActiveWorkbenchWindow().getShell());
 	    sfDialog.setInput(Arrays.asList(dirtyEditors));
       }
-	  // Save all open editors.
-	  if(saveAutomatically || sfDialog.open() == Window.OK)
-	  {
-		int numDirtyEditors = dirtyEditors.length;
-		for(int i = 0; i < numDirtyEditors; i++)
-		{
-		  dirtyEditors[i].doSave(null);
-		}
-		return true;
-	  }
+      
+      if(saveAutomatically || sfDialog.open() == Window.OK){
+    	  ProgressMonitorDialog ctx = new ProgressMonitorDialog(getShell());
+          
+          IRunnableWithProgress runnable = new IRunnableWithProgress(){
+              public void run(IProgressMonitor monitor) throws InvocationTargetException,
+                  InterruptedException{
+            	  try {
+            		  monitor.beginTask(ValidationUIMessages.SaveFilesDialog_saving, dirtyEditors.length);
+            		  int numDirtyEditors = dirtyEditors.length;
+                      for(int i = 0; i < numDirtyEditors; i++){
+                    	  dirtyEditors[i].doSave(new SubProgressMonitor(monitor, 1));
+                      }
+            	  } finally {
+            		  monitor.done();
+            	  }
+             }
+          };
+          
+          try {
+                ctx.run(false, true, runnable);
+                return true;
+          } catch (InvocationTargetException e) {
+                Logger.getLogger().logError(e);
+          } catch (InterruptedException e) {
+          }
+      }
 	  return false;
 	}
 	

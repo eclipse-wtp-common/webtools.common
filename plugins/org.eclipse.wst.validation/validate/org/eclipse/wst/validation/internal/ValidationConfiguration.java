@@ -174,7 +174,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	 * false, return the enabled non-incremental validators.
 	 */
 	public ValidatorMetaData[] getEnabledIncrementalValidators(boolean incremental) throws InvocationTargetException {
-		return getEnabledFullBuildValidators(incremental);
+		return getEnabledFullBuildValidators(!incremental);
 	}
 
 	/**
@@ -764,13 +764,28 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 		Preferences prefs = (Preferences) event.getSource();
 		if (prefs != null && !event.getOldValue().equals(event.getNewValue())) {
 			try {
-				deserializeAllPrefs(prefs);
+				deserializeAllPrefs(event);
+				passivate();
 			 } catch (InvocationTargetException ie) {
 				Logger.getLogger().log(ie);
 			}
 		}
 	}
 
+	private void deserializeAllPrefs(PropertyChangeEvent event) throws InvocationTargetException {
+		String storedConfig = (String)event.getNewValue();
+		if( event.getProperty().equals(USER_PREFERENCE) ){
+			deserialize(storedConfig);
+		}else if(event.getProperty().equals(USER_MANUAL_PREFERENCE)){
+			deserializeManual(storedConfig);
+		}else if(event.getProperty().equals(USER_BUILD_PREFERENCE)){
+			deserializeBuild(storedConfig);
+		}else if(event.getProperty().equals(DELEGATES_PREFERENCE)){
+			deserializeDelegates(storedConfig);
+		}
+	}
+	
+	
 	protected void deserializeBuild(String storedConfiguration) throws InvocationTargetException {
 		if (storedConfiguration == null || storedConfiguration.length() == 0 || storedConfiguration.equals("default_value")) {
 			// Assume that the configuration has never been set (new workspace).

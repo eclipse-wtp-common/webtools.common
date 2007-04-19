@@ -32,11 +32,12 @@ public class URIHelper
   
   public static String ensureURIProtocolFormat(String uri) {
 	  String protocol = getProtocol(uri);
-	  if (protocol.equals(FILE_PROTOCOL)) {
-		  return ensureFileURIProtocolFormat(uri);
-	  } else {
-		  return uri;
+	  if (protocol != null) {
+		  if (protocol.equals(FILE_PROTOCOL)) {
+			  return ensureFileURIProtocolFormat(uri);
+		  }
 	  }
+	 return uri;
   }
   
   
@@ -287,7 +288,7 @@ public class URIHelper
     if (uri != null)
     {
       int index = uri.indexOf(PROTOCOL_PATTERN);
-      if (index != -1 || uri.startsWith("/"))
+      if (index != -1 || uri.startsWith("/") || uri.startsWith("\\"))
       {
         result = true;
       }
@@ -459,7 +460,7 @@ public class URIHelper
         if (isProtocolFileOrNull(uri))
         {
           uri = removeProtocol(uri);                            
-          File file = new File(uri);
+          File file = new File(org.eclipse.wst.common.uriresolver.internal.URI.decode(uri));
           result = file.exists() && file.isFile();
         }
         else if (isPlatformResourceProtocol(uri))

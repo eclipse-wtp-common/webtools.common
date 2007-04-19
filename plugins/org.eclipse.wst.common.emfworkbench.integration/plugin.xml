@@ -33,5 +33,15 @@
       class="org.eclipse.wst.common.internal.emfworkbench.EmfPackagePropertyTester">
     </propertyTester>
   </extension>
+  
+  <extension 
+       point="org.eclipse.jem.util.uiContextSensitiveClass">
+       <uiContextSensitiveClass
+          key="ValidateEditContext"
+          className="org.eclipse.wst.common.internal.emfworkbench.validateedit.ValidateEditHeadlessContext"
+          context="Headless">
+      </uiContextSensitiveClass>
+  </extension>
+  
    
 </plugin>

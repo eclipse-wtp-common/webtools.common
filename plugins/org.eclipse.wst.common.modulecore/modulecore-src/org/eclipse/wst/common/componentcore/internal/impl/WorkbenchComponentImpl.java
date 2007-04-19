@@ -2,7 +2,7 @@
  * <copyright>
  * </copyright>
  *
- * $Id: WorkbenchComponentImpl.java,v 1.13 2006/07/21 18:36:56 cbridgha Exp $
+ * $Id: WorkbenchComponentImpl.java,v 1.12.2.1 2006/09/28 17:01:20 cbridgha Exp $
  */
 package org.eclipse.wst.common.componentcore.internal.impl;
 

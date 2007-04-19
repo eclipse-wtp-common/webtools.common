@@ -62,5 +62,10 @@ public class ResourceTreeRootAdapter extends AdapterImpl implements Adapter {
 		}
 		return resourceTreeRoot;
 	}
+	
+	public void setResourceTreeRoot(ResourceTreeRoot r){
+		
+		resourceTreeRoot = r;
+	}
 
 }

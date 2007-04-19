@@ -8,6 +8,8 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.internal.emf.resource;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -60,6 +62,9 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	protected Translator[] childTranslators;
 
 	protected boolean isRoot = false;
+	
+	private static final String PLATFORM = "org.eclipse.core.runtime.Platform"; //$NON-NLS-1$
+	private static final String ISRUNNING = "isRunning"; //$NON-NLS-1$
 
 	private class DependencyAdapter extends org.eclipse.emf.common.notify.impl.AdapterImpl {
 
@@ -125,12 +130,35 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 
 	protected void initChildTranslators() {
 		List children = new ArrayList();
-		// Get extended child translators
-		Translator[] extendedChildren = TranslatorService.getInstance().getTranslators();
-        for (int i = 0; i < extendedChildren.length; i++) {
-        	if (extendedChildren[i] != null)
-            	children.add(extendedChildren[i]);
-        }
+		boolean isRunning = false; //is the OSGI platform running ?
+		try {
+			// If the Platform class can be found, then continue to check if the OSGI platform is running
+			Class clazz = Class.forName(PLATFORM);
+			Method m = clazz.getMethod(ISRUNNING, null);
+			isRunning = ((Boolean)m.invoke(clazz, null)).booleanValue();
+		} catch (ClassNotFoundException e) {
+		     // Ignore because this must be in a non_OSGI environment
+		} catch (SecurityException e) {
+			 // Ignore because this must be in a non_OSGI environment
+		} catch (NoSuchMethodException e) {
+			 // Ignore because this must be in a non_OSGI environment
+		} catch (IllegalArgumentException e) {
+			 // Ignore because this must be in a non_OSGI environment
+		} catch (IllegalAccessException e) {
+			 // Ignore because this must be in a non_OSGI environment
+		} catch (InvocationTargetException e) {
+			 // Ignore because this must be in a non_OSGI environment
+		}	
+		//Check for extended child translators because we are in OSGI mode
+		if (isRunning) {
+			Translator[] extendedChildren = TranslatorService.getInstance().getTranslators();
+	        for (int i = 0; i < extendedChildren.length; i++) {
+	        	if (extendedChildren[i] != null)
+	            	children.add(extendedChildren[i]);
+	        }
+		}
+		
+		
 		children.addAll(Arrays.asList(fTranslator.getChildren(getTarget(), fRenderer.getVersionID())));
 
 		VariableTranslatorFactory factory = fTranslator.getVariableTranslatorFactory();

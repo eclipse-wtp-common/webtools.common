@@ -148,7 +148,7 @@ public class ProjectCreationDataModelProviderNew extends AbstractDataModelProvid
 	 * @param projectLoc
 	 * @todo Generated comment
 	 */
-	private IStatus validateExisting(String projectName, String projectLoc) {
+	public static IStatus validateExisting(String projectName, String projectLoc) {
 		if (projectName != null && !projectName.equals("")) {//$NON-NLS-1$
 			File file = new File(projectLoc);
 			if (file.exists()) {

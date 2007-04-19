@@ -457,7 +457,7 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 
 	protected void runSaveOperation(IWorkspaceRunnable runnable, IProgressMonitor monitor) throws SaveFailedException {
 		try {
-			ResourcesPlugin.getWorkspace().run(runnable, getProject(), IWorkspace.AVOID_UPDATE, monitor);
+			ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE, monitor);
 		} catch (CoreException e) {
 			throw new SaveFailedException(e);
 		}
@@ -506,15 +506,18 @@ public class EditModel implements CommandStackListener, ResourceStateInputProvid
 			addEditModelResource(res);
 		}
 		Collection resourceExtensions = EditModelRegistry.getInstance().getEditModelExtensions(getEditModelID());
-		if (resourceExtensions.isEmpty()) {
-			knownResourceExtensions = Collections.EMPTY_LIST;
-		} else {
+		/* bug 170690 - initialize knownResourceExtensions if necessary, and change reference from iter to it */
+		if (knownResourceExtensions == null)
+		{
+			knownResourceExtensions = new ArrayList();
+		}
+		if (!resourceExtensions.isEmpty())
+		{
 			knownResourceExtensions.addAll(resourceExtensions);
 			Iterator it = resourceExtensions.iterator();
 			ResourceSetWorkbenchEditSynchronizer sync = (ResourceSetWorkbenchEditSynchronizer) getEmfContext().getResourceSet().getSynchronizer();
 			while (it.hasNext()) {
-				String extension = (String) iter.next();
-				sync.enableAutoload(extension);
+				sync.enableAutoload(it.next().toString());
 			}
 		}
 	}

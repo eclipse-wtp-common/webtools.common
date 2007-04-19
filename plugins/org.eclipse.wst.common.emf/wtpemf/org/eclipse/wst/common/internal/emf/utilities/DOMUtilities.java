@@ -11,10 +11,13 @@
 package org.eclipse.wst.common.internal.emf.utilities;
 
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -558,16 +561,36 @@ public class DOMUtilities {
 	}
 
 
+	
 	private static InputStream createHeaderInputStream(String doctype, String publicId, String systemId, boolean includeDummy) {
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		PrintWriter writer = new PrintWriter(outputStream);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+		// The prior code (which is still in the catch block), uses
+		// the system default encoding [System.getProperty("file.encoding")];
+		// on Z/OS this is Cp1047. The combination of "UTF-8" in the header
+		// and "Cp1047" in the writer create an unusable input stream.
+
+		PrintWriter writer;
+
+		try {
+			OutputStreamWriter outputWriter = new OutputStreamWriter(outputStream, "UTF-8"); //$NON-NLS-1$
+			// throws UnsupportedEncodingException
+			writer = new PrintWriter(outputWriter);
+		} catch (UnsupportedEncodingException e) {
+			// Should never get here (earlier code)
+			writer = new PrintWriter(outputStream); 
+		}
+
 		writeHeader(writer, doctype, publicId, systemId);
 		if (includeDummy)
 			addDummyEntity(writer);
 		writer.flush();
 		writer.close();
-		return new java.io.ByteArrayInputStream(outputStream.toByteArray());
+
+		byte[] bytes = outputStream.toByteArray();
+		return new ByteArrayInputStream(bytes);
 	}
+
 
 	private static void writeHeader(PrintWriter writer, String doctype, String publicId, String systemId) {
 		writer.write("<?xml version=\""); //$NON-NLS-1$

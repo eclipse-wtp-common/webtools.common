@@ -23,10 +23,12 @@ public class Messages {
 	public static String _UI_LABEL_SOURCE_FILES;
 	public static String _UI_LABEL_SELECTED_FILES;
 
+	public static String _UI_POPUP_EXPAND_ALL;
+	public static String _UI_POPUP_COLLAPSE_ALL;
+	
 	public static String _UI_IMPORT_BUTTON;
 	public static String _UI_IMPORT_BUTTON_TOOL_TIP;
-
-
+	
 //	 SelectMultiFilePage
 	public static String _UI_ADD_BUTTON_TOOL_TIP;
 	public static String _UI_REMOVE_BUTTON_TOOL_TIP;

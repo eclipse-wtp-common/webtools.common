@@ -49,5 +49,12 @@
             id="org.eclipse.wst.common.frameworks.internal.operation.extension.ui.PasteActionOperation"/>
    </extension>
    -->
+   <extension 
+       point="org.eclipse.jem.util.uiContextSensitiveClass">
+       <uiContextSensitiveClass
+          key="ISimpleValidateEditContext"
+          className="org.eclipse.wst.common.frameworks.internal.ui.SimpleValidateEditContextUI"
+          context="UI"/>
+   </extension>
    
 </plugin>

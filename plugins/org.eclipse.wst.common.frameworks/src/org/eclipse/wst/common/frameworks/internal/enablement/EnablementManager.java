@@ -64,19 +64,23 @@ public class EnablementManager implements IEnablementManager {
         if (project != null && !project.isAccessible()) project = null;
         
         EnablementIdentifier identifier = null;
+        boolean identifierRequiresUpdate = false;
         synchronized(this) {
 	        Map identifiersById = getIdentifiersById(project);	
-	        
 	        identifier = (EnablementIdentifier) identifiersById.get(identifierId);
-	
-	        if (identifier == null) {
-	            identifier = createIdentifier(identifierId, project);
-	            updateIdentifier(identifier);
+	        if(identifier == null){
+	        	identifierRequiresUpdate = true;
+	        	identifier = createIdentifier(identifierId, project);
 	            identifiersById.put(identifierId, identifier);
 	        }
+	    }
+        
+        synchronized (identifier){
+        	if(identifierRequiresUpdate){
+                updateIdentifier(identifier);
+        	}
+        	return identifier;
         }
-
-        return identifier;
     }
 
 	protected EnablementIdentifier createIdentifier(String identifierId, IProject project) {
