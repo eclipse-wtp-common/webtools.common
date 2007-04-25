@@ -28,7 +28,15 @@
     name="Faceted Project Validators Extension Point"
     schema="schemas/validators.exsd"/>
     
-  <extension-point id="listeners" name="%extPointListeners" schema="schemas/listeners.exsd"/>
+  <extension-point 
+    id="listeners" 
+    name="%extPointListeners" 
+    schema="schemas/listeners.exsd"/>
+    
+  <extension-point 
+    id="presets" 
+    name="%extPointPresets" 
+    schema="schemas/presets.exsd"/>
   
   <extension
     id="nature"
@@ -72,6 +80,12 @@
       properties="projectFacet"
       class="org.eclipse.wst.common.project.facet.core.internal.FacetedProjectPropertyTester">
     </propertyTester>
+  </extension>
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.presets">
+    <dynamic-preset id="default.configuration">
+      <factory class="org.eclipse.wst.common.project.facet.core.internal.DefaultConfigurationPresetFactory"/>
+    </dynamic-preset>
   </extension>
   
 </plugin>

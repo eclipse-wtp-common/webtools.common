@@ -26,7 +26,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.common.project.facet.core.ICategory;
 import org.eclipse.wst.common.project.facet.core.IConstraint;
 import org.eclipse.wst.common.project.facet.core.IGroup;
-import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
@@ -43,34 +42,34 @@ public final class BasicTests
     private static final String PLUGIN_ID 
         = "org.eclipse.wst.common.project.facet.core.tests";
     
-    private static IProjectFacet f1;
-    private static IProjectFacetVersion f1v10;
-    private static IProjectFacetVersion f1v12;
-    private static IProjectFacetVersion f1v121;
-    private static IProjectFacetVersion f1v13;
-    private static IProjectFacetVersion f1v20;
+    public static IProjectFacet f1;
+    public static IProjectFacetVersion f1v10;
+    public static IProjectFacetVersion f1v12;
+    public static IProjectFacetVersion f1v121;
+    public static IProjectFacetVersion f1v13;
+    public static IProjectFacetVersion f1v20;
     
-    private static IProjectFacet f2;
-    private static IProjectFacetVersion f2v35;
-    private static IProjectFacetVersion f2v35a;
-    private static IProjectFacetVersion f2v47;
-    private static IProjectFacetVersion f2v47b;
-    private static IProjectFacetVersion f2v47c;
+    public static IProjectFacet f2;
+    public static IProjectFacetVersion f2v35;
+    public static IProjectFacetVersion f2v35a;
+    public static IProjectFacetVersion f2v47;
+    public static IProjectFacetVersion f2v47b;
+    public static IProjectFacetVersion f2v47c;
     
-    private static IProjectFacet f2ext;
-    private static IProjectFacetVersion f2extv10;
+    public static IProjectFacet f2ext;
+    public static IProjectFacetVersion f2extv10;
 
-    private static IProjectFacet f3a;
-    private static IProjectFacetVersion f3av10;
-    private static IProjectFacetVersion f3av20;
+    public static IProjectFacet f3a;
+    public static IProjectFacetVersion f3av10;
+    public static IProjectFacetVersion f3av20;
 
-    private static IProjectFacet f3b;
-    private static IProjectFacetVersion f3bv10;
-    private static IProjectFacetVersion f3bv20;
+    public static IProjectFacet f3b;
+    public static IProjectFacetVersion f3bv10;
+    public static IProjectFacetVersion f3bv20;
 
-    private static IProjectFacet f3c;
-    private static IProjectFacetVersion f3cv10;
-    private static IProjectFacetVersion f3cv20;
+    public static IProjectFacet f3c;
+    public static IProjectFacetVersion f3cv10;
+    public static IProjectFacetVersion f3cv20;
 
     static
     {
@@ -125,7 +124,6 @@ public final class BasicTests
         suite.addTest( new BasicTests( "testProjectFacetExtensionPoint" ) );
         suite.addTest( new BasicTests( "testProjectFacetVersionExtensionPoint" ) );
         suite.addTest( new BasicTests( "testCategoryExtensionPoint" ) );
-        suite.addTest( new BasicTests( "testPresetExtensionPoint" ) );
         suite.addTest( new BasicTests( "testDefaultVersionComparator" ) );
         suite.addTest( new BasicTests( "testCustomVersionComparator" ) );
         suite.addTest( new BasicTests( "testVersionExpressions" ) );
@@ -265,29 +263,6 @@ public final class BasicTests
         assertEquals( f3a.getCategory(), cat2 );
         assertEquals( f3b.getCategory(), cat2 );
         assertEquals( f3c.getCategory(), cat2 );
-    }
-    
-    public void testPresetExtensionPoint()
-    {
-        assertTrue( ProjectFacetsManager.isPresetDefined( "preset1" ) );
-        final IPreset preset1 = ProjectFacetsManager.getPreset( "preset1" );
-        assertTrue( ProjectFacetsManager.getPresets().contains( preset1 ) );        
-        
-        assertEquals( preset1.getId(), "preset1" );
-        assertEquals( preset1.getLabel(), "Preset 1" );
-        assertEquals( preset1.getDescription(), "This is the description for the first preset." );
-        assertEquals( preset1.getProjectFacets(), asSet( f1v20, f2v35a, f2extv10 ) );
-        assertFalse( preset1.isUserDefined() );
-        
-        assertTrue( ProjectFacetsManager.isPresetDefined( "preset2" ) );
-        final IPreset preset2 = ProjectFacetsManager.getPreset( "preset2" );
-        assertTrue( ProjectFacetsManager.getPresets().contains( preset2 ) );        
-        
-        assertEquals( preset2.getId(), "preset2" );
-        assertEquals( preset2.getLabel(), "preset2" );
-        assertEquals( preset2.getDescription(), "" );
-        assertEquals( preset2.getProjectFacets(), asSet( f3av10, f3bv10, f3cv10 ) );
-        assertFalse( preset2.isUserDefined() );
     }
     
     @SuppressWarnings( "unchecked" )

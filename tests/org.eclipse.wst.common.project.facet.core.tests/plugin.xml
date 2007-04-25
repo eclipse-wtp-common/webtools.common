@@ -154,21 +154,86 @@
       <group-member id="group1"/>
     </project-facet-version>
 
-    <preset id="preset1">
+  </extension>
+  
+  <!-- PresetsTests -->
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.presets">
+  
+    <static-preset id="pt_preset1">
       <label>Preset 1</label>
       <description>This is the description for the first preset.</description>
       <facet id="facet1" version="2.0"/>
       <facet id="facet2" version="3.5#a"/>
       <facet id="facet2ext" version="1.0"/>
-    </preset>
+    </static-preset>
 
-    <preset id="preset2">
+    <static-preset id="pt_preset2">
       <facet id="facet3a" version="1.0"/>
       <facet id="facet3b" version="1.0"/>
       <facet id="facet3c" version="1.0"/>
-    </preset>
+    </static-preset>
     
-  </extension>
+    <static-preset id="pt_preset3" extends="pt_preset1">
+      <facet id="facet3a" version="1.0"/>
+      <facet id="facet1" version="1.2.1"/>  <!-- Tests that the version in derived preset wins. -->
+    </static-preset>      
+
+    <dynamic-preset id="pt_dyn_preset">
+      <factory class="org.eclipse.wst.common.project.facet.core.tests.PresetsTests$PresetFactory"/>
+    </dynamic-preset>      
+
+    <static-preset id="pt_static_extending_dynamic_preset_1" extends="pt_dyn_preset">
+      <label>Static Extending Dynamic Preset</label>
+      <description>This is the static-dynamic description.</description>
+      <facet id="facet2" version="3.5#a"/>
+      <facet id="facet3b" version="1.0"/>
+    </static-preset>
+
+    <static-preset id="pt_static_extending_dynamic_preset_2" extends="pt_static_extending_dynamic_preset_1">
+      <label>Static Extending Dynamic Preset 2</label>
+      <description>This is the static-dynamic description 2.</description>
+      <facet id="facet1" version="1.2.1"/>
+      <facet id="facet3a" version="1.0"/>
+    </static-preset>
+
+    <!-- References facet that doesn't exist. -->
+    
+    <static-preset id="pt_bad.preset1">
+      <facet id="abc" version="1.0"/>
+    </static-preset>
+
+    <!-- References facet version that doesn't exist. -->
+    
+    <static-preset id="pt_bad.preset2">
+      <facet id="facet2" version="99.98"/>
+    </static-preset>
+
+    <!-- References base preset that doesn't exist. -->
+    
+    <static-preset id="pt_bad.preset3" extends="does.not.exist">
+      <facet id="facet2" version="3.5#a"/>
+    </static-preset>
+    
+    <!-- The following four presets form a cycle. -->
+    
+    <static-preset id="pt_cycle_preset1" extends="pt_cycle_preset3">
+      <facet id="facet1" version="1.2.1"/>
+    </static-preset>
+    
+    <static-preset id="pt_cycle_preset2" extends="pt_cycle_preset1">
+      <facet id="facet1" version="1.2.1"/>
+    </static-preset>
+
+    <static-preset id="pt_cycle_preset3" extends="pt_cycle_preset2">
+      <facet id="facet1" version="1.2.1"/>
+    </static-preset>
+
+    <static-preset id="pt_cycle_preset4" extends="pt_cycle_preset3">
+      <facet id="facet1" version="1.2.1"/>
+    </static-preset>
+    
+  </extension>  
 
   <!-- Facet Constraint Tests -->
   

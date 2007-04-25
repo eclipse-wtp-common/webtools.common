@@ -156,7 +156,7 @@ public final class FacetsSelectionPage
 
         if( this.initialPreset != null )
         {
-            this.panel.selectPreset( this.initialPreset );
+            this.panel.getDataModel().setSelectedPreset( this.initialPreset.getId() );
         }
         
         if( this.initialSelection != null )

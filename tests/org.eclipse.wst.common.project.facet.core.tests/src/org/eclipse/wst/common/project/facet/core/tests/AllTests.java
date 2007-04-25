@@ -31,6 +31,7 @@ public class AllTests
         suite.setName( "All Faceted Project Framework Tests" );
         
         suite.addTest( BasicTests.suite() );
+        suite.addTest( PresetsTests.suite() );
         suite.addTest( ProjectCreationTests.suite() );
         suite.addTest( BasicFacetActionTests.suite() );
         suite.addTest( FacetActionSortTests.suite() );

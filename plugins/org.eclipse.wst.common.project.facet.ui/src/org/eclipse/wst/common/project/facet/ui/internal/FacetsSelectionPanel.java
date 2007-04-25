@@ -161,16 +161,13 @@ public final class FacetsSelectionPanel
      */
 
     private final List<TableRowData> data;
-    private final Set<IProjectFacet> fixed;
     private final Set<IProjectFacetVersion> base;
     private final Set<Action> actions;
     private Object oldSelection;
 
     private IStatus problems;
-    private final Set<IFilter> filters;
     private final List<Listener> listeners;
     private final List<ISelectionChangedListener> selectionListeners;
-    private ConflictingFacetsFilter conflictingFilter;
     
     private final ModifyFacetedProjectDataModel model;
     
@@ -196,15 +193,12 @@ public final class FacetsSelectionPanel
         this.context = context;
         this.data = new ArrayList<TableRowData>();
         this.model = model;
-        this.fixed = new HashSet<IProjectFacet>();
         this.base = ( base == null ? new HashSet<IProjectFacetVersion>() : base );
         this.actions = new HashSet<Action>();
         this.oldSelection = null;
         this.problems = Status.OK_STATUS;
-        this.filters = new HashSet<IFilter>();
         this.listeners = new ArrayList<Listener>();
         this.selectionListeners = new ArrayList<ISelectionChangedListener>();
-        this.conflictingFilter = null;
         
         for( IProjectFacet f : ProjectFacetsManager.getProjectFacets() )
         {
@@ -328,8 +322,6 @@ public final class FacetsSelectionPanel
         this.savePresetButton.setLayoutData( gdwhint( gd(), width ) );
         this.deletePresetButton.setLayoutData( gdwhint( gd(), width ) );
         
-        refreshPresetsCombo();
-
         this.sform1 = new SashForm( this.topComposite, SWT.HORIZONTAL | SWT.SMOOTH );
         this.sform1.setLayoutData( gdhspan( gdfill(), 4 ) );
         
@@ -514,28 +506,6 @@ public final class FacetsSelectionPanel
             }
         );
         
-        addFilter
-        (
-            new IFilter()
-            {
-                public boolean check( final IProjectFacetVersion fv )
-                {
-                    final ChangeTargetedRuntimesDataModel dm
-                        = getDataModel().getTargetedRuntimesDataModel();
-                    
-                    for( IRuntime r : dm.getTargetedRuntimes() )
-                    {
-                        if( ! r.supports( fv ) )
-                        {
-                            return false;
-                        }
-                    }
-                    
-                    return true;
-                }
-            }
-        );
-        
         addProjectFacetsListener
         (
             new Listener()
@@ -546,18 +516,6 @@ public final class FacetsSelectionPanel
                         = getDataModel().getTargetedRuntimesDataModel();
                     
                     rdm.refreshTargetableRuntimes();
-                }
-            }
-        );
-        
-        this.model.getTargetedRuntimesDataModel().addListener
-        ( 
-            ChangeTargetedRuntimesDataModel.EVENT_TARGETED_RUNTIMES_CHANGED,
-            new IDataModelListener()
-            {
-                public void handleEvent()
-                {
-                    refresh();                    
                 }
             }
         );
@@ -613,6 +571,46 @@ public final class FacetsSelectionPanel
         
         updateValidationDisplay();
         Dialog.applyDialogFont(parent);
+        
+        // Bind to the model.
+        
+        this.model.addListener
+        ( 
+            ModifyFacetedProjectDataModel.EVENT_FIXED_FACETS_CHANGED, 
+            new IDataModelListener()
+            {
+                public void handleEvent()
+                {
+                    handleModelChangedEvent( ModifyFacetedProjectDataModel.EVENT_FIXED_FACETS_CHANGED );
+                }
+            }
+        );
+
+        this.model.addListener
+        ( 
+            ModifyFacetedProjectDataModel.EVENT_SELECTED_PRESET_CHANGED, 
+            new IDataModelListener()
+            {
+                public void handleEvent()
+                {
+                    handleModelChangedEvent( ModifyFacetedProjectDataModel.EVENT_SELECTED_PRESET_CHANGED );
+                }
+            }
+        );
+        
+        syncWithPresetsModel( this.presetsCombo );
+        
+        this.model.getTargetedRuntimesDataModel().addListener
+        ( 
+            ChangeTargetedRuntimesDataModel.EVENT_TARGETED_RUNTIMES_CHANGED,
+            new IDataModelListener()
+            {
+                public void handleEvent()
+                {
+                    handleModelChangedEvent( ChangeTargetedRuntimesDataModel.EVENT_TARGETED_RUNTIMES_CHANGED );
+                }
+            }
+        );
     }
     
     public ModifyFacetedProjectDataModel getDataModel()
@@ -747,7 +745,7 @@ public final class FacetsSelectionPanel
         {
             try
             {
-                defaultFacets = runtime.getDefaultFacets( this.fixed );
+                defaultFacets = runtime.getDefaultFacets( this.model.getFixedFacets() );
             }
             catch( CoreException e )
             {
@@ -759,32 +757,14 @@ public final class FacetsSelectionPanel
         {
             defaultFacets = new HashSet<IProjectFacetVersion>();
             
-            for( IProjectFacet f : this.fixed )
+            for( IProjectFacet f : this.model.getFixedFacets() )
             {
                 defaultFacets.add( f.getDefaultVersion() );
             }
         }
             
-        IPreset presetToUse = null;
-        
-        for( IPreset preset : this.model.getPresets() )
-        {
-            if( preset.getProjectFacets().equals( defaultFacets ) )
-            {
-                presetToUse = preset;
-                break;
-            }
-        }
-        
-        if( presetToUse == null )
-        {
-            setSelectedProjectFacets( defaultFacets );
-            this.model.setSelectedPreset( null );
-        }
-        else
-        {
-            selectPreset( presetToUse );
-        }
+        setSelectedProjectFacets( defaultFacets );
+        this.model.setSelectedPreset( null );
     }
     
     public Set<IProjectFacetVersion> getSelectedProjectFacets()
@@ -845,81 +825,18 @@ public final class FacetsSelectionPanel
         updateValidationDisplay();
     }
     
-    public void selectPreset( final IPreset preset )
-    {
-        if( preset != null )
-        {
-            if( ! this.model.getPresets().contains( preset ) )
-            {
-                IProjectFacetVersion problemFacet = null;
-                
-                for( IProjectFacetVersion fv : preset.getProjectFacets() )
-                {
-                    if( isFilteredOut( fv ) )
-                    {
-                        problemFacet = fv;
-                        break;
-                    }
-                }
-                
-                final String msg
-                    = Resources.bind( Resources.couldNotSelectPreset, 
-                                      preset.getLabel(), 
-                                      problemFacet.getProjectFacet().getLabel(),
-                                      problemFacet.getVersionString() );
-                
-                FacetUiPlugin.log( msg );
-            }
-            else
-            {
-                this.model.setSelectedPreset( preset );
-            }
-        }
-    }
-
     public void setFixedProjectFacets( final Set<IProjectFacet> fixed )
     {
-        this.fixed.clear();
-        
-        for( TableRowData trd : this.data )
-        {
-            trd.setFixed( false );
-        }
-
-        for( IProjectFacet f : fixed )
-        {
-            final TableRowData trd = findTableRowData( f, true );
-            
-            this.fixed.add( f );
-            trd.setFixed( true );
-            trd.setSelected( true );
-            this.treeViewer.setChecked( trd, true );
-        }
-        
-        if( this.conflictingFilter != null )
-        {
-            this.filters.remove( this.conflictingFilter );
-        }
-        
-        this.conflictingFilter = new ConflictingFacetsFilter( fixed );
-        this.filters.add( this.conflictingFilter );
-
-        refresh();
-        updateValidationDisplay();
+        this.model.setFixedFacets( fixed );
     }
     
-    public void addFilter( final IFilter filter )
+    /**
+     * @deprecated
+     */
+    
+    public void selectPreset( final IPreset preset )
     {
-        this.filters.add( filter );
-        
-        refresh();
-    }
-
-    public void removeFilter( final IFilter filter )
-    {
-        this.filters.remove( filter );
-        
-        refresh();
+        this.model.setSelectedPreset( preset.getId() );
     }
     
     public boolean setFocus()
@@ -1226,7 +1143,6 @@ public final class FacetsSelectionPanel
         final Object[] checked = this.treeViewer.getCheckedElements();
         this.treeViewer.refresh();
         this.treeViewer.setCheckedElements( checked );
-        refreshPresetsCombo();
         refreshVersionsDropDown();
     }
     
@@ -1249,7 +1165,7 @@ public final class FacetsSelectionPanel
                 synchronized( sortedPresets )
                 {
                     sortedPresets.clear();
-                    sortedPresets.addAll( FacetsSelectionPanel.this.model.getPresets() );
+                    sortedPresets.addAll( FacetsSelectionPanel.this.model.getAvailablePresets() );
                     
                     Collections.sort
                     (
@@ -1295,7 +1211,7 @@ public final class FacetsSelectionPanel
             }
         };
 
-        this.model.addListener( ModifyFacetedProjectDataModel.EVENT_SELECTABLE_PRESETS_CHANGED,
+        this.model.addListener( ModifyFacetedProjectDataModel.EVENT_AVAILABLE_PRESETS_CHANGED,
                                 modelToViewContentsListener );
         
         // Selection : model -> view
@@ -1342,18 +1258,18 @@ public final class FacetsSelectionPanel
                     synchronized( sortedPresets )
                     {
                         final int selection = combo.getSelectionIndex();
-                        final IPreset preset;
+                        final String presetId;
                         
                         if( selection == 0 )
                         {
-                            preset = null;
+                            presetId = null;
                         }
                         else
                         {
-                            preset = sortedPresets.get( selection - 1 );
+                            presetId = sortedPresets.get( selection - 1 ).getId();
                         }
                         
-                        FacetsSelectionPanel.this.model.setSelectedPreset( preset );
+                        FacetsSelectionPanel.this.model.setSelectedPreset( presetId );
                     }
                 }
             }
@@ -1362,79 +1278,6 @@ public final class FacetsSelectionPanel
         // Trigger initial UI population.
         
         modelToViewContentsListener.handleEvent();
-    }
-    
-    private void refreshPresetsCombo()
-    {
-        final Set<IPreset> presets = new HashSet<IPreset>();
-        
-        for( IPreset preset : ProjectFacetsManager.getPresets() )
-        {
-            final Set<IProjectFacetVersion> facets = preset.getProjectFacets();
-            boolean applicable = true;
-            
-            // All of the facets listed in the preset and their versions
-            // must be selectable.
-            
-            for( IProjectFacetVersion fv : facets )
-            {
-                final IProjectFacet f = fv.getProjectFacet();
-                final TableRowData trd = findTableRowData( f );
-                
-                if( ! trd.getVersions().contains( fv ) )
-                {
-                    applicable = false;
-                    break;
-                }
-            }
-            
-            // The preset must span across all of the fixed facets.
-            
-            for( IProjectFacet f : this.fixed )
-            {
-                boolean found = false;
-
-                for( IProjectFacetVersion fv : f.getVersions() )
-                {
-                    if( facets.contains( fv ) )
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                
-                if( ! found )
-                {
-                    applicable = false;
-                    break;
-                }
-            }
-            
-            if( applicable )
-            {
-                presets.add( preset );
-            }
-        }
-        
-        this.model.setPresets( presets );
-        
-        refreshPresetsButtons();
-    }
-    
-    private void refreshPresetsButtons()
-    {
-        final IPreset preset = this.model.getSelectedPreset();
-        
-        if( preset == null )
-        {
-            this.savePresetButton.setEnabled( true );
-            this.deletePresetButton.setEnabled( false );
-        }
-        else
-        {
-            this.savePresetButton.setEnabled( false );
-            this.deletePresetButton.setEnabled( preset.isUserDefined() );
-        }
     }
     
     private void refreshCategoryState( final TableRowData trd )
@@ -1518,19 +1361,6 @@ public final class FacetsSelectionPanel
         }
 
         return null;
-    }
-    
-    private boolean isFilteredOut( final IProjectFacetVersion fv )
-    {
-        for( IFilter filter : this.filters )
-        {
-            if( ! filter.check( fv ) )
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
     
     private TableRowData findTableRowData( final IProjectFacet f )
@@ -1707,8 +1537,6 @@ public final class FacetsSelectionPanel
 
             updateValidationDisplay();
         }
-        
-        refreshPresetsButtons();
     }
     
     private void handleSavePreset()
@@ -1718,16 +1546,17 @@ public final class FacetsSelectionPanel
         
         if( preset != null )
         {
-            refreshPresetsCombo();
-            this.model.setSelectedPreset( preset );
+            this.model.refreshAvailablePresets();
+            this.model.setSelectedPreset( preset.getId() );
         }
     }
     
     private void handleDeletePreset()
     {
         final IPreset preset = this.model.getSelectedPreset();
+        this.model.setSelectedPreset( null );
         ProjectFacetsManager.deletePreset( preset );
-        refreshPresetsCombo();
+        this.model.refreshAvailablePresets();
     }
     
     private void handleShowHideRuntimes()
@@ -1741,6 +1570,48 @@ public final class FacetsSelectionPanel
         {
             this.sform1.setMaximizedControl( null );
             this.showHideRuntimesButton.setText( Resources.hideRuntimes );
+        }
+    }
+    
+    private void handleModelChangedEvent( final String event )
+    {
+        if( event.equals( ModifyFacetedProjectDataModel.EVENT_FIXED_FACETS_CHANGED ) )
+        {
+            for( TableRowData trd : this.data )
+            {
+                trd.setFixed( false );
+            }
+
+            for( IProjectFacet f : this.model.getFixedFacets() )
+            {
+                final TableRowData trd = findTableRowData( f, true );
+                
+                trd.setFixed( true );
+                trd.setSelected( true );
+                this.treeViewer.setChecked( trd, true );
+            }
+
+            refresh();
+            updateValidationDisplay();
+        }
+        else if( event.equals( ModifyFacetedProjectDataModel.EVENT_SELECTED_PRESET_CHANGED ) )
+        {
+            final IPreset preset = this.model.getSelectedPreset();
+            
+            if( preset == null )
+            {
+                this.savePresetButton.setEnabled( true );
+                this.deletePresetButton.setEnabled( false );
+            }
+            else
+            {
+                this.savePresetButton.setEnabled( false );
+                this.deletePresetButton.setEnabled( preset.getType() == IPreset.Type.USER_DEFINED );
+            }
+        }
+        else if( event.equals( ChangeTargetedRuntimesDataModel.EVENT_TARGETED_RUNTIMES_CHANGED ) )
+        {
+            refresh();
         }
     }
     
@@ -1856,7 +1727,7 @@ public final class FacetsSelectionPanel
     private final class TableRowData
     {
         private IProjectFacet f;
-        private List<IProjectFacetVersion> versions;
+        private List<IProjectFacetVersion> allVersionsSorted;
         private IProjectFacetVersion current;
         private boolean isSelected;
         private boolean isFixed;
@@ -1868,7 +1739,7 @@ public final class FacetsSelectionPanel
         {
             this.f = f;
             // TODO: Remove this unnecessary copy.
-            this.versions = new ArrayList<IProjectFacetVersion>( f.getSortedVersions( false ) );
+            this.allVersionsSorted = new ArrayList<IProjectFacetVersion>( f.getSortedVersions( false ) );
             this.current = f.getDefaultVersion();
             this.isSelected = false;
             this.isFixed = false;
@@ -1881,17 +1752,22 @@ public final class FacetsSelectionPanel
 
         public List<IProjectFacetVersion> getVersions()
         {
-            final List<IProjectFacetVersion> list = new ArrayList<IProjectFacetVersion>();
-
-            for( IProjectFacetVersion fv : this.versions )
+            final Set<IProjectFacetVersion> versions
+                = FacetsSelectionPanel.this.model.getAvailableFacets().get( this.f );
+            
+            if( versions == null )
             {
-                if( ! isFilteredOut( fv ) )
-                {
-                    list.add( fv );
-                }
+                return Collections.emptyList();
             }
-
-            return list;
+            else
+            {
+                final List<IProjectFacetVersion> sortedVersions 
+                    = new ArrayList<IProjectFacetVersion>( this.allVersionsSorted );
+                
+                sortedVersions.retainAll( versions );
+                
+                return sortedVersions;
+            }
         }
         
         public void addUnknownVersion( final IProjectFacetVersion fv )
@@ -1901,13 +1777,13 @@ public final class FacetsSelectionPanel
                 final Comparator<String> c = this.f.getVersionComparator();
                 boolean added = false;
                 
-                for( int i = 0, n = this.versions.size(); i < n; i++ )
+                for( int i = 0, n = this.allVersionsSorted.size(); i < n; i++ )
                 {
-                    final IProjectFacetVersion x = this.versions.get( i );
+                    final IProjectFacetVersion x = this.allVersionsSorted.get( i );
                     
                     if( c.compare( x.getVersionString(), fv.getVersionString() ) < 0 )
                     {
-                        this.versions.add( i, fv );
+                        this.allVersionsSorted.add( i, fv );
                         added = true;
                         break;
                     }
@@ -1915,7 +1791,7 @@ public final class FacetsSelectionPanel
                 
                 if( ! added )
                 {
-                    this.versions.add( fv );
+                    this.allVersionsSorted.add( fv );
                 }
             }
             catch( CoreException e )
@@ -1926,9 +1802,22 @@ public final class FacetsSelectionPanel
 
         public IProjectFacetVersion getCurrentVersion()
         {
-            if( isFilteredOut( this.current ) )
+            final Set<IProjectFacetVersion> versions
+                = FacetsSelectionPanel.this.model.getAvailableFacets().get( this.f );
+            
+            if( versions == null )
             {
-                this.current = getVersions().get( 0 );
+                if( this.current != null )
+                {
+                    this.current = null;
+                }
+            }
+            else
+            {
+                if( ! versions.contains( this.current ) )
+                {
+                    this.current = getVersions().get( 0 );
+                }
             }
 
             return this.current;
@@ -2532,7 +2421,6 @@ public final class FacetsSelectionPanel
         public static String showConstraints;
         public static String showRuntimes;
         public static String hideRuntimes;
-        public static String couldNotSelectPreset;
         public static String couldNotDeselectFixedFacetMessage;
         public static String facetNotFound;
         public static String facetVersionNotFound;

@@ -14,10 +14,9 @@ package org.eclipse.wst.common.project.facet.core;
 import java.util.Set;
 
 /**
- * A preset is a user convenience mechanism for quickly selecting a predefined 
- * set of project facets. Presets can be defined by plugin writers through the
- * supplied extension point as well as by end users. When a user preset is
- * created, the metadata describing it is stored in the workspace.
+ * A preset is a user convenience mechanism for quickly selecting a predefined set of project 
+ * facets. Presets can be defined by plugin writers through the supplied <code>presets</code> 
+ * extension point as well as by end users. User-defined presets are stored in the workspace.
  * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
@@ -25,16 +24,57 @@ import java.util.Set;
 public interface IPreset
 {
     /**
+     * The enumberation of preset types.
+     * 
+     * @since 2.0
+     */
+    
+    enum Type
+    {
+        /**
+         * Static presets are created using the <code>presets</code> extension point and are fully
+         * specified in the extension point. 
+         */
+        
+        STATIC,
+        
+        /**
+         * Dynamic presets are created by registering a factory in the <code>presets</code>
+         * extension point and are not fully specified until they are resolved within the context
+         * of use. To resolve a dynamic preset, cast the preset object to {@see IDynamicPreset} and
+         * then use the {@see IDynamicPreset.resolve(java.util.Map)} method. 
+         */
+        
+        DYNAMIC,
+        
+        /**
+         * User presets are created using the <code>ProjectFacetsManager.definePreset()</code>
+         * methods and are stored in the workspace.
+         */
+        
+        USER_DEFINED
+    }
+    
+    /**
      * Returns the id of the preset.
      * 
      * @return the id of the preset
      */
     
     String getId();
+    
+    /**
+     * Returns the type of the preset. If the preset type is {@see Type.DYNAMIC}, then the preset
+     * object can be cast to {@see IDynamicPreset}.
+     * 
+     * @return the type of the preset
+     * @since 2.0
+     */
+    
+    Type getType();
 
     /**
-     * Returns the preset label. The label should be used when presenting the
-     * preset to the user.
+     * Returns the label that should be used when presenting the preset to the user.
      * 
      * @return the preset label
      */
@@ -63,6 +103,7 @@ public interface IPreset
      * 
      * @return <code>true</code> if the preset is user-defined,
      *   <code>false</code> otherwise
+     * @deprecated use the {@see getType()} method instead
      */
     
     boolean isUserDefined();

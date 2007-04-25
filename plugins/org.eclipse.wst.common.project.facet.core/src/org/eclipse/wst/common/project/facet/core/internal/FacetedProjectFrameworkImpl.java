@@ -104,16 +104,13 @@ public final class FacetedProjectFrameworkImpl
     private static final String EL_DELEGATE = "delegate"; //$NON-NLS-1$
     private static final String EL_DESCRIPTION = "description"; //$NON-NLS-1$
     private static final String EL_EVENT_HANDLER = "event-handler"; //$NON-NLS-1$
-    private static final String EL_FIXED = "fixed"; //$NON-NLS-1$
     private static final String EL_GROUP = "group"; //$NON-NLS-1$
     private static final String EL_GROUP_MEMBER = "group-member"; //$NON-NLS-1$
     private static final String EL_LABEL = "label"; //$NON-NLS-1$
     private static final String EL_MEMBER = "member"; //$NON-NLS-1$
-    private static final String EL_PRESET = "preset"; //$NON-NLS-1$
     private static final String EL_PROJECT_FACET = "project-facet"; //$NON-NLS-1$
     private static final String EL_PROJECT_FACET_VERSION = "project-facet-version"; //$NON-NLS-1$
     private static final String EL_PROPERTY = "property"; //$NON-NLS-1$
-    private static final String EL_TEMPLATE = "template"; //$NON-NLS-1$
     private static final String EL_VERSION_COMPARATOR = "version-comparator"; //$NON-NLS-1$
     
     private static final String DEFAULT_DESCRIPTION = ""; //$NON-NLS-1$
@@ -125,7 +122,7 @@ public final class FacetedProjectFrameworkImpl
     private final IndexedSet<String,IActionDefinition> actions;
     private final IndexedSet<String,ICategory> categories;
     private final IndexedSet<String,IPreset> presets;
-    private final IndexedSet<String,IFacetedProjectTemplate> templates;
+    private boolean presetsInitialized = false;
     private final IndexedSet<String,IGroup> groups;
     private final Map<String,FacetedProject> projects;
     private final ListenerRegistry listeners;
@@ -171,7 +168,7 @@ public final class FacetedProjectFrameworkImpl
         this.actions = new IndexedSet<String,IActionDefinition>();
         this.categories = new IndexedSet<String,ICategory>();
         this.presets = new IndexedSet<String,IPreset>();
-        this.templates = new IndexedSet<String,IFacetedProjectTemplate>();
+        this.presetsInitialized = false;
         this.groups = new IndexedSet<String,IGroup>();
         this.projects = new HashMap<String,FacetedProject>();
         this.listeners = new ListenerRegistry();
@@ -179,7 +176,6 @@ public final class FacetedProjectFrameworkImpl
         readMetadata();
         
         EventsExtensionPoint.processExtensions( this );
-        readUserPresets();
         
         ( new ResourceChangeListener() ).register();
         
@@ -277,25 +273,38 @@ public final class FacetedProjectFrameworkImpl
     
     public Set<IPreset> getPresets()
     {
-        return this.presets.getUnmodifiable();
+        synchronized( this.presets )
+        {
+            initializePresets();
+            return this.presets.getUnmodifiable();
+        }
     }
     
     public boolean isPresetDefined( final String id )
     {
-        return this.presets.containsKey( id );
+        synchronized( this.presets )
+        {
+            initializePresets();
+            return this.presets.containsKey( id );
+        }
     }
     
     public IPreset getPreset( final String id )
     {
-        final IPreset preset = this.presets.get( id );
-        
-        if( preset == null )
+        synchronized( this.presets )
         {
-            final String msg = NLS.bind( Resources.presetNotDefined, id );
-            throw new IllegalArgumentException( msg );
+            initializePresets();
+            
+            final IPreset preset = this.presets.get( id );
+            
+            if( preset == null )
+            {
+                final String msg = NLS.bind( Resources.presetNotDefined, id );
+                throw new IllegalArgumentException( msg );
+            }
+            
+            return preset;
         }
-        
-        return preset;
     }
     
     public IPreset definePreset( final String name,
@@ -318,6 +327,8 @@ public final class FacetedProjectFrameworkImpl
     {
         synchronized( this.presets )
         {
+            initializePresets();
+            
             String id;
             int i = 0;
             
@@ -328,13 +339,9 @@ public final class FacetedProjectFrameworkImpl
             }
             while( this.presets.containsKey( id ) );
             
-            final Preset preset = new Preset();
-            
-            preset.setId( id );
-            preset.setLabel( name );
-            preset.setDescription( description == null ? "" : description ); //$NON-NLS-1$
-            preset.addProjectFacet( facets );
-            preset.setUserDefined( true );
+            final UserPreset preset 
+                = new UserPreset( id, name, description == null ? "" : description,  //$NON-NLS-1$
+                                  facets );
             
             this.presets.add( id, preset );
             
@@ -351,7 +358,9 @@ public final class FacetedProjectFrameworkImpl
     {
         synchronized( this.presets )
         {
-            if( ! preset.isUserDefined() )
+            initializePresets();
+            
+            if( preset.getType() != IPreset.Type.USER_DEFINED )
             {
                 return false;
             }
@@ -367,19 +376,160 @@ public final class FacetedProjectFrameworkImpl
         }
     }
     
+    private void initializePresets()
+    {
+        if( ! this.presetsInitialized )
+        {
+            for( IPreset preset : PresetsExtensionPoint.getPresets() )
+            {
+                this.presets.add( preset.getId(), preset );
+            }
+            
+            readUserPresets();
+            
+            this.presetsInitialized = true;
+        }
+    }
+    
+    private void saveUserPresets()
+    {
+        try
+        {
+            final Preferences root = getUserPresetsPreferences();
+            
+            final String[] children = root.childrenNames();
+            
+            for( int i = 0; i < children.length; i++ )
+            {
+                root.node( children[ i ] ).removeNode();
+            }
+            
+            for( IPreset preset : this.presets )
+            {
+                if( preset.getType() == IPreset.Type.USER_DEFINED )
+                {
+                    final Preferences pnode = root.node( preset.getId() );
+                    pnode.put( EL_LABEL, preset.getLabel() );
+                    pnode.put( EL_DESCRIPTION, preset.getDescription() );
+                    
+                    int counter = 1;
+                    
+                    for( IProjectFacetVersion fv : preset.getProjectFacets() )
+                    {
+                        final Preferences fnode = pnode.node( String.valueOf( counter ) );
+                        
+                        fnode.put( ATTR_ID, fv.getProjectFacet().getId() );
+                        fnode.put( ATTR_VERSION, fv.getVersionString() );
+                        
+                        counter++;
+                    }
+                }
+            }
+        
+            root.flush();
+        }
+        catch( BackingStoreException e )
+        {
+            FacetCorePlugin.log( e );
+        }
+    }
+    
+    private void readUserPresets()
+    {
+        try
+        {
+            final Preferences root = getUserPresetsPreferences();
+            final String[] pkeys = root.childrenNames();
+            
+            for( int i = 0; i < pkeys.length; i++ )
+            {
+                final Preferences pnode = root.node( pkeys[ i ] );
+                final String label = pnode.get( EL_LABEL, null );
+                
+                if( label == null )
+                {
+                    break;
+                }
+
+                String description = pnode.get( EL_DESCRIPTION, null );
+                
+                if( description == null )
+                {
+                    description = ""; //$NON-NLS-1$
+                }
+                
+                final String[] fkeys = pnode.childrenNames();
+                Set<IProjectFacetVersion> facets = new HashSet<IProjectFacetVersion>();
+                
+                for( int j = 0; j < fkeys.length; j++ )
+                {
+                    final Preferences fnode = pnode.node( fkeys[ j ] );
+                    final String id = fnode.get( ATTR_ID, null );
+                    final String version = fnode.get( ATTR_VERSION, null );
+                    
+                    if( id == null || version == null )
+                    {
+                        facets = null;
+                        break;
+                    }
+                    
+                    if( isProjectFacetDefined( id ) )
+                    {
+                        final IProjectFacet f = getProjectFacet( id );
+                        
+                        if( f.hasVersion( version ) )
+                        {
+                            facets.add( f.getVersion( version ) );
+                        }
+                        else
+                        {
+                            facets = null;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        facets = null;
+                        break;
+                    }
+                }
+
+                if( facets != null )
+                {
+                    definePreset( label, description, facets, false );
+                }
+            }
+        }
+        catch( BackingStoreException e )
+        {
+            FacetCorePlugin.log( e );
+        }
+    }
+    
+    private static Preferences getUserPresetsPreferences()
+    {
+        final InstanceScope scope = new InstanceScope();
+        
+        final IEclipsePreferences pluginRoot 
+            = scope.getNode( FacetCorePlugin.PLUGIN_ID );
+        
+        return pluginRoot.node( "user.presets" ); //$NON-NLS-1$
+    }
+    
     public Set<IFacetedProjectTemplate> getTemplates()
     {
-        return this.templates.getUnmodifiable();
+        return FacetedProjectTemplatesExtensionPoint.getTemplates();
     }
     
     public boolean isTemplateDefined( final String id )
     {
-        return this.templates.containsKey( id );
+        return ( FacetedProjectTemplatesExtensionPoint.getTemplate( id ) != null );
     }
     
     public IFacetedProjectTemplate getTemplate( final String id )
     {
-        final IFacetedProjectTemplate template = this.templates.get( id );
+        final IFacetedProjectTemplate template 
+            = FacetedProjectTemplatesExtensionPoint.getTemplate( id );
         
         if( template == null )
         {
@@ -1209,37 +1359,7 @@ public final class FacetedProjectFrameworkImpl
                 readDefaultVersionInfo( config );
             }
         }
-
-        for( IConfigurationElement config : cfgels )
-        {
-            if( config.getName().equals( EL_PRESET ) )
-            {
-                try
-                {
-                    readPreset( config );
-                }
-                catch( InvalidExtensionException e )
-                {
-                    // Continue. The problem has been reported in the log.
-                }
-            }
-        }
         
-        for( IConfigurationElement config : cfgels )
-        {
-            if( config.getName().equals( EL_TEMPLATE ) )
-            {
-                try
-                {
-                    readTemplate( config );
-                }
-                catch( InvalidExtensionException e )
-                {
-                    // Continue. The problem has been reported in the log.
-                }
-            }
-        }
-
         for( IConfigurationElement config : cfgels )
         {
             if( config.getName().equals( EL_GROUP ) )
@@ -2076,143 +2196,6 @@ public final class FacetedProjectFrameworkImpl
         return new Constraint( fv, type, operands );
     }
     
-    private void readTemplate( final IConfigurationElement config )
-    
-        throws InvalidExtensionException
-        
-    {
-        final FacetedProjectTemplate template = new FacetedProjectTemplate();
-        template.setId( findRequiredAttribute( config, ATTR_ID ) );
-        
-        final IConfigurationElement elLabel = findOptionalElement( config, EL_LABEL );
-        template.setLabel( getElementValue( elLabel, template.getId() ) );
-
-        final IConfigurationElement[] children = config.getChildren();
-        
-        for( int i = 0; i < children.length; i++ )
-        {
-            final IConfigurationElement child = children[ i ];
-            final String childName = child.getName();
-            
-            if( childName.equals( EL_FIXED ) )
-            {
-                final String fid = child.getAttribute( ATTR_FACET );
-                
-                if( fid == null )
-                {
-                    reportMissingAttribute( child, ATTR_FACET );
-                    return;
-                }
-                
-                if( ! isProjectFacetDefined( fid ) )
-                {
-                    reportMissingFacet( fid, child.getContributor().getName() );
-                    return;
-                }
-                
-                template.addFixedProjectFacet( getProjectFacet( fid ) );
-            }
-            else if( childName.equals( EL_PRESET ) )
-            {
-                final String pid = child.getAttribute( ATTR_ID );
-                
-                if( pid == null )
-                {
-                    reportMissingAttribute( child, ATTR_ID );
-                    return;
-                }
-                
-                if( ! isPresetDefined( pid ) )
-                {
-                    final String msg
-                        = NLS.bind( Resources.presetNotDefined, pid ) +
-                          NLS.bind( Resources.usedInPlugin, 
-                                    child.getContributor().getName() );
-                    
-                    FacetCorePlugin.log( msg );
-                    
-                    return;
-                }
-                
-                template.setInitialPreset( getPreset( pid ) );
-            }
-        }
-        
-        this.templates.add( template.getId(), template );
-    }
-    
-    private void readPreset( final IConfigurationElement config )
-    
-        throws InvalidExtensionException
-        
-    {
-        final Preset preset = new Preset();
-        preset.setId( findRequiredAttribute( config, ATTR_ID ) );
-        
-        final IConfigurationElement elLabel = findOptionalElement( config, EL_LABEL );
-        preset.setLabel( getElementValue( elLabel, preset.getId() ) );
-        
-        final IConfigurationElement elDesc = findOptionalElement( config, EL_DESCRIPTION );
-        preset.setDescription( getElementValue( elDesc, DEFAULT_DESCRIPTION ) );
-
-        final IConfigurationElement[] children = config.getChildren();
-        
-        for( int i = 0; i < children.length; i++ )
-        {
-            final IConfigurationElement child = children[ i ];
-            final String childName = child.getName();
-            
-            if( childName.equals( ATTR_FACET ) )
-            {
-                final String fid = child.getAttribute( ATTR_ID );
-                
-                if( fid == null )
-                {
-                    reportMissingAttribute( child, ATTR_ID );
-                    return;
-                }
-                
-                final String fver = child.getAttribute( ATTR_VERSION );
-                
-                if( fver == null )
-                {
-                    reportMissingAttribute( child, ATTR_VERSION );
-                    return;
-                }
-                
-                if( ! isProjectFacetDefined( fid ) )
-                {
-                    final String msg
-                        = Resources.bind( Resources.presetUsesUnknownFacet, preset.getId(), 
-                                          config.getContributor().getName(), fid );
-                    
-                    FacetCorePlugin.logError( msg );
-                    
-                    return;
-                }
-                
-                final IProjectFacet f = getProjectFacet( fid );
-                
-                if( ! f.hasVersion( fver ) )
-                {
-                    final String msg
-                        = Resources.bind( Resources.presetUsesUnknownFacetVersion, preset.getId(),
-                                          config.getContributor().getName(), fid, fver );
-                    
-                    FacetCorePlugin.logError( msg );
-                    
-                    return;
-                }
-                
-                final IProjectFacetVersion fv = f.getVersion( fver );
-                
-                preset.addProjectFacet( fv );
-            }
-        }
-        
-        this.presets.add( preset.getId(), preset );
-    }
-
     private void readGroup( final IConfigurationElement config )
     
         throws InvalidExtensionException
@@ -2256,131 +2239,6 @@ public final class FacetedProjectFrameworkImpl
         final String msg = NLS.bind( Resources.missingElement, params ); 
     
         FacetCorePlugin.log( msg );
-    }
-    
-    private void saveUserPresets()
-    {
-        try
-        {
-            final Preferences root = getUserPresetsPreferences();
-            
-            final String[] children = root.childrenNames();
-            
-            for( int i = 0; i < children.length; i++ )
-            {
-                root.node( children[ i ] ).removeNode();
-            }
-            
-            for( IPreset preset : this.presets )
-            {
-                if( preset.isUserDefined() )
-                {
-                    final Preferences pnode = root.node( preset.getId() );
-                    pnode.put( EL_LABEL, preset.getLabel() );
-                    pnode.put( EL_DESCRIPTION, preset.getDescription() );
-                    
-                    int counter = 1;
-                    
-                    for( IProjectFacetVersion fv : preset.getProjectFacets() )
-                    {
-                        final Preferences fnode = pnode.node( String.valueOf( counter ) );
-                        
-                        fnode.put( ATTR_ID, fv.getProjectFacet().getId() );
-                        fnode.put( ATTR_VERSION, fv.getVersionString() );
-                        
-                        counter++;
-                    }
-                }
-            }
-        
-            root.flush();
-        }
-        catch( BackingStoreException e )
-        {
-            FacetCorePlugin.log( e );
-        }
-    }
-    
-    private void readUserPresets()
-    {
-        try
-        {
-            final Preferences root = getUserPresetsPreferences();
-            final String[] pkeys = root.childrenNames();
-            
-            for( int i = 0; i < pkeys.length; i++ )
-            {
-                final Preferences pnode = root.node( pkeys[ i ] );
-                final String label = pnode.get( EL_LABEL, null );
-                
-                if( label == null )
-                {
-                    break;
-                }
-
-                String description = pnode.get( EL_DESCRIPTION, null );
-                
-                if( description == null )
-                {
-                    description = ""; //$NON-NLS-1$
-                }
-                
-                final String[] fkeys = pnode.childrenNames();
-                Set<IProjectFacetVersion> facets = new HashSet<IProjectFacetVersion>();
-                
-                for( int j = 0; j < fkeys.length; j++ )
-                {
-                    final Preferences fnode = pnode.node( fkeys[ j ] );
-                    final String id = fnode.get( ATTR_ID, null );
-                    final String version = fnode.get( ATTR_VERSION, null );
-                    
-                    if( id == null || version == null )
-                    {
-                        facets = null;
-                        break;
-                    }
-                    
-                    if( isProjectFacetDefined( id ) )
-                    {
-                        final IProjectFacet f = getProjectFacet( id );
-                        
-                        if( f.hasVersion( version ) )
-                        {
-                            facets.add( f.getVersion( version ) );
-                        }
-                        else
-                        {
-                            facets = null;
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        facets = null;
-                        break;
-                    }
-                }
-
-                if( facets != null )
-                {
-                    definePreset( label, description, facets, false );
-                }
-            }
-        }
-        catch( BackingStoreException e )
-        {
-            FacetCorePlugin.log( e );
-        }
-    }
-    
-    private static Preferences getUserPresetsPreferences()
-    {
-        final InstanceScope scope = new InstanceScope();
-        
-        final IEclipsePreferences pluginRoot 
-            = scope.getNode( FacetCorePlugin.PLUGIN_ID );
-        
-        return pluginRoot.node( "user.presets" ); //$NON-NLS-1$
     }
     
     private static String toString( final Collection<? extends Object> collection )
@@ -2463,8 +2321,6 @@ public final class FacetedProjectFrameworkImpl
         public static String actionAlreadyDefined;
         public static String groupNotDefined;
         public static String presetNotDefined;
-        public static String presetUsesUnknownFacet;
-        public static String presetUsesUnknownFacetVersion;
         public static String templateNotDefined;
         public static String usedInPlugin;
         public static String usedInConstraint;

@@ -39,6 +39,7 @@ public final class IndexedSet<K,V>
     public void add( final K key,
                      final V value )
     {
+        remove( this.index.get( key ) );
         add( value );
         this.index.put( key, value );
     }

@@ -27,6 +27,23 @@ public final class FacetedProjectFramework
     public static final String PLUGIN_ID 
         = "org.eclipse.wst.common.project.facet.core"; //$NON-NLS-1$
     
+    /**
+     * The id of a built-in preset that provides default configuration. The contents of this preset
+     * are calculated as follows:
+     * 
+     * <ol>
+     *   <li>If a runtime is selected, this preset will contain default facets as specified by
+     *     {@see IRuntime.getDefaultFacets(Set)}.</li>
+     *   <li>If no runtime is selected, this preset will contain default versions for all of the 
+     *     fixed facets as specified by {@see IProjectFacet.getDefaultVersion()}.
+     * </ol>
+     * 
+     * @since 2.0
+     */
+    
+    public static final String DEFAULT_CONFIGURATION_PRESET_ID 
+        = "default.configuration"; //$NON-NLS-1$
+    
     private static FacetedProjectFrameworkImpl impl = null;
     
     private FacetedProjectFramework() { }

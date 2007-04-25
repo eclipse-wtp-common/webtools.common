@@ -301,6 +301,9 @@
 
    <element name="preset">
       <annotation>
+         <appInfo>
+            <meta.element deprecated="true"/>
+         </appInfo>
          <documentation>
             Declares a preset. A preset represents a common configuration of facets and their versions that a user might want to utilize on several projects. Presets can be supplied via this extension point or created by the user.
          </documentation>

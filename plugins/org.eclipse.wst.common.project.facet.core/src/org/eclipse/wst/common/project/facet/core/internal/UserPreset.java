@@ -19,28 +19,30 @@ import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 
 /**
- * The implementation of the {@see IPreset} interface.
+ * The implementation of the {@see IPreset} interface that's used for user-defined presets.
  * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
-public final class Preset
+public final class UserPreset
 
     implements IPreset
     
 {
-    private String id;
-    private String label;
-    private String description;
+    private final String id;
+    private final String label;
+    private final String description;
     private final Set<IProjectFacetVersion> facets;
-    private final Set<IProjectFacetVersion> facetsReadOnly;
-    private boolean isUserDefined = false;
     
-    Preset() 
+    public UserPreset( final String id,
+                       final String label,
+                       final String description,
+                       final Set<IProjectFacetVersion> facets ) 
     {
-        this.facets = new HashSet<IProjectFacetVersion>();
-        this.facetsReadOnly = Collections.unmodifiableSet( this.facets );
-        this.isUserDefined = false;
+        this.id = id;
+        this.label = label;
+        this.description = description;
+        this.facets = Collections.unmodifiableSet( new HashSet<IProjectFacetVersion>( facets ) );
     }
     
     public String getId()
@@ -48,9 +50,9 @@ public final class Preset
         return this.id;
     }
     
-    void setId( final String id )
+    public Type getType()
     {
-        this.id = id;
+        return Type.USER_DEFINED;
     }
 
     public String getLabel()
@@ -58,49 +60,24 @@ public final class Preset
         return this.label;
     }
     
-    void setLabel( final String label )
-    {
-        this.label = label;
-    }
-    
     public String getDescription()
     {
         return this.description;
     }
     
-    void setDescription( final String description )
-    {
-        this.description = description;
-    }
-    
     public Set<IProjectFacetVersion> getProjectFacets()
     {
-        return this.facetsReadOnly;
-    }
-    
-    void addProjectFacet( final IProjectFacetVersion fv )
-    {
-        this.facets.add( fv );
-    }
-    
-    void addProjectFacet( final Set<IProjectFacetVersion> facets )
-    {
-        this.facets.addAll( facets );
+        return this.facets;
     }
     
     public boolean isUserDefined()
     {
-        return this.isUserDefined;
-    }
-    
-    void setUserDefined( final boolean isUserDefined )
-    {
-        this.isUserDefined = isUserDefined;
+        return false;
     }
     
     public String toString()
     {
-        return this.id;
+        return this.label;
     }
     
 }
