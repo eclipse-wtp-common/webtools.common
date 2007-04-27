@@ -60,10 +60,13 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 		IValidateEditContext validator = (IValidateEditContext) UIContextDetermination.createInstance(IValidateEditContext.CLASS_KEY);
 		IVirtualComponent sourceComp = (IVirtualComponent) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT);
 		IProject project = sourceComp.getProject();
+		//TODO Artifact Edit should not be referred to by CreateReferenceComponentsOp
+		//TODO see bug 182420
 		ArtifactEdit edit = null;
 		try {
 			edit = ComponentUtilities.getArtifactEditForWrite(sourceComp);
-			status = validator.validateState((EditModel)edit.getAdapter(ArtifactEditModel.ADAPTER_TYPE));
+			if(edit != null)
+				status = validator.validateState((EditModel)edit.getAdapter(ArtifactEditModel.ADAPTER_TYPE));
 		} finally {
 			if (edit !=null)
 				edit.dispose();
