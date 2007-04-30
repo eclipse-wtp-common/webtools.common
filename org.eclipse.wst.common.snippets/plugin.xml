@@ -112,6 +112,56 @@
 				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
 				menubarPath="group.add" />
 		</viewerContribution>
+		<viewerContribution
+			targetID="org.eclipse.jst.jsp.core.tagsource.source.EditorContext"
+			id="org.eclipse.wst.common.snippets.actions">
+			<action
+				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				label="%Add_to_Snippets.name"
+				icon="$nl$/icons/snippets_view.gif"
+				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				menubarPath="group.add" />
+		</viewerContribution>
+		<viewerContribution
+			targetID="org.eclipse.jst.jsp.core.tldsource.source.EditorContext"
+			id="org.eclipse.wst.common.snippets.actions">
+			<action
+				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				label="%Add_to_Snippets.name"
+				icon="$nl$/icons/snippets_view.gif"
+				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				menubarPath="group.add" />
+		</viewerContribution>
+		<viewerContribution
+			targetID="org.eclipse.wst.xsd.core.xsdsource.source.EditorContext"
+			id="org.eclipse.wst.common.snippets.actions">
+			<action
+				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				label="%Add_to_Snippets.name"
+				icon="$nl$/icons/snippets_view.gif"
+				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				menubarPath="group.add" />
+		</viewerContribution>
+		<viewerContribution
+			targetID="org.eclipse.wst.wsdl.wsdlsource.source.EditorContext"
+			id="org.eclipse.wst.common.snippets.actions">
+			<action
+				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				label="%Add_to_Snippets.name"
+				icon="$nl$/icons/snippets_view.gif"
+				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				menubarPath="group.add" />
+		</viewerContribution>
+		<viewerContribution
+			targetID="org.eclipse.jst.j2ee.webDD.source.EditorContext"
+			id="org.eclipse.wst.common.snippets.actions">
+			<action
+				id="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				label="%Add_to_Snippets.name"
+				icon="$nl$/icons/snippets_view.gif"
+				class="org.eclipse.wst.common.snippets.internal.actions.AddToSnippetsEditorActionDelegate"
+				menubarPath="group.add" />
+		</viewerContribution>
 		<!-- Java source Editor -->
 		<viewerContribution
 			targetID="#CompilationUnitEditorContext"
