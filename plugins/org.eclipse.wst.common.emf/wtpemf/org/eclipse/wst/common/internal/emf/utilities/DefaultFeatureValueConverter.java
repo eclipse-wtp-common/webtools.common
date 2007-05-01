@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EcorePackage;
+import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 
 /**
  * Insert the type's description here. Creation date: (5/10/2001 2:49:49 PM)
@@ -225,39 +226,71 @@ public class DefaultFeatureValueConverter implements FeatureValueConverter {
 		EClassifier meta = anAttribute.getEType();
 		if (meta.eClass() == EcorePackage.eINSTANCE.getEEnum())
 			return convertToEnum(aValue, anAttribute);
-		switch (meta.getClassifierID()) {
-			case EcorePackage.ESTRING :
+		if (meta.getEPackage() instanceof EcorePackage)
+		{
+			switch (meta.getClassifierID()) {
+				case EcorePackage.ESTRING :
+					return convertToString(aValue);
+				case EcorePackage.EBOOLEAN_OBJECT :
+				case EcorePackage.EBOOLEAN :
+					return convertToBoolean(aValue);
+				case EcorePackage.EINTEGER_OBJECT :
+				case EcorePackage.EINT :
+					return convertToInteger(aValue);
+				case EcorePackage.EFLOAT_OBJECT :
+				case EcorePackage.EFLOAT :
+					return convertToFloat(aValue);
+				case EcorePackage.ECHARACTER_OBJECT :
+				case EcorePackage.ECHAR :
+					return convertToCharacter(aValue);
+				case EcorePackage.ELONG_OBJECT :
+				case EcorePackage.ELONG :
+					return convertToLong(aValue);
+				case EcorePackage.EBYTE_OBJECT :
+				case EcorePackage.EBYTE :
+					return convertToByte(aValue);
+				case EcorePackage.EDOUBLE_OBJECT :
+				case EcorePackage.EDOUBLE :
+					return convertToDouble(aValue);
+				case EcorePackage.ESHORT_OBJECT :
+				case EcorePackage.ESHORT :
+					return convertToShort(aValue);
+				//		case EcorePackage.EENUM:
+				//			return convertToEnum(aValue, anAttribute);
+				case EcorePackage.EOBJECT :
+					return convertToMofObject(aValue);
+				case EcorePackage.EJAVA_OBJECT :
+					return convertToJavaObject(aValue);
+			}
+		}
+		else if (meta.getEPackage() instanceof XMLTypePackage)
+		{
+			switch (meta.getClassifierID()) {
+			case XMLTypePackage.STRING :
 				return convertToString(aValue);
-			case EcorePackage.EBOOLEAN_OBJECT :
-			case EcorePackage.EBOOLEAN :
+			case XMLTypePackage.BOOLEAN_OBJECT :
+			case XMLTypePackage.BOOLEAN :
 				return convertToBoolean(aValue);
-			case EcorePackage.EINTEGER_OBJECT :
-			case EcorePackage.EINT :
+			case XMLTypePackage.INT_OBJECT :
+			case XMLTypePackage.INTEGER :
+			case XMLTypePackage.INT :
 				return convertToInteger(aValue);
-			case EcorePackage.EFLOAT_OBJECT :
-			case EcorePackage.EFLOAT :
+			case XMLTypePackage.FLOAT_OBJECT :
+			case XMLTypePackage.FLOAT :
 				return convertToFloat(aValue);
-			case EcorePackage.ECHARACTER_OBJECT :
-			case EcorePackage.ECHAR :
-				return convertToCharacter(aValue);
-			case EcorePackage.ELONG_OBJECT :
-			case EcorePackage.ELONG :
+			case XMLTypePackage.LONG_OBJECT :
+			case XMLTypePackage.LONG :
 				return convertToLong(aValue);
-			case EcorePackage.EBYTE_OBJECT :
-			case EcorePackage.EBYTE :
+			case XMLTypePackage.BYTE_OBJECT :
+			case XMLTypePackage.BYTE :
 				return convertToByte(aValue);
-			case EcorePackage.EDOUBLE_OBJECT :
-			case EcorePackage.EDOUBLE :
+			case XMLTypePackage.DOUBLE_OBJECT :
+			case XMLTypePackage.DOUBLE :
 				return convertToDouble(aValue);
-			case EcorePackage.ESHORT_OBJECT :
-			case EcorePackage.ESHORT :
+			case XMLTypePackage.SHORT_OBJECT :
+			case XMLTypePackage.SHORT :
 				return convertToShort(aValue);
-			//		case EcorePackage.EENUM:
-			//			return convertToEnum(aValue, anAttribute);
-			case EcorePackage.EOBJECT :
-				return convertToMofObject(aValue);
-			case EcorePackage.EJAVA_OBJECT :
-				return convertToJavaObject(aValue);
+			}
 		}
 		return aValue;
 	}
