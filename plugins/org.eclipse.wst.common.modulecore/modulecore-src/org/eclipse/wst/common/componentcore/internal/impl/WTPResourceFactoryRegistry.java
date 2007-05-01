@@ -54,11 +54,15 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 		return WTPResourceFactoryRegistry.INSTANCE.getFactory(uri);	
 	}   
 
-	public synchronized Resource.Factory getFactory(URI uri) {
-		
+	public synchronized Resource.Factory getFactory(URI uri, IContentDescription description) {
 		Resource.Factory resourceFactory = null;
 		if(uri != null && uri.lastSegment() != null) {
-			ResourceFactoryDescriptor descriptor = getDescriptor(uri);
+			ResourceFactoryDescriptor descriptor = null;
+			if(null == description){
+				descriptor = getDescriptor(uri);
+			} else {
+				descriptor = getDescriptor(uri, description);
+			}
 			
 			if(descriptor != null) {
 				resourceFactory = getFactory(descriptor);	
@@ -67,6 +71,10 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 		if(resourceFactory == null)
 			resourceFactory = super.getFactory(uri);
 		return resourceFactory; 
+	}
+	
+	public synchronized Resource.Factory getFactory(URI uri) {
+		return getFactory(uri, null);
 	}	
 
 
@@ -232,45 +240,52 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 		
 	}
 
-
 	protected void addDescriptor(ResourceFactoryDescriptor descriptor) {
 		getDescriptors().put(getKey(descriptor), descriptor);
 	}
 
-	protected synchronized ResourceFactoryDescriptor getDescriptor(URI uri) {
-		
+	protected synchronized ResourceFactoryDescriptor getDescriptor(URI uri, IContentDescription description) {
 		Set keys = getDescriptors().keySet();
-		IFile file = WorkbenchResourceHelper.getPlatformFile(uri);
-		IContentDescription fileDesc = null;
-		if (file != null && file.exists()) {
-			try {
-				fileDesc = file.getContentDescription();
-			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 		ResourceFactoryDescriptor defaultDesc = null;
 		for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
 			WTPResourceFactoryRegistryKey key = (WTPResourceFactoryRegistryKey) iterator.next();
 			if (key.shortName.equals(uri.lastSegment())) {
 				ResourceFactoryDescriptor desc = (ResourceFactoryDescriptor)getDescriptors().get(key);
-				if (fileDesc == null) {
-					if (key.type == null) return desc;
+				if (description == null) {
+					if (key.type == null) 
+						return desc;
 					else if (desc.isDefault()) 
 						return desc;
 				}
 				//Allow the contentType discrimination to take place
-				if ((key.type != null) && (fileDesc != null) && (fileDesc.getContentType().equals(key.type)))
+				if ((key.type != null) && (description != null) && (description.getContentType().equals(key.type)))
 					return desc;
-				if ((fileDesc != null) && (desc.isDefault()))
+				if ((description != null) && (desc.isDefault()))
 					defaultDesc = desc;
 			}
 		}
-		
-		// Ok no content type match - go to super
-		if (defaultDesc != null)
-			return defaultDesc;
-		else return super.getDescriptor(uri);
+		return defaultDesc;
+	}
+	
+	protected synchronized ResourceFactoryDescriptor getDescriptor(URI uri) {
+		IFile file = WorkbenchResourceHelper.getPlatformFile(uri);
+		IContentDescription description = null;
+		if (file != null && file.exists()) {
+			try {
+				description = file.getContentDescription();
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+		
+		ResourceFactoryDescriptor defaultDesc = getDescriptor(uri, description);
+		// Ok no content type match - go to super
+		if (defaultDesc != null){
+			return defaultDesc;
+		}
+		else{
+			return super.getDescriptor(uri);
+		}
+	}
 }
