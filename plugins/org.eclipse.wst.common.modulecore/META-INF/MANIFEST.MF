@@ -31,4 +31,4 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.2.0,4.0.0)",
  org.eclipse.wst.common.environment;bundle-version="[1.0.100,1.1.0)",
  org.eclipse.wst.validation;bundle-version="[1.1.0,1.2.0)"
 Eclipse-LazyStart: true
-Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
