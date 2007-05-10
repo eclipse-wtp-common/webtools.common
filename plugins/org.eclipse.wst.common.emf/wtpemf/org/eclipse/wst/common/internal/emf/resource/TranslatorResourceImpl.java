@@ -28,7 +28,7 @@ import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.internal.emf.utilities.StringUtil;
 import org.xml.sax.EntityResolver;
 
-public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl implements TranslatorResource {
+public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl implements TranslatorResource, IRootObjectResource{
 	static final public EStructuralFeature ID_FEATURE = EcorePackage.eINSTANCE.getEClass_EIDAttribute();
 	protected static final String DEFAULT_ENCODING = "UTF-8"; //$NON-NLS-1$
 	protected static final String DEFAULT_VERSION = "1.0"; //$NON-NLS-1$
@@ -81,7 +81,7 @@ public abstract class TranslatorResourceImpl extends ReferencedXMIResourceImpl i
 	public String getPublicId() {
 		return publicId;
 	}
-
+	
 	/**
 	 * Return the first element in the EList.
 	 */
