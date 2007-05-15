@@ -13,6 +13,8 @@ package org.eclipse.wst.common.componentcore;
 import java.util.EventObject;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IAdaptable;
@@ -311,6 +313,25 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 		
 		this(aProject,toAccessAsReadOnly,forCreate,projectType,null);
 	}
+	
+	protected void verifyOperationSupported() {
+		if(!validArtifactEdit){
+			throw new RuntimeException("Invalid Artifact Edit access (model version not supported)");
+		}
+	}
+	
+	private boolean validArtifactEdit = true;
+	
+	public boolean isValid() {
+		return validArtifactEdit;
+	}
+	
+	protected void markInvalid(){
+		Logger.global.log(Level.WARNING, "Invalid Artifact Edit access (model version not supported)");
+		validArtifactEdit = false;
+	}
+	
+	
 	/**
 	 * <p>
 	 * Creates an instance facade for the given {@see WorkbenchComponent}.
@@ -332,8 +353,9 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 
 		if (nature == null)
 			throw new IllegalArgumentException("Project does not have ModuleCoreNature: " + aProject);
-		if (!validProjectVersion(aProject))
-			throw new IllegalArgumentException("ArtifactEdit API not valid for JEE version project: " + aProject);
+		if (!validProjectVersion(aProject)){
+			markInvalid();
+		}
 		IVirtualComponent component = ComponentCore.createComponent(aProject);
 		if (component == null)
 			throw new IllegalArgumentException("Invalid component handle: " + aProject);
@@ -393,7 +415,7 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	/**
 	 * Validate edit for resource state
 	 */
-	protected IStatus validateEdit() {
+	public IStatus validateEdit() {
 		IValidateEditContext validator = (IValidateEditContext) UIContextDetermination.createInstance(IValidateEditContext.CLASS_KEY);
 		return validator.validateState(getArtifactEditModel());
 	}
