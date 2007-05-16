@@ -24,17 +24,13 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jem.util.UIContextDetermination;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
-import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.datamodel.properties.ICreateReferenceComponentsDataModelProperties;
-import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
-import org.eclipse.wst.common.componentcore.internal.util.ComponentUtilities;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualReference;
 import org.eclipse.wst.common.frameworks.datamodel.AbstractDataModelOperation;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import org.eclipse.wst.common.internal.emfworkbench.validateedit.IValidateEditContext;
 
 public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
@@ -60,17 +56,7 @@ public class CreateReferenceComponentsOp extends AbstractDataModelOperation {
 		IValidateEditContext validator = (IValidateEditContext) UIContextDetermination.createInstance(IValidateEditContext.CLASS_KEY);
 		IVirtualComponent sourceComp = (IVirtualComponent) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT);
 		IProject project = sourceComp.getProject();
-		//TODO Artifact Edit should not be referred to by CreateReferenceComponentsOp
-		//TODO see bug 182420
-		ArtifactEdit edit = null;
-		try {
-			edit = ComponentUtilities.getArtifactEditForWrite(sourceComp);
-			if(edit != null)
-				status = validator.validateState((EditModel)edit.getAdapter(ArtifactEditModel.ADAPTER_TYPE));
-		} finally {
-			if (edit !=null)
-				edit.dispose();
-		}
+
 		if (status.isOK()) {
 			StructureEdit sEdit = null;
 			try {
