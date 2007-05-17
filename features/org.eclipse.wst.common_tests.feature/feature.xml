@@ -21,6 +21,10 @@
       <update label="%updateSiteName" url="http://download.eclipse.org/webtools/updates/"/>
    </url>
 
+   <requires>
+      <import feature="org.eclipse.emf.common" version="2.3.0" match="compatible"/>
+   </requires>
+
    <plugin
          id="org.eclipse.wst.common.tests"
          download-size="0"
