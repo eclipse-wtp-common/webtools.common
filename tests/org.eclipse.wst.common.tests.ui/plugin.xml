@@ -1,27 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-   id="org.eclipse.wst.common.tests.ui"
-   name="%Ui_Plug-in"
-   version="1.1.0"
-   provider-name="%Eclipse"
-   class="org.eclipse.wst.common.tests.ui.UiPlugin">
+<plugin>
 
-   <runtime>
-      <library name="ui.jar">
-         <export name="*"/>
-      </library>
-   </runtime>
-
-   <requires>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.eclipse.wst.common.frameworks.ui"/>
-      <import plugin="org.eclipse.wst.common.tests"/>
-      <import plugin="org.eclipse.wst.common.environment"/>
-   </requires>
-
-   <extension
+     <extension
          point="org.eclipse.wst.common.tests.collector.suites">
          <suite
             class="org.eclipse.wst.common.tests.ui.DataModelUIAPITests"
