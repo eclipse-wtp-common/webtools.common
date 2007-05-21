@@ -22,8 +22,26 @@
    </url>
 
    <requires>
-      <import feature="org.eclipse.emf.edit" version="2.3.0" match="compatible"/>
-      <import feature="org.eclipse.emf.ecore" version="2.3.0" match="compatible"/>
+      <import plugin="org.eclipse.wst.common.frameworks" version="1.1.0" match="equivalent"/>
+      <import plugin="org.eclipse.wst.common.emf" version="1.1.0" match="equivalent"/>
+      <import plugin="org.eclipse.core.runtime" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.core.resources" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.wst.validation" version="1.1.0" match="equivalent"/>
+      <import plugin="org.eclipse.core.expressions" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.wst.command.env.core" version="1.0.101" match="equivalent"/>
+      <import plugin="org.eclipse.core.commands" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.wst.common.environment" version="1.0.100" match="equivalent"/>
+      <import plugin="org.apache.ant" version="1.6.5" match="compatible"/>
+      <import plugin="org.eclipse.wst.common.emfworkbench.integration" version="1.1.0" match="equivalent"/>
+      <import plugin="org.eclipse.wst.common.uriresolver" version="1.1.0" match="equivalent"/>
+      <import plugin="org.eclipse.emf.ecore" version="2.2.0" match="compatible"/>
+      <import plugin="org.eclipse.emf.ecore.xmi" version="2.2.0" match="compatible"/>
+      <import plugin="com.ibm.icu" version="3.4.4.1" match="compatible"/>
+      <import plugin="org.eclipse.jem.util" version="2.0.0" match="compatible"/>
+      <import plugin="org.eclipse.emf.edit" version="2.2.0" match="compatible"/>
+      <import plugin="org.eclipse.wst.common.project.facet.core" version="1.1.0" match="compatible"/>
+      <import plugin="org.eclipse.ant.core" version="3.1.100" match="equivalent"/>
+      <import plugin="org.eclipse.osgi.util" version="3.1.100" match="compatible"/>
    </requires>
 
    <plugin
