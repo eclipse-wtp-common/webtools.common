@@ -12,7 +12,9 @@ package org.eclipse.wst.common.componentcore.internal.impl;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
@@ -34,6 +36,7 @@ public class ModuleURIUtil {
 		public static final int SUB_PROTOCOL_INDX = 0;
 		public static final int PROJECT_NAME_INDX = 1;
 		public static final int MODULE_NAME_INDX = 2;
+		public static final int CONTENT_TYPE_INDX = 3;
 	}
 
 
@@ -66,6 +69,12 @@ public class ModuleURIUtil {
 		if (aModuleURI.segmentCount() < 3) {
 			if(toThrowExceptionIfNecessary)
 				throw new UnresolveableURIException(aModuleURI);
+			return false;
+		}
+		return true;
+	}
+	public static boolean isValidFullyQualifiedModuleURI(URI aModuleURI) {
+		if (aModuleURI.segmentCount() < 3) {
 			return false;
 		}
 		return true;
@@ -129,8 +138,9 @@ public class ModuleURIUtil {
 	public static URI trimToDeployPathSegment(URI aFullyQualifiedModuleResourcePath) {
 		int segmentCount = aFullyQualifiedModuleResourcePath.segmentCount();
 		URI uri;
-		if(segmentCount > 4){
-			uri = aFullyQualifiedModuleResourcePath.deresolve(aFullyQualifiedModuleResourcePath.trimSegments(segmentCount - 4));
+		int trimIndex = (hasContentTypeName(aFullyQualifiedModuleResourcePath) ? 5 : 4);
+		if(segmentCount > trimIndex){
+			uri = aFullyQualifiedModuleResourcePath.deresolve(aFullyQualifiedModuleResourcePath.trimSegments(segmentCount - trimIndex));
 		} else {
 			uri = URI.createURI(aFullyQualifiedModuleResourcePath.segment(segmentCount-1));
 		}
@@ -160,6 +170,9 @@ public class ModuleURIUtil {
 	public static URI fullyQualifyURI(IProject aProject) {
 		return URI.createURI(RESOURCE_URI_PROTOCOL + aProject.getName() + IPath.SEPARATOR + aProject.getName());
 	}
+	public static URI fullyQualifyURI(IProject aProject, String contentTypeDescriber) {
+		return URI.createURI(RESOURCE_URI_PROTOCOL + aProject.getName() + IPath.SEPARATOR + aProject.getName() + IPath.SEPARATOR + contentTypeDescriber);
+	}
 
 	public static URI archiveComponentfullyQualifyURI(String aComponentName) {
 		return URI.createURI(ARCHIVE_URI_PROTOCOL + aComponentName);
@@ -187,5 +200,26 @@ public class ModuleURIUtil {
 			return ModuleURIUtil.archiveComponentfullyQualifyURI(aComponent.getName()).toString();
 		else
 			return "[" + aComponent.getProject().getFullPath() + "]:" + aComponent.getProject().getName();
+	}
+
+	public static String getContentTypeName(URI uri) {
+		
+		if (WorkbenchResourceHelperBase.isPlatformResourceURI(uri) || !isValidFullyQualifiedModuleURI(uri))
+			return null;
+		String contentTypeIdentifier = (uri.segmentCount() > 3 ? uri.segment(ModuleURI.CONTENT_TYPE_INDX) : null);
+		if (contentTypeIdentifier != null && Platform.getContentTypeManager().getContentType(uri.segment(ModuleURI.CONTENT_TYPE_INDX)) != null)
+			return contentTypeIdentifier;
+		else
+			return null;
+	}
+	public static boolean hasContentTypeName(URI uri) {
+		
+		if (WorkbenchResourceHelperBase.isPlatformResourceURI(uri))
+			return false;
+		String contentTypeIdentifier = (uri.segmentCount() > 3 ? uri.segment(ModuleURI.CONTENT_TYPE_INDX) : null);
+		if (contentTypeIdentifier != null && Platform.getContentTypeManager().getContentType(uri.segment(ModuleURI.CONTENT_TYPE_INDX)) != null)
+			return true;
+		else
+			return false;
 	}
 }

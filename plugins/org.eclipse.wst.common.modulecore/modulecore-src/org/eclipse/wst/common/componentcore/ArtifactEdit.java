@@ -361,7 +361,12 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 			throw new IllegalArgumentException("Invalid component handle: " + aProject);
 		if (!forCreate && !isValidEditableModule(component))
 			throw new IllegalArgumentException("Invalid component handle: " + aProject);
-		URI componentURI = ModuleURIUtil.fullyQualifyURI(aProject);
+		
+		URI componentURI = null;
+		if (forCreate)
+			componentURI = ModuleURIUtil.fullyQualifyURI(aProject,getContentTypeDescriber());
+		else
+			componentURI = ModuleURIUtil.fullyQualifyURI(aProject);
 
 		if (toAccessAsReadOnly)
 			artifactEditModel = nature.getArtifactEditModelForRead(componentURI, this, projectType, editModelParams);
@@ -373,6 +378,15 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 		project = aProject;
 	}
 
+
+	/**
+	 * Used to optionally define an associated content type for XML file creation
+	 * @return
+	 */
+	protected String getContentTypeDescriber() {
+		
+		return null;
+	}
 
 	protected boolean validProjectVersion(IProject project2) {
 		return true;

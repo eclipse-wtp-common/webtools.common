@@ -10,15 +10,18 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.impl;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.content.IContentDescription;
@@ -26,7 +29,13 @@ import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jem.util.RegistryReader;
+import org.eclipse.wst.common.componentcore.ComponentCore;
+import org.eclipse.wst.common.componentcore.UnresolveableURIException;
 import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
+import org.eclipse.wst.common.componentcore.internal.StructureEdit;
+import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
+import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.internal.emf.resource.FileNameResourceFactoryRegistry;
 import org.eclipse.wst.common.internal.emf.resource.ResourceFactoryDescriptor;
 import org.eclipse.wst.common.internal.emf.utilities.DefaultOverridableResourceFactoryRegistry;
@@ -266,7 +275,36 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 		}
 		return defaultDesc;
 	}
+private URI newPlatformURI(URI aNewURI, IProject project) {
+		
+		if (project == null)
+			return ModuleURIUtil.trimToDeployPathSegment(aNewURI);
+		try {
+			IVirtualComponent component = ComponentCore.createComponent(project);
+
+			URI deployPathSegment = ModuleURIUtil.trimToDeployPathSegment(aNewURI);
+			
+			//IVirtualFile newFile = component.getFile(new Path(deployPathSegment.path()));			
+			IVirtualFolder rootFolder = component.getRootFolder();
+			IVirtualFile newFile = rootFolder.getFile(new Path(deployPathSegment.path()));
+			
+			return URI.createPlatformResourceURI(newFile.getWorkspaceRelativePath().toString());
+			 
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
+	private IContentDescription getDescriptionFromURI(URI uri) {
+		String contentTypeIdentifier = ModuleURIUtil.getContentTypeName(uri);
+		if (contentTypeIdentifier != null)
+			return Platform.getContentTypeManager().getContentType(contentTypeIdentifier).getDefaultDescription();
+		else
+			return null;
+		
+	}
+
 	protected synchronized ResourceFactoryDescriptor getDescriptor(URI uri) {
 		IFile file = WorkbenchResourceHelper.getPlatformFile(uri);
 		IContentDescription description = null;
@@ -274,6 +312,25 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 			try {
 				description = file.getContentDescription();
 			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		if (description == null) {//Check for optional embedded uri segment, then normalize
+			description = getDescriptionFromURI(uri);
+			try {
+				if (description != null) {
+					IProject componentProject = null;
+					try {
+						componentProject = StructureEdit.getContainingProject(uri);
+					} catch (UnresolveableURIException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					uri = PlatformURLModuleConnection.resolve(uri);
+					uri = newPlatformURI(uri,componentProject);
+				} 
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

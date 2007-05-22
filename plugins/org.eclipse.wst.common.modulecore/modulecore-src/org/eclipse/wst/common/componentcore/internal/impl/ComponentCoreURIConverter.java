@@ -22,6 +22,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.impl.URIMappingRegistryImpl;
 import org.eclipse.jem.util.emf.workbench.ResourceSetWorkbenchSynchronizer;
 import org.eclipse.jem.util.emf.workbench.WorkbenchResourceHelperBase;
 import org.eclipse.wst.common.componentcore.ComponentCore;
@@ -157,6 +158,32 @@ public class ComponentCoreURIConverter extends CompatibilityWorkbenchURIConverte
 	
 	protected IProject getContainingProject() {
 		return containingProject;
+	}
+
+	@Override
+	protected URIMap getInternalURIMap() {
+
+	    if (uriMap == null)
+	    {
+	      URIMappingRegistryImpl mappingRegistryImpl = 
+	        new URIMappingRegistryImpl()
+	        {
+	          private static final long serialVersionUID = 1L;
+
+	          @Override
+	          protected URI delegatedGetURI(URI uri)
+	          {
+	        	if (ModuleURIUtil.hasContentTypeName(uri))
+	        		return newPlatformURI(uri);
+	            return URIMappingRegistryImpl.INSTANCE.getURI(uri);
+	          }
+	        };
+
+	      uriMap = (URIMap)mappingRegistryImpl.map();
+	    }
+
+	    return uriMap;
+	  
 	}
 
 
