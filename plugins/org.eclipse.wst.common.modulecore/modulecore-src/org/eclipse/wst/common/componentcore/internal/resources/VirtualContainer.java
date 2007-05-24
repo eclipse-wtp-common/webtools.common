@@ -31,6 +31,7 @@ import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeNode;
 import org.eclipse.wst.common.componentcore.internal.impl.ResourceTreeRoot;
+import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualContainer;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFile;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
@@ -155,7 +156,10 @@ public abstract class VirtualContainer extends VirtualResource implements IVirtu
 		List virtualResources = new ArrayList(); // result
 		Set allNames = new HashSet();
 		// Ignore all meta data paths in the virtual container resource set
-		IPath[] metaPaths = getComponent().getMetaResources();
+		IVirtualComponent component = getComponent();
+		if (component == null)
+		    return new IVirtualResource[0];
+		IPath[] metaPaths = component.getMetaResources();
 		for (int i = 0; i < metaPaths.length; i++) {
 			String localName = getLocalName(metaPaths[i]);
 			if (localName != null)
