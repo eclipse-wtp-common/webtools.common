@@ -15,4 +15,5 @@ Require-Bundle: org.eclipse.ui,
 Eclipse-LazyStart: true
 Export-Package: org.eclipse.wst.internet.cache.internal;x-internal:=true,
  org.eclipse.wst.internet.cache.tests.internal;x-internal:=true
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
 
