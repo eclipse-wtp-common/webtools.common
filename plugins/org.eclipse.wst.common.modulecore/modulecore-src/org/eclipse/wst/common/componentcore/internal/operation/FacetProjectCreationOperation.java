@@ -115,16 +115,12 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 		return OK_STATUS;
 	}
 
-	private void addDefaultFacets(IFacetedProject facetProj, Set defaultFacets) {
+	private static void addDefaultFacets(IFacetedProject facetProj, Set defaultFacets) {
 		Set actions = new HashSet();
 		for (Iterator iter = defaultFacets.iterator(); iter.hasNext();) {
 			IProjectFacetVersion facetVersion = (IProjectFacetVersion) iter.next();
 			if (!facetProj.hasProjectFacet(facetVersion.getProjectFacet())) {
-				IDataModel dm = DataModelFactory.createDataModel(new FacetInstallDataModelProvider());
-				dm.setProperty(IFacetDataModelProperties.FACET_ID, facetVersion.getProjectFacet().getId());
-				dm.setProperty(IFacetDataModelProperties.FACET_PROJECT_NAME, facetProj.getProject().getName());
-				dm.setProperty(IFacetDataModelProperties.FACET_VERSION_STR, facetVersion.getVersionString());
-				actions.add(new IFacetedProject.Action(Action.Type.INSTALL, facetVersion, dm));
+				actions.add(new IFacetedProject.Action(Action.Type.INSTALL, facetVersion, null));
 			}
 		}
 
@@ -154,52 +150,11 @@ public class FacetProjectCreationOperation extends AbstractDataModelOperation {
 		}
 		return facetProj;
 	}
-
-	private static void addDefaultFacetsInProject(IFacetedProject facetProj, Set defaultFacets) {
-		Set actions = new HashSet();
-		for (Iterator iter = defaultFacets.iterator(); iter.hasNext();) {
-			IProjectFacetVersion facetVersion = (IProjectFacetVersion) iter.next();
-			if (!facetProj.hasProjectFacet(facetVersion.getProjectFacet())) {
-				IDataModel dm = DataModelFactory.createDataModel(new FacetInstallDataModelProvider());
-				dm.setProperty(IFacetDataModelProperties.FACET_ID, facetVersion.getProjectFacet().getId());
-				dm.setProperty(IFacetDataModelProperties.FACET_PROJECT_NAME, facetProj.getProject().getName());
-				dm.setProperty(IFacetDataModelProperties.FACET_VERSION_STR, facetVersion.getVersionString()); 
-				actions.add(new IFacetedProject.Action(Action.Type.INSTALL, facetVersion, dm));
-			}
-		}
-
-		try {
-			if (!actions.isEmpty())
-				facetProj.modify(actions, null);
-		} catch (CoreException e) {
-			Logger.getLogger().logError(e);
-		}
-	}
-
+	
 	public static void addDefaultFactets(IFacetedProject facetProj, IRuntime runtime) throws ExecutionException {
-
-		Set fixedFacets = new HashSet(), newFacetVersions = facetProj.getProjectFacets(), existingFixedFacets = facetProj.getFixedProjectFacets();
-		for (Iterator iter = newFacetVersions.iterator(); iter.hasNext();) {
-			IProjectFacetVersion facetVersion = (IProjectFacetVersion) iter.next();
-			String facetID = facetVersion.getProjectFacet().getId();
-			boolean shouldInstallFacet = true;
-			for (Iterator existingFacetsIterator = existingFixedFacets.iterator(); shouldInstallFacet && existingFacetsIterator.hasNext();) {
-				IProjectFacet facet = (IProjectFacet) existingFacetsIterator.next();
-				if (facet.getId().equals(facetID)) {
-					shouldInstallFacet = false;
-				}
-			}
-			if (shouldInstallFacet) {
-				fixedFacets.add(facetVersion.getProjectFacet());
-			}
-		}
-
 		try {
-			fixedFacets.addAll(facetProj.getFixedProjectFacets());
-			facetProj.setFixedProjectFacets(fixedFacets);
-
 			if (runtime != null) {
-				addDefaultFacetsInProject(facetProj, runtime.getDefaultFacets(fixedFacets));
+				addDefaultFacets(facetProj, runtime.getDefaultFacets(facetProj.getFixedProjectFacets()));
 			}
 		} catch (CoreException e) {
 			Logger.getLogger().logError(e);
