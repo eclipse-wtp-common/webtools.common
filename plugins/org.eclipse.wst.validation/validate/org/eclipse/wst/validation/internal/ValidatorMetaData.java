@@ -349,8 +349,7 @@ public class ValidatorMetaData {
 				if (resource.getType() == IResource.FILE)
 					description = ((IFile) resource).getContentDescription();
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//Resource exceptions
 			}
 			if (description == null)
 				return false;
