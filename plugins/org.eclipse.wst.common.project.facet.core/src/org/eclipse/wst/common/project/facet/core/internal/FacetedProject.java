@@ -307,26 +307,19 @@ public final class FacetedProject
             final List<Action> copy = new ArrayList<Action>( actions );
             ProjectFacetsManager.sort( this.facets, copy );
             
-            // Update and check the action configs.
+            // Execute the actions.
             
-            for( int i = 0, n = copy.size(); i < n; i++ )
+            for( Action action : copy )
             {
-                Action action = copy.get( i );
-                final IProjectFacetVersion fv = action.getProjectFacetVersion();
+                final Action.Type type = action.getType();
+                final ProjectFacetVersion fv = (ProjectFacetVersion) action.getProjectFacetVersion();
+                final IActionDefinition def = fv.getActionDefinition( this.facets, type );
+                
                 Object config = action.getConfig();
                 
                 if( config == null )
                 {
-                    final IActionDefinition def 
-                        = fv.getActionDefinition( this.facets, action.getType() );
-                    
                     config = def.createConfigObject( fv, this.project.getName() );
-                    
-                    if( config != null )
-                    {
-                        action = new Action( action.getType(), fv, config );
-                        copy.set( i, action );
-                    }
                 }
                 
                 if( config != null )
@@ -356,18 +349,6 @@ public final class FacetedProject
                         }
                     }
                 }
-            }
-            
-            // Execute the actions.
-            
-            for( Action action : copy )
-            {
-                final Action.Type type = action.getType();
-                
-                final ProjectFacetVersion fv 
-                    = (ProjectFacetVersion) action.getProjectFacetVersion();
-                
-                final IActionDefinition def = fv.getActionDefinition( this.facets, type );
                 
                 if( monitor != null )
                 {
@@ -397,14 +378,12 @@ public final class FacetedProject
                 }
                 
                 final IFacetedProjectEvent preEvent
-                    = new ProjectFacetActionEvent( this, getPreEventType( type ), fv, 
-                                                   action.getConfig() );
+                    = new ProjectFacetActionEvent( this, getPreEventType( type ), fv, config );
                                                   
                 notifyListeners( preEvent );
                 worked( monitor, 10 );
                 
-                final IDelegate delegate 
-                    = ( (ActionDefinition) def ).getDelegate();
+                final IDelegate delegate = ( (ActionDefinition) def ).getDelegate();
                 
                 if( delegate == null )
                 {
@@ -412,8 +391,7 @@ public final class FacetedProject
                 }
                 else
                 {
-                    callDelegate( fv, delegate, action.getConfig(), type,
-                                  submon( monitor, 80 ) );
+                    callDelegate( fv, delegate, config, type, submon( monitor, 80 ) );
                 }
         
                 synchronized( this.lock )
@@ -424,8 +402,7 @@ public final class FacetedProject
                 save();
 
                 final IFacetedProjectEvent postEvent
-                    = new ProjectFacetActionEvent( this, getPostEventType( type ), fv,
-                                                   action.getConfig() );
+                    = new ProjectFacetActionEvent( this, getPostEventType( type ), fv, config );
                 
                 notifyListeners( postEvent );
                 worked( monitor, 10 );
