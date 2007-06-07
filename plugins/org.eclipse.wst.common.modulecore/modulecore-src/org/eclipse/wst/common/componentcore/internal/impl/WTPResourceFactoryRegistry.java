@@ -267,9 +267,17 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 						return desc;
 				}
 				//Allow the contentType discrimination to take place
-				if ((key.type != null) && (description != null) && (description.getContentType().equals(key.type)))
-					return desc;
-				if ((description != null) && (desc.isDefault()))
+				if ((key.type != null) && 
+						(description != null) && 
+						(description.getContentType().equals(key.type))) {
+					// If the current describer is "default" then specify
+					if(desc.isDefault())
+						return desc;
+					else 	
+						defaultDesc = desc;
+				}
+					
+				if ((description != null) && (desc.isDefault()) && (defaultDesc == null))
 					defaultDesc = desc;
 			}
 		}
