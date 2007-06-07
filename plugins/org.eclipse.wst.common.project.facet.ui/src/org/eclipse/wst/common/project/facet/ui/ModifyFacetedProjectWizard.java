@@ -72,7 +72,7 @@ public class ModifyFacetedProjectWizard
     
     public ModifyFacetedProjectWizard( final IFacetedProject fproj )
     {
-        this.model = new ModifyFacetedProjectDataModel();
+        this.model = new ModifyFacetedProjectDataModel( fproj );
         this.delayedActions = new ArrayList<Runnable>();;
         this.fproj = fproj;
         

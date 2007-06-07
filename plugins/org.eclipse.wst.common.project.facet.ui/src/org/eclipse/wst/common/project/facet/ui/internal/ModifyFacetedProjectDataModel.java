@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IDynamicPreset;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
@@ -43,14 +44,16 @@ public final class ModifyFacetedProjectDataModel
     public static String EVENT_AVAILABLE_PRESETS_CHANGED = "availablePresetsChanged"; //$NON-NLS-1$
     public static String EVENT_SELECTED_PRESET_CHANGED = "selectedPresetChanged"; //$NON-NLS-1$
     
+    private final IFacetedProject project;
     private Set<IProjectFacet> fixedFacets;
     private Map<IProjectFacet,Set<IProjectFacetVersion>> availableFacets;
     private IndexedSet<String,IPreset> availablePresets;
     private IPreset selectedPreset;
     private final ChangeTargetedRuntimesDataModel runtimesDataModel;
     
-    public ModifyFacetedProjectDataModel()
+    public ModifyFacetedProjectDataModel( final IFacetedProject project )
     {
+        this.project = project;
         this.fixedFacets = Collections.emptySet();
         this.availableFacets = Collections.emptyMap();
         this.availablePresets = new IndexedSet<String,IPreset>();
@@ -83,6 +86,11 @@ public final class ModifyFacetedProjectDataModel
         addListener( EVENT_FIXED_FACETS_CHANGED, avPresetsListener );
         addListener( EVENT_AVAILABLE_FACETS_CHANGED, avPresetsListener );
         this.runtimesDataModel.addListener( EVENT_PRIMARY_RUNTIME_CHANGED, avPresetsListener );
+    }
+    
+    public IFacetedProject getFacetedProject()
+    {
+        return this.project;
     }
     
     public synchronized Set<IProjectFacet> getFixedFacets()
@@ -133,18 +141,21 @@ public final class ModifyFacetedProjectDataModel
             {
                 boolean available = true;
                 
-                for( IRuntime r : targetedRuntimes )
+                if( this.project == null || ! this.project.hasProjectFacet( fv ) )
                 {
-                    if( ! r.supports( fv ) )
+                    for( IRuntime r : targetedRuntimes )
+                    {
+                        if( ! r.supports( fv ) )
+                        {
+                            available = false;
+                            break;
+                        }
+                    }
+                    
+                    if( available && ! fv.isValidFor( this.fixedFacets ) )
                     {
                         available = false;
-                        break;
                     }
-                }
-                
-                if( available && ! fv.isValidFor( this.fixedFacets ) )
-                {
-                    available = false;
                 }
                 
                 if( available )

@@ -90,15 +90,22 @@ public class RuntimesPropertyPage extends PropertyPage
                     {
                         final IFacetedProject fpj = RuntimesPropertyPage.this.project;
                         
-                        for( IProjectFacetVersion fv : fpj.getProjectFacets() )
+                        if( fpj.getTargetedRuntimes().contains( runtime ) )
                         {
-                            if( ! runtime.supports( fv ) )
-                            {
-                                return false;
-                            }
+                            return true;
                         }
-                        
-                        return true;
+                        else
+                        {
+                            for( IProjectFacetVersion fv : fpj.getProjectFacets() )
+                            {
+                                if( ! runtime.supports( fv ) )
+                                {
+                                    return false;
+                                }
+                            }
+                            
+                            return true;
+                        }
                     }
                 }
             );

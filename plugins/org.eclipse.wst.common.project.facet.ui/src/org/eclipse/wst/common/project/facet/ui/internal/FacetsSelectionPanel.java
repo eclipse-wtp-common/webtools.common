@@ -94,6 +94,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.wst.common.project.facet.core.IActionConfig;
 import org.eclipse.wst.common.project.facet.core.ICategory;
 import org.eclipse.wst.common.project.facet.core.IConstraint;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
@@ -493,15 +494,24 @@ public final class FacetsSelectionPanel
             {
                 public boolean check( final IRuntime runtime )
                 {
-                    for( IProjectFacetVersion fv : getSelectedProjectFacets() )
-                    {
-                        if( ! runtime.supports( fv ) )
-                        {
-                            return false;
-                        }
-                    }
+                    final IFacetedProject project = getDataModel().getFacetedProject();
                     
-                    return true;
+                    if( project != null && project.getTargetedRuntimes().contains( runtime ) )
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        for( IProjectFacetVersion fv : getSelectedProjectFacets() )
+                        {
+                            if( ! runtime.supports( fv ) )
+                            {
+                                return false;
+                            }
+                        }
+                        
+                        return true;
+                    }
                 }
             }
         );
@@ -1098,7 +1108,7 @@ public final class FacetsSelectionPanel
     
     private IStatus calculateProblems()
     {
-        IStatus st = ProjectFacetsManager.check( this.base, this.actions );
+        MultiStatus st = (MultiStatus) ProjectFacetsManager.check( this.base, this.actions );
         
         for( IProjectFacetVersion fv : this.base )
         {
@@ -1119,16 +1129,27 @@ public final class FacetsSelectionPanel
             if( msg != null )
             {
                 final IStatus sub
-                    = new Status( IStatus.WARNING, FacetUiPlugin.PLUGIN_ID, 0,
-                                  msg, null );
+                    = new Status( IStatus.WARNING, FacetUiPlugin.PLUGIN_ID, 0, msg, null );
                 
-                final IStatus[] existing = st.getChildren();
-                final IStatus[] modified = new IStatus[ existing.length + 1 ];
-                System.arraycopy( existing, 0, modified, 0, existing.length );
-                modified[ existing.length ] = sub;
-                
-                st = new MultiStatus( FacetUiPlugin.PLUGIN_ID, 0, modified, 
-                                      "", null ); //$NON-NLS-1$
+                st.add( sub );
+            }
+        }
+        
+        for( IRuntime r : getDataModel().getTargetedRuntimesDataModel().getTargetedRuntimes() )
+        {
+            for( IProjectFacetVersion fv : getSelectedProjectFacets() )
+            {
+                if( ! r.supports( fv ) )
+                {
+                    final String msg
+                        = NLS.bind( Resources.facetNotSupportedByTarget, fv.toString(), 
+                                    r.getLocalizedName() );
+                    
+                    final IStatus sub
+                        = new Status( IStatus.ERROR, FacetUiPlugin.PLUGIN_ID, 0, msg, null );
+                    
+                    st.add( sub );
+                }
             }
         }
         
@@ -2424,6 +2445,7 @@ public final class FacetsSelectionPanel
         public static String couldNotDeselectFixedFacetMessage;
         public static String facetNotFound;
         public static String facetVersionNotFound;
+        public static String facetNotSupportedByTarget;
         
         static
         {
