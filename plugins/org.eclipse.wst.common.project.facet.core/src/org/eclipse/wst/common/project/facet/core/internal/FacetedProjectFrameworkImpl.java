@@ -310,14 +310,22 @@ public final class FacetedProjectFrameworkImpl
     public IPreset definePreset( final String name,
                                  final Set<IProjectFacetVersion> facets )
     {
-        return definePreset( name, "", facets, true ); //$NON-NLS-1$
+        synchronized( this.presets )
+        {
+            initializePresets();
+            return definePreset( name, "", facets, true ); //$NON-NLS-1$
+        }
     }
 
     public IPreset definePreset( final String name,
                                  final String description,
                                  final Set<IProjectFacetVersion> facets )
     {
-        return definePreset( name, description, facets, true );
+        synchronized( this.presets )
+        {
+            initializePresets();
+            return definePreset( name, description, facets, true );
+        }
     }
     
     private IPreset definePreset( final String name,
@@ -325,33 +333,28 @@ public final class FacetedProjectFrameworkImpl
                                   final Set<IProjectFacetVersion> facets,
                                   final boolean save )
     {
-        synchronized( this.presets )
+        String id;
+        int i = 0;
+        
+        do
         {
-            initializePresets();
-            
-            String id;
-            int i = 0;
-            
-            do
-            {
-                id = ".usr." + i; //$NON-NLS-1$
-                i++;
-            }
-            while( this.presets.containsKey( id ) );
-            
-            final UserPreset preset 
-                = new UserPreset( id, name, description == null ? "" : description,  //$NON-NLS-1$
-                                  facets );
-            
-            this.presets.add( id, preset );
-            
-            if( save )
-            {
-                saveUserPresets();
-            }
-            
-            return preset;
+            id = ".usr." + i; //$NON-NLS-1$
+            i++;
         }
+        while( this.presets.containsKey( id ) );
+        
+        final UserPreset preset 
+            = new UserPreset( id, name, description == null ? "" : description,  //$NON-NLS-1$
+                              facets );
+        
+        this.presets.add( id, preset );
+        
+        if( save )
+        {
+            saveUserPresets();
+        }
+        
+        return preset;
     }
     
     public boolean deletePreset( final IPreset preset )
@@ -937,7 +940,7 @@ public final class FacetedProjectFrameworkImpl
             }
         }
         
-        // Check the contrains on all of the facets.
+        // Check the constrains on all of the facets.
         
         for( IProjectFacetVersion fv : all )
         {
