@@ -20,6 +20,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.common.componentcore.ComponentCore;
@@ -27,6 +28,7 @@ import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.internal.ComponentcoreFactory;
 import org.eclipse.wst.common.componentcore.internal.ComponentcorePackage;
 import org.eclipse.wst.common.componentcore.internal.DependencyType;
+import org.eclipse.wst.common.componentcore.internal.ModulecorePlugin;
 import org.eclipse.wst.common.componentcore.internal.Property;
 import org.eclipse.wst.common.componentcore.internal.ReferencedComponent;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
@@ -105,7 +107,15 @@ public class VirtualComponent implements IVirtualComponent {
             List propList = component.getProperties();
             if(propList != null) {
                 for (int i = 0; i < propList.size(); i++) {
-                    props.setProperty(((Property)propList.get(i)).getName(), ((Property)propList.get(i)).getValue());
+                	Property property = (Property)propList.get(i);
+                	String name = property.getName();
+                	String value = property.getValue();
+                	if(value == null){
+                		value = ""; //$NON-NLS-1$
+                		String message = "WARNING:  The component file in "+getProject().getName()+" has no value defined for the property: "+name;  //$NON-NLS-1$//$NON-NLS-2$
+                		ModulecorePlugin.getDefault().logError(IStatus.ERROR, message, null);
+                	}
+                    props.setProperty(name, value);
                 }
             }
             return props; 
