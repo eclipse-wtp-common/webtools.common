@@ -27,6 +27,7 @@ import org.eclipse.wst.common.internal.emf.resource.RendererFactory;
 
 /**
  * @author jsholl
+ * @author itewk
  * 
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
@@ -34,24 +35,18 @@ import org.eclipse.wst.common.internal.emf.resource.RendererFactory;
 public abstract class OperationTestCase extends BaseTestCase {
 
 	public static final String VALIDATOR_JOB_FAMILY = "validators";
-
 	public static String fileSep = System.getProperty("file.separator"); //$NON-NLS-1$
-
 	public static IStatus OK_STATUS = new Status(IStatus.OK, "org.eclipse.jem.util", 0, "OK", null); //$NON-NLS-1$ //$NON-NLS-2$
-
-	// public abstract void testBVT() throws Exception;
-
+	
 	protected void setUp() throws Exception {
 		super.setUp();
 		try{ 
 			deleteAllProjects();
-		} catch (Exception e) {
-			// TODO: handle exception
 		} finally {
 			RendererFactory.getDefaultRendererFactory().setValidating(false);
 		}
-		// LogUtility.getInstance().resetLogging();
 	}
+	
 	public static void deleteAllProjects() {
 		IWorkspaceRunnableWithStatus workspaceRunnable = new IWorkspaceRunnableWithStatus(null) {
 			public void run(IProgressMonitor pm) throws CoreException {
@@ -126,22 +121,27 @@ public abstract class OperationTestCase extends BaseTestCase {
 			}
 			if (checkLog)
 				LogUtility.getInstance().resetLogging();
-			//verifyValidDataModel(dataModel);
+			
 			IStatus operationStatus = dataModel.getDefaultOperation().execute(new NullProgressMonitor(), null);
-			// TODO Verification to be fixed to use IDataModel
-			// verifyDataModel(dataModel);
+			
 			if (waitForBuildToComplete) {
 				desc.setAutoBuilding(true);
 				ResourcesPlugin.getWorkspace().setDescription(desc);
 				while (!listener.isBuildComplete()) {
-					Thread.sleep(3000);// do nothing till all the jobs are completeled
+					Thread.sleep(3000);// do nothing till all the jobs are completed
 				}
 			}
-			// bug 173933 - runAndVerify() fails to check return IStatus
-			if (operationStatus.getSeverity() == IStatus.ERROR)
-			{
+			
+			// bug 173933 - runAndVerify() fails to check return IStatushe 
+			if (operationStatus.getSeverity() == IStatus.ERROR) {
 				Assert.fail(operationStatus.getMessage());
 			}
+			
+			//run data model verifications
+			DataModelVerifierFactory verifierFactory = DataModelVerifierFactory.getInstance();
+			DataModelVerifier verifier = verifierFactory.createVerifier(dataModel);
+			verifier.verify(dataModel);
+
 			if (checkTasks && (errorOKList == null || errorOKList.isEmpty())) {
 				checkTasksList();
 			} else if (checkTasks && errorOKList != null && !errorOKList.isEmpty()) {

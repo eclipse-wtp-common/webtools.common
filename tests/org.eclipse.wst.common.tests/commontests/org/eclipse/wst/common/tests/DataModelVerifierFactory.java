@@ -15,6 +15,7 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 
 /**
  * @author Administrator
+ * @author Ian Tewksbury (ictewksb@us.ibm.com)
  * 
  * To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Generation - Code and Comments
@@ -27,7 +28,7 @@ public class DataModelVerifierFactory extends RegistryReader{
 	private DataModelVerifier defaultDataModelVerifier = new DataModelVerifier();
 	
 	public DataModelVerifierFactory() {
-		super(CommonTestsPlugin.PLUGIN_ID, "DataModelVerifier"); //$NON-NLS-1$
+		super(CommonTestsPlugin.PLUGIN_ID, "DataModelVerifier");//$NON-NLS-1$
 	}
 	
 	public static DataModelVerifierFactory getInstance() {
@@ -54,7 +55,7 @@ public class DataModelVerifierFactory extends RegistryReader{
 
 	}
 	
-	protected void addToDataModelVerifiersMap(Map dataModelVerifiers){
+	public void addToDataModelVerifiersMap(Map dataModelVerifiers){
 		if (dataModelVerifiersMap == null)
 			dataModelVerifiersMap = initDataModelVerifiersMap();
 		dataModelVerifiersMap.putAll(dataModelVerifiers);
@@ -105,13 +106,17 @@ public class DataModelVerifierFactory extends RegistryReader{
 	
 	public DataModelVerifier createVerifier(IDataModel model)  {
 		DataModelVerifier verifier = getDefaultDataModelVerifier();
-		String verifierClassName = null;
+		
 		if (model != null) {
-			verifierClassName = (String) getDataModelVerifiersMap().get(model.getClass().getName());
-			if (verifierClassName != null) {
+			Object verifierObject = getDataModelVerifiersMap().get(model.getID());
+			if(verifierObject != null){
 				try {
-					Class verifierClass = Class.forName(verifierClassName);
-					verifier = (DataModelVerifier) verifierClass.newInstance();
+					if(verifierObject instanceof Class){
+						return (DataModelVerifier)((Class)verifierObject).newInstance();
+					} else if(verifierObject instanceof String){
+						Class verifierClass = Class.forName((String)verifierObject);
+						verifier = (DataModelVerifier) verifierClass.newInstance();
+					}
 				} catch (Exception e) { 
 					verifier = getDefaultDataModelVerifier();
 				}
