@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005 IBM Corporation and others.
+ * Copyright (c) 2005, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -47,6 +47,7 @@ public class DependencyGraphManager {
 	private static final String MANIFEST_URI = "META-INF/MANIFEST.MF";
 	private HashMap wtpModuleTimeStamps = null;
 	private HashMap manifestTimeStamps = null;
+	private long modStamp = System.currentTimeMillis();
 	
 	private DependencyGraphManager() {
 		super();
@@ -72,8 +73,13 @@ public class DependencyGraphManager {
 	}
 	
 	private void constructIfNecessary() {
-		if (moduleTimeStampsChanged() || manifestTimeStampsChanged()) 
+		if (metadataChanged()) {
 			buildDependencyGraph();
+		}
+	}
+
+	private boolean metadataChanged() {
+		return moduleTimeStampsChanged() || manifestTimeStampsChanged();
 	}
 	
 	private boolean manifestTimeStampsChanged() {
@@ -223,6 +229,7 @@ public class DependencyGraphManager {
 		DependencyGraph.getInstance().clear();
 		getWtpModuleTimeStamps().clear();
 		getManifestTimeStamps().clear();
+		setModStamp(System.currentTimeMillis());
 	}
 
 	/**
@@ -248,5 +255,15 @@ public class DependencyGraphManager {
 	
 	public void forceRefresh() {
 		buildDependencyGraph();
+	}
+
+	
+	public long getModStamp() {
+		return modStamp;
+	}
+
+	
+	private void setModStamp(long modStamp) {
+		this.modStamp = modStamp;
 	}
 }
