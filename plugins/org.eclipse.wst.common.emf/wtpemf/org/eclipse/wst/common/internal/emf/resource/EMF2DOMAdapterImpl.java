@@ -440,9 +440,11 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 		}
 
 		// Remove any remaining adapters.
-		for (; i < mofChildren.size(); i++) {
-			removeMOFValue((EObject) mofChildren.get(i), map);
-		}
+		//make a copy so we remove all items - bug 192468 
+				Object[] childrenArray = mofChildren.toArray();
+				for (; i < childrenArray.length; i++) {
+					removeMOFValue((EObject) childrenArray[i], map);
+		 		}
 
 		// The adapters cannot be updated as they created. We must wait until
 		// all of the adapters are created and removed before updating,
