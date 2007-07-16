@@ -31,24 +31,23 @@ public class ModuleCoreValidator implements IValidatorJob {
 		}
 		
 		public Resource getPrimaryResource(IProject project) {
-			// Overriden to handle loading the .component resource in new and old forms
-			// First will try to load from .settings/org.eclipse.wst.common.component
-			// Second will try to load from the old location(s) .settings/.component or .component
-
-			URI uri = (URI) URI.createURI(StructureEdit.MODULE_META_FILE_NAME);
-			WTPModulesResource res = (WTPModulesResource)WorkbenchResourceHelper.getOrCreateResource(uri, getResourceSet(project));
-			if (res == null || !res.isLoaded()) {
-				uri = (URI) URI.createURI(".settings/.component");
-				res = (WTPModulesResource)WorkbenchResourceHelper.getOrCreateResource(uri, getResourceSet(project));
-				if (res == null || !res.isLoaded()) {
-					uri = (URI) URI.createURI(".wtpmodules");
-					res = (WTPModulesResource)WorkbenchResourceHelper.getOrCreateResource(uri, getResourceSet(project));
-					if (res == null || !res.isLoaded()) {
-						res = null;
+			// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=181334; Changing this method to call ModuleStructuralModel.getPrimaryResource() method instead.
+			// This does two things:
+			// 1. Reorders the locks to prevent deadlock between locking the resource (Bugzilla 181334),
+			//	  then the edit model and
+			// 2. Reuses code. (The code between this method and MSM.getPrimaryResource() is identical.
+			StructureEdit structureEdit = StructureEdit.getStructureEditForRead(project);
+			if (structureEdit != null) {
+				ModuleStructuralModel structuralModel = structureEdit.getModuleStructuralModel();
+				if (structuralModel != null) {
+					// acquiring the ModuleStructuralModel lock here first because the call to getPrimaryResource()
+					// will cause this lock to be acquired later resulting in a potential deadlock
+					synchronized (structuralModel) {
+						return structuralModel.getPrimaryResource();
 					}
 				}
 			}
-			return res;
+			return null;
 		}
 
 		private ResourceSet getResourceSet(IProject proj) {
