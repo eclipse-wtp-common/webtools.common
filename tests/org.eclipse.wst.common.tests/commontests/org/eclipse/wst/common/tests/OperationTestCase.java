@@ -134,7 +134,16 @@ public abstract class OperationTestCase extends BaseTestCase {
 			
 			// bug 173933 - runAndVerify() fails to check return IStatushe 
 			if (operationStatus.getSeverity() == IStatus.ERROR) {
-				Assert.fail(operationStatus.getMessage());
+				Throwable throwable = operationStatus.getException();
+				String throwableStr = null;
+				if(throwable != null){
+					throwable.printStackTrace();
+					throwableStr = getStackTrace(throwable);
+				}
+				if(throwableStr == null){
+					throwableStr = "no message";
+				}
+				Assert.fail(operationStatus.getMessage()+"\n    caused by: "+throwableStr);
 			}
 			
 			//run data model verifications
@@ -155,6 +164,25 @@ public abstract class OperationTestCase extends BaseTestCase {
 				ResourcesPlugin.getWorkspace().removeResourceChangeListener(listener);
 			dataModel.dispose();
 		}
+	}
+	
+	public static String getStackTrace(Throwable throwable){
+		StringBuffer buffer = new StringBuffer(throwable.toString()+"\n");
+		StackTraceElement[] stack = throwable.getStackTrace();
+		for (int i=0; i<stack.length; i++)
+			buffer.append("\tat " + stack[i]+"\n");
+
+		StackTraceElement[] parentStack = stack;
+		throwable = throwable.getCause();
+		while (throwable != null) {
+			buffer.append("Caused by: ");
+			buffer.append(throwable);
+			buffer.append("\n");
+			StackTraceElement[] currentStack = throwable.getStackTrace();
+			parentStack = currentStack;
+			throwable = throwable.getCause();
+		}
+		return buffer.toString();
 	}
 	/**
 	 * Guaranteed to close the dataModel
