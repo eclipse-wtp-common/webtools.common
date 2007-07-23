@@ -767,7 +767,7 @@ public final class RuntimeManagerImpl
                 
                 if( f == null )
                 {
-                    return;
+                    continue;
                 }
                 
                 final String v = child.getAttribute( ATTR_VERSION );
@@ -783,7 +783,7 @@ public final class RuntimeManagerImpl
                     catch( CoreException e )
                     {
                         FacetCorePlugin.log( e.getStatus() );
-                        return;
+                        continue;
                     }
                 }
                 
@@ -798,7 +798,7 @@ public final class RuntimeManagerImpl
                     
                     if( rct == null )
                     {
-                        return;
+                        continue;
                     }
                     
                     final String v = child.getAttribute( ATTR_VERSION );
@@ -814,7 +814,7 @@ public final class RuntimeManagerImpl
                         catch( CoreException e )
                         {
                             FacetCorePlugin.log( e.getStatus() );
-                            return;
+                            continue;
                         }
                     }
                     
