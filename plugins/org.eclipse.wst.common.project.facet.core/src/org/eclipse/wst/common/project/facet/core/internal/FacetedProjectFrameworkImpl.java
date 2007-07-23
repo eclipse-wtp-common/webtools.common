@@ -2151,13 +2151,22 @@ public final class FacetedProjectFrameworkImpl
             }
             else if( fid != null )
             {
-                final IProjectFacet f;
+                if( ! isProjectFacetDefined( fid ) )
+                {
+                    final String msg
+                        = NLS.bind( Resources.facetNotDefined, fid ) +
+                          NLS.bind( Resources.usedInPlugin, pluginId );
+                    
+                    FacetCorePlugin.logError( msg, true );
+                    return null;
+                }
+                
+                final IProjectFacet f = getProjectFacet( fid );
+
                 VersionExpr vexpr = null;
                 
                 try
                 {
-                    f = getProjectFacet( fid );
-                    
                     if( vexprstr == null || vexprstr.trim().length() == 0 )
                     {
                         vexprstr = IVersionExpr.WILDCARD_SYMBOL;
