@@ -18,9 +18,10 @@ import junit.framework.TestSuite;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IProjectFacet;
+import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.tests.support.TestUtils;
 
@@ -36,6 +37,21 @@ public final class ProjectCreationTests
     private static final String FACETED_PROJECT_NATURE
         = "org.eclipse.wst.common.project.facet.core.nature";
     
+    private static IProjectFacet f1;
+    private static IProjectFacetVersion f1v1;
+
+    private static IProjectFacet f2;
+    private static IProjectFacetVersion f2v1;
+    
+    static
+    {
+        f1 = ProjectFacetsManager.getProjectFacet( "pct-f1" );
+        f1v1 = f1.getVersion( "1.0" );
+
+        f2 = ProjectFacetsManager.getProjectFacet( "pct-f2" );
+        f2v1 = f2.getVersion( "1.0" );
+    }
+
     private ProjectCreationTests( final String name )
     {
         super( name );
@@ -50,6 +66,7 @@ public final class ProjectCreationTests
         suite.addTest( new ProjectCreationTests( "testCreationFromScratch1" ) );
         suite.addTest( new ProjectCreationTests( "testCreationFromScratch2" ) );
         suite.addTest( new ProjectCreationTests( "testCreationFromScratch3" ) );
+        suite.addTest( new ProjectCreationTests( "testCreationFromScratch4" ) );
         suite.addTest( new ProjectCreationTests( "testCreationFromNonFacetedProject1" ) );
         suite.addTest( new ProjectCreationTests( "testCreationFromNonFacetedProject2" ) );
         suite.addTest( new ProjectCreationTests( "testCreationFromNonFacetedProject3" ) );
@@ -141,7 +158,7 @@ public final class ProjectCreationTests
         desc.setLocation( null );
                 
         project.create( desc, null );
-        project.open( IResource.BACKGROUND_REFRESH, null );
+        project.open( null );
         
         this.resourcesToCleanup.add( project );
         
@@ -154,6 +171,40 @@ public final class ProjectCreationTests
         {
             // expected
         }
+    }
+
+    /**
+     * Tests {@see ProjectFacetsManager.create(String,IPath,IProgressMonitor)} method. In this 
+     * scenario, there was previously a faceted project at the specified location. The test 
+     * verifies that previously-installed facets are recognized after the project is resurrected.
+     * 
+     * @throws CoreException
+     * @throws IOException
+     */
+    
+    public void testCreationFromScratch4()
+    
+        throws CoreException, IOException
+    
+    {
+        IFacetedProject fproj;
+        
+        fproj = ProjectFacetsManager.create( "abc", null, null );
+        this.resourcesToCleanup.add( fproj.getProject() );
+        
+        fproj.installProjectFacet( f1v1, null, null );
+        fproj.installProjectFacet( f2v1, null, null );
+        
+        fproj.getProject().delete( false, false, null );
+        
+        fproj = ProjectFacetsManager.create( "abc", null, null );
+        
+        assertEquals( fproj.getFixedProjectFacets().size(), 0 );
+        assertEquals( fproj.getProjectFacets().size(), 2 );
+        assertTrue( fproj.hasProjectFacet( f1v1 ) );
+        assertTrue( fproj.hasProjectFacet( f2v1 ) );
+        assertEquals( fproj.getTargetedRuntimes().size(), 0 );
+        assertNull( fproj.getPrimaryRuntime() );
     }
     
     /**
@@ -176,7 +227,7 @@ public final class ProjectCreationTests
         desc.setLocation( null );
                 
         project.create( desc, null );
-        project.open( IResource.BACKGROUND_REFRESH, null );
+        project.open( null );
         
         this.resourcesToCleanup.add( project );
         
@@ -269,7 +320,7 @@ public final class ProjectCreationTests
         desc.setLocation( null );
                 
         project.create( desc, null );
-        project.open( IResource.BACKGROUND_REFRESH, null );
+        project.open( null );
         
         this.resourcesToCleanup.add( project );
         

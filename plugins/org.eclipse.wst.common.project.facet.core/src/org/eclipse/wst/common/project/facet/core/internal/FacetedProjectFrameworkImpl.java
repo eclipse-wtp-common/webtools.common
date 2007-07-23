@@ -32,7 +32,6 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
@@ -716,7 +715,7 @@ public final class FacetedProjectFrameworkImpl
             desc.setLocation( location );
                     
             project.create( desc, submon( monitor, 1 ) );
-            project.open( IResource.BACKGROUND_REFRESH, submon( monitor, 1 ) );
+            project.open( submon( monitor, 1 ) );
             
             // This is odd, but apparently nature's configure() method will only
             // be called if the setDescription() method is used. It will not be

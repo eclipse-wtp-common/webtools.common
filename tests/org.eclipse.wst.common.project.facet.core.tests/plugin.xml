@@ -553,4 +553,22 @@
       eventTypes="PRE_INSTALL,FIXED_FACETS_CHANGED"/>
   </extension>
 
+  <!-- ProjectCreationTests -->
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.facets">
+  
+    <project-facet id="pct-f1"/>
+    <project-facet-version facet="pct-f1" version="1.0"/>
+    <action facet="pct-f1" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+
+    <project-facet id="pct-f2"/>
+    <project-facet-version facet="pct-f2" version="1.0"/>
+    <action facet="pct-f2" type="INSTALL">
+      <delegate class="org.eclipse.wst.common.project.facet.core.tests.support.NoOpDelegate"/>
+    </action>
+
+  </extension>
+  
 </plugin>
