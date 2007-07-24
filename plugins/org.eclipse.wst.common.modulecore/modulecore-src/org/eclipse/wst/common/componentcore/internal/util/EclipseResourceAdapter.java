@@ -29,8 +29,7 @@ import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 public class EclipseResourceAdapter extends AdapterImpl implements Adapter {
 
 	public static final Class ADAPTER_TYPE = EclipseResourceAdapter.class;
-	private IResource resource;
-	private boolean hasSearchFailed = false;
+	private IResource resource; 
 
 	/*
 	 * (non-Javadoc)
@@ -41,17 +40,16 @@ public class EclipseResourceAdapter extends AdapterImpl implements Adapter {
 		if (aNotification.getFeature() == ComponentcorePackage.eINSTANCE.getComponentResource_SourcePath()) {
 			if (aNotification.getEventType() == Notification.SET) {
 				resource = null;
-				hasSearchFailed = false;
+				
 			}
 		}
 	}
 
-	public IResource getEclipseResource() {
-		IProject container = null;
-		if (resource != null || hasSearchFailed)
-			return resource;
+	public IResource getEclipseResource() { 
 		synchronized (this) {
 			if (resource == null) {
+
+				IProject container = null;
 				ComponentResource moduleResource = (ComponentResource) getTarget();
 				IPath sourcePath = moduleResource.getSourcePath();
 				if (moduleResource.getOwningProject() != null)
@@ -61,9 +59,7 @@ public class EclipseResourceAdapter extends AdapterImpl implements Adapter {
 				if (container != null)
 					resource = container.findMember(sourcePath); 
 				if(resource == null)
-					resource = ResourcesPlugin.getWorkspace().getRoot().findMember(sourcePath); 
-				
-				hasSearchFailed = resource == null;
+					resource = ResourcesPlugin.getWorkspace().getRoot().findMember(sourcePath);  
 			}
 		}
 		return resource;
