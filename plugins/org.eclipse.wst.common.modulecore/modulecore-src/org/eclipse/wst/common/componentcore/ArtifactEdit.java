@@ -363,7 +363,7 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 			throw new IllegalArgumentException("Invalid component handle: " + aProject);
 		
 		URI componentURI = null;
-		if (forCreate)
+		if (forCreate && getContentTypeDescriber() != null)
 			componentURI = ModuleURIUtil.fullyQualifyURI(aProject,getContentTypeDescriber());
 		else
 			componentURI = ModuleURIUtil.fullyQualifyURI(aProject);
