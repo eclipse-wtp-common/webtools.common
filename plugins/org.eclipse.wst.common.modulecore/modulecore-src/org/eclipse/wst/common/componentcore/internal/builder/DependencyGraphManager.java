@@ -266,4 +266,8 @@ public class DependencyGraphManager {
 	private void setModStamp(long modStamp) {
 		this.modStamp = modStamp;
 	}
+
+	public boolean checkIfStillValid(long timeStamp) {
+		return (getModStamp() == timeStamp && !metadataChanged());
+	}
 }
