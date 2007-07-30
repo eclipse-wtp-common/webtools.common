@@ -346,7 +346,7 @@ public class ValidatorMetaData {
 		if (getContentTypeIds() != null) {
 			IContentDescription description = null;
 			try {
-				if (resource.getType() == IResource.FILE)
+				if (resource.getType() == IResource.FILE && resource.exists())
 					description = ((IFile) resource).getContentDescription();
 			} catch (CoreException e) {
 				//Resource exceptions

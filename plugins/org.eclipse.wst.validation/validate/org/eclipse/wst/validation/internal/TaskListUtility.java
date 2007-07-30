@@ -59,7 +59,7 @@ public class TaskListUtility implements ConfigurationConstants {
 	 * This method adds a message to a resource in the task list.
 	 */
 	public static IMarker addTask(String pluginId, IResource resource, String location, String messageId, String message, int markerType, String markerName, String targetObjectName, String groupName, int offset, int length) throws CoreException {
-		if ((message == null) || (resource == null)) {
+		if ((message == null) || (resource == null) || (!resource.exists())) {
 			return null;
 		}
 
@@ -142,7 +142,7 @@ public class TaskListUtility implements ConfigurationConstants {
 	 * This method adds a message to a resource in the task list.
 	 */
 	public static IMarker addTask(String pluginId, IResource resource, String location, String messageId, String message, int markerType, String targetObjectName, String groupName, int offset, int length) throws CoreException {
-		if ((message == null) || (resource == null)) {
+		if ((message == null) || (resource == null) || (!resource.exists())) {
 			return null;
 		}
 
