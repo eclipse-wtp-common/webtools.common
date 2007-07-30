@@ -520,7 +520,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	/* package */static IValidator createValidator(IConfigurationElement element, String validatorClassName) {
 		IValidator validator = null;
 		try {
-			validator = (IValidator) element.createExecutableExtension(TAG_RUN_CLASS);
+			validator = (IValidator) element.createExecutableExtension(ATT_CLASS);
 		} catch (Exception exc) {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {
@@ -1391,7 +1391,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		vmd.setEnabledByDefault(getEnabledByDefault(element));
 		vmd.setMigrationMetaData(getMigrationMetaData(element, vmd));
 		vmd.setHelperClass(element, helperImplName);
-		vmd.setValidatorClass(element); // associate the above attributes with the validator
+		vmd.setValidatorClass(runChildren[0]); // associate the above attributes with the validator
 		vmd.addDependentValidator(getDependentValidatorValue(element));
 		vmd.setContentTypeIds(getContentTypeBindings(element));
 		initializeValidatorCustomMarkers(element, pluginId, vmd);
