@@ -8,8 +8,8 @@ Bundle-ClassPath: .
 Bundle-Localization: plugin
 Export-Package: org.eclipse.wst.common.project.facet.core,
  org.eclipse.wst.common.project.facet.core.events,
- org.eclipse.wst.common.project.facet.core.internal;x-friends:="org.eclipse.wst.common.project.facet.ui",
- org.eclipse.wst.common.project.facet.core.internal.util;x-friends:="org.eclipse.wst.common.project.facet.ui",
+ org.eclipse.wst.common.project.facet.core.internal;x-friends:="org.eclipse.wst.common.project.facet.ui,org.eclipse.wst.common.project.facet.core.tests",
+ org.eclipse.wst.common.project.facet.core.internal.util;x-friends:="org.eclipse.wst.common.project.facet.ui,org.eclipse.wst.common.project.facet.core.tests",
  org.eclipse.wst.common.project.facet.core.runtime
 Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.2.0,4.0)",
  org.eclipse.core.resources;bundle-version="[3.2.0,4.0)",

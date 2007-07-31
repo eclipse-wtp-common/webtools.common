@@ -11,15 +11,24 @@
 
 package org.eclipse.wst.common.project.facet.core.tests;
 
+import static org.eclipse.wst.common.project.facet.core.internal.util.FileUtil.FILE_DOT_PROJECT;
+import static org.eclipse.wst.common.project.facet.core.internal.util.FileUtil.copyFromPlugin;
+import static org.eclipse.wst.common.project.facet.core.tests.FacetedProjectFrameworkCoreTestsPlugin.PLUGIN_ID;
 import static org.eclipse.wst.common.project.facet.core.tests.support.TestUtils.asSet;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
@@ -29,6 +38,7 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
+import org.eclipse.wst.common.project.facet.core.internal.FacetedProject;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -86,9 +96,108 @@ public final class EventDeliveryTests
         
         suite.setName( "Event Delivery Tests" );
 
+        suite.addTest( new EventDeliveryTests( "testEventsAtProjectCreation1" ) );
+        suite.addTest( new EventDeliveryTests( "testEventsAtProjectCreation2" ) );
+        suite.addTest( new EventDeliveryTests( "testEventsAtProjectCreation3" ) );
         suite.addTest( new EventDeliveryTests( "testEventDelivery" ) );
         
         return suite;
+    }
+    
+    /**
+     * This test verifies that no faceted project events are delivered when a new faceted project
+     * is created.
+     */
+    
+    public void testEventsAtProjectCreation1()
+    
+        throws CoreException
+        
+    {
+        FullExtensionBasedListener.reset();
+        createFacetedProject( "testEventsAtProjectCreation1" );
+        
+        assertEquals( FullExtensionBasedListener.retrieveEvents().size(), 0 );
+    }
+    
+    /**
+     * This test verifies that no faceted project events are delivered when an existing faceted 
+     * project is imported into the workspace and the faceted project wrapper is created. In this
+     * scenario variant, the imported project was previously created and then removed from the
+     * workspace in the same workbench session. 
+     */
+
+    public void testEventsAtProjectCreation2()
+    
+        throws CoreException
+        
+    {
+        final IFacetedProject fpj 
+            = ProjectFacetsManager.create( "testEventsAtProjectCreation2", null, null );
+        
+        final IProject pj = fpj.getProject();
+        addResourceToCleanup( pj );
+        
+        fpj.installProjectFacet( f1v10, null, null );
+        fpj.installProjectFacet( f2v11, null, null );
+        
+        pj.delete( false, false, null );
+        
+        FullExtensionBasedListener.reset();
+        
+        pj.create( null );
+        pj.open( null );
+
+        final IFacetedProject fpjNew = ProjectFacetsManager.create( pj );
+        
+        assertTrue( fpjNew.hasProjectFacet( f1v10 ) );
+        assertTrue( fpjNew.hasProjectFacet( f2v11 ) );
+        assertEquals( FullExtensionBasedListener.retrieveEvents().size(), 0 );
+        assertTrue( fpj != fpjNew );
+    }
+    
+    /**
+     * This test verifies that no faceted project events are delivered when an existing faceted 
+     * project is imported into the workspace and the faceted project wrapper is created. In this
+     * scenario variant, no project with than name has existed in the workspace in this workbench
+     * session. 
+     */
+    
+    public void testEventsAtProjectCreation3()
+    
+        throws CoreException
+        
+    {
+        FullExtensionBasedListener.reset();
+        
+        final IWorkspaceRoot wsRoot = ResourcesPlugin.getWorkspace().getRoot();
+        final File wsLocation = wsRoot.getLocation().toFile();
+        
+        final String pjName = "testEventsAtProjectCreation3";
+        final File pjLocation = new File( wsLocation, pjName );
+        
+        final String resPrefix = "resources/EventDeliveryTests.testEventsAtProjectCreation3/";
+        
+        copyFromPlugin( PLUGIN_ID, 
+                        new Path( resPrefix + FILE_DOT_PROJECT ),
+                        new File( pjLocation, FILE_DOT_PROJECT ) );
+        
+        copyFromPlugin( PLUGIN_ID,
+                        new Path( resPrefix + FacetedProject.METADATA_FILE ),
+                        new File( pjLocation, FacetedProject.METADATA_FILE ) );
+        
+        final IProject pj = wsRoot.getProject( pjName );
+        
+        pj.create( null );
+        pj.open( null );
+        
+        addResourceToCleanup( pj );
+        
+        final IFacetedProject fpj = ProjectFacetsManager.create( pj );
+        
+        assertTrue( fpj.hasProjectFacet( f1v10 ) );
+        assertTrue( fpj.hasProjectFacet( f2v11 ) );
+        assertEquals( FullExtensionBasedListener.retrieveEvents().size(), 0 );
     }
     
     public void testEventDelivery()
@@ -257,6 +366,26 @@ public final class EventDeliveryTests
         {
             instance = this;
         }
+        
+        public static void reset()
+        {
+            if( instance != null )
+            {
+                instance.retrieveDeliveredEvents();
+            }
+        }
+        
+        public static List<IFacetedProjectEvent> retrieveEvents()
+        {
+            if( instance != null )
+            {
+                return instance.retrieveDeliveredEvents();
+            }
+            else
+            {
+                return Collections.emptyList();
+            }
+        }
     }
         
     public static final class PartialExtensionBasedListener
@@ -269,6 +398,26 @@ public final class EventDeliveryTests
         public PartialExtensionBasedListener()
         {
             instance = this;
+        }
+        
+        public static void reset()
+        {
+            if( instance != null )
+            {
+                instance.retrieveDeliveredEvents();
+            }
+        }
+        
+        public static List<IFacetedProjectEvent> retrieveEvents()
+        {
+            if( instance != null )
+            {
+                return instance.retrieveDeliveredEvents();
+            }
+            else
+            {
+                return Collections.emptyList();
+            }
         }
     }
 

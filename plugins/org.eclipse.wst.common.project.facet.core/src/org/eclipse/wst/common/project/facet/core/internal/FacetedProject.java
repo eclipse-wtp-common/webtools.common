@@ -119,11 +119,11 @@ public final class FacetedProject
     implements IFacetedProject
     
 {
+    public static final String METADATA_FILE
+        = ".settings/" + FacetCorePlugin.PLUGIN_ID + ".xml"; //$NON-NLS-1$ //$NON-NLS-2$
+
     private static final String TRACING_DELEGATE_CALLS
         = FacetCorePlugin.PLUGIN_ID + "/delegate/calls"; //$NON-NLS-1$
-    
-    private static final String FACETS_METADATA_FILE
-        = ".settings/" + FacetCorePlugin.PLUGIN_ID + ".xml"; //$NON-NLS-1$ //$NON-NLS-2$
     
     private static final String EL_RUNTIME = "runtime"; //$NON-NLS-1$
     private static final String EL_SECONDARY_RUNTIME = "secondary-runtime"; //$NON-NLS-1$
@@ -148,6 +148,7 @@ public final class FacetedProject
     private boolean isBeingModified = false;
     private Thread modifierThread = null;
     private Exception parsingException;
+    private boolean isDeleted;
     
     FacetedProject( final IProject project )
     
@@ -163,10 +164,11 @@ public final class FacetedProject
         this.targetedRuntimes = new CopyOnWriteArraySet<String>();
         this.listeners = new ListenerRegistry();
         this.parsingException = null;
+        this.isDeleted = false;
         
-        this.f = project.getFile( FACETS_METADATA_FILE );
+        this.f = project.getFile( METADATA_FILE );
         
-        refresh();
+        refresh( true );
     }
     
     public IProject getProject()
@@ -295,6 +297,8 @@ public final class FacetedProject
         
         try
         {
+            validateNotDeleted();
+            
             final IStatus st = ProjectFacetsManager.check( this.facets, actions );
             
             if( ! st.isOK() )
@@ -470,6 +474,8 @@ public final class FacetedProject
         
         try
         {
+            validateNotDeleted();
+            
             Set<IProjectFacet> oldFixedFacets = null;
             
             synchronized( FacetedProject.this.lock )
@@ -614,6 +620,8 @@ public final class FacetedProject
         
         try
         {
+            validateNotDeleted();
+            
             final Set<IRuntime> oldRuntimes;
             final Set<IRuntime> newRuntimes;
             final IRuntime oldPrimary;
@@ -778,6 +786,8 @@ public final class FacetedProject
         
         try
         {
+            validateNotDeleted();
+            
             if( runtime == null )
             {
                 throw new NullPointerException();
@@ -1365,6 +1375,14 @@ public final class FacetedProject
         throws CoreException
         
     {
+        refresh( false );
+    }
+    
+    private void refresh( final boolean isInitializing )
+    
+        throws CoreException
+        
+    {
         synchronized( this.lock )
         {
             if( this.isBeingModified )
@@ -1372,8 +1390,7 @@ public final class FacetedProject
                 return;
             }
             
-            if( this.f.exists() && 
-                this.f.getModificationStamp() == this.fModificationStamp )
+            if( this.f.getModificationStamp() == this.fModificationStamp )
             {
                 return;
             }
@@ -1481,9 +1498,53 @@ public final class FacetedProject
             }
         }
 
-        // If we got here, the project was changed. All of the no-op checks return early.
+        // If we got here, the project was changed. All of the no-op checks return early. The
+        // exception is the case where the faceted project is being initialized for the first
+        // time in the workbench session (for instance after workbench restart or when an 
+        // existing faceted project is imported into the workspace).
         
-        notifyListeners( new ProjectModifiedEvent( this ) );
+        if( ! isInitializing )
+        {
+            notifyListeners( new ProjectModifiedEvent( this ) );
+        }
+    }
+    
+    void markDeleted()
+    
+        throws CoreException
+        
+    {
+        synchronized( this.lock )
+        {
+            beginModification();
+            
+            try
+            {
+                this.facets.clear();
+                this.fixed.clear();
+                this.unknownFacets.clear();
+                this.targetedRuntimes.clear();
+                this.primaryRuntime = null;
+            }
+            finally
+            {
+                endModification();
+            }
+            
+            this.isDeleted = true;
+        }
+    }
+    
+    private void validateNotDeleted()
+    
+        throws CoreException
+        
+    {
+        if( this.isDeleted )
+        {
+            final String msg = Resources.cannotModifyDeletedProject;
+            throw new CoreException( FacetCorePlugin.createErrorStatus( msg ) );
+        }
     }
     
     private ProjectFacet createUnknownFacet( final String id )
@@ -1607,6 +1668,7 @@ public final class FacetedProject
         public static String tracingDelegateStarting;
         public static String tracingDelegateFinished;
         public static String newPrimaryNotTargetRuntime;
+        public static String cannotModifyDeletedProject;
         
         // Task Descriptions
         

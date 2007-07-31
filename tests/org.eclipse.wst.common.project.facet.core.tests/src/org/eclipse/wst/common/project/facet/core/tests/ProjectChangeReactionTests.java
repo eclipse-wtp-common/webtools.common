@@ -17,6 +17,7 @@ import static org.eclipse.wst.common.project.facet.core.tests.support.TestUtils.
 import static org.eclipse.wst.common.project.facet.core.tests.support.TestUtils.writeToFile;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -28,6 +29,7 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.tests.support.TestUtils.ICondition;
 
 /**
@@ -119,6 +121,52 @@ public final class ProjectChangeReactionTests
         
         waitForCondition( createNoFacetsCondition( this.fpj ) );
         assertNull( ProjectFacetsManager.create( this.pj ) );
+        
+        try
+        {
+            this.fpj.installProjectFacet( f1v12, null, null );
+            fail();
+        }
+        catch( CoreException e )
+        {
+            verifyCannotModifyDeletedProjectException( e );
+        }
+        
+        try
+        {
+            this.fpj.setFixedProjectFacets( asSet( f1 ) );
+            fail();
+        }
+        catch( CoreException e )
+        {
+            verifyCannotModifyDeletedProjectException( e );
+        }
+        
+        try
+        {
+            this.fpj.setTargetedRuntimes( Collections.<IRuntime>emptySet(), null );
+            fail();
+        }
+        catch( CoreException e )
+        {
+            verifyCannotModifyDeletedProjectException( e );
+        }
+
+        try
+        {
+            this.fpj.setPrimaryRuntime( null, null );
+            fail();
+        }
+        catch( CoreException e )
+        {
+            verifyCannotModifyDeletedProjectException( e );
+        }
+    }
+    
+    private void verifyCannotModifyDeletedProjectException( final CoreException e )
+    {
+        final String expectedMessage = "Cannot modify a deleted project.";
+        assertTrue( e.getStatus().getMessage().equals( expectedMessage ) );
     }
 
     public void testReactionToMetadataFileDelete()

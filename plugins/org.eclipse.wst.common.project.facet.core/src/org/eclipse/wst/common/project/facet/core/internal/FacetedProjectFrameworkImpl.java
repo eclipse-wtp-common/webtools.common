@@ -2297,6 +2297,26 @@ public final class FacetedProjectFrameworkImpl
             
             synchronized( FacetedProjectFrameworkImpl.this.projects )
             {
+                for( IResourceDelta subdelta : delta.getAffectedChildren( IResourceDelta.REMOVED ) )
+                {
+                    final String pjname = subdelta.getFullPath().segment( 0 );
+                    
+                    final IFacetedProject fpj 
+                        = FacetedProjectFrameworkImpl.this.projects.remove( pjname );
+                    
+                    if( fpj != null )
+                    {
+                        try
+                        {
+                            ( (FacetedProject) fpj ).markDeleted();
+                        }
+                        catch( CoreException e )
+                        {
+                            FacetCorePlugin.log( e );
+                        }
+                    }
+                }
+                
                 for( FacetedProject fproj : FacetedProjectFrameworkImpl.this.projects.values() )
                 {
                     final IResourceDelta subdelta = delta.findMember( fproj.f.getFullPath() );
