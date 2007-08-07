@@ -1720,7 +1720,7 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 			Object attributeValue = extractValue(child, map, mofObject);
 			boolean advanceAddIndex = true;
 			if (attributeValue != null){
-				if(map.getFeature() != null && map.getFeature().isUnique() && mofObject.eGet(map.getFeature()) != null && ((List) mofObject.eGet(map.getFeature())).contains(attributeValue)){
+				if(map.getFeature() != null && map.getFeature().isUnique() && mofObject.eGet(map.getFeature()) != null && mofObject.eGet(map.getFeature()) instanceof List && ((List) mofObject.eGet(map.getFeature())).contains(attributeValue)){
 					advanceAddIndex = false;
 					String domName = map.domNameAndPath != null ? map.domNameAndPath : "attribute"; //$NON-NLS-1$
 					org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError(new IllegalArgumentException("The 'no duplicates' constraint is violated by "+domName+" = "+attributeValue));
