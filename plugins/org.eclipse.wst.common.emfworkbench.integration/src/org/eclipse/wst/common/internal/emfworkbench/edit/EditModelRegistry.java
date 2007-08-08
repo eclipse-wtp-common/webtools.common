@@ -304,7 +304,7 @@ public class EditModelRegistry extends RegistryReader {
 			return this.factory;
 		}
 
-		private void initializeResources() {
+		private synchronized void initializeResources() {
 
 			if (editModelResources == null) {
 				if (configurationElement != null) {
@@ -328,6 +328,7 @@ public class EditModelRegistry extends RegistryReader {
 					discardConfigurationElementIfNecessary();
 				} else {
 					editModelResources = Collections.EMPTY_LIST;
+					editModelExtensions = Collections.EMPTY_LIST;
 				}
 			}
 		}
