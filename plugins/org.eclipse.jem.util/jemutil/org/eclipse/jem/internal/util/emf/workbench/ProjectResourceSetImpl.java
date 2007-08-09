@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.8 $$  $$Date: 2005/03/18 18:52:06 $$ 
+ *  $$Revision: 1.9 $$  $$Date: 2007/08/09 00:44:35 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -23,6 +23,8 @@ import org.eclipse.emf.common.notify.impl.NotificationImpl;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.URIConverter;
+import org.eclipse.emf.ecore.resource.Resource.Factory;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.resource.impl.URIConverterImpl;
 import org.eclipse.emf.ecore.xmi.XMLResource;
@@ -73,6 +75,31 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements ProjectRe
 		if (result == null)
 			result = super.createResource(converted);
 		
+		return result;
+	}
+	public Resource createResource(URI uri, Resource.Factory resourceFactory) {
+		if (isReleasing) return null;
+		//Check the map first when creating the resource and do not
+		//normalize if a value is found.
+		boolean isMapped = !(((URIConverterImpl.URIMap)getURIConverter().getURIMap()).getURI(uri).equals(uri));
+		URI converted = uri;
+		if (!isMapped)
+			converted = getURIConverter().normalize(uri);
+		Resource result = createResourceFromHandlers(converted);
+		if (result == null) {
+
+		    if (resourceFactory != null)
+		    {
+		      result = resourceFactory.createResource(uri);
+		      getResources().add(result);
+		      return result;
+		    }
+		    else
+		    {
+		      return null;
+		    }
+		  
+		}
 		return result;
 	}
 	/**
@@ -261,6 +288,76 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements ProjectRe
 		if (isReleasing) return null;
 		return super.getResource(uri, loadOnDemand);
 	}
+	/*
+	 * Javadoc copied from interface.
+	 */
+	public Resource getResource(URI uri, boolean loadOnDemand, Resource.Factory resourceFactory) {
+		if (isReleasing) return null;
+		
+
+	    Map<URI, Resource> map = getURIResourceMap();
+	    if (map != null)
+	    {
+	      Resource resource = map.get(uri);
+	      if (resource != null)
+	      {
+	        if (loadOnDemand && !resource.isLoaded())
+	        {
+	          demandLoadHelper(resource);
+	        }        
+	        return resource;
+	      }
+	    }
+	    
+	    URIConverter theURIConverter = getURIConverter();
+	    URI normalizedURI = theURIConverter.normalize(uri);
+	    for (Resource resource : getResources())
+	    {
+	      if (theURIConverter.normalize(resource.getURI()).equals(normalizedURI))
+	      {
+	        if (loadOnDemand && !resource.isLoaded())
+	        {
+	          demandLoadHelper(resource);
+	        }
+	        
+	        if (map != null)
+	        {
+	          map.put(uri, resource);
+	        } 
+	        return resource;
+	      }
+	    }
+	    
+	    Resource delegatedResource = delegatedGetResource(uri, loadOnDemand);
+	    if (delegatedResource != null)
+	    {
+	      if (map != null)
+	      {
+	        map.put(uri, delegatedResource);
+	      }
+	      return delegatedResource;
+	    }
+
+	    if (loadOnDemand)
+	    {
+	      Resource resource = demandCreateResource(uri,resourceFactory);
+	      if (resource == null)
+	      {
+	        throw new RuntimeException("Cannot create a resource for '" + uri + "'; a registered resource factory is needed");
+	      }
+
+	      demandLoadHelper(resource);
+
+	      if (map != null)
+	      {
+	        map.put(uri, resource);
+	      }      
+	      return resource;
+	    }
+
+	    return null;
+	  
+	}
 
 	
 	/* (non-Javadoc)
@@ -269,6 +366,11 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements ProjectRe
 	public void resetNormalizedURICache() {
 		if (getURIResourceMap() != null)
 			getURIResourceMap().clear();
+	}
+	
+	protected Resource demandCreateResource(URI uri, Factory resourceFactory) {
+		// TODO Auto-generated method stub
+		return createResource(uri,resourceFactory);
 	}
 
 }
