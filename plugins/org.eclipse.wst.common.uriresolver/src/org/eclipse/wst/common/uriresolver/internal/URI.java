@@ -2763,6 +2763,31 @@ public final class URI
     return 0;
   }
 
+  
+  /**
+   * This method takes two URIs, the first one relative, the second absolute. It
+   * tries to resolve the first URI (making it absolute) by using the second one.
+   * If the URI cannot be resolved, the relative one is returned unmodified.
+   * 
+   * @param relativeURI
+   * @param absoluteURI
+   * @return relativeURI resolved (absolute) or relativeURI unmodified if it cannot
+   * be resolved.
+   */
+  public static String resolveRelativeURI(String relativeURI, String absoluteURI) {
+
+	  String result = relativeURI;
+
+	  try {
+      	URI relative = URI.createURI(relativeURI);
+       	URI absolute = URI.createURI(absoluteURI);
+       	URI resolvedRelative = relative.resolve(absolute);
+       	result = resolvedRelative.toString();
+      } catch (Exception e) {}
+      return result;
+  }
+  
+  
   /*
    * Returns <code>true</code> if this URI contains non-ASCII characters;
    * <code>false</code> otherwise.

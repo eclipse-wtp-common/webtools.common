@@ -154,7 +154,12 @@ public class LicenseAcceptanceDialog extends IconAndMessageDialog
 	  // Create the browser.
 	  final Browser browser = new Browser(licenseTextComposite, SWT.BORDER);
 	  gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-	  //gd.heightHint = 400;
+	  
+	  // It's important that the license URL is set even if we read 
+	  // the contents of the license file ourselves (see below) as
+	  // otherwise the progress monitor will not be called on certain
+	  // linux systems with certain browsers.
+	  browser.setUrl(licenseURL);
 	  
 	  // The browser widget has problems loading files stored in jars
 	  // so we read from the jar and set the browser text ourselves.
@@ -193,10 +198,7 @@ public class LicenseAcceptanceDialog extends IconAndMessageDialog
 			  }
 		  }
 	  }
-	  else
-	  {
-		  browser.setUrl(licenseURL);
-	  }
+	  
 	  browser.setLayoutData(gd);
 	  browser.addProgressListener(new ProgressListener(){
 

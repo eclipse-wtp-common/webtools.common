@@ -38,7 +38,6 @@ public class ModuleMigratorManager {
 	private static HashMap managerCache = new HashMap();
 	private static HashSet migrated = new HashSet();
 	private boolean migrating;
-	private HashSet moved = new HashSet();
 	public ModuleMigratorManager() {
 		super();
 	}
@@ -74,9 +73,8 @@ public class ModuleMigratorManager {
 				try {
 					if (aProj.isAccessible() && ModuleCoreNature.isFlexibleProject(aProj)) {
 						if (aProj.findMember(".wtpmodules") != null) {
-							if (!moved.contains(aProj))
-								moveOldMetaDataFile(aProj);
-						} else moved.add(aProj);
+							moveOldMetaDataFile(aProj);
+						}
 						if (needsComponentMigration(aProj,multiComps))
 							migrateComponentsIfNecessary(aProj,multiComps);
 					}
@@ -119,13 +117,11 @@ public class ModuleMigratorManager {
 	private void moveOldMetaDataFile(IProject project) {
 
 		try {
-				if (!moved.contains(project))
-					moveMetaDataFile(project);
+				moveMetaDataFile(project);
 				IFolder depFolder = project.getFolder(".deployables");
 				if (depFolder.exists())
 					depFolder.delete(true, null);
 				project.refreshLocal(IResource.DEPTH_INFINITE, null);
-				moved.add(project);
 
 		} catch (Exception e) {
 		}

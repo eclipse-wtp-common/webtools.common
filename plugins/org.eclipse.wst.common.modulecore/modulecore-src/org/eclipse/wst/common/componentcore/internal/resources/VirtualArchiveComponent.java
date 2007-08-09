@@ -110,9 +110,11 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 	}
 
 	public IPath getWorkspaceRelativePath() {
-		IFile aFile = ResourcesPlugin.getWorkspace().getRoot().getFile(archivePath);
-		if (aFile.exists())
-			return aFile.getFullPath();
+		if( archivePath.segmentCount() > 1 ){
+			IFile aFile = ResourcesPlugin.getWorkspace().getRoot().getFile(archivePath);
+			if (aFile.exists())
+				return aFile.getFullPath();
+		}
 		return null;
 	}
 
@@ -239,9 +241,11 @@ public class VirtualArchiveComponent implements IVirtualComponent, IAdaptable {
 			if(file.exists())
 				loc  = file.getLocation();
 			else {
-				file = ResourcesPlugin.getWorkspace().getRoot().getFile(archivePath);
-				if(file.exists())
-					loc = file.getLocation();
+				if( archivePath.segmentCount() >= 2 ){
+					file = ResourcesPlugin.getWorkspace().getRoot().getFile(archivePath);
+					if(file.exists())
+						loc = file.getLocation();
+				}
 			}
 			// this is a file on the local filesystem
 			if(loc != null)  

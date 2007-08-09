@@ -326,15 +326,20 @@ public class ValidatorMetaData {
 	 */
 	/* package */boolean isApplicableTo(IResource resource, int resourceDelta, ValidatorFilter[] filters) {
 		// Are any of the filters satisfied? (i.e., OR them, not AND them.)
-		for (int i = 0; i < filters.length; i++) {
-			ValidatorFilter filter = filters[i];
-			if (checkIfValidSourceFile(resource) && filter.isApplicableType(resource) && filter.isApplicableName(resource) && filter.isApplicableAction(resourceDelta)) {
-				return true;
+		if (checkIfValidSourceFile(resource)) {
+			for (int i = 0; i < filters.length; i++) {
+				ValidatorFilter filter = filters[i];
+				if (filter.isApplicableType(resource) &&
+					filter.isApplicableName(resource) &&
+					filter.isApplicableAction(resourceDelta)){
+					return true;
+                }
+
 			}
 		}
 		return false;
 	}
-	
+
 	private boolean checkIfValidSourceFile(IResource file) {
 		if (file.getType() == IResource.FILE) {
 			IProjectValidationHelper helper = ValidationHelperRegistryReader.getInstance().getValidationHelper();
@@ -345,19 +350,23 @@ public class ValidatorMetaData {
 			IContainer[] sourceContainers = helper.getSourceContainers(project);
 			for (int i=0; i<outputContainers.length; i++) {
 				String outputPath = outputContainers[i].getProjectRelativePath().makeAbsolute().toString();
-				for (int j=0; j<sourceContainers.length; j++) {
-					String sourceContainerPath = sourceContainers[j].getProjectRelativePath().makeAbsolute().toString();
-					if (outputPath.equals(sourceContainerPath))
-						continue;
+                String filePath = file.getProjectRelativePath().makeAbsolute().toString();
+				if (filePath.startsWith(outputPath)) {
+					//The file is in an output container.
+					//If it is a source container return true and false otherwise.
+					for (int j=0;j<sourceContainers.length; j++) {
+	                    if(outputContainers[i].equals(sourceContainers[j])){
+	                    	return true;
+	                    }
+						return false;
+					}
 				}
-				String filePath = file.getProjectRelativePath().makeAbsolute().toString();
-				if (filePath.startsWith(outputPath))
-					return false;
 			}
 		}
 		return true;
 	}
-
+		
+		
 	/**
 	 * If this validator recognizes the project nature, whether included or excluded, return the
 	 * name filter which describes the nature. Otherwise return null.

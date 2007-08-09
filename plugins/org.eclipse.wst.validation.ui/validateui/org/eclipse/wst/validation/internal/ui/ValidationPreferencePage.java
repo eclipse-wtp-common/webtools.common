@@ -853,7 +853,8 @@ private class ValidatorListPage implements IValidationPage {
 	}
 
 	public boolean performDefaults() throws InvocationTargetException {
-		pagePreferences.resetToDefault();
+		pagePreferences.restoreDefaults();
+		//pagePreferences.resetToDefault();
 		updateWidgetsForDefaults();
 		getDefaultsButton().setFocus();
 		return true;

@@ -17,6 +17,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
@@ -73,16 +74,27 @@ public class GlobalConfiguration extends ValidationConfiguration {
 		_saveAutomatically = save;
 	}
 
-	public void resetToDefault()  throws InvocationTargetException {
+	public void resetToDefault() throws InvocationTargetException {
 		setDisableAllValidation(getDisableValidationDefault());
 		setEnabledValidators(getEnabledValidatorsDefault());
 		setEnabledManualValidators(getManualEnabledValidators());
 		setEnabledBuildValidators(getBuildEnabledValidators());
 		setCanProjectsOverride(getCanProjectsOverrideDefault());
 		setSaveAutomatically(getSaveAutomaticallyDefault());
-    setDefaultDelegates(getValidators());
+		setDefaultDelegates(getValidators());
 	}
 
+	public void restoreDefaults() throws InvocationTargetException
+	{
+		ValidationPlugin plugin = ValidationPlugin.getPlugin();
+		Preferences pluginPreferences = plugin.getPluginPreferences();
+		deserialize(pluginPreferences.getDefaultString(USER_PREFERENCE));
+		deserializeManual(pluginPreferences.getDefaultString(USER_MANUAL_PREFERENCE));
+		deserializeBuild(pluginPreferences.getDefaultString(USER_BUILD_PREFERENCE));
+		deserializeDelegates(pluginPreferences.getDefaultString(DELEGATES_PREFERENCE));
+	}
+
+	
 	/**
 	 * This method exists only for migration purposes. The root marker must be deleted after
 	 * migration is complete.

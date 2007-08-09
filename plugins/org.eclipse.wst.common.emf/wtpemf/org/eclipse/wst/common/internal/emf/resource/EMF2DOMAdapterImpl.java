@@ -8,6 +8,8 @@
  **************************************************************************************************/
 package org.eclipse.wst.common.internal.emf.resource;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -60,6 +62,9 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 	protected Translator[] childTranslators;
 
 	protected boolean isRoot = false;
+	
+	private static final String PLATFORM = "org.eclipse.core.runtime.Platform"; //$NON-NLS-1$
+	private static final String ISRUNNING = "isRunning"; //$NON-NLS-1$
 
 	private class DependencyAdapter extends org.eclipse.emf.common.notify.impl.AdapterImpl {
 
@@ -125,12 +130,35 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 
 	protected void initChildTranslators() {
 		List children = new ArrayList();
-		// Get extended child translators
-		Translator[] extendedChildren = TranslatorService.getInstance().getTranslators();
-        for (int i = 0; i < extendedChildren.length; i++) {
-        	if (extendedChildren[i] != null)
-            	children.add(extendedChildren[i]);
-        }
+		boolean isRunning = false; //is the OSGI platform running ?
+		try {
+			// If the Platform class can be found, then continue to check if the OSGI platform is running
+			Class clazz = Class.forName(PLATFORM);
+			Method m = clazz.getMethod(ISRUNNING, null);
+			isRunning = ((Boolean)m.invoke(clazz, null)).booleanValue();
+		} catch (ClassNotFoundException e) {
+		     // Ignore because this must be in a non_OSGI environment
+		} catch (SecurityException e) {
+			 // Ignore because this must be in a non_OSGI environment
+		} catch (NoSuchMethodException e) {
+			 // Ignore because this must be in a non_OSGI environment
+		} catch (IllegalArgumentException e) {
+			 // Ignore because this must be in a non_OSGI environment
+		} catch (IllegalAccessException e) {
+			 // Ignore because this must be in a non_OSGI environment
+		} catch (InvocationTargetException e) {
+			 // Ignore because this must be in a non_OSGI environment
+		}	
+		//Check for extended child translators because we are in OSGI mode
+		if (isRunning) {
+			Translator[] extendedChildren = TranslatorService.getInstance().getTranslators();
+	        for (int i = 0; i < extendedChildren.length; i++) {
+	        	if (extendedChildren[i] != null)
+	            	children.add(extendedChildren[i]);
+	        }
+		}
+		
+		
 		children.addAll(Arrays.asList(fTranslator.getChildren(getTarget(), fRenderer.getVersionID())));
 
 		VariableTranslatorFactory factory = fTranslator.getVariableTranslatorFactory();
@@ -412,9 +440,11 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 		}
 
 		// Remove any remaining adapters.
-		for (; i < mofChildren.size(); i++) {
-			removeMOFValue((EObject) mofChildren.get(i), map);
-		}
+		//make a copy so we remove all items - bug 192468 
+				Object[] childrenArray = mofChildren.toArray();
+				for (; i < childrenArray.length; i++) {
+					removeMOFValue((EObject) childrenArray[i], map);
+		 		}
 
 		// The adapters cannot be updated as they created. We must wait until
 		// all of the adapters are created and removed before updating,
@@ -1115,6 +1145,7 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 		try {
 			return map.convertStringToValue(trimmedValue, emfObject);
 		} catch (FeatureValueConversionException ex) {
+			org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError(ex);
 			handleFeatureValueConversionException(ex);
 			return null;
 		}
@@ -1678,12 +1709,25 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 		map.clearList(mofObject);
 
 		// Go through the list of nodes and update the MOF collection
+		int addIndex = 0;
 		for (int i = 0; i < nodeChildren.size(); i++) {
 			Node child = (Node) nodeChildren.get(i);
 			Object attributeValue = extractValue(child, map, mofObject);
-			if (attributeValue != null)
-				map.setMOFValue(mofObject, attributeValue, i);
-
+			boolean advanceAddIndex = true;
+			if (attributeValue != null){
+				if(map.getFeature() != null && map.getFeature().isUnique() && mofObject.eGet(map.getFeature()) != null && mofObject.eGet(map.getFeature()) instanceof List && ((List) mofObject.eGet(map.getFeature())).contains(attributeValue)){
+					advanceAddIndex = false;
+					String domName = map.domNameAndPath != null ? map.domNameAndPath : "attribute"; //$NON-NLS-1$
+					org.eclipse.jem.util.logger.proxy.Logger.getLogger().logError(new IllegalArgumentException("The 'no duplicates' constraint is violated by "+domName+" = "+attributeValue));
+					handleInvalidMultiNodes(child.getNodeName());
+				} else {
+					map.setMOFValue(mofObject, attributeValue, addIndex);
+				}
+				if(advanceAddIndex){
+					addIndex ++;
+				}
+			}
+			
 			// Adapt the node so update will occur.
 			addDOMAdapter(child);
 		}
