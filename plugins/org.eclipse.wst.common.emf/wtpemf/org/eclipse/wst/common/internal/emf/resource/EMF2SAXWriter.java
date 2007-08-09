@@ -175,7 +175,7 @@ public class EMF2SAXWriter {
 	 * @return
 	 */
 	private boolean shouldRenderDomPath(EObject target, Translator currentChildTranslator, List mofChildren) {
-		return !currentChildTranslator.isEmptyContentSignificant() || (currentChildTranslator.shouldRenderEmptyDOMPath(target) || mofChildren.size() > 0);
+		return  (currentChildTranslator.shouldRenderEmptyDOMPath(target) || mofChildren.size() > 0);
 	}
 
 	/**
