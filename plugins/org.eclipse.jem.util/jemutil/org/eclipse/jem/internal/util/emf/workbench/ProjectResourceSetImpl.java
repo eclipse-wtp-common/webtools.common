@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.9 $$  $$Date: 2007/08/09 00:44:35 $$ 
+ *  $$Revision: 1.10 $$  $$Date: 2007/08/11 15:26:46 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.*;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.NotificationImpl;
 import org.eclipse.emf.common.util.URI;
@@ -35,6 +36,13 @@ import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jem.util.plugin.JEMUtilPlugin;
 
 public class ProjectResourceSetImpl extends ResourceSetImpl implements ProjectResourceSet {
+	public static interface ModuleURI {
+		public static final int SUB_PROTOCOL_INDX = 0;
+		public static final int PROJECT_NAME_INDX = 1;
+		public static final int MODULE_NAME_INDX = 2;
+		public static final int CONTENT_TYPE_INDX = 3;
+	}
+
 	private boolean isReleasing = false;
 	private IProject project;
 	protected List resourceHandlers = new ArrayList();
@@ -286,7 +294,98 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements ProjectRe
 	 */
 	public Resource getResource(URI uri, boolean loadOnDemand) {
 		if (isReleasing) return null;
-		return super.getResource(uri, loadOnDemand);
+
+	    Map<URI, Resource> map = getURIResourceMap();
+	    if (map != null)
+	    {
+	      Resource resource = map.get(uri);
+	      if (resource != null)
+	      {
+	        if (loadOnDemand && !resource.isLoaded())
+	        {
+	          demandLoadHelper(resource);
+	        }        
+	        return resource;
+	      }
+	    }
+	    
+	    URIConverter theURIConverter = getURIConverter();
+	    URI normalizedURI = theURIConverter.normalize(uri);
+	    for (Resource resource : getResources())
+	    {
+	      if (theURIConverter.normalize(resource.getURI()).equals(normalizedURI)) {
+	    		  
+	    	if (getContentTypeName(uri) == null || getContentTypeName(resource.getURI()) == null) {
+		        if (loadOnDemand && !resource.isLoaded())
+		        {
+		          demandLoadHelper(resource);
+		        }
+		        
+		        if (map != null)
+		        {
+		          map.put(uri, resource);
+		        } 
+		        return resource;
+	    	} else if ((getContentTypeName(uri).equals(getContentTypeName(resource.getURI())))) {
+	    		if (loadOnDemand && !resource.isLoaded())
+		        {
+		          demandLoadHelper(resource);
+		        }
+		        
+		        if (map != null)
+		        {
+		          map.put(uri, resource);
+		        } 
+		        return resource;
+	    	} else return null;  // Returning null because We can't handle multiple resources based on the same DOM model
+	      }
+	    }
+	    
+	    Resource delegatedResource = delegatedGetResource(uri, loadOnDemand);
+	    if (delegatedResource != null)
+	    {
+	      if (map != null)
+	      {
+	        map.put(uri, delegatedResource);
+	      }
+	      return delegatedResource;
+	    }
+
+	    if (loadOnDemand)
+	    {
+	      Resource resource = demandCreateResource(uri);
+	      if (resource == null)
+	      {
+	        throw new RuntimeException("Cannot create a resource for '" + uri + "'; a registered resource factory is needed");
+	      }
+
+	      demandLoadHelper(resource);
+
+	      if (map != null)
+	      {
+	        map.put(uri, resource);
+	      }      
+	      return resource;
+	    }
+
+	    return null;
+	  
+	}
+	protected static String getContentTypeName(URI uri) {
+		
+		if (WorkbenchResourceHelperBase.isPlatformResourceURI(uri) || !isValidFullyQualifiedModuleURI(uri))
+			return null;
+		String contentTypeIdentifier = (uri.segmentCount() > 3 ? uri.segment(ModuleURI.CONTENT_TYPE_INDX) : null);
+		if (contentTypeIdentifier != null && Platform.getContentTypeManager().getContentType(uri.segment(ModuleURI.CONTENT_TYPE_INDX)) != null)
+			return contentTypeIdentifier;
+		else
+			return null;
+	}
+	public static boolean isValidFullyQualifiedModuleURI(URI aModuleURI) {
+		if (aModuleURI.segmentCount() < 3) {
+			return false;
+		}
+		return true;
 	}
 	/*
 	 * Javadoc copied from interface.
