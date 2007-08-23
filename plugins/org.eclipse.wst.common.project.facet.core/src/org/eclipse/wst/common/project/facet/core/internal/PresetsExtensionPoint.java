@@ -571,7 +571,7 @@ public final class PresetsExtensionPoint
                 {
                     def = factory.createPreset( this.id, context );
                 }
-                catch( CoreException e )
+                catch( Exception e )
                 {
                     final String msg 
                         = Resources.bind( Resources.failedWhileInvokingPresetFactory, 

@@ -11,6 +11,7 @@
 
 package org.eclipse.wst.common.project.facet.core.internal;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
@@ -26,7 +27,6 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.IVersion;
 import org.eclipse.wst.common.project.facet.core.IVersionExpr;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
-import org.eclipse.wst.common.project.facet.core.internal.util.UnknownVersion;
 import org.eclipse.wst.common.project.facet.core.internal.util.Versionable;
 
 /**
@@ -44,7 +44,7 @@ public final class ProjectFacetVersion
     private String version;
     private IConstraint constraint;
     private String plugin;
-    private Map<IProjectFacetVersion,Integer> compTable = null;
+    private Map<IProjectFacetVersion,Integer> compTable = Collections.emptyMap();
     
     ProjectFacetVersion() {}
     
@@ -467,7 +467,8 @@ public final class ProjectFacetVersion
         {
             return 0;
         }
-        else if( obj instanceof IProjectFacetVersion )
+        
+        if( obj instanceof IProjectFacetVersion )
         {
             final IProjectFacetVersion fv = (IProjectFacetVersion) obj;
             
@@ -482,23 +483,23 @@ public final class ProjectFacetVersion
                 throw new RuntimeException( msg );
             }
             
-            return this.compTable.get( fv ).intValue();
-        }
-        else if( obj instanceof UnknownVersion )
-        {
-            try
+            final Integer cachedResult = this.compTable.get( fv );
+            
+            if( cachedResult != null )
             {
-                final Comparator<String> comp = this.facet.getVersionComparator();
-                return comp.compare( this.version, ( (IVersion) obj ).getVersionString() );
-            }
-            catch( CoreException e )
-            {
-                throw new RuntimeException( e );
+                return cachedResult.intValue();
             }
         }
-        else
+
+        try
         {
-            throw new IllegalArgumentException();
+            final Comparator<String> comp = this.facet.getVersionComparator();
+            return comp.compare( this.version, ( (IVersion) obj ).getVersionString() );
+        }
+        catch( Exception e )
+        {
+            FacetCorePlugin.log( e );
+            return 0;
         }
     }
     

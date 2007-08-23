@@ -45,6 +45,14 @@ public final class PresetDefinition
         this.label = label;
         this.description = description;
         this.facets = Collections.unmodifiableSet( new HashSet<IProjectFacetVersion>( facets ) );
+        
+        for( IProjectFacetVersion fv : facets )
+        {
+            if( fv == null )
+            {
+                throw new IllegalArgumentException();
+            }
+        }
     }
     
     /**
@@ -79,5 +87,5 @@ public final class PresetDefinition
     {
         return this.facets;
     }
-
+    
 }

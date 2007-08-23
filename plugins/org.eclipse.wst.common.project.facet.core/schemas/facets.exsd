@@ -505,7 +505,9 @@
             <meta.element deprecated="true"/>
          </appInfo>
          <documentation>
-            Adds an event handler for one of the events in the faceted project life cycle. The event-handler element can be used standalone or embeded inside the project-facet-version element. If used inside the project-facet-version element, the facet and version attributes are implied and should not be specified.
+            Adds an event handler for one of the events in the faceted project life cycle. The event-handler element can be used standalone or embeded inside the project-facet-version element. If used inside the project-facet-version element, the facet and version attributes are implied and should not be specified.&lt;br/&gt;&lt;br/&gt;
+
+&lt;b&gt;Deprecation Notes:&lt;/b&gt; This part of the facets extension point is deprecated. The org.eclipse.wst.common.project.facet.core.listeners extension point should be used instead.
          </documentation>
       </annotation>
       <complexType>
@@ -517,9 +519,6 @@
                <documentation>
                   The type of the event.
                </documentation>
-               <appInfo>
-                  <meta.attribute deprecated="true"/>
-               </appInfo>
             </annotation>
             <simpleType>
                <restriction base="string">
@@ -545,9 +544,6 @@
                <documentation>
                   The id of the project facet that this event handler applies to. This attribute should not be used when embeding the event-handler element inside the project-facet-version element.
                </documentation>
-               <appInfo>
-                  <meta.attribute deprecated="true"/>
-               </appInfo>
             </annotation>
          </attribute>
          <attribute name="version" type="string">
@@ -555,9 +551,6 @@
                <documentation>
                   The version of the project facet that this event handler applies to. Multiple versions can be specified using version expression syntax. The version expression should be of the form &quot;2.2,2.5,[3.0-5.3],(7.3&quot;, where the comas function as an OR. Brackets and parenthesis are used as part of the range notation. A bracket means inclusive while a parenthesis means exclusive. This attribute should not be used when embeding the event-handler element inside the project-facet-version element.
                </documentation>
-               <appInfo>
-                  <meta.attribute deprecated="true"/>
-               </appInfo>
             </annotation>
          </attribute>
       </complexType>

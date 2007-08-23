@@ -1773,22 +1773,21 @@ public final class FacetsSelectionPanel
 
         public List<IProjectFacetVersion> getVersions()
         {
-            final Set<IProjectFacetVersion> versions
+            final Set<IProjectFacetVersion> availableVersions
                 = FacetsSelectionPanel.this.model.getAvailableFacets().get( this.f );
             
-            if( versions == null )
+            final List<IProjectFacetVersion> versions = new ArrayList<IProjectFacetVersion>();
+            
+            for( IProjectFacetVersion fv : this.allVersionsSorted )
             {
-                return Collections.emptyList();
+                if( ( availableVersions != null && availableVersions.contains( fv ) ) ||
+                    fv.getPluginId() == null ) // unknown version
+                {
+                    versions.add( fv );
+                }
             }
-            else
-            {
-                final List<IProjectFacetVersion> sortedVersions 
-                    = new ArrayList<IProjectFacetVersion>( this.allVersionsSorted );
-                
-                sortedVersions.retainAll( versions );
-                
-                return sortedVersions;
-            }
+            
+            return versions;
         }
         
         public void addUnknownVersion( final IProjectFacetVersion fv )
@@ -1802,10 +1801,18 @@ public final class FacetsSelectionPanel
                 {
                     final IProjectFacetVersion x = this.allVersionsSorted.get( i );
                     
-                    if( c.compare( x.getVersionString(), fv.getVersionString() ) < 0 )
+                    try
                     {
-                        this.allVersionsSorted.add( i, fv );
-                        added = true;
+                        if( c.compare( x.getVersionString(), fv.getVersionString() ) < 0 )
+                        {
+                            this.allVersionsSorted.add( i, fv );
+                            added = true;
+                            break;
+                        }
+                    }
+                    catch( Exception e )
+                    {
+                        FacetUiPlugin.log( e );
                         break;
                     }
                 }
@@ -1823,15 +1830,11 @@ public final class FacetsSelectionPanel
 
         public IProjectFacetVersion getCurrentVersion()
         {
-            final Set<IProjectFacetVersion> versions
-                = FacetsSelectionPanel.this.model.getAvailableFacets().get( this.f );
+            final List<IProjectFacetVersion> versions = getVersions();
             
-            if( versions == null )
+            if( versions.isEmpty() )
             {
-                if( this.current != null )
-                {
-                    this.current = null;
-                }
+                this.current = null;
             }
             else
             {
