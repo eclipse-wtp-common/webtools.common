@@ -830,14 +830,33 @@ public final class FacetedProject
     
     private static IRuntime getRuntimeFromName( final String name )
     {
+        IRuntime runtime = null;
+        
         if( RuntimeManager.isRuntimeDefined( name ) )
         {
-            return RuntimeManager.getRuntime( name );
+            runtime = RuntimeManager.getRuntime( name );
         }
-        else
+        
+        if( runtime == null )
         {
-            return new UnknownRuntime( name );
+            // For backwards compatibility, search for the runtime using the localized name.
+            
+            for( IRuntime r : RuntimeManager.getRuntimes() )
+            {
+                if( r.getLocalizedName().equals( name ) )
+                {
+                    runtime = r;
+                    break;
+                }
+            }
         }
+        
+        if( runtime == null )
+        {
+            runtime = new UnknownRuntime( name );
+        }
+        
+        return runtime;
     }
     
     private void assignPrimaryRuntimeIfNecessary()
