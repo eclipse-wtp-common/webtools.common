@@ -114,8 +114,12 @@ public class ComponentUtilities {
 			return null;
 		IVirtualFolder root = comp.getRootFolder();
 		IVirtualResource file = root.findMember(aPath);
-		if (file != null)
-			return (IFile) file.getUnderlyingResource();
+		if (file != null && file.getType() == IVirtualResource.FILE){
+			IResource resource = file.getUnderlyingResource();
+			if(resource.getType() == IResource.FILE){
+				return (IFile) resource;
+			}
+		}
 		return null;
 	}
 
