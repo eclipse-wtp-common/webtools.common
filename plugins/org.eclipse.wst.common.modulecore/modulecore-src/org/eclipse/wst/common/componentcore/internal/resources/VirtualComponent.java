@@ -322,7 +322,9 @@ public class VirtualComponent implements IVirtualComponent {
 				referencedComponent.setArchiveName(references[i].getArchiveName());
 			}
 			//clean up any old obsolete references
-			cleanUpReferences(component);	
+			if (component != null){
+				cleanUpReferences(component);
+			}
 		} finally {
 			if(core != null) {
 				core.saveIfNecessary(null);
