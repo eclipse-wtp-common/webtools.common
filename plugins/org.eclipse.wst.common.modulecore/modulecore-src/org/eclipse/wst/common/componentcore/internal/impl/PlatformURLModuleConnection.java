@@ -63,6 +63,9 @@ public class PlatformURLModuleConnection extends PlatformURLConnection {
 			IVirtualComponent component = ComponentCore.createComponent(componentProject);
 			//IVirtualFile vFile = component.getFile(runtimePath);
 			IVirtualFolder rootFolder = component.getRootFolder();
+			int matchingSegs = runtimePath.matchingFirstSegments(rootFolder.getProjectRelativePath());
+			if(matchingSegs > 0)
+				runtimePath = runtimePath.removeFirstSegments(matchingSegs);
 			IVirtualFile vFile = rootFolder.getFile(runtimePath);
 			return URI.createPlatformResourceURI(vFile.getWorkspaceRelativePath().toString());
 		} catch (UnresolveableURIException e) {

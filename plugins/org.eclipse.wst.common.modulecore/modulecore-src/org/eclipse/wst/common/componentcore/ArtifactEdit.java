@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -31,11 +32,15 @@ import org.eclipse.jem.util.UIContextDetermination;
 import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
 import org.eclipse.wst.common.componentcore.internal.BinaryComponentHelper;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
+import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.internal.operations.IOperationHandler;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModel;
 import org.eclipse.wst.common.internal.emfworkbench.integration.EditModelListener;
 import org.eclipse.wst.common.internal.emfworkbench.validateedit.IValidateEditContext;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IProjectFacet;
+import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 /**
  * Provides a Facade pattern for accessing Module Content Metamodels for Web Tools Platform flexible
@@ -361,7 +366,7 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 			throw new IllegalArgumentException("Invalid component handle: " + aProject);
 		if (!forCreate && !isValidEditableModule(component))
 			throw new IllegalArgumentException("Invalid component handle: " + aProject);
-		
+		project = aProject;
 		URI componentURI = null;
 		if (getContentTypeDescriber() != null)
 			componentURI = ModuleURIUtil.fullyQualifyURI(aProject,getContentTypeDescriber());
@@ -374,17 +379,35 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 			artifactEditModel = nature.getArtifactEditModelForWrite(componentURI, this, projectType, editModelParams);
 		isReadOnly = toAccessAsReadOnly;
 		isArtifactEditModelSelfManaged = true;
-		
-		project = aProject;
 	}
-
-
+	
+	public boolean isProjectOfType(IProject project, String typeID) {
+		IFacetedProject facetedProject = null;
+		try {
+			facetedProject = ProjectFacetsManager.create(project);
+		} catch (CoreException e) {
+			return false;
+		}
+		if (facetedProject != null && ProjectFacetsManager.isProjectFacetDefined(typeID)) {
+			IProjectFacet projectFacet = ProjectFacetsManager.getProjectFacet(typeID);
+			return projectFacet != null && facetedProject.hasProjectFacet(projectFacet);
+		}
+		return false;
+	}
 	/**
 	 * Used to optionally define an associated content type for XML file creation
 	 * @return
 	 */
 	protected String getContentTypeDescriber() {
 		
+		if (isProjectOfType(project, IModuleConstants.JST_EJB_MODULE))
+			return "org.eclipse.jst.j2ee.ejbDD";
+		if (isProjectOfType(project, IModuleConstants.JST_WEB_MODULE))
+			return "org.eclipse.jst.j2ee.webDD";
+		if (isProjectOfType(project, IModuleConstants.JST_EAR_MODULE))
+			return "org.eclipse.jst.j2ee.earDD";
+		if (isProjectOfType(project, IModuleConstants.JST_APPCLIENT_MODULE))
+			return "org.eclipse.jst.j2ee.appclientDD";
 		return null;
 	}
 

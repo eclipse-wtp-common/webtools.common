@@ -65,13 +65,23 @@ public class HRefTranslator extends Translator {
 	 *      org.eclipse.emf.ecore.EObject)
 	 */
 	public Object convertStringToValue(String aValue, EObject anOwner) { 
-		WorkbenchComponent earComp = (WorkbenchComponent)anOwner.eContainer();
-		IVirtualComponent virtualComp = ComponentCore.createComponent(StructureEdit.getContainingProject(earComp));
-		ArtifactEdit edit = (ArtifactEdit)virtualComp.getAdapter(ArtifactEdit.class);
-		if (edit == null) return null;
-		if( edit.getContentModelRoot() == null ) return null;
-		Resource res = edit.getContentModelRoot().eResource();
-		return res.getEObject(aValue);
+		Resource res = null;
+		try {
+			WorkbenchComponent earComp = (WorkbenchComponent)anOwner.eContainer();
+			IVirtualComponent virtualComp = ComponentCore.createComponent(StructureEdit.getContainingProject(earComp));
+			ArtifactEdit edit = (ArtifactEdit)virtualComp.getAdapter(ArtifactEdit.class);
+			if (edit == null) return null;
+			if( edit.getContentModelRoot() == null ) return null;
+			res = edit.getContentModelRoot().eResource();
+			if (res != null)
+				return res.getEObject(aValue);
+			return null;
+		} finally {
+//			if ((res != null) && res.getResourceSet() != null) {
+//				res.getResourceSet().getResources().remove(res);
+//				res.unload();
+//			}
+		}
 	}
 
 	/*

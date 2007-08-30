@@ -95,7 +95,8 @@ public class ModuleURIUtil {
 
 	public static URI trimModuleResourcePathToModuleURI(URI aModuleResourcePath) throws UnresolveableURIException {
 		ensureValidFullyQualifiedModuleURI(aModuleResourcePath);
-		return aModuleResourcePath.trimSegments(aModuleResourcePath.segmentCount() - 3);
+		int trimIndex = (hasContentTypeName(aModuleResourcePath) ? 4 : 3);
+		return aModuleResourcePath.trimSegments(aModuleResourcePath.segmentCount() - trimIndex);
 	}
 
 	public static URI trimWorkspacePathToProjectRelativeURI(URI aFullyQualifiedResourceURI) throws UnresolveableURIException {
@@ -140,7 +141,7 @@ public class ModuleURIUtil {
 		URI uri;
 		int trimIndex = (hasContentTypeName(aFullyQualifiedModuleResourcePath) ? 5 : 4);
 		if(segmentCount > trimIndex){
-			uri = aFullyQualifiedModuleResourcePath.deresolve(aFullyQualifiedModuleResourcePath.trimSegments(segmentCount - trimIndex));
+			uri = aFullyQualifiedModuleResourcePath.deresolve(aFullyQualifiedModuleResourcePath.trimSegments(segmentCount - trimIndex), false,false,true);
 		} else {
 			uri = URI.createURI(aFullyQualifiedModuleResourcePath.segment(segmentCount-1));
 		}
