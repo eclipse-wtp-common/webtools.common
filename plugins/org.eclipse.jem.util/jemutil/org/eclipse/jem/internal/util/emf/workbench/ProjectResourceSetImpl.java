@@ -10,15 +10,16 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.10 $$  $$Date: 2007/08/11 15:26:46 $$ 
+ *  $$Revision: 1.11 $$  $$Date: 2007/08/30 02:37:05 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
 import java.io.IOException;
 import java.util.*;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.resources.*;
+import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.NotificationImpl;
 import org.eclipse.emf.common.util.URI;
@@ -35,7 +36,7 @@ import org.eclipse.jem.util.emf.workbench.nature.EMFNature;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jem.util.plugin.JEMUtilPlugin;
 
-public class ProjectResourceSetImpl extends ResourceSetImpl implements ProjectResourceSet {
+public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleProjectResourceSet {
 	public static interface ModuleURI {
 		public static final int SUB_PROTOCOL_INDX = 0;
 		public static final int PROJECT_NAME_INDX = 1;
@@ -75,21 +76,44 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements ProjectRe
 		if (isReleasing) return null;
 		//Check the map first when creating the resource and do not
 		//normalize if a value is found.
-		boolean isMapped = !(((URIConverterImpl.URIMap)getURIConverter().getURIMap()).getURI(uri).equals(uri));
+		 URIConverter theURIConverter = getURIConverter();
+		 URI normURI = theURIConverter.normalize(uri);
+		boolean isMapped = !(((URIConverterImpl.URIMap)getURIConverter().getURIMap()).getURI(uri).equals(normURI));
 		URI converted = uri;
 		if (!isMapped)
 			converted = getURIConverter().normalize(uri);
 		Resource result = createResourceFromHandlers(converted);
-		if (result == null)
-			result = super.createResource(converted);
+		if (result == null) {
+		    Resource.Factory resourceFactory = getResourceFactoryRegistry().getFactory(uri);
+		    if (resourceFactory != null)
+		    {//We got the right factory, now use the right URI
+		      result = resourceFactory.createResource(converted);
+		      getResources().add(result);
+		    }
+		}
+			
 		
 		return result;
+	}
+	/**
+	 * Return the IFile for the <code>uri</code> within the Workspace. This URI is assumed to be
+	 * absolute in the following format: platform:/resource/....
+	 */
+	private IFile getPlatformFile(URI uri) {
+		if (WorkbenchResourceHelperBase.isPlatformResourceURI(uri)) {
+			String fileString = URI.decode(uri.path());
+			fileString = fileString.substring(JEMUtilPlugin.PLATFORM_RESOURCE.length() + 1);
+			return ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(fileString));
+		}
+		return null;
 	}
 	public Resource createResource(URI uri, Resource.Factory resourceFactory) {
 		if (isReleasing) return null;
 		//Check the map first when creating the resource and do not
 		//normalize if a value is found.
-		boolean isMapped = !(((URIConverterImpl.URIMap)getURIConverter().getURIMap()).getURI(uri).equals(uri));
+		URIConverter theURIConverter = getURIConverter();
+		 URI normURI = theURIConverter.normalize(uri);
+		boolean isMapped = !(((URIConverterImpl.URIMap)getURIConverter().getURIMap()).getURI(uri).equals(normURI));
 		URI converted = uri;
 		if (!isMapped)
 			converted = getURIConverter().normalize(uri);
@@ -98,8 +122,9 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements ProjectRe
 
 		    if (resourceFactory != null)
 		    {
-		      result = resourceFactory.createResource(uri);
+		      result = resourceFactory.createResource(converted);
 		      getResources().add(result);
+		      getURIResourceMap().put(uri, result);
 		      return result;
 		    }
 		    else
@@ -315,7 +340,7 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements ProjectRe
 	    {
 	      if (theURIConverter.normalize(resource.getURI()).equals(normalizedURI)) {
 	    		  
-	    	if (getContentTypeName(uri) == null || getContentTypeName(resource.getURI()) == null) {
+	    	if (getContentTypeName(uri) == null) { // loading from legacy archive api or non-typed resource
 		        if (loadOnDemand && !resource.isLoaded())
 		        {
 		          demandLoadHelper(resource);
@@ -326,18 +351,21 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements ProjectRe
 		          map.put(uri, resource);
 		        } 
 		        return resource;
-	    	} else if ((getContentTypeName(uri).equals(getContentTypeName(resource.getURI())))) {
+	    	} else  {// content type is known
+	    		if((!map.containsValue(resource) || ((map.get(uri) != null) && map.get(uri).equals(resource))) // existing resource  with alternate mapping doesn't exist in map
+	    			|| getContentTypeName(findKey(resource)) == null || ((getContentTypeName(resource) != null && getContentTypeName(resource).equals(getContentTypeName(uri))))) {
 	    		if (loadOnDemand && !resource.isLoaded())
 		        {
 		          demandLoadHelper(resource);
 		        }
 		        
-		        if (map != null)
+		        if (map != null && (map.get(uri) == null))
 		        {
 		          map.put(uri, resource);
 		        } 
 		        return resource;
-	    	} else return null;  // Returning null because We can't handle multiple resources based on the same DOM model
+	    		}
+	    	} //return null;  // Returning null because We can't handle multiple resources based on the same DOM model
 	      }
 	    }
 	    
@@ -370,6 +398,41 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements ProjectRe
 
 	    return null;
 	  
+	}
+	private IFile getPlatformFile(Resource res) {
+		IFile file = null;
+		file = getPlatformFile(res.getURI());
+		if (file == null) {
+			if (res.getResourceSet() != null) {
+				URIConverter converter = res.getResourceSet().getURIConverter();
+				URI convertedUri = converter.normalize(res.getURI());
+				if (!res.getURI().equals(convertedUri))
+					file = getPlatformFile(convertedUri);
+			}
+		}
+		return file;
+	}
+	
+	private String getContentTypeName(Resource resource) {
+		IFile file = getPlatformFile(resource);
+		IContentDescription desc = null;
+		try {
+			desc = file.getContentDescription();
+		} catch (CoreException e) {
+		}
+		if (desc != null && desc.getContentType() != null)
+			return desc.getContentType().getName();
+		return null;
+	}
+	private URI findKey(Resource resource) {
+		Map aMap = getURIResourceMap();
+		Set keys = aMap.keySet();
+		for (Iterator iterator = keys.iterator(); iterator.hasNext();) {
+			URI name = (URI) iterator.next();
+			if (aMap.get(name).equals(resource))
+				return name;
+		}
+		return null;
 	}
 	protected static String getContentTypeName(URI uri) {
 		
