@@ -12,7 +12,6 @@ package org.eclipse.wst.common.ui.internal.search;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.search.internal.ui.SearchPluginImages;
 import org.eclipse.search.ui.ISearchQuery;
 import org.eclipse.search.ui.text.AbstractTextSearchResult;
 import org.eclipse.search.ui.text.IEditorMatchAdapter;
@@ -21,6 +20,7 @@ import org.eclipse.search.ui.text.Match;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.wst.common.ui.internal.UIPlugin;
 
 public class SearchResult extends AbstractTextSearchResult implements IEditorMatchAdapter, IFileMatchAdapter {
 	private final Match[] EMPTY_ARR= new Match[0];
@@ -31,7 +31,7 @@ public class SearchResult extends AbstractTextSearchResult implements IEditorMat
 		fQuery= job;
 	}
 	public ImageDescriptor getImageDescriptor() {
-		return SearchPluginImages.DESC_OBJ_TSEARCH_DPDN;
+		return UIPlugin.getDefault().getImageDescriptor("icons/tsearch_dpdn_obj.gif");
 	}
 	public String getLabel() {
 		return fQuery.getResultLabel(getMatchCount());

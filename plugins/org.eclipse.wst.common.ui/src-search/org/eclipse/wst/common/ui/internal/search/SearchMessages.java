@@ -28,6 +28,14 @@ public final class SearchMessages extends NLS {
 	public static String FileSearchPage_error_marker;
 	public static String FileSearchPage_sort_by_label;
 	public static String OpenWithMenu_label;
+	public static String FileSearchQuery_label;
+	public static String FileSearchQuery_pluralPattern;
+	public static String FileSearchQuery_singularLabel;
+	public static String FileSearchQuery_singularLabel_fileNameSearch;
+	public static String FileSearchQuery_pluralPattern_fileNameSearch;
+	public static String TextSearchEngine_statusMessage;
+	public static String FileLabelProvider_count_format;
+	public static String FileLabelProvider_removed_resource_label;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, SearchMessages.class);
