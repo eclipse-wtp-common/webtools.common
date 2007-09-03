@@ -122,6 +122,7 @@ public class SelectSingleFileDialog extends TitleAreaDialog {
 	public boolean close() {
 		if (image != null && imageDescriptor != null) {
 			imageDescriptor.destroyResource(image);
+			image=null;
 		}
 		return super.close();
 	}
