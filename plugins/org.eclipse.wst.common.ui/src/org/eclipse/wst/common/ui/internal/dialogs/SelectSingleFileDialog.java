@@ -9,11 +9,12 @@
  *     IBM Corporation - Initial API and implementation
  *     Jens Lukowski/Innoopract - initial renaming/restructuring
  *******************************************************************************/
-package  org.eclipse.wst.common.ui.internal.dialogs;
+package org.eclipse.wst.common.ui.internal.dialogs;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
@@ -24,105 +25,104 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.internal.WorkbenchImages;
-import org.eclipse.ui.internal.ide.IDEInternalWorkbenchImages;
 import org.eclipse.wst.common.ui.internal.viewers.SelectSingleFileView;
 
 
 
-public class SelectSingleFileDialog extends TitleAreaDialog
-{            
-  protected SelectSingleFileView selectSingleFileView; 
-  protected Button okButton;
-  protected Image image;
- 
-  public SelectSingleFileDialog(Shell parentShell, IStructuredSelection selection, boolean isFileMandatory) 
-  {
-    super(parentShell);   
-    setShellStyle(getShellStyle() | SWT.RESIZE);
-    if (selection == null)
-    {
-      selection = new StructuredSelection();
-    }
-    selectSingleFileView = new SelectSingleFileView(selection, isFileMandatory)
-    {
-	  public void createFilterControl(Composite composite)
-	  {
-		SelectSingleFileDialog.this.createFilterControl(composite);
-	  }
-    };  
-  }
+public class SelectSingleFileDialog extends TitleAreaDialog {
+	protected SelectSingleFileView selectSingleFileView;
+	protected Button okButton;
+	protected Image image;
+	private ImageDescriptor imageDescriptor;
 
-  protected Control createDialogArea(Composite parent) 
-  {                                                 
-    Composite dialogArea = (Composite)super.createDialogArea(parent);
-    
-    //TODO.. enable context help
-    //WorkbenchHelp.setHelp(dialogArea, B2BGUIContextIds.BTBG_SELECT_SINGLE_FILE_DIALOG);
+	public SelectSingleFileDialog(Shell parentShell, IStructuredSelection selection, boolean isFileMandatory) {
+		super(parentShell);
+		setShellStyle(getShellStyle() | SWT.RESIZE);
+		if (selection == null) {
+			selection = new StructuredSelection();
+		}
+		selectSingleFileView = new SelectSingleFileView(selection, isFileMandatory) {
+			public void createFilterControl(Composite composite) {
+				SelectSingleFileDialog.this.createFilterControl(composite);
+			}
+		};
+	}
 
-    Composite composite = new Composite(dialogArea, SWT.NONE);
-    composite.setLayout(new GridLayout());
-    GridData gd = new GridData(GridData.FILL_BOTH);
-    gd.widthHint = 350;
-    gd.heightHint = 350;
-    composite.setLayoutData(gd);   
-            
-    SelectSingleFileView.Listener listener = new SelectSingleFileView.Listener()
-    {                                             
-      public void setControlComplete(boolean isComplete)
-      {                            
-        okButton.setEnabled(isComplete);
-      }
-    };
-    selectSingleFileView.setListener(listener);
-    selectSingleFileView.createControl(composite);
-    return dialogArea;
-  }  
+	protected Control createDialogArea(Composite parent) {
+		Composite dialogArea = (Composite) super.createDialogArea(parent);
 
-  protected void createButtonsForButtonBar(Composite parent) 
-  {
-    okButton = createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
-    okButton.setEnabled(false);
-    createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
-  }  
-       
-  public void create()
-  {
-    super.create();
-    selectSingleFileView.setVisibleHelper(true);
-    image = WorkbenchImages.getImageDescriptor(IDEInternalWorkbenchImages.IMG_DLGBAN_SAVEAS_DLG).createImage();
-    setTitleImage(image);
-  }
+		// TODO.. enable context help
+		// WorkbenchHelp.setHelp(dialogArea,
+		// B2BGUIContextIds.BTBG_SELECT_SINGLE_FILE_DIALOG);
 
-  public void createFilterCombo(Composite composite)
-  {
-  } 
+		Composite composite = new Composite(dialogArea, SWT.NONE);
+		composite.setLayout(new GridLayout());
+		GridData gd = new GridData(GridData.FILL_BOTH);
+		gd.widthHint = 350;
+		gd.heightHint = 350;
+		composite.setLayoutData(gd);
 
-  public IFile getFile()
-  {  
-    return selectSingleFileView.getFile();
-  }   
+		SelectSingleFileView.Listener listener = new SelectSingleFileView.Listener() {
+			public void setControlComplete(boolean isComplete) {
+				okButton.setEnabled(isComplete);
+			}
+		};
+		selectSingleFileView.setListener(listener);
+		selectSingleFileView.createControl(composite);
+		return dialogArea;
+	}
 
-  public void addFilterExtensions(String[] filterExtensions)
-  { 
-    selectSingleFileView.addFilterExtensions(filterExtensions);
-  }
+	protected void createButtonsForButtonBar(Composite parent) {
+		okButton = createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
+		okButton.setEnabled(false);
+		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+	}
 
-  public void addFilterExtensions(String[] filterExtensions, IFile [] excludedFiles)
-  {
-    selectSingleFileView.addFilterExtensions(filterExtensions, excludedFiles);
-  }
-  
-  public void createFilterControl(Composite composite)
-  { 
-  }
+	public void create() {
+		super.create();
+		selectSingleFileView.setVisibleHelper(true);
+		image = getSaveAsImage();
+		setTitleImage(image);
+	}
 
-  public boolean close()
-  {
-    if (image != null)
-    {
-      image.dispose();
-    }
-    return super.close();
-  }
+	private Image getSaveAsImage() {
+		/*
+		 * this image was copied from org.eclipse.ui.ide/icons/full/wizban/
+		 * where it is a non-API image, denoted by
+		 * IDEInternalWorkbenchImages.IMG_DLGBAN_SAVEAS_DLG.
+		 */
+		if (imageDescriptor == null) {
+			imageDescriptor = ImageDescriptor.createFromFile(this.getClass(), "saveas_wiz.png");
+		}
+		if (imageDescriptor == null) {
+			imageDescriptor = ImageDescriptor.getMissingImageDescriptor();
+		}
+		Image localimage = (Image) imageDescriptor.createResource(getContents().getDisplay());
+		return localimage;
+	}
+
+	public void createFilterCombo(Composite composite) {
+	}
+
+	public IFile getFile() {
+		return selectSingleFileView.getFile();
+	}
+
+	public void addFilterExtensions(String[] filterExtensions) {
+		selectSingleFileView.addFilterExtensions(filterExtensions);
+	}
+
+	public void addFilterExtensions(String[] filterExtensions, IFile[] excludedFiles) {
+		selectSingleFileView.addFilterExtensions(filterExtensions, excludedFiles);
+	}
+
+	public void createFilterControl(Composite composite) {
+	}
+
+	public boolean close() {
+		if (image != null && imageDescriptor != null) {
+			imageDescriptor.destroyResource(image);
+		}
+		return super.close();
+	}
 }
