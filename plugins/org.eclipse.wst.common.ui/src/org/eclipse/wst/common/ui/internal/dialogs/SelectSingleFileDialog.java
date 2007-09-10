@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.wst.common.ui.internal.UIPlugin;
 import org.eclipse.wst.common.ui.internal.viewers.SelectSingleFileView;
 
 
@@ -92,10 +93,7 @@ public class SelectSingleFileDialog extends TitleAreaDialog {
 		 * IDEInternalWorkbenchImages.IMG_DLGBAN_SAVEAS_DLG.
 		 */
 		if (imageDescriptor == null) {
-			imageDescriptor = ImageDescriptor.createFromFile(this.getClass(), "saveas_wiz.png");
-		}
-		if (imageDescriptor == null) {
-			imageDescriptor = ImageDescriptor.getMissingImageDescriptor();
+		    imageDescriptor = UIPlugin.getDefault().getImageDescriptor("icons/saveas.png");
 		}
 		Image localimage = (Image) imageDescriptor.createResource(getContents().getDisplay());
 		return localimage;
