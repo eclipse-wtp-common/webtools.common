@@ -95,7 +95,7 @@ public class SelectSingleFileDialog extends TitleAreaDialog {
 		if (imageDescriptor == null) {
 		    imageDescriptor = UIPlugin.getDefault().getImageDescriptor("icons/saveas.png");
 		}
-		Image localimage = (Image) imageDescriptor.createResource(getContents().getDisplay());
+		Image localimage = (Image) imageDescriptor.createImage(true);
 		return localimage;
 	}
 
