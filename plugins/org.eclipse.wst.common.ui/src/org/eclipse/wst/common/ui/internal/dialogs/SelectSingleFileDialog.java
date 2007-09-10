@@ -14,6 +14,7 @@ package org.eclipse.wst.common.ui.internal.dialogs;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.resource.DeviceResourceException;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -86,17 +87,21 @@ public class SelectSingleFileDialog extends TitleAreaDialog {
 		setTitleImage(image);
 	}
 
+	/**
+	 * this image was copied from org.eclipse.ui.ide/icons/full/wizban/ where
+	 * it is a non-API image, denoted by
+	 * IDEInternalWorkbenchImages.IMG_DLGBAN_SAVEAS_DLG.
+	 */
 	private Image getSaveAsImage() {
-		/*
-		 * this image was copied from org.eclipse.ui.ide/icons/full/wizban/
-		 * where it is a non-API image, denoted by
-		 * IDEInternalWorkbenchImages.IMG_DLGBAN_SAVEAS_DLG.
-		 */
-		if (imageDescriptor == null) {
-		    imageDescriptor = UIPlugin.getDefault().getImageDescriptor("icons/saveas_wiz.png");
+		Image localimage = null;
+		try {
+			if (imageDescriptor == null) {
+				imageDescriptor = UIPlugin.getDefault().getImageDescriptor("icons/saveas_wiz.png");
+			}
+			localimage = (Image) imageDescriptor.createResource(getContents().getDisplay());
 		}
-		Image localimage = (Image) imageDescriptor.createResource(getContents().getDisplay());
-		if (localimage == null) {
+		catch (DeviceResourceException e) {
+			// if image not found
 			localimage = (ImageDescriptor.getMissingImageDescriptor()).createImage();
 		}
 		return localimage;
@@ -123,7 +128,7 @@ public class SelectSingleFileDialog extends TitleAreaDialog {
 	public boolean close() {
 		if (image != null && imageDescriptor != null) {
 			imageDescriptor.destroyResource(image);
-			image=null;
+			image = null;
 		}
 		return super.close();
 	}
