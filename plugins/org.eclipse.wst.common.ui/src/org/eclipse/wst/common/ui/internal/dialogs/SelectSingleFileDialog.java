@@ -93,7 +93,7 @@ public class SelectSingleFileDialog extends TitleAreaDialog {
 		 * IDEInternalWorkbenchImages.IMG_DLGBAN_SAVEAS_DLG.
 		 */
 		if (imageDescriptor == null) {
-		    imageDescriptor = UIPlugin.getDefault().getImageDescriptor("icons/saveas.png");
+		    imageDescriptor = UIPlugin.getDefault().getImageDescriptor("icons/saveas_wiz.png");
 		}
 		Image localimage = (Image) imageDescriptor.createImage(true);
 		return localimage;
