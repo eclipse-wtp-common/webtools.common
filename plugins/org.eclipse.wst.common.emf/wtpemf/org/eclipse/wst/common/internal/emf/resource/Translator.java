@@ -28,6 +28,7 @@ import org.eclipse.emf.ecore.impl.EStructuralFeatureImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.wst.common.internal.emf.utilities.ExtendedEcoreUtil;
 import org.eclipse.wst.common.internal.emf.utilities.FeatureValueConverter;
+import org.w3c.dom.Node;
 
 
 public class Translator {
@@ -268,6 +269,10 @@ public class Translator {
 
 	public boolean shouldIndentEndTag() {
 		return (fStyle & END_TAG_NO_INDENT) == 0;
+	}
+
+	public boolean shouldIndentEndTag(Node node) {
+		return shouldIndentEndTag();
 	}
 
 	public boolean isEmptyContentSignificant() {

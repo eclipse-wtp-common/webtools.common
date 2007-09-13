@@ -16,6 +16,7 @@ package org.eclipse.wst.common.internal.emf.resource;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.w3c.dom.Node;
 
 /**
  * @author schacher
@@ -78,6 +79,15 @@ public abstract class MultiObjectTranslator extends Translator {
 		return false;
 	}
 
-
+	public boolean shouldIndentEndTag(Node node) {
+		if (node.getNodeName().equals(getDOMPath())) {
+			return super.shouldIndentEndTag(node);
+		}
+		Translator delegate = getDelegateFor(node.getNodeName(), null);
+		if (delegate != null) {
+			return delegate.shouldIndentEndTag(node);
+		}
+		return super.shouldIndentEndTag(node);
+	}
 
 }
