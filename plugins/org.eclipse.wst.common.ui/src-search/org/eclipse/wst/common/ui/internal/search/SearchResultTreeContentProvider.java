@@ -20,8 +20,8 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.search.internal.ui.text.IFileSearchContentProvider;
 import org.eclipse.search.ui.text.AbstractTextSearchResult;
-import org.eclipse.wst.common.ui.internal.search.basecode.IFileSearchContentProvider;
 
 
 public class SearchResultTreeContentProvider implements ITreeContentProvider, IFileSearchContentProvider {
