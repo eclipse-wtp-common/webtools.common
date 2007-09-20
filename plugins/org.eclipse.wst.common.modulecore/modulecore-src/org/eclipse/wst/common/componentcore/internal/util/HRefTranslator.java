@@ -20,6 +20,7 @@ import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.internal.emf.resource.CompatibilityXMIResource;
 import org.eclipse.wst.common.internal.emf.resource.Translator;
 import org.eclipse.wst.common.internal.emf.resource.TranslatorPath;
 
@@ -92,8 +93,14 @@ public class HRefTranslator extends Translator {
 	 */
 	public String convertValueToString(Object aValue, EObject anOwner) { 
 		String frag = null;
-		if (((EObject)aValue).eResource() != null)
-			frag = ((EObject)aValue).eResource().getURIFragment((EObject)aValue);
+		Resource theResource = ((EObject)aValue).eResource();
+		if (theResource != null)
+		{
+			if (theResource instanceof CompatibilityXMIResource)
+				frag = theResource.getURIFragment((EObject)aValue);
+			else
+				frag = null;
+		}
 		else
 			frag = EcoreUtil.getID((EObject)aValue);
 		return frag;
