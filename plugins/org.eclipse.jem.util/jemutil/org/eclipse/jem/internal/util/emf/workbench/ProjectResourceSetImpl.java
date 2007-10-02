@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.11 $$  $$Date: 2007/08/30 02:37:05 $$ 
+ *  $$Revision: 1.12 $$  $$Date: 2007/10/02 12:57:59 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -76,12 +76,14 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		if (isReleasing) return null;
 		//Check the map first when creating the resource and do not
 		//normalize if a value is found.
-		 URIConverter theURIConverter = getURIConverter();
-		 URI normURI = theURIConverter.normalize(uri);
-		boolean isMapped = !(((URIConverterImpl.URIMap)getURIConverter().getURIMap()).getURI(uri).equals(normURI));
+		boolean isMapped = detectURIMapping(uri);
+		boolean hasContentType = (getContentTypeName(uri) != null);
 		URI converted = uri;
 		if (!isMapped)
 			converted = getURIConverter().normalize(uri);
+		else if (hasContentType)
+			converted = getURIConverter().normalize(uri);
+		
 		Resource result = createResourceFromHandlers(converted);
 		if (result == null) {
 		    Resource.Factory resourceFactory = getResourceFactoryRegistry().getFactory(uri);
@@ -94,6 +96,9 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 			
 		
 		return result;
+	}
+	private boolean detectURIMapping(URI uri) {
+		return !(((URIConverterImpl.URIMap)getURIConverter().getURIMap()).getURI(uri).equals(uri));
 	}
 	/**
 	 * Return the IFile for the <code>uri</code> within the Workspace. This URI is assumed to be
@@ -111,11 +116,12 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		if (isReleasing) return null;
 		//Check the map first when creating the resource and do not
 		//normalize if a value is found.
-		URIConverter theURIConverter = getURIConverter();
-		 URI normURI = theURIConverter.normalize(uri);
-		boolean isMapped = !(((URIConverterImpl.URIMap)getURIConverter().getURIMap()).getURI(uri).equals(normURI));
+		boolean isMapped = detectURIMapping(uri);
+		boolean hasContentType = (getContentTypeName(uri) != null);
 		URI converted = uri;
 		if (!isMapped)
+			converted = getURIConverter().normalize(uri);
+		else if (hasContentType)
 			converted = getURIConverter().normalize(uri);
 		Resource result = createResourceFromHandlers(converted);
 		if (result == null) {
