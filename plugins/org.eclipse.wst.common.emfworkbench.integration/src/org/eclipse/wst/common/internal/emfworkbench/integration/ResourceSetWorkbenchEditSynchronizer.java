@@ -180,6 +180,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	private void primAcceptDelta(IResourceDelta delta, IResourceChangeEvent event) {
 		if (delta != null) {
 			try {
+				currentProjectDelta = null;
 				delta.accept(ResourceSetWorkbenchEditSynchronizer.this);
 			} catch (Exception e) {
 				Logger.getLogger().logError(e);
@@ -219,8 +220,6 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 					currentProjectDelta = delta;
 					return true;
 				}
-				// added line
-				currentProjectDelta = null;
 				return false;
 			}
 			if (resource.getType() == IResource.FILE && isInterrestedInFile((IFile) resource)) {
