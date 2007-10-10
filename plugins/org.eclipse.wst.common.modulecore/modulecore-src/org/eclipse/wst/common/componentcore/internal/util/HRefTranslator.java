@@ -65,24 +65,33 @@ public class HRefTranslator extends Translator {
 	 * @see org.eclipse.wst.common.internal.emf.resource.Translator#convertStringToValue(java.lang.String,
 	 *      org.eclipse.emf.ecore.EObject)
 	 */
-	public Object convertStringToValue(String aValue, EObject anOwner) { 
-		Resource res = null;
-		try {
-			WorkbenchComponent earComp = (WorkbenchComponent)anOwner.eContainer();
-			IVirtualComponent virtualComp = ComponentCore.createComponent(StructureEdit.getContainingProject(earComp));
-			ArtifactEdit edit = (ArtifactEdit)virtualComp.getAdapter(ArtifactEdit.class);
-			if (edit == null) return null;
-			if( edit.getContentModelRoot() == null ) return null;
-			res = edit.getContentModelRoot().eResource();
-			if (res != null)
-				return res.getEObject(aValue);
-			return null;
-		} finally {
+	public Object convertStringToValue(String aValue, EObject anOwner) {
+		Object retVal = null;
+		if (aValue != null)
+		{
+			Resource res = null;
+			try {
+				WorkbenchComponent earComp = (WorkbenchComponent)anOwner.eContainer();
+				IVirtualComponent virtualComp = ComponentCore.createComponent(StructureEdit.getContainingProject(earComp));
+				ArtifactEdit edit = (ArtifactEdit)virtualComp.getAdapter(ArtifactEdit.class);
+				if (edit != null)
+				{
+					EObject contentModelRoot = edit.getContentModelRoot(); 
+					if( contentModelRoot != null )
+					{
+						res = contentModelRoot.eResource();
+						if (res != null)
+							retVal = res.getEObject(aValue);
+					}
+				}
+			} finally {
 //			if ((res != null) && res.getResourceSet() != null) {
 //				res.getResourceSet().getResources().remove(res);
 //				res.unload();
 //			}
+			}
 		}
+		return retVal;
 	}
 
 	/*
