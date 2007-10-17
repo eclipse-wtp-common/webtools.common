@@ -83,7 +83,7 @@ public class WTPResourceFactoryRegistry extends FileNameResourceFactoryRegistry 
 	}
 	
 	public synchronized Resource.Factory getFactory(URI uri) {
-		return getFactory(uri, null);
+		return getFactory(uri, (IContentDescription)null);
 	}	
 
 

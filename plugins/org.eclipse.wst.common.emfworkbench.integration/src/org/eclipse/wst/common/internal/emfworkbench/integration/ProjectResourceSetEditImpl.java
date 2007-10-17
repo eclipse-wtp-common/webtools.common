@@ -18,6 +18,7 @@ package org.eclipse.wst.common.internal.emfworkbench.integration;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.ContentHandler;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jem.internal.util.emf.workbench.ProjectResourceSetImpl;
 import org.eclipse.wst.common.internal.emf.resource.ReferencedResource;
@@ -43,11 +44,14 @@ public class ProjectResourceSetEditImpl extends ProjectResourceSetImpl {
 	 * 
 	 * @see org.eclipse.jem.internal.util.emf.workbench.ProjectResourceSetImpl#createResource(org.eclipse.emf.common.util.URI)
 	 */
-	public Resource createResource(URI uri) {
-		Resource result = super.createResource(uri);
+	public Resource createResource(URI uri, String contentType) {
+		Resource result = super.createResource(uri, contentType);
 		if (result != null && WorkbenchResourceHelper.isReferencedResource(result))
 			WorkbenchResourceHelper.cacheSynchronizationStamp((ReferencedResource) result);
 		return result;
 	}
 
+	public Resource createResource(URI uri) {
+		return createResource(uri, ContentHandler.UNSPECIFIED_CONTENT_TYPE);
+	}
 }

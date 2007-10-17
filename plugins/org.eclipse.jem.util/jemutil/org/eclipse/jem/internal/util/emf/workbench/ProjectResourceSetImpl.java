@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.12 $$  $$Date: 2007/10/02 12:57:59 $$ 
+ *  $$Revision: 1.13 $$  $$Date: 2007/10/17 22:37:18 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -24,8 +24,7 @@ import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.NotificationImpl;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.URIConverter;
+import org.eclipse.emf.ecore.resource.*;
 import org.eclipse.emf.ecore.resource.Resource.Factory;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.resource.impl.URIConverterImpl;
@@ -72,7 +71,8 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 			res = getResourceFromHandlers(uri);
 		return res;
 	}
-	public Resource createResource(URI uri) {
+
+	public Resource createResource(URI uri, String contentType) {
 		if (isReleasing) return null;
 		//Check the map first when creating the resource and do not
 		//normalize if a value is found.
@@ -97,6 +97,11 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		
 		return result;
 	}
+
+	public Resource createResource(URI uri) {
+		return createResource(uri, ContentHandler.UNSPECIFIED_CONTENT_TYPE);
+	}
+
 	private boolean detectURIMapping(URI uri) {
 		return !(((URIConverterImpl.URIMap)getURIConverter().getURIMap()).getURI(uri).equals(uri));
 	}

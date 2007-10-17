@@ -182,7 +182,12 @@ public class ComponentCoreURIConverter extends CompatibilityWorkbenchURIConverte
 	      uriMap = (URIMap)mappingRegistryImpl.map();
 	    }
 
-	    return uriMap;
+	    URIMap uriConverterImplURIMap = null;
+	    if (uriMap instanceof URIMap)
+	    {
+	    	uriConverterImplURIMap = (URIMap)uriMap;
+	    }
+	    return uriConverterImplURIMap;
 	  
 	}
 
