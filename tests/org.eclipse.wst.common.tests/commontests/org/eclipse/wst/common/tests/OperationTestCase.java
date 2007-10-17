@@ -119,8 +119,9 @@ public abstract class OperationTestCase extends BaseTestCase {
 				ResourcesPlugin.getWorkspace().setDescription(desc);
 				ResourcesPlugin.getWorkspace().addResourceChangeListener(listener, IResourceChangeEvent.POST_BUILD);
 			}
-			if (checkLog)
-				LogUtility.getInstance().resetLogging();
+			
+			//deal with weather to fail on logged statuses or not
+			BaseTestCase.failOnLoggedStatus(checkLog);
 			
 			IStatus operationStatus = dataModel.getDefaultOperation().execute(new NullProgressMonitor(), null);
 			
@@ -132,7 +133,7 @@ public abstract class OperationTestCase extends BaseTestCase {
 				}
 			}
 			
-			// bug 173933 - runAndVerify() fails to check return IStatushe 
+			// bug 173933 - runAndVerify() fails to check return IStatus 
 			if (operationStatus.getSeverity() == IStatus.ERROR) {
 				Throwable throwable = operationStatus.getException();
 				String throwableStr = null;
@@ -156,9 +157,7 @@ public abstract class OperationTestCase extends BaseTestCase {
 			} else if (checkTasks && errorOKList != null && !errorOKList.isEmpty()) {
 				TaskViewUtility.verifyErrors(errorOKList, reportIfExpectedErrorNotFound, removeAllSameTypesOfErrors);
 			}
-			if (checkLog) {
-				checkLogUtility();
-			}
+			
 		} finally {
 			if (listener != null)
 				ResourcesPlugin.getWorkspace().removeResourceChangeListener(listener);
@@ -201,8 +200,9 @@ public abstract class OperationTestCase extends BaseTestCase {
 				ResourcesPlugin.getWorkspace().setDescription(desc);
 				ResourcesPlugin.getWorkspace().addResourceChangeListener(listener, IResourceChangeEvent.POST_BUILD);
 			}
-			if (checkLog)
-				LogUtility.getInstance().resetLogging();
+			
+			//deal with weather to fail on logged statuses or not
+			BaseTestCase.failOnLoggedStatus(checkLog);
 			
 			dataModel.getDefaultOperation().execute(new NullProgressMonitor(), null);
 			
@@ -218,9 +218,7 @@ public abstract class OperationTestCase extends BaseTestCase {
 			} else if (checkTasks && errorOKList != null && !errorOKList.isEmpty()) {
 				TaskViewUtility.verifyErrors(errorOKList, reportIfExpectedErrorNotFound, removeAllSameTypesOfErrors);
 			}
-			if (checkLog) {
-				checkLogUtility();
-			}
+
 		} finally {
 			if (listener != null)
 				ResourcesPlugin.getWorkspace().removeResourceChangeListener(listener);
@@ -228,9 +226,6 @@ public abstract class OperationTestCase extends BaseTestCase {
 		}
 	}
 
-	protected static void checkLogUtility() {
-		LogUtility.getInstance().verifyNoWarnings();
-	}
 
 	protected static void checkTasksList() {
 		//TaskViewUtility.verifyNoErrors();
