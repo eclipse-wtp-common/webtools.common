@@ -19,6 +19,7 @@ package org.eclipse.wst.common.frameworks.internal;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IStatus;
@@ -135,7 +136,12 @@ public class WTPProjectUtilities {
 		newNatures = new String[newsize];
 		System.arraycopy(temp, 0, newNatures, 0, newsize);
 		description.setNatureIds(newNatures);
-		project.setDescription(description, null);
+		if (ResourcesPlugin.getWorkspace().getNatureDescriptor(natureId) == null) {
+			// The nature does not exist, so do not attempt to de-configure it while removing it.
+			project.setDescription(description, IResource.AVOID_NATURE_CONFIG | IResource.KEEP_HISTORY, null);
+		} else {
+			project.setDescription(description, null);
+		}
 	}
 
 	public static IProject getProject(Object object) {
