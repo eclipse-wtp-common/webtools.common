@@ -16,7 +16,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.wst.common.componentcore.ModuleCoreNature;
 import org.eclipse.wst.common.componentcore.internal.impl.WTPModulesResource;
@@ -58,10 +57,12 @@ public class ModuleCoreValidator implements IValidatorJob {
 			return null;
 		}
 
+/* bug197531 - standardize compiler settings
 		private ResourceSet getResourceSet(IProject proj) {
 			ModuleCoreNature nature = ModuleCoreNature.getModuleCoreNature(proj);
 			return nature.getResourceSet();
 		}
+*/
 
 		public IStatus validateInJob(IValidationContext helper, IReporter reporter)
 				throws ValidationException {

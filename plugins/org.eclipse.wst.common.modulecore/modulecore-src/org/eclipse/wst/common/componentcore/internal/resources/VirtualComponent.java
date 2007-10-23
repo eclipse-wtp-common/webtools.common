@@ -113,7 +113,7 @@ public class VirtualComponent implements IVirtualComponent {
                 	if(value == null){
                 		value = ""; //$NON-NLS-1$
                 		String message = "WARNING:  The component file in "+getProject().getName()+" has no value defined for the property: "+name;  //$NON-NLS-1$//$NON-NLS-2$
-                		ModulecorePlugin.getDefault().logError(IStatus.ERROR, message, null);
+                		ModulecorePlugin.logError(IStatus.ERROR, message, null);
                 	}
                     props.setProperty(name, value);
                 }
