@@ -17,7 +17,7 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS
 {
 
-	private static final String BUNDLE_NAME = "org.eclipse.wst.common.core.internal.messages";//$NON-NLS-1$
+	private static final String BUNDLE_NAME = "org.eclipse.wst.common.core.search.internal.messages";//$NON-NLS-1$
 
 	public static String engine_searching;
 
