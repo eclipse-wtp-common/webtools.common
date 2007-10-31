@@ -62,8 +62,9 @@ public abstract class IVirtualResourceAPITest extends TestCase {
 
 	protected abstract void doSetup() throws Exception ;
 
+	//TODO: This test fails intermittently (Bug 175286),
+	//waiting for bug 208093 to be resolved before investigating further
 	public void testCreateLinkIPathintIProgressMonitor() throws Exception {
-		
 		IVirtualComponent component = ComponentCore.createComponent(TestWorkspace.getTargetProject(), TestWorkspace.WEB_MODULE_2_NAME);
 		IVirtualFolder rootFolder = component.getRootFolder();
 		
