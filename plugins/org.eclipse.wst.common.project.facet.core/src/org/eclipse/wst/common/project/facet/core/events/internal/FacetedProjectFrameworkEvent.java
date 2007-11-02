@@ -11,49 +11,24 @@
 
 package org.eclipse.wst.common.project.facet.core.events.internal;
 
-import org.eclipse.wst.common.project.facet.core.IFacetedProject;
-import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
-import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectFrameworkEvent;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
-public class FacetedProjectEvent
+public class FacetedProjectFrameworkEvent
 
-    implements IFacetedProjectEvent
+    implements IFacetedProjectFrameworkEvent
     
 {
-    private final IFacetedProject project;
-    private final IFacetedProjectWorkingCopy workingCopy;
     private final Type eventType;
     
-    public FacetedProjectEvent( final IFacetedProject project,
-                                final Type eventType )
+    public FacetedProjectFrameworkEvent( final Type eventType )
     {
-        this.project = project;
-        this.workingCopy = null;
-        this.eventType = eventType;
-    }
-
-    public FacetedProjectEvent( final IFacetedProjectWorkingCopy workingCopy,
-                                final Type eventType )
-    {
-        this.project = null;
-        this.workingCopy = workingCopy;
         this.eventType = eventType;
     }
     
-    public final IFacetedProject getProject()
-    {
-        return this.project;
-    }
-    
-    public final IFacetedProjectWorkingCopy getWorkingCopy()
-    {
-        return this.workingCopy;
-    }
-
     public final Type getType()
     {
         return this.eventType;
@@ -63,9 +38,7 @@ public class FacetedProjectEvent
     {
         final StringBuilder buf = new StringBuilder();
         
-        buf.append( "<event project=\"" ); //$NON-NLS-1$
-        buf.append( this.project.getProject().getName() );
-        buf.append( "\" type=\"" ); //$NON-NLS-1$
+        buf.append( "<event type=\"" ); //$NON-NLS-1$
         buf.append( this.eventType.name() );
         buf.append( "\">\n" ); //$NON-NLS-1$
         

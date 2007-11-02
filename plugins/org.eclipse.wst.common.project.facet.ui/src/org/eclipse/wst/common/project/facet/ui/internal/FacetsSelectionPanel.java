@@ -15,7 +15,6 @@ package org.eclipse.wst.common.project.facet.ui.internal;
 import static java.lang.Math.max;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gd;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdfill;
-import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhalign;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhfill;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhhint;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhspan;
@@ -26,19 +25,15 @@ import static org.eclipse.wst.common.project.facet.ui.internal.util.SwtUtil.getP
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.resource.CompositeImageDescriptor;
@@ -86,25 +81,22 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.wst.common.project.facet.core.IActionConfig;
 import org.eclipse.wst.common.project.facet.core.ICategory;
-import org.eclipse.wst.common.project.facet.core.IConstraint;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
-import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
+import org.eclipse.wst.common.project.facet.core.events.IProjectFacetsChangedEvent;
 import org.eclipse.wst.common.project.facet.ui.IDecorationsProvider;
-import org.eclipse.wst.common.project.facet.ui.IWizardContext;
-import org.eclipse.wst.common.project.facet.ui.internal.AbstractDataModel.IDataModelListener;
-import org.eclipse.wst.common.project.facet.ui.internal.ChangeTargetedRuntimesDataModel.IRuntimeFilter;
+import org.eclipse.wst.common.project.facet.ui.ModifyFacetedProjectWizard;
 import org.eclipse.wst.common.project.facet.ui.internal.util.BasicToolTip;
 import org.eclipse.wst.common.project.facet.ui.internal.util.HeaderToolTip;
 import org.osgi.framework.Bundle;
@@ -134,7 +126,6 @@ public final class FacetsSelectionPanel
     private static final String IMG_WARNING = "##warning##"; //$NON-NLS-1$
     private static final String IMG_DOWN_ARROW = "##down-arrow##"; //$NON-NLS-1$
     
-    private final IDialogSettings settings;
     private final Composite topComposite;
     private final SashForm sform1;
     private final SashForm sform2;
@@ -146,31 +137,23 @@ public final class FacetsSelectionPanel
     private final Tree tree;
     private final TreeColumn colFacet;
     private final TreeColumn colVersion;
-    private final Menu popupMenu;
-    private final MenuItem popupMenuConstraints;
     private final ComboBoxCellEditor ceditor;
     private final FixedFacetToolTip fixedFacetToolTip;
     private final TableViewer problemsView;
+    private final TabItem detailsTabItem;
+    private final DetailsPanel detailsPanel;
+    private final TabItem runtimesTabItem;
     private final RuntimesPanel runtimesPanel;
-    private final Button showHideRuntimesButton;
     
-    private final IWizardContext context;
-
-    /**
-     * Contains the <code>TableRowData</code> objects representing all of the
-     * facets, regardless whether they are displayed or not.
-     */
-
-    private final List<TableRowData> data;
-    private final Set<IProjectFacetVersion> base;
-    private final Set<Action> actions;
-    private Object oldSelection;
-
-    private IStatus problems;
-    private final List<Listener> listeners;
+    private final IDialogSettings settings;
+    private boolean showToolTips;
+    
+    
+    private final IFacetedProjectWorkingCopy fpjwc;
+    private final List<IFacetedProjectListener> registeredWorkingCopyListeners;
+    private final Map<IProjectFacet,IProjectFacetVersion> selectedVersions;
     private final List<ISelectionChangedListener> selectionListeners;
-    
-    private final ModifyFacetedProjectDataModel model;
+    private Object selection;
     
     /**
      * Holds images used throughout the panel.
@@ -184,34 +167,16 @@ public final class FacetsSelectionPanel
     }
 
     public FacetsSelectionPanel( final Composite parent,
-                                 final int style,
-                                 final IWizardContext context,
-                                 final Set<IProjectFacetVersion> base,
-                                 final ModifyFacetedProjectDataModel model )
+                                 final IFacetedProjectWorkingCopy fpjwc )
     {
-        super( parent, style );
+        super( parent, SWT.NONE );
 
-        this.context = context;
-        this.data = new ArrayList<TableRowData>();
-        this.model = model;
-        this.base = ( base == null ? new HashSet<IProjectFacetVersion>() : base );
-        this.actions = new HashSet<Action>();
-        this.oldSelection = null;
-        this.problems = Status.OK_STATUS;
-        this.listeners = new ArrayList<Listener>();
+        this.fpjwc = fpjwc;
+        this.registeredWorkingCopyListeners = new ArrayList<IFacetedProjectListener>(); 
+        this.selectedVersions = new HashMap<IProjectFacet,IProjectFacetVersion>();
+        this.selection = null;
         this.selectionListeners = new ArrayList<ISelectionChangedListener>();
-        
-        for( IProjectFacet f : ProjectFacetsManager.getProjectFacets() )
-        {
-            try
-            {
-                this.data.add( new TableRowData( f ) );
-            }
-            catch( CoreException e )
-            {
-                FacetUiPlugin.log( e );
-            }
-        }
+        this.showToolTips = false;
         
         // Initialize the image registry.
         
@@ -258,7 +223,7 @@ public final class FacetsSelectionPanel
         
         final GridData topgd = gdfill();
         topgd.heightHint = this.settings.getInt( HEIGHT );
-        topgd.widthHint = this.settings.getInt( WIDTH );
+        topgd.widthHint = this.settings.getInt( WIDTH );    
         
         this.topComposite = new Composite( this, SWT.NONE );
         this.topComposite.setLayout( new GridLayout( 4, false ) );
@@ -285,8 +250,6 @@ public final class FacetsSelectionPanel
         
         this.presetsCombo = new Combo( this.topComposite, SWT.READ_ONLY );
         this.presetsCombo.setLayoutData( gdhfill() );
-        
-        syncWithPresetsModel( this.presetsCombo );
         
         this.savePresetButton = new Button( this.topComposite, SWT.PUSH );
         this.savePresetButton.setText( Resources.saveButtonLabel );
@@ -390,21 +353,6 @@ public final class FacetsSelectionPanel
             }
         );
 
-        this.popupMenu = new Menu( getShell(), SWT.POP_UP );
-        this.popupMenuConstraints = new MenuItem( this.popupMenu, SWT.PUSH );
-        this.popupMenuConstraints.setText( Resources.showConstraints );
-        
-        this.popupMenuConstraints.addSelectionListener
-        (
-            new SelectionAdapter()
-            {
-                public void widgetSelected( SelectionEvent e )
-                {
-                    handleShowConstraints();
-                }
-            }
-        );
-        
         new FacetToolTip( this.tree );
         new CategoryToolTip( this.tree );
         this.fixedFacetToolTip = new FixedFacetToolTip( this.tree );
@@ -417,7 +365,7 @@ public final class FacetsSelectionPanel
             {
                 public void selectionChanged( final SelectionChangedEvent e )
                 {
-                    FacetsSelectionPanel.this.selectionChanged( e );
+                    FacetsSelectionPanel.this.handleSelectionChangedEvent( e );
                 }
             }
         );
@@ -428,7 +376,7 @@ public final class FacetsSelectionPanel
             {
                 public void checkStateChanged( final CheckStateChangedEvent e )
                 {
-                    FacetsSelectionPanel.this.checkStateChanged( e );
+                    FacetsSelectionPanel.this.handleCheckStateChanged( e );
                 }
             }
         );
@@ -482,53 +430,18 @@ public final class FacetsSelectionPanel
 
         this.sform2.setWeights( weights2 );
         
-        this.runtimesPanel 
-            = new RuntimesPanel( this.sform1, SWT.NONE, 
-                                 this.model.getTargetedRuntimesDataModel() );
-        
-        this.runtimesPanel.setLayoutData( gdhhint( gdhfill(), 80 ) );
-        
-        this.model.getTargetedRuntimesDataModel().addRuntimeFilter
-        ( 
-            new IRuntimeFilter()
-            {
-                public boolean check( final IRuntime runtime )
-                {
-                    final IFacetedProject project = getDataModel().getFacetedProject();
-                    
-                    if( project != null && project.getTargetedRuntimes().contains( runtime ) )
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        for( IProjectFacetVersion fv : getSelectedProjectFacets() )
-                        {
-                            if( ! runtime.supports( fv ) )
-                            {
-                                return false;
-                            }
-                        }
-                        
-                        return true;
-                    }
-                }
-            }
-        );
-        
-        addProjectFacetsListener
-        (
-            new Listener()
-            {
-                public void handleEvent( final Event event )
-                {
-                    final ChangeTargetedRuntimesDataModel rdm
-                        = getDataModel().getTargetedRuntimesDataModel();
-                    
-                    rdm.refreshTargetableRuntimes();
-                }
-            }
-        );
+        final TabFolder tabFolder = new TabFolder( this.sform1, SWT.NONE );
+        tabFolder.setLayoutData( gdhhint( gdhfill(), 80 ) );
+
+        this.detailsPanel = new DetailsPanel( tabFolder, this );
+        this.detailsTabItem = new TabItem( tabFolder, SWT.NULL );
+        this.detailsTabItem.setControl( this.detailsPanel );
+        this.detailsTabItem.setText( Resources.detailsTabLabel );
+
+        this.runtimesPanel = new RuntimesPanel( tabFolder, this.fpjwc );
+        this.runtimesTabItem = new TabItem( tabFolder, SWT.NULL );
+        this.runtimesTabItem.setControl( this.runtimesPanel );
+        this.runtimesTabItem.setText( Resources.runtimesTabLabel );
         
         this.runtimesPanel.addListener
         (
@@ -549,24 +462,6 @@ public final class FacetsSelectionPanel
                           this.settings.getInt( SASH1W2 ) };
     
         this.sform1.setWeights( weights1 );
-        this.sform1.setMaximizedControl( this.sform2 );
-        
-        this.showHideRuntimesButton = new Button( this.topComposite, SWT.PUSH );
-        this.showHideRuntimesButton.setText( Resources.showRuntimes );
-        GridData gd = gdhalign( gdhspan( gd(), 4 ), GridData.END );
-        gd = gdwhint( gd, getPreferredWidth( this.showHideRuntimesButton ) + 15 );
-        this.showHideRuntimesButton.setLayoutData( gd );
-        
-        this.showHideRuntimesButton.addSelectionListener
-        (
-            new SelectionAdapter()
-            {
-                public void widgetSelected( final SelectionEvent e )
-                {
-                    handleShowHideRuntimes();
-                }
-            }
-        );
         
         this.addDisposeListener
         (
@@ -579,297 +474,80 @@ public final class FacetsSelectionPanel
             }
         );
         
-        updateValidationDisplay();
         Dialog.applyDialogFont(parent);
         
         // Bind to the model.
         
-        this.model.addListener
-        ( 
-            ModifyFacetedProjectDataModel.EVENT_FIXED_FACETS_CHANGED, 
-            new IDataModelListener()
+        addWorkingCopyListener
+        (
+            new IFacetedProjectListener()
             {
-                public void handleEvent()
+                public void handleEvent( final IFacetedProjectEvent event )
                 {
-                    handleModelChangedEvent( ModifyFacetedProjectDataModel.EVENT_FIXED_FACETS_CHANGED );
+                    handleProjectFacetsChangedEvent( event );
                 }
-            }
+            },
+            IFacetedProjectEvent.Type.PROJECT_FACETS_CHANGED
+        );
+        
+        handleProjectFacetsChangedEvent( null );
+        
+        addWorkingCopyListener
+        (
+            new IFacetedProjectListener()
+            {
+                public void handleEvent( final IFacetedProjectEvent event )
+                {
+                    handleValidationProblemsChangedEvent();
+                }
+            },
+            IFacetedProjectEvent.Type.VALIDATION_PROBLEMS_CHANGED
+        );
+        
+        handleValidationProblemsChangedEvent();
+        
+        addWorkingCopyListener
+        ( 
+            new IFacetedProjectListener()
+            {
+                public void handleEvent( final IFacetedProjectEvent event )
+                {
+                    handleSelectedPresetChangedEvent();
+                }
+            },
+            IFacetedProjectEvent.Type.SELECTED_PRESET_CHANGED
         );
 
-        this.model.addListener
-        ( 
-            ModifyFacetedProjectDataModel.EVENT_SELECTED_PRESET_CHANGED, 
-            new IDataModelListener()
-            {
-                public void handleEvent()
-                {
-                    handleModelChangedEvent( ModifyFacetedProjectDataModel.EVENT_SELECTED_PRESET_CHANGED );
-                }
-            }
-        );
+        ModifyFacetedProjectWizard.syncWithPresetsModel( this.fpjwc, this.presetsCombo );
         
-        syncWithPresetsModel( this.presetsCombo );
-        
-        this.model.getTargetedRuntimesDataModel().addListener
+        addWorkingCopyListener
         ( 
-            ChangeTargetedRuntimesDataModel.EVENT_TARGETED_RUNTIMES_CHANGED,
-            new IDataModelListener()
+            new IFacetedProjectListener()
             {
-                public void handleEvent()
+                public void handleEvent( final IFacetedProjectEvent event )
                 {
-                    handleModelChangedEvent( ChangeTargetedRuntimesDataModel.EVENT_TARGETED_RUNTIMES_CHANGED );
+                    handleModelChangedEvent( event );
                 }
-            }
+            },
+            IFacetedProjectEvent.Type.FIXED_FACETS_CHANGED, 
+            IFacetedProjectEvent.Type.SELECTED_PRESET_CHANGED,
+            IFacetedProjectEvent.Type.TARGETED_RUNTIMES_CHANGED
         );
     }
     
-    public ModifyFacetedProjectDataModel getDataModel()
+    public IFacetedProjectWorkingCopy getFacetedProjectWorkingCopy()
     {
-        return this.model;
+        return this.fpjwc;
     }
     
     public boolean isSelectionValid()
     {
-        return ( this.problems.getSeverity() != IStatus.ERROR );
-    }
-    
-    public Set<Action> getActions()
-    {
-        return this.actions;
-    }
-    
-    public Action getAction( final Action.Type type,
-                             final IProjectFacetVersion f )
-    {
-        return getAction( this.actions, type, f );
-    }
-    
-    private static Action getAction( final Set<Action> actions,
-                                     final Action.Type type,
-                                     final IProjectFacetVersion fv )
-    {
-        for( Action action : actions )
-        {
-            if( action.getType() == type && action.getProjectFacetVersion() == fv )
-            {
-                return action;
-            }
-        }
-        
-        return null;
-    }
-    
-    private static Action getAction( final Set<Action> actions,
-                                     final Action.Type type,
-                                     final IProjectFacet f )
-    {
-        for( Action action : actions )
-        {
-            if( action.getType() == type && 
-                action.getProjectFacetVersion().getProjectFacet() == f )
-            {
-                return action;
-            }
-        }
-        
-        return null;
-    }
-    
-    private Action createAction( final Set<Action> actions,
-                                 final Action.Type type,
-                                 final IProjectFacetVersion fv )
-    {
-        Action action = getAction( actions, type, fv );
-        
-        if( action == null )
-        {
-            Object config = null;
-            
-            if( fv.supports( this.base, type ) )
-            {
-                try
-                {
-                    final IProjectFacet f = fv.getProjectFacet();
-                    
-                    action = getAction( actions, type, f );
-                    
-                    if( action != null )
-                    {
-                        final IProjectFacetVersion current
-                            = action.getProjectFacetVersion();
-                        
-                        if( fv.supports( this.base, type ) &&
-                            current.supports( this.base, type ) &&
-                            fv.getActionDefinition( this.base, type )
-                              == current.getActionDefinition( this.base, type ) )
-                        {
-                            config = action.getConfig();
-                            
-                            IActionConfig c = null;
-                            
-                            if( config instanceof IActionConfig )
-                            {
-                                c = (IActionConfig) config;
-                            }
-                            else if( config != null )
-                            {
-                                final IAdapterManager m 
-                                    = Platform.getAdapterManager();
-                                
-                                final String t
-                                    = IActionConfig.class.getName();
-                                
-                                c = (IActionConfig) m.loadAdapter( config, t );
-                            }
-                            
-                            if( c != null )
-                            {
-                                c.setVersion( fv );
-                            }
-                        }
-                    }
-                    
-                    if( config == null )
-                    {
-                    	final String pjname = this.context.getProjectName();
-                        config = this.context.getConfig(fv, type, pjname);
-                    }
-                }
-                catch( CoreException e )
-                {
-                    FacetUiPlugin.log( e );
-                }
-            }
-
-            action = new Action( type, fv, config );
-        }
-        
-        return action;
-    }
-    
-    public void setDefaultFacetsForRuntime( final IRuntime runtime )
-    {
-        final Set<IProjectFacetVersion> defaultFacets;
-        
-        if( runtime != null )
-        {
-            try
-            {
-                defaultFacets = runtime.getDefaultFacets( this.model.getFixedFacets() );
-            }
-            catch( CoreException e )
-            {
-                FacetUiPlugin.log( e );
-                return;
-            }
-        }
-        else
-        {
-            defaultFacets = new HashSet<IProjectFacetVersion>();
-            
-            for( IProjectFacet f : this.model.getFixedFacets() )
-            {
-                defaultFacets.add( f.getDefaultVersion() );
-            }
-        }
-            
-        setSelectedProjectFacets( defaultFacets );
-        this.model.setSelectedPreset( null );
-    }
-    
-    public Set<IProjectFacetVersion> getSelectedProjectFacets()
-    {
-        final Set<IProjectFacetVersion> set = new HashSet<IProjectFacetVersion>();
-
-        for( TableRowData trd : this.data )
-        {
-            if( trd.isSelected() )
-            {
-                set.add( trd.getCurrentVersion() );
-            }
-        }
-
-        return set;
-    }
-
-    public void setSelectedProjectFacets( final Set<IProjectFacetVersion> sel )
-    {
-        final List<TableRowData> toCheck = new ArrayList<TableRowData>();
-        final List<TableRowData> needsCategoryRefresh = new ArrayList<TableRowData>();
-        
-        for( IProjectFacetVersion fv : sel )
-        {
-            final IProjectFacet f = fv.getProjectFacet();
-            final TableRowData trd = findTableRowData( f, true );
-
-            if( fv.getPluginId() == null )
-            {
-                trd.addUnknownVersion( fv );
-            }
-            
-            trd.setSelected( true );
-            trd.setCurrentVersion( fv );
-            
-            toCheck.add( trd );
-            needsCategoryRefresh.add( trd );
-        }
-
-        for( TableRowData trd : this.data )
-        {
-            if( trd.isSelected() && ! sel.contains( trd.getCurrentVersion() ) )
-            {
-                trd.setSelected( false );
-                needsCategoryRefresh.add( trd );
-            }
-        }
-
-        refresh();
-        
-        this.treeViewer.setCheckedElements( toCheck.toArray() );
-        
-        for( TableRowData trd : needsCategoryRefresh )
-        {
-            refreshCategoryState( trd );
-        }
-        
-        updateValidationDisplay();
-    }
-    
-    public void setFixedProjectFacets( final Set<IProjectFacet> fixed )
-    {
-        this.model.setFixedFacets( fixed );
-    }
-    
-    /**
-     * @deprecated
-     */
-    
-    public void selectPreset( final IPreset preset )
-    {
-        this.model.setSelectedPreset( preset.getId() );
+        return ( this.fpjwc.validate().getSeverity() != IStatus.ERROR );
     }
     
     public boolean setFocus()
     {
         return this.tree.setFocus();
-    }
-    
-    public void addProjectFacetsListener( final Listener listener )
-    {
-        this.listeners.add( listener );
-    }
-
-    public void removeProjectFacetsListener( final Listener listener )
-    {
-        this.listeners.remove( listener );
-    }
-
-    private void notifyProjectFacetsListeners()
-    {
-        for( Listener listener : this.listeners )
-        {
-            listener.handleEvent( null );
-        }
     }
     
     public void addSelectionChangedListener( final ISelectionChangedListener listener )
@@ -884,55 +562,15 @@ public final class FacetsSelectionPanel
 
     public ISelection getSelection()
     {
-        final IStructuredSelection ss
-            = (IStructuredSelection) this.treeViewer.getSelection();
-
-        Object sel = ss.getFirstElement();
-
-        if( sel instanceof TableRowData )
-        {
-            sel = ( (TableRowData) sel ).getProjectFacet();
-        }
-
-        if( sel == null )
-        {
-            return new StructuredSelection( new Object[ 0 ] );
-        }
-        else
-        {
-            return new StructuredSelection( sel );
-        }
+        return new StructuredSelection( this.selection );
     }
 
     public void setSelection( final ISelection selection )
     {
-        final IStructuredSelection ss = (IStructuredSelection) selection;
-        final Object sel = ss.getFirstElement();
-        final ISelection ts;
-
-        if( sel == null )
-        {
-            ts = new StructuredSelection( new Object[ 0 ] );
-        }
-        else
-        {
-            if( sel instanceof IProjectFacet )
-            {
-                final TableRowData trd
-                    = findTableRowData( (IProjectFacet) sel );
-
-                ts = new StructuredSelection( trd );
-            }
-            else
-            {
-                ts = selection;
-            }
-        }
-
-        this.treeViewer.setSelection( ts );
+        throw new UnsupportedOperationException();
     }
 
-    public void notifySelectionChangedListeners()
+    private void notifySelectionChangedListeners()
     {
         final SelectionChangedEvent event = new SelectionChangedEvent( this, getSelection() );
 
@@ -946,216 +584,55 @@ public final class FacetsSelectionPanel
     {
         return this.imageRegistry;
     }
-
-    private void selectionChanged( final SelectionChangedEvent event )
+    
+    public Image getImage( final IProjectFacet facet,
+                           final boolean showDecorations )
     {
-        final Object selection
-            = ( (IStructuredSelection) event.getSelection() ).getFirstElement();
-
-        if( selection != this.oldSelection )
+        final boolean isFixed = getFacetedProjectWorkingCopy().isFixedProjectFacet( facet );
+        final String id = ( isFixed && showDecorations ? "F:" : "f:" ) + facet.getId(); //$NON-NLS-1$ //$NON-NLS-2$
+        
+        Image image = getImageRegistry().get( id );
+        
+        if( image == null )
         {
-            this.oldSelection = selection;
-            refreshVersionsDropDown();
-            notifySelectionChangedListeners();
+            final IDecorationsProvider decprov
+                = (IDecorationsProvider) facet.getAdapter( IDecorationsProvider.class );
+            
+            ImageDescriptor imgdesc = decprov.getIcon();
+            
+            if( isFixed && showDecorations )
+            {
+                imgdesc = new FixedFacetImageDescriptor( imgdesc );
+            }
+            
+            getImageRegistry().put( id, imgdesc );
+            image = getImageRegistry().get( id );
         }
+
+        return image;
     }
     
-    private void checkStateChanged( final CheckStateChangedEvent event )
+    public Image getImage( final ICategory category )
     {
-        final Object el = event.getElement();
-        final boolean checked = event.getChecked();
-
-        if( el instanceof TableRowData )
-        {
-            final TableRowData trd = (TableRowData) el;
-            
-            if( trd.isFixed() )
-            {
-                if( ! checked )
-                {
-                    this.treeViewer.setChecked( el, true );
-                    
-                    final String msg 
-                        = NLS.bind( Resources.couldNotDeselectFixedFacetMessage,
-                                    trd.getProjectFacet().getLabel() );                    
-
-                    this.fixedFacetToolTip.setMessage( msg );
-                    
-                    final Point cursorLocation = getDisplay().getCursorLocation();
-                    this.fixedFacetToolTip.show( this.tree.toControl( cursorLocation ) );
-                }
-                
-                return;
-            }
-            
-            trd.setSelected( checked );
-            refreshCategoryState( trd );
-        }
-        else
-        {
-            final ContentProvider cp
-                = (ContentProvider) this.treeViewer.getContentProvider();
-
-            final Object[] children = cp.getChildren( el );
-            int selected = 0;
-            
-            for( Object child : children )
-            {
-                final TableRowData trd = (TableRowData) child;
-                
-                if( ! trd.isFixed() )
-                {
-                    trd.setSelected( checked );
-                    this.treeViewer.setChecked( trd, checked );
-                }
-                
-                if( trd.isSelected() )
-                {
-                    selected++;
-                }
-            }
-            
-            if( selected == 0 || selected == children.length )
-            {
-                this.treeViewer.setGrayed( el, false );
-            }
-            else
-            {
-                this.treeViewer.setGrayChecked( el, true );
-            }
-        }
-
-        updateValidationDisplay();
+        final String id = "c:" + category.getId(); //$NON-NLS-1$
         
-        this.model.setSelectedPreset( null );
+        Image image = getImageRegistry().get( id );
+        
+        if( image == null )
+        {
+            final IDecorationsProvider decprov
+                = (IDecorationsProvider) category.getAdapter( IDecorationsProvider.class );
+            
+            final ImageDescriptor imgdesc = decprov.getIcon();
+            
+            getImageRegistry().put( id, imgdesc );
+            image = getImageRegistry().get( id );
+        }
+
+        return image;
+        
     }
 
-    private void updateValidationDisplay()
-    {
-        final Set<IProjectFacetVersion> sel = getSelectedProjectFacets();
-        final Set<Action> old = new HashSet<Action>( this.actions );
-        this.actions.clear();
-        
-        // What has been removed?
-        
-        for( IProjectFacetVersion fv : this.base )
-        {
-            if( ! sel.contains( fv ) )
-            {
-                this.actions.add( createAction( old, Action.Type.UNINSTALL, fv ) );
-            }
-        }
-
-        // What has been added?
-
-        for( IProjectFacetVersion fv : sel )
-        {
-            if( ! this.base.contains( fv ) )
-            {
-                this.actions.add( createAction( old, Action.Type.INSTALL, fv ) );
-            }
-        }
-        
-        // Coalesce uninstall/install pairs into version change actions, if
-        // possible.
-        
-        final Set<Action> toadd = new HashSet<Action>();
-        final Set<Action> toremove = new HashSet<Action>();
-        
-        for( Action action1 : this.actions )
-        {
-            for( Action action2 : this.actions )
-            {
-                if( action1.getType() == Action.Type.UNINSTALL &&
-                    action2.getType() == Action.Type.INSTALL )
-                {
-                    final IProjectFacetVersion f1 = action1.getProjectFacetVersion();
-                    final IProjectFacetVersion f2 = action2.getProjectFacetVersion();
-                    
-                    if( f1.getProjectFacet() == f2.getProjectFacet() )
-                    {
-                        toremove.add( action1 );
-                        toremove.add( action2 );
-                        toadd.add( createAction( old, Action.Type.VERSION_CHANGE, f2 ) );
-                    }
-                }
-            }
-        }
-        
-        this.actions.removeAll( toremove );
-        this.actions.addAll( toadd );
-        
-        this.problems = calculateProblems();
-        this.problemsView.refresh();
-
-        if( this.problems.isOK() )
-        {
-            if( this.sform2.getMaximizedControl() == null )
-            {
-                this.sform2.setMaximizedControl( this.tree );
-            }
-        }
-        else
-        {
-            if( this.sform2.getMaximizedControl() != null )
-            {
-                this.sform2.setMaximizedControl( null );
-            }
-        }
-
-        notifyProjectFacetsListeners();
-    }
-    
-    private IStatus calculateProblems()
-    {
-        MultiStatus st = (MultiStatus) ProjectFacetsManager.check( this.base, this.actions );
-        
-        for( IProjectFacetVersion fv : this.base )
-        {
-            final IProjectFacet f = fv.getProjectFacet();
-            
-            String msg = null; 
-            
-            if( f.getPluginId() == null )
-            {
-                msg = NLS.bind( Resources.facetNotFound, f.getId() );
-            }
-            else if( fv.getPluginId() == null )
-            {
-                msg = NLS.bind( Resources.facetVersionNotFound, f.getId(), 
-                                fv.getVersionString() );
-            }
-            
-            if( msg != null )
-            {
-                final IStatus sub
-                    = new Status( IStatus.WARNING, FacetUiPlugin.PLUGIN_ID, 0, msg, null );
-                
-                st.add( sub );
-            }
-        }
-        
-        for( IRuntime r : getDataModel().getTargetedRuntimesDataModel().getTargetedRuntimes() )
-        {
-            for( IProjectFacetVersion fv : getSelectedProjectFacets() )
-            {
-                if( ! r.supports( fv ) )
-                {
-                    final String msg
-                        = NLS.bind( Resources.facetNotSupportedByTarget, fv.toString(), 
-                                    r.getLocalizedName() );
-                    
-                    final IStatus sub
-                        = new Status( IStatus.ERROR, FacetUiPlugin.PLUGIN_ID, 0, msg, null );
-                    
-                    st.add( sub );
-                }
-            }
-        }
-        
-        return st;
-    }
-    
     private void refresh()
     {
         // Somehow the checked state of nested items gets lost when a refresh
@@ -1173,293 +650,276 @@ public final class FacetsSelectionPanel
         this.treeViewer.setExpandedState( category, expanded );
     }
     
-    public void syncWithPresetsModel( final Combo combo )
+    public boolean getShowToolTips()
     {
-        final List<IPreset> sortedPresets = new ArrayList<IPreset>();
-        
-        // Contents : model -> view
-
-        final IDataModelListener modelToViewContentsListener = new IDataModelListener()
-        {
-            public void handleEvent()
-            {
-                synchronized( sortedPresets )
-                {
-                    sortedPresets.clear();
-                    sortedPresets.addAll( FacetsSelectionPanel.this.model.getAvailablePresets() );
-                    
-                    Collections.sort
-                    (
-                        sortedPresets,
-                        new Comparator<IPreset>()
-                        {
-                            public int compare( final IPreset p1, 
-                                                final IPreset p2 ) 
-                            {
-                                if( p1 == p2 )
-                                {
-                                    return 0;
-                                }
-                                else
-                                {
-                                    return p1.getLabel().compareTo( p2.getLabel() );
-                                }
-                            }
-                        }
-                    );
-                    
-                    final IPreset selectedPreset 
-                        = FacetsSelectionPanel.this.model.getSelectedPreset();
-                    
-                    combo.removeAll();
-                    combo.add( Resources.customPreset );
-                    
-                    if( selectedPreset == null )
-                    {
-                        combo.select( 0 );
-                    }
-                    
-                    for( IPreset preset : sortedPresets )
-                    {
-                        combo.add( preset.getLabel() );
-                        
-                        if( preset == selectedPreset )
-                        {
-                            combo.select( combo.getItemCount() - 1 );
-                        }
-                    }
-                }
-            }
-        };
-
-        this.model.addListener( ModifyFacetedProjectDataModel.EVENT_AVAILABLE_PRESETS_CHANGED,
-                                modelToViewContentsListener );
-        
-        // Selection : model -> view
-        
-        this.model.addListener
-        ( 
-            ModifyFacetedProjectDataModel.EVENT_SELECTED_PRESET_CHANGED, 
-            new IDataModelListener()
-            {
-                public void handleEvent()
-                {
-                    synchronized( sortedPresets )
-                    {
-                        final IPreset preset
-                            = FacetsSelectionPanel.this.model.getSelectedPreset();
-                        
-                        final int index;
-                        
-                        if( preset == null )
-                        {
-                            index = -1;
-                        }
-                        else
-                        {
-                            index = sortedPresets.indexOf( preset );
-                        }
-                        
-                        combo.select( index + 1 );
-                        
-                        handlePresetSelected();
-                    }
-                }
-            }
-        );
-        
-        // Selection : view -> model
-        
-        combo.addSelectionListener
-        (
-            new SelectionAdapter()
-            {
-                public void widgetSelected( final SelectionEvent e )
-                {
-                    synchronized( sortedPresets )
-                    {
-                        final int selection = combo.getSelectionIndex();
-                        final String presetId;
-                        
-                        if( selection == 0 )
-                        {
-                            presetId = null;
-                        }
-                        else
-                        {
-                            presetId = sortedPresets.get( selection - 1 ).getId();
-                        }
-                        
-                        FacetsSelectionPanel.this.model.setSelectedPreset( presetId );
-                    }
-                }
-            }
-        );
-        
-        // Trigger initial UI population.
-        
-        modelToViewContentsListener.handleEvent();
+        return this.showToolTips;
     }
     
-    private void refreshCategoryState( final TableRowData trd )
+    public void setShowToolTips( final boolean showToolTips )
     {
-        final ICategory category = trd.getProjectFacet().getCategory();
-        
-        if( category != null )
+        this.showToolTips = showToolTips;
+    }
+    
+    private void refreshCategoryState( final ICategory category )
+    {
+        if( category == null )
         {
-            int selected = 0;
-    
-            for( IProjectFacet f : category.getProjectFacets() )
+            return;
+        }
+        
+        int selected = 0;
+
+        for( IProjectFacet f : category.getProjectFacets() )
+        {
+            if( this.fpjwc.hasProjectFacet( f ) )
             {
-                final TableRowData ctrd = findTableRowData( f );
-    
-                if( ctrd.isSelected() )
-                {
-                    selected++;
-                }
+                selected++;
             }
-    
-            if( selected == 0 )
-            {
-                this.treeViewer.setChecked( category, false );
-                this.treeViewer.setGrayed( category, false );
-            }
-            else if( selected == category.getProjectFacets().size() )
-            {
-                this.treeViewer.setChecked( category, true );
-                this.treeViewer.setGrayed( category, false );
-            }
-            else
-            {
-                this.treeViewer.setGrayChecked( category, true );
-            }
+        }
+
+        if( selected == 0 )
+        {
+            this.treeViewer.setChecked( category, false );
+            this.treeViewer.setGrayed( category, false );
+        }
+        else if( selected == category.getProjectFacets().size() )
+        {
+            this.treeViewer.setChecked( category, true );
+            this.treeViewer.setGrayed( category, false );
+        }
+        else
+        {
+            this.treeViewer.setGrayChecked( category, true );
         }
     }
     
     private void refreshVersionsDropDown()
     {
-        final TableRowData trd = getSelectedTableRowData();
+        final IProjectFacet f = getSelectedProjectFacet();
         
-        if( trd == null )
+        if( f == null )
         {
             return;
         }
         
-        final List<IProjectFacetVersion> versions = trd.getVersions();
+        final SortedSet<IProjectFacetVersion> versions = this.fpjwc.getAvailableVersions( f );
         final String[] verstrs = new String[ versions.size() ];
-
-        for( int i = 0, n = versions.size(); i < n; i++ )
+        Integer value = null;
+        
+        int i = 0;
+        
+        for( IProjectFacetVersion fv : versions )
         {
-            final IProjectFacetVersion fv = versions.get( i );
-            verstrs[ i ] = fv.getVersionString(); 
-        }
-
-        this.ceditor.setItems( verstrs );
-
-        for( int i = 0, n = versions.size(); i < n; i++ )
-        {
-            if( versions.get( i ) == trd.getCurrentVersion() )
+            verstrs[ i ] = fv.getVersionString();
+            
+            if( fv == getSelectedVersion( f ) )
             {
-                this.ceditor.setValue( new Integer( i ) );
-                break;
+                value = new Integer( i );
             }
+            
+            i++;
         }
+        
+        this.ceditor.setItems( verstrs );
+        this.ceditor.setValue( value );
+    }
+    
+    private void addWorkingCopyListener( final IFacetedProjectListener listener,
+                                         final IFacetedProjectEvent.Type... types )
+    {
+        this.fpjwc.addListener( listener, types );
+        this.registeredWorkingCopyListeners.add( listener );
     }
 
-    private TableRowData getSelectedTableRowData()
+    public IProjectFacet getSelectedProjectFacet()
     {
-        final IStructuredSelection ssel 
-            = (IStructuredSelection) this.treeViewer.getSelection();
+        final IProjectFacetVersion fv = getSelectedProjectFacetVersion();
         
-        if( ssel != null && ! ssel.isEmpty() )
+        if( fv != null )
         {
-            final Object obj = ssel.getFirstElement();
-            
-            if( obj instanceof TableRowData )
-            {
-                return (TableRowData) obj;
-            }
+            return fv.getProjectFacet();
         }
-
+        
         return null;
     }
     
-    private TableRowData findTableRowData( final IProjectFacet f )
+    public IProjectFacetVersion getSelectedProjectFacetVersion()
     {
-        return findTableRowData( f, false );
-    }
-
-    private TableRowData findTableRowData( final IProjectFacet f,
-                                           final boolean createIfNecessary )
-    {
-        for( TableRowData trd : this.data )
+        if( this.selection != null && this.selection instanceof IProjectFacetVersion )
         {
-            if( trd.getProjectFacet() == f )
+            return (IProjectFacetVersion) this.selection;
+        }
+        
+        return null;
+    }
+    
+    private IProjectFacetVersion getSelectedVersion( final IProjectFacet f )
+    {
+        final Set<IProjectFacetVersion> availableVersions = this.fpjwc.getAvailableVersions( f );
+        
+        if( availableVersions.isEmpty() )
+        {
+            throw new IllegalStateException();
+        }
+        
+        IProjectFacetVersion selectedVersion = this.fpjwc.getProjectFacetVersion( f );
+        
+        if( selectedVersion == null )
+        {
+            selectedVersion = this.selectedVersions.get( f );
+
+            if( selectedVersion == null )
             {
-                return trd;
+                selectedVersion = f.getDefaultVersion();
+            }
+            
+            if( ! availableVersions.contains( selectedVersion ) )
+            {
+                selectedVersion = this.fpjwc.getHighestAvailableVersion( f );
             }
         }
         
-        if( createIfNecessary )
+        this.selectedVersions.put( f, selectedVersion );
+        
+        return selectedVersion;
+    }
+    
+    private void setSelectedVersion( final IProjectFacet f,
+                                     final IProjectFacetVersion fv )
+    {
+        if( this.fpjwc.getProjectFacetVersion( f ) != null )
         {
-            try
+            this.fpjwc.changeProjectFacetVersion( fv );
+        }
+        
+        this.selectedVersions.put( f, fv );
+        
+        if( f == this.getSelectedProjectFacet() )
+        {
+            this.selection = fv;
+            notifySelectionChangedListeners();
+        }
+    }
+    
+    private void handleSelectionChangedEvent( final SelectionChangedEvent event )
+    {
+        Object selection = ( (IStructuredSelection) event.getSelection() ).getFirstElement();
+
+        if( selection != null && selection instanceof IProjectFacet )
+        {
+            selection = getSelectedVersion( (IProjectFacet ) selection );
+        }
+        
+        if( selection != this.selection )
+        {
+            this.selection = selection;
+            
+            refreshVersionsDropDown();
+            notifySelectionChangedListeners();
+        }
+    }
+    
+    private void handleCheckStateChanged( final CheckStateChangedEvent event )
+    {
+        final Object el = event.getElement();
+        final boolean checked = event.getChecked();
+
+        if( el instanceof IProjectFacet )
+        {
+            final IProjectFacet f = (IProjectFacet) el;
+            
+            if( this.fpjwc.getFixedProjectFacets().contains( f ) )
             {
-                final TableRowData trd = new TableRowData( f );
-                this.data.add( trd );
-                return trd;
+                if( ! checked )
+                {
+                    this.treeViewer.setChecked( el, true );
+                    
+                    final String msg 
+                        = NLS.bind( Resources.couldNotDeselectFixedFacetMessage, f.getLabel() );                    
+
+                    this.fixedFacetToolTip.setMessage( msg );
+                    
+                    final Point cursorLocation = getDisplay().getCursorLocation();
+                    this.fixedFacetToolTip.show( this.tree.toControl( cursorLocation ) );
+                }
+                
+                return;
             }
-            catch( CoreException e )
+            
+            if( checked )
             {
-                FacetUiPlugin.log( e );
+                this.fpjwc.addProjectFacet( getSelectedVersion( f ) );
             }
+            else
+            {
+                this.fpjwc.removeProjectFacet( f );
+            }
+            
+            refreshCategoryState( f.getCategory() );
+        }
+        else
+        {
+            final ContentProvider cp
+                = (ContentProvider) this.treeViewer.getContentProvider();
+
+            final Set<IProjectFacetVersion> facets
+                = new HashSet<IProjectFacetVersion>( this.fpjwc.getProjectFacets() );
+                
+            final Object[] children = cp.getChildren( el );
+            int selected = 0;
+            
+            for( Object child : children )
+            {
+                final IProjectFacet f = (IProjectFacet) child;
+                
+                if( ! this.fpjwc.getFixedProjectFacets().contains( f ) )
+                {
+                    final IProjectFacetVersion fv = getSelectedVersion( f );
+                    
+                    if( checked )
+                    {
+                        facets.add( fv );
+                    }
+                    else
+                    {
+                        facets.remove( fv );
+                    }
+                    
+                    this.treeViewer.setChecked( f, checked );
+                }
+                
+                if( this.fpjwc.hasProjectFacet( f ) )
+                {
+                    selected++;
+                }
+            }
+            
+            if( selected == 0 || selected == children.length )
+            {
+                this.treeViewer.setGrayed( el, false );
+            }
+            else
+            {
+                this.treeViewer.setGrayChecked( el, true );
+            }
+            
+            this.fpjwc.setProjectFacets( facets );
         }
 
-        throw new IllegalStateException();
+        this.fpjwc.setSelectedPreset( null );
     }
 
     private void handleMouseDownEvent( final Event event )
     {
         final List<TreeItem> items = getAllTreeItems();
         
-        TreeItem onItem = null;
-
         for( TreeItem item : items )
         {
-            if( item.getBounds( 0 ).contains( event.x, event.y ) )
-            {
-                onItem = item;
-                break;
-            }
-
             if( item.getBounds( 1 ).contains( event.x, event.y ) )
             {
                 this.tree.setSelection( new TreeItem[] { item } );
                 this.treeViewer.editElement( item.getData(), 1 );
-                break;
             }
-        }
-        
-        if( onItem != null && onItem.getData() instanceof TableRowData )
-        {
-            final TableRowData trd = (TableRowData) onItem.getData();
-            final IProjectFacetVersion fv = trd.getCurrentVersion();
-            final IConstraint c = fv.getConstraint();
-            
-            if( c.getType() == IConstraint.Type.AND && 
-                c.getOperands().size() == 0 )
-            {
-                this.popupMenuConstraints.setEnabled( false );
-            }
-            else
-            {
-                this.popupMenuConstraints.setEnabled( true );
-            }
-            
-            this.tree.setMenu( this.popupMenu );
-        }
-        else
-        {
-            this.tree.setMenu( null );
         }
     }
     
@@ -1468,11 +928,11 @@ public final class FacetsSelectionPanel
         final TreeItem item = (TreeItem) event.item;
         final Object itemData = item.getData();
 
-        if( itemData instanceof TableRowData && event.index == 1 )
+        if( itemData instanceof IProjectFacet && event.index == 1 )
         {
-            final TableRowData trd = (TableRowData) itemData;
+            final IProjectFacet f = (IProjectFacet) itemData;
             
-            if( trd.getVersions().size() > 1 )
+            if( this.fpjwc.getAvailableVersions( f ).size() > 1 )
             {
                 final Image arrowImage = getImageRegistry().get( IMG_DOWN_ARROW );
                 final Rectangle arrowImageBounds = arrowImage.getBounds();
@@ -1496,143 +956,138 @@ public final class FacetsSelectionPanel
     private void handleDisposeEvent()
     {
         this.imageRegistry.dispose();
-    }
-    
-    private void handleShowConstraints()
-    {
-        final TreeItem[] items = this.tree.getSelection();
-        if( items.length != 1 ) throw new IllegalStateException();
-        final TreeItem item = items[ 0 ];
-        final TableRowData trd = (TableRowData) item.getData();
-        final IProjectFacetVersion fv = trd.getCurrentVersion();
         
-        final Rectangle bounds = item.getBounds();
-        
-        Point location = new Point( bounds.x, bounds.y + bounds.height );
-        location = this.tree.toDisplay( location );
-        
-        final ConstraintDisplayDialog dialog 
-            = new ConstraintDisplayDialog( getShell(), location,
-                                           fv.getConstraint() );
-
-        dialog.open();
-    }
-    
-    private void handlePresetSelected()
-    {
-        final IPreset preset = this.model.getSelectedPreset();
-        
-        if( preset != null )
+        for( IFacetedProjectListener listener : this.registeredWorkingCopyListeners )
         {
-            final Set<TableRowData> selected = new HashSet<TableRowData>();
-            
-            for( IProjectFacetVersion fv : preset.getProjectFacets() )
-            {
-                final TableRowData trd = findTableRowData( fv.getProjectFacet() );
-                
-                if( ! trd.isSelected() )
-                {
-                    this.treeViewer.setChecked( trd, true );
-                    trd.setSelected( true );
-                    refreshCategoryState( trd );
-                }
-                
-                if( trd.getCurrentVersion() != fv )
-                {
-                    trd.setCurrentVersion( fv );
-                    this.treeViewer.update( trd, null );
-                }
-                
-                selected.add( trd );
-            }
-
-            for( TableRowData trd : this.data )
-            {
-                if( ! selected.contains( trd ) )
-                {
-                    this.treeViewer.setChecked( trd, false );
-                    trd.setSelected( false );
-                    refreshCategoryState( trd );
-                }
-            }
-
-            updateValidationDisplay();
+            this.fpjwc.removeListener( listener );
         }
     }
     
     private void handleSavePreset()
     {
-        final Set<IProjectFacetVersion> facets = getSelectedProjectFacets();
+        final Set<IProjectFacetVersion> facets = this.fpjwc.getProjectFacets();
         final IPreset preset = SavePresetDialog.showDialog( getShell(), facets );
         
         if( preset != null )
         {
-            this.model.refreshAvailablePresets();
-            this.model.setSelectedPreset( preset.getId() );
+            this.fpjwc.setSelectedPreset( preset.getId() );
         }
     }
     
     private void handleDeletePreset()
     {
-        final IPreset preset = this.model.getSelectedPreset();
-        this.model.setSelectedPreset( null );
+        final IPreset preset = this.fpjwc.getSelectedPreset();
+        this.fpjwc.setSelectedPreset( null );
         ProjectFacetsManager.deletePreset( preset );
-        this.model.refreshAvailablePresets();
     }
     
-    private void handleShowHideRuntimes()
+    private void handleProjectFacetsChangedEvent( final IFacetedProjectEvent event )
     {
-        if( this.sform1.getMaximizedControl() == null )
+        final Set<ICategory> affectedCategories = new HashSet<ICategory>();
+        
+        if( event != null )
         {
-            this.sform1.setMaximizedControl( this.sform2 );
-            this.showHideRuntimesButton.setText( Resources.showRuntimes );
+            final IFacetedProjectWorkingCopy fpjwc = event.getWorkingCopy();
+            
+            final IProjectFacetsChangedEvent evt
+                = (IProjectFacetsChangedEvent) event;
+            
+            for( IProjectFacetVersion fv : evt.getAllAffectedFacets())
+            {
+                final IProjectFacet f = fv.getProjectFacet();
+                final boolean checked = fpjwc.hasProjectFacet( fv );
+                this.treeViewer.setChecked( f, checked );
+                this.treeViewer.update( f, null );
+                
+                final ICategory category = f.getCategory();
+                
+                if( category != null )
+                {
+                    affectedCategories.add( category );
+                }
+            }
         }
         else
         {
-            this.sform1.setMaximizedControl( null );
-            this.showHideRuntimesButton.setText( Resources.hideRuntimes );
+            final List<IProjectFacet> facets = new ArrayList<IProjectFacet>();
+            
+            for( IProjectFacetVersion fv : this.fpjwc.getProjectFacets() )
+            {
+                facets.add( fv.getProjectFacet() );
+            }
+            
+            this.treeViewer.setCheckedElements( facets.toArray() );
+            
+            for( IProjectFacet facet : this.fpjwc.getAvailableFacets().keySet() )
+            {
+                final ICategory category = facet.getCategory();
+                
+                if( category != null )
+                {
+                    affectedCategories.add( category );
+                }
+            }
+            
+            this.treeViewer.update( this.fpjwc.getAvailableFacets().keySet().toArray(), null );
+        }
+
+        for( ICategory category : affectedCategories )
+        {
+            refreshCategoryState( category );
         }
     }
     
-    private void handleModelChangedEvent( final String event )
+    private void handleValidationProblemsChangedEvent()
     {
-        if( event.equals( ModifyFacetedProjectDataModel.EVENT_FIXED_FACETS_CHANGED ) )
-        {
-            for( TableRowData trd : this.data )
-            {
-                trd.setFixed( false );
-            }
+        this.problemsView.refresh();
 
-            for( IProjectFacet f : this.model.getFixedFacets() )
+        if( this.fpjwc.validate().isOK() )
+        {
+            if( this.sform2.getMaximizedControl() == null )
             {
-                final TableRowData trd = findTableRowData( f, true );
+                this.sform2.setMaximizedControl( this.tree );
+            }
+        }
+        else
+        {
+            if( this.sform2.getMaximizedControl() != null )
+            {
+                this.sform2.setMaximizedControl( null );
+            }
+        }
+    }
+    
+    private void handleSelectedPresetChangedEvent()
+    {
+        final IPreset preset = this.fpjwc.getSelectedPreset();
+        
+        if( preset == null )
+        {
+            this.savePresetButton.setEnabled( true );
+            this.deletePresetButton.setEnabled( false );
+        }
+        else
+        {
+            this.savePresetButton.setEnabled( false );
+            this.deletePresetButton.setEnabled( preset.getType() == IPreset.Type.USER_DEFINED );
+        }
+    }
+    
+    private void handleModelChangedEvent( final IFacetedProjectEvent event )
+    {
+        switch( event.getType() )
+        {
+            case FIXED_FACETS_CHANGED:
+            {
+                refresh();
                 
-                trd.setFixed( true );
-                trd.setSelected( true );
-                this.treeViewer.setChecked( trd, true );
+                break;
             }
-
-            refresh();
-            updateValidationDisplay();
-        }
-        else if( event.equals( ModifyFacetedProjectDataModel.EVENT_SELECTED_PRESET_CHANGED ) )
-        {
-            final IPreset preset = this.model.getSelectedPreset();
-            
-            if( preset == null )
+            case TARGETED_RUNTIMES_CHANGED:
             {
-                this.savePresetButton.setEnabled( true );
-                this.deletePresetButton.setEnabled( false );
+                refresh();
+                break;
             }
-            else
-            {
-                this.savePresetButton.setEnabled( false );
-                this.deletePresetButton.setEnabled( preset.getType() == IPreset.Type.USER_DEFINED );
-            }
-        }
-        else if( event.equals( ChangeTargetedRuntimesDataModel.EVENT_TARGETED_RUNTIMES_CHANGED ) )
-        {
-            refresh();
         }
     }
     
@@ -1744,149 +1199,6 @@ public final class FacetsSelectionPanel
         
         return max( maxVersionStringWidth, columnLabelWidth );
     }
-    
-    private final class TableRowData
-    {
-        private IProjectFacet f;
-        private List<IProjectFacetVersion> allVersionsSorted;
-        private IProjectFacetVersion current;
-        private boolean isSelected;
-        private boolean isFixed;
-
-        public TableRowData( final IProjectFacet f )
-        
-            throws CoreException
-            
-        {
-            this.f = f;
-            // TODO: Remove this unnecessary copy.
-            this.allVersionsSorted = new ArrayList<IProjectFacetVersion>( f.getSortedVersions( false ) );
-            this.current = f.getDefaultVersion();
-            this.isSelected = false;
-            this.isFixed = false;
-        }
-
-        public IProjectFacet getProjectFacet()
-        {
-            return this.f;
-        }
-
-        public List<IProjectFacetVersion> getVersions()
-        {
-            final Set<IProjectFacetVersion> availableVersions
-                = FacetsSelectionPanel.this.model.getAvailableFacets().get( this.f );
-            
-            final List<IProjectFacetVersion> versions = new ArrayList<IProjectFacetVersion>();
-            
-            for( IProjectFacetVersion fv : this.allVersionsSorted )
-            {
-                if( ( availableVersions != null && availableVersions.contains( fv ) ) ||
-                    fv.getPluginId() == null ) // unknown version
-                {
-                    versions.add( fv );
-                }
-            }
-            
-            return versions;
-        }
-        
-        public void addUnknownVersion( final IProjectFacetVersion fv )
-        {
-            try
-            {
-                final Comparator<String> c = this.f.getVersionComparator();
-                boolean added = false;
-                
-                for( int i = 0, n = this.allVersionsSorted.size(); i < n; i++ )
-                {
-                    final IProjectFacetVersion x = this.allVersionsSorted.get( i );
-                    
-                    try
-                    {
-                        if( c.compare( x.getVersionString(), fv.getVersionString() ) < 0 )
-                        {
-                            this.allVersionsSorted.add( i, fv );
-                            added = true;
-                            break;
-                        }
-                    }
-                    catch( Exception e )
-                    {
-                        FacetUiPlugin.log( e );
-                        break;
-                    }
-                }
-                
-                if( ! added )
-                {
-                    this.allVersionsSorted.add( fv );
-                }
-            }
-            catch( CoreException e )
-            {
-                FacetUiPlugin.log( e );
-            }
-        }
-
-        public IProjectFacetVersion getCurrentVersion()
-        {
-            final List<IProjectFacetVersion> versions = getVersions();
-            
-            if( versions.isEmpty() )
-            {
-                this.current = null;
-            }
-            else
-            {
-                if( ! versions.contains( this.current ) )
-                {
-                    this.current = getVersions().get( 0 );
-                }
-            }
-
-            return this.current;
-        }
-
-        public void setCurrentVersion( final IProjectFacetVersion fv )
-        {
-            this.current = fv;
-        }
-
-        public boolean isSelected()
-        {
-            if( getVersions().isEmpty() )
-            {
-                this.isSelected = false;
-            }
-
-            return this.isSelected;
-        }
-
-        public void setSelected( final boolean isSelected )
-        {
-            this.isSelected = isSelected;
-        }
-
-        public boolean isFixed()
-        {
-            return this.isFixed;
-        }
-
-        public void setFixed( final boolean isFixed )
-        {
-            this.isFixed = isFixed;
-        }
-
-        public boolean isVisible()
-        {
-            return ! getVersions().isEmpty();
-        }
-        
-        public String toString()
-        {
-            return this.current.toString();
-        }
-    }
 
     private final class ContentProvider
 
@@ -1895,6 +1207,7 @@ public final class FacetsSelectionPanel
     {
         public Object[] getElements( final Object element )
         {
+            final IFacetedProjectWorkingCopy fpjwc = getFacetedProjectWorkingCopy();
             final List<Object> list = new ArrayList<Object>();
             final Set<ICategory> categories = ProjectFacetsManager.getCategories();
 
@@ -1904,7 +1217,7 @@ public final class FacetsSelectionPanel
 
                 for( IProjectFacet f : cat.getProjectFacets() )
                 {
-                    if( findTableRowData( f ).isVisible() )
+                    if( ! fpjwc.getAvailableVersions( f ).isEmpty() )
                     {
                         visible = true;
                         break;
@@ -1916,12 +1229,16 @@ public final class FacetsSelectionPanel
                     list.add( cat );
                 }
             }
-
-            for( TableRowData trd : FacetsSelectionPanel.this.data )
+            
+            for( Map.Entry<IProjectFacet,SortedSet<IProjectFacetVersion>> entry 
+                 : fpjwc.getAvailableFacets().entrySet() )
             {
-                if( trd.getProjectFacet().getCategory() == null && trd.isVisible() )
+                final IProjectFacet f = entry.getKey();
+                final SortedSet<IProjectFacetVersion> availableVersions = entry.getValue();
+                
+                if( f.getCategory() == null && ! availableVersions.isEmpty() )
                 {
-                    list.add( trd );
+                    list.add( f );
                 }
             }
 
@@ -1932,20 +1249,19 @@ public final class FacetsSelectionPanel
         {
             if( parent instanceof ICategory )
             {
+                final IFacetedProjectWorkingCopy fpjwc = getFacetedProjectWorkingCopy();
                 final ICategory category = (ICategory) parent;
-                final List<TableRowData> trds = new ArrayList<TableRowData>();
+                final List<IProjectFacet> facets = new ArrayList<IProjectFacet>();
 
                 for( IProjectFacet f : category.getProjectFacets() )
                 {
-                    final TableRowData trd = findTableRowData( f );
-
-                    if( trd.isVisible() )
+                    if( ! fpjwc.getAvailableVersions( f ).isEmpty() )
                     {
-                        trds.add( trd );
+                        facets.add( f );
                     }
                 }
 
-                return trds.toArray();
+                return facets.toArray();
             }
             else
             {
@@ -1955,11 +1271,9 @@ public final class FacetsSelectionPanel
 
         public Object getParent( final Object element )
         {
-            if( element instanceof TableRowData )
+            if( element instanceof IProjectFacet )
             {
-                final IProjectFacet f 
-                    = ( (TableRowData) element ).getProjectFacet();
-
+                final IProjectFacet f = (IProjectFacet) element;
                 return f.getCategory();
             }
             else
@@ -2002,17 +1316,17 @@ public final class FacetsSelectionPanel
             }
             else
             {
-                final TableRowData trd = (TableRowData) element;
+                final IProjectFacet f = (IProjectFacet) element;
 
                 switch( column )
                 {
                     case 0:
                     {
-                        return trd.getProjectFacet().getLabel();
+                        return f.getLabel();
                     }
                     case 1:
                     {
-                        return trd.getCurrentVersion().getVersionString();
+                        return getSelectedVersion( f ).getVersionString();
                     }
                     default:
                     {
@@ -2030,44 +1344,14 @@ public final class FacetsSelectionPanel
                 return null;
             }
             
-            String id;
-            IAdaptable obj;
-            boolean isFixed = false;
-
-            if( element instanceof TableRowData )
+            if( element instanceof IProjectFacet )
             {
-                final TableRowData trd = (TableRowData) element;
-                final IProjectFacet f = trd.getProjectFacet();
-
-                isFixed = trd.isFixed;
-                id = ( isFixed ? "F:" : "f:" ) + f.getId(); //$NON-NLS-1$ //$NON-NLS-2$
-                obj = f;
+                return getImage( (IProjectFacet) element, true );
             }
             else
             {
-                id = "c:" + ( (ICategory) element ).getId(); //$NON-NLS-1$
-                obj = (IAdaptable) element;
+                return getImage( (ICategory) element );
             }
-            
-            Image image = getImageRegistry().get( id );
-            
-            if( image == null )
-            {
-                final IDecorationsProvider decprov
-                    = (IDecorationsProvider) obj.getAdapter( IDecorationsProvider.class );
-                
-                ImageDescriptor imgdesc = decprov.getIcon();
-                
-                if( isFixed )
-                {
-                    imgdesc = new FixedFacetImageDescriptor( imgdesc );
-                }
-                
-                getImageRegistry().put( id, imgdesc );
-                image = getImageRegistry().get( id );
-            }
-
-            return image;
         }
 
         public boolean isLabelProperty( final Object obj,
@@ -2119,21 +1403,30 @@ public final class FacetsSelectionPanel
         implements ICellModifier
 
     {
+        private final IFacetedProjectWorkingCopy fpjwc;
+        
+        public CellModifier()
+        {
+            this.fpjwc = getFacetedProjectWorkingCopy();
+        }
+        
         public Object getValue( final Object element,
                                 final String property )
         {
-            final TableRowData trd = (TableRowData) element;
+            final IProjectFacet f = (IProjectFacet) element;
 
             if( property.equals( VERSION_COLUMN ) )
             {
-                final List<IProjectFacetVersion> versions = trd.getVersions();
-
-                for( int i = 0, n = versions.size(); i < n; i++ )
+                int i = 0;
+                
+                for( IProjectFacetVersion fv : this.fpjwc.getAvailableVersions( f ) )
                 {
-                    if( versions.get( i ) == trd.getCurrentVersion() )
+                    if( fv == getSelectedVersion( f ) )
                     {
                         return new Integer( i );
                     }
+                    
+                    i++;
                 }
 
                 return new IllegalStateException();
@@ -2148,8 +1441,8 @@ public final class FacetsSelectionPanel
                                   final String property )
         {
             return property.equals( VERSION_COLUMN ) &&
-                   element instanceof TableRowData &&
-                   ( (TableRowData) element ).getVersions().size() > 1;
+                   element instanceof IProjectFacet &&
+                   this.fpjwc.getAvailableVersions( (IProjectFacet ) element ).size() > 1;
         }
 
         public void modify( final Object element,
@@ -2157,7 +1450,7 @@ public final class FacetsSelectionPanel
                             final Object value )
         {
             final TreeItem item = (TreeItem) element;
-            final TableRowData trd = (TableRowData) item.getData();
+            final IProjectFacet f = (IProjectFacet) item.getData();
 
             if( property.equals( VERSION_COLUMN ) )
             {
@@ -2165,19 +1458,19 @@ public final class FacetsSelectionPanel
 
                 if( index != -1 )
                 {
-                    final IProjectFacetVersion fv = trd.getVersions().get( index );
+                    int i = 0;
                     
-                    if( trd.getCurrentVersion() != fv )
+                    for( IProjectFacetVersion fv : this.fpjwc.getAvailableVersions( f ) )
                     {
-                        trd.setCurrentVersion( fv );
-                        FacetsSelectionPanel.this.treeViewer.update( trd, null );
-                        
-                        if( trd.isSelected() )
+                        if( i == index )
                         {
-                            FacetsSelectionPanel.this.model.setSelectedPreset( null );
+                            setSelectedVersion( f, fv );
+                            FacetsSelectionPanel.this.treeViewer.update( f, null );
+                            
+                            break;
                         }
-    
-                        updateValidationDisplay();
+                        
+                        i++;
                     }
                 }
             }
@@ -2202,9 +1495,9 @@ public final class FacetsSelectionPanel
 
         private static String getLabel( final Object obj )
         {
-            if( obj instanceof TableRowData )
+            if( obj instanceof IProjectFacet )
             {
-                return ( (TableRowData) obj ).getProjectFacet().getLabel();
+                return ( (IProjectFacet) obj ).getLabel();
             }
             else
             {
@@ -2226,6 +1519,11 @@ public final class FacetsSelectionPanel
         @Override
         protected final boolean shouldCreateToolTip( final Event event ) 
         {
+            if( getShowToolTips() == false )
+            {
+                return false;
+            }
+            
             final TreeItem treeItem = getTreeItem( event.x, event.y );
             String description = null;
             
@@ -2233,12 +1531,9 @@ public final class FacetsSelectionPanel
             {
                 final Object treeItemData = treeItem.getData();
                 
-                if( treeItemData instanceof TableRowData )
+                if( treeItemData instanceof IProjectFacet )
                 {
-                    final IProjectFacetVersion fv 
-                        = ( (TableRowData) treeItemData ).getCurrentVersion();
-                    
-                    description = fv.getProjectFacet().getDescription();
+                    description = ( (IProjectFacet) treeItemData ).getDescription();
                 }
             }
             
@@ -2248,8 +1543,8 @@ public final class FacetsSelectionPanel
         @Override
         protected String getToolTipTitle( final Event event )
         {
-            final TableRowData trd = (TableRowData) getTreeItem( event.x, event.y ).getData();
-            return trd.getCurrentVersion().toString();
+            final IProjectFacet f = (IProjectFacet) getTreeItem( event.x, event.y ).getData();
+            return getSelectedVersion( f ).toString();
         }
 
         @Override
@@ -2266,8 +1561,8 @@ public final class FacetsSelectionPanel
             label.setLayoutData( gdfill() );
             label.setBackground( display.getSystemColor( SWT.COLOR_INFO_BACKGROUND ) );
 
-            final TableRowData trd = (TableRowData) getTreeItem( event.x, event.y ).getData();
-            label.setText( trd.getCurrentVersion().getProjectFacet().getDescription() );
+            final IProjectFacet f = (IProjectFacet) getTreeItem( event.x, event.y ).getData();
+            label.setText( f.getDescription() );
             
             return composite;
         }
@@ -2286,6 +1581,11 @@ public final class FacetsSelectionPanel
         @Override
         protected final boolean shouldCreateToolTip( final Event event ) 
         {
+            if( getShowToolTips() == false )
+            {
+                return false;
+            }
+            
             final TreeItem treeItem = getTreeItem( event.x, event.y );
             String description = null;
             
@@ -2382,14 +1682,14 @@ public final class FacetsSelectionPanel
     {
         public Object[] getElements( final Object element )
         {
-            return FacetsSelectionPanel.this.problems.getChildren();
+            return FacetsSelectionPanel.this.fpjwc.validate().getChildren();
         }
-
-        public void dispose() { }
 
         public void inputChanged( final Viewer viewer,
                                   final Object oldObject,
                                   final Object newObject ) {}
+        
+        public void dispose() {}
     }
 
     private final class ProblemsLabelProvider
@@ -2435,20 +1735,15 @@ public final class FacetsSelectionPanel
         
     {
         public static String presetsLabel;
-        public static String customPreset;
         public static String saveButtonLabel;
         public static String deleteButtonLabel;
         public static String savePresetDialogTitle;
         public static String savePresetDialogMessage;
         public static String facetColumnLabel;
         public static String versionColumnLabel;
-        public static String showConstraints;
-        public static String showRuntimes;
-        public static String hideRuntimes;
         public static String couldNotDeselectFixedFacetMessage;
-        public static String facetNotFound;
-        public static String facetVersionNotFound;
-        public static String facetNotSupportedByTarget;
+        public static String detailsTabLabel;
+        public static String runtimesTabLabel;
         
         static
         {

@@ -16,60 +16,60 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
-import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectFrameworkEvent;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectFrameworkListener;
 import org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
-public final class ListenerRegistry
+public final class FrameworkListenerRegistry
 {
-    private final Map<IFacetedProjectEvent.Type,Set<IFacetedProjectListener>> listeners;
+    private final Map<IFacetedProjectFrameworkEvent.Type,Set<IFacetedProjectFrameworkListener>> listeners;
     
-    public ListenerRegistry()
+    public FrameworkListenerRegistry()
     {
         this.listeners
-            = new EnumMap<IFacetedProjectEvent.Type,Set<IFacetedProjectListener>>( IFacetedProjectEvent.Type.class );
+            = new EnumMap<IFacetedProjectFrameworkEvent.Type,Set<IFacetedProjectFrameworkListener>>( IFacetedProjectFrameworkEvent.Type.class );
         
-        for( IFacetedProjectEvent.Type t : IFacetedProjectEvent.Type.values() )
+        for( IFacetedProjectFrameworkEvent.Type t : IFacetedProjectFrameworkEvent.Type.values() )
         {
-            this.listeners.put( t, new CopyOnWriteArraySet<IFacetedProjectListener>() );
+            this.listeners.put( t, new CopyOnWriteArraySet<IFacetedProjectFrameworkListener>() );
         }
     }
     
-    public void addListener( final IFacetedProjectListener listener,
-                             final IFacetedProjectEvent.Type... types )
+    public void addListener( final IFacetedProjectFrameworkListener listener,
+                             final IFacetedProjectFrameworkEvent.Type... types )
     {
         if( listener == null || types == null )
         {
             throw new IllegalArgumentException();
         }
         
-        for( IFacetedProjectEvent.Type type 
-             : ( types.length > 0 ? types : IFacetedProjectEvent.Type.values() ) )
+        for( IFacetedProjectFrameworkEvent.Type type 
+             : ( types.length > 0 ? types : IFacetedProjectFrameworkEvent.Type.values() ) )
         {
             this.listeners.get( type ).add( listener );
         }
     }
     
-    public void removeListener( final IFacetedProjectListener listener )
+    public void removeListener( final IFacetedProjectFrameworkListener listener )
     {
         if( listener == null )
         {
             throw new IllegalArgumentException();
         }
         
-        for( Set<IFacetedProjectListener> listeners : this.listeners.values() )
+        for( Set<IFacetedProjectFrameworkListener> listeners : this.listeners.values() )
         {
             listeners.remove( listener );
         }
     }
     
-    public void notifyListeners( final IFacetedProjectEvent event )
+    public void notifyListeners( final IFacetedProjectFrameworkEvent event )
     {
-        for( IFacetedProjectListener listener : this.listeners.get( event.getType() ) )
+        for( IFacetedProjectFrameworkListener listener : this.listeners.get( event.getType() ) )
         {
             try
             {
@@ -82,7 +82,7 @@ public final class ListenerRegistry
         }
     }
     
-    public Set<IFacetedProjectListener> getListeners( final IFacetedProjectEvent.Type eventType )
+    public Set<IFacetedProjectFrameworkListener> getListeners( final IFacetedProjectFrameworkEvent.Type eventType )
     {
         return this.listeners.get( eventType );
     }

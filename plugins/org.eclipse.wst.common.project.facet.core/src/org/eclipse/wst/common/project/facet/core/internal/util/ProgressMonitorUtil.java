@@ -52,7 +52,14 @@ public final class ProgressMonitorUtil
     public static IProgressMonitor submon( final IProgressMonitor parent,
                                            final int ticks )
     {
-        return ( parent == null ? null : new SubProgressMonitor( parent, ticks ) );
+        return submon( parent, ticks, SubProgressMonitor.SUPPRESS_SUBTASK_LABEL );
+    }
+
+    public static IProgressMonitor submon( final IProgressMonitor parent,
+                                           final int ticks,
+                                           final int style )
+    {
+        return ( parent == null ? null : new SubProgressMonitor( parent, ticks, style ) );
     }
     
     public static void subTask( final IProgressMonitor monitor,

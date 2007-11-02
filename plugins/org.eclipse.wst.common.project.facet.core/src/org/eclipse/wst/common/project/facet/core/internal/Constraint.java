@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
@@ -254,6 +255,159 @@ public final class Constraint
         return result;
     }
     
+    /**
+     * Prunes the constraint by removing parts that are not relevant or satisfied by default
+     * in the context of the provided fixed facets.
+     * 
+     * <ol>
+     *   <li>An AND or an OR operator with no children is eliminated.</li>
+     *   <li>An AND or an OR operator with one child is replaced by that child.</li>
+     *   <li>A REQUIRES_FACET operator is eliminated if all applicable versions of
+     *     that facet are incompatible with the fixed facets.</li>
+     *   <li>A REQUIRED_FACET operator is eliminated if it will accept every version
+     *     of a fixed facet.</li>
+     *   <li>A CONFLICTS_WITH_FACET operator is eliminated if none of the matched versions
+     *     of that facet are compatible with the fixed facets.</li>
+     *   <li>A CONFLICTS_WITH_GROUP operator is eliminated if all members of the group
+     *     (not counting this facet) are incompatible with the fixed facets.</li>
+     * </ol>
+     */
+    
+    public static IConstraint pruneConstraint( final IProjectFacetVersion facet,
+                                               final Set<IProjectFacet> fixedFacets )
+    {
+        return pruneConstraint( facet, facet.getConstraint(), fixedFacets );
+    }
+
+    private static IConstraint pruneConstraint( final IProjectFacetVersion facet,
+                                                final IConstraint constraint,
+                                                final Set<IProjectFacet> fixedFacets )
+    {
+        final IConstraint.Type type = constraint.getType();
+        
+        if( type == IConstraint.Type.AND || type == IConstraint.Type.OR )
+        {
+            final List<IConstraint> newOperands = new ArrayList<IConstraint>();
+            boolean changed = false;
+            
+            for( Object operand : constraint.getOperands() )
+            {
+                final IConstraint newOperand 
+                    = pruneConstraint( facet, (IConstraint) operand, fixedFacets );
+                
+                if( newOperand == null )
+                {
+                    changed = true;
+                }
+                else if( operand != newOperand )
+                {
+                    changed = true;
+                    newOperands.add( newOperand );
+                }
+                else
+                {
+                    newOperands.add( (IConstraint) operand );
+                }
+            }
+            
+            final int newOperandCount = newOperands.size();
+            
+            if( newOperandCount == 0 )
+            {
+                return null;
+            }
+            else if( newOperandCount == 1 )
+            {
+                return newOperands.get( 0 );
+            }
+            else if( changed )
+            {
+                return new Constraint( ( (Constraint) constraint ).fv, type,
+                                       newOperands.toArray() );
+            }
+        }
+        else if( type == IConstraint.Type.REQUIRES )
+        {
+            final Object firstOperand = constraint.getOperand( 0 );
+            
+            if( firstOperand instanceof IProjectFacet )
+            {
+                final IProjectFacet f = (IProjectFacet) firstOperand;
+                final IVersionExpr vexpr = (IVersionExpr) constraint.getOperand( 1 );
+                
+                int acceptableVersionCount = 0;
+                
+                for( IProjectFacetVersion fv : f.getVersions() )
+                {
+                    if( vexpr.check( fv ) && fv.isValidFor( fixedFacets ) )
+                    {
+                        acceptableVersionCount++;
+                    }
+                }
+                
+                if( acceptableVersionCount == 0 )
+                {
+                    return null;
+                }
+                
+                if( fixedFacets.contains( f ) && 
+                    f.getVersions().size() == acceptableVersionCount )
+                {
+                    return null;
+                }
+            }
+        }
+        else if( type == IConstraint.Type.CONFLICTS )
+        {
+            final Object firstOperand = constraint.getOperand( 0 );
+            
+            if( firstOperand instanceof IProjectFacet )
+            {
+                final IProjectFacet f = (IProjectFacet) firstOperand;
+                final IVersionExpr vexpr = (IVersionExpr) constraint.getOperand( 1 );
+                
+                boolean isValidForContext = false;
+                
+                for( IProjectFacetVersion fv : f.getVersions() )
+                {
+                    if( vexpr.check( fv ) && fv.isValidFor( fixedFacets ) )
+                    {
+                        isValidForContext = true;
+                        break;
+                    }
+                }
+                
+                if( ! isValidForContext )
+                {
+                    return null;
+                }
+            }
+            else if( firstOperand instanceof IGroup )
+            {
+                final IGroup group = (IGroup) firstOperand;
+                
+                boolean atLeastOneIsValid = false;
+                
+                for( IProjectFacetVersion member : group.getMembers() )
+                {
+                    if( member.getProjectFacet() != facet.getProjectFacet() && 
+                        member.isValidFor( fixedFacets ) )
+                    {
+                        atLeastOneIsValid = true;
+                        break;
+                    }
+                }
+                
+                if( ! atLeastOneIsValid )
+                {
+                    return null;
+                }
+            }
+        }
+        
+        return constraint;
+    }
+    
     private boolean containsOnlyRequires()
     {
         for( Object operand : this.operands )
@@ -286,7 +440,7 @@ public final class Constraint
         return createMultiStatus( new IStatus[ 0 ] );
     }
 
-    static MultiStatus createMultiStatus( final IStatus[] children )
+    public static MultiStatus createMultiStatus( final IStatus[] children )
     {
         return new MultiStatus( FacetCorePlugin.PLUGIN_ID, 0, children, 
                                 Resources.validationProblems, null );

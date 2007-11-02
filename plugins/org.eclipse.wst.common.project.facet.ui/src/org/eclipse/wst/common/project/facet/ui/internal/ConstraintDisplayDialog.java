@@ -139,7 +139,14 @@ public final class ConstraintDisplayDialog
     
     protected Point getInitialLocation( final Point size )
     {
-        return this.location;
+        if( this.location != null )
+        {
+            return this.location;
+        }
+        else
+        {
+            return super.getInitialLocation( size );
+        }
     }
     
     protected Point getInitialSize()

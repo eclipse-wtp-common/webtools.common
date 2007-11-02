@@ -14,6 +14,8 @@ package org.eclipse.wst.common.project.facet.core;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectFrameworkEvent;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectFrameworkListener;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectFrameworkImpl;
 import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectNature;
@@ -47,6 +49,12 @@ public final class FacetedProjectFramework
     private static FacetedProjectFrameworkImpl impl = null;
     
     private FacetedProjectFramework() { }
+    
+    public static IFacetedProjectWorkingCopy createNewProject()
+    {
+        initialize();
+        return impl.createNewProject();
+    }
     
     /**
      * <p>Determines whether the specified project facet is installed in the
@@ -163,6 +171,13 @@ public final class FacetedProjectFramework
         impl.addListener( listener, types );
     }
     
+    public static void addListener( final IFacetedProjectFrameworkListener listener,
+                                    final IFacetedProjectFrameworkEvent.Type... types )
+    {
+        initialize();
+        impl.addListener( listener, types );
+    }
+    
     /**
      * Removes the faceted project listener that was previously registered using the
      * {@see addListener(IFacetedProjectListener,IFacetedProjectEvent.Type[])} method. If the
@@ -176,6 +191,12 @@ public final class FacetedProjectFramework
      */
     
     public static void removeListener( final IFacetedProjectListener listener )
+    {
+        initialize();
+        impl.removeListener( listener );
+    }
+    
+    public static void removeListener( final IFacetedProjectFrameworkListener listener )
     {
         initialize();
         impl.removeListener( listener );

@@ -11,11 +11,6 @@
 
 package org.eclipse.wst.common.project.facet.ui;
 
-import java.util.Set;
-
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
@@ -24,8 +19,6 @@ import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectTemplate;
-import org.eclipse.wst.common.project.facet.core.IProjectFacet;
-import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -39,14 +32,15 @@ public abstract class FacetedProjectWizard
 {
     private final IFacetedProjectTemplate template;
     private WizardNewProjectCreationPage firstPage;
-    private String projectName;
-    private IPath customPath;
     
     public FacetedProjectWizard()
     {
         super( null );
         
         this.template = getTemplate();
+        
+        this.fpjwc.setSelectedPreset( this.template.getInitialPreset().getId() );
+        this.fpjwc.setFixedProjectFacets( this.template.getFixedProjectFacets() );
         
         this.setWindowTitle( Resources.newPrefix + this.template.getLabel() );
         
@@ -73,11 +67,6 @@ public abstract class FacetedProjectWizard
         addPage( this.firstPage );
         
         super.addPages();
-        
-        this.facetsSelectionPage.setInitialPreset( this.template.getInitialPreset() );
-        
-        final Set<IProjectFacet> fixed = this.template.getFixedProjectFacets();
-        this.facetsSelectionPage.setFixedProjectFacets( fixed );
     }
     
     public boolean canFinish()
@@ -96,44 +85,18 @@ public abstract class FacetedProjectWizard
         return pages;
     }
     
-    public synchronized boolean performFinish() 
+    @Override
+    public IWizardPage getNextPage( final IWizardPage page )
     {
-        this.projectName = this.firstPage.getProjectName();
+        if( page == this.firstPage )
+        {
+            this.fpjwc.setProjectName( this.firstPage.getProjectName() );
+            this.fpjwc.setProjectLocation( this.firstPage.getLocationPath() );
+        }
+        
+        return super.getNextPage( page );
+    }
 
-        this.customPath
-            = this.firstPage.useDefaults() 
-              ? null : this.firstPage.getLocationPath();
-        
-        return super.performFinish();
-    }
-    
-    protected void performFinish( final IProgressMonitor monitor )
-    
-        throws CoreException
-        
-    {
-        this.fproj 
-            = ProjectFacetsManager.create( this.projectName,
-                                           this.customPath, monitor );
-        
-        super.performFinish( monitor );
-        
-        final Set<IProjectFacet> fixed = this.template.getFixedProjectFacets();
-        this.fproj.setFixedProjectFacets( fixed );
-    }
-    
-    public synchronized String getProjectName()
-    {
-        if( this.fproj == null )
-        {
-            return this.firstPage.getProjectName();
-        }
-        else
-        {
-            return this.fproj.getProject().getName();
-        }
-    }
-    
     protected abstract IFacetedProjectTemplate getTemplate();
     protected abstract String getPageDescription();
     protected abstract ImageDescriptor getDefaultPageImageDescriptor();

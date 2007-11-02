@@ -57,6 +57,7 @@ import org.eclipse.wst.common.project.facet.core.IConstraint;
 import org.eclipse.wst.common.project.facet.core.IDefaultVersionProvider;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectTemplate;
+import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.IGroup;
 import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
@@ -64,10 +65,14 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.IVersionExpr;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectFrameworkEvent;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectFrameworkListener;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.events.internal.EventsExtensionPoint;
+import org.eclipse.wst.common.project.facet.core.events.internal.FacetedProjectFrameworkEvent;
+import org.eclipse.wst.common.project.facet.core.events.internal.FrameworkListenerRegistry;
 import org.eclipse.wst.common.project.facet.core.events.internal.LegacyEventHandlerAdapter;
-import org.eclipse.wst.common.project.facet.core.events.internal.ListenerRegistry;
+import org.eclipse.wst.common.project.facet.core.events.internal.ProjectListenerRegistry;
 import org.eclipse.wst.common.project.facet.core.internal.util.IndexedSet;
 import org.eclipse.wst.common.project.facet.core.internal.util.VersionExpr;
 import org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.InvalidExtensionException;
@@ -124,7 +129,8 @@ public final class FacetedProjectFrameworkImpl
     private boolean presetsInitialized = false;
     private final IndexedSet<String,IGroup> groups;
     private final Map<String,FacetedProject> projects;
-    private final ListenerRegistry listeners;
+    private final ProjectListenerRegistry projectListenerRegistry;
+    private final FrameworkListenerRegistry frameworkListenerRegistry;
     
     private FacetedProjectFrameworkImpl()
     {
@@ -170,7 +176,8 @@ public final class FacetedProjectFrameworkImpl
         this.presetsInitialized = false;
         this.groups = new IndexedSet<String,IGroup>();
         this.projects = new HashMap<String,FacetedProject>();
-        this.listeners = new ListenerRegistry();
+        this.projectListenerRegistry = new ProjectListenerRegistry();
+        this.frameworkListenerRegistry = new FrameworkListenerRegistry();
         
         readMetadata();
         
@@ -309,22 +316,23 @@ public final class FacetedProjectFrameworkImpl
     public IPreset definePreset( final String name,
                                  final Set<IProjectFacetVersion> facets )
     {
-        synchronized( this.presets )
-        {
-            initializePresets();
-            return definePreset( name, "", facets, true ); //$NON-NLS-1$
-        }
+        return definePreset( name, null, facets );
     }
 
     public IPreset definePreset( final String name,
                                  final String description,
                                  final Set<IProjectFacetVersion> facets )
     {
-        synchronized( this.presets )
-        {
-            initializePresets();
-            return definePreset( name, description, facets, true );
-        }
+       initializePresets();
+       
+       final IPreset preset = definePreset( name, description, facets, true );
+
+       final IFacetedProjectFrameworkEvent event 
+           = new FacetedProjectFrameworkEvent( IFacetedProjectFrameworkEvent.Type.PRESET_ADDED );
+       
+       this.frameworkListenerRegistry.notifyListeners( event );
+       
+       return preset;
     }
     
     private IPreset definePreset( final String name,
@@ -332,32 +340,37 @@ public final class FacetedProjectFrameworkImpl
                                   final Set<IProjectFacetVersion> facets,
                                   final boolean save )
     {
-        String id;
-        int i = 0;
-        
-        do
+        synchronized( this.presets )
         {
-            id = ".usr." + i; //$NON-NLS-1$
-            i++;
+            String id;
+            int i = 0;
+            
+            do
+            {
+                id = ".usr." + i; //$NON-NLS-1$
+                i++;
+            }
+            while( this.presets.containsKey( id ) );
+            
+            final UserPreset preset 
+                = new UserPreset( id, name, description == null ? "" : description,  //$NON-NLS-1$
+                                  facets );
+            
+            this.presets.add( id, preset );
+            
+            if( save )
+            {
+                saveUserPresets();
+            }
+            
+            return preset;
         }
-        while( this.presets.containsKey( id ) );
-        
-        final UserPreset preset 
-            = new UserPreset( id, name, description == null ? "" : description,  //$NON-NLS-1$
-                              facets );
-        
-        this.presets.add( id, preset );
-        
-        if( save )
-        {
-            saveUserPresets();
-        }
-        
-        return preset;
     }
     
     public boolean deletePreset( final IPreset preset )
     {
+        boolean deleted;
+        
         synchronized( this.presets )
         {
             initializePresets();
@@ -367,29 +380,40 @@ public final class FacetedProjectFrameworkImpl
                 return false;
             }
             
-            final boolean res = this.presets.delete( preset.getId() );
+            deleted = this.presets.delete( preset.getId() );
             
-            if( res )
+            if( deleted )
             {
                 saveUserPresets();
             }
-            
-            return res;
         }
+
+        if( deleted )
+        {
+            final IFacetedProjectFrameworkEvent event 
+                = new FacetedProjectFrameworkEvent( IFacetedProjectFrameworkEvent.Type.PRESET_REMOVED );
+            
+            this.frameworkListenerRegistry.notifyListeners( event );
+        }
+        
+        return deleted;
     }
     
     private void initializePresets()
     {
-        if( ! this.presetsInitialized )
+        synchronized( this.presets )
         {
-            for( IPreset preset : PresetsExtensionPoint.getPresets() )
+            if( ! this.presetsInitialized )
             {
-                this.presets.add( preset.getId(), preset );
+                for( IPreset preset : PresetsExtensionPoint.getPresets() )
+                {
+                    this.presets.add( preset.getId(), preset );
+                }
+                
+                readUserPresets();
+                
+                this.presetsInitialized = true;
             }
-            
-            readUserPresets();
-            
-            this.presetsInitialized = true;
         }
     }
     
@@ -564,7 +588,7 @@ public final class FacetedProjectFrameworkImpl
         
         return group;
     }
-
+    
     public Set<IFacetedProject> getFacetedProjects()
     
         throws CoreException
@@ -620,6 +644,11 @@ public final class FacetedProjectFrameworkImpl
         }
         
         return result;
+    }
+    
+    public IFacetedProjectWorkingCopy createNewProject()
+    {
+        return new FacetedProjectWorkingCopy( null );
     }
 
     public IFacetedProject create( final IProject project )
@@ -739,17 +768,28 @@ public final class FacetedProjectFrameworkImpl
     public void addListener( final IFacetedProjectListener listener,
                              final IFacetedProjectEvent.Type... types )
     {
-        this.listeners.addListener( listener, types );
+        this.projectListenerRegistry.addListener( listener, types );
+    }
+    
+    public void addListener( final IFacetedProjectFrameworkListener listener,
+                             final IFacetedProjectFrameworkEvent.Type... types )
+    {
+        this.frameworkListenerRegistry.addListener( listener, types );
     }
     
     public void removeListener( final IFacetedProjectListener listener )
     {
-        this.listeners.removeListener( listener );
+        this.projectListenerRegistry.removeListener( listener );
     }
     
-    ListenerRegistry getListenerRegistry()
+    public void removeListener( final IFacetedProjectFrameworkListener listener )
     {
-        return this.listeners;
+        this.frameworkListenerRegistry.removeListener( listener );
+    }
+    
+    ProjectListenerRegistry getProjectListenerRegistry()
+    {
+        return this.projectListenerRegistry;
     }
     
     public IStatus check( final Set<IProjectFacetVersion> base,

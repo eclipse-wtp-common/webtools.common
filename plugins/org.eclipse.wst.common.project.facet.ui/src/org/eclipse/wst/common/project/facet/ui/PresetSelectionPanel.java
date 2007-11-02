@@ -12,18 +12,25 @@
 
 package org.eclipse.wst.common.project.facet.ui;
 
+import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.*;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.IPreset;
-import org.eclipse.wst.common.project.facet.ui.internal.ModifyFacetedProjectDataModel;
-import org.eclipse.wst.common.project.facet.ui.internal.AbstractDataModel.IDataModelListener;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
+import org.eclipse.wst.common.project.facet.ui.internal.FacetsSelectionDialog;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -36,16 +43,18 @@ public final class PresetSelectionPanel
 {
     private final Group group;
     private final Combo presetsCombo;
+    private final Button modifyButton;
     private final Label descLabel;
-    private final ModifyFacetedProjectDataModel model;
+    private final IFacetedProjectWorkingCopy fpjwc;
     
     public PresetSelectionPanel( final Composite parent,
-                                 final int style,
-                                 final ModifyFacetedProjectDataModel model )
+                                 final IFacetedProjectWorkingCopy fpjwc )
     {
-        super( parent, style );
+        super( parent, SWT.NONE );
         
-        this.model = model;
+        Dialog.applyDialogFont( parent );
+        
+        this.fpjwc = fpjwc;
         
         GridLayout layout = new GridLayout( 1, false );
         layout.marginHeight = 0;
@@ -54,16 +63,31 @@ public final class PresetSelectionPanel
         setLayout( layout );
         
         this.group = new Group( this, SWT.NONE );
-        this.group.setLayout( new GridLayout( 1, false ) );
+        this.group.setLayout( new GridLayout( 2, false ) );
         this.group.setLayoutData( gdhfill() );
         this.group.setText( Resources.groupTitle );
         
         this.presetsCombo = new Combo( this.group, SWT.BORDER | SWT.READ_ONLY );
         this.presetsCombo.setLayoutData( gdhfill() );
         
+        this.modifyButton = new Button( this.group, SWT.PUSH );
+        this.modifyButton.setText( "Modify..." ); //$NON-NLS-1$
+        
+        this.modifyButton.addSelectionListener
+        (
+            new SelectionAdapter()
+            {
+                @Override
+                public void widgetSelected( final SelectionEvent event )
+                {
+                    handleModifyButtonPressed();
+                }
+            }
+        );
+        
         this.descLabel = new Label( this.group, SWT.WRAP );
    
-        final GridData gd = gdhfill();
+        final GridData gd = gdhspan( gdhfill(), 2 );
         gd.widthHint = 400;
         gd.minimumHeight = 30;
         gd.grabExcessVerticalSpace = true;
@@ -72,29 +96,24 @@ public final class PresetSelectionPanel
         
         refreshDescription();
         
-        this.model.addListener
+        this.fpjwc.addListener
         ( 
-            ModifyFacetedProjectDataModel.EVENT_SELECTED_PRESET_CHANGED,
-            new IDataModelListener()
+            new IFacetedProjectListener()
             {
-                public void handleEvent()
+                public void handleEvent( final IFacetedProjectEvent event )
                 {
                     refreshDescription();
                 }
-            }
+            },
+            IFacetedProjectEvent.Type.SELECTED_PRESET_CHANGED
         );
         
-        Dialog.applyDialogFont( parent );
-    }
-    
-    public Combo getPresetsCombo()
-    {
-        return this.presetsCombo;
+        ModifyFacetedProjectWizard.syncWithPresetsModel( this.fpjwc, this.presetsCombo );
     }
     
     private void refreshDescription()
     {
-        final IPreset preset = this.model.getSelectedPreset();
+        final IPreset preset = this.fpjwc.getSelectedPreset();
         
         final String desc;
         
@@ -110,9 +129,9 @@ public final class PresetSelectionPanel
         this.descLabel.setText( desc );
     }
     
-    private static GridData gdhfill() 
+    private void handleModifyButtonPressed()
     {
-        return new GridData( GridData.FILL_HORIZONTAL );
+        FacetsSelectionDialog.openDialog( getShell(), this.fpjwc );
     }
     
     private static final class Resources

@@ -62,12 +62,15 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentType;
+import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
 import org.eclipse.wst.common.project.facet.ui.IDecorationsProvider;
 import org.eclipse.wst.common.project.facet.ui.IRuntimeComponentLabelProvider;
-import org.eclipse.wst.common.project.facet.ui.internal.AbstractDataModel.IDataModelListener;
 import org.osgi.framework.Bundle;
 
 /**
@@ -81,9 +84,8 @@ public final class RuntimesPanel
 {
     private static final Object NO_RUNTIME_SELECTED_PLACEHOLDER = new Object();
     
-    private final ChangeTargetedRuntimesDataModel model;
+    private final IFacetedProjectWorkingCopy fpjwc;
     private boolean showAllRuntimesSetting;
-    private final Label runtimesLabel;
     private final CheckboxTableViewer runtimes;
     private final Button showAllRuntimesCheckbox;
     private final Button makePrimaryButton;
@@ -91,16 +93,15 @@ public final class RuntimesPanel
     private final Label runtimeComponentsLabel;
     private final TableViewer runtimeComponents;
     private IRuntime currentPrimaryRuntime;
-    private final List<IDataModelListener> listeners;
+    private final List<IFacetedProjectListener> listeners;
     private Color colorGray;
     
     public RuntimesPanel( final Composite parent,
-                          final int style,
-                          final ChangeTargetedRuntimesDataModel model )
+                          final IFacetedProjectWorkingCopy fpjwc )
     {
-        super( parent, style );
+        super( parent, SWT.NONE );
         
-        this.listeners = new ArrayList<IDataModelListener>();
+        this.listeners = new ArrayList<IFacetedProjectListener>();
         
         addDisposeListener
         ( 
@@ -115,54 +116,54 @@ public final class RuntimesPanel
         
         // Bind to the data model.
         
-        this.model = model;
+        this.fpjwc = fpjwc;
         
         addDataModelListener
         ( 
-            ChangeTargetedRuntimesDataModel.EVENT_AVAILABLE_RUNTIMES_CHANGED, 
-            new IDataModelListener()
+            new IFacetedProjectListener()
             {
-                public void handleEvent()
+                public void handleEvent( final IFacetedProjectEvent event )
                 {
                     handleAvailableRuntimesChanged();
                 }
-            }
+            },
+            IFacetedProjectEvent.Type.AVAILABLE_RUNTIMES_CHANGED
         );
         
         addDataModelListener
         ( 
-            ChangeTargetedRuntimesDataModel.EVENT_TARGETABLE_RUNTIMES_CHANGED, 
-            new IDataModelListener()
+            new IFacetedProjectListener()
             {
-                public void handleEvent()
+                public void handleEvent( final IFacetedProjectEvent event )
                 {
                     handleTargetableRuntimesChanged();
                 }
-            }
+            },
+            IFacetedProjectEvent.Type.TARGETABLE_RUNTIMES_CHANGED
         );
         
         addDataModelListener
         ( 
-            ChangeTargetedRuntimesDataModel.EVENT_TARGETED_RUNTIMES_CHANGED, 
-            new IDataModelListener()
+            new IFacetedProjectListener()
             {
-                public void handleEvent()
+                public void handleEvent( final IFacetedProjectEvent event )
                 {
                     handleTargetedRuntimesChanged();
                 }
-            }
+            },
+            IFacetedProjectEvent.Type.TARGETED_RUNTIMES_CHANGED
         );
         
         addDataModelListener
         ( 
-            ChangeTargetedRuntimesDataModel.EVENT_PRIMARY_RUNTIME_CHANGED, 
-            new IDataModelListener()
+            new IFacetedProjectListener()
             {
-                public void handleEvent()
+                public void handleEvent( final IFacetedProjectEvent event )
                 {
                     handlePrimaryRuntimeChanged();
                 }
-            }
+            },
+            IFacetedProjectEvent.Type.PRIMARY_RUNTIME_CHANGED
         );
         
         this.showAllRuntimesSetting = false;
@@ -174,15 +175,11 @@ public final class RuntimesPanel
         // Layout the panel.
         
         final GridLayout layout = new GridLayout( 1, false );
-        layout.marginHeight = 0;
-        layout.marginWidth = 0;
+        layout.marginHeight = 5;
+        layout.marginWidth = 5;
 
         setLayout( layout );
 
-        this.runtimesLabel = new Label( this, SWT.NONE );
-        this.runtimesLabel.setText( Resources.runtimesLabel );
-        this.runtimesLabel.setLayoutData( gdhfill() );
-        
         this.runtimes = CheckboxTableViewer.newCheckList( this, SWT.BORDER );
         this.runtimes.getTable().setLayoutData( gdfill() );
         this.runtimes.setContentProvider( new ContentProvider() );
@@ -284,14 +281,14 @@ public final class RuntimesPanel
         this.runtimeComponentsLabel.setEnabled( false );
         
         refresh();
-        this.currentPrimaryRuntime = this.model.getPrimaryRuntime();
+        this.currentPrimaryRuntime = this.fpjwc.getPrimaryRuntime();
         
 	    Dialog.applyDialogFont( parent );
     }
     
-    public ChangeTargetedRuntimesDataModel getDataModel()
+    public IFacetedProjectWorkingCopy getFacetedProjectWorkingCopy()
     {
-        return this.model;
+        return this.fpjwc;
     }
     
     private void handleAvailableRuntimesChanged()
@@ -357,9 +354,9 @@ public final class RuntimesPanel
             return;
         }
         
-        final Set<IRuntime> targeted = this.model.getTargetedRuntimes();
+        final Set<IRuntime> targeted = this.fpjwc.getTargetedRuntimes();
         
-        for( IRuntime r : this.model.getTargetableRuntimes() )
+        for( IRuntime r : this.fpjwc.getTargetableRuntimes() )
         {
             if( targeted.contains( r ) )
             {
@@ -401,7 +398,7 @@ public final class RuntimesPanel
             this.runtimes.update( this.currentPrimaryRuntime, null );
         }
         
-        this.currentPrimaryRuntime = this.model.getPrimaryRuntime();
+        this.currentPrimaryRuntime = this.fpjwc.getPrimaryRuntime();
         
         if( this.currentPrimaryRuntime != null )
         {
@@ -413,7 +410,7 @@ public final class RuntimesPanel
     {
         final IRuntime runtime = (IRuntime) e.getElement();
         
-        if( ! this.model.getTargetableRuntimes().contains( runtime ) &&
+        if( ! this.fpjwc.getTargetableRuntimes().contains( runtime ) &&
             e.getChecked() )
         {
             this.runtimes.setChecked( runtime, false );
@@ -422,11 +419,11 @@ public final class RuntimesPanel
         
         if( e.getChecked() )
         {
-            this.model.addTargetedRuntime( runtime );
+            this.fpjwc.addTargetedRuntime( runtime );
         }
         else
         {
-            this.model.removeTargetedRuntime( runtime );
+            this.fpjwc.removeTargetedRuntime( runtime );
         }
     }
     
@@ -454,9 +451,9 @@ public final class RuntimesPanel
             }
             
             if( this.runtimes.getChecked( r ) && 
-                this.model.getPrimaryRuntime() != null && 
-                ! this.model.getPrimaryRuntime().equals( r ) &&
-                this.model.getTargetableRuntimes().contains( r ) )
+                this.fpjwc.getPrimaryRuntime() != null && 
+                ! this.fpjwc.getPrimaryRuntime().equals( r ) &&
+                this.fpjwc.getTargetableRuntimes().contains( r ) )
             {
                 this.makePrimaryButton.setEnabled( true );
             }
@@ -477,7 +474,7 @@ public final class RuntimesPanel
     
     private void handleMakePrimarySelected()
     {
-        this.model.setPrimaryRuntime( getSelection() );
+        this.fpjwc.setPrimaryRuntime( getSelection() );
     }
     
     @SuppressWarnings( "unchecked" )
@@ -506,7 +503,7 @@ public final class RuntimesPanel
             
             if( result.equals( true ) )
             {
-                this.model.refreshTargetableRuntimes();
+                this.fpjwc.refreshTargetableRuntimes();
             }
         }
         catch( Exception e )
@@ -526,10 +523,10 @@ public final class RuntimesPanel
     {
         this.runtimes.refresh();
 
-        final Set<IRuntime> untargetable = new HashSet<IRuntime>( this.model.getAllRuntimes() );
-        untargetable.removeAll( this.model.getTargetableRuntimes() );
+        final Set<IRuntime> untargetable = new HashSet<IRuntime>( RuntimeManager.getRuntimes() );
+        untargetable.removeAll( this.fpjwc.getTargetableRuntimes() );
         
-        this.runtimes.setCheckedElements( this.model.getTargetedRuntimes().toArray() );
+        this.runtimes.setCheckedElements( this.fpjwc.getTargetedRuntimes().toArray() );
     }
     
     private IRuntime getSelection()
@@ -547,18 +544,18 @@ public final class RuntimesPanel
         }
     }
     
-    private void addDataModelListener( final String event,
-                                       final IDataModelListener listener )
+    private void addDataModelListener( final IFacetedProjectListener listener,
+                                       final IFacetedProjectEvent.Type... types )
     {
-        this.model.addListener( event, listener );
+        this.fpjwc.addListener( listener, types );
         this.listeners.add( listener );
     }
     
     private void removeDataModelListeners()
     {
-        for( IDataModelListener listener : this.listeners )
+        for( IFacetedProjectListener listener : this.listeners )
         {
-            this.model.removeListener( listener );
+            this.fpjwc.removeListener( listener );
         }
     }
     
@@ -571,11 +568,11 @@ public final class RuntimesPanel
         {
             if( RuntimesPanel.this.showAllRuntimesSetting )
             {
-                return getDataModel().getAllRuntimes().toArray();
+                return RuntimeManager.getRuntimes().toArray();
             }
             else
             {
-                return getDataModel().getTargetableRuntimes().toArray();
+                return getFacetedProjectWorkingCopy().getTargetableRuntimes().toArray();
             }
         }
     
@@ -610,7 +607,7 @@ public final class RuntimesPanel
             final IRuntimeComponent rc = r.getRuntimeComponents().get( 0 );
             final IRuntimeComponentType rct = rc.getRuntimeComponentType();
             
-            final IRuntime primary = getDataModel().getPrimaryRuntime();
+            final IRuntime primary = getFacetedProjectWorkingCopy().getPrimaryRuntime();
             final boolean isPrimary = primary != null && primary.equals( r );
             
             final String imgid
@@ -635,9 +632,9 @@ public final class RuntimesPanel
                 image = this.imageRegistry.get( imgid );
             }
 
-            if( getDataModel().getTargetableRuntimes().contains( r ) )
+            if( getFacetedProjectWorkingCopy().getTargetableRuntimes().contains( r ) )
             {
-                if( RuntimesPanel.this.model.getTargetedRuntimes().contains( r ) )
+                if( RuntimesPanel.this.fpjwc.getTargetedRuntimes().contains( r ) )
                 {
                     RuntimesPanel.this.runtimes.setChecked( r, true );
                 }
@@ -667,7 +664,7 @@ public final class RuntimesPanel
         
         public Color getForeground( final Object element )
         {
-            if( ! getDataModel().getTargetableRuntimes().contains( element ) )
+            if( ! getFacetedProjectWorkingCopy().getTargetableRuntimes().contains( element ) )
             {
                 return RuntimesPanel.this.colorGray;
             }
@@ -849,7 +846,6 @@ public final class RuntimesPanel
         extends NLS
         
     {
-        public static String runtimesLabel;
         public static String runtimeCompositionLabel;
         public static String makePrimaryLabel;
         public static String newRuntimeButtonLabel;

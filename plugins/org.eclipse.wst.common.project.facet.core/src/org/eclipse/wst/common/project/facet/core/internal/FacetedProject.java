@@ -60,6 +60,7 @@ import org.eclipse.wst.common.project.facet.core.IActionDefinition;
 import org.eclipse.wst.common.project.facet.core.IDelegate;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectValidator;
+import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
@@ -68,7 +69,7 @@ import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.events.ITargetedRuntimesChangedEvent;
 import org.eclipse.wst.common.project.facet.core.events.internal.FixedFacetsChangedEvent;
 import org.eclipse.wst.common.project.facet.core.events.internal.LegacyListenerAdapter;
-import org.eclipse.wst.common.project.facet.core.events.internal.ListenerRegistry;
+import org.eclipse.wst.common.project.facet.core.events.internal.ProjectListenerRegistry;
 import org.eclipse.wst.common.project.facet.core.events.internal.PrimaryRuntimeChangedEvent;
 import org.eclipse.wst.common.project.facet.core.events.internal.ProjectFacetActionEvent;
 import org.eclipse.wst.common.project.facet.core.events.internal.ProjectModifiedEvent;
@@ -143,7 +144,7 @@ public final class FacetedProject
     private String primaryRuntime;
     IFile f;
     private long fModificationStamp = -1;
-    private final ListenerRegistry listeners;
+    private final ProjectListenerRegistry listeners;
     private final Object lock = new Object();
     private boolean isBeingModified = false;
     private Thread modifierThread = null;
@@ -162,7 +163,7 @@ public final class FacetedProject
         this.fixedReadOnly = Collections.unmodifiableSet( this.fixed );
         this.unknownFacets = new HashMap<String,ProjectFacet>();
         this.targetedRuntimes = new CopyOnWriteArraySet<String>();
-        this.listeners = new ListenerRegistry();
+        this.listeners = new ProjectListenerRegistry();
         this.parsingException = null;
         this.isDeleted = false;
         
@@ -208,7 +209,7 @@ public final class FacetedProject
         }
     }
     
-    public IProjectFacetVersion getInstalledVersion( final IProjectFacet f )
+    public IProjectFacetVersion getProjectFacetVersion( final IProjectFacet f )
     {
         synchronized( this.lock )
         {
@@ -222,6 +223,11 @@ public final class FacetedProject
             
             return null;
         }
+    }
+
+    public IProjectFacetVersion getInstalledVersion( final IProjectFacet f )
+    {
+        return getProjectFacetVersion( f );
     }
 
     public void installProjectFacet( final IProjectFacetVersion fv,
@@ -425,6 +431,14 @@ public final class FacetedProject
         synchronized( this.lock )
         {
             return this.fixedReadOnly;
+        }
+    }
+    
+    public boolean isFixedProjectFacet( final IProjectFacet facet )
+    {
+        synchronized( this.lock )
+        {
+            return this.fixed.contains( facet );
         }
     }
     
@@ -875,6 +889,11 @@ public final class FacetedProject
         }
     }
     
+    public IStatus validate()
+    {
+        return validate( null );
+    }
+    
     public IStatus validate( final IProgressMonitor monitor )
     {
         synchronized( this.lock )
@@ -1008,6 +1027,14 @@ public final class FacetedProject
         }
     }
     
+    public IFacetedProjectWorkingCopy createWorkingCopy()
+    {
+        synchronized( this.lock )
+        {
+            return new FacetedProjectWorkingCopy( this );
+        }
+    }
+    
     public IMarker createErrorMarker( final String message )
     
         throws CoreException
@@ -1085,7 +1112,7 @@ public final class FacetedProject
     private void notifyListeners( final IFacetedProjectEvent event )
     {
         this.listeners.notifyListeners( event );
-        FacetedProjectFrameworkImpl.getInstance().getListenerRegistry().notifyListeners( event );
+        FacetedProjectFrameworkImpl.getInstance().getProjectListenerRegistry().notifyListeners( event );
     }
     
     /**

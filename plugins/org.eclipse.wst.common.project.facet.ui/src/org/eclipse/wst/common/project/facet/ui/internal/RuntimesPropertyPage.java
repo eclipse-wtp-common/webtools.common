@@ -41,9 +41,10 @@ import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
-import org.eclipse.wst.common.project.facet.core.IFacetedProjectListener;
-import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.ui.ModifyFacetedProjectWizard;
 
@@ -55,7 +56,7 @@ public class RuntimesPropertyPage extends PropertyPage
 {
     private IFacetedProject project;
     private IFacetedProjectListener projectListener;
-    private ChangeTargetedRuntimesDataModel model;
+    private IFacetedProjectWorkingCopy fpjwc;
     private RuntimesPanel panel;
     
     protected Control createContents( final Composite parent ) 
@@ -77,48 +78,18 @@ public class RuntimesPropertyPage extends PropertyPage
                 return null;
             }
             
-            this.model = new ChangeTargetedRuntimesDataModel();
-            
-            this.model.setTargetedRuntimes( this.project.getTargetedRuntimes() );
-            this.model.setPrimaryRuntime( this.project.getPrimaryRuntime() );
-            
-            this.model.addRuntimeFilter
-            (
-                new ChangeTargetedRuntimesDataModel.IRuntimeFilter()
-                {
-                    public boolean check( final IRuntime runtime )
-                    {
-                        final IFacetedProject fpj = RuntimesPropertyPage.this.project;
-                        
-                        if( fpj.getTargetedRuntimes().contains( runtime ) )
-                        {
-                            return true;
-                        }
-                        else
-                        {
-                            for( IProjectFacetVersion fv : fpj.getProjectFacets() )
-                            {
-                                if( ! runtime.supports( fv ) )
-                                {
-                                    return false;
-                                }
-                            }
-                            
-                            return true;
-                        }
-                    }
-                }
-            );
+            this.fpjwc = this.project.createWorkingCopy();
             
             this.projectListener = new IFacetedProjectListener()
             {
-                public void projectChanged()
+                public void handleEvent( final IFacetedProjectEvent event )
                 {
                     handleProjectChangedEvent();
                 }
             };
             
-            this.project.addListener( this.projectListener );
+            this.project.addListener( this.projectListener, 
+                                      IFacetedProjectEvent.Type.PROJECT_MODIFIED );
             
             final Composite composite = new Composite( parent, SWT.NONE );
             composite.setLayoutData( gdfill() );
@@ -130,7 +101,7 @@ public class RuntimesPropertyPage extends PropertyPage
             
             composite.setLayout( layout );
             
-            this.panel = new RuntimesPanel( composite, SWT.NONE, this.model );
+            this.panel = new RuntimesPanel( composite, this.fpjwc );
             this.panel.setLayoutData( gdfill() );
 
             final Label hint = new Label( composite, SWT.WRAP );
@@ -179,8 +150,8 @@ public class RuntimesPropertyPage extends PropertyPage
     
     public boolean performOk() 
     {
-        final Set<IRuntime> targeted = this.model.getTargetedRuntimes();
-        final IRuntime primary = this.model.getPrimaryRuntime();
+        final Set<IRuntime> targeted = this.fpjwc.getTargetedRuntimes();
+        final IRuntime primary = this.fpjwc.getPrimaryRuntime();
         
         if( ! this.project.getTargetedRuntimes().equals( primary ) ||
             ! equals( this.project.getPrimaryRuntime(), primary ) )
@@ -234,8 +205,8 @@ public class RuntimesPropertyPage extends PropertyPage
     {
         super.performDefaults();
         
-        this.model.setTargetedRuntimes( this.project.getTargetedRuntimes() );
-        this.model.setPrimaryRuntime( this.project.getPrimaryRuntime() );
+        this.fpjwc.setTargetedRuntimes( this.project.getTargetedRuntimes() );
+        this.fpjwc.setPrimaryRuntime( this.project.getPrimaryRuntime() );
     }
     
     private void performAddRemoveFacets()
@@ -248,19 +219,19 @@ public class RuntimesPropertyPage extends PropertyPage
     
     private void handleProjectChangedEvent()
     {
-        this.model.refreshTargetableRuntimes();
+        this.fpjwc.refreshTargetableRuntimes();
         
         final Set<IRuntime> targetedRuntimes = this.project.getTargetedRuntimes();
-        this.model.setTargetedRuntimes( targetedRuntimes );
+        this.fpjwc.setTargetedRuntimes( targetedRuntimes );
         
         final IRuntime primaryRuntime = this.project.getPrimaryRuntime();
-        this.model.setPrimaryRuntime( primaryRuntime );
+        this.fpjwc.setPrimaryRuntime( primaryRuntime );
     }
     
     private void handleDisposeEvent()
     {
         this.project.removeListener( this.projectListener );
-        this.model.dispose();
+        this.fpjwc.dispose();
     }
     
     private static boolean equals( final IRuntime r1,

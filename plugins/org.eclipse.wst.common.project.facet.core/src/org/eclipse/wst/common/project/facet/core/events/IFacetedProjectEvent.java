@@ -12,6 +12,7 @@
 package org.eclipse.wst.common.project.facet.core.events;
 
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 
 /**
  * The root interface of all faceted project events. 
@@ -105,7 +106,18 @@ public interface IFacetedProjectEvent
          * interface to get additional details about the change. 
          */
         
-        PRIMARY_RUNTIME_CHANGED
+        PRIMARY_RUNTIME_CHANGED,
+        
+        
+        
+        PROJECT_NAME_CHANGED,
+        PROJECT_FACETS_CHANGED,
+        AVAILABLE_FACETS_CHANGED,
+        AVAILABLE_PRESETS_CHANGED,
+        SELECTED_PRESET_CHANGED,
+        AVAILABLE_RUNTIMES_CHANGED,
+        TARGETABLE_RUNTIMES_CHANGED,
+        VALIDATION_PROBLEMS_CHANGED;
     }
     
     /**
@@ -123,5 +135,7 @@ public interface IFacetedProjectEvent
      */
     
     IFacetedProject getProject();
+    
+    IFacetedProjectWorkingCopy getWorkingCopy();
 
 }
