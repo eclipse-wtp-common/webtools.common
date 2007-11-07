@@ -278,9 +278,16 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
                         }
                 } else {
                         /*Unload if found and is not modified but inconsistent.*/
-                	if (resource.isLoaded() && WorkbenchResourceHelper.isReferencedResource(resource) && !WorkbenchResourceHelper.isConsistent((ReferencedResource)resource)) {
-                        deferredUnloadResources.add(resource);
-                        didProcess = true;
+                	if (resource.isLoaded()) {
+                		if ( WorkbenchResourceHelper.isReferencedResource(resource)) {
+                			if (!WorkbenchResourceHelper.isConsistent((ReferencedResource)resource)) {
+                				deferredUnloadResources.add(resource);
+                				didProcess = true;
+                			}
+                		} else {
+                			deferredUnloadResources.add(resource);
+            				didProcess = true;
+                		}	
                 	}
                 }
         } else {                
@@ -308,8 +315,12 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 			
 			if (isRemove)
 				deferredRemoveResources.add(resource);
-			else if (resource.isLoaded() && WorkbenchResourceHelper.isReferencedResource(resource) && !WorkbenchResourceHelper.isConsistent((ReferencedResource)resource))
-				deferredUnloadResources.add(resource);
+			else if (resource.isLoaded()) {
+        		if ( WorkbenchResourceHelper.isReferencedResource(resource)) {
+        			if(!WorkbenchResourceHelper.isConsistent((ReferencedResource)resource)) 
+        				deferredUnloadResources.add(resource);
+        		} else deferredUnloadResources.add(resource);
+			}
 		}
 		return false;
 	}
