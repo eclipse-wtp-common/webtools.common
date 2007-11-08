@@ -591,7 +591,7 @@ public final class FacetedProjectWorkingCopy
         
         final IProjectFacetsChangedEvent event
             = new ProjectFacetsChangedEvent( this, addedFacets, removedFacets,
-                                                      changedVersions );
+                                             changedVersions );
         
         notifyListeners( event );
     }
@@ -1128,11 +1128,7 @@ public final class FacetedProjectWorkingCopy
                     if( config == null )
                     {
                         final IActionDefinition def = fv.getActionDefinition( base, type );
-                        
-                        final String pjname 
-                            = ( this.project == null ? null : this.project.getProject().getName() );
-                        
-                        config = def.createConfigObject( fv, pjname );
+                        config = def.createConfigObject( fv, getProjectName() );
                     }
                 }
                 catch( CoreException e )
