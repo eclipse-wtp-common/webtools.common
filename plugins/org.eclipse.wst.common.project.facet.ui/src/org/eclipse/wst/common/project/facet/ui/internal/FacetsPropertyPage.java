@@ -45,9 +45,10 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
-import org.eclipse.wst.common.project.facet.core.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.ui.ModifyFacetedProjectWizard;
 
 /**
@@ -78,13 +79,14 @@ public class FacetsPropertyPage extends PropertyPage
             
             this.projectListener = new IFacetedProjectListener()
             {
-                public void projectChanged()
+                public void handleEvent( final IFacetedProjectEvent event )
                 {
                     handleProjectChangedEvent();
                 }
             };
             
-            this.project.addListener( this.projectListener );
+            this.project.addListener( this.projectListener,
+                                      IFacetedProjectEvent.Type.PROJECT_MODIFIED );
             
             Composite composite = new Composite(parent, SWT.NONE);
             
@@ -184,23 +186,16 @@ public class FacetsPropertyPage extends PropertyPage
     {
         final Display display = this.viewer.getTable().getDisplay();
         
-        if( ! Thread.currentThread().equals( display.getThread() ) )
-        {
-            display.syncExec
-            ( 
-                new Runnable()
+        display.asyncExec
+        ( 
+            new Runnable()
+            {
+                public void run()
                 {
-                    public void run()
-                    {
-                        handleProjectChangedEvent();
-                    }
+                    FacetsPropertyPage.this.viewer.refresh();
                 }
-            );
-            
-            return;
-        }
-        
-        this.viewer.refresh();
+            }
+        );
     }
     
     private void handleDisposeEvent()
