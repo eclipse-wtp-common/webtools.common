@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -37,6 +38,8 @@ import org.eclipse.wst.common.frameworks.internal.operations.ProjectCreationData
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
+import org.eclipse.wst.common.project.facet.core.IFacetedProject;
+import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
@@ -75,7 +78,10 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 
 	public void init() {
 		super.init();
-		model.setProperty(FACETED_PROJECT_WORKING_COPY, FacetedProjectFramework.createNewProject());
+		
+		final IFacetedProjectWorkingCopy fpjwc = FacetedProjectFramework.createNewProject();
+		model.setProperty(FACETED_PROJECT_WORKING_COPY, fpjwc);
+		
 		IDataModel projectDataModel = DataModelFactory.createDataModel(new ProjectCreationDataModelProviderNew());
 		projectDataModel.addListener(new IDataModelListener() {
 			public void propertyChanged(DataModelEvent event) {
@@ -268,6 +274,25 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 					}
 				}
 			}
+		}
+		else if( REQUIRED_FACETS_COLLECTION.equals(propertyName) )
+		{
+		    final IFacetedProjectWorkingCopy fpjwc 
+		        = (IFacetedProjectWorkingCopy) this.model.getProperty( FACETED_PROJECT_WORKING_COPY );
+		    
+	        final Collection<IProjectFacet> fixedFacets = (Collection<IProjectFacet>) propertyValue;
+	        
+	        fpjwc.setFixedProjectFacets( new HashSet<IProjectFacet>( fixedFacets ) );
+	        
+	        final FacetDataModelMap facetDmMap = (FacetDataModelMap) getProperty( FACET_DM_MAP );
+	        
+	        for( IProjectFacet facet : fixedFacets )
+	        {
+	            final IFacetedProject.Action action 
+	                = fpjwc.getProjectFacetAction( IFacetedProject.Action.Type.INSTALL, facet );
+	            
+	            facetDmMap.add( (IDataModel) action.getConfig() );
+	        }
 		}
 		return super.propertySet(propertyName, propertyValue);
 	}
