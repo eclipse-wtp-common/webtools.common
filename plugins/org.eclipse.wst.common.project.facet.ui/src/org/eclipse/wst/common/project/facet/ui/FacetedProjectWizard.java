@@ -19,6 +19,7 @@ import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectTemplate;
+import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -35,12 +36,11 @@ public abstract class FacetedProjectWizard
     
     public FacetedProjectWizard()
     {
-        super( null );
-        
         this.template = getTemplate();
         
-        this.fpjwc.setSelectedPreset( this.template.getInitialPreset().getId() );
-        this.fpjwc.setFixedProjectFacets( this.template.getFixedProjectFacets() );
+        final IFacetedProjectWorkingCopy fpjwc = getFacetedProjectWorkingCopy();
+        fpjwc.setSelectedPreset( this.template.getInitialPreset().getId() );
+        fpjwc.setFixedProjectFacets( this.template.getFixedProjectFacets() );
         
         this.setWindowTitle( Resources.newPrefix + this.template.getLabel() );
         
@@ -90,8 +90,9 @@ public abstract class FacetedProjectWizard
     {
         if( page == this.firstPage )
         {
-            this.fpjwc.setProjectName( this.firstPage.getProjectName() );
-            this.fpjwc.setProjectLocation( this.firstPage.getLocationPath() );
+            final IFacetedProjectWorkingCopy fpjwc = getFacetedProjectWorkingCopy();
+            fpjwc.setProjectName( this.firstPage.getProjectName() );
+            fpjwc.setProjectLocation( this.firstPage.getLocationPath() );
         }
         
         return super.getNextPage( page );

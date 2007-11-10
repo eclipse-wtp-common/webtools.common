@@ -34,6 +34,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.common.project.facet.core.ActionConfig;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 import org.eclipse.wst.common.project.facet.core.IActionConfig;
 import org.eclipse.wst.common.project.facet.core.IActionDefinition;
@@ -1033,11 +1034,17 @@ public final class FacetedProjectWorkingCopy
     }
     
     public synchronized Action getProjectFacetAction( final Action.Type type,
-                                                      final IProjectFacetVersion f )
+                                                      final IProjectFacetVersion fv )
+    {
+        return getProjectFacetAction( this.actions, type, fv );
+    }
+
+    public synchronized Action getProjectFacetAction( final Action.Type type,
+                                                      final IProjectFacet f )
     {
         return getProjectFacetAction( this.actions, type, f );
     }
-    
+
     private static Action getProjectFacetAction( final Set<Action> actions,
                                                  final Action.Type type,
                                                  final IProjectFacetVersion fv )
@@ -1100,35 +1107,58 @@ public final class FacetedProjectWorkingCopy
                               == current.getActionDefinition( base, type ) )
                         {
                             config = action.getConfig();
-                            
-                            IActionConfig c = null;
-                            
-                            if( config instanceof IActionConfig )
-                            {
-                                c = (IActionConfig) config;
-                            }
-                            else if( config != null )
-                            {
-                                final IAdapterManager m 
-                                    = Platform.getAdapterManager();
-                                
-                                final String t
-                                    = IActionConfig.class.getName();
-                                
-                                c = (IActionConfig) m.loadAdapter( config, t );
-                            }
-                            
-                            if( c != null )
-                            {
-                                c.setVersion( fv );
-                            }
                         }
                     }
                     
                     if( config == null )
                     {
                         final IActionDefinition def = fv.getActionDefinition( base, type );
-                        config = def.createConfigObject( fv, getProjectName() );
+                        config = def.createConfigObject();
+                    }
+
+                    if( config != null )
+                    {
+                        IActionConfig c1 = null;
+                        
+                        if( config instanceof IActionConfig )
+                        {
+                            c1 = (IActionConfig) config;
+                        }
+                        else if( config != null )
+                        {
+                            final IAdapterManager m 
+                                = Platform.getAdapterManager();
+                            
+                            final String t
+                                = IActionConfig.class.getName();
+                            
+                            c1 = (IActionConfig) m.loadAdapter( config, t );
+                        }
+                        
+                        if( c1 != null )
+                        {
+                            c1.setProjectName( getProjectName() );
+                            c1.setVersion( fv );
+                        }
+                        
+                        ActionConfig c2 = null;
+                        
+                        if( config instanceof ActionConfig )
+                        {
+                            c2 = (ActionConfig) config;
+                        }
+                        else if( config != null )
+                        {
+                            final IAdapterManager m = Platform.getAdapterManager();
+                            final String t = ActionConfig.class.getName();
+                            c2 = (ActionConfig) m.loadAdapter( config, t );
+                        }
+                        
+                        if( c2 != null )
+                        {
+                            c2.setFacetedProjectWorkingCopy( this );
+                            c2.setProjectFacetVersion( fv );
+                        }
                     }
                 }
                 catch( CoreException e )

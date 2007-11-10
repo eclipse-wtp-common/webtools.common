@@ -329,7 +329,7 @@ public final class FacetedProject
                 
                 if( config == null )
                 {
-                    config = def.createConfigObject( fv, this.project.getName() );
+                    config = def.createConfigObject();
                 }
                 
                 if( config != null )

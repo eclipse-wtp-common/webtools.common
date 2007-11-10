@@ -13,10 +13,8 @@ package org.eclipse.wst.common.project.facet.ui;
 
 import java.util.Set;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action.Type;
 
 /**
  * The interface exposed to the facet action wizard pages that allows them
@@ -81,11 +79,5 @@ public interface IWizardContext
     
     Action getAction( Action.Type type,
                       IProjectFacetVersion fv );
-    
-    /**
-     * Do not use! This method is internal and will be removed.
-     */
-    
-	Object getConfig(IProjectFacetVersion fv, Type type, String pjname) throws CoreException;
     
 }

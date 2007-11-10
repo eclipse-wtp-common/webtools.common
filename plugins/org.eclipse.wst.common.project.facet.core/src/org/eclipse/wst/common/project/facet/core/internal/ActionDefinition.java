@@ -18,9 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdapterManager;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.wst.common.project.facet.core.IActionConfig;
 import org.eclipse.wst.common.project.facet.core.IActionConfigFactory;
 import org.eclipse.wst.common.project.facet.core.IActionDefinition;
 import org.eclipse.wst.common.project.facet.core.IDelegate;
@@ -118,9 +115,17 @@ public final class ActionDefinition
     {
         return this.properties.get( name );
     }
-    
+
     public Object createConfigObject( final IProjectFacetVersion fv,
                                       final String pjname )
+    
+        throws CoreException
+        
+    {
+        return createConfigObject();
+    }
+    
+    public Object createConfigObject()
     
         throws CoreException
         
@@ -135,27 +140,7 @@ public final class ActionDefinition
                 = instantiate( this.pluginId, this.configFactoryClassName, 
                                IActionConfigFactory.class );
             
-            final Object config = ( (IActionConfigFactory) factory ).create();
-            
-            IActionConfig cfg = null;
-            
-            if( config instanceof IActionConfig )
-            {
-                cfg = (IActionConfig) config;
-            }
-            else
-            {
-                final IAdapterManager m = Platform.getAdapterManager();
-                cfg = (IActionConfig) m.loadAdapter( config, IActionConfig.class.getName() );
-            }
-            
-            if( cfg != null )
-            {
-                cfg.setVersion( fv );
-                cfg.setProjectName( pjname );
-            }
-            
-            return config;
+            return ( (IActionConfigFactory) factory ).create();
         }
     }
     

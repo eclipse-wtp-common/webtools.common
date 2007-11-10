@@ -45,7 +45,6 @@ import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
-import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action.Type;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.ui.internal.FacetUiPlugin;
@@ -60,7 +59,7 @@ public class ModifyFacetedProjectWizard
     extends Wizard 
     
 {
-    protected final IFacetedProjectWorkingCopy fpjwc;
+    private IFacetedProjectWorkingCopy fpjwc;
     private final WizardContext context = new WizardContext(); 
     private boolean showFacetsSelectionPage;
     private FacetsSelectionPage facetsSelectionPage;
@@ -69,19 +68,23 @@ public class ModifyFacetedProjectWizard
     private final List<IWizardPage> pagesToDispose = new ArrayList<IWizardPage>();
     private final List<Runnable> delayedActions;
     
+    public ModifyFacetedProjectWizard()
+    {
+        this( (IFacetedProject) null );
+    }
+    
     public ModifyFacetedProjectWizard( final IFacetedProject fproj )
+    {
+        this( fproj == null
+              ? FacetedProjectFramework.createNewProject() 
+              : fproj.createWorkingCopy() );
+    }
+
+    public ModifyFacetedProjectWizard( final IFacetedProjectWorkingCopy fpjwc )
     {
         try
         {
-            if( fproj == null )
-            {
-                this.fpjwc = FacetedProjectFramework.createNewProject();
-            }
-            else
-            {
-                this.fpjwc = fproj.createWorkingCopy();
-            }
-            
+            this.fpjwc = fpjwc;
             this.delayedActions = new ArrayList<Runnable>();;
             this.facetsSelectionPage = null;
             this.showFacetsSelectionPage = true;
@@ -100,6 +103,11 @@ public class ModifyFacetedProjectWizard
     public final IFacetedProjectWorkingCopy getFacetedProjectWorkingCopy()
     {
         return this.fpjwc;
+    }
+    
+    public void setFacetedProjectWorkingCopy( final IFacetedProjectWorkingCopy fpjwc )
+    {
+        this.fpjwc = fpjwc;
     }
     
     public final IFacetedProject getFacetedProject()
@@ -348,10 +356,6 @@ public class ModifyFacetedProjectWizard
         this.fpjwc.commitChanges( monitor );
     }
     
-	public Object getConfig(IProjectFacetVersion fv, Type type, String pjname) throws CoreException{
-		return null;
-	}
-	
     public void syncWithPresetsModel( final Combo combo )
     {
         syncWithPresetsModel( this.fpjwc, combo );
@@ -730,16 +734,6 @@ public class ModifyFacetedProjectWizard
             
             return null;
         }
-        
-		public Object getConfig(IProjectFacetVersion fv, Type type, String pjname) throws CoreException {
-			Object config = ModifyFacetedProjectWizard.this.getConfig(fv, type, pjname);
-			if (null == config) {
-                final Set<IProjectFacetVersion> base = getBaseFacets();
-                final IActionDefinition def = fv.getActionDefinition( base, type );
-                config = def.createConfigObject( fv, pjname );
-			}
-			return config;
-		}
     }
     
     private static final class Resources

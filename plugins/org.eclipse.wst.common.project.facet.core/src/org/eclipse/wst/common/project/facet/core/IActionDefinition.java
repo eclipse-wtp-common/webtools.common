@@ -96,6 +96,20 @@ public interface IActionDefinition
      * execution of this action. If this action definition does not specify a
      * config object factory, this method will return <code>null</code>.
      * 
+     * @return the new config object
+     * @throws CoreException if failed while instantiating the config object
+     *   factory or creating the config object
+     */
+
+    Object createConfigObject()
+    
+        throws CoreException;
+    
+    /**
+     * Creates a new config object that can be used for parameterizing the
+     * execution of this action. If this action definition does not specify a
+     * config object factory, this method will return <code>null</code>.
+     * 
      * @param fv the actual facet version that this config object will be used
      *   with; should be one of the versions matched by the version expression
      *   specified for this action definition
@@ -103,6 +117,7 @@ public interface IActionDefinition
      * @return the new config object
      * @throws CoreException if failed while instantiating the config object
      *   factory or creating the config object
+     * @deprecated
      */
     
     Object createConfigObject( IProjectFacetVersion fv,
