@@ -17,6 +17,9 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModelProperties;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 
 public interface IFacetProjectCreationDataModelProperties extends IDataModelProperties {
+    
+    public static final String FACETED_PROJECT_WORKING_COPY 
+        = "IFacetProjectCreationDataModelProperties.FACETED_PROJECT_WORKING_COPY"; //$NON-NLS-1$";
 
 	/**
 	 * A String

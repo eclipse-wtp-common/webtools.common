@@ -13,11 +13,13 @@ package org.eclipse.wst.common.componentcore.datamodel;
 
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetDataModelProperties;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
-import org.eclipse.wst.common.project.facet.core.IActionConfig;
+import org.eclipse.wst.common.project.facet.core.ActionConfig;
+import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -25,7 +27,7 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 
 public final class FacetDataModelConfigAdapter
 
-    implements IActionConfig
+    extends ActionConfig
     
 {
     private final IDataModel dm;
@@ -35,19 +37,30 @@ public final class FacetDataModelConfigAdapter
         this.dm = dm;
     }
     
-    public void setVersion( final IProjectFacetVersion fv )
+    public void setProjectFacetVersion( final IProjectFacetVersion fv )
     {
         dm.setProperty( IFacetDataModelProperties.FACET_VERSION, fv );
     }
-
-    public void setProjectName( final String pjname )
+    
+    public void setFacetedProjectWorkingCopy( final IFacetedProjectWorkingCopy fpjwc )
     {
-        dm.setStringProperty( IFacetDataModelProperties.FACET_PROJECT_NAME, pjname );
+        dm.setProperty( IFacetDataModelProperties.FACETED_PROJECT_WORKING_COPY, fpjwc );
+        
+        final IFacetedProjectListener nameChangeListener = new IFacetedProjectListener()
+        {
+            public void handleEvent( final IFacetedProjectEvent event )
+            {
+                dm.setStringProperty( IFacetDataModelProperties.FACET_PROJECT_NAME, fpjwc.getProjectName() );
+            }
+        };
+        
+        fpjwc.addListener( nameChangeListener, IFacetedProjectEvent.Type.PROJECT_NAME_CHANGED );
+        nameChangeListener.handleEvent( null );
     }
 
     public IStatus validate()
     {
-        return Status.OK_STATUS;
+        return dm.validate();
     }
 
     public static final class Factory
@@ -55,13 +68,12 @@ public final class FacetDataModelConfigAdapter
         implements IAdapterFactory
         
     {
-        private static final Class[] ADAPTER_TYPES
-            = { IActionConfig.class };
+        private static final Class[] ADAPTER_TYPES = { ActionConfig.class };
         
         public Object getAdapter( final Object adaptable, 
                                   final Class adapterType )
         {
-            if( adapterType == IActionConfig.class )
+            if( adapterType == ActionConfig.class )
             {
                 return new FacetDataModelConfigAdapter( (IDataModel) adaptable );
             }

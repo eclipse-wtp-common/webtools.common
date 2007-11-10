@@ -36,6 +36,7 @@ import org.eclipse.wst.common.frameworks.internal.operations.IProjectCreationPro
 import org.eclipse.wst.common.frameworks.internal.operations.ProjectCreationDataModelProviderNew;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonMessages;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
+import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
@@ -62,6 +63,7 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 
 	public Set getPropertyNames() {
 		Set names = super.getPropertyNames();
+		names.add(FACETED_PROJECT_WORKING_COPY);
 		names.add(FACET_PROJECT_NAME);
 		names.add(FACET_DM_MAP);
 		names.add(FACET_ACTION_MAP);
@@ -73,6 +75,7 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 
 	public void init() {
 		super.init();
+		model.setProperty(FACETED_PROJECT_WORKING_COPY, FacetedProjectFramework.createNewProject());
 		IDataModel projectDataModel = DataModelFactory.createDataModel(new ProjectCreationDataModelProviderNew());
 		projectDataModel.addListener(new IDataModelListener() {
 			public void propertyChanged(DataModelEvent event) {

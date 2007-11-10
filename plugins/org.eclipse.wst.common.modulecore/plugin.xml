@@ -70,7 +70,7 @@
     <factory 
       class="org.eclipse.wst.common.componentcore.datamodel.FacetDataModelConfigAdapter$Factory" 
       adaptableType="org.eclipse.wst.common.frameworks.datamodel.IDataModel">
-      <adapter type="org.eclipse.wst.common.project.facet.core.IActionConfig"/>
+      <adapter type="org.eclipse.wst.common.project.facet.core.ActionConfig"/>
     </factory>
   </extension>
   

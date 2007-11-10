@@ -31,6 +31,7 @@ public class FacetDataModelProvider extends AbstractDataModelProvider implements
 
 	public Set getPropertyNames() {
 		Set names = super.getPropertyNames();
+		names.add(FACETED_PROJECT_WORKING_COPY);
 		names.add(FACET_PROJECT_NAME);
 		names.add(FACET_ID);
 		names.add(FACET_VERSION_STR);
