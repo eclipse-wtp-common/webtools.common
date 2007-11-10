@@ -734,6 +734,14 @@ public class ModifyFacetedProjectWizard
             
             return null;
         }
+        
+        public Object getConfig( final IProjectFacetVersion fv, 
+                                 final Action.Type type, 
+                                 final String pjname )
+        {
+            final Action action = getAction( type, fv );
+            return action.getConfig();
+        }
     }
     
     private static final class Resources
