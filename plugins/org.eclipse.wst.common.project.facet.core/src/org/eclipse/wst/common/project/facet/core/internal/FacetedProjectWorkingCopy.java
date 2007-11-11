@@ -377,8 +377,14 @@ public final class FacetedProjectWorkingCopy
             
             if( currentVersion == null )
             {
-                final IProjectFacetVersion highestAvailableVersion = getHighestAvailableVersion( f );
-                this.facets.add( f, highestAvailableVersion );
+                IProjectFacetVersion fv = f.getDefaultVersion();
+                
+                if( ! isFacetAvailable( fv ) )
+                {
+                    fv = getHighestAvailableVersion( f );
+                }
+                
+                this.facets.add( f, fv );
             }
         }
         
