@@ -44,6 +44,8 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
+import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
 
@@ -81,6 +83,31 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 		
 		final IFacetedProjectWorkingCopy fpjwc = FacetedProjectFramework.createNewProject();
 		model.setProperty(FACETED_PROJECT_WORKING_COPY, fpjwc);
+		
+		fpjwc.addListener
+		(
+		    new IFacetedProjectListener()
+		    {
+                public void handleEvent( final IFacetedProjectEvent event )
+                {
+                    for( IFacetedProject.Action action : fpjwc.getProjectFacetActions() )
+                    {
+                        final Object config = action.getConfig();
+                        
+                        if( config != null && config instanceof IDataModel )
+                        {
+                            final IDataModel dm = (IDataModel) config;
+                            
+                            if( dm.getAllProperties().contains( FacetInstallDataModelProvider.MASTER_PROJECT_DM ) )
+                            {
+                                dm.setProperty( FacetInstallDataModelProvider.MASTER_PROJECT_DM, model );
+                            }
+                        }
+                    }
+                }
+		    },
+		    IFacetedProjectEvent.Type.PROJECT_FACETS_CHANGED
+		);
 		
 		IDataModel projectDataModel = DataModelFactory.createDataModel(new ProjectCreationDataModelProviderNew());
 		projectDataModel.addListener(new IDataModelListener() {
