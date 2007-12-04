@@ -69,11 +69,10 @@ public interface IFacetedProjectWorkingCopy
     
     Set<Action> getProjectFacetActions();
     
-    Action getProjectFacetAction( Action.Type type,
-                                  IProjectFacet f );
+    Action getProjectFacetAction( IProjectFacet facet );
     
-    Action getProjectFacetAction( Action.Type type,
-                                  IProjectFacetVersion fv );
+    void setProjectFacetActionConfig( IProjectFacet facet,
+                                      Object newActionConfig );    
     
     void commitChanges( IProgressMonitor monitor )
     

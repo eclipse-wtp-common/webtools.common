@@ -72,6 +72,12 @@ public final class FacetedProjectWorkingCopy
         = Collections.unmodifiableSortedSet( new TreeSet<IProjectFacetVersion>() );
     
     /**
+     * The object that's used internally for synchronizing access to the data structure.
+     */
+    
+    private Object lock;
+    
+    /**
      * The name of the project in the scenario where the working copy is for a
      * project that doesn't exist yet, <code>null</code> otherwise.
      */
@@ -95,7 +101,7 @@ public final class FacetedProjectWorkingCopy
     private IRuntime primaryRuntime;
     private Set<Action> actions;
     private List<IStatus> problems;
-    private final List<Runnable> disposeTasks;    
+    private final List<Runnable> disposeTasks;
     
     /**
      * Maps event types to the list of listeners registered for those events. The map is
@@ -104,10 +110,26 @@ public final class FacetedProjectWorkingCopy
      * for safe iteration when notifying listeners.
      */
     
-    private final Map<IFacetedProjectEvent.Type,List<IFacetedProjectListener>> listeners; 
+    private final Map<IFacetedProjectEvent.Type,List<IFacetedProjectListener>> listeners;
+
+    /**
+     * Tracks whether or not event notification is currently suspended. This counter is
+     * incremented by the suspendEventNotification() method and decremented by the
+     * resumeEventNotification() method. Once the counter reaches zero, any queued events
+     * can be delivered.
+     */
+    
+    private int suspendEventNoticationCounter;
+    
+    /**
+     * Tracks the events that are queued while event notification is suspended.
+     */
+    
+    private final List<IFacetedProjectEvent> queuedEvents;
     
     public FacetedProjectWorkingCopy( final IFacetedProject project )
     {
+        this.lock = new Object();
         this.projectName = null;
         this.projectLocation = null;
         this.project = project;
@@ -130,39 +152,17 @@ public final class FacetedProjectWorkingCopy
             this.listeners.put( eventType, new CopyOnWriteArrayList<IFacetedProjectListener>() );
         }
         
+        this.suspendEventNoticationCounter = 0;
+        this.queuedEvents = new ArrayList<IFacetedProjectEvent>();
+        
         refreshAvailableFacets();
         
-        final IFacetedProjectListener avFacetsListener = new IFacetedProjectListener()
-        {
-            public void handleEvent( final IFacetedProjectEvent event )
-            {
-                refreshAvailableFacets();
-            }
-        };
-        
-        addListener( avFacetsListener, 
-                     IFacetedProjectEvent.Type.FIXED_FACETS_CHANGED, 
-                     IFacetedProjectEvent.Type.TARGETED_RUNTIMES_CHANGED );
-
         if( this.project != null )
         {
             setFixedProjectFacets( this.project.getFixedProjectFacets() );
         }
 
         refreshAvailablePresets();
-        
-        final IFacetedProjectListener avPresetsListener = new IFacetedProjectListener()
-        {
-            public void handleEvent( final IFacetedProjectEvent event )
-            {
-                refreshAvailablePresets();
-            }
-        };
-        
-        addListener( avPresetsListener,
-                     IFacetedProjectEvent.Type.FIXED_FACETS_CHANGED,
-                     IFacetedProjectEvent.Type.AVAILABLE_FACETS_CHANGED,
-                     IFacetedProjectEvent.Type.PRIMARY_RUNTIME_CHANGED );
         
         if( this.project != null )
         {
@@ -178,18 +178,26 @@ public final class FacetedProjectWorkingCopy
         }
         
         // Listen for changes to registered runtimes.
-        
+
         final IListener runtimeManagerListener = new IListener()
         {
             public void handle()
             {
-                final IFacetedProjectEvent event
-                    = new FacetedProjectEvent( FacetedProjectWorkingCopy.this, 
-                                               IFacetedProjectEvent.Type.AVAILABLE_RUNTIMES_CHANGED );
+                final Thread runtimesRefreshThread = new Thread()
+                {
+                    public void run()
+                    {
+                        final IFacetedProjectEvent event
+                            = new FacetedProjectEvent( FacetedProjectWorkingCopy.this, 
+                                                       IFacetedProjectEvent.Type.AVAILABLE_RUNTIMES_CHANGED );
+                        
+                        notifyListeners( event );
+                        
+                        refreshTargetableRuntimes();
+                    }
+                };
                 
-                notifyListeners( event );
-                
-                refreshTargetableRuntimes();
+                runtimesRefreshThread.start();
             }
         };
         
@@ -258,82 +266,112 @@ public final class FacetedProjectWorkingCopy
                      IFacetedProjectEvent.Type.TARGETED_RUNTIMES_CHANGED );
     }
     
-    public synchronized String getProjectName()
+    public String getProjectName()
     {
-        if( this.project != null )
+        synchronized( this.lock )
         {
-            return this.project.getProject().getName();
-        }
-        else
-        {
-            return this.projectName;
-        }
-    }
-    
-    public synchronized void setProjectName( final String name )
-    {
-        if( this.project == null )
-        {
-            if( ! equals( this.projectName, name ) )
+            if( this.project != null )
             {
-                this.projectName = name;
-                
-                for( Action action : getProjectFacetActions() )
-                {
-                    final Object config = action.getConfig();
-                    
-                    if( config != null )
-                    {
-                        IActionConfig c = null;
-                        
-                        if( config instanceof IActionConfig )
-                        {
-                            c = (IActionConfig) config;
-                        }
-                        else
-                        {
-                            final IAdapterManager m = Platform.getAdapterManager();
-                            final String t = IActionConfig.class.getName();
-                            c = (IActionConfig) m.loadAdapter( config, t );
-                        }
-                        
-                        if( c != null )
-                        {
-                            c.setProjectName( this.projectName );
-                        }
-                    }
-                }
-                
-                notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.PROJECT_NAME_CHANGED ) );
+                return this.project.getProject().getName();
+            }
+            else
+            {
+                return this.projectName;
             }
         }
-        else
+    }
+    
+    public void setProjectName( final String name )
+    {
+        suspendEventNotification();
+        
+        try
         {
-            throw new IllegalArgumentException(); // TODO: needs message
+            synchronized( this.lock )
+            {
+                if( this.project == null )
+                {
+                    if( ! equals( this.projectName, name ) )
+                    {
+                        this.projectName = name;
+                        
+                        for( Action action : getProjectFacetActions() )
+                        {
+                            final Object config = action.getConfig();
+                            
+                            if( config != null )
+                            {
+                                IActionConfig c = null;
+                                
+                                if( config instanceof IActionConfig )
+                                {
+                                    c = (IActionConfig) config;
+                                }
+                                else
+                                {
+                                    final IAdapterManager m = Platform.getAdapterManager();
+                                    final String t = IActionConfig.class.getName();
+                                    c = (IActionConfig) m.loadAdapter( config, t );
+                                }
+                                
+                                if( c != null )
+                                {
+                                    c.setProjectName( this.projectName );
+                                }
+                            }
+                        }
+                        
+                        notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.PROJECT_NAME_CHANGED ) );
+                    }
+                }
+                else
+                {
+                    throw new IllegalArgumentException(); // TODO: needs message
+                }
+            }
+        }
+        finally
+        {
+            resumeEventNotification();
         }
     }
     
-    public synchronized IPath getProjectLocation()
+    public IPath getProjectLocation()
     {
-        if( this.project != null )
+        synchronized( this.lock )
         {
-            return this.project.getProject().getLocation();
-        }
-        else
-        {
-            return this.projectLocation;
+            if( this.project != null )
+            {
+                return this.project.getProject().getLocation();
+            }
+            else
+            {
+                return this.projectLocation;
+            }
         }
     }
     
-    public synchronized void setProjectLocation( final IPath location )
+    public void setProjectLocation( final IPath location )
     {
-        if( this.project == null )
+        suspendEventNotification();
+        
+        try
         {
-            this.projectLocation = location;
+            synchronized( this.lock )
+            {
+                if( this.project == null )
+                {
+                    this.projectLocation = location;
+                }
+                else
+                {
+                    throw new IllegalArgumentException(); // TODO: needs message
+                }
+            }
         }
-        else
+        finally
         {
-            throw new IllegalArgumentException(); // TODO: needs message
+            resumeEventNotification();
         }
     }
     
@@ -354,98 +392,137 @@ public final class FacetedProjectWorkingCopy
         return this.project;
     }
     
-    public synchronized Set<IProjectFacet> getFixedProjectFacets()
+    public Set<IProjectFacet> getFixedProjectFacets()
     {
-        return this.fixedFacets;
-    }
-    
-    public synchronized boolean isFixedProjectFacet( final IProjectFacet facet )
-    {
-        return this.fixedFacets.contains( facet );
-    }
-    
-    public synchronized void setFixedProjectFacets( final Set<IProjectFacet> fixed )
-    {
-        if( this.fixedFacets.equals( fixed ) )
+        synchronized( this.lock )
         {
-            return;
+            return this.fixedFacets;
         }
-        
-        for( IProjectFacet f : fixed )
+    }
+    
+    public boolean isFixedProjectFacet( final IProjectFacet facet )
+    {
+        synchronized( this.lock )
         {
-            final IProjectFacetVersion currentVersion = getProjectFacetVersion( f );
-            
-            if( currentVersion == null )
+            return this.fixedFacets.contains( facet );
+        }
+    }
+    
+    public void setFixedProjectFacets( final Set<IProjectFacet> fixed )
+    {
+        suspendEventNotification();
+        
+        try
+        {
+            synchronized( this.lock )
             {
-                IProjectFacetVersion fv = f.getDefaultVersion();
-                
-                if( ! isFacetAvailable( fv ) )
+                if( this.fixedFacets.equals( fixed ) )
                 {
-                    fv = getHighestAvailableVersion( f );
+                    return;
                 }
                 
-                this.facets.add( f, fv );
+                for( IProjectFacet f : fixed )
+                {
+                    final IProjectFacetVersion currentVersion = getProjectFacetVersion( f );
+                    
+                    if( currentVersion == null )
+                    {
+                        IProjectFacetVersion fv = f.getDefaultVersion();
+                        
+                        if( ! isFacetAvailable( fv ) )
+                        {
+                            fv = getHighestAvailableVersion( f );
+                        }
+                        
+                        this.facets.add( f, fv );
+                    }
+                }
+                
+                notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.PROJECT_FACETS_CHANGED ) );
+                
+                this.fixedFacets 
+                    = Collections.unmodifiableSet( new HashSet<IProjectFacet>( fixed ) );
+                
+                notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.FIXED_FACETS_CHANGED ) );
+                
+                refreshAvailableFacets();
+                refreshAvailablePresets();
             }
         }
-        
-        notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.PROJECT_FACETS_CHANGED ) );
-        
-        this.fixedFacets = Collections.unmodifiableSet( new HashSet<IProjectFacet>( fixed ) );
-        
-        notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.FIXED_FACETS_CHANGED ) );
-    }
-    
-    public synchronized Map<IProjectFacet,SortedSet<IProjectFacetVersion>> getAvailableFacets()
-    {
-        return this.availableFacets;
-    }
-    
-    public synchronized boolean isFacetAvailable( final IProjectFacet f )
-    {
-        return this.availableFacets.containsKey( f );
-    }
-    
-    public synchronized boolean isFacetAvailable( final IProjectFacetVersion fv )
-    {
-        final Set<IProjectFacetVersion> versions = this.availableFacets.get( fv.getProjectFacet() );
-        return ( versions != null && versions.contains( fv ) );
-    }
-    
-    public synchronized SortedSet<IProjectFacetVersion> getAvailableVersions( final IProjectFacet f )
-    {
-        SortedSet<IProjectFacetVersion> availableVersions = this.availableFacets.get( f );
-        
-        if( availableVersions == null )
+        finally
         {
-            availableVersions = EMPTY_SORTED_FV_SET;
+            resumeEventNotification();
         }
-        
-        return availableVersions;
     }
     
-    public synchronized IProjectFacetVersion getHighestAvailableVersion( final IProjectFacet f )
+    public Map<IProjectFacet,SortedSet<IProjectFacetVersion>> getAvailableFacets()
     {
-        IProjectFacetVersion version = null;
-        
-        for( IProjectFacetVersion fv : this.availableFacets.get( f ) )
+        synchronized( this.lock )
         {
-            if( version == null )
+            return this.availableFacets;
+        }
+    }
+    
+    public boolean isFacetAvailable( final IProjectFacet f )
+    {
+        synchronized( this.lock )
+        {
+            return this.availableFacets.containsKey( f );
+        }
+    }
+    
+    public boolean isFacetAvailable( final IProjectFacetVersion fv )
+    {
+        synchronized( this.lock )
+        {
+            final Set<IProjectFacetVersion> versions 
+                = this.availableFacets.get( fv.getProjectFacet() );
+            
+            return ( versions != null && versions.contains( fv ) );
+        }
+    }
+    
+    public SortedSet<IProjectFacetVersion> getAvailableVersions( final IProjectFacet f )
+    {
+        synchronized( this.lock )
+        {
+            SortedSet<IProjectFacetVersion> availableVersions = this.availableFacets.get( f );
+            
+            if( availableVersions == null )
             {
-                version = fv;
+                availableVersions = EMPTY_SORTED_FV_SET;
             }
-            else
+            
+            return availableVersions;
+        }
+    }
+    
+    public IProjectFacetVersion getHighestAvailableVersion( final IProjectFacet f )
+    {
+        synchronized( this.lock )
+        {
+            IProjectFacetVersion version = null;
+            
+            for( IProjectFacetVersion fv : this.availableFacets.get( f ) )
             {
-                if( fv.compareTo( version ) > 0 )
+                if( version == null )
                 {
                     version = fv;
                 }
+                else
+                {
+                    if( fv.compareTo( version ) > 0 )
+                    {
+                        version = fv;
+                    }
+                }
             }
+            
+            return version;
         }
-        
-        return version;
     }
     
-    private synchronized void refreshAvailableFacets()
+    private void refreshAvailableFacets()
     {
         final Map<IProjectFacet,SortedSet<IProjectFacetVersion>> newAvailableFacets
             = new HashMap<IProjectFacet,SortedSet<IProjectFacetVersion>>();
@@ -525,197 +602,290 @@ public final class FacetedProjectWorkingCopy
             this.availableFacets = Collections.unmodifiableMap( newAvailableFacets );
             
             notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.AVAILABLE_FACETS_CHANGED ) );
+
+            refreshAvailablePresets();
         }
     }
     
-    public synchronized Set<IProjectFacetVersion> getProjectFacets()
+    public Set<IProjectFacetVersion> getProjectFacets()
     {
-        return this.facets.getUnmodifiable();
+        synchronized( this.lock )
+        {
+            return this.facets.getUnmodifiable();
+        }
     }
     
-    public synchronized IProjectFacetVersion getProjectFacetVersion( final IProjectFacet f )
+    public IProjectFacetVersion getProjectFacetVersion( final IProjectFacet f )
     {
-        return this.facets.get( f );
+        synchronized( this.lock )
+        {
+            return this.facets.get( f );
+        }
     }
     
-    public synchronized boolean hasProjectFacet( final IProjectFacet f )
+    public boolean hasProjectFacet( final IProjectFacet f )
     {
-        return this.facets.containsKey( f );
+        synchronized( this.lock )
+        {
+            return this.facets.containsKey( f );
+        }
     }
 
-    public synchronized boolean hasProjectFacet( final IProjectFacetVersion fv )
+    public boolean hasProjectFacet( final IProjectFacetVersion fv )
     {
-        return this.facets.contains( fv );
+        synchronized( this.lock )
+        {
+            return this.facets.contains( fv );
+        }
     }
     
-    public synchronized void setProjectFacets( final Set<IProjectFacetVersion> facets )
+    public void setProjectFacets( final Set<IProjectFacetVersion> facets )
     {
-        final IndexedSet<IProjectFacet,IProjectFacetVersion> newProjectFacets
-            = new IndexedSet<IProjectFacet,IProjectFacetVersion>();
+        suspendEventNotification();
         
-        for( IProjectFacetVersion fv : facets )
+        try
         {
-            newProjectFacets.add( fv.getProjectFacet(), fv );
-        }
-        
-        final Set<IProjectFacetVersion> addedFacets = new HashSet<IProjectFacetVersion>();
-        final Set<IProjectFacetVersion> removedFacets = new HashSet<IProjectFacetVersion>();
-        final Set<IProjectFacetVersion> changedVersions = new HashSet<IProjectFacetVersion>();
-        
-        for( IProjectFacetVersion fv : newProjectFacets )
-        {
-            final IProjectFacetVersion currentFacetVersion = this.facets.get( fv.getProjectFacet() );
-            
-            if( currentFacetVersion == null )
+            synchronized( this.lock )
             {
-                addedFacets.add( fv );
-            }
-            else
-            {
-                if( ! fv.equals( currentFacetVersion ) )
+                final IndexedSet<IProjectFacet,IProjectFacetVersion> newProjectFacets
+                    = new IndexedSet<IProjectFacet,IProjectFacetVersion>();
+                
+                for( IProjectFacetVersion fv : facets )
                 {
-                    changedVersions.add( fv );
+                    newProjectFacets.add( fv.getProjectFacet(), fv );
+                }
+                
+                final Set<IProjectFacetVersion> addedFacets = new HashSet<IProjectFacetVersion>();
+                final Set<IProjectFacetVersion> removedFacets = new HashSet<IProjectFacetVersion>();
+                final Set<IProjectFacetVersion> changedVersions = new HashSet<IProjectFacetVersion>();
+                
+                for( IProjectFacetVersion fv : newProjectFacets )
+                {
+                    final IProjectFacetVersion currentFacetVersion 
+                        = this.facets.get( fv.getProjectFacet() );
+                    
+                    if( currentFacetVersion == null )
+                    {
+                        addedFacets.add( fv );
+                    }
+                    else
+                    {
+                        if( ! fv.equals( currentFacetVersion ) )
+                        {
+                            changedVersions.add( fv );
+                        }
+                    }
+                }
+                
+                for( IProjectFacetVersion fv : this.facets )
+                {
+                    if( ! newProjectFacets.containsKey( fv.getProjectFacet() ) )
+                    {
+                        removedFacets.add( fv );
+                    }
+                }
+                
+                if( addedFacets.isEmpty() && removedFacets.isEmpty() && changedVersions.isEmpty() )
+                {
+                    return;
+                }
+                
+                setSelectedPreset( null );
+                
+                this.facets = newProjectFacets;
+                
+                final IProjectFacetsChangedEvent event
+                    = new ProjectFacetsChangedEvent( this, addedFacets, removedFacets,
+                                                     changedVersions );
+                
+                notifyListeners( event );
+            }
+        }
+        finally
+        {
+            resumeEventNotification();
+        }
+    }
+    
+    public void setDefaultFacetsForRuntime( final IRuntime runtime )
+    {
+        suspendEventNotification();
+        
+        try
+        {
+            synchronized( this.lock )
+            {
+                final Set<IProjectFacetVersion> defaultFacets;
+                
+                if( runtime != null )
+                {
+                    try
+                    {
+                        defaultFacets = runtime.getDefaultFacets( getFixedProjectFacets() );
+                    }
+                    catch( CoreException e )
+                    {
+                        FacetCorePlugin.log( e );
+                        return;
+                    }
+                }
+                else
+                {
+                    defaultFacets = new HashSet<IProjectFacetVersion>();
+                    
+                    for( IProjectFacet f : getFixedProjectFacets() )
+                    {
+                        defaultFacets.add( f.getDefaultVersion() );
+                    }
+                }
+                
+                setProjectFacets( defaultFacets );
+            }
+        }
+        finally
+        {
+            resumeEventNotification();
+        }
+    }
+    
+    public void addProjectFacet( final IProjectFacetVersion fv )
+    {
+        suspendEventNotification();
+        
+        try
+        {
+            synchronized( this.lock )
+            {
+                final IProjectFacetVersion existingVersion 
+                    = this.facets.get( fv.getProjectFacet() );
+                
+                if( existingVersion == null )
+                {
+                    final Set<IProjectFacetVersion> newProjectFacets 
+                        = new HashSet<IProjectFacetVersion>();
+        
+                    newProjectFacets.addAll( this.facets );
+                    newProjectFacets.add( fv );
+                    
+                    setProjectFacets( newProjectFacets );
+                }
+                else if( existingVersion == fv )
+                {
+                    return;
+                }
+                else
+                {
+                    // TODO: needs exception msg
+                    throw new IllegalArgumentException();
                 }
             }
         }
-        
-        for( IProjectFacetVersion fv : this.facets )
+        finally
         {
-            if( ! newProjectFacets.containsKey( fv.getProjectFacet() ) )
-            {
-                removedFacets.add( fv );
-            }
-        }
-        
-        if( addedFacets.isEmpty() && removedFacets.isEmpty() && changedVersions.isEmpty() )
-        {
-            return;
-        }
-        
-        setSelectedPreset( null );
-        
-        this.facets = newProjectFacets;
-        
-        final IProjectFacetsChangedEvent event
-            = new ProjectFacetsChangedEvent( this, addedFacets, removedFacets,
-                                             changedVersions );
-        
-        notifyListeners( event );
-    }
-    
-    public synchronized void setDefaultFacetsForRuntime( final IRuntime runtime )
-    {
-        final Set<IProjectFacetVersion> defaultFacets;
-        
-        if( runtime != null )
-        {
-            try
-            {
-                defaultFacets = runtime.getDefaultFacets( getFixedProjectFacets() );
-            }
-            catch( CoreException e )
-            {
-                FacetCorePlugin.log( e );
-                return;
-            }
-        }
-        else
-        {
-            defaultFacets = new HashSet<IProjectFacetVersion>();
-            
-            for( IProjectFacet f : getFixedProjectFacets() )
-            {
-                defaultFacets.add( f.getDefaultVersion() );
-            }
-        }
-        
-        setProjectFacets( defaultFacets );
-    }
-    
-    public synchronized void addProjectFacet( final IProjectFacetVersion fv )
-    {
-        final IProjectFacetVersion existingVersion = this.facets.get( fv.getProjectFacet() );
-        
-        if( existingVersion == null )
-        {
-            final Set<IProjectFacetVersion> newProjectFacets = new HashSet<IProjectFacetVersion>();
-
-            newProjectFacets.addAll( this.facets );
-            newProjectFacets.add( fv );
-            
-            setProjectFacets( newProjectFacets );
-        }
-        else if( existingVersion == fv )
-        {
-            return;
-        }
-        else
-        {
-            // TODO: needs exception msg
-            throw new IllegalArgumentException();
+            resumeEventNotification();
         }
     }
     
-    public synchronized void removeProjectFacet( final IProjectFacet f )
+    public void removeProjectFacet( final IProjectFacet f )
     {
-        final IProjectFacetVersion fv = getProjectFacetVersion( f );
+        suspendEventNotification();
         
-        if( fv != null )
+        try
         {
-            removeProjectFacet( getProjectFacetVersion( f ) );
+            synchronized( this.lock )
+            {
+                final IProjectFacetVersion fv = getProjectFacetVersion( f );
+                
+                if( fv != null )
+                {
+                    removeProjectFacet( getProjectFacetVersion( f ) );
+                }
+            }
+        }
+        finally
+        {
+            resumeEventNotification();
         }
     }
     
-    public synchronized void removeProjectFacet( final IProjectFacetVersion fv )
+    public void removeProjectFacet( final IProjectFacetVersion fv )
     {
-        final IProjectFacetVersion existingVersion = this.facets.get( fv.getProjectFacet() );
+        suspendEventNotification();
         
-        if( existingVersion == null )
+        try
         {
-            return;
+            synchronized( this.lock )
+            {
+                final IProjectFacetVersion existingVersion 
+                    = this.facets.get( fv.getProjectFacet() );
+                
+                if( existingVersion == null )
+                {
+                    return;
+                }
+                else if( existingVersion == fv )
+                {
+                    final Set<IProjectFacetVersion> newProjectFacets 
+                        = new HashSet<IProjectFacetVersion>();
+        
+                    newProjectFacets.addAll( this.facets );
+                    newProjectFacets.remove( fv );
+                    
+                    setProjectFacets( newProjectFacets );
+                }
+                else
+                {
+                    // TODO: needs exception msg
+                    throw new IllegalArgumentException();
+                }
+            }
         }
-        else if( existingVersion == fv )
+        finally
         {
-            final Set<IProjectFacetVersion> newProjectFacets = new HashSet<IProjectFacetVersion>();
-
-            newProjectFacets.addAll( this.facets );
-            newProjectFacets.remove( fv );
-            
-            setProjectFacets( newProjectFacets );
-        }
-        else
-        {
-            // TODO: needs exception msg
-            throw new IllegalArgumentException();
+            resumeEventNotification();
         }
     }
 
-    public synchronized void changeProjectFacetVersion( final IProjectFacetVersion fv )
+    public void changeProjectFacetVersion( final IProjectFacetVersion fv )
     {
-        final IProjectFacetVersion existingVersion = this.facets.get( fv.getProjectFacet() );
+        suspendEventNotification();
         
-        if( existingVersion == null )
+        try
         {
-            // TODO: needs exception msg
-            throw new IllegalArgumentException();
+            synchronized( this.lock )
+            {
+                final IProjectFacetVersion existingVersion 
+                    = this.facets.get( fv.getProjectFacet() );
+                
+                if( existingVersion == null )
+                {
+                    // TODO: needs exception msg
+                    throw new IllegalArgumentException();
+                }
+                else if( existingVersion == fv )
+                {
+                    return;
+                }
+                else
+                {
+                    final Set<IProjectFacetVersion> newProjectFacets 
+                        = new HashSet<IProjectFacetVersion>();
+        
+                    newProjectFacets.addAll( this.facets );
+                    newProjectFacets.remove( existingVersion );
+                    newProjectFacets.add( fv );
+                    
+                    setProjectFacets( newProjectFacets );
+                }
+            }
         }
-        else if( existingVersion == fv )
+        finally
         {
-            return;
-        }
-        else
-        {
-            final Set<IProjectFacetVersion> newProjectFacets = new HashSet<IProjectFacetVersion>();
-
-            newProjectFacets.addAll( this.facets );
-            newProjectFacets.remove( existingVersion );
-            newProjectFacets.add( fv );
-            
-            setProjectFacets( newProjectFacets );
+            resumeEventNotification();
         }
     }
     
-    private synchronized Set<IProjectFacetVersion> getBaseProjectFacets()
+    private Set<IProjectFacetVersion> getBaseProjectFacets()
     {
         if( this.project == null )
         {
@@ -727,293 +897,406 @@ public final class FacetedProjectWorkingCopy
         }
     }
     
-    public synchronized Set<IPreset> getAvailablePresets()
+    public Set<IPreset> getAvailablePresets()
     {
-        return this.availablePresets.getUnmodifiable();
+        synchronized( this.lock )
+        {
+            return this.availablePresets.getUnmodifiable();
+        }
     }
     
-    private synchronized void refreshAvailablePresets()
+    private void refreshAvailablePresets()
     {
-        final IndexedSet<String,IPreset> newAvailablePresets = new IndexedSet<String,IPreset>();
-        Map<String,Object> context = null;
+        suspendEventNotification();
         
-        for( IPreset preset : ProjectFacetsManager.getPresets() )
+        try
         {
-            if( preset.getType() == IPreset.Type.DYNAMIC )
+            synchronized( this.lock )
             {
-                if( context == null )
-                {
-                    context = new HashMap<String,Object>();
-                    context.put( IDynamicPreset.CONTEXT_KEY_FIXED_FACETS, this.fixedFacets );
-                    context.put( IDynamicPreset.CONTEXT_KEY_PRIMARY_RUNTIME, this.primaryRuntime );
-                }
+                final IndexedSet<String,IPreset> newAvailablePresets = new IndexedSet<String,IPreset>();
+                Map<String,Object> context = null;
                 
-                preset = ( (IDynamicPreset) preset ).resolve( context );
-                
-                if( preset == null )
+                for( IPreset preset : ProjectFacetsManager.getPresets() )
                 {
-                    continue;
-                }
-            }
-            
-            final Set<IProjectFacetVersion> facets = preset.getProjectFacets();
-            boolean applicable = true;
-            
-            // All of the facets listed in the preset and their versions must be available.
-            
-            for( IProjectFacetVersion fv : facets )
-            {
-                if( ! isFacetAvailable( fv ) )
-                {
-                    applicable = false;
-                    break;
-                }
-            }
-            
-            // The preset must span across all of the fixed facets.
-            
-            for( IProjectFacet f : this.fixedFacets )
-            {
-                boolean found = false;
-
-                for( IProjectFacetVersion fv : f.getVersions() )
-                {
-                    if( facets.contains( fv ) )
+                    if( preset.getType() == IPreset.Type.DYNAMIC )
                     {
-                        found = true;
-                        break;
+                        if( context == null )
+                        {
+                            context = new HashMap<String,Object>();
+                            context.put( IDynamicPreset.CONTEXT_KEY_FIXED_FACETS, this.fixedFacets );
+                            context.put( IDynamicPreset.CONTEXT_KEY_PRIMARY_RUNTIME, this.primaryRuntime );
+                        }
+                        
+                        preset = ( (IDynamicPreset) preset ).resolve( context );
+                        
+                        if( preset == null )
+                        {
+                            continue;
+                        }
+                    }
+                    
+                    final Set<IProjectFacetVersion> facets = preset.getProjectFacets();
+                    boolean applicable = true;
+                    
+                    // All of the facets listed in the preset and their versions must be available.
+                    
+                    for( IProjectFacetVersion fv : facets )
+                    {
+                        if( ! isFacetAvailable( fv ) )
+                        {
+                            applicable = false;
+                            break;
+                        }
+                    }
+                    
+                    // The preset must span across all of the fixed facets.
+                    
+                    for( IProjectFacet f : this.fixedFacets )
+                    {
+                        boolean found = false;
+        
+                        for( IProjectFacetVersion fv : f.getVersions() )
+                        {
+                            if( facets.contains( fv ) )
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+                        
+                        if( ! found )
+                        {
+                            applicable = false;
+                            break;
+                        }
+                    }
+                    
+                    if( applicable )
+                    {
+                        newAvailablePresets.add( preset.getId(), preset );
                     }
                 }
                 
-                if( ! found )
+                if( ! this.availablePresets.equals( newAvailablePresets ) )
                 {
-                    applicable = false;
-                    break;
-                }
-            }
-            
-            if( applicable )
-            {
-                newAvailablePresets.add( preset.getId(), preset );
-            }
-        }
-        
-        if( ! this.availablePresets.equals( newAvailablePresets ) )
-        {
-            this.availablePresets = newAvailablePresets;
-            notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.AVAILABLE_PRESETS_CHANGED ) );
-            
-            if( this.selectedPreset != null && 
-                ! this.availablePresets.containsKey( this.selectedPreset.getId() ) )
-            {
-                setSelectedPreset( null );
-            }
-        }
-    }
-    
-    public synchronized IPreset getSelectedPreset()
-    {
-        return this.selectedPreset;
-    }
-    
-    public synchronized void setSelectedPreset( final String presetId )
-    {
-        if( presetId != null && ! this.availablePresets.containsKey( presetId ) )
-        {
-            final String msg = Resources.bind( Resources.couldNotSelectPreset, presetId ); 
-            throw new IllegalArgumentException( msg );
-        }
-        
-        final IPreset preset = this.availablePresets.get( presetId );
-
-        if( ! equals( this.selectedPreset, preset ) )
-        {
-            if( preset != null )
-            {
-                // The following line keeps the setProjectFacets() call that comes next from 
-                // causing a preset change event from being generated. We want to avoid firing 
-                // two preset change events while presenting a consistent data structure (the 
-                // old preset isn't selected) to event handlers listening on the facet change 
-                // event.
-                
-                this.selectedPreset = null;
-                
-                setProjectFacets( preset.getProjectFacets() );
-            }
-            
-            this.selectedPreset = preset;
-            
-            notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.SELECTED_PRESET_CHANGED ) );
-        }
-    }
-    
-    public synchronized Set<IRuntime> getTargetableRuntimes()
-    {
-        return this.targetableRuntimes;
-    }
-    
-    public synchronized boolean isTargetable( final IRuntime runtime )
-    {
-        return this.targetableRuntimes.contains( runtime );
-    }
-    
-    public synchronized void refreshTargetableRuntimes()
-    {
-        final Set<IRuntime> result = new HashSet<IRuntime>();
-        
-        for( IRuntime r : RuntimeManager.getRuntimes() )
-        {
-            boolean ok;
-            
-            if( this.project != null && 
-                this.project.getTargetedRuntimes().contains( r ) )
-            {
-                ok = true;
-            }
-            else
-            {
-                ok = true;
-                
-                for( IProjectFacetVersion fv : this.facets )
-                {
-                    if( ! r.supports( fv ) )
+                    this.availablePresets = newAvailablePresets;
+                    notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.AVAILABLE_PRESETS_CHANGED ) );
+                    
+                    if( this.selectedPreset != null && 
+                        ! this.availablePresets.containsKey( this.selectedPreset.getId() ) )
                     {
-                        ok = false;
-                        break;
+                        setSelectedPreset( null );
                     }
                 }
             }
-
-            if( ok )
-            {
-                result.add( r );
-            }
         }
+        finally
+        {
+            resumeEventNotification();
+        }
+    }
+    
+    public IPreset getSelectedPreset()
+    {
+        synchronized( this.lock )
+        {
+            return this.selectedPreset;
+        }
+    }
+    
+    public void setSelectedPreset( final String presetId )
+    {
+        suspendEventNotification();
         
-        if( ! this.targetableRuntimes.equals( result ) )
+        try
         {
-            this.targetableRuntimes.clear();
-            this.targetableRuntimes.addAll( result );
-            notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.TARGETABLE_RUNTIMES_CHANGED ) );
-            
-            final List<IRuntime> toRemove = new ArrayList<IRuntime>();
-            
-            for( IRuntime r : this.targetedRuntimes )
+            synchronized( this.lock )
             {
-                if( ! this.targetableRuntimes.contains( r ) )
+                if( presetId != null && ! this.availablePresets.containsKey( presetId ) )
                 {
-                    toRemove.add( r );
+                    final String msg = Resources.bind( Resources.couldNotSelectPreset, presetId ); 
+                    throw new IllegalArgumentException( msg );
                 }
-            }
-            
-            this.targetedRuntimes.removeAll( toRemove );
-            
-            if( ! toRemove.isEmpty() )
-            {
-                notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.TARGETED_RUNTIMES_CHANGED ) );
                 
-                if( this.primaryRuntime != null && 
-                    ! this.targetableRuntimes.contains( this.primaryRuntime ) )
+                final IPreset preset = this.availablePresets.get( presetId );
+        
+                if( ! equals( this.selectedPreset, preset ) )
                 {
-                    autoAssignPrimaryRuntime();
+                    if( preset != null )
+                    {
+                        // The following line keeps the setProjectFacets() call that comes next from 
+                        // causing a preset change event from being generated. We want to avoid 
+                        // firing two preset change events while presenting a consistent data 
+                        // structure (the old preset isn't selected) to event handlers listening on 
+                        // the facet change event.
+                        
+                        this.selectedPreset = null;
+                        
+                        setProjectFacets( preset.getProjectFacets() );
+                    }
+                    
+                    this.selectedPreset = preset;
+                    
+                    notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.SELECTED_PRESET_CHANGED ) );
                 }
             }
         }
-    }
-    
-    public synchronized Set<IRuntime> getTargetedRuntimes()
-    {
-        return this.targetedRuntimes;
-    }
-    
-    public synchronized boolean isTargeted( final IRuntime runtime )
-    {
-        return this.targetedRuntimes.contains( runtime );
-    }
-    
-    public synchronized void setTargetedRuntimes( final Set<IRuntime> runtimes )
-    {
-        if( ! this.targetedRuntimes.equals( runtimes ) )
+        finally
         {
-            this.targetedRuntimes.clear();
-            
-            for( IRuntime r : runtimes )
-            {
-                if( this.targetableRuntimes.contains( r ) )
-                {
-                    this.targetedRuntimes.add( r );
-                }
-            }
-            
-            notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.TARGETED_RUNTIMES_CHANGED ) );
-            
-            if( this.primaryRuntime == null ||
-                ! this.targetedRuntimes.contains( this.primaryRuntime ) )
-            {
-                autoAssignPrimaryRuntime();
-            }
+            resumeEventNotification();
         }
     }
     
-    public synchronized void addTargetedRuntime( final IRuntime runtime )
+    public Set<IRuntime> getTargetableRuntimes()
     {
-        if( runtime == null )
+        synchronized( this.lock )
         {
-            throw new NullPointerException();
-        }
-        else
-        {
-            this.targetedRuntimes.add( runtime );
-            notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.TARGETED_RUNTIMES_CHANGED ) );
-            
-            if( this.primaryRuntime == null )
-            {
-                this.primaryRuntime = runtime;
-                notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.PRIMARY_RUNTIME_CHANGED ) );
-            }
+            return this.targetableRuntimes;
         }
     }
     
-    public synchronized void removeTargetedRuntime( final IRuntime runtime )
+    public boolean isTargetable( final IRuntime runtime )
     {
-        if( runtime == null )
+        synchronized( this.lock )
         {
-            throw new NullPointerException();
+            return this.targetableRuntimes.contains( runtime );
         }
-        else
+    }
+    
+    public void refreshTargetableRuntimes()
+    {
+        suspendEventNotification();
+        
+        try
         {
-            if( this.targetedRuntimes.remove( runtime ) )
+            synchronized( this.lock )
             {
-                notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.TARGETED_RUNTIMES_CHANGED ) );
+                final Set<IRuntime> result = new HashSet<IRuntime>();
                 
-                if( runtime.equals( this.primaryRuntime ) )
+                for( IRuntime r : RuntimeManager.getRuntimes() )
                 {
-                    autoAssignPrimaryRuntime();
+                    boolean ok;
+                    
+                    if( this.project != null && 
+                        this.project.getTargetedRuntimes().contains( r ) )
+                    {
+                        ok = true;
+                    }
+                    else
+                    {
+                        ok = true;
+                        
+                        for( IProjectFacetVersion fv : this.facets )
+                        {
+                            if( ! r.supports( fv ) )
+                            {
+                                ok = false;
+                                break;
+                            }
+                        }
+                    }
+        
+                    if( ok )
+                    {
+                        result.add( r );
+                    }
+                }
+                
+                if( ! this.targetableRuntimes.equals( result ) )
+                {
+                    this.targetableRuntimes.clear();
+                    this.targetableRuntimes.addAll( result );
+                    notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.TARGETABLE_RUNTIMES_CHANGED ) );
+                    
+                    final List<IRuntime> toRemove = new ArrayList<IRuntime>();
+                    
+                    for( IRuntime r : this.targetedRuntimes )
+                    {
+                        if( ! this.targetableRuntimes.contains( r ) )
+                        {
+                            toRemove.add( r );
+                        }
+                    }
+                    
+                    this.targetedRuntimes.removeAll( toRemove );
+                    
+                    if( ! toRemove.isEmpty() )
+                    {
+                        notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.TARGETED_RUNTIMES_CHANGED ) );
+                        refreshAvailableFacets();
+                        
+                        if( this.primaryRuntime != null && 
+                            ! this.targetableRuntimes.contains( this.primaryRuntime ) )
+                        {
+                            autoAssignPrimaryRuntime();
+                        }
+                    }
                 }
             }
         }
-    }
-    
-    public synchronized IRuntime getPrimaryRuntime()
-    {
-        return this.primaryRuntime;
-    }
-    
-    public synchronized void setPrimaryRuntime( final IRuntime runtime )
-    {
-        if( ! equals( this.primaryRuntime, runtime ) )
+        finally
         {
-            if( runtime == null && this.targetedRuntimes.size() > 0 )
+            resumeEventNotification();
+        }
+    }
+    
+    public Set<IRuntime> getTargetedRuntimes()
+    {
+        synchronized( this.lock )
+        {
+            return this.targetedRuntimes;
+        }
+    }
+    
+    public boolean isTargeted( final IRuntime runtime )
+    {
+        synchronized( this.lock )
+        {
+            return this.targetedRuntimes.contains( runtime );
+        }
+    }
+    
+    public void setTargetedRuntimes( final Set<IRuntime> runtimes )
+    {
+        suspendEventNotification();
+        
+        try
+        {
+            synchronized( this.lock )
             {
-                throw new IllegalArgumentException();
+                if( ! this.targetedRuntimes.equals( runtimes ) )
+                {
+                    this.targetedRuntimes.clear();
+                    
+                    for( IRuntime r : runtimes )
+                    {
+                        if( this.targetableRuntimes.contains( r ) )
+                        {
+                            this.targetedRuntimes.add( r );
+                        }
+                    }
+                    
+                    notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.TARGETED_RUNTIMES_CHANGED ) );
+                    refreshAvailableFacets();
+                    
+                    if( this.primaryRuntime == null ||
+                        ! this.targetedRuntimes.contains( this.primaryRuntime ) )
+                    {
+                        autoAssignPrimaryRuntime();
+                    }
+                }
             }
-            
-            if( this.targetedRuntimes.contains( runtime ) )
+        }
+        finally
+        {
+            resumeEventNotification();
+        }
+    }
+    
+    public void addTargetedRuntime( final IRuntime runtime )
+    {
+        suspendEventNotification();
+        
+        try
+        {
+            synchronized( this.lock )
             {
-                this.primaryRuntime = runtime;
+                if( runtime == null )
+                {
+                    throw new NullPointerException();
+                }
+                else
+                {
+                    this.targetedRuntimes.add( runtime );
+                    
+                    notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.TARGETED_RUNTIMES_CHANGED ) );
+                    refreshAvailableFacets();
+                    
+                    if( this.primaryRuntime == null )
+                    {
+                        this.primaryRuntime = runtime;
+
+                        notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.PRIMARY_RUNTIME_CHANGED ) );
+                        refreshAvailablePresets();
+                    }
+                }
             }
-            
-            notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.PRIMARY_RUNTIME_CHANGED ) );
+        }
+        finally
+        {
+            resumeEventNotification();
+        }
+    }
+    
+    public void removeTargetedRuntime( final IRuntime runtime )
+    {
+        suspendEventNotification();
+        
+        try
+        {
+            synchronized( this.lock )
+            {
+                if( runtime == null )
+                {
+                    throw new NullPointerException();
+                }
+                else
+                {
+                    if( this.targetedRuntimes.remove( runtime ) )
+                    {
+                        notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.TARGETED_RUNTIMES_CHANGED ) );
+                        refreshAvailableFacets();
+                        
+                        if( runtime.equals( this.primaryRuntime ) )
+                        {
+                            autoAssignPrimaryRuntime();
+                        }
+                    }
+                }
+            }
+        }
+        finally
+        {
+            resumeEventNotification();
+        }
+    }
+    
+    public IRuntime getPrimaryRuntime()
+    {
+        synchronized( this.lock )
+        {
+            return this.primaryRuntime;
+        }
+    }
+    
+    public void setPrimaryRuntime( final IRuntime runtime )
+    {
+        suspendEventNotification();
+        
+        try
+        {
+            synchronized( this.lock )
+            {
+                if( ! equals( this.primaryRuntime, runtime ) )
+                {
+                    if( runtime == null && this.targetedRuntimes.size() > 0 )
+                    {
+                        throw new IllegalArgumentException();
+                    }
+                    
+                    if( this.targetedRuntimes.contains( runtime ) )
+                    {
+                        this.primaryRuntime = runtime;
+                    }
+                    
+                    notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.PRIMARY_RUNTIME_CHANGED ) );
+                    refreshAvailablePresets();
+                }
+            }
+        }
+        finally
+        {
+            resumeEventNotification();
         }
     }
     
@@ -1032,32 +1315,33 @@ public final class FacetedProjectWorkingCopy
         }
 
         notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.PRIMARY_RUNTIME_CHANGED ) );
+        refreshAvailablePresets();
     }
     
-    public synchronized Set<Action> getProjectFacetActions()
+    public Set<Action> getProjectFacetActions()
     {
-        return this.actions;
+        synchronized( this.lock )
+        {
+            return this.actions;
+        }
     }
     
-    public synchronized Action getProjectFacetAction( final Action.Type type,
-                                                      final IProjectFacetVersion fv )
+    public Action getProjectFacetAction( final IProjectFacet facet )
     {
-        return getProjectFacetAction( this.actions, type, fv );
+        synchronized( this.lock )
+        {
+            return getProjectFacetAction( this.actions, null, facet );
+        }
     }
-
-    public synchronized Action getProjectFacetAction( final Action.Type type,
-                                                      final IProjectFacet f )
-    {
-        return getProjectFacetAction( this.actions, type, f );
-    }
-
+    
     private static Action getProjectFacetAction( final Set<Action> actions,
                                                  final Action.Type type,
                                                  final IProjectFacetVersion fv )
     {
         for( Action action : actions )
         {
-            if( action.getType() == type && action.getProjectFacetVersion() == fv )
+            if( ( type == null || action.getType() == type ) && 
+                action.getProjectFacetVersion() == fv )
             {
                 return action;
             }
@@ -1072,7 +1356,7 @@ public final class FacetedProjectWorkingCopy
     {
         for( Action action : actions )
         {
-            if( action.getType() == type && 
+            if( ( type == null || action.getType() == type ) && 
                 action.getProjectFacetVersion().getProjectFacet() == f )
             {
                 return action;
@@ -1082,9 +1366,9 @@ public final class FacetedProjectWorkingCopy
         return null;
     }
     
-    private synchronized Action createProjectFacetAction( final Set<Action> actions,
-                                                          final Action.Type type,
-                                                          final IProjectFacetVersion fv )
+    private Action createProjectFacetAction( final Set<Action> actions,
+                                             final Action.Type type,
+                                             final IProjectFacetVersion fv )
     {
         Action action = getProjectFacetAction( actions, type, fv );
         
@@ -1121,51 +1405,8 @@ public final class FacetedProjectWorkingCopy
                         final IActionDefinition def = fv.getActionDefinition( base, type );
                         config = def.createConfigObject();
                     }
-
-                    if( config != null )
-                    {
-                        IActionConfig c1 = null;
-                        
-                        if( config instanceof IActionConfig )
-                        {
-                            c1 = (IActionConfig) config;
-                        }
-                        else if( config != null )
-                        {
-                            final IAdapterManager m 
-                                = Platform.getAdapterManager();
-                            
-                            final String t
-                                = IActionConfig.class.getName();
-                            
-                            c1 = (IActionConfig) m.loadAdapter( config, t );
-                        }
-                        
-                        if( c1 != null )
-                        {
-                            c1.setProjectName( getProjectName() );
-                            c1.setVersion( fv );
-                        }
-                        
-                        ActionConfig c2 = null;
-                        
-                        if( config instanceof ActionConfig )
-                        {
-                            c2 = (ActionConfig) config;
-                        }
-                        else if( config != null )
-                        {
-                            final IAdapterManager m = Platform.getAdapterManager();
-                            final String t = ActionConfig.class.getName();
-                            c2 = (ActionConfig) m.loadAdapter( config, t );
-                        }
-                        
-                        if( c2 != null )
-                        {
-                            c2.setFacetedProjectWorkingCopy( this );
-                            c2.setProjectFacetVersion( fv );
-                        }
-                    }
+                    
+                    bindProjectFacetActionConfig( fv, config );
                 }
                 catch( CoreException e )
                 {
@@ -1179,7 +1420,56 @@ public final class FacetedProjectWorkingCopy
         return action;
     }
     
-    private synchronized void refreshProjectFacetActions()
+    private void bindProjectFacetActionConfig( final IProjectFacetVersion fv,
+                                               final Object actionConfig )
+    {
+        if( actionConfig != null )
+        {
+            IActionConfig c1 = null;
+            
+            if( actionConfig instanceof IActionConfig )
+            {
+                c1 = (IActionConfig) actionConfig;
+            }
+            else if( actionConfig != null )
+            {
+                final IAdapterManager m 
+                    = Platform.getAdapterManager();
+                
+                final String t
+                    = IActionConfig.class.getName();
+                
+                c1 = (IActionConfig) m.loadAdapter( actionConfig, t );
+            }
+            
+            if( c1 != null )
+            {
+                c1.setProjectName( getProjectName() );
+                c1.setVersion( fv );
+            }
+            
+            ActionConfig c2 = null;
+            
+            if( actionConfig instanceof ActionConfig )
+            {
+                c2 = (ActionConfig) actionConfig;
+            }
+            else if( actionConfig != null )
+            {
+                final IAdapterManager m = Platform.getAdapterManager();
+                final String t = ActionConfig.class.getName();
+                c2 = (ActionConfig) m.loadAdapter( actionConfig, t );
+            }
+            
+            if( c2 != null )
+            {
+                c2.setFacetedProjectWorkingCopy( this );
+                c2.setProjectFacetVersion( fv );
+            }
+        }
+    }
+    
+    private void refreshProjectFacetActions()
     {
         final Set<IProjectFacetVersion> base = getBaseProjectFacets();
         final Set<IProjectFacetVersion> sel = getProjectFacets();
@@ -1238,57 +1528,158 @@ public final class FacetedProjectWorkingCopy
         this.actions = newActions;
     }
     
-    public synchronized void addListener( final IFacetedProjectListener listener,
-                                          final IFacetedProjectEvent.Type... types )
+    public void setProjectFacetActionConfig( final IProjectFacet facet,
+                                             final Object newActionConfig )
     {
-        if( types.length == 0 )
-        {
-            throw new IllegalArgumentException();
-        }
+        suspendEventNotification();
         
-        for( IFacetedProjectEvent.Type type : types )
+        try
         {
-            this.listeners.get( type ).add( listener );
+            synchronized( this.lock )
+            {
+                final Action oldAction = getProjectFacetAction( facet );
+                
+                if( oldAction == null )
+                {
+                    throw new IllegalArgumentException();
+                }
+                
+                final IProjectFacetVersion fv = oldAction.getProjectFacetVersion();
+                final Action newAction = new Action( oldAction.getType(), fv, newActionConfig );
+                bindProjectFacetActionConfig( fv, newActionConfig );
+                
+                this.actions.remove( oldAction );
+                this.actions.add( newAction );
+            }
         }
-    }
-
-    public synchronized void removeListener( final IFacetedProjectListener listener )
-    {
-        for( List<IFacetedProjectListener> listeners : this.listeners.values() )
+        finally
         {
-            listeners.remove( listener );
-        }
-    }
-
-    private synchronized void notifyListeners( final IFacetedProjectEvent event )
-    {
-        final List<IFacetedProjectListener> listeners = this.listeners.get( event.getType() );
-        
-        for( IFacetedProjectListener listener : listeners )
-        {
-            listener.handleEvent( event );
+            resumeEventNotification();
         }
     }
     
-    public synchronized IStatus validate( final IProgressMonitor monitor )
+    public void addListener( final IFacetedProjectListener listener,
+                             final IFacetedProjectEvent.Type... types )
+    {
+        synchronized( this.lock )
+        {
+            if( types.length == 0 )
+            {
+                throw new IllegalArgumentException();
+            }
+            
+            for( IFacetedProjectEvent.Type type : types )
+            {
+                this.listeners.get( type ).add( listener );
+            }
+        }
+    }
+
+    public void removeListener( final IFacetedProjectListener listener )
+    {
+        synchronized( this.lock )
+        {
+            for( List<IFacetedProjectListener> listeners : this.listeners.values() )
+            {
+                listeners.remove( listener );
+            }
+        }
+    }
+
+    private void notifyListeners( final IFacetedProjectEvent event )
+    {
+        List<IFacetedProjectListener> listenersToNotify = null;
+        
+        synchronized( this.lock )
+        {
+            if( this.suspendEventNoticationCounter == 0 )
+            {
+                listenersToNotify = this.listeners.get( event.getType() );
+            }
+            else
+            {
+                this.queuedEvents.add( event );
+            }
+        }
+        
+        if( listenersToNotify != null )
+        {
+            for( IFacetedProjectListener listener : listenersToNotify )
+            {
+                try
+                {
+                    listener.handleEvent( event );
+                }
+                catch( Exception e )
+                {
+                    FacetCorePlugin.log( e );
+                }
+            }
+        }
+    }
+    
+    private void suspendEventNotification()
+    {
+        synchronized( this.lock )
+        {
+            this.suspendEventNoticationCounter++;
+        }
+    }
+    
+    private void resumeEventNotification()
+    {
+        List<IFacetedProjectEvent> eventsToFire = null;
+        
+        synchronized( this.lock )
+        {
+            this.suspendEventNoticationCounter--;
+            
+            if( this.suspendEventNoticationCounter == 0 )
+            {
+                if( ! this.queuedEvents.isEmpty() )
+                {
+                    eventsToFire = new ArrayList<IFacetedProjectEvent>();
+                    eventsToFire.addAll( this.queuedEvents );
+                    this.queuedEvents.clear();
+                }
+            }
+            else if( this.suspendEventNoticationCounter < 0 )
+            {
+                throw new IllegalStateException();
+            }
+        }
+        
+        if( eventsToFire != null )
+        {
+            for( IFacetedProjectEvent event : eventsToFire )
+            {
+                notifyListeners( event );
+            }
+        }
+    }
+    
+    public IStatus validate( final IProgressMonitor monitor )
     {
         return validate();
     }
     
-    public synchronized IStatus validate()
+    public IStatus validate()
     {
-        if( this.problems.isEmpty() )
+        synchronized( this.lock )
         {
-            return Status.OK_STATUS;
-        }
-        else
-        {
-            final IStatus[] probs = this.problems.toArray( new IStatus[ this.problems.size() ] );
-            return Constraint.createMultiStatus( probs );
+            if( this.problems.isEmpty() )
+            {
+                return Status.OK_STATUS;
+            }
+            else
+            {
+                final IStatus[] probs = this.problems.toArray( new IStatus[ this.problems.size() ] );
+                return Constraint.createMultiStatus( probs );
+            }
         }
     }
     
-    private synchronized void performValidation()
+    private void performValidation()
     {
         final Set<IProjectFacetVersion> base = getBaseProjectFacets();
 
@@ -1350,147 +1741,93 @@ public final class FacetedProjectWorkingCopy
         }
     }
     
-    public synchronized void commitChanges( final IProgressMonitor monitor )
+    public void commitChanges( final IProgressMonitor monitor )
     
         throws CoreException
         
     {
-        final SubMonitor pm = SubMonitor.convert( monitor, 24 );
+        synchronized( this.lock )
+        {
+            final SubMonitor pm = SubMonitor.convert( monitor, 100 );
+            
+            try
+            {
+                final IFacetedProject fpj;
+                
+                if( this.project == null )
+                {
+                    fpj = ProjectFacetsManager.create( this.projectName,
+                                                       this.projectLocation, 
+                                                       pm.newChild( 10, SubMonitor.SUPPRESS_ALL_LABELS ) );
+                }
+                else
+                {
+                    fpj = this.project;
+                    pm.worked( 10 );
+                }
+                
+                ( (FacetedProject) fpj ).mergeChanges( this, pm.newChild( 90 ) );
+            }
+            finally
+            {
+                pm.done();
+            }
+        }
+    }
+    
+    public void mergeChanges( final IFacetedProjectWorkingCopy fpjwc )
+    {
+        suspendEventNotification();
         
         try
         {
-            // Create the project, if it doesn't exist already.
-            
-            final IFacetedProject fpj;
-            
-            if( this.project == null )
+            synchronized( this.lock )
             {
-                fpj = ProjectFacetsManager.create( this.projectName,
-                                                   this.projectLocation, submon( pm, 2 ) );
-            }
-            else
-            {
-                fpj = this.project;
-            }
+                // TODO: Both this method and the clone method ignore the action config objects.
             
-            // Figure out whether we can set runtimes before applying facet actions. This is better
-            // for performance reasons, but may not work if the project contains facets that are
-            // not supported by the new runtime. You can get into this situation if the user tries
-            // to simultaneously uninstall a facet and select a different runtime. The fallback
-            // solution for this situation is to set the targeted runtimes to an empty list first,
-            // then apply the facet actions, and then set the targeted runtimes to the new list.
-            // This is more drastic than necessary in all situations, but it is not clear that
-            // implementing additional optimizations is necessary either.
-            
-            boolean canSetRuntimesFirst = true;
-            
-            for( IProjectFacetVersion fv : getProjectFacets() )
-            {
-                for( IRuntime r : getTargetedRuntimes() )
-                {
-                    if( ! r.supports( fv ) )
-                    {
-                        canSetRuntimesFirst = false;
-                        break;
-                    }
-                }
+                setProjectName( fpjwc.getProjectName() );
+                setProjectLocation( fpjwc.getProjectLocation() );
+                setFixedProjectFacets( fpjwc.getFixedProjectFacets() );
+                setProjectFacets( fpjwc.getProjectFacets() );
+                setTargetedRuntimes( fpjwc.getTargetedRuntimes() );
+                setPrimaryRuntime( fpjwc.getPrimaryRuntime() );
                 
-                if( ! canSetRuntimesFirst )
-                {
-                    break;
-                }
-            }
-            
-            pm.subTask( Resources.taskConfiguringRuntimes );
-            
-            if( canSetRuntimesFirst )
-            {
-                fpj.setTargetedRuntimes( getTargetedRuntimes(), submon( pm, 2 ) );
+                final IPreset selectedPreset = fpjwc.getSelectedPreset();
                 
-                if( fpj.getPrimaryRuntime() != null )
+                if( selectedPreset != null )
                 {
-                    fpj.setPrimaryRuntime( getPrimaryRuntime(), submon( pm, 2 ) );
-                }
-                else
-                {
-                    pm.worked( 2 );
+                    setSelectedPreset( selectedPreset.getId() );
                 }
             }
-            else
-            {
-                final Set<IRuntime> emptySet = Collections.emptySet();
-                fpj.setTargetedRuntimes( emptySet, submon( pm, 2 ) );
-            }
-            
-            fpj.modify( getProjectFacetActions(), 
-                        pm.newChild( 16, SubMonitor.SUPPRESS_SETTASKNAME ) );
-            
-            if( ! canSetRuntimesFirst )
-            {
-                pm.subTask( Resources.taskConfiguringRuntimes );
-                
-                fpj.setTargetedRuntimes( getTargetedRuntimes(), submon( pm, 2 ) );
-                
-                if( fpj.getPrimaryRuntime() != null )
-                {
-                    fpj.setPrimaryRuntime( getPrimaryRuntime(), submon( pm, 2 ) );
-                }
-                else
-                {
-                    pm.worked( 2 );
-                }
-            }
-            
-            fpj.setFixedProjectFacets( getFixedProjectFacets() );
-            pm.worked( 2 );
         }
         finally
         {
-            pm.done();
+            resumeEventNotification();
         }
     }
     
-    public synchronized void mergeChanges( final IFacetedProjectWorkingCopy fpjwc )
+    public IFacetedProjectWorkingCopy clone()
     {
-        // TODO: Both this method and the clone method ignore the action config objects.
-        
-        synchronized( fpjwc )
+        synchronized( this.lock )
         {
-            setProjectName( fpjwc.getProjectName() );
-            setProjectLocation( fpjwc.getProjectLocation() );
-            setFixedProjectFacets( fpjwc.getFixedProjectFacets() );
-            setProjectFacets( fpjwc.getProjectFacets() );
-            setTargetedRuntimes( fpjwc.getTargetedRuntimes() );
-            setPrimaryRuntime( fpjwc.getPrimaryRuntime() );
+            final FacetedProjectWorkingCopy clone = new FacetedProjectWorkingCopy( this.project );
             
-            final IPreset selectedPreset = fpjwc.getSelectedPreset();
+            clone.setProjectName( getProjectName() );
+            clone.setProjectLocation( getProjectLocation() );
+            clone.setFixedProjectFacets( getFixedProjectFacets() );
+            clone.setProjectFacets( getProjectFacets() );
+            clone.setTargetedRuntimes( getTargetedRuntimes() );
+            clone.setPrimaryRuntime( getPrimaryRuntime() );
+            
+            final IPreset selectedPreset = getSelectedPreset();
             
             if( selectedPreset != null )
             {
-                setSelectedPreset( selectedPreset.getId() );
+                clone.setSelectedPreset( selectedPreset.getId() );
             }
+            
+            return clone;
         }
-    }
-    
-    public synchronized IFacetedProjectWorkingCopy clone()
-    {
-        final FacetedProjectWorkingCopy clone = new FacetedProjectWorkingCopy( this.project );
-        
-        clone.setProjectName( getProjectName() );
-        clone.setProjectLocation( getProjectLocation() );
-        clone.setFixedProjectFacets( getFixedProjectFacets() );
-        clone.setProjectFacets( getProjectFacets() );
-        clone.setTargetedRuntimes( getTargetedRuntimes() );
-        clone.setPrimaryRuntime( getPrimaryRuntime() );
-        
-        final IPreset selectedPreset = getSelectedPreset();
-        
-        if( selectedPreset != null )
-        {
-            clone.setSelectedPreset( selectedPreset.getId() );
-        }
-        
-        return clone;
     }
     
     public void dispose()
@@ -1536,12 +1873,6 @@ public final class FacetedProjectWorkingCopy
         }
     }
     
-    private static SubMonitor submon( final SubMonitor parent,
-                                      final int ticks )
-    {
-        return parent.newChild( ticks, SubMonitor.SUPPRESS_ALL_LABELS );
-    }
-    
     private static final class Resources
     
         extends NLS
@@ -1551,7 +1882,6 @@ public final class FacetedProjectWorkingCopy
         public static String facetNotFound;
         public static String facetVersionNotFound;
         public static String facetNotSupportedByTarget;
-        public static String taskConfiguringRuntimes;
         
         static
         {

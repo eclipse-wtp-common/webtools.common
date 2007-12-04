@@ -12,11 +12,11 @@
 package org.eclipse.wst.common.project.facet.core.internal;
 
 import static org.eclipse.wst.common.project.facet.core.internal.util.FileUtil.validateEdit;
-import static org.eclipse.wst.common.project.facet.core.internal.util.XmlUtil.*;
 import static org.eclipse.wst.common.project.facet.core.internal.util.ProgressMonitorUtil.beginTask;
 import static org.eclipse.wst.common.project.facet.core.internal.util.ProgressMonitorUtil.done;
 import static org.eclipse.wst.common.project.facet.core.internal.util.ProgressMonitorUtil.submon;
 import static org.eclipse.wst.common.project.facet.core.internal.util.ProgressMonitorUtil.worked;
+import static org.eclipse.wst.common.project.facet.core.internal.util.XmlUtil.escape;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -48,14 +48,13 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.wst.common.project.facet.core.IActionConfig;
 import org.eclipse.wst.common.project.facet.core.IActionDefinition;
 import org.eclipse.wst.common.project.facet.core.IDelegate;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
@@ -69,9 +68,9 @@ import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.events.ITargetedRuntimesChangedEvent;
 import org.eclipse.wst.common.project.facet.core.events.internal.FixedFacetsChangedEvent;
 import org.eclipse.wst.common.project.facet.core.events.internal.LegacyListenerAdapter;
-import org.eclipse.wst.common.project.facet.core.events.internal.ProjectListenerRegistry;
 import org.eclipse.wst.common.project.facet.core.events.internal.PrimaryRuntimeChangedEvent;
 import org.eclipse.wst.common.project.facet.core.events.internal.ProjectFacetActionEvent;
+import org.eclipse.wst.common.project.facet.core.events.internal.ProjectListenerRegistry;
 import org.eclipse.wst.common.project.facet.core.events.internal.ProjectModifiedEvent;
 import org.eclipse.wst.common.project.facet.core.events.internal.TargetedRuntimesChangedEvent;
 import org.eclipse.wst.common.project.facet.core.internal.util.ObjectReference;
@@ -275,7 +274,39 @@ public final class FacetedProject
                 
                 try
                 {
-                    result.set( modifyInternal( actions, monitor ) );
+                    final IFacetedProjectWorkingCopy fpjwc = createWorkingCopy();
+                    
+                    for( Action action : actions )
+                    {
+                        final Action.Type type = action.getType();
+                        final IProjectFacetVersion fv = action.getProjectFacetVersion();
+                        
+                        if( type == Action.Type.INSTALL )
+                        {
+                            fpjwc.addProjectFacet( fv );
+                        }
+                        else if( type == Action.Type.VERSION_CHANGE )
+                        {
+                            fpjwc.changeProjectFacetVersion( fv );
+                        }
+                        else if( type == Action.Type.UNINSTALL )
+                        {
+                            fpjwc.removeProjectFacet( fv );
+                        }
+                        else
+                        {
+                            throw new IllegalStateException();
+                        }
+                        
+                        final Object config = action.getConfig();
+                        
+                        if( config != null )
+                        {
+                            fpjwc.setProjectFacetActionConfig( fv.getProjectFacet(), config );
+                        }
+                    }
+                    
+                    result.set( mergeChangesInternal( fpjwc, monitor ) );
                 }
                 finally
                 {
@@ -324,41 +355,7 @@ public final class FacetedProject
                 final Action.Type type = action.getType();
                 final ProjectFacetVersion fv = (ProjectFacetVersion) action.getProjectFacetVersion();
                 final IActionDefinition def = fv.getActionDefinition( this.facets, type );
-                
-                Object config = action.getConfig();
-                
-                if( config == null )
-                {
-                    config = def.createConfigObject();
-                }
-                
-                if( config != null )
-                {
-                    IActionConfig cfg = null;
-                    
-                    if( config instanceof IActionConfig )
-                    {
-                        cfg = (IActionConfig) config;
-                    }
-                    else
-                    {
-                        final IAdapterManager m = Platform.getAdapterManager();
-                        cfg = (IActionConfig) m.loadAdapter( config, IActionConfig.class.getName() );
-                    }
-                    
-                    if( cfg != null )
-                    {
-                        cfg.setProjectName( this.project.getName() );
-                        cfg.setVersion( fv );
-                        
-                        final IStatus status = cfg.validate();
-                        
-                        if( status.getSeverity() != IStatus.OK )
-                        {
-                            throw new CoreException( status );
-                        }
-                    }
-                }
+                final Object config = action.getConfig();
                 
                 if( monitor != null )
                 {
@@ -1032,6 +1029,148 @@ public final class FacetedProject
         synchronized( this.lock )
         {
             return new FacetedProjectWorkingCopy( this );
+        }
+    }
+    
+    public void mergeChanges( final IFacetedProjectWorkingCopy fpjwc,
+                              final IProgressMonitor monitor )
+    
+        throws CoreException
+        
+    {
+        final ObjectReference<Boolean> result = new ObjectReference<Boolean>( true );
+        
+        final IWorkspaceRunnable wr = new IWorkspaceRunnable()
+        {
+            public void run( final IProgressMonitor monitor ) 
+            
+                throws CoreException
+                
+            {
+                beginModification();
+                
+                try
+                {
+                    result.set( mergeChangesInternal( fpjwc, monitor ) );
+                }
+                finally
+                {
+                    endModification();
+                }
+            }
+        };
+        
+        final IWorkspace ws = ResourcesPlugin.getWorkspace();
+        ws.run( wr, ws.getRoot(), IWorkspace.AVOID_UPDATE, monitor );
+        
+        if( result.get() )
+        {
+            notifyListeners( new ProjectModifiedEvent( this ) );
+        }
+    }
+    
+    private boolean mergeChangesInternal( final IFacetedProjectWorkingCopy fpjwc,
+                                          final IProgressMonitor monitor )
+    
+        throws CoreException
+        
+    {
+        final SubMonitor pm = SubMonitor.convert( monitor, 26 );
+        
+        try
+        {
+            boolean modified = false;
+            
+            // Figure out whether we can set runtimes before applying facet actions. This is better
+            // for performance reasons, but may not work if the project contains facets that are
+            // not supported by the new runtime. You can get into this situation if the user tries
+            // to simultaneously uninstall a facet and select a different runtime. The fallback
+            // solution for this situation is to set the targeted runtimes to an empty list first,
+            // then apply the facet actions, and then set the targeted runtimes to the new list.
+            // This is more drastic than necessary in all situations, but it is not clear that
+            // implementing additional optimizations is necessary either.
+            
+            boolean canSetRuntimesFirst = true;
+            
+            for( IProjectFacetVersion fv : getProjectFacets() )
+            {
+                for( IRuntime r : fpjwc.getTargetedRuntimes() )
+                {
+                    if( ! r.supports( fv ) )
+                    {
+                        canSetRuntimesFirst = false;
+                        break;
+                    }
+                }
+                
+                if( ! canSetRuntimesFirst )
+                {
+                    break;
+                }
+            }
+            
+            pm.subTask( Resources.taskConfiguringRuntimes );
+            
+            if( canSetRuntimesFirst )
+            {
+                if( setTargetedRuntimesInternal( fpjwc.getTargetedRuntimes(), submon( pm, 2 ) ) )
+                {
+                    modified = true;
+                }
+                
+                if( getPrimaryRuntime() != null )
+                {
+                    setPrimaryRuntimeInternal( fpjwc.getPrimaryRuntime(), submon( pm, 2 ) );
+                }
+                else
+                {
+                    pm.worked( 2 );
+                }
+            }
+            else
+            {
+                final Set<IRuntime> emptySet = Collections.emptySet();
+                setTargetedRuntimesInternal( emptySet, submon( pm, 4 ) );
+            }
+            
+            if( modifyInternal( fpjwc.getProjectFacetActions(), 
+                                pm.newChild( 16, SubMonitor.SUPPRESS_SETTASKNAME ) ) )
+            {
+                modified = true;
+            }
+            
+            if( ! canSetRuntimesFirst )
+            {
+                pm.subTask( Resources.taskConfiguringRuntimes );
+                
+                if( setTargetedRuntimesInternal( fpjwc.getTargetedRuntimes(), submon( pm, 2 ) ) )
+                {
+                    modified = true;
+                }
+                
+                if( getPrimaryRuntime() != null )
+                {
+                    if( setPrimaryRuntimeInternal( fpjwc.getPrimaryRuntime(), submon( pm, 2 ) ) )
+                    {
+                        modified = true;
+                    }
+                }
+                else
+                {
+                    pm.worked( 2 );
+                }
+            }
+            
+            if( setFixedProjectFacetsInternal( fpjwc.getFixedProjectFacets(), submon( pm, 2 ) ) )
+            {
+                modified = true;
+            }
+            
+            return modified;
+        }
+        finally
+        {
+            pm.done();
         }
     }
     
@@ -1722,6 +1861,7 @@ public final class FacetedProject
         public static String taskInstallingFacet;
         public static String taskUninstallingFacet;
         public static String taskChangingFacetVersion;
+        public static String taskConfiguringRuntimes;
         
         // Validation Messages
         

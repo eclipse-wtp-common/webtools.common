@@ -503,7 +503,15 @@ public final class RuntimesPanel
             
             if( result.equals( true ) )
             {
-                this.fpjwc.refreshTargetableRuntimes();
+                final Thread refreshThread = new Thread()
+                {
+                    public void run()
+                    {
+                        getFacetedProjectWorkingCopy().refreshTargetableRuntimes();
+                    }
+                };
+                
+                refreshThread.start();
             }
         }
         catch( Exception e )
