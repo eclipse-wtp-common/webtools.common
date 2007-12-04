@@ -47,7 +47,6 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
-import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
 
 public class FacetProjectCreationDataModelProvider extends AbstractDataModelProvider implements IFacetProjectCreationDataModelProperties {
 
@@ -108,6 +107,18 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 		    },
 		    IFacetedProjectEvent.Type.PROJECT_FACETS_CHANGED
 		);
+
+        fpjwc.addListener
+        (
+            new IFacetedProjectListener()
+            {
+                public void handleEvent( final IFacetedProjectEvent event )
+                {
+                    model.notifyPropertyChange(FACET_RUNTIME, IDataModel.VALID_VALUES_CHG);
+                }
+            },
+            IFacetedProjectEvent.Type.TARGETABLE_RUNTIMES_CHANGED
+        );
 		
 		IDataModel projectDataModel = DataModelFactory.createDataModel(new ProjectCreationDataModelProviderNew());
 		projectDataModel.addListener(new IDataModelListener() {
@@ -315,9 +326,7 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 	        
 	        for( IProjectFacet facet : fixedFacets )
 	        {
-	            final IFacetedProject.Action action 
-	                = fpjwc.getProjectFacetAction( IFacetedProject.Action.Type.INSTALL, facet );
-	            
+	            final IFacetedProject.Action action = fpjwc.getProjectFacetAction( facet );
 	            facetDmMap.add( (IDataModel) action.getConfig() );
 	        }
 		}
@@ -355,30 +364,15 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 	}
 
 	public DataModelPropertyDescriptor[] getValidPropertyDescriptors(String propertyName) {
-		if (FACET_RUNTIME.equals(propertyName)) {
-			Collection projectFacets = (Collection)getProperty(REQUIRED_FACETS_COLLECTION);
-			Set runtimes = RuntimeManager.getRuntimes();
-			ArrayList list = new ArrayList();
+		if (FACET_RUNTIME.equals(propertyName)) 
+		{
+            final IFacetedProjectWorkingCopy fpjwc 
+                = (IFacetedProjectWorkingCopy) this.model.getProperty( FACETED_PROJECT_WORKING_COPY );
+            
+            final Set<IRuntime> targetableRuntimes = fpjwc.getTargetableRuntimes();
 
-			for (Iterator it = runtimes.iterator(); it.hasNext();) {
-				IRuntime rt = (IRuntime) it.next();
-
-				// add this runtime in the list only if it supports all of the required facets
-				boolean supportsFactet = true;
-				for (Iterator facetIt = projectFacets.iterator(); facetIt.hasNext();) {
-					IProjectFacet facet = (IProjectFacet) facetIt.next();
-					if (!rt.supports(facet)) {
-						supportsFactet = false;
-						break;
-					}
-				}
-				if (supportsFactet) {
-					list.add(rt);
-				}
-			}
-
-			DataModelPropertyDescriptor[] descriptors = new DataModelPropertyDescriptor[list.size() + 1];
-			Iterator iterator = list.iterator();
+			DataModelPropertyDescriptor[] descriptors = new DataModelPropertyDescriptor[targetableRuntimes.size() + 1];
+			Iterator iterator = targetableRuntimes.iterator();
 			for (int i = 0; i < descriptors.length - 1; i++) {
 				IRuntime runtime = (IRuntime) iterator.next();
 				descriptors[i] = new DataModelPropertyDescriptor(runtime, runtime.getLocalizedName());
@@ -399,11 +393,21 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 		return super.getValidPropertyDescriptors(propertyName);
 	}
 
-	public IStatus validate(String propertyName) {
-		if (FACET_PROJECT_NAME.equals(propertyName)) {
+	public IStatus validate(String propertyName) 
+	{
+		if (FACET_PROJECT_NAME.equals(propertyName)) 
+		{
 			IDataModel projModel = model.getNestedModel(NESTED_PROJECT_DM);
 			return projModel.validateProperty(IProjectCreationPropertiesNew.PROJECT_NAME);
 		}
+		else if( propertyName.equals( FACETED_PROJECT_WORKING_COPY ) )
+		{
+            final IFacetedProjectWorkingCopy fpjwc 
+                = (IFacetedProjectWorkingCopy) this.model.getProperty( FACETED_PROJECT_WORKING_COPY );
+            
+            return fpjwc.validate();
+		}
+		
 		return super.validate(propertyName);
 	}
 
