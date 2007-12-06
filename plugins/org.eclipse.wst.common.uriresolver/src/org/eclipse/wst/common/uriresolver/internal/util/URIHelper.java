@@ -1,13 +1,17 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others.
+ * Copyright (c) 2004, 2007 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
+ * IBM Corporation - initial API and implementation
+ * yyyymmdd bug      Email and other contact information
+ * -------- -------- -----------------------------------------------------------
  *     IBM Corporation - Initial API and implementation
  *     Jens Lukowski/Innoopract - initial renaming/restructuring
+ * 20071205   211262 ericdp@ca.ibm.com - Eric Peters, CopyWSDLTreeCommand fails to copy ?wsdl
  *******************************************************************************/
 package org.eclipse.wst.common.uriresolver.internal.util;
 
@@ -344,6 +348,11 @@ public class URIHelper
   {                                    
     String protocol = getProtocol(uri);   
     return protocol == null || protocol.equals(FILE_PROTOCOL);
+  }  
+
+  public static boolean isProtocolFile(String uri)
+  {                                    
+	  return uri != null && uri.startsWith(FILE_PROTOCOL);
   }  
 
                                            
