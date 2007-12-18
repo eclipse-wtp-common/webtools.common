@@ -62,7 +62,7 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 		if (instance == null) {
 			instance = new SnippetManager();
 			try {
-				hiddenStateFilename = SnippetsPlugin.getDefault().getStateLocation().toString() + "/hidden.xml"; //$NON-NLS-1$
+				hiddenStateFilename = SnippetsPlugin.getDefault().getStateLocation().append("hidden.xml").toOSString(); //$NON-NLS-1$
 			}
 			catch (Exception e) {
 				hiddenStateFilename = "/hidden.xml"; //$NON-NLS-1$
