@@ -12,6 +12,7 @@ package org.eclipse.wst.common.snippets.internal.model;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -54,7 +55,7 @@ import org.xml.sax.SAXException;
  */
 public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 
-	protected static String hiddenStateFilename = "hidden.xml"; //$NON-NLS-1$
+	private static File hiddenStateFile = new File("/hidden.xml"); //$NON-NLS-1$
 
 	private static SnippetManager instance = null;
 
@@ -62,10 +63,10 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 		if (instance == null) {
 			instance = new SnippetManager();
 			try {
-				hiddenStateFilename = SnippetsPlugin.getDefault().getStateLocation().append("hidden.xml").toOSString(); //$NON-NLS-1$
+				hiddenStateFile = SnippetsPlugin.getDefault().getStateLocation().append("hidden.xml").toFile(); //$NON-NLS-1$
 			}
 			catch (Exception e) {
-				hiddenStateFilename = "/hidden.xml"; //$NON-NLS-1$
+				hiddenStateFile = new File("/hidden.xml"); //$NON-NLS-1$
 			}
 			// hook resource listener and load categories from workspace
 			// nsd_TODO: disable in-workspace support until fully stabilized
@@ -251,7 +252,7 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 		try {
 			DocumentBuilder builder = CommonXML.getDocumentBuilder();
 			if (builder != null) {
-				document = builder.parse(hiddenStateFilename);
+				document = builder.parse(hiddenStateFile);
 			}
 			else {
 				Logger.log(Logger.ERROR, "SnippetManager couldn't obtain a DocumentBuilder"); //$NON-NLS-1$
@@ -372,7 +373,7 @@ public class SnippetManager implements ISnippetManager, PropertyChangeListener {
 	protected void saveHiddenState() {
 		Document document = CommonXML.getDocumentBuilder().getDOMImplementation().createDocument(null, "hidden", null); //$NON-NLS-1$
 		try {
-			FileOutputStream ostream = new FileOutputStream(hiddenStateFilename);
+			FileOutputStream ostream = new FileOutputStream(hiddenStateFile);
 			List categoryIDs = new ArrayList(0);
 			List itemIDs = new ArrayList(0);
 			// collect all of the hidden entry IDs
