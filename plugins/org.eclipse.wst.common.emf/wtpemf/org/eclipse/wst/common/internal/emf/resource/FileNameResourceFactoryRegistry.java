@@ -47,7 +47,11 @@ public abstract class FileNameResourceFactoryRegistry extends DefaultOverridable
 	}
 
 	public synchronized Resource.Factory getFactory(URI uri) {
+		return getFactory(uri, null);
+	}
 
+	public Resource.Factory getFactory(URI uri, String contentType)
+	{
 		Resource.Factory resourceFactory = null;
 		if(uri != null && uri.lastSegment() != null) {
 			ResourceFactoryDescriptor descriptor = getDescriptor(uri);
@@ -57,7 +61,7 @@ public abstract class FileNameResourceFactoryRegistry extends DefaultOverridable
 			}	
 		}
 		if(resourceFactory == null)
-			resourceFactory = super.getFactory(uri);
+			resourceFactory = super.getFactory(uri, contentType);
 		return resourceFactory; 
 	}
 

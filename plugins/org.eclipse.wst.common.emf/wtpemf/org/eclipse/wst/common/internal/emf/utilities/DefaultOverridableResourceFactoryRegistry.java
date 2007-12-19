@@ -37,6 +37,11 @@ public class DefaultOverridableResourceFactoryRegistry extends ResourceFactoryRe
 	}
 
 	public Resource.Factory getFactory(URI uri) {
+		return getFactory(uri, null);
+	}
+
+	public Resource.Factory getFactory(URI uri, String contentType)
+	{
 		Object resourceFactory = null;
 		if (resourceFactory == null) {
 			String protocol = uri.scheme();
