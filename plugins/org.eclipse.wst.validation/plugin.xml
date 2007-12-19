@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
-
-    
+  
 <!-- Validation extension points -->
    <extension-point id="validator" name="%Validator" schema="xsds/validatorExtSchema.exsd"/>
+   <extension-point id="validatorV2" name="%Extension.validator" schema="xsds/validator.exsd"/>
    <extension-point id="referencialFileValidator" name="%ReferencialFileValidator" schema="xsds/referencialFileExtSchema.exsd"/>
    <extension-point id="validationSelectionHandler" name="%validationSelectionHandler" schema="xsds/validationSelectionHandler.exsd"/>
    <extension-point id="validationHelper" name="validationHelper" schema="xsds/validationHelper.exsd"/>
@@ -110,5 +110,20 @@
             name="version">
       </attribute>
    </extension>
+   <!-- GRK - I added a new problem marker so that we can keep the v2 changes separate from the v1 framework. -->
+   <extension
+         id="problemmarker2"
+         name="%ProblemMarkerV2"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+      <attribute
+            name="owner">
+      </attribute>
+  </extension>
 
 </plugin>

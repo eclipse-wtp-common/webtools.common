@@ -11,11 +11,11 @@
 package org.eclipse.wst.validation.internal.ui;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,7 +26,6 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -48,9 +47,12 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
+import org.eclipse.wst.validation.ValidationFramework;
+import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.GlobalConfiguration;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
+import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidationSelectionHandlerRegistryReader;
 import org.eclipse.wst.validation.internal.operations.ManualIncrementalValidatorsOperation;
@@ -58,28 +60,26 @@ import org.eclipse.wst.validation.internal.operations.ManualValidatorsOperation;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;
+import org.eclipse.wst.validation.ui.internal.ManualValidationRunner;
 
 /**
  * This class implements the pop-up menu item "Run Validation" When the item is selected, this
  * action triggers a validation of the project, using all configured, enabled validators.
  */
 public class ValidationMenuAction implements IViewActionDelegate {
-	private ISelection _currentSelection = null;
+	private ISelection _currentSelection;
 	protected static final String SEP = "/"; //$NON-NLS-1$
-	private Display _currentDisplay = null;
-	private IResourceVisitor _folderVisitor = null;
-	private IResourceVisitor _projectVisitor = null;
-	private Map _selectedResources = null;
-	//protected IWorkbenchContext workbenchContext;
+	private Display _currentDisplay;
+	private IResourceVisitor _folderVisitor;
+	private IResourceVisitor _projectVisitor;
+	private Map<IProject, Set<IResource>> _selectedResources;
 
 	public ValidationMenuAction() {
 		super();
-		_currentDisplay = Display.getCurrent(); // cache the display before
-		// this action is forked. After
-		// the action is forked,
-		// Display.getCurrent() returns
-		// null.
-		_selectedResources = new HashMap();
+		// cache the display before this action is forked. After the action is forked,
+		// Display.getCurrent() returns null.
+		_currentDisplay = Display.getCurrent(); 
+		_selectedResources = new HashMap<IProject, Set<IResource>>();
 	}
 
 	private Display getDisplay() {
@@ -113,11 +113,10 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	 * validated.
 	 */
 	// TODO: Check this method for selected resources.
-	private Map loadSelected(ValidateAction action, boolean refresh) {
+	private Map<IProject, Set<IResource>> loadSelected(ValidateAction action, boolean refresh) {
 		if (refresh) {
 			// selectionChanged(IAction, ISelection) has been called. Flush the
-			// existing cache of resources and
-			// add just the currently selected ones.
+			// existing cache of resources and add just the currently selected ones.
 			_selectedResources.clear();
 		}
 		ISelection selection = getCurrentSelection();
@@ -145,8 +144,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		} else if (isValidType(getExtendedType(selected))) {
 			addSelected(action,getExtendedType(selected));
 		} else {
-			// Not a valid input type. Must be IProject, IJavaProject, or
-			// IResource.
+			// Not a valid input type. Must be IProject, IJavaProject, or IResource.
 			// If this ValidationMenuAction is a delegate of ValidateAction, is
 			// the input type recognized by the ValidateAction?
 			boolean valid = false;
@@ -161,8 +159,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 			}
 			if (!valid) {
 				// Stop processing. (This allows the "Run Validation" menu item
-				// to gray
-				// out once at least one non-validatable element is selected.)
+				// to gray out once at least one non-validatable element is selected.)
 				_selectedResources.clear();
 			}
 		}
@@ -181,16 +178,16 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	void addSelected(IResource selected) {
 		IProject project = selected.getProject();
 		boolean added = _selectedResources.containsKey(project);
-		Set changedRes = null;
+		Set<IResource> changedRes = null;
 		if (added) {
 			// If the value is null, the entire project needs to be validated
 			// anyway.
-			changedRes = (Set) _selectedResources.get(project);
+			changedRes = _selectedResources.get(project);
 			if (changedRes == null) {
 				return;
 			}
 		} else {
-			changedRes = new HashSet();
+			changedRes = new HashSet<IResource>();
 		}
 		if (changedRes.add(selected)) {
 			_selectedResources.put(project, changedRes);
@@ -232,8 +229,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	
 	private void addVisitor(IProject selected) {
 		// add the folder and its children
-		if( !selected.isAccessible() )
-			return;
+		if(!selected.isAccessible())return;
 		try {
 			selected.accept(getProjectVisitor());
 		} catch (CoreException exc) {
@@ -253,11 +249,9 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		if (_projectVisitor == null) {
 			_projectVisitor = new IResourceVisitor() {
 				public boolean visit(IResource res) {
-					if (res instanceof IFile) {
-						addSelected(res);
-					} else if (res instanceof IFolder) {
-						addSelected(res);
-					}
+					if (res instanceof IFile)addSelected(res);
+					else if (res instanceof IFolder)addSelected(res);
+					
 					return true; // visit the resource's children
 				}
 			};
@@ -269,42 +263,40 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	 * The delegating action has been performed. Implement this method to do the actual work.
 	 * 
 	 * @param action
-	 *            action proxy that handles the presentation portion of the plugin action
-	 * @param window
-	 *            the desktop window passed by the action proxy
+	 *            action proxy that handles the presentation portion of the plug-in action
 	 */
 	public void run(IAction action) {
-		// TODO: Insert dirty file check here.
 		ValidateAction vaction = null;
 		if (action instanceof ValidateAction) {
 			vaction = (ValidateAction) action;
 		}
-		final Map projects = loadSelected(vaction, false);
+		final Map<IProject, Set<IResource>> projects = loadSelected(vaction, false);
 		if ((projects == null) || (projects.size() == 0)) {
 			return;
 		}
 		
 		// If the files aren't saved do not run validation.
-		if(!handleFilesToSave(projects))
-		{
-		  return;
-		}
+		if(!handleFilesToSave(projects))return;
 
-		ValidationJob validationop = new ValidationJob(ValidationUIMessages.RunValidationDialogTitle){
-			protected IStatus run(IProgressMonitor monitor) {
-				final Map projectsMap = projects;
-				IStatus stat = validate(monitor, projectsMap);	
-				_selectedResources.clear();
-				return stat;
-			}
-		};
-		validationop.setProjectsMap(projects);
-		validationop.setRule(ResourcesPlugin.getWorkspace().getRoot());
-		validationop.setUser(true);
-		validationop.schedule();
+//		ValidationJob validationop = new ValidationJob(ValidationUIMessages.RunValidationDialogTitle){
+//			protected IStatus run(IProgressMonitor monitor) {
+//				final Map projectsMap = projects;
+//				IStatus stat = validate(monitor, projectsMap);	
+//				_selectedResources.clear();
+//				return stat;
+//			}
+//		};
+//		validationop.setProjectsMap(projects);
+//		validationop.setRule(ResourcesPlugin.getWorkspace().getRoot());
+//		validationop.setUser(true);
+//		validationop.schedule();
+		
+		boolean confirm = org.eclipse.wst.validation.internal.ValManager.getDefault().getGlobalPreferences()
+			.getConfirmDialog();
+		ManualValidationRunner.validate(projects, true, false, confirm);
 	}
 	
-	private IStatus validate(final IProgressMonitor monitor, final Map projects) {
+	private IStatus validate(final IProgressMonitor monitor, final Map<IProject, Set<IResource>> projects) {
 		boolean cancelled = false; // Was the operation cancelled?
 		Iterator iterator = projects.keySet().iterator();
 		while (iterator.hasNext()) {
@@ -329,8 +321,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 				performValidation(monitor, projects, project);
 			} catch (OperationCanceledException exc) {
 				// When loading file deltas, if the operation has been
-				// cancelled, then
-				// resource.accept throws an OperationCanceledException.
+				// cancelled, then resource.accept throws an OperationCanceledException.
 				cancelled = true;
 				String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_RESCANCELLED, new String[]{project.getName()});
 				monitor.setTaskName(message);
@@ -370,18 +361,16 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	 * @throws CoreException
 	 */
 
-	private IStatus performValidation(final IProgressMonitor monitor, final Map projects,
-				 IProject project) throws CoreException {
-		// Even if the "maximum number of messages" message is on
-		// the task list,
-		// run validation, because some messages may have been
-		// fixed
+	private IStatus performValidation(final IProgressMonitor monitor, 
+			final Map<IProject, Set<IResource>> projects, IProject project) throws CoreException {
+		// Even if the "maximum number of messages" message is on the task list,
+		// run validation, because some messages may have been fixed
 		// and there may be space for more messages.
 		
 		if ( monitor.isCanceled() )
 			return new Status(IStatus.CANCEL, "org.eclipse.wst.validation", 0, "OK", null);
 		
-		Set changedResources = (Set) projects.get(project);
+		Set<IResource> changedResources = projects.get(project);
 		IResource[] resources = null;
 		if (changedResources != null) {
 			resources = new IResource[changedResources.size()];
@@ -422,14 +411,11 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	 */
 	private IStatus checkProjectConfiguration(final IProgressMonitor monitor,
 				IProject project, IResource[] resources, ProjectConfiguration prjp) throws InvocationTargetException, CoreException {
-		boolean successful = true; // Did the operation
-		// complete
-		// successfully?
+		boolean successful = true; // Did the operation complete successfully?
 		if ( monitor.isCanceled() )
 			new Status(IStatus.CANCEL, "org.eclipse.wst.validation", 0, "OK", null);
 		
 		ManualValidatorsOperation validOp = null;
-		//validOp = new ManualValidatorsOperation(project, resources);
 		if (resources == null) {
 			validOp = new ManualValidatorsOperation(project);
 		} else {
@@ -498,66 +484,42 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	 */
 	public void selectionChanged(IAction action, ISelection selection) {
 		_currentSelection = selection;
-		int count = 0;
-		boolean fwkActivated = (ValidationPlugin.isActivated() && ValidationRegistryReader.isActivated());
-		if (fwkActivated) {
-			ValidateAction vaction = null;
-			if (action instanceof ValidateAction) {
-				vaction = (ValidateAction) action;
-			}
-			final Map projects = loadSelected(vaction, true);
-			if ((projects != null) && (projects.size() > 0)) {
-				Iterator iterator = projects.keySet().iterator();
-				while (iterator.hasNext()) {
-					// If at least one project can be validated, make "enabled"
-					// true and
-					// let the dialog tell the user which projects need to be
-					// opened,
-					// validators enabled, etc.
-					IProject project = (IProject) iterator.next();
-					if ((project != null) && (project.isOpen())) {
-						// If the validation plugin hasn't been activated yet,
-						// don't activate it just to
-						// find out if there are validators. Only ask if there
-						// are enabled validators if
-						// the plugin has already been activated.
-						try {
-							ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfigurationWithoutMigrate(project);
-							if( !prjp.isDisableAllValidation() ){
-								count += prjp.numberOfManualValidators();
-							}							
-						} catch (InvocationTargetException exc) {
-							Logger logger = ValidationPlugin.getPlugin().getLogger();
-							if (logger.isLoggingLevel(Level.SEVERE)) {
-								LogEntry entry = ValidationPlugin.getLogEntry();
-								entry.setSourceIdentifier("ValidationMenuAction::selectionChanged"); //$NON-NLS-1$
-								entry.setTargetException(exc);
-								logger.write(Level.SEVERE, entry);
-								if (exc.getTargetException() != null) {
-									entry.setTargetException(exc);
-									logger.write(Level.SEVERE, entry);
-								}
-							}
-						}
-						if (count > 0)
-							break;
-					}
+		boolean enabled = false;
+		
+		// Don't force the plug-in to be activated just to check this setting.
+		if (ValidationPlugin.isActivated() && ValidationRegistryReader.isActivated()){
+			enabled = hasManualValidators(selection);
+		}
+		action.setEnabled(enabled);
+	}
+	
+	/**
+	 * Answer true if any of the selected items have manual validators enabled.
+	 * @param selection
+	 */
+	private boolean hasManualValidators(ISelection selection){
+		if (selection == null || selection.isEmpty())return false;
+		
+		if (selection instanceof IStructuredSelection){
+			IStructuredSelection ss = (IStructuredSelection)selection;
+			for (Iterator it = ss.iterator(); it.hasNext();){
+				Object sel = it.next();
+				if (sel instanceof IProject){
+					if (ValManager.getDefault().hasManualValidators((IProject)sel))return true;
+				} else if (sel instanceof IResource){
+					IResource resource = (IResource)sel;
+					Validator[] vals = ValidationFramework.getDefault()
+						.getValidatorsFor(resource, true, false);
+					if (vals.length > 0)return true;
+
 				}
 			}
+		
 		}
-		action.setEnabled((count > 0) || (!fwkActivated)); // Don't disable the
-		// action just
-		// because the
-		// framework hasn't
-		// been activated.
+		
+		return false;
+		
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.wst.common.navigator.internal.views.navigator.INavigatorActionsExtension#init(org.eclipse.wst.common.navigator.internal.views.navigator.INavigatorExtensionSite)
-	 */
-
 
 	/*
 	 * (non-Javadoc)
@@ -608,8 +570,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	{
 	  List fileList = getIFiles(projects);
       final IEditorPart[] dirtyEditors = SaveFilesHelper.getDirtyEditors(fileList);
-      if(dirtyEditors == null || dirtyEditors.length == 0)
-    	return true;
+      if(dirtyEditors == null || dirtyEditors.length == 0)return true;
       boolean saveAutomatically = false;
       try
       {
@@ -655,9 +616,9 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	  return false;
 	}
 	
-	protected List getIFiles(Map projects)
+	protected List<IFile> getIFiles(Map projects)
 	{
-		List fileList = new ArrayList();
+		List<IFile> fileList = new LinkedList<IFile>();
 		Set projectKeys = projects.keySet();
 		Iterator projectIter = projectKeys.iterator();
 		while(projectIter.hasNext())
@@ -670,7 +631,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 			IResource resource = (IResource)resourcesIter.next();
 			if(resource instanceof IFile)
 			{
-				fileList.add(resource);
+				fileList.add((IFile)resource);
 			}
 		  }
 		}

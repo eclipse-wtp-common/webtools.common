@@ -24,6 +24,7 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
@@ -32,6 +33,9 @@ import org.eclipse.wst.validation.internal.ProjectConfiguration;
 import org.eclipse.wst.validation.internal.ResourceConstants;
 import org.eclipse.wst.validation.internal.ResourceHandler;
 import org.eclipse.wst.validation.internal.TimeEntry;
+import org.eclipse.wst.validation.internal.ValBuilderJob;
+import org.eclipse.wst.validation.internal.ValManager;
+import org.eclipse.wst.validation.internal.ValOperationManager;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
@@ -102,6 +106,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 	 * @see org.eclipse.core.resources.IncrementalProjectBuilder#clean(org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	protected void clean(IProgressMonitor monitor) throws CoreException {
+		newClean(monitor);
 		IProject currentProject = getProject();
 		if (currentProject == null || !currentProject.isAccessible())
 			return;
@@ -140,14 +145,16 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 	}
 
 	public IProject[] build(int kind, Map parameters, IProgressMonitor monitor) {
-		long start = System.currentTimeMillis();
+		long start = System.currentTimeMillis();	
 		int executionMap = 0x0;
 		Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 		IResourceDelta delta = null;
 		IProject project = getProject();
 		IProject[] referenced = getAllReferencedProjects(project, null);
 		try {
-			if (ValidatorManager.getManager().isSuspended(project)) {
+			newBuild(kind, parameters, monitor);
+
+			if (org.eclipse.wst.validation.internal.operations.ValidatorManager.getManager().isSuspended(project)) {
 				// Do not perform validation on this project
 				executionMap |= 0x1;
 				return referenced;
@@ -276,7 +283,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 	private void logBuilderTimeEntry(long start, int executionMap, Logger logger, IResourceDelta delta) {
 		TimeEntry entry = ValidationPlugin.getTimeEntry();
 		entry.setSourceID("ValidationBuilder.build(int, Map, IProgressMonitor)"); //$NON-NLS-1$
-		entry.setProjectName(getProject().getName()); //$NON-NLS-1$  //$NON-NLS-2$
+		entry.setProjectName(getProject().getName());
 		entry.setExecutionMap(executionMap);
 		entry.setElapsedTime(System.currentTimeMillis() - start);
 		if (delta == null) {
@@ -285,4 +292,48 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 		entry.setToolName("ValidationBuilder"); //$NON-NLS-1$
 		logger.write(Level.FINE, entry);
 	}
+	
+	/**
+	 * Run the new validation builder. This is a transition method, while we continue to have
+	 * the old and new validation builders.
+	 * 
+	 * @param kind the kind of build
+	 * 
+	 * @see IncrementalProjectBuilder#AUTO_BUILD
+	 * @see IncrementalProjectBuilder#CLEAN_BUILD
+	 * @see IncrementalProjectBuilder#FULL_BUILD
+	 * @see IncrementalProjectBuilder#INCREMENTAL_BUILD
+	 */
+	protected IProject[] newBuild(int kind, Map args, IProgressMonitor monitor)
+		throws CoreException {
+
+		if (args == null);
+		IResourceDelta delta = null;
+		IProject project = getProject();
+		
+		switch (kind){
+			case AUTO_BUILD:
+			case INCREMENTAL_BUILD:
+				delta = getDelta(project);
+				break;
+		}
+		
+		Job job = new ValBuilderJob(project, delta, kind, ValOperationManager.getDefault().getOperation());
+		
+		job.schedule();
+		return null;
+	}
+	
+	
+	/**
+	 * Run the new clean method. This is a transition method, while we continue to have
+	 * the old and new validation builders.
+	 */
+	protected void newClean(IProgressMonitor monitor) throws CoreException {
+		ValManager.getDefault().clean(getProject(), monitor);
+	}
+
+
+	
+	
 }

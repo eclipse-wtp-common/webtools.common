@@ -37,14 +37,14 @@ public class ResourceHandler {
 	public static ResourceBundle getBundle() {
 		if (_bundle == null) {
 			try {
-				_bundle = ResourceBundle.getBundle(ValidationPlugin.getBundleName());
+				_bundle = ResourceBundle.getBundle(ValidationPlugin.getBundlePropertyFileName());
 			} catch (MissingResourceException exc) {
 				_bundle = null;
 				Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 				if (logger.isLoggingLevel(Level.FINE)) {
 					LogEntry entry = ValidationPlugin.getLogEntry();
 					entry.setSourceID("org.eclipse.wst.validation.internal.operations.internal.ResourceHandler.getBundle()"); //$NON-NLS-1$
-					entry.setText("Cannot find bundle " + ValidationPlugin.getBundleName()); //$NON-NLS-1$
+					entry.setText("Cannot find bundle " + ValidationPlugin.getBundlePropertyFileName()); //$NON-NLS-1$
 					entry.setTargetException(exc);
 					logger.write(Level.FINE, entry);
 				}

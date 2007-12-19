@@ -15,8 +15,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.wst.validation.AbstractValidator;
+import org.eclipse.wst.validation.ValidationResult;
+import org.eclipse.wst.validation.ValidationState;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
 import org.eclipse.wst.validation.internal.ResourceConstants;
@@ -50,7 +55,7 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidatorJob;
  * API will almost certainly be broken (repeatedly) as the API evolves.
  * </p>
  */
-public class DelegatingValidator implements IDelegatingValidator
+public class DelegatingValidator extends AbstractValidator implements IDelegatingValidator
 {
   public DelegatingValidator()
   {
@@ -257,4 +262,9 @@ public class DelegatingValidator implements IDelegatingValidator
   {
     return null;
   }
+
+@Override
+public ValidationResult validate(IResource resource, int kind, ValidationState state, IProgressMonitor monitor) {
+	return null;
+}
 }

@@ -61,12 +61,17 @@ public interface ConfigurationConstants {
 	QualifiedName DELEGATES_PREFERENCE = new QualifiedName(PLUGIN_ID, "ValidationDelegatesConfiguration"); //$NON-NLS-1$ // ValidationConfiguration for the IResource
 
 	// Validation message marker constants
-	String VALIDATION_MARKER = PLUGIN_ID + ".problemmarker"; //$NON-NLS-1$ // The extension which is used to add validation markers to the task list
-	String VALIDATION_MARKER_GROUP = "groupName"; //$NON-NLS-1$ // For incremental validation, this field associates a message with a group, so that a subset of messages may be removed from a file.
-	String VALIDATION_MARKER_MESSAGEID = "messageId"; //$NON-NLS-1$ // Persist the message id of the message, not just the translated text.
-
-	// The following values must match the attributes in the validation message marker as shown in
-	// plugin.xml
+	
+	/** The extension which is used to add validation markers to the task list */
+	String VALIDATION_MARKER = PLUGIN_ID + ".problemmarker"; //$NON-NLS-1$ 
+	
+	/** For incremental validation, this field associates a message with a group, so that a subset of messages may be removed from a file. */
+	String VALIDATION_MARKER_GROUP = "groupName"; //$NON-NLS-1$
+	
+	/**  Persist the message id of the message, not just the translated text. */
+	String VALIDATION_MARKER_MESSAGEID = "messageId"; //$NON-NLS-1$
+	
+	// The following values must match the attributes in the validation message marker as shown in plugin.xml
 	String VALIDATION_MARKER_OWNER = "owner"; //$NON-NLS-1$ // The IValidator who owns the IMarker on the task list
 	String VALIDATION_MARKER_SEVERITY = "validationSeverity"; //$NON-NLS-1$ // one of the SeverityEnum values
 	String VALIDATION_MARKER_TARGETOBJECT = "targetObject"; //$NON-NLS-1$ // When more than one target object resolves to the same IResource, this field identifies which targetObject owns a particular message.

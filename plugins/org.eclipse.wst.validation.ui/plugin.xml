@@ -31,7 +31,7 @@
          point="org.eclipse.ui.preferencePages">
       <page
             name="%VBF_TITLE_PREFERENCE"
-            class="org.eclipse.wst.validation.internal.ui.ValidationPreferencePage"
+            class="org.eclipse.wst.validation.ui.internal.preferences.ValidationPreferencePage"
             id="ValidationPreferencePage">
       </page>
    </extension>
@@ -44,7 +44,7 @@
          point="org.eclipse.ui.propertyPages">
       <page
             name="%VBF_TITLE_PROPERTIES"
-            class="org.eclipse.wst.validation.internal.ui.ValidationPropertiesPage"
+            class="org.eclipse.wst.validation.ui.internal.preferences.ValidationPropertyPage"
             id="ValidationPropertiesPage">
          <enabledWhen>
 	         <adapt type="org.eclipse.core.resources.IProject"/>

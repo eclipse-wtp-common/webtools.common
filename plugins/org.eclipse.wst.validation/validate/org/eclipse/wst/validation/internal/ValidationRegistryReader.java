@@ -1448,8 +1448,8 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	 * This method should be called ONLY BY THE VALIDATION FRAMEWORK! The value from this method is
 	 * used to populate the validation preference page.
 	 */
-	public Collection getAllValidators() {
-		Set validators = new HashSet();
+	public Collection<ValidatorMetaData> getAllValidators() {
+		Set<ValidatorMetaData> validators = new HashSet<ValidatorMetaData>(50);
 		clone(_indexedValidators.values(), validators);
 		return validators;
 	}

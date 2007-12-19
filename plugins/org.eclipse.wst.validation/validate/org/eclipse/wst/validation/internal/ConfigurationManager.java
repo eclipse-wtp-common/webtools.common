@@ -129,6 +129,17 @@ public final class ConfigurationManager implements ConfigurationConstants {
 		GlobalConfiguration gp = null;
 		try {
 			gp = (GlobalConfiguration) root.getSessionProperty(USER_PREFERENCE);
+			if (gp == null)gp = getGlobalConfiguration(root);
+		} catch (CoreException exc) {
+			throw new InvocationTargetException(exc, ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_RETRIEVE, new String[]{root.getName()}));
+		}
+		return gp;
+	}
+	
+	private synchronized GlobalConfiguration getGlobalConfiguration(IWorkspaceRoot root) throws InvocationTargetException {
+		GlobalConfiguration gp = null;
+		try {
+			gp = (GlobalConfiguration) root.getSessionProperty(USER_PREFERENCE);
 			if (gp == null) {
 				gp = new GlobalConfiguration(root);
 				Preferences prefs = ValidationPlugin.getPlugin().getPluginPreferences();

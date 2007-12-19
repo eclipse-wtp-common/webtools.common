@@ -13,7 +13,7 @@ package org.eclipse.wst.validation.internal;
 
 
 /**
- * Constants used to access the string resources associated with the plugin.
+ * Constants used to access the string resources associated with the plug-in.
  * 
  * See the plugin.properties file, in the plugin's directory, for the contents of the strings.
  */

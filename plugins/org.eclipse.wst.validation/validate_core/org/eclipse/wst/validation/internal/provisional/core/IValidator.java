@@ -55,13 +55,7 @@ public interface IValidator{
 	 * @param helper 
 	 * 			loads an object. 
 	 * @param reporter
-	 * 			Is an instance of an IReporter interface, which is used for
-	 * interaction with the user.
-	 * @param changedFiles
-	 * 			Is an array of files which have been added, changed, or deleted
-	 * since the last validation. If <code>changedFiles</code> is null, or if it is an empty
-	 * array, then a full validation should be performed. Otherwise, validation on just the files
-	 * listed in the array should performed if the validator supports incremental validation.
+	 * 			Is an instance of an IReporter interface, which is used for interaction with the user.
 	 * 
 	 * [issue : CS - I'm curious to understand why the validator is not invoked directly on a file.  It seems it should be the
 	 * domain of another API to manage manage incremental file changes and triggering validations accordingly. 

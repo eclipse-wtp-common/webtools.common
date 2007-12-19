@@ -92,7 +92,6 @@ public final class ValidatorManager {
 					.getGlobalConfiguration();
 			gf.enableSingleValidator(vmd);
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -108,7 +107,6 @@ public final class ValidatorManager {
 					.getGlobalConfiguration();
 			gf.disableSingleValidator(vmd);
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -133,7 +131,6 @@ public final class ValidatorManager {
 			prjp.store();
 			
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -157,7 +154,6 @@ public final class ValidatorManager {
 			prjp.store();
 			
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -167,7 +163,7 @@ public final class ValidatorManager {
 	
 	/**
 	 * Given an IProject, if the IProject does not support build validation, add the validation
-	 * builder to the project description so that the project can support bulid validation.
+	 * builder to the project description so that the project can support build validation.
 	 */
 	public static void addProjectBuildValidationSupport(IProject project) {
 		if (project == null) {

@@ -12,6 +12,8 @@ package org.eclipse.wst.validation.internal.provisional.core;
 
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 /*
  * CCM - Reporter is now passed locale-independent messages.
  *       Messages should only be translated to a locale upon access.
@@ -68,7 +70,7 @@ public interface IReporter {
 	 * immediately. This message indicates which subtask is currently being processed. The message
 	 * is not stored. The subtask message in this context is the subtask in a IProgressMontior 
 	 * 
-	 * @see subTask(String name) in IProgressMonitor
+	 * @see IProgressMonitor#subTask(String)
 	 * </p>
 	 * <p>
 	 * Both parameters must not be null. 
@@ -76,7 +78,7 @@ public interface IReporter {
 	 * 
 	 * @param IValidator
 	 *            validator The validator issuing the subtask message.
-	 * @param IMessage
+	 * @param IValidatorMessage
 	 *            message The message to be displayed to the user.
 	 *                       
 	 */
@@ -91,9 +93,9 @@ public interface IReporter {
 
 	/**
 	 * <p>
-	 * Return true if the user cancelled validation, and false otherwise. This method should be
+	 * Return true if the user canceled validation, and false otherwise. This method should be
 	 * called by IValidators periodically, because no event is fired to notify IValidators that the
-	 * user cancelled validation. If a validator does not check this method, a cancellation request
+	 * user canceled validation. If a validator does not check this method, a cancellation request
 	 * is ignored.
 	 * </p>
 	 * 

@@ -13,6 +13,7 @@ package org.eclipse.wst.validation.internal.delegates;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.wst.validation.AbstractValidator;
 import org.eclipse.wst.validation.internal.ResourceConstants;
 import org.eclipse.wst.validation.internal.ResourceHandler;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
@@ -122,5 +123,24 @@ public class ValidatorDelegateDescriptor
       String delegatingValidatorName = ValidationRegistryReader.getReader().getValidatorMetaData(getTargetID()).getValidatorDisplayName();
       throw new ValidationException(new LocalizedMessage(IMessage.HIGH_SEVERITY, ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_CANNOT_INSTANTIATE_DELEGATE, new String[] { getName(), delegatingValidatorName })));
     }
+  }
+  
+  /**
+   * Answer an AbstractValidator  if one has been defined, otherwise answer null. 
+   */
+  public AbstractValidator getValidator2() throws ValidationException {
+	    try
+	    {
+	      Object object = delegateConfiguration.createExecutableExtension(ValidatorDelegatesRegistryReader.CLASS_ATTRIBUTE);
+	      if (object instanceof AbstractValidator) {
+				return (AbstractValidator) object;
+	      }
+	    }
+	    catch (CoreException e)
+	    {
+	      String delegatingValidatorName = ValidationRegistryReader.getReader().getValidatorMetaData(getTargetID()).getValidatorDisplayName();
+	      throw new ValidationException(new LocalizedMessage(IMessage.HIGH_SEVERITY, ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_CANNOT_INSTANTIATE_DELEGATE, new String[] { getName(), delegatingValidatorName })));
+	    }
+	    return null;
   }
 }

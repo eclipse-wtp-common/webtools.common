@@ -1,2 +1,3 @@
-com.ibm.etools.validation/debug=true
-com.ibm.etools.validation/tracefilter=
+org.eclipse.wst.validation/debug=true
+org.eclipse.wst.validation/timings=false
+org.eclipse.wst.validation/tracefilter=

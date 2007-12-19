@@ -16,8 +16,10 @@ import java.util.logging.Level;
 
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -161,4 +163,11 @@ public class ValidationUIPlugin extends WTPUIPlugin {
 		}
 		return null;
 	}
+	
+	
+	public void handleException(Throwable e){
+		Status status = new Status(IStatus.ERROR, PLUGIN_ID, e.getLocalizedMessage(), e);
+		getLog().log(status);
+	}
+
 }

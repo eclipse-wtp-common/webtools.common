@@ -64,7 +64,7 @@ public class DelegatingValidatorPreferencesDialog extends Dialog
    * @param delegateID
    *          the ID of the currently selected validator delegate.
    */
-  protected DelegatingValidatorPreferencesDialog(Shell parentShell, ValidatorMetaData vmd, String delegateID)
+  public DelegatingValidatorPreferencesDialog(Shell parentShell, ValidatorMetaData vmd, String delegateID)
   {
     super(parentShell);
 

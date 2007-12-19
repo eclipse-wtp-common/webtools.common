@@ -1,0 +1,21 @@
+1) The restore defaults button works immediately, if the user later presses cancel, the restore should not happen.
+2) Should I add checks for Team Private and derived?
+
+4) Adding a new validator had no filters, until a restore defaults was forced.
+5) How do you get your builder added to a new project?
+6) Since I hijacked column 3, what should I do about delegating validators?
+- If it is an old validator call the old dialog
+- If it is a new validator, add a combo box to the settings page
+- Note - the delegating EP has a target, which is really no more than a name, and a class which is what really gets
+selected, and then called. In the case of the XSD validator, the target is XSDDelegatingValidator. (This phoney
+target is what you add your filters to)
+
+Remember to delete this file when you are done.
+
+I've been storing the patches under z:/patches (This means that they are under a crude form of source control)
+
+To upgrade an existing validator
+
+1) I changed the plug-in to use the new EP
+2) I keep the validator as implementing an IValidator (to make some of the other calls easier)
+3) Add project level options

@@ -247,6 +247,19 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 		}
 	}
 	
+	/**
+	 * Update the list of validators that have been enabled for manual validation.
+	 * 
+	 * @param vmds the validators that are enabled for manual validation.
+	 * @throws InvocationTargetException
+	 */
+	public void setEnabledManualValidators(Set<ValidatorMetaData> vmds) throws InvocationTargetException {
+		for(ValidatorMetaData data : getValidators()) {
+			if(vmds.contains(data))getManualEnabledValidatorsMap().put(data, Boolean.TRUE);
+			else getManualEnabledValidatorsMap().put(data, Boolean.FALSE);			
+		}
+	}
+	
 	public void setEnabledBuildValidators(ValidatorMetaData[] vmds) throws InvocationTargetException {
 		List buildEnabledVMDList = Arrays.asList(vmds);
 		List allValidators = Arrays.asList(getValidators());
@@ -257,6 +270,19 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 			else
 				getBuildEnabledValidatorsMap().put(data, new Boolean(false));
 			
+		}
+	}
+	
+	/**
+	 * Update the list of validators that have been enabled for build validation.
+	 * 
+	 * @param vmds the validators that are enabled for build validation.
+	 * @throws InvocationTargetException
+	 */
+	public void setEnabledBuildValidators(Set<ValidatorMetaData> vmds) throws InvocationTargetException {
+		for(ValidatorMetaData data : getValidators()) {
+			if(vmds.contains(data))getBuildEnabledValidatorsMap().put(data, Boolean.TRUE);
+			else getBuildEnabledValidatorsMap().put(data, Boolean.FALSE);			
 		}
 	}
 
