@@ -68,7 +68,7 @@ public class Message implements IMessage {
 	private int lineNumber = IMessage.LINENO_UNSET;
 	private int length = IMessage.OFFSET_UNSET;
 	private int offset = IMessage.OFFSET_UNSET;
-	private HashMap messageAttributes;
+	private HashMap<String, Object> messageAttributes;
 	private String markerId;
 
 	/**
@@ -284,7 +284,7 @@ public class Message implements IMessage {
 			message = bundle.getString(getId());
 
 			if (getParams() != null) {
-				message = java.text.MessageFormat.format(message, getParams());
+				message = java.text.MessageFormat.format(message, (Object[])getParams());
 			}
 		} catch (MissingResourceException exc) {
 			System.err.println(exc.getMessage());
@@ -379,12 +379,12 @@ public class Message implements IMessage {
 
 	public void setAttribute(String attributeName, Object value) {
 		if(messageAttributes == null) {
-			messageAttributes = new HashMap();
+			messageAttributes = new HashMap<String, Object>();
 		}
 		messageAttributes.put(attributeName,value);
 	}
 	
-	public HashMap getAttributes() {
+	public HashMap<String,Object> getAttributes() {
 		return messageAttributes;
 	}
 

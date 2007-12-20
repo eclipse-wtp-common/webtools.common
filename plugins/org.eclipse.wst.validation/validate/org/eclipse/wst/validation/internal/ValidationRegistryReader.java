@@ -507,7 +507,8 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				entry.setSourceID("ValidationRegistryReader.createHelper(IConfigurationElement, String)"); //$NON-NLS-1$
 				entry.setMessageTypeIdentifier(ResourceConstants.VBF_EXC_SYNTAX_NO_HELPER_THROWABLE);
 				entry.setTargetException(exc);
-				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NO_HELPER_THROWABLE), new String[]{helperClassName});
+				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NO_HELPER_THROWABLE), 
+					new Object[]{helperClassName});
 				entry.setText(result);				
 				//entry.setTokens(new String[]{helperClassName});
 				logger.write(Level.SEVERE, entry);
@@ -528,7 +529,8 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				entry.setSourceID("ValidationRegistryReader.createValidator(IConfigurationElement, String, String)"); //$NON-NLS-1$
 				entry.setMessageTypeID(ResourceConstants.VBF_EXC_SYNTAX_NO_VAL_THROWABLE);
 				//entry.setTokens(new String[]{validatorClassName});
-				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NO_VAL_THROWABLE), new String[]{validatorClassName});
+				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NO_VAL_THROWABLE), 
+					new Object[]{validatorClassName});
 				entry.setText(result);				
 				entry.setTargetException(exc);
 				logger.write(Level.SEVERE, entry);
@@ -794,7 +796,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				entry.setMessageTypeID(ResourceConstants.VBF_EXC_MISSING_VALIDATOR_EP);
 				//entry.setTokens(new String[]{ValidationPlugin.PLUGIN_ID + "." + VALIDATOR_EXT_PT_ID}); //$NON-NLS-1$
 				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_MISSING_VALIDATOR_EP),
-						new String[]{ValidationPlugin.PLUGIN_ID + "." + VALIDATOR_EXT_PT_ID});
+						new Object[]{ValidationPlugin.PLUGIN_ID + "." + VALIDATOR_EXT_PT_ID}); //$NON-NLS-1$
 				entry.setText(result);		
 				logger.write(Level.FINE, entry);
 			}
@@ -1323,7 +1325,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				entry.setMessageTypeID(ResourceConstants.VBF_EXC_SYNTAX_NO_VAL_RUN);
 				//entry.setTokens(new String[]{validatorName});
 				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NO_VAL_RUN),
-						new String[]{validatorName});
+						new Object[]{validatorName});
 				entry.setText(result);
 				
 				logger.write(Level.FINE, entry);
@@ -1418,17 +1420,17 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			String[] qualifiedMarkerIds = new String[customMarkerIds.length];
 			for (int i = 0; i < customMarkerIds.length; i++) {
 				String markerid = customMarkerIds[i];
-				if (markerid.lastIndexOf(".") != -1) {
-					String pluginID = markerid.substring(0, markerid.lastIndexOf("."));
+				if (markerid.lastIndexOf(".") != -1) { //$NON-NLS-1$
+					String pluginID = markerid.substring(0, markerid.lastIndexOf(".")); //$NON-NLS-1$
 					Bundle bundle = Platform.getBundle(pluginID);
 					if (bundle == null)
-						qualifiedMarkerIds[i] = pluginId + "." + customMarkerIds[i];
+						qualifiedMarkerIds[i] = pluginId + "." + customMarkerIds[i]; //$NON-NLS-1$
 					else
 						qualifiedMarkerIds[i] = customMarkerIds[i];
 				} else
-					qualifiedMarkerIds[i] = pluginId + "." + customMarkerIds[i];
+					qualifiedMarkerIds[i] = pluginId + "." + customMarkerIds[i]; //$NON-NLS-1$
 			}
-			vmd.setMarkerIds(qualifiedMarkerIds); //$NON-NLS-1$
+			vmd.setMarkerIds(qualifiedMarkerIds);
 		}
 	}
 
@@ -1477,7 +1479,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 					entry.setMessageTypeID(ResourceConstants.VBF_EXC_VALIDATORNAME_IS_NULL);
 					//entry.setTokens(msgParm);
 					String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_VALIDATORNAME_IS_NULL),
-							msgParm);
+							(Object[])msgParm);
 					entry.setText(result);					
 					logger.write(Level.FINE, entry);
 				}

@@ -17,7 +17,6 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.wst.common.frameworks.internal.WTPPlugin;
@@ -167,8 +166,5 @@ public class ValidationPlugin extends WTPPlugin {
 		Status status = new Status(severity, PLUGIN_ID, message);
 		getLog().log(status);
 		
-	}
-
-	
-	
+	}	
 }

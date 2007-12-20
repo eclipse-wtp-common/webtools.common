@@ -556,7 +556,8 @@ public final class WorkbenchReporter implements IReporter {
 				LogEntry entry = ValidationPlugin.getLogEntry();
 				entry.setSourceID("WorkbenchReporter.addMessage(IValidator, Message)"); //$NON-NLS-1$
 				entry.setMessageTypeIdentifier(ResourceConstants.VBF_EXC_INVALID_RESOURCE);
-				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INVALID_RESOURCE), new String[]{message.getText(), getTargetObjectName(helper, message)});
+				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INVALID_RESOURCE), 
+					new Object[]{message.getText(), getTargetObjectName(helper, message)});
 				entry.setText(result);				
 				//entry.setTokens(new String[]{message.getText(), getTargetObjectName(helper, message)});
 				logger.write(Level.FINE, entry);
@@ -578,10 +579,10 @@ public final class WorkbenchReporter implements IReporter {
 				String messageMarkerId = message.getMarkerId();
 				if (messageMarkerId != null && messageMarkerId.length() > 0) {
 					String firstMarkerId = vmd.getMarkerIds()[0];
-					String pluginQualifier = firstMarkerId.substring(0, firstMarkerId.lastIndexOf("."));
+					String pluginQualifier = firstMarkerId.substring(0, firstMarkerId.lastIndexOf(".")); //$NON-NLS-1$
 					String qualifiedMessageMarkerId = null;
 					if (messageMarkerId.indexOf(pluginQualifier) == -1)
-						qualifiedMessageMarkerId = pluginQualifier + "." + messageMarkerId;
+						qualifiedMessageMarkerId = pluginQualifier + "." + messageMarkerId; //$NON-NLS-1$
 					else
 						qualifiedMessageMarkerId = messageMarkerId;
 					if (Arrays.asList(vmd.getMarkerIds()).contains(qualifiedMessageMarkerId))

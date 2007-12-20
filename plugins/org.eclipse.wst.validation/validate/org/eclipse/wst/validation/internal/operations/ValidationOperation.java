@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal.operations;
 
-
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -77,18 +76,15 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	private static final String DELTA_AS_STRING = "IFileDelta[{0}] '{'{1}'}'"; //$NON-NLS-1$
 	private static final String COMMA = ", "; //$NON-NLS-1$
 	
-	protected static final boolean DEFAULT_ASYNC = true; // For the deprecated
-	// constructors, by
-	// default the
-	// operation will not
-	// fork.
+	// For the deprecated constructors, by default the operation will not fork. 
+	protected static final boolean DEFAULT_ASYNC = true;
+	
 	protected static final boolean DEFAULT_FORCE = true;
-	protected static final String VALIDATIONLAUNCHERMSG = "Waiting for build"; 
 	
 	class ValidationLauncherJob extends Job {
 	    private Job validationJob;
 	    public ValidationLauncherJob(Job validationJob) {
-	            super(ResourceHandler.getExternalizedMessage("VBF_VALIDATION_JOB_MSG"));
+	            super(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_VALIDATION_JOB_MSG));
 	            
 	            setSystem(true);
 	            setRule(ResourcesPlugin.getWorkspace().getRoot());
@@ -153,7 +149,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			buffer.replace(0, 1, ""); //$NON-NLS-1$ // magic numbers 0 and 1 => Remove first COMMA from the list (hence index 0); length of COMMA is 2, hence index 0, 1.
 			args = buffer.toString();
 		}
-		return MessageFormat.format(DELTA_AS_STRING, new String[]{String.valueOf(numArgs), args});
+		return MessageFormat.format(DELTA_AS_STRING, new Object[]{String.valueOf(numArgs), args});
 	}
 
 	protected static void checkCanceled(WorkbenchReporter reporter) throws OperationCanceledException {

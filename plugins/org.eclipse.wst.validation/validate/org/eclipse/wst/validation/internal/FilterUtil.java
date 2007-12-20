@@ -282,7 +282,8 @@ public final class FilterUtil {
 				LogEntry entry = ValidationPlugin.getLogEntry();
 				entry.setSourceID("FilterUtil::getFileDelta(IWorkbenchContext, ValidatorMetaData, IResource, int)"); //$NON-NLS-1$
 				entry.setMessageTypeID(ResourceConstants.VBF_EXC_SYNTAX_NULL_NAME);
-				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NULL_NAME), new String[]{resource.getName(), vmd.getValidatorDisplayName()});
+				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NULL_NAME), 
+					new Object[]{resource.getName(), vmd.getValidatorDisplayName()});
 				entry.setText(result);
 				//entry.setTokens(new String[]{resource.getName(), vmd.getValidatorDisplayName()});
 				logger.write(Level.SEVERE, entry);

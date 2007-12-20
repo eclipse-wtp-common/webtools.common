@@ -85,7 +85,7 @@ public class ResourceHandler {
 	public static String getExternalizedMessage(String key, String[] parms) {
 		String res = ""; //$NON-NLS-1$
 		try {
-			res = java.text.MessageFormat.format(getExternalizedMessage(key), parms);
+			res = java.text.MessageFormat.format(getExternalizedMessage(key), (Object[])parms);
 		} catch (MissingResourceException exc) {
 			Logger logger = WTPUIPlugin.getLogger();
 			if (logger.isLoggingLevel(Level.FINE)) {

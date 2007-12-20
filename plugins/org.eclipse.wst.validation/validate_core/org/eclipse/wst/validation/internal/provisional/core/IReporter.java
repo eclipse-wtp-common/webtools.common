@@ -12,8 +12,6 @@ package org.eclipse.wst.validation.internal.provisional.core;
 
 import java.util.List;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-
 /*
  * CCM - Reporter is now passed locale-independent messages.
  *       Messages should only be translated to a locale upon access.
@@ -62,7 +60,7 @@ public interface IReporter {
 	 *  to handle a MessageLimitException? Seems to me that this is a validation framework
 	 *  specific issue and that client validators shouldn't know about this at all. ]
 	 */
-	abstract void addMessage(IValidator origin, IMessage message);
+	void addMessage(IValidator origin, IMessage message);
 
 	/**
 	 * <p>
@@ -82,7 +80,7 @@ public interface IReporter {
 	 *            message The message to be displayed to the user.
 	 *                       
 	 */
-	abstract void displaySubtask(IValidator validator, IMessage message);
+	void displaySubtask(IValidator validator, IMessage message);
 
 	/**
 	 * @return the message access interface to this reporter, or null if message access is not
@@ -102,7 +100,7 @@ public interface IReporter {
 	 * @return true if the user cancelled validation, and false otherwise.
 	 *  
 	 */
-	abstract boolean isCancelled();
+	boolean isCancelled();
 
 	/**
 	 * <p>
@@ -115,7 +113,7 @@ public interface IReporter {
 	 * @param origin
 	 * 			originator validator of the message.  
 	 */
-	abstract void removeAllMessages(IValidator origin);
+	void removeAllMessages(IValidator origin);
 
 	/**
 	 * Remove all validation messages, entered by the identified validator, pertaining to the Object
@@ -134,7 +132,7 @@ public interface IReporter {
 	 * when adding the message as problem marker.
 	 * 
  	 */
-	abstract void removeAllMessages(IValidator origin, Object object);
+	void removeAllMessages(IValidator origin, Object object);
 
 	/**
 	 * To support removal of a subset of validation messages, an IValidator may assign group names

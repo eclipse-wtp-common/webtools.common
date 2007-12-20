@@ -28,9 +28,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jem.util.logger.LogEntry;
 import org.eclipse.jem.util.logger.proxy.Logger;
@@ -51,13 +48,9 @@ import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.GlobalConfiguration;
-import org.eclipse.wst.validation.internal.ProjectConfiguration;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidationSelectionHandlerRegistryReader;
-import org.eclipse.wst.validation.internal.operations.ManualIncrementalValidatorsOperation;
-import org.eclipse.wst.validation.internal.operations.ManualValidatorsOperation;
-import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;
 import org.eclipse.wst.validation.ui.internal.ManualValidationRunner;
@@ -296,176 +289,6 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		ManualValidationRunner.validate(projects, true, false, confirm);
 	}
 	
-	private IStatus validate(final IProgressMonitor monitor, final Map<IProject, Set<IResource>> projects) {
-		boolean cancelled = false; // Was the operation cancelled?
-		Iterator iterator = projects.keySet().iterator();
-		while (iterator.hasNext()) {
-			
-			if ( monitor.isCanceled() )
-				return new Status(IStatus.CANCEL, "org.eclipse.wst.validation", 0, "OK", null);;
-			IProject project = (IProject) iterator.next();
-			if (project == null) {
-				continue;
-			}
-			try {
-				if (cancelled) {
-					String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_RESCANCELLED, new String[]{project.getName()});
-					monitor.setTaskName(message);
-					continue;
-				}
-				if (!project.isOpen()) {
-					String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_CLOSED_PROJECT, new String[]{project.getName()});
-					monitor.setTaskName(message);
-					continue;
-				}
-				performValidation(monitor, projects, project);
-			} catch (OperationCanceledException exc) {
-				// When loading file deltas, if the operation has been
-				// cancelled, then resource.accept throws an OperationCanceledException.
-				cancelled = true;
-				String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_RESCANCELLED, new String[]{project.getName()});
-				monitor.setTaskName(message);
-			} catch (Exception exc) {
-				logException(monitor, project, exc);
-			}
-		}
-		return new Status(IStatus.OK, "org.eclipse.wst.validation", 0, "OK", null);
-	}
-	
-
-
-	/**
-	 * @param dialog
-	 * @param project
-	 * @param exc
-	 */
-
-	private void logException(IProgressMonitor monitor, IProject project, Throwable exc) {
-		Logger logger = WTPUIPlugin.getLogger();
-		if (logger.isLoggingLevel(Level.SEVERE)) {
-			LogEntry entry = ValidationUIPlugin.getLogEntry();
-			entry.setSourceID("ValidationMenuAction.validate"); //$NON-NLS-1$
-			entry.setMessageTypeIdentifier(ResourceConstants.VBF_EXC_INTERNAL);
-			entry.setTargetException(exc);
-			logger.write(Level.SEVERE, entry);
-		}
-		String internalErrorMessage = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PROJECT, new String[]{project.getName()});
-		monitor.setTaskName(internalErrorMessage);
-	}	
-
-	/**
-	 * @param monitor
-	 * @param projects
-	 * @param dialog
-	 * @param project
-	 * @throws CoreException
-	 */
-
-	private IStatus performValidation(final IProgressMonitor monitor, 
-			final Map<IProject, Set<IResource>> projects, IProject project) throws CoreException {
-		// Even if the "maximum number of messages" message is on the task list,
-		// run validation, because some messages may have been fixed
-		// and there may be space for more messages.
-		
-		if ( monitor.isCanceled() )
-			return new Status(IStatus.CANCEL, "org.eclipse.wst.validation", 0, "OK", null);
-		
-		Set<IResource> changedResources = projects.get(project);
-		IResource[] resources = null;
-		if (changedResources != null) {
-			resources = new IResource[changedResources.size()];
-			changedResources.toArray(resources);
-		}
-		try {
-			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
-			if (prjp.numberOfManualEnabledValidators() > 0) {
-				checkProjectConfiguration(monitor, project, resources, prjp);
-			} else {
-				String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_NO_VALIDATORS_ENABLED, new String[]{project.getName()});
-				monitor.setTaskName(message);
-			}
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ValidationMenuAction::run"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
-		}
-		return new Status(IStatus.OK, "org.eclipse.wst.validation", 0, "OK", null);
-	}
-	
-	/**
-	 * @param monitor
-	 * @param dialog
-	 * @param project
-	 * @param resources
-	 * @param prjp
-	 * @throws InvocationTargetException
-	 * @throws CoreException
-	 */
-	private IStatus checkProjectConfiguration(final IProgressMonitor monitor,
-				IProject project, IResource[] resources, ProjectConfiguration prjp) throws InvocationTargetException, CoreException {
-		boolean successful = true; // Did the operation complete successfully?
-		if ( monitor.isCanceled() )
-			new Status(IStatus.CANCEL, "org.eclipse.wst.validation", 0, "OK", null);
-		
-		ManualValidatorsOperation validOp = null;
-		if (resources == null) {
-			validOp = new ManualValidatorsOperation(project);
-		} else {
-			validOp = new ManualIncrementalValidatorsOperation(project, resources);
-		}
-		if (validOp.isNecessary(monitor)) {
-			validOp.run(monitor);
-		} else {
-			if (resources == null) {
-				String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_PRJNEEDINPUT, new String[]{project.getName()});
-				monitor.setTaskName(message);
-			} else {
-				for (int i = 0; i < resources.length; i++) {
-					String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_RESNEEDINPUT, new String[]{resources[i].getFullPath().toString()});
-					monitor.setTaskName(message);
-				}
-			}
-		}
-		if (successful) {
-			performSucessful(monitor, project, resources);
-		} else {
-			String internalErrorMessage = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PROJECT, new String[]{project.getName()});
-			monitor.setTaskName(internalErrorMessage);
-		}
-		return new Status(IStatus.OK, "org.eclipse.wst.validation", 0, "OK", null);
-	}
-	
-
-
-	/**
-	 * @param dialog
-	 * @param project
-	 * @param resources
-	 */
-	private void performSucessful(final IProgressMonitor monitor, IProject project, IResource[] resources) {
-		boolean limitExceeded = ValidatorManager.getManager().wasValidationTerminated(project);
-		if (limitExceeded) {
-			String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_MAX_REPORTED, new String[]{project.getName()});
-			monitor.setTaskName(message);
-		} else if (resources == null) {
-			String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_PRJVALIDATED, new String[]{project.getName()});
-			monitor.setTaskName(message);
-		} else {
-			for (int i = 0; i < resources.length; i++) {
-				String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_UI_RESVALIDATED, new String[]{resources[i].getFullPath().toString()});
-				monitor.setTaskName(message);
-			}
-		}
-	}	
-
 	/**
 	 * Selection in the desktop has changed. Plugin provider can use it to change the availability
 	 * of the action or to modify other presentation properties.
