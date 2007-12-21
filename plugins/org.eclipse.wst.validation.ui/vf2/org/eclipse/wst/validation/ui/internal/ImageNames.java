@@ -7,10 +7,8 @@ package org.eclipse.wst.validation.ui.internal;
  */
 public interface ImageNames {
 	
-	String okTable = "ok_tbl";
-	String failTable = "fail_tbl";
-	
-	String settings = "settings";
-	
-	String disabled = "_disabled";
+	String okTable 		= "ok_tbl"; //$NON-NLS-1$
+	String failTable 	= "fail_tbl"; //$NON-NLS-1$	
+	String settings 	= "settings"; //$NON-NLS-1$
+	String disabled 	= "_disabled"; //$NON-NLS-1$
 }

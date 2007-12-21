@@ -126,8 +126,7 @@ public class ValidatorJob extends Job {
 				entry.setSourceID("ValidatorJob.run()"); //$NON-NLS-1$
 				entry.setTargetException(exc);
 				logger.write(Level.SEVERE, entry);
-				IStatus stat = new Status(IStatus.ERROR,
-			    		      ValidationPlugin.PLUGIN_ID, 0, "", exc );
+				IStatus stat = new Status(IStatus.ERROR, ValidationPlugin.PLUGIN_ID, 0, "", exc ); //$NON-NLS-1$
 					logger.write(Level.SEVERE, stat);
 				
 			}

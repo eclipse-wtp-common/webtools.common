@@ -101,6 +101,21 @@ public final class ValidationFramework {
 	}
 	
 	/**
+	 * Answer true if the resource has any enabled validators.
+	 * 
+	 * @param resource a file, folder or project.
+	 * 
+	 * @param isManual if true then the validator must be turned on for manual validation. 
+	 * If false then the isManualValidation setting isn't used to filter out validators.
+	 *   
+	 * @param isBuild if true then the validator must be turned on for build based validation.
+	 * If false then the isBuildValidation setting isn't used to filter out validators.  
+	 */
+	public boolean hasValidators(IResource resource, boolean isManual, boolean isBuild){
+		return ValManager.getDefault().hasValidators(resource, isManual, isBuild);
+	}
+	
+	/**
 	 * Validate the projects.
 	 *  
 	 * @param projects the projects to be validated.

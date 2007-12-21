@@ -80,7 +80,7 @@ public class ManualValidationRunner extends WorkspaceJob {
 						parms[2] = _nf.format(vr.getSeverityInfo());
 						message = NLS.bind(ValUIMessages.ErrSummary, parms); 
 					}
-					MessageDialog.openInformation(null, "Validation Status", message);					
+					MessageDialog.openInformation(null, ValUIMessages.ValidationStatus, message);					
 				}
 				
 			};

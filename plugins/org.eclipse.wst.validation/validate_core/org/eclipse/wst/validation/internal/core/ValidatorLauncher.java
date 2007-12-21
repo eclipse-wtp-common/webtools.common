@@ -27,16 +27,13 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 import org.eclipse.wst.validation.internal.provisional.core.IValidatorJob;
 
 /**
- * <p>
  * This singleton launches the validation on a single validator. Clients should call this class's
  * <code>start</code> method to begin the validation.
- * </p>
  */
 public class ValidatorLauncher {
 	private static ValidatorLauncher _launcher;
 
 	private ValidatorLauncher() {
-		//Default constructor
 	}
 
 	/**
@@ -54,9 +51,7 @@ public class ValidatorLauncher {
 	 * This method is the launch point of the validation. It runs validation on the validator
 	 * accessed by the IValidationContext. When the validation is complete, each validator may perform resource
 	 * cleanup, if necessary.
-	 * 
-	 * <br>
-	 * <br>
+	 * <p>
 	 * If <code>helper</code>,<code>validator</code>, or <code>reporter</code> are null,
 	 * validation is not performed. <code>changedFiles</code> may be null, or empty, if a full
 	 * build should be done.
@@ -67,25 +62,15 @@ public class ValidatorLauncher {
 	 * @param validator
 	 * 			validator object to launch validation.
 	 * @param reporter
-	 * 			Is an instance of an IReporter interface, which is used for
-	 * interaction with the user.
-	 * @param changedFiles
-	 * 			Is an array of files which have been added, changed, or deleted
-	 * since the last validation. If <code>changedFiles</code> is null, or if it is an empty
-	 * array, then a full validation should be performed. Otherwise, validation on just the files
-	 * listed in the array should performed if the validator supports incremental validation.
+	 * 			Is an instance of an IReporter interface, which is used for interaction with the user.
 	 */
 	public void start(final IValidationContext helper, final IValidator validator, final IReporter reporter) throws ValidationException {
-		if ((helper == null) || (validator == null) || (reporter == null)) {
-			return;
-		}
+		if ((helper == null) || (validator == null) || (reporter == null))return;
 
 		// Can't force each validator to check if it's cancelled or not,
-		// so check for cancellation here. Hopefully the user won't wait
-		// too long.
-		if (reporter.isCancelled()) {
-			return;
-		}
+		// so check for cancellation here. Hopefully the user won't wait too long.
+		if (reporter.isCancelled())return;
+		
 
 		// If the validator is about to perform a full build, remove all of its previous validation
 		// messages.

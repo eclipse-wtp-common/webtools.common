@@ -75,12 +75,12 @@ public class ValidatorNameFilter {
 		if (name.equalsIgnoreCase(_nameFilter))
 			return true;
 
-		int indexOfStarDot = _nameFilter.indexOf("*.");
+		int indexOfStarDot = _nameFilter.indexOf("*."); //$NON-NLS-1$
 
-		//return value if the fileter name extension matches the extension
+		//return value if the filter name extension matches the extension
 		//of the resource 
 		if (indexOfStarDot != -1) {
-			String nameExtension = name.substring(name.lastIndexOf(".") + 1);
+			String nameExtension = name.substring(name.lastIndexOf(".") + 1); //$NON-NLS-1$
 			return nameFilterExtension.equalsIgnoreCase(nameExtension);
 		}
 

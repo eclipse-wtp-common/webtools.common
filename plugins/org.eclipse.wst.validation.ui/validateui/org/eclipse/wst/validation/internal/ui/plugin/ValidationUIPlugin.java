@@ -39,7 +39,7 @@ public class ValidationUIPlugin extends WTPUIPlugin {
 
 	public final static String VALIDATION_PROP_FILE_NAME = "validate_ui"; //$NON-NLS-1$
 	public static final String VALIDATION_PLUGIN_ID = "org.eclipse.wst.validation.ui"; //$NON-NLS-1$
-	public static final String[] ICON_DIRS = new String[]{"icons"};
+	public static final String[] ICON_DIRS = new String[]{"icons"}; //$NON-NLS-1$
 
 	public ValidationUIPlugin() {
 		super();

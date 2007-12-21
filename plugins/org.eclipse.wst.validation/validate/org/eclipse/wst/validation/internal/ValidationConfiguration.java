@@ -14,12 +14,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,7 +39,6 @@ import org.eclipse.wst.validation.internal.delegates.ValidatorDelegateDescriptor
 import org.eclipse.wst.validation.internal.delegates.ValidatorDelegatesRegistry;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
-
 /**
  * This class represents the user's preference or project settings.
  * 
@@ -48,21 +46,26 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  * property while the resource is open.
  */
 public abstract class ValidationConfiguration implements IPropertyChangeListener {
-	private IResource _resource;
-	private boolean disableAllValidation = getDisableAllValidation();
-	private String _version;
-	private Map _validators; // Map of all validators (ValidatorMetaData) configured on the
-	// project or installed globally. The value is a Boolean; TRUE
-	// means that the VMD is enabled, FALSE means that the VMD is
-	// disabled.
-	protected HashMap manualValidators;
-	protected HashMap buildValidators;
-	protected String USER_PREFERENCE = "USER_PREFERENCE";
-	protected String USER_MANUAL_PREFERENCE = "USER_MANUAL_PREFERENCE";
-	protected String USER_BUILD_PREFERENCE = "USER_BUILD_PREFERENCE";
-	protected String DELEGATES_PREFERENCE = "DELEGATES_PREFERENCE";
+	private IResource 	_resource;
+	private boolean 	disableAllValidation = getDisableAllValidation();
+	private String 		_version;
 	
-  private Map _delegatesByTarget;
+	/**
+	 * Map of all validators configured on the project or installed globally. The value of true
+	 * means that the VMD is enabled, and a value of false means that the VMD is disabled.
+	 */
+	private Map<ValidatorMetaData, Boolean>		_validators;
+	protected Map<ValidatorMetaData, Boolean> 	manualValidators;
+	protected Map<ValidatorMetaData, Boolean> 	buildValidators;
+	
+	protected String USER_PREFERENCE 		= "USER_PREFERENCE"; //$NON-NLS-1$
+	protected String USER_MANUAL_PREFERENCE = "USER_MANUAL_PREFERENCE"; //$NON-NLS-1$
+	protected String USER_BUILD_PREFERENCE 	= "USER_BUILD_PREFERENCE"; //$NON-NLS-1$
+	protected String DELEGATES_PREFERENCE 	= "DELEGATES_PREFERENCE"; //$NON-NLS-1$
+	
+	private Map<String, String> _delegatesByTarget;
+	
+	private static final String DefaultValue = "default_value"; //$NON-NLS-1$
 
 	public static String getEnabledElementsAsString(Set elements) {
 		if (elements == null) {
@@ -82,36 +85,30 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 		return false;
 	}
 
-	public static String getEnabledElementsAsString(Object[] elements) {
+	public static String getEnabledElementsAsString(ValidatorMetaData[] elements) {
 		StringBuffer buffer = new StringBuffer();
-		for (int i = 0; i < elements.length; i++) {
-			buffer.append(((ValidatorMetaData) elements[i]).getValidatorUniqueName());
+		for (ValidatorMetaData vmd : elements) {
+			buffer.append(vmd.getValidatorUniqueName());
 			buffer.append(ConfigurationConstants.ELEMENT_SEPARATOR);
 		}
 		return buffer.toString();
 	}
 
-	public static Set getStringAsEnabledElements(String elements) {
-		if (elements == null) {
-			return null;
-		}
+	public static Set<ValidatorMetaData> getStringAsEnabledElements(String elements) {
+		if (elements == null)return null;
 
-		HashSet result = new HashSet();
+		Set<ValidatorMetaData> result = new HashSet<ValidatorMetaData>();
 		StringTokenizer tokenizer = new StringTokenizer(elements, ConfigurationConstants.ELEMENT_SEPARATOR);
 		while (tokenizer.hasMoreTokens()) {
 			String elem = tokenizer.nextToken();
 			ValidatorMetaData vmd = ValidationRegistryReader.getReader().getValidatorMetaData(elem);
-			if (vmd != null) {
-				result.add(vmd);
-			}
+			if (vmd != null)result.add(vmd);
 		}
 		return result;
 	}
 
 	public static ValidatorMetaData[] getStringAsEnabledElementsArray(String elements) {
-		if (elements == null) {
-			return null;
-		}
+		if (elements == null)return null;
 
 		StringTokenizer tokenizer = new StringTokenizer(elements, ConfigurationConstants.ELEMENT_SEPARATOR);
 		ValidatorMetaData[] result = new ValidatorMetaData[tokenizer.countTokens()];
@@ -119,9 +116,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 		while (tokenizer.hasMoreTokens()) {
 			String elem = tokenizer.nextToken();
 			ValidatorMetaData vmd = ValidationRegistryReader.getReader().getValidatorMetaData(elem);
-			if (vmd != null) {
-				result[count++] = vmd;
-			}
+			if (vmd != null)result[count++] = vmd;
 		}
 
 		if (count != result.length) {
@@ -138,8 +133,8 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	}
 
 	protected ValidationConfiguration() throws InvocationTargetException {
-		_validators = new HashMap();
-    _delegatesByTarget = new HashMap();
+		_validators = new HashMap<ValidatorMetaData, Boolean>();
+		_delegatesByTarget = new HashMap<String, String>();
 	}
 
 	protected ValidationConfiguration(IResource resource, ValidatorMetaData[] validators) throws InvocationTargetException {
@@ -192,16 +187,11 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 		 
 		if( !isDisableAllValidation() ){
 			ValidatorMetaData[] temp = new ValidatorMetaData[numberOfValidators()];
-			Iterator iterator = getBuildEnabledValidatorsMap().keySet().iterator();
-
-			
-			while (iterator.hasNext()) {
-				ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
-				Boolean bvalue = (Boolean)(getBuildEnabledValidatorsMap().get(vmd));
-				if (bvalue.booleanValue() == true) {
+			for (ValidatorMetaData vmd : getBuildEnabledValidatorsMap().keySet()) {
+				Boolean bvalue = getBuildEnabledValidatorsMap().get(vmd);
+				if (bvalue) {
 					// If the validator is enabled
-					if (vmd == null)
-						continue;
+					if (vmd == null)continue;
 					if ( vmd.isBuildValidation() ) {
 						if (!onlyReferenced || vmd.isDependentValidator())
 							temp[count++] = vmd;
@@ -210,7 +200,8 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 			}
 			result = new ValidatorMetaData[count];
 			System.arraycopy(temp, 0, result, 0, count);
-		}else{
+		}
+		else {
 			 result = new ValidatorMetaData[0];
 		}
 		return result;
@@ -218,31 +209,28 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 
 	public void setEnabledValidators(ValidatorMetaData[] vmds) {
 		// First, "disable" all validators
-		Map all = getValidatorMetaData();
-		Iterator iterator = all.keySet().iterator();
-		while (iterator.hasNext()) {
-			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
+		Map<ValidatorMetaData, Boolean> all = getValidatorMetaData();
+		for (ValidatorMetaData vmd : all.keySet()) {
 			all.put(vmd, Boolean.FALSE);
 		}
 
 		// Then enable only the validators in the array
-		if ((vmds == null) || (vmds.length == 0)) {
-			return;
-		}
-		for (int i = 0; i < vmds.length; i++) {
-			all.put(vmds[i], Boolean.TRUE);
+		if ((vmds == null) || (vmds.length == 0))return;
+		
+		for (ValidatorMetaData vmd : vmds) {
+			all.put(vmd, Boolean.TRUE);
 		}
 	}
 	
 	public void setEnabledManualValidators(ValidatorMetaData[] vmds) throws InvocationTargetException {
-		List manualEnabledVMDList = Arrays.asList(vmds);
-		List allValidators = Arrays.asList(getValidators());
-		for(int i = 0; i < allValidators.size(); i++) {
-			ValidatorMetaData data = (ValidatorMetaData) allValidators.get(i);
-			if(manualEnabledVMDList.contains(data))
-				getManualEnabledValidatorsMap().put(data, new Boolean(true));
+		Set<ValidatorMetaData> manualEnabledVMDs = new HashSet<ValidatorMetaData>(vmds.length);
+		for (ValidatorMetaData vmd : vmds)manualEnabledVMDs.add(vmd);
+		
+		for(ValidatorMetaData data : getValidators()) {
+			if(manualEnabledVMDs.contains(data))
+				getManualEnabledValidatorsMap().put(data, Boolean.TRUE);
 			else
-				getManualEnabledValidatorsMap().put(data, new Boolean(false));
+				getManualEnabledValidatorsMap().put(data, Boolean.FALSE);
 			
 		}
 	}
@@ -261,15 +249,13 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	}
 	
 	public void setEnabledBuildValidators(ValidatorMetaData[] vmds) throws InvocationTargetException {
-		List buildEnabledVMDList = Arrays.asList(vmds);
-		List allValidators = Arrays.asList(getValidators());
-		for(int i = 0; i < allValidators.size(); i++) {
-			ValidatorMetaData data = (ValidatorMetaData) allValidators.get(i);
-			if(buildEnabledVMDList.contains(data))
-				getBuildEnabledValidatorsMap().put(data, new Boolean(true));
+		Set<ValidatorMetaData> buildEnabledVMDs = new HashSet<ValidatorMetaData>(vmds.length);
+		for (ValidatorMetaData vmd : vmds)buildEnabledVMDs.add(vmd);
+		for(ValidatorMetaData data : getValidators()) {
+			if(buildEnabledVMDs.contains(data))
+				getBuildEnabledValidatorsMap().put(data, Boolean.TRUE);
 			else
-				getBuildEnabledValidatorsMap().put(data, new Boolean(false));
-			
+				getBuildEnabledValidatorsMap().put(data, Boolean.FALSE);			
 		}
 	}
 	
@@ -286,7 +272,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 		}
 	}
 
-	private Map getValidatorMetaData() {
+	private Map<ValidatorMetaData, Boolean> getValidatorMetaData() {
 		return _validators;
 	}
 	
@@ -301,11 +287,9 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	 */
 	private ValidatorMetaData[] getValidators(boolean value) throws InvocationTargetException {
 		ValidatorMetaData[] temp = new ValidatorMetaData[numberOfValidators()];
-		Iterator iterator = getValidatorMetaData().keySet().iterator();
 		int count = 0;
-		while (iterator.hasNext()) {
-			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
-			Boolean bvalue = (Boolean) getValidatorMetaData().get(vmd);
+		for (ValidatorMetaData vmd : getValidatorMetaData().keySet()) {
+			Boolean bvalue = getValidatorMetaData().get(vmd);
 			if (bvalue.booleanValue() == value) {
 				temp[count++] = vmd;
 			}
@@ -317,14 +301,12 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	}
 	
 	public ValidatorMetaData[] getManualEnabledValidators() throws InvocationTargetException {
-		HashMap map = getManualEnabledValidatorsMap();
-		Set set = getManualEnabledValidatorsMap().keySet();
+		Map<ValidatorMetaData, Boolean> map = getManualEnabledValidatorsMap();
+		Set<ValidatorMetaData> set = getManualEnabledValidatorsMap().keySet();
 		if (!set.isEmpty()) {
-			Iterator it = set.iterator();
-			List enabledManualValidators = new ArrayList();
-			while (it.hasNext()) {
-				ValidatorMetaData data = (ValidatorMetaData) it.next();
-				Boolean obj = (Boolean) map.get(data);
+			List<ValidatorMetaData> enabledManualValidators = new LinkedList<ValidatorMetaData>();
+			for (ValidatorMetaData data : set) {
+				Boolean obj = map.get(data);
 				if (obj != null && obj.booleanValue() == true) {
 					enabledManualValidators.add(data);
 				}
@@ -335,14 +317,12 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	}	
 	
 	public  ValidatorMetaData[] getBuildEnabledValidators() throws InvocationTargetException {
-		HashMap map = getBuildEnabledValidatorsMap();
-		Set set = getBuildEnabledValidatorsMap().keySet();
-		Iterator it = set.iterator();
-		List enabledBuildValidators = new ArrayList();
+		Map<ValidatorMetaData, Boolean> map = getBuildEnabledValidatorsMap();
+		Set<ValidatorMetaData> set = getBuildEnabledValidatorsMap().keySet();
+		List<ValidatorMetaData> enabledBuildValidators = new LinkedList<ValidatorMetaData>();
 		if (!set.isEmpty()) {
-			while (it.hasNext()) {
-				ValidatorMetaData data = (ValidatorMetaData) it.next();
-				Boolean obj = (Boolean) map.get(data);
+			for (ValidatorMetaData data : set) {
+				Boolean obj = map.get(data);
 				if (obj != null && obj.booleanValue() == true) {
 					enabledBuildValidators.add(data);
 				}
@@ -352,15 +332,14 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 		return getEnabledValidators();
 	}
 	
-	protected  HashMap getBuildEnabledValidatorsMap() {
+	protected  Map<ValidatorMetaData, Boolean> getBuildEnabledValidatorsMap() {
 		if(buildValidators == null)
-			buildValidators = new HashMap();
+			buildValidators = new HashMap<ValidatorMetaData, Boolean>();
 		return buildValidators;
 	}	
 	
-	protected  HashMap getManualEnabledValidatorsMap() {
-		if(manualValidators == null)
-			manualValidators = new HashMap();
+	protected  Map<ValidatorMetaData, Boolean> getManualEnabledValidatorsMap() {
+		if(manualValidators == null)manualValidators = new HashMap<ValidatorMetaData, Boolean>();
 		return manualValidators;
 	}	
 
@@ -370,17 +349,10 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	 */
 	public ValidatorMetaData[] getIncrementalValidators() throws InvocationTargetException {
 		ValidatorMetaData[] temp = new ValidatorMetaData[numberOfValidators()];
-		Iterator iterator = getValidatorMetaData().keySet().iterator();
 		int count = 0;
-		while (iterator.hasNext()) {
-			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
-			Boolean bvalue = (Boolean) getValidatorMetaData().get(vmd);
-			if (bvalue.booleanValue() == true) {
-				// If the validator is enabled
-				if (vmd.isIncremental()) {
-					temp[count++] = vmd;
-				}
-			}
+		for (ValidatorMetaData vmd : getValidatorMetaData().keySet()) {
+			Boolean bvalue = getValidatorMetaData().get(vmd);
+			if (bvalue && vmd.isIncremental())temp[count++] = vmd;
 		}
 
 		ValidatorMetaData[] result = new ValidatorMetaData[count];
@@ -398,25 +370,20 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	
 	public void setValidators(ValidatorMetaData[] vmds) {
 		_validators.clear();
-		for (int i = 0; i < vmds.length; i++) {
-			if (vmds[i] == null)
-				continue;
-			_validators.put(vmds[i], (vmds[i].isEnabledByDefault() ? Boolean.TRUE : Boolean.FALSE));
+		for (ValidatorMetaData vmd : vmds) {
+			if (vmd == null)continue;
+			_validators.put(vmd, (vmd.isEnabledByDefault() ? Boolean.TRUE : Boolean.FALSE));
 		}
 	}
 	
   public void setDefaultDelegates(ValidatorMetaData[] vmds) throws InvocationTargetException {
     _delegatesByTarget.clear();
-    for (int i = 0; i < vmds.length; i++) {
-      ValidatorMetaData vmd = vmds[i];
-      if (vmd == null) {
-        continue;
-      }
+    for (ValidatorMetaData vmd : vmds) {
+      if (vmd == null)continue;
+      
       String targetID = vmd.getValidatorUniqueName();
       String delegateID = ValidatorDelegatesRegistry.getInstance().getDefaultDelegate(targetID);
-      if (delegateID == null) {
-        continue;
-      }
+      if (delegateID == null)continue;
       _delegatesByTarget.put(targetID, ValidatorDelegatesRegistry.getInstance().getDefaultDelegate(targetID));
     }
   }
@@ -439,11 +406,8 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 
 	private static int numberOfIncrementalValidators(ValidatorMetaData[] vmds) {
 		int count = 0;
-		for (int i = 0; i < vmds.length; i++) {
-			ValidatorMetaData vmd = vmds[i];
-			if (vmd.isIncremental()) {
-				count++;
-			}
+		for (ValidatorMetaData vmd : vmds) {
+			if (vmd.isIncremental())count++;
 		}
 		return count;
 	}
@@ -462,21 +426,11 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 		return getDisabledValidators().length;
 	}
 
-	/*public int getMaximumNumberOfMessages() throws InvocationTargetException {
-		return _maxMessages;
-	}
-
-	public void setMaximumNumberOfMessages(int max) {
-		_maxMessages = max;
-	}*/
-
 	/**
 	 * The value returned from this method is guaranteed to be non-null.
 	 */
 	public final String getVersion() throws InvocationTargetException {
-		if (_version == null) {
-			loadVersion();
-		}
+		if (_version == null)loadVersion();
 		return _version;
 	}
 
@@ -519,14 +473,10 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	 * Return true if the validator is enabled on this preference.
 	 */
 	public boolean isEnabled(ValidatorMetaData vmd) throws InvocationTargetException {
-		if (vmd == null) {
-			return false;
-		}
+		if (vmd == null)return false;
 
-		Boolean value = (Boolean) getValidatorMetaData().get(vmd);
-		if (value == null) {
-			return false;
-		}
+		Boolean value = getValidatorMetaData().get(vmd);
+		if (value == null)return false;
 
 		return value.booleanValue();
 	}
@@ -573,9 +523,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	public static ValidatorMetaData[] convertToArray(Collection c) {
 		int length = (c == null) ? 0 : c.size();
 		ValidatorMetaData[] result = new ValidatorMetaData[length];
-		if (length == 0) {
-			return result;
-		}
+		if (length == 0)return result;
 
 		Iterator iterator = c.iterator();
 		int count = 0;
@@ -590,9 +538,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	public static ValidatorMetaData[] convertToArray(Object[] c) {
 		int length = (c == null) ? 0 : c.length;
 		ValidatorMetaData[] result = new ValidatorMetaData[length];
-		if (length == 0) {
-			return result;
-		}
+		if (length == 0)return result;
 
 		System.arraycopy(c, 0, result, 0, length);
 		return result;
@@ -648,9 +594,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 
 	protected final String loadVersion(IMarker[] marker) throws InvocationTargetException {
 		String version = (String) getValue(marker[0], ConfigurationConstants.VERSION);
-		if (version == null) {
-			return ConfigurationConstants.VERSION4_03;
-		}
+		if (version == null)	return ConfigurationConstants.VERSION4_03;
 
 		return version;
 	}
@@ -715,9 +659,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	protected abstract void load(IMarker[] marker) throws InvocationTargetException;
 
 	protected Object getValue(IMarker marker, String attribName) {
-		if (marker == null) {
-			return null;
-		}
+		if (marker == null)return null;
 
 		try {
 			return marker.getAttribute(attribName);
@@ -735,27 +677,21 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 
 	protected boolean getValue(IMarker marker, String attribName, boolean defaultValue) {
 		Boolean bool = (Boolean) getValue(marker, attribName);
-		if (bool == null) {
-			return defaultValue;
-		}
+		if (bool == null)return defaultValue;
 
 		return bool.booleanValue();
 	}
 
 	protected int getValue(IMarker marker, String attribName, int defaultValue) {
 		Integer integer = (Integer) getValue(marker, attribName);
-		if (integer == null) {
-			return defaultValue;
-		}
+		if (integer == null)return defaultValue;
 
 		return integer.intValue();
 	}
 
 	protected String getValue(IMarker marker, String attribName, String defaultValue) {
 		String string = (String) getValue(marker, attribName);
-		if (string == null) {
-			return defaultValue;
-		}
+		if (string == null)return defaultValue;
 
 		return string;
 	}
@@ -813,7 +749,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	
 	
 	protected void deserializeBuild(String storedConfiguration) throws InvocationTargetException {
-		if (storedConfiguration == null || storedConfiguration.length() == 0 || storedConfiguration.equals("default_value")) {
+		if (storedConfiguration == null || storedConfiguration.length() == 0 || storedConfiguration.equals(DefaultValue)) {
 			// Assume that the configuration has never been set (new workspace).
 			resetToDefault();
 			return;
@@ -825,7 +761,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	}
 
 	protected void deserializeManual(String storedConfiguration) throws InvocationTargetException {
-		if (storedConfiguration == null || storedConfiguration.length() == 0 || storedConfiguration.equals("default_value")) {
+		if (storedConfiguration == null || storedConfiguration.length() == 0 || storedConfiguration.equals(DefaultValue)) {
 			// Assume that the configuration has never been set (new workspace).
 			resetToDefault();
 			return;
@@ -838,7 +774,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 
 	protected void deserializeDelegates(String storedConfiguration) throws InvocationTargetException {
 
-    if (storedConfiguration == null || storedConfiguration.length() == 0 || storedConfiguration.equals("default_value")) {
+    if (storedConfiguration == null || storedConfiguration.length() == 0 || storedConfiguration.equals(DefaultValue)) {
 	    // Assume that the configuration has never been set (new workspace).
 	    resetToDefault();
 	    return;
@@ -873,11 +809,11 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
     up.setDelegatingValidators(getDelegatingValidators());
 	}
 
-  public Map getDelegatingValidators() throws InvocationTargetException {
+  public Map<String, String> getDelegatingValidators() throws InvocationTargetException {
     return _delegatesByTarget;
   }
 
-  public void setDelegatingValidators(Map source)
+  public void setDelegatingValidators(Map<String, String> source)
   {
     // It is safe to copy this map as it contains only immutable strings.
     _delegatesByTarget.putAll(source);
@@ -931,7 +867,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
     {
       String targetID = (String) iterator.next();
       String oldDelegateID = (String) oldDelegates.get(targetID);
-      String newDelegateID = (String) _delegatesByTarget.get(targetID);
+      String newDelegateID = _delegatesByTarget.get(targetID);
       
       if (oldDelegateID == null || newDelegateID == null) {
         return true;
@@ -1019,7 +955,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
    */
   public String getDelegateUniqueName(ValidatorMetaData vmd) {
     String targetID = vmd.getValidatorUniqueName();    
-    return (String) _delegatesByTarget.get(targetID);
+    return _delegatesByTarget.get(targetID);
   }
 
   /**
@@ -1039,7 +975,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	 * loadVersion() method.
 	 */
 	protected void deserialize(String storedConfiguration) throws InvocationTargetException {
-		if (storedConfiguration == null || storedConfiguration.length() == 0 || storedConfiguration.equals("default_value")) {
+		if (storedConfiguration == null || storedConfiguration.length() == 0 || storedConfiguration.equals(DefaultValue)) {
 			// Assume that the configuration has never been set (new workspace).
 			resetToDefault();
 			return;
@@ -1100,37 +1036,31 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	}
 	
 	public void enableSingleValidator(ValidatorMetaData  vmd){
-		Map all = getValidatorMetaData();
-		all.put(vmd, Boolean.TRUE);
+		getValidatorMetaData().put(vmd, Boolean.TRUE);
 	}
 	
 	
 	public void disableSingleValidator(ValidatorMetaData  vmd){
-		Map all = getValidatorMetaData();
-		all.put(vmd, Boolean.FALSE);
+		getValidatorMetaData().put(vmd, Boolean.FALSE);
 	}
 	
 	public void enableSingleManualValidator(ValidatorMetaData  vmd){
-		Map manVal = getManualEnabledValidatorsMap();
-		manVal.put(vmd, Boolean.TRUE);
+		getManualEnabledValidatorsMap().put(vmd, Boolean.TRUE);
 	}
 	
 	
 	public void disableSingleManualValidator(ValidatorMetaData  vmd){
-		Map manVal = getManualEnabledValidatorsMap();
-		manVal.put(vmd, Boolean.FALSE);
+		getManualEnabledValidatorsMap().put(vmd, Boolean.FALSE);
 	}
 
 	
 	public void enableSingleBuildValidator(ValidatorMetaData  vmd){
-		Map buildVal = getBuildEnabledValidatorsMap();
-		buildVal.put(vmd, Boolean.TRUE);
+		getBuildEnabledValidatorsMap().put(vmd, Boolean.TRUE);
 	}
 	
 	
 	public void disableSingleBuildValidator(ValidatorMetaData  vmd){
-		Map buildVal = getBuildEnabledValidatorsMap();
-		buildVal.put(vmd, Boolean.FALSE);
+		getBuildEnabledValidatorsMap().put(vmd, Boolean.FALSE);
 	}
 	
   /**

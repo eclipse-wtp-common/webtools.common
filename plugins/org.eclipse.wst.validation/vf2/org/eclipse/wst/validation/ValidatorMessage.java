@@ -31,7 +31,7 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  */
 public class ValidatorMessage {
 	
-	private Map	_map = new HashMap(5);
+	private Map<String, Object>	_map = new HashMap<String, Object>(5);
 	private IResource	_resource;
 	private String		_type;
 	
@@ -228,7 +228,7 @@ public class ValidatorMessage {
 	 *		(key type : <code>String</code> value type : <code>String</code>, 
 	 *		<code>Integer</code>, or <code>Boolean</code>) or <code>null</code>
 	 */
-	public void setAttributes(Map attributes) {
+	public void setAttributes(Map<String, Object> attributes) {
 		_map.clear();
 		_map.putAll(attributes);
 		

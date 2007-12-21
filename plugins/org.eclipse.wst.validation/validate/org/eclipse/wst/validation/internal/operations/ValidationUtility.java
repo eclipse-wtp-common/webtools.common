@@ -104,7 +104,7 @@ public final class ValidationUtility {
 			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidationUtility::isEnabled(" + project.getName() + ", String[])"); //$NON-NLS-1$  //$NON-NLS-2$  //$NON-NLS-3$
+				entry.setSourceID("ValidationUtility::isEnabled(" + project.getName() + ", String[])"); //$NON-NLS-1$  //$NON-NLS-2$  
 				entry.setTargetException(exc);
 				logger.write(Level.SEVERE, entry);
 

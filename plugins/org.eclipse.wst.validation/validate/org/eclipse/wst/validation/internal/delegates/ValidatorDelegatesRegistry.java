@@ -54,7 +54,8 @@ public class ValidatorDelegatesRegistry
   /**
    * The map of target validator id to Map of delegates by id.
    */
-  private Map delegatesByTarget = new HashMap();
+  private Map<String, Map<String,ValidatorDelegateDescriptor>> _delegatesByTarget = 
+	  new HashMap<String, Map<String,ValidatorDelegateDescriptor>>();
 
   /**
    * Adds a descriptor to the registry.
@@ -64,19 +65,16 @@ public class ValidatorDelegatesRegistry
    */
   void add(ValidatorDelegateDescriptor descriptor)
   {
-    if (descriptor == null)
-    {
-      return;
-    }
+    if (descriptor == null)return;
 
     String targetID = descriptor.getTargetID();
 
-    Map delegates = (Map) delegatesByTarget.get(targetID);
+    Map<String,ValidatorDelegateDescriptor> delegates = _delegatesByTarget.get(targetID);
 
     if (delegates == null)
     {
-      delegates = new HashMap();
-      delegatesByTarget.put(targetID, delegates);
+      delegates = new HashMap<String,ValidatorDelegateDescriptor>();
+      _delegatesByTarget.put(targetID, delegates);
     }
 
     delegates.put(descriptor.getId(), descriptor);
@@ -93,10 +91,7 @@ public class ValidatorDelegatesRegistry
   {
     Map delegates = getDelegateDescriptors(targetID);
 
-    if (delegates == null)
-    {
-      return null;
-    }
+    if (delegates == null)return null;
 
     // TODO: Implement a default attribute and use that to get the default?
     // What happens if two or more delegates claim to be the default one?
@@ -104,10 +99,7 @@ public class ValidatorDelegatesRegistry
 
     Iterator delegatesIterator = delegates.values().iterator();
 
-    if (!delegatesIterator.hasNext())
-    {
-      return null;
-    }
+    if (!delegatesIterator.hasNext())return null;
 
     ValidatorDelegateDescriptor descriptor = (ValidatorDelegateDescriptor) delegatesIterator.next();
 
@@ -128,10 +120,7 @@ public class ValidatorDelegatesRegistry
   {
     ValidatorDelegateDescriptor descriptor = getDescriptor(targetID, delegateID);
 
-    if (descriptor == null)
-    {
-      return null;
-    }
+    if (descriptor == null)return null;
 
     IValidator delegate = descriptor.getValidator();
 
@@ -147,9 +136,8 @@ public class ValidatorDelegatesRegistry
    * @return a Map <string, ValidatorDelegateDescriptor>. May be null if the ID
    *         passed in is not a delegating validator.
    */
-  public Map getDelegateDescriptors(String targetID)
-  {
-    return (Map) delegatesByTarget.get(targetID);
+  public Map<String,ValidatorDelegateDescriptor> getDelegateDescriptors(String targetID) {
+    return _delegatesByTarget.get(targetID);
   }
 
   /**
@@ -164,19 +152,9 @@ public class ValidatorDelegatesRegistry
    */
   public ValidatorDelegateDescriptor getDescriptor(String targetID, String delegateID)
   {
-    Map delegates = (Map) delegatesByTarget.get(targetID);
+    Map<String,ValidatorDelegateDescriptor> delegates = _delegatesByTarget.get(targetID);
 
-    if (delegates == null)
-    {
-      // No delegates registered for this target.
-
-      return null;
-    }
-
-    if (delegateID == null)
-    {
-      return null;
-    }
+    if (delegates == null || delegateID == null)return null;
     
     ValidatorDelegateDescriptor descriptor = (ValidatorDelegateDescriptor) delegates.get(delegateID);
 
@@ -192,7 +170,7 @@ public class ValidatorDelegatesRegistry
    */
   public boolean hasDelegates(String targetID)
   {
-    Map delegatesByID = (Map) delegatesByTarget.get(targetID);
+    Map delegatesByID = _delegatesByTarget.get(targetID);
 
     boolean hasDelegates = (delegatesByID != null && !delegatesByID.isEmpty());
     return hasDelegates;

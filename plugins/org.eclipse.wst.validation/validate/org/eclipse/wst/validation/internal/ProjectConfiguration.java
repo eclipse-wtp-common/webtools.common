@@ -27,14 +27,17 @@ import org.eclipse.wst.validation.internal.delegates.ValidatorDelegateDescriptor
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.osgi.service.prefs.BackingStoreException;
 
-
 /**
  * This class represents the Project Preferences as set on the Project's Validation Properties page.
  */
 public class ProjectConfiguration extends ValidationConfiguration {
 	
 	/** false - If the user has never set a preference before, this is the override default */
-	static final boolean PRJ_OVERRIDEGLOBAL_DEFAULT = false; 
+	static final boolean PRJ_OVERRIDEGLOBAL_DEFAULT = false;
+	
+	/** default_value - the configuration is using the defaults. */
+	private static final String DefaultValue = "default_value"; //$NON-NLS-1$
+	
 	private boolean _doesProjectOverride = getDoesProjectOverrideDefault();
 
 	/**
@@ -154,7 +157,7 @@ public class ProjectConfiguration extends ValidationConfiguration {
    * (non-Javadoc)
    * @see org.eclipse.wst.validation.internal.ValidationConfiguration#getDelegatingValidators()
 	 */
-  public Map getDelegatingValidators() throws InvocationTargetException {
+  public Map<String,String> getDelegatingValidators() throws InvocationTargetException {
     if (useGlobalPreference()) {
       return ConfigurationManager.getManager().getGlobalConfiguration().getDelegatingValidators();
     }
@@ -501,7 +504,7 @@ public class ProjectConfiguration extends ValidationConfiguration {
 	 * @see org.eclipse.wst.validation.internal.operations.internal.attribute.ValidationConfiguration#deserialize(String)
 	 */
 	public void deserialize(String storedConfiguration) throws InvocationTargetException {
-		if (storedConfiguration == null || storedConfiguration.length() == 0 || storedConfiguration.equals("default_value")) {
+		if (storedConfiguration == null || storedConfiguration.length() == 0 || storedConfiguration.equals(DefaultValue)) {
 			resetToDefault();
 		} else if (storedConfiguration != null) {
 			int prjOverrideIndex = storedConfiguration.indexOf(ConfigurationConstants.PRJ_OVERRIDEGLOBAL);
@@ -643,13 +646,13 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		IScopeContext projectContext = new ProjectScope(project);
 		final IEclipsePreferences prefs = projectContext.getNode(ValidationPlugin.PLUGIN_ID);
 		if (prefs != null) {
-			String storedConfig = prefs.get(USER_PREFERENCE,"default_value");
+			String storedConfig = prefs.get(USER_PREFERENCE, DefaultValue);
 			deserialize(storedConfig);
-			String storedManualConfig = prefs.get(USER_MANUAL_PREFERENCE,"default_value");
+			String storedManualConfig = prefs.get(USER_MANUAL_PREFERENCE, DefaultValue);
 			deserializeManual(storedManualConfig);
-			String storedBuildConfig = prefs.get(USER_BUILD_PREFERENCE,"default_value");
+			String storedBuildConfig = prefs.get(USER_BUILD_PREFERENCE, DefaultValue);
 			deserializeBuild(storedBuildConfig);
-			String storedDelegatesConfiguration = prefs.get(DELEGATES_PREFERENCE,"default_value");
+			String storedDelegatesConfiguration = prefs.get(DELEGATES_PREFERENCE, DefaultValue);
 			deserializeDelegates(storedDelegatesConfiguration);
 		}
 	}

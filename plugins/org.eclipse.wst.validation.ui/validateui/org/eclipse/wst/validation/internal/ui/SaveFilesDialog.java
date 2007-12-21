@@ -67,7 +67,8 @@ public class SaveFilesDialog extends ListDialog {
 				  }
 				  catch(InvocationTargetException exc)
 				  {
-					Logger.getLogger(ValidationUIPlugin.getBundleName()).log(Level.WARNING, "Unable to set save automatically preference in save files for validation dialog: " + exc);
+					Logger.getLogger(ValidationUIPlugin.getBundleName()).log(Level.WARNING, 
+						ValidationUIMessages.UnableToSave + exc);
 				  }
 				  
 				}

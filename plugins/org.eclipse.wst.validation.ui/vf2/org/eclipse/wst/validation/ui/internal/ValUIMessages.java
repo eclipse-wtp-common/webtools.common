@@ -63,6 +63,7 @@ public class ValUIMessages extends NLS {
 	public static String DescContentType;
 	
 	public static String Validation;
+	public static String ValidationStatus;
 	
 	public static String ErrSummary;
 	public static String ValidationSuccessful;

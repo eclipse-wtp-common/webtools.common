@@ -11,8 +11,8 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal.ui;
 
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -39,8 +39,8 @@ public class SaveFilesHelper {
 	 * 			An array of IEditorParts containing all the dirty editors for the files in the list.
 	 */
 	public static IEditorPart[] getDirtyEditors(List files) {
-		Set inputs = new HashSet();
-		List result = new ArrayList(0);
+		Set<IEditorInput> inputs = new HashSet<IEditorInput>();
+		List<IEditorPart> result = new LinkedList<IEditorPart>();
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		IWorkbenchWindow[] windows = workbench.getWorkbenchWindows();
 		for (int i = 0; i < windows.length; i++) {
@@ -62,6 +62,6 @@ public class SaveFilesHelper {
 				}
 			}
 		}
-		return (IEditorPart[]) result.toArray(new IEditorPart[result.size()]);
+		return result.toArray(new IEditorPart[result.size()]);
 	}
 }

@@ -45,10 +45,8 @@ import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 import org.eclipse.wst.validation.ValidationFramework;
-import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.GlobalConfiguration;
-import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidationSelectionHandlerRegistryReader;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
@@ -60,15 +58,14 @@ import org.eclipse.wst.validation.ui.internal.ManualValidationRunner;
  * action triggers a validation of the project, using all configured, enabled validators.
  */
 public class ValidationMenuAction implements IViewActionDelegate {
-	private ISelection _currentSelection;
+	private ISelection 		_currentSelection;
 	protected static final String SEP = "/"; //$NON-NLS-1$
-	private Display _currentDisplay;
+	private Display 		_currentDisplay;
 	private IResourceVisitor _folderVisitor;
 	private IResourceVisitor _projectVisitor;
 	private Map<IProject, Set<IResource>> _selectedResources;
 
 	public ValidationMenuAction() {
-		super();
 		// cache the display before this action is forked. After the action is forked,
 		// Display.getCurrent() returns null.
 		_currentDisplay = Display.getCurrent(); 
@@ -93,10 +90,6 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		return shell;
 	}
 
-	private ISelection getCurrentSelection() {
-		return _currentSelection;
-	}
-
 	/**
 	 * Return a map of the selected elements. Each key of the map is an IProject, and the value is a
 	 * Set of the selected resources in that project. If a project is selected, and nothing else in
@@ -104,25 +97,19 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	 * project is selected, and some files/folders in the project are also selected, only the
 	 * files/folders will be validated. If a folder is selected, all of its contents are also
 	 * validated.
+	 * 
+	 * @return null if there is no selection.
 	 */
-	// TODO: Check this method for selected resources.
-	private Map<IProject, Set<IResource>> loadSelected(ValidateAction action, boolean refresh) {
-		if (refresh) {
-			// selectionChanged(IAction, ISelection) has been called. Flush the
-			// existing cache of resources and add just the currently selected ones.
-			_selectedResources.clear();
-		}
-		ISelection selection = getCurrentSelection();
-		if ((selection == null) || selection.isEmpty() || !(selection instanceof IStructuredSelection)) {
-			return null;
-		}
-		Object[] elements = ((IStructuredSelection) selection).toArray();
-		for (int i = 0; i < elements.length; i++) {
-			Object element = elements[i];
-			if (element == null) {
-				continue;
-			}
-			addSelected(action, element);
+	private Map<IProject, Set<IResource>> loadSelected(ValidateAction action) {
+		// GRK this used to not do a clear, but I couldn't understand why that would be so I am forcing a clear
+		// GRK In my testing, not doing a clear caused duplicate validations
+		_selectedResources.clear();
+		if ((_currentSelection == null) || _currentSelection.isEmpty() || 
+			!(_currentSelection instanceof IStructuredSelection))return null;
+		
+		Object[] elements = ((IStructuredSelection) _currentSelection).toArray();
+		for (Object element : elements) {
+			if (element != null)addSelected(action, element);
 		}
 		return _selectedResources;
 	}
@@ -173,12 +160,10 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		boolean added = _selectedResources.containsKey(project);
 		Set<IResource> changedRes = null;
 		if (added) {
-			// If the value is null, the entire project needs to be validated
-			// anyway.
+			// If the value is null, the entire project needs to be validated anyway.
 			changedRes = _selectedResources.get(project);
-			if (changedRes == null) {
-				return;
-			}
+			if (changedRes == null)return;
+			
 		} else {
 			changedRes = new HashSet<IResource>();
 		}
@@ -263,7 +248,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		if (action instanceof ValidateAction) {
 			vaction = (ValidateAction) action;
 		}
-		final Map<IProject, Set<IResource>> projects = loadSelected(vaction, false);
+		final Map<IProject, Set<IResource>> projects = loadSelected(vaction);
 		if ((projects == null) || (projects.size() == 0)) {
 			return;
 		}
@@ -307,7 +292,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	 */
 	public void selectionChanged(IAction action, ISelection selection) {
 		_currentSelection = selection;
-		boolean enabled = false;
+		boolean enabled = true;
 		
 		// Don't force the plug-in to be activated just to check this setting.
 		if (ValidationPlugin.isActivated() && ValidationRegistryReader.isActivated()){
@@ -327,17 +312,11 @@ public class ValidationMenuAction implements IViewActionDelegate {
 			IStructuredSelection ss = (IStructuredSelection)selection;
 			for (Iterator it = ss.iterator(); it.hasNext();){
 				Object sel = it.next();
-				if (sel instanceof IProject){
-					if (ValManager.getDefault().hasManualValidators((IProject)sel))return true;
-				} else if (sel instanceof IResource){
+				if (sel instanceof IResource){
 					IResource resource = (IResource)sel;
-					Validator[] vals = ValidationFramework.getDefault()
-						.getValidatorsFor(resource, true, false);
-					if (vals.length > 0)return true;
-
+					return ValidationFramework.getDefault().hasValidators(resource, true, false);
 				}
-			}
-		
+			}		
 		}
 		
 		return false;
@@ -376,8 +355,6 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	 * @see org.eclipse.ui.IViewActionDelegate#init(org.eclipse.ui.IViewPart)
 	 */
 	public void init(IViewPart view) { 
-		//init
-		
 	}
 	
 	/**
@@ -389,7 +366,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	 * @return
 	 * 			True if all files have been saved, false otherwise.
 	 */
-	protected boolean handleFilesToSave(Map projects)
+	protected boolean handleFilesToSave(Map<IProject, Set<IResource>> projects)
 	{
 	  List fileList = getIFiles(projects);
       final IEditorPart[] dirtyEditors = SaveFilesHelper.getDirtyEditors(fileList);
@@ -414,8 +391,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
     	  ProgressMonitorDialog ctx = new ProgressMonitorDialog(getShell());
           
           IRunnableWithProgress runnable = new IRunnableWithProgress(){
-              public void run(IProgressMonitor monitor) throws InvocationTargetException,
-                  InterruptedException{
+              public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException{
             	  try {
             		  monitor.beginTask(ValidationUIMessages.SaveFilesDialog_saving, dirtyEditors.length);
             		  int numDirtyEditors = dirtyEditors.length;
@@ -439,23 +415,11 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	  return false;
 	}
 	
-	protected List<IFile> getIFiles(Map projects)
-	{
+	protected List<IFile> getIFiles(Map<IProject, Set<IResource>> projects) {
 		List<IFile> fileList = new LinkedList<IFile>();
-		Set projectKeys = projects.keySet();
-		Iterator projectIter = projectKeys.iterator();
-		while(projectIter.hasNext())
-		{
-		  IProject project = (IProject) projectIter.next();
-		  Set resourcesList = (Set) projects.get(project);
-		  Iterator resourcesIter = resourcesList.iterator();
-		  while(resourcesIter.hasNext())
-		  {
-			IResource resource = (IResource)resourcesIter.next();
-			if(resource instanceof IFile)
-			{
-				fileList.add((IFile)resource);
-			}
+		for(IProject project : projects.keySet()) {
+		  for(IResource resource : projects.get(project)) {
+			if(resource instanceof IFile)fileList.add((IFile)resource);
 		  }
 		}
 		return fileList;

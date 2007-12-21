@@ -8,9 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
@@ -100,14 +102,34 @@ public class ValManager {
 		}
 		return null;
 	}
-	
+		
 	/**
-	 * Answer true if this project has any manual validators enabled.
-	 * @param project
+	 * Answer true if the resource has any enabled validators.
+	 * 
+	 * @param resource a file, folder or project.
+	 * 
+	 * @param isManual if true then the validator must be turned on for manual validation. 
+	 * If false then the isManualValidation setting isn't used to filter out validators.
+	 *   
+	 * @param isBuild if true then the validator must be turned on for build based validation.
+	 * If false then the isBuildValidation setting isn't used to filter out validators.  
 	 */
-	public boolean hasManualValidators(IProject project){
-		//FIXME implement this
-		return true;
+	public boolean hasValidators(IResource resource, boolean isManual, boolean isBuild){
+		if (resource instanceof IProject){
+			IProject project = (IProject)resource;
+			return ValManager.getDefault().getValidators(project).length > 0;
+		}
+		else if (resource instanceof IFolder){
+			IFolder folder = (IFolder)resource;
+			HasValidatorVisitor v = new HasValidatorVisitor(isManual, isBuild);
+			return v.hasValidator(folder);
+		}
+		else {
+			for (Validator val : ValManager.getDefault().getValidators(resource.getProject())){
+				if (val.shouldValidate(resource, isManual, isBuild))return true;
+			}			
+		}
+		return false;
 	}
 		
 	/**
@@ -446,6 +468,37 @@ public class ValManager {
 		ValidationFramework.getDefault().getDependencyIndex().clear(project);
 		ValOperation operation = new ValOperation();
 		accept(visitor, project, false, true, operation, monitor);
+	}
+	
+	private class HasValidatorVisitor implements IResourceVisitor {
+		
+		private boolean 	_hasValidator;
+		private boolean		_isManual;
+		private boolean		_isBuild;
+		
+		public HasValidatorVisitor(boolean isManual, boolean isBuild){
+			_isManual = isManual;
+			_isBuild = isBuild;			
+		}
+		
+		public boolean hasValidator(IFolder folder){
+			try {
+				folder.accept(this);
+			}
+			catch (CoreException e){
+				ValidationPlugin.getPlugin().handleException(e);
+			}
+			return _hasValidator;
+		}
+
+		public boolean visit(IResource resource) throws CoreException {
+			if (resource instanceof IFolder)return true;
+			if (hasValidators(resource, _isManual, _isBuild)){
+				_hasValidator = true;
+				return false;
+			}
+			return true;
+		}
 	}
 
 }

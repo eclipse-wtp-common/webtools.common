@@ -11,8 +11,8 @@
 package org.eclipse.wst.validation.internal.ui;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -70,6 +70,7 @@ import org.eclipse.wst.validation.internal.ProjectConfiguration;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;
+import org.eclipse.wst.validation.ui.internal.ImageNames;
 
 /**
  * This class and its inner classes are not intended to be subclassed outside of the validation
@@ -242,30 +243,29 @@ private class NoValidatorsPage implements IValidationPage {
 }
 
 private class ValidatorListPage implements IValidationPage {
-	private Composite page = null;
+	private Composite page;
 
-	private Composite composite = null;
-	TableViewer validatorList = null;
-	private Button enableAllButton = null;
-	private Button disableAllButton = null;
-	private Label emptyRowPlaceholder = null;
-	Button disableAllValidation = null;
-	Button overrideButton = null;
-	Button saveButton = null;
-	private Label listLabel = null;
+	private Composite composite;
+	TableViewer validatorList;
+	private Button enableAllButton;
+	private Button disableAllButton;
+	private Label emptyRowPlaceholder;
+	Button disableAllValidation;
+	Button overrideButton;
+	Button saveButton;
+	private Label listLabel;
 	private Table validatorsTable;
 
-	GlobalConfiguration pagePreferences = null; // the values currently on the page, but not
+	GlobalConfiguration pagePreferences; // the values currently on the page, but not
 	// necessarily stored yet. Package visibility
 	// for the widget listeners (the compiler would
 	// have to create a synthetic accessor method in
 	// order to access this field)
 	//private boolean _isAutoBuildEnabled; // initialized in the constructor
-	private ValidatorMetaData[] _oldVmd = null; // Cache the enabled validators so that, if
-  private Map _oldDelegates = null; // Cache the validator delegates.
-	// there is no change to this list, the
-	// expensive task list update can be avoided
-	private boolean _allow = false; // Cache the value of the prefence "allow projects to
+	
+	private ValidatorMetaData[] _oldVmd;
+	private Map<String, String> _oldDelegates; 
+	private boolean _allow; // Cache the value of the preference "allow projects to
 
 	// override" so that, when OK is clicked, we can determine
 	// if "allow" has changed or not.
@@ -352,7 +352,7 @@ private class ValidatorListPage implements IValidationPage {
     private Image getImage(String imageName) {
       boolean isDisabled = !validatorsTable.isEnabled();
       if (isDisabled) {
-          imageName = imageName + "_disabled";  //$NON-NLS-N$
+          imageName = imageName + ImageNames.disabled;
       }
       Image image = ValidationUIPlugin.getPlugin().getImage(imageName);
       return image;
@@ -361,13 +361,13 @@ private class ValidatorListPage implements IValidationPage {
 		public Image getColumnImage(Object element, int columnIndex) {
 			if(columnIndex == 1) {
 				if(((ValidatorMetaData)element).isManualValidation())
-					return  getImage("ok_tbl");
-				return getImage("fail_tbl");
+					return  getImage(ImageNames.okTable);
+				return getImage(ImageNames.failTable);
 			} 
       else if(columnIndex == 2) {
 				if(((ValidatorMetaData)element).isBuildValidation())
-					return getImage("ok_tbl");;
-				return getImage("fail_tbl");
+					return getImage(ImageNames.okTable);
+				return getImage(ImageNames.failTable);
 			}
       else if (columnIndex == 3)
       {
@@ -375,7 +375,7 @@ private class ValidatorListPage implements IValidationPage {
 
         if (vmd.isDelegating())
         {
-          return getImage("settings");          
+          return getImage(ImageNames.settings);          
         }
       }
 			return null;
@@ -434,7 +434,7 @@ private class ValidatorListPage implements IValidationPage {
 	public ValidatorListPage(Composite parent) throws InvocationTargetException {
 		//_isAutoBuildEnabled = ValidatorManager.getManager().isGlobalAutoBuildEnabled();
 		pagePreferences = new GlobalConfiguration(ConfigurationManager.getManager().getGlobalConfiguration()); // This
-		// represents the values on the page that haven't been persistedyet.
+		// represents the values on the page that haven't been persisted yet.
 		// Start with the last values that were persisted into the current page's starting values.
 		
 		_oldVmd = pagePreferences.getEnabledValidators(); // Cache the enabled validators so
@@ -442,7 +442,7 @@ private class ValidatorListPage implements IValidationPage {
 		// list, the expensive task list
 		// update can be avoided
 
-    _oldDelegates =  new HashMap(pagePreferences.getDelegatingValidators());
+    _oldDelegates =  new HashMap<String, String>(pagePreferences.getDelegatingValidators());
 		
     _allow = pagePreferences.canProjectsOverride();
 
@@ -880,37 +880,33 @@ private class ValidatorListPage implements IValidationPage {
 	}
 	
 	public ValidatorMetaData[] getEnabledValidators() {
-		List enabledValidators = new ArrayList();
-		TableItem[] items = validatorsTable.getItems();
-		for (int i = 0; i < items.length; i++) {
-			ValidatorMetaData validatorMetaData = (ValidatorMetaData) items[i].getData();
+		List<ValidatorMetaData> enabledValidators = new LinkedList<ValidatorMetaData>();
+		for (TableItem ti : validatorsTable.getItems()) {
+			ValidatorMetaData validatorMetaData = (ValidatorMetaData) ti.getData();
 			if(validatorMetaData.isManualValidation() || validatorMetaData.isBuildValidation())
 				enabledValidators.add(validatorMetaData);
 		}
-		return (ValidatorMetaData[])enabledValidators.toArray(new ValidatorMetaData[enabledValidators.size()]);
+		return enabledValidators.toArray(new ValidatorMetaData[enabledValidators.size()]);
 	}
 	
 	public ValidatorMetaData[] getEnabledManualValidators() {
-		List enabledValidators = new ArrayList();
-		TableItem[] items = validatorsTable.getItems();
-		for (int i = 0; i < items.length; i++) {
-			ValidatorMetaData validatorMetaData = (ValidatorMetaData) items[i].getData();
-			if(validatorMetaData.isManualValidation())
-				enabledValidators.add(validatorMetaData);
+		List<ValidatorMetaData> enabledValidators = new LinkedList<ValidatorMetaData>();
+		for (TableItem ti : validatorsTable.getItems()) {
+			ValidatorMetaData validatorMetaData = (ValidatorMetaData) ti.getData();
+			if(validatorMetaData.isManualValidation())enabledValidators.add(validatorMetaData);
 		}
-		return (ValidatorMetaData[])enabledValidators.toArray(new ValidatorMetaData[enabledValidators.size()]);
+		return enabledValidators.toArray(new ValidatorMetaData[enabledValidators.size()]);
 	
 	}
 	
 	public ValidatorMetaData[] getEnabledBuildValidators() {
-		List enabledValidators = new ArrayList();
-		TableItem[] items = validatorsTable.getItems();
-		for (int i = 0; i < items.length; i++) {
-			ValidatorMetaData validatorMetaData = (ValidatorMetaData) items[i].getData();
+		List<ValidatorMetaData> enabledValidators = new LinkedList<ValidatorMetaData>();
+		for (TableItem ti : validatorsTable.getItems()) {
+			ValidatorMetaData validatorMetaData = (ValidatorMetaData) ti.getData();
 			if(validatorMetaData.isBuildValidation())
 				enabledValidators.add(validatorMetaData);
 		}
-		return (ValidatorMetaData[])enabledValidators.toArray(new ValidatorMetaData[enabledValidators.size()]);
+		return enabledValidators.toArray(new ValidatorMetaData[enabledValidators.size()]);
 	
 	}
 

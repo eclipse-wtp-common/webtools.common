@@ -29,8 +29,11 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  * @author vijayb
  */
 public class ReferencialFileValidatorRegistryReader extends RegistryReader {
-	static ReferencialFileValidatorRegistryReader instance = null;
-	protected List referencialFileValidationExtensions;
+	static ReferencialFileValidatorRegistryReader instance;
+	
+	private static final String Id = "id"; //$NON-NLS-1$
+	
+	protected List<ReferencialFileValidatorExtension> referencialFileValidationExtensions;
 
 	public ReferencialFileValidatorRegistryReader() {
 		super(ValidationPlugin.PLUGIN_ID, "referencialFileValidator"); //$NON-NLS-1$
@@ -63,7 +66,7 @@ public class ReferencialFileValidatorRegistryReader extends RegistryReader {
     	Iterator it = extensions.iterator();
     	while(it.hasNext()) {
     		ReferencialFileValidatorExtension ext = (ReferencialFileValidatorExtension)it.next();
-    		if(!ext.getElement().getAttribute("id").equals(newExtension.getAttribute("id")))
+    		if(!ext.getElement().getAttribute(Id).equals(newExtension.getAttribute(Id)))
     			containsExt = false;
     	}
     	if(!containsExt ||getReferencialFileValidationExtensions().isEmpty())
@@ -80,7 +83,7 @@ public class ReferencialFileValidatorRegistryReader extends RegistryReader {
 	 */
 	protected void addExtensionPoint(ReferencialFileValidatorExtension newExtension) {
 		if (referencialFileValidationExtensions == null)
-			referencialFileValidationExtensions = new ArrayList();
+			referencialFileValidationExtensions = new ArrayList<ReferencialFileValidatorExtension>();
 		referencialFileValidationExtensions.add(newExtension);
 	}
 
@@ -111,9 +114,9 @@ public class ReferencialFileValidatorRegistryReader extends RegistryReader {
 	/**
 	 * @return Returns the handlerExtensions.
 	 */
-	protected List getReferencialFileValidationExtensions() {
+	protected List<ReferencialFileValidatorExtension> getReferencialFileValidationExtensions() {
 		if (referencialFileValidationExtensions == null)
-			referencialFileValidationExtensions = new ArrayList();
+			referencialFileValidationExtensions = new ArrayList<ReferencialFileValidatorExtension>();
 		return referencialFileValidationExtensions;
 	}
 

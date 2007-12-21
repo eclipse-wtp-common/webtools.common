@@ -25,10 +25,10 @@ public interface ConfigurationConstants {
 
 	// Defaults for the preference and project values
 	
-	String CURRENT_VERSION = (String) ValidationPlugin.getPlugin().getBundle().getHeaders().get(org.osgi.framework.Constants.BUNDLE_VERSION); //$NON-NLS-1$ // this is a constant, so it should be intern
+	String CURRENT_VERSION = (String) ValidationPlugin.getPlugin().getBundle().getHeaders().get(org.osgi.framework.Constants.BUNDLE_VERSION);  // this is a constant, so it should be intern
 	boolean DEFAULT_ASYNC = true;
 	boolean DEFAULT_DISABLE_VALIDATION_SETTING = false;
-	ValidatorMetaData[] DEFAULT_ENABLED_VALIDATORS = ValidationRegistryReader.getReader().getValidatorMetaDataArrayEnabledByDefault(); //$NON-NLS-1$ // store a copy here so that we don't modify the original and don't create a copy every time we need this value
+	ValidatorMetaData[] DEFAULT_ENABLED_VALIDATORS = ValidationRegistryReader.getReader().getValidatorMetaDataArrayEnabledByDefault();  // store a copy here so that we don't modify the original and don't create a copy every time we need this value
 	int DEFAULT_MAXNUMMESSAGES = 50;
 	int DEPTH_INFINITE = IResource.DEPTH_INFINITE;
 	int DEPTH_ZERO = IResource.DEPTH_ZERO;

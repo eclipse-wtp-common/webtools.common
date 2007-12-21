@@ -10,19 +10,19 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.wst.validation.internal.SummaryReporter;
 import org.eclipse.wst.validation.internal.ValOperation;
 import org.eclipse.wst.validation.internal.ValOperationManager;
 import org.eclipse.wst.validation.internal.ValidationConfiguration;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
+import org.eclipse.wst.validation.internal.core.ValidatorLauncher;
 import org.eclipse.wst.validation.internal.delegates.ValidatorDelegateDescriptor;
 import org.eclipse.wst.validation.internal.delegates.ValidatorDelegatesRegistry;
 import org.eclipse.wst.validation.internal.model.FilterGroup;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchContext;
 import org.eclipse.wst.validation.internal.operations.WorkbenchContext;
-import org.eclipse.wst.validation.internal.operations.WorkbenchReporter;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
-import org.eclipse.wst.validation.internal.provisional.core.IValidatorJob;
 
 /**
  * Represents a validator. This gets instantiated through one of the validator extension points.
@@ -338,6 +338,7 @@ public static class V1 extends Validator {
 	public ValidationResult validate(IResource resource, int kind, ValOperation operation, 
 		IProgressMonitor monitor) {
 		
+		ValidationResult vr = new ValidationResult();
 		IValidator v = null;
 		try {
 			v = _vmd.getValidator();
@@ -349,24 +350,30 @@ public static class V1 extends Validator {
 		
 		try {
 			IProject project = resource.getProject();
-			WorkbenchReporter reporter = new WorkbenchReporter(project, monitor);
+			SummaryReporter reporter = new SummaryReporter(project, monitor);
 			IWorkbenchContext helper = _vmd.getHelper(project);
 			if (helper instanceof WorkbenchContext){
 				WorkbenchContext wc = (WorkbenchContext)helper;
 				List<String> files = new LinkedList<String>();
-				files.add(resource.getFullPath().toString());
+				files.add(resource.getProjectRelativePath().toString());
 				wc.setValidationFileURIs(files);
 			}
-			if (v instanceof IValidatorJob) {
-				IValidatorJob vj = (IValidatorJob) v;
-				vj.validateInJob(helper, reporter);
-			}
-			else v.validate(helper, reporter);
+			ValidatorLauncher.getLauncher().start(helper, v, reporter);
+//			if (v instanceof IValidatorJob) {
+//				IValidatorJob vj = (IValidatorJob) v;
+//				vj.validateInJob(helper, reporter);
+//			}
+//			else v.validate(helper, reporter);
+			
+			vr.incrementError(reporter.getSeverityHigh());
+			vr.incrementWarning(reporter.getSeverityNormal());
+			vr.incrementInfo(reporter.getSeverityLow());
+			
 		}
 		catch (Exception e){
 			ValidationPlugin.getPlugin().handleException(e);
 		}
-		return null;
+		return vr;
 	}
 		
 }

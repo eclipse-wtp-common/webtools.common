@@ -75,7 +75,7 @@ public class ValidatorFilter {
 	}
 	
 	private String getFilterExt(String filter) {
-		return filter.substring(filter.indexOf(".") + 1);
+		return filter.substring(filter.indexOf(".") + 1); //$NON-NLS-1$
 	}
 	
 

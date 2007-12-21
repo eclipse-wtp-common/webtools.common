@@ -35,8 +35,7 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidatorJob;
 
 /**
  * IValidator instances will interact with an instance of this class, but should never cast that
- * IReporter instance to WorkbenchReporter. The WorkbenchReporter class will be moved in Milestone
- * 4.
+ * IReporter instance to WorkbenchReporter.
  * 
  * This class handles interaction between the user and the IValidator in the eclipse workbench
  * environment.
@@ -47,7 +46,7 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidatorJob;
  * Only the validation framework may instantiate or alter instances of this class.
  */
 
-public final class WorkbenchReporter implements IReporter {
+public class WorkbenchReporter implements IReporter {
 	public static final String DEFAULT_LOCATION = ""; //$NON-NLS-1$
 	public static final int NO_MESSAGE_LIMIT = -1;
 
@@ -555,8 +554,8 @@ public final class WorkbenchReporter implements IReporter {
 			if (logger.isLoggingLevel(Level.FINE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
 				entry.setSourceID("WorkbenchReporter.addMessage(IValidator, Message)"); //$NON-NLS-1$
-				entry.setMessageTypeIdentifier(ResourceConstants.VBF_EXC_INVALID_RESOURCE);
-				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INVALID_RESOURCE), 
+				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(
+					ResourceConstants.VBF_EXC_INVALID_RESOURCE), 
 					new Object[]{message.getText(), getTargetObjectName(helper, message)});
 				entry.setText(result);				
 				//entry.setTokens(new String[]{message.getText(), getTargetObjectName(helper, message)});

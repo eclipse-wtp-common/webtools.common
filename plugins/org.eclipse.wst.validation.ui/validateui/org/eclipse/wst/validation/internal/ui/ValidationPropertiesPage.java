@@ -13,8 +13,8 @@ package org.eclipse.wst.validation.internal.ui;
 
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -78,6 +78,7 @@ import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;
+import org.eclipse.wst.validation.ui.internal.ImageNames;
 
 /**
  * This class and its inner classes are not intended to be subclassed outside of the validation
@@ -250,29 +251,26 @@ public class ValidationPropertiesPage extends PropertyPage {
 	}
 
 	public class ValidatorListPage implements IValidationPage {
-		Composite page = null;
-		GridLayout layout = null;
-		GridData data = null;
-		Label messageLabel = null;
-		TableViewer validatorList = null;
-		Button overrideGlobalButton = null;
-		boolean existingOverrideGlobalVal = false;
-		Button disableAllValidation = null;
-		boolean existingDisableAllValidation = false;
-		private Button enableAllButton = null;
-		private Button disableAllButton = null;
-		Label emptyRowPlaceholder = null;
+		Composite page;
+		GridLayout layout;
+		GridData data;
+		Label messageLabel;
+		TableViewer validatorList;
+		Button overrideGlobalButton;
+		boolean existingOverrideGlobalVal;
+		Button disableAllValidation;
+		boolean existingDisableAllValidation;
+		private Button enableAllButton;
+		private Button disableAllButton;
+		Label emptyRowPlaceholder;
 		private Table validatorsTable;
-		ProjectConfiguration pagePreferences = null;
-		private boolean canOverride = false;
-		private Button addValidationBuilder = null;
-		private Color color = null;
+		ProjectConfiguration pagePreferences;
+		private boolean canOverride;
+		private Button addValidationBuilder;
+		private Color color;
 
-		private ValidatorMetaData[] oldVmd = null; // Cache the enabled validators so that, if there
-    private Map oldDelegates = null; // Cache the validator delegates.
-
-		// is no change to this list, the expensive task
-		// list update can be avoided
+		private ValidatorMetaData[] oldVmd;
+		private Map<String, String> oldDelegates;
 
 		/**
 		 * This class is provided for the CheckboxTableViewer in the
@@ -372,7 +370,7 @@ public class ValidationPropertiesPage extends PropertyPage {
       private Image getImage(String imageName) {
         boolean isDisabled = !validatorsTable.isEnabled();
         if (isDisabled) {
-            imageName = imageName + "_disabled";  //$NON-NLS-N$
+            imageName = imageName + ImageNames.disabled;
         }
         Image image = ValidationUIPlugin.getPlugin().getImage(imageName);
         return image;
@@ -382,12 +380,12 @@ public class ValidationPropertiesPage extends PropertyPage {
       public Image getColumnImage(Object element, int columnIndex) {
 				if(columnIndex == 1) {
 					if(((ValidatorMetaData)element).isManualValidation())
-						return  getImage("ok_tbl");
-					return getImage("fail_tbl");
+						return  getImage(ImageNames.okTable);
+					return getImage(ImageNames.failTable);
 				} else if(columnIndex == 2) {
 					if(((ValidatorMetaData)element).isBuildValidation())
-						return getImage("ok_tbl");;
-					return getImage("fail_tbl");
+						return getImage(ImageNames.okTable);;
+					return getImage(ImageNames.failTable);
 				}
         else if (columnIndex == 3)
         {
@@ -395,7 +393,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 
           if (vmd.isDelegating())
           {
-            return getImage("settings");          
+            return getImage(ImageNames.settings);          
           }
         }
 				return null;
@@ -447,12 +445,12 @@ public class ValidationPropertiesPage extends PropertyPage {
 			canOverride = prefMgr.getGlobalConfiguration().canProjectsOverride();
 			//isAutoBuildEnabled = vMgr.isGlobalAutoBuildEnabled();
 			//isBuilderConfigured = ValidatorManager.doesProjectSupportBuildValidation(getProject());
-			oldVmd = pagePreferences.getEnabledValidators(); // Cache the enabled validators so
-      // that, if there is no change to this
-      // list, the expensive task list update
-      // can be avoided
+			
+			// Cache the enabled validators so that, if there is no change to this list, 
+			// the expensive task list update can be avoided
+			oldVmd = pagePreferences.getEnabledValidators(); 
 
-      oldDelegates =  new HashMap(pagePreferences.getDelegatingValidators());
+			oldDelegates =  new HashMap<String, String>(pagePreferences.getDelegatingValidators());
 
 			createPage(parent);
 			
@@ -523,7 +521,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 				}
 
 				private String getPreferencePageID() {
-					return "ValidationPreferencePage";
+					return "ValidationPreferencePage"; //$NON-NLS-1$
 				}
 			});
 			
@@ -774,36 +772,31 @@ public class ValidationPropertiesPage extends PropertyPage {
 		}
 		
 		public ValidatorMetaData[] getEnabledValidators() {
-			List enabledValidators = new ArrayList();
-			TableItem[] items = validatorsTable.getItems();
-			for (int i = 0; i < items.length; i++) {
-				ValidatorMetaData validatorMetaData = (ValidatorMetaData) items[i].getData();
+			List<ValidatorMetaData> enabledValidators = new LinkedList<ValidatorMetaData>();
+			for (TableItem ti : validatorsTable.getItems()) {
+				ValidatorMetaData validatorMetaData = (ValidatorMetaData) ti.getData();
 				if(validatorMetaData.isManualValidation() || validatorMetaData.isBuildValidation())
 					enabledValidators.add(validatorMetaData);
 			}
-			return (ValidatorMetaData[])enabledValidators.toArray(new ValidatorMetaData[enabledValidators.size()]);
+			return enabledValidators.toArray(new ValidatorMetaData[enabledValidators.size()]);
 		}
 		
 		public ValidatorMetaData[] getManualEnabledValidators() {
-			List enabledValidators = new ArrayList();
-			TableItem[] items = validatorsTable.getItems();
-			for (int i = 0; i < items.length; i++) {
-				ValidatorMetaData validatorMetaData = (ValidatorMetaData) items[i].getData();
-				if(validatorMetaData.isManualValidation())
-					enabledValidators.add(validatorMetaData);
+			List<ValidatorMetaData> enabledValidators = new LinkedList<ValidatorMetaData>();
+			for (TableItem ti : validatorsTable.getItems()) {
+				ValidatorMetaData validatorMetaData = (ValidatorMetaData) ti.getData();
+				if(validatorMetaData.isManualValidation())enabledValidators.add(validatorMetaData);
 			}
-			return (ValidatorMetaData[])enabledValidators.toArray(new ValidatorMetaData[enabledValidators.size()]);
+			return enabledValidators.toArray(new ValidatorMetaData[enabledValidators.size()]);
 		}
 		
 		public ValidatorMetaData[] getBuildEnabledValidators() {
-			List enabledValidators = new ArrayList();
-			TableItem[] items = validatorsTable.getItems();
-			for (int i = 0; i < items.length; i++) {
-				ValidatorMetaData validatorMetaData = (ValidatorMetaData) items[i].getData();
-				if(validatorMetaData.isBuildValidation())
-					enabledValidators.add(validatorMetaData);
+			List<ValidatorMetaData> enabledValidators = new LinkedList<ValidatorMetaData>();
+			for (TableItem ti : validatorsTable.getItems()) {
+				ValidatorMetaData validatorMetaData = (ValidatorMetaData) ti.getData();
+				if(validatorMetaData.isBuildValidation())enabledValidators.add(validatorMetaData);
 			}
-			return (ValidatorMetaData[])enabledValidators.toArray(new ValidatorMetaData[enabledValidators.size()]);
+			return enabledValidators.toArray(new ValidatorMetaData[enabledValidators.size()]);
 		}
 
 		
@@ -953,7 +946,7 @@ public class ValidationPropertiesPage extends PropertyPage {
 			Map args = command.getArguments();
 			if(args.isEmpty())
 				return false;
-			String handle = (String)args.get("LaunchConfigHandle");
+			String handle = (String)args.get("LaunchConfigHandle"); //$NON-NLS-1$
 			if(handle != null && handle.length() > 0 && handle.indexOf(ValidationPlugin.VALIDATION_BUILDER_ID) != -1)
 				return true;
 			return false;
