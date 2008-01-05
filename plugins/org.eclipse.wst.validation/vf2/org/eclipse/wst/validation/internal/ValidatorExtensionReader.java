@@ -61,7 +61,8 @@ public class ValidatorExtensionReader {
 				
 		for (IExtension ext : extensionPoint.getExtensions()){
 			for (IConfigurationElement validator : ext.getConfigurationElements()){
-				list.add(processValidator(validator, ext.getUniqueIdentifier(), ext.getLabel(), deep));
+				Validator v = processValidator(validator, ext.getUniqueIdentifier(), ext.getLabel(), deep);
+				if (v != null)list.add(v);
 			}
 		}
 		Validator[] val = new Validator[list.size()];
@@ -78,7 +79,7 @@ public class ValidatorExtensionReader {
 	 * @param deep if true load all the configuration elements for each validator, if false
 	 * do a shallow load, where only the validator class, id and name's are loaded.
 	 * 
-	 * @return a configured validator
+	 * @return a configured validator or return null if there was an error.
 	 */
 	private Validator processValidator(IConfigurationElement validator, String id, String label, boolean deep) {
 		Validator.V2 v = null;
@@ -158,6 +159,7 @@ public class ValidatorExtensionReader {
 		for (IExtension ext : extensionPoint.getExtensions()){
 			for (IConfigurationElement validator : ext.getConfigurationElements()){
 				Validator v = processValidator(validator, ext.getUniqueIdentifier(), ext.getLabel(), true);
+				if (v == null)continue;
 				Validator old = map.get(v.getId());
 				if (old == null || old.getVersion() < v.getVersion()){
 					//TODO we may be replacing user preferences, at some point we may want to do a real migration.

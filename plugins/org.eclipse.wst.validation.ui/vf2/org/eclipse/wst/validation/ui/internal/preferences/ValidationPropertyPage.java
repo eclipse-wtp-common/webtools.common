@@ -659,13 +659,15 @@ public class ValidationPropertyPage extends PropertyPage  {
 		}
 
 		public boolean performOk() throws InvocationTargetException {
-			if (!ValManager.getDefault().getGlobalPreferences().getOverride()){
+			
+			addBuilder();
+			// [213631] this warning should only be shown if the user actually tried to override
+			// the validators
+			if (!ValManager.getDefault().getGlobalPreferences().getOverride() && _override.getSelection()){
 				MessageDialog.openWarning(_shell, ValUIMessages.Validation, 
 					ValUIMessages.ProjectOverridesNotAllowed);
 				return false;
 			}
-			
-			addBuilder();
 			updateV1ProjectSettings();
 			getProjectPreferences().setSuspend(_suspend.getSelection());
 			getProjectPreferences().setOverride(_override.getSelection());

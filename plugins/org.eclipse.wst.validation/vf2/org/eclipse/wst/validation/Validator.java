@@ -355,7 +355,9 @@ public static class V1 extends Validator {
 			if (helper instanceof WorkbenchContext){
 				WorkbenchContext wc = (WorkbenchContext)helper;
 				List<String> files = new LinkedList<String>();
-				files.add(resource.getProjectRelativePath().toString());
+				// [213631] The JSP validator expects full paths not relative paths, but the XML validator
+				// expects relative paths.
+				files.add(wc.getPortableName(resource));
 				wc.setValidationFileURIs(files);
 			}
 			ValidatorLauncher.getLauncher().start(helper, v, reporter);
