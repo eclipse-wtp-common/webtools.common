@@ -24,6 +24,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
@@ -102,7 +103,15 @@ public final class PresetSelectionPanel
             {
                 public void handleEvent( final IFacetedProjectEvent event )
                 {
-                    refreshDescription();
+                    final Runnable runnable = new Runnable()
+                    {
+                        public void run()
+                        {
+                            refreshDescription();
+                        }
+                    };
+                    
+                    Display.getDefault().syncExec( runnable );
                 }
             },
             IFacetedProjectEvent.Type.SELECTED_PRESET_CHANGED

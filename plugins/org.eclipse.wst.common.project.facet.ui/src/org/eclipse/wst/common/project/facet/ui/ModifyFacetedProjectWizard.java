@@ -36,6 +36,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 import org.eclipse.wst.common.project.facet.core.IActionDefinition;
 import org.eclipse.wst.common.project.facet.core.ICategory;
@@ -145,7 +146,15 @@ public class ModifyFacetedProjectWizard
             {
                 public void handleEvent( final IFacetedProjectEvent event ) 
                 {
-                    handleSelectedFacetsChangedEvent();
+                    final Runnable runnable = new Runnable()
+                    {
+                        public void run()
+                        {
+                            handleSelectedFacetsChangedEvent();
+                        }
+                    };
+                    
+                    Display.getDefault().syncExec( runnable );
                 }
             },
             IFacetedProjectEvent.Type.PROJECT_FACETS_CHANGED
@@ -372,51 +381,60 @@ public class ModifyFacetedProjectWizard
         {
             public void handleEvent( final IFacetedProjectEvent event )
             {
-                synchronized( sortedPresets )
+                final Runnable runnable = new Runnable()
                 {
-                    sortedPresets.clear();
-                    sortedPresets.addAll( fpjwc.getAvailablePresets() );
-                    
-                    Collections.sort
-                    (
-                        sortedPresets,
-                        new Comparator<IPreset>()
+                    public void run()
+                    {
+                        synchronized( sortedPresets )
                         {
-                            public int compare( final IPreset p1, 
-                                                final IPreset p2 ) 
-                            {
-                                if( p1 == p2 )
+                            sortedPresets.clear();
+                            sortedPresets.addAll( fpjwc.getAvailablePresets() );
+                            
+                            Collections.sort
+                            (
+                                sortedPresets,
+                                new Comparator<IPreset>()
                                 {
-                                    return 0;
+                                    public int compare( final IPreset p1, 
+                                                        final IPreset p2 ) 
+                                    {
+                                        if( p1 == p2 )
+                                        {
+                                            return 0;
+                                        }
+                                        else
+                                        {
+                                            return p1.getLabel().compareTo( p2.getLabel() );
+                                        }
+                                    }
                                 }
-                                else
+                            );
+                            
+                            final IPreset selectedPreset = fpjwc.getSelectedPreset();
+                            
+                            combo.removeAll();
+                            combo.add( Resources.customPreset );
+                            
+                            if( selectedPreset == null )
+                            {
+                                combo.select( 0 );
+                            }
+                            
+                            for( IPreset preset : sortedPresets )
+                            {
+                                combo.add( preset.getLabel() );
+                                
+                                if( selectedPreset != null && 
+                                    preset.getId().equals( selectedPreset.getId() ) )
                                 {
-                                    return p1.getLabel().compareTo( p2.getLabel() );
+                                    combo.select( combo.getItemCount() - 1 );
                                 }
                             }
                         }
-                    );
-                    
-                    final IPreset selectedPreset = fpjwc.getSelectedPreset();
-                    
-                    combo.removeAll();
-                    combo.add( Resources.customPreset );
-                    
-                    if( selectedPreset == null )
-                    {
-                        combo.select( 0 );
                     }
-                    
-                    for( IPreset preset : sortedPresets )
-                    {
-                        combo.add( preset.getLabel() );
-                        
-                        if( selectedPreset != null && preset.getId().equals( selectedPreset.getId() ) )
-                        {
-                            combo.select( combo.getItemCount() - 1 );
-                        }
-                    }
-                }
+                };
+                
+                Display.getDefault().syncExec( runnable );
             }
         };
         
@@ -427,22 +445,30 @@ public class ModifyFacetedProjectWizard
         {
             public void handleEvent( final IFacetedProjectEvent event )
             {
-                synchronized( sortedPresets )
+                final Runnable runnable = new Runnable()
                 {
-                    final IPreset preset = fpjwc.getSelectedPreset();
-                    final int index;
-                    
-                    if( preset == null )
+                    public void run()
                     {
-                        index = -1;
+                        synchronized( sortedPresets )
+                        {
+                            final IPreset preset = fpjwc.getSelectedPreset();
+                            final int index;
+                            
+                            if( preset == null )
+                            {
+                                index = -1;
+                            }
+                            else
+                            {
+                                index = sortedPresets.indexOf( preset );
+                            }
+                            
+                            combo.select( index + 1 );
+                        }
                     }
-                    else
-                    {
-                        index = sortedPresets.indexOf( preset );
-                    }
-                    
-                    combo.select( index + 1 );
-                }
+                };
+                
+                Display.getDefault().syncExec( runnable );
             }
         };
         

@@ -187,13 +187,26 @@ public final class FacetedProjectWorkingCopy
                 {
                     public void run()
                     {
-                        final IFacetedProjectEvent event
-                            = new FacetedProjectEvent( FacetedProjectWorkingCopy.this, 
-                                                       IFacetedProjectEvent.Type.AVAILABLE_RUNTIMES_CHANGED );
+                        // Suspending event notification to make sure that the internal list of
+                        // targetable runtimes is updated before the AVAILABLE_RUNTIMES_CHANGED
+                        // event is received by listeners.
                         
-                        notifyListeners( event );
+                        suspendEventNotification();
                         
-                        refreshTargetableRuntimes();
+                        try
+                        {
+                            final IFacetedProjectEvent event
+                                = new FacetedProjectEvent( FacetedProjectWorkingCopy.this, 
+                                                           IFacetedProjectEvent.Type.AVAILABLE_RUNTIMES_CHANGED );
+                            
+                            notifyListeners( event );
+                            
+                            refreshTargetableRuntimes();
+                        }
+                        finally
+                        {
+                            resumeEventNotification();
+                        }
                     }
                 };
                 
