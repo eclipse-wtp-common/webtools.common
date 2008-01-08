@@ -47,6 +47,7 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
+import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
 
 public class FacetProjectCreationDataModelProvider extends AbstractDataModelProvider implements IFacetProjectCreationDataModelProperties {
 
@@ -117,7 +118,7 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
                     model.notifyPropertyChange(FACET_RUNTIME, IDataModel.VALID_VALUES_CHG);
                 }
             },
-            IFacetedProjectEvent.Type.TARGETABLE_RUNTIMES_CHANGED
+            IFacetedProjectEvent.Type.AVAILABLE_RUNTIMES_CHANGED
         );
 		
 		IDataModel projectDataModel = DataModelFactory.createDataModel(new ProjectCreationDataModelProviderNew());
@@ -369,10 +370,32 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
             final IFacetedProjectWorkingCopy fpjwc 
                 = (IFacetedProjectWorkingCopy) this.model.getProperty( FACETED_PROJECT_WORKING_COPY );
             
-            final Set<IRuntime> targetableRuntimes = fpjwc.getTargetableRuntimes();
+            final Set<IProjectFacet> fixedFacets = fpjwc.getFixedProjectFacets();
+            final ArrayList list = new ArrayList();
 
-			DataModelPropertyDescriptor[] descriptors = new DataModelPropertyDescriptor[targetableRuntimes.size() + 1];
-			Iterator iterator = targetableRuntimes.iterator();
+            for( IRuntime rt : RuntimeManager.getRuntimes() ) 
+            {
+                // add this runtime in the list only if it supports all of the required facets
+
+                boolean supports = true;
+                
+                for( IProjectFacet facet : fixedFacets )
+                {
+                    if( ! rt.supports( facet ) )
+                    {
+                        supports = false;
+                        break;
+                    }
+                }
+                
+                if( supports ) 
+                {
+                    list.add(rt);
+                }
+            }
+
+            DataModelPropertyDescriptor[] descriptors = new DataModelPropertyDescriptor[list.size() + 1];
+			Iterator iterator = list.iterator();
 			for (int i = 0; i < descriptors.length - 1; i++) {
 				IRuntime runtime = (IRuntime) iterator.next();
 				descriptors[i] = new DataModelPropertyDescriptor(runtime, runtime.getLocalizedName());

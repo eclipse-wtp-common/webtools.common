@@ -23,6 +23,7 @@ import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.common.frameworks.datamodel.DataModelEvent;
@@ -423,18 +424,27 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 	 * @see org.eclipse.wst.common.frameworks.internal.operation.WTPOperationDataModelListener#propertyChanged(java.lang.String,
 	 *      java.lang.Object, java.lang.Object)
 	 */
-	public void propertyChanged(DataModelEvent event) {
+	public void propertyChanged(final DataModelEvent event) {
 		DataModelWizard w = getDataModelWizard();
-		if(w == null || !w.isExecuting()){
-			String propertyName = event.getPropertyName();
-			if (validationPropertyNames != null && (event.getFlag() == DataModelEvent.VALUE_CHG || (!isPageComplete() && event.getFlag() == DataModelEvent.VALID_VALUES_CHG))) {
-				for (int i = 0; i < validationPropertyNames.length; i++) {
-					if (validationPropertyNames[i].equals(propertyName)) {
-						validatePage(showValidationErrorsOnEnter());
-						break;
-					}
-				}
-			}
+		if(w == null || !w.isExecuting())
+		{
+		    final Runnable uiChanges = new Runnable()
+		    {
+		        public void run()
+		        {
+        			String propertyName = event.getPropertyName();
+        			if (validationPropertyNames != null && (event.getFlag() == DataModelEvent.VALUE_CHG || (!isPageComplete() && event.getFlag() == DataModelEvent.VALID_VALUES_CHG))) {
+        				for (int i = 0; i < validationPropertyNames.length; i++) {
+        					if (validationPropertyNames[i].equals(propertyName)) {
+        						validatePage(showValidationErrorsOnEnter());
+        						break;
+        					}
+        				}
+        			}
+		        }
+		    };
+		    
+		    Display.getDefault().syncExec(uiChanges);
 		}
 	}
 
