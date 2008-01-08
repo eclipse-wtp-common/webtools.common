@@ -42,13 +42,13 @@
 
    <extension point="org.eclipse.ui.newWizards">
       <wizard 
-        name="Faceted Project Test Wizard"
+        name="%wizard.name.0"
         id="org.eclipse.wst.common.project.facet.ui.tests.TestProjectWizard"
         class="org.eclipse.wst.common.project.facet.ui.tests.TestProjectWizard"
         icon="images/unknown.gif"
         project="true">
         <description>
-          This wizard is used to test the Faceted Project Wizard.
+          %wizard.description.0
         </description>
         <selection class="org.eclipse.core.resources.IResource"/>
       </wizard>
