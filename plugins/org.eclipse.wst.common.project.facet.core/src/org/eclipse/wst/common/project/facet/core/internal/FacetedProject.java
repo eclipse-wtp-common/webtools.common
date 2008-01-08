@@ -1008,9 +1008,9 @@ public final class FacetedProject
                     for( int i = 0, n = warnings.size(), offset = errors.size(); 
                          i < n; i++ )
                     {
-                        starray[ i ] 
+                        starray[ i + offset ] 
                             = new Status( IStatus.WARNING, FacetCorePlugin.PLUGIN_ID,
-                                          warnings.get( i + offset ) );
+                                          warnings.get( i ) );
                     }
                     
                     return new MultiStatus( FacetCorePlugin.PLUGIN_ID, -1,
