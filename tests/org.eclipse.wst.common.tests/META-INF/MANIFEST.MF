@@ -1,12 +1,11 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: org.eclipse.wst.common.tests
+Bundle-Name: %Bundle-Name.0
 Bundle-SymbolicName: org.eclipse.wst.common.tests; singleton:=true
 Bundle-Version: 1.1.0
 Bundle-ClassPath: commontests.jar
 Bundle-Activator: org.eclipse.core.internal.compatibility.PluginActivator
-Bundle-Vendor: Eclipse.org
-Bundle-Localization: plugin
+Bundle-Vendor: %Bundle-Vendor.0
 Export-Package: org.eclipse.etools.common.test.apitools,
  org.eclipse.etools.common.tests.xml,
  org.eclipse.wst.common.environment.tests,
@@ -34,3 +33,4 @@ Require-Bundle: org.junit;visibility:=reexport,
 Eclipse-LazyStart: true
 Plugin-Class: org.eclipse.wst.common.tests.CommonTestsPlugin
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-Localization: plugin
