@@ -123,9 +123,14 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 		
 		IDataModel projectDataModel = DataModelFactory.createDataModel(new ProjectCreationDataModelProviderNew());
 		projectDataModel.addListener(new IDataModelListener() {
-			public void propertyChanged(DataModelEvent event) {
-				if (IProjectCreationPropertiesNew.PROJECT_NAME.equals(event.getPropertyName())) {
-					getDataModel().setProperty(FACET_PROJECT_NAME, event.getProperty());
+			public void propertyChanged(DataModelEvent event) 
+			{
+                if( event.getFlag() == IDataModel.VALUE_CHG &&
+                    event.getPropertyName().equals( IProjectCreationPropertiesNew.PROJECT_NAME ) )
+                {
+                    final String projectName = (String) event.getProperty();
+					getDataModel().setProperty(FACET_PROJECT_NAME, projectName);
+					fpjwc.setProjectName( projectName );
 				}
 			}
 		});
