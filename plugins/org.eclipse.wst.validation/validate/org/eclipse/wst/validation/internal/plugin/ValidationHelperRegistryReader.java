@@ -28,7 +28,7 @@ public class ValidationHelperRegistryReader extends RegistryReader {
 	static final String ATT_HELPER_CLASS = "helperClass"; //$NON-NLS-1$
 	
 	private static ValidationHelperRegistryReader INSTANCE = null;
-	private List validationHelpers = null;
+	private List<IProjectValidationHelper> _validationHelpers;
 	
 	public ValidationHelperRegistryReader() {
 		super(ValidationPlugin.PLUGIN_ID, VALIDATION_HELPER);
@@ -42,10 +42,10 @@ public class ValidationHelperRegistryReader extends RegistryReader {
 		return INSTANCE;
 	}
 	
-	private List getValidationHelpers() {
-		if (validationHelpers == null)
-			validationHelpers = new ArrayList();
-		return validationHelpers;
+	private List<IProjectValidationHelper> getValidationHelpers() {
+		if (_validationHelpers == null)
+			_validationHelpers = new ArrayList<IProjectValidationHelper>();
+		return _validationHelpers;
 	}
 
 	public boolean readElement(IConfigurationElement element) {
@@ -63,9 +63,8 @@ public class ValidationHelperRegistryReader extends RegistryReader {
 	}
 	
 	public IProjectValidationHelper getValidationHelper() {
-		if (getValidationHelpers().isEmpty())
-			return null;
-		return (IProjectValidationHelper) getValidationHelpers().get(0);
+		if (getValidationHelpers().isEmpty())return null;
+		return getValidationHelpers().get(0);
 	}
 
 }

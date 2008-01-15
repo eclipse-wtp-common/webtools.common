@@ -48,22 +48,19 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  */
 public class ValidationBuilder extends IncrementalProjectBuilder {
 	public static final int NO_DELTA_CHANGE = -1;
-	protected List referencedProjects;
+	protected List<IProject> referencedProjects;
 	protected IWorkbenchContext workbenchContext = null;
 
 	public ValidationBuilder() {
 		super();
 	}
 
-	private IProject[] getAllReferencedProjects(IProject project, Set visitedProjects) {
-		if (visitedProjects == null)
-			visitedProjects = new HashSet();
-		else if (visitedProjects.contains(project))
-			return getReferencedProjects();
-		else
-			visitedProjects.add(project);
+	private IProject[] getAllReferencedProjects(IProject project, Set<IProject> visitedProjects) {
+		if (visitedProjects == null)visitedProjects = new HashSet<IProject>();
+		else if (visitedProjects.contains(project))return getReferencedProjects();
+		else visitedProjects.add(project);
 		if (referencedProjects == null)
-			referencedProjects = new ArrayList();
+			referencedProjects = new ArrayList<IProject>();
 		try {
 			if (project.isAccessible()) {
 				IProject[] refProjArray = project.getReferencedProjects();
@@ -138,10 +135,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 
 	private IProject[] getReferencedProjects() {
 		IProject[] refProjArray = new IProject[referencedProjects.size()];
-		for (int i = 0; i < referencedProjects.size(); i++) {
-			refProjArray[i] = (IProject) referencedProjects.get(i);
-		}
-		return refProjArray;
+		return referencedProjects.toArray(refProjArray);
 	}
 
 	public IProject[] build(int kind, Map parameters, IProgressMonitor monitor) {

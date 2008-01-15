@@ -18,6 +18,8 @@ package org.eclipse.wst.validation.internal.operations;
 
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
+
 /**
  * @author vijayb
  */
@@ -29,5 +31,5 @@ public interface ReferencialFileValidator {
 	 * @param inputFiles
 	 * @return a list of IFile's.
 	 */
-	public List getReferencedFile(List inputFiles);
+	public List<IFile> getReferencedFile(List inputFiles);
 }

@@ -11,7 +11,7 @@ import org.eclipse.core.resources.IResource;
  * @author karasiuk
  *
  */
-public class ValidationResult {
+public final class ValidationResult {
 	
 	private List<ValidatorMessage> _messages;
 	
@@ -35,6 +35,9 @@ public class ValidationResult {
 	private int			_severityError;
 	private int			_severityWarning;
 	private int			_severityInfo;
+	
+	/** A count of the number of resources that were validated. */
+	private int			_numberOfValidatedResources;
 	
 	/**
 	 * This is an optional method, that a validator can use to return error messages. When the validation framework
@@ -83,6 +86,9 @@ public class ValidationResult {
 		incrementError(result.getSeverityError());
 		incrementWarning(result.getSeverityWarning());
 		incrementInfo(result.getSeverityInfo());
+		
+		_numberOfValidatedResources++;
+		if (result.getValidated() != null)_numberOfValidatedResources += result.getValidated().length;
 		
 	}
 
@@ -246,6 +252,13 @@ public class ValidationResult {
 	 */
 	public void setCanceled(boolean canceled) {
 		_canceled = canceled;
+	}
+
+	/**
+	 * Answer the number of resources that have been validated.
+	 */
+	public int getNumberOfValidatedResources() {
+		return _numberOfValidatedResources;
 	}
 
 }

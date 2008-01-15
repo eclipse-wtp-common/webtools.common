@@ -131,7 +131,6 @@ public final class ValidationFramework {
 	 */
 	public ValidationResults validate(IProject[] projects, final boolean isManual, final boolean isBuild,
 		IProgressMonitor monitor) throws CoreException{
-		//FIXME must handle the old validators as well
 		ValOperation vo = ValidationRunner.validate(createMap(projects), isManual, isBuild, monitor);
 		return vo.getResults();
 	}

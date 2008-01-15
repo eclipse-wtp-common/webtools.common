@@ -45,7 +45,7 @@ public final class ValidationUtility {
 			return new String[0];
 		}
 
-		Set tempSet = new HashSet();
+		Set<String> tempSet = new HashSet<String>();
 		for (int i = 0; i < markers.length; i++) {
 			IMarker marker = markers[i];
 			try {
@@ -54,7 +54,7 @@ public final class ValidationUtility {
 					// The ValidationMigrator will remove any "unowned" validation markers.
 					continue;
 				}
-				tempSet.add(owner);
+				tempSet.add((String)owner);
 			} catch (CoreException exc) {
 				Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 				if (logger.isLoggingLevel(Level.SEVERE)) {

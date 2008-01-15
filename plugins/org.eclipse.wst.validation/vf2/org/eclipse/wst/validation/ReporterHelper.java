@@ -50,13 +50,11 @@ public class ReporterHelper implements IReporter {
 	}
 
 	public void removeAllMessages(IValidator origin, Object object) {
-		// TODO Auto-generated method stub
-
+		_list.clear();
 	}
 
 	public void removeMessageSubset(IValidator validator, Object obj, String groupName) {
-		// TODO Auto-generated method stub
-
+		_list.clear();
 	}
 	
 	public void makeMarkers(){

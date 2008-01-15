@@ -14,10 +14,10 @@ package org.eclipse.wst.validation.internal;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
@@ -73,14 +73,19 @@ import org.osgi.framework.Bundle;
  */
 public final class ValidationRegistryReader implements RegistryConstants {
 	private static ValidationRegistryReader inst;
-	private HashMap _validators; // list of all validators registered, with their associated
-	// ValidatorMetaData, indexed by project nature id
-	private HashMap _indexedValidators; // list of all validators, indexed by validator class name,
+	
+	/** list of all validators registered, with their associated ValidatorMetaData, indexed by project nature id */
+	private Map<String,Set<ValidatorMetaData>> _validators;
+	
+	// list of all validators, indexed by validator class name,
 	// with the validator's ValidatorMetaData as the value.
 	// Needed by the WorkbenchReporter, because sometimes the
 	// IValidator is not enough to remove all messages from the
 	// task list.
-	private Set _defaultEnabledValidators;
+	private Map<String, ValidatorMetaData> _indexedValidators; 
+	
+	private Set<ValidatorMetaData> _defaultEnabledValidators;
+	
 	// Since IProject's contents are all instances of IResource, every type filter for a validator
 	// must be an instance of IResource. This applies to both the rebuildCache pass and to the
 	// validation pass.
@@ -89,7 +94,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	private static final String UNKNOWN_PROJECT = "UNKNOWN"; //$NON-NLS-1$ // This 'project nature id' is used as a key to get the validators which can run on a project type which hasn't been explicitly filtered in or out by any validator.
 	private static final String EXCLUDED_PROJECT = "EXCLUDED"; //$NON-NLS-1$ // This 'project nature id' is used as a key to get the validators which are excluded on certain projects.
 	
-	public HashMap projectValidationMetaData;
+	public HashMap<IProject, Set<ValidatorMetaData>> projectValidationMetaData;
 
 	/**
 	 * The registry is read once - when this class is instantiated.
@@ -98,9 +103,9 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		super();
 
 		try {
-			_validators = new HashMap();
-			_indexedValidators = new HashMap();
-			_defaultEnabledValidators = new HashSet();
+			_validators = new HashMap<String,Set<ValidatorMetaData>>();
+			_indexedValidators = new HashMap<String, ValidatorMetaData>();
+			_defaultEnabledValidators = new HashSet<ValidatorMetaData>();
 
 			// Read the registry and build a map of validators. The key into
 			// the map is the IValidator instance and the value is the ValidatorMetaData
@@ -126,9 +131,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	 * created to increase runtime performance.
 	 */
 	private void buildCache() {
-		Iterator iterator = _indexedValidators.values().iterator();
-		while (iterator.hasNext()) {
-			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
+		for (ValidatorMetaData vmd : _indexedValidators.values()) {
 			buildProjectNatureCache(vmd);
 			buildDefaultEnabledCache(vmd);
 		}
@@ -138,7 +141,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		addRemainder();
 
 		// this temporary list isn't needed any more. All of the excluded
-		// projects have been added to the project natures which they don't exlcude.
+		// projects have been added to the project natures which they don't exclude.
 		_validators.remove(EXCLUDED_PROJECT);
 
 		Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
@@ -189,13 +192,9 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	 * Build the list of validators which are enabled by default.
 	 */
 	private void buildDefaultEnabledCache(ValidatorMetaData vmd) {
-		if (vmd == null) {
-			return;
-		}
+		if (vmd == null)return;
 
-		if (vmd.isEnabledByDefault()) {
-			_defaultEnabledValidators.add(vmd);
-		}
+		if (vmd.isEnabledByDefault())_defaultEnabledValidators.add(vmd);
 	}
 
 	/**
@@ -229,23 +228,20 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	}
 
 	private void addExcludedRemainder() {
-		Set excludedProjVmds = (Set) _validators.get(EXCLUDED_PROJECT);
+		Set<ValidatorMetaData> excludedProjVmds = _validators.get(EXCLUDED_PROJECT);
 		if (excludedProjVmds == null) {
 			// no excluded project natures
 			return;
 		}
 
-		Iterator exIterator = excludedProjVmds.iterator();
-		while (exIterator.hasNext()) {
-			ValidatorMetaData vmd = (ValidatorMetaData) exIterator.next();
+		for (ValidatorMetaData vmd : excludedProjVmds) {
 
-			boolean noneIncluded = true; // assume that, by default, if someone explicitly excludes
-			// a project nature then they don't include any project
-			// natures
-			Set keys = _validators.keySet();
-			Iterator iterator = keys.iterator();
-			while (iterator.hasNext()) {
-				String projId = (String) iterator.next();
+			// assume that, by default, if someone explicitly excludes
+			// a project nature then they don't include any project natures
+			boolean noneIncluded = true;
+			
+			// a project nature then they don't include any project natures
+			for (String projId : _validators.keySet()) {
 				if (projId.equals(UNKNOWN_PROJECT) || projId.equals(EXCLUDED_PROJECT)) {
 					// Don't add list to a project nature which is excluded or applicable to all.
 					continue;
@@ -278,16 +274,13 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	}
 
 	private void addAnyRemainder() {
-		Set anyProjVmds = (Set) _validators.get(UNKNOWN_PROJECT);
+		Set<ValidatorMetaData> anyProjVmds = _validators.get(UNKNOWN_PROJECT);
 		if (anyProjVmds == null) {
 			// no validators run on all projects
 			return;
 		}
 
-		Set keys = _validators.keySet();
-		Iterator iterator = keys.iterator();
-		while (iterator.hasNext()) {
-			String projId = (String) iterator.next();
+		for (String projId : _validators.keySet()) {
 			if (projId.equals(UNKNOWN_PROJECT) || projId.equals(EXCLUDED_PROJECT)) {
 				// Don't add list to itself or to a project nature which is excluded.
 				continue;
@@ -297,26 +290,22 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		}
 	}
 
-	private void add(String projectNatureId, Set vmdList) {
-		if ((vmdList == null) || (vmdList.size() == 0)) {
-			return;
-		}
+	private void add(String projectNatureId, Set<ValidatorMetaData> vmdList) {
+		if ((vmdList == null) || (vmdList.size() == 0))return;
 
-		Set pnVal = createSet(projectNatureId); // whether the validator includes or excludes this
-		// project nature id, make sure that an entry is
-		// created for it in the table
+		// whether the validator includes or excludes this
+		// project nature id, make sure that an entry is created for it in the table
+		Set<ValidatorMetaData> pnVal = createSet(projectNatureId); 
 		pnVal.addAll(vmdList);
 		_validators.put(projectNatureId, pnVal);
 	}
 
 	private void add(String projectNatureId, ValidatorMetaData vmd) {
-		if (vmd == null) {
-			return;
-		}
+		if (vmd == null)return;
 
-		Set pnVal = createSet(projectNatureId); // whether the validator includes or excludes this
-		// project nature id, make sure that an entry is
-		// created for it in the table
+		// whether the validator includes or excludes this
+		// project nature id, make sure that an entry is created for it in the table
+		Set<ValidatorMetaData> pnVal = createSet(projectNatureId); 
 		pnVal.add(vmd);
 		_validators.put(projectNatureId, pnVal);
 	}
@@ -334,25 +323,21 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		// a lot of processing time... Instead, traverse the list of proj nature ids,
 		// and search the Set of that proj nature id, and remove the vmd if it's in the
 		// Set.
-		Object[] keys = _validators.keySet().toArray();
-		for (int i = 0; i < keys.length; i++) {
-			Object key = keys[i];
-			Set value = (Set) _validators.get(key);
-			if (value == null) {
-				continue;
-			}
+		for (String projId : _validators.keySet()) {
+			Set<ValidatorMetaData> value = _validators.get(projId);
+			if (value == null)continue;
 
 			if (value.contains(vmd)) {
 				value.remove(vmd);
-				_validators.put(key, value);
+				_validators.put(projId, value);
 			}
 		}
 	}
 
-	private Set createSet(String projNature) {
-		Set v = (Set) _validators.get(projNature);
+	private Set<ValidatorMetaData> createSet(String projNature) {
+		Set<ValidatorMetaData> v = _validators.get(projNature);
 		if (v == null) {
-			v = new HashSet();
+			v = new HashSet<ValidatorMetaData>();
 		}
 		return v;
 	}
@@ -505,12 +490,10 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
 				entry.setSourceID("ValidationRegistryReader.createHelper(IConfigurationElement, String)"); //$NON-NLS-1$
-				entry.setMessageTypeIdentifier(ResourceConstants.VBF_EXC_SYNTAX_NO_HELPER_THROWABLE);
 				entry.setTargetException(exc);
 				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NO_HELPER_THROWABLE), 
 					new Object[]{helperClassName});
 				entry.setText(result);				
-				//entry.setTokens(new String[]{helperClassName});
 				logger.write(Level.SEVERE, entry);
 			}
 			return null;
@@ -527,8 +510,6 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
 				entry.setSourceID("ValidationRegistryReader.createValidator(IConfigurationElement, String, String)"); //$NON-NLS-1$
-				entry.setMessageTypeID(ResourceConstants.VBF_EXC_SYNTAX_NO_VAL_THROWABLE);
-				//entry.setTokens(new String[]{validatorClassName});
 				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NO_VAL_THROWABLE), 
 					new Object[]{validatorClassName});
 				entry.setText(result);				
@@ -793,8 +774,6 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			if (logger.isLoggingLevel(Level.FINE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
 				entry.setSourceID("ValidationRegistryReader.getValidatorExtensionPoint()"); //$NON-NLS-1$
-				entry.setMessageTypeID(ResourceConstants.VBF_EXC_MISSING_VALIDATOR_EP);
-				//entry.setTokens(new String[]{ValidationPlugin.PLUGIN_ID + "." + VALIDATOR_EXT_PT_ID}); //$NON-NLS-1$
 				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_MISSING_VALIDATOR_EP),
 						new Object[]{ValidationPlugin.PLUGIN_ID + "." + VALIDATOR_EXT_PT_ID}); //$NON-NLS-1$
 				entry.setText(result);		
@@ -852,8 +831,8 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	 * 
 	 * This is a long-running process. If you can, cache the result.
 	 */
-	public Set getValidatorMetaData(IProject project) {
-		Set copy = new HashSet();
+	public Set<ValidatorMetaData> getValidatorMetaData(IProject project) {
+		Set<ValidatorMetaData> copy = new HashSet<ValidatorMetaData>();
 		getValidatorMetaData(project, copy);
 		return copy;
 	}
@@ -861,10 +840,8 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	/**
 	 * Copy the set of configured validator metadata into the Set.
 	 */
-	public void getValidatorMetaData(IProject project, Set vmds) {
-		if (vmds == null) {
-			return;
-		}
+	public void getValidatorMetaData(IProject project, Set<ValidatorMetaData> vmds) {
+		if (vmds == null)return;
 		vmds.clear();
 		int executionMap = 0x0;
 		Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
@@ -912,10 +889,8 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		        //  <test forcePluginActivation="true" property="foo.testProperty"/>
 		        // </enablement> 
 				
-				Set validatorsWithEnablementExpression = new HashSet();
-				Iterator allValidators = getAllValidators().iterator();
-				while (allValidators.hasNext()) {
-					ValidatorMetaData vmd = (ValidatorMetaData) allValidators.next();
+				Set<ValidatorMetaData> validatorsWithEnablementExpression = new HashSet<ValidatorMetaData>();
+				for (ValidatorMetaData vmd : getAllValidators()) {
 					if (isFacetEnabled(vmd, project)) {
 						validatorsWithEnablementExpression.add(vmd);
 					}
@@ -969,31 +944,22 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	 * @param vmds
 	 * @param projectNatures
 	 */
-	private void calculateVmdsForNatureAndFacets(Set vmds, String[] projectNatures, IProject project) {
-		Set projVmds;
+	private void calculateVmdsForNatureAndFacets(Set<ValidatorMetaData> vmds, String[] projectNatures, IProject project) {
+		Set<ValidatorMetaData> projVmds;
 		String[] projectFacetIds = getProjectFacetIds(project);
-		Iterator allValidators = getAllValidators().iterator();
-		while (allValidators.hasNext()) {
-			ValidatorMetaData vmd = (ValidatorMetaData) allValidators.next();
+		for (ValidatorMetaData vmd : getAllValidators()) {
 			if (containsProjectFacet(vmd, projectFacetIds) || isFacetEnabled(vmd, project)) {
 				vmds.add(vmd);
 			}
 		}
-		for (int i = 0; i < projectNatures.length; i++) {
-			String projectNatureId = projectNatures[i];
-			projVmds = (Set) _validators.get(projectNatureId);
-			if (projVmds == null)
-				continue;
+		for (String projectNatureId : projectNatures) {
+			projVmds = _validators.get(projectNatureId);
+			if (projVmds == null)continue;
 
-			Iterator iterator = projVmds.iterator();
-			while (iterator.hasNext()) {
-				ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
+			for (ValidatorMetaData vmd : projVmds) {
 				if (!vmds.contains(vmd) && (vmd.getFacetFilters() == null || vmd.getFacetFilters().length == 0)) {
-					if (vmd.getEnablementExpresion() == null)
-						vmds.add(vmd);
-					else if (isFacetEnabled(vmd, project))
-						vmds.add(vmd);
-
+					if (vmd.getEnablementExpresion() == null)vmds.add(vmd);
+					else if (isFacetEnabled(vmd, project))vmds.add(vmd);
 				}
 			}
 		}
@@ -1121,14 +1087,9 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private Collection clone(Collection input, Collection copy) {
-		if (input == null) {
-			return null;
-		}
-
-		if (copy == null) {
-			return null;
-		}
+		if (input == null || copy == null)return null;
 		copy.clear();
 		copy.addAll(input);
 		return copy;
@@ -1138,16 +1099,12 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("Project nature => validators configured"); //$NON-NLS-1$
 		buffer.append("\n"); //$NON-NLS-1$
-		Iterator viterator = _validators.keySet().iterator();
-		while (viterator.hasNext()) {
-			String projId = (String) viterator.next();
+		for (String projId : _validators.keySet()) {
 			buffer.append("projId: "); //$NON-NLS-1$
 			buffer.append(projId);
 			buffer.append("\n"); //$NON-NLS-1$
-			Set validators = (Set) _validators.get(projId);
-			Iterator innerIterator = validators.iterator();
-			while (innerIterator.hasNext()) {
-				ValidatorMetaData vmd = (ValidatorMetaData) innerIterator.next();
+			Set<ValidatorMetaData> validators = _validators.get(projId);
+			for (ValidatorMetaData vmd : validators) {
 				buffer.append("\t"); //$NON-NLS-1$
 				buffer.append(vmd.getValidatorUniqueName());
 				buffer.append("\n"); //$NON-NLS-1$
@@ -1157,9 +1114,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 
 		buffer.append("Enable/disable validator by default"); //$NON-NLS-1$
 		buffer.append("\n"); //$NON-NLS-1$
-		viterator = _indexedValidators.values().iterator();
-		while (viterator.hasNext()) {
-			ValidatorMetaData vmd = (ValidatorMetaData) viterator.next();
+		for (ValidatorMetaData vmd : _indexedValidators.values()) {
 			buffer.append(vmd.getValidatorUniqueName());
 			buffer.append(" enabled? "); //$NON-NLS-1$
 			buffer.append(vmd.isEnabledByDefault());
@@ -1171,21 +1126,14 @@ public final class ValidationRegistryReader implements RegistryConstants {
 
 	public boolean isConfiguredOnProject(ValidatorMetaData vmd, IProject project) {
 		if (projectValidationMetaData == null)
-			projectValidationMetaData = new HashMap();
+			projectValidationMetaData = new HashMap<IProject, Set<ValidatorMetaData>>();
 
-		Object vmds = projectValidationMetaData.get(project);
+		Set<ValidatorMetaData> vmds = projectValidationMetaData.get(project);
 		if (vmds != null) {
-			Set pvmds = (Set) vmds;
-			return pvmds.contains(vmd);
+			return vmds.contains(vmd);
 		} else {
-			Set prjVmds = getValidatorMetaData(project);
-			if (prjVmds == null) {
-				return false;
-			}
-
-			if (prjVmds.size() == 0) {
-				return false;
-			}
+			Set<ValidatorMetaData> prjVmds = getValidatorMetaData(project);
+			if (prjVmds == null || prjVmds.size() == 0)return false;
 			projectValidationMetaData.put(project, prjVmds);
 			return prjVmds.contains(vmd);
 		}
@@ -1199,10 +1147,10 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	 * 
 	 * @see addExcludedRemainder()
 	 */
-	private Set getValidatorMetaDataUnknownProject() {
-		Set projVmds = (Set) _validators.get(UNKNOWN_PROJECT);
+	private Set<ValidatorMetaData> getValidatorMetaDataUnknownProject() {
+		Set<ValidatorMetaData> projVmds = _validators.get(UNKNOWN_PROJECT);
 		if (projVmds == null) {
-			projVmds = Collections.EMPTY_SET;
+			projVmds = new HashSet<ValidatorMetaData>();
 		}
 		return projVmds;
 	}
@@ -1237,18 +1185,12 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			return null;
 		}
 
-		ValidatorMetaData vmd = (ValidatorMetaData) _indexedValidators.get(validatorClassName);
-		if (vmd != null) {
-			return vmd;
-		}
+		ValidatorMetaData vmd2 = _indexedValidators.get(validatorClassName);
+		if (vmd2 != null)return vmd2;
 
 		// Check for an aggregate validator
-		Iterator iterator = _indexedValidators.values().iterator();
-		while (iterator.hasNext()) {
-			vmd = (ValidatorMetaData) iterator.next();
-			if (vmd == null) {
-				continue;
-			}
+		for (ValidatorMetaData vmd : _indexedValidators.values()) {
+			if (vmd == null)continue;
 
 			if (vmd.getValidatorUniqueName().equals(validatorClassName)) {
 				return vmd;
@@ -1322,7 +1264,6 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			if (logger.isLoggingLevel(Level.FINE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
 				entry.setSourceID("ValidationRegistryReader.initializeValidator(IConfigurationElement, String, String)"); //$NON-NLS-1$
-				entry.setMessageTypeID(ResourceConstants.VBF_EXC_SYNTAX_NO_VAL_RUN);
 				//entry.setTokens(new String[]{validatorName});
 				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NO_VAL_RUN),
 						new Object[]{validatorName});
@@ -1476,8 +1417,6 @@ public final class ValidationRegistryReader implements RegistryConstants {
 					String[] msgParm = {extension.getUniqueIdentifier()};
 					LogEntry entry = ValidationPlugin.getLogEntry();
 					entry.setSourceID("ValidationRegistryReader.readExtension(IExtension)"); //$NON-NLS-1$
-					entry.setMessageTypeID(ResourceConstants.VBF_EXC_VALIDATORNAME_IS_NULL);
-					//entry.setTokens(msgParm);
 					String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_VALIDATORNAME_IS_NULL),
 							(Object[])msgParm);
 					entry.setText(result);					
@@ -1525,7 +1464,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	}
 
 	public IValidator getValidator(String validatorClassName) throws InstantiationException {
-		ValidatorMetaData vmd = (ValidatorMetaData) _indexedValidators.get(validatorClassName);
+		ValidatorMetaData vmd = _indexedValidators.get(validatorClassName);
 		if(vmd != null)
 			return vmd.getValidator();
 		return null;

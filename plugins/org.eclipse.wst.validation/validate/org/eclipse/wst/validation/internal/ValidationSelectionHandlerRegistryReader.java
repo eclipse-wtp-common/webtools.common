@@ -27,7 +27,7 @@ public class ValidationSelectionHandlerRegistryReader extends RegistryReader {
 	
 	static final String ATT_SELECTION_TYPE = "selectionType"; //$NON-NLS-1$
 	private static ValidationSelectionHandlerRegistryReader INSTANCE;
-	private List validationSelectionHandlers;
+	private List<IValidationSelectionHandler> _validationSelectionHandlers;
 	
 	public ValidationSelectionHandlerRegistryReader() {
 		super(ValidationPlugin.PLUGIN_ID, VALIDATION_SELECTION_HANDLER);
@@ -65,19 +65,17 @@ public class ValidationSelectionHandlerRegistryReader extends RegistryReader {
 	   return false;
 	}
 	
-	private List getValidationSelectionHandlers() {
-		if (validationSelectionHandlers == null)
-			validationSelectionHandlers = new ArrayList();
-		return validationSelectionHandlers;
+	private List<IValidationSelectionHandler> getValidationSelectionHandlers() {
+		if (_validationSelectionHandlers == null)
+			_validationSelectionHandlers = new ArrayList<IValidationSelectionHandler>();
+		return _validationSelectionHandlers;
 	}
 	
 	public Object getExtendedType(Object selection) {
 		Object result = null;
-		for (int i=0; i<getValidationSelectionHandlers().size(); i++ ) {
-			IValidationSelectionHandler handler = (IValidationSelectionHandler) getValidationSelectionHandlers().get(i);
+		for (IValidationSelectionHandler handler : getValidationSelectionHandlers()) {
 			result = handler.getBaseValidationType(selection);
-			if (result != null)
-				break;
+			if (result != null)break;
 		}
 		return result;
 	}

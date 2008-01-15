@@ -37,10 +37,10 @@ import org.eclipse.wst.validation.internal.provisional.core.IMessage;
  * symbolic model name.
  */
 public class WorkbenchContext implements IWorkbenchContext {
-	private IProject _project;
-	private Hashtable _modelRegistry;
-	private int _ruleGroup = RegistryConstants.ATT_RULE_GROUP_DEFAULT;
-	public List validationFileURIs; 
+	private IProject 	_project;
+	private Hashtable<String,Method> 	_modelRegistry;
+	private int 		_ruleGroup = RegistryConstants.ATT_RULE_GROUP_DEFAULT;
+	public List<String> validationFileURIs; 
 	public static final String GET_PROJECT_FILES = "getAllFiles"; //$NON-NLS-1$
 	public static final String GET_FILE = "getFile"; //$NON-NLS-1$
 	public static final String VALIDATION_MARKER = "com.ibm.etools.validation.problemmarker"; //$NON-NLS-1$
@@ -48,7 +48,7 @@ public class WorkbenchContext implements IWorkbenchContext {
 
 	public WorkbenchContext() {
 		super();
-		_modelRegistry = new Hashtable();
+		_modelRegistry = new Hashtable<String, Method>();
 
 		registerModel(IRuleGroup.PASS_LEVEL, "loadRuleGroup"); //$NON-NLS-1$
 		
@@ -388,10 +388,10 @@ public class WorkbenchContext implements IWorkbenchContext {
 	   * @param validatorClassName The name of the validator class.
 	   * @return The collection of files relevant for the validator class specified.
 	   */
-	  public Collection getFiles(String validatorClassName)
+	  public Collection<IFile> getFiles(String validatorClassName)
 	  {
 	    IProject project = getProject();
-	    List files = new ArrayList();
+	    List<IFile> files = new ArrayList<IFile>();
 	    getFiles(files, project, validatorClassName);
 	    return files;
 	  }
@@ -404,7 +404,7 @@ public class WorkbenchContext implements IWorkbenchContext {
 	   * @param resource The resource to look for files in.
 	   * @param validatorClassName The name of the validator class.
 	   */
-	  protected void getFiles(Collection files, IContainer resource, String validatorClassName)
+	  protected void getFiles(Collection<IFile> files, IContainer resource, String validatorClassName)
 	  {
 	    try
 	    {
@@ -414,7 +414,7 @@ public class WorkbenchContext implements IWorkbenchContext {
 	        if (ValidatorManager.getManager().isApplicableTo(validatorClassName, resourceArray[i])) 
 	        {
 	          if (resourceArray[i] instanceof IFile) 
-				  files.add(resourceArray[i]);
+				  files.add((IFile)resourceArray[i]);
 	        }
 	        if (resourceArray[i].getType() == IResource.FOLDER)
 	         getFiles(files,(IContainer)resourceArray[i], validatorClassName) ;
@@ -547,9 +547,7 @@ public class WorkbenchContext implements IWorkbenchContext {
 	 * "registerModel" method.
 	 */
 	public final boolean isRegistered(String symbolicName) {
-		if (symbolicName == null) {
-			return false;
-		}
+		if (symbolicName == null)return false;
 		return _modelRegistry.containsKey(symbolicName);
 	}
 
@@ -575,10 +573,8 @@ public class WorkbenchContext implements IWorkbenchContext {
 	 */
 	public Object loadModel(String symbolicName, Object[] parms) {
 		try {
-			Method loader = (Method) _modelRegistry.get(symbolicName);
-			if (loader == null) {
-				return null;
-			}
+			Method loader = _modelRegistry.get(symbolicName);
+			if (loader == null)return null;
 
 			return loader.invoke(this, parms);
 		} catch (IllegalAccessException exc) {
@@ -761,28 +757,26 @@ public class WorkbenchContext implements IWorkbenchContext {
 	}
 
 	public String getTargetObjectName(Object object) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public String[] getURIs() {
 		String[] uris = new String[validationFileURIs.size()];
-		for(int i = 0; i < validationFileURIs.size(); i++) 
-			uris[i] = (String) validationFileURIs.get(i);
+		validationFileURIs.toArray(uris);
 		return uris;
 	}
 
 	/**
 	 * @return Returns the validationFileURIs.
 	 */
-	public List getValidationFileURIs() {
+	public List<String> getValidationFileURIs() {
 		return validationFileURIs;
 	}
 
 	/**
 	 * @param validationFileURIs The validationFileURIs to set.
 	 */
-	public void setValidationFileURIs(List validationFileURIs) {
+	public void setValidationFileURIs(List<String> validationFileURIs) {
 		this.validationFileURIs = validationFileURIs;
 	}
 }

@@ -14,7 +14,6 @@ package org.eclipse.wst.validation.internal;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -57,15 +56,11 @@ public final class InternalValidatorManager {
 	/**
 	 * Return a new Set that contains all of the elements from the array.
 	 */
-	public static Set wrapInSet(Object[] obj) {
-		Set result = new HashSet();
-		if ((obj == null) || (obj.length == 0)) {
-			return result;
-		}
+	public static Set<ValidatorMetaData> wrapInSet(ValidatorMetaData[] vmds) {
+		Set<ValidatorMetaData> result = new HashSet<ValidatorMetaData>();
+		if ((vmds == null) || (vmds.length == 0))return result;
 
-		for (int i = 0; i < obj.length; i++) {
-			result.add(obj[i]);
-		}
+		for (ValidatorMetaData vmd : vmds)result.add(vmd);
 
 		return result;
 	}
@@ -111,11 +106,10 @@ public final class InternalValidatorManager {
 	 * Return an array of the fully-qualified names of the validator classes.
 	 */
 	public String[] getValidatorNames(ValidatorMetaData[] vmds) {
-		Set temp = new HashSet();
-		for (int i = 0; i < vmds.length; i++) {
-			String[] names = vmds[i].getValidatorNames();
-			for (int j = 0; j < names.length; j++) {
-				temp.add(names[j]);
+		Set<String> temp = new HashSet<String>();
+		for (ValidatorMetaData vmd : vmds) {
+			for (String name : vmd.getValidatorNames()) {
+				temp.add(name);
 			}
 		}
 
@@ -127,14 +121,11 @@ public final class InternalValidatorManager {
 	/**
 	 * Return an array of the fully-qualified names of the validator classes.
 	 */
-	public String[] getValidatorNames(Collection vmds) {
-		Set temp = new HashSet();
-		Iterator iterator = vmds.iterator();
-		while (iterator.hasNext()) {
-			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
-			String[] names = vmd.getValidatorNames();
-			for (int j = 0; j < names.length; j++) {
-				temp.add(names[j]);
+	public String[] getValidatorNames(Collection<ValidatorMetaData> vmds) {
+		Set<String> temp = new HashSet<String>();
+		for (ValidatorMetaData vmd : vmds) {
+			for (String name : vmd.getValidatorNames()) {
+				temp.add(name);
 			}
 		}
 

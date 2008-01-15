@@ -249,7 +249,7 @@ public class ValidatorSubsetOperation extends ValidationOperation {
 		}
 
 		if ((changedResources != null) && (changedResources.length > 0)) {
-			Set tempSet = new HashSet();
+			Set<IProject> tempSet = new HashSet<IProject>();
 			for (int i = 0; i < changedResources.length; i++) {
 				IProject p = changedResources[i].getProject();
 				if (!p.isOpen()) {
@@ -266,9 +266,9 @@ public class ValidatorSubsetOperation extends ValidationOperation {
 			}
 			if (tempSet.size() != 1) {
 				StringBuffer buffer = new StringBuffer("\n"); //$NON-NLS-1$
-				Iterator iterator = tempSet.iterator();
+				Iterator<IProject> iterator = tempSet.iterator();
 				while (iterator.hasNext()) {
-					IProject p = (IProject) iterator.next();
+					IProject p = iterator.next();
 					buffer.append("\t"); //$NON-NLS-1$
 					buffer.append(p.getName());
 					if (iterator.hasNext()) {
@@ -288,22 +288,7 @@ public class ValidatorSubsetOperation extends ValidationOperation {
 
 		setEnabledValidators(InternalValidatorManager.wrapInSet(vmds));
 		setFileDeltas(FilterUtil.getFileDeltas(getEnabledValidators(), changedResources, ifileDeltaType)); // construct
-		// an
-		// array
-		// of
-		// IFileDelta[]
-		// to
-		// wrap
-		// the
-		// IResource[];
-		// one
-		// IFileDelta
-		// for
-		// each
-		// IResource
-		// in
-		// the
-		// array
+		// an array of IFileDelta[] to wrap the IResource[]; one IFileDelta for each IResource in the array
 	}
 
 	/**
@@ -313,14 +298,14 @@ public class ValidatorSubsetOperation extends ValidationOperation {
 	 * of IProject.)
 	 */
 	public void setValidators(String[] validatorNames) throws IllegalArgumentException {
-		Set enabled = new HashSet();
-		for (int i = 0; i < validatorNames.length; i++) {
-			ValidatorMetaData vmd = ValidationRegistryReader.getReader().getValidatorMetaData(validatorNames[i]);
+		Set<ValidatorMetaData> enabled = new HashSet<ValidatorMetaData>();
+		for (String name : validatorNames) {
+			ValidatorMetaData vmd = ValidationRegistryReader.getReader().getValidatorMetaData(name);
 			if (vmd == null) {
 				// No validator, with that plugin id, can be run on that project.
 				// Either the validator isn't installed, or the IProject passed in
 				// doesn't have the necessary nature.
-				throw new IllegalArgumentException(validatorNames[i]);
+				throw new IllegalArgumentException(name);
 			}
 			enabled.add(vmd);
 		}

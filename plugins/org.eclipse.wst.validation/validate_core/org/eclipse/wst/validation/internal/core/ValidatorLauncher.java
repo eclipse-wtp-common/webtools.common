@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal.core;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.eclipse.core.runtime.CoreException;
@@ -86,7 +86,7 @@ public class ValidatorLauncher {
 			//the  validators who have implemented IValidatorJob but are running synchronously
 			//would log messages now ...
 			ValidatorManager mgr = ValidatorManager.getManager();
-			final ArrayList list = mgr.getMessages((IValidatorJob)validator);
+			final List list = mgr.getMessages((IValidatorJob)validator);
 
 	    	Iterator it = list.iterator();
 			while( it.hasNext() ){

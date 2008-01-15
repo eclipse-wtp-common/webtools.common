@@ -48,6 +48,7 @@ public class TaskListUtility implements ConfigurationConstants {
 	 * This method is here for use by the SABER validator's reporter instance ONLY. Do not use. See
 	 * defect 260144 for details.
 	 */
+	@SuppressWarnings("unchecked")
 	public static IMarker setPriority(IMarker item, int priority) throws CoreException {
 		Map attrib = item.getAttributes();
 		attrib.put(IMarker.PRIORITY, new Integer(priority));

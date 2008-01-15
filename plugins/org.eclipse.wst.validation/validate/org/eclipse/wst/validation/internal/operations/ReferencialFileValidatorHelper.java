@@ -30,16 +30,15 @@ import org.eclipse.core.runtime.CoreException;
  */
 public class ReferencialFileValidatorHelper {
 	public ReferencialFileValidatorHelper() {
-		super();
 	}
 
 	/**
 	 * Return a list of all files contained in project to infinite depth
 	 */
 	public static List getAllProjectFiles(IProject project) {
-		List result = new ArrayList();
-		if (project == null)
-			return result;
+		List<IFile> result = new ArrayList<IFile>();
+		if (project == null)return result;
+		
 		try {
 			result = collectFiles(project.members(), result);
 		} catch (CoreException e) {
@@ -48,15 +47,11 @@ public class ReferencialFileValidatorHelper {
 		return result;
 	}
 
-	private static List collectFiles(IResource[] members, List result) throws CoreException {
+	private static List<IFile> collectFiles(IResource[] members, List<IFile> result) throws CoreException {
 		// recursively collect files for the given members
-		for (int i = 0; i < members.length; i++) {
-			IResource res = members[i];
-			if (res instanceof IFolder) {
-				collectFiles(((IFolder) res).members(), result);
-			} else if (res instanceof IFile) {
-				result.add(res);
-			}
+		for (IResource res : members) {
+			if (res instanceof IFolder)collectFiles(((IFolder) res).members(), result);
+			else if (res instanceof IFile)result.add((IFile)res);
 		}
 		return result;
 	}

@@ -12,9 +12,9 @@ package org.eclipse.wst.validation.internal.operations;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -61,7 +61,6 @@ import org.eclipse.wst.validation.internal.provisional.core.IReporter;
 import org.eclipse.wst.validation.internal.provisional.core.IValidationContext;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 import org.eclipse.wst.validation.internal.provisional.core.IValidatorJob;
-import org.eclipse.wst.validation.internal.provisional.core.MessageLimitException;
 
 /**
  * Implemented Validators methods must not be called directly by anyone other than this class, since
@@ -100,29 +99,23 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 * @deprecated Will be removed in Milestone 3. Use DEFAULT_ASYNC
 	 */
 	protected static final boolean DEFAULT_FORK = false; // @deprecated
-	private IProject _project = null; // project to be validated
-	private int _ruleGroup = RegistryConstants.ATT_RULE_GROUP_DEFAULT; // which
-	// pass
-	// should
-	// the
-	// validation
-	// invoke
+	private IProject 		_project; // project to be validated
+	private int 			_ruleGroup = RegistryConstants.ATT_RULE_GROUP_DEFAULT;
 	private boolean _fork = DEFAULT_ASYNC; // do not fork the validation into a
 	// different thread by default
-	private Map _fileDeltas = null; // To reduce object creation,
-	private IResourceDelta _delta = null;
+	private Map<ValidatorMetaData, Set<IFileDelta>> _fileDeltas; // To reduce object creation,
+	private IResourceDelta _delta;
+	
 	// the resource delta tree to be processed, or null if a full build/menu
 	// option was triggered. This value is cached so that validation can be run
 	// either from a builder, or from a menu item. (The Operation interface
 	// doesn't allow any parameter on execute except the IProgressMonitor.)
-	private Set _enabledValidators = null;
-	private boolean _force = DEFAULT_FORCE; // force this operation to run even
-	// if it doesn't need to?
-	private boolean _isFullValidate = false; // Run a full validation or an
-	// incremental? (true = full)
-	private Boolean _isAutoBuild = null; // Is the global auto-build preference
-	// enabled?
-	private Set _launchedValidators = null; // A list of the validators that
+	private Set<ValidatorMetaData> _enabledValidators;
+	
+	private boolean _force = DEFAULT_FORCE; // force this operation to run even if it doesn't need to?
+	private boolean _isFullValidate; 	// Run a full validation or an incremental? (true = full)
+	private Boolean _isAutoBuild; 		// Is the global auto-build preference enabled?
+	private Set<ValidatorMetaData> _launchedValidators;
 	
 	protected IWorkbenchContext context;
 
@@ -208,7 +201,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		_ruleGroup = ruleGroup;
 		_fork = fork;
 		_force = force;
-		_enabledValidators = new HashSet();
+		_enabledValidators = new HashSet<ValidatorMetaData>();
 	}
 	
 	/**
@@ -222,7 +215,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		_ruleGroup = ruleGroup;
 		_fork = fork;
 		_force = force;
-		_enabledValidators = new HashSet();
+		_enabledValidators = new HashSet<ValidatorMetaData>();
 		context = aContext;
 	}
 
@@ -468,19 +461,8 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 * run automatically.)
 	 */
 	private boolean isValidationNecessary(ValidatorMetaData vmd, IFileDelta[] delta) {
-		// Validation is not necessary if:
-		//    1. auto-validation has run and the validator is incremental,
-		//    2. There are no files for the validator to validate.
-		// There are files to validate if this is a full validation or if the
-		// validator filtered in some of the deltas.
-		boolean autoValidateRan = false;
-		if (_isAutoBuild != null) {
-			// User set the autoBuild default, so check if validation is
-			// necessary or not.
-			autoValidateRan = ValidatorManager.getManager().isAutoValidate(getProject(), _isAutoBuild.booleanValue()) && vmd.isIncremental();
-		}
-		boolean hasFiles = (isFullValidate() || (delta.length > 0));
-		return (!autoValidateRan && hasFiles);
+		// Validation is not necessary if there are no files for the validator to validate.
+		return isFullValidate() || (delta.length > 0);
 	}
 
 	/**
@@ -505,18 +487,15 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		return false;
 	}
 
-	private Map getFileDeltas(IProgressMonitor monitor) throws CoreException {
-		if (_fileDeltas == null) {
-			loadFileDeltas(monitor);
-		}
+	private Map<ValidatorMetaData, Set<IFileDelta>> getFileDeltas(IProgressMonitor monitor) throws CoreException {
+		if (_fileDeltas == null)loadFileDeltas(monitor);
 		return _fileDeltas;
 	}
 
 	private IFileDelta[] getFileDeltas(IProgressMonitor monitor, ValidatorMetaData vmd) throws CoreException {
-		Set result = (Set) getFileDeltas(monitor).get(vmd);
-		if (result == null) {
-			return new IFileDelta[0];
-		}
+		Set<IFileDelta> result = getFileDeltas(monitor).get(vmd);
+		if (result == null)return new IFileDelta[0];
+		
 		IFileDelta[] temp = new IFileDelta[result.size()];
 		result.toArray(temp);
 		return temp;
@@ -542,7 +521,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		}
 	}
 
-	protected void setFileDeltas(Map deltas) {
+	protected void setFileDeltas(Map<ValidatorMetaData, Set<IFileDelta>> deltas) {
 		_fileDeltas = deltas;
 	}
 
@@ -562,7 +541,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 * Return the validators which are both configured on this type of project, (as stored in
 	 * getProject()), and enabled by the user on this project.
 	 */
-	public Set getEnabledValidators() {
+	public Set<ValidatorMetaData> getEnabledValidators() {
 		return _enabledValidators;
 	}
 
@@ -570,9 +549,9 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 * This is an internal method, subject to change without notice. It is provided only for the
 	 * automated validation framework tests.
 	 */
-	public Set getLaunchedValidators() {
+	public Set<ValidatorMetaData> getLaunchedValidators() {
 		if (_launchedValidators == null) {
-			_launchedValidators = new HashSet();
+			_launchedValidators = new HashSet<ValidatorMetaData>();
 		}
 		return _launchedValidators;
 	}
@@ -694,10 +673,9 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 */
 	private void refFileValidateFileDelta(WorkbenchReporter reporter, ReferencialFileValidator refFileValidator) {
 		IResourceDelta[] resourceDelta = _delta.getAffectedChildren(IResourceDelta.ADDED | IResourceDelta.CHANGED | IResourceDelta.REMOVED);
-		List inputFiles = new ArrayList();
+		List<IResource> inputFiles = new ArrayList<IResource>();
 		
-		// A list of IFile's
-		List referencingFiles = new ArrayList();
+		List<IFile> referencingFiles = new ArrayList<IFile>();
 		if (resourceDelta != null && resourceDelta.length > 0) {
 			for (int i = 0; i < resourceDelta.length; i++) {
 				IResource resource = resourceDelta[i].getResource();
@@ -706,7 +684,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				} else if (resource instanceof IFile)
 					inputFiles.add(resource);
 			}
-			List rFilesToValidate = refFileValidator.getReferencedFile(inputFiles);
+			List<IFile> rFilesToValidate = refFileValidator.getReferencedFile(inputFiles);
 			if (rFilesToValidate != null && !rFilesToValidate.isEmpty())
 				referencingFiles.addAll(rFilesToValidate);
 			try {
@@ -722,14 +700,12 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 * @param delta
 	 * @return
 	 */
-	private void getFileResourceDeltaInFolder(IResourceDelta delta, List inputFiles) {
+	private void getFileResourceDeltaInFolder(IResourceDelta delta, List<IResource> inputFiles) {
 		IResourceDelta[] resourceDelta = delta.getAffectedChildren();
 		for (int i = 0; i < resourceDelta.length; i++) {
 			IResource resource = resourceDelta[i].getResource();
-			if (resource instanceof IFile) {
-				inputFiles.add(resource);
-			} else if (resource instanceof IFolder)
-				getFileResourceDeltaInFolder(resourceDelta[i], inputFiles);
+			if (resource instanceof IFile)inputFiles.add(resource);
+			else if (resource instanceof IFolder)getFileResourceDeltaInFolder(resourceDelta[i], inputFiles);
 		}
 	}
 
@@ -745,7 +721,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			List filters = data.getNameFilters();
 			List files = getAllFilesForFilter(filters);
 			if (!files.isEmpty()) {
-				List fileForValidation = refFileValidator.getReferencedFile(files);
+				List<IFile> fileForValidation = refFileValidator.getReferencedFile(files);
 				try {
 					validateReferencingFiles(reporter, fileForValidation);
 				} catch (Exception e) {
@@ -759,10 +735,10 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 * @param filters
 	 * @return
 	 */
-	private List getAllFilesForFilter(List filters) {
+	private List<IFile> getAllFilesForFilter(List filters) {
 		if (!filters.isEmpty()) {
 			List allProjectFiles = ReferencialFileValidatorHelper.getAllProjectFiles(_project);
-			List filterFiles = new ArrayList();
+			List<IFile> filterFiles = new ArrayList<IFile>();
 			for (int i = 0; i < filters.size(); i++) {
 				String fileName = (String) filters.get(i);
 				if (fileName == null)
@@ -781,13 +757,12 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			}
 			return filterFiles;
 		}
-		return Collections.EMPTY_LIST;
+		return new LinkedList<IFile>();
 	}
 
-	private void validateReferencingFiles(IReporter reporter, List referencingFiles) throws Exception {
-		HashSet validatedFiles = new HashSet();
-		for (int i = 0; i < referencingFiles.size(); i++) {
-			IFile refFile = (IFile) referencingFiles.get(i);
+	private void validateReferencingFiles(IReporter reporter, List<IFile> referencingFiles) throws Exception {
+		Set<IFile> validatedFiles = new HashSet<IFile>();
+		for (IFile refFile : referencingFiles) {
 			if (!validatedFiles.contains(refFile)) {
 				IResource resource = refFile.getParent();
 				IProject project = null;
@@ -841,8 +816,8 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		final Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 		IFileDelta[] delta = null;
 		
-		HashSet jobValidators = new HashSet();
-		HashSet validators = new HashSet();
+		Set<ValidatorMetaData> jobValidators = new HashSet<ValidatorMetaData>();
+		Set<ValidatorMetaData> validators = new HashSet<ValidatorMetaData>();
 		
 		
 		iterator = getEnabledValidators().iterator();
@@ -866,9 +841,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 							e.printStackTrace();
 						}
 						boolean willRun = (isForce() || isValidationNecessary(vmd, delta));
-						if( willRun ){
-							jobValidators.add( vmd );
-						}
+						if( willRun )jobValidators.add( vmd );
 					}else if (valInstance != null){
 						validators.add( vmd );
 				}
@@ -915,8 +888,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 						buffer.append(_isAutoBuild);
 						buffer.append("  "); //$NON-NLS-1$
 						buffer.append("isAutoValidate? "); //$NON-NLS-1$
-						boolean autoBuild = (_isAutoBuild == null) ? ValidatorManager.getManager().isGlobalAutoBuildEnabled() : _isAutoBuild.booleanValue();
-						buffer.append(ValidatorManager.getManager().isAutoValidate(getProject(), autoBuild));
 						buffer.append("  "); //$NON-NLS-1$
 						buffer.append("isIncremental? "); //$NON-NLS-1$
 						buffer.append(vmd.isIncremental());
@@ -1010,9 +981,8 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 
 	private void initValidateContext(IFileDelta[] delta) {
 		 if (context instanceof WorkbenchContext) {
-			 ((WorkbenchContext)context).setValidationFileURIs(new ArrayList());
-			 for(int i = 0; i < delta.length; i++) {
-				 IFileDelta file = delta[i];
+			 ((WorkbenchContext)context).setValidationFileURIs(new ArrayList<String>());
+			 for(IFileDelta file : delta) {
 				 if(file.getDeltaType() != IFileDelta.DELETED ) {
 					 ((WorkbenchContext)context).getValidationFileURIs().add(file.getFileName());
 				 }
@@ -1274,8 +1244,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_STARTING_VALIDATION, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
 			reporter.displaySubtask(message);
 			if (logger.isLoggingLevel(Level.FINEST)) {
-				// This internal "launched validators" value is used only in
-				// tests.
+				// This internal "launched validators" value is used only in tests.
 				getLaunchedValidators().add(vmd);
 			}
 			//initValidateContext(delta);
@@ -1304,8 +1273,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			}
 			message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_ENDING_VALIDATION, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
 			reporter.displaySubtask(message);
-		} catch (MessageLimitException exc) {
-			throw exc;
 		} catch (OperationCanceledException exc) {
 			throw exc;
 		} catch (ValidationException exc) {
@@ -1313,48 +1280,16 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			// accidentally wrapped a MessageLimitException instead of
 			// propagating it.
 			if (exc.getAssociatedException() != null) {
-				if (exc.getAssociatedException() instanceof MessageLimitException) {
-					MessageLimitException mssgExc = (MessageLimitException) exc.getAssociatedException();
-					throw mssgExc;
-				} else if (exc.getAssociatedException() instanceof ValidationException) {
+				if (exc.getAssociatedException() instanceof ValidationException) {
 					ValidationException vexc = (ValidationException) exc.getAssociatedException();
 					vexc.setClassLoader(validator.getClass().getClassLoader()); // first,
-					// set
-					// the
-					// class
-					// loader,
-					// so
-					// that
-					// the
-					// exception's
-					// getMessage()
-					// method
-					// can
-					// retrieve
-					// the
-					// resource
-					// bundle
+					// set the class loader, so that the exception's getMessage() method
+					// can retrieve the resource bundle
 				}
 			}
 			// If there is a problem with this particular validator, log the
-			// error and continue
-			// with the next validator.
+			// error and continue with the next validator.
 			exc.setClassLoader(validator.getClass().getClassLoader()); // first,
-			// set
-			// the
-			// class
-			// loader,
-			// so
-			// that
-			// the
-			// exception's
-			// getMessage()
-			// method
-			// can
-			// retrieve
-			// the
-			// resource
-			// bundle
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
 				entry.setSourceID("ValidationOperation.validate(WorkbenchMonitor)"); //$NON-NLS-1$
@@ -1371,14 +1306,11 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				reporter.addMessage(validator, exc.getAssociatedMessage());
 			}
 		} catch (Exception exc) {
-			// If there is a problem with this particular validator, log the
-			// error and continue
+			// If there is a problem with this particular validator, log the error and continue
 			// with the next validator.
 			// If a runtime exception has occured, e.g. NullPointer or
-			// ClassCast, display it with the "A runtime exception has occurred
-			// " messsage.
-			// This will provide more information to the user when he/she calls
-			// IBM Service.
+			// ClassCast, display it with the "A runtime exception has occurred" messsage. 
+			// This will provide more information to the user when he/she calls Service.
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
 				entry.setSourceID("ValidationOperation.validate(WorkbenchMonitor)"); //$NON-NLS-1$
@@ -1404,8 +1336,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		} finally {
 			try {
 				validator.cleanup(reporter);
-			} catch (MessageLimitException e) {
-				throw e;
 			} catch (OperationCanceledException e) {
 				throw e;
 			} catch (Exception exc) {
@@ -1441,8 +1371,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			}
 			try {
 				helper.cleanup(reporter);
-			} catch (MessageLimitException e) {
-				throw e;
 			} catch (OperationCanceledException e) {
 				throw e;
 			} catch (Exception exc) {
@@ -1562,7 +1490,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		this.context = context;
 	}
 	
-	void launchJobs(HashSet validators, final WorkbenchReporter reporter) throws OperationCanceledException{
+	void launchJobs(Set<ValidatorMetaData> validators, final WorkbenchReporter reporter) throws OperationCanceledException{
 		
 		final Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 		Iterator iterator = validators.iterator();
@@ -1681,9 +1609,8 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	
 	private void initValidateContext(IFileDelta[] delta, IWorkbenchContext context ) {
 		 if (context instanceof WorkbenchContext) {
-			 ((WorkbenchContext)context).setValidationFileURIs(new ArrayList());
-			 for(int i = 0; i < delta.length; i++) {
-				 IFileDelta file = delta[i];
+			 ((WorkbenchContext)context).setValidationFileURIs(new ArrayList<String>());
+			 for(IFileDelta file : delta) {
 				 if(file.getDeltaType() != IFileDelta.DELETED ) {
 					 ((WorkbenchContext)context).getValidationFileURIs().add(file.getFileName());
 				 }
@@ -1727,7 +1654,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 							QualifiedName validatorKey = new QualifiedName(null, "Validator"); //$NON-NLS-1$
 							IValidatorJob validator = (IValidatorJob)job.getProperty( validatorKey );
 							ValidatorManager mgr = ValidatorManager.getManager();
-							final ArrayList list = mgr.getMessages(validator);							
+							final List list = mgr.getMessages(validator);							
 							
 							IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 							    public void run(IProgressMonitor monitor) throws CoreException {

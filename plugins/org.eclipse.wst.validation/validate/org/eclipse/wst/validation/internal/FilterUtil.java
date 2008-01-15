@@ -45,9 +45,9 @@ public final class FilterUtil {
 	private static VMDResourceVisitor _resourceVisitor = null;
 
 	private interface VMDRecorder {
-		public Map getResult();
+		public Map<ValidatorMetaData, Set<IFileDelta>> getResult();
 
-		public void setEnabledValidators(Set enabledValidators);
+		public void setEnabledValidators(Set<ValidatorMetaData> enabledValidators);
 
 		public void setProgressMonitor(IProgressMonitor monitor);
 
@@ -55,53 +55,40 @@ public final class FilterUtil {
 	}
 
 	private interface VMDDeltaVisitor extends VMDRecorder, IResourceDeltaVisitor {
-		//constructor
 	}
 
 	private interface VMDResourceVisitor extends VMDRecorder, IResourceVisitor {
-		//constructor
 	}
 
-	/**
-	 * Don't let anyone create an instance of this class.
-	 */
 	private FilterUtil() {
-		//default
 	}
 
 	/**
 	 * Given a Set of enabled ValidatorMetaData, create a Map with each ValidatorMetaData as a key
 	 * with an associated null value.
 	 */
-	static Map wrapInMap(Set enabledValidators) {
-		Map result = new HashMap();
-		if ((enabledValidators == null) || (enabledValidators.size() == 0)) {
-			return result;
-		}
+	static Map<ValidatorMetaData, Set<IFileDelta>> wrapInMap(Set<ValidatorMetaData> enabledValidators) {
+		Map<ValidatorMetaData, Set<IFileDelta>> result = new HashMap<ValidatorMetaData, Set<IFileDelta>>();
+		if ((enabledValidators == null) || (enabledValidators.size() == 0))return result;
 
-		Iterator iterator = enabledValidators.iterator();
-		while (iterator.hasNext()) {
-			result.put(iterator.next(), null);
-		}
+		for (ValidatorMetaData vmd : enabledValidators)result.put(vmd, null);
 		return result;
 	}
 
 	static void checkCanceled(IProgressMonitor monitor) throws OperationCanceledException {
-		if (monitor == null) {
-			return;
-		} else if (monitor.isCanceled()) {
-			throw new OperationCanceledException(""); //$NON-NLS-1$
-		}
+		if (monitor == null)return;
+		else if (monitor.isCanceled())throw new OperationCanceledException(""); //$NON-NLS-1$
 	}
 
 	/**
 	 * Given a Map of VMD <=>Set(IFileDelta), either return the existing Set or create a Set and
 	 * return it.
 	 */
-	private static Set getResourceDeltas(Map enabledValidators, ValidatorMetaData vmd) {
-		Set fileDeltas = (Set) enabledValidators.get(vmd);
+	private static Set<IFileDelta> getResourceDeltas(Map<ValidatorMetaData, Set<IFileDelta>> enabledValidators, 
+			ValidatorMetaData vmd) {
+		Set<IFileDelta> fileDeltas = enabledValidators.get(vmd);
 		if (fileDeltas == null) {
-			fileDeltas = new HashSet();
+			fileDeltas = new HashSet<IFileDelta>();
 			enabledValidators.put(vmd, fileDeltas);
 		}
 		return fileDeltas;
@@ -168,8 +155,9 @@ public final class FilterUtil {
 	 * Return the validators which are both configured on this type of project, (as stored in
 	 * getProject()), and enabled by the user on this project.
 	 */
-	static void addFileDelta(Map enabledValidators, ValidatorMetaData vmd, WorkbenchFileDelta fileDelta) {
-		Set fileDeltas = getResourceDeltas(enabledValidators, vmd);
+	static void addFileDelta(Map<ValidatorMetaData, Set<IFileDelta>> enabledValidators, 
+			ValidatorMetaData vmd, WorkbenchFileDelta fileDelta) {
+		Set<IFileDelta> fileDeltas = getResourceDeltas(enabledValidators, vmd);
 		fileDeltas.add(fileDelta);
 		enabledValidators.put(vmd, fileDeltas);
 	}
@@ -181,7 +169,8 @@ public final class FilterUtil {
 	 * If filterIn is true, do not check if the resources are filtered in by the validator. If
 	 * filterIn is false, check if the resources are filtered in by the validator (recommended).
 	 */
-	public static Map getFileDeltas(Set enabledValidators, Object[] changedResources, boolean filterIn) {
+	public static Map<ValidatorMetaData, Set<IFileDelta>> 
+		getFileDeltas(Set enabledValidators, Object[] changedResources, boolean filterIn) {
 		// by default assume that the resources have changed, i.e. not added or deleted
 		return getFileDeltas(enabledValidators, changedResources, IFileDelta.CHANGED, filterIn); 
 	}
@@ -190,7 +179,8 @@ public final class FilterUtil {
 	 * Return a Map wrapper, with each VMD from enabledValidators as the key, and the value a Set of
 	 * IFileDelta wrapper around the changed Object[], with each delta of type deltaType.
 	 */
-	public static Map getFileDeltas(Set enabledValidators, Object[] changedResources, int ifileDeltaType) {
+	public static Map<ValidatorMetaData, Set<IFileDelta>> 
+		getFileDeltas(Set enabledValidators, Object[] changedResources, int ifileDeltaType) {
 		// by default check if the Objects are filtered in by the validator
 		return getFileDeltas(enabledValidators, changedResources, ifileDeltaType, false); 
 	}
@@ -198,13 +188,13 @@ public final class FilterUtil {
 	/**
 	 * Return a Map wrapper, with each VMD from enabledValidators as the key, and the value a Set of
 	 * IFileDelta wrapper around the changed Object[].
-	 * 
+	 * <p>
 	 * If "force" is true, then don't check if the object is filtered in by the validator or not.
 	 * ValidatorSubsetOperation can use validators that don't filter in these particular resources,
 	 * but can use a defaultExtension's validators instead.
 	 */
-	public static Map getFileDeltas(Set enabledValidators, Object[] changedResources, int ifileDeltaType, boolean force) {
-		Map result = new HashMap();
+	public static Map<ValidatorMetaData, Set<IFileDelta>> getFileDeltas(Set enabledValidators, Object[] changedResources, int ifileDeltaType, boolean force) {
+		Map<ValidatorMetaData, Set<IFileDelta>> result = new HashMap<ValidatorMetaData, Set<IFileDelta>>();
 		if ((enabledValidators == null) || (enabledValidators.size() == 0)) {
 			return result;
 		}
@@ -215,7 +205,7 @@ public final class FilterUtil {
 		while (iterator.hasNext()) {
 			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
 			try {
-				Set deltas = new HashSet();
+				Set<IFileDelta> deltas = new HashSet<IFileDelta>();
 				IProgressMonitor monitor = new NullProgressMonitor();
 				for (int i = 0; i < changedResources.length; i++) {
 					Object obj = changedResources[i];
@@ -267,7 +257,6 @@ public final class FilterUtil {
 			}
 		}
 
-
 		return result;
 	}
 
@@ -281,7 +270,6 @@ public final class FilterUtil {
 			if (logger.isLoggingLevel(Level.SEVERE)) {
 				LogEntry entry = ValidationPlugin.getLogEntry();
 				entry.setSourceID("FilterUtil::getFileDelta(IWorkbenchContext, ValidatorMetaData, IResource, int)"); //$NON-NLS-1$
-				entry.setMessageTypeID(ResourceConstants.VBF_EXC_SYNTAX_NULL_NAME);
 				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NULL_NAME), 
 					new Object[]{resource.getName(), vmd.getValidatorDisplayName()});
 				entry.setText(result);
@@ -314,7 +302,7 @@ public final class FilterUtil {
 	 * Add the IResource to the vmd's list of resources to validate. Return true if the add was
 	 * successful or false if the add was not successful.
 	 */
-	static boolean addToFileList(Map enabledValidators, IWorkbenchContext helper, ValidatorMetaData vmd, IResource resource, int resourceDelta, boolean isFullBuild) {
+	static boolean addToFileList(Map<ValidatorMetaData, Set<IFileDelta>> enabledValidators, IWorkbenchContext helper, ValidatorMetaData vmd, IResource resource, int resourceDelta, boolean isFullBuild) {
 		if ((vmd == null) || (resource == null)) {
 			return false;
 		}
@@ -397,10 +385,8 @@ public final class FilterUtil {
 	 * completion of the <code>validate</code>), increment the IProgressMonitor's status by one
 	 * (i.e., one resource has been processed.)
 	 */
-	static void filterOut(IProgressMonitor monitor, Map enabledValidators, IResource resource, int resourceDelta, boolean isFullBuild) {
-		if (monitor == null) {
-			return;
-		}
+	static void filterOut(IProgressMonitor monitor, Map<ValidatorMetaData, Set<IFileDelta>> enabledValidators, IResource resource, int resourceDelta, boolean isFullBuild) {
+		if (monitor == null)return;
 
 		checkCanceled(monitor);
 
@@ -470,12 +456,12 @@ public final class FilterUtil {
 	 * completion of the <code>validate</code>), increment the IProgressMonitor's status by one
 	 * (i.e., one resource has been processed.)
 	 */
-	static void filterOut(IProgressMonitor monitor, Map enabledValidators, IResource resource, IResourceDelta delta) {
+	static void filterOut(IProgressMonitor monitor, Map<ValidatorMetaData, Set<IFileDelta>> enabledValidators, 
+			IResource resource, IResourceDelta delta) {
 		// filter in only resources which have been added, deleted, or its content changed.
 		// moves will be registered as an add & delete combination
-		if (filterOut(delta)) {
-			return;
-		}
+		if (filterOut(delta))return;
+		
 		filterOut(monitor, enabledValidators, resource, delta.getKind(), false); // false =
 		// incremental
 		// build
@@ -591,17 +577,17 @@ public final class FilterUtil {
 		return true;
 	}
 
-	private static VMDResourceVisitor getResourceVisitor(IProgressMonitor monitor, Set enabledValidators) {
+	private static VMDResourceVisitor getResourceVisitor(IProgressMonitor monitor, Set<ValidatorMetaData> enabledValidators) {
 		if (_resourceVisitor == null) {
 			_resourceVisitor = new VMDResourceVisitor() {
-				private Map _vmdDeltas = null;
+				private Map<ValidatorMetaData, Set<IFileDelta>> _vmdDeltas = null;
 				private IProgressMonitor _progressMonitor = null;
 
-				public Map getResult() {
+				public Map<ValidatorMetaData, Set<IFileDelta>> getResult() {
 					return _vmdDeltas;
 				}
 
-				public void setEnabledValidators(Set validators) {
+				public void setEnabledValidators(Set<ValidatorMetaData> validators) {
 					_vmdDeltas = wrapInMap(validators);
 				}
 
@@ -630,17 +616,17 @@ public final class FilterUtil {
 		return _resourceVisitor;
 	}
 
-	private static VMDDeltaVisitor getDeltaVisitor(IProgressMonitor monitor, Set enabledValidators) {
+	private static VMDDeltaVisitor getDeltaVisitor(IProgressMonitor monitor, Set<ValidatorMetaData> enabledValidators) {
 		if (_deltaVisitor == null) {
 			_deltaVisitor = new VMDDeltaVisitor() {
-				private Map _vmdDeltas = null;
+				private Map<ValidatorMetaData, Set<IFileDelta>> _vmdDeltas = null;
 				private IProgressMonitor _progressMonitor = null;
 
-				public Map getResult() {
+				public Map<ValidatorMetaData, Set<IFileDelta>> getResult() {
 					return _vmdDeltas;
 				}
 
-				public void setEnabledValidators(Set validators) {
+				public void setEnabledValidators(Set<ValidatorMetaData> validators) {
 					_vmdDeltas = wrapInMap(validators);
 				}
 
@@ -695,13 +681,15 @@ public final class FilterUtil {
 		return _deltaVisitor;
 	}
 
-	public static Map loadDeltas(final IProgressMonitor monitor, final Set enabledValidators, IResourceDelta delta) throws CoreException {
+	public static Map<ValidatorMetaData, Set<IFileDelta>> loadDeltas(final IProgressMonitor monitor, 
+			final Set<ValidatorMetaData> enabledValidators,	IResourceDelta delta) throws CoreException {
 		VMDDeltaVisitor visitor = getDeltaVisitor(monitor, enabledValidators);
 		delta.accept(visitor, true); // true means include phantom resources
 		return visitor.getResult();
 	}
 
-	public static Map loadDeltas(final IProgressMonitor monitor, final Set enabledValidators, IProject project) throws CoreException {
+	public static Map<ValidatorMetaData, Set<IFileDelta>> loadDeltas(final IProgressMonitor monitor, 
+			final Set<ValidatorMetaData> enabledValidators,	IProject project) throws CoreException {
 		VMDResourceVisitor visitor = getResourceVisitor(monitor, enabledValidators);
 		project.accept(visitor, IResource.DEPTH_INFINITE, true); // true means include phantom
 		// resources

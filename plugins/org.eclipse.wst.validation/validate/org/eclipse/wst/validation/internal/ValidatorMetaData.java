@@ -45,37 +45,37 @@ import org.osgi.framework.Bundle;
  * ValidatorMetaData; it is for use by the base framework only.
  */
 public class ValidatorMetaData {
-	private ValidatorFilter[] _filters;
-	private ValidatorNameFilter[] _projectNatureFilters;
-	private String[] facetFilters;
-	private IValidator _validator;
-	private IWorkbenchContext _helper;
-	private String _validatorDisplayName;
-	private String _validatorUniqueName;
-	private String[] _aggregatedValidators;
-    private String[] contentTypeIds = null;
-	private String[] _validatorNames;
-	private String _pluginId;
-	private boolean _supportsIncremental = RegistryConstants.ATT_INCREMENTAL_DEFAULT;
-	private boolean _supportsFullBuild = RegistryConstants.ATT_FULLBUILD_DEFAULT;
-	private Logger _logger;
-	private boolean _isEnabledByDefault = RegistryConstants.ATT_ENABLED_DEFAULT;
+	private ValidatorFilter[] 		_filters;
+	private ValidatorNameFilter[] 	_projectNatureFilters;
+	private String[] 				_facetFilters;
+	private IValidator 				_validator;
+	private IWorkbenchContext 		_helper;
+	private String 					_validatorDisplayName;
+	private String 			_validatorUniqueName;
+	private String[] 		_aggregatedValidators;
+    private String[] 		_contentTypeIds = null;
+	private String[] 		_validatorNames;
+	private String 			_pluginId;
+	private boolean 		_supportsIncremental = RegistryConstants.ATT_INCREMENTAL_DEFAULT;
+	private boolean 		_supportsFullBuild = RegistryConstants.ATT_FULLBUILD_DEFAULT;
+	private Logger 			_logger;
+	private boolean 		_isEnabledByDefault = RegistryConstants.ATT_ENABLED_DEFAULT;
 	private MigrationMetaData _migrationMetaData;
-	private int _ruleGroup = RegistryConstants.ATT_RULE_GROUP_DEFAULT;
-	private boolean _async = RegistryConstants.ATT_ASYNC_DEFAULT;
-	private boolean dependentValidator = RegistryConstants.DEP_VAL_VALUE_DEFAULT;
-	private String[] markerIds;
-	private String _helperClassName;
+	private int 			_ruleGroup = RegistryConstants.ATT_RULE_GROUP_DEFAULT;
+	private boolean 		_async = RegistryConstants.ATT_ASYNC_DEFAULT;
+	private boolean 		_dependentValidator = RegistryConstants.DEP_VAL_VALUE_DEFAULT;
+	private String[] 		_markerIds;
+	private String 			_helperClassName;
 	private IConfigurationElement _helperClassElement;
 	private IConfigurationElement _validatorClassElement;
-	private boolean _cannotLoad = false;
-	private boolean manualValidation = true;
-	private boolean buildValidation = true;
-	private Map helpers = Collections.synchronizedMap( new HashMap() );
-	private Expression enablementExpression;
+	private boolean 		_cannotLoad;
+	private boolean 		_manualValidation = true;
+	private boolean 		_buildValidation = true;
+	private Map<IValidatorJob, IWorkbenchContext> _helpers = 
+		Collections.synchronizedMap( new HashMap<IValidatorJob, IWorkbenchContext>() );
+	private Expression 		_enablementExpression;
 
 	ValidatorMetaData() {
-		//default
 	}
 
 	/**
@@ -105,23 +105,21 @@ public class ValidatorMetaData {
 	 * Add the facet  filter(s).
 	 */
 	protected void addFacetFilters(String[] filters) {
-		facetFilters = filters;
+		_facetFilters = filters;
 	}
 	
 	protected String[] getFacetFilters() {
-		return facetFilters;
+		return _facetFilters;
 	}
 
-	public List getNameFilters() {
-		List nameFilters = new ArrayList();
+	public List<String> getNameFilters() {
+		List<String> nameFilters = new ArrayList<String>();
 		if (_filters != null && _filters.length > 0) {
-			for (int i = 0; i < _filters.length; i++) {
-				ValidatorFilter filter = _filters[i];
+			for (ValidatorFilter filter : _filters) {
 				ValidatorNameFilter nameFilter = filter.get_nameFilter();
 				if (nameFilter != null) {
 					nameFilters.add(nameFilter.getNameFilter());
 				}
-
 			}
 		}
 		return nameFilters;
@@ -493,51 +491,36 @@ public class ValidatorMetaData {
 		private Set _ids = null;
 
 		public MigrationMetaData() {
-			//default
 		}
 
+		@SuppressWarnings("unchecked")
 		public void addId(String oldId, String newId) {
-			if (oldId == null) {
-				// log
-				return;
-			}
-
-			if (newId == null) {
-				// log
-				return;
-			}
+			if (oldId == null)return;
+			if (newId == null)return;
 
 			String[] ids = new String[]{oldId, newId};
 			getIds().add(ids);
 		}
 
 		public Set getIds() {
-			if (_ids == null) {
-				_ids = new HashSet();
-			}
+			if (_ids == null)_ids = new HashSet();
 			return _ids;
 		}
 	}
 
-	/**
-	 * @param b
-	 */
 	public void addDependentValidator(boolean b) {
-		dependentValidator = b;
+		_dependentValidator = b;
 	}
 
-	/**
-	 * @param b
-	 */
 	public boolean isDependentValidator() {
-		return dependentValidator;
+		return _dependentValidator;
 	}
 
 	/**
 	 * @return Returns the markerId.
 	 */
 	public String[] getMarkerIds() {
-		return markerIds;
+		return _markerIds;
 	}
 
 	/**
@@ -545,23 +528,23 @@ public class ValidatorMetaData {
 	 *            The markerId to set.
 	 */
 	public void setMarkerIds(String[] markerId) {
-		this.markerIds = markerId;
+		this._markerIds = markerId;
 	}
 
 	public boolean isBuildValidation() {
-		return buildValidation;
+		return _buildValidation;
 	}
 
 	public void setBuildValidation(boolean buildValidation) {
-		this.buildValidation = buildValidation;
+		this._buildValidation = buildValidation;
 	}
 
 	public boolean isManualValidation() {
-		return manualValidation;
+		return _manualValidation;
 	}
 
 	public void setManualValidation(boolean manualValidation) {
-		this.manualValidation = manualValidation;
+		this._manualValidation = manualValidation;
 	}
   
 	/**
@@ -588,15 +571,15 @@ public class ValidatorMetaData {
 	}	  
 	
    public void addHelper( IValidatorJob validator, IWorkbenchContext helper ){
-	   helpers.put( validator, helper );
+	   _helpers.put( validator, helper );
    }
    
    public void removeHelper( IValidatorJob validator ){
-	   helpers.remove( validator );
+	   _helpers.remove( validator );
    }
    
    private IWorkbenchContext getHelper( IValidatorJob validator ){
-	   return (IWorkbenchContext)helpers.get( validator );
+	   return _helpers.get( validator );
    }   
    
    public IWorkbenchContext getHelper( IProject project, IValidator validator ){
@@ -626,19 +609,19 @@ public class ValidatorMetaData {
    }   
    
    public Expression getEnablementExpresion() {
-		return enablementExpression;
+		return _enablementExpression;
 	}
 
    public void setEnablementElement(Expression enablementElement) {
-	 enablementExpression = enablementElement;
+	 _enablementExpression = enablementElement;
 	}
 
 public String[] getContentTypeIds() {
-	return contentTypeIds;
+	return _contentTypeIds;
 }
 
 public void setContentTypeIds(String[] contentTypeIds) {
-	this.contentTypeIds = contentTypeIds;
+	this._contentTypeIds = contentTypeIds;
 }
 
  

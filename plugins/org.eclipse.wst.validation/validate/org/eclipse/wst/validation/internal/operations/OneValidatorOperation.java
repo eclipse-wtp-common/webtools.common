@@ -117,7 +117,7 @@ public class OneValidatorOperation extends ValidatorSubsetOperation {
 			throw new IllegalArgumentException(validatorId);
 		}
 
-		Set enabled = new HashSet();
+		Set<ValidatorMetaData> enabled = new HashSet<ValidatorMetaData>();
 		enabled.add(vmd);
 		setEnabledValidators(enabled);
 	}

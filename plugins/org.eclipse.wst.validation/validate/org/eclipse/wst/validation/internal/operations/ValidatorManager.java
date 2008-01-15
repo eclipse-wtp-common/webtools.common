@@ -57,19 +57,21 @@ public final class ValidatorManager {
 	// MOF objects.
 	private static final Class RESOURCEUTIL_DEFAULTCLASS = org.eclipse.wst.validation.internal.operations.DefaultResourceUtil.class;
 	private static Class _resourceUtilClass = RESOURCEUTIL_DEFAULTCLASS;
-	private static final Set EMPTY_SET = Collections.EMPTY_SET; // an empty set, provided for
-	// convenience, so that we only
-	// construct one empty set once.
-	private Set _suspendedProjects;
-	private boolean _suspendAllValidation = false;
-	private static Class _messageLimitOwner;
-	private String[] _internalOwners;
-	private Map validatorMsgs = Collections.synchronizedMap( new HashMap() );	
-	private Set problemValidators = new HashSet();	
+		
+	// an empty set, provided for convenience, so that we only construct one empty set once.
+	private static final Set<ValidatorMetaData> EMPTY_SET = new HashSet<ValidatorMetaData>();
+	
+	private Set<IProject> 	_suspendedProjects;
+	private boolean 		_suspendAllValidation = false;
+	private static Class 	_messageLimitOwner;
+	private String[] 		_internalOwners;
+	private Map<IValidatorJob, List<MessageInfo>> _validatorMsgs = 
+		Collections.synchronizedMap( new HashMap<IValidatorJob, List<MessageInfo>>() );	
+	private Set<ValidatorMetaData> _problemValidators = new HashSet<ValidatorMetaData>();	
 	
 	private ValidatorManager() {
 		super();
-		_suspendedProjects = new HashSet();
+		_suspendedProjects = new HashSet<IProject>();
 		_internalOwners = new String[0];
 
 		addInternalOwner(getMessageLimitOwner());
@@ -475,12 +477,10 @@ public final class ValidatorManager {
 	/**
 	 * @deprecated For use by the validation framework only.
 	 */
-	public Set getIncrementalValidators(Collection vmds) {
-		if (vmds == null) {
-			return Collections.EMPTY_SET;
-		}
+	public Set<ValidatorMetaData> getIncrementalValidators(Collection vmds) {
+		if (vmds == null)return new HashSet<ValidatorMetaData>();
 
-		Set result = new HashSet();
+		Set<ValidatorMetaData> result = new HashSet<ValidatorMetaData>();
 		Iterator iterator = vmds.iterator();
 		while (iterator.hasNext()) {
 			ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
@@ -625,21 +625,18 @@ public final class ValidatorManager {
 	 * Given a checked list of enabled validators, return a set of the ones which are configured on
 	 * the project and, if getIncremental is true, which also run incrementally.
 	 */
-	public Set getProjectConfiguredValidators(IProject project, Object[] enabledVal, boolean getIncremental) {
+	public Set<ValidatorMetaData> getProjectConfiguredValidators(IProject project, Object[] enabledVal, 
+			boolean getIncremental) {
 		if ((project == null) || (enabledVal == null) || (enabledVal.length == 0)) {
-			return Collections.EMPTY_SET;
+			return new HashSet<ValidatorMetaData>();
 		}
 
-		Set val = new HashSet();
+		Set<ValidatorMetaData> val = new HashSet<ValidatorMetaData>();
 		for (int i = 0; i < enabledVal.length; i++) {
 			ValidatorMetaData vmd = (ValidatorMetaData) enabledVal[i];
-			if (!vmd.isConfiguredOnProject(project)) {
-				continue;
-			}
+			if (!vmd.isConfiguredOnProject(project))continue;
 
-			if (!getIncremental || vmd.isIncremental()) {
-				val.add(vmd);
-			}
+			if (!getIncremental || vmd.isIncremental())val.add(vmd);
 		}
 		return val;
 	}
@@ -690,22 +687,21 @@ public final class ValidatorManager {
 	}
 
 	private ValidatorMetaData[] getStateOfProjectLevelValidatorsFromGlobal(ProjectConfiguration prjp) throws InvocationTargetException {
-		List enabledGlobalValidatorsForProject = new ArrayList();
+		List<ValidatorMetaData> enabledGlobalValidatorsForProject = new ArrayList<ValidatorMetaData>();
 		GlobalConfiguration gf = ConfigurationManager.getManager().getGlobalConfiguration();
 		List allProjectValidator = getAllValidatorUniqueNames(prjp.getValidators());
-		ValidatorMetaData[] vmd = gf.getBuildEnabledValidators();
-		for(int i = 0; i < vmd.length; i++) {
-			if(allProjectValidator.contains(vmd[i].getValidatorUniqueName())) {
-				enabledGlobalValidatorsForProject.add(vmd[i]);
+		for(ValidatorMetaData vmd : gf.getBuildEnabledValidators()) {
+			if(allProjectValidator.contains(vmd.getValidatorUniqueName())) {
+				enabledGlobalValidatorsForProject.add(vmd);
 			}
 	   }
 		return (ValidatorMetaData[]) enabledGlobalValidatorsForProject.toArray(new ValidatorMetaData[enabledGlobalValidatorsForProject.size()]);
 	}
 	
-	private List getAllValidatorUniqueNames(ValidatorMetaData[] metaData) {
-		List names = new ArrayList();
-		for(int i = 0; i < metaData.length; i++) {
-			names.add(metaData[i].getValidatorUniqueName());
+	private List<String> getAllValidatorUniqueNames(ValidatorMetaData[] metaData) {
+		List<String> names = new ArrayList<String>();
+		for(ValidatorMetaData vmd : metaData) {
+			names.add(vmd.getValidatorUniqueName());
 		}
 		return names;
 	}
@@ -946,13 +942,9 @@ public final class ValidatorManager {
 	 * org.eclipse.wst.validation.internal.provisional.core.core.prop plugin). If you don't, validation may not be suspended.
 	 */
 	public void suspendValidation(IProject project, boolean suspend) {
-		if (project == null) {
-			return;
-		}
+		if (project == null)return;
 
-		if (!project.exists()) {
-			return;
-		}
+		if (!project.exists())return;
 
 		// Ignore whether or not the project is closed. If it's closed then it will not be built
 		// and the "Run Validation" option will not be available.
@@ -994,14 +986,8 @@ public final class ValidatorManager {
 	 * will return true even though validation will not run.
 	 */
 	public boolean isSuspended(IProject project) {
-		if (project == null) {
-			return false;
-		}
-
-		if (_suspendAllValidation) {
-			return true;
-		}
-
+		if (project == null)return false;
+		if (_suspendAllValidation)return true;
 		return _suspendedProjects.contains(project);
 	}
 
@@ -1028,7 +1014,7 @@ public final class ValidatorManager {
 	 * Given a list of validators' plugin ids, make those validators enabled for this project. All
 	 * others, disable for this project.
 	 */
-	public void setEnabledValidators(IProject project, Set vmdsSet, IProgressMonitor monitor) {
+	public void setEnabledValidators(IProject project, Set<ValidatorMetaData> vmdsSet, IProgressMonitor monitor) {
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			ValidatorMetaData[] vmds = null;
@@ -1208,32 +1194,31 @@ public final class ValidatorManager {
 	}
 	
 	public void cacheMessage(IValidatorJob validator, MessageInfo info){
-		ArrayList list = (ArrayList) validatorMsgs.get(validator);
+		List<MessageInfo> list = _validatorMsgs.get(validator);
 		if( list == null ){
-			list = new ArrayList();
-			validatorMsgs.put(validator, list);
+			list = new ArrayList<MessageInfo>();
+			_validatorMsgs.put(validator, list);
 		}
 		list.add(info);
 	}
 	
-	public ArrayList getMessages(IValidatorJob validator){
-		ArrayList list = (ArrayList) validatorMsgs.get(validator);
-		if( list == null )
-			list = new ArrayList();		
+	public List getMessages(IValidatorJob validator){
+		List<MessageInfo> list = _validatorMsgs.get(validator);
+		if( list == null )list = new ArrayList<MessageInfo>();		
 		return list;
 	}
 	
 	public void clearMessages(IValidatorJob validator){
-		ArrayList list = (ArrayList) validatorMsgs.get(validator);
+		List<MessageInfo> list = _validatorMsgs.get(validator);
 		if( list != null ){
 			list.clear();
 		}
-		validatorMsgs.remove( validator );
+		_validatorMsgs.remove( validator );
 	}
 
 	
-	public Set getProblemValidators() {
-		return problemValidators;
+	public Set<ValidatorMetaData> getProblemValidators() {
+		return _problemValidators;
 	}
 	
 }

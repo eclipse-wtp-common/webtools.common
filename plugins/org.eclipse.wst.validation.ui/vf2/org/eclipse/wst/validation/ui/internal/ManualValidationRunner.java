@@ -11,12 +11,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.wst.validation.ValidationResult;
 import org.eclipse.wst.validation.internal.ValOperation;
 import org.eclipse.wst.validation.internal.ValidationRunner;
+import org.eclipse.wst.validation.ui.internal.dialog.ResultsDialog;
 
 /**
  * Run a manual validation. 
@@ -59,7 +58,14 @@ public class ManualValidationRunner extends WorkspaceJob {
 
 	public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
 		
+		long start = System.currentTimeMillis();
 		final ValOperation vo = ValidationRunner.validate(_projects, _isManual, _isBuild, monitor);
+		final long time = System.currentTimeMillis() - start;
+		int resourceCount = 0;
+		for (Set s : _projects.values()){
+			resourceCount += s.size();
+		}
+		final int finalResourceCount = resourceCount;
 		if (vo.getResult().isCanceled())return Status.CANCEL_STATUS;
 		
 		if (_showResults){
@@ -69,18 +75,20 @@ public class ManualValidationRunner extends WorkspaceJob {
 				public void run() {
 					String message = null;
 					ValidationResult vr = vo.getResult();
-					if (vr.getSeverityError() + vr.getSeverityWarning() + vr.getSeverityInfo() == 0){
-						message = ValUIMessages.ValidationSuccessful;
-					}
-					else {
-						
-						String[] parms = new String[3];
-						parms[0] = _nf.format(vr.getSeverityError());
-						parms[1] = _nf.format(vr.getSeverityWarning());
-						parms[2] = _nf.format(vr.getSeverityInfo());
-						message = NLS.bind(ValUIMessages.ErrSummary, parms); 
-					}
-					MessageDialog.openInformation(null, ValUIMessages.ValidationStatus, message);					
+					ResultsDialog rd = new ResultsDialog(null, vr, time, finalResourceCount);
+					rd.open();
+//					if (vr.getSeverityError() + vr.getSeverityWarning() + vr.getSeverityInfo() == 0){
+//						message = ValUIMessages.ValidationSuccessful;
+//					}
+//					else {
+//						
+//						String[] parms = new String[3];
+//						parms[0] = _nf.format(vr.getSeverityError());
+//						parms[1] = _nf.format(vr.getSeverityWarning());
+//						parms[2] = _nf.format(vr.getSeverityInfo());
+//						message = NLS.bind(ValUIMessages.ErrSummary, parms); 
+//					}
+//					MessageDialog.openInformation(null, ValUIMessages.ValidationStatus, message);					
 				}
 				
 			};
