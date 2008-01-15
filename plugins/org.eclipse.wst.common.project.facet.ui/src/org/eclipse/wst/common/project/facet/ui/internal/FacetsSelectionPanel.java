@@ -83,7 +83,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -125,11 +124,6 @@ public final class FacetsSelectionPanel
     implements ISelectionProvider
 
 {
-    // Needed to workaround a problem in SWT.
-    // https://bugs.eclipse.org/bugs/show_bug.cgi?id=215095
-    
-    private static final boolean WIN_32 = SWT.getPlatform().equals( "win32" ); //$NON-NLS-1$
-    
     private static final String WIDTH = "width"; //$NON-NLS-1$
     private static final String HEIGHT = "height"; //$NON-NLS-1$
     private static final String CW_FACET = "cw.facet"; //$NON-NLS-1$
@@ -315,13 +309,7 @@ public final class FacetsSelectionPanel
         
         this.tree.setHeaderVisible( true );
         
-        if( WIN_32 )
-        {
-            // Needed to workaround a problem in SWT.
-            // https://bugs.eclipse.org/bugs/show_bug.cgi?id=215095
-
-            OS.SetWindowLong(this.tree.handle,OS.GWL_STYLE,OS.GetWindowLong(this.tree.handle,OS.GWL_STYLE) | OS.TVS_HASLINES);
-        }
+        workAroundBug215095();
         
         final FocusCellHighlighter focusCellHiglighter 
             = new CustomFocusCellHighlighter( this.treeViewer );
@@ -1207,6 +1195,38 @@ public final class FacetsSelectionPanel
         }
         
         return max( maxVersionStringWidth, columnLabelWidth );
+    }
+    
+    // Needed to workaround a problem in SWT.
+    // https://bugs.eclipse.org/bugs/show_bug.cgi?id=215095
+    
+    @SuppressWarnings( "unchecked" )
+    private void workAroundBug215095()
+    {
+        if( SWT.getPlatform().equals( "win32" ) ) //$NON-NLS-1$
+        {
+            // Using reflection to make the following API call that will only compile on Win32.
+            // OS.SetWindowLong(this.tree.handle,OS.GWL_STYLE,OS.GetWindowLong(this.tree.handle,OS.GWL_STYLE) | OS.TVS_HASLINES);
+            
+            final int GWL_STYLE = 0xfffffff0;
+            final int TVS_HASLINES = 0x2;
+            
+            try
+            {
+                final Class win32OSClass = Class.forName( "org.eclipse.swt.internal.win32.OS" ); //$NON-NLS-1$
+                final Method getWindowLong = win32OSClass.getMethod( "GetWindowLong", new Class[] { int.class, int.class } ); //$NON-NLS-1$
+                final Method setWindowLong = win32OSClass.getMethod( "SetWindowLong", new Class[] { int.class, int.class, int.class } ); //$NON-NLS-1$
+                
+                int style = ( (Integer) getWindowLong.invoke( null, this.tree.handle, GWL_STYLE ) ).intValue();
+                style = style | TVS_HASLINES;
+                
+                setWindowLong.invoke( null, this.tree.handle, GWL_STYLE, style );
+            }
+            catch( Exception e )
+            {
+                FacetUiPlugin.log( e );
+            }
+        }
     }
 
     private final class ContentProvider
