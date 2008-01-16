@@ -270,4 +270,8 @@ public class DependencyGraphManager {
 	public boolean checkIfStillValid(long timeStamp) {
 		return (getModStamp() == timeStamp && !metadataChanged());
 	}
+	
+	public boolean checkIfModuleTimeStampsStillValid(long timeStamp) {
+		return (getModStamp() == timeStamp && !moduleTimeStampsChanged());
+	}	
 }
