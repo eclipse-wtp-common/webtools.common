@@ -1004,7 +1004,8 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 			publicId = docType.getPublicId();
 			systemId = docType.getSystemId();
 		}
-		if (!(StringUtil.stringsEqual(publicId, resource.getPublicId()) && StringUtil.stringsEqual(systemId, resource.getSystemId())))
+		if ((!(StringUtil.stringsEqual(publicId, resource.getPublicId()) && StringUtil.stringsEqual(systemId, resource.getSystemId()))) || 
+				((resource.getPublicId() == null) || resource.getSystemId() == null))
 			resource.setDoctypeValues(publicId, systemId);
 	}
 
