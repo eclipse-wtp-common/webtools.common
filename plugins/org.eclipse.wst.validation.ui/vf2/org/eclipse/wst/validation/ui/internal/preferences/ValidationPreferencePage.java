@@ -68,8 +68,6 @@ import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.model.GlobalPreferences;
 import org.eclipse.wst.validation.internal.ui.ContextIds;
 import org.eclipse.wst.validation.internal.ui.DelegatingValidatorPreferencesDialog;
-import org.eclipse.wst.validation.internal.ui.ResourceConstants;
-import org.eclipse.wst.validation.internal.ui.ResourceHandler;
 import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;
 import org.eclipse.wst.validation.ui.internal.ImageNames;
 import org.eclipse.wst.validation.ui.internal.ValUIMessages;
@@ -501,7 +499,7 @@ public class ValidationPreferencePage extends PreferencePage implements
 			
 			_override = new Button(validatorGroup, SWT.CHECK);
 			_override.setLayoutData(gd);
-			_override.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.PREF_BUTTON_OVERRIDE));
+			_override.setText(ValUIMessages.PREF_BUTTON_OVERRIDE);
 			_override.setEnabled(true);
 			_override.setSelection(_globalPreferences.getOverride());
 			_override.addSelectionListener(new SelectionAdapter() {

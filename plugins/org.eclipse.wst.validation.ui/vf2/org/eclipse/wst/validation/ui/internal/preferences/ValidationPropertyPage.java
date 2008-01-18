@@ -76,8 +76,6 @@ import org.eclipse.wst.validation.internal.operations.ValidatorManager;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.ui.ContextIds;
 import org.eclipse.wst.validation.internal.ui.DelegatingValidatorPreferencesDialog;
-import org.eclipse.wst.validation.internal.ui.ResourceConstants;
-import org.eclipse.wst.validation.internal.ui.ResourceHandler;
 import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;
 import org.eclipse.wst.validation.ui.internal.ImageNames;
 import org.eclipse.wst.validation.ui.internal.ValUIMessages;
@@ -453,7 +451,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 			GridData layout = new GridData(GridData.HORIZONTAL_ALIGN_END);
 			_configLink.setLayoutData(layout);
 			_configLink.setText("<A>"+ //$NON-NLS-1$
-				ResourceHandler.getExternalizedMessage(ResourceConstants.CONFIG_WS_SETTINGS)+"</A>"); //$NON-NLS-1$
+				ValUIMessages.ConfigWsSettings+"</A>"); //$NON-NLS-1$
 			_configLink.addSelectionListener(new SelectionListener() {
 				public static final String DATA_NO_LINK = "PropertyAndPreferencePage.nolink"; //$NON-NLS-1$
 

@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.delegates.ValidatorDelegateDescriptor;
 import org.eclipse.wst.validation.internal.delegates.ValidatorDelegatesRegistry;
+import org.eclipse.wst.validation.ui.internal.ValUIMessages;
 
 /**
  * Dialog used to allow the user to select a validator delegate from the list of
@@ -81,7 +82,7 @@ public class DelegatingValidatorPreferencesDialog extends Dialog
   {
     super.createDialogArea(parent);
 
-    getShell().setText(ResourceHandler.getExternalizedMessage(ResourceConstants.DELEGATES_DIALOG_TITLE));
+    getShell().setText(ValUIMessages.DelegatesDialogTitle);
 
     GridLayout layout = new GridLayout();
     parent.setLayout(layout);
@@ -106,7 +107,7 @@ public class DelegatingValidatorPreferencesDialog extends Dialog
 
     Label comboLabel = new Label(group, SWT.NONE);
     comboLabel.setLayoutData(new GridData());
-    comboLabel.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.DELEGATES_COMBO_LABEL));
+    comboLabel.setText(ValUIMessages.DelegatesComboLabel);
     
     Combo combo = new Combo(group, SWT.READ_ONLY);
     GridData comboGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);

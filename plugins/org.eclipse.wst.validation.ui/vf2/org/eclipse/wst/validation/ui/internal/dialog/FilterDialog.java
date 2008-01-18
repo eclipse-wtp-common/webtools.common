@@ -35,8 +35,6 @@ import org.eclipse.wst.validation.internal.delegates.ValidatorDelegatesRegistry;
 import org.eclipse.wst.validation.internal.model.FilterGroup;
 import org.eclipse.wst.validation.internal.model.FilterRule;
 import org.eclipse.wst.validation.internal.model.ValidatorHelper;
-import org.eclipse.wst.validation.internal.ui.ResourceConstants;
-import org.eclipse.wst.validation.internal.ui.ResourceHandler;
 import org.eclipse.wst.validation.ui.internal.AdapterFactory;
 import org.eclipse.wst.validation.ui.internal.ValUIMessages;
 
@@ -246,7 +244,7 @@ public class FilterDialog extends Dialog {
 		line.setLayout(new RowLayout(SWT.HORIZONTAL));
 
 		Label label = new Label(line, SWT.CENTER);
-		label.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.DELEGATES_COMBO_LABEL));
+		label.setText(ValUIMessages.DelegatesComboLabel);
 
 				
 		_delegating = new Combo(line, SWT.READ_ONLY);

@@ -16,6 +16,10 @@ public class ValUIMessages extends NLS {
 	public static String PREF_MNU_BUILD;
 	public static String PREF_MNU_SETTINGS;
 	
+	public static String ConfigWsSettings;
+	public static String DelegatesDialogTitle;
+	public static String DelegatesComboLabel;
+	
 	public static String VBF_EXC_INTERNAL_TITLE;
 	public static String VBF_EXC_INTERNAL_PAGE;
 	public static String VBF_EXC_INVALID_REGISTER;

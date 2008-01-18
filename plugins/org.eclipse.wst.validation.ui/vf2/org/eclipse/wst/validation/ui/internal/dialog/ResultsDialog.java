@@ -1,5 +1,6 @@
 package org.eclipse.wst.validation.ui.internal.dialog;
 
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IconAndMessageDialog;
 import org.eclipse.osgi.util.NLS;
@@ -37,6 +38,15 @@ public class ResultsDialog extends IconAndMessageDialog {
 		_result = results;
 		_time = time;
 		_resourceCount = resourceCount;
+	}
+	
+	@Override
+	public int open() {
+		if (!ErrorDialog.AUTOMATED_MODE) {
+			return super.open();
+		}
+		setReturnCode(OK);
+		return OK;
 	}
 	
 	@Override
