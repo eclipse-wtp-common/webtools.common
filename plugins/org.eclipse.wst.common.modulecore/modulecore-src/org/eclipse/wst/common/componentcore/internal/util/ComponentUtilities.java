@@ -314,14 +314,22 @@ public class ComponentUtilities {
 		comp.setMetaProperty(IModuleConstants.CONTEXTROOT, contextRoot);
 	}
 
+	/**
+	 * @deprecated use {@link #getDeployUriOfComponent(IVirtualReference, String)}
+	 * @param reference
+	 * @return
+	 */
 	public static String getDeployUriOfUtilComponent(IVirtualReference reference){
+		return ComponentUtilities.getDeployUriOfComponent(reference, ".jar"); //$NON-NLS-1$
+	}
+
+	public static String getDeployUriOfComponent(IVirtualReference reference, String extension) {
 		String archiveName = reference.getArchiveName();
 		String uri = null;
-		if( archiveName != null && archiveName != "" ){ //$NON-NLS-1$
+		if( archiveName != null && !archiveName.equals("") ){ //$NON-NLS-1$
 			uri = reference.getRuntimePath() + "/" + reference.getArchiveName(); //$NON-NLS-1$
 		}else{
-			uri = reference.getRuntimePath() + "/" + reference.getReferencedComponent().getProject().getName() + ".jar"; //$NON-NLS-1$ //$NON-NLS-2$
+			uri = reference.getRuntimePath() + "/" + reference.getReferencedComponent().getProject().getName() + extension; //$NON-NLS-1$
 		}
 		return uri;
-	}
-}
+	}}
