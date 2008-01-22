@@ -6,7 +6,11 @@
          <meta.schema plugin="org.eclipse.wst.internet.cache" id="cacheresource" name="Cache Resource"/>
       </appInfo>
       <documentation>
-         The cache resource extension point allows clients to specify resources that may be cached that require licenses to be accepted prior to caching.
+         Deprecated. No longer used in WTP, and will be removed. 
+
+The cache resource extension point allows clients to specify resources that may be cached that require licenses to be accepted prior to caching.
+
+Deprecated. No longer used in WTP, and will be removed. 
       </documentation>
    </annotation>
 
@@ -87,23 +91,7 @@
       </documentation>
    </annotation>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="apiInfo"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="implementation"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
 
    <annotation>
       <appInfo>
