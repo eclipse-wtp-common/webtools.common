@@ -766,7 +766,7 @@ public class ModifyFacetedProjectWizard
                                  final String pjname )
         {
             final Action action = getAction( type, fv );
-            return action.getConfig();
+            return action != null ? action.getConfig() : null;
         }
     }
     
