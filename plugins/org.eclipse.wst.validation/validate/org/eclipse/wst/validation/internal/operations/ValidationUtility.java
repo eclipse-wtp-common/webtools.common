@@ -13,14 +13,11 @@ package org.eclipse.wst.validation.internal.operations;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.ConfigurationConstants;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
@@ -55,14 +52,8 @@ public final class ValidationUtility {
 					continue;
 				}
 				tempSet.add((String)owner);
-			} catch (CoreException exc) {
-				Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-				if (logger.isLoggingLevel(Level.SEVERE)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("ValidationUtility.listValidatorClasses(" + resource.getName() + ", " + severity); //$NON-NLS-1$  //$NON-NLS-2$
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
+			} catch (CoreException e) {
+				ValidationPlugin.getPlugin().handleException(e);
 			}
 		}
 
@@ -100,19 +91,9 @@ public final class ValidationUtility {
 					return false;
 				}
 			}
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidationUtility::isEnabled(" + project.getName() + ", String[])"); //$NON-NLS-1$  //$NON-NLS-2$  
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			ValidationPlugin.getPlugin().handleException(e.getTargetException());
 			return false;
 		}
 

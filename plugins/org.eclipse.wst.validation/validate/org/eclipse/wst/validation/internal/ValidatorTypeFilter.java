@@ -11,12 +11,8 @@
 package org.eclipse.wst.validation.internal;
 
 import java.text.MessageFormat;
-import java.util.logging.Level;
 
 import org.eclipse.core.resources.IResource;
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
-import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 /**
  * Represents a type filter tag in a validator's plugin.xml file. e.g. &lt;filter
@@ -121,27 +117,17 @@ public class ValidatorTypeFilter {
 				// If the filter class is not an instance of mustImplementClass
 				if (!isInstance(filterClass, mustImplementClass)) {
 					_typeFilterClass = null;
-					Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-					if (logger.isLoggingLevel(Level.FINE)) {
-						LogEntry entry = ValidationPlugin.getLogEntry();
-						entry.setSourceID("ValidatorTypeFilter.setTypeFilter(String)"); //$NON-NLS-1$
-						entry.setMessageTypeID(ResourceConstants.VBF_EXC_INVALID_TYPE_FILTER);
+					if (Misc.isLogging()) {
 						String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INVALID_TYPE_FILTER), 
-								new Object[]{filter, getMustImplementClass()});
-						entry.setText(result);						
-						//entry.setTokens(new String[]{filter, getMustImplementClass()});
-						logger.write(Level.FINE, entry);
+							new Object[]{filter, getMustImplementClass()});
+						Misc.log(result);						
 					}
 				}
 			}
 		} catch (ClassNotFoundException exc) {
 			_typeFilterClass = null;
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.FINE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidatorTypeFilter.setTypeFilter(String)"); //$NON-NLS-1$
-				entry.setText("The class named " + filter + " cannot be instantiated because it does not exist. Check the spelling of the name, in the validator's plugin.xml contribution, and try restarting eclipse again."); //$NON-NLS-1$  //$NON-NLS-2$
-				logger.write(Level.FINE, entry);
+			if (Misc.isLogging()) {
+				Misc.log("The class named " + filter + " cannot be instantiated because it does not exist. Check the spelling of the name, in the validator's plugin.xml contribution, and try restarting eclipse again."); //$NON-NLS-1$  //$NON-NLS-2$
 			}
 			return;
 		}

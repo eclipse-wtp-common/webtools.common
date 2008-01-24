@@ -21,23 +21,57 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.jem.util.RegistryReader;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.validation.internal.operations.ReferencialFileValidator;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 /**
  * @author vijayb
  */
-public class ReferencialFileValidatorRegistryReader extends RegistryReader {
+public class ReferencialFileValidatorRegistryReader {
 	static ReferencialFileValidatorRegistryReader instance;
 	
 	private static final String Id = "id"; //$NON-NLS-1$
+	private static final String ExtensionPoint = "referencialFileValidator"; //$NON-NLS-1$
 	
 	protected List<ReferencialFileValidatorExtension> referencialFileValidationExtensions;
 
 	public ReferencialFileValidatorRegistryReader() {
-		super(ValidationPlugin.PLUGIN_ID, "referencialFileValidator"); //$NON-NLS-1$
 	}
+	
+	/**
+	 * Read the extension point and parse it.
+	 */
+	public void readRegistry() {
+		IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(Id, ExtensionPoint);
+		if (point == null)return;
+		IConfigurationElement[] elements = point.getConfigurationElements();
+		for (int i = 0; i < elements.length; i++) {
+			internalReadElement(elements[i]);
+		}
+	}
+	
+	private void internalReadElement(IConfigurationElement element) {
+		boolean recognized = this.readElement(element);
+		if (!recognized) {
+			logError(element, "Error processing extension: " + element); //$NON-NLS-1$
+		}
+	}
+
+	/*
+	 * Logs the error in the desktop log using the provided text and the information in the configuration element.
+	 */
+	protected void logError(IConfigurationElement element, String text) {
+		IExtension extension = element.getDeclaringExtension();
+		StringBuffer buf = new StringBuffer();
+		buf.append("Plugin " + extension.getContributor().getName() + ", extension " + extension.getExtensionPointUniqueIdentifier()); //$NON-NLS-1$ //$NON-NLS-2$
+		buf.append("\n" + text); //$NON-NLS-1$
+		ValidationPlugin.getPlugin().logMessage(IStatus.ERROR, buf.toString());
+	}
+
 
 	/*
 	 * (non-Javadoc)

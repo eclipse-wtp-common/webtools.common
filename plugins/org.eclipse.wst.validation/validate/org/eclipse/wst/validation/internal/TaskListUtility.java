@@ -11,7 +11,6 @@
 package org.eclipse.wst.validation.internal;
 
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -19,8 +18,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 
@@ -283,14 +280,8 @@ public class TaskListUtility implements ConfigurationConstants {
 			}
 
 			return ((String) owner).equals(ownerId);
-		} catch (CoreException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("TaskListUtility.isOwner(IMarker, ownerId)"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (CoreException e) {
+			ValidationPlugin.getPlugin().handleException(e);
 			return false;
 		}
 	}
@@ -302,25 +293,11 @@ public class TaskListUtility implements ConfigurationConstants {
 			IMarker[] allMarkers = null;
 			try {
 				allMarkers = resource.findMarkers(VALIDATION_MARKER, true, depth); // false means
-				// only consider
-				// PROBLEM_MARKER,
-				// not variants
-				// of
-				// PROBLEM_MARKER.
-				// Since addTask
-				// only adds
-				// PROBLEM_MARKER,
-				// we don't need
-				// to consider
-				// its subtypes.
-			} catch (CoreException exc) {
-				Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-				if (logger.isLoggingLevel(Level.SEVERE)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("TaskListUtility.getValidationTasks(IResource, int)"); //$NON-NLS-1$
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
+				// only consider PROBLEM_MARKER, not variants of PROBLEM_MARKER.
+				// Since addTask only adds PROBLEM_MARKER, we don't need
+				// to consider its subtypes.
+			} catch (CoreException e) {
+				ValidationPlugin.getPlugin().handleException(e);
 				return NO_MARKERS;
 			}
 
@@ -335,23 +312,11 @@ public class TaskListUtility implements ConfigurationConstants {
 						// Default to the current severity and add it to the list.
 						try {
 							marker.setAttribute(IMarker.SEVERITY, getSeverity(severity));
-						} catch (CoreException exc) {
-							Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-							if (logger.isLoggingLevel(Level.SEVERE)) {
-								LogEntry entry = ValidationPlugin.getLogEntry();
-								entry.setSourceID("TaskListUtility.getValidationTasks(int, IResource, int)"); //$NON-NLS-1$
-								entry.setTargetException(exc);
-								logger.write(Level.SEVERE, entry);
-							}
+						} catch (CoreException e) {
+							ValidationPlugin.getPlugin().handleException(e);
 							continue;
-						} catch (Exception exc) {
-							Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-							if (logger.isLoggingLevel(Level.SEVERE)) {
-								LogEntry entry = ValidationPlugin.getLogEntry();
-								entry.setSourceID("TaskListUtility.getValidationTasks(int, IResource, int)"); //$NON-NLS-1$
-								entry.setTargetException(exc);
-								logger.write(Level.SEVERE, entry);
-							}
+						} catch (Exception e) {
+							ValidationPlugin.getPlugin().handleException(e);
 							continue;
 						}
 					} else if ((severity & filterSeverity.intValue()) == 0) {
@@ -360,14 +325,8 @@ public class TaskListUtility implements ConfigurationConstants {
 					tempMarkers[validCount++] = marker;
 				}
 			}
-		} catch (CoreException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("TaskListUtility.getValidationTasks(int, IResource, int)"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (CoreException e) {
+			ValidationPlugin.getPlugin().handleException(e);
 		}
 
 		if (validCount == 0) {
@@ -412,14 +371,8 @@ public class TaskListUtility implements ConfigurationConstants {
 						break;
 					}
 				}
-			} catch (CoreException exc) {
-				Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-				if (logger.isLoggingLevel(Level.SEVERE)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("TaskListUtility.getValidationTasks(project, String[])"); //$NON-NLS-1$
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
+			} catch (CoreException e) {
+				ValidationPlugin.getPlugin().handleException(e);
 				return NO_MARKERS;
 			}
 		}
@@ -488,15 +441,8 @@ public class TaskListUtility implements ConfigurationConstants {
 		try {
 			IMarker[] markers = getValidationTasks(resource, IMessage.ALL_MESSAGES);
 			ResourcesPlugin.getWorkspace().deleteMarkers(markers);
-		} catch (CoreException exc) {
-			// Couldn't remove the task from the task list for some reason...
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("WorkbenchMonitor.removeAllMessages(String[], IResource, String)"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (CoreException e) {
+			ValidationPlugin.getPlugin().handleException(e);
 		}
 	}
 

@@ -37,7 +37,7 @@ public final class ValidationResult {
 	private int			_severityInfo;
 	
 	/** A count of the number of resources that were validated. */
-	private int			_numberOfValidatedResources;
+	private int			_numberOfValidatedResources = 1;
 	
 	/**
 	 * This is an optional method, that a validator can use to return error messages. When the validation framework
@@ -87,8 +87,7 @@ public final class ValidationResult {
 		incrementWarning(result.getSeverityWarning());
 		incrementInfo(result.getSeverityInfo());
 		
-		_numberOfValidatedResources++;
-		if (result.getValidated() != null)_numberOfValidatedResources += result.getValidated().length;
+		_numberOfValidatedResources += result.getNumberOfValidatedResources();
 		
 	}
 
@@ -258,7 +257,8 @@ public final class ValidationResult {
 	 * Answer the number of resources that have been validated.
 	 */
 	public int getNumberOfValidatedResources() {
-		return _numberOfValidatedResources;
+		if (_validated == null)return _numberOfValidatedResources;
+		return _numberOfValidatedResources + _validated.length;
 	}
 
 }

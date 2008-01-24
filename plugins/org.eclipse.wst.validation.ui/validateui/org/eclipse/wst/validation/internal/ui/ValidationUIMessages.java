@@ -38,10 +38,6 @@ public class ValidationUIMessages extends NLS {
 	public static String ValTime;
 	public static String ValSuccess;
 	
-	public static String TimeUnder;
-	public static String TimeSec;
-	public static String TimeMin;
-	
 
 	static {
 		// load message values from bundle file

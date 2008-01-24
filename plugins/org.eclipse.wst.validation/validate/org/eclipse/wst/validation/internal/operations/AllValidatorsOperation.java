@@ -12,11 +12,8 @@ package org.eclipse.wst.validation.internal.operations;
 
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.InternalValidatorManager;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
@@ -53,18 +50,10 @@ public class AllValidatorsOperation extends ValidatorSubsetOperation {
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			setEnabledValidators(InternalValidatorManager.wrapInSet(prjp.getValidators()));
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("EventManager::closing(" + project.getName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, exc);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, exc);
-				}
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			if (e.getTargetException() != null) {
+				ValidationPlugin.getPlugin().handleException(e.getTargetException());
 			}
 		}
 	}

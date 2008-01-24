@@ -11,15 +11,12 @@
 package org.eclipse.wst.validation.internal;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Preferences;
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 
@@ -61,14 +58,8 @@ public final class ConfigurationManager implements ConfigurationConstants {
 				return null;
 			}
 			return attrib.toString();
-		} catch (CoreException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("InternalPreferenceManager.getValidator(IMarker)"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (CoreException e) {
+			ValidationPlugin.getPlugin().handleException(e);
 			return null;
 		}
 	}
@@ -83,14 +74,8 @@ public final class ConfigurationManager implements ConfigurationConstants {
 
 		try {
 			return marker.getType().equals(VALIDATION_MARKER);
-		} catch (CoreException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("InternalPreferenceManager.isValidationMarker(IMarker)"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (CoreException e) {
+			ValidationPlugin.getPlugin().handleException(e);
 			return false;
 		}
 	}
@@ -101,23 +86,14 @@ public final class ConfigurationManager implements ConfigurationConstants {
 	 * Validation plugin.
 	 */
 	public void removeAllValidationMarkers(IProject project) {
-		if ((project == null) || (!project.isOpen())) {
-			return;
-		}
+		if ((project == null) || (!project.isOpen()))return;
 
 		try {
 			project.deleteMarkers(VALIDATION_MARKER, false, DEPTH_INFINITE); // false means only
 			// consider VALIDATION_MARKER, not variants of VALIDATION_MARKER. 
 			//Since addTask only adds VALIDATION_MARKER, we don't need to consider its subtypes.
-		} catch (CoreException exc) {
-			// Couldn't retrieve the markers from the resource for some reason...
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("WorkbenchMonitor.removeAllValidationMarkers(IProject)"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (CoreException e) {
+			ValidationPlugin.getPlugin().handleException(e);
 		}
 	}
 
@@ -212,19 +188,10 @@ public final class ConfigurationManager implements ConfigurationConstants {
 				if(!prjp.useGlobalPreference())
 					prjp.store();
 			}
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("InternalPreferenceManager::closing(" + project.getName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			if (e.getTargetException() != null)
+				ValidationPlugin.getPlugin().handleException(e.getTargetException());
 		}
 	}
 

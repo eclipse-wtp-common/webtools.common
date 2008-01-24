@@ -12,7 +12,6 @@ package org.eclipse.wst.validation.internal;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -21,8 +20,6 @@ import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.delegates.ValidatorDelegateDescriptor;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.osgi.service.prefs.BackingStoreException;
@@ -85,14 +82,8 @@ public class ProjectConfiguration extends ValidationConfiguration {
 			// If the project overrides, then don't use the global.
 			// If the project does not override, use the global.
 			return !_doesProjectOverride;
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ProjectConfiguration.userGlobalPreference"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
 			return false;
 		}
 	}
@@ -334,15 +325,8 @@ public class ProjectConfiguration extends ValidationConfiguration {
 			}
 			// Job is done. Nothing to migrate.
 			return null;
-		} catch (CoreException exc) {
-			// Can't find the IMarker? Assume it's deleted.
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ProjectConfiguration::getMarker"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (CoreException e) {
+			ValidationPlugin.getPlugin().handleException(e);
 			return null;
 		}
 	}
@@ -406,22 +390,10 @@ public class ProjectConfiguration extends ValidationConfiguration {
 			}
 
 			getResource().getWorkspace().deleteMarkers(marker);
-		} catch (CoreException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ProjectConfiguration.loadMarker "); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ProjectConfiguration.loadMarker InvocationTargetException"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (CoreException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
 		}
 	}
 
@@ -635,8 +607,8 @@ public class ProjectConfiguration extends ValidationConfiguration {
 				pref.put(USER_BUILD_PREFERENCE, serializeBuildSetting());
 				pref.put(DELEGATES_PREFERENCE, serializeDelegatesSetting());
 				pref.flush();
-			} catch (BackingStoreException bse) {
-				Logger.getLogger().log(bse);
+			} catch (BackingStoreException e) {
+				ValidationPlugin.getPlugin().handleException(e);
 			}
 		}
 	}

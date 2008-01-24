@@ -11,14 +11,11 @@
 package org.eclipse.wst.validation.internal;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 
@@ -98,15 +95,9 @@ public class GlobalConfiguration extends ValidationConfiguration {
 			// job is done. Nothing to migrate.
 			return null;
 
-		} catch (CoreException exc) {
+		} catch (CoreException e) {
 			// Can't find the IMarker? Assume it's deleted.
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("GlobalConfiguration.getMarker()"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+			ValidationPlugin.getPlugin().handleException(e);
 			return null;
 		}
 	}
@@ -143,14 +134,8 @@ public class GlobalConfiguration extends ValidationConfiguration {
 //				enabledValidators = ConfigurationConstants.DEFAULT_ENABLED_VALIDATORS;
 			setCanProjectsOverride(getValue(rootMarker, ConfigurationConstants.PREF_PROJECTS_CAN_OVERRIDE, PREF_PROJECTS_CAN_OVERRIDE_DEFAULT));
 			root.getWorkspace().deleteMarkers(marker);
-		} catch (CoreException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("GlobalConfiguration.loadV50"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (CoreException e) {
+			ValidationPlugin.getPlugin().handleException(e);
 		}
 	}
 

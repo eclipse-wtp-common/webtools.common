@@ -18,7 +18,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -38,18 +37,16 @@ import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.internal.operations.IHeadlessRunnableWithProgress;
 import org.eclipse.wst.validation.internal.FilterUtil;
 import org.eclipse.wst.validation.internal.IProjectValidationHelper;
 import org.eclipse.wst.validation.internal.InternalValidatorManager;
+import org.eclipse.wst.validation.internal.Misc;
 import org.eclipse.wst.validation.internal.ReferencialFileValidatorRegistryReader;
 import org.eclipse.wst.validation.internal.RegistryConstants;
 import org.eclipse.wst.validation.internal.ResourceConstants;
 import org.eclipse.wst.validation.internal.ResourceHandler;
 import org.eclipse.wst.validation.internal.TaskListUtility;
-import org.eclipse.wst.validation.internal.TimeEntry;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.core.IFileDelta;
@@ -66,7 +63,7 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidatorJob;
  * Implemented Validators methods must not be called directly by anyone other than this class, since
  * some initialization of the validator is done here (via the getProject() method). The
  * initialization is separated because the IProject isn't known until runtime.
- * 
+ * <p>
  * This operation is not intended to be subclassed outside of the validation framework.
  */
 public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadlessRunnableWithProgress {
@@ -75,7 +72,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	private static final String DELTA_AS_STRING = "IFileDelta[{0}] '{'{1}'}'"; //$NON-NLS-1$
 	private static final String COMMA = ", "; //$NON-NLS-1$
 	
-	// For the deprecated constructors, by default the operation will not fork. 
+	// For the depreciated constructors, by default the operation will not fork. 
 	protected static final boolean DEFAULT_ASYNC = true;
 	
 	protected static final boolean DEFAULT_FORCE = true;
@@ -119,12 +116,9 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	
 	protected IWorkbenchContext context;
 
-	// are enabled and were launched
-	// (i.e., that have input to
-	// validate). For internal
+	// are enabled and were launched (i.e., that have input to validate). For internal
 	// validation framework use only;
-	// it's needed for the automatic
-	// tests.
+	// it's needed for the automatic tests.
 	/**
 	 * This method is used for FINEST logging, to report exactly what deltas were about to be
 	 * validated.
@@ -232,17 +226,10 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			reporter.displaySubtask(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_VALIDATOR_CLEANUP, new String[]{vmd.getValidatorDisplayName()}));
 			try {
 				reporter.removeAllMessages(vmd.getValidator());
-			} catch (InstantiationException exc) {
+			} catch (InstantiationException e) {
 				// Remove the vmd from the reader's list
 				ValidationRegistryReader.getReader().disableValidator(vmd);
-				// Log the reason for the disabled validator
-				final Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-				if (logger.isLoggingLevel(Level.SEVERE)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("ValidationOperation::terminateCleanup"); //$NON-NLS-1$
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
+				ValidationPlugin.getPlugin().handleException(e);
 				continue;
 			}
 			addCancelTask(vmd);
@@ -608,7 +595,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 */
 	public void run(IProgressMonitor progressMonitor) throws OperationCanceledException {
 		long start = System.currentTimeMillis();
-		final Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 		try {
 			// In order to check whether or not the monitor has been cancelled,
 			// the monitor must not be null.
@@ -631,24 +617,20 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				preValidate(reporter);
 				validate(reporter);
 				validateReferencialFiles(reporter);
-			} catch (CoreException exc) {
-				if (logger.isLoggingLevel(Level.SEVERE)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("ValidationOperation.run"); //$NON-NLS-1$
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
+			} catch (CoreException e) {
+				ValidationPlugin.getPlugin().handleException(e);
 			}
 		} finally {
-			if (logger.isLoggingLevel(Level.FINE)) {
-				long finish = System.currentTimeMillis();
-				TimeEntry entry = ValidationPlugin.getTimeEntry();
-				entry.setSourceID("ValidationOperation.run(WorkbenchMonitor)"); //$NON-NLS-1$
-				entry.setProjectName(getProject().getName());
-				entry.setToolName("ValidationOperation"); //$NON-NLS-1$
-				entry.setElapsedTime(finish - start);
-				logger.write(Level.FINE, entry);
-			}
+			//TODO GRK determine if timing info should be added here
+//			if (logger.isLoggingLevel(Level.FINE)) {
+//				long finish = System.currentTimeMillis();
+//				TimeEntry entry = ValidationPlugin.getTimeEntry();
+//				entry.setSourceID("ValidationOperation.run(WorkbenchMonitor)"); //$NON-NLS-1$
+//				entry.setProjectName(getProject().getName());
+//				entry.setToolName("ValidationOperation"); //$NON-NLS-1$
+//				entry.setElapsedTime(finish - start);
+//				logger.write(Level.FINE, entry);
+//			}
 		}
 	}
 
@@ -691,7 +673,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				if (!referencingFiles.isEmpty())
 					validateReferencingFiles(reporter, referencingFiles);
 			} catch (Exception e) {
-				Logger.getLogger().log(e);
+				ValidationPlugin.getPlugin().handleException(e);
 			}
 		}
 	}
@@ -725,7 +707,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				try {
 					validateReferencingFiles(reporter, fileForValidation);
 				} catch (Exception e) {
-					Logger.getLogger().log(e);
+					ValidationPlugin.getPlugin().handleException(e);
 				}
 			}
 		}
@@ -813,7 +795,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		ValidatorMetaData vmd = null;
 		Iterator iterator = null;
 //		WorkbenchReporter nullReporter = new WorkbenchReporter(getProject(), new NullProgressMonitor());
-		final Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 		IFileDelta[] delta = null;
 		
 		Set<ValidatorMetaData> jobValidators = new HashSet<ValidatorMetaData>();
@@ -863,20 +844,14 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			while (iterator.hasNext()) {
 				vmd = (ValidatorMetaData) iterator.next();
 				// Is validation about to be run on this validator?
-				// Validation will run either if this operation forces
-				// regardless
+				// Validation will run either if this operation forces regardless
 				// of need, or if the validator was not run automatically.
 				// If validation is not about to be run, then don't activate
 				// the plugin
 				try {
 					delta = getFileDeltas(reporter.getProgressMonitor(), vmd);
 					boolean willRun = (isForce() || isValidationNecessary(vmd, delta));
-					if (logger.isLoggingLevel(Level.FINEST)) {
-						TimeEntry entry = ValidationPlugin.getTimeEntry();
-						entry.setSourceID("ValidationOperation.validate(WorkbenchReporter)"); //$NON-NLS-1$
-						entry.setProjectName(getProject().getName());
-						entry.setToolName(vmd.getValidatorUniqueName());
-						entry.setElapsedTime(0);
+					if (Misc.isLogging()) {
 						StringBuffer buffer = new StringBuffer();
 						buffer.append("will run? "); //$NON-NLS-1$
 						buffer.append(willRun);
@@ -901,33 +876,15 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 								buffer.append(getDeltaAsString(delta));
 							}
 						}
-						entry.setDetails(buffer.toString());
-						logger.write(Level.FINEST, entry);
+						Misc.log(buffer);
 					}
 					if (!willRun) {
 						continue;
 					}
-				} catch (CoreException exc) {
-					if (logger.isLoggingLevel(Level.SEVERE)) {
-						LogEntry entry = ValidationPlugin.getLogEntry();
-						entry.setSourceID("ValidationOperation.validate(WorkbenchReporter)"); //$NON-NLS-1$
-						entry.setTargetException(exc);
-						logger.write(Level.SEVERE, entry);
-					}
+				} catch (CoreException e) {
+					ValidationPlugin.getPlugin().handleException(e);
 					String mssg = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_ENDING_VALIDATION_ABNORMALLY, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
 					reporter.displaySubtask(mssg);
-					/*
-					 The code  below  causes bundle not found exception since, the  bundle here is
-					 validate_base and we  are  trying to load that bundle from the classloader of 
-					 the Validator. 
-			  
-					String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
-					Message message = ValidationPlugin.getMessage();
-					message.setSeverity(IMessage.NORMAL_SEVERITY);
-					message.setId(ResourceConstants.VBF_EXC_RUNTIME);
-					message.setParams(msgParm);
-					reporter.addMessage(validator, message);
-					*/
 					continue;
 				}
 				try {
@@ -937,16 +894,10 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 					
 					checkCanceled(reporter);
 					
-				} catch (InstantiationException exc) {
+				} catch (InstantiationException e) {
 					// Remove the vmd from the reader's list
 					ValidationRegistryReader.getReader().disableValidator(vmd);
-					// Log the reason for the disabled validator
-					if (logger.isLoggingLevel(Level.SEVERE)) {
-						LogEntry entry = ValidationPlugin.getLogEntry();
-						entry.setSourceID("ValidationOperation::validate(WorkbenchReporter)"); //$NON-NLS-1$
-						entry.setTargetException(exc);
-						logger.write(Level.SEVERE, entry);
-					}
+					ValidationPlugin.getPlugin().handleException(e);
 					continue;
 				}
 				
@@ -963,7 +914,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				internalValidate(reporter, validator, vmd, context, delta);
 				}
 		} catch (OperationCanceledException exc) {
-			handleOperationCancelledValidateException(reporter, validator, vmd, iterator, logger, exc);
+			handleOperationCancelledValidateException(reporter, validator, vmd, iterator, exc);
 		} finally {
 			releaseCachedMaps();
 		}
@@ -998,7 +949,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 * @param logger
 	 * @param exc
 	 */
-	private void handleOperationCancelledValidateException(WorkbenchReporter reporter, IValidator validator, ValidatorMetaData vmd, Iterator iterator, final Logger logger, OperationCanceledException exc) {
+	private void handleOperationCancelledValidateException(WorkbenchReporter reporter, IValidator validator, ValidatorMetaData vmd, Iterator iterator, OperationCanceledException exc) {
 		/*
 		 * If the user terminates validation (i.e., presses "cancel" on the progress monitor) before
 		 * the validation completes, perform clean up on each configured enabled validator.
@@ -1027,13 +978,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			} catch (InstantiationException exc2) {
 				// Remove the vmd from the reader's list
 				ValidationRegistryReader.getReader().disableValidator(vmd);
-				// Log the reason for the disabled validator
-				if (logger.isLoggingLevel(Level.SEVERE)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("ValidationOperation::validate(WorkbenchReporter)"); //$NON-NLS-1$
-					entry.setTargetException(exc2);
-					logger.write(Level.SEVERE, entry);
-				}
+				ValidationPlugin.getPlugin().handleException(exc2);
 				continue;
 			}
 			reporter.displaySubtask(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_VALIDATOR_CLEANUP, new String[]{vmd.getValidatorDisplayName()}));
@@ -1049,7 +994,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 
 	/* package */
 	void internalValidate(final WorkbenchReporter reporter, final IValidator validator, final ValidatorMetaData vmd,final IWorkbenchContext aContext, final IFileDelta[] delta) throws OperationCanceledException {
-		final Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 		try {
 			checkCanceled(reporter);
 			removeOldMessages(reporter, validator, vmd, delta);
@@ -1068,21 +1012,13 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		} catch (OperationCanceledException exc) {
 			// This is handled in the validate(WorkbenchReporter) method.
 			throw exc;
-		}catch (Exception exc) {
+		}catch (Exception e) {
 			// If there is a problem with this particular validator, log the
-			// error and continue
-			// with the next validator.
-			// If a runtime exception has occured, e.g. NullPointer or
-			// ClassCast, display it with the "A runtime exception has occurred
-			// " messsage.
-			// This will provide more information to the user when he/she calls
-			// IBM Service.
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidationOperation.internalValidate"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+			// error and continue with the next validator.
+			// If a runtime exception has occurred, e.g. NullPointer or
+			// ClassCast, display it with the "A runtime exception has occurred" message.
+			// This will provide more information to the user when he/she calls Service.
+			ValidationPlugin.getPlugin().handleException(e);
 			String mssg = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_ENDING_VALIDATION_ABNORMALLY, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
 			reporter.displaySubtask(mssg);
 			
@@ -1123,7 +1059,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		// task.
 		InternalValidatorManager.getManager().removeOperationTasks(getProject(), vmd);
 		checkCanceled(reporter);
-		Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 		try {
 			// Check to see if a full build must be performed, or if a delta
 			// build is to be performed, if there are files to verify for that
@@ -1170,35 +1105,10 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			}
 		} catch (OperationCanceledException exc) {
 			throw exc;
-		} catch (Exception exc) {
-			// If there is a problem with this particular validator, log the
-			// error and continue
-			// with the next validator.
-			// If a runtime exception has occured, e.g. NullPointer or
-			// ClassCast, display it with the "A runtime exception has occurred
-			// " messsage.
-			// This will provide more information to the user when he/she calls
-			// IBM Service.
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidationOperation.validate(WorkbenchMonitor)"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (Exception e) {
+			ValidationPlugin.getPlugin().handleException(e);
 			String mssg = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_ENDING_VALIDATION_ABNORMALLY, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
 			reporter.displaySubtask(mssg);
-			
-			/*
-			 The code  below  causes bundle not found exception since, the  bundle here is
-			 validate_base and we  are  trying to load that bundle from the classloader of 
-			 the Validator. 			 * 
-			String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
-			Message message = ValidationPlugin.getMessage();
-			message.setSeverity(IMessage.NORMAL_SEVERITY);
-			message.setId(ResourceConstants.VBF_EXC_RUNTIME);
-			message.setParams(msgParm);
-			reporter.addMessage(validator, message);
-			*/
 			return;
 		}
 	}
@@ -1225,7 +1135,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			return;
 		}
 		checkCanceled(reporter);
-		Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 		// Check to see if a full build must be performed, or if a delta
 		// build is to be performed, if there are files to verify for that
 		// validator. (If it's delta, but there are no files, calling
@@ -1243,34 +1152,35 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			long start = System.currentTimeMillis();
 			String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_STARTING_VALIDATION, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
 			reporter.displaySubtask(message);
-			if (logger.isLoggingLevel(Level.FINEST)) {
+			if (Misc.isLogging()) {
 				// This internal "launched validators" value is used only in tests.
 				getLaunchedValidators().add(vmd);
 			}
 			//initValidateContext(delta);
 			ValidatorLauncher.getLauncher().start(helper, validator, reporter);
 			long finish = System.currentTimeMillis();
-			if (logger.isLoggingLevel(Level.INFO)) {
-				TimeEntry entry = ValidationPlugin.getTimeEntry();
-				entry.setSourceID("ValidationOperation.launchValidator"); //$NON-NLS-1$
-				entry.setProjectName(getProject().getName());
-				entry.setToolName(vmd.getValidatorUniqueName());
-				entry.setElapsedTime(finish - start);
-				if (logger.isLoggingLevel(Level.FINE)) {
-					StringBuffer buffer = new StringBuffer();
-					if (isFullValidate()) {
-						buffer.append("EVERYTHING"); //$NON-NLS-1$
-					} else {
-						if (delta.length == 0) {
-							buffer.append("NOTHING"); //$NON-NLS-1$
-						} else {
-							buffer.append(getDeltaAsString(delta));
-						}
-					}
-					entry.setDetails(buffer.toString());
-				}
-				logger.write(Level.INFO, entry);
-			}
+			//TODO GRK determine if timing info should be added here
+//			if (logger.isLoggingLevel(Level.INFO)) {
+//				TimeEntry entry = ValidationPlugin.getTimeEntry();
+//				entry.setSourceID("ValidationOperation.launchValidator"); //$NON-NLS-1$
+//				entry.setProjectName(getProject().getName());
+//				entry.setToolName(vmd.getValidatorUniqueName());
+//				entry.setElapsedTime(finish - start);
+//				if (logger.isLoggingLevel(Level.FINE)) {
+//					StringBuffer buffer = new StringBuffer();
+//					if (isFullValidate()) {
+//						buffer.append("EVERYTHING"); //$NON-NLS-1$
+//					} else {
+//						if (delta.length == 0) {
+//							buffer.append("NOTHING"); //$NON-NLS-1$
+//						} else {
+//							buffer.append(getDeltaAsString(delta));
+//						}
+//					}
+//					entry.setDetails(buffer.toString());
+//				}
+//				logger.write(Level.INFO, entry);
+//			}
 			message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_ENDING_VALIDATION, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
 			reporter.displaySubtask(message);
 		} catch (OperationCanceledException exc) {
@@ -1290,33 +1200,15 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			// If there is a problem with this particular validator, log the
 			// error and continue with the next validator.
 			exc.setClassLoader(validator.getClass().getClassLoader()); // first,
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidationOperation.validate(WorkbenchMonitor)"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-				if (exc.getAssociatedException() != null) {
-					entry.setTargetException(exc.getAssociatedException());
-					logger.write(Level.SEVERE, entry);
-				}
-			}
+			ValidationPlugin.getPlugin().handleException(exc);
+			ValidationPlugin.getPlugin().handleException(exc.getAssociatedException());
 			String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_ENDING_VALIDATION_ABNORMALLY, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
 			reporter.displaySubtask(message);
 			if (exc.getAssociatedMessage() != null) {
 				reporter.addMessage(validator, exc.getAssociatedMessage());
 			}
-		} catch (Exception exc) {
-			// If there is a problem with this particular validator, log the error and continue
-			// with the next validator.
-			// If a runtime exception has occured, e.g. NullPointer or
-			// ClassCast, display it with the "A runtime exception has occurred" messsage. 
-			// This will provide more information to the user when he/she calls Service.
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidationOperation.validate(WorkbenchMonitor)"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (Exception e) {
+			ValidationPlugin.getPlugin().handleException(e);
 			String mssg = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_ENDING_VALIDATION_ABNORMALLY, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
 			reporter.displaySubtask(mssg);
 			
@@ -1338,70 +1230,16 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				validator.cleanup(reporter);
 			} catch (OperationCanceledException e) {
 				throw e;
-			} catch (Exception exc) {
-				// If a runtime exception has occured, e.g. NullPointer or
-				// ClassCast, display it with the "A runtime exception has
-				// occurred " messsage.
-				// This will provide more information to the user when he/she
-				// calls IBM Service.
-				if (logger.isLoggingLevel(Level.SEVERE)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("ValidationOperation::launchValidator"); //$NON-NLS-1$
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-				
-				/*
-			 The code  below  causes bundle not found exception since, the  bundle here is
-			 validate_base and we  are  trying to load that bundle from the classloader of 
-			 the Validator.  
-				String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
-				Message message = ValidationPlugin.getMessage();
-				message.setSeverity(IMessage.NORMAL_SEVERITY);
-				message.setId(ResourceConstants.VBF_EXC_RUNTIME);
-				message.setParams(msgParm);
-				try {
-					reporter.addMessage(validator, message);
-				} catch (MessageLimitException e) {
-					throw e;
-				}
-				
-				*/
+			} catch (Exception e) {
+				ValidationPlugin.getPlugin().handleException(e);
 				return;
 			}
 			try {
 				helper.cleanup(reporter);
 			} catch (OperationCanceledException e) {
 				throw e;
-			} catch (Exception exc) {
-				// If a runtime exception has occured, e.g. NullPointer or
-				// ClassCast, display it with the "A runtime exception has
-				// occurred " messsage.
-				// This will provide more information to the user when he/she
-				// calls IBM Service.
-				if (logger.isLoggingLevel(Level.SEVERE)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("ValidationOperation::launchValidator"); //$NON-NLS-1$
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-				
-				/*
-			 The code  below bundle not found exception since, the  bundle here is
-			 validate_base and we  are  trying to load that bundle from the classloader of 
-			 the Validator. 
-			 				 
-				String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
-				Message message = ValidationPlugin.getMessage();
-				message.setSeverity(IMessage.NORMAL_SEVERITY);
-				message.setId(ResourceConstants.VBF_EXC_RUNTIME);
-				message.setParams(msgParm);
-				try {
-					reporter.addMessage(validator, message);
-				} catch (MessageLimitException e) {
-					throw e;
-				}
-				*/
+			} catch (Exception e) {
+				ValidationPlugin.getPlugin().handleException(e);
 				return;
 			} finally {
 				// Now that cleanup has been called, set the project to null.
@@ -1492,7 +1330,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	
 	void launchJobs(Set<ValidatorMetaData> validators, final WorkbenchReporter reporter) throws OperationCanceledException{
 		
-		final Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 		Iterator iterator = validators.iterator();
 		ValidatorMetaData vmd = null;
 		IValidator validator = null;
@@ -1510,29 +1347,10 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				if (!willRun) {
 					continue;
 				}
-			} catch (CoreException exc) {
-				if (logger.isLoggingLevel(Level.SEVERE)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("ValidationOperation.launchJobs()"); //$NON-NLS-1$
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
+			} catch (CoreException e) {
+				ValidationPlugin.getPlugin().handleException(e);
 				String mssg = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_ENDING_VALIDATION_ABNORMALLY, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
 				reporter.displaySubtask(mssg);
-				
-				/*
-			 The code  below  causes bundle not found exception since, the  bundle here is
-			 validate_base and we  are  trying to load that bundle from the classloader of 
-			 the Validator. 
-			  
-				String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
-				Message message = ValidationPlugin.getMessage();
-				message.setSeverity(IMessage.NORMAL_SEVERITY);
-				message.setId(ResourceConstants.VBF_EXC_RUNTIME);
-				message.setParams(msgParm);
-				reporter.addMessage(validator, message);
-				*/
-				
 				continue;
 			}
 			
@@ -1543,16 +1361,10 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				vmd.addHelper((IValidatorJob)validator, workbenchcontext);				
 				checkCanceled(reporter);
 				
-			} catch (InstantiationException exc) {
+			} catch (InstantiationException e) {
 				// Remove the vmd from the reader's list
 				ValidationRegistryReader.getReader().disableValidator(vmd);
-				// Log the reason for the disabled validator
-				if (logger.isLoggingLevel(Level.SEVERE)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("ValidationOperation.launchJobs()"); //$NON-NLS-1$
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
+				ValidationPlugin.getPlugin().handleException(e);
 				continue;
 			}
 			
@@ -1568,13 +1380,8 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			} catch (OperationCanceledException exc) {
 				throw exc;
 
-			} catch (Throwable exc) {
-				if (logger.isLoggingLevel(Level.SEVERE)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("ValidationOperation.launchJobs()"); //$NON-NLS-1$
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
+			} catch (Throwable e) {
+				ValidationPlugin.getPlugin().handleException(e);
 				String mssg = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_ENDING_VALIDATION_ABNORMALLY, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
 				reporter.displaySubtask(mssg);
 
@@ -1627,12 +1434,11 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			return;
 		}
 		checkCanceled(reporter);
-		Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 
 		if (helper instanceof WorkbenchContext) {
 			((WorkbenchContext) helper).setRuleGroup(getRuleGroup());
 		}
-		if (logger.isLoggingLevel(Level.FINEST)) {
+		if (Misc.isLogging()) {
 			// This internal "launched validators" value is used only in
 			// tests.
 			getLaunchedValidators().add(vmd);
@@ -1674,13 +1480,8 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 												info.getMsg().getLength());
 										
 										
-										} catch (CoreException exc) {
-											Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-											if (logger.isLoggingLevel(Level.SEVERE)) {
-												LogEntry entry = ValidationPlugin.getLogEntry();
-												entry.setTargetException(exc);
-												logger.write(Level.SEVERE, entry);
-											}
+										} catch (CoreException e) {
+											ValidationPlugin.getPlugin().handleException(e);
 										}										
 									}
 							    }

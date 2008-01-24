@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
 
 import org.eclipse.core.expressions.EvaluationContext;
 import org.eclipse.core.expressions.EvaluationResult;
@@ -34,9 +33,9 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
@@ -115,14 +114,8 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			// Once all of the validators have been read, the caches of the
 			// validators need to be updated.
 			buildCache();
-		} catch (Exception exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidationRegistryReader()"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (Exception e) {
+			ValidationPlugin.getPlugin().handleException(e);
 		}
 	}
 
@@ -144,14 +137,9 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		// projects have been added to the project natures which they don't exclude.
 		_validators.remove(EXCLUDED_PROJECT);
 
-		Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-		if (logger.isLoggingLevel(Level.FINEST)) {
-			LogEntry entry = ValidationPlugin.getLogEntry();
-			entry.setSourceID("ValidationRegistryReader.buildCache()"); //$NON-NLS-1$
-			entry.setText(debug());
-			logger.write(Level.FINEST, entry);
+		if (Misc.isLogging()) {
+			Misc.log(debug());
 		}
-
 	}
 
 	/**
@@ -481,51 +469,33 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		return helpers[0].getAttribute(ATT_CLASS);
 	}
 
-	/* package */static IWorkbenchContext createHelper(IConfigurationElement element, String helperClassName) {
+	static IWorkbenchContext createHelper(IConfigurationElement element, String helperClassName) {
 		IWorkbenchContext wh = null;
 		try {
 			wh = (IWorkbenchContext) element.createExecutableExtension(TAG_HELPER_CLASS);
 		} catch (Exception exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidationRegistryReader.createHelper(IConfigurationElement, String)"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NO_HELPER_THROWABLE), 
-					new Object[]{helperClassName});
-				entry.setText(result);				
-				logger.write(Level.SEVERE, entry);
-			}
+			String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NO_HELPER_THROWABLE), 
+				new Object[]{helperClassName});
+			ValidationPlugin.getPlugin().logMessage(IStatus.ERROR, result);	
 			return null;
 		}
 		return wh;
 	}
 
-	/* package */static IValidator createValidator(IConfigurationElement element, String validatorClassName) {
+	static IValidator createValidator(IConfigurationElement element, String validatorClassName) {
 		IValidator validator = null;
 		try {
 			validator = (IValidator) element.createExecutableExtension(ATT_CLASS);
-		} catch (Exception exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidationRegistryReader.createValidator(IConfigurationElement, String, String)"); //$NON-NLS-1$
-				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NO_VAL_THROWABLE), 
-					new Object[]{validatorClassName});
-				entry.setText(result);				
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (Exception e) {
+			String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NO_VAL_THROWABLE), 
+				new Object[]{validatorClassName});
+			ValidationPlugin.getPlugin().logMessage(IStatus.ERROR, result);	
+			ValidationPlugin.getPlugin().handleException(e);
 		}
 
 		if (validator == null) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.FINE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidationRegistryReader.createValidator(IConfigurationElement, String)"); //$NON-NLS-1$
-				entry.setMessageTypeID(ResourceConstants.VBF_EXC_SYNTAX_NO_VAL_NULL);
-				entry.setTokens(new String[]{validatorClassName});
-				logger.write(Level.FINE, entry);
+			if (Misc.isLogging()) {
+				Misc.log(NLS.bind(ValMessages.VbfExcSyntaxNoValNull, validatorClassName));
 			}
 			return null;
 		}
@@ -768,16 +738,11 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		IExtensionPoint extensionPoint = registry.getExtensionPoint(PLUGIN_ID, VALIDATOR_EXT_PT_ID);
 		if (extensionPoint == null) {
 			// If this happens it means that someone removed the "validator" extension point
-			// declaration
-			// from our plugin.xml file.
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.FINE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidationRegistryReader.getValidatorExtensionPoint()"); //$NON-NLS-1$
+			// declaration from our plugin.xml file.
+			if (Misc.isLogging()) {
 				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_MISSING_VALIDATOR_EP),
 						new Object[]{ValidationPlugin.PLUGIN_ID + "." + VALIDATOR_EXT_PT_ID}); //$NON-NLS-1$
-				entry.setText(result);		
-				logger.write(Level.FINE, entry);
+				Misc.log(result);		
 			}
 		}
 		return extensionPoint;
@@ -790,13 +755,9 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	public ValidatorMetaData getValidatorMetaData(IValidator validator) {
 		// retrieval will be in log(n) time
 		if (validator == null) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidationRegistryReader.getValidatorMetaData(IValidator)"); //$NON-NLS-1$
-				entry.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_ORPHAN_IVALIDATOR, new String[]{"null"})); //$NON-NLS-1$
-				logger.write(Level.SEVERE, entry);
-			}
+				String message = ResourceHandler.getExternalizedMessage(
+					ResourceConstants.VBF_EXC_ORPHAN_IVALIDATOR, new String[]{"null"}); //$NON-NLS-1$
+				ValidationPlugin.getPlugin().logMessage(IStatus.ERROR, message);
 			return null;
 		}
 
@@ -808,13 +769,9 @@ public final class ValidationRegistryReader implements RegistryConstants {
 
 		// If we got here, then vmd is neither a root nor an aggregate validator,
 		// yet the IValidator exists. Internal error.
-		Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-		if (logger.isLoggingLevel(Level.SEVERE)) {
-			LogEntry entry = ValidationPlugin.getLogEntry();
-			entry.setSourceID("ValidationRegistryReader.getValidatorMetaData(IValidator)"); //$NON-NLS-1$
-			entry.setText(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_ORPHAN_IVALIDATOR, new String[]{validatorClassName}));
-			logger.write(Level.SEVERE, entry);
-		}
+		String message = ResourceHandler.getExternalizedMessage(
+				ResourceConstants.VBF_EXC_ORPHAN_IVALIDATOR, new String[]{validatorClassName});
+		ValidationPlugin.getPlugin().logMessage(IStatus.ERROR, message);
 		return null;
 	}
 
@@ -844,13 +801,9 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		if (vmds == null)return;
 		vmds.clear();
 		int executionMap = 0x0;
-		Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
 		try {
-			if (logger.isLoggingLevel(Level.FINEST)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidationRegistryReader.getValidatorMetaData(IProject)"); //$NON-NLS-1$
-				entry.setText("IProject is " + String.valueOf(project)); //$NON-NLS-1$
-				logger.write(Level.FINEST, entry);
+			if (Misc.isLogging()) {
+				Misc.log("IProject is " + String.valueOf(project)); //$NON-NLS-1$
 			}
 			if (project == null) {
 				executionMap |= 0x1;
@@ -860,16 +813,10 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			String[] projectNatures = null;
 			try {
 				projectNatures = project.getDescription().getNatureIds();
-			} catch (CoreException exc) {
+			} catch (CoreException e) {
 				executionMap |= 0x2;
 				// vmds is already clear
-				if (logger.isLoggingLevel(Level.SEVERE)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("ValidationRegistryReader.getValidatorMetaData(" + project.getName() + ")"); //$NON-NLS-1$  //$NON-NLS-2$
-					entry.setTargetException(exc);
-					entry.setExecutionMap(executionMap);
-					logger.write(Level.SEVERE, entry);
-				}
+				ValidationPlugin.getPlugin().handleException(e);
 				return;
 			}
 			// If there are no project natures on a particular project,
@@ -905,12 +852,8 @@ public final class ValidationRegistryReader implements RegistryConstants {
 
 			} else {
 				executionMap |= 0x8;
-				if (logger.isLoggingLevel(Level.FINEST)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("ValidationRegistryReader.getValidatorMetaData(IProject)"); //$NON-NLS-1$
-					// entry.setTokens(projectNatures);
-					entry.setText(projectNatures.toString());
-					logger.write(Level.FINEST, entry);
+				if (Misc.isLogging()) {
+					Misc.log(projectNatures.toString());
 				}
 				calculateVmdsForNatureAndFacets(vmds, projectNatures,project);
 				// Now filter out the validators which must not run on this project
@@ -921,20 +864,13 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				}
 			}
 		} finally {
-			if (logger.isLoggingLevel(Level.FINER)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidationRegistryReader.getValidatorMetaData(IProject)"); //$NON-NLS-1$
-				entry.setExecutionMap(executionMap);
-				
+			if (Misc.isLogging()) {
 				StringBuffer buffer = new StringBuffer();
-				Iterator iterator = vmds.iterator();
-				while (iterator.hasNext()) {
-					ValidatorMetaData vmd = (ValidatorMetaData) iterator.next();
+				for (ValidatorMetaData vmd : vmds) {
 					buffer.append(vmd.getValidatorUniqueName());
 					buffer.append("\n"); //$NON-NLS-1$
 				}
-				entry.setText(buffer.toString());
-				logger.write(Level.FINER, entry);
+				Misc.log(buffer.toString());
 			}
 		}
 	}
@@ -1016,34 +952,21 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	 * instance of a java project, then the AValidator is included by the java nature and excluded
 	 * by the J2EE nature. The AValidator would have to be removed from the set.
 	 */
-	private void removeExcludedProjects(IProject project, Set vmds) {
-		Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-		if (logger.isLoggingLevel(Level.FINEST)) {
-			LogEntry entry = ValidationPlugin.getLogEntry();
-			entry.setSourceID("ValidationRegistryReader.removeExcludedProjects"); //$NON-NLS-1$
-
+	private void removeExcludedProjects(IProject project, Set<ValidatorMetaData> vmds) {
+		if (Misc.isLogging()) {
 			StringBuffer buffer = new StringBuffer("\nBefore:\n"); //$NON-NLS-1$
-			Iterator viterator = vmds.iterator();
-			while (viterator.hasNext()) {
-				ValidatorMetaData vmd = (ValidatorMetaData) viterator.next();
+			for (ValidatorMetaData vmd : vmds) {
 				buffer.append(vmd.getValidatorUniqueName());
 				buffer.append("\n"); //$NON-NLS-1$
 			}
-			entry.setText(buffer.toString());
-			logger.write(Level.FINEST, entry);
+			Misc.log(buffer.toString());
 		}
 
 		String[] projectNatures = null;
 		try {
 			projectNatures = project.getDescription().getNatureIds();
-		} catch (CoreException exc) {
-			// if there's no natures, there's no list.
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidationRegistryReader.getValidatorMetaData(" + project.getName() + ")"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (CoreException e) {
+			ValidationPlugin.getPlugin().handleException(e);
 			return;
 		}
 		if ((projectNatures == null) || (projectNatures.length == 0)) {
@@ -1071,19 +994,13 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			}
 		}
 
-		if (logger.isLoggingLevel(Level.FINEST)) {
-			LogEntry entry = ValidationPlugin.getLogEntry();
-			entry.setSourceID("ValidationRegistryReader.removeExcludedProjects"); //$NON-NLS-1$
-
+		if (Misc.isLogging()) {
 			StringBuffer buffer = new StringBuffer("\nAfter:\n"); //$NON-NLS-1$
-			Iterator viterator = vmds.iterator();
-			while (viterator.hasNext()) {
-				ValidatorMetaData vmd = (ValidatorMetaData) viterator.next();
+			for (ValidatorMetaData vmd : vmds) {
 				buffer.append(vmd.getValidatorUniqueName());
 				buffer.append("\n"); //$NON-NLS-1$
 			}
-			entry.setText(buffer.toString());
-			logger.write(Level.FINEST, entry);
+			Misc.log(buffer);
 		}
 	}
 
@@ -1258,36 +1175,22 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	private ValidatorMetaData initializeValidator(IConfigurationElement element, String validatorName, String pluginId) {
 		IConfigurationElement[] runChildren = element.getChildren(TAG_RUN_CLASS);
 		if ((runChildren == null) || (runChildren.length < 1)) {
-			// How can an IValidatorImpl be created when there no class name to
-			// instantiate?
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.FINE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidationRegistryReader.initializeValidator(IConfigurationElement, String, String)"); //$NON-NLS-1$
-				//entry.setTokens(new String[]{validatorName});
-				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NO_VAL_RUN),
-						new Object[]{validatorName});
-				entry.setText(result);
-				
-				logger.write(Level.FINE, entry);
+			// How can an IValidatorImpl be created when there no class name to instantiate?
+			if (Misc.isLogging()) {
+				Misc.log(NLS.bind(ValMessages.VbfExcSyntaxNoValRun, validatorName));				
 			}
 			return null;
 		}
 
 		//WTP Bugzilla defect: 82338
-		//Using the Unique Identifier give the flexibility of the same validator class used by other validator extentions without writing a new validation class
+		//Using the Unique Identifier give the flexibility of the same validator class used by other validator extensions without writing a new validation class
 		//Reverting the fix back as the class name defined in the ext is unique to this validator and has to be used for the unique id in the validation metadata
 		String validatorImplName = runChildren[0].getAttribute(ATT_CLASS);
 		
 		if (validatorImplName == null) {
 			// Same as before; how can we instantiate when...
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.FINE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidationRegistryReader.initializeValidator(IConfigurationElement, String, String)"); //$NON-NLS-1$
-				entry.setMessageTypeID(ResourceConstants.VBF_EXC_SYNTAX_NO_VAL_CLASS);
-				entry.setTokens(new String[]{validatorName});
-				logger.write(Level.FINE, entry);
+			if (Misc.isLogging()) {
+				Misc.log(NLS.bind(ValMessages.VbfExcSyntaxNoValClass, validatorName));
 			}
 			return null;
 		}
@@ -1295,13 +1198,8 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		String helperImplName = getHelperName(element);
 		if (helperImplName == null) {
 			// Same as before; how can we instantiate when...
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.FINE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidationRegistryReader.initializeValidator(IConfigurationElement, String, String)"); //$NON-NLS-1$
-				entry.setMessageTypeID(ResourceConstants.VBF_EXC_SYNTAX_NO_VAL_RUN);
-				entry.setTokens(new String[]{validatorImplName});
-				logger.write(Level.FINE, entry);
+			if (Misc.isLogging()) {
+				Misc.log(NLS.bind(ValMessages.VbfExcSyntaxNoValRun, validatorImplName));
 			}
 			return null;
 		}
@@ -1339,12 +1237,8 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		vmd.setContentTypeIds(getContentTypeBindings(element));
 		initializeValidatorCustomMarkers(element, pluginId, vmd);
 		
-		Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-		if (logger.isLoggingLevel(Level.FINEST)) {
-			LogEntry entry = ValidationPlugin.getLogEntry();
-			entry.setSourceID("ValidationRegistryReader.initializeValidator(IConfigurationElement, String, String)"); //$NON-NLS-1$
-			entry.setText("validator loaded: " + validatorImplName); //$NON-NLS-1$
-			logger.write(Level.FINEST, entry);
+		if (Misc.isLogging()) {
+			Misc.log("validator loaded: " + validatorImplName); //$NON-NLS-1$
 		}
 
 		return vmd;
@@ -1381,8 +1275,8 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			return null;
 		try {
 			return ExpressionConverter.getDefault().perform(enablements[0]);
-		} catch (CoreException ce) {
-			Logger.getLogger().log(ce);
+		} catch (CoreException e) {
+			ValidationPlugin.getPlugin().handleException(e);
 		}
 		return null;
 	}
@@ -1412,21 +1306,17 @@ public final class ValidationRegistryReader implements RegistryConstants {
 
 			String label = extension.getLabel();
 			if (label == null || label.equals("")) { //$NON-NLS-1$
-				Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-				if (logger.isLoggingLevel(Level.FINE)) {
+				if (Misc.isLogging()) {
 					String[] msgParm = {extension.getUniqueIdentifier()};
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("ValidationRegistryReader.readExtension(IExtension)"); //$NON-NLS-1$
 					String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_VALIDATORNAME_IS_NULL),
 							(Object[])msgParm);
-					entry.setText(result);					
-					logger.write(Level.FINE, entry);
+					Misc.log(result);					
 				}
 			} else {
 				// If getLabel() returns an empty string, this is an illegal validator.
 				// The PropertyPage, and other status messages, need to have a displayable name for
 				// the validator.
-				String pluginId = extension.getNamespace();
+				String pluginId = extension.getContributor().getName();
 				ValidatorMetaData vmd = initializeValidator(element, label, pluginId);
 
 				if (vmd != null) {

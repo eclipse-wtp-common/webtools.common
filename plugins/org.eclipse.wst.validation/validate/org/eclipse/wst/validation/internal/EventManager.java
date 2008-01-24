@@ -11,7 +11,6 @@
 package org.eclipse.wst.validation.internal;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -23,9 +22,6 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jem.util.UIContextDetermination;
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchContext;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
@@ -85,50 +81,28 @@ public class EventManager implements IResourceChangeListener {
 					try {
 						helper = vmd.getHelper(project);
 						helper.closing();
-					} catch (InstantiationException exc) {
+					} catch (InstantiationException e) {
 						// Remove the vmd from the reader's list
 						ValidationRegistryReader.getReader().disableValidator(vmd);
 
-						// Log the reason for the disabled validator
-						Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-						if (logger.isLoggingLevel(Level.SEVERE)) {
-							LogEntry entry = ValidationPlugin.getLogEntry();
-							entry.setSourceID("EventManager::closing(IProject)"); //$NON-NLS-1$
-							entry.setTargetException(exc);
-							logger.write(Level.SEVERE, entry);
-						}
-
+						ValidationPlugin.getPlugin().handleException(e);
 						continue;
-					} catch (Exception exc) {
+					} catch (Exception e) {
 						// If there is a problem with this particular helper, log the error and
 						// continue
 						// with the next validator.
-						Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-						if (logger.isLoggingLevel(Level.SEVERE)) {
-							LogEntry entry = ValidationPlugin.getLogEntry();
-							entry.setSourceID("EventManager::closing(IProject)"); //$NON-NLS-1$
-							entry.setTargetException(exc);
-							logger.write(Level.SEVERE, entry);
-						}
+						ValidationPlugin.getPlugin().handleException(e);
 						continue;
 					}
 				}
 
 				ConfigurationManager.getManager().closing(project);
 			}
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("EventManager::closing(" + project.getName() + ")"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			if (e.getTargetException() != null)
+				ValidationPlugin.getPlugin().handleException(e.getTargetException());
 
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
 		}
 	}
 
@@ -156,50 +130,27 @@ public class EventManager implements IResourceChangeListener {
 					try {
 						helper = vmd.getHelper(project);
 						helper.deleting();
-					} catch (InstantiationException exc) {
+					} catch (InstantiationException e) {
 						// Remove the vmd from the reader's list
 						ValidationRegistryReader.getReader().disableValidator(vmd);
-
-						// Log the reason for the disabled validator
-						Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-						if (logger.isLoggingLevel(Level.SEVERE)) {
-							LogEntry entry = ValidationPlugin.getLogEntry();
-							entry.setSourceID("EventManager::deleting(IProject)"); //$NON-NLS-1$
-							entry.setTargetException(exc);
-							logger.write(Level.SEVERE, entry);
-						}
-
+						ValidationPlugin.getPlugin().handleException(e);
 						continue;
-					} catch (Exception exc) {
+					} catch (Exception e) {
 						// If there is a problem with this particular helper, log the error and
 						// continue
 						// with the next validator.
-						Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-						if (logger.isLoggingLevel(Level.SEVERE)) {
-							LogEntry entry = ValidationPlugin.getLogEntry();
-							entry.setSourceID("EventManager::deleting(IProject)"); //$NON-NLS-1$
-							entry.setTargetException(exc);
-							logger.write(Level.SEVERE, entry);
-						}
+						ValidationPlugin.getPlugin().handleException(e);
 						continue;
 					}
 				}
 
 				ConfigurationManager.getManager().deleting(project);
 			}
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("EventManager::deleting(" + project.getName() + ")"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			if (e.getTargetException() != null)
+				ValidationPlugin.getPlugin().handleException(e.getTargetException());
 
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
 		}
 	}
 
@@ -221,19 +172,11 @@ public class EventManager implements IResourceChangeListener {
 							try {
 								// flush existing "enabled validator" settings and reset to default
 								ConfigurationManager.getManager().resetProjectNature(project); // 
-							} catch (InvocationTargetException exc) {
-								Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-								if (logger.isLoggingLevel(Level.SEVERE)) {
-									LogEntry entry = ValidationPlugin.getLogEntry();
-									entry.setSourceIdentifier("EventManager::postAutoChange"); //$NON-NLS-1$
-									entry.setTargetException(exc);
-									logger.write(Level.SEVERE, entry);
+							} catch (InvocationTargetException e) {
+								ValidationPlugin.getPlugin().handleException(e);
+								if (e.getTargetException() != null)
+									ValidationPlugin.getPlugin().handleException(e.getTargetException());
 
-									if (exc.getTargetException() != null) {
-										entry.setTargetException(exc);
-										logger.write(Level.SEVERE, entry);
-									}
-								}
 							}
 							return false;
 						}
@@ -370,19 +313,11 @@ public class EventManager implements IResourceChangeListener {
 							}
 						}
 					}
-				} catch (InvocationTargetException exc) {
-					Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-					if (logger.isLoggingLevel(Level.SEVERE)) {
-						LogEntry entry = ValidationPlugin.getLogEntry();
-						entry.setSourceIdentifier("EventManager::shutdown(" + project.getName() + ")"); //$NON-NLS-1$  //$NON-NLS-2$
-						entry.setTargetException(exc);
-						logger.write(Level.SEVERE, entry);
+				} catch (InvocationTargetException e) {
+					ValidationPlugin.getPlugin().handleException(e);
+					if (e.getTargetException() != null)
+						ValidationPlugin.getPlugin().handleException(e.getTargetException());
 
-						if (exc.getTargetException() != null) {
-							entry.setTargetException(exc);
-							logger.write(Level.SEVERE, entry);
-						}
-					}
 				}
 			}
 		} catch (Exception exc) {
@@ -414,12 +349,13 @@ public class EventManager implements IResourceChangeListener {
 	}
 
 	/**
-	 * This method should be used to determine if the workbench is running in UI or Headless
+	 * This method should be used to determine if the workbench is running in UI or Headless.
+	 * 
+	 * @deprecated This plug-in no longer depends on jem. If you need this function use the jem
+	 * code directly.
 	 */
 	public static boolean isHeadless() {
-		boolean ret = UIContextDetermination.getCurrentContext() == UIContextDetermination.HEADLESS_CONTEXT;
-		return ret;
-		//return UIContextDetermination.getCurrentContext() ==
-		// UIContextDetermination.HEADLESS_CONTEXT;
+		//return UIContextDetermination.getCurrentContext() == UIContextDetermination.HEADLESS_CONTEXT;
+		return false;
 	}
 }

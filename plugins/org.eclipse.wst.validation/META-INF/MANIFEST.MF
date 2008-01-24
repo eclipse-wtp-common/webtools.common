@@ -7,17 +7,16 @@ Bundle-Activator: org.eclipse.wst.validation.internal.plugin.ValidationPlugin
 Bundle-Vendor: %Bundle-Vendor.0
 Bundle-Localization: plugin
 Export-Package: org.eclipse.wst.validation,
- org.eclipse.wst.validation.internal;x-internal:=true,
- org.eclipse.wst.validation.internal.core;x-internal:=true,
+ org.eclipse.wst.validation.internal;x-friends:="org.eclipse.jst.validation.test",
+ org.eclipse.wst.validation.internal.core;x-friends:="org.eclipse.jst.validation.test",
  org.eclipse.wst.validation.internal.delegates;x-internal:=true,
  org.eclipse.wst.validation.internal.model;x-internal:=true,
- org.eclipse.wst.validation.internal.operations;x-internal:=true,
- org.eclipse.wst.validation.internal.plugin;x-internal:=true,
+ org.eclipse.wst.validation.internal.operations;x-friends:="org.eclipse.jst.validation.test",
+ org.eclipse.wst.validation.internal.plugin;x-friends:="org.eclipse.jst.validation.test",
  org.eclipse.wst.validation.internal.provisional;x-internal:=true,
- org.eclipse.wst.validation.internal.provisional.core;x-internal:=true
+ org.eclipse.wst.validation.internal.provisional.core;x-friends:="org.eclipse.jst.validation.test"
 Require-Bundle: org.eclipse.core.resources;bundle-version="[3.2.0,4.0.0)",
  org.eclipse.wst.common.frameworks;bundle-version="[1.1.0,1.2.0)",
- org.eclipse.jem.util;bundle-version="[2.0.0,3.0.0)",
  org.eclipse.core.runtime;bundle-version="[3.2.0,4.0.0)",
  org.eclipse.wst.common.project.facet.core;bundle-version="[1.1.0,2.0.0)",
  org.eclipse.core.expressions;bundle-version="[3.2.0,4.0.0)"

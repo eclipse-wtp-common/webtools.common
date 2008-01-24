@@ -12,11 +12,8 @@ package org.eclipse.wst.validation.internal.core;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.TaskListUtility;
 import org.eclipse.wst.validation.internal.operations.MessageInfo;
 import org.eclipse.wst.validation.internal.operations.ValidatorManager;
@@ -97,13 +94,8 @@ public class ValidatorLauncher {
 							info.getMsg().getSeverity(), info.getTargetObjectName(),
 							info.getMsg().getGroupName(), info.getMsg().getOffset(), info.getMsg().getLength());
 				
-				} catch (CoreException exc) {
-					Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-					if (logger.isLoggingLevel(Level.SEVERE)) {
-						LogEntry entry = ValidationPlugin.getLogEntry();
-						entry.setTargetException(exc);
-						logger.write(Level.SEVERE, entry);
-					}
+				} catch (CoreException e) {
+					ValidationPlugin.getPlugin().handleException(e);
 				}										
 			}
 			mgr.clearMessages( (IValidatorJob)validator );

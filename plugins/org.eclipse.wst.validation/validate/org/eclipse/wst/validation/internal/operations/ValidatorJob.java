@@ -10,17 +10,16 @@
  *******************************************************************************/
 package org.eclipse.wst.validation.internal.operations;
 
-import java.util.logging.Level;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.frameworks.internal.plugin.WTPCommonPlugin;
+import org.eclipse.wst.validation.IPerformanceMonitor;
+import org.eclipse.wst.validation.PerformanceCounters;
+import org.eclipse.wst.validation.ValidationFramework;
+import org.eclipse.wst.validation.internal.Misc;
 import org.eclipse.wst.validation.internal.ResourceConstants;
 import org.eclipse.wst.validation.internal.ResourceHandler;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
@@ -54,6 +53,14 @@ public class ValidatorJob extends Job {
 	//error information is reported by the IReporter
 	
 	protected IStatus run(IProgressMonitor monitor) {
+		
+		IPerformanceMonitor pm = ValidationFramework.getDefault().getPerformanceMonitor();
+		long elapsed = -1;
+		long cpuTime = -1;
+		if (pm.isCollecting()){
+			elapsed = System.currentTimeMillis();
+			cpuTime = Misc.getCPUTime();
+		}
 
 		monitor.beginTask("Validating", IProgressMonitor.UNKNOWN); //$NON-NLS-1$
 		IStatus status = IValidatorJob.OK_STATUS;
@@ -61,28 +68,17 @@ public class ValidatorJob extends Job {
 
 		ValidatorMetaData vmd = ValidationRegistryReader.getReader().getValidatorMetaData(validator);
 		
-		Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-
 		try {
 
 			String message = ResourceHandler.getExternalizedMessage(
 				ResourceConstants.VBF_STATUS_STARTING_VALIDATION,
 				new String[]{helper.getProject().getName(), vmd.getValidatorDisplayName()});
 			
-			monitor.subTask(message);
-			
-		
+			monitor.subTask(message);		
 			status = validator.validateInJob(helper, reporter);
 		
-			//to remove, if error is returned from the validator, the job stays back in the UI...
-			//should we even return error status if error is found in the validator
-			//status = IValidatorJob.OK_STATUS;	
-			
-			
-			
-			message = ResourceHandler.getExternalizedMessage(
-					ResourceConstants.VBF_STATUS_ENDING_VALIDATION,
-					new String[]{helper.getProject().getName(), vmd.getValidatorDisplayName()});
+			message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_ENDING_VALIDATION,
+				new String[]{helper.getProject().getName(), vmd.getValidatorDisplayName()});
 			monitor.subTask(message);
  
 		} catch (OperationCanceledException exc) {
@@ -98,41 +94,24 @@ public class ValidatorJob extends Job {
 				}
 			}
 			// If there is a problem with this particular validator, log the
-			// error and continue
-			// with the next validator.
+			// error and continue with the next validator.
 			exc.setClassLoader(validator.getClass().getClassLoader());
 
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidatorJob.run()"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-				if (exc.getAssociatedException() != null) {
-					entry.setTargetException(exc.getAssociatedException());
-					logger.write(Level.SEVERE, entry);
-				}
-			}
+			ValidationPlugin.getPlugin().handleException(exc);
+			ValidationPlugin.getPlugin().handleException(exc.getAssociatedException());
 			String message = ResourceHandler.getExternalizedMessage(
-						ResourceConstants.VBF_STATUS_ENDING_VALIDATION_ABNORMALLY,
-						new String[]{helper.getProject().getName(), vmd.getValidatorDisplayName()});
+					ResourceConstants.VBF_STATUS_ENDING_VALIDATION_ABNORMALLY,
+					new String[]{helper.getProject().getName(), vmd.getValidatorDisplayName()});
 			
 			monitor.subTask(message);
 			if (exc.getAssociatedMessage() != null) {
 				reporter.addMessage(validator, exc.getAssociatedMessage());
 			}
-		} catch (Exception exc) {
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidatorJob.run()"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-				IStatus stat = new Status(IStatus.ERROR, ValidationPlugin.PLUGIN_ID, 0, "", exc ); //$NON-NLS-1$
-					logger.write(Level.SEVERE, stat);
-				
-			}
+		} catch (Exception e) {
+			ValidationPlugin.getPlugin().handleException(e);
 			String mssg = ResourceHandler.getExternalizedMessage(
-						ResourceConstants.VBF_STATUS_ENDING_VALIDATION_ABNORMALLY,
-						new String[]{helper.getProject().getName(), vmd.getValidatorDisplayName() });
+				ResourceConstants.VBF_STATUS_ENDING_VALIDATION_ABNORMALLY,
+				new String[]{helper.getProject().getName(), vmd.getValidatorDisplayName() });
 			
 			monitor.subTask(mssg);
 			
@@ -142,12 +121,7 @@ public class ValidatorJob extends Job {
 			} catch (OperationCanceledException e) {
 				throw e;
 			} catch (Exception exc) {
-				if (logger.isLoggingLevel(Level.SEVERE)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("ValidatorJob.run()"); //$NON-NLS-1$
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
+				ValidationPlugin.getPlugin().handleException(exc);
 				
 				String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$				
 				Message message = ValidationPlugin.getMessage();
@@ -163,12 +137,7 @@ public class ValidatorJob extends Job {
 				}catch (OperationCanceledException e) {
 					throw e;
 				} catch (Exception exc) {
-					if (logger.isLoggingLevel(Level.SEVERE)) {
-						LogEntry entry = ValidationPlugin.getLogEntry();
-						entry.setSourceID("ValidatorJob.run()"); //$NON-NLS-1$
-						entry.setTargetException(exc);
-						logger.write(Level.SEVERE, entry);
-					}
+					ValidationPlugin.getPlugin().handleException(exc);
 					String[] msgParm = {exc.getClass().getName(), vmd.getValidatorDisplayName(), (exc.getMessage() == null ? "" : exc.getMessage())}; //$NON-NLS-1$
 					Message message = ValidationPlugin.getMessage();
 					message.setSeverity(IMessage.NORMAL_SEVERITY);
@@ -188,6 +157,16 @@ public class ValidatorJob extends Job {
 			//reporter.getProgressMonitor().worked(((delta == null) ? 1 : delta.length)); // One
 			//monitor.worked(((delta == null) ? 1 : delta.length)); // One
 			monitor.done();
+		}
+		if (pm.isCollecting()){
+			if (cpuTime != -1){
+				cpuTime = Misc.getCPUTime() - cpuTime;
+			}
+			String projectName = null;
+			if (project != null)projectName = project.getName();
+			pm.add(new PerformanceCounters(vmd.getValidatorUniqueName(), 
+				vmd.getValidatorDisplayName(),projectName, -1, 
+				System.currentTimeMillis()-elapsed, cpuTime));
 		}
 		return status;
 	}

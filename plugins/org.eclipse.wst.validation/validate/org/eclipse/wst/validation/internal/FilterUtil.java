@@ -17,7 +17,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -28,10 +27,9 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.core.IFileDelta;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchContext;
 import org.eclipse.wst.validation.internal.operations.WorkbenchFileDelta;
@@ -226,20 +224,12 @@ public final class FilterUtil {
 					}
 				}
 				result.put(vmd, deltas);
-			} catch (InstantiationException exc) {
+			} catch (InstantiationException e) {
 				cannotLoad = true;
 
 				// Remove the vmd from the reader's list
 				ValidationRegistryReader.getReader().disableValidator(vmd);
-
-				// Log the reason for the disabled validator
-				Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-				if (logger.isLoggingLevel(Level.SEVERE)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("FilterUtil::getFileDeltas(Set, Object[], int, boolean)"); //$NON-NLS-1$
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
+				ValidationPlugin.getPlugin().handleException(e);
 				continue;
 			}
 
@@ -266,16 +256,9 @@ public final class FilterUtil {
 		if (fileName == null) {
 			// The resource is not contained in the current project.
 			// Can't see how this would happen, but check for it anyway.
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("FilterUtil::getFileDelta(IWorkbenchContext, ValidatorMetaData, IResource, int)"); //$NON-NLS-1$
-				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NULL_NAME), 
-					new Object[]{resource.getName(), vmd.getValidatorDisplayName()});
-				entry.setText(result);
-				//entry.setTokens(new String[]{resource.getName(), vmd.getValidatorDisplayName()});
-				logger.write(Level.SEVERE, entry);
-			}
+			String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_SYNTAX_NULL_NAME), 
+				new Object[]{resource.getName(), vmd.getValidatorDisplayName()});
+			ValidationPlugin.getPlugin().logMessage(IStatus.ERROR, result);
 
 			IPath resourcePath = resource.getFullPath();
 			if (resourcePath != null) {
@@ -283,12 +266,8 @@ public final class FilterUtil {
 				// resource.
 				fileName = resourcePath.toString();
 			} else {
-				if (logger.isLoggingLevel(Level.SEVERE)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("FilterUtil::getFileDelta(IWorkbenchContext, ValidtaorMetaData, IResource, int)"); //$NON-NLS-1$
-					entry.setText("portableName is null and path is null for resource " + resource); //$NON-NLS-1$
-					logger.write(Level.SEVERE, entry);
-				}
+				ValidationPlugin.getPlugin().logMessage(IStatus.ERROR, 
+					"portableName is null and path is null for resource " + resource); //$NON-NLS-1$
 				return null;
 			}
 		}
@@ -310,15 +289,7 @@ public final class FilterUtil {
 		try {
 			helper.registerResource(resource);
 		} catch (Exception exc) {
-			// How to log this????
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("FilterUtil.addToFileList"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
-
+			ValidationPlugin.getPlugin().handleException(exc);
 			InternalValidatorManager.getManager().addInternalErrorTask(resource.getProject(), vmd, exc);
 
 			// Don't return ... even though the register threw an exception, that's not to say
@@ -402,20 +373,12 @@ public final class FilterUtil {
 					// Notify the helper that a resource is about to be filtered in
 					IWorkbenchContext helper = vmd.getHelper(resource.getProject());
 					addToFileList(enabledValidators, helper, vmd, resource, resourceDelta, isFullBuild);
-				} catch (InstantiationException exc) {
+				} catch (InstantiationException e) {
 					cannotLoad = true;
 
 					// Remove the vmd from the reader's list
 					ValidationRegistryReader.getReader().disableValidator(vmd);
-
-					// Log the reason for the disabled validator
-					Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-					if (logger.isLoggingLevel(Level.SEVERE)) {
-						LogEntry entry = ValidationPlugin.getLogEntry();
-						entry.setSourceID("FilterUtil::filterOut(IProgressMonitor, Map, IResource, int, boolean)"); //$NON-NLS-1$
-						entry.setTargetException(exc);
-						logger.write(Level.SEVERE, entry);
-					}
+					ValidationPlugin.getPlugin().handleException(e);
 				}
 			}
 		}
@@ -645,8 +608,7 @@ public final class FilterUtil {
 
 					IResource resource = subdelta.getResource();
 
-					Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-					if (logger.isLoggingLevel(Level.FINEST)) {
+					if (Misc.isLogging()) {
 						StringBuffer buffer = new StringBuffer("subdelta of "); //$NON-NLS-1$
 						buffer.append(resource.getName());
 						buffer.append(" is "); //$NON-NLS-1$
@@ -655,14 +617,7 @@ public final class FilterUtil {
 						buffer.append(resource.exists());
 						buffer.append(" resource.isPhantom?"); //$NON-NLS-1$
 						buffer.append(resource.isPhantom());
-
-						if (logger.isLoggingLevel(Level.FINEST)) {
-							LogEntry entry = ValidationPlugin.getLogEntry();
-							entry.setSourceID("FilterUtil::visit(IResourceDelta)"); //$NON-NLS-1$
-							entry.setText(buffer.toString());
-							logger.write(Level.FINEST, entry);
-						}
-
+						Misc.log(buffer);
 					}
 
 					// If the delta is an IProject, and the IProject is getting deleted or closed,

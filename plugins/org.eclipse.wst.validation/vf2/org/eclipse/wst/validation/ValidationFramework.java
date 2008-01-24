@@ -12,9 +12,13 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.wst.validation.internal.DebugConstants;
 import org.eclipse.wst.validation.internal.DependencyIndex;
+import org.eclipse.wst.validation.internal.Misc;
+import org.eclipse.wst.validation.internal.PerformanceMonitor;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValOperation;
 import org.eclipse.wst.validation.internal.ValidationRunner;
@@ -33,6 +37,7 @@ import org.eclipse.wst.validation.internal.provisional.core.IReporter;
 public final class ValidationFramework {
 	
 	private IDependencyIndex 			_dependencyIndex;
+	private IPerformanceMonitor			_performanceMonitor;
 	private static ValidationFramework 	_me;
 	
 	/** 
@@ -57,6 +62,16 @@ public final class ValidationFramework {
 	private synchronized IDependencyIndex getDependencyIndex2() {
 		if (_dependencyIndex == null)_dependencyIndex = new DependencyIndex();
 		return _dependencyIndex;
+	}
+	
+	public synchronized IPerformanceMonitor getPerformanceMonitor(){
+		if (_performanceMonitor == null){
+			boolean traceTimes = Misc.debugOptionAsBoolean(DebugConstants.TraceTimes);
+			String traceFile = Platform.getDebugOption(DebugConstants.TraceTimesFile);
+
+			_performanceMonitor = PerformanceMonitor.create(traceTimes, traceFile);
+		}
+		return _performanceMonitor;
 	}
 	
 	/**
@@ -169,5 +184,6 @@ public final class ValidationFramework {
 		}
 		
 	}
+
 
 }

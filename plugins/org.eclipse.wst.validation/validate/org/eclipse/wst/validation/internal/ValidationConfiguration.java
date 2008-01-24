@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -33,8 +32,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.Preferences.IPropertyChangeListener;
 import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.delegates.ValidatorDelegateDescriptor;
 import org.eclipse.wst.validation.internal.delegates.ValidatorDelegatesRegistry;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
@@ -560,8 +557,8 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 				pref.store(os, USER_BUILD_PREFERENCE);
 				pref.setValue(DELEGATES_PREFERENCE, serializeDelegatesSetting());
 				pref.store(os, DELEGATES_PREFERENCE);
-			} catch (IOException ie) {
-				Logger.getLogger().log(ie);
+			} catch (IOException e) {
+				ValidationPlugin.getPlugin().handleException(e);
 			}
 
 		}
@@ -663,14 +660,8 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 
 		try {
 			return marker.getAttribute(attribName);
-		} catch (CoreException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ValidationConfiguration::getValue(" + attribName + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (CoreException e) {
+			ValidationPlugin.getPlugin().handleException(e);
 			return null;
 		}
 	}
@@ -728,8 +719,8 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 			try {
 				deserializeAllPrefs(event);
 				passivate();
-			 } catch (InvocationTargetException ie) {
-				Logger.getLogger().log(ie);
+			 } catch (InvocationTargetException e) {
+				 ValidationPlugin.getPlugin().handleException(e);
 			}
 		}
 	}

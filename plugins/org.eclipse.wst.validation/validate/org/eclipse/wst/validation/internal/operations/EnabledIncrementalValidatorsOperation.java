@@ -13,13 +13,10 @@ package org.eclipse.wst.validation.internal.operations;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
-import java.util.logging.Level;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.FilterUtil;
 import org.eclipse.wst.validation.internal.InternalValidatorManager;
@@ -111,19 +108,11 @@ public class EnabledIncrementalValidatorsOperation extends EnabledValidatorsOper
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			setEnabledValidators(InternalValidatorManager.wrapInSet(prjp.getEnabledIncrementalValidators(true)));
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("EnabledIncrementalVAlidatorsOperation(IProject<" + project.getName() + ">, IResourceDelta, int, boolean)"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, exc);
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			if (e.getTargetException() != null)
+				ValidationPlugin.getPlugin().handleException(e.getTargetException());
 
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, exc);
-				}
-			}
 		}
 		setDelta(delta);
 		setContext(context);
@@ -145,19 +134,11 @@ public class EnabledIncrementalValidatorsOperation extends EnabledValidatorsOper
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			setEnabledValidators(InternalValidatorManager.wrapInSet(prjp.getEnabledIncrementalValidators(true)));
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("EnabledIncrementalVAlidatorsOperation(IProject<" + project.getName() + ">, IResourceDelta, int, boolean)"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, exc);
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			if (e.getTargetException() != null)
+				ValidationPlugin.getPlugin().handleException(e.getTargetException());
 
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, exc);
-				}
-			}
 		}
 		setDelta(delta);
 	}
@@ -179,19 +160,11 @@ public class EnabledIncrementalValidatorsOperation extends EnabledValidatorsOper
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			setEnabledValidators(InternalValidatorManager.wrapInSet(prjp.getEnabledIncrementalValidators(true)));
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("EnabledIncrementalValidatorsOperation(IResource[], IProject<" + project.getName() + ">, boolean)"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, exc);
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			if (e.getTargetException() != null)
+				ValidationPlugin.getPlugin().handleException(e.getTargetException());
 
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
 		}
 		//construct an array of IFileDelta[] to wrap the Object[]; one IFileDelta for each Object in the array
 		setFileDeltas(FilterUtil.getFileDeltas(getEnabledValidators(), changedResources, false));
@@ -215,19 +188,11 @@ public class EnabledIncrementalValidatorsOperation extends EnabledValidatorsOper
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			setEnabledValidators(InternalValidatorManager.wrapInSet(prjp.getEnabledIncrementalValidators(true)));
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("EnabledIncrementalValidatorsOperation(IResource[], IProject<" + project.getName() + ">, boolean)"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, exc);
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			if (e.getTargetException() != null)
+				ValidationPlugin.getPlugin().handleException(e.getTargetException());
 
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
 		}
 		//construct an array of IFileDelta[] to wrap the Object[]; one IFileDelta for each Object in the array
 		setFileDeltas(FilterUtil.getFileDeltas(getEnabledValidators(), changedResources, false));

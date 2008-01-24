@@ -19,7 +19,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -29,8 +28,6 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -43,7 +40,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
-import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.GlobalConfiguration;
@@ -177,14 +173,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		try {
 			selected.accept(getFolderVisitor());
 		} catch (CoreException exc) {
-			Logger logger = WTPUIPlugin.getLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationUIPlugin.getLogEntry();
-				entry.setSourceIdentifier("ValidationMenuAction.addSelected(IFolder)"); //$NON-NLS-1$
-				entry.setMessageTypeIdentifier(ResourceConstants.VBF_EXC_INTERNAL);
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+			ValidationUIPlugin.getPlugin().handleException(exc);
 			return;
 		}
 	}
@@ -211,14 +200,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		try {
 			selected.accept(getProjectVisitor());
 		} catch (CoreException exc) {
-			Logger logger = WTPUIPlugin.getLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationUIPlugin.getLogEntry();
-				entry.setSourceIdentifier("ValidationMenuAction.addSelected(IFolder)"); //$NON-NLS-1$
-				entry.setMessageTypeIdentifier(ResourceConstants.VBF_EXC_INTERNAL);
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+			ValidationUIPlugin.getPlugin().handleException(exc);
 			return;
 		}
 	}
@@ -408,8 +390,9 @@ public class ValidationMenuAction implements IViewActionDelegate {
                 ctx.run(false, true, runnable);
                 return true;
           } catch (InvocationTargetException e) {
-                Logger.getLogger().logError(e);
+                ValidationUIPlugin.getPlugin().handleException(e);
           } catch (InterruptedException e) {
+        	  ValidationUIPlugin.getPlugin().handleException(e);
           }
       }
 	  return false;

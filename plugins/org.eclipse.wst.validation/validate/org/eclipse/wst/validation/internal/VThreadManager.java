@@ -12,10 +12,8 @@ package org.eclipse.wst.validation.internal;
 
 
 import java.util.Vector;
-import java.util.logging.Level;
 
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 
@@ -45,13 +43,8 @@ public class VThreadManager {
 					try {
 						if (restart > MAX_NUM_OF_RESTART) {
 							// something has gone seriously, seriously wrong
-							Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-							if (logger.isLoggingLevel(Level.SEVERE)) {
-								LogEntry entry = ValidationPlugin.getLogEntry();
-								entry.setSourceID("VThreadManager::validationRunnable"); //$NON-NLS-1$
-								entry.setText("restart = " + restart); //$NON-NLS-1$
-								logger.write(Level.SEVERE, entry);
-							}
+							String message = "restart = " + restart; //$NON-NLS-1$
+							ValidationPlugin.getPlugin().logMessage(IStatus.ERROR, message);
 							break;
 						}
 
@@ -63,20 +56,10 @@ public class VThreadManager {
 							job.run();
 							getJobs().setActive(false);
 						}
-					} catch (Exception exc) {
-						// This exception is added as FINE instead of SEVERE because it's not
-						// improbable
-						// that an exception will be thrown
+					} catch (Exception e) {
 						restart++;
 						getJobs().setActive(false);
-
-						Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-						if (logger.isLoggingLevel(Level.FINE)) {
-							LogEntry entry = ValidationPlugin.getLogEntry();
-							entry.setSourceID("VThreadManager::validationRunnable"); //$NON-NLS-1$
-							entry.setTargetException(exc);
-							logger.write(Level.FINE, entry);
-						}
+						ValidationPlugin.getPlugin().handleException(e);
 					} finally {
 						//do nothing
 					}

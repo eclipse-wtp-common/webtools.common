@@ -15,15 +15,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.core.Message;
 import org.eclipse.wst.validation.internal.operations.WorkbenchReporter;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
@@ -163,19 +160,10 @@ public final class InternalValidatorManager {
 			ValidatorMetaData[] result = new ValidatorMetaData[count];
 			System.arraycopy(temp, 0, result, 0, count);
 			return result;
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("InternalValidatorManager::getValidatorsForExtension(" + project.getName() + ", " + fileExtension + ")"); //$NON-NLS-1$  //$NON-NLS-2$ //$NON-NLS-3$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			if (e.getTargetException() != null)
+				ValidationPlugin.getPlugin().handleException(e.getTargetException());
 			return new ValidatorMetaData[0];
 		}
 	}

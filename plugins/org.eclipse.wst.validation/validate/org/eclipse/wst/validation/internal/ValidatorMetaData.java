@@ -29,12 +29,10 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.content.IContentType;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.delegates.ValidatorDelegatesRegistry;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchContext;
 import org.eclipse.wst.validation.internal.operations.WorkbenchContext;
 import org.eclipse.wst.validation.internal.plugin.ValidationHelperRegistryReader;
-import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 import org.eclipse.wst.validation.internal.provisional.core.IValidatorJob;
 import org.osgi.framework.Bundle;
@@ -58,7 +56,6 @@ public class ValidatorMetaData {
 	private String 			_pluginId;
 	private boolean 		_supportsIncremental = RegistryConstants.ATT_INCREMENTAL_DEFAULT;
 	private boolean 		_supportsFullBuild = RegistryConstants.ATT_FULLBUILD_DEFAULT;
-	private Logger 			_logger;
 	private boolean 		_isEnabledByDefault = RegistryConstants.ATT_ENABLED_DEFAULT;
 	private MigrationMetaData _migrationMetaData;
 	private int 			_ruleGroup = RegistryConstants.ATT_RULE_GROUP_DEFAULT;
@@ -230,23 +227,6 @@ public class ValidatorMetaData {
 	 */
 	public boolean cannotLoad() {
 		return _cannotLoad;
-	}
-
-	/**
-	 * This method must not be called until the unique id of the validator has been initialized.
-	 */
-	public Logger getMsgLogger() {
-		if (_logger == null) {
-			_logger = ValidationPlugin.getPlugin().getMsgLogger();
-			/*
-			 * // Decided against having a logger for each validator because each validator // would
-			 * need to contribute an extension in their plugins for it to be recognized // by the
-			 * logging preference page. For now, just use the validation framework's logger. _logger =
-			 * (MsgLogger)MsgLogger.getFactory().getLogger(getValidatorUniqueName());
-			 * _logger.write(Level.CONFIG, getValidatorDisplayName());
-			 */
-		}
-		return _logger;
 	}
 
 	public MigrationMetaData getMigrationMetaData() {

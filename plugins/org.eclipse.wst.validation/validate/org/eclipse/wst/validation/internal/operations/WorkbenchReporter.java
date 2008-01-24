@@ -13,15 +13,13 @@ package org.eclipse.wst.validation.internal.operations;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.validation.internal.Misc;
 import org.eclipse.wst.validation.internal.ResourceConstants;
 import org.eclipse.wst.validation.internal.ResourceHandler;
 import org.eclipse.wst.validation.internal.TaskListUtility;
@@ -110,15 +108,8 @@ public class WorkbenchReporter implements IReporter {
 		int severity = message.getSeverity();
 		try {
 			TaskListUtility.addTask(messageOwnerId, resource, location, message.getId(), message.getText(cl), severity,targetObjectName, message.getGroupName(), message.getOffset(), message.getLength());
-		} catch (CoreException exc) {
-			// Couldn't add the task to the task list for some reason...
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("WorkbenchReporter.addMessage(Class,, IResource, IMessage, String, String"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (CoreException e) {
+			ValidationPlugin.getPlugin().handleException(e);
 		}
 	}
 	
@@ -126,15 +117,8 @@ public class WorkbenchReporter implements IReporter {
 		int severity = message.getSeverity();
 		try {
 			TaskListUtility.addTask(messageOwnerId, resource, location, message.getId(), message.getText(cl), severity,markerId,targetObjectName, message.getGroupName(), message.getOffset(), message.getLength());
-		} catch (CoreException exc) {
-			// Couldn't add the task to the task list for some reason...
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("WorkbenchReporter.addMessage(Class,, IResource, IMessage, String, String"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (CoreException e) {
+			ValidationPlugin.getPlugin().handleException(e);
 		}
 	}
 	
@@ -154,15 +138,8 @@ public class WorkbenchReporter implements IReporter {
 		String[] validatorNames = vmd.getValidatorNames();
 		try {
 			TaskListUtility.removeAllTasks(resource, validatorNames);
-		} catch (CoreException exc) {
-			// Couldn't remove the task from the task list for some reason...
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("WorkbenchReporter.removeAllMessages(String[], IResource, String)"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (CoreException e) {
+			ValidationPlugin.getPlugin().handleException(e);
 		}
 	}
 
@@ -186,33 +163,18 @@ public class WorkbenchReporter implements IReporter {
 			//String targetObjectName = getTargetObjectName(vmd.getHelper(resource.getProject()), object);
 			String targetObjectName = getTargetObjectName( getHelper( resource.getProject(), validator), object);			
 			removeAllMessages(resource, validatorNames, targetObjectName);
-		} catch (InstantiationException exc) {
+		} catch (InstantiationException e) {
 			// Remove the vmd from the reader's list
 			ValidationRegistryReader.getReader().disableValidator(vmd);
-
-			// Log the reason for the disabled validator
-			final Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("WorkbenchReporter::removeAllMessages(IResource, IValidator, Object)"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+			ValidationPlugin.getPlugin().handleException(e);
 		}
 	}
 
 	public static void removeAllMessages(IResource resource, String[] validatorNames, String targetObjectName) {
 		try {
 			TaskListUtility.removeAllTasks(resource, validatorNames, targetObjectName);
-		} catch (CoreException exc) {
-			// Couldn't remove the task from the task list for some reason...
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("WorkbenchReporter.removeAllMessages(String[], IResource, String)"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (CoreException e) {
+			ValidationPlugin.getPlugin().handleException(e);
 		}
 	}
 
@@ -231,15 +193,8 @@ public class WorkbenchReporter implements IReporter {
 	public static void removeMessageSubset(IResource resource, String[] ownerId, String targetObjectName, String groupName) {
 		try {
 			TaskListUtility.removeTaskSubset(resource, ownerId, targetObjectName, groupName);
-		} catch (CoreException exc) {
-			// Couldn't remove the task to the task list for some reason...
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("WorkbenchReporter.removeMessageSubset(String[], IResource, String, String)"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (CoreException e) {
+			ValidationPlugin.getPlugin().handleException(e);
 		}
 	}
 
@@ -264,14 +219,14 @@ public class WorkbenchReporter implements IReporter {
 		return getUniqueId(validator.getClass());
 	}
 
-	public static Logger getMsgLogger(IValidator validator) {
-		ValidatorMetaData vmd = ValidationRegistryReader.getReader().getValidatorMetaData(validator);
-		if (vmd == null) {
-			return ValidationPlugin.getPlugin().getMsgLogger();
-		}
-
-		return vmd.getMsgLogger();
-	}
+//	public static Logger getMsgLogger(IValidator validator) {
+//		ValidatorMetaData vmd = ValidationRegistryReader.getReader().getValidatorMetaData(validator);
+//		if (vmd == null) {
+//			return ValidationPlugin.getPlugin().getMsgLogger();
+//		}
+//
+//		return vmd.getMsgLogger();
+//	}
 
 	public static String getLocation(IWorkbenchContext helper, IMessage message) {
 		if (message == null) {
@@ -288,14 +243,8 @@ public class WorkbenchReporter implements IReporter {
 		String location = null;
 		try {
 			location = helper.getLocation(targetObject);
-		} catch (Exception exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("WorkbenchReporter.getLocationText(Object)"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (Exception e) {
+			ValidationPlugin.getPlugin().handleException(e);
 		}
 		if ((location == null) || (location.trim().equals(""))) { //$NON-NLS-1$
 			location = DEFAULT_LOCATION;
@@ -316,14 +265,8 @@ public class WorkbenchReporter implements IReporter {
 		String targetObjectName = null;
 		try {
 			targetObjectName = helper.getTargetObjectName(targetObject);
-		} catch (Exception exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("WorkbenchReporter.getTargetObjectName(Object)"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (Exception e) {
+			ValidationPlugin.getPlugin().handleException(e);
 		}
 		return targetObjectName;
 	}
@@ -414,7 +357,7 @@ public class WorkbenchReporter implements IReporter {
 				try {
 					IWorkbenchContext helper = getHelper(validator);
 					resource = helper.getResource(object);
-				} catch (InstantiationException exc) {
+				} catch (InstantiationException e) {
 					try {
 						// Unlikely that an exception will be thrown, because this method is
 						// invoked by the validator, and if the validator is invoked, it's likely
@@ -424,45 +367,20 @@ public class WorkbenchReporter implements IReporter {
 						// Remove the vmd from the reader's list
 						ValidationRegistryReader.getReader().disableValidator(vmd);
 
-						// Log the reason for the disabled validator
-						Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-						if (logger.isLoggingLevel(Level.SEVERE)) {
-							LogEntry entry = ValidationPlugin.getLogEntry();
-							entry.setSourceID("WorkbenchReporter::getMessageResource(IValidator, Object)"); //$NON-NLS-1$
-							entry.setTargetException(exc);
-							logger.write(Level.SEVERE, entry);
-						}
-					} catch (IllegalArgumentException exc2) {
+						ValidationPlugin.getPlugin().handleException(e);
+					} catch (IllegalArgumentException e2) {
 						// Even the IValidator is invalid. Unfortunately, can't disable the
 						// validator because it can't be found by the registry reader.
 						// Log the reason for the disabled validator
-						Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-						if (logger.isLoggingLevel(Level.SEVERE)) {
-							LogEntry entry = ValidationPlugin.getLogEntry();
-							entry.setSourceID("WorkbenchReporter::getMessageResource(IValidator, Object)"); //$NON-NLS-1$
-							entry.setTargetException(exc2);
-							logger.write(Level.SEVERE, entry);
-						}
+						ValidationPlugin.getPlugin().handleException(e2);
 					}
-				} catch (IllegalArgumentException exc) {
+				} catch (IllegalArgumentException e) {
 					// Even the IValidator is invalid. Unfortunately, can't disable the
 					// validator because it can't be found by the registry reader.
 					// Log the reason for the disabled validator
-					Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-					if (logger.isLoggingLevel(Level.SEVERE)) {
-						LogEntry entry = ValidationPlugin.getLogEntry();
-						entry.setSourceID("WorkbenchReporter::getMessageResource(IValidator, Object)"); //$NON-NLS-1$
-						entry.setTargetException(exc);
-						logger.write(Level.SEVERE, entry);
-					}
-				} catch (Exception exc) {
-					Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-					if (logger.isLoggingLevel(Level.SEVERE)) {
-						LogEntry entry = ValidationPlugin.getLogEntry();
-						entry.setSourceID("WorkbenchReporter.getMessageResource(IValidator, Object)"); //$NON-NLS-1$
-						entry.setTargetException(exc);
-						logger.write(Level.SEVERE, entry);
-					}
+					ValidationPlugin.getPlugin().handleException(e);
+				} catch (Exception e) {
+					ValidationPlugin.getPlugin().handleException(e);
 				}
 			}
 		}
@@ -521,24 +439,15 @@ public class WorkbenchReporter implements IReporter {
 		ValidatorMetaData vmd = getVMD(validator);
 		try {
 			helper = getHelper(validator);
-		} catch (InstantiationException exc) {
+		} catch (InstantiationException e) {
 			try {
 				// Unlikely that an exception will be thrown, because this method is
 				// invoked by the validator, and if the validator is invoked, it's likely
 				// that the helper has been loaded too
-				
-				
+								
 				// Remove the vmd from the reader's list
 				ValidationRegistryReader.getReader().disableValidator(vmd);
-
-				// Log the reason for the disabled validator
-				Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-				if (logger.isLoggingLevel(Level.SEVERE)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("WorkbenchReporter::addMessage(IValidator, IMessage)"); //$NON-NLS-1$
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
+				ValidationPlugin.getPlugin().handleException(e);
 				return;
 			} catch (IllegalArgumentException exc2) {
 				logDisabledValidator(exc2);
@@ -550,16 +459,11 @@ public class WorkbenchReporter implements IReporter {
 		}
 
 		if (resource == null) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.FINE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("WorkbenchReporter.addMessage(IValidator, Message)"); //$NON-NLS-1$
+			if (Misc.isLogging()) {
 				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(
 					ResourceConstants.VBF_EXC_INVALID_RESOURCE), 
 					new Object[]{message.getText(), getTargetObjectName(helper, message)});
-				entry.setText(result);				
-				//entry.setTokens(new String[]{message.getText(), getTargetObjectName(helper, message)});
-				logger.write(Level.FINE, entry);
+				Misc.log(result);		
 			}
 			return;
 		}
@@ -592,17 +496,11 @@ public class WorkbenchReporter implements IReporter {
 		return null;
 	}
 
-	private void logDisabledValidator(IllegalArgumentException exc) {
+	private void logDisabledValidator(IllegalArgumentException e) {
 		// Even the IValidator is invalid. Unfortunately, can't disable the
 		// validator because it can't be found by the registry reader.
 		// Log the reason for the disabled validator
-		Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-		if (logger.isLoggingLevel(Level.SEVERE)) {
-			LogEntry entry = ValidationPlugin.getLogEntry();
-			entry.setSourceID("WorkbenchReporter::addMessage(IValidator, IMessage)"); //$NON-NLS-1$
-			entry.setTargetException(exc);
-			logger.write(Level.SEVERE, entry);
-		}
+		ValidationPlugin.getPlugin().handleException(e);
 		return;
 	}
 
@@ -647,22 +545,14 @@ public class WorkbenchReporter implements IReporter {
 		try {
 			//helper = vmd.getHelper(resource.getProject());
 			helper = getHelper(validator);
-		} catch (InstantiationException exc) {
+		} catch (InstantiationException e) {
 			// Unlikely that an exception will be thrown, because this method is
 			// invoked by the validator, and if the validator is invoked, it's likely
 			// that the helper has been loaded too.
 
 			// Remove the vmd from the reader's list
 			ValidationRegistryReader.getReader().disableValidator(vmd);
-
-			// Log the reason for the disabled validator
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("WorkbenchReporter::removeAllMessages(IResource, IValidator, Object)"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+			ValidationPlugin.getPlugin().handleException(e);
 
 			return;
 		}
@@ -692,22 +582,14 @@ public class WorkbenchReporter implements IReporter {
 			//helper = vmd.getHelper(resource.getProject());
 			helper = getHelper( resource.getProject(), validator );
 		} 
-		catch (InstantiationException exc) {
+		catch (InstantiationException e) {
 			// Unlikely that an exception will be thrown, because this method is
 			// invoked by the validator, and if the validator is invoked, it's likely
 			// that the helper has been loaded too.
 
 			// Remove the vmd from the reader's list
 			ValidationRegistryReader.getReader().disableValidator(vmd);
-
-			// Log the reason for the disabled validator
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("WorkbenchReporter::removeAllMessages(IResource, IValidator, Object)"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+			ValidationPlugin.getPlugin().handleException(e);
 
 			return;
 		}

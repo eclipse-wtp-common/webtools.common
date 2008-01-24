@@ -12,7 +12,6 @@ package org.eclipse.wst.validation.internal.ui.plugin;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
 
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.IPath;
@@ -20,15 +19,12 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
 import org.eclipse.wst.validation.internal.operations.ValidationOperation;
-import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
@@ -52,11 +48,6 @@ public class ValidationUIPlugin extends WTPUIPlugin {
 		return VALIDATION_PROP_FILE_NAME;
 	}
 
-	public static LogEntry getLogEntry() {
-		return ValidationPlugin.getLogEntry();
-	}
-
-
 	public static ValidationUIPlugin getPlugin() {
 		return _plugin;
 	}
@@ -72,15 +63,7 @@ public class ValidationUIPlugin extends WTPUIPlugin {
 		try {
 			return Platform.getResourceString(Platform.getBundle(VALIDATION_PLUGIN_ID), key);
 		} catch (Exception e) {
-			e.printStackTrace();
-			Logger logger = WTPUIPlugin.getLogger();
-			if (logger.isLoggingLevel(Level.FINE)) {
-				LogEntry entry = getLogEntry();
-				entry.setSourceID("ValidationUIPlugin.getResourceString(String)"); //$NON-NLS-1$
-				entry.setText("Missing resource for key" + key); //$NON-NLS-1$
-				logger.write(Level.FINE, entry);
-			}
-
+			ValidationUIPlugin.getPlugin().handleException(e);
 			return key;
 		}
 	}
@@ -169,5 +152,20 @@ public class ValidationUIPlugin extends WTPUIPlugin {
 		Status status = new Status(IStatus.ERROR, PLUGIN_ID, e.getLocalizedMessage(), e);
 		getLog().log(status);
 	}
+	
+	/** 
+	 * Write a message into the log. 
+	 * 
+	 * We are in the transition of moving to a new approach for localized messages. This is the new 
+	 * approach for exceptions.
+	 * 
+	 * @param severity message severity, see IStaus
+	 * @param message a localized message
+	 */
+	public void logMessage(int severity, String message){
+		Status status = new Status(severity, PLUGIN_ID, message);
+		getLog().log(status);
+		
+	}	
 
 }

@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.logging.Level;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -25,8 +24,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.wst.validation.internal.Misc;
 import org.eclipse.wst.validation.internal.RegistryConstants;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IMessage;
@@ -155,16 +153,9 @@ public class WorkbenchContext implements IWorkbenchContext {
 						foundResource = null;
 					}
 				}
-			} catch (IllegalArgumentException exc) {
+			} catch (IllegalArgumentException e) {
 				foundResource = null;
-
-				Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-				if (logger.isLoggingLevel(Level.SEVERE)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("WorkbenchContext::getContainerRelativePath(IResource, IContainer)"); //$NON-NLS-1$
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
+				ValidationPlugin.getPlugin().handleException(e);
 			}
 		}
 
@@ -290,14 +281,8 @@ public class WorkbenchContext implements IWorkbenchContext {
 		}
 		try {
 			return util.getLineNo(object);
-		} catch (Exception exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("WorkbenchContext.getLineNo(Object)"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (Exception e) {
+			ValidationPlugin.getPlugin().handleException(e);
 			return IMessage.LINENO_UNSET;
 		}
 
@@ -335,14 +320,8 @@ public class WorkbenchContext implements IWorkbenchContext {
 		Method m = null;
 		try {
 			m = getClass().getMethod(methodName, parmTypes);
-		} catch (NoSuchMethodException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("WorkbenchContext::getMethod(String, Class[])"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (NoSuchMethodException e) {
+			ValidationPlugin.getPlugin().handleException(e);
 			return null;
 		}
 
@@ -577,46 +556,18 @@ public class WorkbenchContext implements IWorkbenchContext {
 			if (loader == null)return null;
 
 			return loader.invoke(this, parms);
-		} catch (IllegalAccessException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("WorkbenchContext::loadModel(String, Object[])"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (IllegalAccessException e) {
+			ValidationPlugin.getPlugin().handleException(e);
 			return null;
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("WorkbenchContext::loadModel(String, Object[])"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc.getTargetException());
-					logger.write(Level.SEVERE, exc);
-				}
-			}
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			ValidationPlugin.getPlugin().handleException(e.getTargetException());
 			return null;
-		} catch (NullPointerException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("WorkbenchContext::loadModel(String, Object[])"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (NullPointerException e) {
+			ValidationPlugin.getPlugin().handleException(e);
 			return null;
-		} catch (ExceptionInInitializerError exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("WorkbenchContext::loadModel(String, Object[])"); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-			}
+		} catch (ExceptionInInitializerError e) {
+			ValidationPlugin.getPlugin().handleException(e);
 			return null;
 		}
 	}
@@ -682,8 +633,7 @@ public class WorkbenchContext implements IWorkbenchContext {
 	protected final void registerModel(String symbolicName, String loadMethodName, Class[] parms) {
 		Method method = getMethod(loadMethodName, parms);
 		if (method == null) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.FINE)) {
+			if (Misc.isLogging()) {
 				StringBuffer buffer = new StringBuffer("Load method "); //$NON-NLS-1$
 				buffer.append(loadMethodName);
 				buffer.append("("); //$NON-NLS-1$
@@ -692,10 +642,7 @@ public class WorkbenchContext implements IWorkbenchContext {
 				}
 				buffer.append(") must exist. " + getClass().getName() + " cannot support model " + symbolicName); //$NON-NLS-1$ //$NON-NLS-2$
 
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidationRegistryReader.readExtension(IExtension)"); //$NON-NLS-1$
-				entry.setText(buffer.toString());
-				logger.write(Level.FINE, entry);
+				Misc.log(buffer);
 			}
 		} else {
 			_modelRegistry.put(symbolicName, method);

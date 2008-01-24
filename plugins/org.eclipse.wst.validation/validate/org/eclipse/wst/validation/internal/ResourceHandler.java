@@ -12,10 +12,7 @@ package org.eclipse.wst.validation.internal;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 
@@ -40,13 +37,8 @@ public class ResourceHandler {
 				_bundle = ResourceBundle.getBundle(ValidationPlugin.getBundlePropertyFileName());
 			} catch (MissingResourceException exc) {
 				_bundle = null;
-				Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-				if (logger.isLoggingLevel(Level.FINE)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("org.eclipse.wst.validation.internal.operations.internal.ResourceHandler.getBundle()"); //$NON-NLS-1$
-					entry.setText("Cannot find bundle " + ValidationPlugin.getBundlePropertyFileName()); //$NON-NLS-1$
-					entry.setTargetException(exc);
-					logger.write(Level.FINE, entry);
+				if (Misc.isLogging()) {
+					Misc.log("Cannot find bundle " + ValidationPlugin.getBundlePropertyFileName()); //$NON-NLS-1$
 				}
 			}
 		}
@@ -57,25 +49,16 @@ public class ResourceHandler {
 		try {
 			ResourceBundle bundle = getBundle();
 			if (bundle == null) {
-				Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-				if (logger.isLoggingLevel(Level.FINE)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("org.eclipse.wst.validation.internal.operations.internal.ResourceHandler.getExternalizedMessage(String)"); //$NON-NLS-1$
-					entry.setText("Resource bundle is null"); //$NON-NLS-1$
-					logger.write(Level.FINE, entry);
+				if (Misc.isLogging()) {
+					Misc.log("Resource bundle is null"); //$NON-NLS-1$
 				}
 				return key;
 			}
 
 			return bundle.getString(key);
 		} catch (NullPointerException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.FINE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("org.eclipse.wst.validation.internal.operations.ui.ResourceHandler.getExternalizedMessage(String)"); //$NON-NLS-1$
-				entry.setText("Cannot find message id " + key); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.FINE, entry);
+			if (Misc.isLogging()) {
+				Misc.log("Cannot find message id " + key); //$NON-NLS-1$
 			}
 		}
 		return key;
@@ -86,22 +69,12 @@ public class ResourceHandler {
 		try {
 			res = java.text.MessageFormat.format(getExternalizedMessage(key), (Object[])parms);
 		} catch (MissingResourceException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.FINE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("org.eclipse.wst.validation.internal.operations.internal.ResourceHandler.getExternalizedMessage(String, String[])"); //$NON-NLS-1$
-				entry.setText("Cannot find message id " + key); //$NON-NLS-1$
-				entry.setTargetException(exc);
-				logger.write(Level.FINE, entry);
+			if (Misc.isLogging()) {
+				Misc.log("Cannot find message id " + key); //$NON-NLS-1$
 			}
 		} catch (NullPointerException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.FINE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("org.eclipse.wst.validation.internal.operations.internal.ResourceHandler.getExternalizedMessage(String, String[])"); //$NON-NLS-1$
-				entry.setText("Cannot format message id " + key + " with " + parms.length + " parameters."); //$NON-NLS-1$  //$NON-NLS-2$  //$NON-NLS-3$
-				entry.setTargetException(exc);
-				logger.write(Level.FINE, entry);
+			if (Misc.isLogging()) {
+				Misc.log("Cannot format message id " + key + " with " + parms.length + " parameters."); //$NON-NLS-1$  //$NON-NLS-2$  //$NON-NLS-3$
 			}
 		}
 		return res;

@@ -18,6 +18,10 @@ public class ValMessages extends NLS {
 	public static String ErrTypeReq;
 	public static String ErrType;
 	
+	public static String VbfExcSyntaxNoValClass;
+	public static String VbfExcSyntaxNoValRun;
+	public static String VbfExcSyntaxNoValNull;
+	
 	public static String GroupInclude;
 	
 	public static String GroupExclude;
@@ -29,6 +33,9 @@ public class ValMessages extends NLS {
 	public static String LogValStart;
 	public static String LogValEnd;
 	public static String LogValEndTime;
+	public static String LogValSummary;
+	public static String LogValSummary2;
+	public static String LogSession;
 	
 	public static String MigrationJobName;
 	
@@ -40,6 +47,12 @@ public class ValMessages extends NLS {
 	
 	public static String FileExtWithCase;
 	public static String FileExtWithoutCase;
+	
+	public static String TimeUnder;
+	public static String TimeNano;
+	public static String TimeMicro;
+	public static String TimeSec;
+	public static String TimeMin;
 	
 	public static String TypeInclude;
 	public static String TypeExclude;

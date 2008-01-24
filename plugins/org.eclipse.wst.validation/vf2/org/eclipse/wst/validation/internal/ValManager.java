@@ -18,6 +18,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.validation.IPerformanceMonitor;
+import org.eclipse.wst.validation.PerformanceCounters;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.ValidationResult;
 import org.eclipse.wst.validation.Validator;
@@ -352,17 +354,28 @@ public class ValManager {
 			IProgressMonitor monitor){
 		if (operation.isValidated(validator.getId(), resource))return;
 		long time = 0;
+		long cpuTime = -1;
 		String msg1 = NLS.bind(ValMessages.LogValStart, validator.getName(), resource.getName());
 		monitor.subTask(msg1);
-		if (ValidationPlugin.getPlugin().isDebugging()){
-			if (Misc.debugOptionAsBoolean(DebugConstants.TraceTimes))time = System.currentTimeMillis();
-			Misc.log(msg1);
+		IPerformanceMonitor pm = ValidationFramework.getDefault().getPerformanceMonitor();
+		if (pm.isCollecting()){
+			time = System.currentTimeMillis();
+			cpuTime = Misc.getCPUTime();
 		}
 		ValidationResult vr = validator.validate(resource, kind, operation, monitor);
+		if (pm.isCollecting()){
+			if (cpuTime != -1){
+				cpuTime = Misc.getCPUTime() - cpuTime;
+			}
+			PerformanceCounters pc = new PerformanceCounters(validator.getId(), 
+				validator.getName(), resource.getName(),
+				vr.getNumberOfValidatedResources(),	System.currentTimeMillis()-time, cpuTime);
+			pm.add(pc);
+		}
 		if (ValidationPlugin.getPlugin().isDebugging()){
 			String msg = time != 0 ? 
 				NLS.bind(ValMessages.LogValEndTime,	new Object[]{validator.getName(), 
-					resource, String.valueOf(System.currentTimeMillis()-time)}) :
+					validator.getId(), resource, String.valueOf(System.currentTimeMillis()-time)}) :
 				NLS.bind(ValMessages.LogValEnd, validator.getName(), resource);
 			Misc.log(msg);
 		}

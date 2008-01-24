@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IMarker;
@@ -30,8 +29,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jem.util.logger.LogEntry;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.GlobalConfiguration;
 import org.eclipse.wst.validation.internal.InternalValidatorManager;
@@ -44,7 +41,7 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 import org.eclipse.wst.validation.internal.provisional.core.IValidatorJob;
 
 /**
- * A centralised class for accessing validation metadata.
+ * A centralized class for accessing validation metadata.
  * 
  * This class is not intended to be subclassed outside of the validation framework.
  */
@@ -168,18 +165,15 @@ public final class ValidatorManager {
 	 * builder to the project description so that the project can support build validation.
 	 */
 	public static void addProjectBuildValidationSupport(IProject project) {
-		if (project == null) {
-			return;
-		}
+		if (project == null)return;
 
 		boolean isBuilderAdded = false;
 		try {
 			IProjectDescription description = project.getDescription();
-			ICommand[] commands = description.getBuildSpec(); // don't need to check if description
-			// is null, because it's never null
+			ICommand[] commands = description.getBuildSpec();
 			if (commands != null) {
-				for (int i = 0; i < commands.length; i++) {
-					String builderName = commands[i].getBuilderName();
+				for (ICommand command : commands) {
+					String builderName = command.getBuilderName();
 					if (builderName == null) {
 						// builder name will be null if it has not been set
 						continue;
@@ -222,7 +216,7 @@ public final class ValidatorManager {
 	 * incremental validation), and false otherwise. The test, to find out if the project supports
 	 * build validation or not, is to see if the ValidationBuilder is configured on that type of
 	 * project.
-	 * 
+	 * <p>
 	 * This is a long-running process - is there any way that I can shorten the amount of time this
 	 * takes?
 	 */
@@ -272,19 +266,9 @@ public final class ValidatorManager {
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			prjp.setEnabledValidators(prjp.getValidators());
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidatorManager::enableAllValidators(" + project.getName() + ")"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			ValidationPlugin.getPlugin().handleException(e.getTargetException());
 		}
 	}
 
@@ -298,19 +282,9 @@ public final class ValidatorManager {
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			return InternalValidatorManager.wrapInSet(prjp.getIncrementalValidators());
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidatorManager::getProjectConfiguredIncrementalValidators(" + project.getName() + ")"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			ValidationPlugin.getPlugin().handleException(e.getTargetException());
 			return Collections.EMPTY_SET;
 		}
 	}
@@ -327,19 +301,9 @@ public final class ValidatorManager {
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			return InternalValidatorManager.wrapInSet(prjp.getValidators());
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceID("ValidatorManager::getProjectConfiguredValidatorMetaData(" + project.getName() + ")"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			ValidationPlugin.getPlugin().handleException(e.getTargetException());
 			return Collections.EMPTY_SET;
 		}
 	}
@@ -357,19 +321,9 @@ public final class ValidatorManager {
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			return InternalValidatorManager.wrapInSet(prjp.getEnabledIncrementalValidators(true));
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ValidatorManager::getProjectEnabledIncrementalValidators" + project.getName() + ")"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			ValidationPlugin.getPlugin().handleException(e.getTargetException());
 			return Collections.EMPTY_SET;
 		}
 	}
@@ -387,19 +341,9 @@ public final class ValidatorManager {
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			return InternalValidatorManager.wrapInSet(prjp.getEnabledIncrementalValidators(false));
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ValidatorManager::getProjectEnabledNonIncrementalValidators" + project.getName() + ")"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			ValidationPlugin.getPlugin().handleException(e.getTargetException());
 			return Collections.EMPTY_SET;
 		}
 	}
@@ -602,19 +546,9 @@ public final class ValidatorManager {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			ValidatorMetaData[] vmds = prjp.getEnabledIncrementalValidators(true);
 			return InternalValidatorManager.wrapInSet(vmds);
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ValidatorManager::getEnabledIncrementalValidators" + project.getName() + ")"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			ValidationPlugin.getPlugin().handleException(e.getTargetException());
 			return Collections.EMPTY_SET;
 		}
 	}
@@ -669,19 +603,9 @@ public final class ValidatorManager {
 			else
 			   vmds = getStateOfProjectLevelValidatorsFromGlobal(prjp);
 			return InternalValidatorManager.wrapInSet(vmds);
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ValidatorManager::getEnabledValidators" + project.getName() + ")"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			ValidationPlugin.getPlugin().handleException(e.getTargetException());
 			return Collections.EMPTY_SET;
 		}
 	}
@@ -713,19 +637,9 @@ public final class ValidatorManager {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			ValidatorMetaData[] vmds = prjp.getManualEnabledValidators();
 			return InternalValidatorManager.wrapInSet(vmds);
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ValidatorManager::getEnabledValidators" + project.getName() + ")"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			ValidationPlugin.getPlugin().handleException(e.getTargetException());
 			return Collections.EMPTY_SET;
 		}
 	}	
@@ -735,19 +649,9 @@ public final class ValidatorManager {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			ValidatorMetaData[] vmds = prjp.getBuildEnabledValidators();
 			return InternalValidatorManager.wrapInSet(vmds);
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ValidatorManager::getEnabledValidators" + project.getName() + ")"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			ValidationPlugin.getPlugin().handleException(e.getTargetException());
 			return Collections.EMPTY_SET;
 		}
 	}	
@@ -791,19 +695,9 @@ public final class ValidatorManager {
 				// Can't run validation, so remove the "exceeded" message
 				ValidatorManager.getManager().removeMessageLimitExceeded(project);
 			}*/
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ValidatorManager.updateTaskList(" + project.getName() + ")"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			ValidationPlugin.getPlugin().handleException(e.getTargetException());
 		}
 	}
 
@@ -813,19 +707,9 @@ public final class ValidatorManager {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			boolean incrementalValEnabled = (prjp.numberOfEnabledIncrementalValidators() > 0);
 			return canAutoValidateButtonBeEnabled(project, isGlobalAutoBuildOn, incrementalValEnabled);
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ValidatorManager::canAutoValidateButtonBeEnabled" + project.getName() + ")"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			ValidationPlugin.getPlugin().handleException(e.getTargetException());
 			return false;
 		}
 	}
@@ -843,19 +727,9 @@ public final class ValidatorManager {
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			return prjp.isEnabled(validatorName);
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ValidatorManager.isEnabled(" + project.getName() + ", " + validatorName + ")"); //$NON-NLS-1$  //$NON-NLS-2$ //$NON-NLS-3$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			ValidationPlugin.getPlugin().handleException(e.getTargetException());
 			return false;
 		}
 	}
@@ -868,19 +742,9 @@ public final class ValidatorManager {
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			return prjp.isEnabled(vmd);
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ValidatorManager::isEnabled" + project.getName() + ")"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			ValidationPlugin.getPlugin().handleException(e.getTargetException());
 			return false;
 		}
 	}
@@ -910,19 +774,9 @@ public final class ValidatorManager {
 		try {
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			return prjp.numberOfEnabledValidators();
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ValidatorManager::numberProjectEnabledValidators" + project.getName() + ")"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			ValidationPlugin.getPlugin().handleException(e.getTargetException());
 			return 0;
 		}
 	}
@@ -1028,19 +882,9 @@ public final class ValidatorManager {
 			prjp.setEnabledValidators(vmds);
 
 			updateTaskList(project);
-		} catch (InvocationTargetException exc) {
-			Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-			if (logger.isLoggingLevel(Level.SEVERE)) {
-				LogEntry entry = ValidationPlugin.getLogEntry();
-				entry.setSourceIdentifier("ValidatorManager.setEnabledValidators(" + project.getName() + ", Set, IProgressMonitor)"); //$NON-NLS-1$  //$NON-NLS-2$
-				entry.setTargetException(exc);
-				logger.write(Level.SEVERE, entry);
-
-				if (exc.getTargetException() != null) {
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
-			}
+		} catch (InvocationTargetException e) {
+			ValidationPlugin.getPlugin().handleException(e);
+			ValidationPlugin.getPlugin().handleException(e.getTargetException());
 		}
 	}
 
@@ -1124,14 +968,8 @@ public final class ValidatorManager {
 			try {
 				ResourcesPlugin.getWorkspace().deleteMarkers(exceededMessage);
 				return true;
-			} catch (CoreException exc) {
-				Logger logger = ValidationPlugin.getPlugin().getMsgLogger();
-				if (logger.isLoggingLevel(Level.SEVERE)) {
-					LogEntry entry = ValidationPlugin.getLogEntry();
-					entry.setSourceID("ValidatorManager.removeMessageLimitExceeded(" + project.getName() + ")"); //$NON-NLS-1$  //$NON-NLS-2$
-					entry.setTargetException(exc);
-					logger.write(Level.SEVERE, entry);
-				}
+			} catch (CoreException e) {
+				ValidationPlugin.getPlugin().handleException(e);
 			}
 		}
 		return false;

@@ -17,8 +17,8 @@
 package org.eclipse.wst.validation.internal;
 
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.validation.internal.operations.ReferencialFileValidator;
+import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 /**
  * @author vijayb
@@ -50,7 +50,7 @@ public class ReferencialFileValidatorExtension {
 			if (instance == null && !errorCondition)
 				instance = (ReferencialFileValidator) element.createExecutableExtension(RUN);
 		} catch (Exception e) {
-			Logger.getLogger().logError(e);
+			ValidationPlugin.getPlugin().handleException(e);
 			errorCondition = true;
 		}
 		return instance;

@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wst.validation.ValidationResult;
+import org.eclipse.wst.validation.internal.Misc;
 import org.eclipse.wst.validation.internal.ui.ValidationUIMessages;
 
 /**
@@ -69,8 +70,8 @@ public class ResultsDialog extends IconAndMessageDialog {
 		}
 		
 		if (_resourceCount > 0){
-			if (_resourceCount == 1)b.append(NLS.bind(ValidationUIMessages.ValTime1, getTime(_time)));
-			else b.append(NLS.bind(ValidationUIMessages.ValTime, _resourceCount, getTime(_time)));
+			if (_resourceCount == 1)b.append(NLS.bind(ValidationUIMessages.ValTime1, Misc.getTimeMS(_time)));
+			else b.append(NLS.bind(ValidationUIMessages.ValTime, _resourceCount, Misc.getTimeMS(_time)));
 		}
 				
 		Label msg = new Label(parent, SWT.NONE);
@@ -93,12 +94,6 @@ public class ResultsDialog extends IconAndMessageDialog {
 		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
 	}
 	
-	private String getTime(long time) {
-		if (_time <= 1000)return ValidationUIMessages.TimeUnder;
-		if (_time <= 60000)return NLS.bind(ValidationUIMessages.TimeSec, _time/1000);
-		return NLS.bind(ValidationUIMessages.TimeMin, _time/60000);
-	}
-
 	private String getInfoMessage() {
 		int n = _result.getSeverityInfo();
 		if (n == 0)return null;
