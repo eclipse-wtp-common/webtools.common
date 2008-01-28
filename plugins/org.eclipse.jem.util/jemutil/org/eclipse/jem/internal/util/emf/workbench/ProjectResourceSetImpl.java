@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.13 $$  $$Date: 2007/10/17 22:37:18 $$ 
+ *  $$Revision: 1.14 $$  $$Date: 2008/01/28 00:48:20 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -369,6 +369,8 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		        {
 		          demandLoadHelper(resource);
 		        }
+	    		if (getContentTypeName(resource) != null && (!getContentTypeName(resource).equals(getContentTypeName(uri))))
+	    			continue;
 		        
 		        if (map != null && (map.get(uri) == null))
 		        {

@@ -205,9 +205,11 @@ public class VirtualComponent implements IVirtualComponent {
 		List metaResources = new ArrayList();
 		try {
 			moduleCore = StructureEdit.getStructureEditForRead(getProject());
-			WorkbenchComponent component = moduleCore.getComponent();
-			if (component != null)
-				metaResources.addAll(component.getMetadataResources());
+			if (moduleCore != null) {
+				WorkbenchComponent component = moduleCore.getComponent();
+				if (component != null)
+					metaResources.addAll(component.getMetadataResources());
+			}
 		} finally {
 			if (moduleCore != null) {
 				moduleCore.dispose();
