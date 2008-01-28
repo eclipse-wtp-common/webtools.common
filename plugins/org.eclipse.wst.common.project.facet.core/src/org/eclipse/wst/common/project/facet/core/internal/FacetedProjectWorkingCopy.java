@@ -254,19 +254,6 @@ public final class FacetedProjectWorkingCopy
         
         // Listen for changes to the project.
         
-        final IFacetedProjectListener projectFacetsChangedListener = new IFacetedProjectListener()
-        {
-            public void handleEvent( final IFacetedProjectEvent event )
-            {
-                refreshTargetableRuntimes();
-                refreshProjectFacetActions();
-                performValidation();
-            }
-        };
-        
-        addListener( projectFacetsChangedListener,
-                     IFacetedProjectEvent.Type.PROJECT_FACETS_CHANGED );
-        
         final IFacetedProjectListener targetedRuntimesChangedListener = new IFacetedProjectListener()
         {
             public void handleEvent( final IFacetedProjectEvent event )
@@ -434,6 +421,9 @@ public final class FacetedProjectWorkingCopy
                     return;
                 }
                 
+                final Set<IProjectFacetVersion> newFacets 
+                    = new HashSet<IProjectFacetVersion>( getProjectFacets() );
+                
                 for( IProjectFacet f : fixed )
                 {
                     final IProjectFacetVersion currentVersion = getProjectFacetVersion( f );
@@ -447,11 +437,11 @@ public final class FacetedProjectWorkingCopy
                             fv = getHighestAvailableVersion( f );
                         }
                         
-                        this.facets.add( f, fv );
+                        newFacets.add( fv );
                     }
                 }
                 
-                notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.PROJECT_FACETS_CHANGED ) );
+                setProjectFacets( newFacets );
                 
                 this.fixedFacets 
                     = Collections.unmodifiableSet( new HashSet<IProjectFacet>( fixed ) );
@@ -712,6 +702,10 @@ public final class FacetedProjectWorkingCopy
                                                      changedVersions );
                 
                 notifyListeners( event );
+                
+                refreshTargetableRuntimes();
+                refreshProjectFacetActions();
+                performValidation();
             }
         }
         finally
