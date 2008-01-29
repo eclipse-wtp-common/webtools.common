@@ -1133,19 +1133,6 @@ public final class FacetsSelectionPanel
         return null;
     }
     
-    /*private TreeItem getTreeItem( final Object modelObject )
-    {
-        for( TreeItem item : getAllTreeItems() )
-        {
-            if( item.getData().equals( modelObject ) )
-            {
-                return item;
-            }
-        }
-        
-        return null;
-    }*/
-    
     private int computeDefaultFacetColumnWidth()
     {
         final GC gc = new GC( this.getDisplay() );
