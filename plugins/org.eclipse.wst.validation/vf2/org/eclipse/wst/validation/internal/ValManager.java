@@ -65,7 +65,7 @@ public class ValManager {
 	 * @return Answer an empty array if there are no validators.
 	 */
 	public Validator[] getValidators(){
-		return getValidators(false, null);
+		return getValidators(false);
 	}
 	
 	/**
@@ -81,7 +81,7 @@ public class ValManager {
 	 * @param project this may be null, in which case the global preferences are used.
 	 * @return
 	 */
-	public Validator[] getValidators(IProject project){
+	public Validator[] getValidators(IProject project) throws ProjectUnavailableError {
 		if (project == null)return getValidators();
 		if (!getGlobalPreferences().getOverride())return getValidators(false, project);
 		
@@ -133,6 +133,17 @@ public class ValManager {
 		}
 		return false;
 	}
+	
+	Validator[] getValidators(boolean forceDefaults){
+		Validator[] vals = null;
+		try {
+			vals = getValidators(forceDefaults, null);
+		}
+		catch (ProjectUnavailableError e){
+			// can't happen since the project is null
+		}
+		return vals;
+	}
 		
 	/**
 	 * Answer all the registered validators.
@@ -145,7 +156,7 @@ public class ValManager {
 	 * 
 	 * @return Answer an empty array if there are no validators.
 	 */
-	Validator[] getValidators(boolean forceDefaults, IProject project){
+	Validator[] getValidators(boolean forceDefaults, IProject project) throws ProjectUnavailableError {
 		// If I use a local variable I don't need to synchronize the method.
 		Validator[] validators = _validators;
 		if (!forceDefaults && project == null && validators != null)return validators;
@@ -187,6 +198,7 @@ public class ValManager {
 			}
 		}
 		catch (InvocationTargetException e){
+			if (!project.exists() || !project.isOpen())throw new ProjectUnavailableError(project);
 			ValidationPlugin.getPlugin().handleException(e);
 		}
 		
@@ -261,7 +273,7 @@ public class ValManager {
 	public synchronized void restoreDefaults() {
 		getGlobalPreferences().resetToDefault();
 		_validators = null;
-		getValidators(true, null);
+		getValidators(true);
 	}
 	
 
@@ -387,6 +399,9 @@ public class ValManager {
 			resource.deleteMarkers(ValConstants.ProblemMarker, false, IResource.DEPTH_ZERO);
 		}
 		catch (CoreException e){
+			IProject project = resource.getProject();
+			if (!project.exists() || !project.isOpen())throw new ProjectUnavailableError(project);
+			if (!resource.exists())throw new ResourceUnavailableError(resource);
 			ValidationPlugin.getPlugin().handleException(e);
 		}
 		

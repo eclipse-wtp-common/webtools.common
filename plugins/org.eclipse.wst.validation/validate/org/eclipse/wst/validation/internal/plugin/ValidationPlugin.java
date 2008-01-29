@@ -20,6 +20,9 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.internal.DependencyIndex;
 import org.eclipse.wst.validation.internal.EventManager;
+import org.eclipse.wst.validation.internal.Misc;
+import org.eclipse.wst.validation.internal.ProjectUnavailableError;
+import org.eclipse.wst.validation.internal.ResourceUnavailableError;
 import org.eclipse.wst.validation.internal.ValOperationManager;
 import org.eclipse.wst.validation.internal.core.Message;
 import org.eclipse.wst.validation.internal.provisional.core.IMessage;
@@ -132,6 +135,14 @@ public class ValidationPlugin extends Plugin {
 		if (e == null)return;
 		Status status = new Status(IStatus.ERROR, PLUGIN_ID, e.getLocalizedMessage(), e);
 		getLog().log(status);
+	}
+	
+	public void handleProjectUnavailableError(ProjectUnavailableError e){
+		if (Misc.isLogging())handleException(e);
+	}
+	
+	public void handleResourceUnavailableError(ResourceUnavailableError e){
+		if (Misc.isLogging())handleException(e);
 	}
 	
 	/** 

@@ -91,6 +91,12 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 			else deltaBuild();
 			
 		}
+		catch (ProjectUnavailableError e){
+			ValidationPlugin.getPlugin().handleProjectUnavailableError(e);
+		}
+		catch (ResourceUnavailableError e){
+			ValidationPlugin.getPlugin().handleResourceUnavailableError(e);
+		}
 		catch (CoreException e){
 			ValidationPlugin.getPlugin().handleException(e);
 		}

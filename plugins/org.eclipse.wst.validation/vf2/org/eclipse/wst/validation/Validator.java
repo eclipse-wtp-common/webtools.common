@@ -9,6 +9,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.validation.internal.SummaryReporter;
 import org.eclipse.wst.validation.internal.ValOperation;
@@ -139,8 +140,8 @@ public abstract class Validator implements Comparable {
 	 * 
 	 * @param resource the resource to be validated
 	 * @param kind the kind of resource change, see IResourceDelta for values.
-	 * @param operation the operation that this validation is running under.
-	 * @param monitor a way to report progress 
+	 * @param operation the operation that this validation is running under. This can be null.
+	 * @param monitor a way to report progress. This can be null.
 	 * 
 	 * @return the result of doing the validation, it can be, but usually isn't null.
 	 */
@@ -338,6 +339,8 @@ public static class V1 extends Validator {
 	public ValidationResult validate(IResource resource, int kind, ValOperation operation, 
 		IProgressMonitor monitor) {
 		
+		if (monitor == null)monitor = new NullProgressMonitor();
+		
 		ValidationResult vr = new ValidationResult();
 		IValidator v = null;
 		try {
@@ -361,11 +364,6 @@ public static class V1 extends Validator {
 				wc.setValidationFileURIs(files);
 			}
 			ValidatorLauncher.getLauncher().start(helper, v, reporter);
-//			if (v instanceof IValidatorJob) {
-//				IValidatorJob vj = (IValidatorJob) v;
-//				vj.validateInJob(helper, reporter);
-//			}
-//			else v.validate(helper, reporter);
 			
 			vr.incrementError(reporter.getSeverityHigh());
 			vr.incrementWarning(reporter.getSeverityNormal());
@@ -540,19 +538,12 @@ public static class V2 extends Validator implements IAdaptable {
 	public void setName(String name) {
 		_name = name;
 	}
-
-	/**
-	 * Validate the resource.
-	 * 
-	 * @param resource the resource to be validated
-	 * @param kind the kind of resource change, see IResourceDelta for values.
-	 * @param operation the operation that this validation is running under.
-	 * @param monitor a way to report progress 
-	 * 
-	 * @return the result of doing the validation, it can be, but usually isn't null.
-	 */
+	
+	@Override
 	public ValidationResult validate(IResource resource, int kind, ValOperation operation, IProgressMonitor monitor) {
 		ValidationResult vr = null;
+		if (operation == null)operation = new ValOperation();
+		if (monitor == null)monitor = new NullProgressMonitor();
 		try {
 			vr = getDelegatedValidator().validate(resource, kind, operation.getState(), monitor);
 		}
