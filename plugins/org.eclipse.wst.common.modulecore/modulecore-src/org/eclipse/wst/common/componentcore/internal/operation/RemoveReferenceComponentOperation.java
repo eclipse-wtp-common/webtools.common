@@ -11,7 +11,6 @@
 package org.eclipse.wst.common.componentcore.internal.operation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -23,6 +22,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jem.util.emf.workbench.ProjectUtilities;
+import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.componentcore.datamodel.properties.ICreateReferenceComponentsDataModelProperties;
 import org.eclipse.wst.common.componentcore.internal.resources.VirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
@@ -48,41 +48,70 @@ public class RemoveReferenceComponentOperation extends AbstractDataModelOperatio
 	protected void removeReferencedComponents(IProgressMonitor monitor) {
 		
 		IVirtualComponent sourceComp = (IVirtualComponent) model.getProperty(ICreateReferenceComponentsDataModelProperties.SOURCE_COMPONENT);
-		if (!sourceComp.getProject().isAccessible()) return;
+		if (sourceComp == null || !sourceComp.getProject().isAccessible() || sourceComp.isBinary()) return;
 		
-        List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST);
+		IVirtualReference [] existingReferencesArray = sourceComp.getReferences();
+		if(existingReferencesArray == null || existingReferencesArray.length == 0){
+			return;
+		}
+		
+		List existingReferences = new ArrayList();
+		for(int i=0;i<existingReferencesArray.length; i++){
+			existingReferences.add(existingReferencesArray[i]);
+		}
+		
+		String deployPath = model.getStringProperty( ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH );
+		IPath path = new Path( deployPath );
+		
+		List modList = (List) model.getProperty(ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENT_LIST);
     
 		List targetprojectList = new ArrayList();
 
-		for (int i = 0; i < modList.size(); i++) {
+		for (int i = 0; i < modList.size() && !existingReferences.isEmpty(); i++) {
 			IVirtualComponent comp = (IVirtualComponent) modList.get(i);
-			if (comp==null || sourceComp==null)
+			if (comp==null )
 				continue;
-			IVirtualReference ref = sourceComp.getReference(comp.getName());
-			if( ref != null && ref.getReferencedComponent() != null && ref.getReferencedComponent().isBinary()){
+
+			IVirtualReference ref = findMatchingReference(existingReferences, comp, path);
+			//if a ref was found matching the specified deployPath, then remove it
+			if(ref != null){
 				removeRefereneceInComponent(sourceComp, ref);
-			}else if(ref != null){
-				if (Arrays.asList(comp.getReferencingComponents()).contains(sourceComp)) {
-					
-					String deployPath = model.getStringProperty( ICreateReferenceComponentsDataModelProperties.TARGET_COMPONENTS_DEPLOY_PATH );
-					IPath path = new Path( deployPath );
-					
-					if( ref.getRuntimePath() != null && path != null && ref.getRuntimePath().equals( path )){
-						removeRefereneceInComponent(sourceComp,sourceComp.getReference(comp.getName()));
-						IProject targetProject = comp.getProject();
-						targetprojectList.add(targetProject);
-					}
-				}					
+				existingReferences.remove(ref);
+				//after removing the ref, check to see if it was the last ref removed to that component
+				//and if it was, then also remove the project reference
+				ref = findMatchingReference(existingReferences, comp);
+				if(ref == null){
+					IProject targetProject = comp.getProject();
+					targetprojectList.add(targetProject);
+				}
 			}
 		}
 		
 		try {
 			ProjectUtilities.removeReferenceProjects(sourceComp.getProject(),targetprojectList);
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger.getLogger().logError(e);
 		}		
 		
+	}
+
+	private IVirtualReference findMatchingReference(List existingReferences, IVirtualComponent comp, IPath path) {
+		for(int i=0;i<existingReferences.size(); i++){
+			IVirtualReference ref = (IVirtualReference)existingReferences.get(i);
+			IVirtualComponent c = ref.getReferencedComponent();
+			if(c != null && c.getName().equals(comp.getName())){
+				if(path == null){
+					return ref;
+				} else if(path.equals(ref.getRuntimePath())){
+					return ref;
+				}
+			}
+		}
+		return null;
+	}
+
+	private IVirtualReference findMatchingReference(List existingReferences, IVirtualComponent comp) {
+		return findMatchingReference(existingReferences, comp, null);
 	}
 
 	protected void removeRefereneceInComponent(IVirtualComponent component, IVirtualReference reference) {
