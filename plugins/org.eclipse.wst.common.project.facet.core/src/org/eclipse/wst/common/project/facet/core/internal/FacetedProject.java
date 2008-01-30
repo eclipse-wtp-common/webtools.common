@@ -850,11 +850,9 @@ public final class FacetedProject
         
         if( runtime == null )
         {
-            // For backwards compatibility, search for the runtime using the localized name.
-            
             for( IRuntime r : RuntimeManager.getRuntimes() )
             {
-                if( r.getLocalizedName().equals( name ) )
+                if( r.getAlternateNames().contains( name ) )
                 {
                     runtime = r;
                     break;

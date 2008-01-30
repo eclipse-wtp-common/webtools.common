@@ -24,6 +24,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IPath;
@@ -85,6 +88,13 @@ public final class FacetedProjectWorkingCopy
     private String projectName;
     
     /**
+     * The validation status of the project name. If the project name is acceptable, the status
+     * severity is going to be IStatus.OK.
+     */
+    
+    private IStatus projectNameValidation;
+    
+    /**
      * The location of the project in the scenario where the working copy is for a
      * project that doesn't exist yet, <code>null</code> otherwise.
      */
@@ -131,6 +141,7 @@ public final class FacetedProjectWorkingCopy
     {
         this.lock = new Object();
         this.projectName = null;
+        this.projectNameValidation = Status.OK_STATUS;
         this.projectLocation = null;
         this.project = project;
         this.actions = Collections.emptySet();
@@ -322,6 +333,17 @@ public final class FacetedProjectWorkingCopy
                         }
                         
                         notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.PROJECT_NAME_CHANGED ) );
+                        
+                        final IWorkspace ws = ResourcesPlugin.getWorkspace();
+                        
+                        final IStatus validateNameResult    
+                            = ws.validateName( this.projectName, IResource.PROJECT );
+                        
+                        if( ! this.projectNameValidation.equals( validateNameResult ) )
+                        {
+                            this.projectNameValidation = validateNameResult;
+                            notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.VALIDATION_PROBLEMS_CHANGED ) );
+                        }
                     }
                 }
                 else
@@ -1674,14 +1696,25 @@ public final class FacetedProjectWorkingCopy
     {
         synchronized( this.lock )
         {
-            if( this.problems.isEmpty() )
+            if( this.projectNameValidation.isOK() && this.problems.isEmpty() )
             {
                 return Status.OK_STATUS;
             }
             else
             {
-                final IStatus[] probs = this.problems.toArray( new IStatus[ this.problems.size() ] );
-                return Constraint.createMultiStatus( probs );
+                final MultiStatus ms = Constraint.createMultiStatus();
+                
+                if( ! this.projectNameValidation.isOK() )
+                {
+                    ms.add( new StatusWrapper( this.projectNameValidation, PROBLEM_PROJECT_NAME ) );
+                }
+                
+                for( IStatus st : this.problems )
+                {
+                    ms.add( new StatusWrapper( st, PROBLEM_OTHER ) );
+                }
+
+                return ms;
             }
         }
     }

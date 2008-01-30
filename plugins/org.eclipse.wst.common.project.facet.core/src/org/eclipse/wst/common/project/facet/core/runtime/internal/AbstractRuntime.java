@@ -11,6 +11,7 @@
 
 package org.eclipse.wst.common.project.facet.core.runtime.internal;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -35,6 +36,14 @@ public abstract class AbstractRuntime
 {
     private static final String PROP_LOCALIZED_NAME = "localized-name"; //$NON-NLS-1$
     
+    /**
+     * The value of the property should be a comma-separate list of names that this runtime
+     * can be alternatively known by. Any commas in the names have to be escaped using a leading
+     * slash character ('\'). 
+     */
+    
+    private static final String PROP_ALTERNATE_NAMES = "alternate-names"; //$NON-NLS-1$
+    
     private String name;
     
     /**
@@ -58,6 +67,77 @@ public abstract class AbstractRuntime
         }
         
         return localizedName;
+    }
+    
+    public final Set<String> getAlternateNames()
+    {
+        final String alternateNamesProp = getProperty( PROP_ALTERNATE_NAMES );
+        final Set<String> alternateNames = new HashSet<String>();
+        
+        final String localizedName = getLocalizedName();
+        
+        if( ! localizedName.equals( getName() ) )
+        {
+            alternateNames.add( localizedName );
+        }
+        
+        if( alternateNamesProp != null )
+        {
+            final StringBuilder buf = new StringBuilder();
+            boolean seenEscapeChar = false;
+            
+            for( int i = 0, n = alternateNamesProp.length(); i < n; i++ )
+            {
+                final char ch = alternateNamesProp.charAt( i );
+                
+                if( seenEscapeChar )
+                {
+                    if( ch != ',' )
+                    {
+                        buf.append( '\\' );
+                    }
+                    
+                    buf.append( ch );
+                    seenEscapeChar = false;
+                }
+                else
+                {
+                    if( ch == '\\' && i != n - 1 )
+                    {
+                        seenEscapeChar = true;
+                    }
+                    else if( ch == ',' )
+                    {
+                        final String name = buf.toString().trim();
+                        
+                        if( name.length() > 0 )
+                        {
+                            alternateNames.add( name );
+                        }
+                        
+                        buf.setLength( 0 );
+                    }
+                    else
+                    {
+                        buf.append( ch );
+                    }
+                }
+            }
+            
+            if( seenEscapeChar )
+            {
+                buf.append( '\\' );
+            }
+            
+            final String name = buf.toString().trim();
+            
+            if( name.length() > 0 )
+            {
+                alternateNames.add( name );
+            }
+        }
+        
+        return Collections.unmodifiableSet( alternateNames );
     }
     
     final void setName( final String name )

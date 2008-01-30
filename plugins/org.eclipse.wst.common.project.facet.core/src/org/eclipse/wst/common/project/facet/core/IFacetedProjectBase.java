@@ -30,6 +30,9 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 
 public interface IFacetedProjectBase
 {
+    static final int PROBLEM_PROJECT_NAME = 1;
+    static final int PROBLEM_OTHER = -1;
+    
     IProject getProject();
     
     /**

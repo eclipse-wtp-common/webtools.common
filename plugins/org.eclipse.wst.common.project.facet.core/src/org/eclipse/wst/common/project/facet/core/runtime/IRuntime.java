@@ -62,7 +62,7 @@ public interface IRuntime
      * 
      * <p>To mitigate the above risks, the name localization feature is expected to be used 
      * sparingly and only in contexts where the runtime provider can take steps to guarantee that
-     * the above situation is not likely to occurr. One scenario where name localization is
+     * the above situation is not likely to occur. One scenario where name localization is
      * acceptable is when a runtime is auto-created and the user is not given ability to delete or
      * rename it.</p>
      * 
@@ -70,6 +70,16 @@ public interface IRuntime
      */
     
     String getLocalizedName();
+    
+    /**
+     * Returns the set of other names (if any) that this runtime may be known by. The localized
+     * name (if specified) will be present in the alternate names set. 
+     * 
+     * @return the set of alternate names for this runtime or an empty set
+     * @since 3.0
+     */
+    
+    Set<String> getAlternateNames();
     
     /**
      * Returns the runtime components that comprise this runtime. Note that the
