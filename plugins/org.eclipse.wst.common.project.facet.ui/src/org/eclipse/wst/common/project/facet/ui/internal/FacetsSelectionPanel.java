@@ -1055,7 +1055,7 @@ public final class FacetsSelectionPanel
     {
         this.problemsView.refresh();
 
-        if( this.fpjwc.validate().isOK() )
+        if( getFilteredProblems().length == 0 )
         {
             if( this.sform2.getMaximizedControl() == null )
             {
@@ -1214,6 +1214,38 @@ public final class FacetsSelectionPanel
                 FacetUiPlugin.log( e );
             }
         }
+    }
+    
+    private IStatus[] getFilteredProblems()
+    {
+        final IStatus[] unfiltered = this.fpjwc.validate().getChildren();
+        boolean somethingToRemove = false;
+        
+        for( IStatus st : unfiltered )
+        {
+            if( st.getCode() == IFacetedProjectWorkingCopy.PROBLEM_PROJECT_NAME )
+            {
+                somethingToRemove = true;
+                break;
+            }
+        }
+        
+        if( ! somethingToRemove )
+        {
+            return unfiltered;
+        }
+        
+        final List<IStatus> filtered = new ArrayList<IStatus>();
+        
+        for( IStatus st : unfiltered )
+        {
+            if( st.getCode() != IFacetedProjectWorkingCopy.PROBLEM_PROJECT_NAME )
+            {
+                filtered.add( st );
+            }
+        }
+        
+        return filtered.toArray( new IStatus[ filtered.size() ] );
     }
 
     private final class ContentProvider
@@ -1730,7 +1762,7 @@ public final class FacetsSelectionPanel
     {
         public Object[] getElements( final Object element )
         {
-            return FacetsSelectionPanel.this.fpjwc.validate().getChildren();
+            return getFilteredProblems();
         }
 
         public void inputChanged( final Viewer viewer,
