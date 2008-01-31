@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta
+  http-equiv="Content-Type"
+  content="text/html; charset=iso-8859-1">
+<title>What's New for 1.5.1?</title>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="format.css">
+</head>
+
+<body>
+<p class="ueberschrift">What's New for 1.5.1?</p>
+
+<p>This document describes the API changes that have been made in the Faceted
+Project Framework for WTP 1.5.1 release. Both Java API and extension point 
+changes are covered. Note that the Faceted Project Framework API remains 
+provisional for the 1.5.1 release. This means it will continue undergoing 
+further significant changes in future release(s).</p>
+
+<ol>
+  <li><a href="#defver">Specifying Default Facet Version</a></li>
+  <li><a href="#wildcard">Wildcard Support in Version Expressions</a></li>
+</ol>
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="vexprs">1. Specifying Default Facet Version</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>It is now possible to specify the facet version that will be used by default
+when the facet is presented to the user. There are two ways to specify the default
+version. You can either specify a static default or you can implement the
+<code>IDefaultVersionProvider</code> interface. If a default version is not
+specified, the latest version will be used instead.</p>
+
+<p><u>Extension Point Changes</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">&lt;extension point="org.eclipse.wst.common.project.facet.core.facets"&gt;
+  &lt;project-facet&gt;</font>
+    &lt;default-version version="{string}"/&gt; <i>(optional)</i>
+    &lt;default-version provider="{class:org.eclipse.wst.common.project.facet.core.IDefaultVersionProvider}"/&gt; <i>(optional)</i>
+  <font color="#7B7B7B">&lt;/project-facet&gt;
+&lt;extension&gt;</font>
+</pre>
+</td></tr></table>
+
+<p><u>Java API Additions</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">org.eclipse.wst.common.project.facet.core.IProjectFacet
+{</font>
+   IProjectFacetVersion getDefaultVersion();
+<font color="#7B7B7B">}</font>
+
+org.eclipse.wst.common.project.facet.core.IDefaultVersionProvider
+{
+   IProjectFacetVersion getDefaultVersion();
+}
+</pre>
+</td></tr></table>
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="wildcard">2. Wildcard Support in Version Expressions</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>A wildcard character '*' can now be used in version expressions in order to
+match any version. Note that it is not possible to use the wildcard to match
+part of the version string.</p>
+
+<p><u>Java API Additions</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">org.eclipse.wst.common.project.facet.core.IVersionExpr
+{</font>
+   static final String WILDCARD_SYMBOL = "*";
+<font color="#7B7B7B">}</font>
+</pre>
+</td></tr></table>
+
+<p></p>
+
+</body>
+</html>

@@ -1,0 +1,296 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <title>Listening for Changes to Faceted Projects</title>
+  <link type="text/css" rel="stylesheet" href="tutorial/tutorial.css"/>
+</head>
+
+<body>
+
+<style type="text/css">
+  
+  .subHeader
+  {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .eventsTableHeaderCell
+  {
+    font-weight: bold;
+    border-bottom: 1px solid #000000;
+    padding: 2px;
+  }
+  
+  .eventsTableTypeCell
+  {
+    vertical-align: top;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 2px;
+    padding-right: 20px;
+  }
+  
+  .eventsTableInterfaceCell
+  {
+    vertical-align: top;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 2px;
+    padding-right: 20px;
+  }
+  
+  .eventsTableDescriptionCell
+  {
+    vertical-align: top;
+    padding: 2px;
+  }
+
+</style>
+
+<h1 align="center">Listening for Changes to Faceted Projects</h1>
+
+<p>The Faceted Project Framework provides a facility that will notify any interested parties when
+a change is made to the model of a faceted project. Listeners can be registered either via a direct
+API call or via an extension point. Listeners can be global or scoped to a specific project.</p>
+
+<p class="subHeader">Events</p>
+
+<table style="border-collapse:collapse">
+
+  <tr>
+    <td class="eventsTableHeaderCell">Event Type</td>
+    <td class="eventsTableHeaderCell">Event Object Interface</td>
+    <td class="eventsTableHeaderCell">Description</td>
+  </tr>
+
+  <tr>
+    <td class="eventsTableTypeCell">PROJECT_MODIFIED</td>
+    <td class="eventsTableInterfaceCell">IFacetedProjectEvent</td>
+    <td class="eventsTableDescriptionCell">
+      Gets triggered when faceted project metadata is modified in any way. No detailed information 
+      about the change is provided. Note that while listening for PROJECT_MODIFIED events is 
+      guaranteed to catch all other events, the inverse is not true. Listing on all the other 
+      events is not guaranteed to catch all PROJECT_MODIFIED events. This is because there are 
+      circumstances when the system does not have the details about the type of the change 
+      (such as when the faceted project metadata file is modified on disk).
+    </td>
+  </tr>
+  
+  <tr>
+    <td class="eventsTableTypeCell">PRE_INSTALL</td>
+    <td class="eventsTableInterfaceCell">IProjectFacetActionEvent</td>
+    <td class="eventsTableDescriptionCell">
+      Gets triggered right before a facet is installed.
+    </td>
+  </tr>
+  
+  <tr>
+    <td class="eventsTableTypeCell">POST_INSTALL</td>
+    <td class="eventsTableInterfaceCell">IProjectFacetActionEvent</td>
+    <td>Gets triggered right after a facet is installed.</td>
+  </tr>
+  
+  <tr>
+    <td class="eventsTableTypeCell">PRE_UNINSTALL</td>
+    <td class="eventsTableInterfaceCell">IProjectFacetActionEvent</td>
+    <td class="eventsTableDescriptionCell">
+      Gets triggered right before a facet is uninstalled.
+    </td>
+  </tr>
+  
+  <tr>
+    <td class="eventsTableTypeCell">POST_UNINSTALL</td>
+    <td class="eventsTableInterfaceCell">IProjectFacetActionEvent</td>
+    <td class="eventsTableDescriptionCell">
+      Gets triggered right after a facet is uninstalled.
+    </td>
+  </tr>
+  
+  <tr>
+    <td class="eventsTableTypeCell">PRE_VERSION_CHANGE</td>
+    <td class="eventsTableInterfaceCell">IProjectFacetActionEvent</td>
+    <td class="eventsTableDescriptionCell">
+      Gets triggered right before a facet version is changed.
+    </td>
+  </tr>
+  
+  <tr>
+    <td class="eventsTableTypeCell">POST_VERSION_CHANGE</td>
+    <td class="eventsTableInterfaceCell">IProjectFacetActionEvent</td>
+    <td class="eventsTableDescriptionCell">
+      Gets triggered right after a facet version is changed.
+    </td>
+  </tr>
+  
+  <tr>
+    <td class="eventsTableTypeCell">FIXED_FACETS_CHANGED</td>
+    <td class="eventsTableInterfaceCell">IFixedFacetsChangedEvent</td>
+    <td class="eventsTableDescriptionCell">
+      Gets triggered when project's fixed facets are changed.
+    </td>
+  </tr>
+  
+  <tr>
+    <td class="eventsTableTypeCell">TARGETED_RUNTIMES_CHANGED</td>
+    <td class="eventsTableInterfaceCell">ITargetedRuntimesChangedEvent</td>
+    <td class="eventsTableDescriptionCell">
+      Gets triggered when the set of runtimes that the project targets is changed.
+    </td>
+  </tr>
+  
+  <tr>
+    <td class="eventsTableTypeCell">PRIMARY_RUNTIME_CHANGED</td>
+    <td class="eventsTableInterfaceCell">IPrimaryRuntimeChangedEvent</td>
+    <td class="eventsTableDescriptionCell">
+      Gets triggered when the primary targeted runtime of the project is changed.
+    </td>
+  </tr>
+    
+</table>
+
+<p class="subHeader">Registering a Listener</p>
+
+<p>All listeners have to implement <code>IFacetedProjectListener</code> interface which looks like
+this:</p>
+
+<div class="code">
+<pre class="java-code"><span class="java-keyword">package</span> org.eclipse.wst.common.project.facet.core.events;
+
+<span class="java-keyword">public interface</span> IFacetedProjectListener 
+{
+    <span class="java-keyword">void</span> handleEvent( IFacetedProjectEvent event );
+}
+</pre>
+</div>
+
+<p>Depending on the event type, it may be possible to cast the event object to a more specific
+interface in order to get details about the event. See the event table for information about which
+event object interface corresponds with which event type.</p>
+
+<p>There are three ways to register a listener:</p>
+
+<ol>
+  <li>IFacetedProject.addListener()</li>
+  <li>FacetedProjectFramework.addListener()</li>
+  <li>Extension Point: org.eclipse.wst.common.project.facet.core.listeners</p>
+</ol>
+
+<p>All of these methods allows you to specify which events the listener should be notified about. 
+Not specifying event types on registration will cause the listener to be notified about all events. 
+This is typically not desired. If a listener needs to react to any change in the project and has no 
+need to analyze specific events, it should be registered for the <code>PROJECT_MODIFIED</code> 
+event.</p>
+
+<p>The first method registers a listener that is scoped to a specific project. The last two
+register a global listener which will be notified about changes in all faceted projects that are
+present in the workspace. In most circumstances, if a global listener is needed, it should be 
+registered via the extension point rather than using <code>FacetedProjectFramework.addListener()</code>
+API. Using the extension point guarantees that the listener will not miss any events due to not
+being registered early enough. It also delays initialization of the plugin bundle containing the
+listener until an event that the listener is interested in is fired.</p>
+
+<p class="subHeader">Extension Point</p>
+
+<p>The extension point that's used for registering listeners is quite simple. Only two pices of
+information need to be supplied: the listener class name and an optional list of event types.</p>
+
+<div class="code">
+<pre class="xml-code">&lt;extension point="<span class="code-text">org.eclipse.wst.common.project.facet.core.listeners</span>"&gt;
+  &lt;listener 
+    class="<span class="code-text">{class:org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener}</span>"
+    eventTypes="<span class="code-text">{event.types}</span>"/> <i>(1 or more)</i>
+&lt;extension&gt;
+</pre>
+</div>
+
+<p>The <code>eventTypes</code> attribute value should be a comma-separated list of event types.</p>
+
+<p class="subHeader">Examples</p>
+
+<p>This example registers a very simple listener that prints out events received. The listener is
+registered several different ways for the purposes of this example.</p>
+
+<div class="code">
+<pre class="java-code"><span class="java-keyword">package</span> com.mycorp.myproduct;
+
+<span class="java-keyword">import</span> org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
+<span class="java-keyword">import</span> org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
+
+<span class="java-keyword">public final class</span> ListenerImpl <span class="java-keyword">implements</span> IFacetedProjectListener 
+{
+    <span class="java-keyword">public void</span> handleEvent( <span class="java-keyword">final</span> IFacetedProjectEvent event )
+    {
+        System.out.println( event.toString() );
+    }
+}
+</pre>
+</div>
+
+<p>The following code snippet registers the above listener on a specific project to listen for
+changes in the runtimes that the project targets.</p>
+
+<div class="code">
+<pre class="java-code"><span class="java-keyword">import</span> org.eclipse.core.resources.IProject;
+<span class="java-keyword">import</span> org.eclipse.wst.common.project.facet.core.IFacetedProject;
+<span class="java-keyword">import</span> org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
+<span class="java-keyword">import</span> org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
+
+...
+
+IProject pj;
+
+...
+
+<span class="java-keyword">final</span> IFacetedProject fpj = ProjectFacetsManager.create( pj );
+<span class="java-keyword">final</span> ListenerImpl listener = <span class="java-keyword">new</span> ListenerImpl();
+
+fpj.addListener( listener, 
+                 IFacetedProjectEvent.Type.TARGETED_RUNTIMES_CHANGED,
+                 IFacetedProjectEvent.Type.PRIMARY_RUNTIME_CHANGED );
+                 
+...
+
+fpj.removeListener( listener );
+</pre>
+</div>
+
+<p>The following code snippet register the above listener to listen for the PRE_INSTALL and
+PRE_UNINSTALL events in all faceted projects.</p>
+
+<div class="code">
+<pre class="java-code"><span class="java-keyword">import</span> org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
+<span class="java-keyword">import</span> org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
+
+...
+
+<span class="java-keyword">final</span> ListenerImpl listener = <span class="java-keyword">new</span> ListenerImpl();
+
+FacetedProjectFramework.addListener( listener, 
+                                     IFacetedProjectEvent.Type.PRE_INSTALL,
+                                     IFacetedProjectEvent.Type.PRE_UNINSTALL );
+                 
+...
+
+FacetedProjectFramework.removeListener( listener );
+</pre>
+</div>
+
+<p>The following code snippet accomplishes the same thing as the one above, except it does this
+via the extension point.</p>
+
+<div class="code">
+<pre class="xml-code">&lt;extension point="<span class="code-text">org.eclipse.wst.common.project.facet.core.listeners</span>"&gt;
+  &lt;listener class="<span class="code-text">com.mycorp.myproduct.ListenerImpl</span>" eventTypes="<span class="code-text">PRE_INSTALL,PRE_UNINSTALL</span>"/>
+&lt;extension&gt;
+</pre>
+</div>
+
+<br/><br/><br/><br/>
+
+</body>
+
+</html>

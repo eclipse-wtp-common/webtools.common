@@ -1,0 +1,1203 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <title>Extending WTP Using Project Facets</title>
+  <link type="text/css" rel="stylesheet" href="tutorial.css"/>
+</head>
+
+<body>
+
+<h1 align="center">Extending WTP Using Project Facets</h1>
+
+<blockquote>
+<b>Summary</b><br/>
+The Faceted Project Framework allows the plugin developer to think of Web Tools 
+Platform (WTP) projects as composed of units of functionality, otherwise known 
+as facets, that can be added and removed by the user. This tutorial walks you 
+through an example of creating a couple of basic facets and in the process 
+covers the majority of the framework's extension points. This tutorial has been
+written for version 1.5 of the Web Tools Platform.
+<br/><br/>
+
+<b>Konstantin Komissarchik</b><br/>
+BEA Systems, Inc.<br/>
+September 5, 2006
+</blockquote>
+
+<hr width="100%">
+
+<h2>Introduction</h2>
+
+<p>Faceted Project Framework provides a powerful mechanism for extending the
+capabilities of the Web Tools Platform. Project facets are typically used as
+a way of adding functionality to a project. When a facet is added to the
+project it can perform any necessary setup actions such as copying resources, 
+installing builders, adding natures, etc. Facets can also be used as markers for
+enabling user interface elements.</p>
+
+<p>Some of the readers may be wondering how
+facets are different from the project natures which are supported by the Eclipse
+platform. Natures are designed to be hidden from user's view. They are
+essentially markers that are set behind the scenes by tooling. Project facets,
+on the other hand, have been designed from the ground up to be manipulated by
+the end users. The Faceted Project Framework provides all the necessary user 
+interface elements for managing the facets on a project and since facets
+are self describing the user is prevented from creating invalid configurations.
+Basically, it is no longer necessary to write custom project creation wizards or
+the "Enable Feature X" menu actions. Common way of managing which facets are
+installed on a project means less burden on the plugin writer and better end user
+experience.</p>
+
+<p>This tutorial covers the extension points and Java API that are used for 
+creating project facets. The reader is assumed to be already familiar with 
+developing plugins for Eclipse and to have user-level knowledge of the Web Tools 
+Platform.</p>
+
+<h2>Tutorial Scenario</h2>
+
+<p>You are a developer for a company which develops a product called
+FormGen. FormGen is basically a servlet that generates HTML forms based on XML
+definition files. The product is composed of a jar containing the servlet and
+some basic widgets. There is also an add-on jar with some extra widgets. Users
+have been manually adding the jars into the WEB-INF/lib directories of their
+web projects and setting up the servlet definitions in web.xml by hand. Your
+task is to make this setup easier by writing a couple of project facets that
+will perform these actions automatically.</p>
+
+<h2>Table of Contents</h2>
+
+<div class="block-indent">
+1. <a href="#getting.started">Getting Started</a><br/>
+2. <a href="#creating.basic.facets">Creating Basic Facet Definitions</a><br/>
+3. <a href="#specifying.constraints">Specifying Constraints</a><br/>
+4. <a href="#implementing.actions">Implementing Actions</a><br/>
+5. <a href="#creating.categories">Creating Categories</a><br/>
+6. <a href="#decorating">Decorating</a><br/>
+7. <a href="#adding.wizard.pages">Adding Wizard Pages</a><br/>
+8. <a href="#defining.presets">Defining Presets</a><br/>
+9. <a href="#runtime.mappings">Specifying Runtime Support Mappings</a><br/>
+10. <a href="#summary">Summary</a><br/>
+Appendix A: <a href="#custom.version.comparators">Custom Version Comparators</a><br/>
+Appendix B: <a href="#version.expressions">Version Expressions</a><br/>
+Appendix C: <a href="#property.tester">Property Tester</a><br/>
+Appendix D: <a href="#wizard.context">Wizard Context</a><br/>
+</div>
+
+<h2><a name="getting.started">1. Getting Started</a></h2>
+
+<p>To follow along with this tutorial, you will need to have a working install 
+of Web Tools Platform v1.5. The tutorial is not designed to be used with 1.0.x
+version of WTP as there are numerous extension point and API differences. You 
+can download the install kits for WTP and its prerequisites, including Eclipse 
+Platform v3.2, at the following locations:</p>
+
+<ul>
+  <li><a href="http://download.eclipse.org/eclipse/downloads/">Eclipse Platform Download Site</a></li>
+  <li><a href="http://download.eclipse.org/webtools/downloads/">Web Tools Platform Download Site</a></li>
+</ul>
+
+<p>Once the required software has been installed you will need to
+create a new workspace and add the <a href="materials/starter.zip">starter project</a>
+to it. The starter project includes the materials and utility code that will
+be used in this tutorial. If you get stuck at any point you can take a peek at
+the <a href="materials/solution.zip">solution project</a>.</p>
+
+<h2><a name="creating.basic.facets">2. Creating Basic Facet Definitions</a></h2>
+
+<p>Project facets are declared via the <code>org.eclipse.wst.common.project.facet.core.facets</code>
+extension point. This is a pretty large extension point with lots of facilities,
+but we will start small and progress incrementally while building the tutorial
+facets. Here is the part of the schema that we will be working with initially:</p>
+
+<div class="code">
+<pre class="code-xml">&lt;extension point="org.eclipse.wst.common.project.facet.core.facets"&gt;
+
+  &lt;project-facet id="<span class="schema-type">{string}</span>"&gt; <span class="schema-control">(0 or more)</span>
+    &lt;label&gt;<span class="schema-type">{string}</span>&lt;/label&gt;
+    &lt;description&gt;<span class="schema-type">{string}</span>&lt;/description&gt; <span class="schema-control">(optional)</span>
+  &lt;/project-facet&gt;
+
+  &lt;project-facet-version facet="<span class="schema-type">{string}</span>" version="<span class="schema-type">{string}</span>"/&gt; <span class="schema-control">(0 or more)</span>
+  
+&lt;/extension&gt;</pre>
+</div>
+
+<p>As you can see, there are two top-level elements in this part of the extension
+point schema. The <code>&lt;project-facet&gt;</code> element is used to declare
+the facet itself. The <code>&lt;project-facet-version&gt;</code> element is used
+to declare versions of the facet. Every facet implementation needs to provide
+at least one facet version declaration. In fact, as you will see later in this
+tutorial, the bulk of the work happens in the <code>&lt;project-facet-version&gt;</code>
+declaration. For now all you need to remember is that a facet cannot be used
+unless it has at least one version.</p>
+
+<div class="code">
+<pre class="code-xml">&lt;extension point="<span class="code-text">org.eclipse.wst.common.project.facet.core.facets</span>"&gt;
+
+  &lt;project-facet id="<span class="code-text">formgen.core</span>"&gt;
+    &lt;label&gt;<span class="code-text">FormGen Core</span>&lt;/label&gt;
+    &lt;description&gt;
+      <span class="code-text">Enables generation of HTML forms based on XML definition files.</span>
+    &lt;/description&gt;
+  &lt;/project-facet&gt;
+
+  &lt;project-facet-version facet="<span class="code-text">formgen.core</span>" version="<span class="code-text">1.0</span>"/&gt;
+
+  &lt;project-facet id="<span class="code-text">formgen.ext</span>"&gt;
+    &lt;label&gt;<span class="code-text">FormGen Extensions</span>&lt;/label&gt;
+    &lt;description&gt;
+      <span class="code-text">Enables additional FormGen widgets.</span>
+    &lt;/description&gt;
+  &lt;/project-facet&gt;
+
+  &lt;project-facet-version facet="<span class="code-text">formgen.ext</span>" version="<span class="code-text">1.0</span>"/&gt;
+  
+&lt;/extension&gt;</pre>
+</div>
+
+<p>Insert the above code into your plugin.xml file and lets see it in action.
+Launch Eclipse with your FormGen plugin and then open the Dynamic Web Project
+wizard. Make sure that <code>&lt;none&gt;</code> is selected in the Target Runtime
+field on the first page and go to the second page. You should see a screen that
+looks like the following. Note that the FormGen facets that you have created
+are displayed.</p>
+
+<div class="screen-shot"><img src="images/screen01.gif"/></div>
+
+<h2><a name="specifying.constraints">3. Specifying Constraints</a></h2>
+
+<p>One of the problems with what we have so far is that the FormGen facets
+appear in other module project wizards such as the EJB Project Wizard. That, of
+course, makes no sense since FormGen is servlet-based technology and so is only
+applicable to J2EE web applications. To solve this problem we will use the 
+constraint mechanism to specify the dependencies.</p>
+
+<p>Here is what that part of the extension point schema looks like:</p>
+
+<div class="code">
+<pre class="code-xml"><span class="context-code">&lt;extension point="org.eclipse.wst.common.project.facet.core.facets"&gt;
+  &lt;project-facet-version&gt;</span>
+    &lt;constraint&gt; <span class="schema-control">(optional)</span>
+      <span class="schema-control">[expr]</span>
+    &lt;/constraint&gt;
+  <span class="context-code">&lt;/project-facet-version&gt;
+&lt;/extension&gt;</span>
+
+<span class="schema-control">[expr] =</span>
+  &lt;requires facet="<span class="schema-type">{string}</span>" version="<span class="schema-type"><span class="schema-type-link">{<a href="#version.expressions">version.expr</a>}</span></span>" soft="<span class="schema-type">{boolean}</span>"/&gt; <span class="schema-control">or</span>
+  &lt;conflicts facet="<span class="schema-type">{string}</span>" version="<span class="schema-type"><span class="schema-type-link">{<a href="#version.expressions">version.expr</a>}</span></span>"/&gt; <span class="schema-control">or</span>
+  &lt;conflicts group="<span class="schema-type">{string}</span>"/&gt; <span class="schema-control">or</span>
+  &lt;and&gt;
+    <span class="schema-control">[expr]</span> <span class="schema-control">(1 or more)</span>
+  &lt;/and&gt; <span class="schema-control">or</span>
+  &lt;or&gt;
+    <span class="schema-control">[expr]</span> <span class="schema-control">(1 or more)</span>
+  &lt;/or&gt;</pre>
+</div>
+
+<p>As you can see, the constraint is an expression tree and you have four
+operators at your disposal. Lets go over them one by one.</p>
+
+<div style="margin-left: 10px">
+<p><b>requires</b></p>
+
+<p>The <code>requires</code> operator is the most frequently used of all the operators. 
+It is used to specify a dependency on another facet. If the <code>version</code>
+attribute is not specified, any version of the referenced facet will satisfy
+the constraint. If only specific versions will do, the <code>version</code> 
+attribute can contain a <a href="#version.expressions">version expression</a>.</p>
+
+<p>The <code>soft</code> attribute is used to create a special kind of a
+dependency. Facet selection will not be prevented if the dependency is not
+met, but if the dependency is met, the facet is guaranteed to be installed
+after the referenced facet.</p>
+
+<p><b>conflicts</b></p>
+
+<p>The <code>conflicts</code> constraint is used to indicate that the declaring
+facet will not work correctly if installed into the same project as referenced
+facets. The <code>conflicts</code> constraint comes in two flavors. You can
+either specify a conflict with a single facet or with a group of facets.</p>
+
+<p>What are groups of facets? Facet groups are a way to designate a conflict with
+a certain class of facets without having to list all of the facets explicitly.
+For instance, the WTP module facets all belong to the "modules" group. They also
+each declare a conflict with the "modules" group. This prevents two module facets
+from being installed into the same project. By declaring a conflict with a
+group whose membership can expand as necessary, third parties can add module
+facets on top of WTP and have the new facets interact correctly with the
+built-in module facets.</p>
+
+<p>A facet group is created the first time a facet declares group membership.
+Here is the extension point schema for declaring group membership:</p>
+
+<div class="code">
+<pre class="code-xml"><span class="context-code">&lt;extension point="org.eclipse.wst.common.project.facet.core.facets"&gt;
+  &lt;project-facet-version&gt;</span>
+    &lt;group-member id="<span class="schema-type">{string}</span>"/&gt; <span class="schema-control">(0 or more)</span>
+  <span class="context-code">&lt;/project-facet-version&gt;
+&lt;/extension&gt;</span>
+</pre>
+</div>
+
+<p><b>and &amp; or</b>
+
+<p>The <code>and</code> &amp; <code>or</code> constraints are used to perform 
+logical conjunction and disjunction over their operands. Although it is legal
+for these operators to have only one operand, typically they will have two or
+more.</p>
+</div>
+
+<p>We can now specify the constraints for the FormGen facets. The facet id that
+marks a project as a J2EE web module is <code>jst.web</code>. We will setup
+a dependency on it from the <code>formgen.core</code> facet. The
+<code>formgen.ext</code> facet can then depend on the <code>formgen.ext</code>
+facet. That latter constraint will ensure that the FormGen Extensions
+are not installed without installing FormGen Core.</p>
+
+<div class="code">
+<pre class="code-xml"><span class="context-code">&lt;extension point="org.eclipse.wst.common.project.facet.core.facets"&gt;
+
+  &lt;project-facet-version id="formgen.core" version="1.0"&gt;</span>
+    &lt;constraint&gt;
+      &lt;requires facet="<span class="xml-text">jst.web</span>" version="<span class="xml-text">2.2,2.3,2.4</span>"/&gt;
+    &lt;/constraint&gt;
+  <span class="context-code">&lt;/project-facet&gt;
+
+  &lt;project-facet-version id="formgen.ext" version="1.0"&gt;</span>
+    &lt;constraint&gt;
+      &lt;requires facet="<span class="xml-text">formgen.core</span>" version="<span class="xml-text">1.0</span>"/&gt;
+    &lt;/constraint&gt;
+  <span class="context-code">&lt;/project-facet&gt;
+  
+&lt;/extension&gt;</span></pre>
+</div>
+
+<p>Once the above code is added, the FormGen facets should only appear in the
+Dynamic Web Project wizard.</p>
+
+<h2><a name="implementing.actions">4. Implementing Actions</a></h2>
+
+<p>Let's now try selecting the FormGen Core facet on the facets selection page
+of the Dynamic Web Project wizard. If you do that, you should see the
+following error message appear.</p>
+
+<div class="screen-shot"><img src="images/screen02.gif"/></div>
+
+<p>This error message is displayed because the install action has not been
+implemented for this facet. What's an action? An action is an operation that a
+user can perform on a facet. There are three action types <code>INSTALL</code>,
+<code>UNINSTALL</code>, and <code>VERSION_CHANGE</code>. We will now implement
+the install actions for the FormGen facets.</p>
+
+<p>Here is what that part of the extension point schema looks like:</p>
+
+<div class="code">
+<pre class="code-xml"><span class="context-code">&lt;extension point="org.eclipse.wst.common.project.facet.core.facets"&gt;</span>
+  &lt;action id="<span class="schema-type">{string}</span>" facet="<span class="schema-type">{string}</span>" version="<span class="schema-type"><span class="schema-type-link">{<a href="#version.expressions">version.expr</a>}</span></span>" type="<span class="schema-type">INSTALL|UNINSTALL|VERSION_CHANGE</span>"&gt;
+    &lt;delegate class="<span class="schema-type">{class:org.eclipse.wst.common.project.facet.core.IDelegate}</span>"/&gt;
+    &lt;property name="<span class="schema-type">{string}</span>" value="<span class="schema-type">{string}</span>"/&gt; <span class="schema-control">(0 or more)</span>
+  &lt;/action&gt;
+<span class="context-code">&lt;/extension&gt;</span>
+</pre>
+</div>
+
+<ul>
+
+  <li><p>The version attribute can contain a single version or a <a href="#version.expressions">version expression</a>.
+    It can also be omitted if the action applies to all versions of the facet.</p></li>
+    
+  <li><p>The <code>id</code> attribute is optional. If not specified, the framework
+    will automatically generate one using the following pattern:</p>
+    <p><code>[facet-id]#[version-expression]#[action-type](#[prop-name]=[prop-value])*</code></p>
+    <p>As you can see, it is better to provide an explicit id rather than letting
+    the framework generate it. Later in the tutorial we will cover extension
+    points that make references to action ids.</p>
+  
+  <li><p>The <code>&lt;action&gt;</code> element can also be embeded inside the
+    <code>&lt;project-facet-version&gt;</code> element. In that case, the
+    <code>facet</code> and <code>version</code> attributes should be omitted.
+    Note that if the same delegate implementation applies to multiple facet 
+    versions, it is better to provide a single action declaration externally.
+    This allows the framework to perform certain kinds of optimizations</p></li>
+    
+  <li><p>For the <code>VERSION_CHANGE</code> action, it is possible to restrict
+    the applicability of the action definition with regards to the starting
+    version. To do that, simply specify "from.versions" property in the action
+    definition. The value is a <a href="#version.expressions">version expression</a>.
+    If this property is not specified, the framework will assume that the delegate
+    is capable of converting from any starting version.</p></li>
+    
+</ul>
+
+<div class="code">
+<pre class="java-code"><span class="java-keyword">package</span> org.eclipse.wst.common.project.facet.core;
+
+<span class="java-keyword">import</span> org.eclipse.core.resources.IProject;
+<span class="java-keyword">import</span> org.eclipse.core.runtime.CoreException;
+<span class="java-keyword">import</span> org.eclipse.core.runtime.IProgressMonitor;
+
+<span class="java-comment">/**
+ * This interface is implemented in order to provide logic associated with
+ * a particular event in project facet's life cycle, such as install or 
+ * uninstall.
+ */</span>
+
+<span class="java-keyword">public interface</span> IDelegate 
+{
+    <span class="java-comment">/**
+     * The method that's called to execute the delegate.
+     * 
+     * <span class="java-javadoc-keyword">@param</span> project the workspace project
+     * <span class="java-javadoc-keyword">@param</span> fv the project facet version that this delegate is handling; this
+     *   is useful when sharing the delegate among several versions of the same
+     *   project facet or even different project facets
+     * <span class="java-javadoc-keyword">@param</span> config the configuration object, or <code>null</code> if defaults
+     *   should be used
+     * <span class="java-javadoc-keyword">@param</span> monitor the progress monitor
+     * <span class="java-javadoc-keyword">@throws</span> CoreException if the delegate fails for any reason
+     */</span>
+    
+    <span class="java-keyword">void</span> execute( IProject project,
+                  IProjectFacetVersion fv,
+                  Object config,
+                  IProgressMonitor monitor )
+    
+        <span class="java-keyword">throws</span> CoreException;
+}
+</pre>
+</div>
+
+<p>Let's now dive in and implement the install delegates for the FormGen facets.
+The <code>formgen.core</code> facet should (a) copy <code>formgen-core.jar</code>
+into the project's <code>WEB-INF/lib</code> directory, and (b) register the
+FormGen servlet in <code>web.xml</code>. The <code>formgen.ext</code> facet should
+copy the <code>formgen-ext.jar</code> into the project's <code>WEB-INF/lib</code>
+directory.</p>
+
+<div class="code">
+<pre class="code-xml"><span class="context-code">&lt;extension point="org.eclipse.wst.common.project.facet.core.facets"&gt;</span>
+
+  <span class="context-code">&lt;project-facet-version facet="formgen.core" version="1.0"&gt;</span>
+    &lt;action type="<span class="xml-text">INSTALL</span>"&gt;
+      &lt;delegate class="<span class="xml-text">com.formgen.eclipse.FormGenCoreFacetInstallDelegate</span>"/&gt;
+    &lt;/action&gt;
+  <span class="context-code">&lt;/project-facet-version&gt;</span>
+
+  <span class="context-code">&lt;project-facet-version facet="formgen.ext" version="1.0"&gt;</span>
+    &lt;action type="<span class="xml-text">INSTALL</span>"&gt;
+      &lt;delegate class="<span class="xml-text">com.formgen.eclipse.FormGenExtFacetInstallDelegate</span>"/&gt;
+    &lt;/action&gt;
+  <span class="context-code">&lt;/project-facet-version&gt;</span>
+  
+<span class="context-code">&lt;/extension&gt;</span>
+</pre>
+</div>
+
+<div class="code">
+<pre class="java-code"><span class="java-keyword">package</span> com.formgen.eclipse;
+
+<span class="java-keyword">import</span> org.eclipse.core.resources.IFolder;
+<span class="java-keyword">import</span> org.eclipse.core.resources.IProject;
+<span class="java-keyword">import</span> org.eclipse.core.runtime.CoreException;
+<span class="java-keyword">import</span> org.eclipse.core.runtime.IProgressMonitor;
+<span class="java-keyword">import</span> org.eclipse.core.runtime.Path;
+<span class="java-keyword">import</span> org.eclipse.wst.common.project.facet.core.IDelegate;
+<span class="java-keyword">import</span> org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+
+<span class="java-keyword">public final class</span> FormGenCoreFacetInstallDelegate <span class="java-keyword">implements</span> IDelegate
+{
+    <span class="java-keyword">public void</span> execute( <span class="java-keyword">final</span> IProject pj,
+                         <span class="java-keyword">final</span> IProjectFacetVersion fv,
+                         <span class="java-keyword">final</span> Object config,
+                         <span class="java-keyword">final</span> IProgressMonitor monitor )
+
+        <span class="java-keyword">throws</span> CoreException
+
+    {
+        monitor.beginTask( "", 2 );
+
+        <span class="java-keyword">try</span>
+        {
+            <span class="java-keyword">final</span> IFolder webInfLib = Utils.getWebInfLibDir( pj );
+
+            Utils.copyFromPlugin( new Path( "libs/formgen-core.jar" ),
+                                  webInfLib.getFile( "formgen-core.jar" ) );
+
+            monitor.worked( 1 );
+
+            Utils.registerFormGenServlet( pj );
+
+            monitor.worked( 1 );
+        }
+        <span class="java-keyword">finally</span>
+        {
+            monitor.done();
+        }
+    }
+}
+</pre>
+</div>
+
+<div class="code">
+<pre class="java-code"><span class="java-keyword">package</span> com.formgen.eclipse;
+
+<span class="java-keyword">import</span> org.eclipse.core.resources.IFolder;
+<span class="java-keyword">import</span> org.eclipse.core.resources.IProject;
+<span class="java-keyword">import</span> org.eclipse.core.runtime.CoreException;
+<span class="java-keyword">import</span> org.eclipse.core.runtime.IProgressMonitor;
+<span class="java-keyword">import</span> org.eclipse.core.runtime.Path;
+<span class="java-keyword">import</span> org.eclipse.wst.common.project.facet.core.IDelegate;
+<span class="java-keyword">import</span> org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+
+<span class="java-keyword">public final class</span> FormGenExtFacetInstallDelegate <span class="java-keyword">implements</span> IDelegate
+{
+    <span class="java-keyword">public void</span> execute( <span class="java-keyword">final</span> IProject pj,
+                         <span class="java-keyword">final</span> IProjectFacetVersion fv,
+                         <span class="java-keyword">final</span> Object config,
+                         <span class="java-keyword">final</span> IProgressMonitor monitor )
+
+        <span class="java-keyword">throws</span> CoreException
+
+    {
+        monitor.beginTask( "", 1 );
+
+        <span class="java-keyword">try</span>
+        {
+            <span class="java-keyword">final</span> IFolder webInfLib = Utils.getWebInfLibDir( pj );
+
+            Utils.copyFromPlugin( new Path( "libs/formgen-ext.jar" ),
+                                  webInfLib.getFile( "formgen-ext.jar" ) );
+
+            monitor.worked( 1 );
+        }
+        <span class="java-keyword">finally</span>
+        {
+            monitor.done();
+        }
+
+    }
+}
+</pre>
+</div>
+
+<p>Once the install actions have been implemented, you should be able to select
+the FormGen facets on the Facets Selection Page of the Dynamic Web Project Wizard
+without getting any error messages. You should also be able to complete the
+project creation and see the following highlighted artifacts in the new project.
+These artifacts have been created by the FormGen facet install delegates.</p>
+
+<div class="screen-shot"><img src="images/screen03.gif"/></div>
+
+<h2><a name="creating.categories">5. Creating Categories</a></h2>
+
+<p>Project facets can be grouped into categories in order to provide the "one
+click" exprience for novice users and retain the fine-grained control for advanced 
+users. You are told that most of FormGen users always add both of the jars to
+their web apps. These users would benefit from having the FormGen facets grouped
+into a category and so we will do just that.</p>
+
+<p>Here is what that part of the extension point schema looks like:</p>
+
+<div class="code">
+<pre class="code-xml"><span class="context-code">&lt;extension point="org.eclipse.wst.common.project.facet.core.facets"&gt;</span>
+  &lt;category id="<span class="schema-type">{string}</span>"&gt;
+    &lt;label&gt;<span class="schema-type">{string}</span>&lt;/label&gt;
+    &lt;description&gt;<span class="schema-type">{string}</span>&lt;/description&gt; <span class="schema-control">(optional)</span>
+  &lt;/category&gt;
+  <span class="context-code">&lt;project-facet&gt;</span>
+    &lt;category&gt;<span class="schema-type">{string}</span>&lt;/category&gt; <span class="schema-control">(optional)</span>
+  <span class="context-code">&lt;/project-facet&gt;</span>
+<span class="context-code">&lt;/extension&gt;</span>
+</pre>
+</div>
+
+<p>We can now create a category around the FormGen facets.</p>
+
+<div class="code">
+<pre class="code-xml"><span class="context-code">&lt;extension point="org.eclipse.wst.common.project.facet.core.facets"&gt;</span>
+
+  &lt;category id="<span class="schema-type">formgen.category</span>"&gt;
+    &lt;label&gt;<span class="schema-type">FormGen</span>&lt;/label&gt;
+    &lt;description&gt;<span class="schema-type">Enables generation of HTML forms based on XML definition files.</span>&lt;/description&gt;
+  &lt;/category&gt;
+
+  <span class="context-code">&lt;project-facet id="formgen.core"&gt;</span>
+    &lt;category&gt;<span class="schema-type">formgen.category</span>&lt;/category&gt;
+  <span class="context-code">&lt;/project-facet&gt;</span>
+
+  <span class="context-code">&lt;project-facet id="formgen.ext"&gt;</span>
+    &lt;category&gt;<span class="schema-type">formgen.category</span>&lt;/category&gt;
+  <span class="context-code">&lt;/project-facet&gt;</span>
+
+<span class="context-code">&lt;/extension&gt;</span>
+</pre>
+</div>
+
+<p>Once the above change has been put in place, the facets selection page should 
+look like this:</p>
+
+<div class="screen-shot"><img src="images/screen04.gif"/></div>
+
+<h2><a name="decorating">6. Decorating</a></h2>
+
+<p>Custom icons can be provided for facets and categories. If an icon is not
+provided, a default icon is used. The icons are helpful as a way to better
+differentiate facets and to make them stand out.</p>
+
+<p>Here is what that extension point looks like:</p>
+
+<div class="code">
+<pre class="code-xml">&lt;extension point="org.eclipse.wst.common.project.facet.ui.images"&gt;
+  &lt;image facet="<span class="schema-type">{string}</span>" path="<span class="schema-type">{string}</span>"/&gt; <span class="schema-control">(0 or more)</span>
+  &lt;image category="<span class="schema-type">{string}</span>" path="<span class="schema-type">{string}</span>"/&gt; <span class="schema-control">(0 or more)</span>
+&lt;/extension&gt;
+</pre>
+</div>
+
+<p>Your starter project came with three icons in the <code>icons</code> folder.
+We will now associate them with the FormGen facets and the category.</p>
+
+<div class="code">
+<pre class="code-xml">&lt;extension point="<span class="xml-text">org.eclipse.wst.common.project.facet.ui.images</span>"&gt;
+  &lt;image facet="<span class="xml-text">formgen.core</span>" path="<span class="xml-text">icons/formgen-core.gif</span>"/&gt;
+  &lt;image facet="<span class="xml-text">formgen.ext</span>" path="<span class="xml-text">icons/formgen-ext.gif</span>"/&gt;
+  &lt;image category="<span class="xml-text">formgen.category</span>" path="<span class="xml-text">icons/formgen-cat.gif</span>"/&gt;
+&lt;/extension&gt;
+</pre>
+</div>
+
+<p>Once the above snippet has been added to your plugin.xml file, the facets
+selection page should look like this:</p>
+
+<div class="screen-shot"><img src="images/screen05.gif"/></div>
+
+<h2><a name="adding.wizard.pages">7. Adding Wizard Pages</a></h2>
+
+<p>It is often desirable to gather user input prior to installing a facet.
+The framework allows a sequence of wizard pages to be associated with facet
+actions. The supplied wizard pages are shown after the facets selection
+page. Based on user feedback, you known that FormGen users often customize
+the URL pattern of the FormGen servlet so you would like to give them the ability
+to do that in the wizard when the FormGen facets are being installed.</p>
+
+<p>Here is what the relevant parts of the extension points look like:</p>
+
+<div class="code">
+<pre class="code-xml"><span class="context-code">&lt;extension point="org.eclipse.wst.common.project.facet.core.facets"&gt;
+  &lt;action&gt;</span>
+    &lt;config-factory class="<span class="schema-type">class:org.eclipse.wst.common.project.facet.core.IActionConfigFactory</span>"/&gt;
+  <span class="context-code">&lt;/action&gt;
+&lt;/extension&gt;</span>
+
+&lt;extension point="<span class="xml-text">org.eclipse.wst.common.project.facet.ui.wizardPages</span>"&gt;
+  &lt;wizard-pages action="<span class="schema-type">{string}</span>"&gt; <span class="schema-control">(0 or more)</span>
+    &lt;page class="<span class="schema-type">{class:org.eclipse.wst.common.project.facet.ui.IFacetWizardPage}</span>"/> <span class="schema-control">(1 or more)</span>
+  &lt;/wizard-pages&gt;
+&lt;/extension&gt;  
+</pre>
+</div>
+
+<p>One thing to note here is that in order to enable communication between the
+facet action delegate and the wizard pages, we go back to the action declaration
+and provide an action config factory. The object created by the factory is 
+populated by the wizard pages and is read by the action delegate. No restrictions
+are placed on the shape of the config object. You may choose to implement a custom
+class or you can use a something generic like <code>java.util.HashMap</code>.</p>
+
+<p>Another thing to note is that the <code>wizardPages</code> extension point refers
+to the actions by their ids, so it becomes more important to explicitly specify
+the id rather than letting the framework automatically generate one.</p>
+
+<p>Here are the interfaces that are used in the above extension point schema:</p> 
+
+<div class="code">
+<pre class="java-code"><span class="java-keyword">package</span> org.eclipse.wst.common.project.facet.core;
+
+<span class="java-keyword">import</span> org.eclipse.core.runtime.CoreException;
+
+<span class="java-comment">/**
+ * This interface is implemented in order to provide a method for creating 
+ * a config object that will be used for parameterizing the facet action
+ * delegate.
+ */</span>
+
+<span class="java-keyword">public interface</span> IActionConfigFactory
+{
+    <span class="java-comment">/**
+     * Creates a new facet action configuration object. The new configuration
+     * object should ideally be populated with reasonable defaults.
+     * 
+     * <span class="java-javadoc-keyword">@return</span> a new facet action configuration object
+     * <span class="java-javadoc-keyword">@throws</span> CoreException if failed while creating the configuration object
+     */</span>
+    
+    Object create() <span class="java-keyword">throws</span> CoreException;
+}
+</pre>
+</div>
+
+<div class="code">
+<pre class="java-code"><span class="java-keyword">package</span> org.eclipse.wst.common.project.facet.ui;
+
+<span class="java-keyword">import</span> org.eclipse.jface.wizard.IWizardPage;
+
+<span class="java-comment">/**
+ * This interface is implemented by the wizard pages associated with project
+ * facet actions.
+ */</span>
+
+<span class="java-keyword">public interface</span> IFacetWizardPage <span class="java-keyword">extends</span> IWizardPage
+{
+    <span class="java-comment">/**
+     * The framework will call this method in order to provide the wizard
+     * context to the wizard page. The wizard context can be used to find out
+     * about other actions being configured by the wizard.
+     * 
+     * <span class="java-javadoc-keyword">@param</span> context the wizard context
+     */</span>
+    
+    <span class="java-keyword">void</span> setWizardContext( IWizardContext context );
+    
+    <span class="java-comment">/**
+     * The framework will call this method in order to provide the action config
+     * object that the wizard page should save user selection into. The
+     * populated config object will then be passed to the action delegate.
+     * 
+     * <span class="java-javadoc-keyword">@param</span> config the action config object
+     */</span>
+    
+    <span class="java-keyword">void</span> setConfig( Object config );
+    
+    <span class="java-comment">/**
+     * This method is called after the user has pressed the <code>Finish</code>
+     * button. It allows the wizard page to transfer user selection into the
+     * config object. Alternative, instead of using this method, the wizard
+     * page could update the model on the fly as the user is making changes.
+     */</span>
+
+    <span class="java-keyword">void</span> transferStateToConfig();
+}
+</pre>
+</div>
+
+<p>We will now implement a wizard page for the <code>facet.core</code> facet
+install action. The wizard page will allow the user to change the default
+servlet URL pattern for the FormGen servlet.</p>
+
+<div class="code">
+<pre class="code-xml"><span class="context-code">&lt;extension point="org.eclipse.wst.common.project.facet.core.facets"&gt;
+  &lt;project-facet-version facet="formgen.core" version="1.0"&gt;
+    &lt;action type="INSTALL"</span> id="<span class="xml-text">formgen.core.install</span>"<span class="context-code">&gt;</span>
+      &lt;config-factory class="<span class="xml-text">com.formgen.eclipse.FormGenCoreFacetInstallConfig$Factory</span>"/&gt;
+    <span class="context-code">&lt;/action&gt;
+  &lt;/project-facet-version&gt;
+&lt;/extension&gt;</span>
+
+&lt;extension point="<span class="xml-text">org.eclipse.wst.common.project.facet.ui.wizardPages</span>"&gt;
+  &lt;wizard-pages action="<span class="xml-text">formgen.core.install</span>"&gt;
+    &lt;page class="<span class="schema-type">com.formgen.eclipse.FormGenCoreFacetInstallPage</span>"/>
+  &lt;/wizard-pages&gt;
+&lt;/extension&gt;  
+</pre>
+</div>
+
+<div class="code">
+<pre class="java-code"><span class="java-keyword">package</span> com.formgen.eclipse;
+
+<span class="java-keyword">import</span> org.eclipse.wst.common.project.facet.core.IActionConfigFactory;
+
+<span class="java-keyword">public final class</span> FormGenCoreFacetInstallConfig
+{
+    <span class="java-keyword">private</span> String urlPattern = <span class="java-literal">"*.form"</span>;
+
+    <span class="java-keyword">public</span> String getUrlPattern()
+    {
+        <span class="java-keyword">return this</span>.urlPattern;
+    }
+
+    <span class="java-keyword">public void</span> setUrlPattern( <span class="java-keyword">final</span> String urlPattern )
+    {
+        <span class="java-keyword">this</span>.urlPattern = urlPattern;
+    }
+
+    <span class="java-keyword">public static final class</span> Factory <span class="java-keyword">implements</span> IActionConfigFactory
+    {
+        <span class="java-keyword">public</span> Object create()
+        {
+            <span class="java-keyword">return new</span> FormGenCoreFacetInstallConfig();
+        }
+    }
+}
+</pre>
+</div>
+
+<div class="code">
+<pre class="java-code"><span class="java-keyword">package</span> com.formgen.eclipse;
+
+<span class="java-keyword">import</span> org.eclipse.swt.SWT;
+<span class="java-keyword">import</span> org.eclipse.swt.layout.GridData;
+<span class="java-keyword">import</span> org.eclipse.swt.layout.GridLayout;
+<span class="java-keyword">import</span> org.eclipse.swt.widgets.Composite;
+<span class="java-keyword">import</span> org.eclipse.swt.widgets.Label;
+<span class="java-keyword">import</span> org.eclipse.swt.widgets.Text;
+<span class="java-keyword">import</span> org.eclipse.wst.common.project.facet.ui.AbstractFacetWizardPage;
+
+<span class="java-keyword">public final class</span> FormGenCoreFacetInstallPage <span class="java-keyword">extends</span> AbstractFacetWizardPage
+{
+    <span class="java-keyword">private</span> FormGenCoreFacetInstallConfig config;
+    <span class="java-keyword">private</span> Text urlPatternTextField;
+
+    <span class="java-keyword">public</span> FormGenCoreFacetInstallPage()
+    {
+        <span class="java-keyword">super</span>( <span class="java-literal">"formgen.core.facet.install.page"</span> );
+
+        setTitle( <span class="java-literal">"FormGen Core"</span> );
+        setDescription( <span class="java-literal">"Configure the FormGen servlet."</span> );
+    }
+
+    <span class="java-keyword">public void</span> createControl( <span class="java-keyword">final</span> Composite parent )
+    {
+        <span class="java-keyword">final</span> Composite composite = <span class="java-keyword">new</span> Composite( parent, SWT.NONE );
+        composite.setLayout( <span class="java-keyword">new</span> GridLayout( 1, <span class="java-keyword">false</span> ) );
+
+        <span class="java-keyword">final</span> Label label = <span class="java-keyword">new</span> Label( composite, SWT.NONE );
+        label.setLayoutData( gdhfill() );
+        label.setText( <span class="java-literal">"URL Pattern:"</span> );
+
+        <span class="java-keyword">this</span>.urlPatternTextField = <span class="java-keyword">new</span> Text( composite, SWT.BORDER );
+        <span class="java-keyword">this</span>.urlPatternTextField.setLayoutData( gdhfill() );
+        <span class="java-keyword">this</span>.urlPatternTextField.setText( this.config.getUrlPattern() );
+
+        setControl( composite );
+    }
+
+    <span class="java-keyword">public void</span> setConfig( <span class="java-keyword">final</span> Object config )
+    {
+        <span class="java-keyword">this</span>.config = (FormGenCoreFacetInstallConfig) config;
+    }
+
+    <span class="java-keyword">public void</span> transferStateToConfig()
+    {
+        <span class="java-keyword">this</span>.config.setUrlPattern( <span class="java-keyword">this</span>.urlPatternTextField.getText() );
+    }
+
+    <span class="java-keyword">private static</span> GridData gdhfill()
+    {
+        <span class="java-keyword">return new</span> GridData( GridData.FILL_HORIZONTAL );
+    }
+}
+</pre>
+</div>
+
+<div class="code">
+<pre class="java-code"><span class="java-context"><span class="java-context-keyword">package</span> com.formgen.eclipse;
+
+<span class="java-context-keyword">import</span> org.eclipse.core.resources.IFolder;
+<span class="java-context-keyword">import</span> org.eclipse.core.resources.IProject;
+<span class="java-context-keyword">import</span> org.eclipse.core.runtime.CoreException;
+<span class="java-context-keyword">import</span> org.eclipse.core.runtime.IProgressMonitor;
+<span class="java-context-keyword">import</span> org.eclipse.core.runtime.Path;
+<span class="java-context-keyword">import</span> org.eclipse.wst.common.project.facet.core.IDelegate;
+<span class="java-context-keyword">import</span> org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+
+<span class="java-context-keyword">public final class</span> FormGenCoreFacetInstallDelegate <span class="java-context-keyword">implements</span> IDelegate
+{
+    <span class="java-context-keyword">public void</span> execute( <span class="java-context-keyword">final</span> IProject pj,
+                         <span class="java-context-keyword">final</span> IProjectFacetVersion fv,
+                         <span class="java-context-keyword">final</span> Object config,
+                         <span class="java-context-keyword">final</span> IProgressMonitor monitor )
+
+        <span class="java-context-keyword">throws</span> CoreException
+
+    {
+        monitor.beginTask( "", 2 );
+
+        try
+        {</span>
+            <span class="java-keyword">final</span> FormGenCoreFacetInstallConfig cfg
+                = (FormGenCoreFacetInstallConfig) config;
+
+            <span class="java-context"><span class="java-context-keyword">final</span> IFolder webInfLib = Utils.getWebInfLibDir( pj );
+
+            Utils.copyFromPlugin( <span class="java-context-keyword">new</span> Path( "libs/formgen-core.jar" ),
+                                  webInfLib.getFile( "formgen-core.jar" ) );
+
+            monitor.worked( 1 );</span>
+
+            Utils.registerFormGenServlet( pj, cfg.getUrlPattern() );
+
+            <span class="java-context">monitor.worked( 1 );
+        }
+        <span class="java-context-keyword">finally</span>
+        {
+            monitor.done();
+        }
+    }
+}</span>
+</pre>
+</div>
+
+<p>Once the above code changes have been made you should see another page appear
+in the Dynamic Web Project Wizard after the FormGen facets are selected. The
+new page will appear after the Web Module page, which is associated with the
+<code>jst.web</code> facet. That's because <code>formgen.core</code> facet
+depends on the <code>jst.web</code> facet. If this dependency relationship 
+was not specified the relative order of these pages would be unspecified.</p>
+
+<div class="screen-shot"><img src="images/screen06.gif"/></div>
+
+<h2><a name="defining.presets">8. Defining Presets</a></h2>
+
+<p>As the number of available facets grows, it becomes increasingly difficult
+for the user to figure out which combinations make sense. This is where presets
+come in. Presets (or Configurations, as they are referred to in the UI) are
+simply combinations of facets that someone has determined are useful in certain
+situations. Presets can be created by the user or supplied via an extension
+point.</p>
+
+<p>Here is the extension point schema for declaring presets:</p>
+
+<div class="code">
+<pre class="code-xml">&lt;extension point="<span class="xml-text">org.eclipse.wst.common.project.facet.core.facets</span>"&gt;
+  &lt;preset id="<span class="schema-type">{string}</span>"&gt;
+    &lt;label&gt;<span class="schema-type">{string}</span>&lt;/label&gt;
+    &lt;description&gt;<span class="schema-type">{string}</span>&lt;/description&gt; <span class="schema-control">(optional)</span>
+    &lt;facet id="<span class="schema-type">{string}</span>" version="<span class="schema-type">{string}</span>"/&gt; <span class="schema-control">(1 or more)</span>
+  &lt;/preset&gt;
+&lt;/extension&gt;
+</pre>
+</div>
+
+<p>Note that in order for a preset to apply to a given faceted project, the
+preset needs to include all of the project's "fixed facets". Fixed facets are
+the facets that are key to the proper operation of that project type and so
+cannot be removed. You can identify fixed facets by the lock icon.</p>
+
+<p>Let's now create a preset that includes formgen facets.</p>
+
+<div class="code">
+<pre class="code-xml">&lt;extension point="<span class="xml-text">org.eclipse.wst.common.project.facet.core.facets</span>"&gt;
+  &lt;preset id="<span class="xml-text">formgen.preset</span>"&gt;
+    &lt;label&gt;<span class="xml-text">FormGen Web Project</span>&lt;/label&gt;
+    &lt;description&gt;<span class="xml-text">Creates a web project with FormGen functionality.</span>&lt;/description&gt;
+    &lt;facet id="<span class="xml-text">jst.java</span>" version="<span class="xml-text">5.0</span>"/&gt;
+    &lt;facet id="<span class="xml-text">jst.web</span>" version="<span class="xml-text">2.2</span>"/&gt;
+    &lt;facet id="<span class="xml-text">formgen.core</span>" version="<span class="xml-text">1.0</span>"/&gt;
+    &lt;facet id="<span class="xml-text">formgen.ext</span>" version="<span class="xml-text">1.0</span>"/&gt;
+  &lt;/preset&gt;
+&lt;/extension&gt;
+</pre>
+</div>
+
+<p>Here is how the preset shows up on the facets selection page:</p>
+
+<div class="screen-shot"><img src="images/screen07.gif"/></div>
+
+<p>The preset can also be selected on the first page of all WTP project
+creation wizards. Here is how this looks in the Dynamic Web Project wizard:</p>
+
+<div class="screen-shot"><img src="images/screen08.gif"/></div>
+
+<h2><a name="runtime.mappings">9. Specifying Runtime Support Mappings</a></h2>
+
+<p>One of the most important functions of the faceted project framework is to
+be able to accurately model whether a certain server runtime supports a
+given project. We do that by "mapping" project facets to runtime components
+that support them. If the artifacts created by a facet will run on any server
+that supports all of the facet's upstream dependencies, then the <code>any</code>
+wildcard can be used.</p>
+
+<p>It's important to note that every facet needs to specify a support mapping of
+some kind. Facets that don't specify any support mappings are treated as not
+supported by any runtime, which is not very useful.</p>
+
+<p>Here is the extension point that's used for specifying the support mappings:</p>
+
+<div class="code">
+<pre class="code-xml">&lt;extension point="<span class="xml-text">org.eclipse.wst.common.project.facet.core.runtimes</span>"&gt;
+  &lt;supported&gt; <span class="schema-control">(0 or more)</span>
+    &lt;runtime-component any="<span class="schema-type">{boolean}</span>"/&gt; <span class="schema-control">(optional)</span>
+    &lt;runtime-component id="<span class="schema-type">{string}</span>"/ version="<span class="schema-type"><span class="schema-type-link">{<a href="#version.expressions">version.expr</a>}</span></span>"/&gt; <span class="schema-control">(0 or more)</span>
+    &lt;facet id="<span class="schema-type">{string}</span>"/ version="<span class="schema-type"><span class="schema-type-link">{<a href="#version.expressions">version.expr</a>}</span></span>"/&gt; <span class="schema-control">(1 or more)</span>
+  &lt;/supported&gt;
+&lt;/extension&gt;
+</pre>
+</div>
+
+<p>The <code>&lt;supported&gt;</code> block can reference any number of runtime
+components as well as any number of facets. The semantics of that is to declare 
+as supported every combination in the resulting cross-product.</p> 
+
+<p>The <code>version</code> attributes of the <code>&lt;runtime-component&gt;</code> 
+and <code>&lt;facet&gt;</code> elements can be omitted to include all versions.</p>
+
+<p>The FormGen facets don't have any special support requirements. They will run
+on any server that supports the j2ee servlet spec. We will use the <code>any</code>
+wildcard to designate that.</p>
+
+<div class="code">
+<pre class="code-xml">&lt;extension point="<span class="xml-text">org.eclipse.wst.common.project.facet.core.runtimes</span>"&gt;
+  &lt;supported&gt;
+    &lt;runtime-component any="<span class="xml-text">true</span>"/&gt;
+    &lt;facet id="<span class="xml-text">formgen.core</span>"/&gt;
+    &lt;facet id="<span class="xml-text">formgen.ext</span>"/&gt;
+  &lt;/supported&gt;
+&lt;/extension&gt;
+</pre>
+</div>
+
+<p>Alternative, if for some reason the FormGen functionality required a specific
+runtime, such as Tomcat, we would use something like the this instead:</p>
+
+<div class="code">
+<pre class="code-xml">&lt;extension point="<span class="xml-text">org.eclipse.wst.common.project.facet.core.runtimes</span>"&gt;
+  &lt;supported&gt;
+    &lt;runtime-component id="<span class="xml-text">org.eclipse.jst.server.tomcat</span>" version="<span class="xml-text">[5.0</span>"/&gt;
+    &lt;facet id="<span class="xml-text">formgen.core</span>"/&gt;
+    &lt;facet id="<span class="xml-text">formgen.ext</span>"/&gt;
+  &lt;/supported&gt;
+&lt;/extension&gt;
+</pre>
+</div>
+
+<p>The above more restrictive specification will prevent FormGen facets from
+being selected if the project is targetted to any runtime other than Apache
+Tomcat 5.0 or newer.</p>
+
+<h2><a name="summary">10. Summary</a></h2>
+
+<p>In this tutorial we created two fully-functional project facets by specifying
+constraints, implementing actions, grouping facets into categories, and creating
+wizard pages to allow users to parameterize facet installation. You should now
+be well prepared to create your own facets. Additional information not covered
+by this tutorial can be found in the following appendix sections.</p> 
+
+<h2><a name="custom.version.comparators">Appendix A: Custom Version Comparators</a></h2>
+
+<p>The faceted project framework needs to be able to compare facet version
+strings. The framework supplies a default version comparator that can handle
+version strings encoded using the standard decimal notation (such as 1.2 or
+5.66.5533), but if you want to use a different format you will need to supply
+a custom version comparator.</p>
+
+<p>Here is how you plug in a custom version comparator:</p>
+
+<div class="code">
+<pre class="code-xml"><span class="context-code">&lt;extension point="org.eclipse.wst.common.project.facet.core.facets"&gt;
+  &lt;project-facet&gt;</span>
+    &lt;version-comparator class="<span class="schema-type">{class:java.util.Comparator&lt;String&gt;}</span>"/&gt;
+  <span class="context-code">&lt;/project-facet&gt;
+&lt;/extension&gt;</span>
+</pre>
+</div>
+
+<p>When implementing a version comparator you can either start from scratch
+or subclass the default version comparator (<code>org.eclipse.wst.common.project.facet.core.DefaultVersionComparator</code>).
+Subclassing the default version comparator makes sense if the version format
+differs only slightly from the default format, such as using separators other
+than dots or having non-numeric characters at certain positions. Here are the
+protected methods exposed by the <code>DefaultVersionComparator</code> class
+that are designed to be overridden:</p>
+
+<div class="code">
+<pre class="java-code"><span class="java-comment">/**
+ * Returns the string containing the separator characters that should be
+ * used when breaking the version string into segments. The default
+ * implementation returns ".". Subclasses can override this method.
+ * 
+ * <span class="java-javadoc-keyword">@return</span> the separator characters
+ */</span>
+    
+<span class="java-keyword">protected</span> String getSeparators();
+    
+<span class="java-comment">/**
+ * Parses a segment of the version string. The default implementation parses
+ * the first segment as an integer (leading zeroes are ignored) and the
+ * rest of the segments as decimals (leading zeroes are kept). Subclasses 
+ * can override this method to provide custom parsing for any number of 
+ * segments.
+ * 
+ * <span class="java-javadoc-keyword">@param</span> version the full version string
+ * <span class="java-javadoc-keyword">@param</span> segment the version segment
+ * <span class="java-javadoc-keyword">@param</span> position the position of the segment in the version string
+ * <span class="java-javadoc-keyword">@return</span> the parsed representation of the segment as a {@see Comparable}
+ * <span class="java-javadoc-keyword">@throws</span> VersionFormatException if encountered an error while parsing
+ */</span>
+    
+<span class="java-keyword">protected</span> Comparable parse( <span class="java-keyword">final</span> String version,
+                            <span class="java-keyword">final</span> String segment,
+                            <span class="java-keyword">final</span> int position )
+    
+    <span class="java-keyword">throws</span> VersionFormatException;
+</pre>
+</div>
+
+<h2><a name="version.expressions">Appendix B: Version Expressions</a></h2>
+
+<p>A version expression is a syntax for specifying more than one version. The
+version expressions are used throughout the framework's extension points, but
+you will most likely first encounter them while specifying the <code>requires</code> 
+constraint.</p>
+
+<p>A version expression is composed of multiple segments separated by commas. 
+The commas function as an OR operation. Each segment is either a single version, 
+a range, or a wildcard. Ranges are represented by bracket and dash notation such 
+as [x-y). A bracket means inclusive, while the parenthesis means exclusive. Open 
+ended ranges are also supported. A wildcard (represented by '*' character) can
+be used to match any version. It is not possible to use the wildcard to match
+part of the version string.</p>
+
+<p>Here are some examples:</p>
+
+<div class="code">
+<pre class="java-code">1.2
+1.2,1.5,3.2
+[1.2-3.2]
+[3.7-5.0)
+[3.7
+5.0)
+1.2,[3.0-4.5),[7.3
+*
+</pre>
+</div>
+
+<h2><a name="property.tester">Appendix C: Property Tester</a></h2>
+
+<p>A property tester is provided by the Faceted Project Framework that allows
+the presence of the facet in a project to be tested by any extension point that
+works with <code>org.eclipse.core.expressions</code> package. The most common
+usage is to enable user interface elements (such as actions and project property
+pages). The property name is <code>org.eclipse.wst.common.project.facet.core.projectFacet</code>
+and the value is either a facet id or a facet id followed by a colon and
+a <a href="#version.expressions">version expression</a>.</p>
+
+<p>Here is an example of using facets property tester to control enablement of
+a project properties page:</p>
+
+<div class="code">
+<pre class="code-xml">&lt;extension point="<span class="xml-text">org.eclipse.ui.propertyPages</span>"&gt;
+  &lt;page 
+    adaptable="<span class="xml-text">true</span>"
+    objectClass="<span class="xml-text">org.eclipse.core.resources.IProject</span>"
+    name="<span class="xml-text">FormGen Properties</span>"
+    class="<span class="xml-text">com.formgen.eclipse.FormGenPropertiesPage</span>"
+    id="<span class="xml-text">org.eclipse.jst.j2ee.internal.J2EEDependenciesPage</span>"&gt;
+    &lt;enabledWhen&gt;
+      &lt;test 
+        forcePluginActivation="<span class="xml-text">true</span>"
+        property="<span class="xml-text">org.eclipse.wst.common.project.facet.core.projectFacet</span>"
+        value="<span class="xml-text">formgen.core</span>"/&gt;
+    &lt;/enabledWhen&gt;          
+  &lt;/page&gt;
+&lt;/extension&gt;
+</pre>
+</div>
+
+<h2><a name="wizard.context">Appendix D: Wizard Context</a></h2>
+
+<p>Sometimes it desirable to be able to adjust the behavior of facet action 
+wizard pages based on user input in the wizard pages of other facets. The
+<code>IWizardContext</code> interface can be used for this purpose. The wizard
+page gets a handle on <code>IWizardContext</code> interface when it's
+<code>setWizardContext</code> method is called. When writing code that relies
+on the wizard context, there are a couple of points you should keep in mind.</p>
+
+<ol>
+
+  <li><p>The facet whose value you wish to check may have already been installed
+    in the past. In that case you will not find it's install configuration in
+    the wizard context. You will need to write conditional logic that will
+    consult the wizard context or looks at project state on disk.</p></li>
+    
+  <li><p>You should make sure that a reasonable default is provided in your
+    config object for the API-only scenario where your wizard page will not be
+    involved.</p>
+    
+</ol>
+
+<p>Here is what the <code>IWizardContext</code> interface looks like:</p>
+
+<div class="code">
+<pre class="java-code"><span class="java-keyword">package</span> org.eclipse.wst.common.project.facet.ui;
+
+<span class="java-keyword">import</span> java.util.Set;
+
+<span class="java-keyword">import</span> org.eclipse.core.runtime.CoreException;
+<span class="java-keyword">import</span> org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+<span class="java-keyword">import</span> org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
+<span class="java-keyword">import</span> org.eclipse.wst.common.project.facet.core.IFacetedProject.Action.Type;
+
+<span class="java-comment">/**
+ * The interface exposed to the facet action wizard pages that allows them
+ * to gather information about the wizard state.
+ */</span>
+
+<span class="java-keyword">public interface</span> IWizardContext 
+{
+    <span class="java-comment">/**
+     * Returns the name of the project that the wizard is operating on. If the
+     * wizard is in the project creation mode, the project will not yet exist
+     * in the workspace.
+     * 
+     * <span class="java-javadoc-keyword">@return</span> the name of the project that the wizard is operating on
+     */</span>
+    
+    String getProjectName();
+    
+    <span class="java-comment">/**
+     * Returns the set of facets currently selected in the wizard. If the wizard
+     * is in the add/remove facets mode (vs. project creation), this method will 
+     * return the set of facets currently installed in a project after being 
+     * modified by the current set of actions. 
+     * 
+     * <span class="java-javadoc-keyword">@return</span> the set of facets currently selected in the wizard (element type:
+     *   {<span class="java-javadoc-keyword">@see</span> IProjectFacetVersion})
+     */</span>
+    
+    Set getSelectedProjectFacets();
+    
+    <span class="java-comment">/**
+     * Determines whether the specified facet is currently selected in the
+     * wizard. See {@see getSelectedProjectFacets()} for more information.
+     * 
+     * <span class="java-javadoc-keyword">@param</span> fv the project facet version object
+     * <span class="java-javadoc-keyword">@return</span> <code>true</code> if an only if the provided project facet is
+     *   currently selected in the wizard
+     */</span>
+    
+    <span class="java-keyword">boolean</span> isProjectFacetSelected( IProjectFacetVersion fv );
+    
+    <span class="java-comment">/**
+     * Returns the set of actions currently specified by the user.
+     * 
+     * <span class="java-javadoc-keyword">@return</span> the set of actions currently specified by the user
+     */</span>
+    
+    Set getActions();
+    
+    <span class="java-comment">/**
+     * Finds the action of specified type that applies to the specified facet,
+     * if such action exists. If the wizard is in the add/remove facets mode
+     * (vs. project creation), you cannot depend on finding the install action
+     * for a required facet as that facet may have already been installed.
+     * 
+     * <span class="java-javadoc-keyword">@param</span> type the action type
+     * <span class="java-javadoc-keyword">@param</span> fv the project facet version object
+     * <span class="java-javadoc-keyword">@return</span> the action object or <code>null</code>
+     */</span>
+    
+    Action getAction( Action.Type type,
+                      IProjectFacetVersion fv );
+}
+</pre>
+</div>
+
+<br/><br/><br/>
+
+</body>
+
+</html>

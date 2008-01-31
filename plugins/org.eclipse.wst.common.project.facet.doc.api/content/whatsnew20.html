@@ -1,0 +1,447 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta
+  http-equiv="Content-Type"
+  content="text/html; charset=iso-8859-1">
+<title>What's New for 2.0?</title>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="format.css">
+</head>
+
+<body>
+<p class="ueberschrift">What's New for 2.0?</p>
+
+<p>This document describes the API changes that have been made in the Faceted Project Framework for 
+the WTP 2.0 release. Both Java API and extension point changes are covered. All API that was 
+deprecated in this release is still supported, but clients are advised to switch to non-deprecated 
+alternatives as soon as feasible.</p>
+
+<ol>
+  <li><a href="#generics">Generics</a></li>
+  <li><a href="#presets">Improvements to Presets</a></li>
+  <li><a href="#comparable">IProjectFacetVersion and IRuntimeComponentVersion Extend Comparable</a></li>
+  <li><a href="#requires-group">Requires Constraint Supports Groups</a></li>
+  <li><a href="#group-labels">Labels and Descriptions for Groups</a></li>
+  <li><a href="#validate">New IFacetedProject Validation API</a></li>
+  <li><a href="#new-wizard-class">AddRemoveFacetsWizard Class Renamed to ModifyFacetedProjectWizard</a></li>
+  <li><a href="#pde-limitations">Extension Point Schema Changes to Work Around PDE Limitations</a></li>
+  <li><a href="#listeners">Listeners and Events</a></li>
+  <li><a href="#misc">Miscellaneous</a></li>
+</ol>
+
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="#generics">1. Generics</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>All of the framework's API now use Java 5 generics. This has been done in a backwards compatible
+way and existing clients are expected to continue to work without any modifications. In order for a 
+client to gain access to the type safety afforded by generics in this API, the client plugin's Java 
+compiler level should be configured to be 5.0 or newer.</p>  
+
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="presets">2. Improvements to Presets</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>Significant improvements have been made to the presets facility for the 2.0 release. A new type of
+preset, referred to as a dynamic preset, is now available. A dynamic preset uses an extender-supplied
+factory to synthesize the preset definition on the fly based on the context in which it will be
+used. The "old-style" declarative presets are still available and are now referred to as static
+presets. Static presets have also been improved to allow them to extend other presets. A static
+preset can even extend a dynamic preset.</p>
+
+<p>There is also a new preset that's part of the framework. It's a dynamic preset with id of 
+"default.configuration" and whose contents are synthesized as follows:</p>
+
+<ol>
+  <li>If a runtime is selected, this preset will contain default facets as specified by
+    IRuntime.getDefaultFacets(Set).</li>
+  <li>If no runtime is selected, this preset will contain default versions for all of the fixed
+    facets as specified by IProjectFacet.getDefaultVersion().</li>
+</ol>   
+
+<p><u>New Extension Point</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+&lt;extension point="org.eclipse.wst.common.project.facet.core.presets"&gt;
+  &lt;static-preset id="<i>{string}</i>" extends="<i>{string}</i>"&gt;
+    &lt;label&gt;<i>{string}</i>&lt;/label&gt; <i>(optional)</i>
+    &lt;description&gt;<i>{string}</i>&lt;/description&gt; <i>(optional)</i>
+    &lt;facet id="<i>{string}</i>" version="<i>{string}</i>"/&gt; <i>(1 or more)</i>
+  &lt;/static-preset&gt; <i>(0 or more)</i>
+  &lt;dynamic-preset id="<i>{string}</i>"&gt;
+    &lt;factory class="<i>{class:org.eclipse.wst.common.project.facet.core.IPresetFactory}</i>"/&gt;
+  &lt;/dynamic-preset&gt; <i>(0 or more)</i>
+&lt;extension&gt;
+</pre>
+</td></tr></table>
+
+<p><u>Deprecated Extension Point</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#FFF1C1">
+<pre>
+<font color="#7B7B7B">&lt;extension point="org.eclipse.wst.common.project.facet.core.facets"&gt;</font>
+  &lt;preset id="<i>{string}</i>"&gt;
+    &lt;label&gt;<i>{string}</i>&lt;/label&gt; <i>(optional)</i>
+    &lt;description&gt;<i>{string}</i>&lt;/description&gt; <i>(optional)</i>
+    &lt;facet id="<i>{string}</i>" version="<i>{string}</i>"/&gt; <i>(1 or more)</i>
+  &lt;/preset&gt; <i>(0 or more)</i>
+<font color="#7B7B7B">&lt;extension&gt;</font>
+</pre>
+</td></tr></table>
+
+<p><u>Java API Additions</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">interface org.eclipse.wst.common.project.facet.core.IPreset
+{</font>
+    enum Type { STATIC, DYNAMIC, USER_DEFINED }
+    Type getType();
+<font color="#7B7B7B">}</font>
+
+interface org.eclipse.wst.common.project.facet.core.IDynamicPreset extends IPreset
+{
+    static final String CONTEXT_KEY_FIXED_FACETS;
+    static final String CONTEXT_KEY_PRIMARY_RUNTIME;
+    IPreset resolve( Map<String,Object> context );
+}
+
+interface org.eclipse.wst.common.project.facet.core.IPresetFactory
+{
+    PresetDefinition createPreset( String presetId, Map<String,Object> context );
+}
+
+class org.eclipse.wst.common.project.facet.core.PresetDefinition
+{
+    PresetDefinition( String label, String description, Set<IProjectFacetVersion> facets );
+    String getLabel();
+    String getDescription();
+    Set<IProjectFacetVersion> getProjectFacets();
+}
+
+<font color="#7B7B7B">org.eclipse.wst.common.project.facet.core.FacetedProjectFramework
+{</font>
+    static final String DEFAULT_CONFIGURATION_PRESET_ID;
+<font color="#7B7B7B">}</font>
+</pre>
+</td></tr></table>
+
+<p><u>Deprecated Java API</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor=#FFF1C1>
+<pre>
+<font color="#7B7B7B">interface org.eclipse.wst.common.project.facet.core.IPreset
+{</font>
+    boolean isUserDefined()
+<font color="#7B7B7B">}</font>
+</pre>
+</td></tr></table>
+
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="#comparable">3. IProjectFacetVersion and IRuntimeComponentVersion Extend Comparable</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>The IProjectFacetVersion and IRuntimeComponentVersion interfaces now extend
+Comparable. Using the compareTo methods will yield significantly better performance
+than calling the version comparator directly on the version strings as the 
+compareTo methods use pre-computed results and do not need to parse the version
+strings.</p>
+
+<p>As part of this change, IVersionExpr.evaluate( String ) method has been
+replaced with IVersionExpr.check( Comparable ) method.</p>
+
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="#requires-group">4. Requires Constraint Supports Groups</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>The requires constraint can now be declared using facet groups instead of
+individual facets. Any member of the group will satisfy the constraint. This
+allows a level of indirection so that a facet does not need to know about all of
+the group members.</p>
+
+<p><u>Extension Point Changes</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">&lt;extension point="org.eclipse.wst.common.project.facet.core.facets"&gt;
+  &lt;project-facet-version&gt;
+    &lt;constraint&gt;</font>
+      &lt;requires group="group.id"/&gt;
+    <font color="#7B7B7B">&lt;/constraint&gt;
+  &lt;/project-facet-version&gt;
+&lt;extension&gt;</font>
+</pre>
+</td></tr></table>
+
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="group-labels">5. Labels and Descriptions for Groups</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>It is now possible to associate labels and description with groups. Note that
+groups are still automatically created on first use, so the use of the new group
+element is only necessary in order to specify the label and the description.</p>
+   
+<p><u>Extension Points Changes</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">&lt;extension point="org.eclipse.wst.common.project.facet.core.facets"&gt;</font>
+  &lt;group id="..."&gt; <i>(0 or more)</i>
+    &lt;label&gt;...&lt/label&gt;
+    &lt;description&gt;...&lt/description&gt; <i>(0 or 1)</i>
+  &lt/group&gt;
+<font color="#7B7B7B">&lt;extension&gt;</font>
+</pre>
+</td></tr></table>
+
+<p><u>Java API Changes</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">org.eclipse.wst.common.project.facet.core.IGroup
+{</font>
+   String getLabel();
+   String getDescription();
+<font color="#7B7B7B">}</font>
+</pre>
+</td></tr></table>
+
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="validate">6. New IFacetedProject Validation API</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>There is now API for validating the faceted project. It allows the caller to
+find out about any problems with the project without searching for problem
+markers created by the faceted project validation builder. The validation
+builder now uses the new API.</p>
+
+<p><u>Java API Changes</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">org.eclipse.wst.common.project.facet.core.IFacetedProject
+{</font>
+   IStatus validate( IProgressMonitor monitor );
+<font color="#7B7B7B">}</font>
+</pre>
+</td></tr></table>
+
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="new-wizard-class">7. AddRemoveFacetsWizard Class Renamed to ModifyFacetedProjectWizard</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>The AddRemoveFacetsWizard class has been renamed to ModifyFacetedProjectWizard
+to align with terminology change being made in the rest of the system. The old
+class is deprecated, but still supported (extends the new class).</p>
+
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="pde-limitations">8. Extension Point Schema Changes to Work Around PDE Limitations</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>In order to work around false warnings reported by PDE's extension point schema validation, the
+following changes have been made to the framework's extension points. The old syntax is deprecated,
+but is still supported.</p>
+
+<p>When declaring that a facet belongs to a category...</p>
+
+<p><u>Old Syntax</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">&lt;extension point="org.eclipse.wst.common.project.facet.core.facets"&gt;
+  &lt;project-facet&gt;</font>
+    &lt;category&gt;...&lt/category&gt;
+  <font color="#7B7B7B">&lt/project-facet&gt;
+&lt;extension&gt;</font>
+</pre>
+</td></tr></table>
+
+<p><u>New Syntax</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">&lt;extension point="org.eclipse.wst.common.project.facet.core.facets"&gt;
+  &lt;project-facet&gt;</font>
+    &lt;member category="..."/&gt;
+  <font color="#7B7B7B">&lt/project-facet&gt;
+&lt;extension&gt;</font>
+</pre>
+</td></tr></table>
+
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="listeners">9. Listeners and Events</a></font></p>
+<!--  ********************************************************************** -->
+
+<p>The existing facilities for listening on faceted project model changes have been re-designed to
+provide more information about the change that took place and to provide the same facility
+regardless of whether the client chooses to register the listener via direct API call or via an
+extension point.</p>
+
+<p>In 1.5, extenders could either:</p>
+
+<ol>
+  
+  <li>Use <code>IFacetedProject.addListener()</code> method. Listener would get called when any
+  aspect of faceted project model was changed, but the listener was not given any details about
+  the change that took place.<br/><br/></li>
+  
+  <li>Use <code>&lt;event-handler&gt;</code> element of the 
+  <code>org.eclipse.wst.common.project.facet.core.facets</code> extension point to register an
+  <code>IDelegate</code> implementation which is similar to how actions are implemented. This 
+  approach gave user a bit more control over what events to process as well as more information
+  regarding what actually took place. However, not all changes could be surfaced via this 
+  interface due to limitations of the extension point and the <code>IDelegate</code> interface.</li>
+  
+</ol>
+
+<p>Full discussion of the new facility can be found <a href="listeners.html">here</a>.</p>
+   
+<p><u>Java API Additions</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener
+{
+    void handleEvent( IFacetedProjectEvent event );
+}
+
+org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent
+{
+    enum Type
+    {
+        PROJECT_MODIFIED,
+        PRE_INSTALL,
+        POST_INSTALL,
+        PRE_UNINSTALL,
+        POST_UNINSTALL,
+        PRE_VERSION_CHANGE,
+        POST_VERSION_CHANGE,
+        FIXED_FACETS_CHANGED,
+        TARGETED_RUNTIMES_CHANGED,
+        PRIMARY_RUNTIME_CHANGED
+    }
+    
+    Type getType();
+    IFacetedProject getProject();
+}
+
+org.eclipse.wst.common.project.facet.core.events.IFixedFacetsChangedEvent : IFacetedProjectEvent
+{
+    Set&lt;IProjectFacet&gt; getOldFixedFacets();
+    Set&lt;IProjectFacet&gt; getNewFixedFacets();
+}
+
+org.eclipse.wst.common.project.facet.core.events.IProjectFacetActionEvent : IFacetedProjectEvent
+{
+    IProjectFacet getProjectFacet();
+    IProjectFacetVersion getProjectFacetVersion();
+    Object getActionConfig();
+}
+
+org.eclipse.wst.common.project.facet.core.events.IPrimaryRuntimeChangedEvent : IFacetedProjectEvent
+{
+    IRuntime getOldPrimaryRuntime();
+    IRuntime getNewPrimaryRuntime();
+}
+
+org.eclipse.wst.common.project.facet.core.events.ITargetedRuntimesChangedEvent : IFacetedProjectEvent
+{
+    Set&lt;IRuntime&gt; getOldTargetedRuntimes();
+    Set&lt;IRuntime&gt; getNewTargetedRuntimes();
+}
+
+<font color="#7B7B7B">org.eclipse.wst.common.project.facet.core.IFacetedProject
+{</font>
+    void addListener( org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener, IFacetedProjectEvent.Type... );
+    void removeListener( org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener );
+<font color="#7B7B7B">}</font>
+
+<font color="#7B7B7B">org.eclipse.wst.common.project.facet.core.FacetedProjectFramework
+{</font>
+    void addListener( org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener, IFacetedProjectEvent.Type... );
+    void removeListener( org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener );
+<font color="#7B7B7B">}</font>
+</pre>
+</td></tr></table>
+
+<p><u>New Extension Point</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+&lt;extension point="org.eclipse.wst.common.project.facet.core.listeners"&gt;
+  &lt;listener 
+    class="{class:org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener}"
+    eventTypes="{csv:org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent.Type}"/> <i>(1 or more)</i>
+&lt;extension&gt;
+</pre>
+</td></tr></table>
+
+<p><u>Deprecated Java API</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor=#FFF1C1>
+<pre>
+org.eclipse.wst.common.project.facet.core.IFacetedProjectListener
+{
+    projectChanged();
+}
+
+<font color="#7B7B7B">org.eclipse.wst.common.project.facet.core.IFacetedProject
+{</font>
+    void addListener( org.eclipse.wst.common.project.facet.core.IFacetedProjectListener );
+    void removeListener( org.eclipse.wst.common.project.facet.core.IFacetedProjectListener );
+<font color="#7B7B7B">}</font>
+
+org.eclipse.wst.common.project.facet.core.IRuntimeChangedEvent
+{
+    IRuntime getOldRuntime();
+    IRuntime getNewRuntime();
+}
+</pre>
+</td></tr></table>
+
+<p><u>Deprecated Extension Point</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#FFF1C1">
+<pre>
+<font color="#7B7B7B">&lt;extension point="org.eclipse.wst.common.project.facet.core.facets"&gt;</font>
+  &lt;event-handler type="{string}" facet="{string}" version="{string}"&gt;
+    &lt;delegate class="{class:org.eclipse.wst.common.project.facet.core.IDelegate}"/&gt;
+  &lt/event-handler&gt;
+<font color="#7B7B7B">&lt;extension&gt;</font>
+</pre>
+</td></tr></table>
+
+
+<!--  ********************************************************************** -->
+<p><font size="+1"><a name="misc">10. Miscellaneous</a></font></p>
+<!--  ********************************************************************** -->
+
+<p><u>Java API Additions</u></p>
+
+<table cellpadding="10"><tr><td width="10">&nbsp;</td><td bgcolor="#E2E2E2">
+<pre>
+<font color="#7B7B7B">org.eclipse.wst.common.project.facet.core.IFacetedProject
+{</font>
+    boolean isTargetable( IRuntime runtime );
+    boolean isTargeted( IRuntime runtime );
+<font color="#7B7B7B">}</font>
+</pre>
+</td></tr></table>
+
+
+</body>
+</html>

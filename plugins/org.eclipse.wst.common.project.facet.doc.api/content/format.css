@@ -1,0 +1,35 @@
+/* CSS Document */
+body {
+	font-family: Arial, Helvetica, sans-serif
+}
+
+.ueberschrift {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: x-large;
+	margin-top: 20px;
+}
+
+.code {
+	font-family: Courier, "Courier New", Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	line-height: 16px;
+	color: #0467B4;
+	background-color: #CCCCCC;
+	padding: 5px 7px 5px 13px;
+	border: 1px solid black;
+}
+
+.note {
+	font-size: smaller
+}
+
+.description {
+	font-family: "Times New Roman", Times, serif;
+	font-size: xx-large;
+}
+
+.schema {
+	font-style: italic;
+	font-size: large
+}
