@@ -13,6 +13,7 @@ package org.eclipse.wst.common.project.facet.core.internal;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -45,8 +46,14 @@ public final class ProjectFacetVersion
     private IConstraint constraint;
     private String plugin;
     private Map<IProjectFacetVersion,Integer> compTable = Collections.emptyMap();
+    private final Map<String,Object> properties;
+    private final Map<String,Object> propertiesReadOnly;
     
-    ProjectFacetVersion() {}
+    ProjectFacetVersion() 
+    {
+        this.properties = new HashMap<String,Object>();
+        this.propertiesReadOnly = Collections.unmodifiableMap( this.properties );
+    }
     
     public IProjectFacet getProjectFacet() 
     {
@@ -503,9 +510,32 @@ public final class ProjectFacetVersion
         }
     }
     
+    public Map<String,Object> getProperties()
+    {
+        return this.propertiesReadOnly;
+    }
+    
+    public Object getProperty( final String name )
+    {
+        return this.properties.get( name );
+    }
+
+    void setProperty( final String name,
+                      final Object value )
+    {
+        this.properties.put( name, value );
+    }
+    
     public String toString()
     {
-        return this.facet.getLabel() + " " + this.version; //$NON-NLS-1$
+        if( this.facet.isVersionHidden() )
+        {
+            return this.facet.getLabel();
+        }
+        else
+        {
+            return this.facet.getLabel() + " " + this.version; //$NON-NLS-1$
+        }
     }
     
     private static final class Resources

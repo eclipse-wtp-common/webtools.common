@@ -1458,6 +1458,42 @@ public final class FacetedProjectFrameworkImpl
             f.setVersionComparator( findRequiredAttribute( elComp, ATTR_CLASS ) );
         }
         
+        final IConfigurationElement[] children = config.getChildren();
+        
+        for( int i = 0; i < children.length; i++ )
+        {
+            final IConfigurationElement child = children[ i ];
+            final String childName = child.getName();
+            
+            if( childName.equals( EL_PROPERTY ) )
+            {
+                final String name = child.getAttribute( ATTR_NAME );
+    
+                if( name == null )
+                {
+                    reportMissingAttribute( child, ATTR_NAME );
+                    continue;
+                }
+    
+                final String value = child.getAttribute( ATTR_VALUE );
+                
+                if( value == null )
+                {
+                    reportMissingAttribute( child, ATTR_VALUE );
+                    continue;
+                }
+                
+                Object parsedValue = value;
+                
+                if( name.equals( IProjectFacet.PROP_HIDE_VERSION ) )
+                {
+                    parsedValue = Boolean.parseBoolean( value );
+                }
+
+                f.setProperty( name, parsedValue );
+            }
+        }
+        
         String catname = null;
         
         final IConfigurationElement elMember = findOptionalElement( config, EL_MEMBER );
@@ -1573,6 +1609,26 @@ public final class FacetedProjectFrameworkImpl
             else if( childName.equals( EL_ACTION ) )
             {
                 actions.add( child );
+            }
+            else if( childName.equals( EL_PROPERTY ) )
+            {
+                final String name = child.getAttribute( ATTR_NAME );
+    
+                if( name == null )
+                {
+                    reportMissingAttribute( child, ATTR_NAME );
+                    continue;
+                }
+    
+                final String value = child.getAttribute( ATTR_VALUE );
+                
+                if( value == null )
+                {
+                    reportMissingAttribute( child, ATTR_VALUE );
+                    continue;
+                }
+                
+                fv.setProperty( name, value );
             }
         }
         
@@ -1878,7 +1934,7 @@ public final class FacetedProjectFrameworkImpl
 
                 if( name == null )
                 {
-                    reportMissingAttribute( config, ATTR_NAME );
+                    reportMissingAttribute( child, ATTR_NAME );
                     return;
                 }
 
@@ -1886,27 +1942,17 @@ public final class FacetedProjectFrameworkImpl
                 
                 if( value == null )
                 {
-                    reportMissingAttribute( config, ATTR_VALUE );
+                    reportMissingAttribute( child, ATTR_VALUE );
                     return;
                 }
                 
+                Object parsedValue = value;
+                
                 if( name.equals( IActionDefinition.PROP_FROM_VERSIONS ) )
                 {
-                    if( def.getActionType() != Action.Type.VERSION_CHANGE )
-                    {
-                        final String msg
-                            = NLS.bind( Resources.propertyNotApplicable, name,
-                                        def.getActionType().name() );
-                        
-                        FacetCorePlugin.logWarning( msg );
-                    }
-                    
                     try
                     {
-                        final VersionExpr vexpr 
-                            = new VersionExpr<ProjectFacetVersion>( f, value, pluginId );
-                        
-                        def.setProperty( name, vexpr );
+                        parsedValue = new VersionExpr<ProjectFacetVersion>( f, value, pluginId );
                     }
                     catch( CoreException e )
                     {
@@ -1914,14 +1960,8 @@ public final class FacetedProjectFrameworkImpl
                         return;
                     }
                 }
-                else
-                {
-                    final String msg
-                        = NLS.bind( Resources.unknownProperty, name ) +
-                          NLS.bind( Resources.usedInPlugin, pluginId );
-                    
-                    FacetCorePlugin.logWarning( msg );
-                }
+
+                def.setProperty( name, parsedValue );
             }
         }
         
@@ -2403,8 +2443,6 @@ public final class FacetedProjectFrameworkImpl
         public static String tracingActionSorting;
         public static String tracingFrameworkActivationStarting;
         public static String tracingFrameworkActivationFinished;
-        public static String unknownProperty;
-        public static String propertyNotApplicable;
         
         static
         {

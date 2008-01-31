@@ -30,7 +30,7 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 public interface IActionDefinition
 {
     /**
-     * The name of the property that's used to constraint the starting version
+     * The name of the property that's used to constrain the starting version
      * of the VERSION_CHANGE action definition.
      */
     

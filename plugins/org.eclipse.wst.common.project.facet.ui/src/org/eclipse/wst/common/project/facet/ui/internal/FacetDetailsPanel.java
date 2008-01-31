@@ -39,6 +39,7 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.IVersionExpr;
 import org.eclipse.wst.common.project.facet.core.internal.Constraint;
+import org.eclipse.wst.common.project.facet.core.internal.ProjectFacet;
 import org.eclipse.wst.common.project.facet.ui.internal.util.EnhancedHyperlink;
 import org.eclipse.wst.common.project.facet.ui.internal.util.ImageWithTextComposite;
 
@@ -101,7 +102,8 @@ public final class FacetDetailsPanel
                     
                     text.append( f.getLabel() );
                     
-                    if( ! vexpr.toString().equals( IVersionExpr.WILDCARD_SYMBOL ) )
+                    if( ! vexpr.toString().equals( IVersionExpr.WILDCARD_SYMBOL ) &&
+                        ! ( (ProjectFacet) f ).isVersionHidden() )
                     {
                         text.append( ' ' );
                         text.append( vexpr.toDisplayString() );

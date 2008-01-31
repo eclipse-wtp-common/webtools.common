@@ -107,6 +107,7 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.events.IProjectFacetsChangedEvent;
+import org.eclipse.wst.common.project.facet.core.internal.ProjectFacet;
 import org.eclipse.wst.common.project.facet.ui.IDecorationsProvider;
 import org.eclipse.wst.common.project.facet.ui.ModifyFacetedProjectWizard;
 import org.eclipse.wst.common.project.facet.ui.internal.util.BasicToolTip;
@@ -1385,8 +1386,12 @@ public final class FacetsSelectionPanel
         {
             if( element instanceof IProjectFacet )
             {
-                final IProjectFacet f = (IProjectFacet) element;
-                return getSelectedVersion( f ).getVersionString();
+                final ProjectFacet f = (ProjectFacet) element;
+                
+                if( ! f.isVersionHidden() )
+                {
+                    return getSelectedVersion( f ).getVersionString();
+                }
             }
             
             return null;

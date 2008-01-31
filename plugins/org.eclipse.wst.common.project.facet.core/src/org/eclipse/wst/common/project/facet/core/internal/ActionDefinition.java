@@ -105,17 +105,17 @@ public final class ActionDefinition
         return this.propertiesReadOnly;
     }
     
+    public Object getProperty( final String name )
+    {
+        return this.properties.get( name );
+    }
+
     void setProperty( final String name,
                       final Object value )
     {
         this.properties.put( name, value );
     }
     
-    public Object getProperty( final String name )
-    {
-        return this.properties.get( name );
-    }
-
     public Object createConfigObject( final IProjectFacetVersion fv,
                                       final String pjname )
     

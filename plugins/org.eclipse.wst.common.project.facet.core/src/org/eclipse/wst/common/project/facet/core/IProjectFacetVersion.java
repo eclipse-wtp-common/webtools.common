@@ -11,6 +11,7 @@
 
 package org.eclipse.wst.common.project.facet.core;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
@@ -182,5 +183,29 @@ public interface IProjectFacetVersion
     boolean isValidFor( Set<IProjectFacet> fixed );
     
     boolean conflictsWith( IProjectFacetVersion fv );
+
+    /**
+     * Returns the properties that specify additional information regarding this facet version. 
+     * Some of the properties are recognized and processed by the faceted project framework, while 
+     * others are there for the benefit of framework's users.
+     * 
+     * @return the properties of this project facet version
+     * @since 3.0
+     */
+    
+    Map<String,Object> getProperties();
+    
+    /**
+     * Returns the property value corresponding to the provided name. Properties specify additional
+     * information regarding this facet version. Some of the properties are recognized and processed
+     * by the faceted project framework, while others are there for the benefit of framework's 
+     * users.
+     * 
+     * @param name the name of the property
+     * @return the value of the property
+     * @since 3.0
+     */
+    
+    Object getProperty( String name );
     
 }

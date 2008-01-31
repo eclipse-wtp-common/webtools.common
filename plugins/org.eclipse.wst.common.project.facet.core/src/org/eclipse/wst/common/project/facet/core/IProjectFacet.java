@@ -13,6 +13,7 @@ package org.eclipse.wst.common.project.facet.core;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
@@ -31,6 +32,15 @@ public interface IProjectFacet
     extends IAdaptable
     
 {
+    /**
+     * The name of the property that's used for suggesting to the framework that this facet's
+     * version does not convey a special meaning and should be hidden where possible.
+     * 
+     * @since 3.0
+     */
+    
+    static final String PROP_HIDE_VERSION = "hide.version"; //$NON-NLS-1$
+    
     /**
      * Returns the project facet identifier. 
      * 
@@ -166,5 +176,28 @@ public interface IProjectFacet
     Comparator<String> getVersionComparator()
     
         throws CoreException;
+    
+    /**
+     * Returns the properties that specify additional information regarding this facet. Some of
+     * the properties are recognized and processed by the faceted project framework, while others
+     * are there for the benefit of framework's users.
+     * 
+     * @return the properties of this project facet
+     * @since 3.0
+     */
+    
+    Map<String,Object> getProperties();
+    
+    /**
+     * Returns the property value corresponding to the provided name. Properties specify additional
+     * information regarding this facet. Some of the properties are recognized and processed by the
+     * faceted project framework, while others are there for the benefit of framework's users.
+     * 
+     * @param name the name of the property
+     * @return the value of the property
+     * @since 3.0
+     */
+    
+    Object getProperty( String name );
     
 }

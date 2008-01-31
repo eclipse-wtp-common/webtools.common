@@ -111,7 +111,7 @@ public final class ProjectFacetRef
     
     public String toString()
     {
-        if( this.vexpr == null )
+        if( this.vexpr == null || ( (ProjectFacet) this.f ).isVersionHidden() )
         {
             return this.f.getLabel();
         }

@@ -11,9 +11,14 @@
 
 package org.eclipse.wst.common.project.facet.core.internal;
 
+import static org.eclipse.wst.common.project.facet.core.internal.util.MiscUtil.equal;
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Platform;
@@ -46,10 +51,14 @@ public final class ProjectFacet
     private final List<IActionDefinition> actionDefinitions;
     private IProjectFacetVersion defaultVersion;
     private IDefaultVersionProvider defaultVersionProvider;
+    private final Map<String,Object> properties;
+    private final Map<String,Object> propertiesReadOnly;
     
     ProjectFacet() 
     {
         this.actionDefinitions = new ArrayList<IActionDefinition>();
+        this.properties = new HashMap<String,Object>();
+        this.propertiesReadOnly = Collections.unmodifiableMap( this.properties );
     }
     
     public String getId() 
@@ -183,6 +192,28 @@ public final class ProjectFacet
     {
         return NLS.bind( FacetedProjectFrameworkImpl.Resources.facetVersionNotDefined,
                          this.id, verstr );
+    }
+    
+    public Map<String,Object> getProperties()
+    {
+        return this.propertiesReadOnly;
+    }
+    
+    public Object getProperty( final String name )
+    {
+        return this.properties.get( name );
+    }
+
+    void setProperty( final String name,
+                      final Object value )
+    {
+        this.properties.put( name, value );
+    }
+    
+    public boolean isVersionHidden()
+    {
+        return ( this.versions.size() == 1 &&
+                 equal( getProperty( PROP_HIDE_VERSION ), true ) );
     }
     
     public String toString()

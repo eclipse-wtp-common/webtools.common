@@ -217,6 +217,7 @@
             <element ref="version-comparator" minOccurs="0" maxOccurs="1"/>
             <element ref="default-version" minOccurs="0" maxOccurs="1"/>
             <element ref="member" minOccurs="0" maxOccurs="1"/>
+            <element ref="property" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="id" type="string" use="required">
             <annotation>
@@ -240,6 +241,7 @@
             <element ref="group-member" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="action" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="event-handler" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="property" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="facet" type="string" use="required">
             <annotation>
@@ -312,29 +314,6 @@
          <sequence>
             <element ref="label"/>
             <element ref="description" minOccurs="0" maxOccurs="1"/>
-            <element name="facet">
-               <annotation>
-                  <documentation>
-                     Specifies the facet that is part of this preset.
-                  </documentation>
-               </annotation>
-               <complexType>
-                  <attribute name="id" type="string" use="required">
-                     <annotation>
-                        <documentation>
-                           The project facet id.
-                        </documentation>
-                     </annotation>
-                  </attribute>
-                  <attribute name="version" type="string" use="required">
-                     <annotation>
-                        <documentation>
-                           The facet version.
-                        </documentation>
-                     </annotation>
-                  </attribute>
-               </complexType>
-            </element>
          </sequence>
          <attribute name="id" type="string" use="required">
             <annotation>
@@ -355,38 +334,6 @@
       <complexType>
          <sequence>
             <element ref="label"/>
-            <element name="fixed">
-               <annotation>
-                  <documentation>
-                     Specifies a facet that should be fixed (made not deselectable) for the project.
-                  </documentation>
-               </annotation>
-               <complexType>
-                  <attribute name="facet" type="string" use="required">
-                     <annotation>
-                        <documentation>
-                           The project facet id.
-                        </documentation>
-                     </annotation>
-                  </attribute>
-               </complexType>
-            </element>
-            <element name="preset">
-               <annotation>
-                  <documentation>
-                     Specifies which preset should be selected by default.
-                  </documentation>
-               </annotation>
-               <complexType>
-                  <attribute name="id" type="string" use="required">
-                     <annotation>
-                        <documentation>
-                           The preset id.
-                        </documentation>
-                     </annotation>
-                  </attribute>
-               </complexType>
-            </element>
          </sequence>
          <attribute name="id" type="string" use="required">
             <annotation>
@@ -408,7 +355,6 @@
          <sequence>
             <element ref="config-factory" minOccurs="0" maxOccurs="1"/>
             <element ref="delegate"/>
-            <element ref="property" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="type" use="required">
             <annotation>
@@ -559,22 +505,16 @@
    <element name="property">
       <annotation>
          <documentation>
-            Specifies an action property.
+            Sets a property on the containing context.
          </documentation>
       </annotation>
       <complexType>
-         <attribute name="name" use="required">
+         <attribute name="name" type="string" use="required">
             <annotation>
                <documentation>
                   The name of the property.
                </documentation>
             </annotation>
-            <simpleType>
-               <restriction base="string">
-                  <enumeration value="from.versions">
-                  </enumeration>
-               </restriction>
-            </simpleType>
          </attribute>
          <attribute name="value" type="string" use="required">
             <annotation>
@@ -651,14 +591,6 @@
       </complexType>
    </element>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="since"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
 
    <annotation>
       <appInfo>
@@ -724,23 +656,7 @@
       </documentation>
    </annotation>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="apiInfo"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="implementation"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
 
    <annotation>
       <appInfo>
