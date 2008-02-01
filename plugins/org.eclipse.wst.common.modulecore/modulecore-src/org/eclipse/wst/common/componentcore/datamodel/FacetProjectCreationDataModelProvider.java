@@ -275,8 +275,6 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 				} else {
 					event.getDataModel().removeListener(this);
 				}
-			} else if (event.getPropertyName().equals(IFacetDataModelProperties.FACET_VERSION)) {
-				getDataModel().notifyPropertyChange(FACET_RUNTIME, IDataModel.VALID_VALUES_CHG);
 			}
 		}
 
