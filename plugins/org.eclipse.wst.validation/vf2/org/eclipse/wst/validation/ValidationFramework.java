@@ -116,6 +116,31 @@ public final class ValidationFramework {
 	}
 	
 	/**
+	 * Answer the validator with the given id.
+	 * @param id
+	 * @return null if the validator is not found
+	 */
+	public Validator getValidator(String id){
+		return ValManager.getDefault().getValidatorWithId(id, null);
+	}
+	
+	/**
+	 * Answer all the validators that are applicable for the given resource.
+	 * By convention this is the method that is used
+	 * by the as-you-type validators, to determine if they should be validating the resource.
+	 * 
+	 * @param resource the resource that determines which validators are applicable.
+	 */
+	public Validator[] getValidatorsFor(IResource resource){
+		List<Validator> list = new LinkedList<Validator>();
+		for (Validator v : getValidatorsFor(resource, false, false)){
+			if (v.isBuildValidation() || v.isManualValidation())list.add(v);
+		}
+		Validator[] vals = new Validator[list.size()];
+		return list.toArray(vals);
+	}
+	
+	/**
 	 * Answer true if the resource has any enabled validators.
 	 * 
 	 * @param resource a file, folder or project.

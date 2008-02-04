@@ -3,7 +3,9 @@ org.eclipse.wst.validation/debug=true
 # Set this to true if you wish performance information to be logged
 org.eclipse.wst.validation/timings=false
 
-# set this to a file name, if you wish the results to be logged to a file, otherwise
-# they will be written to stderr
-org.eclipse.wst.validation/timings/tracefile=
+# Set this to a file name, if you wish the results to be logged to a file, otherwise
+# they will be written to stderr. When logged to a file the results are in a
+# CSV (comma separated values) form. When logged to stderr they are in a more 
+# human readable form.
+# org.eclipse.wst.validation/timings/tracefile=
 

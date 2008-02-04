@@ -79,6 +79,14 @@
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="sourceid" type="string">
+            <annotation>
+               <documentation>
+                  If this validator also serves as an as-you-type validator (also know as an ISourceValidator) then it&apos;s source id is specified here, so that the two validators can be associated with one another.
+By source id, we mean the id that is used in the org.eclipse.wst.sse.ui.sourceValidation extension point
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
@@ -261,22 +269,6 @@
       </documentation>
    </annotation>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="implementation"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="copyright"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
 
 </schema>

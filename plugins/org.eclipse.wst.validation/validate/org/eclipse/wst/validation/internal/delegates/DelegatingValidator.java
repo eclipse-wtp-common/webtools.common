@@ -80,7 +80,7 @@ public class DelegatingValidator extends AbstractValidator implements IDelegatin
    */
   public void validate(IValidationContext helper, IReporter reporter) throws ValidationException
   {
-    // Apparently this method will not be called on an IValidatorJob.
+    validateInJob(helper, reporter);
   }
 
   /**

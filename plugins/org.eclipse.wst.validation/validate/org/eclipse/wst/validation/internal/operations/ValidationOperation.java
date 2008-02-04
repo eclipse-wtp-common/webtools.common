@@ -594,7 +594,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	 * The IProgressMonitor passed in must not be null.
 	 */
 	public void run(IProgressMonitor progressMonitor) throws OperationCanceledException {
-		long start = System.currentTimeMillis();
 		try {
 			// In order to check whether or not the monitor has been cancelled,
 			// the monitor must not be null.
@@ -1149,7 +1148,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				// which the validator should validate.
 				((WorkbenchContext) helper).setRuleGroup(getRuleGroup());
 			}
-			long start = System.currentTimeMillis();
 			String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_STARTING_VALIDATION, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
 			reporter.displaySubtask(message);
 			if (Misc.isLogging()) {
@@ -1158,7 +1156,6 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			}
 			//initValidateContext(delta);
 			ValidatorLauncher.getLauncher().start(helper, validator, reporter);
-			long finish = System.currentTimeMillis();
 			//TODO GRK determine if timing info should be added here
 //			if (logger.isLoggingLevel(Level.INFO)) {
 //				TimeEntry entry = ValidationPlugin.getTimeEntry();

@@ -23,6 +23,7 @@ import org.eclipse.wst.validation.internal.model.FilterGroup;
 import org.eclipse.wst.validation.internal.operations.IWorkbenchContext;
 import org.eclipse.wst.validation.internal.operations.WorkbenchContext;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
 
 /**
@@ -37,6 +38,12 @@ public abstract class Validator implements Comparable {
 	
 	/** If this is a delegating validator, then this field holds the validator that will be delegated to. */
 	private String 		_delegatingId;
+	
+	/** 
+	 * If this validator is also used to control an ISource validator, the id of the ISource validator is
+	 * registered here.
+	 */
+	private String		_sourceId;
 	
 	protected boolean 	_manualValidation = true;
 	
@@ -179,6 +186,10 @@ public abstract class Validator implements Comparable {
 	public void validationFinishing(IProject project, ValidationState state, IProgressMonitor monitor){		
 		// subclasses need to override this, if they wish to let their validators know about this event
 	}
+	
+	public IValidator asIValidator(){
+		return null;
+	}
 
 	
 	protected abstract boolean shouldValidate(IResource resource);
@@ -226,6 +237,10 @@ public abstract class Validator implements Comparable {
 		_buildValidation = buildValidation;
 	}
 
+	/**
+	 * Get the id of the "real" validator, that is the validator that will be called when this delegating
+	 * validator is asked to validate something. If this isn't a delegating validator answer null.
+	 */
 	public String getDelegatingId() {
 		return _delegatingId;
 	}
@@ -262,7 +277,7 @@ public abstract class Validator implements Comparable {
  * @author karasiuk
  *
  */ 
-public static class V1 extends Validator {
+public final static class V1 extends Validator {
 	private ValidatorMetaData _vmd;
 	
 	/**
@@ -277,6 +292,19 @@ public static class V1 extends Validator {
 			setManualValidation(config.isManualEnabled(vmd));
 		}
 		setDelegatingId(ValidatorDelegatesRegistry.getInstance().getDefaultDelegate(getValidatorClassname()));
+	}
+	
+	@Override
+	public IValidator asIValidator() {
+		IValidator v = null;
+		try {
+			v = _vmd.getValidator();
+		}
+		catch (InstantiationException e){
+			ValidationPlugin.getPlugin().handleException(e);
+			return null;
+		}
+		return v;
 	}
 	
 	public V1 asV1Validator() {
@@ -342,14 +370,8 @@ public static class V1 extends Validator {
 		if (monitor == null)monitor = new NullProgressMonitor();
 		
 		ValidationResult vr = new ValidationResult();
-		IValidator v = null;
-		try {
-			v = _vmd.getValidator();
-		}
-		catch (InstantiationException e){
-			ValidationPlugin.getPlugin().handleException(e);
-			return null;
-		}
+		IValidator v = asIValidator();
+		if (v == null)return null;
 		
 		try {
 			IProject project = resource.getProject();
@@ -383,7 +405,7 @@ public static class V1 extends Validator {
  * @author karasiuk
  *
  */
-public static class V2 extends Validator implements IAdaptable {
+public final static class V2 extends Validator implements IAdaptable {
 	private AbstractValidator	_validator;
 	
 	private List<FilterGroup>	_groups = new LinkedList<FilterGroup>();
@@ -409,6 +431,13 @@ public static class V2 extends Validator implements IAdaptable {
 	public synchronized void add(FilterGroup fg) {
 		_groupsArray = null;
 		_groups.add(fg);
+	}
+	
+	@Override
+	public IValidator asIValidator() {
+		AbstractValidator av = getDelegatedValidator();
+		if (av instanceof IValidator)return (IValidator)av;
+		return super.asIValidator();
 	}
 	
 	public V2 asV2Validator() {
@@ -552,6 +581,10 @@ public static class V2 extends Validator implements IAdaptable {
 		}
 		
 		if (vr != null){
+			if (vr.getValidationException() != null){
+				ValidationPlugin.getPlugin().handleException(vr.getValidationException());
+			}
+			updateResults(vr);
 			if (vr.getDependsOn() != null){
 				ValidationFramework.getDefault().getDependencyIndex().set(getDependencyId(), resource, vr.getDependsOn());
 			}
@@ -577,6 +610,36 @@ public static class V2 extends Validator implements IAdaptable {
 		return vr;		
 	}
 	
+	private void updateResults(ValidationResult vr) {
+		ReporterHelper rh = vr.getReporterHelper();
+		if (rh == null)return;
+		for (IMessage message : rh.getMessages()){
+			Object target = message.getTargetObject();
+			if (target != null){
+				if (target instanceof IResource){
+					IResource res = (IResource)target;
+					ValidatorMessage vm = ValidatorMessage.create(message.getText(), res);
+					vr.add(vm);
+					int markerSeverity = IMarker.SEVERITY_INFO;
+					int sev = message.getSeverity();
+					if ((sev & IMessage.HIGH_SEVERITY) != 0)markerSeverity = IMarker.SEVERITY_ERROR;
+					else if ((sev & IMessage.NORMAL_SEVERITY) != 0)markerSeverity = IMarker.SEVERITY_WARNING;
+					vm.setAttribute(IMarker.SEVERITY, markerSeverity);
+					vm.setAttribute(IMarker.LINE_NUMBER, message.getLineNumber());
+					int offset = message.getOffset();
+					if (offset != IMessage.OFFSET_UNSET){
+						vm.setAttribute(IMarker.CHAR_START, offset);
+						int len = message.getLength();
+						if (len != IMessage.OFFSET_UNSET){
+							vm.setAttribute(IMarker.CHAR_START, offset);
+							vm.setAttribute(IMarker.CHAR_END, offset+len);
+						}
+					}					
+				}
+			}
+		}		
+	}
+
 	@Override
 	public void validationStarting(IProject project, ValidationState state, IProgressMonitor monitor) {
 		_validator.validationStarting(project, state, monitor);
@@ -604,5 +667,13 @@ public static class V2 extends Validator implements IAdaptable {
 		}
 		return true;
 	}
+}
+
+public String getSourceId() {
+	return _sourceId;
+}
+
+public void setSourceId(String sourceId) {
+	_sourceId = sourceId;
 }
 }

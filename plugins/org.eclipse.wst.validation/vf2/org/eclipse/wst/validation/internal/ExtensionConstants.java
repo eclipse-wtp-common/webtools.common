@@ -20,6 +20,14 @@ public interface ExtensionConstants {
 	String manual = "manual"; //$NON-NLS-1$
 	
 	/** 
+	 * sourceid - If this validator also serves as an as-you-type validator (also know as an ISourceValidator) 
+	 * then it's source id is specified here, so that the two validators can be associated with one 
+	 * another. By source id, we mean the id that is used in the org.eclipse.wst.sse.ui.sourceValidation 
+	 * extension point.
+	 */
+	String sourceId = "sourceid"; //$NON-NLS-1$
+	
+	/** 
 	 * version - the version of this definition. The attribute is a simple integer, and if not specified it
 	 * is assumed to be 1. This allows the filter settings to be changed in the future.
 	 */

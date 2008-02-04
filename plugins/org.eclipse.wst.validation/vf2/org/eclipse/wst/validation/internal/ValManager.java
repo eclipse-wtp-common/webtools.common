@@ -40,6 +40,7 @@ public class ValManager {
 
 	/** All the known, global, validators. If this is null it means that the validators have not been loaded yet. */
 	private Validator[] _validators;
+
 		
 	/**
 	 * Projects may be allowed to override the global validation settings. If that is the case then those
@@ -93,18 +94,34 @@ public class ValManager {
 	/**
 	 * Answer the validator with the given id that is in effect for the given project.
 	 * 
-	 * @param id validator dependency id.
+	 * @param dependencyId validator dependency id.
 	 * @param project
 	 * @return null if the validator is not found
 	 */
-	public Validator getValidator(String id, IProject project){
+	public Validator getValidator(String dependencyId, IProject project){
 		Validator[] vals = getValidators(project);
 		for (Validator v : vals){
-			if (v.getDependencyId().equals(id))return v;
+			if (v.getDependencyId().equals(dependencyId))return v;
 		}
 		return null;
 	}
-		
+	
+	/**
+	 * Answer the validator with the given id that is in effect for the given project.
+	 * 
+	 * @param id validator id.
+	 * @param project this can be null, in which case all the registered validators are checked.
+	 * @return null if the validator is not found
+	 */
+	public Validator getValidatorWithId(String id, IProject project){
+		Validator[] vals = getValidators(project);
+		for (Validator v : vals){
+			if (v.getId().equals(id))return v;
+		}
+		return null;
+	}
+	
+			
 	/**
 	 * Answer true if the resource has any enabled validators.
 	 * 
@@ -182,20 +199,11 @@ public class ValManager {
 		for (Validator v : val)set.add(v);
 		
 		List<Validator> list = new LinkedList<Validator>();
-		ValidationConfiguration vc = null;
 		try {
-			if (project == null){
-				vc = ConfigurationManager.getManager().getGlobalConfiguration();
-				for (ValidatorMetaData vmd : ValidationRegistryReader.getReader().getAllValidators()){
-					list.add(Validator.create(vmd, vc));
-				}			
-			}
-			else {
-				vc = ConfigurationManager.getManager().getProjectConfiguration(project);
-				for (ValidatorMetaData vmd : vc.getValidators()){
-					list.add(Validator.create(vmd, vc));
-				}							
-			}
+			ValidationConfiguration vc = ConfigurationManager.getManager().getConfiguration(project);
+			for (ValidatorMetaData vmd : vc.getValidators()){
+				list.add(Validator.create(vmd, vc));
+			}							
 		}
 		catch (InvocationTargetException e){
 			if (!project.exists() || !project.isOpen())throw new ProjectUnavailableError(project);

@@ -80,38 +80,4 @@ public class ReporterHelper implements IReporter {
 			}
 		}
 	}
-	
-	/**
-	 * Copy the messages from the reporter into validation result.
-	 */
-	public void updateResult(ValidationResult result){
-		for (IMessage message : _list){
-			Object target = message.getTargetObject();
-			if (target != null){
-				if (target instanceof IResource){
-					IResource res = (IResource)target;
-					ValidatorMessage vm = ValidatorMessage.create(message.getText(), res);
-					result.add(vm);
-					int markerSeverity = IMarker.SEVERITY_INFO;
-					int sev = message.getSeverity();
-					if ((sev & IMessage.HIGH_SEVERITY) != 0)markerSeverity = IMarker.SEVERITY_ERROR;
-					else if ((sev & IMessage.NORMAL_SEVERITY) != 0)markerSeverity = IMarker.SEVERITY_WARNING;
-					vm.setAttribute(IMarker.SEVERITY, markerSeverity);
-					vm.setAttribute(IMarker.LINE_NUMBER, message.getLineNumber());
-					int offset = message.getOffset();
-					if (offset != IMessage.OFFSET_UNSET){
-						vm.setAttribute(IMarker.CHAR_START, offset);
-						int len = message.getLength();
-						if (len != IMessage.OFFSET_UNSET){
-							vm.setAttribute(IMarker.CHAR_START, offset);
-							vm.setAttribute(IMarker.CHAR_END, offset+len);
-						}
-					}
-					
-				}
-			}
-		}
-		
-	}
-
 }

@@ -298,8 +298,7 @@ public class ValidatorMetaData {
 	public boolean isApplicableTo(IResource resource, int resourceDelta) {
 		// If no filters are specified, then every type of resource should be validated/trigger a
 		// rebuild of the model cache
-		if (_filters == null)
-			return true;
+		if (_filters == null)return true;
 
 		return isApplicableTo(resource, resourceDelta, _filters);
 	}
@@ -307,8 +306,7 @@ public class ValidatorMetaData {
 	/**
 	 * Return true if the resource passes the name/type filters for this validator.
 	 */
-	boolean isApplicableTo(IResource resource, int resourceDelta,
-			ValidatorFilter[] filters) {
+	boolean isApplicableTo(IResource resource, int resourceDelta, ValidatorFilter[] filters) {
 		// Are any of the filters satisfied? (i.e., OR them, not AND them.)
 		if (checkIfValidSourceFile(resource)) {
 			for (int i = 0; i < filters.length; i++) {

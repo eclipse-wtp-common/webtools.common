@@ -23,13 +23,16 @@ public class PerformanceMonitor implements IPerformanceMonitor {
 	/**
 	 * Create a performance monitor.
 	 * 
-	 * @param traceTimes should the monitor be turned on?
-	 * @param file should the events be logged to a file. If this is null the events will be written to stderr.
-	 * If it is not null then the the events are appended to a file with this name.
+	 * @param traceTimes
+	 *            should the monitor be turned on?
+	 * @param file
+	 *            should the events be logged to a file. If this is null or the
+	 *            empty string the events will be written to stderr. Otherwise
+	 *            the events are appended to a file with this name.
 	 */
 	public static PerformanceMonitor create(boolean traceTimes, String file){
 		PerformanceMonitor pm = null;
-		if (file == null)pm = new PerformanceMonitor();
+		if (file == null || file.length() == 0)pm = new PerformanceMonitor();
 		else pm = new ToFile(file);
 		
 		if (traceTimes)pm.setCollectionLevel(CollectionLevel.Default);

@@ -91,6 +91,7 @@ public class ValidatorExtensionReader {
 			v.setBuildValidation(getAttribute(validator, ExtensionConstants.build, true));
 			v.setManualValidation(getAttribute(validator, ExtensionConstants.manual, true));
 			v.setVersion(getAttribute(validator, ExtensionConstants.version, 1));
+			v.setSourceId(validator.getAttribute(ExtensionConstants.sourceId));
 			if (deep){
 				IConfigurationElement[] children = validator.getChildren();
 				for (int i=0; i<children.length; i++)processValidatorChildren(v, children[i]);

@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.wst.validation.internal.core.ValidationException;
+import org.eclipse.wst.validation.internal.provisional.core.IReporter;
 
 /**
  * The result of running a validate operation.
@@ -39,6 +42,9 @@ public final class ValidationResult {
 	/** A count of the number of resources that were validated. */
 	private int			_numberOfValidatedResources = 1;
 	
+	private ReporterHelper	_reporter;
+	private ValidationException	_validationException;
+	
 	/**
 	 * This is an optional method, that a validator can use to return error messages. When the validation framework
 	 * is invoking the validator these will be converted into IMarkers. If the validator is being called directly then
@@ -49,12 +55,37 @@ public final class ValidationResult {
 	 * because the resource hasn't even been saved. It needs to return something other than an IMarker. But when called
 	 * in batch mode, it does ultimately want IMarkers. By returning ValidatorMessages, it only needs to return one type
 	 * of message, and those messages can be either be directly used by the caller, or automatically converted into IMarkers by
-	 * the validation framework.   
+	 * the validation framework.
+	 * <p>
+	 * To make matters even more complicated there is a third way to return messages. To make it easier for 
+	 * old validators to port to the new framework, they can continue to use an IReporter. If a validator calls the
+	 * getReporter() method then it is assumed by the framework that that is the approach that they have chosen.  
+	 * 
+	 * @see #getReporter(IProgressMonitor)
 	 * 
 	 * @param message a message
 	 */
 	public void add(ValidatorMessage message){
 		getMessageList().add(message);
+	}
+	
+	/**
+	 * Answer an IReporter for handing error messages.
+	 * <p>
+	 * This is a transition method, to help old validators port to the new validation framework. If this method
+	 * is called it is assumed by the framework, that this IReport will be used as the only way of passing messages
+	 * back to the framework.
+	 * 
+	 * @see #add(ValidatorMessage)
+	 * @param monitor
+	 */
+	public IReporter getReporter(IProgressMonitor monitor){
+		if (_reporter == null)_reporter = new ReporterHelper(monitor);
+		return _reporter;
+	}
+	
+	ReporterHelper getReporterHelper(){
+		return _reporter;
 	}
 	
 	/**
@@ -261,4 +292,17 @@ public final class ValidationResult {
 		return _numberOfValidatedResources + _validated.length;
 	}
 
+	public ValidationException getValidationException() {
+		return _validationException;
+	}
+
+	/**
+	 * If the validation failed with an exception, it can be recorded here.
+	 * <p>
+	 * This method is provided for old validators to ease their transition to the new framework.
+	 * @param validationException
+	 */
+	public void setValidationException(ValidationException validationException) {
+		_validationException = validationException;
+	}
 }

@@ -258,4 +258,17 @@ public final class ConfigurationManager implements ConfigurationConstants {
 		return false;
 	}
 
+	/**
+	 * Answer the appropriate configuration based on whether the project has overridden the configuration
+	 * or not. If the project exists and is allowed to override the global configuration answer the
+	 * project configuration, otherwise answer the global configuration.
+	 * @param project it can be null
+	 */
+	public ValidationConfiguration getConfiguration(IProject project) throws InvocationTargetException {
+		if (project == null)return getGlobalConfiguration();
+		ProjectConfiguration pc = getProjectConfiguration(project);
+		if (pc != null && !pc.useGlobalPreference())return pc;
+		return getGlobalConfiguration();
+	}
+
 }
