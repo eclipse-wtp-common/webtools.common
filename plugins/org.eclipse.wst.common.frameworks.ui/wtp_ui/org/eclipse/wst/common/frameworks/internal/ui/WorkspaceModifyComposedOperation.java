@@ -27,7 +27,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
  * </p>
  */
 public class WorkspaceModifyComposedOperation extends org.eclipse.ui.actions.WorkspaceModifyOperation {
-	protected List fRunnables;
+	private List fRunnables;
 
 	public WorkspaceModifyComposedOperation(ISchedulingRule rule) {
 		super(rule);
@@ -42,12 +42,12 @@ public class WorkspaceModifyComposedOperation extends org.eclipse.ui.actions.Wor
 
 	public WorkspaceModifyComposedOperation(ISchedulingRule rule, List nestedRunnablesWithProgress) {
 		super(rule);
-		fRunnables = nestedRunnablesWithProgress;
+		getRunnables().addAll(nestedRunnablesWithProgress);
 	}
 
 	public WorkspaceModifyComposedOperation(List nestedRunnablesWithProgress) {
 		super();
-		fRunnables = nestedRunnablesWithProgress;
+		getRunnables().addAll(nestedRunnablesWithProgress);
 	}
 
 	/**
@@ -66,10 +66,13 @@ public class WorkspaceModifyComposedOperation extends org.eclipse.ui.actions.Wor
 	}
 
 	protected void execute(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-		int size = fRunnables.size();
-		monitor.beginTask("", size);//$NON-NLS-1$
-		for (int i = 0; i < fRunnables.size(); i++) {
-			IRunnableWithProgress op = (IRunnableWithProgress) fRunnables.get(i);
+		List runnables = getRunnables();
+		if(runnables.size() == 0){
+			return;
+		}
+		monitor.beginTask("", runnables.size());//$NON-NLS-1$
+		for (int i = 0; i < runnables.size(); i++) {
+			IRunnableWithProgress op = (IRunnableWithProgress) runnables.get(i);
 			op.run(new SubProgressMonitor(monitor, 1, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK));
 		}
 	}
