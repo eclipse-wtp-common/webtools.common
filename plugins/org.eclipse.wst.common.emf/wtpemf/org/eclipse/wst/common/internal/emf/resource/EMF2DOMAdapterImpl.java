@@ -330,7 +330,10 @@ public class EMF2DOMAdapterImpl extends AdapterImpl implements EMF2DOMAdapter {
 					continue;
 				// A node has been reordered in the list
 				Node reorderNode = adapter.getNode();
-				Node insertBeforeNode = (Node) domChildren.get(i);
+				Node insertBeforeNode = reorderNode;
+				if (i < domChildren.size() && domChildren.get(i) != reorderNode) {
+					insertBeforeNode = (Node) domChildren.get(i);
+				}
 				domChildren.remove(reorderNode);
 				domChildren.add(i, reorderNode);
 				if (reorderNode != insertBeforeNode) {
