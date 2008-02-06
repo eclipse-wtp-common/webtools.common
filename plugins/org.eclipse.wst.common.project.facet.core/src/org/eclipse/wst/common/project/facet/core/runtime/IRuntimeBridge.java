@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005-2007 BEA Systems, Inc.
+ * Copyright (c) 2008 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,6 +16,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 
 /**
  * The interface implemented by extensions wishing to expose runtimes defined
@@ -28,7 +31,7 @@ public interface IRuntimeBridge
 {
     /**
      * Returns the set of names for runtimes that this bridge wants to export.
-     * The system will try to accomodate these name choices, but may have to
+     * The system will try to accommodate these name choices, but may have to
      * disambiguate names due to collisions. However, even if the runtime name
      * is changed, the name that will be passed into the {@see bridge(String)}
      * call will be the original name provided by this method call. 
@@ -69,8 +72,8 @@ public interface IRuntimeBridge
         /**
          * Returns the runtime components that comprise this runtime. Note that 
          * the order is important since for some operations components are 
-         * consoluted in order and the first one capable of performing the o
-         * peation wins.
+         * consulted in order and the first one capable of performing the
+         * operation wins.
          *  
          * @return the runtime components that comprise this runtime
          */
@@ -79,7 +82,7 @@ public interface IRuntimeBridge
         
         /**
          * Returns the properties associated with this runtime component. The
-         * contents will vary dependending on how the runtime was created and 
+         * contents will vary depending on how the runtime was created and 
          * what component types/versions it's comprised of.
          * 
          * @return the properties associated with this runtime (key type: 
@@ -87,6 +90,54 @@ public interface IRuntimeBridge
          */
         
         Map<String,String> getProperties();
+    }
+    
+    /**
+     * Represents a single bridged runtime. The system will wrap this interface
+     * and expose it to clients as {@see IRuntime}. All relevant calls will be
+     * delegated to this interface.
+     * 
+     * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
+     * @since 3.0
+     */
+
+    public abstract class Stub
+    
+        implements IStub
+        
+    {
+        /**
+         * Returns the runtime components that comprise this runtime. Note that 
+         * the order is important since for some operations components are 
+         * consulted in order and the first one capable of performing the
+         * operation wins.
+         *  
+         * @return the runtime components that comprise this runtime
+         * @since 3.0
+         */
+        
+        public abstract List<IRuntimeComponent> getRuntimeComponents();
+        
+        /**
+         * Returns the properties associated with this runtime component. The
+         * contents will vary depending on how the runtime was created and 
+         * what component types/versions it's comprised of.
+         * 
+         * @return the properties associated with this runtime (key type: 
+         *   {@see String}, value type: {@see String})
+         * @since 3.0
+         */
+        
+        public abstract Map<String,String> getProperties();
+ 
+        /**
+         * @since 3.0
+         */
+        
+        public IStatus validate( final IProgressMonitor monitor )
+        {
+            return Status.OK_STATUS;
+        }
     }
     
 }

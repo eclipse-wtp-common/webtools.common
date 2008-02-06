@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeBridge;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
@@ -87,6 +89,19 @@ public final class BridgedRuntime
         }
         
         return this.supported.contains( fv );
+    }
+
+    @Override
+    public IStatus validate( final IProgressMonitor monitor )
+    {
+        if( this.stub instanceof IRuntimeBridge.Stub )
+        {
+            return ( (IRuntimeBridge.Stub) this.stub ).validate( monitor );
+        }
+        else
+        {
+            return super.validate( monitor );
+        }
     }
 
 }

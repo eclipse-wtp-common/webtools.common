@@ -15,6 +15,8 @@ import java.util.Set;
 
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
@@ -22,6 +24,9 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
+import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
+import org.eclipse.wst.common.project.facet.core.runtime.events.IRuntimeLifecycleEvent;
+import org.eclipse.wst.common.project.facet.core.runtime.events.IRuntimeLifecycleListener;
 import org.eclipse.wst.common.project.facet.ui.FacetUiHelpContextIds;
 
 /**
@@ -52,7 +57,7 @@ public final class FacetsSelectionPage
     {
         this.panel = new FacetsSelectionPanel( parent, this.fpjwc );
         
-        setPageComplete( this.panel.isSelectionValid() );
+        updatePageState();
 
         this.fpjwc.addListener
         (
@@ -60,10 +65,32 @@ public final class FacetsSelectionPage
             {
                 public void handleEvent( final IFacetedProjectEvent event )
                 {
-                    handleSelectedFacetsChangedEvent();
+                    updatePageState();
                 }
             },
-            IFacetedProjectEvent.Type.PROJECT_FACETS_CHANGED
+            IFacetedProjectEvent.Type.PROJECT_MODIFIED
+        );
+        
+        final IRuntimeLifecycleListener runtimeLifecycleListener = new IRuntimeLifecycleListener()
+        {
+            public void handleEvent( final IRuntimeLifecycleEvent event )
+            {
+                updatePageState();
+            }
+        };
+        
+        RuntimeManager.addListener( runtimeLifecycleListener, 
+                                    IRuntimeLifecycleEvent.Type.VALIDATION_STATUS_CHANGED );
+        
+        this.panel.addDisposeListener
+        (
+            new DisposeListener()
+            {
+                public void widgetDisposed( final DisposeEvent e )
+                {
+                    RuntimeManager.removeListener( runtimeLifecycleListener );
+                }
+            }
         );
 
         final IWorkbenchHelpSystem h = PlatformUI.getWorkbench().getHelpSystem();
@@ -72,8 +99,22 @@ public final class FacetsSelectionPage
         setControl( this.panel );
     }
 
-    private void handleSelectedFacetsChangedEvent()
+    private void updatePageState()
     {
+        if( ! Thread.currentThread().equals( this.panel.getDisplay().getThread() ) )
+        {
+            final Runnable uiRunnable = new Runnable()
+            {
+                public void run()
+                {
+                    updatePageState();
+                }
+            };
+            
+            this.panel.getDisplay().syncExec( uiRunnable );
+            return;
+        }
+
         setPageComplete( this.panel.isSelectionValid() );
 
         if( getContainer().getCurrentPage() != null )

@@ -44,8 +44,8 @@ public abstract class BasicToolTip
     }
 
     @Override
-    protected final Composite createToolTipContentArea( final Event event,
-                                                        final Composite parent )
+    protected Composite createToolTipContentArea( final Event event,
+                                                  final Composite parent )
     {
         final Display display = parent.getDisplay();
         

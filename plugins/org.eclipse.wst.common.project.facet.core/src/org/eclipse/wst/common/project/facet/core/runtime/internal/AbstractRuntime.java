@@ -18,7 +18,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
@@ -249,6 +252,11 @@ public abstract class AbstractRuntime
         // 4. Return the result.
         
         return new HashSet<IProjectFacetVersion>( facets.values() );
+    }
+    
+    public IStatus validate( final IProgressMonitor monitor )
+    {
+        return Status.OK_STATUS;
     }
 
     public final boolean equals( final Object obj )

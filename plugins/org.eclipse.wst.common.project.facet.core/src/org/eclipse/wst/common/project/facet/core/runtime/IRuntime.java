@@ -17,6 +17,8 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 
@@ -144,5 +146,16 @@ public interface IRuntime
     Set<IProjectFacetVersion> getDefaultFacets( final Set<IProjectFacet> fixed )
     
         throws CoreException;
+    
+    /**
+     * Performs a number of runtime-specific checks to determine whether this runtime
+     * instance is valid or not.
+     * 
+     * @param monitor used for getting progress information and canceling validation
+     * @return the result of validation
+     * @since 3.0
+     */
+    
+    IStatus validate( IProgressMonitor monitor );
     
 }

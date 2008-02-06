@@ -17,6 +17,8 @@ import java.util.Set;
 
 import org.eclipse.wst.common.project.facet.core.IListener;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.runtime.events.IRuntimeLifecycleEvent;
+import org.eclipse.wst.common.project.facet.core.runtime.events.IRuntimeLifecycleListener;
 import org.eclipse.wst.common.project.facet.core.runtime.internal.RuntimeManagerImpl;
 
 /**
@@ -167,6 +169,17 @@ public final class RuntimeManager
     public static void removeRuntimeListener( final IListener listener )
     {
         RuntimeManagerImpl.removeRuntimeListener( listener );
+    }
+    
+    public static void addListener( final IRuntimeLifecycleListener listener,
+                                    final IRuntimeLifecycleEvent.Type... types )
+    {
+        RuntimeManagerImpl.addListener( listener, types );
+    }
+    
+    public static void removeListener( final IRuntimeLifecycleListener listener )
+    {
+        RuntimeManagerImpl.removeListener( listener );
     }
     
 }

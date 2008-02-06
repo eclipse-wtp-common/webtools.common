@@ -108,6 +108,9 @@ import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.events.IProjectFacetsChangedEvent;
 import org.eclipse.wst.common.project.facet.core.internal.ProjectFacet;
+import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
+import org.eclipse.wst.common.project.facet.core.runtime.events.IRuntimeLifecycleEvent;
+import org.eclipse.wst.common.project.facet.core.runtime.events.IRuntimeLifecycleListener;
 import org.eclipse.wst.common.project.facet.ui.IDecorationsProvider;
 import org.eclipse.wst.common.project.facet.ui.ModifyFacetedProjectWizard;
 import org.eclipse.wst.common.project.facet.ui.internal.util.BasicToolTip;
@@ -173,6 +176,8 @@ public final class FacetsSelectionPanel
      */
     
     private final ImageRegistry imageRegistry;
+    
+    private final IRuntimeLifecycleListener runtimeLifecycleListener;
     
     public interface IFilter 
     {
@@ -509,7 +514,20 @@ public final class FacetsSelectionPanel
             }
         );
         
-        Dialog.applyDialogFont(parent);
+        Dialog.applyDialogFont( parent );
+        
+        // Setup runtime lifecycle listener.
+        
+        this.runtimeLifecycleListener = new IRuntimeLifecycleListener()
+        {
+            public void handleEvent( final IRuntimeLifecycleEvent event )
+            {
+                handleValidationProblemsChangedEvent();
+            }
+        };
+        
+        RuntimeManager.addListener( this.runtimeLifecycleListener, 
+                                    IRuntimeLifecycleEvent.Type.VALIDATION_STATUS_CHANGED );
         
         // Bind to the model.
         
@@ -536,7 +554,8 @@ public final class FacetsSelectionPanel
                     handleValidationProblemsChangedEvent();
                 }
             },
-            IFacetedProjectEvent.Type.VALIDATION_PROBLEMS_CHANGED
+            IFacetedProjectEvent.Type.VALIDATION_PROBLEMS_CHANGED,
+            IFacetedProjectEvent.Type.PROJECT_MODIFIED
         );
         
         handleValidationProblemsChangedEvent();
@@ -976,6 +995,8 @@ public final class FacetsSelectionPanel
         {
             this.fpjwc.removeListener( listener );
         }
+        
+        RuntimeManager.removeListener( this.runtimeLifecycleListener );
     }
     
     private void handleSavePreset()
@@ -1054,6 +1075,20 @@ public final class FacetsSelectionPanel
     
     private void handleValidationProblemsChangedEvent()
     {
+        if( ! Thread.currentThread().equals( getDisplay().getThread() ) )
+        {
+            final Runnable uiRunnable = new Runnable()
+            {
+                public void run()
+                {
+                    handleValidationProblemsChangedEvent();
+                }
+            };
+            
+            getDisplay().syncExec( uiRunnable );
+            return;
+        }
+        
         this.problemsView.refresh();
 
         if( getFilteredProblems().length == 0 )

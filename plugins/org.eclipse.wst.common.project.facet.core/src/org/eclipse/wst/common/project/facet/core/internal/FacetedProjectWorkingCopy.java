@@ -33,6 +33,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
@@ -58,6 +59,7 @@ import org.eclipse.wst.common.project.facet.core.events.IProjectFacetsChangedEve
 import org.eclipse.wst.common.project.facet.core.events.internal.FacetedProjectEvent;
 import org.eclipse.wst.common.project.facet.core.events.internal.ProjectFacetsChangedEvent;
 import org.eclipse.wst.common.project.facet.core.internal.util.IndexedSet;
+import org.eclipse.wst.common.project.facet.core.internal.util.StatusWrapper;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
 
@@ -1206,6 +1208,7 @@ public final class FacetedProjectWorkingCopy
                     }
                     
                     notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.TARGETED_RUNTIMES_CHANGED ) );
+                    notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.PROJECT_MODIFIED ) );
                     refreshAvailableFacets();
                     
                     if( this.primaryRuntime == null ||
@@ -1248,6 +1251,8 @@ public final class FacetedProjectWorkingCopy
                         notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.PRIMARY_RUNTIME_CHANGED ) );
                         refreshAvailablePresets();
                     }
+                    
+                    notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.PROJECT_MODIFIED ) );
                 }
             }
         }
@@ -1280,6 +1285,8 @@ public final class FacetedProjectWorkingCopy
                         {
                             autoAssignPrimaryRuntime();
                         }
+                        
+                        notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.PROJECT_MODIFIED ) );
                     }
                 }
             }
@@ -1696,26 +1703,42 @@ public final class FacetedProjectWorkingCopy
     {
         synchronized( this.lock )
         {
-            if( this.projectNameValidation.isOK() && this.problems.isEmpty() )
+            final MultiStatus ms = Constraint.createMultiStatus();
+            
+            if( ! this.projectNameValidation.isOK() )
             {
-                return Status.OK_STATUS;
+                final StatusWrapper wrapper = new StatusWrapper( this.projectNameValidation );
+                wrapper.setCode( PROBLEM_PROJECT_NAME );
+                
+                ms.add( wrapper );
             }
-            else
+            
+            for( IStatus st : this.problems )
             {
-                final MultiStatus ms = Constraint.createMultiStatus();
+                final StatusWrapper wrapper = new StatusWrapper( st );
+                wrapper.setCode( PROBLEM_OTHER );
                 
-                if( ! this.projectNameValidation.isOK() )
-                {
-                    ms.add( new StatusWrapper( this.projectNameValidation, PROBLEM_PROJECT_NAME ) );
-                }
+                ms.add( wrapper );
+            }
+            
+            for( IRuntime runtime : this.targetedRuntimes )
+            {
+                final IStatus st = runtime.validate( new NullProgressMonitor() );
                 
-                for( IStatus st : this.problems )
+                if( ! st.isOK() )
                 {
-                    ms.add( new StatusWrapper( st, PROBLEM_OTHER ) );
+                    final String msg 
+                        = Resources.bind( Resources.invalidRuntimeMsg, runtime.getName(), 
+                                          st.getMessage() );
+                    
+                    final StatusWrapper wrapper = new StatusWrapper( st );
+                    wrapper.setMessage( msg );
+                    
+                    ms.add( wrapper );
                 }
+            }
 
-                return ms;
-            }
+            return ms;
         }
     }
     
@@ -1922,6 +1945,7 @@ public final class FacetedProjectWorkingCopy
         public static String facetNotFound;
         public static String facetVersionNotFound;
         public static String facetNotSupportedByTarget;
+        public static String invalidRuntimeMsg;
         
         static
         {

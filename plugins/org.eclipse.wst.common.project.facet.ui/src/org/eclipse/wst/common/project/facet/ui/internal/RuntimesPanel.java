@@ -24,11 +24,16 @@ import static org.eclipse.wst.common.project.facet.ui.internal.util.SwtUtil.getP
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.resource.CompositeImageDescriptor;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -60,8 +65,11 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
@@ -69,8 +77,12 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentType;
 import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
+import org.eclipse.wst.common.project.facet.core.runtime.events.IRuntimeLifecycleEvent;
+import org.eclipse.wst.common.project.facet.core.runtime.events.IRuntimeLifecycleListener;
+import org.eclipse.wst.common.project.facet.core.runtime.events.IValidationStatusChangedEvent;
 import org.eclipse.wst.common.project.facet.ui.IDecorationsProvider;
 import org.eclipse.wst.common.project.facet.ui.IRuntimeComponentLabelProvider;
+import org.eclipse.wst.common.project.facet.ui.internal.util.BasicToolTip;
 import org.osgi.framework.Bundle;
 
 /**
@@ -95,6 +107,7 @@ public final class RuntimesPanel
     private IRuntime currentPrimaryRuntime;
     private final List<IFacetedProjectListener> listeners;
     private Color colorGray;
+    private final RuntimeValidationAssistant runtimeValidationAssistant;
     
     public RuntimesPanel( final Composite parent,
                           final IFacetedProjectWorkingCopy fpjwc )
@@ -114,6 +127,10 @@ public final class RuntimesPanel
             }
         );
         
+        // Setup runtime validation assistant.
+        
+        this.runtimeValidationAssistant = new RuntimeValidationAssistant();
+       
         // Bind to the data model.
         
         this.fpjwc = fpjwc;
@@ -186,6 +203,8 @@ public final class RuntimesPanel
         this.runtimes.setLabelProvider( new LabelProvider() );
         this.runtimes.setSorter( new Sorter() );
         this.runtimes.setInput( new Object() );
+        
+        new ValidationProblemToolTip( this.runtimes.getTable() );
         
         this.runtimes.addSelectionChangedListener
         (
@@ -523,8 +542,24 @@ public final class RuntimesPanel
     private void handleWidgetDisposed()
     {
         removeDataModelListeners();
-        
         this.colorGray.dispose();
+        this.runtimeValidationAssistant.dispose();
+    }
+    
+    private void handleRuntimeValidationResultChanged()
+    {
+        final Runnable uiRunnable = new Runnable()
+        {
+            public void run()
+            {
+                for( TableItem item : RuntimesPanel.this.runtimes.getTable().getItems() )
+                {
+                    RuntimesPanel.this.runtimes.update( item.getData(), null );
+                }
+            }
+        };
+        
+        getDisplay().syncExec( uiRunnable );
     }
     
     private void refresh()
@@ -567,6 +602,25 @@ public final class RuntimesPanel
         }
     }
     
+    private TableItem getTableItem( final int x,
+                                    final int y )
+    {
+        for( TableItem item : this.runtimes.getTable().getItems() )
+        {
+            if( item.getBounds().contains( x, y ) )
+            {
+                return item;
+            }
+        }
+        
+        return null;
+    }
+    
+    private RuntimeValidationAssistant getRuntimeValidationAssistant()
+    {
+        return this.runtimeValidationAssistant;
+    }
+    
     private final class ContentProvider
 
         implements IStructuredContentProvider
@@ -607,20 +661,37 @@ public final class RuntimesPanel
         {
             return ( (IRuntime) element ).getLocalizedName();
         }
+        
+        private String getImageRegistryKey( final IRuntime runtime,
+                                            final boolean isPrimary,
+                                            final IStatus validationResult )
+        {
+            final StringBuilder buf = new StringBuilder();
+            
+            buf.append( runtime.getName() );
+            
+            if( isPrimary )
+            {
+                buf.append( ",##primary##" ); //$NON-NLS-1$
+            }
+            
+            if( validationResult != null && validationResult.getSeverity() == IStatus.ERROR )
+            {
+                buf.append( ",##error##" ); //$NON-NLS-1$
+            }
+            
+            return buf.toString();
+        }
 
         public Image getImage( final Object element )
         {
             final IRuntime r = (IRuntime) element;
-            
             final IRuntimeComponent rc = r.getRuntimeComponents().get( 0 );
             final IRuntimeComponentType rct = rc.getRuntimeComponentType();
-            
             final IRuntime primary = getFacetedProjectWorkingCopy().getPrimaryRuntime();
             final boolean isPrimary = primary != null && primary.equals( r );
-            
-            final String imgid
-                = ( isPrimary ? "p:" : "s" ) //$NON-NLS-1$ //$NON-NLS-2$
-                  + rct.getId();
+            final IStatus valResult = getRuntimeValidationAssistant().getValidationResult( r );
+            final String imgid = getImageRegistryKey( r, isPrimary, valResult );
             
             Image image = this.imageRegistry.get( imgid );
             
@@ -628,13 +699,9 @@ public final class RuntimesPanel
             {
                 final IDecorationsProvider decprov
                     = (IDecorationsProvider) rct.getAdapter( IDecorationsProvider.class );
-                
-                ImageDescriptor imgdesc = decprov.getIcon();
-                
-                if( isPrimary )
-                {
-                    imgdesc = new PrimaryRuntimeImageDescriptor( imgdesc );
-                }
+
+                final ImageDescriptor imgdesc
+                    = new DecoratedRuntimeImageDescriptor( decprov.getIcon(), isPrimary, valResult );
                 
                 this.imageRegistry.put( imgid, imgdesc );
                 image = this.imageRegistry.get( imgid );
@@ -816,36 +883,187 @@ public final class RuntimesPanel
         public void removeListener( final ILabelProviderListener listener ) {}
     }
     
-    private static final class PrimaryRuntimeImageDescriptor 
+    private static final class DecoratedRuntimeImageDescriptor 
     
         extends CompositeImageDescriptor 
         
     {
-        private static final String OVERLAY_IMG_LOCATION
+        private static final String PRIMARY_RUNTIME_OVERLAY_IMG_LOCATION
             = "images/primary-runtime-overlay.gif"; //$NON-NLS-1$
         
-        private static final ImageData OVERLAY
-            = FacetUiPlugin.getImageDescriptor( OVERLAY_IMG_LOCATION ).getImageData();
+        private static final ImageData PRIMARY_RUNTIME_OVERLAY
+            = FacetUiPlugin.getImageDescriptor( PRIMARY_RUNTIME_OVERLAY_IMG_LOCATION ).getImageData();
         
+        private static final String ERROR_OVERLAY_IMG_LOCATION
+            = "images/error-overlay.gif"; //$NON-NLS-1$
+        
+        private static final ImageData ERROR_OVERLAY
+            = FacetUiPlugin.getImageDescriptor( ERROR_OVERLAY_IMG_LOCATION ).getImageData();
+
+        private static final String WARNING_OVERLAY_IMG_LOCATION
+            = "images/warning-overlay.gif"; //$NON-NLS-1$
+        
+        private static final ImageData WARNING_OVERLAY
+            = FacetUiPlugin.getImageDescriptor( WARNING_OVERLAY_IMG_LOCATION ).getImageData();
+    
         private final ImageData base;
         private final Point size;
+        private boolean isPrimary;
+        private IStatus valResult;
         
-        public PrimaryRuntimeImageDescriptor( final ImageDescriptor base ) 
+        public DecoratedRuntimeImageDescriptor( final ImageDescriptor base,
+                                                final boolean isPrimary,
+                                                final IStatus valResult ) 
         {
             this.base = base.getImageData();
-            this.size = new Point( this.base.width, this.base.height ); 
+            this.size = new Point( this.base.width, this.base.height );
+            this.isPrimary = isPrimary;
+            this.valResult = valResult;
         }
     
         protected void drawCompositeImage( final int width, 
                                            final int height ) 
         {
             drawImage( this.base, 0, 0 );
-            drawImage( OVERLAY, 0, height - OVERLAY.height );
+            
+            if( this.isPrimary )
+            {
+                drawImage( PRIMARY_RUNTIME_OVERLAY, width - PRIMARY_RUNTIME_OVERLAY.width, 
+                           height - PRIMARY_RUNTIME_OVERLAY.height );
+            }
+            
+            if( ! this.valResult.isOK() )
+            {
+                final ImageData valOverlay
+                    = this.valResult.getSeverity() == IStatus.ERROR 
+                      ? ERROR_OVERLAY : WARNING_OVERLAY;
+                
+                drawImage( valOverlay, 0, height - valOverlay.height );
+            }
         }
     
         protected Point getSize()
         {
             return this.size;
+        }
+    }
+    
+    private final class ValidationProblemToolTip
+    
+        extends BasicToolTip
+        
+    {
+        public ValidationProblemToolTip( final Control control )
+        {
+            super( control );
+        }
+        
+        @Override
+        protected Composite createToolTipContentArea( final Event event,
+                                                      final Composite parent )
+        {
+            final IStatus validationResult = getValidationResult( event );
+            setMessage( validationResult.getMessage() );
+            return super.createToolTipContentArea( event, parent );
+        }
+        
+        @Override
+        protected boolean shouldCreateToolTip( final Event event ) 
+        {
+            return ! getValidationResult( event ).isOK();
+        }
+        
+        private IRuntime getRuntime( final Event event )
+        {
+            final TableItem item = getTableItem( event.x, event.y );
+            return item != null ? (IRuntime) item.getData() : null;
+        }
+        
+        private IStatus getValidationResult( final Event event )
+        {
+            final IRuntime runtime = getRuntime( event );
+            IStatus result = null;
+            
+            if( runtime != null )
+            {
+                result = RuntimesPanel.this.runtimeValidationAssistant.getValidationResult( runtime );
+            }
+            
+            if( result == null )
+            {
+                result = Status.OK_STATUS;
+            }
+            
+            return result;
+        }
+    }
+    
+    private final class RuntimeValidationAssistant
+    {
+        private final Map<String,IStatus> validationResults;
+        private final IRuntimeLifecycleListener runtimeLifecycleListener;
+        
+        public RuntimeValidationAssistant()
+        {
+            this.validationResults = new HashMap<String,IStatus>();
+            
+            this.runtimeLifecycleListener = new IRuntimeLifecycleListener()
+            {
+                public void handleEvent( final IRuntimeLifecycleEvent event )
+                {
+                    final IValidationStatusChangedEvent evt = (IValidationStatusChangedEvent) event;
+                    setValidationResult( evt.getRuntime(), evt.getNewValidationStatus() );
+                    handleRuntimeValidationResultChanged();
+                }
+            };
+            
+            final Thread initialValidationThread = new Thread()
+            {
+                public void run()
+                {
+                    for( IRuntime runtime : RuntimeManager.getRuntimes() )
+                    {
+                        final IStatus result = runtime.validate( new NullProgressMonitor() );
+                        
+                        synchronized( RuntimeValidationAssistant.this.validationResults )
+                        {
+                            if( getValidationResult( runtime ) == null )
+                            {
+                                setValidationResult( runtime, result );
+                            }
+                        }
+                    }
+                    
+                    RuntimeManager.addListener( RuntimeValidationAssistant.this.runtimeLifecycleListener, 
+                                                IRuntimeLifecycleEvent.Type.VALIDATION_STATUS_CHANGED );
+                    
+                    handleRuntimeValidationResultChanged();
+                }
+            };
+            
+            initialValidationThread.start();
+        }
+        
+        public IStatus getValidationResult( final IRuntime runtime )
+        {
+            synchronized( this.validationResults )
+            {
+                return this.validationResults.get( runtime.getName() );
+            }
+        }
+        
+        private void setValidationResult( final IRuntime runtime,
+                                          final IStatus validationResult )
+        {
+            synchronized( this.validationResults )
+            {
+                this.validationResults.put( runtime.getName(), validationResult );
+            }
+        }
+        
+        public void dispose()
+        {
+            RuntimeManager.removeListener( this.runtimeLifecycleListener );
         }
     }
 

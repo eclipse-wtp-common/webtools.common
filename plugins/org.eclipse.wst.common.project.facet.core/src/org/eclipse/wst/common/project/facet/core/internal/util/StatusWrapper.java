@@ -9,7 +9,7 @@
  *    Konstantin Komissarchik
  ******************************************************************************/
 
-package org.eclipse.wst.common.project.facet.core.internal;
+package org.eclipse.wst.common.project.facet.core.internal.util;
 
 import org.eclipse.core.runtime.IStatus;
 
@@ -25,58 +25,81 @@ public final class StatusWrapper
     implements IStatus
     
 {
-    private final IStatus status;
-    private final int code;
+    private final IStatus base;
+    private Integer code = null;
+    private String message = null;
     
-    public StatusWrapper( final IStatus status,
-                          final int code )
+    public StatusWrapper( final IStatus status )
     {
-        this.status = status;
-        this.code = code;
+        this.base = status;
     }
-
+    
     public IStatus[] getChildren()
     {
-        return this.status.getChildren();
+        return this.base.getChildren();
     }
 
     public int getCode()
     {
-        return this.code;
+        if( this.code != null )
+        {
+            return this.code;
+        }
+        else
+        {
+            return this.base.getCode();
+        }
+    }
+    
+    public void setCode( final int code )
+    {
+        this.code = code;
     }
 
     public Throwable getException()
     {
-        return this.status.getException();
+        return this.base.getException();
     }
 
     public String getMessage()
     {
-        return this.status.getMessage();
+        if( this.message != null )
+        {
+            return this.message;
+        }
+        else
+        {
+            return this.base.getMessage();
+        }
+    }
+    
+    public void setMessage( final String message )
+    {
+        this.message = message;
     }
 
     public String getPlugin()
     {
-        return this.status.getPlugin();
+        return this.base.getPlugin();
     }
 
     public int getSeverity()
     {
-        return this.status.getSeverity();
+        return this.base.getSeverity();
     }
 
     public boolean isMultiStatus()
     {
-        return this.status.isMultiStatus();
+        return this.base.isMultiStatus();
     }
 
     public boolean isOK()
     {
-        return this.status.isOK();
+        return this.base.isOK();
     }
 
     public boolean matches( final int severityMask )
     {
-        return this.status.matches( severityMask );
+        return this.base.matches( severityMask );
     }
 }

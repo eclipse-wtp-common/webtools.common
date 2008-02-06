@@ -27,6 +27,8 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IListener;
@@ -44,6 +46,11 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeBridge;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentType;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentVersion;
+import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
+import org.eclipse.wst.common.project.facet.core.runtime.events.IRuntimeLifecycleEvent;
+import org.eclipse.wst.common.project.facet.core.runtime.events.IRuntimeLifecycleListener;
+import org.eclipse.wst.common.project.facet.core.runtime.events.internal.RuntimeLifecycleListenerRegistry;
+import org.eclipse.wst.common.project.facet.core.runtime.events.internal.ValidationStatusChangedEvent;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -78,6 +85,7 @@ public final class RuntimeManagerImpl
     private static final Map<String,IRuntimeBridge> bridges;
     private static final List<DefaultFacetsEntry> defaultFacets;
     private static final Set<IListener> listeners;
+    private static final RuntimeLifecycleListenerRegistry runtimeLifecycleListenerRegistry;
     
     static
     {
@@ -87,10 +95,13 @@ public final class RuntimeManagerImpl
         bridges = new HashMap<String,IRuntimeBridge>();
         defaultFacets = new ArrayList<DefaultFacetsEntry>();
         listeners = new HashSet<IListener>();
+        runtimeLifecycleListenerRegistry = new RuntimeLifecycleListenerRegistry();
         
         readMetadata();
         readBridgesExtensions();
         readDefaultFacetsExtensions();
+        
+        ( new RuntimeValidationThread() ).start();
     }
     
     private RuntimeManagerImpl() {}
@@ -276,6 +287,17 @@ public final class RuntimeManagerImpl
                 FacetCorePlugin.log( e );
             }
         }
+    }
+    
+    public static void addListener( final IRuntimeLifecycleListener listener,
+                                    final IRuntimeLifecycleEvent.Type... types )
+    {
+        runtimeLifecycleListenerRegistry.addListener( listener, types );
+    }
+    
+    public static void removeListener( final IRuntimeLifecycleListener listener )
+    {
+        runtimeLifecycleListenerRegistry.removeListener( listener );
     }
     
     static Set<IProjectFacetVersion> getSupportedFacets( final List<IRuntimeComponent> composition )
@@ -1125,6 +1147,72 @@ public final class RuntimeManagerImpl
             {
                 return this.rcvexpr.check( rcv );
             }
+        }
+    }
+    
+    private static final class RuntimeValidationThread
+
+        extends Thread
+        
+    {
+        private boolean isAborted;
+        private Map<String,IStatus> validationResults;
+        
+        public RuntimeValidationThread()
+        {
+            this.isAborted = false;
+            this.validationResults = new HashMap<String,IStatus>();
+        }
+        
+        private IStatus getValidationResult( final IRuntime runtime )
+        {
+            synchronized( this.validationResults )
+            {
+                return this.validationResults.get( runtime.getName() );
+            }
+        }
+        
+        private void setValidationResult( final IRuntime runtime,
+                                          final IStatus validationResult )
+        {
+            synchronized( this.validationResults )
+            {
+                this.validationResults.put( runtime.getName(), validationResult );
+            }
+        }
+        
+        @Override
+        public void run()
+        {
+            while( ! this.isAborted )
+            {
+                for( IRuntime runtime : RuntimeManager.getRuntimes() )
+                {
+                    final IStatus oldResult = getValidationResult( runtime );
+                    final IStatus newResult = runtime.validate( new NullProgressMonitor() );
+                    
+                    if( oldResult == null || ! oldResult.getMessage().equals( newResult.getMessage() ) )
+                    {
+                        setValidationResult( runtime, newResult );
+                        
+                        final IRuntimeLifecycleEvent event
+                            = new ValidationStatusChangedEvent( runtime, oldResult, newResult );
+                        
+                        runtimeLifecycleListenerRegistry.notifyListeners( event );
+                    }
+                }
+
+                try
+                {
+                    Thread.sleep( 1000 );
+                }
+                catch( InterruptedException e ) {}
+            }
+        }
+        
+        public void terminate()
+        {
+            this.isAborted = true;
         }
     }
 
