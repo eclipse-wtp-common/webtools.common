@@ -27,6 +27,8 @@ public class ValidationUIMessages extends NLS {
 	public static String RunValidationDialogTitle;
 	public static String UnableToSave;
 	
+	public static String Validate;
+	
 	public static String ValResultsStatus;
 	public static String ValErrors1;
 	public static String ValErrors;

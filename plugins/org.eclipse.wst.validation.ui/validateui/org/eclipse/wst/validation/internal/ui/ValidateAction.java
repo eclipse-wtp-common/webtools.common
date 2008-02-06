@@ -12,14 +12,13 @@ package org.eclipse.wst.validation.internal.ui;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.actions.SelectionListenerAction;
-import org.eclipse.wst.validation.internal.ui.plugin.ValidationUIPlugin;
 
 
 public class ValidateAction extends SelectionListenerAction {
 	protected ValidationMenuAction delegate;
 
 	public ValidateAction() {
-		super(ValidationUIPlugin.getResourceString(ResourceConstants.VBF_UI_POPUP_RUNVALIDATION));
+		super(ValidationUIMessages.Validate);
 		delegate = new ValidationMenuAction();
 	}
 
