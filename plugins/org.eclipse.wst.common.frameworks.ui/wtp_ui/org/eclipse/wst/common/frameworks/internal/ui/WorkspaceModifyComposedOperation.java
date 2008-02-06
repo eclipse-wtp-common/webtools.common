@@ -66,14 +66,18 @@ public class WorkspaceModifyComposedOperation extends org.eclipse.ui.actions.Wor
 	}
 
 	protected void execute(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-		List runnables = getRunnables();
-		if(runnables.size() == 0){
-			return;
-		}
-		monitor.beginTask("", runnables.size());//$NON-NLS-1$
-		for (int i = 0; i < runnables.size(); i++) {
-			IRunnableWithProgress op = (IRunnableWithProgress) runnables.get(i);
-			op.run(new SubProgressMonitor(monitor, 1, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK));
+		try{
+			List runnables = getRunnables();
+			if(runnables.size() == 0){
+				return;
+			}
+			monitor.beginTask("", runnables.size());//$NON-NLS-1$
+			for (int i = 0; i < runnables.size(); i++) {
+				IRunnableWithProgress op = (IRunnableWithProgress) runnables.get(i);
+				op.run(new SubProgressMonitor(monitor, 1, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK));
+			}
+		} finally {
+			monitor.done();
 		}
 	}
 
