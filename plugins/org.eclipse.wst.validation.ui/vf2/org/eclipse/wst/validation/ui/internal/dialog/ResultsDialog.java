@@ -5,15 +5,21 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IconAndMessageDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.wst.validation.ValidationResult;
 import org.eclipse.wst.validation.internal.Misc;
 import org.eclipse.wst.validation.internal.ui.ValidationUIMessages;
+import org.eclipse.wst.validation.ui.internal.ValUIMessages;
 
 /**
  * A dialog for displaying the results of a manual validation.
@@ -79,9 +85,44 @@ public class ResultsDialog extends IconAndMessageDialog {
 		GridData gd = new GridData();
 		gd.horizontalSpan = 2;
 		msg.setLayoutData(gd);
+		
+		addConfigLink(parent);
+		
+		
 		Control c = super.createDialogArea(parent);
 		return c;
 	}
+	
+	private void addConfigLink(Composite validatorGroup){
+		Link configLink = new Link(validatorGroup,SWT.None);
+		GridData gd = new GridData();
+		gd.horizontalSpan = 2;
+		configLink.setLayoutData(gd);
+		configLink.setText(ValUIMessages.ConfigLink);
+		configLink.addSelectionListener(new SelectionListener() {
+			public static final String DATA_NO_LINK = "PropertyAndPreferencePage.nolink"; //$NON-NLS-1$
+
+			public void doLinkActivated(Link e) {
+				String id = getPreferencePageID();
+				close();
+				PreferencesUtil.createPreferenceDialogOn(getShell(), id, new String[]{id}, DATA_NO_LINK).open();
+			}
+
+			private String getPreferencePageID() {
+				return "ValidationPreferencePage"; //$NON-NLS-1$
+			}
+
+			public void widgetDefaultSelected(SelectionEvent e) {
+				doLinkActivated((Link) e.widget);					
+			}
+
+			public void widgetSelected(SelectionEvent e) {
+				doLinkActivated((Link) e.widget);					
+			}
+		});
+		
+	}
+
 	
 	@Override
 	protected void configureShell(Shell newShell) {
@@ -91,7 +132,8 @@ public class ResultsDialog extends IconAndMessageDialog {
 	
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+		Button cancel = createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+		cancel.setFocus();
 	}
 	
 	private String getInfoMessage() {

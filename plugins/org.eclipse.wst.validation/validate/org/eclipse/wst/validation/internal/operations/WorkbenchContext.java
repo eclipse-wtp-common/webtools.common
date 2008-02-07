@@ -24,8 +24,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.wst.validation.internal.Misc;
 import org.eclipse.wst.validation.internal.RegistryConstants;
+import org.eclipse.wst.validation.internal.Tracing;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 
@@ -633,7 +633,7 @@ public class WorkbenchContext implements IWorkbenchContext {
 	protected final void registerModel(String symbolicName, String loadMethodName, Class[] parms) {
 		Method method = getMethod(loadMethodName, parms);
 		if (method == null) {
-			if (Misc.isLogging()) {
+			if (Tracing.isLogging()) {
 				StringBuffer buffer = new StringBuffer("Load method "); //$NON-NLS-1$
 				buffer.append(loadMethodName);
 				buffer.append("("); //$NON-NLS-1$
@@ -642,7 +642,7 @@ public class WorkbenchContext implements IWorkbenchContext {
 				}
 				buffer.append(") must exist. " + getClass().getName() + " cannot support model " + symbolicName); //$NON-NLS-1$ //$NON-NLS-2$
 
-				Misc.log(buffer);
+				Tracing.log(buffer);
 			}
 		} else {
 			_modelRegistry.put(symbolicName, method);

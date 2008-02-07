@@ -37,8 +37,8 @@ public class ResourceHandler {
 				_bundle = ResourceBundle.getBundle(ValidationPlugin.getBundlePropertyFileName());
 			} catch (MissingResourceException exc) {
 				_bundle = null;
-				if (Misc.isLogging()) {
-					Misc.log("Cannot find bundle " + ValidationPlugin.getBundlePropertyFileName()); //$NON-NLS-1$
+				if (Tracing.isLogging()) {
+					Tracing.log("Cannot find bundle " + ValidationPlugin.getBundlePropertyFileName()); //$NON-NLS-1$
 				}
 			}
 		}
@@ -49,16 +49,16 @@ public class ResourceHandler {
 		try {
 			ResourceBundle bundle = getBundle();
 			if (bundle == null) {
-				if (Misc.isLogging()) {
-					Misc.log("Resource bundle is null"); //$NON-NLS-1$
+				if (Tracing.isLogging()) {
+					Tracing.log("Resource bundle is null"); //$NON-NLS-1$
 				}
 				return key;
 			}
 
 			return bundle.getString(key);
 		} catch (NullPointerException exc) {
-			if (Misc.isLogging()) {
-				Misc.log("Cannot find message id " + key); //$NON-NLS-1$
+			if (Tracing.isLogging()) {
+				Tracing.log("Cannot find message id " + key); //$NON-NLS-1$
 			}
 		}
 		return key;
@@ -69,12 +69,12 @@ public class ResourceHandler {
 		try {
 			res = java.text.MessageFormat.format(getExternalizedMessage(key), (Object[])parms);
 		} catch (MissingResourceException exc) {
-			if (Misc.isLogging()) {
-				Misc.log("Cannot find message id " + key); //$NON-NLS-1$
+			if (Tracing.isLogging()) {
+				Tracing.log("Cannot find message id " + key); //$NON-NLS-1$
 			}
 		} catch (NullPointerException exc) {
-			if (Misc.isLogging()) {
-				Misc.log("Cannot format message id " + key + " with " + parms.length + " parameters."); //$NON-NLS-1$  //$NON-NLS-2$  //$NON-NLS-3$
+			if (Tracing.isLogging()) {
+				Tracing.log("Cannot format message id " + key + " with " + parms.length + " parameters."); //$NON-NLS-1$  //$NON-NLS-2$  //$NON-NLS-3$
 			}
 		}
 		return res;

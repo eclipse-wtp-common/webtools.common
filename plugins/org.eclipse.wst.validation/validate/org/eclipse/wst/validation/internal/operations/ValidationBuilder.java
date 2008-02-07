@@ -53,8 +53,8 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 		if (visitedProjects == null)visitedProjects = new HashSet<IProject>();
 		else if (visitedProjects.contains(project))return getReferencedProjects();
 		else visitedProjects.add(project);
-		if (referencedProjects == null)
-			referencedProjects = new ArrayList<IProject>();
+		
+		if (referencedProjects == null)referencedProjects = new ArrayList<IProject>();
 		try {
 			if (project.isAccessible()) {
 				IProject[] refProjArray = project.getReferencedProjects();
@@ -78,7 +78,11 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 		return workbenchContext;
 	}
 
-
+	/**
+	 * Add the projects from refProjArray to the list of referenced projects (if they are not
+	 * already in the list).
+	 * @param refProjArray
+	 */
 	private void collectReferecedProject(IProject[] refProjArray) {
 		for (IProject project : refProjArray) {
 			if (!referencedProjects.contains(project))referencedProjects.add(project);
@@ -114,6 +118,8 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 	public IProject[] build(int kind, Map parameters, IProgressMonitor monitor) {
 		IResourceDelta delta = null;
 		IProject project = getProject();
+		// GRK I wonder why this builder needs to know about all the other referenced projects?
+		// won't they have builders of their own.
 		IProject[] referenced = getAllReferencedProjects(project, null);
 		try {
 			newBuild(kind, parameters, monitor);
@@ -206,10 +212,8 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 	 * @see IncrementalProjectBuilder#FULL_BUILD
 	 * @see IncrementalProjectBuilder#INCREMENTAL_BUILD
 	 */
-	protected IProject[] newBuild(int kind, Map args, IProgressMonitor monitor)
-		throws CoreException {
+	protected IProject[] newBuild(int kind, Map args, IProgressMonitor monitor)	throws CoreException {
 
-		if (args == null);
 		IResourceDelta delta = null;
 		IProject project = getProject();
 		

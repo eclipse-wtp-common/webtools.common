@@ -83,7 +83,7 @@ public class ValOperationManager implements IResourceChangeListener {
 		
 		
 		//TODO remove this	
-		if (Misc.isLogging()){
+		if (Tracing.isLogging()){
 			String kindName = null;
 			if (kind == IncrementalProjectBuilder.AUTO_BUILD)kindName = "Auto"; //$NON-NLS-1$
 			else if (kind == IncrementalProjectBuilder.CLEAN_BUILD)kindName = "Clean"; //$NON-NLS-1$
@@ -109,7 +109,7 @@ public class ValOperationManager implements IResourceChangeListener {
 			IResourceDelta rd = event.getDelta();
 			if (rd == null)b.append(", there was no resource delta"); //$NON-NLS-1$
 			
-			Misc.log(b);
+			Tracing.log(b);
 		}
 		
 	}
@@ -192,6 +192,9 @@ public class ValOperationManager implements IResourceChangeListener {
 		
 	}
 
+	/**
+	 * Answer the current validation operation.
+	 */
 	public ValOperation getOperation() {
 		return _operation;
 	}

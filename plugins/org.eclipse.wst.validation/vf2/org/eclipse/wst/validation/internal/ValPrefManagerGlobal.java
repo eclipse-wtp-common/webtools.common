@@ -100,8 +100,8 @@ public class ValPrefManagerGlobal {
 					Preferences rule = ruleNode.node(ruleName);
 					FilterRule fr = FilterRule.create(rule.get(PrefConstants.ruleType, null));
 					if (fr != null){
+						fr.load(rule);
 						fg.add(fr);
-						fr.setData(rule.get(PrefConstants.pattern, null));
 					}
 				}
 			}
@@ -153,8 +153,7 @@ public class ValPrefManagerGlobal {
 			Preferences r = gid.node(PrefConstants.rules);
 			for (int j=0; j<rules.length; j++){
 				Preferences rid= r.node(String.valueOf(j));
-				rid.put(PrefConstants.ruleType, rules[j].getType());
-				rid.put(PrefConstants.pattern, rules[j].getPattern());
+				rules[j].save(rid);
 			}
 		}		
 	}

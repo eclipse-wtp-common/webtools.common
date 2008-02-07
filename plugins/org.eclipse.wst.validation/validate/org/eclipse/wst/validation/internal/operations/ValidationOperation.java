@@ -41,12 +41,12 @@ import org.eclipse.wst.common.frameworks.internal.operations.IHeadlessRunnableWi
 import org.eclipse.wst.validation.internal.FilterUtil;
 import org.eclipse.wst.validation.internal.IProjectValidationHelper;
 import org.eclipse.wst.validation.internal.InternalValidatorManager;
-import org.eclipse.wst.validation.internal.Misc;
 import org.eclipse.wst.validation.internal.ReferencialFileValidatorRegistryReader;
 import org.eclipse.wst.validation.internal.RegistryConstants;
 import org.eclipse.wst.validation.internal.ResourceConstants;
 import org.eclipse.wst.validation.internal.ResourceHandler;
 import org.eclipse.wst.validation.internal.TaskListUtility;
+import org.eclipse.wst.validation.internal.Tracing;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.core.IFileDelta;
@@ -850,7 +850,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				try {
 					delta = getFileDeltas(reporter.getProgressMonitor(), vmd);
 					boolean willRun = (isForce() || isValidationNecessary(vmd, delta));
-					if (Misc.isLogging()) {
+					if (Tracing.isLogging()) {
 						StringBuffer buffer = new StringBuffer();
 						buffer.append("will run? "); //$NON-NLS-1$
 						buffer.append(willRun);
@@ -875,7 +875,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 								buffer.append(getDeltaAsString(delta));
 							}
 						}
-						Misc.log(buffer);
+						Tracing.log(buffer);
 					}
 					if (!willRun) {
 						continue;
@@ -1150,7 +1150,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			}
 			String message = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_STARTING_VALIDATION, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
 			reporter.displaySubtask(message);
-			if (Misc.isLogging()) {
+			if (Tracing.isLogging()) {
 				// This internal "launched validators" value is used only in tests.
 				getLaunchedValidators().add(vmd);
 			}
@@ -1435,7 +1435,7 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 		if (helper instanceof WorkbenchContext) {
 			((WorkbenchContext) helper).setRuleGroup(getRuleGroup());
 		}
-		if (Misc.isLogging()) {
+		if (Tracing.isLogging()) {
 			// This internal "launched validators" value is used only in
 			// tests.
 			getLaunchedValidators().add(vmd);

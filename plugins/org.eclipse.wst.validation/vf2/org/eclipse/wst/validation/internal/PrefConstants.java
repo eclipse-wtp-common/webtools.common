@@ -69,6 +69,12 @@ public interface PrefConstants {
 	/** suspend - suspend all validation? true/false */
 	String suspend = "suspend"; //$NON-NLS-1$
 	
+	/** case - is this case sensitive? */
+	String caseSensitive = "case"; //$NON-NLS-1$
+	
+	/** fileType - the type of file, see FilterRule.File */
+	String fileType = "fileType"; //$NON-NLS-1$
+	
 	/** confirmDialog - should we show a confirmation dialog when doing a manual validation? */
 	String confirmDialog = "confirmDialog"; //$NON-NLS-1$
 	

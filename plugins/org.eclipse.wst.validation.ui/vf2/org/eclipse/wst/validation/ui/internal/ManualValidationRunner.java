@@ -76,7 +76,7 @@ public class ManualValidationRunner extends WorkspaceJob {
 				}
 				
 			};
-			display.syncExec(run);			
+			display.asyncExec(run);			
 		}
 		return Status.OK_STATUS;
 	}

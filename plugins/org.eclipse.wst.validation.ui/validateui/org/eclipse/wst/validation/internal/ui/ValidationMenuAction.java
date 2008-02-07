@@ -35,7 +35,6 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IViewActionDelegate;
@@ -238,26 +237,13 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		// If the files aren't saved do not run validation.
 		if(!handleFilesToSave(projects))return;
 
-//		ValidationJob validationop = new ValidationJob(ValidationUIMessages.RunValidationDialogTitle){
-//			protected IStatus run(IProgressMonitor monitor) {
-//				final Map projectsMap = projects;
-//				IStatus stat = validate(monitor, projectsMap);	
-//				_selectedResources.clear();
-//				return stat;
-//			}
-//		};
-//		validationop.setProjectsMap(projects);
-//		validationop.setRule(ResourcesPlugin.getWorkspace().getRoot());
-//		validationop.setUser(true);
-//		validationop.schedule();
-		
 		boolean confirm = org.eclipse.wst.validation.internal.ValManager.getDefault().getGlobalPreferences()
 			.getConfirmDialog();
 		ManualValidationRunner.validate(projects, true, false, confirm);
 	}
 	
 	/**
-	 * Selection in the desktop has changed. Plugin provider can use it to change the availability
+	 * Selection in the desktop has changed. Plug-in provider can use it to change the availability
 	 * of the action or to modify other presentation properties.
 	 * 
 	 * <p>
@@ -268,7 +254,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	 * </p>
 	 * 
 	 * @param action
-	 *            action proxy that handles presentation portion of the plugin action
+	 *            action proxy that handles presentation portion of the plug-in action
 	 * @param selection
 	 *            current selection in the desktop
 	 */
@@ -303,34 +289,6 @@ public class ValidationMenuAction implements IViewActionDelegate {
 		
 		return false;
 		
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.IActionDelegate2#runWithEvent(org.eclipse.jface.action.IAction,
-	 *      org.eclipse.swt.widgets.Event)
-	 */
-	public void runWithEvent(IAction action, Event event) {
-		run(action);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.IActionDelegate2#init(org.eclipse.jface.action.IAction)
-	 */
-	public void init(IAction action) {
-		//init
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.IActionDelegate2#dispose()
-	 */
-	public void dispose() { 
-		//dispose
 	}
 
 	/* (non-Javadoc)

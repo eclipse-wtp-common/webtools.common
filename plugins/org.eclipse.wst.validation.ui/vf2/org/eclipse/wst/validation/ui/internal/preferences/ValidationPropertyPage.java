@@ -18,7 +18,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -60,7 +59,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.dialogs.PropertyPage;
@@ -286,8 +284,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 			GridLayout validatorGroupLayout = new GridLayout();
 			validatorGroupLayout.numColumns = 2;
 			validatorGroup.setLayout(validatorGroupLayout);
-			PlatformUI.getWorkbench().getHelpSystem()
-				.setHelp(validatorGroup, ContextIds.VALIDATION_PREFERENCE_PAGE);
+			PlatformUI.getWorkbench().getHelpSystem().setHelp(validatorGroup, ContextIds.VALIDATION_PREFERENCE_PAGE);
 
 			addOverride(validatorGroup);
 			addConfigLink(validatorGroup);
@@ -890,12 +887,6 @@ public class ValidationPropertyPage extends PropertyPage  {
 		return _pageImpl.getControl();
 	}
 
-	/*
-	 * @see IWorkbenchPreferencePage#init(IWorkbench)
-	 */
-	public void init(IWorkbench workbench) {
-	}
-
 	/**
 	 * Performs special processing when this page's Defaults button has been
 	 * pressed.
@@ -993,12 +984,6 @@ public class ValidationPropertyPage extends PropertyPage  {
 		Object adaptedObject = selectedElement.getAdapter(IProject.class);
 		if (adaptedObject instanceof IProject)return (IProject) adaptedObject;
 		return null;
-
-	}
-
-
-	public void preferenceChange(PreferenceChangeEvent event) {
-//		String key = event.getKey();
 
 	}
 }

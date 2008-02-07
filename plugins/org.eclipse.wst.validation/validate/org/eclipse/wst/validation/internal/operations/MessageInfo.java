@@ -23,20 +23,12 @@ public class MessageInfo {
 	private String		targetObjectName;	
 	private String		markerId;	
 	private IMessage	msg;
-
-				
 	
-	public MessageInfo(){
-		
+	public MessageInfo(){		
 	}
 	
-	public MessageInfo(String messageOwnerId,
-						IResource resource,
-						String location, 
-						String text,
-						String targetObjectName,
-						String markerId,
-						IMessage msg){
+	public MessageInfo(String messageOwnerId, IResource resource, String location, 
+		String text, String targetObjectName, String markerId, IMessage msg){
 		
 		this.messageOwnerId = messageOwnerId;	
 		this.resource = resource;
@@ -101,6 +93,12 @@ public class MessageInfo {
 
 	public void setText(String text) {
 		this.text = text;
+	}
+	
+	@Override
+	public String toString() {
+		if (text != null)return "MessageInfo: " + text; //$NON-NLS-1$
+		return super.toString();
 	}
 	
 }

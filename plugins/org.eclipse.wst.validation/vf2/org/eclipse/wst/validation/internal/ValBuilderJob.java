@@ -19,7 +19,7 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 
 /**
- * Run all the validators through this job.
+ * Run all the v2 validators through this job.
  * <p>
  * This is the main class for supporting build based validation. When triggered it looks at all of the
  * resource changes and determines what needs to be validated. 
@@ -84,7 +84,7 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 		
 		try {		
 			if (_buildKind == IncrementalProjectBuilder.CLEAN_BUILD){
-				Misc.log("Whoops -- now build kind is set to clean ??"); //$NON-NLS-1$
+				Tracing.log("Whoops -- now build kind is set to clean ??"); //$NON-NLS-1$
 			}
 			
 			if (_delta == null)fullBuild();

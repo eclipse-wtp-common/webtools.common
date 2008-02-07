@@ -29,28 +29,25 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  * This class manages resource change events for the validation framework.
  */
 public class EventManager implements IResourceChangeListener {
-	private static EventManager _inst = null;
-	private boolean _shutdown = false; // false means that eclipse is not shutting down, and true
-	// means that it is shutting down. Used in two methods:
-	// shutdown(),and resourceChanged(IResourceChangeEvent)
+	private static EventManager _inst;
+	
+	// false means that eclipse is not shutting down, and true means that it is shutting down. 
+	// Used in two methods: shutdown(),and resourceChanged(IResourceChangeEvent)
+	private boolean _shutdown; 
+
 	private IResourceDeltaVisitor _postAutoBuildVisitor = null;
 	private boolean _isActive = false; // has the registry been read?
 
 	private EventManager() {
-		super();
 	}
 
 	public static EventManager getManager() {
-		if (_inst == null) {
-			_inst = new EventManager();
-		}
+		if (_inst == null)_inst = new EventManager();
 		return _inst;
 	}
 
 	public void opening(IProject project) {
-		if (project == null || !ValidationPlugin.isActivated()) {
-			return;
-		}
+		if (project == null || !ValidationPlugin.isActivated())return;
 
 		// When the project is opened, check for any orphaned tasks
 		// or tasks whose owners need to be updated.
@@ -58,14 +55,12 @@ public class EventManager implements IResourceChangeListener {
 	}
 
 	public void closing(IProject project) {
-		if (project == null || !ValidationPlugin.isActivated()) {
-			return;
-		}
+		if (project == null || !ValidationPlugin.isActivated())return;
 
 		try {
 			boolean isMigrated = ConfigurationManager.getManager().isMigrated(project);
 			// If it's not migrated, then it hasn't been loaded, and we don't want to load the
-			// validator and its prerequisite plugins until they're needed.
+			// validator and its prerequisite plug-ins until they're needed.
 			if (isMigrated) {
 				ValidatorMetaData[] vmds = ConfigurationManager.getManager().getProjectConfiguration(project).getValidators();
 				for (int i = 0; i < vmds.length; i++) {
@@ -89,8 +84,7 @@ public class EventManager implements IResourceChangeListener {
 						continue;
 					} catch (Exception e) {
 						// If there is a problem with this particular helper, log the error and
-						// continue
-						// with the next validator.
+						// continue with the next validator.
 						ValidationPlugin.getPlugin().handleException(e);
 						continue;
 					}
@@ -102,14 +96,11 @@ public class EventManager implements IResourceChangeListener {
 			ValidationPlugin.getPlugin().handleException(e);
 			if (e.getTargetException() != null)
 				ValidationPlugin.getPlugin().handleException(e.getTargetException());
-
 		}
 	}
 
 	public void deleting(IProject project) {
-		if (project == null) {
-			return;
-		}
+		if (project == null)return;
 
 		try {
 			boolean isMigrated = ConfigurationManager.getManager().isMigrated(project);
@@ -137,8 +128,7 @@ public class EventManager implements IResourceChangeListener {
 						continue;
 					} catch (Exception e) {
 						// If there is a problem with this particular helper, log the error and
-						// continue
-						// with the next validator.
+						// continue with the next validator.
 						ValidationPlugin.getPlugin().handleException(e);
 						continue;
 					}
@@ -184,14 +174,9 @@ public class EventManager implements IResourceChangeListener {
 						if ((subdelta.getFlags() & IResourceDelta.OPEN) == IResourceDelta.OPEN) {
 							if (project.isOpen()) {
 								// Project was just opened. If project.isOpen() had returned false,
-								// project
-								// would just have been closed.
+								// project would just have been closed.
 								opening(project);
 							}
-							// closing is called by PRE_CLOSE in resourceChanged
-							//							else {
-							//								closing(project);
-							//							}
 						}
 					}
 
@@ -215,50 +200,44 @@ public class EventManager implements IResourceChangeListener {
 	 * @see IResource
 	 */
 	public void resourceChanged(IResourceChangeEvent event) {
-		if (_shutdown && (!isActive())) {
+		if (_shutdown && !isActive()) {
 			// If we're shutting down, and nothing has been activated, don't need to
 			// do anything.
 			return;
 		}
 
-		/*
-		 * StringBuffer buffer = new StringBuffer(); buffer.append("IResourceChangeEvent type = ");
-		 * buffer.append(event.getType()); buffer.append(", resource = ");
-		 * buffer.append(event.getResource()); buffer.append(", source = ");
-		 * buffer.append(event.getSource()); buffer.append(", delta = ");
-		 * buffer.append(event.getDelta()); System.out.println(buffer.toString());
-		 */
-
+//		if (Tracing.isLogging()){
+//			Tracing.log("IResourceChangeEvent type = " + //$NON-NLS-1$
+//				Misc.resourceChangeEventType(event.getType()) + 
+//				", resource = " +  //$NON-NLS-1$
+//				event.getResource() + ", source = " + event.getSource() + ", delta = " +   //$NON-NLS-1$//$NON-NLS-2$
+//				event.getDelta());
+//				
+//		}
+		
 		if (event.getSource() instanceof IWorkspace) {
-			if ((event.getType() == IResourceChangeEvent.PRE_DELETE) && (event.getResource() instanceof IProject)) {
+			boolean isProject = event.getResource() instanceof IProject;
+			if ((event.getType() == IResourceChangeEvent.PRE_DELETE) && isProject) {
 				deleting((IProject) event.getResource());
-			} else if ((event.getType() == IResourceChangeEvent.PRE_CLOSE) && (event.getResource() instanceof IProject)) {
+			} else if ((event.getType() == IResourceChangeEvent.PRE_CLOSE) && isProject) {
 				closing((IProject) event.getResource());
 			} else if (event.getType() == IResourceChangeEvent.POST_BUILD) {
 				postAutoChange(event.getDelta());
 			}
-
 		}
 	}
 
 	/**
 	 * Notifies this manager that the ValidationPlugin is shutting down. (Usually implies that
-	 * either the plugin could not load, or that the workbench is shutting down.)
-	 * 
+	 * either the plug-in could not load, or that the workbench is shutting down.)
+	 * <p>
 	 * The manager will then notify all active helpers of the shutdown, so that they may perform any
 	 * last-minute writes to disk, cleanup, etc.
 	 */
 	public void shutdown() {
 		try {
-			_shutdown = true; // resourceChanged(IResourceChangeEvent) needs to know when a shutdown
-			// has started.
-
-			/*
-			 * if( !isHeadless() && ConfigurationManager.getManager().isGlobalMigrated()) {
-			 * GlobalConfiguration gp = ConfigurationManager.getManager().getGlobalConfiguration();
-			 * gp.store(); // First, see if any validators are loaded. If none are, there is nothing
-			 * to // clean up. if(gp.numberOfValidators() == 0) { return; } }
-			 */
+			// resourceChanged(IResourceChangeEvent) needs to know when a shutdown has started.
+			_shutdown = true;
 
 			// If the validators are loaded, then for every project in the workbench,
 			// we must see if it has been loaded. If it has, every enabled IWorkbenchContext
@@ -281,17 +260,12 @@ public class EventManager implements IResourceChangeListener {
 				try {
 					boolean isMigrated = ConfigurationManager.getManager().isMigrated(project);
 					// If it's not migrated, then it hasn't been loaded, and we don't want to load
-					// the
-					// validator and its prerequisite plugins until they're needed.
+					// the validator and its prerequisite plug-ins until they're needed.
 					if (isMigrated) {
 						prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
-						//No need to save project level validation preferences at shutdown.b
-						//if(!prjp.useGlobalPreference())
-						//	prjp.store();
 
 						ValidatorMetaData[] vmdList = prjp.getEnabledValidators();
-						// if vmdList is null, IProject has never been loaded, so nothing to clean
-						// up
+						// if vmdList is null, IProject has never been loaded, so nothing to clean up
 						if (vmdList != null) {
 							for (int j = 0; j < vmdList.length; j++) {
 								ValidatorMetaData vmd = vmdList[j];
@@ -327,7 +301,7 @@ public class EventManager implements IResourceChangeListener {
 
 	public boolean isActive() {
 		// Have to use this convoluted technique for the shutdown problem.
-		// i.e., when eclipse is shut down, if validation plugin hasn't been loaded,
+		// i.e., when eclipse is shut down, if validation plug-in hasn't been loaded,
 		// the EventManager is activated for the first time, and it
 		// sends many exceptions to the .log. At first, I wrote a
 		// static method on ValidationRegistryReader, which returned true

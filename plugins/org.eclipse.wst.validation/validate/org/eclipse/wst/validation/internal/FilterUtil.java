@@ -608,7 +608,7 @@ public final class FilterUtil {
 
 					IResource resource = subdelta.getResource();
 
-					if (Misc.isLogging()) {
+					if (Tracing.isLogging()) {
 						StringBuffer buffer = new StringBuffer("subdelta of "); //$NON-NLS-1$
 						buffer.append(resource.getName());
 						buffer.append(" is "); //$NON-NLS-1$
@@ -617,7 +617,7 @@ public final class FilterUtil {
 						buffer.append(resource.exists());
 						buffer.append(" resource.isPhantom?"); //$NON-NLS-1$
 						buffer.append(resource.isPhantom());
-						Misc.log(buffer);
+						Tracing.log(buffer);
 					}
 
 					// If the delta is an IProject, and the IProject is getting deleted or closed,

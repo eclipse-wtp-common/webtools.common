@@ -270,6 +270,7 @@ public class ValManager {
 			
 		ValPrefManagerProject vpm = new ValPrefManagerProject(project);
 		ProjectPreferences pp = vpm.loadProjectPreferences();
+		if (pp == null)pp = new ProjectPreferences(project);
 		_projectPreferences.put(project, pp);
 		return pp;
 	}
@@ -397,7 +398,7 @@ public class ValManager {
 				NLS.bind(ValMessages.LogValEndTime,	new Object[]{validator.getName(), 
 					validator.getId(), resource, String.valueOf(System.currentTimeMillis()-time)}) :
 				NLS.bind(ValMessages.LogValEnd, validator.getName(), resource);
-			Misc.log(msg);
+			Tracing.log(msg);
 		}
 		operation.getResult().mergeResults(vr);				
 	}
@@ -405,6 +406,7 @@ public class ValManager {
 	private void deleteMarkers(IResource resource){
 		try {
 			resource.deleteMarkers(ValConstants.ProblemMarker, false, IResource.DEPTH_ZERO);
+			resource.deleteMarkers(ConfigurationConstants.VALIDATION_MARKER, false, IResource.DEPTH_ZERO);
 		}
 		catch (CoreException e){
 			IProject project = resource.getProject();

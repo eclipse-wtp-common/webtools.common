@@ -67,7 +67,7 @@ public class PerformanceMonitor implements IPerformanceMonitor {
 	}
 	
 	public void add(PerformanceCounters counters){
-		Misc.write(counters.toString());
+		Tracing.write(counters.toString());
 	}
 	
 	public static class Counters{

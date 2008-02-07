@@ -20,9 +20,9 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.internal.DependencyIndex;
 import org.eclipse.wst.validation.internal.EventManager;
-import org.eclipse.wst.validation.internal.Misc;
 import org.eclipse.wst.validation.internal.ProjectUnavailableError;
 import org.eclipse.wst.validation.internal.ResourceUnavailableError;
+import org.eclipse.wst.validation.internal.Tracing;
 import org.eclipse.wst.validation.internal.ValOperationManager;
 import org.eclipse.wst.validation.internal.core.Message;
 import org.eclipse.wst.validation.internal.provisional.core.IMessage;
@@ -89,12 +89,11 @@ public class ValidationPlugin extends Plugin {
 		return false;
 	}
 
-	/**
-	 * @see Plugin#startup()
-	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(EventManager.getManager(), IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE | IResourceChangeEvent.POST_BUILD | IResourceChangeEvent.PRE_BUILD | IResourceChangeEvent.POST_CHANGE);
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(EventManager.getManager(), 
+			IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE | 
+			IResourceChangeEvent.POST_BUILD | IResourceChangeEvent.PRE_BUILD | IResourceChangeEvent.POST_CHANGE);
 
 		DependencyIndex di = (DependencyIndex)ValidationFramework.getDefault().getDependencyIndex();
 		IWorkspace ws = ResourcesPlugin.getWorkspace();
@@ -104,9 +103,6 @@ public class ValidationPlugin extends Plugin {
 
 	}
 
-	/**
-	 * @see org.eclipse.core.runtime.Plugin#stop(BundleContext context)
-	 */
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener( EventManager.getManager() );		
@@ -138,11 +134,11 @@ public class ValidationPlugin extends Plugin {
 	}
 	
 	public void handleProjectUnavailableError(ProjectUnavailableError e){
-		if (Misc.isLogging())handleException(e);
+		if (Tracing.isLogging())handleException(e);
 	}
 	
 	public void handleResourceUnavailableError(ResourceUnavailableError e){
-		if (Misc.isLogging())handleException(e);
+		if (Tracing.isLogging())handleException(e);
 	}
 	
 	/** 

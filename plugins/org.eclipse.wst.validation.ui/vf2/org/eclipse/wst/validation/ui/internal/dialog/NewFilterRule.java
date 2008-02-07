@@ -4,6 +4,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNatureDescriptor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
@@ -274,13 +275,17 @@ public class NewFilterRule extends Wizard {
 					if (file != null){
 						if (root != null && file.startsWith(root) && file.length() > root.length()){
 							file = file.substring(root.length()+1);
+							IPath path = new Path(file);
+							if (_project == null)path = path.removeFirstSegments(1);
 							_type = FilterRule.File.FileTypeFile;
+							_pattern.setText(path.toPortableString());
 						}
-						else _type = FilterRule.File.FileTypeFull;
-						_pattern.setText(file);
+						else {
+							_type = FilterRule.File.FileTypeFull;
+							_pattern.setText(file);
+						}
 					}
-				}
-				
+				}				
 			});
 			
 			_browseFolder = new Button(control, SWT.PUSH);
@@ -309,10 +314,15 @@ public class NewFilterRule extends Wizard {
 					if (dir != null){
 						if (root != null && dir.startsWith(root) && dir.length() > root.length()){
 							dir = dir.substring(root.length()+1);
+							IPath path = new Path(dir);
+							if (_project == null)path = path.removeFirstSegments(1);
 							_type = FilterRule.File.FileTypeFolder;
+							_pattern.setText(path.toPortableString());
 						}
-						else _type = FilterRule.File.FileTypeFull;
-						_pattern.setText(dir);				
+						else {
+							_type = FilterRule.File.FileTypeFull;
+							_pattern.setText(dir);				
+						}
 					}
 				}
 				

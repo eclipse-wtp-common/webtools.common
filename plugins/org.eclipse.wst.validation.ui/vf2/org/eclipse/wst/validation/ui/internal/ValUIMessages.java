@@ -17,6 +17,7 @@ public class ValUIMessages extends NLS {
 	public static String PREF_MNU_SETTINGS;
 	
 	public static String ConfigWsSettings;
+	public static String ConfigLink;
 	public static String DelegatesDialogTitle;
 	public static String DelegatesComboLabel;
 	

@@ -17,7 +17,7 @@ import java.util.Map;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.wst.validation.internal.Misc;
+import org.eclipse.wst.validation.internal.Tracing;
 import org.eclipse.wst.validation.internal.ValConstants;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
@@ -46,7 +46,7 @@ public class ValidatorMessage {
 		ValidatorMessage msg = new ValidatorMessage();
 		msg._type = ValConstants.ProblemMarker;
 		msg._resource = resource;
-		msg.setAttribute(IMarker.MESSAGE, ValidationPlugin.getPlugin().isDebugging() ? Misc.timestampIt(message): message);
+		msg.setAttribute(IMarker.MESSAGE, ValidationPlugin.getPlugin().isDebugging() ? Tracing.timestampIt(message): message);
 		return msg;
 	}
 	

@@ -12,8 +12,10 @@ import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 import org.eclipse.wst.validation.internal.ExtensionConstants;
+import org.eclipse.wst.validation.internal.PrefConstants;
 import org.eclipse.wst.validation.internal.ValMessages;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.osgi.service.prefs.Preferences;
 
 /**
  * A rule that is used to filter out (or in) validation on a resource.
@@ -202,11 +204,22 @@ public abstract class FilterRule implements IAdaptable {
 		public boolean isCaseSensitive() {
 			return _caseSensitive;
 		}
+		
+		@Override
+		public void load(Preferences rid) {
+			_caseSensitive = rid.getBoolean(PrefConstants.caseSensitive, false);
+			super.load(rid);
+		}
+		
+		@Override
+		public void save(Preferences rid) {
+			rid.putBoolean(PrefConstants.caseSensitive, _caseSensitive);
+			super.save(rid);
+		}
 
 		public void setCaseSensitive(boolean caseSensitive) {
 			_caseSensitive = caseSensitive;
-		}
-		
+		}		
 	}
 	
 	public static class File extends FilterRule {
@@ -217,6 +230,10 @@ public abstract class FilterRule implements IAdaptable {
 		public static final int FileTypeFile = 1;
 		public static final int FileTypeFolder = 2;
 		public static final int FileTypeFull = 3;
+		
+		public File(){
+			
+		}
 		
 		public FilterRule copy() {
 			File rule = new File();
@@ -273,6 +290,20 @@ public abstract class FilterRule implements IAdaptable {
 			
 			if (_caseSensitive)return _pattern.equals(name);
 			return _pattern.equalsIgnoreCase(name);
+		}
+		
+		@Override
+		public void load(Preferences rid) {
+			_caseSensitive = rid.getBoolean(PrefConstants.caseSensitive, false);
+			_type = rid.getInt(PrefConstants.fileType, -1);
+			super.load(rid);
+		}
+		
+		@Override
+		public void save(Preferences rid) {
+			rid.putBoolean(PrefConstants.caseSensitive, _caseSensitive);
+			rid.putInt(PrefConstants.fileType, _type);
+			super.save(rid);
 		}
 
 		public void setCaseSensitive(boolean caseSensitive) {
@@ -359,5 +390,18 @@ public abstract class FilterRule implements IAdaptable {
 
 	/** Answer a deep copy of yourself. */
 	public abstract FilterRule copy();
+
+	/**
+	 * Save yourself in the preference file.
+	 * @param rid
+	 */
+	public void save(Preferences rid) {
+		rid.put(PrefConstants.ruleType, getType());
+		rid.put(PrefConstants.pattern, getPattern());		
+	}
+
+	public void load(Preferences rule) {
+		setData(rule.get(PrefConstants.pattern, null));		
+	}
 	
 }

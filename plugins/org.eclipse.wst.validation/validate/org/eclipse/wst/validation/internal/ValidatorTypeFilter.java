@@ -117,17 +117,17 @@ public class ValidatorTypeFilter {
 				// If the filter class is not an instance of mustImplementClass
 				if (!isInstance(filterClass, mustImplementClass)) {
 					_typeFilterClass = null;
-					if (Misc.isLogging()) {
+					if (Tracing.isLogging()) {
 						String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INVALID_TYPE_FILTER), 
 							new Object[]{filter, getMustImplementClass()});
-						Misc.log(result);						
+						Tracing.log(result);						
 					}
 				}
 			}
 		} catch (ClassNotFoundException exc) {
 			_typeFilterClass = null;
-			if (Misc.isLogging()) {
-				Misc.log("The class named " + filter + " cannot be instantiated because it does not exist. Check the spelling of the name, in the validator's plugin.xml contribution, and try restarting eclipse again."); //$NON-NLS-1$  //$NON-NLS-2$
+			if (Tracing.isLogging()) {
+				Tracing.log("The class named " + filter + " cannot be instantiated because it does not exist. Check the spelling of the name, in the validator's plugin.xml contribution, and try restarting eclipse again."); //$NON-NLS-1$  //$NON-NLS-2$
 			}
 			return;
 		}

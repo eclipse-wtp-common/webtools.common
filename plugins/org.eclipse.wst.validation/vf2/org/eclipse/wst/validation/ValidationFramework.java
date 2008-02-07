@@ -116,6 +116,25 @@ public final class ValidationFramework {
 	}
 	
 	/**
+	 * Answer all the validators that should not validate the resource, either because
+	 * their filters don't support the resource, or the validator has been disabled for
+	 * both build validation and manual validation.
+	 * @param resource
+	 */
+	public Set<Validator> getDisabledValidatorsFor(IResource resource){
+		IProject project = resource.getProject();
+		Set<Validator> set = new HashSet<Validator>(10);
+		for (Validator val : ValManager.getDefault().getValidators(project)){
+			boolean validateIt = false;
+			if (val.shouldValidate(resource, false, false)){
+				validateIt = val.isBuildValidation() || val.isManualValidation();
+			}
+			if (!validateIt)set.add(val);
+		}
+		return set;
+	}
+	
+	/**
 	 * Answer the validator with the given id.
 	 * @param id
 	 * @return null if the validator is not found
