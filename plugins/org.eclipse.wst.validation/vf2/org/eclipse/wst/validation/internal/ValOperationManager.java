@@ -22,6 +22,10 @@ public class ValOperationManager implements IResourceChangeListener {
 	
 	private static ValOperationManager _me;
 
+	/**
+	 * This operation is in affect for a build cycle. At the end of the build it is
+	 * reinitialized.
+	 */
 	private ValOperation 	_operation;
 
 	public static synchronized ValOperationManager getDefault(){

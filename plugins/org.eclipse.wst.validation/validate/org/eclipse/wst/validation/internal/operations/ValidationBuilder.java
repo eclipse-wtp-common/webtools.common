@@ -23,6 +23,7 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.InternalValidatorManager;
 import org.eclipse.wst.validation.internal.ProjectConfiguration;
@@ -45,6 +46,9 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 	public static final int NO_DELTA_CHANGE = -1;
 	protected List<IProject> referencedProjects;
 	protected IWorkbenchContext workbenchContext = null;
+	
+	/** All the jobs that the validation framework spawns will belong to this family. */
+	public static final Object FAMILY_VALIDATION_JOB = new Object();
 
 	public ValidationBuilder() {
 	}
@@ -121,13 +125,12 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 		// GRK I wonder why this builder needs to know about all the other referenced projects?
 		// won't they have builders of their own.
 		IProject[] referenced = getAllReferencedProjects(project, null);
+		if (ValidationFramework.getDefault().isSuspended(project) || 
+			ValManager.getDefault().isDisabled(project))return referenced;
+
 		try {
 			newBuild(kind, parameters, monitor);
 
-			if (org.eclipse.wst.validation.internal.operations.ValidatorManager.getManager().isSuspended(project)) {
-				// Do not perform validation on this project
-				return referenced;
-			}
 			ProjectConfiguration prjp = ConfigurationManager.getManager().getProjectConfiguration(project);
 			delta = getDelta(project);
 			boolean doFullBuild = (kind == FULL_BUILD);
@@ -212,7 +215,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 	 * @see IncrementalProjectBuilder#FULL_BUILD
 	 * @see IncrementalProjectBuilder#INCREMENTAL_BUILD
 	 */
-	protected IProject[] newBuild(int kind, Map args, IProgressMonitor monitor)	throws CoreException {
+	private void newBuild(int kind, Map args, IProgressMonitor monitor)	throws CoreException {
 
 		IResourceDelta delta = null;
 		IProject project = getProject();
@@ -227,7 +230,6 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 		Job job = new ValBuilderJob(project, delta, kind, ValOperationManager.getDefault().getOperation());
 		
 		job.schedule();
-		return null;
 	}
 	
 	
@@ -235,7 +237,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 	 * Run the new clean method. This is a transition method, while we continue to have
 	 * the old and new validation builders.
 	 */
-	protected void newClean(IProgressMonitor monitor) throws CoreException {
+	private void newClean(IProgressMonitor monitor) throws CoreException {
 		ValManager.getDefault().clean(getProject(), monitor);
 	}	
 	

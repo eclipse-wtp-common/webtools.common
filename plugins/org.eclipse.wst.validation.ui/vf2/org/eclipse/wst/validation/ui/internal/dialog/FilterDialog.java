@@ -114,8 +114,8 @@ public class FilterDialog extends Dialog {
 			blurb.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
 			blurb.setText(ValUIMessages.FilterHelp);
 			
-			_tree = new TreeViewer(c, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL);
-			_tree.getControl().setLayoutData(new GridData(375,300));
+			_tree = new TreeViewer(c, SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+			_tree.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 			Platform.getAdapterManager().registerAdapters(_adaptorFactory, Validator.V2.class);
 			Platform.getAdapterManager().registerAdapters(_adaptorFactory, FilterGroup.class);
 			Platform.getAdapterManager().registerAdapters(_adaptorFactory, FilterRule.class);

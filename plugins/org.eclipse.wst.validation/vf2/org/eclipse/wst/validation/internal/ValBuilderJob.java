@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.wst.validation.DependentResource;
 import org.eclipse.wst.validation.IDependencyIndex;
 import org.eclipse.wst.validation.ValidationFramework;
+import org.eclipse.wst.validation.internal.operations.ValidationBuilder;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 
 
@@ -76,6 +77,7 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 	
 	public boolean belongsTo(Object family) {
 		if (family == ResourcesPlugin.FAMILY_MANUAL_BUILD)return true;
+		if (family == ValidationBuilder.FAMILY_VALIDATION_JOB)return true;
 		return super.belongsTo(family);
 	}
 
@@ -83,10 +85,6 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 		_monitor = monitor;
 		
 		try {		
-			if (_buildKind == IncrementalProjectBuilder.CLEAN_BUILD){
-				Tracing.log("Whoops -- now build kind is set to clean ??"); //$NON-NLS-1$
-			}
-			
 			if (_delta == null)fullBuild();
 			else deltaBuild();
 			
@@ -136,8 +134,14 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 	}
 
 	public boolean visit(IResource resource) throws CoreException {
-		ValManager.getDefault().validate(_project, resource, IResourceDelta.NO_CHANGE, false, 
-			true, _buildKind, _operation, _monitor);
+		try {
+			ValManager.getDefault().validate(_project, resource, IResourceDelta.NO_CHANGE, false, 
+					true, _buildKind, _operation, _monitor);
+		}
+		catch (ResourceUnavailableError e){
+			if (Tracing.isLogging())Tracing.log(e.toString());
+			return false;
+		}
 		return true;
 	}
 

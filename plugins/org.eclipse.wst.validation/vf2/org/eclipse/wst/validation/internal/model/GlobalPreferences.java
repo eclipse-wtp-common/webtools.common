@@ -71,6 +71,7 @@ public class GlobalPreferences {
 		_stateTimeStamp = stateTimeStamp;
 	}
 
+	/** Answer whether or not projects are allowed to override the global preferences. */
 	public boolean getOverride() {
 		return _override;
 	}

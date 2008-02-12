@@ -130,18 +130,22 @@ public abstract class FilterGroup implements IAdaptable {
 		FilterRule[] rules = getRules();
 		boolean exclude = isExclude();
 		boolean include = isInclude();
+		int count = 0;
 		for (FilterRule rule : rules){
 			if (resource != null){
 				Boolean match = rule.matchesResource(resource);
+				if (match != null)count++;
 				if (exclude && match != null && match)return false;
 				if (include && match != null && match)return true;
 			}
 			
 			Boolean match = rule.matchesProject(project);
+			if (match != null)count++;
 			if (exclude && match != null && match)return false;
 			if (include && match != null && match)return true;
 		}
 		if (exclude)return true;
+		if (count == 0)return true;
 		return false;
 	}
 

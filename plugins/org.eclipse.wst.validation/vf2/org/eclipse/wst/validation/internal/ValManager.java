@@ -151,6 +151,22 @@ public class ValManager {
 		return false;
 	}
 	
+	/**
+	 * Answer true if the project has disabled all of it's validators, or of project overrides are not
+	 * allowed if global validation has been disabled.
+	 * 
+	 * @param project the project that is being consulted, or null if only the global settings are to be 
+	 * checked.
+	 */
+	public boolean isDisabled(IProject project){
+		GlobalPreferences gp = getGlobalPreferences();
+		if (!gp.getOverride() || project == null)return gp.getDisableAllValidation();
+		
+		ProjectPreferences pp = getProjectPreferences(project);
+		if (pp == null)return gp.getDisableAllValidation();
+		return pp.getSuspend();		
+	}
+	
 	Validator[] getValidators(boolean forceDefaults){
 		Validator[] vals = null;
 		try {
@@ -313,6 +329,7 @@ public class ValManager {
 	 * If this is a manual validation both the version 1 and version 2 validators are run. If it
 	 * is a build validation, then only the version 2 validators are run, because the old framework handles
 	 * the running of the old validators.
+	 * </p>
 	 * 
 	 * @param project project that is being validated
 	 * 
@@ -430,12 +447,12 @@ public class ValManager {
 	public void accept(IValidatorVisitor visitor, IProject project, boolean isManual, boolean isBuild, 
 		ValOperation operation, IProgressMonitor monitor){
 		
-		GlobalPreferences gp = getGlobalPreferences();
-		if (gp.getDisableAllValidation())return;
+		if (isDisabled(project))return;
 		
+		boolean hasProcessedProject = operation.hasProcessedProject(project);
 		for (Validator val : getValidators(project)){
 			if (monitor.isCanceled())return;
-			if (val.shouldValidateProject(project, isManual, isBuild)){
+			if (!operation.shouldExclude(val, project, hasProcessedProject, isManual, isBuild)){
 				try {
 					visitor.visit(val, project, isManual, isBuild, operation, monitor);
 				}
@@ -451,14 +468,13 @@ public class ValManager {
 	 */
 	public void accept(IValidatorVisitor visitor, IProject project, IResource resource, boolean isManual, 
 			boolean isBuild, ValOperation operation, IProgressMonitor monitor){
-		GlobalPreferences gp = getGlobalPreferences();
-		if (gp.getDisableAllValidation())return;
-		ProjectPreferences pp = null;
-		if (gp.getOverride())pp = getProjectPreferences(project);
-		if (pp != null && pp.getSuspend())return;
 		
+		if (isDisabled(project))return;
+		
+		boolean hasProcessedProject = operation.hasProcessedProject(project);
 		for (Validator val : getValidators(project)){
 			if (monitor.isCanceled())return;
+			if (operation.shouldExclude(val, project, hasProcessedProject, isManual, isBuild))continue;
 			if (val.shouldValidate(resource, isManual, isBuild)){
 				try {
 					visitor.visit(val, project, isManual, isBuild, operation, monitor);
@@ -538,5 +554,4 @@ public class ValManager {
 			return true;
 		}
 	}
-
 }

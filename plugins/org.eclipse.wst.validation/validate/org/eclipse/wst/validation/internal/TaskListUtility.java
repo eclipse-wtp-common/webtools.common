@@ -297,7 +297,7 @@ public class TaskListUtility implements ConfigurationConstants {
 				// Since addTask only adds PROBLEM_MARKER, we don't need
 				// to consider its subtypes.
 			} catch (CoreException e) {
-				ValidationPlugin.getPlugin().handleException(e);
+				if (Tracing.isLogging())ValidationPlugin.getPlugin().handleException(e);
 				return NO_MARKERS;
 			}
 

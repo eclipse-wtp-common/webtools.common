@@ -13,6 +13,7 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 import org.eclipse.wst.validation.internal.ExtensionConstants;
 import org.eclipse.wst.validation.internal.PrefConstants;
+import org.eclipse.wst.validation.internal.Tracing;
 import org.eclipse.wst.validation.internal.ValMessages;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.osgi.service.prefs.Preferences;
@@ -342,7 +343,7 @@ public abstract class FilterRule implements IAdaptable {
 				return FacetedProjectFramework.hasProjectFacet(project, _pattern);
 			}
 			catch (CoreException e){
-				ValidationPlugin.getPlugin().handleException(e);
+				if (Tracing.isLogging())ValidationPlugin.getPlugin().handleException(e);
 			}
 			return Boolean.FALSE;
 		}
@@ -381,7 +382,7 @@ public abstract class FilterRule implements IAdaptable {
 				}
 			}
 			catch (CoreException e){
-				ValidationPlugin.getPlugin().handleException(e);
+				if(Tracing.isLogging())ValidationPlugin.getPlugin().handleException(e);
 			}
 			return Boolean.FALSE;
 		}

@@ -29,6 +29,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.GlobalConfiguration;
 import org.eclipse.wst.validation.internal.InternalValidatorManager;
@@ -49,17 +50,13 @@ public final class ValidatorManager {
 	public static final String VALIDATOR_JOB_FAMILY = "validators";	 //$NON-NLS-1$	
 	private static ValidatorManager inst;
 	private static IResourceUtil _resourceUtil; // a common utility, different whether or not
-	// WSAD is running in headless or UI mode,
-	// which can retrieve the line number of some
-	// MOF objects.
+	// WSAD is running in headless or UI mode, which can retrieve the line number of some MOF objects.
 	private static final Class RESOURCEUTIL_DEFAULTCLASS = org.eclipse.wst.validation.internal.operations.DefaultResourceUtil.class;
 	private static Class _resourceUtilClass = RESOURCEUTIL_DEFAULTCLASS;
 		
 	// an empty set, provided for convenience, so that we only construct one empty set once.
 	private static final Set<ValidatorMetaData> EMPTY_SET = new HashSet<ValidatorMetaData>();
 	
-	private Set<IProject> 	_suspendedProjects;
-	private boolean 		_suspendAllValidation = false;
 	private static Class 	_messageLimitOwner;
 	private String[] 		_internalOwners;
 	private Map<IValidatorJob, List<MessageInfo>> _validatorMsgs = 
@@ -68,7 +65,6 @@ public final class ValidatorManager {
 	
 	private ValidatorManager() {
 		super();
-		_suspendedProjects = new HashSet<IProject>();
 		_internalOwners = new String[0];
 
 		addInternalOwner(getMessageLimitOwner());
@@ -783,83 +779,43 @@ public final class ValidatorManager {
 
 
 	/**
-	 * Suspends, or undoes the suspension of, validation on the current project. If "suspend" is
-	 * true then validation is suspended and if it's "false" then validation will run on the
-	 * project. The value of this variable is not persisted.
-	 * 
-	 * Be VERY CAREFUL when you use this method! Turn validation back on in a finally block because
-	 * if the code which suspended validation crashes, the user has no way to unsuspend validation.
-	 * The user will have to shut down & restart WSAD to get validation to work again.
-	 * 
-	 * If an operation is used to make changes that should not be validated, then use the technique
-	 * documented in the "Preventing Validation" topic of the "Validation Guide" (in the
-	 * org.eclipse.wst.validation.internal.provisional.core.core.prop plugin). If you don't, validation may not be suspended.
+	 * @deprecated Use ValidationFramework.suspendValidation(project, suspend) directly.
+	 * @see ValidationFramework#suspendValidation(IProject, boolean)
 	 */
 	public void suspendValidation(IProject project, boolean suspend) {
-		if (project == null)return;
-
-		if (!project.exists())return;
-
-		// Ignore whether or not the project is closed. If it's closed then it will not be built
-		// and the "Run Validation" option will not be available.
-		if (suspend) {
-			_suspendedProjects.add(project);
-		} else {
-			_suspendedProjects.remove(project);
-		}
+		ValidationFramework.getDefault().suspendValidation(project, suspend);
 	}
 
 	/**
-	 * Suspends, or undoes the suspension of, validation on all projects in the workbench. If
-	 * "suspend" is true then validation is suspended and if it's "false" then validation will run.
-	 * The value of this variable is not persisted.
-	 * 
-	 * Be VERY CAREFUL when you use this method! Turn validation back on in a finally block because
-	 * if the code which suspended validation crashes, the user has no way to unsuspend validation.
-	 * The user will have to shut down & restart WSAD to get validation to work again.
-	 * 
-	 * If an operation is used to make changes that should not be validated, then use the technique
-	 * documented in the "Preventing Validation" topic of the "Validation Guide" (in the
-	 * org.eclipse.wst.validation.internal.provisional.core.core.prop plugin). If you don't, validation may not be suspended.
+	 * @deprecated Use ValidationFramework.getDefault().suspendAllValidation(suspend) directly.
+	 * @see ValidationFramework#suspendAllValidation(boolean)
 	 */
 	public void suspendAllValidation(boolean suspend) {
-		_suspendAllValidation = suspend;
+		ValidationFramework.getDefault().suspendAllValidation(suspend);
 	}
 
 	/**
-	 * Return true if "suspend all" is enabled, false otherwise.
+	 * @deprecated Use ValidationFramework.getDefault().isSuspended() directly.
+	 * @see ValidationFramework#isSuspended()
 	 */
 	public boolean isSuspended() {
-		return _suspendAllValidation;
+		return ValidationFramework.getDefault().isSuspended();
 	}
 
 	/**
-	 * Returns true if validation will not run on the project because it's been suspended. This
-	 * method checks only the suspension status; if validation cannot run for some other reason (for
-	 * example, there are no enabled validators), yet the IProject is not suspended, this method
-	 * will return true even though validation will not run.
+	 * @deprecated Use ValidationFramework.getDefault().isSuspended(project) directly.
+	 * @see ValidationFramework#isSuspended(IProject)
 	 */
 	public boolean isSuspended(IProject project) {
-		if (project == null)return false;
-		if (_suspendAllValidation)return true;
-		return _suspendedProjects.contains(project);
+		return ValidationFramework.getDefault().isSuspended(project);
 	}
 
 	/**
-	 * This method should be called by any code that is preparing to suspend validation on a
-	 * project. Rather than calling isSuspsend(IProject), which will return true if all validation
-	 * has been suspended, this method returns the state of the project itself. See the
-	 * ValidationMigrator::migrateProject for an example.
-	 * 
-	 * @param project
-	 * @return boolean
+	 * @deprecated Use ValidationFramework.getDefault().isProjectSuspended(project) directly.
+	 * @see ValidationFramework#isProjectSuspended(IProject)
 	 */
 	public boolean isProjectSuspended(IProject project) {
-		if (project == null) {
-			return false;
-		}
-
-		return _suspendedProjects.contains(project);
+		return ValidationFramework.getDefault().isProjectSuspended(project);
 	}
 
 	/**
@@ -893,7 +849,7 @@ public final class ValidatorManager {
 	}
 
 	/**
-	 * This method is for use by batch EJB deploy only. Only in batch mode is an infinitie number of
+	 * This method is for use by batch EJB deploy only. Only in batch mode is an infinite number of
 	 * messages allowed.
 	 * 
 	 * Enable a project to have an infinite number of messages.
@@ -1040,7 +996,7 @@ public final class ValidatorManager {
 		list.add(info);
 	}
 	
-	public List getMessages(IValidatorJob validator){
+	public List<MessageInfo> getMessages(IValidatorJob validator){
 		List<MessageInfo> list = _validatorMsgs.get(validator);
 		if( list == null )list = new ArrayList<MessageInfo>();		
 		return list;

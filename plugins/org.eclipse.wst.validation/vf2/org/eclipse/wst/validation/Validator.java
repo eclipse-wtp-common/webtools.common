@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.wst.validation.internal.ResourceUnavailableError;
 import org.eclipse.wst.validation.internal.SummaryReporter;
 import org.eclipse.wst.validation.internal.ValOperation;
 import org.eclipse.wst.validation.internal.ValOperationManager;
@@ -603,6 +604,7 @@ public final static class V2 extends Validator implements IAdaptable {
 					marker.setAttributes(m.getAttributes());
 				}
 				catch (CoreException e){
+					if (!m.getResource().exists())throw new ResourceUnavailableError(m.getResource());
 					ValidationPlugin.getPlugin().handleException(e);
 				}
 			}
