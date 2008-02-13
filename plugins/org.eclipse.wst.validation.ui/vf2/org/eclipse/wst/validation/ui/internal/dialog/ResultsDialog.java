@@ -132,8 +132,8 @@ public class ResultsDialog extends IconAndMessageDialog {
 	
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		Button cancel = createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
-		cancel.setFocus();
+		Button ok = createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, false);
+		ok.setFocus();
 	}
 	
 	private String getInfoMessage() {
