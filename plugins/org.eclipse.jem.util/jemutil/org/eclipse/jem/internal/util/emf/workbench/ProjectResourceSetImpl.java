@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.14 $$  $$Date: 2008/01/28 00:48:20 $$ 
+ *  $$Revision: 1.15 $$  $$Date: 2008/02/13 22:44:38 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -363,13 +363,15 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		        } 
 		        return resource;
 	    	} else  {// content type is known
+	    		String resourceContentTypeID = getContentTypeName(resource);
+	    		String uriContentTypeID = getContentTypeName(uri);
 	    		if((!map.containsValue(resource) || ((map.get(uri) != null) && map.get(uri).equals(resource))) // existing resource  with alternate mapping doesn't exist in map
-	    			|| getContentTypeName(findKey(resource)) == null || ((getContentTypeName(resource) != null && getContentTypeName(resource).equals(getContentTypeName(uri))))) {
+	    			|| getContentTypeName(findKey(resource)) == null || ((resourceContentTypeID != null && resourceContentTypeID.equals(uriContentTypeID)))) {
 	    		if (loadOnDemand && !resource.isLoaded())
 		        {
 		          demandLoadHelper(resource);
-		        }
-	    		if (getContentTypeName(resource) != null && (!getContentTypeName(resource).equals(getContentTypeName(uri))))
+		        } //if embedded uri content type is different than resource content type, continue searching
+	    		if (resourceContentTypeID != null && uriContentTypeID != null && (!resourceContentTypeID.equals(uriContentTypeID)))
 	    			continue;
 		        
 		        if (map != null && (map.get(uri) == null))
@@ -378,7 +380,7 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		        } 
 		        return resource;
 	    		}
-	    	} //return null;  // Returning null because We can't handle multiple resources based on the same DOM model
+	    	}
 	      }
 	    }
 	    
