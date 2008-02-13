@@ -1,5 +1,6 @@
 package org.eclipse.wst.common.frameworks.componentcore.tests;
 
+import junit.framework.Test;
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IProject;
@@ -19,6 +20,7 @@ import org.eclipse.wst.common.componentcore.internal.Property;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.frameworks.componentcore.virtualpath.tests.TestWorkspace;
+import org.eclipse.wst.common.tests.SimpleTestSuite;
 
 public class StructureEditStressTest extends TestCase {
 	public static String fileSep = System.getProperty("file.separator");
@@ -29,8 +31,10 @@ public class StructureEditStressTest extends TestCase {
 	public static final String EDITMODEL_STRESS = "stresstest";
 	private Path zipFilePath = new Path("TestData" + fileSep + "TestArtifactEdit.zip");
 	private IProject project;
-	
 
+	public static Test suite() {
+		return new SimpleTestSuite(StructureEditStressTest.class);
+	}
 
 	// /This should be extracted out, dont have time, just trying to get coverage
 	// for m4 integration....

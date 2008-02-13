@@ -12,18 +12,16 @@ package org.eclipse.wst.common.frameworks.componentcore.tests;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.wst.common.componentcore.internal.impl.ComponentCoreURIConverter;
 import org.eclipse.wst.common.frameworks.componentcore.virtualpath.tests.TestWorkspace;
+import org.eclipse.wst.common.tests.SimpleTestSuite;
 
 public class ModuleCoreURIConverterUnitTest  extends TestCase {
 
 	public static Test suite() {
-		TestSuite suite = new TestSuite();
-		suite.addTestSuite(ModuleCoreURIConverterUnitTest.class);
-		return suite;
+		return new SimpleTestSuite(ModuleCoreURIConverterUnitTest.class);
 	}
 
 	public ModuleCoreURIConverterUnitTest(String name) {

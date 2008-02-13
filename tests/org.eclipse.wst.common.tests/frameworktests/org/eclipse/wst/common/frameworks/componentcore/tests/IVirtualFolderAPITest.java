@@ -10,6 +10,7 @@
  *******************************************************************************/ 
 package org.eclipse.wst.common.frameworks.componentcore.tests;
 
+import junit.framework.Test;
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IContainer;
@@ -23,6 +24,7 @@ import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualFolder;
 import org.eclipse.wst.common.componentcore.resources.IVirtualResource;
+import org.eclipse.wst.common.tests.SimpleTestSuite;
 
 public class IVirtualFolderAPITest extends TestCase {
 	
@@ -49,6 +51,10 @@ public class IVirtualFolderAPITest extends TestCase {
 	public IVirtualFolderAPITest(String name) {
 		super(name);
 	} 
+
+	public static Test suite() {
+		return new SimpleTestSuite(IVirtualFolderAPITest.class);
+	}
 
 	protected void setUp() throws Exception {
 		super.setUp();

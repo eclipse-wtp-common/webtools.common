@@ -65,6 +65,66 @@ public class BaseTestCase extends TestCase {
 		
 		//TODO register any plugins with the JUnitLogListener here that you want to fail on when their log is written too
 		//EX: CommonTestsPlugin.instance.getLog().addLogListener(JUnitLogListener.INSTANCE);
+
+		//list of plugins whos logs if written to will cause JUnits to fail
+//		ArrayList<String> pluginIDs = new ArrayList<String>();
+		
+		//TODO uncomment these to make tests start failing on logged errors
+//		pluginIDs.add(JEMUtilPlugin.ID);
+//		pluginIDs.add("org.eclipse.jst.common.annotations.controller");
+//		pluginIDs.add("org.eclipse.jst.common.annotations.core");
+//		pluginIDs.add("org.eclipse.jst.common.annotations.ui");
+//		pluginIDs.add(CommonFrameworksPlugin.PLUGIN_ID);
+//		pluginIDs.add(EJBUIPlugin.PLUGIN_ID);
+//		pluginIDs.add(J2EEPlugin.PLUGIN_ID);
+//		pluginIDs.add(J2EECorePlugin.PLUGIN_ID);
+//		pluginIDs.add(EjbPlugin.PLUGIN_ID);
+//		pluginIDs.add(ModelPlugin.PLUGINID);
+//		pluginIDs.add("org.eclipse.jst.j2ee.ejb.annotations.emitter");
+//		pluginIDs.add(XDocletAnnotationPlugin.PLUGINID);
+//		pluginIDs.add(JcaPlugin.PLUGIN_ID);
+//		pluginIDs.add(JCAUIPlugin.PLUGIN_ID);
+//		pluginIDs.add(J2EENavigatorPlugin.PLUGIN_ID);
+//		pluginIDs.add(J2EEUIPlugin.PLUGIN_ID);
+//		pluginIDs.add(WebPlugin.PLUGIN_ID);
+//		pluginIDs.add(WebServicePlugin.PLUGIN_ID);
+//		pluginIDs.add(WebServiceUIPlugin.PLUGIN_ID);
+//		pluginIDs.add(JEEPlugin.PLUGIN_ID);
+//		pluginIDs.add(Activator.PLUGIN_ID);
+//		pluginIDs.add(J2EEUIPlugin.PLUGIN_ID);
+//		pluginIDs.add(org.eclipse.jst.jee.web.Activator.PLUGIN_ID);
+//		pluginIDs.add(ServletUIPlugin.PLUGIN_ID);
+//		pluginIDs.add(PropertiesValidatorPlugin.PLUGIN_ID);
+//		pluginIDs.add(BVTValidationPlugin.PLUGIN_ID);
+//		pluginIDs.add(EcoreUtilitiesPlugin.ID);
+//		pluginIDs.add(EMFWorkbenchEditPlugin.ID);
+//		pluginIDs.add(WTPCommonPlugin.PLUGIN_ID);
+//		pluginIDs.add(WTPUIPlugin.PLUGIN_ID);
+//		pluginIDs.add(ModulecorePlugin.PLUGIN_ID);
+//		pluginIDs.add(ValidationPlugin.PLUGIN_ID);
+//		pluginIDs.add(ValidationUIPlugin.PLUGIN_ID);
+//		pluginIDs.add(WSTWebPlugin.PLUGIN_ID);
+//		pluginIDs.add(WSTWebUIPlugin.PLUGIN_ID);
+//		pluginIDs.add("org.eclipse.wst.xml.core");
+//		pluginIDs.add("org.eclipse.jem");
+//		pluginIDs.add(BeaninfoPlugin.PI_BEANINFO_PLUGINID);
+//		pluginIDs.add("org.eclipse.jem.proxy");
+//		pluginIDs.add("org.eclipse.jem.ui");
+//		pluginIDs.add("org.eclipse.jem.workbench");
+//		pluginIDs.add("org.eclipse.jem.tests");
+//		pluginIDs.add("org.eclipse.jst.standard.schemas");
+//		pluginIDs.add(CommonTestsPlugin.PLUGIN_ID);
+//		pluginIDs.add("org.eclipse.wst.common.tests.collector");
+//		pluginIDs.add("org.eclipse.wst.common.tests.ui");
+//		pluginIDs.add("org.eclipse.jst.j2ee.core.tests");
+//		pluginIDs.add("org.eclipse.jst.j2ee.core.tests.performance");
+//		pluginIDs.add("org.eclipse.jst.j2ee.tests");
+//		pluginIDs.add("org.eclipse.jst.j2ee.tests.performance");
+//		pluginIDs.add("org.eclipse.jst.servlet.tests");	
+
+//		for(String pluginID : pluginIDs) {
+//			InternalPlatform.getDefault().getLog(InternalPlatform.getDefault().getBundle(pluginID)).addLogListener(JUnitLogListener.INSTANCE);
+//		}
 	}
 	
 	/**

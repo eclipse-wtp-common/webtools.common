@@ -15,7 +15,6 @@ import java.util.Map;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
@@ -54,9 +53,7 @@ public class ModuleCoreAPIFVTTest extends TestCase {
 
 
 	public static Test suite() {
-		TestSuite suite = new TestSuite();
-		suite.addTestSuite(ModuleCoreAPIFVTTest.class);
-		return suite;
+		return new org.eclipse.wst.common.tests.SimpleTestSuite(ModuleCoreAPIFVTTest.class);
 	}
 
 	public ModuleCoreAPIFVTTest(String name) {
