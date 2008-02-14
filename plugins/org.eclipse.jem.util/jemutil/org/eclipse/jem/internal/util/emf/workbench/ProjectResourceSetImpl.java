@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.15 $$  $$Date: 2008/02/13 22:44:38 $$ 
+ *  $$Revision: 1.16 $$  $$Date: 2008/02/14 03:31:55 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -363,7 +363,7 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		        } 
 		        return resource;
 	    	} else  {// content type is known
-	    		String resourceContentTypeID = getContentTypeName(resource);
+	    		String resourceContentTypeID = getContentTypeID(resource);
 	    		String uriContentTypeID = getContentTypeName(uri);
 	    		if((!map.containsValue(resource) || ((map.get(uri) != null) && map.get(uri).equals(resource))) // existing resource  with alternate mapping doesn't exist in map
 	    			|| getContentTypeName(findKey(resource)) == null || ((resourceContentTypeID != null && resourceContentTypeID.equals(uriContentTypeID)))) {
@@ -428,7 +428,7 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		return file;
 	}
 	
-	private String getContentTypeName(Resource resource) {
+	private String getContentTypeID(Resource resource) {
 		IFile file = getPlatformFile(resource);
 		IContentDescription desc = null;
 		try {
@@ -436,7 +436,7 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		} catch (CoreException e) {
 		}
 		if (desc != null && desc.getContentType() != null)
-			return desc.getContentType().getName();
+			return desc.getContentType().getId();
 		return null;
 	}
 	private URI findKey(Resource resource) {
