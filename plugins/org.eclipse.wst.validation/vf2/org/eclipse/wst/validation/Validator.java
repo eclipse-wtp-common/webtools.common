@@ -644,12 +644,12 @@ public final static class V2 extends Validator implements IAdaptable {
 
 	@Override
 	public void validationStarting(IProject project, ValidationState state, IProgressMonitor monitor) {
-		_validator.validationStarting(project, state, monitor);
+		getDelegatedValidator().validationStarting(project, state, monitor);
 	}
 	
 	@Override
 	public void validationFinishing(IProject project, ValidationState state, IProgressMonitor monitor) {
-		_validator.validationFinishing(project, state, monitor);
+		getDelegatedValidator().validationFinishing(project, state, monitor);
 	}
 
 	public Object getAdapter(Class adapter) {
