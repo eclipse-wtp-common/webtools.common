@@ -67,7 +67,7 @@ public class ValidationTest extends TestCase {
 		validationList = new ArrayList();
 	}
 
-	public void testBasicValidation() {
+	public void _testBasicValidation() {
 		for (int i = 0; i < 2; i++) {
 			boolean ok = i == 0;
 			status = ok ? okStatus : errorStatus;
