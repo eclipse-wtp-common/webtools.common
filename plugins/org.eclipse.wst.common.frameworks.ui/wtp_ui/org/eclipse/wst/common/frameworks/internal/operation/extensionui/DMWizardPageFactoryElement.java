@@ -1,89 +1,90 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2005 IBM Corporation and others.
+ * Copyright (c) 2008 SAP AG and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- * IBM Corporation - initial API and implementation
+ * Kaloyan Raev, kaloyan.raev@sap.com - initial API and implementation
  *******************************************************************************/
-/*
- * Created on Oct 20, 2003
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
-
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.ConfigurationElementWrapper;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizardPage;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageGroupHandler;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageHandler;
 
 /**
- * @author schacher
+ * This class provides convenient methods for accessing the semantics of the
+ * given <code>IConfigurationElement</code> in the context of the
+ * <cite>factory</cite> element as a child element of the <cite>wizardPage</cite>
+ * element of the <cite>wizardPageGroup</cite> extension point.
  * 
- * To change the template for this generated type comment go to Window>Preferences>Java>Code
- * Generation>Code and Comments
+ * @author kraev
  */
 public class DMWizardPageFactoryElement extends ConfigurationElementWrapper {
-
-	static final String ATT_CLASS_NAME = "className"; //$NON-NLS-1$
-
+	
+	/**
+	 * The name of the attribute that points to fully qualified name of the
+	 * class that extends the <code>DMWizardPageExtensionFactory</code>
+	 * abstract class. This class does the actual job on extending a wizard
+	 * page.
+	 */
+	public static final String ATT_CLASS_NAME = "className"; //$NON-NLS-1$
+	
 	protected String className;
-	protected DMWizardExtensionFactory wizardPageFactory;
-	protected boolean isPageFactoryInitialized;
-	protected String pageGroupID;
+	protected DMWizardPageExtensionFactory wizardPageFactory;
+
+	private boolean isPageFactoryInitialized;
 
 	/**
-	 * @param element
+	 * Constructs a new <code>DMWizardPageFactoryElement</code> from the given
+	 * <code>IConfigurationElement</code>.
+	 * 
+	 * @param element -
+	 *            the <code>IConfigurationElement</code> to wrap.
 	 */
-	public DMWizardPageFactoryElement(IConfigurationElement element, String pageGroupID) {
+	public DMWizardPageFactoryElement(IConfigurationElement element) {
 		super(element);
 		className = element.getAttribute(ATT_CLASS_NAME);
-		this.pageGroupID = pageGroupID;
+		
+		isPageFactoryInitialized = false;
 	}
-
-	public IDMPageHandler createPageHandler(IDataModel dataModel) {
+	
+	/**
+	 * Create additional controls for the specified wizard page.
+	 * 
+	 * <p>
+	 * This method ensures that the implementation of the
+	 * <code>DMWizardPageExtensionFactory</code> abstract class, that is
+	 * defined in the <cite>className</cite> attribute, is initialized. Then
+	 * the method forwards the call to the factory class.
+	 * </p>
+	 * 
+	 * @param parent -
+	 *            the parent composite where the additional controls will be
+	 *            added to.
+	 * @param model -
+	 *            the data model of the wizard.
+	 * @param pageName -
+	 *            the name of the extended wizard page.
+	 */
+	public void createAdditionalControls(Composite parent, IDataModel model, String pageName) {
 		if (!isPageFactoryInitialized)
 			initPageFactory();
-		if (wizardPageFactory == null)
-			return null;
-
-		IDMPageHandler handler = wizardPageFactory.createPageHandler(dataModel, pageGroupID);
-		return handler;
-	}
-
-	public DataModelWizardPage[] createPageGroup(IDataModel dataModel) {
-		if (!isPageFactoryInitialized)
-			initPageFactory();
 
 		if (wizardPageFactory == null)
-			return null;
-
-		DataModelWizardPage[] pages = wizardPageFactory.createPageGroup(dataModel, pageGroupID);
+			return;
 		
-		return pages;
+		wizardPageFactory.createAdditionalControls(parent, model, pageName);
 	}
-
-	public IDMPageGroupHandler createPageGroupHandler( IDataModel dataModel )
-	{
-	  if (!isPageFactoryInitialized) initPageFactory();
-		
-	  if( wizardPageFactory == null ) return null;
-	  
-	  return wizardPageFactory.createPageGroupHandler( dataModel, pageGroupID );
-	}
-		
+	
 	private void initPageFactory() {
 		try {
-			wizardPageFactory = (DMWizardExtensionFactory) element.createExecutableExtension(ATT_CLASS_NAME);
+			wizardPageFactory = (DMWizardPageExtensionFactory) element.createExecutableExtension(ATT_CLASS_NAME);
 		} catch (CoreException e) {
 			Logger.getLogger().logError("Error getting page factory: " + className); //$NON-NLS-1$ 
 			Logger.getLogger().logError(e);
@@ -91,6 +92,5 @@ public class DMWizardPageFactoryElement extends ConfigurationElementWrapper {
 			isPageFactoryInitialized = true;
 		}
 	}
-
 
 }

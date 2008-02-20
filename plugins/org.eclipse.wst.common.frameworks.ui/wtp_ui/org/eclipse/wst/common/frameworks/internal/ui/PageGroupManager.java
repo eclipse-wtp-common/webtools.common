@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2007 IBM Corporation and others.
+ * Copyright (c) 2003, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,9 +7,11 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Kaloyan Raev, kaloyan.raev@sap.com - bug 213927
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.ui;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -59,8 +61,7 @@ public class PageGroupManager {
 
 
 		PageGroupEntry rootPageGroupEntry = new PageGroupEntry(rootPageGroup);
-		IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(CommonUIPluginConstants.PLUGIN_ID, ELEMENT_PAGE_GROUP);
-		elements = point.getConfigurationElements();
+		elements = getPageGroupExtensions();
 		groupTable.put(this.rootPageGroup.getPageGroupID(), rootPageGroupEntry);
 
 		if (this.rootPageGroup.getAllowsExtendedPages()) {
@@ -220,6 +221,21 @@ public class PageGroupManager {
 		while (!pageGroupStack.empty()) {
 			moveBackOnePage();
 		}
+	}
+	
+	private IConfigurationElement[] getPageGroupExtensions() {
+		List result = new ArrayList();
+		
+		IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(CommonUIPluginConstants.PLUGIN_ID, ELEMENT_PAGE_GROUP);
+		IConfigurationElement[] allElements = point.getConfigurationElements();
+		for (int i = 0; i < allElements.length; i++) {
+			IConfigurationElement element = (IConfigurationElement) allElements[i];
+			if (ELEMENT_PAGE_GROUP.equals(element.getName())) {
+				result.add(element);
+			}
+		}
+		
+		return (IConfigurationElement[]) result.toArray(new IConfigurationElement[] { });
 	}
 
 	private boolean findPreviousPageInGroup() {

@@ -1,14 +1,14 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2006 IBM Corporation and others.
+ * Copyright (c) 2001, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- * IBM Corporation - initial API and implementation
+ *     IBM Corporation - initial API and implementation
+ *     Kaloyan Raev, kaloyan.raev@sap.com - bug 213927
  *******************************************************************************/
-
 package org.eclipse.wst.common.frameworks.internal.datamodel.ui;
 
 import java.util.Collections;
@@ -35,6 +35,7 @@ import org.eclipse.wst.common.frameworks.internal.ui.ValidationStatus;
  * This class is EXPERIMENTAL and is subject to substantial changes.
  */
 public abstract class DataModelWizardPage extends WizardPage implements Listener, IDataModelListener {
+	
 	protected static final int NEXT = 1;
 	protected static final int PREVIOUS = 2;
 	protected static final int COMPOSITE_BORDER = SWT.NULL;
@@ -98,13 +99,22 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
 	 * @param parent
 	 *            the parent composite
 	 */
-	public final void createControl(org.eclipse.swt.widgets.Composite parent) {
+	public final void createControl(Composite parent) {
 		Composite top = createTopLevelComposite(parent);
+		addExtendedControls(top);
 		setControl(top);
 		setupInfopop(top);
 		setDefaults();
 		addListeners();
 		initializeValidationProperties();
+	}
+
+	private void addExtendedControls(Composite top) {
+		IWizard _wizard = getWizard();
+		if (_wizard instanceof DataModelWizard) {
+			PageExtensionManager pageExtensionManager = ((DataModelWizard) _wizard).getPageExtensionManager();
+			pageExtensionManager.createAdditionalControls(top, model, getName());
+		}
 	}
 
 	private void initializeValidationProperties() {

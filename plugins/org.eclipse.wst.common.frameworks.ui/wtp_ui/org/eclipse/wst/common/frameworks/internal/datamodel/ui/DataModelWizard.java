@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2007 IBM Corporation and others.
+ * Copyright (c) 2003, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Kaloyan Raev, kaloyan.raev@sap.com - bug 213927
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.datamodel.ui;
 
@@ -39,10 +40,13 @@ import org.eclipse.wst.common.frameworks.internal.ui.WTPUIPlugin;
  * This class is EXPERIMENTAL and is subject to substantial changes.
  */
 public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
-	private PageGroupManager pageGroupManager;
+	
 	private IDataModel dataModel;
 	private AddablePageGroup rootPageGroup;
 	private IDataModelPausibleOperation rootOperation;
+
+	private PageGroupManager pageGroupManager;
+	private PageExtensionManager pageExtensionManager;
 
 	// private IWizardPage firstpage;
 
@@ -146,6 +150,10 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 
 	public PageGroupManager getPageGroupManager() {
 		return pageGroupManager;
+	}
+	
+	public PageExtensionManager getPageExtensionManager() {
+		return pageExtensionManager;
 	}
 
 	// TODO need to implement this. Perhaps in the PageGroupManager
@@ -359,6 +367,7 @@ public abstract class DataModelWizard extends Wizard implements IDMPageHandler {
 		} else {
 			pageGroupManager = new PageGroupManager(getDataModel(), rootPageGroup);
 		}
+		pageExtensionManager = new PageExtensionManager(this);
 	}
 	
 	/**

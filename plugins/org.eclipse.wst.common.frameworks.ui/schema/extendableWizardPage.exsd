@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipse.wst.common.frameworks.ui">
+<schema targetNamespace="org.eclipse.wst.common.frameworks.ui" xmlns="http://www.w3.org/2001/XMLSchema">
 <annotation>
-      <appInfo>
+      <appinfo>
          <meta.schema plugin="org.eclipse.wst.common.frameworks.ui" id="wizardPageGroup" name="Extendable Wizard Page"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          This allows you to add an data model wizard page to a predefined extensable data model wizard.
       </documentation>
@@ -13,7 +13,8 @@
    <element name="extension">
       <complexType>
          <sequence>
-            <choice>
+            <choice minOccurs="1" maxOccurs="unbounded">
+               <element ref="wizardPage"/>
                <element ref="wizardPageGroup"/>
             </choice>
          </sequence>
@@ -44,9 +45,7 @@
    <element name="wizardPageGroup">
       <complexType>
          <sequence>
-            <choice>
-               <element ref="factory"/>
-            </choice>
+            <element ref="factory"/>
          </sequence>
          <attribute name="wizardID" type="string" use="required">
             <annotation>
@@ -79,6 +78,21 @@
       </complexType>
    </element>
 
+   <element name="wizardPage">
+      <complexType>
+         <sequence>
+            <element ref="factory"/>
+         </sequence>
+         <attribute name="wizardID" type="string" use="required">
+            <annotation>
+               <documentation>
+                  This must match the id defined in the extendableWizard element in the extendableWizard extension point
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
    <element name="factory">
       <complexType>
          <attribute name="className" type="string" use="required">
@@ -92,47 +106,24 @@
    </element>
 
    <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="since"/>
-      </appInfo>
+      </appinfo>
       <documentation>
          1.0
       </documentation>
    </annotation>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="examples"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
+
+
+
 
    <annotation>
-      <appInfo>
-         <meta.section type="apiInfo"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
-
-   <annotation>
-      <appInfo>
-         <meta.section type="implementation"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
-
-   <annotation>
-      <appInfo>
+      <appinfo>
          <meta.section type="copyright"/>
-      </appInfo>
+      </appinfo>
       <documentation>
-         Copyright (c) 2005 IBM Corporation and others.&lt;br&gt;
+         Copyright (c) 2005, 2008 IBM Corporation and others.&lt;br&gt;
 All rights reserved. This program and the accompanying materials are made 
 available under the terms of the Eclipse Public License v1.0 which accompanies 
 this distribution, and is available at &lt;a

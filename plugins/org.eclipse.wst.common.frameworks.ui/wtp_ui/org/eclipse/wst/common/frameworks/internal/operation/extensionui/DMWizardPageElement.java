@@ -1,270 +1,119 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2006 IBM Corporation and others.
+ * Copyright (c) 2008 SAP AG and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     IBM Corporation - initial API and implementation
+ * Kaloyan Raev, kaloyan.raev@sap.com - initial API and implementation
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
 
-import java.util.HashSet;
-import java.util.Set;
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.jem.util.logger.proxy.Logger;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.AbstractRegistryDescriptor;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.DataModelWizardPage;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageGroupHandler;
-import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageHandler;
-import org.eclipse.wst.common.frameworks.internal.enablement.IdentifiableComparator;
+import org.eclipse.wst.common.frameworks.internal.enablement.Identifiable;
 
-public class DMWizardPageElement extends AbstractRegistryDescriptor implements Comparable {
-	static final String ELEMENT_PAGE_GROUP = "wizardPageGroup"; //$NON-NLS-1$
-	static final String ATT_PAGE_ID = "pageGroupID"; //$NON-NLS-1$
-	static final String ATT_WIZARD_ID = "wizardID"; //$NON-NLS-1$
-	static final String ATT_REQUIRES_DATA_OPERATION_ID = "requiresDataOperationId"; //$NON-NLS-1$
-	static final String ATT_DATA_MODEL_IDS = "dataModelIds"; //$NON-NLS-1$
-	static final String ATT_ALLOWS_EXTENDED_PAGES_AFTER = "allowsExtendedPagesAfter"; //$NON-NLS-1$
-	static final String ATT_PAGE_INSERTION_ID = "pageGroupInsertionID"; //$NON-NLS-1$
-	static final String ELEMENT_FACTORY = "factory"; //$NON-NLS-1$
-
-	protected DMWizardPageFactoryElement wizardPageFactoryElement;
-	protected String pluginID;
+/**
+ * This class provides convenient methods for accessing the semantics of the
+ * given <code>IConfigurationElement</code> in the context of the the
+ * <cite>wizardPage</cite> element of the <cite>wizardPageGroup</cite>
+ * extension point.
+ * 
+ * @author kraev
+ */
+public class DMWizardPageElement extends AbstractRegistryDescriptor {
+	
+	/**
+	 * The name of the attribute that points to the wizard, which pages are
+	 * extended by the current contribution.
+	 */
+	public static final String ATT_WIZARD_ID = "wizardID"; //$NON-NLS-1$
+	
+	/**
+	 * The name of the element that contains the factory class name, where is
+	 * the Java code that contributes the new controls to the wizard pages.
+	 */
+	public static final String ELEMENT_FACTORY = "factory"; //$NON-NLS-1$
+	
 	protected String wizardID;
-	public String pageGroupID;
-	protected String wizardFactoryElement;
-	protected boolean allowsExtendedPagesAfter;
-	protected String requiresDataOperationId;
-	protected Set dataModelIDs;
-	protected String pageInsertionID;
+	protected DMWizardPageFactoryElement factoryElement;
+	
 	private int loadOrder;
 	private static int loadOrderCounter;
-
-
-	private int type;
-
-	public DMWizardPageElement(IConfigurationElement element1) {
-		super(element1);
-		pluginID = element1.getDeclaringExtension().getNamespace();
-		wizardID = element1.getAttribute(ATT_WIZARD_ID);
-		pageGroupID = element1.getAttribute(ATT_PAGE_ID);
-		requiresDataOperationId = element1.getAttribute(ATT_REQUIRES_DATA_OPERATION_ID);
-		dataModelIDs = getDataModelIds( element1 );
-		readAllowsExtendedPageAfter(element1);
-		pageInsertionID = element1.getAttribute(ATT_PAGE_INSERTION_ID);
-		readFactory(element1);
-		validateSettings();
+	
+	/**
+	 * Constructs a new <code>DMWizardPageElement</code> from the given
+	 * <code>IConfigurationElement</code>.
+	 * 
+	 * @param element -
+	 *            the <code>IConfigurationElement</code> to wrap.
+	 */
+	public DMWizardPageElement(IConfigurationElement element) {
+		super(element);
+		
+		wizardID = element.getAttribute(ATT_WIZARD_ID);
+		readFactory(element);
+		
 		loadOrder = loadOrderCounter++;
 	}
 
-  private Set getDataModelIds(IConfigurationElement element )
-  {
-    HashSet ids    = new HashSet();
-    String  idList = element.getAttribute(ATT_DATA_MODEL_IDS);
-    
-    if( idList != null )
-    {
-      String[] dataModelIDs = idList.split( " *"); //$NON-NLS-1$
-    
-      for( int index = 0; index < dataModelIDs.length; index++ )
-      {
-        ids.add( dataModelIDs[index] );  
-      }
-    }
-    
-    return ids;
-  }
-  
-	private void validateSettings() {
-		if (wizardID == null || wizardPageFactoryElement == null) {
-			Logger.getLogger().logError("Incomplete page extension specification."); //$NON-NLS-1$
+	/**
+	 * @see Identifiable#getID()
+	 */
+	public String getID() {
+		String id = wizardID;
+		if (factoryElement != null) {
+			id = id + "@" + factoryElement.className;
 		}
-	}
-
-
-	private void readAllowsExtendedPageAfter(IConfigurationElement element1) {
-		String allowsPageAfterValue = element1.getAttribute(ATT_ALLOWS_EXTENDED_PAGES_AFTER);
-		allowsExtendedPagesAfter = allowsPageAfterValue == null ? false : Boolean.valueOf(allowsPageAfterValue).booleanValue();
-	}
-
-	private void readFactory(IConfigurationElement element1) {
-		IConfigurationElement[] factories = element1.getChildren(ELEMENT_FACTORY);
-		if (factories != null && factories.length > 0) {
-			wizardPageFactoryElement = new DMWizardPageFactoryElement(factories[0], pageGroupID);
-		}
-	}
-
-	public IDMPageHandler createPageHandler(IDataModel dataModel) {
-		if (wizardPageFactoryElement != null)
-			return wizardPageFactoryElement.createPageHandler(dataModel);
-		return null;
-	}
-
-	public DataModelWizardPage[] createPageGroup(IDataModel dataModel) {
-		if (wizardPageFactoryElement != null)
-			return wizardPageFactoryElement.createPageGroup(dataModel);
-		return null;
-	}
-
-	public IDMPageGroupHandler createPageGroupHandler(IDataModel dataModel) {
-		return wizardPageFactoryElement == null ? null : wizardPageFactoryElement.createPageGroupHandler(dataModel);
-	}
-
-	public int compareTo(Object o) {
-		return IdentifiableComparator.getInstance().compare(this, o);
-		/*
-		 * if (o == null) return GREATER_THAN; WizardPageElement element = (WizardPageElement) o; if
-		 * (getID() == null && element.getID() == null) return compareLoadOrder(element); if
-		 * (getID() == null) return GREATER_THAN; else if (element.getID() == null) return
-		 * LESS_THAN;
-		 * 
-		 * int priority = getPriority(); int elementPriority =element.getPriority();
-		 * 
-		 * if (priority == elementPriority) return compareLoadOrder(element); if (priority <
-		 * elementPriority) return GREATER_THAN; if (priority > elementPriority) return LESS_THAN;
-		 * return EQUAL;
-		 */
+		return id; 
 	}
 
 	/**
-	 * @return
-	 */
-	public boolean allowsExtendedPagesAfter() {
-		return allowsExtendedPagesAfter;
-	}
-
-	/**
-	 * @return
-	 */
-	public String getPluginID() {
-		return pluginID;
-	}
-
-	/**
-	 * @return
-	 */
-	public String getPageID() {
-		return pageGroupID;
-	}
-
-	/**
-	 * @return
-	 */
-	public String getPageInsertionID() {
-		return pageInsertionID;
-	}
-
-	/**
-	 * @return
-	 */
-	public int getType() {
-		return type;
-	}
-
-	/**
-	 * @return
+	 * @see Identifiable#getLoadOrder()
 	 */
 	public int getLoadOrder() {
 		return loadOrder;
 	}
-
-
+	
 	/**
-	 * @return Returns the allowsExtendedPagesAfter.
-	 */
-	public boolean isAllowsExtendedPagesAfter() {
-		return allowsExtendedPagesAfter;
-	}
-
-	/**
-	 * @param allowsExtendedPagesAfter
-	 *            The allowsExtendedPagesAfter to set.
-	 */
-	public void setAllowsExtendedPagesAfter(boolean allowsExtendedPagesAfter) {
-		this.allowsExtendedPagesAfter = allowsExtendedPagesAfter;
-	}
-
-	public String getRequiresDataOperationId() {
-		return requiresDataOperationId;
-	}
-
-
-	public void setRequiresDataOperationId(String dataOperationId) {
-		requiresDataOperationId = dataOperationId;
-	}
-
-	public Set getDataModelIDs() {
-		return dataModelIDs;
-	}
-
-	public void setDataModelID(Set newDataModelIDs) {
-		dataModelIDs = newDataModelIDs;
-	}
-
-	/**
-	 * @return Returns the wizardFactoryElement.
-	 */
-	public String getWizardFactoryElement() {
-		return wizardFactoryElement;
-	}
-
-	/**
-	 * @param wizardFactoryElement
-	 *            The wizardFactoryElement to set.
-	 */
-	public void setWizardFactoryElement(String wizardFactoryElement) {
-		this.wizardFactoryElement = wizardFactoryElement;
-	}
-
-	/**
-	 * @return Returns the wizardID.
+	 * Returns the ID of the wizard which pages the current extension will
+	 * contribute to.
+	 * 
+	 * @return a String representation of the wizard ID.
 	 */
 	public String getWizardID() {
 		return wizardID;
 	}
-
+	
 	/**
-	 * @param wizardID
-	 *            The wizardID to set.
-	 */
-	public void setWizardID(String wizardID) {
-		this.wizardID = wizardID;
-	}
-
-	/**
-	 * @return Returns the wizardPageFactoryElement.
-	 */
-	public DMWizardPageFactoryElement getWizardPageFactoryElement() {
-		return wizardPageFactoryElement;
-	}
-
-	/**
-	 * @param wizardPageFactoryElement
-	 *            The wizardPageFactoryElement to set.
-	 */
-	public void setWizardPageFactoryElement(DMWizardPageFactoryElement wizardPageFactoryElement) {
-		this.wizardPageFactoryElement = wizardPageFactoryElement;
-	}
-
-
-	/**
-	 * @param pageID
-	 *            The pageID to set.
-	 */
-	public void setPageID(String pageID) {
-		this.pageGroupID = pageID;
-	}
-
-	/*
-	 * (non-Javadoc)
+	 * Create additional controls for the specified wizard page.
 	 * 
-	 * @see org.eclipse.wst.common.frameworks.internal.AbstractRegistryDescriptor#getID()
+	 * <p>
+	 * The current extension contributes additional controls to the specified
+	 * parent composite that is part of the wizard page.
+	 * </p>
+	 * 
+	 * @param parent -
+	 *            the parent composite where the additional controls will be
+	 *            added to.
+	 * @param model -
+	 *            the data model of the wizard.
+	 * @param pageName -
+	 *            the name of the extended wizard page.
 	 */
-	public String getID() {
-		return getPageID();
+	public void createAdditionalControls(Composite parent, IDataModel model, String pageName) {
+		if (factoryElement != null)
+			factoryElement.createAdditionalControls(parent, model, pageName);
+	}
+	
+	private void readFactory(IConfigurationElement element) {
+		IConfigurationElement[] factories = element.getChildren(ELEMENT_FACTORY);
+		if (factories != null && factories.length > 0) {
+			factoryElement = new DMWizardPageFactoryElement(factories[0]);
+		}
 	}
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2006 IBM Corporation and others.
+ * Copyright (c) 2003, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Kaloyan Raev, kaloyan.raev@sap.com - bug 213927
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.operation.extensionui;
 
@@ -80,13 +81,13 @@ public class DMWizardPageExtensionManager {
 	protected class WizardPageExtensionReader extends RegistryReader {
 
 		public WizardPageExtensionReader() {
-			super(CommonUIPluginConstants.PLUGIN_ID, DMWizardPageElement.ELEMENT_PAGE_GROUP);
+			super(CommonUIPluginConstants.PLUGIN_ID, DMWizardPageGroupElement.ELEMENT_PAGE_GROUP);
 		}
 
 		public boolean readElement(IConfigurationElement element) {
-			if (!DMWizardPageElement.ELEMENT_PAGE_GROUP.equals(element.getName()))
+			if (!DMWizardPageGroupElement.ELEMENT_PAGE_GROUP.equals(element.getName()))
 				return false;
-			DMWizardPageElement newElement = new DMWizardPageElement(element);
+			DMWizardPageGroupElement newElement = new DMWizardPageGroupElement(element);
 
 			// put the element into a hashmap, wizardID as key,
 			// list of page elements as object
@@ -101,12 +102,12 @@ public class DMWizardPageExtensionManager {
 			return true;
 		}
 
-		public void insertPageElement(TreeMap pageMap, DMWizardPageElement newElement) {
+		public void insertPageElement(TreeMap pageMap, DMWizardPageGroupElement newElement) {
 			if (newElement.pageInsertionID == null) {
 				pageMap.put(newElement, new TreeSet());
 			} else {
 				String elementName = newElement.pageInsertionID;
-				DMWizardPageElement parentElement = getPageElement(elementName, pageMap);
+				DMWizardPageGroupElement parentElement = getPageElement(elementName, pageMap);
 				insertExtPageElement(pageMap, parentElement, newElement);
 			}
 
@@ -114,7 +115,7 @@ public class DMWizardPageExtensionManager {
 
 		}
 
-		private void insertExtPageElement(TreeMap pageMap, DMWizardPageElement parentElement, DMWizardPageElement newElement) {
+		private void insertExtPageElement(TreeMap pageMap, DMWizardPageGroupElement parentElement, DMWizardPageGroupElement newElement) {
 			if (parentElement == null) {
 				nonSyncedPageElementList.add(newElement);
 				return;
@@ -134,10 +135,10 @@ public class DMWizardPageExtensionManager {
 				nonSyncedPageElementList.remove(newElement);
 		}
 
-		private DMWizardPageElement getPageElement(String elementName, TreeMap map) {
+		private DMWizardPageGroupElement getPageElement(String elementName, TreeMap map) {
 			Set keySet = map.keySet();
 			for (Iterator iter = keySet.iterator(); iter.hasNext();) {
-				DMWizardPageElement element = (DMWizardPageElement) iter.next();
+				DMWizardPageGroupElement element = (DMWizardPageGroupElement) iter.next();
 				if (element.getPageID().equals(elementName))
 					return element;
 			}
@@ -145,7 +146,7 @@ public class DMWizardPageExtensionManager {
 
 		}
 
-		private TreeMap createPageMapEntry(DMWizardPageElement newElement) {
+		private TreeMap createPageMapEntry(DMWizardPageGroupElement newElement) {
 			TreeMap pageMap = new TreeMap();
 			TreeSet pageExtensionSet = new TreeSet();
 			pageMap.put(newElement, pageExtensionSet);
@@ -160,17 +161,17 @@ public class DMWizardPageExtensionManager {
 		return treeMap.isEmpty();
 	}
 
-	public DMWizardPageElement[] getPageElements(String wizardID) {
+	public DMWizardPageGroupElement[] getPageElements(String wizardID) {
 		TreeMap elementMap = (TreeMap) wizardPageElements.get(wizardID);
 		if (elementMap == null || elementMap.isEmpty()) {
-			return new DMWizardPageElement[0];
+			return new DMWizardPageGroupElement[0];
 		}
 		ArrayList alreadyVistedList = new ArrayList(elementMap.size());
 		Set allPageElementsList = elementMap.keySet();
 		ArrayList orderedPageList = new ArrayList(elementMap.size());
 
 		for (Iterator iter = allPageElementsList.iterator(); iter.hasNext();) {
-			DMWizardPageElement element = (DMWizardPageElement) iter.next();
+			DMWizardPageGroupElement element = (DMWizardPageGroupElement) iter.next();
 			if (alreadyVistedList.contains(element))
 				continue;
 			if (EnablementManager.INSTANCE.getIdentifier(element.getID(), null).isEnabled()) {
@@ -184,19 +185,19 @@ public class DMWizardPageExtensionManager {
 
 	}
 
-	private DMWizardPageElement[] getPageArray(ArrayList orderedPageList) {
-		DMWizardPageElement[] pageElements = new DMWizardPageElement[orderedPageList.size()];
+	private DMWizardPageGroupElement[] getPageArray(ArrayList orderedPageList) {
+		DMWizardPageGroupElement[] pageElements = new DMWizardPageGroupElement[orderedPageList.size()];
 		for (int i = 0; i < orderedPageList.size(); i++) {
-			pageElements[i] = (DMWizardPageElement) orderedPageList.get(i);
+			pageElements[i] = (DMWizardPageGroupElement) orderedPageList.get(i);
 		}
 		return pageElements;
 	}
 
 	private void flatenTreeSet(TreeSet treeSet, Set allPageElementsList, ArrayList alreadyVistedList, ArrayList orderedPageList, TreeMap elementMap) {
 		for (Iterator iter = treeSet.iterator(); iter.hasNext();) {
-			DMWizardPageElement element = (DMWizardPageElement) iter.next();
+			DMWizardPageGroupElement element = (DMWizardPageGroupElement) iter.next();
 			if (alreadyVistedList.contains(element)) {
-				Logger.getLogger().logError(WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WizardPageExtensionManager_UI_2, new Object[]{element.getPageID(), DMWizardPageElement.ATT_PAGE_INSERTION_ID})); 
+				Logger.getLogger().logError(WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WizardPageExtensionManager_UI_2, new Object[]{element.getPageID(), DMWizardPageGroupElement.ATT_PAGE_INSERTION_ID})); 
 				return;
 			}
 			if (allPageElementsList.contains(element)) {
@@ -219,7 +220,7 @@ public class DMWizardPageExtensionManager {
 	private void postReadFromRegistry() {
 		listRemoveObjects = new ArrayList(nonSyncedPageElementList.size());
 		for (int i = 0; i < nonSyncedPageElementList.size(); i++) {
-			DMWizardPageElement element = (DMWizardPageElement) nonSyncedPageElementList.get(i);
+			DMWizardPageGroupElement element = (DMWizardPageGroupElement) nonSyncedPageElementList.get(i);
 			TreeMap pageMap = (TreeMap) wizardPageElements.get(element.wizardID);
 			if (element.pageInsertionID == null) {
 				addToFirstAvialiable(pageMap, element);
@@ -237,10 +238,10 @@ public class DMWizardPageExtensionManager {
 	 * @param pageMap
 	 * @param element
 	 */
-	private void addToFirstAvialiable(TreeMap pageMap, DMWizardPageElement newElement) {
+	private void addToFirstAvialiable(TreeMap pageMap, DMWizardPageGroupElement newElement) {
 		boolean insertNotFound = true;
 		for (Iterator iter = pageMap.keySet().iterator(); iter.hasNext();) {
-			DMWizardPageElement element = (DMWizardPageElement) iter.next();
+			DMWizardPageGroupElement element = (DMWizardPageGroupElement) iter.next();
 			if (element.allowsExtendedPagesAfter) {
 				TreeSet set = (TreeSet) pageMap.get(element);
 				set.add(newElement);
@@ -258,7 +259,7 @@ public class DMWizardPageExtensionManager {
 	private void logMissingClassError() {
 		Logger logger = Logger.getLogger();
 		for (int i = 0; i < nonSyncedPageElementList.size(); i++) {
-			DMWizardPageElement element = (DMWizardPageElement) nonSyncedPageElementList.get(i);
+			DMWizardPageGroupElement element = (DMWizardPageGroupElement) nonSyncedPageElementList.get(i);
 			logger.logError(WTPCommonUIResourceHandler.getString(WTPCommonUIResourceHandler.WizardPageExtensionManager_UI_4, new Object[]{element.pageInsertionID, element.getPageID(), element.pluginID}));
 		}
 		nonSyncedPageElementList.clear();

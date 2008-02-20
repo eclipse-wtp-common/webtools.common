@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005 IBM Corporation and others.
+ * Copyright (c) 2005, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Kaloyan Raev, kaloyan.raev@sap.com - bug 213927
  *******************************************************************************/
 package org.eclipse.wst.common.frameworks.internal.ui;
 
@@ -19,49 +20,49 @@ import org.eclipse.wst.common.frameworks.datamodel.IDataModel;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageGroup;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageGroupHandler;
 import org.eclipse.wst.common.frameworks.internal.datamodel.ui.IDMPageHandler;
-import org.eclipse.wst.common.frameworks.internal.operation.extensionui.DMWizardPageElement;
+import org.eclipse.wst.common.frameworks.internal.operation.extensionui.DMWizardPageGroupElement;
 
 public class DMPageGroupElementImpl implements IDMPageGroup {
-	private DMWizardPageElement pageElement;
-
+	private DMWizardPageGroupElement pageGroupElement;
+	
 	public DMPageGroupElementImpl(IConfigurationElement element) {
-		pageElement = new DMWizardPageElement(element);
+		pageGroupElement = new DMWizardPageGroupElement(element);
 	}
 
 	public boolean getAllowsExtendedPages() {
-		return pageElement.allowsExtendedPagesAfter();
+		return pageGroupElement.allowsExtendedPagesAfter();
 	}
 
 	public String getRequiredDataOperationToRun() {
-		return pageElement.getRequiresDataOperationId();
+		return pageGroupElement.getRequiresDataOperationId();
 	}
 
 	public Set getDataModelIDs() {
-		return pageElement.getDataModelIDs();
+		return pageGroupElement.getDataModelIDs();
 	}
 
 	public IDMPageGroupHandler getPageGroupHandler(IDataModel dataModel) {
-		return pageElement.createPageGroupHandler(dataModel);
+		return pageGroupElement.createPageGroupHandler(dataModel);
 	}
 
 	public List getPages(IDataModel dataModel){
-		return Arrays.asList(pageElement.createPageGroup(dataModel));
+		return Arrays.asList(pageGroupElement.createPageGroup(dataModel));
 	}
 	
 	public IDMPageHandler getPageHandler(IDataModel dataModel) {
-		return pageElement.createPageHandler(dataModel);
+		return pageGroupElement.createPageHandler(dataModel);
 	}
 
 	public String getPageGroupID() {
-		return pageElement.getPageID();
+		return pageGroupElement.getPageID();
 	}
 
 	public String getPageGroupInsertionID() {
-		return pageElement.getPageInsertionID();
+		return pageGroupElement.getPageInsertionID();
 	}
 
 	public String getWizardID() {
-		return pageElement.getWizardID();
+		return pageGroupElement.getWizardID();
 	}
 
 }
