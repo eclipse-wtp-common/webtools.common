@@ -32,6 +32,18 @@
             wizardID="org.eclipse.wst.common.tests.ui.wizard.Test2DataModelProvider">
          <factory className="org.eclipse.wst.common.tests.ui.wizard.Test2DataModelWizardFactory3"/>
       </wizardPageGroup>
+      <wizardPage
+            wizardID="org.eclipse.wst.common.tests.ui.wizard.Test2DataModelProvider">
+         <factory
+               className="org.eclipse.wst.common.tests.ui.wizard.Test2PageWizardExtensionFactory">
+         </factory>
+      </wizardPage>
+      <wizardPage
+            wizardID="org.eclipse.wst.common.tests.ui.wizard.Test2DataModelProvider">
+         <factory
+               className="org.eclipse.wst.common.tests.ui.wizard.Test2PageWizardExtensionFactory2">
+         </factory>
+      </wizardPage>
    </extension>
   
      <!--
