@@ -157,7 +157,7 @@ public final class ValidationResult {
 	}
 
 	/**
-	 * Answer all the resources that were validated as a side-effect of validating the main resource.
+	 * @return All the resources that were validated as a side-effect of validating the main resource, or null if none were.
 	 */
 	public IResource[] getValidated() {
 		return _validated;

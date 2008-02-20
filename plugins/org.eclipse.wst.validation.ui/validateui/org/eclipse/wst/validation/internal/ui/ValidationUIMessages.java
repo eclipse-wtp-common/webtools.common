@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006 IBM Corporation and others.
+ * Copyright (c) 2006, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -29,15 +29,24 @@ public class ValidationUIMessages extends NLS {
 	
 	public static String Validate;
 	
-	public static String ValResultsStatus;
-	public static String ValErrors1;
-	public static String ValErrors;
-	public static String ValWarn1;
-	public static String ValWarn;
-	public static String ValInfo1;
-	public static String ValInfo;
-	public static String ValTime1;
-	public static String ValTime;
+	public static String ValResults;
+
+	// results validating one resource
+	public static String ValError1Resource1;
+	public static String ValErrorsResource1;
+	public static String ValWarn1Resource1;
+	public static String ValWarnResource1;
+	public static String ValInfo1Resource1;
+	public static String ValInfoResource1;
+
+	// results validating multiple resources
+	public static String ValError1Resources;
+	public static String ValErrorsResources;
+	public static String ValWarn1Resources;
+	public static String ValWarnResources;
+	public static String ValInfo1Resources;
+	public static String ValInfoResources;
+
 	public static String ValSuccess;
 	
 
