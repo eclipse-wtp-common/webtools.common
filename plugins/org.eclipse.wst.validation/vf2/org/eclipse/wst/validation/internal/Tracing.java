@@ -15,12 +15,20 @@ public class Tracing {
 	
 	private static DateFormat 	_df = new SimpleDateFormat("HH:mm:ss.SSSS"); //$NON-NLS-1$
 	private static boolean		_forceLogging;
+	private static Boolean		_traceMatches;
 	
 	/**
 	 * Are we in logging/debugging mode?
 	 */
 	public static boolean isLogging(){
 		return _forceLogging || ValidationPlugin.getPlugin().isDebugging();
+	}
+	
+	public static boolean isTraceMatches(){
+		if (_traceMatches == null){
+			_traceMatches = Misc.debugOptionAsBoolean(DebugConstants.TraceMatches);
+		}
+		return _traceMatches;
 	}
 
 	/**

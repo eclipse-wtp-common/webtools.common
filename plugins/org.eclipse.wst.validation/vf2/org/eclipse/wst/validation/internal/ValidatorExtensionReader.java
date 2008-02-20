@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.IExtension;
@@ -14,6 +15,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.validation.AbstractValidator;
+import org.eclipse.wst.validation.MessageSeveritySetting;
 import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.internal.model.FilterGroup;
 import org.eclipse.wst.validation.internal.model.FilterRule;
@@ -27,41 +29,29 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  */
 public class ValidatorExtensionReader {
 	
+	private static ValidatorExtensionReader _me;
+	
+	public static ValidatorExtensionReader getDefault(){
+		if (_me == null)_me = new ValidatorExtensionReader();
+		return _me;
+	}
+	
+	private ValidatorExtensionReader(){}
+	
 	/**
 	 * Read the extensions.
 	 * 
 	 * @param deep if true load all the configuration elements for each validator, if false
-	 * do a shallow load, where only the validator class, id and name's are loaded.
+	 * do a shallow load, where only the validator class, id, name and message categories loaded.
 	 */
-	public static Validator[] process(boolean deep){
-		ValidatorExtensionReader ver = new ValidatorExtensionReader();
-		return ver.readRegistry(deep);
-	}
-	
-	/**
-	 * Determine if any of the validators need to be migrated, and if so answer a new
-	 * Validator array.
-	 * 
-	 * @param validators the existing validators (from the preferences).
-	 *  
-	 * @return null if no validators needed to be migrated.
-	 */
-	public static Validator[] migrate(Validator[] validators){
-		ValidatorExtensionReader ver = new ValidatorExtensionReader();
-		return ver.migrate2(validators);
-	}
-
-	private ValidatorExtensionReader(){}
-	
-	private Validator[] readRegistry(boolean deep) {
+	public Validator[] process(boolean deep, IProject project) {
 		List<Validator> list = new LinkedList<Validator>();
-		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IExtensionPoint extensionPoint = registry.getExtensionPoint(ValidationPlugin.PLUGIN_ID, ExtensionConstants.validator);
+		IExtensionPoint extensionPoint = getExtensionPoint();
 		if (extensionPoint == null)return new Validator[0];
 				
 		for (IExtension ext : extensionPoint.getExtensions()){
 			for (IConfigurationElement validator : ext.getConfigurationElements()){
-				Validator v = processValidator(validator, ext.getUniqueIdentifier(), ext.getLabel(), deep);
+				Validator v = processValidator(validator, ext.getUniqueIdentifier(), ext.getLabel(), deep, project);
 				if (v != null)list.add(v);
 			}
 		}
@@ -81,11 +71,11 @@ public class ValidatorExtensionReader {
 	 * 
 	 * @return a configured validator or return null if there was an error.
 	 */
-	private Validator processValidator(IConfigurationElement validator, String id, String label, boolean deep) {
+	private Validator processValidator(IConfigurationElement validator, String id, String label, boolean deep, IProject project) {
 		Validator.V2 v = null;
 		try {
 			AbstractValidator vb = (AbstractValidator)validator.createExecutableExtension(ExtensionConstants.AttribClass);
-			v = Validator.create(vb).asV2Validator();
+			v = Validator.create(vb, project).asV2Validator();
 			v.setId(id);
 			v.setName(label);
 			v.setBuildValidation(getAttribute(validator, ExtensionConstants.build, true));
@@ -105,6 +95,54 @@ public class ValidatorExtensionReader {
 		}
 		return v;
 	}
+	
+	/**
+	 * Answer all the messages that this validator has defined.
+	 * @param v
+	 * @return an empty list if the validator did not define any messages.
+	 */
+	public List<MessageSeveritySetting> addMessages(Validator v){
+		List<MessageSeveritySetting> list = new LinkedList<MessageSeveritySetting>();
+		IExtensionPoint extensionPoint = getExtensionPoint();
+		if (extensionPoint == null)return list;
+		IExtension ext = extensionPoint.getExtension(v.getId());
+		if (ext == null)return list;
+		
+		for (IConfigurationElement elem : ext.getConfigurationElements()){
+			for (IConfigurationElement ce : elem.getChildren(ExtensionConstants.MessageCategory.name)){
+				list.add(processMessage(ce));
+			}
+		}
+
+		return list;
+	}
+
+	/**
+	 * Answer the extension point for the validators.
+	 * 
+	 * @return null if there is a problem or no extensions.
+	 */
+	private IExtensionPoint getExtensionPoint() {
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
+		return registry.getExtensionPoint(ValidationPlugin.PLUGIN_ID, ExtensionConstants.validator);
+	}
+	
+
+	/**
+	 * Process a message element for the validator, by creating a MessageCategory for it.
+	 * 
+	 * @param ce a MessageCategory element.
+	 */
+	private MessageSeveritySetting processMessage(IConfigurationElement ce) {
+		String s = ce.getAttribute(ExtensionConstants.MessageCategory.severity);
+		MessageSeveritySetting.Severity sev = null;
+		if (ExtensionConstants.MessageCategory.sevError.equals(s))sev = MessageSeveritySetting.Severity.Error;
+		else if (ExtensionConstants.MessageCategory.sevWarning.equals(s))sev = MessageSeveritySetting.Severity.Warning;
+		else if (ExtensionConstants.MessageCategory.sevIgnore.equals(s))sev = MessageSeveritySetting.Severity.Ignore;
+		
+		return new MessageSeveritySetting(ce.getAttribute(ExtensionConstants.MessageCategory.id), 
+			ce.getAttribute(ExtensionConstants.MessageCategory.label), sev);		
+	}
 
 	/** 
 	 * Process the children of the validator tag, i.e. include and exclude groups.
@@ -114,7 +152,7 @@ public class ValidatorExtensionReader {
 	 */
 	private void processValidatorChildren(Validator.V2 v, IConfigurationElement group) {
 		FilterGroup fg = FilterGroup.create(group.getName());
-		if (fg == null)throw new IllegalStateException(ValMessages.ErrGroupName);			
+		if (fg == null)return;			
 		
 		IConfigurationElement[] rules = group.getChildren(ExtensionConstants.rules);
 		// there should only be one
@@ -148,18 +186,17 @@ public class ValidatorExtensionReader {
 	 *  
 	 * @return null if no validators needed to be migrated.
 	 */
-	private Validator[] migrate2(Validator[] validators) {
+	public Validator[] migrate(Validator[] validators, IProject project) {
 		int count = 0;
 		Map<String, Validator> map = new HashMap<String, Validator>(validators.length);
 		for (Validator v : validators)map.put(v.getId(), v);
 		
-		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		IExtensionPoint extensionPoint = registry.getExtensionPoint(ValidationPlugin.PLUGIN_ID, ExtensionConstants.validator);
+		IExtensionPoint extensionPoint = getExtensionPoint();
 		if (extensionPoint == null)return null;
 				
 		for (IExtension ext : extensionPoint.getExtensions()){
 			for (IConfigurationElement validator : ext.getConfigurationElements()){
-				Validator v = processValidator(validator, ext.getUniqueIdentifier(), ext.getLabel(), true);
+				Validator v = processValidator(validator, ext.getUniqueIdentifier(), ext.getLabel(), true, project);
 				if (v == null)continue;
 				Validator old = map.get(v.getId());
 				if (old == null || old.getVersion() < v.getVersion()){
@@ -197,4 +234,18 @@ public class ValidatorExtensionReader {
 		}
 		return dft;
 	}
+	
+//	/**
+//	 * This method is only used for debugging.
+//	 * @param elem
+//	 */
+//	private static void dump(IConfigurationElement elem){
+//		String name = elem.getName();
+//		String[] attribs = elem.getAttributeNames();
+//		String[] vals = new String[attribs.length];
+//		for (int i=0; i<vals.length; i++)vals[i] = elem.getAttribute(attribs[i]);
+//		String v = elem.getValue();
+//		IConfigurationElement[] children = elem.getChildren();
+//		for (int i=0; i<children.length; i++)dump(children[i]);
+//	}
 }

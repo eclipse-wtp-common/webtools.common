@@ -275,7 +275,7 @@ public class ProjectConfiguration extends ValidationConfiguration {
 
 		setEnabledManualValidators(gp.getManualEnabledValidators());
 		setEnabledBuildValidators(gp.getBuildEnabledValidators());
-    setDelegatingValidators(gp.getDelegatingValidators());
+		setDelegatingValidators(gp.getDelegatingValidators());
 		
 		// except for this field, which is unique to the project preferences
 		setDoesProjectOverride(getDoesProjectOverrideDefault());
@@ -286,12 +286,14 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		GlobalConfiguration gp = ConfigurationManager.getManager().getGlobalConfiguration();
 		setEnabledManualValidators(gp.getManualEnabledValidators());
 		setEnabledBuildValidators(gp.getBuildEnabledValidators());
-    setDelegatingValidators(gp.getDelegatingValidators());
+		setDelegatingValidators(gp.getDelegatingValidators());
 	}
 
 	/**
 	 * The project's nature has changed, so recalculate the validators that are configured on the
 	 * project, and reset the values of the project to the default.
+	 * 
+	 * @deprecated this method doesn't do anything
 	 */
 	public void resetProjectNature() {
 		/*
@@ -472,9 +474,6 @@ public class ProjectConfiguration extends ValidationConfiguration {
   }
 
 
-	/**
-	 * @see org.eclipse.wst.validation.internal.operations.internal.attribute.ValidationConfiguration#deserialize(String)
-	 */
 	public void deserialize(String storedConfiguration) throws InvocationTargetException {
 		if (storedConfiguration == null || storedConfiguration.length() == 0 || storedConfiguration.equals(DefaultValue)) {
 			resetToDefault();
@@ -496,9 +495,6 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		}
 	}
 
-	/**
-	 * @see org.eclipse.wst.validation.internal.operations.internal.attribute.ValidationConfiguration#serialize()
-	 */
 	public String serialize() throws InvocationTargetException {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(ConfigurationConstants.PRJ_OVERRIDEGLOBAL);

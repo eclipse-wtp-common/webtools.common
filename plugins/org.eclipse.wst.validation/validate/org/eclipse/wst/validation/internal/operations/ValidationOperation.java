@@ -97,7 +97,9 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 	    @Override
 	    public boolean belongsTo(Object family) {
 			if (family == ResourcesPlugin.FAMILY_MANUAL_BUILD)return true;
-			if (family == ValidationBuilder.FAMILY_VALIDATION_JOB)return true;
+			if (family == ValidationBuilder.FAMILY_VALIDATION_JOB){
+				return true;
+			}
 			return super.belongsTo(family);
 	    }
 	}

@@ -77,7 +77,10 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 	
 	public boolean belongsTo(Object family) {
 		if (family == ResourcesPlugin.FAMILY_MANUAL_BUILD)return true;
-		if (family == ValidationBuilder.FAMILY_VALIDATION_JOB)return true;
+		if (family == ValidationBuilder.FAMILY_VALIDATION_JOB){
+			return true;
+		}
+			
 		return super.belongsTo(family);
 	}
 

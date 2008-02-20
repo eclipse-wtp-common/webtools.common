@@ -11,7 +11,7 @@ import org.eclipse.wst.validation.internal.ValPrefManagerProject;
  *
  */
 public class ProjectPreferences {
-	/** false - Default setting for the should all the validation be suspended setting. */ 
+	/** false - Default setting for the "should all the validation be suspended" setting. */ 
 	public static final boolean DefaultSuspend = false;
 	
 	/** false - Default setting for letting projects override the global settings. */
@@ -41,6 +41,10 @@ public class ProjectPreferences {
 		_suspend = suspend;
 	}
 	
+	/**
+	 * Answer the validators that have been registered for this project.
+	 * @return an empty array if there are no validators.
+	 */
 	public Validator[] getValidators() {
 		Validator[] vals = _validators;
 		if (vals == null){
@@ -58,11 +62,13 @@ public class ProjectPreferences {
 		Validator[] vals = null;
 		ValPrefManagerProject vpm = new ValPrefManagerProject(_project);
 		if (vpm.hasProjectSpecificSettings()){
-			vpm.loadProjectPreferences();			
+			vpm.loadProjectPreferences(this);
+			vals = _validators;
 		}
 		else {
 			vals = ValManager.getDefault().getValidators();
 		}
+		if (vals == null)vals = new Validator[0];
 		return vals;
 	}
 

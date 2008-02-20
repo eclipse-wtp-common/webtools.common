@@ -1,15 +1,17 @@
 package org.eclipse.wst.validation.internal;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
+import org.eclipse.wst.validation.MessageSeveritySetting;
 import org.eclipse.wst.validation.Validator;
-import org.eclipse.wst.validation.internal.model.FilterGroup;
-import org.eclipse.wst.validation.internal.model.FilterRule;
 import org.eclipse.wst.validation.internal.model.ProjectPreferences;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
 import org.osgi.service.prefs.BackingStoreException;
@@ -23,15 +25,35 @@ import org.osgi.service.prefs.Preferences;
 public class ValPrefManagerProject {
 	
 	private IProject	_project;
+	private static List<IValChangedListener> _listeners = new LinkedList<IValChangedListener>();
+
 	
 	public ValPrefManagerProject(IProject project){
 		assert project != null;
 		_project = project;
 	}
 	
+	public static void addListener(IValChangedListener listener){
+		if (_listeners.contains(listener))return;
+		_listeners.add(listener);
+	}
+	
+	public static void removeListener(IValChangedListener listener){
+		_listeners.remove(listener);
+	}
+	
+	private static void updateListeners(IProject project){
+		for (IValChangedListener cl : _listeners)cl.validatorsForProjectChanged(project); 
+	}
+
+	
 	/**
-	 * Answer whether or not this project has overridden the validation settings.  
-	 * @return
+	 * Answer whether or not this project has validation settings.
+	 *   
+	 * @return true if it has settings. This does not mean that the settings are enabled, only that it
+	 * has settings.
+	 * 
+	 * @see ValManager#hasEnabledProjectPreferences(IProject)
 	 */
 	public boolean hasProjectSpecificSettings(){
 		IEclipsePreferences pref = getPreferences();
@@ -44,24 +66,23 @@ public class ValPrefManagerProject {
 	}
 		
 	/**
-	 * If the project has preferences answer them.
-	 * @return null if the project does not have any specific preferences.
+	 * Update the project preferences from the preference store.
+	 * @return false if the project does not have any specific preferences.
 	 */
-	public ProjectPreferences loadProjectPreferences() {
+	public boolean loadProjectPreferences(ProjectPreferences pp) {
 		IEclipsePreferences pref = getPreferences();
 		
-		if (pref == null)return null;
+		if (pref == null)return false;
 		int version = pref.getInt(PrefConstants.frameworkVersion, 0);
-		if (version == 0)return null;
+		if (version == 0)return false;
 
-		ProjectPreferences pp = new ProjectPreferences(_project);
 		pp.setOverride(pref.getBoolean(PrefConstants.override, ProjectPreferences.DefaultOverride));
 		pp.setSuspend(pref.getBoolean(PrefConstants.suspend, ProjectPreferences.DefaultSuspend));
 		
-		Validator[] vals = ValManager.getDefault().getValidators(false, _project);
+		Validator[] vals = ValManager.getDefault().getValidators2(_project);
 		loadPreferences(vals, pref);
 		pp.setValidators(vals);
-		return pp;
+		return true;
 	}
 	
 	/**
@@ -115,7 +136,7 @@ public class ValPrefManagerProject {
 		catch (BackingStoreException e){
 			ValidationPlugin.getPlugin().handleException(e);
 		}
-		for (Validator v : validators)savePreference(v, filters);
+		for (Validator v : validators)ValPrefManagerGlobal.save(v, pref);
 		try {
 			pref.flush();
 			ProjectConfiguration pc = ConfigurationManager.getManager()
@@ -124,11 +145,11 @@ public class ValPrefManagerProject {
 			pc.setEnabledManualValidators(getEnabledManualValidators(validators));
 			pc.passivate();
 			pc.store();
+			updateListeners(_project);
 		}
 		catch (Exception e){
 			ValidationPlugin.getPlugin().handleException(e);
-		}
-		
+		}		
 	}
 	
 	/**
@@ -161,32 +182,12 @@ public class ValPrefManagerProject {
 		return set;
 	}
 	
-	/**
-	 * Save the validator preferences and filters. 
-	 * @param validator
-	 * @param prefs up to the filter part of the preference tree
-	 */
-	private void savePreference(Validator validator, Preferences prefs) {
-		if (validator.asV2Validator() == null)return;
-		Preferences val = prefs.node(validator.getId());
-		val.putBoolean(PrefConstants.build, validator.isBuildValidation());
-		val.putBoolean(PrefConstants.manual, validator.isManualValidation());
-		val.putInt(PrefConstants.version, validator.getVersion());
-		if (validator.getDelegatingId() != null)val.put(PrefConstants.delegate, validator.getDelegatingId());
-		Validator.V2 v2 = validator.asV2Validator();
-		if (v2 == null)return;
-		
-		FilterGroup[] groups = v2.getGroups();
-		Preferences group = val.node(PrefConstants.groups);
-		for (int i=0; i<groups.length; i++){
-			Preferences gid= group.node(String.valueOf(i));
-			gid.put(PrefConstants.type, groups[i].getType());
-			FilterRule[] rules = groups[i].getRules();
-			Preferences r = gid.node(PrefConstants.rules);
-			for (int j=0; j<rules.length; j++){
-				Preferences rid= r.node(String.valueOf(j));
-				rules[j].save(rid);
-			}
+	public void loadMessages(Validator validator, Map<String, MessageSeveritySetting> settings) {
+		try {
+			ValPrefManagerGlobal.loadMessageSettings(validator, settings, getPreferences());
+		}
+		catch (BackingStoreException e){
+			ValidationPlugin.getPlugin().handleException(e);
 		}		
 	}
 

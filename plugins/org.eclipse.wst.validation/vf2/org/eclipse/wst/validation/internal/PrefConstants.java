@@ -36,6 +36,9 @@ public interface PrefConstants {
 	/** manual - is the validator enabled for manual validation? */
 	String manual = "manual"; //$NON-NLS-1$
 	
+	/** msgs - node where all the message severity mappings are stored. */
+	String msgs = "msgs"; //$NON-NLS-1$
+	
 	/** 
 	 * version - version of the filter definition. This is something that a client can use to keep track
 	 * of changes that they might make to their validation extension.

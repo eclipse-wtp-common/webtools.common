@@ -28,11 +28,16 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  * However, some validators want to be used in multiple contexts, for example as-you-type validation and 
  * batch validation. For these types of validators it is not possible for them to use only IMarkers, because
  * often the Resource has not been saved yet.
+ * </p>
  */
 public class ValidatorMessage {
 	
+	/** Associate some arbitrary attributes with a message. */
 	private Map<String, Object>	_map = new HashMap<String, Object>(5);
+	
 	private IResource	_resource;
+	
+	/** The type of marker. */
 	private String		_type;
 	
 	/**

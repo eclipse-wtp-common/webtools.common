@@ -374,11 +374,19 @@ public abstract class FilterRule implements IAdaptable {
 			try {
 				if (resource instanceof IFile) {
 					IFile file = (IFile) resource;
+					
+					String name = resource.getName();
+					if (name.equals(".project")){
+						int i = 0;
+					}
+						
 					IContentDescription cd = file.getContentDescription();
 					if (cd == null)return Boolean.FALSE;
 					IContentType ct = cd.getContentType();
 					if (ct == null)return Boolean.FALSE;
-					return _pattern.equals(ct.getId());
+					boolean match = _pattern.equals(ct.getId());
+					if (match && Tracing.isTraceMatches())Tracing.log(toString() + " has matched " + resource); //$NON-NLS-1$
+					return match;
 				}
 			}
 			catch (CoreException e){

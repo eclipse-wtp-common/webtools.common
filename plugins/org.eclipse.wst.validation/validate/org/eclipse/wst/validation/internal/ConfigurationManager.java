@@ -168,17 +168,10 @@ public final class ConfigurationManager implements ConfigurationConstants {
 
 	/**
 	 * The nature of the project has changed; update the enabled validators on the project.
+	 * 
+	 * @deprecated this method doesn't do anything.
 	 */
 	public void resetProjectNature(IProject project) throws InvocationTargetException {
-		resetProjectNature(getProjectConfiguration(project));
-	}
-
-	/**
-	 * When a project has been created for the first time, its natures may not have been complete at
-	 * the time that this Preference was recreated. Call this method to recalculate the vmds.
-	 */
-	protected void resetProjectNature(ProjectConfiguration prjp) throws InvocationTargetException {
-		prjp.resetProjectNature();
 	}
 
 	public void closing(IProject project) {

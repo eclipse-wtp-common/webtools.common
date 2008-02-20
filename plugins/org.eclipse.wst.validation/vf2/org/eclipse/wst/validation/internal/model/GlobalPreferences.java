@@ -1,5 +1,7 @@
 package org.eclipse.wst.validation.internal.model;
 
+import org.eclipse.wst.validation.internal.ValManager;
+
 /**
  * This class represents the global Preferences as set on the Validation Preferences page.
  */
@@ -22,8 +24,15 @@ public class GlobalPreferences {
 	private boolean _confirmDialog = DefaultConfirm;
 	private boolean _override = DefaultOverride;
 	
-	/** The plug-in state timestamp. */
+	/** The plug-in state time stamp. */
 	private long	_stateTimeStamp;
+	
+	/**
+	 * The only valid way to get the global preferences is through the ValManager.
+	 * 
+	 * @see ValManager#getGlobalPreferences()
+	 */
+	public GlobalPreferences(){	}
 	
 	public boolean getSaveAutomatically() {
 		return _saveAutomatically;

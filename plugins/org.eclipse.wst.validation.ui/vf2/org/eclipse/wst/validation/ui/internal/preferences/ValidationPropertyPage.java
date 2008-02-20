@@ -182,8 +182,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 		private Link			_configLink;
 		private Button			_addValidationBuilder;
 		private Table 			_validatorsTable;
-		private ProjectPreferences	_projectPreferences;
-
+		private Validator[]		_validators;
 
 		/**
 		 * This class is provided for the CheckboxTableViewer in the
@@ -194,8 +193,8 @@ public class ValidationPropertyPage extends PropertyPage  {
 			}
 
 			public Object[] getElements(Object inputElement) {
-				if (inputElement instanceof ValidatorWrapper[]) {
-					return (ValidatorWrapper[]) inputElement;
+				if (inputElement instanceof Validator[]) {
+					return (Validator[]) inputElement;
 				}
 				return new Object[0];
 			}
@@ -212,8 +211,8 @@ public class ValidationPropertyPage extends PropertyPage  {
 		public class ValidationLabelProvider extends LabelProvider implements ITableLabelProvider {
 			public String getText(Object element) {
 				if (element == null)return ""; //$NON-NLS-1$
-				else if (element instanceof ValidatorWrapper)
-					return ((ValidatorWrapper) element).getName();
+				else if (element instanceof Validator)
+					return ((Validator) element).getName();
 				else
 					return super.getText(element);
 			}
@@ -227,23 +226,23 @@ public class ValidationPropertyPage extends PropertyPage  {
 			}
 
 			public Image getColumnImage(Object element, int columnIndex) {
-				ValidatorWrapper v = (ValidatorWrapper) element;
+				Validator v = (Validator) element;
 				if (columnIndex == 1) {
-					return getImage(v.isManual() ? ImageNames.okTable
+					return getImage(v.isManualValidation() ? ImageNames.okTable
 							: ImageNames.failTable);
 				} else if (columnIndex == 2) {
-					return getImage(v.isBuild() ? ImageNames.okTable
+					return getImage(v.isBuildValidation() ? ImageNames.okTable
 							: ImageNames.failTable);
 				} else if (columnIndex == 3) {
-					if (v.isV2())return getImage(ImageNames.settings);
-					if (v.getValidator().getDelegatingId() != null)return getImage(ImageNames.settings);
+					if (v.asV2Validator() != null)return getImage(ImageNames.settings);
+					if (v.getDelegatingId() != null)return getImage(ImageNames.settings);
 					return  null;
 				}
 				return null;
 			}
 
 			public String getColumnText(Object element, int columnIndex) {
-				if (columnIndex == 0)return ((ValidatorWrapper) element).getName();
+				if (columnIndex == 0)return ((Validator) element).getName();
 				return null;
 			}
 		}
@@ -272,6 +271,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 		}
 
 		public Composite createPage(Composite parent) throws InvocationTargetException {
+			copyValidators();
 			final ScrolledComposite sc1 = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
 			sc1.setLayoutData(new GridData(GridData.FILL_BOTH));
 			_composite = new Composite(sc1, SWT.NONE);
@@ -330,7 +330,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 			_validatorList.setSorter(new ViewerSorter());
 			setupTableColumns(_validatorsTable);
 
-			_validatorList.setInput(ValidatorWrapper.createWrappers(getProject()));
+			_validatorList.setInput(_validators);
 			_validatorsTable.addMouseListener(new MouseAdapter() {
 
 				public void mouseDown(MouseEvent e) {
@@ -500,6 +500,15 @@ public class ValidationPropertyPage extends PropertyPage  {
 		}
 		
 		/**
+		 * Make a copy of the current validators and store the results.
+		 */
+		private void copyValidators(){
+			Validator[] vals = ValManager.getDefault().getValidators(getProject());
+			_validators = new Validator[vals.length];
+			for (int i=0; i<vals.length; i++)_validators[i] = vals[i].copy();
+		}
+
+		/**
 		 * Answer if this project has a validator builder assigned to it.
 		 */
 		private boolean hasValidationBuilder(){
@@ -565,12 +574,10 @@ public class ValidationPropertyPage extends PropertyPage  {
 
 			menu.addMenuListener(new MenuAdapter() {
 				public void menuShown(MenuEvent e) {
-					IStructuredSelection selection = (IStructuredSelection) _validatorList
-							.getSelection();
-					ValidatorWrapper vw = (ValidatorWrapper) selection
-							.getFirstElement();
-					manualItem.setSelection(vw.isManual());
-					buildItem.setSelection(vw.isBuild());
+					IStructuredSelection selection = (IStructuredSelection) _validatorList.getSelection();
+					Validator val = (Validator) selection.getFirstElement();
+					manualItem.setSelection(val.isManualValidation());
+					buildItem.setSelection(val.isBuildValidation());
 					// settingsItem.setEnabled(vmd.isDelegating());
 				}
 			});
@@ -580,20 +587,22 @@ public class ValidationPropertyPage extends PropertyPage  {
 
 		protected void columnClicked(int columnToEdit) {
 			IStructuredSelection selection = (IStructuredSelection) _validatorList.getSelection();
-			ValidatorWrapper val = (ValidatorWrapper) selection.getFirstElement();
+			Validator val = (Validator) selection.getFirstElement();
 
 			switch (columnToEdit) {
 			case 1:
-				val.setManual(!val.isManual());
+				val.setManualValidation(!val.isManualValidation());
 				break;
 			case 2:
-				val.setBuild(!val.isBuild());
+				val.setBuildValidation(!val.isBuildValidation());
 				break;
 			case 3:
-				Validator.V2 v2 = val.getValidator().asV2Validator();
+				Validator.V2 v2 = val.asV2Validator();
 				if (v2 != null){
-					FilterDialog fd = new FilterDialog(_shell, val.getValidator(), getProject());
-					fd.open();
+					FilterDialog fd = new FilterDialog(_shell, val, getProject());
+					if (Window.OK == fd.open()){
+						val.become(fd.getValidator());
+					}
 				}
 				else {
 					handleOldDelegate(val);
@@ -606,9 +615,9 @@ public class ValidationPropertyPage extends PropertyPage  {
 			_validatorList.refresh();
 		}
 
-		private void handleOldDelegate(ValidatorWrapper val) {
+		private void handleOldDelegate(Validator val) {
 			try {
-				Validator.V1 v1 = val.getValidator().asV1Validator();
+				Validator.V1 v1 = val.asV1Validator();
 				if (v1 == null)return;
 				
 				ValidatorMetaData vmd = v1.getVmd();
@@ -649,7 +658,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 			_suspend.setSelection(getProjectPreferences().getSuspend());
 			_override.setSelection(getProjectPreferences().getOverride());
 			enableDisableWidgets();
-			_validatorList.setInput(ValidatorWrapper.createWrappers(getProject()));
+			_validatorList.setInput(_validators);
 			_validatorList.refresh();
 		}
 
@@ -666,10 +675,9 @@ public class ValidationPropertyPage extends PropertyPage  {
 			updateV1ProjectSettings();
 			getProjectPreferences().setSuspend(_suspend.getSelection());
 			getProjectPreferences().setOverride(_override.getSelection());
-			updateValidators();
 			IProject project = getProject();
 			ValPrefManagerProject vpm = new ValPrefManagerProject(project);
-			vpm.savePreferences(getProjectPreferences(), getValidators());
+			vpm.savePreferences(getProjectPreferences(), _validators);
 			return true;
 		}
 		
@@ -678,55 +686,26 @@ public class ValidationPropertyPage extends PropertyPage  {
 		 */
 		private void updateV1ProjectSettings() {
 			try {
-				ProjectConfiguration pc = ConfigurationManager.getManager()
-					.getProjectConfiguration(getProject());
+				ProjectConfiguration pc = ConfigurationManager.getManager().getProjectConfiguration(getProject());
 				pc.setDoesProjectOverride(_override.getSelection());
 				pc.setDisableAllValidation(_suspend.getSelection());
 			}
 			catch (InvocationTargetException e){
 				ValidationPlugin.getPlugin().handleException(e);
-			}
-			
-			
+			}			
 		}
 
-		private Validator[] getValidators(){
-			Validator[] vals = new Validator[_validatorsTable.getItems().length];
-			int i = 0;
-			for (TableItem ti : _validatorsTable.getItems()) {
-				ValidatorWrapper vw = (ValidatorWrapper) ti.getData();
-				vals[i++] = vw.getValidator();
-			}		
-			return vals;
-		}
-				
 		/**
 		 * Answer the specific project preferences. If the project didn't have any specific project
 		 * preferences, then create a default set.
 		 * @return
 		 */
 		private ProjectPreferences getProjectPreferences(){
-			if (_projectPreferences == null){
-				IProject project = getProject();
-				_projectPreferences = ValManager.getDefault().getProjectPreferences(project);
-				if (_projectPreferences == null)_projectPreferences = new ProjectPreferences(project);
-			}
-			return _projectPreferences;
-		}
-
-
-		/**
-		 * Update the validates to reflect the preference changes.
-		 */
-		private void updateValidators() {
-			for (TableItem ti : _validatorsTable.getItems()) {
-				ValidatorWrapper vw = (ValidatorWrapper) ti.getData();
-				vw.updateValidator();
-			}		
+			return ValManager.getDefault().getProjectPreferences(getProject());
 		}
 
 		public boolean performDefaults() throws InvocationTargetException {
-			ValManager.getDefault().restoreDefaults();
+			_validators = ValManager.getDefaultValidators(getProject());
 			updateWidgetsForDefaults();
 			getDefaultsButton().setFocus();
 			return true;
@@ -740,11 +719,10 @@ public class ValidationPropertyPage extends PropertyPage  {
 		}
 
 		private void setAllValidators(boolean bool) {
-			TableItem[] items = _validatorsTable.getItems();
-			for (int i = 0; i < items.length; i++) {
-				ValidatorWrapper vw = (ValidatorWrapper) items[i].getData();
-				vw.setManual(bool);
-				vw.setBuild(bool);
+			for (TableItem item : _validatorsTable.getItems()) {
+				Validator val = (Validator) item.getData();
+				val.setManualValidation(bool);
+				val.setBuildValidation(bool);
 			}
 		}
 
@@ -798,83 +776,6 @@ public class ValidationPropertyPage extends PropertyPage  {
 		}
 	}
 
-	/**
-	 * Wrap a validator so that temporary changes can be made to it.
-	 * 
-	 * @author karasiuk
-	 * 
-	 */
-	private static class ValidatorWrapper {
-		private boolean _manual;
-		private boolean _build;
-		private Validator _validator;
-
-		public ValidatorWrapper(Validator validator) {
-			_validator = validator;
-			_manual = validator.isManualValidation();
-			_build = validator.isBuildValidation();
-		}
-
-		/**
-		 * Update the validator to reflect the value in the preference.
-		 */
-		public void updateValidator() {
-			_validator.setBuildValidation(_build);
-			_validator.setManualValidation(_manual);
-		}
-
-		public String getName() {
-			return _validator.getName();
-		}
-
-		/**
-		 * Create wrappers for all the validators.
-		 */
-		public static ValidatorWrapper[] createWrappers(IProject project) {
-			Validator[] validators = ValManager.getDefault().getValidators(project);
-			ValidatorWrapper[] wrappers = new ValidatorWrapper[validators.length];
-			for (int i = 0; i < validators.length; i++)
-				wrappers[i] = new ValidatorWrapper(validators[i]);
-			return wrappers;
-		}
-
-		public boolean isManual() {
-			return _manual;
-		}
-
-		/** Is this a version 2 validator? */
-		public boolean isV2() {
-			return _validator.asV2Validator() != null;
-		}
-
-		/**
-		 * Refresh the wrapper settings from the under lying validator model.
-		 */
-		public void refreshWrapper() {
-			_build = _validator.isBuildValidation();
-			_manual = _validator.isManualValidation();
-		}
-
-		public void setManual(boolean manual) {
-			_manual = manual;
-		}
-
-		public boolean isBuild() {
-			return _build;
-		}
-
-		public void setBuild(boolean build) {
-			_build = build;
-		}
-
-		public Validator getValidator() {
-			return _validator;
-		}
-	}
-
-	/*
-	 * @see PreferencePage#createContents(Composite)
-	 */
 	protected Control createContents(Composite parent) {
 		try {
 			_shell = parent.getShell();
@@ -887,15 +788,6 @@ public class ValidationPropertyPage extends PropertyPage  {
 		return _pageImpl.getControl();
 	}
 
-	/**
-	 * Performs special processing when this page's Defaults button has been
-	 * pressed.
-	 * <p>
-	 * This is a framework hook method for subclasses to do special things when
-	 * the Defaults button has been pressed. Subclasses may override, but should
-	 * call <code>super.performDefaults</code>.
-	 * </p>
-	 */
 	protected void performDefaults() {
 		super.performDefaults();
 

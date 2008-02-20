@@ -43,10 +43,16 @@
    </element>
 
    <element name="validator">
+      <annotation>
+         <documentation>
+            Defines a validator to the validation framework.
+         </documentation>
+      </annotation>
       <complexType>
          <sequence>
             <element ref="include" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="exclude" minOccurs="0" maxOccurs="1"/>
+            <element ref="messageCategory" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="class" type="string" use="required">
             <annotation>
@@ -173,12 +179,22 @@ By source id, we mean the id that is used in the org.eclipse.wst.sse.ui.sourceVa
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="type" type="string" use="required">
+         <attribute name="type" use="required">
             <annotation>
                <documentation>
                   Type of name, there are three choices. &lt;ul&gt;&lt;li&gt;folder - specifies a project relative folder name.&lt;/li&gt;&lt;li&gt;file - a simple file name (i.e. no path information).&lt;/li&gt;&lt;li&gt;full - a fully qualified (project relative) file name.&lt;/li&gt;&lt;/ul&gt;
                </documentation>
             </annotation>
+            <simpleType>
+               <restriction base="string">
+                  <enumeration value="folder">
+                  </enumeration>
+                  <enumeration value="file">
+                  </enumeration>
+                  <enumeration value="full">
+                  </enumeration>
+               </restriction>
+            </simpleType>
          </attribute>
       </complexType>
    </element>
@@ -225,6 +241,50 @@ By source id, we mean the id that is used in the org.eclipse.wst.sse.ui.sourceVa
                   The content type id.
                </documentation>
             </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="messageCategory">
+      <annotation>
+         <documentation>
+            Used to group together a set of messages, where the user can change the message severity of all the messages in the group. This is similar to the support in the JDT, where for example a user can specify whether used methods should be errors, warnings or ignored.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A simple id that is unique within the scope of this validator.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="label" type="string" use="required">
+            <annotation>
+               <documentation>
+                  A short, one line label that is displayed to the end user, that describes the message category.
+               </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+         <attribute name="severity">
+            <annotation>
+               <documentation>
+                  The default severity for this category.
+               </documentation>
+            </annotation>
+            <simpleType>
+               <restriction base="string">
+                  <enumeration value="error">
+                  </enumeration>
+                  <enumeration value="warning">
+                  </enumeration>
+                  <enumeration value="ignore">
+                  </enumeration>
+               </restriction>
+            </simpleType>
          </attribute>
       </complexType>
    </element>

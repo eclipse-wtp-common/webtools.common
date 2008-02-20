@@ -1,7 +1,7 @@
 package org.eclipse.wst.validation.ui.internal.preferences;
 
 /*******************************************************************************
- * Copyright (c) 2001, 2004 IBM Corporation and others.
+ * Copyright (c) 2001, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,8 +15,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -58,7 +56,6 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.GlobalConfiguration;
@@ -78,22 +75,13 @@ import org.eclipse.wst.validation.ui.internal.dialog.FilterDialog;
  * <p>
  * This class and its inner classes are not intended to be subclassed outside of
  * the validation framework.
+ * </p>
  */
-public class ValidationPreferencePage extends PreferencePage implements
-		IWorkbenchPreferencePage, IPreferenceChangeListener {
+public class ValidationPreferencePage extends PreferencePage implements	IWorkbenchPreferencePage {
 
 	private IValidationPage _pageImpl = null;
 	private Shell _shell;
 
-	/*
-	 * Initially, this interface was created as an abstract class, and
-	 * getControl() was implemented. (getProject() could also have been
-	 * implemented in the abstract class.) However, at runtime, a
-	 * NullPointerException was thrown; the inner class had lost its pointer to
-	 * its enclosing class. After some experimentation, I discovered that if I
-	 * changed the parent to an interface, the enclosing class could be found.
-	 * (Merely moving the AValidationPage into its own file was insufficient.)
-	 */
 	public interface IValidationPage {
 		Composite createPage(Composite parent) throws InvocationTargetException;
 
@@ -131,8 +119,7 @@ public class ValidationPreferencePage extends PreferencePage implements
 			// Don't create the default and apply buttons.
 			noDefaultAndApplyButton();
 
-			final ScrolledComposite sc1 = new ScrolledComposite(parent,
-					SWT.H_SCROLL | SWT.V_SCROLL);
+			final ScrolledComposite sc1 = new ScrolledComposite(parent,	SWT.H_SCROLL | SWT.V_SCROLL);
 			sc1.setLayoutData(new GridData(GridData.FILL_BOTH));
 			composite = new Composite(sc1, SWT.NONE);
 			sc1.setContent(composite);
@@ -183,7 +170,6 @@ public class ValidationPreferencePage extends PreferencePage implements
 
 	private class ValidatorListPage implements IValidationPage {
 		private Composite _page;
-
 		private Composite _composite;
 		private TableViewer _validatorList;
 		private Button _enableAllButton;
@@ -194,7 +180,9 @@ public class ValidationPreferencePage extends PreferencePage implements
 		private Button _confirmButton;
 		private Label _listLabel;
 		private Table _validatorsTable;
-		private GlobalPreferences _globalPreferences = ValManager.getDefault().getGlobalPreferences();
+		private GlobalPreferences 	_globalPreferences = ValManager.getDefault().getGlobalPreferences();
+		private GlobalConfiguration _globalConfig;
+		private Validator[] _validators;
 
 		/**
 		 * This class is provided for the CheckboxTableViewer in the
@@ -205,8 +193,8 @@ public class ValidationPreferencePage extends PreferencePage implements
 			}
 
 			public Object[] getElements(Object inputElement) {
-				if (inputElement instanceof ValidatorWrapper[]) {
-					return (ValidatorWrapper[]) inputElement;
+				if (inputElement instanceof Validator[]) {
+					return (Validator[]) inputElement;
 				}
 				return new Object[0];
 			}
@@ -217,37 +205,33 @@ public class ValidationPreferencePage extends PreferencePage implements
 
 		/**
 		 * This class is provided for
-		 * ValidationPropertiesPage$ValidatorListPage's checkboxTableViewer
-		 * element.
+		 * ValidationPropertiesPage$ValidatorListPage's checkboxTableViewer element.
 		 */
 		public class ValidationLabelProvider extends LabelProvider implements ITableLabelProvider {
 			public String getText(Object element) {
 				if (element == null)return ""; //$NON-NLS-1$
-				else if (element instanceof ValidatorWrapper)
-					return ((ValidatorWrapper) element).getName();
+				else if (element instanceof Validator)
+					return ((Validator) element).getName();
 				else
 					return super.getText(element);
 			}
 
 			private Image getImage(String imageName) {
 				boolean isDisabled = !_validatorsTable.isEnabled();
-				if (isDisabled)
-					imageName = imageName + ImageNames.disabled;
+				if (isDisabled)imageName = imageName + ImageNames.disabled;
 
 				return ValidationUIPlugin.getPlugin().getImage(imageName);
 			}
 
 			public Image getColumnImage(Object element, int columnIndex) {
-				ValidatorWrapper v = (ValidatorWrapper) element;
+				Validator v = (Validator) element;
 				if (columnIndex == 1) {
-					return getImage(v.isManual() ? ImageNames.okTable
-							: ImageNames.failTable);
+					return getImage(v.isManualValidation() ? ImageNames.okTable : ImageNames.failTable);
 				} else if (columnIndex == 2) {
-					return getImage(v.isBuild() ? ImageNames.okTable
-							: ImageNames.failTable);
+					return getImage(v.isBuildValidation() ? ImageNames.okTable : ImageNames.failTable);
 				} else if (columnIndex == 3) {
-					if (v.isV2())return getImage(ImageNames.settings);
-					if (v.getValidator().getDelegatingId() != null)return getImage(ImageNames.settings);
+					if (v.asV2Validator() != null)return getImage(ImageNames.settings);
+					if (v.getDelegatingId() != null)return getImage(ImageNames.settings);
 					return  null;
 
 				}
@@ -255,8 +239,7 @@ public class ValidationPreferencePage extends PreferencePage implements
 			}
 
 			public String getColumnText(Object element, int columnIndex) {
-				if (columnIndex == 0)
-					return ((ValidatorWrapper) element).getName();
+				if (columnIndex == 0)return ((Validator) element).getName();
 				return null;
 			}
 		}
@@ -296,6 +279,9 @@ public class ValidationPreferencePage extends PreferencePage implements
 		}
 
 		public Composite createPage(Composite parent) throws InvocationTargetException {
+			_globalConfig = new GlobalConfiguration(ConfigurationManager.getManager().getGlobalConfiguration());
+			copyValidators();
+			
 			final ScrolledComposite sc1 = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
 			sc1.setLayoutData(new GridData(GridData.FILL_BOTH));
 			_composite = new Composite(sc1, SWT.NONE);
@@ -344,7 +330,7 @@ public class ValidationPreferencePage extends PreferencePage implements
 			_validatorList.setSorter(new ValidationViewerSorter());
 			setupTableColumns(_validatorsTable);
 
-			_validatorList.setInput(ValidatorWrapper.createWrappers());
+			_validatorList.setInput(_validators);
 			_validatorsTable.addMouseListener(new MouseAdapter() {
 
 				public void mouseDown(MouseEvent e) {
@@ -361,8 +347,7 @@ public class ValidationPreferencePage extends PreferencePage implements
 					int columnsCount = _validatorsTable.getColumnCount();
 					if (columnsCount == 0) {
 						// If no TableColumn, Table acts as if it has a single
-						// column
-						// which takes the whole width.
+						// column which takes the whole width.
 						columnNumber = 0;
 					} else {
 						columnNumber = -1;
@@ -426,10 +411,8 @@ public class ValidationPreferencePage extends PreferencePage implements
 			PlatformUI.getWorkbench().getHelpSystem().setHelp(_disableAllButton, ContextIds.VALIDATION_PREFERENCE_PAGE);
 
 			// Have to set the tab order or only the first checkbox in a
-			// Composite can
-			// be tab-ed to. (Seems to apply only to checkboxes. Have to use the
-			// arrow
-			// key to navigate the checkboxes.)
+			// Composite can be tabbed to. (Seems to apply only to checkboxes. Have to use the
+			// arrow key to navigate the checkboxes.)
 			validatorGroup.setTabList(new Control[] { _suspend, _autoSave,
 				_validatorList.getTable(), _enableAllButton, _disableAllButton });
 
@@ -439,6 +422,15 @@ public class ValidationPreferencePage extends PreferencePage implements
 			_composite.setSize(_composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 
 			return _composite;
+		}
+		
+		/**
+		 * Make a copy of the current validators and store the results.
+		 */
+		private void copyValidators(){
+			Validator[] vals = ValManager.getDefault().getValidators();
+			_validators = new Validator[vals.length];
+			for (int i=0; i<vals.length; i++)_validators[i] = vals[i].copy();
 		}
 
 		private void addConfirm(Composite validatorGroup) {
@@ -534,13 +526,10 @@ public class ValidationPreferencePage extends PreferencePage implements
 
 			menu.addMenuListener(new MenuAdapter() {
 				public void menuShown(MenuEvent e) {
-					IStructuredSelection selection = (IStructuredSelection) _validatorList
-							.getSelection();
-					ValidatorWrapper vw = (ValidatorWrapper) selection
-							.getFirstElement();
-					manualItem.setSelection(vw.isManual());
-					buildItem.setSelection(vw.isBuild());
-					// settingsItem.setEnabled(vmd.isDelegating());
+					IStructuredSelection selection = (IStructuredSelection) _validatorList.getSelection();
+					Validator vw = (Validator) selection.getFirstElement();
+					manualItem.setSelection(vw.isManualValidation());
+					buildItem.setSelection(vw.isBuildValidation());
 				}
 			});
 
@@ -549,20 +538,22 @@ public class ValidationPreferencePage extends PreferencePage implements
 
 		protected void columnClicked(int columnToEdit) {
 			IStructuredSelection selection = (IStructuredSelection) _validatorList.getSelection();
-			ValidatorWrapper val = (ValidatorWrapper) selection.getFirstElement();
+			Validator val = (Validator) selection.getFirstElement();
 
 			switch (columnToEdit) {
 			case 1:
-				val.setManual(!val.isManual());
+				val.setManualValidation(!val.isManualValidation());
 				break;
 			case 2:
-				val.setBuild(!val.isBuild());
+				val.setBuildValidation(!val.isBuildValidation());
 				break;
 			case 3:
-				Validator.V2 v2 = val.getValidator().asV2Validator();
+				Validator.V2 v2 = val.asV2Validator();
 				if (v2 != null){
-					FilterDialog fd = new FilterDialog(_shell, val.getValidator(), null);
-					fd.open();
+					FilterDialog fd = new FilterDialog(_shell, val, null);
+					if (Window.OK == fd.open()){
+						val.become(fd.getValidator());
+					}
 				}
 				else {
 					handleOldDelegate(val);
@@ -575,29 +566,23 @@ public class ValidationPreferencePage extends PreferencePage implements
 			_validatorList.refresh();
 		}
 
-		private void handleOldDelegate(ValidatorWrapper val) {
-			try {
-				Validator.V1 v1 = val.getValidator().asV1Validator();
-				if (v1 == null)return;
-				
-				ValidatorMetaData vmd = v1.getVmd();
-			    if (!vmd.isDelegating())return;
-			    
-			    GlobalConfiguration gc = ConfigurationManager.getManager().getGlobalConfiguration();
-			    String delegateID = gc.getDelegateUniqueName(vmd);
-			    Shell shell = Display.getCurrent().getActiveShell();
-			    DelegatingValidatorPreferencesDialog dialog = 
-			    	new DelegatingValidatorPreferencesDialog(shell, vmd, delegateID);
+		private void handleOldDelegate(Validator val) {
+			Validator.V1 v1 = val.asV1Validator();
+			if (v1 == null)return;
 			
-			    dialog.setBlockOnOpen(true);
-			    dialog.create();
-			
-			    int result = dialog.open();
-		        if (result == Window.OK)gc.setDelegateUniqueName(vmd, dialog.getDelegateID());
-			}
-			catch (InvocationTargetException e){
-				
-			}
+			ValidatorMetaData vmd = v1.getVmd();
+		    if (!vmd.isDelegating())return;
+		    
+		    String delegateID = _globalConfig.getDelegateUniqueName(vmd);
+		    Shell shell = Display.getCurrent().getActiveShell();
+		    DelegatingValidatorPreferencesDialog dialog = 
+		    	new DelegatingValidatorPreferencesDialog(shell, vmd, delegateID);
+		
+		    dialog.setBlockOnOpen(true);
+		    dialog.create();
+		
+		    int result = dialog.open();
+	        if (result == Window.OK)_globalConfig.setDelegateUniqueName(vmd, dialog.getDelegateID());
 		}
 
 		protected void updateWidgets() throws InvocationTargetException {
@@ -605,12 +590,6 @@ public class ValidationPreferencePage extends PreferencePage implements
 			// widgets because of performDefaults(). If performDefaults() is
 			// selected, then the pagePreferences values are reset, and these widgets
 			// might also need to be updated.
-			updateAllWidgets();
-			updateHelp();
-		}
-
-		protected void updateWidgetsForDefaults()
-				throws InvocationTargetException {
 			updateAllWidgets();
 			updateHelp();
 		}
@@ -623,16 +602,15 @@ public class ValidationPreferencePage extends PreferencePage implements
 			_validatorsTable.setEnabled(!_suspend.getSelection());
 			_enableAllButton.setEnabled(!_suspend.getSelection());
 			_disableAllButton.setEnabled(!_suspend.getSelection());
-			_validatorList.setInput(ValidatorWrapper.createWrappers());
+			_validatorList.setInput(_validators);
 			_validatorList.refresh();
 		}
 
 		public boolean performOk() throws InvocationTargetException {
 			_globalPreferences.setDisableAllValidation(_suspend.getSelection());
 			_globalPreferences.setSaveAutomatically(_autoSave.getSelection());
-			updateValidators();
-			ValPrefManagerGlobal vpm = new ValPrefManagerGlobal();
-			vpm.saveShallowPreferences(_globalPreferences, ValManager.getDefault().getValidators());
+			ValPrefManagerGlobal vpm = ValPrefManagerGlobal.getDefault();
+			vpm.savePreferences(_globalPreferences, _validators);
 			saveV1Preferences();
 			return true;
 		}
@@ -666,7 +644,7 @@ public class ValidationPreferencePage extends PreferencePage implements
 		 */
 		private ValidatorMetaData[] getEnabledManualValidators() {
 			List<ValidatorMetaData> list = new LinkedList<ValidatorMetaData>();
-			for (Validator v : ValManager.getDefault().getValidators()){
+			for (Validator v : _validators){
 				if (v.isManualValidation()){
 					Validator.V1 v1 = v.asV1Validator();
 					if (v1 != null){
@@ -685,12 +663,10 @@ public class ValidationPreferencePage extends PreferencePage implements
 		 */
 		private ValidatorMetaData[] getEnabledBuildValidators() {
 			List<ValidatorMetaData> list = new LinkedList<ValidatorMetaData>();
-			for (Validator v : ValManager.getDefault().getValidators()){
+			for (Validator v : _validators){
 				if (v.isBuildValidation()){
 					Validator.V1 v1 = v.asV1Validator();
-					if (v1 != null){
-						list.add(v1.getVmd());
-					}
+					if (v1 != null)list.add(v1.getVmd());
 				}
 			}
 			ValidatorMetaData[] result = new ValidatorMetaData[list.size()];
@@ -698,19 +674,9 @@ public class ValidationPreferencePage extends PreferencePage implements
 			return result;
 		}
 
-		/**
-		 * Update the validates to reflect the preference changes.
-		 */
-		private void updateValidators() {
-			for (TableItem ti : _validatorsTable.getItems()) {
-				ValidatorWrapper vw = (ValidatorWrapper) ti.getData();
-				vw.updateValidator();
-			}
-		}
-
 		public boolean performDefaults() throws InvocationTargetException {
-			ValManager.getDefault().restoreDefaults();
-			updateWidgetsForDefaults();
+			_validators = ValManager.getDefaultValidators();
+			updateWidgets();
 			getDefaultsButton().setFocus();
 			return true;
 		}
@@ -722,20 +688,18 @@ public class ValidationPreferencePage extends PreferencePage implements
 			return true;
 		}
 
-		private void setAllValidators(boolean bool) {
-			TableItem[] items = _validatorsTable.getItems();
-			for (int i = 0; i < items.length; i++) {
-				ValidatorWrapper vw = (ValidatorWrapper) items[i].getData();
-				vw.setManual(bool);
-				vw.setBuild(bool);
-			}
-		}
-
 		public boolean performDisableAll() throws InvocationTargetException {
 			setAllValidators(false);
 			_disableAllButton.setFocus();
 			_validatorList.refresh();
 			return true;
+		}
+		
+		private void setAllValidators(boolean bool){
+			for (Validator v : _validators){
+				v.setBuildValidation(bool);
+				v.setManualValidation(bool);
+			}
 		}
 
 		protected void updateHelp() {
@@ -762,97 +726,9 @@ public class ValidationPreferencePage extends PreferencePage implements
 		}
 
 		public void loseFocus() {
-			// This page does not need to cache anything before it loses focus.
 		}
 
-		public void gainFocus() {/*
-									 * // This page depends on the Workbench
-									 * Preference page, so update the value of
-									 * the // isAutoBuild (in case the workbench
-									 * page's value has changed), and then
-									 * update // this page's widgets. try {
-									 * //_isAutoBuildEnabled =
-									 * ValidatorManager.getManager().isGlobalAutoBuildEnabled();
-									 * updateWidgets(); } catch
-									 * (InvocationTargetException exc) {
-									 * displayAndLogError(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_TITLE),
-									 * ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_INTERNAL_PAGE),
-									 * exc); }
-									 */
-		}
-	}
-
-	/**
-	 * Wrap a validator so that temporary changes can be made to it.
-	 * 
-	 * @author karasiuk
-	 * 
-	 */
-	private static class ValidatorWrapper {
-		private boolean _manual;
-		private boolean _build;
-		private Validator _validator;
-
-		public ValidatorWrapper(Validator validator) {
-			_validator = validator;
-			_manual = validator.isManualValidation();
-			_build = validator.isBuildValidation();
-		}
-
-		/**
-		 * Update the validator to reflect the value in the preference.
-		 */
-		public void updateValidator() {
-			_validator.setBuildValidation(_build);
-			_validator.setManualValidation(_manual);
-		}
-
-		public String getName() {
-			return _validator.getName();
-		}
-
-		/**
-		 * Create wrappers for all the validators.
-		 */
-		public static ValidatorWrapper[] createWrappers() {
-			Validator[] validators = ValManager.getDefault().getValidators();
-			ValidatorWrapper[] wrappers = new ValidatorWrapper[validators.length];
-			for (int i = 0; i < validators.length; i++)
-				wrappers[i] = new ValidatorWrapper(validators[i]);
-			return wrappers;
-		}
-
-		public boolean isManual() {
-			return _manual;
-		}
-
-		/** Is this a version 2 validator? */
-		public boolean isV2() {
-			return _validator.asV2Validator() != null;
-		}
-
-		/**
-		 * Refresh the wrapper settings from the under lying validator model.
-		 */
-		public void refreshWrapper() {
-			_build = _validator.isBuildValidation();
-			_manual = _validator.isManualValidation();
-		}
-
-		public void setManual(boolean manual) {
-			_manual = manual;
-		}
-
-		public boolean isBuild() {
-			return _build;
-		}
-
-		public void setBuild(boolean build) {
-			_build = build;
-		}
-
-		public Validator getValidator() {
-			return _validator;
+		public void gainFocus() {
 		}
 	}
 
@@ -862,16 +738,7 @@ public class ValidationPreferencePage extends PreferencePage implements
 	protected Control createContents(Composite parent) {
 		try {
 			_shell = parent.getShell();
-			ValidationFramework.getDefault().getPreferenceStore().addPreferenceChangeListener(this);
-			try {
-				_pageImpl = new ValidatorListPage(parent);
-			} catch (InvocationTargetException exc) {
-				_pageImpl = new InvalidPage(parent);
-				displayAndLogError(ValUIMessages.VBF_EXC_INTERNAL_TITLE, ValUIMessages.VBF_EXC_INTERNAL_PAGE, exc);
-			} catch (Throwable exc) {
-				_pageImpl = new InvalidPage(parent);
-				displayAndLogError(ValUIMessages.VBF_EXC_INTERNAL_TITLE, ValUIMessages.VBF_EXC_INTERNAL_PAGE, exc);
-			}
+			_pageImpl = new ValidatorListPage(parent);
 		} catch (Throwable exc) {
 			_pageImpl = new InvalidPage(parent);
 			displayAndLogError(ValUIMessages.VBF_EXC_INTERNAL_TITLE, ValUIMessages.VBF_EXC_INTERNAL_PAGE, exc);
@@ -880,11 +747,7 @@ public class ValidationPreferencePage extends PreferencePage implements
 		return _pageImpl.getControl();
 	}
 
-	/*
-	 * @see IWorkbenchPreferencePage#init(IWorkbench)
-	 */
 	public void init(IWorkbench workbench) {
-		// init
 	}
 
 	/**
@@ -919,11 +782,8 @@ public class ValidationPreferencePage extends PreferencePage implements
 	public boolean performOk() {
 		try {
 			return _pageImpl.performOk();
-		} catch (InvocationTargetException exc) {
-			displayAndLogError(ValUIMessages.VBF_EXC_INTERNAL_TITLE,
-					ValUIMessages.VBF_EXC_INTERNAL_PAGE, exc);
-			return false;
-		} catch (Throwable exc) {
+		} 
+		catch (Throwable exc) {
 			displayAndLogError(ValUIMessages.VBF_EXC_INTERNAL_TITLE,
 					ValUIMessages.VBF_EXC_INTERNAL_PAGE, exc);
 			return false;
@@ -938,8 +798,6 @@ public class ValidationPreferencePage extends PreferencePage implements
 	 */
 	public void dispose() {
 		super.dispose();
-		ValidationFramework.getDefault().getPreferenceStore()
-				.removePreferenceChangeListener(this);
 		try {
 			if (_pageImpl != null) {
 				_pageImpl.dispose();
@@ -949,8 +807,7 @@ public class ValidationPreferencePage extends PreferencePage implements
 			// TODO figure out what this thing did
 			// ExtensionManger.instance().getDelegate().disposePreferencePage();
 		} catch (Throwable exc) {
-			displayAndLogError(ValUIMessages.VBF_EXC_INTERNAL_TITLE,
-					ValUIMessages.VBF_EXC_INTERNAL_PAGE, exc);
+			displayAndLogError(ValUIMessages.VBF_EXC_INTERNAL_TITLE, ValUIMessages.VBF_EXC_INTERNAL_PAGE, exc);
 		}
 	}
 
@@ -970,8 +827,7 @@ public class ValidationPreferencePage extends PreferencePage implements
 
 	private void displayMessage(String title, String message, int iIconType) {
 		MessageBox messageBox = new MessageBox(getShell(),
-				org.eclipse.swt.SWT.OK | iIconType
-						| org.eclipse.swt.SWT.APPLICATION_MODAL);
+				org.eclipse.swt.SWT.OK | iIconType	| org.eclipse.swt.SWT.APPLICATION_MODAL);
 		messageBox.setMessage(message);
 		messageBox.setText(title);
 		messageBox.open();
@@ -988,15 +844,7 @@ public class ValidationPreferencePage extends PreferencePage implements
 		else _pageImpl.loseFocus();
 	}
 
-	/**
-	 * @see org.eclipse.jface.preference.PreferencePage#getDefaultsButton()
-	 */
 	protected Button getDefaultsButton() {
 		return super.getDefaultsButton();
-	}
-
-	public void preferenceChange(PreferenceChangeEvent event) {
-//		String key = event.getKey();
-
 	}
 }

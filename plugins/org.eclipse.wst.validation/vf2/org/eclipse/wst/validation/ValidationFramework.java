@@ -11,6 +11,7 @@ import java.util.Set;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
@@ -99,7 +100,7 @@ public final class ValidationFramework {
 	 * <p>
 	 * The caller may still need to test if the validator has been turned off by the
 	 * user, by using the isBuildValidation() and isManualValidation() methods.
-	 * 
+	 * </p>
 	 * @param resource the resource that determines which validators are applicable.
 	 * 
 	 * @param isManual if true then the validator must be turned on for manual validation. 
@@ -143,7 +144,10 @@ public final class ValidationFramework {
 	}
 	
 	/**
-	 * Answer the validator with the given id.
+	 * Answer the global validator with the given id.
+	 * 
+	 * @deprecated Use getValidator(String id, IProject project) with a null project instead.
+	 * 
 	 * @param id
 	 * @return null if the validator is not found
 	 */
@@ -152,9 +156,27 @@ public final class ValidationFramework {
 	}
 	
 	/**
+	 * Answer the validator with the given id that is in effect for the given project.
+	 * <p>
+	 * Individual projects may override the global validation preference settings. If this is allowed and if
+	 * the project has it's own settings, then those validators are returned via this method.
+	 * </p>
+	 * <p>
+	 * The following approach is used. For version 1 validators, the validator is only returned if it
+	 * is defined to operate on this project type. This is the way that the previous version of the framework
+	 * did it. For version 2 validators, they are all returned.
+	 * </p>
+	 * 
+	 * @param id validator id.
+	 * @param project this can be null, in which case all the registered validators are checked.
+	 * @return null if the validator is not found
+	 */
+	public Validator getValidator(String id, IProject project){
+		return ValManager.getDefault().getValidatorWithId(id, project);
+	}
+	
+	/**
 	 * Answer all the validators that are applicable for the given resource.
-	 * By convention this is the method that is used
-	 * by the as-you-type validators, to determine if they should be validating the resource.
 	 * 
 	 * @param resource the resource that determines which validators are applicable.
 	 */
@@ -207,6 +229,7 @@ public final class ValidationFramework {
 	 * @exception OperationCanceledException if the progress monitor is canceled while waiting
 	 */
 	public void join(IProgressMonitor monitor) throws InterruptedException, OperationCanceledException {
+		Job.getJobManager().join(ResourcesPlugin.FAMILY_AUTO_BUILD, monitor);
 		Job.getJobManager().join(ValidationBuilder.FAMILY_VALIDATION_JOB, monitor);
 	}
 	
@@ -332,6 +355,5 @@ public final class ValidationFramework {
 		}
 		
 	}
-
 
 }

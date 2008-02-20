@@ -1,8 +1,13 @@
 package org.eclipse.wst.validation.internal;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.validation.MessageSeveritySetting;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.Validator;
 import org.eclipse.wst.validation.internal.model.FilterGroup;
@@ -21,7 +26,28 @@ public class ValPrefManagerGlobal {
 	/** Version of the framework properties. */
 	public final static int frameworkVersion = 2;
 	
-	public ValPrefManagerGlobal(){}
+	private List<IValChangedListener> _listeners = new LinkedList<IValChangedListener>();
+	private static ValPrefManagerGlobal _me;
+	
+	private ValPrefManagerGlobal(){}
+	
+	public static ValPrefManagerGlobal getDefault(){
+		if (_me == null)_me = new ValPrefManagerGlobal();
+		return _me;
+	}
+	
+	public void addListener(IValChangedListener listener){
+		if (_listeners.contains(listener))return;
+		_listeners.add(listener);
+	}
+	
+	public void removeListener(IValChangedListener listener){
+		_listeners.remove(listener);
+	}
+	
+	private void updateListeners(){
+		for (IValChangedListener cl : _listeners)cl.validatorsForProjectChanged(null); 
+	}
 			
 	/**
 	 * Update the validator filters from the preference store.
@@ -35,7 +61,7 @@ public class ValPrefManagerGlobal {
 	public boolean loadPreferences(Validator[] val) {
 	
 		try {
-			IEclipsePreferences pref = new InstanceScope().getNode(ValidationPlugin.PLUGIN_ID);
+			IEclipsePreferences pref = ValidationFramework.getDefault().getPreferenceStore();
 			if (!pref.nodeExists(PrefConstants.filters))return false;
 		
 			Preferences filters = pref.node(PrefConstants.filters);
@@ -55,15 +81,18 @@ public class ValPrefManagerGlobal {
 		return true;
 	}
 	
-	public GlobalPreferences loadGlobalPreferences() {
+	/**
+	 * The only valid way to get the global preferences is through the ValManager.
+	 * 
+	 * @see ValManager#getGlobalPreferences()
+	 */
+	public void loadGlobalPreferences(GlobalPreferences gp) {
 		IEclipsePreferences pref = ValidationFramework.getDefault().getPreferenceStore();
-		GlobalPreferences gp = new GlobalPreferences();
 		gp.setSaveAutomatically(pref.getBoolean(PrefConstants.saveAuto, GlobalPreferences.DefaultAutoSave));
 		gp.setDisableAllValidation(pref.getBoolean(PrefConstants.suspend, GlobalPreferences.DefaultSuspend));
 		gp.setConfirmDialog(pref.getBoolean(PrefConstants.confirmDialog, GlobalPreferences.DefaultConfirm));
 		gp.setOverride(pref.getBoolean(PrefConstants.override, GlobalPreferences.DefaultOverride));
 		gp.setStateTimeStamp(pref.getLong(PrefConstants.stateTS, 0));
-		return gp;
 	}
 	
 	/**
@@ -112,13 +141,13 @@ public class ValPrefManagerGlobal {
 	 * Save the validator into the preference store, including it's filter settings.
 	 * @param v
 	 */
-	public synchronized void save(Validator v){
+	private synchronized void save(Validator v){
 		try {
 			IEclipsePreferences prefs = ValidationFramework.getDefault().getPreferenceStore();
 			Preferences filters = prefs.node(PrefConstants.filters);
 			Preferences vp = filters.node(v.getId());
 			vp.removeNode();
-			save(v, filters);
+			save(v, prefs);
 			prefs.flush();
 
 		}
@@ -127,20 +156,32 @@ public class ValPrefManagerGlobal {
 		}
 		
 	}
+	
 	/**
 	 * Save the validator into the preference store. 
 	 * 
 	 * @param validator the validator being saved.
 	 * 
-	 * @param filters the filters node in the preference tree, i.e. 
-	 * /instance/validator-framework-id/filters
+	 * @param root the top of the preference tree for validators, i.e. 
+	 * /instance/validator-framework-id/ for workspace validators and / for project validators.
 	 */
-	private void save(Validator validator, Preferences filters) {
+	static void save(Validator validator, Preferences root) {
+		Preferences filters = root.node(PrefConstants.filters);
 		Preferences vp = filters.node(validator.getId());
 		vp.putBoolean(PrefConstants.build, validator.isBuildValidation());
 		vp.putBoolean(PrefConstants.manual, validator.isManualValidation());
 		vp.putInt(PrefConstants.version, validator.getVersion());
 		if (validator.getDelegatingId() != null)vp.put(PrefConstants.delegate, validator.getDelegatingId());
+		
+		Collection<MessageSeveritySetting> msgs = validator.getMessageSettings().values();
+		if (msgs.size() > 0){
+			Preferences msgsNode = filters.parent().node(PrefConstants.msgs);
+			Preferences valNode = msgsNode.node(validator.getId());
+			for (MessageSeveritySetting ms : msgs){
+				valNode.putInt(ms.getId(), ms.getCurrent().ordinal());
+			}			
+		}
+
 		Validator.V2 v2 = validator.asV2Validator();
 		if (v2 == null)return;
 		
@@ -155,7 +196,7 @@ public class ValPrefManagerGlobal {
 				Preferences rid= r.node(String.valueOf(j));
 				rules[j].save(rid);
 			}
-		}		
+		}
 	}
 	
 	public void saveAsPrefs(Validator[] val) {
@@ -165,8 +206,9 @@ public class ValPrefManagerGlobal {
 			filters.removeNode();
 			
 			filters = pref.node(PrefConstants.filters);
-			for (Validator v : val)save(v, filters);
+			for (Validator v : val)save(v, pref);
 			pref.flush();
+			updateListeners();
 		}
 		catch (BackingStoreException e){
 			throw new RuntimeException(e);
@@ -175,9 +217,9 @@ public class ValPrefManagerGlobal {
 
 	
 	/**
-	 * Save whether the validator are enabled or not.
+	 * Save the global preferences and the validators.
 	 */
-	public synchronized void saveShallowPreferences(GlobalPreferences gp, Validator[] validators){
+	public synchronized void savePreferences(GlobalPreferences gp, Validator[] validators){
 		try {
 			IEclipsePreferences prefs = ValidationFramework.getDefault().getPreferenceStore();
 			prefs.putBoolean(PrefConstants.saveAuto, gp.getSaveAutomatically());
@@ -185,9 +227,9 @@ public class ValPrefManagerGlobal {
 			prefs.putLong(PrefConstants.stateTS, gp.getStateTimeStamp());
 			prefs.putBoolean(PrefConstants.confirmDialog, gp.getConfirmDialog());
 			prefs.putBoolean(PrefConstants.override, gp.getOverride());
-			Preferences filters = prefs.node(PrefConstants.filters);
-			for (Validator v : validators)saveShallowPreference(v, filters);
+			for (Validator v : validators)save(v);
 			prefs.flush();
+			updateListeners();
 		}
 		catch (BackingStoreException e){
 			ValidationPlugin.getPlugin().handleException(e);
@@ -195,16 +237,61 @@ public class ValPrefManagerGlobal {
 	}
 
 	/**
+	 * Update any message preferences in the map.
+	 * @param validator
+	 * @param settings
+	 */
+	public void loadMessages(Validator validator, Map<String, MessageSeveritySetting> settings) {
+		IEclipsePreferences pref = ValidationFramework.getDefault().getPreferenceStore();
+		try {
+			loadMessageSettings(validator, settings, pref);
+		}
+		catch (BackingStoreException e){
+			ValidationPlugin.getPlugin().handleException(e);
+		}
+	}
+		
+	static void loadMessageSettings(Validator val, Map<String, MessageSeveritySetting> settings, Preferences prefs) 
+		throws BackingStoreException {
+		if (!prefs.nodeExists(PrefConstants.msgs))return;
+		
+		Preferences msgs = prefs.node(PrefConstants.msgs); 
+		if (!msgs.nodeExists(val.getId()))return;
+		
+		Preferences valPrefs = msgs.node(val.getId());
+		for (String key : valPrefs.keys()){
+			int sev = valPrefs.getInt(key, -1);
+			if (sev != -1){
+				MessageSeveritySetting ms = settings.get(key);
+				if (ms != null)ms.setCurrent(MessageSeveritySetting.Severity.values()[sev]);
+			}
+		}		
+	}
+
+	/**
 	 * Save whether the validator is enabled or not. 
 	 * @param validator
 	 * @param prefs up to the filter part of the preference tree
 	 */
-	private void saveShallowPreference(Validator validator, Preferences prefs) {
-		if (validator.asV2Validator() == null)return;
-		Preferences val = prefs.node(validator.getId());
-		val.putBoolean(PrefConstants.build, validator.isBuildValidation());
-		val.putBoolean(PrefConstants.manual, validator.isManualValidation());
-		val.putInt(PrefConstants.version, validator.getVersion());
-	}
+//	private void saveShallowPreference(Validator validator, Preferences prefs) {
+//		if (validator.asV2Validator() == null)return;
+//		Preferences val = prefs.node(validator.getId());
+//		val.putBoolean(PrefConstants.build, validator.isBuildValidation());
+//		val.putBoolean(PrefConstants.manual, validator.isManualValidation());
+//		val.putInt(PrefConstants.version, validator.getVersion());
+//	}
+	
+//	/**
+//	 * Load the customized message settings from the preference store.
+//	 * @param messageSettings
+//	 */
+//	public void loadMessageSettings(Validator val, MessageCategory[] messageSettings) {
+//		try {
+//			loadMessageSettings(val, messageSettings, ValidationFramework.getDefault().getPreferenceStore());
+//		}
+//		catch (Exception e){
+//			ValidationPlugin.getPlugin().handleException(e);
+//		}
+//	}
 
 }

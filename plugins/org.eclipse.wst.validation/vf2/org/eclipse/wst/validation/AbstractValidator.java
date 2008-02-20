@@ -3,6 +3,7 @@ package org.eclipse.wst.validation;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.wst.validation.Validator.V2;
 
 /**
  * The class that all Validators that wish to use version two of the validation framework must subclass.
@@ -10,6 +11,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
  *
  */
 public abstract class AbstractValidator {
+	
+	private V2 _parent;
 	
 	/**
 	 * Validate the resource. The validator is called from a WorkspaceJob, so the validator itself does not need
@@ -96,5 +99,15 @@ public abstract class AbstractValidator {
 	public String getDependencyId(){
 		return null;
 	}
-
+	
+	/**
+	 * Answer the validator that you belong to. The validator controls controls the filters and various other settings. 
+	 */
+	public V2 getParent(){
+		return _parent;
+	}
+	
+	void setParent(V2 parent){
+		_parent = parent;
+	}
 }

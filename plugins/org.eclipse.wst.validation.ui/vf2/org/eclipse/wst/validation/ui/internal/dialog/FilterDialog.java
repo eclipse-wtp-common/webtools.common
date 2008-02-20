@@ -1,5 +1,6 @@
 package org.eclipse.wst.validation.ui.internal.dialog;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -7,6 +8,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -24,12 +26,15 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.eclipse.wst.validation.MessageSeveritySetting;
 import org.eclipse.wst.validation.Validator;
-import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
+import org.eclipse.wst.validation.internal.ValManager;
+import org.eclipse.wst.validation.internal.ValMessages;
 import org.eclipse.wst.validation.internal.delegates.ValidatorDelegateDescriptor;
 import org.eclipse.wst.validation.internal.delegates.ValidatorDelegatesRegistry;
 import org.eclipse.wst.validation.internal.model.FilterGroup;
@@ -46,8 +51,6 @@ import org.eclipse.wst.validation.ui.internal.ValUIMessages;
  *
  */
 public class FilterDialog extends Dialog {
-	
-	private Validator	_origValidator;
 	
 	/** 
 	 * If we are doing project level filters this will point to the project. If this is null if we are doing
@@ -76,6 +79,11 @@ public class FilterDialog extends Dialog {
 	private FilterGroup	_selectedGroup;
 	private FilterRule	_selectedRule;
 	
+	private Combo[]		_messageSev;
+	
+	private static String[] _messages = new String[]{
+		ValMessages.SevError, ValMessages.SevWarning, ValMessages.SevIgnore};
+	
 	private Shell		_shell;
 	
 	/**
@@ -92,7 +100,6 @@ public class FilterDialog extends Dialog {
 		super(shell);
 		_shell = shell;
 		setShellStyle(SWT.CLOSE|SWT.MIN|SWT.MAX|SWT.RESIZE);
-		_origValidator = validator;
 		_validator = validator.copy();
 		_v2 = _validator.asV2Validator();
 		_project = project;
@@ -124,84 +131,7 @@ public class FilterDialog extends Dialog {
 			_tree.setInput(_v2);
 			_tree.expandAll();
 			
-			Composite buttons = new Composite(c, SWT.TOP);
-			GridData gd = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
-			buttons.setLayoutData(gd);
-			buttons.setLayout(new GridLayout(1, true));
-			_addGroupInclude = new Button(buttons, SWT.PUSH | SWT.FILL | SWT.CENTER);
-			_addGroupInclude.setText(ValUIMessages.ButtonAddGroupInclude);
-			_addGroupInclude.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-			
-			_addGroupInclude.addSelectionListener(new SelectionListener(){
-
-				public void widgetDefaultSelected(SelectionEvent e) {
-					addGroup(false);				
-				}
-
-				public void widgetSelected(SelectionEvent e) {
-					addGroup(false);						
-				}
-				
-			});
-				
-			_addGroupExclude = new Button(buttons, SWT.PUSH | SWT.FILL | SWT.CENTER);
-			_addGroupExclude.setText(ValUIMessages.ButtonAddGroupExclude);
-			_addGroupExclude.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-			
-			_addGroupExclude.addSelectionListener(new SelectionListener(){
-
-				public void widgetDefaultSelected(SelectionEvent e) {
-					addGroup(true);				
-				}
-
-				public void widgetSelected(SelectionEvent e) {
-					addGroup(true);						
-				}
-				
-			});
-
-			_addRule = new Button(buttons, SWT.PUSH | SWT.FILL | SWT.CENTER);
-			_addRule.setText(ValUIMessages.ButtonAddRule);
-			_addRule.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-			_addRule.addSelectionListener(new SelectionListener(){
-
-				public void widgetDefaultSelected(SelectionEvent e) {
-					doIt();
-				}
-
-				public void widgetSelected(SelectionEvent e) {
-					doIt();
-				}
-				
-				private void doIt(){
-					NewFilterRule nfr = new NewFilterRule(_project);
-					WizardDialog wd = new WizardDialog(_shell, nfr);
-					wd.setBlockOnOpen(true);
-					int rc = wd.open();
-					if (rc == WizardDialog.CANCEL)return;
-					
-					FilterRule rule = nfr.getRule();
-					if (rule != null){
-						_selectedGroup.add(rule);
-						refresh();
-					}
-				}
-				
-			});
-
-			_remove = new Button(buttons, SWT.PUSH | SWT.FILL | SWT.CENTER);
-			_remove.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-			_remove.setText(ValUIMessages.ButtonRemove);
-			_remove.addSelectionListener(new SelectionListener(){
-
-				public void widgetDefaultSelected(SelectionEvent e) {
-					remove();					
-				}
-
-				public void widgetSelected(SelectionEvent e) {
-					remove();						
-				}				
-			});
+			addButtons(c);
 			
 			String delegatingId = _v2.getDelegatingId();
 			if (delegatingId != null){
@@ -228,9 +158,177 @@ public class FilterDialog extends Dialog {
 			};
 			
 			_tree.addSelectionChangedListener(_nodeChangedListener);
-
+			
+			addMessageMappings(c);
 		}
 		return c;
+	}
+
+	private void addButtons(Composite c) {
+		Composite buttons = new Composite(c, SWT.TOP);
+		GridData gd = new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1);
+		buttons.setLayoutData(gd);
+		buttons.setLayout(new GridLayout(1, true));
+		_addGroupInclude = new Button(buttons, SWT.PUSH | SWT.FILL | SWT.CENTER);
+		_addGroupInclude.setText(ValUIMessages.ButtonAddGroupInclude);
+		_addGroupInclude.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+		
+		_addGroupInclude.addSelectionListener(new SelectionListener(){
+
+			public void widgetDefaultSelected(SelectionEvent e) {
+				addGroup(false);				
+			}
+
+			public void widgetSelected(SelectionEvent e) {
+				addGroup(false);						
+			}
+			
+		});
+			
+		_addGroupExclude = new Button(buttons, SWT.PUSH | SWT.FILL | SWT.CENTER);
+		_addGroupExclude.setText(ValUIMessages.ButtonAddGroupExclude);
+		_addGroupExclude.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+		
+		_addGroupExclude.addSelectionListener(new SelectionListener(){
+
+			public void widgetDefaultSelected(SelectionEvent e) {
+				addGroup(true);				
+			}
+
+			public void widgetSelected(SelectionEvent e) {
+				addGroup(true);						
+			}
+			
+		});
+
+		_addRule = new Button(buttons, SWT.PUSH | SWT.FILL | SWT.CENTER);
+		_addRule.setText(ValUIMessages.ButtonAddRule);
+		_addRule.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+		_addRule.addSelectionListener(new SelectionListener(){
+
+			public void widgetDefaultSelected(SelectionEvent e) {
+				doIt();
+			}
+
+			public void widgetSelected(SelectionEvent e) {
+				doIt();
+			}
+			
+			private void doIt(){
+				NewFilterRule nfr = new NewFilterRule(_project);
+				WizardDialog wd = new WizardDialog(_shell, nfr);
+				wd.setBlockOnOpen(true);
+				int rc = wd.open();
+				if (rc == WizardDialog.CANCEL)return;
+				
+				FilterRule rule = nfr.getRule();
+				if (rule != null){
+					_selectedGroup.add(rule);
+					refresh();
+				}
+			}
+			
+		});
+
+		_remove = new Button(buttons, SWT.PUSH | SWT.FILL | SWT.CENTER);
+		_remove.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+		_remove.setText(ValUIMessages.ButtonRemove);
+		_remove.addSelectionListener(new SelectionListener(){
+
+			public void widgetDefaultSelected(SelectionEvent e) {
+				remove();					
+			}
+
+			public void widgetSelected(SelectionEvent e) {
+				remove();						
+			}				
+		});
+		
+		Button restore = new Button(buttons, SWT.PUSH | SWT.FILL | SWT.CENTER);
+		restore.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+		String defaults = JFaceResources.getString("defaults"); //$NON-NLS-1$
+		restore.setText(defaults);
+		restore.addSelectionListener(new SelectionListener(){
+
+			public void widgetDefaultSelected(SelectionEvent e) {
+				restoreDefaults();					
+			}
+
+			public void widgetSelected(SelectionEvent e) {
+				restoreDefaults();						
+			}				
+		});
+	}
+	
+	private void restoreDefaults() {
+		if (_v2 != null){
+			try {
+				String id = _v2.getId();
+				Validator[] vals = ValManager.getDefaultValidators();
+				for (Validator v : vals){
+					if (v.getId().equals(id)){
+						_validator = v;
+						_v2 = v.asV2Validator();
+						_tree.setInput(_v2);
+						_tree.expandAll();
+						refresh();
+						return;
+					}
+				}
+			}
+			catch (InvocationTargetException e){
+				
+			}
+		}
+		
+	}
+
+
+	private void addMessageMappings(Composite c) {
+		if (_v2 == null)return;
+		Map<String,MessageSeveritySetting> mappings = _validator.getMessageSettings();
+		if (mappings == null || mappings.size() == 0)return;
+		
+		Group group = new Group(c, SWT.NONE);
+		group.setText(ValUIMessages.FrMsgSev);
+		group.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
+		group.setLayout(new GridLayout(2, false));
+		
+//		Label heading = new Label(c, SWT.LEFT);
+//		heading.setText(ValUIMessages.ErrorsWarnings);
+//		heading.setFont(JFaceResources.getHeaderFont());
+//		heading.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
+		
+		_messageSev = new Combo[mappings.size()];
+		int i= 0;
+		for (MessageSeveritySetting ms : mappings.values()){
+			Label label = new Label(group, SWT.LEFT);
+			label.setText("   " + ms.getLabel() + ":"); //$NON-NLS-1$ //$NON-NLS-2$
+			
+			Combo sev = new Combo(group, SWT.RIGHT);
+			_messageSev[i++] = sev;
+			sev.setItems(_messages);
+			sev.select(ms.getCurrent().ordinal());
+			sev.setData(ms);
+			sev.addSelectionListener(new SelectionListener(){
+
+				public void widgetDefaultSelected(SelectionEvent e) {
+					select(e);
+				}
+
+				public void widgetSelected(SelectionEvent e) {
+					select(e);
+				}
+				
+				private void select(SelectionEvent e){
+					Combo w = (Combo)e.widget;
+					MessageSeveritySetting ms = (MessageSeveritySetting)w.getData();
+					int i = w.getSelectionIndex();
+					ms.setCurrent(MessageSeveritySetting.Severity.values()[i]);
+				}
+				
+			});
+		}
 	}
 		
 	/**
@@ -312,23 +410,21 @@ public class FilterDialog extends Dialog {
 		}
 	}
 	
-	protected void okPressed() {
-		super.okPressed();
-		Validator.V2 v = _origValidator.asV2Validator();
-		if (v != null){
-			v.setGroups(_v2.getGroups());
-			v.setDelegatingId(_v2.getDelegatingId());
-			ValPrefManagerGlobal vpm = new ValPrefManagerGlobal();
-			vpm.save(v);
-		}
-	}
-		
 	private void updateButtons() {
 		if (_v2 != null){
 			_addGroupExclude.setEnabled(!ValidatorHelper.hasExcludeGroup(_v2));
 		}
 		_addRule.setEnabled(_selectedGroup != null);
 		_remove.setEnabled(_selectedGroup != null || _selectedRule != null);
+		if (_messageSev != null){
+			Map<String,MessageSeveritySetting> msgs = _validator.getMessageSettings();
+			if (msgs != null && _messageSev.length == msgs.size()){
+				int i = 0;
+				for (MessageSeveritySetting ms : msgs.values()){
+					_messageSev[i++].select(ms.getCurrent().ordinal());
+				}
+			}
+		}
 	}
 
 
@@ -340,5 +436,9 @@ public class FilterDialog extends Dialog {
 	
 	protected Point getInitialSize() {
 		return new Point(550, 475);
+	}
+
+	public Validator getValidator() {
+		return _validator;
 	}
 }

@@ -47,7 +47,11 @@ public class ValMessages extends NLS {
 	
 	public static String FileExtWithCase;
 	public static String FileExtWithoutCase;
-	
+
+	public static String SevError;
+	public static String SevWarning;
+	public static String SevIgnore;
+
 	public static String TimeUnder;
 	public static String TimeNano;
 	public static String TimeMicro;

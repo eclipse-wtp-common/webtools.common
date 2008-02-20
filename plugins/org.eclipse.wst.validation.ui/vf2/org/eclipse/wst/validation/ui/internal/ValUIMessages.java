@@ -32,6 +32,8 @@ public class ValUIMessages extends NLS {
 	public static String DelegatesDialogTitle;
 	public static String DelegatesComboLabel;
 	
+	public static String ErrorsWarnings;
+		
 	public static String VBF_EXC_INTERNAL_TITLE;
 	public static String VBF_EXC_INTERNAL_PAGE;
 	public static String VBF_EXC_INVALID_REGISTER;
@@ -101,6 +103,7 @@ public class ValUIMessages extends NLS {
 	public static String FrFacitLabel;
 	public static String FrContentType;
 	public static String FrContentTypeLabel;
+	public static String FrMsgSev;
 	
 		
 	static {

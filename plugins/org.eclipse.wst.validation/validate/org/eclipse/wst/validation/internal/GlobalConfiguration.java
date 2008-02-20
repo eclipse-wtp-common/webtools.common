@@ -35,14 +35,11 @@ public class GlobalConfiguration extends ValidationConfiguration {
 	public GlobalConfiguration(IWorkspaceRoot root) throws InvocationTargetException {
 		super(root, convertToArray(ValidationRegistryReader.getReader().getAllValidators()));
 
-		// Can't put the call to load() and passivate() in the ValidationConfiguration constructor
-		// due
+		// Can't put the call to load() and passivate() in the ValidationConfiguration constructor due
 		// to the order of initialization.
-		//    1. First the ValidationConfiguration constructor is called, and that loads the stored
-		// values.
+		//    1. First the ValidationConfiguration constructor is called, and that loads the stored values.
 		//    2. Then this class's <init> method is called, and that initializes the "override" field
-		// to the default,
-		//       which may be different than the stored value.
+		// 	  to the default, which may be different than the stored value.
 	}
 
 	/**
@@ -77,7 +74,7 @@ public class GlobalConfiguration extends ValidationConfiguration {
 		setEnabledBuildValidators(getBuildEnabledValidators());
 		setCanProjectsOverride(getCanProjectsOverrideDefault());
 		setSaveAutomatically(getSaveAutomaticallyDefault());
-    setDefaultDelegates(getValidators());
+		setDefaultDelegates(getValidators());
 	}
 
 	/**

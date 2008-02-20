@@ -1,7 +1,9 @@
 package org.eclipse.wst.validation;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -13,9 +15,13 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.wst.validation.internal.ResourceUnavailableError;
 import org.eclipse.wst.validation.internal.SummaryReporter;
+import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValOperation;
 import org.eclipse.wst.validation.internal.ValOperationManager;
+import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
+import org.eclipse.wst.validation.internal.ValPrefManagerProject;
 import org.eclipse.wst.validation.internal.ValidationConfiguration;
+import org.eclipse.wst.validation.internal.ValidatorExtensionReader;
 import org.eclipse.wst.validation.internal.ValidatorMetaData;
 import org.eclipse.wst.validation.internal.core.ValidatorLauncher;
 import org.eclipse.wst.validation.internal.delegates.ValidatorDelegateDescriptor;
@@ -34,6 +40,7 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidator;
  *
  */
 public abstract class Validator implements Comparable {
+	// Remember is you add a new instance variable, make sure that you update the copy and become methods
 	
 	protected boolean	_buildValidation = true;
 	
@@ -54,12 +61,23 @@ public abstract class Validator implements Comparable {
 	 */
 	private int			_version = 1;
 	
-	public static Validator create(AbstractValidator validator) {
-		return new V2(validator);
+	/** Map simple message id's to message settings. */
+	private Map<String, MessageSeveritySetting> _messageSettings;
+	
+	/** The project that you are defined in. This can be null which means that you are a global validator. */
+	protected IProject	_project;
+	
+	public static Validator create(AbstractValidator validator, IProject project) {
+		V2 v2 = new V2(validator);
+		v2._project = project;
+		validator.setParent(v2);
+		return v2;
 	}
 	
-	public static Validator create(ValidatorMetaData vmd, ValidationConfiguration config){
-		return new V1(vmd, config);
+	public static Validator create(ValidatorMetaData vmd, ValidationConfiguration config, IProject project){
+		V1 v1 = new V1(vmd, config);
+		v1._project = project;
+		return v1;
 	}
 	
 	/**
@@ -107,6 +125,9 @@ public abstract class Validator implements Comparable {
 		_buildValidation = v._buildValidation;
 		_delegatingId = v._delegatingId;
 		_manualValidation = v._manualValidation;
+		_messageSettings = v._messageSettings;
+		_project = v._project;
+		_sourceId = v._sourceId;
 		_version = v._version;
 	}
 	
@@ -188,6 +209,14 @@ public abstract class Validator implements Comparable {
 		// subclasses need to override this, if they wish to let their validators know about this event
 	}
 	
+	void add(MessageSeveritySetting message){
+		// I can't use getMessageSettings() here, as that will put us into an infinite loop
+		if (_messageSettings == null){
+			_messageSettings = new HashMap<String, MessageSeveritySetting>(10);
+		}
+		_messageSettings.put(message.getId(), message);
+	}
+	
 	public IValidator asIValidator(){
 		return null;
 	}
@@ -197,8 +226,51 @@ public abstract class Validator implements Comparable {
 	protected abstract boolean shouldValidateProject(IProject project);
 			
 	public abstract String getId();
+	
+	public MessageSeveritySetting getMessage(String id){
+		return getMessageSettings().get(id);
+	}
+	
+	/**
+	 * Answer all the message settings that this validator has defined.
+	 * 
+	 * @return an empty map if the validator did not define any message settings.
+	 */
+	public Map<String, MessageSeveritySetting> getMessageSettings(){
+		Map<String, MessageSeveritySetting> settings = _messageSettings;
+		if (settings == null){
+			settings = new HashMap<String, MessageSeveritySetting>(10);
+			init(settings);
+			if (ValManager.getDefault().hasEnabledProjectPreferences(getProject())){
+				ValPrefManagerProject vp = new ValPrefManagerProject(getProject());
+				vp.loadMessages(this, settings);
+			}
+			else {
+				ValPrefManagerGlobal gp = ValPrefManagerGlobal.getDefault();
+				gp.loadMessages(this, settings);
+				
+			}
+			_messageSettings = settings;
+		}
+		return settings;
+	}
+	
+	private void init(Map<String, MessageSeveritySetting> settings) {
+		for (MessageSeveritySetting ms : ValidatorExtensionReader.getDefault().addMessages(this)){
+			settings.put(ms.getId(), ms);
+		}		
+	}
 
 	public abstract String getName();
+	
+	/**
+	 * Answer the project that you were enabled on. 
+	 * 
+	 * @return null if you are a global (i.e. workspace level) validator.
+	 */
+	public IProject getProject(){
+		return _project;
+	}
 		
 	/**
 	 * Answer the name of the class that implements the validator.
@@ -219,6 +291,10 @@ public abstract class Validator implements Comparable {
 	 * @param manualValidation
 	 */
 	public void setManualValidation(boolean manualValidation) {
+		setManualValidation2(manualValidation);
+	}
+	
+	protected final void setManualValidation2(boolean manualValidation) {
 		_manualValidation = manualValidation;
 	}
 
@@ -235,6 +311,10 @@ public abstract class Validator implements Comparable {
 	 * @param buildValidation
 	 */
 	public void setBuildValidation(boolean buildValidation) {
+		setBuildValidation2(buildValidation);
+	}
+	
+	protected final void setBuildValidation2(boolean buildValidation) {
 		_buildValidation = buildValidation;
 	}
 
@@ -278,7 +358,7 @@ public abstract class Validator implements Comparable {
  * @author karasiuk
  *
  */ 
-public final static class V1 extends Validator {
+public static class V1 extends Validator {
 	private ValidatorMetaData _vmd;
 	
 	/**
@@ -311,9 +391,17 @@ public final static class V1 extends Validator {
 	public V1 asV1Validator() {
 		return this;
 	}
+	
+	@Override
+	public void become(Validator val) {
+		super.become(val);
+		V1 v1 = val.asV1Validator();
+		if (v1 == null)throw new IllegalArgumentException("Internal error, the incoming validator must be a v1 validator"); //$NON-NLS-1$
+		_vmd = v1._vmd;
+	}
 		
 	public Validator copy() {
-		V1 v = new V1(_vmd, null);
+		V1 v = new V1Copy(_vmd, null);
 		v.copyLocal(this);
 				
 		return v;
@@ -398,6 +486,35 @@ public final static class V1 extends Validator {
 		}
 		return vr;
 	}
+	
+	/*
+	 * GRK - Because I didn't want to try to make a true copy of the V1 validator, (because I didn't
+	 * want to copy the vmd object), I came up with this approach to only copy the fields that
+	 * the preference page was worried about. 
+	 */
+	public static class V1Copy extends V1 {
+		public V1Copy(ValidatorMetaData vmd, ValidationConfiguration vc){
+			super(vmd, vc);
+		}
+		
+		@Override
+		public void setManualValidation(boolean bool) {
+			setManualValidation2(bool);
+		}
+		
+		@Override
+		public void setBuildValidation(boolean bool) {
+			setBuildValidation2(bool);
+		}
+		
+		@Override
+		public void become(Validator val) {
+			super.become(val);
+			super.setBuildValidation(val.isBuildValidation());
+			super.setManualValidation(val.isManualValidation());
+		}
+		
+	}
 		
 }
 
@@ -426,6 +543,7 @@ public final static class V2 extends Validator implements IAdaptable {
 	
 	public V2(AbstractValidator base){
 		_validator = base;
+		base.setParent(this);
 		setDelegatingId(ValidatorDelegatesRegistry.getInstance().getDefaultDelegate(getValidatorClassname()));
 	}
 
@@ -499,6 +617,7 @@ public final static class V2 extends Validator implements IAdaptable {
 			ValidationPlugin.getPlugin().handleException(e);
 		}
 		if (delegated == null)return _validator;
+		delegated.setParent(this);
 		_delegated = delegated;
 		return delegated;
 	}
@@ -669,6 +788,19 @@ public final static class V2 extends Validator implements IAdaptable {
 		}
 		return true;
 	}
+	
+	@Override
+	public void become(Validator val) {
+		super.become(val);
+		V2 v2 = val.asV2Validator();
+		if (v2 == null)throw new IllegalArgumentException("Internal error, the incoming validator must be a v2 validator"); //$NON-NLS-1$
+		_delegated = v2._delegated;
+		_groups = v2._groups;
+		_groupsArray = v2._groupsArray;
+		_id = v2._id;
+		_name = v2._name;
+		_validator = v2._validator;
+	}
 }
 
 public String getSourceId() {
@@ -678,4 +810,24 @@ public String getSourceId() {
 public void setSourceId(String sourceId) {
 	_sourceId = sourceId;
 }
+
+/**
+ * Take the instance variables from the incoming validator and set them to yourself.
+ * @param validator
+ */
+public void become(Validator validator) {
+	_buildValidation = validator._buildValidation;
+	_delegatingId = validator._delegatingId;
+	_manualValidation = validator._manualValidation;
+	_messageSettings = validator._messageSettings;
+	_project = validator._project;
+	_sourceId = validator._sourceId;
+	_version = validator._version;
+	
+}
+
+void setMessages(Map<String, MessageSeveritySetting> map) {
+	_messageSettings = map;
+}
+
 }

@@ -159,15 +159,6 @@ public class EventManager implements IResourceChangeListener {
 					if (resource instanceof IProject) {
 						IProject project = (IProject) resource;
 						if ((subdelta.getFlags() & IResourceDelta.DESCRIPTION) == IResourceDelta.DESCRIPTION) {
-							try {
-								// flush existing "enabled validator" settings and reset to default
-								ConfigurationManager.getManager().resetProjectNature(project); // 
-							} catch (InvocationTargetException e) {
-								ValidationPlugin.getPlugin().handleException(e);
-								if (e.getTargetException() != null)
-									ValidationPlugin.getPlugin().handleException(e.getTargetException());
-
-							}
 							return false;
 						}
 

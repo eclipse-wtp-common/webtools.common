@@ -101,6 +101,24 @@ public interface ExtensionConstants {
 		String full = "full"; //$NON-NLS-1$
 	}
 	
+	interface MessageCategory {
+		/** messageCategory - name of the message category element. */
+		String name = "messageCategory"; //$NON-NLS-1$
+		
+		/** id - simple id of the message. */
+		String id = "id"; //$NON-NLS-1$
+		
+		/** label = human readable label of the message category. */
+		String label = "label"; //$NON-NLS-1$
+		
+		/** severity - message severity, it must be one of error, warning or ignore. */
+		String severity = "severity"; //$NON-NLS-1$
+		
+		String sevError = "error"; //$NON-NLS-1$
+		String sevWarning = "warning"; //$NON-NLS-1$
+		String sevIgnore = "ignore";  //$NON-NLS-1$
+	}
+	
 	/** true */
 	String True = "true"; //$NON-NLS-1$
 	
