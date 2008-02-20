@@ -24,6 +24,8 @@ import org.eclipse.wst.common.frameworks.internal.operation.extensionui.DMWizard
 
 public class DMPageGroupElementImpl implements IDMPageGroup {
 	private DMWizardPageGroupElement pageGroupElement;
+
+	private List pages;
 	
 	public DMPageGroupElementImpl(IConfigurationElement element) {
 		pageGroupElement = new DMWizardPageGroupElement(element);
@@ -46,7 +48,10 @@ public class DMPageGroupElementImpl implements IDMPageGroup {
 	}
 
 	public List getPages(IDataModel dataModel){
-		return Arrays.asList(pageGroupElement.createPageGroup(dataModel));
+		if (pages == null) {
+			pages = Arrays.asList(pageGroupElement.createPageGroup(dataModel));
+		}
+		return pages;
 	}
 	
 	public IDMPageHandler getPageHandler(IDataModel dataModel) {
