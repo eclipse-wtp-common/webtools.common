@@ -13,8 +13,8 @@ package org.eclipse.wst.common.ui.internal.search;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.search.internal.ui.text.IFileSearchContentProvider;
 import org.eclipse.search.ui.text.AbstractTextSearchResult;
-import org.eclipse.wst.common.ui.internal.search.basecode.IFileSearchContentProvider;
 
 public class SearchResultTableContentProvider implements IStructuredContentProvider, IFileSearchContentProvider {
 	

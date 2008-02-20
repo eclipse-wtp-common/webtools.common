@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2007 IBM Corporation and others.
+ * Copyright (c) 2000, 2005 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,7 +22,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.util.DelegatingDragAdapter;
-//import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
@@ -34,6 +34,12 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.search.internal.ui.SearchMessages;
+import org.eclipse.search.internal.ui.SearchPlugin;
+import org.eclipse.search.internal.ui.text.FileLabelProvider;
+import org.eclipse.search.internal.ui.text.IFileSearchContentProvider;
+import org.eclipse.search.internal.ui.text.ResourceTransferDragAdapter;
+import org.eclipse.search.internal.ui.text.SortAction;
 import org.eclipse.search.ui.IContextMenuConstants;
 import org.eclipse.search.ui.ISearchResultViewPart;
 import org.eclipse.search.ui.NewSearchUI;
@@ -62,10 +68,6 @@ import org.eclipse.ui.part.IShowInTargetList;
 import org.eclipse.ui.part.ResourceTransfer;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.wst.common.ui.internal.UIPlugin;
-import org.eclipse.wst.common.ui.internal.search.basecode.FileLabelProvider;
-import org.eclipse.wst.common.ui.internal.search.basecode.IFileSearchContentProvider;
-import org.eclipse.wst.common.ui.internal.search.basecode.ResourceTransferDragAdapter;
-import org.eclipse.wst.common.ui.internal.search.basecode.SortAction;
 
 
 public class SearchResultPage extends AbstractTextSearchViewPage implements IAdaptable {
@@ -118,7 +120,7 @@ public class SearchResultPage extends AbstractTextSearchViewPage implements IAda
 		}
 	};
 
-	// private IPropertyChangeListener fPropertyChangeListener;
+	private IPropertyChangeListener fPropertyChangeListener;
 	
 	public SearchResultPage() {
 		// TODO
@@ -239,7 +241,7 @@ public class SearchResultPage extends AbstractTextSearchViewPage implements IAda
 	
 	public void dispose() {
 		fActionGroup.dispose();
-		// SearchPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(fPropertyChangeListener);
+		SearchPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(fPropertyChangeListener);
 		super.dispose();
 	}
 

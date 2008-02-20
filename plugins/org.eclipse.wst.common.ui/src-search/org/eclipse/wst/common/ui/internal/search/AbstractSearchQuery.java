@@ -23,6 +23,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.search.internal.ui.Messages;
+import org.eclipse.search.internal.ui.SearchMessages;
 import org.eclipse.search.ui.IQueryListener;
 import org.eclipse.search.ui.ISearchQuery;
 import org.eclipse.search.ui.ISearchResult;
@@ -32,7 +34,6 @@ import org.eclipse.wst.common.core.search.SearchEngine;
 import org.eclipse.wst.common.core.search.pattern.QualifiedName;
 import org.eclipse.wst.common.core.search.pattern.SearchPattern;
 import org.eclipse.wst.common.core.search.scope.SearchScope;
-import org.eclipse.wst.common.ui.internal.search.basecode.Messages;
 
 
 public abstract class AbstractSearchQuery implements ISearchQuery {

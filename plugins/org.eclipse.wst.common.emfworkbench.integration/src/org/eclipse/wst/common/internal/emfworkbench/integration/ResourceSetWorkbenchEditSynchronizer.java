@@ -180,6 +180,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	private void primAcceptDelta(IResourceDelta delta, IResourceChangeEvent event) {
 		if (delta != null) {
 			try {
+				currentProjectDelta = null;
 				delta.accept(ResourceSetWorkbenchEditSynchronizer.this);
 			} catch (Exception e) {
 				Logger.getLogger().logError(e);
@@ -219,8 +220,6 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 					currentProjectDelta = delta;
 					return true;
 				}
-				// added line
-				currentProjectDelta = null;
 				return false;
 			}
 			if (resource.getType() == IResource.FILE && isInterrestedInFile((IFile) resource)) {
@@ -279,9 +278,16 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
                         }
                 } else {
                         /*Unload if found and is not modified but inconsistent.*/
-                	if (resource.isLoaded() && WorkbenchResourceHelper.isReferencedResource(resource) && !WorkbenchResourceHelper.isConsistent((ReferencedResource)resource)) {
-                        deferredUnloadResources.add(resource);
-                        didProcess = true;
+                	if (resource.isLoaded()) {
+                		if ( WorkbenchResourceHelper.isReferencedResource(resource)) {
+                			if (!WorkbenchResourceHelper.isConsistent((ReferencedResource)resource)) {
+                				deferredUnloadResources.add(resource);
+                				didProcess = true;
+                			}
+                		} else {
+                			deferredUnloadResources.add(resource);
+            				didProcess = true;
+                		}	
                 	}
                 }
         } else {                
@@ -309,8 +315,12 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 			
 			if (isRemove)
 				deferredRemoveResources.add(resource);
-			else if (resource.isLoaded() && WorkbenchResourceHelper.isReferencedResource(resource) && !WorkbenchResourceHelper.isConsistent((ReferencedResource)resource))
-				deferredUnloadResources.add(resource);
+			else if (resource.isLoaded()) {
+        		if ( WorkbenchResourceHelper.isReferencedResource(resource)) {
+        			if(!WorkbenchResourceHelper.isConsistent((ReferencedResource)resource)) 
+        				deferredUnloadResources.add(resource);
+        		} else deferredUnloadResources.add(resource);
+			}
 		}
 		return false;
 	}

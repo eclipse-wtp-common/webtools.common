@@ -112,24 +112,29 @@ public class URIResolverExtensionRegistry
 	 */
 	public List getExtensionDescriptors(IProject project)
 	{
-		List result = new ArrayList();
-		for (Iterator i = map.keySet().iterator(); i.hasNext();)
-		{
-			String key = (String) i.next();
-			try
-			{
-				if (key == NULL_PROJECT_NATURE_ID || project == null
-						|| project.hasNature(key))
-				{
-					result.addAll((List) ((HashMap) map.get(key)).get(PRIORITY_HIGH));
-					result.addAll((List) ((HashMap) map.get(key)).get(PRIORITY_MEDIUM));
-					result.addAll((List) ((HashMap) map.get(key)).get(PRIORITY_LOW));
-				}
-			} catch (CoreException e)
-			{
-			}
-		}
-		return result;
+	  List result = new ArrayList();
+	  List lowPriorityList = new ArrayList();
+	  List mediumPriorityList = new ArrayList();
+	  List highPriorityList = new ArrayList();          
+	  for (Iterator i = map.keySet().iterator(); i.hasNext();)
+	  {
+	    String key = (String) i.next();
+	    try
+	    {
+	      if (key == NULL_PROJECT_NATURE_ID || project == null || project.hasNature(key))
+	      {
+	        highPriorityList.addAll((List) ((HashMap) map.get(key)).get(PRIORITY_HIGH));
+	        mediumPriorityList.addAll((List) ((HashMap) map.get(key)).get(PRIORITY_MEDIUM));
+	        lowPriorityList.addAll((List) ((HashMap) map.get(key)).get(PRIORITY_LOW));
+	      }
+	    } catch (CoreException e)
+	    {
+	    }
+	  }
+	  result.addAll(highPriorityList);
+	  result.addAll(mediumPriorityList);
+	  result.addAll(lowPriorityList);
+	  return result;
 	}
 
 	/**

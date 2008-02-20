@@ -20,6 +20,7 @@ import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
+import org.eclipse.wst.common.internal.emf.resource.CompatibilityXMIResource;
 import org.eclipse.wst.common.internal.emf.resource.Translator;
 import org.eclipse.wst.common.internal.emf.resource.TranslatorPath;
 
@@ -64,24 +65,33 @@ public class HRefTranslator extends Translator {
 	 * @see org.eclipse.wst.common.internal.emf.resource.Translator#convertStringToValue(java.lang.String,
 	 *      org.eclipse.emf.ecore.EObject)
 	 */
-	public Object convertStringToValue(String aValue, EObject anOwner) { 
-		Resource res = null;
-		try {
-			WorkbenchComponent earComp = (WorkbenchComponent)anOwner.eContainer();
-			IVirtualComponent virtualComp = ComponentCore.createComponent(StructureEdit.getContainingProject(earComp));
-			ArtifactEdit edit = (ArtifactEdit)virtualComp.getAdapter(ArtifactEdit.class);
-			if (edit == null) return null;
-			if( edit.getContentModelRoot() == null ) return null;
-			res = edit.getContentModelRoot().eResource();
-			if (res != null)
-				return res.getEObject(aValue);
-			return null;
-		} finally {
+	public Object convertStringToValue(String aValue, EObject anOwner) {
+		Object retVal = null;
+		if (aValue != null)
+		{
+			Resource res = null;
+			try {
+				WorkbenchComponent earComp = (WorkbenchComponent)anOwner.eContainer();
+				IVirtualComponent virtualComp = ComponentCore.createComponent(StructureEdit.getContainingProject(earComp));
+				ArtifactEdit edit = (ArtifactEdit)virtualComp.getAdapter(ArtifactEdit.class);
+				if (edit != null)
+				{
+					EObject contentModelRoot = edit.getContentModelRoot(); 
+					if( contentModelRoot != null )
+					{
+						res = contentModelRoot.eResource();
+						if (res != null)
+							retVal = res.getEObject(aValue);
+					}
+				}
+			} finally {
 //			if ((res != null) && res.getResourceSet() != null) {
 //				res.getResourceSet().getResources().remove(res);
 //				res.unload();
 //			}
+			}
 		}
+		return retVal;
 	}
 
 	/*
@@ -92,8 +102,14 @@ public class HRefTranslator extends Translator {
 	 */
 	public String convertValueToString(Object aValue, EObject anOwner) { 
 		String frag = null;
-		if (((EObject)aValue).eResource() != null)
-			frag = ((EObject)aValue).eResource().getURIFragment((EObject)aValue);
+		Resource theResource = ((EObject)aValue).eResource();
+		if (theResource != null)
+		{
+			if (theResource instanceof CompatibilityXMIResource)
+				frag = theResource.getURIFragment((EObject)aValue);
+			else
+				frag = null;
+		}
 		else
 			frag = EcoreUtil.getID((EObject)aValue);
 		return frag;

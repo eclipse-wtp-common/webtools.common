@@ -85,8 +85,8 @@ public class EditModelLeastUsedCache {
 			}
 		}
 		if (shouldAccess) {
-			editModel.access(this);
 			synchronized (lru) {
+				editModel.access(this);
 				lru.add(editModel);
 			}
 		}
@@ -107,9 +107,9 @@ public class EditModelLeastUsedCache {
 					lru.remove(model);	
 				}
 			}
-		}
 		if (model != null)
 			model.releaseAccess(this);
+		}
 	}
 
 	/**
