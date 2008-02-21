@@ -260,13 +260,35 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	 */
 	public void selectionChanged(IAction action, ISelection selection) {
 		_currentSelection = selection;
-		boolean enabled = true;
+		boolean enabled = quickCheck(selection);
 		
 		// Don't force the plug-in to be activated just to check this setting.
-		if (ValidationPlugin.isActivated() && ValidationRegistryReader.isActivated()){
+		if (enabled && ValidationPlugin.isActivated() && ValidationRegistryReader.isActivated()){
 			enabled = hasManualValidators(selection);
 		}
 		action.setEnabled(enabled);
+	}
+	
+	/**
+	 * Do a quick check on the selection, so see if we know that we don't want to validate the selection.
+	 * 
+	 * @param selection
+	 * @return false if we are sure that we don't want to validate it. Return true if we are still not sure.
+	 */
+	private boolean quickCheck(ISelection selection){
+		if (selection == null || selection.isEmpty())return false;
+		if (selection instanceof IStructuredSelection){
+			IStructuredSelection ss = (IStructuredSelection)selection;
+			Object sel = ss.getFirstElement();
+			if (sel != null){
+				if (sel instanceof IProject){
+					IProject project = (IProject)sel;
+					if (!project.isOpen())return false;
+				}
+			}
+		}
+
+		return true;
 	}
 	
 	/**
@@ -274,15 +296,14 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	 * @param selection
 	 */
 	private boolean hasManualValidators(ISelection selection){
-		if (selection == null || selection.isEmpty())return false;
-		
+				
 		if (selection instanceof IStructuredSelection){
 			IStructuredSelection ss = (IStructuredSelection)selection;
 			for (Iterator it = ss.iterator(); it.hasNext();){
 				Object sel = it.next();
 				if (sel instanceof IResource){
 					IResource resource = (IResource)sel;
-					return ValidationFramework.getDefault().hasValidators(resource, true, false);
+					if (ValidationFramework.getDefault().hasValidators(resource, true, false))return true;
 				}
 			}		
 		}
