@@ -780,7 +780,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 		try {
 			_shell = parent.getShell();
 			_pageImpl = new ValidatorListPage(parent);
-		} catch (Throwable exc) {
+		} catch (Exception exc) {
 			_pageImpl = new InvalidPage(parent);
 			displayAndLogError(ValUIMessages.VBF_EXC_INTERNAL_TITLE, ValUIMessages.VBF_EXC_INTERNAL_PAGE, exc);
 		}
@@ -793,7 +793,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 
 		try {
 			_pageImpl.performDefaults();
-		} catch (Throwable exc) {
+		} catch (Exception exc) {
 			displayAndLogError(ValUIMessages.VBF_EXC_INTERNAL_TITLE, ValUIMessages.VBF_EXC_INTERNAL_PAGE, exc);
 		}
 	}
@@ -801,7 +801,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 	public boolean performOk() {
 		try {
 			return _pageImpl.performOk();
-		} catch (Throwable exc) {
+		} catch (Exception exc) {
 			displayAndLogError(ValUIMessages.VBF_EXC_INTERNAL_TITLE, ValUIMessages.VBF_EXC_INTERNAL_PAGE, exc);
 			return false;
 		}
@@ -820,7 +820,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 				_pageImpl.dispose();
 				_pageImpl = null;
 			}
-		} catch (Throwable exc) {
+		} catch (Exception exc) {
 			displayAndLogError(ValUIMessages.VBF_EXC_INTERNAL_TITLE, ValUIMessages.VBF_EXC_INTERNAL_PAGE, exc);
 		}
 	}

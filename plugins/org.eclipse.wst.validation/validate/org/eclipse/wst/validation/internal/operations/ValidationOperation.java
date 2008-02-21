@@ -1350,10 +1350,15 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 			} catch (OperationCanceledException exc) {
 				throw exc;
 
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				ValidationPlugin.getPlugin().handleException(e);
 				String mssg = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_ENDING_VALIDATION_ABNORMALLY, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
 				reporter.displaySubtask(mssg);
+			} catch (Error e) {
+				ValidationPlugin.getPlugin().handleException(e);
+				String mssg = ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_STATUS_ENDING_VALIDATION_ABNORMALLY, new String[]{getProject().getName(), vmd.getValidatorDisplayName()});
+				reporter.displaySubtask(mssg);
+				throw e;
 			} finally {
 				// If user fixes problem, and limit exceeded, add "exceeded"
 				// message, or if limit not exceeded any more, remove "exceeded" message.

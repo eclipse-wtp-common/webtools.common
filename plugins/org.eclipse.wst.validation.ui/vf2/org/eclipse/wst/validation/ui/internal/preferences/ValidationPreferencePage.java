@@ -739,7 +739,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 		try {
 			_shell = parent.getShell();
 			_pageImpl = new ValidatorListPage(parent);
-		} catch (Throwable exc) {
+		} catch (Exception exc) {
 			_pageImpl = new InvalidPage(parent);
 			displayAndLogError(ValUIMessages.VBF_EXC_INTERNAL_TITLE, ValUIMessages.VBF_EXC_INTERNAL_PAGE, exc);
 		}
@@ -764,12 +764,8 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 
 		try {
 			_pageImpl.performDefaults();
-		} catch (InvocationTargetException exc) {
-			displayAndLogError(ValUIMessages.VBF_EXC_INTERNAL_TITLE,
-					ValUIMessages.VBF_EXC_INTERNAL_PAGE, exc);
-		} catch (Throwable exc) {
-			displayAndLogError(ValUIMessages.VBF_EXC_INTERNAL_TITLE,
-					ValUIMessages.VBF_EXC_INTERNAL_PAGE, exc);
+		} catch (Exception exc) {
+			displayAndLogError(ValUIMessages.VBF_EXC_INTERNAL_TITLE, ValUIMessages.VBF_EXC_INTERNAL_PAGE, exc);
 		}
 	}
 
@@ -783,9 +779,8 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 		try {
 			return _pageImpl.performOk();
 		} 
-		catch (Throwable exc) {
-			displayAndLogError(ValUIMessages.VBF_EXC_INTERNAL_TITLE,
-					ValUIMessages.VBF_EXC_INTERNAL_PAGE, exc);
+		catch (Exception exc) {
+			displayAndLogError(ValUIMessages.VBF_EXC_INTERNAL_TITLE, ValUIMessages.VBF_EXC_INTERNAL_PAGE, exc);
 			return false;
 		}
 	}
@@ -806,7 +801,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 
 			// TODO figure out what this thing did
 			// ExtensionManger.instance().getDelegate().disposePreferencePage();
-		} catch (Throwable exc) {
+		} catch (Exception exc) {
 			displayAndLogError(ValUIMessages.VBF_EXC_INTERNAL_TITLE, ValUIMessages.VBF_EXC_INTERNAL_PAGE, exc);
 		}
 	}
