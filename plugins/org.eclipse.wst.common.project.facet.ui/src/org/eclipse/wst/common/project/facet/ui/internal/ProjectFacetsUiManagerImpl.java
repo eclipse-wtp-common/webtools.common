@@ -11,8 +11,8 @@
 
 package org.eclipse.wst.common.project.facet.ui.internal;
 
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.findExtensions;
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.getTopLevelElements;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findExtensions;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.getTopLevelElements;
 import static org.eclipse.wst.common.project.facet.ui.internal.FacetUiPlugin.PLUGIN_ID;
 
 import java.net.URL;

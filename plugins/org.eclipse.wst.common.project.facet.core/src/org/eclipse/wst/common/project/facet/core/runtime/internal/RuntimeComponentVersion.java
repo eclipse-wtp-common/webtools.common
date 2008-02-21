@@ -11,7 +11,7 @@
 
 package org.eclipse.wst.common.project.facet.core.runtime.internal;
 
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.instantiate;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.instantiate;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -21,10 +21,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IVersion;
-import org.eclipse.wst.common.project.facet.core.internal.util.UnknownVersion;
-import org.eclipse.wst.common.project.facet.core.internal.util.Versionable;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentType;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentVersion;
+import org.eclipse.wst.common.project.facet.core.util.internal.UnknownVersion;
+import org.eclipse.wst.common.project.facet.core.util.internal.Versionable;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>

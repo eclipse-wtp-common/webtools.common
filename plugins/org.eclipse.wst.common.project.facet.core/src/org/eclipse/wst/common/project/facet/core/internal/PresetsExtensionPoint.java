@@ -15,13 +15,13 @@ import static org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin
 import static org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin.createErrorStatus;
 import static org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin.log;
 import static org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin.logError;
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.findExtensions;
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.findOptionalElement;
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.findRequiredAttribute;
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.findRequiredElement;
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.getElementValue;
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.getTopLevelElements;
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.instantiate;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findExtensions;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findOptionalElement;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findRequiredAttribute;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findRequiredElement;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.getElementValue;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.getTopLevelElements;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.instantiate;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -38,8 +38,8 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.PresetDefinition;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
-import org.eclipse.wst.common.project.facet.core.internal.util.IndexedSet;
-import org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.InvalidExtensionException;
+import org.eclipse.wst.common.project.facet.core.util.internal.IndexedSet;
+import org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.InvalidExtensionException;
 
 /**
  * Contains the logic for processing the <code>presets</code> extension point.
@@ -436,6 +436,22 @@ public final class PresetsExtensionPoint
         public final String toString()
         {
             return this.id;
+        }
+        
+        public boolean equals( final Object obj )
+        {
+            if( ! ( obj instanceof StaticPreset ) )
+            {
+                return false;
+            }
+            
+            final StaticPreset p = (StaticPreset) obj;
+            
+            return this.id.equals( p.id ) &&
+                   this.pluginId.equals( p.pluginId ) &&
+                   this.label.equals( p.label ) &&
+                   this.description.equals( p.description ) &&
+                   this.facetVersions.equals( p.facetVersions );
         }
         
         protected final Set<IProjectFacetVersion> createCombinedFacetSet( final IPreset basePreset )

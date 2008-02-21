@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005-2007 BEA Systems, Inc.
+ * Copyright (c) 2008 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,34 +9,27 @@
  *    Konstantin Komissarchik
  ******************************************************************************/
 
-package org.eclipse.wst.common.project.facet.core.internal.util;
+package org.eclipse.wst.common.project.facet.core.util.internal;
 
 /**
+ * Contains miscellaneous utility functions.
+ * 
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
-public final class ObjectReference<T>
+public final class MiscUtil
 {
-    private T object;
-    
-    public ObjectReference()
+    public static boolean equal( final Object obj1,
+                                 final Object obj2 )
     {
-        this.object = null;
-    }
-    
-    public ObjectReference( final T object )
-    {
-        this.object = object;
-    }
-    
-    public T get()
-    {
-        return this.object;
-    }
-    
-    public void set( final T object )
-    {
-        this.object = object;
+        if( obj1 == null || obj2 == null )
+        {
+            return false;
+        }
+        else
+        {
+            return obj1.equals( obj2 );
+        }
     }
     
 }

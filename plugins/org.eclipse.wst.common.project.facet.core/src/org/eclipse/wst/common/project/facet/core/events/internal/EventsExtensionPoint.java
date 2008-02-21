@@ -12,9 +12,9 @@
 package org.eclipse.wst.common.project.facet.core.events.internal;
 
 import static org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin.PLUGIN_ID;
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.findExtensions;
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.findRequiredAttribute;
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.getTopLevelElements;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findExtensions;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findRequiredAttribute;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.getTopLevelElements;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin;
 import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectFrameworkImpl;
-import org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.InvalidExtensionException;
+import org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.InvalidExtensionException;
 
 /**
  * Contains the logic for processing the <code>listeners</code> extension point.

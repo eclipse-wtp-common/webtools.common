@@ -13,11 +13,11 @@ package org.eclipse.wst.common.project.facet.core.internal;
 
 import static org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin.PLUGIN_ID;
 import static org.eclipse.wst.common.project.facet.core.internal.FacetedProjectFrameworkImpl.reportMissingFacet;
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.findExtensions;
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.findOptionalElement;
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.findRequiredAttribute;
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.getElementValue;
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.getTopLevelElements;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findExtensions;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findOptionalElement;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findRequiredAttribute;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.getElementValue;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.getTopLevelElements;
 
 import java.util.Set;
 
@@ -25,8 +25,8 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectTemplate;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
-import org.eclipse.wst.common.project.facet.core.internal.util.IndexedSet;
-import org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.InvalidExtensionException;
+import org.eclipse.wst.common.project.facet.core.util.internal.IndexedSet;
+import org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.InvalidExtensionException;
 
 /**
  * Contains the logic for processing the <code>template</code> element of the <code>facets</code> 

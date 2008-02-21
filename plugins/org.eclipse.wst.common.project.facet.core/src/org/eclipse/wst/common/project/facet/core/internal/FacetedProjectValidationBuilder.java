@@ -12,9 +12,10 @@
 package org.eclipse.wst.common.project.facet.core.internal;
 
 import static org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin.PLUGIN_ID;
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.findExtensions;
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.getTopLevelElements;
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.instantiate;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findExtensions;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.getTopLevelElements;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.instantiate;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.reportMissingAttribute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -158,7 +159,7 @@ public final class FacetedProjectValidationBuilder
 
                 if( def.className == null )
                 {
-                    FacetedProjectFrameworkImpl.reportMissingAttribute( config, ATTR_CLASS );
+                    reportMissingAttribute( config, ATTR_CLASS );
                     continue;
                 }
                 

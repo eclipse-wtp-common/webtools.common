@@ -11,12 +11,12 @@
 
 package org.eclipse.wst.common.project.facet.core.internal;
 
-import static org.eclipse.wst.common.project.facet.core.internal.util.FileUtil.validateEdit;
-import static org.eclipse.wst.common.project.facet.core.internal.util.ProgressMonitorUtil.beginTask;
-import static org.eclipse.wst.common.project.facet.core.internal.util.ProgressMonitorUtil.done;
-import static org.eclipse.wst.common.project.facet.core.internal.util.ProgressMonitorUtil.submon;
-import static org.eclipse.wst.common.project.facet.core.internal.util.ProgressMonitorUtil.worked;
-import static org.eclipse.wst.common.project.facet.core.internal.util.XmlUtil.escape;
+import static org.eclipse.wst.common.project.facet.core.util.internal.FileUtil.validateEdit;
+import static org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil.beginTask;
+import static org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil.done;
+import static org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil.submon;
+import static org.eclipse.wst.common.project.facet.core.util.internal.ProgressMonitorUtil.worked;
+import static org.eclipse.wst.common.project.facet.core.util.internal.XmlUtil.escape;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -73,10 +73,10 @@ import org.eclipse.wst.common.project.facet.core.events.internal.ProjectFacetAct
 import org.eclipse.wst.common.project.facet.core.events.internal.ProjectListenerRegistry;
 import org.eclipse.wst.common.project.facet.core.events.internal.ProjectModifiedEvent;
 import org.eclipse.wst.common.project.facet.core.events.internal.TargetedRuntimesChangedEvent;
-import org.eclipse.wst.common.project.facet.core.internal.util.ObjectReference;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
 import org.eclipse.wst.common.project.facet.core.runtime.internal.UnknownRuntime;
+import org.eclipse.wst.common.project.facet.core.util.internal.ObjectReference;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;

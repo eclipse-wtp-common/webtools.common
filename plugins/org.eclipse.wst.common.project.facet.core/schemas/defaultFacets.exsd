@@ -6,7 +6,7 @@
          <meta.schema plugin="org.eclipse.wst.common.project.facet.core" id="defaultFacets" name="Default Facets Extension Point"/>
       </appInfo>
       <documentation>
-         Used to specify which facets (and which versions of those facets) should be selected by default when a runtime that includes the specified runtime component is selected. Multiple extensions referring to the same runtime component (type and version) will be merged. This allows a party not affiliated with the runtime vendor to specify that a certain additional facet should be preselected when the runtime containing the specified runtime component is selected.
+         Used to specify which facets (and which versions of those facets) should be considered part of the default configuration for a project. The optional context element allows the extender to control the situations when the provided facets should be contributed to the default configuration. The context can restrict applicability to specific runtime types and/or specific fixed facets. If multiple extensions are applicable in a given situations, the facets specified in these extensions will be merged to form a unified default configuration.
       </documentation>
    </annotation>
 
@@ -18,7 +18,7 @@
       </annotation>
       <complexType>
          <choice>
-            <element ref="default-facets"/>
+            <element ref="default-facets" minOccurs="1" maxOccurs="unbounded"/>
          </choice>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -47,12 +47,13 @@
    <element name="default-facets">
       <annotation>
          <documentation>
-            Used to specify which facets (and which versions of those facets) should be selected by default when a runtime that includes the specified runtime component is selected. Multiple extensions referring to the same runtime component (type and version) will be merged. This allows a party not affiliated with the runtime vendor to specify that a certain additional facet should be preselected when the runtime containing the specified runtime component is selected.
+            The root element of the extension.
          </documentation>
       </annotation>
       <complexType>
          <sequence>
-            <element ref="runtime-component"/>
+            <element ref="context" minOccurs="0" maxOccurs="1"/>
+            <element ref="runtime-component" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="facet" minOccurs="1" maxOccurs="unbounded"/>
          </sequence>
       </complexType>
@@ -61,7 +62,7 @@
    <element name="runtime-component">
       <annotation>
          <documentation>
-            Specifies the runtime component type id and version that these defaults are for.
+            Indicates the the primary targeted runtime for the project is required to have a runtime component of specified type in order for these default facets to apply.
          </documentation>
       </annotation>
       <complexType>
@@ -72,10 +73,10 @@
                </documentation>
             </annotation>
          </attribute>
-         <attribute name="version" type="string" use="required">
+         <attribute name="version" type="string">
             <annotation>
                <documentation>
-                  Specifies the match expression for the runtime component version. The expression should be of the form &quot;2.2,2.5,[3.0-5.3],(7.3&quot;, where the comas function as an OR. Brackets and parenthesis are used as part of the range notation. A bracket means inclusive while a parenthesis means exclusive.
+                  Specifies the match expression for the runtime component version. The expression should be of the form &quot;2.2,2.5,[3.0-5.3],(7.3&quot;, where the comas function as an OR. Brackets and parenthesis are used as part of the range notation. A bracket means inclusive while a parenthesis means exclusive. If the version attribute is not specified, any version will satisfy the condition.
                </documentation>
             </annotation>
          </attribute>
@@ -106,14 +107,37 @@
       </complexType>
    </element>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="since"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
+   <element name="context">
+      <annotation>
+         <documentation>
+            Describes the situation when the specified facets should be added to the default set.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="runtime-component" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="fixed-facet" minOccurs="0" maxOccurs="unbounded"/>
+         </sequence>
+      </complexType>
+   </element>
+
+   <element name="fixed-facet">
+      <annotation>
+         <documentation>
+            Indicates that the specified facet needs to be one of the project&apos;s fixed facets in order for these default facets to apply.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="id" type="string" use="required">
+            <annotation>
+               <documentation>
+                  The id of the fixed facet.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
 
    <annotation>
       <appInfo>
@@ -125,7 +149,9 @@
 &lt;pre&gt;
 &lt;extension point=&quot;org.eclipse.wst.common.project.facet.core.defaultFacets&quot;&gt;
   &lt;default-facets&gt;
-    &lt;runtime-component id=&quot;MyRuntimeComponent&quot;/&gt;
+    &lt;context&gt;
+      &lt;runtime-component id=&quot;MyRuntimeComponent&quot;/&gt;
+    &lt;/context&gt;
     &lt;facet id=&quot;facet1&quot; version=&quot;1.3&quot;/&gt;
     &lt;facet id=&quot;facet2&quot; version=&quot;5.0&quot;/&gt;
   &lt;/default-facets&gt;
@@ -137,38 +163,39 @@
 &lt;pre&gt;
 &lt;extension point=&quot;org.eclipse.wst.common.project.facet.core.defaultFacets&quot;&gt;
   &lt;default-facets&gt;
-    &lt;runtime-component id=&quot;MyRuntimeComponent&quot;/&gt;
+    &lt;context&gt;
+      &lt;runtime-component id=&quot;MyRuntimeComponent&quot;/&gt;
+    &lt;/context&gt;
     &lt;facet id=&quot;facet3&quot; version=&quot;1.2&quot;/&gt;
   &lt;/default-facets&gt;
 &lt;/extension&gt;
 &lt;/pre&gt;
+
+&lt;p&gt;Further context information can be specified to control when the specified default facets should be used. Consider the situation where a particular facet should only be enabled by default for a specific project type (as represented by fixed facets). In the following example, facet4 will be only enabled by default if one of the project&apos;s fixed facets is fixed.facet1.&lt;/p&gt;
+
+&lt;pre&gt;
+&lt;extension point=&quot;org.eclipse.wst.common.project.facet.core.defaultFacets&quot;&gt;
+  &lt;default-facets&gt;
+    &lt;context&gt;
+      &lt;runtime-component id=&quot;MyRuntimeComponent&quot;/&gt;
+      &lt;fixed-facet id=&quot;fixed.facet1&quot;/&gt;
+    &lt;/context&gt;
+    &lt;facet id=&quot;facet4&quot; version=&quot;1.0&quot;/&gt;
+  &lt;/default-facets&gt;
+&lt;/extension&gt;
+&lt;/pre&gt;
+
       </documentation>
    </annotation>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="apiInfo"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
 
-   <annotation>
-      <appInfo>
-         <meta.section type="implementation"/>
-      </appInfo>
-      <documentation>
-         
-      </documentation>
-   </annotation>
 
    <annotation>
       <appInfo>
          <meta.section type="copyright"/>
       </appInfo>
       <documentation>
-         Copyright (c) 2005-2006 BEA Systems, Inc. and others.&lt;br&gt;
+         Copyright (c) 2008 BEA Systems, Inc. and others.&lt;br&gt;
 All rights reserved. This program and the accompanying materials are made 
 available under the terms of the Eclipse Public License v1.0 which accompanies 
 this distribution, and is available at &lt;a

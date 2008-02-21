@@ -84,13 +84,13 @@
   
   <extension point="org.eclipse.wst.common.project.facet.core.presets">
     <dynamic-preset id="default.configuration">
-      <factory class="org.eclipse.wst.common.project.facet.core.internal.DefaultConfigurationPresetFactory"/>
+      <factory class="org.eclipse.wst.common.project.facet.core.DefaultConfigurationPresetFactory"/>
     </dynamic-preset>
   </extension>
 
   <extension point="org.eclipse.wst.common.project.facet.core.presets">
     <dynamic-preset id="minimal.configuration">
-      <factory class="org.eclipse.wst.common.project.facet.core.internal.MinimalConfigurationPresetFactory"/>
+      <factory class="org.eclipse.wst.common.project.facet.core.MinimalConfigurationPresetFactory"/>
     </dynamic-preset>
   </extension>
   

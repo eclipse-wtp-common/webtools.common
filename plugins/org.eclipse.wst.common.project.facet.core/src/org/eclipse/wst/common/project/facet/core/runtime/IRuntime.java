@@ -141,6 +141,7 @@ public interface IRuntime
      * @param fixed the fixed facets
      * @return the default facets
      * @throws CoreException if failed for any reason
+     * @deprecated use IFacetedProjectWorkingCopy.getDefaultConfiguration() instead
      */
     
     Set<IProjectFacetVersion> getDefaultFacets( final Set<IProjectFacet> fixed )

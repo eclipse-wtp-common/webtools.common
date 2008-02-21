@@ -39,6 +39,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.ActionConfig;
+import org.eclipse.wst.common.project.facet.core.DefaultConfigurationPresetFactory;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
 import org.eclipse.wst.common.project.facet.core.IActionConfig;
 import org.eclipse.wst.common.project.facet.core.IActionDefinition;
@@ -49,6 +50,7 @@ import org.eclipse.wst.common.project.facet.core.IListener;
 import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
+import org.eclipse.wst.common.project.facet.core.MinimalConfigurationPresetFactory;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
@@ -58,10 +60,10 @@ import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
 import org.eclipse.wst.common.project.facet.core.events.IProjectFacetsChangedEvent;
 import org.eclipse.wst.common.project.facet.core.events.internal.FacetedProjectEvent;
 import org.eclipse.wst.common.project.facet.core.events.internal.ProjectFacetsChangedEvent;
-import org.eclipse.wst.common.project.facet.core.internal.util.IndexedSet;
-import org.eclipse.wst.common.project.facet.core.internal.util.StatusWrapper;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.RuntimeManager;
+import org.eclipse.wst.common.project.facet.core.util.internal.IndexedSet;
+import org.eclipse.wst.common.project.facet.core.util.internal.StatusWrapper;
 
 /**
  * @since 3.0
@@ -107,7 +109,7 @@ public final class FacetedProjectWorkingCopy
     private IndexedSet<IProjectFacet,IProjectFacetVersion> facets;
     private Map<IProjectFacet,SortedSet<IProjectFacetVersion>> availableFacets;
     private IndexedSet<String,IPreset> availablePresets;
-    private IPreset selectedPreset;
+    private String selectedPresetId;
     private final Set<IRuntime> targetableRuntimes;
     private final Set<IRuntime> targetedRuntimes;
     private IRuntime primaryRuntime;
@@ -152,7 +154,7 @@ public final class FacetedProjectWorkingCopy
         this.facets = new IndexedSet<IProjectFacet,IProjectFacetVersion>();
         this.availableFacets = Collections.emptyMap();
         this.availablePresets = new IndexedSet<String,IPreset>();
-        this.selectedPreset = null;
+        this.selectedPresetId = null;
         this.targetableRuntimes = new CopyOnWriteArraySet<IRuntime>();
         this.targetedRuntimes = new CopyOnWriteArraySet<IRuntime>();
         this.primaryRuntime = null;
@@ -729,48 +731,8 @@ public final class FacetedProjectWorkingCopy
                 
                 refreshTargetableRuntimes();
                 refreshProjectFacetActions();
+                refreshAvailablePresets();
                 performValidation();
-            }
-        }
-        finally
-        {
-            resumeEventNotification();
-        }
-    }
-    
-    public void setDefaultFacetsForRuntime( final IRuntime runtime )
-    {
-        suspendEventNotification();
-        
-        try
-        {
-            synchronized( this.lock )
-            {
-                final Set<IProjectFacetVersion> defaultFacets;
-                
-                if( runtime != null )
-                {
-                    try
-                    {
-                        defaultFacets = runtime.getDefaultFacets( getFixedProjectFacets() );
-                    }
-                    catch( CoreException e )
-                    {
-                        FacetCorePlugin.log( e );
-                        return;
-                    }
-                }
-                else
-                {
-                    defaultFacets = new HashSet<IProjectFacetVersion>();
-                    
-                    for( IProjectFacet f : getFixedProjectFacets() )
-                    {
-                        defaultFacets.add( f.getDefaultVersion() );
-                    }
-                }
-                
-                setProjectFacets( defaultFacets );
             }
         }
         finally
@@ -954,8 +916,14 @@ public final class FacetedProjectWorkingCopy
                         if( context == null )
                         {
                             context = new HashMap<String,Object>();
-                            context.put( IDynamicPreset.CONTEXT_KEY_FIXED_FACETS, this.fixedFacets );
-                            context.put( IDynamicPreset.CONTEXT_KEY_PRIMARY_RUNTIME, this.primaryRuntime );
+                            
+                            context.put( IDynamicPreset.CONTEXT_KEY_FACETED_PROJECT, this );
+                            
+                            context.put( IDynamicPreset.CONTEXT_KEY_PRIMARY_RUNTIME, 
+                                         this.primaryRuntime );
+                            
+                            context.put( IDynamicPreset.CONTEXT_KEY_FIXED_FACETS, 
+                                         this.fixedFacets );
                         }
                         
                         preset = ( (IDynamicPreset) preset ).resolve( context );
@@ -1013,8 +981,8 @@ public final class FacetedProjectWorkingCopy
                     this.availablePresets = newAvailablePresets;
                     notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.AVAILABLE_PRESETS_CHANGED ) );
                     
-                    if( this.selectedPreset != null && 
-                        ! this.availablePresets.containsKey( this.selectedPreset.getId() ) )
+                    if( this.selectedPresetId != null && 
+                        ! this.availablePresets.containsKey( this.selectedPresetId ) )
                     {
                         setSelectedPreset( null );
                     }
@@ -1031,7 +999,14 @@ public final class FacetedProjectWorkingCopy
     {
         synchronized( this.lock )
         {
-            return this.selectedPreset;
+            if( this.selectedPresetId != null )
+            {
+                return this.availablePresets.get( this.selectedPresetId );
+            }
+            else
+            {
+                return null;
+            }
         }
     }
     
@@ -1049,10 +1024,10 @@ public final class FacetedProjectWorkingCopy
                     throw new IllegalArgumentException( msg );
                 }
                 
-                final IPreset preset = this.availablePresets.get( presetId );
-        
-                if( ! equals( this.selectedPreset, preset ) )
+                if( ! equals( this.selectedPresetId, presetId ) )
                 {
+                    final IPreset preset = this.availablePresets.get( presetId );
+                    
                     if( preset != null )
                     {
                         // The following line keeps the setProjectFacets() call that comes next from 
@@ -1061,12 +1036,12 @@ public final class FacetedProjectWorkingCopy
                         // structure (the old preset isn't selected) to event handlers listening on 
                         // the facet change event.
                         
-                        this.selectedPreset = null;
+                        this.selectedPresetId = null;
                         
                         setProjectFacets( preset.getProjectFacets() );
                     }
                     
-                    this.selectedPreset = preset;
+                    this.selectedPresetId = presetId;
                     
                     notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.SELECTED_PRESET_CHANGED ) );
                 }
@@ -1078,6 +1053,22 @@ public final class FacetedProjectWorkingCopy
         }
     }
     
+    public IPreset getDefaultConfiguration()
+    {
+        synchronized( this.lock )
+        {
+            return this.availablePresets.get( DefaultConfigurationPresetFactory.PRESET_ID );
+        }
+    }
+
+    public IPreset getMinimalConfiguration()
+    {
+        synchronized( this.lock )
+        {
+            return this.availablePresets.get( MinimalConfigurationPresetFactory.PRESET_ID );
+        }
+    }
+
     public Set<IRuntime> getTargetableRuntimes()
     {
         synchronized( this.lock )

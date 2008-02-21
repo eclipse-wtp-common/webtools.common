@@ -11,7 +11,7 @@
 
 package org.eclipse.wst.common.project.facet.core.internal;
 
-import static org.eclipse.wst.common.project.facet.core.internal.util.MiscUtil.equal;
+import static org.eclipse.wst.common.project.facet.core.util.internal.MiscUtil.equal;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,8 +28,8 @@ import org.eclipse.wst.common.project.facet.core.ICategory;
 import org.eclipse.wst.common.project.facet.core.IDefaultVersionProvider;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
-import org.eclipse.wst.common.project.facet.core.internal.util.Versionable;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
+import org.eclipse.wst.common.project.facet.core.util.internal.Versionable;
 
 /**
  * The implementation of the <code>IProjectFacet</code> interface.

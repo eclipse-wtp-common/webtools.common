@@ -11,7 +11,7 @@
 
 package org.eclipse.wst.common.project.facet.core.runtime.internal;
 
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.instantiate;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.instantiate;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,8 +39,6 @@ import org.eclipse.wst.common.project.facet.core.VersionFormatException;
 import org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin;
 import org.eclipse.wst.common.project.facet.core.internal.FacetedProjectFrameworkImpl;
 import org.eclipse.wst.common.project.facet.core.internal.ProjectFacetVersion;
-import org.eclipse.wst.common.project.facet.core.internal.util.IndexedSet;
-import org.eclipse.wst.common.project.facet.core.internal.util.VersionExpr;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeBridge;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
@@ -51,6 +49,8 @@ import org.eclipse.wst.common.project.facet.core.runtime.events.IRuntimeLifecycl
 import org.eclipse.wst.common.project.facet.core.runtime.events.IRuntimeLifecycleListener;
 import org.eclipse.wst.common.project.facet.core.runtime.events.internal.RuntimeLifecycleListenerRegistry;
 import org.eclipse.wst.common.project.facet.core.runtime.events.internal.ValidationStatusChangedEvent;
+import org.eclipse.wst.common.project.facet.core.util.internal.IndexedSet;
+import org.eclipse.wst.common.project.facet.core.util.internal.VersionExpr;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>

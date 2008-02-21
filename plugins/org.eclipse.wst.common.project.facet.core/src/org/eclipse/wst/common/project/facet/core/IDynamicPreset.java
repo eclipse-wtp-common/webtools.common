@@ -29,6 +29,14 @@ public interface IDynamicPreset
     
 {
     /**
+     * The key of the context map entry whose value is an {@see IFacetedProjectBase} object.
+     * 
+     * @since 3.0
+     */
+    
+    static final String CONTEXT_KEY_FACETED_PROJECT = "CONTEXT_KEY_FACETED_PROJECT"; //$NON-NLS-1$
+    
+    /**
      * The key of the context map entry whose value is a set of {@see IProjectFacet} objects
      * representing the fixed facets.
      */

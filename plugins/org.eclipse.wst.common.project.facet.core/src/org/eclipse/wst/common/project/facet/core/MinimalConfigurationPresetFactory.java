@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005-2007 BEA Systems, Inc.
+ * Copyright (c) 2008 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,7 +9,7 @@
  *    Konstantin Komissarchik
  ******************************************************************************/
 
-package org.eclipse.wst.common.project.facet.core.internal;
+package org.eclipse.wst.common.project.facet.core;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -17,12 +17,7 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.wst.common.project.facet.core.IDynamicPreset;
-import org.eclipse.wst.common.project.facet.core.IPresetFactory;
-import org.eclipse.wst.common.project.facet.core.IProjectFacet;
-import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
-import org.eclipse.wst.common.project.facet.core.PresetDefinition;
-import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
+import org.eclipse.wst.common.project.facet.core.internal.DefaultFacetsExtensionPoint;
 
 /**
  * Preset factory for the <code>minimal.configuration</code> preset. This preset only contains
@@ -35,49 +30,34 @@ import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
  *     by {@see IProjectFacet.getDefaultVersion()}.
  * </ol>
  * 
+ * @since 3.0
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
-public final class MinimalConfigurationPresetFactory
+public class MinimalConfigurationPresetFactory
 
     implements IPresetFactory
     
 {
-    @SuppressWarnings( "unchecked" )
+    public static final String PRESET_ID = "minimal.configuration"; //$NON-NLS-1$
+    
     public PresetDefinition createPreset( final String presetId,
                                           final Map<String,Object> context ) 
     
         throws CoreException
         
     {
-        final Set<IProjectFacet> fixed
-            = (Set<IProjectFacet>) context.get( IDynamicPreset.CONTEXT_KEY_FIXED_FACETS );
-        
-        if( fixed == null )
-        {
-            return null;
-        }
+        final IFacetedProjectBase fproj 
+            = (IFacetedProjectBase) context.get( IDynamicPreset.CONTEXT_KEY_FACETED_PROJECT );
     
-        final IRuntime runtime 
-            = (IRuntime) context.get( IDynamicPreset.CONTEXT_KEY_PRIMARY_RUNTIME );
-        
         final Set<IProjectFacetVersion> facets = new HashSet<IProjectFacetVersion>();
         
-        if( runtime != null )
+        final Set<IProjectFacetVersion> defaultFacets 
+            = DefaultFacetsExtensionPoint.getDefaultFacets( fproj );
+        
+        for( IProjectFacet f : fproj.getFixedProjectFacets() )
         {
-            final Set<IProjectFacetVersion> defaultFacets = runtime.getDefaultFacets( fixed );
-            
-            for( IProjectFacet f : fixed )
-            {
-                facets.add( findProjectFacetVersion( defaultFacets, f ) );
-            }
-        }
-        else
-        {
-            for( IProjectFacet f : fixed )
-            {
-                facets.add( f.getDefaultVersion() );
-            }
+            facets.add( findProjectFacetVersion( defaultFacets, f ) );
         }
         
         return new PresetDefinition( Resources.presetLabel, Resources.presetDescription, facets );

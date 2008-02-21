@@ -932,7 +932,7 @@ public final class RuntimesPanel
                            height - PRIMARY_RUNTIME_OVERLAY.height );
             }
             
-            if( ! this.valResult.isOK() )
+            if( this.valResult != null && ! this.valResult.isOK() )
             {
                 final ImageData valOverlay
                     = this.valResult.getSeverity() == IStatus.ERROR 

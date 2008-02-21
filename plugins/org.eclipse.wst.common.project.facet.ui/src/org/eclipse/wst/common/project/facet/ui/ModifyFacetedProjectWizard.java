@@ -48,6 +48,9 @@ import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
+import org.eclipse.wst.common.project.facet.core.util.IFilter;
+import org.eclipse.wst.common.project.facet.core.util.IFilter.IFilterEvent;
+import org.eclipse.wst.common.project.facet.core.util.IFilter.IFilterListener;
 import org.eclipse.wst.common.project.facet.ui.internal.FacetUiPlugin;
 import org.eclipse.wst.common.project.facet.ui.internal.FacetsSelectionPage;
 
@@ -370,8 +373,15 @@ public class ModifyFacetedProjectWizard
         syncWithPresetsModel( this.fpjwc, combo );
     }
 	
+    public static void syncWithPresetsModel( final IFacetedProjectWorkingCopy fpjwc,
+                                             final Combo combo )
+    {
+        syncWithPresetsModel( fpjwc, combo, null );
+    }
+    
 	public static void syncWithPresetsModel( final IFacetedProjectWorkingCopy fpjwc,
-	                                         final Combo combo )
+	                                         final Combo combo,
+                                             final IFilter<IPreset> filter )
 	{
         final List<IPreset> sortedPresets = new ArrayList<IPreset>();
         
@@ -388,7 +398,21 @@ public class ModifyFacetedProjectWizard
                         synchronized( sortedPresets )
                         {
                             sortedPresets.clear();
-                            sortedPresets.addAll( fpjwc.getAvailablePresets() );
+                            
+                            if( filter != null )
+                            {
+                                for( IPreset preset : fpjwc.getAvailablePresets() )
+                                {
+                                    if( filter.check( preset ) )
+                                    {
+                                        sortedPresets.add( preset );
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                sortedPresets.addAll( fpjwc.getAvailablePresets() );
+                            }
                             
                             Collections.sort
                             (
@@ -440,6 +464,21 @@ public class ModifyFacetedProjectWizard
         
         fpjwc.addListener( availablePresetsChangedListener, 
                            IFacetedProjectEvent.Type.AVAILABLE_PRESETS_CHANGED );
+        
+        if( filter != null )
+        {
+            filter.addListener
+            (
+                new IFilterListener<IPreset>()
+                {
+                    public void handleEvent( final IFilterEvent<IPreset> event )
+                    {
+                        availablePresetsChangedListener.handleEvent( null );
+                    }
+                },
+                IFilterEvent.Type.FILTER_CHANGED 
+            );
+        }
         
         final IFacetedProjectListener selectedPresetChangedListener = new IFacetedProjectListener()
         {

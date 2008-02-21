@@ -13,9 +13,9 @@ package org.eclipse.wst.common.project.facet.core.runtime.internal;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.wst.common.project.facet.core.internal.util.Versionable;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentType;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentVersion;
+import org.eclipse.wst.common.project.facet.core.util.internal.Versionable;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>

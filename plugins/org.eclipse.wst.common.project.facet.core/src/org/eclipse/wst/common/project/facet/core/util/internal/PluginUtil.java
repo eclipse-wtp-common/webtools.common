@@ -9,7 +9,7 @@
  *    Konstantin Komissarchik
  ******************************************************************************/
 
-package org.eclipse.wst.common.project.facet.core.internal.util;
+package org.eclipse.wst.common.project.facet.core.util.internal;
 
 import java.util.ArrayList;
 import java.util.Collection;

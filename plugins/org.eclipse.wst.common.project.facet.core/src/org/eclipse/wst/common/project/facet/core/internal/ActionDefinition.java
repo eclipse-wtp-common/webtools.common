@@ -11,7 +11,7 @@
 
 package org.eclipse.wst.common.project.facet.core.internal;
 
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.instantiate;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.instantiate;
 
 import java.util.Collections;
 import java.util.HashMap;

@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005-2007 BEA Systems, Inc.
+ * Copyright (c) 2008 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,9 @@
 
 package org.eclipse.wst.common.project.facet.core.internal;
 
-import java.util.Set;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.reportMissingAttribute;
+
+import java.util.Collection;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -20,7 +22,7 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.IVersionExpr;
 import org.eclipse.wst.common.project.facet.core.ProjectFacetsManager;
-import org.eclipse.wst.common.project.facet.core.internal.util.VersionExpr;
+import org.eclipse.wst.common.project.facet.core.util.internal.VersionExpr;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -48,23 +50,42 @@ public final class ProjectFacetRef
         this.vexpr = vexpr;
     }
     
-    public boolean check( final Set<IProjectFacetVersion> facets )
+    public IProjectFacet getProjectFacet()
+    {
+        return this.f;
+    }
     
-        throws CoreException
-        
+    public boolean hasVersionExpr()
+    {
+        return ( this.vexpr != null );
+    }
+    
+    public boolean check( final IProjectFacetVersion fv )
+    {
+        if( this.f == fv.getProjectFacet() )
+        {
+            if( this.vexpr != null )
+            {
+                return this.vexpr.check( fv );
+            }
+            else
+            {
+                return true;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public boolean check( final Collection<IProjectFacetVersion> facets )
     {
         for( IProjectFacetVersion fv : facets )
         {
-            if( this.f == fv.getProjectFacet() )
+            if( check( fv ) )
             {
-                if( this.vexpr != null )
-                {
-                    return this.vexpr.check( fv );
-                }
-                else
-                {
-                    return true;
-                }
+                return true;
             }
         }
         
@@ -77,7 +98,7 @@ public final class ProjectFacetRef
 
         if( id == null )
         {
-            FacetedProjectFrameworkImpl.reportMissingAttribute( config, ATTR_ID );
+            reportMissingAttribute( config, ATTR_ID );
             return null;
         }
         

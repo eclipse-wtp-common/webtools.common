@@ -9,27 +9,35 @@
  *    Konstantin Komissarchik
  ******************************************************************************/
 
-package org.eclipse.wst.common.project.facet.core.internal.util;
+package org.eclipse.wst.common.project.facet.core.util;
 
 /**
- * Contains miscellaneous utility functions.
- * 
+ * @since 3.0
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 
-public final class MiscUtil
+public class FilterEvent<T>
+
+    implements IFilter.IFilterEvent<T>
 {
-    public static boolean equal( final Object obj1,
-                                 final Object obj2 )
+    private final IFilter<T> filter;
+    private final Type eventType;
+    
+    public FilterEvent( final IFilter<T> filter,
+                        final Type eventType )
     {
-        if( obj1 == null || obj2 == null )
-        {
-            return false;
-        }
-        else
-        {
-            return obj1.equals( obj2 );
-        }
+        this.filter = filter;
+        this.eventType = eventType;
+    }
+    
+    public IFilter<T> getFilter()
+    {
+        return this.filter;
+    }
+
+    public Type getType()
+    {
+        return this.eventType;
     }
     
 }

@@ -28,7 +28,7 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.IVersion;
 import org.eclipse.wst.common.project.facet.core.IVersionExpr;
 import org.eclipse.wst.common.project.facet.core.IFacetedProject.Action;
-import org.eclipse.wst.common.project.facet.core.internal.util.Versionable;
+import org.eclipse.wst.common.project.facet.core.util.internal.Versionable;
 
 /**
  * The implementation of the <code>IProjectFacetVersion</code> interface.

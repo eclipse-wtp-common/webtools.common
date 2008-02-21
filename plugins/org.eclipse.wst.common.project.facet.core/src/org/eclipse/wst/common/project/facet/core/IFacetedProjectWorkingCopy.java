@@ -39,8 +39,6 @@ public interface IFacetedProjectWorkingCopy
     
     void setProjectFacets( Set<IProjectFacetVersion> facets );
     
-    void setDefaultFacetsForRuntime( IRuntime runtime );
-    
     void addProjectFacet( IProjectFacetVersion fv );
     
     void removeProjectFacet( IProjectFacet f );
@@ -54,6 +52,10 @@ public interface IFacetedProjectWorkingCopy
     IPreset getSelectedPreset();
     
     void setSelectedPreset( String presetId );
+    
+    IPreset getDefaultConfiguration();
+    
+    IPreset getMinimalConfiguration();
 
     Set<IRuntime> getTargetableRuntimes();
     

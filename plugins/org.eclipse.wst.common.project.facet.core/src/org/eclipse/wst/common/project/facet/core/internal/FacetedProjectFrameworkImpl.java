@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005-2007 BEA Systems, Inc.
+ * Copyright (c) 2008 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,12 +11,14 @@
 
 package org.eclipse.wst.common.project.facet.core.internal;
 
-import static org.eclipse.wst.common.project.facet.core.internal.util.FileUtil.FILE_DOT_PROJECT;
-import static org.eclipse.wst.common.project.facet.core.internal.util.FileUtil.validateEdit;
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.findOptionalElement;
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.findRequiredAttribute;
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.getElementValue;
-import static org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.instantiate;
+import static org.eclipse.wst.common.project.facet.core.util.internal.FileUtil.FILE_DOT_PROJECT;
+import static org.eclipse.wst.common.project.facet.core.util.internal.FileUtil.validateEdit;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findOptionalElement;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.findRequiredAttribute;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.getElementValue;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.instantiate;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.reportMissingAttribute;
+import static org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.reportMissingElement;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -73,9 +75,9 @@ import org.eclipse.wst.common.project.facet.core.events.internal.FacetedProjectF
 import org.eclipse.wst.common.project.facet.core.events.internal.FrameworkListenerRegistry;
 import org.eclipse.wst.common.project.facet.core.events.internal.LegacyEventHandlerAdapter;
 import org.eclipse.wst.common.project.facet.core.events.internal.ProjectListenerRegistry;
-import org.eclipse.wst.common.project.facet.core.internal.util.IndexedSet;
-import org.eclipse.wst.common.project.facet.core.internal.util.VersionExpr;
-import org.eclipse.wst.common.project.facet.core.internal.util.PluginUtil.InvalidExtensionException;
+import org.eclipse.wst.common.project.facet.core.util.internal.IndexedSet;
+import org.eclipse.wst.common.project.facet.core.util.internal.VersionExpr;
+import org.eclipse.wst.common.project.facet.core.util.internal.PluginUtil.InvalidExtensionException;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
@@ -1258,6 +1260,16 @@ public final class FacetedProjectFrameworkImpl
         }
     }
     
+    public static void reportMissingRuntimeComponentType( final String rct,
+                                                          final String plugin )
+    {
+        final String msg
+            = NLS.bind( Resources.runtimeComponentTypeNotDefined, rct ) +
+              NLS.bind( Resources.usedInPlugin, plugin );
+        
+        FacetCorePlugin.log( msg );
+    }
+    
     private static IProgressMonitor submon( final IProgressMonitor monitor,
                                             final int ticks )
     {
@@ -2308,30 +2320,6 @@ public final class FacetedProjectFrameworkImpl
         group.setDescription( getElementValue( elDesc, DEFAULT_DESCRIPTION ) );
     }
     
-    static void reportMissingAttribute( final IConfigurationElement el,
-                                        final String attribute )
-    {
-        final String[] params 
-            = new String[] { el.getContributor().getName(), el.getName(), 
-                             attribute };
-        
-        final String msg = NLS.bind( Resources.missingAttribute, params ); 
-    
-        FacetCorePlugin.log( msg );
-    }
-
-    static void reportMissingElement( final IConfigurationElement el,
-                                      final String element )
-    {
-        final String[] params 
-            = new String[] { el.getContributor().getName(), el.getName(), 
-                             element };
-        
-        final String msg = NLS.bind( Resources.missingElement, params ); 
-    
-        FacetCorePlugin.log( msg );
-    }
-    
     private static String toString( final Collection<? extends Object> collection )
     {
         final StringBuffer buf = new StringBuffer();
@@ -2422,9 +2410,7 @@ public final class FacetedProjectFrameworkImpl
         extends NLS
         
     {
-        public static String missingAttribute;
         public static String missingOneOfTwoAttributes;
-        public static String missingElement;
         public static String categoryNotDefined;
         public static String facetNotDefined;
         public static String facetVersionNotDefined;
@@ -2433,6 +2419,7 @@ public final class FacetedProjectFrameworkImpl
         public static String groupNotDefined;
         public static String presetNotDefined;
         public static String templateNotDefined;
+        public static String runtimeComponentTypeNotDefined;
         public static String usedInPlugin;
         public static String usedInConstraint;
         public static String invalidActionType;

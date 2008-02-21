@@ -12,9 +12,7 @@
 package org.eclipse.wst.common.project.facet.core.runtime.internal;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
@@ -26,7 +24,6 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacet;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntime;
 import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponent;
-import org.eclipse.wst.common.project.facet.core.runtime.IRuntimeComponentVersion;
 
 /**
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
@@ -192,66 +189,14 @@ public abstract class AbstractRuntime
         throws CoreException
         
     {
-        // 1. Get the complete list.
-        
-        final Map<IProjectFacet,IProjectFacetVersion> facets 
-            = new HashMap<IProjectFacet,IProjectFacetVersion>();
-        
-        for( IRuntimeComponent rc : getRuntimeComponents() )
-        {
-            final IRuntimeComponentVersion rcv = rc.getRuntimeComponentVersion();
-
-            for( IProjectFacetVersion fv : RuntimeManagerImpl.getDefaultFacets( rcv ) )
-            {
-                if( ! facets.containsKey( fv.getProjectFacet() ) )
-                {
-                    facets.put( fv.getProjectFacet(), fv );
-                }
-            }
-        }
-        
-        // 2. Remove the facets that conflict with fixed facets.
-        
-        final Set<IProjectFacet> toRemove = new HashSet<IProjectFacet>();
-        
-        for( IProjectFacetVersion fv : facets.values() )
-        {
-            if( ! fv.isValidFor( fixed ) )
-            {
-                toRemove.add( fv.getProjectFacet() );
-            }
-        }
-        
-        for( IProjectFacet f : toRemove )
-        {
-            facets.remove( f );
-        }
-        
-        // 3. Make sure that the result includes all of the fixed facets.
-        
-        Map<IProjectFacet,IProjectFacetVersion> toadd = null;
+        final Set<IProjectFacetVersion> facets = new HashSet<IProjectFacetVersion>();
         
         for( IProjectFacet f : fixed )
         {
-            if( ! facets.containsKey( f ) )
-            {
-                if( toadd == null )
-                {
-                    toadd = new HashMap<IProjectFacet,IProjectFacetVersion>();
-                }
-                
-                toadd.put( f, f.getLatestSupportedVersion( this ) );
-            }
+            facets.add( f.getLatestSupportedVersion( this ) );
         }
         
-        if( toadd != null )
-        {
-            facets.putAll( toadd );
-        }
-        
-        // 4. Return the result.
-        
-        return new HashSet<IProjectFacetVersion>( facets.values() );
+        return facets;
     }
     
     public IStatus validate( final IProgressMonitor monitor )

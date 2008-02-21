@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005-2007 BEA Systems, Inc.
+ * Copyright (c) 2008 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -31,6 +31,7 @@ import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.IPreset;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectEvent;
 import org.eclipse.wst.common.project.facet.core.events.IFacetedProjectListener;
+import org.eclipse.wst.common.project.facet.core.util.IFilter;
 import org.eclipse.wst.common.project.facet.ui.internal.FacetsSelectionDialog;
 
 /**
@@ -50,6 +51,13 @@ public final class PresetSelectionPanel
     
     public PresetSelectionPanel( final Composite parent,
                                  final IFacetedProjectWorkingCopy fpjwc )
+    {
+        this( parent, fpjwc, null );
+    }
+
+    public PresetSelectionPanel( final Composite parent,
+                                 final IFacetedProjectWorkingCopy fpjwc,
+                                 final IFilter<IPreset> filter )
     {
         super( parent, SWT.NONE );
         
@@ -117,7 +125,7 @@ public final class PresetSelectionPanel
             IFacetedProjectEvent.Type.SELECTED_PRESET_CHANGED
         );
         
-        ModifyFacetedProjectWizard.syncWithPresetsModel( this.fpjwc, this.presetsCombo );
+        ModifyFacetedProjectWizard.syncWithPresetsModel( this.fpjwc, this.presetsCombo, filter );
     }
     
     private void refreshDescription()
