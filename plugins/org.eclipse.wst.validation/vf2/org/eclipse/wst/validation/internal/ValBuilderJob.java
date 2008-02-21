@@ -5,7 +5,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
@@ -40,7 +39,7 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 	/** 
 	 * The kind of build.
 	 * 
-	 *  @see IncrementalProjectBuilder
+	 *  @see org.eclipse.core.resources.IncrementalProjectBuilder
 	 */
 	private int					_buildKind;
 	
@@ -59,10 +58,10 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 	 * full validation of the project.
 	 * 
 	 * @param buildKind the kind of build.
-	 * @see IncrementalProjectBuilder#AUTO_BUILD
-	 * @see IncrementalProjectBuilder#CLEAN_BUILD
-	 * @see IncrementalProjectBuilder#FULL_BUILD
-	 * @see IncrementalProjectBuilder#INCREMENTAL_BUILD
+	 * @see org.eclipse.core.resources.IncrementalProjectBuilder#AUTO_BUILD
+	 * @see org.eclipse.core.resources.IncrementalProjectBuilder#CLEAN_BUILD
+	 * @see org.eclipse.core.resources.IncrementalProjectBuilder#FULL_BUILD
+	 * @see org.eclipse.core.resources.IncrementalProjectBuilder#INCREMENTAL_BUILD
 	 * 
 	 * @param operation some global context for the validation operation
 	 * 

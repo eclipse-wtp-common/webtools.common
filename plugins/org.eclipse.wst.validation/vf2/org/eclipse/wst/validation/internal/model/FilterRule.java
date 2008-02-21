@@ -249,6 +249,7 @@ public abstract class FilterRule implements IAdaptable {
 		}
 		
 		public String getDisplayableType() {
+			if (_type == FileTypeFolder)return ValMessages.RuleFolder;
 			return ValMessages.RuleFile;
 		}
 
@@ -374,12 +375,6 @@ public abstract class FilterRule implements IAdaptable {
 			try {
 				if (resource instanceof IFile) {
 					IFile file = (IFile) resource;
-					
-					String name = resource.getName();
-					if (name.equals(".project")){
-						int i = 0;
-					}
-						
 					IContentDescription cd = file.getContentDescription();
 					if (cd == null)return Boolean.FALSE;
 					IContentType ct = cd.getContentType();

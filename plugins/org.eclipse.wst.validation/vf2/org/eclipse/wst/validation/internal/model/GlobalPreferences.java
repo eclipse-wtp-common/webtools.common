@@ -1,7 +1,5 @@
 package org.eclipse.wst.validation.internal.model;
 
-import org.eclipse.wst.validation.internal.ValManager;
-
 /**
  * This class represents the global Preferences as set on the Validation Preferences page.
  */
@@ -30,7 +28,7 @@ public class GlobalPreferences {
 	/**
 	 * The only valid way to get the global preferences is through the ValManager.
 	 * 
-	 * @see ValManager#getGlobalPreferences()
+	 * @see org.eclipse.wst.validation.internal.ValManager#getGlobalPreferences()
 	 */
 	public GlobalPreferences(){	}
 	

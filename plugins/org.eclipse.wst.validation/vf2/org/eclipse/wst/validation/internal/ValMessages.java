@@ -42,6 +42,7 @@ public class ValMessages extends NLS {
 	public static String RuleProjectNature;
 	public static String RuleFileExt;
 	public static String RuleFile;
+	public static String RuleFolder;
 	public static String RuleContentType;
 	public static String RuleFacet;
 	
