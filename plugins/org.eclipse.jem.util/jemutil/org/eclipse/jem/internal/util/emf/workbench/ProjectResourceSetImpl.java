@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.16 $$  $$Date: 2008/02/14 03:31:55 $$ 
+ *  $$Revision: 1.17 $$  $$Date: 2008/02/22 03:53:48 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -365,21 +365,23 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 	    	} else  {// content type is known
 	    		String resourceContentTypeID = getContentTypeID(resource);
 	    		String uriContentTypeID = getContentTypeName(uri);
+	    		String existingMapKeyType = getContentTypeName(findKey(resource));
 	    		if((!map.containsValue(resource) || ((map.get(uri) != null) && map.get(uri).equals(resource))) // existing resource  with alternate mapping doesn't exist in map
-	    			|| getContentTypeName(findKey(resource)) == null || ((resourceContentTypeID != null && resourceContentTypeID.equals(uriContentTypeID)))) {
-	    		if (loadOnDemand && !resource.isLoaded())
-		        {
-		          demandLoadHelper(resource);
-		        } //if embedded uri content type is different than resource content type, continue searching
-	    		if (resourceContentTypeID != null && uriContentTypeID != null && (!resourceContentTypeID.equals(uriContentTypeID)))
-	    			continue;
-		        
-		        if (map != null && (map.get(uri) == null))
-		        {
-		          map.put(uri, resource);
-		        } 
-		        return resource;
-	    		}
+	    			|| existingMapKeyType == null || ((resourceContentTypeID != null && resourceContentTypeID.equals(uriContentTypeID)))) {
+						if (loadOnDemand && !resource.isLoaded()) {
+							demandLoadHelper(resource);
+						} // if embedded uri content type is different than resource content type, continue searching
+						if (resourceContentTypeID != null
+								&& uriContentTypeID != null
+								&& ((!resourceContentTypeID.equals(uriContentTypeID)) || (existingMapKeyType != null && !existingMapKeyType
+										.equals(uriContentTypeID))))
+							continue;
+
+						if (map != null && (map.get(uri) == null)) {
+							map.put(uri, resource);
+						}
+						return resource;
+					}
 	    	}
 	      }
 	    }
