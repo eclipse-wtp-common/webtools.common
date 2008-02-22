@@ -11,8 +11,8 @@
 
 package org.eclipse.wst.common.project.facet.core.tests;
 
-import static org.eclipse.wst.common.project.facet.core.internal.util.FileUtil.FILE_DOT_PROJECT;
-import static org.eclipse.wst.common.project.facet.core.internal.util.FileUtil.copyFromPlugin;
+import static org.eclipse.wst.common.project.facet.core.util.internal.FileUtil.FILE_DOT_PROJECT;
+import static org.eclipse.wst.common.project.facet.core.util.internal.FileUtil.copyFromPlugin;
 import static org.eclipse.wst.common.project.facet.core.tests.FacetedProjectFrameworkCoreTestsPlugin.PLUGIN_ID;
 import static org.eclipse.wst.common.project.facet.core.tests.support.TestUtils.asSet;
 
