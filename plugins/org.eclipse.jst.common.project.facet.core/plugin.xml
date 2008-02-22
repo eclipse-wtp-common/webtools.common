@@ -11,4 +11,57 @@
     </factory>
   </extension>
 
+  <extension point="org.eclipse.wst.common.project.facet.core.runtimeBridges">
+    <bridge
+      id="org.eclipse.jst.common.project.facet.core.JavaRuntimeBridge"
+      class="org.eclipse.jst.common.project.facet.core.internal.JavaRuntimeBridge"/>
+  </extension>
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.runtimes">
+  
+    <runtime-component-type id="standard.jre"/>
+    <runtime-component-version type="standard.jre" version="1.3"/>
+    <runtime-component-version type="standard.jre" version="1.4"/>
+    <runtime-component-version type="standard.jre" version="5.0"/>
+    <runtime-component-version type="standard.jre" version="6.0"/>
+
+    <supported>
+      <facet id="jst.java" version="1.3"/>
+      <runtime-component id="standard.jre" version="[1.3"/>
+    </supported>
+
+    <supported>
+      <facet id="jst.java" version="1.4"/>
+      <runtime-component id="standard.jre" version="[1.4"/>
+    </supported>
+
+    <supported>
+      <facet id="jst.java" version="5.0"/>
+      <runtime-component id="standard.jre" version="[5.0"/>
+    </supported>
+
+    <supported>
+      <facet id="jst.java" version="6.0"/>
+      <runtime-component id="standard.jre" version="[6.0"/>
+    </supported>
+    
+    <adapter>
+      <runtime-component id="standard.jre"/>
+      <factory class="org.eclipse.jst.common.project.facet.core.internal.StandardJreClasspathProvider$Factory"/>
+      <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
+    </adapter>
+
+    <adapter>
+      <runtime-component id="standard.jre"/>
+      <factory class="org.eclipse.jst.common.project.facet.core.internal.StandardJreComponentLabelProvider$Factory"/>
+      <type class="org.eclipse.wst.common.project.facet.ui.IRuntimeComponentLabelProvider"/>
+    </adapter>
+
+  </extension>
+
+  <extension point="org.eclipse.wst.common.project.facet.ui.images">
+    <image runtime-component-type="standard.jre"
+       path="images/standard-jre-component.gif"/>
+  </extension>
+
 </plugin>

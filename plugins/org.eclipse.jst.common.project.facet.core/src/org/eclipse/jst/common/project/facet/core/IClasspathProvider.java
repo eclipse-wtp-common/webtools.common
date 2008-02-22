@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005 BEA Systems, Inc.
+ * Copyright (c) 2008 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -13,10 +13,11 @@ package org.eclipse.jst.common.project.facet.core;
 
 import java.util.List;
 
+import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 
 /**
- * The iterface implemented by a runtime component adapter in order to provide
+ * The interface implemented by a runtime component adapter in order to provide
  * classpath entries for project facets. For convenience, the runtime can also
  * be adapted to this interface. That adapter will delegate to the runtime 
  * components in the order that they are listed in the runtime. The first one 
@@ -31,12 +32,11 @@ public interface IClasspathProvider
      * Returns the classpath entries for the specified project facet.
      * 
      * @param fv the project facet version
-     * @return returns the classpath entries for the specified project facet
-     *   (element type: {@see org.eclipse.jdt.core.IClasspathEntry}), or
+     * @return returns the classpath entries for the specified project facet, or
      *   <code>null</code> if this provider does not provide classpath entries
      *   for the given project facet
      */
     
-    List getClasspathEntries( IProjectFacetVersion fv );
+    List<IClasspathEntry> getClasspathEntries( IProjectFacetVersion fv );
     
 }
