@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.17 $$  $$Date: 2008/02/22 03:53:48 $$ 
+ *  $$Revision: 1.18 $$  $$Date: 2008/02/22 13:48:16 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -365,7 +365,7 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 	    	} else  {// content type is known
 	    		String resourceContentTypeID = getContentTypeID(resource);
 	    		String uriContentTypeID = getContentTypeName(uri);
-	    		String existingMapKeyType = getContentTypeName(findKey(resource));
+	    		String existingMapKeyType = (findKey(resource) != null) ? getContentTypeName(findKey(resource)) : null;
 	    		if((!map.containsValue(resource) || ((map.get(uri) != null) && map.get(uri).equals(resource))) // existing resource  with alternate mapping doesn't exist in map
 	    			|| existingMapKeyType == null || ((resourceContentTypeID != null && resourceContentTypeID.equals(uriContentTypeID)))) {
 						if (loadOnDemand && !resource.isLoaded()) {
