@@ -86,11 +86,14 @@ public final class StandardJreRuntimeComponent
         
         final Map<String,String> properties = new HashMap<String,String>();
         
-        properties.put( StandardJreRuntimeComponent.PROP_VM_INSTALL_TYPE, 
-                        vmInstall.getVMInstallType().getId() );
-        
-        properties.put( StandardJreRuntimeComponent.PROP_VM_INSTALL_ID, 
-                        vmInstall.getId() );
+        if( vmInstall != null )
+        {
+            properties.put( StandardJreRuntimeComponent.PROP_VM_INSTALL_TYPE, 
+                            vmInstall.getVMInstallType().getId() );
+            
+            properties.put( StandardJreRuntimeComponent.PROP_VM_INSTALL_ID, 
+                            vmInstall.getId() );
+        }
         
         return RuntimeManager.createRuntimeComponent( rcv, properties );
     }
