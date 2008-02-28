@@ -10,18 +10,20 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectUtilities.java,v $$
- *  $$Revision: 1.4 $$  $$Date: 2005/05/11 19:01:24 $$ 
+ *  $$Revision: 1.5 $$  $$Date: 2008/02/28 18:55:47 $$ 
  */
 
 package org.eclipse.jem.util.emf.workbench;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.*;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.*;
 
@@ -287,6 +289,15 @@ public class ProjectUtilities {
 		}
 		return null;
 	}
+	
+	public static IFile getPlatformFile(URI uri) {
+		if (WorkbenchResourceHelperBase.isPlatformResourceURI(uri)) {
+			String fileString = URI.decode(uri.path());
+			fileString = fileString.substring(JEMUtilPlugin.PLATFORM_RESOURCE.length() + 1);
+			return WorkbenchResourceHelperBase.getWorkspace().getRoot().getFile(new Path(fileString));
+		}
+		return null;
+	}
 
 	/**
 	 * Get the project associated with the given Resource. (If in a ProjectResourceSet, then the project from that resource set).
@@ -298,6 +309,15 @@ public class ProjectUtilities {
 	 */
 	public static IProject getProject(Resource resource) {
 		ResourceSet set = resource == null ? null : resource.getResourceSet();
+		if (set == null) {
+			URI uri = resource.getURI();
+			if (uri == null) return null;
+			IFile file = getPlatformFile(resource.getURI());
+			if (file == null) 
+				return null;
+			return file.getProject();
+		}
+			
 		if (set instanceof ProjectResourceSet)
 			return ((ProjectResourceSet) set).getProject();
 		URIConverter converter = set == null ? null : set.getURIConverter();
