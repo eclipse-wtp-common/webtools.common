@@ -209,43 +209,56 @@ public class DataModelSynchHelper implements IDataModelListener {
 	 */
 	public void synchUIWithModel(final String propertyName, final int flag) {
 		if (null != propertyToWidgetHash && propertyToWidgetHash.containsKey(propertyName)) {
-			Display.getDefault().asyncExec(new Runnable() {
-				public void run() {
-					try {
-						currentWidget = (Widget) propertyToWidgetHash.get(propertyName);
-						if (currentWidget != null && currentWidget != currentWidgetFromEvent) {
-							//We must hold a copy in a temp variable because setting the widget value
-							//may trigger an event that will cause this method to be called again.
-							Widget widget = currentWidget;
-							try {
-								ignoreModifyEvent = true;
-								if (currentWidget instanceof Text)
-									setWidgetValue(propertyName, flag, (Text) currentWidget);
-								else if (currentWidget instanceof Combo) {
-									setWidgetValue(propertyName, flag, (Combo) currentWidget);
-								} else if (currentWidget instanceof Button)
-									setWidgetValue(propertyName, flag, (Button) currentWidget);
-								else if (currentWidget instanceof Label)
-									setWidgetValue(propertyName, flag, (Label) currentWidget);
-								else if (currentWidget instanceof List)
-									setWidgetValue(propertyName, flag, (List) currentWidget);
-								else if (currentWidget instanceof Table)
-									setWidgetValue(propertyName, flag, (Table) currentWidget);
-								else if (currentWidget instanceof Tree)
-									setWidgetValue(propertyName, flag, (Tree) currentWidget);
-							} finally {
-								ignoreModifyEvent = false;
-							}
-							//Pass the copy of the currentWidget
-							setEnablement((Control) widget, dataModel.isPropertyEnabled(propertyName));
-						}
-					} finally {
-						currentWidget = null;
+			if(Thread.currentThread() == Display.getDefault().getThread()){
+				doSynchUIWithModel(propertyName, flag);
+			} else {
+				Display.getDefault().asyncExec(new Runnable() {
+					public void run() {
+						doSynchUIWithModel(propertyName, flag);
 					}
-				}
-			});
+				});
+			}
 		}
 	}
+	/**
+	 * This method must run on the UI thread
+	 * @param propertyName
+	 * @param flag
+	 */
+	private void doSynchUIWithModel(final String propertyName, final int flag) {
+		try {
+			currentWidget = (Widget) propertyToWidgetHash.get(propertyName);
+			if (currentWidget != null && currentWidget != currentWidgetFromEvent) {
+				//We must hold a copy in a temp variable because setting the widget value
+				//may trigger an event that will cause this method to be called again.
+				Widget widget = currentWidget;
+				try {
+					ignoreModifyEvent = true;
+					if (currentWidget instanceof Text)
+						setWidgetValue(propertyName, flag, (Text) currentWidget);
+					else if (currentWidget instanceof Combo) {
+						setWidgetValue(propertyName, flag, (Combo) currentWidget);
+					} else if (currentWidget instanceof Button)
+						setWidgetValue(propertyName, flag, (Button) currentWidget);
+					else if (currentWidget instanceof Label)
+						setWidgetValue(propertyName, flag, (Label) currentWidget);
+					else if (currentWidget instanceof List)
+						setWidgetValue(propertyName, flag, (List) currentWidget);
+					else if (currentWidget instanceof Table)
+						setWidgetValue(propertyName, flag, (Table) currentWidget);
+					else if (currentWidget instanceof Tree)
+						setWidgetValue(propertyName, flag, (Tree) currentWidget);
+				} finally {
+					ignoreModifyEvent = false;
+				}
+				//Pass the copy of the currentWidget
+				setEnablement((Control) widget, dataModel.isPropertyEnabled(propertyName));
+			}
+		} finally {
+			currentWidget = null;
+		}
+	}
+	
 
 	/**
 	 * @param control
