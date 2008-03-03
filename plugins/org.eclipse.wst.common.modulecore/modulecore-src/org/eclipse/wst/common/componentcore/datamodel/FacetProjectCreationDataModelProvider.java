@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jem.util.logger.proxy.Logger;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetDataModelProperties;
 import org.eclipse.wst.common.componentcore.datamodel.properties.IFacetProjectCreationDataModelProperties;
@@ -331,7 +332,14 @@ public class FacetProjectCreationDataModelProvider extends AbstractDataModelProv
 	        for( IProjectFacet facet : fixedFacets )
 	        {
 	            final IFacetedProject.Action action = fpjwc.getProjectFacetAction( facet );
-	            facetDmMap.add( (IDataModel) action.getConfig() );
+	            Object config = action.getConfig();
+	            
+	            if( ! ( config instanceof IDataModel ) )
+	            {
+	                config = Platform.getAdapterManager().getAdapter( config, IDataModel.class );
+	            }
+	            
+	            facetDmMap.add( (IDataModel) config );
 	        }
 		}
 		return super.propertySet(propertyName, propertyValue);
