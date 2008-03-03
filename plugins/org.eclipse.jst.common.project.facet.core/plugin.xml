@@ -63,5 +63,70 @@
     <image runtime-component-type="standard.jre"
        path="images/standard-jre-component.gif"/>
   </extension>
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.facets">
+  
+    <project-facet id="jst.java">
+      <label>%jstJavaFacetLabel</label>
+      <description>%jstJavaFacetDescription</description>
+      <default-version provider="org.eclipse.jst.common.project.facet.core.internal.JavaFacetDefaultVersionProvider"/>
+    </project-facet>
 
+    <project-facet-version facet="jst.java" version="1.3">
+      <constraint>
+        <conflicts facet="wst.web"/>
+      </constraint>
+    </project-facet-version>
+
+    <project-facet-version facet="jst.java" version="1.4">
+      <constraint>
+        <conflicts facet="wst.web"/>
+      </constraint>
+    </project-facet-version>
+
+    <project-facet-version facet="jst.java" version="5.0">
+      <constraint>
+        <conflicts facet="wst.web"/>
+      </constraint>
+    </project-facet-version>
+
+    <project-facet-version facet="jst.java" version="6.0">
+      <constraint>
+        <conflicts facet="wst.web"/>
+      </constraint>
+    </project-facet-version>
+
+    <action facet="jst.java" type="install">
+      <delegate class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetInstallDelegate"/>
+      <config-factory class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetInstallConfigFactory"/>
+    </action>
+
+    <action facet="jst.java" type="version-change">
+      <delegate class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetVersionChangeDelegate"/>
+    </action>
+
+  </extension>
+
+  <extension point="org.eclipse.wst.common.project.facet.core.listeners">
+     <listener
+       class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetRuntimeChangedListener"
+       eventTypes="PRIMARY_RUNTIME_CHANGED"/>
+  </extension>
+  
+  <extension point="org.eclipse.wst.common.project.facet.core.validators">
+    <validator class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetValidator">
+      <facet id="jst.java"/>
+    </validator>
+  </extension>    
+
+  <extension 
+    point="org.eclipse.core.resources.markers"
+    id="javaVersionMismatch"
+    name="%javaVersionMismatchMarkerName">
+    <super type="org.eclipse.wst.common.project.facet.core.validation.marker"/>
+    <attribute name="facetVersion"/>
+    <attribute name="compilerLevel"/>
+    <persistent value="true"/>
+  </extension>
+  
 </plugin>
