@@ -453,8 +453,11 @@ public abstract class DataModelWizardPage extends WizardPage implements Listener
         			}
 		        }
 		    };
-		    
-		    Display.getDefault().asyncExec(uiChanges);
+		    if(Thread.currentThread() == Display.getDefault().getThread()){
+		    	uiChanges.run();
+		    } else {
+		    	Display.getDefault().asyncExec(uiChanges);
+		    }
 		}
 	}
 
