@@ -106,7 +106,11 @@
     </action>
 
   </extension>
-
+  
+  <extension point="org.eclipse.wst.common.project.facet.ui.images">
+    <image facet="jst.java" path="images/java-face.gif"/>
+  </extension>
+  
   <extension point="org.eclipse.wst.common.project.facet.core.listeners">
      <listener
        class="org.eclipse.jst.common.project.facet.core.internal.JavaFacetRuntimeChangedListener"
@@ -128,5 +132,14 @@
     <attribute name="compilerLevel"/>
     <persistent value="true"/>
   </extension>
+  
+  <extension
+    point="org.eclipse.ui.ide.markerResolution">
+	<markerResolutionGenerator
+      markerType="org.eclipse.jst.common.project.facet.core.javaVersionMismatch"
+      class="org.eclipse.jst.common.project.facet.core.internal.JavaVersionMismatchMarkerResolutions">
+    </markerResolutionGenerator>
+  </extension>
+  
   
 </plugin>
