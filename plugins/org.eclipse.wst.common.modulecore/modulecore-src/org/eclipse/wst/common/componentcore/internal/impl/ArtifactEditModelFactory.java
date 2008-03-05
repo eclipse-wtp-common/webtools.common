@@ -29,15 +29,21 @@ public class ArtifactEditModelFactory extends EditModelFactory {
 	
 	public static final String PARAM_MODULE_URI = "MODULE_URI"; //$NON-NLS-1$
 	
+	public static final String PARAM_ROOT_URI = "ROOT_URI"; //$NON-NLS-1$
+	
+	public static final String PARAM_ROOT_CONTENT_TYPE = "ROOT_CONTENT_TYPE"; //$NON-NLS-1$
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.wst.common.internal.emfworkbench.integration.EditModelFactory#createEditModelForRead(java.lang.String, org.eclipse.wst.common.internal.emfworkbench.EMFWorkbenchContext, java.util.Map)
 	 */
 	public EditModel createEditModelForRead(String editModelID, EMFWorkbenchContext context, Map params) {
 		URI moduleURI = (URI) ((params != null) ? params.get(PARAM_MODULE_URI) : null);
+		URI rootURI = (URI) ((params != null) ? params.get(PARAM_ROOT_URI) : null);
+		String rootContentType = (String) ((params != null) ? params.get(PARAM_ROOT_CONTENT_TYPE) : null);
 		if(moduleURI == null)
 			throw new IllegalStateException("A Module URI must be provided");
 		
-		return  new ArtifactEditModel(editModelID, context, true, moduleURI);
+		return  new ArtifactEditModel(editModelID, context, true, moduleURI, rootURI, rootContentType);
 	}
 	
 	/* (non-Javadoc)
@@ -45,9 +51,11 @@ public class ArtifactEditModelFactory extends EditModelFactory {
 	 */
 	public EditModel createEditModelForWrite(String editModelID, EMFWorkbenchContext context, Map params) {
 		URI moduleURI = (URI) ((params != null) ? params.get(PARAM_MODULE_URI) : null);
+		URI rootURI = (URI) ((params != null) ? params.get(PARAM_ROOT_URI) : null);
+		String rootContentType = (String) ((params != null) ? params.get(PARAM_ROOT_CONTENT_TYPE) : null);
 		if(moduleURI == null)
 			throw new IllegalStateException("A Module URI must be provided");
-		return  new ArtifactEditModel(editModelID, context, false,false, moduleURI);
+		return  new ArtifactEditModel(editModelID, context, false, moduleURI, rootURI, rootContentType);
 	}
 	
 	/* (non-Javadoc)

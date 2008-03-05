@@ -13,6 +13,7 @@ package org.eclipse.wst.common.frameworks.internal;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jem.util.UIContextDetermination;
 
 public class SimpleValidateEdit {
@@ -33,7 +34,12 @@ public class SimpleValidateEdit {
 			return true;
 		}
 		ISimpleValidateEditContext validator = (ISimpleValidateEditContext) UIContextDetermination.createInstance(ISimpleValidateEditContext.CLASS_KEY);
-		return validator.validateEdit(files).isOK();
+		if (validator != null) {
+			IStatus status = validator.validateEdit(files);
+			if (status != null)
+				return status.isOK();
+		}
+		return true;
 	}
 
 }

@@ -66,6 +66,8 @@ public class ArtifactEditModel extends EditModel implements IAdaptable, IFaceted
 	public static final Class ADAPTER_TYPE = ArtifactEditModel.class;
 	private final IProject componentProject; 
 	private final IPath modulePath;
+	private URI rootURI;
+	private String rootContentType;
 	private final IVirtualComponent virtualComponent;
 	private final URI componentURI;
 
@@ -101,7 +103,16 @@ public class ArtifactEditModel extends EditModel implements IAdaptable, IFaceted
 	public ArtifactEditModel(String anEditModelId, EMFWorkbenchContext aContext, boolean toMakeReadOnly, URI aModuleURI) {
 		this(anEditModelId, aContext, toMakeReadOnly, true, aModuleURI);
 	}
-
+	
+	public ArtifactEditModel(String anEditModelId, EMFWorkbenchContext aContext, boolean toMakeReadOnly, boolean toAccessUnknownResourcesAsReadOnly, URI aModuleURI,URI rootURI,
+			String rootContentType) {
+		this(anEditModelId, aContext, toMakeReadOnly, toAccessUnknownResourcesAsReadOnly, aModuleURI);
+		this.rootURI = rootURI;
+		this.rootContentType = rootContentType;
+		
+	}
+	
+	
 	/**
 	 * 
 	 * <p>
@@ -154,6 +165,14 @@ public class ArtifactEditModel extends EditModel implements IAdaptable, IFaceted
 		processLoadedResources(componentProject);
 	}
 
+	public ArtifactEditModel(String editModelID, EMFWorkbenchContext context, boolean toMakeReadOnly, URI moduleURI, URI rootURI,
+			String rootContentType) {
+		this(editModelID, context, toMakeReadOnly, true, moduleURI);
+		this.rootURI = rootURI;
+		this.rootContentType = rootContentType;
+		
+	}
+
 	/**
 	 * <p>
 	 * Accesses resources within the underlying resource set. Takes a standard URI attaches module
@@ -168,8 +187,15 @@ public class ArtifactEditModel extends EditModel implements IAdaptable, IFaceted
 	 * @return Resource (@see Resource)
 	 */
 	public Resource getResource(URI aUri) {
-		// First check if passed URI is already normalized...
-		IPath requestPath = modulePath.append(new Path(aUri.path()));
+		IPath requestPath;
+		//If requesting rootURI, use content type describer if available
+		if (rootURI != null && rootURI.equals(aUri) && rootContentType != null) {
+			requestPath = modulePath.append(new Path(rootContentType));
+			requestPath = requestPath.append(new Path(aUri.path()));
+		}
+		else {// First check if passed URI is already normalized...
+			requestPath = modulePath.append(new Path(aUri.path()));
+		}
 		URI resourceURI = URI.createURI(PlatformURLModuleConnection.MODULE_PROTOCOL + requestPath.toString());
 		return super.getResource(resourceURI);
 	}

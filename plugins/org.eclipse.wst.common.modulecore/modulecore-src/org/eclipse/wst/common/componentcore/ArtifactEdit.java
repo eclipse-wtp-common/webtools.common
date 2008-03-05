@@ -11,6 +11,7 @@
 package org.eclipse.wst.common.componentcore;
 
 import java.util.EventObject;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -31,6 +32,7 @@ import org.eclipse.jem.internal.util.emf.workbench.nls.EMFWorkbenchResourceHandl
 import org.eclipse.jem.util.UIContextDetermination;
 import org.eclipse.wst.common.componentcore.internal.ArtifactEditModel;
 import org.eclipse.wst.common.componentcore.internal.BinaryComponentHelper;
+import org.eclipse.wst.common.componentcore.internal.impl.ArtifactEditModelFactory;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
@@ -367,16 +369,19 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 		if (!forCreate && !isValidEditableModule(component))
 			throw new IllegalArgumentException("Invalid component handle: " + aProject);
 		project = aProject;
-		URI componentURI = null;
-		if (getContentTypeDescriber() != null)
-			componentURI = ModuleURIUtil.fullyQualifyURI(aProject,getContentTypeDescriber());
-		else
-			componentURI = ModuleURIUtil.fullyQualifyURI(aProject);
-
-		if (toAccessAsReadOnly)
+		URI componentURI = ModuleURIUtil.fullyQualifyURI(aProject);
+		if (getContentTypeDescriber() != null) {
+			if (editModelParams == null)
+				editModelParams = new HashMap();
+			editModelParams.put(ArtifactEditModelFactory.PARAM_ROOT_URI, getRootURI());
+			editModelParams.put(ArtifactEditModelFactory.PARAM_ROOT_CONTENT_TYPE, getContentTypeDescriber());
+		}
+		if (toAccessAsReadOnly) 
 			artifactEditModel = nature.getArtifactEditModelForRead(componentURI, this, projectType, editModelParams);
-		else
+		else 
 			artifactEditModel = nature.getArtifactEditModelForWrite(componentURI, this, projectType, editModelParams);
+		
+			
 		isReadOnly = toAccessAsReadOnly;
 		isArtifactEditModelSelfManaged = true;
 	}
@@ -408,6 +413,23 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 			return "org.eclipse.jst.j2ee.earDD";
 		if (isProjectOfType(project, IModuleConstants.JST_APPCLIENT_MODULE))
 			return "org.eclipse.jst.j2ee.appclientDD";
+		return null;
+	}
+	
+	/**
+	 * Used to optionally define an root URI for the project
+	 * @return
+	 */
+	protected URI getRootURI() {
+		
+		if (isProjectOfType(project, IModuleConstants.JST_EJB_MODULE))
+			return URI.createURI("META-INF/ejb-jar.xml");
+		if (isProjectOfType(project, IModuleConstants.JST_WEB_MODULE))
+			return URI.createURI("WEB-INF/web.xml");
+		if (isProjectOfType(project, IModuleConstants.JST_EAR_MODULE))
+			return URI.createURI("META-INF/application.xml");
+		if (isProjectOfType(project, IModuleConstants.JST_APPCLIENT_MODULE))
+			return URI.createURI("META-INF/application-client.xml");
 		return null;
 	}
 

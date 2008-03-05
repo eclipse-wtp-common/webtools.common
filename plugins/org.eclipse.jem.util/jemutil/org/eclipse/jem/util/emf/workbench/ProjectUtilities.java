@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectUtilities.java,v $$
- *  $$Revision: 1.5 $$  $$Date: 2008/02/28 18:55:47 $$ 
+ *  $$Revision: 1.6 $$  $$Date: 2008/03/05 19:43:18 $$ 
  */
 
 package org.eclipse.jem.util.emf.workbench;
@@ -285,7 +285,8 @@ public class ProjectUtilities {
 	public static IProject getProject(EObject aRefObject) {
 		if (aRefObject != null) {
 			Resource resource = aRefObject.eResource();
-			return getProject(resource);
+			if (resource != null)
+				return getProject(resource);
 		}
 		return null;
 	}
