@@ -6,8 +6,6 @@
 
 Remember to delete this file when you are done.
 
-I've been storing the patches under z:/patches (This means that they are under a crude form of source control)
-
 To upgrade an existing validator
 
 1) I changed the plug-in to use the new EP
