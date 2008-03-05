@@ -312,10 +312,12 @@ public class EditModelRegistry extends RegistryReader {
 					editModelResources = new ArrayList();
 
 					IConfigurationElement[] resources = configurationElement.getChildren(EditModelResource.EDIT_MODEL_RESOURCE_ELEMENT);
+					IConfigurationElement[] resExtensions = configurationElement.getChildren(EDIT_MODEL_RESOURCE_EXTENSION);
+					// set the configurationElement to null- keeps code from reentering
+					discardConfigurationElementIfNecessary();
 					for (int j = 0; j < resources.length; j++) {
 						editModelResources.add(new EditModelResource(resources[j]));
 					}
-					IConfigurationElement[] resExtensions = configurationElement.getChildren(EDIT_MODEL_RESOURCE_EXTENSION);
 					if (resExtensions == null || resExtensions.length == 0) {
 						editModelExtensions = Collections.EMPTY_LIST;
 					} else {
@@ -325,7 +327,6 @@ public class EditModelRegistry extends RegistryReader {
 							editModelExtensions.add(extension);
 						}
 					}
-					discardConfigurationElementIfNecessary();
 				} else {
 					editModelResources = Collections.EMPTY_LIST;
 					editModelExtensions = Collections.EMPTY_LIST;
