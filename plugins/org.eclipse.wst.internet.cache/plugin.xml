@@ -10,7 +10,7 @@
             name="%_UI_CACHE_PREFERENCE_PAGE_TITLE"
             class="org.eclipse.wst.internet.cache.internal.preferences.CachePreferencePage"
             id="org.eclipse.wst.internet.cache.internal.preferences.CachePreferencePage"
-            category = "org.eclipse.internet">
+            category="org.eclipse.ui.net.NetPreferences">
       </page>
    </extension>
    <extension
