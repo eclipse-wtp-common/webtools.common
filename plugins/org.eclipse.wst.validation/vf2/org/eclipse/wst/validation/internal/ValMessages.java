@@ -6,6 +6,8 @@ public class ValMessages extends NLS {
 	
 	private static final String BUNDLE_NAME = "org.eclipse.wst.validation.internal.messages"; //$NON-NLS-1$
 	   
+	public static String ConfigError;
+	
 	public static String ErrConfig;	
 	public static String ErrFilterRule;	  
 	public static String ErrGroupName;
@@ -45,6 +47,9 @@ public class ValMessages extends NLS {
 	public static String RuleFolder;
 	public static String RuleContentType;
 	public static String RuleFacet;
+	
+	public static String ContentTypeExact;
+	public static String ContentTypeNotExact;
 	
 	public static String FileExtWithCase;
 	public static String FileExtWithoutCase;

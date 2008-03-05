@@ -19,6 +19,14 @@ public class PerformanceCounters {
 	private	long	_elapsedTime;
 	private long	_cpuTime;
 	
+	/**
+	 * @param validatorId
+	 * @param validatorName
+	 * @param resourceName 
+	 * @param numberInvocations number of times the validator was invoked
+	 * @param elapsedTime elapsed time in milliseconds
+	 * @param cpuTime CPU time in nanoseconds
+	 */
 	public PerformanceCounters(String validatorId, String validatorName, String resourceName, 
 		int numberInvocations, long elapsedTime, long cpuTime){
 		_validatorId = validatorId;
@@ -44,7 +52,7 @@ public class PerformanceCounters {
 	}
 	
 	/**
-	 * Answer the amount of CPU time in milliseconds. If this can not be determined,
+	 * Answer the amount of CPU time in nanoseconds. If this can not be determined,
 	 * answer -1;
 	 */
 	public long getCpuTime() {

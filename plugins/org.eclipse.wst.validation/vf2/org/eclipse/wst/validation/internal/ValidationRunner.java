@@ -27,16 +27,21 @@ public class ValidationRunner implements IWorkspaceRunnable {
 	private ValOperation	_valOperation;
 	
 	/**
-	 * Validate the selected projects and/or resources. 
+	 * Validate the selected projects and/or resources.
 	 * 
-	 * @param projects The selected projects. The key is an IProject and the value is the Set of
-	 * IResources that were selected. Often this will be every resource in the project.
+	 * @param projects
+	 *            The selected projects. The key is an IProject and the value is
+	 *            the Set of IResources that were selected. Often this will be
+	 *            every resource in the project.
 	 * 
-	 * @param isManual is this a manual validation?
+	 * @param isManual
+	 *            Is this a manual validation?
 	 * 
-	 * @param isBuild is this a build based validation?
+	 * @param isBuild
+	 *            Is this a build based validation?
 	 * 
-	 * @param monitor progress monitor
+	 * @param monitor
+	 *            progress monitor
 	 */
 	public static ValOperation validate(Map<IProject, Set<IResource>> projects, boolean isManual, 
 		boolean isBuild, IProgressMonitor monitor) throws CoreException{

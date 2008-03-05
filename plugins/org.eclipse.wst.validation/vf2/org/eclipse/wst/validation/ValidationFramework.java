@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
@@ -23,6 +24,7 @@ import org.eclipse.wst.validation.internal.DebugConstants;
 import org.eclipse.wst.validation.internal.DependencyIndex;
 import org.eclipse.wst.validation.internal.Misc;
 import org.eclipse.wst.validation.internal.PerformanceMonitor;
+import org.eclipse.wst.validation.internal.ValConstants;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValOperation;
 import org.eclipse.wst.validation.internal.ValidationRunner;
@@ -58,6 +60,21 @@ public final class ValidationFramework {
 	}
 	
 	private ValidationFramework(){}
+	
+	/**
+	 * Clear any validation markers that may have been set by this validator.
+	 *  
+	 * @param resource the resource that may have it's markers cleared
+	 * @param validatorId the id of validator that created the marker
+	 */
+	public void clearMessages(IResource resource, String validatorId) throws CoreException {
+		if (resource == null)return;
+		IMarker[] markers = resource.findMarkers(ValConstants.ProblemMarker, false, IResource.DEPTH_ZERO);
+		for (IMarker marker : markers){
+			String id = marker.getAttribute(ValidatorMessage.ValidationId, null);
+			if (validatorId.equals(id))marker.delete();
+		}
+	}
 	
 	/**
 	 * Answer the dependency index. Validators can use this to determine which resources depend on which
@@ -303,17 +320,21 @@ public final class ValidationFramework {
 	
 	/**
 	 * Validate the projects.
-	 *  
-	 * @param projects the projects to be validated.
 	 * 
-	 * @param isManual is this being done as part of a manual validation? i.e. did the user select the
-	 * Validate menu item?
+	 * @param projects
+	 *            The projects to be validated.
 	 * 
-	 * @param isBuild is this being done as part of a build?
+	 * @param isManual
+	 *            Is this being done as part of a manual validation? i.e. did
+	 *            the user select the Validate menu item?
+	 * 
+	 * @param isBuild
+	 *            Is this being done as part of a build?
 	 * 
 	 * @param monitor
 	 * 
-	 * @return the validation result is the combined result for all the resources that were validated.
+	 * @return the validation result which is the combined result for all the
+	 *         resources that were validated.
 	 */
 	public ValidationResults validate(IProject[] projects, final boolean isManual, final boolean isBuild,
 		IProgressMonitor monitor) throws CoreException{

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006 IBM Corporation and others.
+ * Copyright (c) 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,12 +22,12 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidator;
  * ValidatorDelegatesRegistry is a singleton used to store validator delegate
  * descriptors for each delegating validator.
  */
-public class ValidatorDelegatesRegistry
-{
+public class ValidatorDelegatesRegistry {
+	
   /**
    * The one and only instance of this registry.
    */
-  private static ValidatorDelegatesRegistry instance;
+  private static ValidatorDelegatesRegistry _instance;
 
   /**
    * Provides the one and only instance of this class.
@@ -38,17 +38,14 @@ public class ValidatorDelegatesRegistry
    * 
    * @return the validator delegates registry singleton instance.
    */
-  public static ValidatorDelegatesRegistry getInstance()
-  {
-    if (instance == null)
-    {
-      instance = new ValidatorDelegatesRegistry();
-
-      ValidatorDelegatesRegistryReader reader = new ValidatorDelegatesRegistryReader(instance);
+  public static ValidatorDelegatesRegistry getInstance() {
+    if (_instance == null) {
+      _instance = new ValidatorDelegatesRegistry();
+      ValidatorDelegatesRegistryReader reader = new ValidatorDelegatesRegistryReader(_instance);
       reader.readRegistry();
     }
 
-    return instance;
+    return _instance;
   }
 
   /**
@@ -61,18 +58,16 @@ public class ValidatorDelegatesRegistry
    * Adds a descriptor to the registry.
    * 
    * @param descriptor
-   *          the descriptor to add. Must not be null.
+   *          The descriptor to add. Must not be null.
    */
-  void add(ValidatorDelegateDescriptor descriptor)
-  {
+  void add(ValidatorDelegateDescriptor descriptor) {
     if (descriptor == null)return;
 
     String targetID = descriptor.getTargetID();
 
     Map<String,ValidatorDelegateDescriptor> delegates = _delegatesByTarget.get(targetID);
 
-    if (delegates == null)
-    {
+    if (delegates == null) {
       delegates = new HashMap<String,ValidatorDelegateDescriptor>();
       _delegatesByTarget.put(targetID, delegates);
     }
@@ -84,7 +79,7 @@ public class ValidatorDelegatesRegistry
    * Provides the default delegate ID for the given delegating validator ID.
    * 
    * @param targetID
-   *          the delegating validator's ID.
+   *          The delegating validator's ID.
    * @return a String with the ID of the default delegate.
    */
   public String getDefaultDelegate(String targetID)

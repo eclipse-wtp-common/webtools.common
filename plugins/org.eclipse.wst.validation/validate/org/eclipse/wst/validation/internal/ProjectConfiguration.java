@@ -144,10 +144,6 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		return super.getValidators();
 	}
 
-	/*
-   * (non-Javadoc)
-   * @see org.eclipse.wst.validation.internal.ValidationConfiguration#getDelegatingValidators()
-	 */
   public Map<String,String> getDelegatingValidators() throws InvocationTargetException {
     if (useGlobalPreference()) {
       return ConfigurationManager.getManager().getGlobalConfiguration().getDelegatingValidators();

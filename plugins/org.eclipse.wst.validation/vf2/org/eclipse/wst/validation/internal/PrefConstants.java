@@ -33,6 +33,9 @@ public interface PrefConstants {
 	/** delegate - the delegating implementation to use */
 	String delegate = "delegate"; //$NON-NLS-1$
 	
+	/** exactMatch - must the content type match exactly? */
+	String exactMatch = "exactMatch"; //$NON-NLS-1$
+	
 	/** manual - is the validator enabled for manual validation? */
 	String manual = "manual"; //$NON-NLS-1$
 	

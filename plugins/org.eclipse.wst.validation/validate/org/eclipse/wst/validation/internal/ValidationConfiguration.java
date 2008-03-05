@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2007 IBM Corporation and others.
+ * Copyright (c) 2001, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -60,6 +60,10 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	protected String USER_BUILD_PREFERENCE 	= "USER_BUILD_PREFERENCE"; //$NON-NLS-1$
 	protected String DELEGATES_PREFERENCE 	= "DELEGATES_PREFERENCE"; //$NON-NLS-1$
 	
+	/**
+	 * The key is the target id, that is the id of the place holder validator. The value is the id 
+	 * of the real validator. 
+	 */
 	private Map<String, String> _delegatesByTarget;
 	
 	private static final String DefaultValue = "default_value"; //$NON-NLS-1$
@@ -800,15 +804,19 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
     up.setDelegatingValidators(getDelegatingValidators());
 	}
 
-  public Map<String, String> getDelegatingValidators() throws InvocationTargetException {
-    return _delegatesByTarget;
-  }
+	/**
+	 * The key is the id of the place holder validator, and the value is the id of validator
+	 * that will perform the validation. 
+	 */
+	public Map<String, String> getDelegatingValidators() throws InvocationTargetException {
+		return _delegatesByTarget;
+	}
 
-  public void setDelegatingValidators(Map<String, String> source)
-  {
-    // It is safe to copy this map as it contains only immutable strings.
-    _delegatesByTarget.putAll(source);
-  }
+	public void setDelegatingValidators(Map<String, String> source)
+	{
+		// It is safe to copy this map as it contains only immutable strings.
+		_delegatesByTarget.putAll(source);
+	}
 
   /**
 	 * Return true if the enabled validators have not changed since this ValidationConfiguration was
@@ -848,9 +856,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
    */
   protected boolean haveDelegatesChanged(Map oldDelegates) throws InvocationTargetException {
     
-    if (oldDelegates == null) {
-      return true;
-    }
+    if (oldDelegates == null)return true;
     
     Iterator iterator = oldDelegates.keySet().iterator();
     
@@ -939,14 +945,25 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
   
   /**
    * Provides the delegate's ID of the validator delegate configured in this configuration for 
-   * a given delegating validator.
+   * a given delegating validator. That is answer the id of validator that is going to do the real work.
    * 
-   * @param vmd the delegating validator's metadata. Must not be null.
-   * @return a String with the unique name (ID) of the validator delegate, null if there isn't one.
+   * @param vmd the delegating validator's meta data. Must not be null.
+   * @return a String with the id of the validator delegate, null if there isn't one.
    */
   public String getDelegateUniqueName(ValidatorMetaData vmd) {
     String targetID = vmd.getValidatorUniqueName();    
     return _delegatesByTarget.get(targetID);
+  }
+  
+  /**
+   * Provides the delegate's ID of the validator delegate configured in this configuration for 
+   * a given delegating validator. That is answer the id of validator that is going to do the real work.
+   * 
+   * @param targetId the id of the target (or place holder) validator. Must not be null.
+   * @return a String with the id of the validator delegate, null if there isn't one.
+   */
+  public String getDelegateForTarget(String targetId){
+	  return _delegatesByTarget.get(targetId);
   }
 
   /**

@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.wst.validation.internal.core.ValidationException;
@@ -38,6 +39,8 @@ public final class ValidationResult {
 	private int			_severityError;
 	private int			_severityWarning;
 	private int			_severityInfo;
+	
+	private IProject	_suspendValidation;
 	
 	/** A count of the number of resources that were validated. */
 	private int			_numberOfValidatedResources = 1;
@@ -96,8 +99,7 @@ public final class ValidationResult {
 		if (result == null)return;
 		
 		ValidatorMessage[] msgs = result.getMessages();
-		for (int i=0; i<msgs.length; i++){
-			ValidatorMessage m = msgs[i];
+		for (ValidatorMessage m : msgs){
 			add(m);
 			int severity = m.getAttribute(IMarker.SEVERITY, 0);
 			switch (severity){
@@ -304,5 +306,28 @@ public final class ValidationResult {
 	 */
 	public void setValidationException(ValidationException validationException) {
 		_validationException = validationException;
+	}
+	
+	/**
+	 * Answer the project that the validator would like to have suspended.
+	 * 
+	 * @return the project to suspend or null. The normal result is null, which means that
+	 * the validator wishes to receive normal validation requests. 
+	 */
+	public IProject getSuspendValidation(){
+		return _suspendValidation;
+	}
+
+	/**
+	 * Calling this method will inform the framework, that this validator does not wish to be
+	 * called again for any resources in this project, for the duration of this validation operation.
+	 * <p>
+	 * Some validators may have a rich set of triggers, but once they have been invoked once,
+	 * do not need to be invoked again during the course of the current validation.
+	 * </p>
+	 * @param project The project that this validator no longer wants to be notified on.
+	 */
+	public void setSuspendValidation(IProject project) {
+		_suspendValidation = project;
 	}
 }

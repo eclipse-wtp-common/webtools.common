@@ -91,6 +91,7 @@ public class ValUIMessages extends NLS {
 	public static String FrFileExtension;
 	public static String FrFileExtensionLabel;
 	public static String FrCaseSensitive;
+	public static String FrExactMatch;
 	public static String FrFolderOrFile;
 	public static String FrFolderOrFileLabel;
 	public static String FrBrowseFile;

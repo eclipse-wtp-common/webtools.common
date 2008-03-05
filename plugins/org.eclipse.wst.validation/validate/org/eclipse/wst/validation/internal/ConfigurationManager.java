@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2007 IBM Corporation and others.
+ * Copyright (c) 2001, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,17 +24,15 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  * Only the validation framework can use this class.
  */
 public final class ConfigurationManager implements ConfigurationConstants {
-	private static ConfigurationManager inst = null;
+	private static ConfigurationManager _instance = null;
 
-	private ConfigurationManager() {
-		//Default constructor
-	}
+	private ConfigurationManager() {}
 
 	public static ConfigurationManager getManager() {
-		if (inst == null) {
-			inst = new ConfigurationManager();
+		if (_instance == null) {
+			_instance = new ConfigurationManager();
 		}
-		return inst;
+		return _instance;
 	}
 
 	/**
@@ -43,14 +41,10 @@ public final class ConfigurationManager implements ConfigurationConstants {
 	 * return null.
 	 */
 	public String getValidator(IMarker marker) {
-		if (marker == null) {
-			return null;
-		}
+		if (marker == null)return null;
 
 		try {
-			if (!marker.getType().equals(VALIDATION_MARKER)) {
-				return null;
-			}
+			if (!marker.getType().equals(VALIDATION_MARKER))return null;
 
 			Object attrib = marker.getAttribute(VALIDATION_MARKER_OWNER);
 			if (attrib == null) {
@@ -68,9 +62,7 @@ public final class ConfigurationManager implements ConfigurationConstants {
 	 * Return true if the given marker is a validation marker. Otherwise return false.
 	 */
 	public boolean isValidationMarker(IMarker marker) {
-		if (marker == null) {
-			return false;
-		}
+		if (marker == null)return false;
 
 		try {
 			return marker.getType().equals(VALIDATION_MARKER);
@@ -81,9 +73,9 @@ public final class ConfigurationManager implements ConfigurationConstants {
 	}
 
 	/**
-	 * This method is for use by the TVT Validation plugin ONLY!!! No code should access the
+	 * This method is for use by the TVT Validation plug-in ONLY!!! No code should access the
 	 * validation markers in the list directly except for the validation framework and the TVT
-	 * Validation plugin.
+	 * Validation plug-in.
 	 */
 	public void removeAllValidationMarkers(IProject project) {
 		if ((project == null) || (!project.isOpen()))return;

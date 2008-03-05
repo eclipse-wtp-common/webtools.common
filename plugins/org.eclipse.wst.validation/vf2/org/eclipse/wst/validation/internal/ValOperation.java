@@ -19,8 +19,10 @@ import org.eclipse.wst.validation.Validator;
  * resource.
  * <p>
  * The operation can, but doesn't need to, span multiple projects.
+ * </p>
  * <p>
- * Once the operation has finished, this object goes away.     
+ * Once the operation has finished, this object goes away.
+ * </p>     
  * @author karasiuk
  *
  */
@@ -92,19 +94,15 @@ public class ValOperation {
 	 * already determined that a particular validator doesn't apply to the project. 
 	 *   
 	 * @param val
-	 * @param project can be null, in case we return false
+	 * @param project can be null, in which case we return false
 	 * @param isManual
 	 * @param isBuild
 	 * 
-	 * @return true if we already know that this validator should run run on this project.
+	 * @return true if we already know that this validator should not run on this project.
 	 */
 	public boolean shouldExclude(Validator val, IProject project, boolean haveProcessedProject, boolean isManual, boolean isBuild) {
 		if (project == null)return false;
-		Set<Validator> set = _excludeCache.get(project);
-		if (set == null){
-			set = new HashSet<Validator>(5);
-			_excludeCache.put(project, set);
-		}
+		Set<Validator> set = getExcludeSet(project);
 		
 		if (!haveProcessedProject){
 			if (val.shouldValidateProject(project, isManual, isBuild))return false;
@@ -114,9 +112,18 @@ public class ValOperation {
 		
 		return set.contains(val);
 	}
+	
+	private Set<Validator> getExcludeSet(IProject project){
+		Set<Validator> set = _excludeCache.get(project);
+		if (set == null){
+			set = new HashSet<Validator>(5);
+			_excludeCache.put(project, set);
+		}
+		return set;
+	}
 
 	/**
-	 * Have set primed the exclude project cache for this project yet?
+	 * Have we primed the exclude project cache for this project yet?
 	 * @param project
 	 */
 	public boolean hasProcessedProject(IProject project) {
@@ -128,5 +135,10 @@ public class ValOperation {
 			return false;
 		}
 		return true;
+	}
+
+	void suspendValidation(IProject project, Validator validator) {
+		if (project == null)return;
+		getExcludeSet(project).add(validator);
 	}	
 }

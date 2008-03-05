@@ -70,6 +70,12 @@ public interface ExtensionConstants {
 		/** caseSensitive - true or false. */
 		String caseSensitive = "caseSensitive"; //$NON-NLS-1$
 		
+		/** 
+		 * exactMatch - true or false, default is true. It is used to decide whether content types need to match
+		 * exactly, or whether sub types should also be considered.
+		 */
+		String exactMatch = "exactMatch"; //$NON-NLS-1$
+		
 		/** ext - a file extension, for example "html". */
 		String ext = "ext"; //$NON-NLS-1$
 		

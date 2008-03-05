@@ -64,14 +64,22 @@ public class ValidatorExtensionReader {
 	/**
 	 * Process the validator element in a validator extension.
 	 * 
-	 * @param validator the validator element
+	 * @param validator
+	 *            The validator element.
 	 * 
-	 * @param deep if true load all the configuration elements for each validator, if false
-	 * do a shallow load, where only the validator class, id and name's are loaded.
+	 * @param deep
+	 *            If true load all the configuration elements for each
+	 *            validator, if false do a shallow load, where only the
+	 *            validator class, id and name's are loaded.
 	 * 
-	 * @return a configured validator or return null if there was an error.
+	 * @param project
+	 *            The project that you are defined in. This can be null which
+	 *            means that you are a global validator.
+	 * 
+	 * @return a configured validator or null if there was an error.
 	 */
-	private Validator processValidator(IConfigurationElement validator, String id, String label, boolean deep, IProject project) {
+	private Validator processValidator(IConfigurationElement validator, String id, String label, boolean deep, 
+			IProject project) {
 		Validator.V2 v = null;
 		try {
 			AbstractValidator vb = (AbstractValidator)validator.createExecutableExtension(ExtensionConstants.AttribClass);

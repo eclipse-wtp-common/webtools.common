@@ -432,6 +432,7 @@ public class NewFilterRule extends Wizard {
 	
 	public static class ContentTypePage extends WizardPage implements FilterWizardPage {
 		private Text	_pattern;
+		private Button	_exactMatch;
 		
 		public ContentTypePage(){
 			super("contentType", ValUIMessages.FrContentType, null); //$NON-NLS-1$
@@ -452,11 +453,17 @@ public class NewFilterRule extends Wizard {
 				}
 				
 			});
+			
+			_exactMatch = new Button(control, SWT.CHECK);
+			_exactMatch.setText(ValUIMessages.FrExactMatch);
+			_exactMatch.setSelection(false);
+			_exactMatch.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING,false, false, 2, 1));
+
 		}
 
 		public FilterRule getFilterRule() {
 			if (!isPageComplete())return null;
-			FilterRule rule = FilterRule.createContentType(_pattern.getText());
+			FilterRule rule = FilterRule.createContentType(_pattern.getText(), _exactMatch.getSelection());
 			return rule;
 		}
 		

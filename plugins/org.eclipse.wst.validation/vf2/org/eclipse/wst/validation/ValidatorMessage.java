@@ -32,6 +32,8 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  */
 public class ValidatorMessage {
 	
+	public static final String ValidationId = "ValidationId"; //$NON-NLS-1$
+	
 	/** Associate some arbitrary attributes with a message. */
 	private Map<String, Object>	_map = new HashMap<String, Object>(5);
 	

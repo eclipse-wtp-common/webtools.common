@@ -1,5 +1,6 @@
 package org.eclipse.wst.validation;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,11 +12,15 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.osgi.util.NLS;
+import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.ResourceUnavailableError;
 import org.eclipse.wst.validation.internal.SummaryReporter;
 import org.eclipse.wst.validation.internal.ValManager;
+import org.eclipse.wst.validation.internal.ValMessages;
 import org.eclipse.wst.validation.internal.ValOperation;
 import org.eclipse.wst.validation.internal.ValOperationManager;
 import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
@@ -67,9 +72,18 @@ public abstract class Validator implements Comparable {
 	/** The project that you are defined in. This can be null which means that you are a global validator. */
 	protected IProject	_project;
 	
+	/**
+	 * Create a new validator based on a abstract validator.
+	 * 
+	 * @param validator
+	 *            The validator that is being wrapped.
+	 * 
+	 * @param project
+	 *            The project that you are defined in. This can be null which
+	 *            means that you are a global validator.
+	 */
 	public static Validator create(AbstractValidator validator, IProject project) {
-		V2 v2 = new V2(validator);
-		v2._project = project;
+		V2 v2 = new V2(validator, project);
 		validator.setParent(v2);
 		return v2;
 	}
@@ -541,10 +555,17 @@ public final static class V2 extends Validator implements IAdaptable {
 	 */
 	private AbstractValidator	_delegated;
 	
-	public V2(AbstractValidator base){
+	V2(AbstractValidator base, IProject project){
 		_validator = base;
+		_project = project;
 		base.setParent(this);
-		setDelegatingId(ValidatorDelegatesRegistry.getInstance().getDefaultDelegate(getValidatorClassname()));
+		try {
+			setDelegatingId(ConfigurationManager.getManager().getConfiguration(project)
+				.getDelegateForTarget(getValidatorClassname()));
+		}
+		catch (InvocationTargetException e){
+			ValidationPlugin.getPlugin().handleException(e);
+		}
 	}
 
 	public synchronized void add(FilterGroup fg) {
@@ -574,7 +595,7 @@ public final static class V2 extends Validator implements IAdaptable {
 	}
 	
 	public Validator copy() {
-		V2 v = new V2(_validator);
+		V2 v = new V2(_validator, _project);
 		v.copyLocal(this);
 		
 		FilterGroup[] groups = getGroups();
@@ -688,6 +709,7 @@ public final static class V2 extends Validator implements IAdaptable {
 		_name = name;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public ValidationResult validate(IResource resource, int kind, ValOperation operation, IProgressMonitor monitor) {
 		ValidationResult vr = null;
@@ -716,21 +738,52 @@ public final static class V2 extends Validator implements IAdaptable {
 			}
 			
 			ValidatorMessage[] msgs = vr.getMessages();
-			for (int i=0; i<msgs.length; i++){
-				ValidatorMessage m = msgs[i];
-				try {
-					IMarker marker = m.getResource().createMarker(m.getType());
-					marker.setAttributes(m.getAttributes());
+			if (sanityTest(msgs.length, resource)){
+				for (ValidatorMessage m : msgs){
+					try {
+						IMarker marker = m.getResource().createMarker(m.getType());
+						Map map = m.getAttributes();
+						if (map.get(ValidatorMessage.ValidationId) == null)
+							map.put(ValidatorMessage.ValidationId, getId());
+						marker.setAttributes(map);
+					}
+					catch (CoreException e){
+						if (!m.getResource().exists())throw new ResourceUnavailableError(m.getResource());
+						ValidationPlugin.getPlugin().handleException(e);
+					}
 				}
-				catch (CoreException e){
-					if (!m.getResource().exists())throw new ResourceUnavailableError(m.getResource());
-					ValidationPlugin.getPlugin().handleException(e);
-				}
+			}
+			else {
+				setBuildValidation(false);
+				setManualValidation(false);
 			}
 		}
 		return vr;		
 	}
 	
+	/**
+	 * Perform a simple sanity test to ensure that the validator is configured correctly.
+	 * @param numberofMessages number of messages that the validator produced.
+	 * @return true if the test passed
+	 */
+	private boolean sanityTest(int numberofMessages, IResource resource) {
+		//FIXME make this more general and configurable
+		if (numberofMessages < 201)return true;
+		
+		String resName = ""; //$NON-NLS-1$
+		if (resource != null)resName = resource.getName();
+		String message = NLS.bind(ValMessages.ConfigError, new Object[]{
+				getName(), getId(), String.valueOf(numberofMessages), resName});
+		ValidationPlugin.getPlugin().logMessage(IStatus.ERROR, message);
+		
+		return false;
+	}
+
+	/**
+	 * If the validator is using a report helper then update it with any of the messages that were
+	 * added directly to the validation result.
+	 * @param vr
+	 */
 	private void updateResults(ValidationResult vr) {
 		ReporterHelper rh = vr.getReporterHelper();
 		if (rh == null)return;

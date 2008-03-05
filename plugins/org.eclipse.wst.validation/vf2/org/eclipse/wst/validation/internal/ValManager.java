@@ -87,11 +87,11 @@ public class ValManager implements IValChangedListener {
 	 * @return
 	 */
 	public Validator[] getValidators(IProject project) throws ProjectUnavailableError {
-		if (project == null)return getValidators();
-		if (!getGlobalPreferences().getOverride())return getValidators();
+		if (project == null)return getValidators2(null);
+		if (!getGlobalPreferences().getOverride())return getValidators2(null);
 		
 		ProjectPreferences pp = getProjectPreferences(project);
-		if (pp == null || !pp.getOverride())return getValidators();
+		if (pp == null || !pp.getOverride())return getValidators2(null);
 		return pp.getValidators();		
 	}
 	
@@ -457,11 +457,14 @@ public class ValManager implements IValChangedListener {
 		if (ValidationPlugin.getPlugin().isDebugging()){
 			String msg = time != 0 ? 
 				NLS.bind(ValMessages.LogValEndTime,	new Object[]{validator.getName(), 
-					validator.getId(), resource, String.valueOf(System.currentTimeMillis()-time)}) :
+					validator.getId(), resource, Misc.getTimeMS(System.currentTimeMillis()-time)}) :
 				NLS.bind(ValMessages.LogValEnd, validator.getName(), resource);
 			Tracing.log(msg);
 		}
-		operation.getResult().mergeResults(vr);				
+		if (vr != null){
+			operation.getResult().mergeResults(vr);
+			if (vr.getSuspendValidation() != null)operation.suspendValidation(vr.getSuspendValidation(), validator);
+		}
 	}
 	
 	private void deleteMarkers(IResource resource){

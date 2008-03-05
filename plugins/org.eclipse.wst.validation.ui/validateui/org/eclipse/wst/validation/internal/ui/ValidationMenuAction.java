@@ -96,7 +96,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	 * @return null if there is no selection.
 	 */
 	private Map<IProject, Set<IResource>> loadSelected(ValidateAction action) {
-		// GRK this used to not do a clear, but I couldn't understand why that would be so I am forcing a clear
+		// GRK previously this did not do a clear, but I couldn't understand why that would be so I am forcing a clear
 		// GRK In my testing, not doing a clear caused duplicate validations
 		_selectedResources.clear();
 		if ((_currentSelection == null) || _currentSelection.isEmpty() || 
@@ -219,10 +219,10 @@ public class ValidationMenuAction implements IViewActionDelegate {
 	}
 
 	/**
-	 * The delegating action has been performed. Implement this method to do the actual work.
+	 * The delegating action has been invoked. This method does the actual work.
 	 * 
 	 * @param action
-	 *            action proxy that handles the presentation portion of the plug-in action
+	 *            Action proxy that handles the presentation portion of the plug-in action.
 	 */
 	public void run(IAction action) {
 		ValidateAction vaction = null;

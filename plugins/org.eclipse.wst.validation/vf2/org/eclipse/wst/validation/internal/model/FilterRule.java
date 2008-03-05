@@ -68,9 +68,10 @@ public abstract class FilterRule implements IAdaptable {
 		return pn;
 	}
 	
-	public static FilterRule createContentType(String contentType){
+	public static FilterRule createContentType(String contentType, boolean exactMatch){
 		ContentType ct = new ContentType();
 		ct.setData(contentType);
+		ct.setExactMatch(exactMatch);
 		return ct;
 	}
 	
@@ -353,9 +354,14 @@ public abstract class FilterRule implements IAdaptable {
 	
 	public static class ContentType extends FilterRule {
 		
+		private IContentType 	_type;
+		private boolean			_exactMatch = true;
+		
 		public FilterRule copy() {
 			ContentType rule = new ContentType();
 			rule._pattern = _pattern;
+			rule._type = _type;
+			rule._exactMatch = _exactMatch;
 			return rule;
 		}
 		
@@ -366,12 +372,35 @@ public abstract class FilterRule implements IAdaptable {
 		public String getDisplayableType() {
 			return ValMessages.RuleContentType;
 		}
+		
+		@Override
+		public void load(Preferences rid) {
+			_exactMatch = rid.getBoolean(PrefConstants.exactMatch, true);
+			super.load(rid);
+		}
+		
+		@Override
+		public void save(Preferences rid) {
+			rid.putBoolean(PrefConstants.exactMatch, _exactMatch);
+			super.save(rid);
+		}
 
 		public void setData(IConfigurationElement rule) {
-			_pattern = rule.getAttribute(ExtensionConstants.RuleAttrib.id);
+			setData(rule.getAttribute(ExtensionConstants.RuleAttrib.id));
+			boolean exactMatch = true;
+			String exact = rule.getAttribute(ExtensionConstants.RuleAttrib.exactMatch);
+			if (ExtensionConstants.False.equals(exact)) exactMatch = false;
+			setExactMatch(exactMatch);
+		}
+		
+		@Override
+		public void setData(String pattern) {
+			_pattern = pattern;
+			_type = Platform.getContentTypeManager().getContentType(pattern);
 		}
 		
 		public Boolean matchesResource(IResource resource) {
+			if (_type == null)return Boolean.FALSE;
 			try {
 				if (resource instanceof IFile) {
 					IFile file = (IFile) resource;
@@ -379,7 +408,10 @@ public abstract class FilterRule implements IAdaptable {
 					if (cd == null)return Boolean.FALSE;
 					IContentType ct = cd.getContentType();
 					if (ct == null)return Boolean.FALSE;
-					boolean match = _pattern.equals(ct.getId());
+					boolean match = false;
+					if (_exactMatch)match = ct.getId().equals(_type.getId());
+					else match = ct.isKindOf(_type);
+					
 					if (match && Tracing.isTraceMatches())Tracing.log(toString() + " has matched " + resource); //$NON-NLS-1$
 					return match;
 				}
@@ -388,6 +420,25 @@ public abstract class FilterRule implements IAdaptable {
 				if(Tracing.isLogging())ValidationPlugin.getPlugin().handleException(e);
 			}
 			return Boolean.FALSE;
+		}
+
+		/**
+		 * Should the content type match exactly, or should sub types be
+		 * included as well?
+		 * 
+		 * @param exactMatch
+		 *            If true this rule will only match this specific content
+		 *            type. If false this rule will match this content type and
+		 *            any of it's sub types.
+		 */
+		public void setExactMatch(boolean exactMatch) {
+			_exactMatch = exactMatch;
+		}
+		
+		@Override
+		public String toString() {
+			if (_exactMatch)return NLS.bind(ValMessages.ContentTypeExact, getDisplayableType(), _pattern);
+			return NLS.bind(ValMessages.ContentTypeNotExact, getDisplayableType(), _pattern);
 		}
 		
 	}

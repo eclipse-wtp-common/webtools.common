@@ -73,7 +73,11 @@ public class PerformanceMonitor implements IPerformanceMonitor {
 	public static class Counters{
 		String	name;
 		int 	numberInvocations;
+		
+		/** Elapsed time in milliseconds. */
 		long	elapsedTime;
+		
+		/** CPU time in nanoseconds, or -1 if unknown. */
 		long	cpuTime;		
 	}
 	
@@ -92,7 +96,7 @@ public class PerformanceMonitor implements IPerformanceMonitor {
 			try {
 				PrintWriter pw = getWriter();
 				pw.println(pc.getValidatorId() + Comma + pc.getNumberInvocations() +
-						Comma+pc.getElapsedTime()+Comma+pc.getCpuTime());
+					Comma+pc.getElapsedTime()+Comma+pc.getCpuTime());
 				pw.flush();
 			}
 			catch (IOException e){

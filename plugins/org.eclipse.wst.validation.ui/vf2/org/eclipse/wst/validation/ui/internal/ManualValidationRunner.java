@@ -31,14 +31,20 @@ public class ManualValidationRunner extends WorkspaceJob {
 	/**
 	 * Validate the selected projects and/or resources.
 	 * 
-	 * @param projects The selected projects. The key is an IProject and the value is the Set of
-	 * IResources that were selected. Often this will be every resource in the project.
+	 * @param projects
+	 *            The selected projects. The key is an IProject and the value is
+	 *            the Set of IResources that were selected. Often this will be
+	 *            every resource in the project.
 	 * 
-	 * @param isManual is this a manual validation?
+	 * @param isManual
+	 *            Is this a manual validation?
 	 * 
-	 * @param isBuild is this a build based validation?
+	 * @param isBuild
+	 *            Is this a build based validation?
 	 * 
-	 * @param showResults when the validation is finished, show the results in a dialog box.
+	 * @param showResults
+	 *            When the validation is finished, show the results in a dialog
+	 *            box.
 	 */
 	public static void validate(Map<IProject, Set<IResource>> projects, boolean isManual, 
 			boolean isBuild, boolean showResults){
