@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+    <extension
+         point="org.eclipse.wst.validation.validatorV2"
+         id="Test1" name="%Test1.Validator.Name">
+      <validator
+            build="true"
+            class="org.eclipse.wst.validation.tests.TestValidator">
+         <include>
+            <rules>
+               <fileext
+                     ext="test1">
+               </fileext>
+            </rules>
+         </include>
+      </validator>
+   </extension>
+   <extension
+         point="org.eclipse.wst.validation.validatorV2"
+         id="Test2" name="%Test2.Validator.Name">
+      <validator
+            class="org.eclipse.wst.validation.tests.TestValidator2">
+         <include>
+            <rules>
+               <fileext
+                     ext="jsp">
+               </fileext>
+               <file
+                     name="somefile.txt"
+                     type="file">
+               </file>
+               <fileext
+                     ext="jspx">
+               </fileext>
+               <fileext
+                     ext="java">
+               </fileext>
+               <fileext
+                     ext="test2">
+               </fileext>
+            </rules>
+         </include>
+         <include>
+            <rules>
+               <projectNature id="org.eclipse.sample" />
+               <facet id="com.ibm.vf.test.facet2"/>
+            </rules>
+         </include>
+         <include>
+            <rules>
+               <contentType
+                     id="com.ibm.vf.test.contentType2">
+               </contentType>
+            </rules>
+         </include>
+         <exclude>
+            <rules>
+               <facet
+                     id="org.eclipse.wst.wid.facet">
+               </facet>
+            </rules>
+         </exclude>         
+         <messageCategory id="bad" label="%Message.bad" severity="error"/>
+         <messageCategory id="sortof" label="%Message.sortof" severity="warning"/>
+         <messageCategory id="nice" label="%Message.nice" severity="ignore"/>
+         <messageCategory id="long" label="%Message.long" severity="ignore"/>
+         
+      </validator>
+   </extension>
+   
+   <extension
+         point="org.eclipse.wst.validation.validatorV2"
+         id="Test3" name="%Test3.Validator.Name">
+      <validator
+            build="true"
+            class="org.eclipse.wst.validation.tests.TestValidator3"
+            manual="true">
+         <include>
+            <rules>
+               <fileext
+                     ext="html">
+               </fileext>
+               <fileext
+                     ext="htm">
+               </fileext>
+            </rules>
+         </include>
+      </validator>
+   </extension>
+   
+   <extension
+         point="org.eclipse.wst.validation.validatorV2"
+         id="Test4" name="%Test4.Validator.Name">
+      <validator
+            build="true"
+            class="org.eclipse.wst.validation.tests.TestValidator4">
+         <include>
+            <rules>
+               <fileext
+                     ext="test4">
+               </fileext>
+            </rules>
+         </include>
+      </validator>
+   </extension>
+   <extension id="Test5" name="%Test5.Validator.Name" point="org.eclipse.wst.validation.validatorV2">
+      <validator class="org.eclipse.wst.validation.tests.TestValidator5">
+         <include>
+            <rules>
+               <fileext
+                     ext="test5">
+               </fileext>
+            </rules>
+         </include>
+      </validator>
+   </extension>
+   <extension
+         point="org.eclipse.wst.validation.validatorDelegates">
+      <delegate
+            class="org.eclipse.wst.validation.tests.TestValidator5D"
+            name="%Test5D.Validator.Name"
+            target="org.eclipse.wst.validation.tests.TestValidator5">
+      </delegate>
+   </extension>
+   <extension
+         id="Test6"
+         name="%Test6.Validator.Name"
+         point="org.eclipse.wst.validation.validatorV2">
+      <validator
+            class="org.eclipse.wst.validation.tests.TestValidator6">
+         <include>
+            <rules>
+               <contentType id="org.eclipse.core.runtime.xml"></contentType>
+               <contentType id="org.eclipse.wst.xml.core.xmlsource"></contentType>
+               <contentType id="org.eclipse.wst.xml.core.xslsource"></contentType>
+               <contentType id="org.eclipse.jst.jsp.core.tldsource"></contentType>
+            </rules>
+         </include>
+         <exclude>
+            <rules>
+               <file
+                     caseSensitive="true"
+                     name=".project"
+                     type="file">
+               </file>
+            </rules>
+         </exclude>
+      </validator>
+   </extension>
+ 
+</plugin>
