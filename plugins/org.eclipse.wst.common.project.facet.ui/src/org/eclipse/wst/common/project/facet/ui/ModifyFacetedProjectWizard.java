@@ -708,6 +708,7 @@ public class ModifyFacetedProjectWizard
             newFacetPages.toArray( this.facetPages );
             
             this.pageContainer.layout( true, true );
+            getContainer().updateButtons();
         }
     }
     
