@@ -108,7 +108,7 @@
   </extension>
   
   <extension point="org.eclipse.wst.common.project.facet.ui.images">
-    <image facet="jst.java" path="images/java-face.gif"/>
+    <image facet="jst.java" path="images/java-facet.gif"/>
   </extension>
   
   <extension point="org.eclipse.wst.common.project.facet.core.listeners">
