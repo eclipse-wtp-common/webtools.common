@@ -19,6 +19,7 @@ package org.eclipse.wst.common.internal.emfworkbench.integration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +34,9 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.ILock;
 import org.eclipse.emf.common.util.URI;
@@ -59,6 +62,60 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	private static final String JAVA_EXTENSION = "java"; //$NON-NLS-1$
 	private Set recentlySavedFiles = new HashSet();
 	private Map ignoredFilesCache = new HashMap();
+	private class SavedFileKey {
+		private Resource res;
+		private IFile savedFile;
+		public SavedFileKey(Resource res, IFile savedFile) {
+			super();
+			this.res = res;
+			this.savedFile = savedFile;
+		}
+		public Resource getRes() {
+			return res;
+		}
+		public void setRes(Resource res) {
+			this.res = res;
+		}
+		public IFile getSavedFile() {
+			return savedFile;
+		}
+		public void setSavedFile(IFile savedFile) {
+			this.savedFile = savedFile;
+		}
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result + ((res == null) ? 0 : res.hashCode());
+			result = prime * result + ((savedFile == null) ? 0 : savedFile.hashCode());
+			return result;
+		}
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			SavedFileKey other = (SavedFileKey) obj;
+			if (!getOuterType().equals(other.getOuterType()))
+				return false;
+			if (res == null) {
+				if (other.res != null)
+					return false;
+			} else if (!res.equals(other.res))
+				return false;
+			if (savedFile == null) {
+				if (other.savedFile != null)
+					return false;
+			} else if (!savedFile.equals(other.savedFile))
+				return false;
+			return true;
+		}
+		private ResourceSetWorkbenchEditSynchronizer getOuterType() {
+			return ResourceSetWorkbenchEditSynchronizer.this;
+		}
+	}
 
 	/** The emf resources to be removed from the resource set as a result of a delta */
 	protected List deferredRemoveResources = new ArrayList();
@@ -262,64 +319,81 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	 */
 	protected boolean addedResource(IFile aFile) {
         boolean didProcess = false;
-        Resource resource = getResource(aFile);
-        if ((resource != null) || (recentlySavedFiles.contains(resource))){
-                /*
-                 * The IFile was just added to the workspace but we have a resource
-                 * in memory.  Need to decide if it should be unloaded.
-                 */
-                if (resource.isModified()) {
-                        if (WorkbenchResourceHelper.isReferencedResource(resource)) {
-                                ReferencedResource refRes = (ReferencedResource) resource;
-                                if (refRes.shouldForceRefresh()) {
-                                        deferredUnloadResources.add(resource);
-                                        didProcess = true;
-                                }
-                        }
-                } else {
-                        /*Unload if found and is not modified but inconsistent.*/
-                	if (resource.isLoaded()) {
-                		if ( WorkbenchResourceHelper.isReferencedResource(resource)) {
-                			if (!WorkbenchResourceHelper.isConsistent((ReferencedResource)resource)) {
-                				deferredUnloadResources.add(resource);
-                				didProcess = true;
-                			}
-                		} else {
-                			deferredUnloadResources.add(resource);
-            				didProcess = true;
-                		}	
-                	}
-                }
-        } else {                
-                //Process resource as a refresh.
-                URI uri = URI.createPlatformResourceURI(aFile.getFullPath().toString());
-                if ((autoloadResourcesURIs.contains(uri)) || (autoloadResourcesExts.contains(aFile.getFileExtension()))) {
-                        deferredLoadResources.add(uri);
-                        didProcess = true;
-                }
-        }
+        List resources = getResources(aFile);
+        for (Iterator iterator = resources.iterator(); iterator.hasNext();) {
+			Resource resource = (Resource) iterator.next();
+
+			if ((resource != null) || (recentlySavedFilesContains(resource))) {
+				/*
+				 * The IFile was just added to the workspace but we have a
+				 * resource in memory. Need to decide if it should be unloaded.
+				 */
+				if (resource.isModified()) {
+					if (WorkbenchResourceHelper.isReferencedResource(resource)) {
+						ReferencedResource refRes = (ReferencedResource) resource;
+						if (refRes.shouldForceRefresh()) {
+							deferredUnloadResources.add(resource);
+							didProcess = true;
+						}
+					}
+				} else {
+					/* Unload if found and is not modified but inconsistent. */
+					if (resource.isLoaded()) {
+						if (WorkbenchResourceHelper.isReferencedResource(resource)) {
+							if (!WorkbenchResourceHelper.isConsistent((ReferencedResource) resource)) {
+								deferredUnloadResources.add(resource);
+								didProcess = true;
+							}
+						} else {
+							deferredUnloadResources.add(resource);
+							didProcess = true;
+						}
+					}
+				}
+			} else {
+				// Process resource as a refresh.
+				URI uri = URI.createPlatformResourceURI(aFile.getFullPath().toString());
+				if ((autoloadResourcesURIs.contains(uri)) || (autoloadResourcesExts.contains(aFile.getFileExtension()))) {
+					deferredLoadResources.add(uri);
+					didProcess = true;
+				}
+			}
+		}
         return didProcess;
 }
 
-	protected boolean processResource(IFile aFile, boolean isRemove) {
-		Resource resource = getResource(aFile);
-		if ((resource != null) || (recentlySavedFiles.contains(resource))){
-			if (resource.isModified()) {
-				if (WorkbenchResourceHelper.isReferencedResource(resource)) {
-					ReferencedResource refRes = (ReferencedResource) resource;
-					if (!refRes.shouldForceRefresh())
-						return false; //Do not do anything
-				} else
-					return false;
+	private synchronized boolean recentlySavedFilesContains(Resource resource) {
+		for (Iterator iterator = recentlySavedFiles.iterator(); iterator.hasNext();) {
+			SavedFileKey key = (SavedFileKey) iterator.next();
+			if (key.res.equals(resource)) 
+				return true;
 			}
-			
-			if (isRemove)
-				deferredRemoveResources.add(resource);
-			else if (resource.isLoaded()) {
-        		if ( WorkbenchResourceHelper.isReferencedResource(resource)) {
-        			if(!WorkbenchResourceHelper.isConsistent((ReferencedResource)resource)) 
-        				deferredUnloadResources.add(resource);
-        		} else deferredUnloadResources.add(resource);
+		return false;
+	}
+
+	protected boolean processResource(IFile aFile, boolean isRemove) {
+		List resources = getResources(aFile);
+        for (Iterator iterator = resources.iterator(); iterator.hasNext();) {
+			Resource resource = (Resource) iterator.next();
+			if ((resource != null) || (recentlySavedFilesContains(resource))) {
+				if (resource.isModified()) {
+					if (WorkbenchResourceHelper.isReferencedResource(resource)) {
+						ReferencedResource refRes = (ReferencedResource) resource;
+						if (!refRes.shouldForceRefresh())
+							continue; // Do not do anything
+					} else
+						continue;
+				}
+
+				if (isRemove)
+					deferredRemoveResources.add(resource);
+				else if (resource.isLoaded()) {
+					if (WorkbenchResourceHelper.isReferencedResource(resource)) {
+						if (!WorkbenchResourceHelper.isConsistent((ReferencedResource) resource))
+							deferredUnloadResources.add(resource);
+					} else
+						deferredUnloadResources.add(resource);
+				}
 			}
 		}
 		return false;
@@ -350,6 +424,25 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 		
 		return resourceSet.getResource(URI.createPlatformResourceURI(aFile.getFullPath().toString()), false);
 	}
+	
+	protected List getResources(IFile aFile) {
+		
+		List resources = new ArrayList();
+		List allResources = resourceSet.getResources();
+		for (Iterator iterator = allResources.iterator(); iterator.hasNext();) {
+			Resource res = (Resource) iterator.next();
+			URI resURI = res.getURI();
+			IPath resURIPath;
+			if (WorkbenchResourceHelper.isPlatformResourceURI(resURI)) 
+				resURIPath = new Path(URI.decode(resURI.path())).removeFirstSegments(2);
+			else 
+				resURIPath = new Path(URI.decode(resURI.path())).removeFirstSegments(1);
+			String resURIString = resURIPath.toString();
+			if (aFile.getFullPath().toString().indexOf(resURIString) != -1)
+				resources.add(res);
+		}
+		return resources;
+	}
 
 
 	/**
@@ -357,9 +450,23 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	 */
 	public void preSave(IFile aFile) {
 		if (aFile != null) {
-			recentlySavedFiles.add(aFile);
+			recentlySavedFilesAdd(aFile,null);
 			ignoredFilesCache.remove(aFile);
 		}
+	}
+	
+	/**
+	 * This method should be called prior to writing to an IFile from a MOF resource.
+	 */
+	public void preSave(IFile aFile, Resource res) {
+		if (aFile != null) {
+			recentlySavedFilesAdd(aFile, res);
+			ignoredFilesCache.remove(aFile);
+		}
+	}
+
+	private synchronized boolean recentlySavedFilesAdd(IFile file, Resource res) {
+		return recentlySavedFiles.add(new SavedFileKey(res, file));
 	}
 
 	/**
@@ -367,9 +474,38 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	 */
 	public void removeFromRecentlySavedList(IFile aFile) {
 		if (aFile != null) {
-			recentlySavedFiles.remove(aFile);
+			recentlySavedFilesForceRemove(aFile);
 			ignoredFilesCache.remove(aFile);
 		}
+	}
+
+	private synchronized boolean recentlySavedFilesRemove(IFile file) {
+		
+		boolean removedFromList = false;
+		for (Iterator iterator = recentlySavedFiles.iterator(); iterator.hasNext();) {
+			SavedFileKey key = (SavedFileKey) iterator.next();
+			if (key.savedFile != null && key.savedFile.equals(file)) {
+				List resources = getResources(file);
+				if (resources.contains(key.res)) {
+					iterator.remove();
+					removedFromList = true;
+					break;
+				}
+			}
+		}
+		return removedFromList;
+	}
+	private synchronized boolean recentlySavedFilesForceRemove(IFile file) {
+		
+		boolean removedFromList = false;
+		for (Iterator iterator = recentlySavedFiles.iterator(); iterator.hasNext();) {
+			SavedFileKey key = (SavedFileKey) iterator.next();
+			if (key.savedFile != null && key.savedFile.equals(file)) {
+					iterator.remove();
+					removedFromList = true;
+			}
+		}
+		return removedFromList;
 	}
 
 	/**
@@ -396,9 +532,9 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 		String extension = aFile.getFileExtension();
 		if (CLASS_EXTENSION.equals(extension) || JAVA_EXTENSION.equals(extension))
 			return false;
-		if (recentlySavedFiles.remove(aFile)) {
-			cacheIgnored(aFile);
-			return false;
+		if (recentlySavedFilesRemove(aFile)) {
+				cacheIgnored(aFile);
+				return false;
 		}
 		return !hasIgnored(aFile);
 	}
