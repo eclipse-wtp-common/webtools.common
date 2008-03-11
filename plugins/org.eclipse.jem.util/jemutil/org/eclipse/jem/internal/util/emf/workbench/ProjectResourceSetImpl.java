@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.18 $$  $$Date: 2008/02/22 13:48:16 $$ 
+ *  $$Revision: 1.19 $$  $$Date: 2008/03/11 22:27:44 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -347,6 +347,7 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 	    
 	    URIConverter theURIConverter = getURIConverter();
 	    URI normalizedURI = theURIConverter.normalize(uri);
+	    List resourcesToRemove = new ArrayList();
 	    for (Resource resource : getResources())
 	    {
 	      if (theURIConverter.normalize(resource.getURI()).equals(normalizedURI)) {
@@ -363,20 +364,32 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 		        } 
 		        return resource;
 	    	} else  {// content type is known
+	    		boolean resourceExists = false;
+	    		IFile file = getPlatformFile(resource);
+	    		if (file != null)
+	    			resourceExists = file.exists();
 	    		String resourceContentTypeID = getContentTypeID(resource);
 	    		String uriContentTypeID = getContentTypeName(uri);
 	    		String existingMapKeyType = (findKey(resource) != null) ? getContentTypeName(findKey(resource)) : null;
 	    		if((!map.containsValue(resource) || ((map.get(uri) != null) && map.get(uri).equals(resource))) // existing resource  with alternate mapping doesn't exist in map
-	    			|| existingMapKeyType == null || ((resourceContentTypeID != null && resourceContentTypeID.equals(uriContentTypeID)))) {
+	    			||  ((resourceContentTypeID != null && resourceContentTypeID.equals(uriContentTypeID)))) {
 						if (loadOnDemand && !resource.isLoaded()) {
 							demandLoadHelper(resource);
 						} // if embedded uri content type is different than resource content type, continue searching
 						if (resourceContentTypeID != null
-								&& uriContentTypeID != null
-								&& ((!resourceContentTypeID.equals(uriContentTypeID)) || (existingMapKeyType != null && !existingMapKeyType
-										.equals(uriContentTypeID))))
+								&& uriContentTypeID != null) {
+							if ((!resourceContentTypeID.equals(uriContentTypeID)) || (existingMapKeyType != null && !existingMapKeyType
+									.equals(uriContentTypeID)))
+								continue;
+							else if (existingMapKeyType == null && !resourceExists) {
+								resourcesToRemove.add(resource);
+								continue;
+							}
+						} else if (uriContentTypeID != null && resourceContentTypeID == null && !resourceExists) {
+							resourcesToRemove.add(resource);
 							continue;
-
+						}
+								
 						if (map != null && (map.get(uri) == null)) {
 							map.put(uri, resource);
 						}
@@ -385,7 +398,8 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 	    	}
 	      }
 	    }
-	    
+	    // Cleanup invalid resources
+	    getResources().removeAll(resourcesToRemove);
 	    Resource delegatedResource = delegatedGetResource(uri, loadOnDemand);
 	    if (delegatedResource != null)
 	    {
@@ -403,13 +417,15 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 	      {
 	        throw new RuntimeException("Cannot create a resource for '" + uri + "'; a registered resource factory is needed");
 	      }
-
-	      demandLoadHelper(resource);
-
+	      
 	      if (map != null)
 	      {
 	        map.put(uri, resource);
-	      }      
+	      }  
+
+	      demandLoadHelper(resource);
+
+	          
 	      return resource;
 	    }
 
