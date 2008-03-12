@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: ProjectResourceSetImpl.java,v $$
- *  $$Revision: 1.19 $$  $$Date: 2008/03/11 22:27:44 $$ 
+ *  $$Revision: 1.20 $$  $$Date: 2008/03/12 14:21:40 $$ 
  */
 package org.eclipse.jem.internal.util.emf.workbench;
 
@@ -103,6 +103,7 @@ public class ProjectResourceSetImpl extends ResourceSetImpl implements FlexibleP
 	}
 
 	private boolean detectURIMapping(URI uri) {
+		if (uri == null) return false;
 		return !(((URIConverterImpl.URIMap)getURIConverter().getURIMap()).getURI(uri).equals(uri));
 	}
 	/**

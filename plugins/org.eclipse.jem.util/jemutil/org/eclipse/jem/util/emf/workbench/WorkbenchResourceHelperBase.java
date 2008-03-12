@@ -10,7 +10,7 @@
  *******************************************************************************/
 /*
  *  $$RCSfile: WorkbenchResourceHelperBase.java,v $$
- *  $$Revision: 1.5 $$  $$Date: 2006/08/09 15:40:22 $$ 
+ *  $$Revision: 1.6 $$  $$Date: 2008/03/12 14:21:39 $$ 
  */
 package org.eclipse.jem.util.emf.workbench;
 
@@ -688,6 +688,7 @@ public class WorkbenchResourceHelperBase {
 	 * @since 1.0.0
 	 */
 	public static boolean isPlatformPluginResourceURI(URI uri) {
+		if (uri == null) return false;
 		return JEMUtilPlugin.PLATFORM_PROTOCOL.equals(uri.scheme()) && JEMUtilPlugin.PLATFORM_PLUGIN.equals(uri.segment(0));
 	}
 
