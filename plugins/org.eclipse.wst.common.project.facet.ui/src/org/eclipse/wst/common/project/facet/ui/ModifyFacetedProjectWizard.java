@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.wizard.IWizardContainer;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.osgi.util.NLS;
@@ -708,7 +709,13 @@ public class ModifyFacetedProjectWizard
             newFacetPages.toArray( this.facetPages );
             
             this.pageContainer.layout( true, true );
-            getContainer().updateButtons();
+            
+            final IWizardContainer wizardContainer = getContainer();
+            
+            if( wizardContainer.getCurrentPage() != null )
+            {
+                wizardContainer.updateButtons();
+            }
         }
     }
     
