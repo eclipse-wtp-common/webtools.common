@@ -60,6 +60,7 @@ import org.eclipse.wst.common.internal.emfworkbench.WorkbenchResourceHelper;
 public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSynchronizer implements IResourceDeltaVisitor {
 	private static final String CLASS_EXTENSION = "class"; //$NON-NLS-1$
 	private static final String JAVA_EXTENSION = "java"; //$NON-NLS-1$
+	private static final String JAVA_ARCHIVE = "jar"; //$NON-NLS-1$
 	private Set recentlySavedFiles = new HashSet();
 	private Map ignoredFilesCache = new HashMap();
 	private class SavedFileKey {
@@ -438,7 +439,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 			else 
 				resURIPath = new Path(URI.decode(resURI.path())).removeFirstSegments(1);
 			String resURIString = resURIPath.toString();
-			if (aFile.getFullPath().toString().indexOf(resURIString) != -1)
+			if (!resURIString.equals("") && aFile.getFullPath().toString().indexOf(resURIString) != -1)
 				resources.add(res);
 		}
 		return resources;
@@ -530,7 +531,7 @@ public class ResourceSetWorkbenchEditSynchronizer extends ResourceSetWorkbenchSy
 	 */
 	protected boolean isInterrestedInFile(IFile aFile) {
 		String extension = aFile.getFileExtension();
-		if (CLASS_EXTENSION.equals(extension) || JAVA_EXTENSION.equals(extension))
+		if (CLASS_EXTENSION.equals(extension) || JAVA_EXTENSION.equals(extension) || JAVA_ARCHIVE.equals(extension))
 			return false;
 		if (recentlySavedFilesRemove(aFile)) {
 				cacheIgnored(aFile);
