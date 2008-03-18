@@ -30,13 +30,20 @@ import org.eclipse.wst.validation.ValidatorMessage;
  * <li>warning - create a warning marker for this line
  * <li>info - create an info marker for this line
  * </ul>
+ * </p>
+ * <p>
+ * Include files contain the magic token map. For example the line "map t1error error" will
+ * cause occurrences of t1error to be mapped to error.
+ * </p>
  * @author karasiuk
  *
  */
 public class TestValidator extends AbstractValidator {
 	
+	private static final String SimpleName = "Test1";
+	
 	public static String id(){
-		return Activator.PLUGIN_ID +".Test1";
+		return Activator.PLUGIN_ID +"." + SimpleName;
 	}
 	
 	public ValidationResult validate(IResource resource, int kind, ValidationState state, IProgressMonitor monitor){
@@ -80,7 +87,7 @@ public class TestValidator extends AbstractValidator {
 			}
 			
 			if (severity != -1){
-				ValidatorMessage message = ValidatorMessage.create(line, resource);
+				ValidatorMessage message = ValidatorMessage.create(line + "(by " + SimpleName +")", resource);
 				message.setAttribute(IMarker.LINE_NUMBER, count);
 				message.setAttribute(IMarker.SEVERITY, severity);
 				vr.add(message);

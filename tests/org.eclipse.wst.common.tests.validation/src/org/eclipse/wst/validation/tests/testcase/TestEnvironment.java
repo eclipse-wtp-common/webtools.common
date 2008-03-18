@@ -84,10 +84,9 @@ public class TestEnvironment {
 		}
 	}
 
-	public IPath addFile(IPath folder, String fileName, String contents) throws CoreException, UnsupportedEncodingException {
+	public IFile addFile(IPath folder, String fileName, String contents) throws CoreException, UnsupportedEncodingException {
 		IPath filePath = folder.append(fileName);
-		createFile(filePath, contents.getBytes("UTF8"));
-		return filePath;
+		return createFile(filePath, contents.getBytes("UTF8"));
 	}
 
 	private IFile createFile(IPath filePath, byte[] contents) throws CoreException {
@@ -115,6 +114,14 @@ public class TestEnvironment {
 			_workspace.setDescription(wd);
 		}
 		
+	}
+	
+	public void turnOnAutoBuild() throws CoreException {
+		IWorkspaceDescription wd = _workspace.getDescription();
+		if (!wd.isAutoBuilding()){
+			wd.setAutoBuilding(true);
+			_workspace.setDescription(wd);
+		}		
 	}
 
 }

@@ -1,7 +1,7 @@
 package org.eclipse.wst.validation.tests;
 
 /**
- * Some misc counters.
+ * Some miscellaneous counters.
  * @author karasiuk
  *
  */
@@ -16,5 +16,11 @@ public class ValCounters {
 		startingProjectCount = 0;
 		finishedCount = 0;
 		finishedProjectCount = 0;
+	}
+	
+	@Override
+	public String toString() {
+		return "ValCounters: startingCount=" + startingCount + ", finishedCount="+finishedCount+
+			", startProjectCount="+startingProjectCount+", finishedProjectCount="+finishedProjectCount;
 	}
 }

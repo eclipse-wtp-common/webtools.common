@@ -9,6 +9,8 @@ import org.eclipse.wst.validation.ValidationState;
 
 /**
  * A slower validator. This validator takes at least 2 seconds to run.
+ * 
+ * It looks at files with a file extension of test4.
  * @author karasiuk
  *
  */

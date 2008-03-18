@@ -1,11 +1,16 @@
 package org.eclipse.wst.validation.tests.testcase;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.StringBufferInputStream;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -14,32 +19,38 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.wst.validation.IDependencyIndex;
 import org.eclipse.wst.validation.MessageSeveritySetting;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.ValidationResults;
 import org.eclipse.wst.validation.Validator;
+import org.eclipse.wst.validation.internal.Tracing;
 import org.eclipse.wst.validation.internal.ValConstants;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValPrefManagerGlobal;
+import org.eclipse.wst.validation.tests.Misc;
 import org.eclipse.wst.validation.tests.TestValidator;
 import org.eclipse.wst.validation.tests.TestValidator2;
 import org.eclipse.wst.validation.tests.TestValidator4;
 import org.eclipse.wst.validation.tests.TestValidator5D;
 import org.eclipse.wst.validation.tests.TestValidator6;
+import org.eclipse.wst.validation.tests.TestValidator7;
 import org.eclipse.wst.validation.tests.ValCounters;
 
-public class Framework extends TestCase {
+public class TestSuite1 extends TestCase {
 	
 	private TestEnvironment _env;
 	private IProject		_testProject;
 	
+	private IFile			_mapTest1;
+	
 	public static Test suite() {
-		return new TestSuite(Framework.class);
+		return new TestSuite(TestSuite1.class);
 	} 
 	
-	public Framework(String name){
+	public TestSuite1(String name){
 		super(name);
 	}
 	
@@ -57,7 +68,7 @@ public class Framework extends TestCase {
 		"t1error - extra error\nt1warning - extra warning");
 		_env.addFile(folder, "second.test1", "info - information\nwarning - warning\nerror - error\n\n" +
 			"t1error - extra error\nt1warning - extra warning");
-		_env.addFile(folder, "map.test1", "# will hold future mappings");
+		_mapTest1 = _env.addFile(folder, "map.test1", "# will hold future mappings");
 		_env.addFile(folder, "first.test2", "# sample file");
 		_env.addFile(folder, "third.test4", "# Doesn't really matter\nWe just want to make the build a bit slower.");
 		_env.addFile(folder, "fourth.test4", "# Doesn't really matter");
@@ -71,7 +82,7 @@ public class Framework extends TestCase {
 	private static void turnoffOtherValidators() {
 		Validator[] vals = ValManager.getDefault().getValidators();
 		for (Validator v : vals){
-			if (!v.getValidatorClassname().startsWith("org.eclipse.wst.validation.tests")){
+			if (!v.getValidatorClassname().startsWith("org.eclipse.wst.validation.tests.Test")){
 				v.setBuildValidation(false);
 				v.setManualValidation(false);
 			}
@@ -120,27 +131,33 @@ public class Framework extends TestCase {
 	}
 	
 	public void testTest1() throws CoreException, UnsupportedEncodingException, InterruptedException {
-		//FIXME need to implement this test again
-		if (1 == 1)return;
+		Tracing.log("testTest1 starting");
+		IProgressMonitor monitor = new NullProgressMonitor();
 		ValidationFramework vf = ValidationFramework.getDefault();
 		IProject[] projects = {_testProject};
-		ValidationResults vr = vf.validate(projects, true, false, new NullProgressMonitor());
+		/*
+		 * After the validation we expect first.test1 to have 1 error, 1 warning and 1 info. And for
+		 * second.test1 to have 1 error, 1 warning and 1 info. 
+		 */
+		ValidationResults vr = vf.validate(projects, true, false, monitor);
 		
 		IResource resource = _env.getWorkspace().getRoot().findMember("TestProject/source/first.test1");
 		checkFirstPass(resource, vr);
 		
 		// add a first build so that we know that only the map file has changed
 		_env.incrementalBuild();
-		ValidationFramework.getDefault().join(null);
+		vf.join(monitor);
 		
-		IPath folder = _env.addFolder(_testProject.getFullPath(), "source");
-		_env.addFile(folder, "map.test1", "# will hold future mappings");
+		ByteArrayInputStream in = new ByteArrayInputStream("map t1error error\nmap t1warning warning".getBytes());
+		_mapTest1.setContents(in, true, true, monitor);
 		
 		TestValidator4.getCounters().reset();
 		TestValidator5D.getCounters().reset();
 		_env.incrementalBuild();
-		ValidationFramework.getDefault().join(null);
+		vf.join(monitor);
+		
 		ValCounters vc = TestValidator4.getCounters();
+		Tracing.log("testTest1: " + vc.toString());
 		assertEquals(vc.startingCount, vc.finishedCount);
 		assertEquals(vc.startingProjectCount, vc.finishedProjectCount);
 		assertEquals(vc.startingCount, 1);
@@ -155,7 +172,8 @@ public class Framework extends TestCase {
 		assertTrue("We expect the delegating validator Test5D to be called at least once", 
 			TestValidator5D.getCalledCount()>0);
 		
-		checkSecondPass(resource);		
+		checkSecondPass(resource);	
+		Tracing.log("testTest1 finished");
 	}
 	
 	public void testTest2() {
@@ -207,6 +225,10 @@ public class Framework extends TestCase {
 		IResource projectFile = _testProject.findMember(".project");
 		assertFalse("We should not be validating the .product file", t6.getSet().contains(projectFile));
 		
+		v = vf.getValidator(TestValidator7.id(), null);
+		TestValidator7 t7 = (TestValidator7)v.asV2Validator().getValidator();
+		assertEquals("We expected the validation to be suspended after the first call", 1, t7.getSet().size());
+		
 		vf.suspendAllValidation(true);
 		_env.fullBuild();
 		vf.join(null);
@@ -257,9 +279,12 @@ public class Framework extends TestCase {
 				break;
 			}
 		}
+		if (Tracing.isLogging()){
+			Tracing.log("checkSecondPass: " + Misc.listMarkers(resource));
+		}
 		assertTrue("We expect there to be exactly two error messages, but errors=" + errors, errors == 2);
 		assertTrue("We expect there to be exactly two warning messages, but warnings="+warnings, warnings == 2);
-		assertTrue("We expect there to be exactly two info messages, but info="+info, info == 2);
+		assertTrue("We expect there to be exactly one info message, but info="+info, info == 1);
 	}
 
 }

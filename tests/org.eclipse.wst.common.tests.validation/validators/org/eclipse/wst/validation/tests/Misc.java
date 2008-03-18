@@ -7,6 +7,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
+
 /**
  * Some miscellaneous helper methods. 
  * @author karasiuk
@@ -34,6 +38,29 @@ public class Misc {
 		catch (IOException e){
 			// eat it
 		}		
+	}
+	
+	public static String listMarkers(IResource resource){
+		StringBuffer b = new StringBuffer(2000);
+		try {
+			IMarker[] markers = resource.findMarkers(null, true, IResource.DEPTH_ZERO);
+			for (IMarker m : markers){
+				Object o = m.getAttribute(IMarker.MESSAGE);
+				if (o != null){
+					b.append(o);
+				}
+				o = m.getAttribute(IMarker.SEVERITY);
+				if (o != null){
+					b.append(", Severity=");
+					b.append(o);
+				}
+				b.append("; ");
+			}
+		}
+		catch (CoreException e){
+			
+		}
+		return b.toString();
 	}
 	
 	/**
