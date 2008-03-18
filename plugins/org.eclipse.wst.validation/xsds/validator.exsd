@@ -60,7 +60,7 @@
                   The class that implements the validator.
                </documentation>
                <appinfo>
-                  <meta.attribute kind="java" basedOn="org.eclipse.wst.validation.ValidatorBase"/>
+                  <meta.attribute kind="java" basedOn="org.eclipse.wst.validation.AbstractValidator"/>
                </appinfo>
             </annotation>
          </attribute>
