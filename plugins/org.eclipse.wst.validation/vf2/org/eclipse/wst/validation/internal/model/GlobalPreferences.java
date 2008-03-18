@@ -15,7 +15,7 @@ public class GlobalPreferences {
 	public static final boolean DefaultConfirm = true;
 	
 	/** false - Default setting for letting projects override the global settings. */
-	public static final boolean DefaultOverride = false;
+	public static final boolean DefaultOverride = true;
 
 	private boolean _disableAllValidation = DefaultSuspend;
 	private boolean _saveAutomatically = DefaultAutoSave;
