@@ -1,7 +1,5 @@
 package org.eclipse.wst.validation.tests.testcase;
 
-import java.util.Map;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -13,8 +11,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -87,8 +83,8 @@ public class TestSuite2 extends TestCase {
 	
 	public void testFullBuild() throws CoreException, InterruptedException {
 		ValidationFramework vf = ValidationFramework.getDefault();
-		Listener listener = new Listener(_firstTest2x);
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+//		Listener listener = new Listener(_firstTest2x);
+//		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		try {
 //			workspace.addResourceChangeListener(listener);
 			_env.fullBuild();
@@ -125,16 +121,15 @@ public class TestSuite2 extends TestCase {
 			_interested = resource;
 		}
 
-		@SuppressWarnings("unchecked")
 		public void resourceChanged(IResourceChangeEvent event) {
 			IMarkerDelta[] markers = event.findMarkerDeltas(ValConstants.ProblemMarker, false);
 			for (IMarkerDelta marker : markers){
 				IResource resource = marker.getResource();
 				if (_interested.equals(resource)){
 					// added=1, removed=2, changed=4
-					int kind = marker.getKind();
-					Map map = marker.getAttributes();
-					int len = map.size();
+//					int kind = marker.getKind();
+//					Map map = marker.getAttributes();
+//					int len = map.size();
 				}
 			}
 		}

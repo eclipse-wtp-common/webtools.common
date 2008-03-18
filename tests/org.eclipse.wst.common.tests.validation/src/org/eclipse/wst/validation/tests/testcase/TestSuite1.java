@@ -1,9 +1,6 @@
 package org.eclipse.wst.validation.tests.testcase;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.StringBufferInputStream;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 
 import junit.framework.Test;
