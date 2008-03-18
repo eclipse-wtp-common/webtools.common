@@ -17,7 +17,10 @@ import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
 
@@ -91,6 +94,32 @@ public class Misc {
 		return NLS.bind(ValMessages.TimeMin, time/60000);
 	}
 
+	/**
+	 * Used in debugging so we can see what types of markers there are.
+	 * @param resource
+	 */
+	public static String listMarkers(IResource resource){
+		StringBuffer b = new StringBuffer(2000);
+		try {
+			IMarker[] markers = resource.findMarkers(null, true, IResource.DEPTH_ZERO);
+			for (IMarker m : markers){
+				Object o = m.getAttribute(IMarker.MESSAGE);
+				if (o != null){
+					b.append(o);
+				}
+				o = m.getAttribute(IMarker.SEVERITY);
+				if (o != null){
+					b.append(", Severity="); //$NON-NLS-1$
+					b.append(o);
+				}
+				b.append("; "); //$NON-NLS-1$
+			}
+		}
+		catch (CoreException e){
+			
+		}
+		return b.toString();
+	}
 	
 	public static void niy(String msg){
 		if (msg == null)msg = "Sorry, this function is not implemented yet"; //$NON-NLS-1$

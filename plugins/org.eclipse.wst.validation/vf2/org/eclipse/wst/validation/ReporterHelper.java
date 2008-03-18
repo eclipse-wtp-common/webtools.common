@@ -3,12 +3,8 @@ package org.eclipse.wst.validation;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.wst.validation.internal.ConfigurationConstants;
-import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
+import org.eclipse.wst.validation.internal.MarkerManager;
 import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 import org.eclipse.wst.validation.internal.provisional.core.IReporter;
 import org.eclipse.wst.validation.internal.provisional.core.IValidator;
@@ -58,26 +54,7 @@ public class ReporterHelper implements IReporter {
 	}
 	
 	public void makeMarkers(){
-		for (IMessage message : _list){
-			Object target = message.getTargetObject();
-			if (target != null){
-				if (target instanceof IResource){
-					IResource res = (IResource)target;
-					try {
-						IMarker marker = res.createMarker(ConfigurationConstants.VALIDATION_MARKER);
-						marker.setAttribute(IMarker.MESSAGE, message.getText());
-						int markerSeverity = IMarker.SEVERITY_INFO;
-						int sev = message.getSeverity();
-						if ((sev & IMessage.HIGH_SEVERITY) != 0)markerSeverity = IMarker.SEVERITY_ERROR;
-						else if ((sev & IMessage.NORMAL_SEVERITY) != 0)markerSeverity = IMarker.SEVERITY_WARNING;
-						marker.setAttribute(IMarker.SEVERITY, markerSeverity);
-						marker.setAttribute(IMarker.LINE_NUMBER, message.getLineNumber());
-					}
-					catch (CoreException e){
-						ValidationPlugin.getPlugin().handleException(e);
-					}
-				}
-			}
-		}
+		MarkerManager.getDefault().makeMarkers(_list);
 	}
+	
 }

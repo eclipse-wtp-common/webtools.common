@@ -389,7 +389,7 @@ public class ValManager implements IValChangedListener {
 	public void validate(IProject project, final IResource resource, final int kind, boolean isManual, 
 		boolean isBuild, int buildKind, ValOperation operation, final IProgressMonitor monitor) {
 		
-		deleteMarkers(resource);
+		MarkerManager.getDefault().deleteMarkers(resource, operation.getStarted());
 		
 		IValidatorVisitor visitor = new IValidatorVisitor(){
 
@@ -404,7 +404,15 @@ public class ValManager implements IValChangedListener {
 					IResource[] dependencies = ValidationFramework.getDefault()
 						.getDependencyIndex().get(validator.getDependencyId(), resource);
 					if (dependencies != null){
+						MarkerManager mm = MarkerManager.getDefault();
+						String id = validator.getId();
 						for (IResource resource : dependencies){
+							try {
+								mm.clearMarker(resource, id);
+							}
+							catch (CoreException e){
+								//eat this one
+							}
 							validate(validator, operation, resource, IResourceDelta.NO_CHANGE, monitor);
 							operation.addValidated(validator.getId(), resource);
 						}
@@ -454,7 +462,7 @@ public class ValManager implements IValChangedListener {
 				num, System.currentTimeMillis()-time, cpuTime);
 			pm.add(pc);
 		}
-		if (ValidationPlugin.getPlugin().isDebugging()){
+		if (ValidationPlugin.getPlugin().isDebugging() && !pm.isCollecting()){
 			String msg = time != 0 ? 
 				NLS.bind(ValMessages.LogValEndTime,	new Object[]{validator.getName(), 
 					validator.getId(), resource, Misc.getTimeMS(System.currentTimeMillis()-time)}) :
@@ -467,20 +475,6 @@ public class ValManager implements IValChangedListener {
 		}
 	}
 	
-	private void deleteMarkers(IResource resource){
-		try {
-			resource.deleteMarkers(ValConstants.ProblemMarker, false, IResource.DEPTH_ZERO);
-			resource.deleteMarkers(ConfigurationConstants.VALIDATION_MARKER, false, IResource.DEPTH_ZERO);
-		}
-		catch (CoreException e){
-			IProject project = resource.getProject();
-			if (!project.exists() || !project.isOpen())throw new ProjectUnavailableError(project);
-			if (!resource.exists())throw new ResourceUnavailableError(resource);
-			ValidationPlugin.getPlugin().handleException(e);
-		}
-		
-	}
-
 	/**
 	 * Accept a visitor for all the validators that are enabled for the given project.
 	 * 

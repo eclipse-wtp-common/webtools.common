@@ -84,6 +84,7 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 	}
 
 	public IStatus runInWorkspace(IProgressMonitor monitor) {
+		Tracing.log("ValBuilderJob Starting"); //$NON-NLS-1$
 		_monitor = monitor;
 		
 		try {		
@@ -101,6 +102,7 @@ public class ValBuilderJob extends WorkspaceJob implements IResourceDeltaVisitor
 			ValidationPlugin.getPlugin().handleException(e);
 		}
 		
+		Tracing.log("ValBuilderJob Finished"); //$NON-NLS-1$
 		return Status.OK_STATUS;
 	}
 

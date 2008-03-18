@@ -41,6 +41,13 @@ import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
  * This builder is configured on J2EE IProjects automatically, and can be added to other types of
  * projects through the Properties page. It launches validation on the project if the project has
  * build validation enabled.
+ * </p>
+ * <p>
+ * This launches a Job for the new V2 validators and also a Job for each of the Job based V1
+ * validators. If there are any "in-line" V1 validations they are done as part of this builder.
+ * Because of all the jobs that this builder spawns, the build will usually be finished long before
+ * all the validation has finished.
+ * </p>
  */
 public class ValidationBuilder extends IncrementalProjectBuilder {
 	public static final int NO_DELTA_CHANGE = -1;
@@ -227,8 +234,7 @@ public class ValidationBuilder extends IncrementalProjectBuilder {
 				break;
 		}
 		
-		Job job = new ValBuilderJob(project, delta, kind, ValOperationManager.getDefault().getOperation());
-		
+		Job job = new ValBuilderJob(project, delta, kind, ValOperationManager.getDefault().getOperation());		
 		job.schedule();
 	}
 	

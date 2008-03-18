@@ -29,6 +29,7 @@ public class ValMessages extends NLS {
 	public static String GroupExclude;
 	
 	public static String JobName;
+	public static String JobNameMonitor;
 	
 	public static String JobIndexSave;
 	

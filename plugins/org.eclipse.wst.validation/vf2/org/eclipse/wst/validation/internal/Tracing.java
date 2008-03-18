@@ -16,6 +16,7 @@ public class Tracing {
 	private static DateFormat 	_df = new SimpleDateFormat("HH:mm:ss.SSSS"); //$NON-NLS-1$
 	private static boolean		_forceLogging;
 	private static Boolean		_traceMatches;
+	private static Boolean		_traceV1;
 	
 	/**
 	 * Are we in logging/debugging mode?
@@ -29,6 +30,13 @@ public class Tracing {
 			_traceMatches = Misc.debugOptionAsBoolean(DebugConstants.TraceMatches);
 		}
 		return _traceMatches;
+	}
+	
+	public static boolean isTraceV1(){
+		if (_traceV1 == null){
+			_traceV1 = Misc.debugOptionAsBoolean(DebugConstants.TraceV1);
+		}
+		return _traceV1;
 	}
 
 	/**

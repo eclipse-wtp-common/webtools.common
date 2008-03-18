@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2001, 2007 IBM Corporation and others.
+ * Copyright (c) 2001, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -838,13 +838,13 @@ public abstract class ValidationOperation implements IWorkspaceRunnable, IHeadle
 				// Validation will run either if this operation forces regardless
 				// of need, or if the validator was not run automatically.
 				// If validation is not about to be run, then don't activate
-				// the plugin
+				// the plug-in
 				try {
 					delta = getFileDeltas(reporter.getProgressMonitor(), vmd);
 					boolean willRun = (isForce() || isValidationNecessary(vmd, delta));
-					if (Tracing.isLogging()) {
+					if (Tracing.isTraceV1()) {
 						StringBuffer buffer = new StringBuffer();
-						buffer.append("will run? "); //$NON-NLS-1$
+						buffer.append("ValidationOperation: will run? "); //$NON-NLS-1$
 						buffer.append(willRun);
 						buffer.append("  "); //$NON-NLS-1$
 						buffer.append("is force? "); //$NON-NLS-1$

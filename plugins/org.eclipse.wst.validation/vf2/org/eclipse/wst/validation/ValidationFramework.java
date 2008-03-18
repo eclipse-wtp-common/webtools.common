@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
@@ -22,9 +21,9 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.wst.validation.internal.DebugConstants;
 import org.eclipse.wst.validation.internal.DependencyIndex;
+import org.eclipse.wst.validation.internal.MarkerManager;
 import org.eclipse.wst.validation.internal.Misc;
 import org.eclipse.wst.validation.internal.PerformanceMonitor;
-import org.eclipse.wst.validation.internal.ValConstants;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValOperation;
 import org.eclipse.wst.validation.internal.ValidationRunner;
@@ -68,12 +67,7 @@ public final class ValidationFramework {
 	 * @param validatorId the id of validator that created the marker
 	 */
 	public void clearMessages(IResource resource, String validatorId) throws CoreException {
-		if (resource == null)return;
-		IMarker[] markers = resource.findMarkers(ValConstants.ProblemMarker, false, IResource.DEPTH_ZERO);
-		for (IMarker marker : markers){
-			String id = marker.getAttribute(ValidatorMessage.ValidationId, null);
-			if (validatorId.equals(id))marker.delete();
-		}
+		MarkerManager.getDefault().clearMarker(resource, validatorId);
 	}
 	
 	/**

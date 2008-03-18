@@ -137,7 +137,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		// projects have been added to the project natures which they don't exclude.
 		_validators.remove(EXCLUDED_PROJECT);
 
-		if (Tracing.isLogging()) {
+		if (Tracing.isTraceV1()) {
 			Tracing.log(debug());
 		}
 	}
@@ -494,7 +494,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		}
 
 		if (validator == null) {
-			if (Tracing.isLogging()) {
+			if (Tracing.isTraceV1()) {
 				Tracing.log(NLS.bind(ValMessages.VbfExcSyntaxNoValNull, validatorClassName));
 			}
 			return null;
@@ -739,7 +739,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		if (extensionPoint == null) {
 			// If this happens it means that someone removed the "validator" extension point
 			// declaration from our plugin.xml file.
-			if (Tracing.isLogging()) {
+			if (Tracing.isTraceV1()) {
 				String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_MISSING_VALIDATOR_EP),
 						new Object[]{ValidationPlugin.PLUGIN_ID + "." + VALIDATOR_EXT_PT_ID}); //$NON-NLS-1$
 				Tracing.log(result);		
@@ -802,7 +802,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		vmds.clear();
 		int executionMap = 0x0;
 		try {
-			if (Tracing.isLogging()) {
+			if (Tracing.isTraceV1()) {
 				Tracing.log("IProject is " + String.valueOf(project)); //$NON-NLS-1$
 			}
 			if (project == null) {
@@ -852,7 +852,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 
 			} else {
 				executionMap |= 0x8;
-				if (Tracing.isLogging()) {
+				if (Tracing.isTraceV1()) {
 					Tracing.log(projectNatures.toString());
 				}
 				calculateVmdsForNatureAndFacets(vmds, projectNatures,project);
@@ -864,7 +864,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 				}
 			}
 		} finally {
-			if (Tracing.isLogging()) {
+			if (Tracing.isTraceV1()) {
 				StringBuffer buffer = new StringBuffer();
 				for (ValidatorMetaData vmd : vmds) {
 					buffer.append(vmd.getValidatorUniqueName());
@@ -953,13 +953,13 @@ public final class ValidationRegistryReader implements RegistryConstants {
 	 * by the J2EE nature. The AValidator would have to be removed from the set.
 	 */
 	private void removeExcludedProjects(IProject project, Set<ValidatorMetaData> vmds) {
-		if (Tracing.isLogging()) {
+		if (Tracing.isTraceV1()) {
 			StringBuffer buffer = new StringBuffer("\nBefore:\n"); //$NON-NLS-1$
 			for (ValidatorMetaData vmd : vmds) {
 				buffer.append(vmd.getValidatorUniqueName());
 				buffer.append("\n"); //$NON-NLS-1$
 			}
-			Tracing.log(buffer.toString());
+			Tracing.log(buffer);
 		}
 
 		String[] projectNatures = null;
@@ -994,7 +994,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 			}
 		}
 
-		if (Tracing.isLogging()) {
+		if (Tracing.isTraceV1()) {
 			StringBuffer buffer = new StringBuffer("\nAfter:\n"); //$NON-NLS-1$
 			for (ValidatorMetaData vmd : vmds) {
 				buffer.append(vmd.getValidatorUniqueName());
@@ -1237,7 +1237,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 		vmd.setContentTypeIds(getContentTypeBindings(element));
 		initializeValidatorCustomMarkers(element, pluginId, vmd);
 		
-		if (Tracing.isLogging()) {
+		if (Tracing.isTraceV1()) {
 			Tracing.log("validator loaded: " + validatorImplName); //$NON-NLS-1$
 		}
 
@@ -1306,7 +1306,7 @@ public final class ValidationRegistryReader implements RegistryConstants {
 
 			String label = extension.getLabel();
 			if (label == null || label.equals("")) { //$NON-NLS-1$
-				if (Tracing.isLogging()) {
+				if (Tracing.isTraceV1()) {
 					String[] msgParm = {extension.getUniqueIdentifier()};
 					String result = MessageFormat.format(ResourceHandler.getExternalizedMessage(ResourceConstants.VBF_EXC_VALIDATORNAME_IS_NULL),
 							(Object[])msgParm);

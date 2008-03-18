@@ -9,7 +9,6 @@ import java.util.Map;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -17,7 +16,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
-import org.eclipse.wst.validation.internal.ResourceUnavailableError;
+import org.eclipse.wst.validation.internal.MarkerManager;
 import org.eclipse.wst.validation.internal.SummaryReporter;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValMessages;
@@ -560,8 +559,10 @@ public final static class V2 extends Validator implements IAdaptable {
 		_project = project;
 		base.setParent(this);
 		try {
-			setDelegatingId(ConfigurationManager.getManager().getConfiguration(project)
-				.getDelegateForTarget(getValidatorClassname()));
+			String target = getValidatorClassname();
+			String id = ConfigurationManager.getManager().getConfiguration(project).getDelegateForTarget(target);
+			if (id == null) id = ValidatorDelegatesRegistry.getInstance().getDefaultDelegate(target);
+			setDelegatingId(id);
 		}
 		catch (InvocationTargetException e){
 			ValidationPlugin.getPlugin().handleException(e);
@@ -709,7 +710,6 @@ public final static class V2 extends Validator implements IAdaptable {
 		_name = name;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public ValidationResult validate(IResource resource, int kind, ValOperation operation, IProgressMonitor monitor) {
 		ValidationResult vr = null;
@@ -739,18 +739,9 @@ public final static class V2 extends Validator implements IAdaptable {
 			
 			ValidatorMessage[] msgs = vr.getMessages();
 			if (sanityTest(msgs.length, resource)){
+				MarkerManager mm = MarkerManager.getDefault();
 				for (ValidatorMessage m : msgs){
-					try {
-						IMarker marker = m.getResource().createMarker(m.getType());
-						Map map = m.getAttributes();
-						if (map.get(ValidatorMessage.ValidationId) == null)
-							map.put(ValidatorMessage.ValidationId, getId());
-						marker.setAttributes(map);
-					}
-					catch (CoreException e){
-						if (!m.getResource().exists())throw new ResourceUnavailableError(m.getResource());
-						ValidationPlugin.getPlugin().handleException(e);
-					}
+					mm.createMarker(m, getId());
 				}
 			}
 			else {

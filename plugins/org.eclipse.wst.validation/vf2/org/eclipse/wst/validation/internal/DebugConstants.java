@@ -10,6 +10,9 @@ public interface DebugConstants {
 	/** timings - trace the times of the validators. */
 	String TraceTimes = ValidationPlugin.PLUGIN_ID+"/timings"; //$NON-NLS-1$
 	
+	/** v1 - trace the v1 validators. */
+	String TraceV1 = ValidationPlugin.PLUGIN_ID+"/v1"; //$NON-NLS-1$
+	
 	/** timings/tracefile - file that stores the trace events */
 	String TraceTimesFile = ValidationPlugin.PLUGIN_ID+"/timings/tracefile"; //$NON-NLS-1$
 

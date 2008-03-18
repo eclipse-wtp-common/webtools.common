@@ -127,7 +127,9 @@ public class ValidatorTypeFilter {
 		} catch (ClassNotFoundException exc) {
 			_typeFilterClass = null;
 			if (Tracing.isLogging()) {
-				Tracing.log("The class named " + filter + " cannot be instantiated because it does not exist. Check the spelling of the name, in the validator's plugin.xml contribution, and try restarting eclipse again."); //$NON-NLS-1$  //$NON-NLS-2$
+				Tracing.log("The class named " + filter +  //$NON-NLS-1$
+					" cannot be instantiated because it does not exist. Check the spelling of the name, " + //$NON-NLS-1$
+					"in the validator's plugin.xml contribution, and try restarting eclipse again."); //$NON-NLS-1$
 			}
 			return;
 		}

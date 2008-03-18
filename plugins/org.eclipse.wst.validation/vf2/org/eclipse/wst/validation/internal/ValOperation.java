@@ -33,13 +33,23 @@ public class ValOperation {
 	private Map<IProject, Set<Validator>> _excludeCache = 
 		Collections.synchronizedMap(new HashMap<IProject, Set<Validator>>(40));
 	
+	/** The time that the operation started. */
+	private long	_started = System.currentTimeMillis();
+	
+	/** 
+	 * Are we in a multi project validation? This can be triggered by either clean all or 
+	 * if auto build is turned off, a build all. 
+	 */
+	private boolean	_multiProject;
+	
 	/** 
 	 * Holds all the resources that have been validated as a side-effect of running other validations.
 	 * The key is the validator id and the value is a Set of IResources.
 	 */
 	private Map<String, Set<IResource>> 	_validated = new HashMap<String, Set<IResource>>(20);
 	
-	public ValOperation(){}
+	public ValOperation(){
+	}
 	
 	public ValidationState getState() {
 		return _state;
@@ -140,5 +150,22 @@ public class ValOperation {
 	void suspendValidation(IProject project, Validator validator) {
 		if (project == null)return;
 		getExcludeSet(project).add(validator);
+	}
+
+	public long getStarted() {
+		return _started;
+	}
+
+	public boolean isMultiProject() {
+		return _multiProject;
+	}
+
+	/** 
+	 * Are we in a multi project validation? That is, could we be validating several
+	 * projects at the same time? This can be triggered by either clean all or 
+	 * if auto build is turned off, a build all. 
+	 */
+	public void setMultiProject(boolean multiProject) {
+		_multiProject = multiProject;
 	}	
 }

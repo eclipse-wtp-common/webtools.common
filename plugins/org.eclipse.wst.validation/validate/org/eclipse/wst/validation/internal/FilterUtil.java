@@ -609,13 +609,13 @@ public final class FilterUtil {
 					IResource resource = subdelta.getResource();
 
 					if (Tracing.isLogging()) {
-						StringBuffer buffer = new StringBuffer("subdelta of "); //$NON-NLS-1$
+						StringBuffer buffer = new StringBuffer("VMDDeltaVisitor: subdelta of "); //$NON-NLS-1$
 						buffer.append(resource.getName());
-						buffer.append(" is "); //$NON-NLS-1$
+						buffer.append(" has resource delta kind: "); //$NON-NLS-1$
 						buffer.append(subdelta.getKind());
-						buffer.append(" resource exists? "); //$NON-NLS-1$
+						buffer.append(" Does the resource exist? "); //$NON-NLS-1$
 						buffer.append(resource.exists());
-						buffer.append(" resource.isPhantom?"); //$NON-NLS-1$
+						buffer.append(" Is it a phantom? "); //$NON-NLS-1$
 						buffer.append(resource.isPhantom());
 						Tracing.log(buffer);
 					}

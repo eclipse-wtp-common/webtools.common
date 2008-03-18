@@ -53,7 +53,8 @@ public class ValidatorMessage {
 		ValidatorMessage msg = new ValidatorMessage();
 		msg._type = ValConstants.ProblemMarker;
 		msg._resource = resource;
-		msg.setAttribute(IMarker.MESSAGE, ValidationPlugin.getPlugin().isDebugging() ? Tracing.timestampIt(message): message);
+		msg.setAttribute(IMarker.MESSAGE, ValidationPlugin.getPlugin().isDebugging() ? 
+			Tracing.timestampIt(message): message);
 		return msg;
 	}
 	
