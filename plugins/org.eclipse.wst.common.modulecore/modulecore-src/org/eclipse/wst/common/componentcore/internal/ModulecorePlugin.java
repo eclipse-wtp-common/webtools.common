@@ -26,6 +26,8 @@ import org.eclipse.wst.common.componentcore.internal.util.ArtifactEditAdapterFac
 import org.eclipse.wst.common.componentcore.internal.util.ModuleCoreEclipseAdapterFactory;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.osgi.framework.BundleContext;
+import java.lang.Throwable;
+import org.eclipse.core.runtime.CoreException;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -169,5 +171,21 @@ public class ModulecorePlugin extends Plugin {
 	public static IStatus createErrorStatus(int aCode, String aMessage,
 			Throwable exception) {
 		return createStatus(IStatus.ERROR, aCode, aMessage, exception);
+	}
+
+	public static IStatus createStatus(int severity, String message, Throwable exception) {
+		return new Status(severity, PLUGIN_ID, message, exception);
+	}
+
+	public static IStatus createStatus(int severity, String message) {
+		return createStatus(severity, message, null);
+	}
+
+	public static void logError(Throwable exception) {
+		Platform.getLog(Platform.getBundle(PLUGIN_ID)).log( createStatus(IStatus.ERROR, exception.getMessage(), exception));
+	}
+
+	public static void logError(CoreException exception) {
+		Platform.getLog(Platform.getBundle(PLUGIN_ID)).log( exception.getStatus() );
 	}
 }
