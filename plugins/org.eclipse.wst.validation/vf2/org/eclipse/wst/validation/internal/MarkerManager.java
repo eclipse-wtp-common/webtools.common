@@ -82,27 +82,29 @@ public class MarkerManager {
 	}
 	public void makeMarkers(List<IMessage> list){
 		for (IMessage message : list){
+			IResource res = null;
 			Object target = message.getTargetObject();
-			if (target != null){
-				if (target instanceof IResource){
-					IResource res = (IResource)target;
-					try {
-						IMarker marker = res.createMarker(ConfigurationConstants.VALIDATION_MARKER);
-						marker.setAttribute(IMarker.MESSAGE, message.getText());
-						int markerSeverity = IMarker.SEVERITY_INFO;
-						int sev = message.getSeverity();
-						if ((sev & IMessage.HIGH_SEVERITY) != 0)markerSeverity = IMarker.SEVERITY_ERROR;
-						else if ((sev & IMessage.NORMAL_SEVERITY) != 0)markerSeverity = IMarker.SEVERITY_WARNING;
-						marker.setAttribute(IMarker.SEVERITY, markerSeverity);
-						marker.setAttribute(IMarker.LINE_NUMBER, message.getLineNumber());
-					}
-					catch (CoreException e){
-						ValidationPlugin.getPlugin().handleException(e);
-					}
+			if (target != null && target instanceof IResource)res = (IResource)target;
+			if (res == null){
+				target = message.getAttribute(IMessage.TargetResource);
+				if (target != null && target instanceof IResource)res = (IResource)target;
+			}
+			if (res != null){
+				try {
+					IMarker marker = res.createMarker(ConfigurationConstants.VALIDATION_MARKER);
+					marker.setAttribute(IMarker.MESSAGE, message.getText());
+					int markerSeverity = IMarker.SEVERITY_INFO;
+					int sev = message.getSeverity();
+					if ((sev & IMessage.HIGH_SEVERITY) != 0)markerSeverity = IMarker.SEVERITY_ERROR;
+					else if ((sev & IMessage.NORMAL_SEVERITY) != 0)markerSeverity = IMarker.SEVERITY_WARNING;
+					marker.setAttribute(IMarker.SEVERITY, markerSeverity);
+					marker.setAttribute(IMarker.LINE_NUMBER, message.getLineNumber());
 				}
+				catch (CoreException e){
+					ValidationPlugin.getPlugin().handleException(e);
+				}				
 			}
 		}
 	}
-
 
 }

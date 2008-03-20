@@ -72,6 +72,19 @@ public interface IMessage {
 	 * Specify all types of messages. Typically used with a MessageFilter.
 	 */
 	int ALL_MESSAGES = ERROR_AND_WARNING | LOW_SEVERITY;
+	
+	/** 
+	 * TargetResource - The key to use when associating a resource with a message via an
+	 * attribute. 
+	 * <p>
+	 * Normally, the target is stored using the setTargetObject() method, but
+	 * some of the legacy validators used this field for objects that where not IResources.
+	 * In order to associate the message with the proper IResource the validator can store
+	 * the IResource as an attribute and use this string as the key.
+	 * </p>
+	 *  
+	 */
+	String TargetResource = "TargetResource"; //$NON-NLS-1$
 
 	/**
 	 * @return the name of the bundle which this message is contained in.
