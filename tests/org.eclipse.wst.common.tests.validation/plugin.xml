@@ -5,8 +5,9 @@
          point="org.eclipse.wst.validation.validatorV2"
          id="Test1" name="%Test1.Validator.Name">
       <validator
-            build="true"
-            class="org.eclipse.wst.validation.tests.TestValidator">
+            build="false"
+            class="org.eclipse.wst.validation.tests.TestValidator"
+            manual="false">
          <include>
             <rules>
                <fileext
@@ -20,7 +21,9 @@
          point="org.eclipse.wst.validation.validatorV2"
          id="Test2" name="%Test2.Validator.Name">
       <validator
-            class="org.eclipse.wst.validation.tests.TestValidator2">
+            build="false"
+            class="org.eclipse.wst.validation.tests.TestValidator2"
+            manual="false">
          <include>
             <rules>
                <fileext
@@ -73,9 +76,9 @@
          point="org.eclipse.wst.validation.validatorV2"
          id="Test3" name="%Test3.Validator.Name">
       <validator
-            build="true"
+            build="false"
             class="org.eclipse.wst.validation.tests.TestValidator3"
-            manual="true">
+            manual="false">
          <include>
             <rules>
                <fileext
@@ -93,8 +96,9 @@
          point="org.eclipse.wst.validation.validatorV2"
          id="Test4" name="%Test4.Validator.Name">
       <validator
-            build="true"
-            class="org.eclipse.wst.validation.tests.TestValidator4">
+            build="false"
+            class="org.eclipse.wst.validation.tests.TestValidator4"
+            manual="false">
          <include>
             <rules>
                <fileext
@@ -105,7 +109,10 @@
       </validator>
    </extension>
    <extension id="Test5" name="%Test5.Validator.Name" point="org.eclipse.wst.validation.validatorV2">
-      <validator class="org.eclipse.wst.validation.tests.TestValidator5">
+      <validator
+            build="false"
+            class="org.eclipse.wst.validation.tests.TestValidator5"
+            manual="false">
          <include>
             <rules>
                <fileext
@@ -128,7 +135,9 @@
          name="%Test6.Validator.Name"
          point="org.eclipse.wst.validation.validatorV2">
       <validator
-            class="org.eclipse.wst.validation.tests.TestValidator6">
+            build="false"
+            class="org.eclipse.wst.validation.tests.TestValidator6"
+            manual="false">
          <include>
             <rules>
                <contentType id="org.eclipse.core.runtime.xml"></contentType>
@@ -152,8 +161,9 @@
          point="org.eclipse.wst.validation.validatorV2"
          id="Test7" name="%Test7.Validator.Name">
       <validator
-            build="true"
-            class="org.eclipse.wst.validation.tests.TestValidator7">
+            build="false"
+            class="org.eclipse.wst.validation.tests.TestValidator7"
+            manual="false">
          <include>
             <rules>
                <fileext
@@ -168,8 +178,9 @@
          point="org.eclipse.wst.validation.validatorV2"
          id="T1A" name="T1A Validator">
       <validator
-            build="true"
-            class="org.eclipse.wst.validation.tests.T1AValidator">
+            build="false"
+            class="org.eclipse.wst.validation.tests.T1AValidator"
+            manual="false">
          <include>
             <rules>
                <fileext

@@ -58,7 +58,7 @@ public class TestSuite1 extends TestCase {
 		_testProject = _env.findProject("TestProject");
 		if (_testProject != null)return;
 		_env.turnoffAutoBuild();
-		turnoffOtherValidators();
+		enableOnlyTestValidators();
 		_testProject = _env.createProject("TestProject");
 		IPath folder = _env.addFolder(_testProject.getFullPath(), "source");
 		_env.addFile(folder, "first.test1", "include map.test1\ninfo - information\nwarning - warning\nerror - error\n\n" +
@@ -76,13 +76,12 @@ public class TestSuite1 extends TestCase {
 	 * Since other plug-ins can add and remove validators, turn off all the ones that are not part of
 	 * these tests.
 	 */
-	private static void turnoffOtherValidators() {
+	private static void enableOnlyTestValidators() {
 		Validator[] vals = ValManager.getDefault().getValidators();
 		for (Validator v : vals){
-			if (!v.getValidatorClassname().startsWith("org.eclipse.wst.validation.tests.Test")){
-				v.setBuildValidation(false);
-				v.setManualValidation(false);
-			}
+			boolean enable = v.getValidatorClassname().startsWith("org.eclipse.wst.validation.tests.Test");
+			v.setBuildValidation(enable);
+			v.setManualValidation(enable);
 		}
 		ValPrefManagerGlobal gp = ValPrefManagerGlobal.getDefault();
 		gp.saveAsPrefs(vals);		
