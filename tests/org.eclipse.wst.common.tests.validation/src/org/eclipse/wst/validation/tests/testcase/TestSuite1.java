@@ -61,13 +61,25 @@ public class TestSuite1 extends TestCase {
 		enableOnlyTestValidators();
 		_testProject = _env.createProject("TestProject");
 		IPath folder = _env.addFolder(_testProject.getFullPath(), "source");
-		_env.addFile(folder, "first.test1", "include map.test1\ninfo - information\nwarning - warning\nerror - error\n\n" +
-		"t1error - extra error\nt1warning - extra warning");
-		_env.addFile(folder, "second.test1", "info - information\nwarning - warning\nerror - error\n\n" +
-			"t1error - extra error\nt1warning - extra warning");
-		_mapTest1 = _env.addFile(folder, "map.test1", "# will hold future mappings");
+		_env.addFile(folder, "first.test1", "include map.test1\n" +
+			"info - information\n" +
+			"warning - warning\n" +
+			"error - error\n\n" +
+			"t1error - extra error\n" +
+			"t1warning - extra warning");
+		_env.addFile(folder, "second.test1", "info - information\n" +
+			"warning - warning\n" +
+			"error - error\n\n" +
+			"t1error - extra error\n" +
+			"t1warning - extra warning");
+		_mapTest1 = _env.addFile(folder, "map.test1", 
+			"# will hold future mappings\n\n" +
+			"# syntax: map target replacement\n" +
+			"# for example map t1error error - would replace all t1error tokens with error");
 		_env.addFile(folder, "first.test2", "# sample file");
-		_env.addFile(folder, "third.test4", "# Doesn't really matter\nWe just want to make the build a bit slower.");
+		_env.addFile(folder, "third.test4", 
+			"# Doesn't really matter\n" +
+			"# We just want to make the build a bit slower.");
 		_env.addFile(folder, "fourth.test4", "# Doesn't really matter");
 		_env.addFile(folder, "fifth.test5", "# Doesn't really matter");
 	}
@@ -142,6 +154,7 @@ public class TestSuite1 extends TestCase {
 		
 		// add a first build so that we know that only the map file has changed
 		_env.incrementalBuild();
+		Thread.sleep(2000);
 		vf.join(monitor);
 		
 		ByteArrayInputStream in = new ByteArrayInputStream("map t1error error\nmap t1warning warning".getBytes());
@@ -150,6 +163,7 @@ public class TestSuite1 extends TestCase {
 		TestValidator4.getCounters().reset();
 		TestValidator5D.getCounters().reset();
 		_env.incrementalBuild();
+		Thread.sleep(2000);
 		vf.join(monitor);
 		
 		ValCounters vc = TestValidator4.getCounters();
