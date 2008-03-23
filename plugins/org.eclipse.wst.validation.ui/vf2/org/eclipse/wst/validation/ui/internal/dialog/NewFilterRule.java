@@ -1,10 +1,15 @@
 package org.eclipse.wst.validation.ui.internal.dialog;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNatureDescriptor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
@@ -74,6 +79,7 @@ public class NewFilterRule extends Wizard {
 	
 	private IWizardPage returnOrBuildPage(int selectedFilter) {
 			IWizardPage page =  null;
+			if (_project != null && selectedFilter == 2)selectedFilter = 4;
 			switch (selectedFilter){
 			case 0:
 				page = new FileExtPage();
@@ -431,8 +437,9 @@ public class NewFilterRule extends Wizard {
 	}
 	
 	public static class ContentTypePage extends WizardPage implements FilterWizardPage {
-		private Text	_pattern;
+		private Combo	_pattern;
 		private Button	_exactMatch;
+		private Map<String, IContentType> _map;
 		
 		public ContentTypePage(){
 			super("contentType", ValUIMessages.FrContentType, null); //$NON-NLS-1$
@@ -443,9 +450,24 @@ public class NewFilterRule extends Wizard {
 			setControl(control);
 			control.setLayout(new GridLayout(2, false));
 			(new Label(control, SWT.NONE)).setText(ValUIMessages.FrContentTypeLabel);
-			_pattern = new Text(control, SWT.NONE);
+			
+			IContentType[] types = Platform.getContentTypeManager().getAllContentTypes();
+			_map = new TreeMap<String, IContentType>();
+			for (IContentType type : types){
+				String name = type.getName();
+				if (name == null)name = type.getId();
+				_map.put(name, type);
+			}
+			String items[] = new String[_map.size()];
+			int i = 0;
+			for (String label : _map.keySet()){
+				items[i++] = label;
+			}
+			_pattern = new Combo(control, SWT.DROP_DOWN | SWT.READ_ONLY);
 			_pattern.setFocus();
 			_pattern.setLayoutData(new GridData(300, 14));
+			_pattern.setVisibleItemCount(20);
+			_pattern.setItems(items);
 			_pattern.addModifyListener(new ModifyListener(){
 
 				public void modifyText(ModifyEvent e) {
@@ -463,7 +485,9 @@ public class NewFilterRule extends Wizard {
 
 		public FilterRule getFilterRule() {
 			if (!isPageComplete())return null;
-			FilterRule rule = FilterRule.createContentType(_pattern.getText(), _exactMatch.getSelection());
+			IContentType type = _map.get(_pattern.getText());
+			if (type == null)return null;
+			FilterRule rule = FilterRule.createContentType(type.getId(), _exactMatch.getSelection());
 			return rule;
 		}
 		

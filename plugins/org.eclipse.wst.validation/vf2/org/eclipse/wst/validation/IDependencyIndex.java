@@ -47,7 +47,7 @@ public interface IDependencyIndex {
 	List<DependentResource> get(IResource resource);
 	
 	/** 
-	 * Answer all the resources that depends on this resource.
+	 * Answer all the resources that depend on this resource.
 	 * For example, if this resource was an XSD, this could answer all the XML files that
 	 * depended on it for their validity.
 	 * 

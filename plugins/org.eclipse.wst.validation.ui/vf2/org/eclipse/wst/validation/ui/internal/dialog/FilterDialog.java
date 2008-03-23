@@ -53,7 +53,7 @@ import org.eclipse.wst.validation.ui.internal.ValUIMessages;
 public class FilterDialog extends Dialog {
 	
 	/** 
-	 * If we are doing project level filters this will point to the project. If this is null if we are doing
+	 * If we are doing project level filters this will point to the project. This is null if we are doing
 	 * workspace level filters. 
 	 */
 	private IProject	_project;

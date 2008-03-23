@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2007, 2008 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ * IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.wst.validation.internal;
 
 import java.lang.reflect.InvocationTargetException;
@@ -52,6 +62,13 @@ public class ValManager implements IValChangedListener {
 		Collections.synchronizedMap(new HashMap<IProject, ProjectPreferences>(50));
 	
 	private GlobalPreferences _globalPreferences;
+	
+	/**
+	 * This number increases each time any of the validation configurations change. It is used to determine
+	 * if information that we have cached in the ValProperty is stale or not. This starts off at zero, each time
+	 * the workbench is started.
+	 */
+	private int _configNumber;
 		
 	public static synchronized ValManager getDefault(){
 		if (_me == null)_me = new ValManager();
@@ -165,7 +182,7 @@ public class ValManager implements IValChangedListener {
 	}
 	
 	/**
-	 * Answer true if the project has disabled all of it's validators, or of project overrides are not
+	 * Answer true if the project has disabled all of it's validators, or if project overrides are not
 	 * allowed if global validation has been disabled.
 	 * 
 	 * @param project the project that is being consulted, or null if only the global settings are to be 
@@ -418,9 +435,7 @@ public class ValManager implements IValChangedListener {
 						}
 					}
 				}		
-			}
-						
-			
+			}			
 		};
 		accept(visitor, project, resource, isManual, isBuild, operation, monitor);
 		
@@ -511,6 +526,17 @@ public class ValManager implements IValChangedListener {
 			boolean isBuild, ValOperation operation, IProgressMonitor monitor){
 		
 		if (isDisabled(project))return;
+		
+		ValProperty vp = null;
+		try {
+			vp = (ValProperty)resource.getSessionProperty(ValProperty.Key);
+		}
+		catch (CoreException e){
+			// don't care about this one
+		}
+		if (vp != null && vp.getConfigNumber() == _configNumber && vp.getConfigSet().cardinality() > 0){
+			//FIXME GRK implement this
+		}
 		
 		boolean hasProcessedProject = operation.hasProcessedProject(project);
 		for (Validator val : getValidators(project)){

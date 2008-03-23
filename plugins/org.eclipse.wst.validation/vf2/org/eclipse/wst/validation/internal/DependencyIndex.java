@@ -58,7 +58,7 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 		
 		Depends d = depends.get(dependent);
 		if (d == null){
-			d = new Depends(dependent);
+			d = new Depends();
 			depends.put(dependent, d);
 		}
 		if (d.hasValidator(id))return;
@@ -68,6 +68,7 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 			List<Depends> list = _projectMap.get(dependent.getProject());
 			if (list == null){
 				list = new LinkedList<Depends>();
+				_projectMap.put(dependent.getProject(), list);
 			}
 			list.add(d);
 		}
@@ -253,13 +254,15 @@ public class DependencyIndex implements IDependencyIndex, ISaveParticipant {
 	}
 
 private static class Depends {
+	
+	/** The key is the validator dependencyId.*/
 	private Map<String, Boolean> 	_validators;
 	
-	public Depends(IResource dependent){
+	private Depends(){
 		_validators = new HashMap<String, Boolean>(5);
 	}
 
-	public Map<String, Boolean> getValidators() {
+	private Map<String, Boolean> getValidators() {
 		return _validators;
 	}
 	
@@ -267,7 +270,7 @@ private static class Depends {
 	 * Answer the validator id's that are still enabled.
 	 * @return
 	 */
-	public List<String> getValidatorsEnabled() {
+	private List<String> getValidatorsEnabled() {
 		List<String> list = new LinkedList<String>();
 		for (Map.Entry<String, Boolean> me : _validators.entrySet()){
 			if (me.getValue())list.add(me.getKey());
@@ -275,16 +278,16 @@ private static class Depends {
 		return list;
 	}
 
-	public void delete() {
+	private void delete() {
 		_validators.clear();
 	}
 
-	public void add(String id) {
+	private void add(String id) {
 		_validators.put(id, Boolean.TRUE);
 		
 	}
 
-	public boolean hasValidator(String id) {
+	private boolean hasValidator(String id) {
 		Boolean v = _validators.get(id);
 		if (v == null)return false;
 		return v.booleanValue();
@@ -294,7 +297,7 @@ private static class Depends {
 	 * Answer the number of active dependencies.
 	 * @return
 	 */
-	public int validatorCount(){
+	private int validatorCount(){
 		int count = 0;
 		for (Boolean b : _validators.values()){
 			if (b)count++;
