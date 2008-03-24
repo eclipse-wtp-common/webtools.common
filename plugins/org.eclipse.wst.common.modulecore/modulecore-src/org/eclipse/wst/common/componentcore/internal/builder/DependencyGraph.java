@@ -10,45 +10,39 @@
  *******************************************************************************/
 package org.eclipse.wst.common.componentcore.internal.builder;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 
+/**
+ * @deprecated use {@link IDependencyGraph}
+ */
 public class DependencyGraph {
-	
+
 	private static final DependencyGraph INSTANCE = new DependencyGraph();
-	
-	private final Map dependencies = new HashMap();
-	
+
 	public static DependencyGraph getInstance() {
 		return INSTANCE;
 	}
 
 	public IProject[] getReferencingComponents(IProject target) {
-		Set referencingComponents = internalGetReferencingComponents(target);
+		Set<IProject> referencingComponents = IDependencyGraph.INSTANCE.getReferencingComponents(target);
 		return (IProject[]) referencingComponents.toArray(new IProject[referencingComponents.size()]);
 	}
-	
+
 	public void addReference(IProject target, IProject referencingComponent) {
-		internalGetReferencingComponents(target).add(referencingComponent);
+		// do nothing
 	}
-	
+
 	public void removeReference(IProject target, IProject referencingComponent) {
-		internalGetReferencingComponents(target).remove(referencingComponent);
-		
+		// do nothing
 	}
-	
+
 	protected Set internalGetReferencingComponents(IProject target) {
-		Set referencingComponents = (Set) dependencies.get(target);
-		if(referencingComponents == null) 
-			dependencies.put(target, (referencingComponents = new HashSet()));
-		return referencingComponents;
+		return Collections.EMPTY_SET;
 	}
-	
+
 	public void clear() {
-		dependencies.clear();
 	}
 }
