@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik
+ *    Konstantin Komissarchik - initial implementation and ongoing maintenance
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core.util;
@@ -19,6 +19,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import org.eclipse.wst.common.project.facet.core.internal.FacetCorePlugin;
 
 /**
+ * @since 3.0
  * @author <a href="mailto:kosta@bea.com">Konstantin Komissarchik</a>
  */
 

@@ -1,12 +1,12 @@
 /******************************************************************************
- * Copyright (c) 2005-2007 BEA Systems, Inc.
+ * Copyright (c) 2008 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik
+ *    Konstantin Komissarchik - initial implementation and ongoing maintenance
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.core.internal;
@@ -104,7 +104,7 @@ public final class FacetedProjectWorkingCopy
      */
     
     private IPath projectLocation;
-    private final IFacetedProject project;
+    private IFacetedProject project;
     private Set<IProjectFacet> fixedFacets;
     private IndexedSet<IProjectFacet,IProjectFacetVersion> facets;
     private Map<IProjectFacet,SortedSet<IProjectFacetVersion>> availableFacets;
@@ -728,6 +728,8 @@ public final class FacetedProjectWorkingCopy
                                                      changedVersions );
                 
                 notifyListeners( event );
+                
+                notifyListeners( new FacetedProjectEvent( this, IFacetedProjectEvent.Type.PROJECT_MODIFIED ) );
                 
                 refreshTargetableRuntimes();
                 refreshProjectFacetActions();
@@ -1821,6 +1823,15 @@ public final class FacetedProjectWorkingCopy
                 }
                 
                 ( (FacetedProject) fpj ).mergeChanges( this, pm.newChild( 90 ) );
+                
+                // Make sure that the working copy is still valid after changes are committed.
+                
+                this.project = fpj;
+                this.projectName = null;
+                this.projectNameValidation = Status.OK_STATUS;
+                this.projectLocation = null;
+                
+                revertChanges();
             }
             finally
             {
@@ -1860,14 +1871,47 @@ public final class FacetedProjectWorkingCopy
         }
     }
     
+    public void revertChanges()
+    {
+        suspendEventNotification();
+        
+        try
+        {
+            synchronized( this.lock )
+            {
+            	if( this.project != null )
+            	{
+                    setFixedProjectFacets( this.project.getFixedProjectFacets() );
+                    setTargetedRuntimes( Collections.<IRuntime>emptySet() );
+                    setProjectFacets( this.project.getProjectFacets() );
+                    setTargetedRuntimes( this.project.getTargetedRuntimes() );
+                    setPrimaryRuntime( this.project.getPrimaryRuntime() );
+                    this.actions.clear();
+            	}
+            	else
+            	{
+            		throw new UnsupportedOperationException();
+            	}
+            }
+        }
+        finally
+        {
+            resumeEventNotification();
+        }
+    }
+    
     public IFacetedProjectWorkingCopy clone()
     {
         synchronized( this.lock )
         {
             final FacetedProjectWorkingCopy clone = new FacetedProjectWorkingCopy( this.project );
             
-            clone.setProjectName( getProjectName() );
-            clone.setProjectLocation( getProjectLocation() );
+            if( this.project == null )
+            {
+	            clone.setProjectName( getProjectName() );
+	            clone.setProjectLocation( getProjectLocation() );
+            }
+            
             clone.setFixedProjectFacets( getFixedProjectFacets() );
             clone.setProjectFacets( getProjectFacets() );
             clone.setTargetedRuntimes( getTargetedRuntimes() );

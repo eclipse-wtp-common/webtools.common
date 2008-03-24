@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005-2007 BEA Systems, Inc.
+ * Copyright (c) 2008 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,6 @@
 package org.eclipse.wst.common.project.facet.ui.internal;
 
 import static org.eclipse.jface.resource.JFaceResources.getFontRegistry;
-import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gd;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdfill;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhfill;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhindent;
@@ -30,9 +29,6 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.forms.events.HyperlinkAdapter;
-import org.eclipse.ui.forms.events.HyperlinkEvent;
-import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.wst.common.project.facet.core.IConstraint;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.IProjectFacet;
@@ -40,7 +36,6 @@ import org.eclipse.wst.common.project.facet.core.IProjectFacetVersion;
 import org.eclipse.wst.common.project.facet.core.IVersionExpr;
 import org.eclipse.wst.common.project.facet.core.internal.Constraint;
 import org.eclipse.wst.common.project.facet.core.internal.ProjectFacet;
-import org.eclipse.wst.common.project.facet.ui.internal.util.EnhancedHyperlink;
 import org.eclipse.wst.common.project.facet.ui.internal.util.ImageWithTextComposite;
 
 /**
@@ -117,20 +112,9 @@ public final class FacetDetailsPanel
             }
             else
             {
-                final Hyperlink showConstraintsLink = new EnhancedHyperlink( this, SWT.NONE );
-                showConstraintsLink.setText( Resources.showConstraintsLink );
-                showConstraintsLink.setLayoutData( gdvindent( gd(), 4 ) );
-        
-                showConstraintsLink.addHyperlinkListener
-                (
-                    new HyperlinkAdapter()
-                    {
-                        public void linkActivated( HyperlinkEvent e )
-                        {
-                            handleShowConstraintsLinkActivated( prunedConstraint );
-                        }
-                    }
-                );
+            	final Label label = new Label( this, SWT.NONE );
+            	label.setText( Resources.constraintTooComplex );
+            	label.setLayoutData( gdvindent( gdhfill(), 4 ) );
             }
         }
     }
@@ -188,20 +172,12 @@ public final class FacetDetailsPanel
         }
     }
     
-    private void handleShowConstraintsLinkActivated( final IConstraint constraint )
-    {
-        final ConstraintDisplayDialog dialog 
-            = new ConstraintDisplayDialog( getShell(), null, constraint );
-    
-        dialog.open();
-    }
-    
     private static final class Resources
     
         extends NLS
         
     {
-        public static String showConstraintsLink;
+        public static String constraintTooComplex;
         public static String requiredFacetsLabel;
         
         static

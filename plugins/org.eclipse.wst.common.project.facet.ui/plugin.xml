@@ -74,5 +74,18 @@
       </filter>
     </page>
   </extension>
+  
+  <extension point="org.eclipse.ui.newWizards">
+    <wizard
+      canFinishEarly="false"
+      class="org.eclipse.wst.common.project.facet.ui.BasicFacetedProjectWizard"
+      hasPages="true"
+      icon="images/newprj_wiz.gif"
+      id="org.eclipse.wst.common.project.facet.examples.standalone.FacetedJavaProjectWizard"
+      name="%basicFacetedProjectWizardName"
+      project="true"
+      category="org.eclipse.ui.Basic">
+    </wizard>
+  </extension>
 
 </plugin>

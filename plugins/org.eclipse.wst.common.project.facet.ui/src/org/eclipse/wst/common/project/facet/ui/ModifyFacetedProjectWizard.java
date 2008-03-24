@@ -1,12 +1,12 @@
 /******************************************************************************
- * Copyright (c) 2005-2007 BEA Systems, Inc.
+ * Copyright (c) 2008 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Konstantin Komissarchik
+ *    Konstantin Komissarchik - initial implementation and ongoing maintenance
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.ui;
@@ -72,6 +72,8 @@ public class ModifyFacetedProjectWizard
     private Composite pageContainer;
     private final List<IWizardPage> pagesToDispose = new ArrayList<IWizardPage>();
     private final List<Runnable> delayedActions;
+    private final List<Runnable> onDisposeActions;
+    private final boolean disposeWorkingCopy;
     
     public ModifyFacetedProjectWizard()
     {
@@ -82,15 +84,23 @@ public class ModifyFacetedProjectWizard
     {
         this( fproj == null
               ? FacetedProjectFramework.createNewProject() 
-              : fproj.createWorkingCopy() );
+              : fproj.createWorkingCopy(), true );
     }
 
     public ModifyFacetedProjectWizard( final IFacetedProjectWorkingCopy fpjwc )
     {
+    	this( fpjwc, false );
+    }
+
+    private ModifyFacetedProjectWizard( final IFacetedProjectWorkingCopy fpjwc,
+    		                            final boolean disposeWorkingCopy )
+    {
         try
         {
             this.fpjwc = fpjwc;
-            this.delayedActions = new ArrayList<Runnable>();;
+            this.delayedActions = new ArrayList<Runnable>();
+            this.onDisposeActions = new ArrayList<Runnable>();
+            this.disposeWorkingCopy = disposeWorkingCopy;
             this.facetsSelectionPage = null;
             this.showFacetsSelectionPage = true;
             
@@ -100,7 +110,7 @@ public class ModifyFacetedProjectWizard
         }
         catch( RuntimeException e )
         {
-            e.printStackTrace();
+            FacetUiPlugin.log( e );
             throw e;
         }
     }
@@ -144,27 +154,36 @@ public class ModifyFacetedProjectWizard
     
     public void addPages()
     {
-        this.fpjwc.addListener
-        (
-            new IFacetedProjectListener()
+        final IFacetedProjectListener listener = new IFacetedProjectListener()
+        {
+            public void handleEvent( final IFacetedProjectEvent event ) 
             {
-                public void handleEvent( final IFacetedProjectEvent event ) 
+                final Runnable runnable = new Runnable()
                 {
-                    final Runnable runnable = new Runnable()
+                    public void run()
                     {
-                        public void run()
-                        {
-                            handleSelectedFacetsChangedEvent();
-                        }
-                    };
-                    
-                    Display.getDefault().syncExec( runnable );
-                }
-            },
-            IFacetedProjectEvent.Type.PROJECT_FACETS_CHANGED
+                        handleSelectedFacetsChangedEvent();
+                    }
+                };
+                
+                Display.getDefault().syncExec( runnable );
+            }
+        };
+
+    	this.fpjwc.addListener( listener, IFacetedProjectEvent.Type.PROJECT_FACETS_CHANGED );
+    	
+    	this.onDisposeActions.add
+    	(
+    		new Runnable()
+    		{
+    			public void run()
+    			{
+    				ModifyFacetedProjectWizard.this.fpjwc.removeListener( listener );
+    			}
+    		}
         );
         
-        if( this.showFacetsSelectionPage )
+        if( getShowFacetsSelectionPage() )
         {
             this.facetsSelectionPage = new FacetsSelectionPage( getBaseFacets(), this.fpjwc );
             addPage( this.facetsSelectionPage );
@@ -607,7 +626,22 @@ public class ModifyFacetedProjectWizard
             page.dispose();
         }
         
-        this.fpjwc.dispose();
+        for( Runnable onDisposeAction : this.onDisposeActions )
+        {
+        	try
+        	{
+        		onDisposeAction.run();
+        	}
+        	catch( Exception e )
+        	{
+        		FacetUiPlugin.log( e );
+        	}
+        }
+        
+        if( this.disposeWorkingCopy )
+        {
+        	this.fpjwc.dispose();
+        }
     }
     
     private static final class FacetPages

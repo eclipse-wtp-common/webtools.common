@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2005-2007 BEA Systems, Inc.
+ * Copyright (c) 2008 BEA Systems, Inc.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,7 +7,6 @@
  *
  * Contributors:
  *    Konstantin Komissarchik - initial implementation and ongoing maintenance
- *    David Schneider, david.schneider@unisys.com - [142500] WTP properties pages fonts don't follow Eclipse preferences
  ******************************************************************************/
 
 package org.eclipse.wst.common.project.facet.ui.internal;
@@ -20,11 +19,13 @@ import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUt
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdhspan;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gdwhint;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.gl;
+import static org.eclipse.wst.common.project.facet.ui.internal.util.GridLayoutUtil.glmargins;
 import static org.eclipse.wst.common.project.facet.ui.internal.util.SwtUtil.getPreferredWidth;
 
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -43,13 +44,7 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnViewer;
-import org.eclipse.jface.viewers.ColumnViewerEditor;
-import org.eclipse.jface.viewers.ColumnViewerEditorActivationEvent;
-import org.eclipse.jface.viewers.ColumnViewerEditorActivationStrategy;
 import org.eclipse.jface.viewers.EditingSupport;
-import org.eclipse.jface.viewers.FocusCellHighlighter;
-import org.eclipse.jface.viewers.FocusCellOwnerDrawHighlighter;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelection;
@@ -64,10 +59,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
-import org.eclipse.jface.viewers.TreeViewerEditor;
-import org.eclipse.jface.viewers.TreeViewerFocusCellManager;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.osgi.util.NLS;
@@ -77,14 +69,11 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -93,11 +82,14 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.wst.common.project.facet.core.ICategory;
 import org.eclipse.wst.common.project.facet.core.IFacetedProjectWorkingCopy;
 import org.eclipse.wst.common.project.facet.core.IPreset;
@@ -128,8 +120,6 @@ public final class FacetsSelectionPanel
     implements ISelectionProvider
 
 {
-    private static final String WIDTH = "width"; //$NON-NLS-1$
-    private static final String HEIGHT = "height"; //$NON-NLS-1$
     private static final String CW_FACET = "cw.facet"; //$NON-NLS-1$
     private static final String CW_VERSION = "cw.version"; //$NON-NLS-1$
     private static final String SASH1W1 = "sash.1.weight.1"; //$NON-NLS-1$
@@ -137,8 +127,6 @@ public final class FacetsSelectionPanel
     private static final String SASH2W1 = "sash.2.weight.1"; //$NON-NLS-1$
     private static final String SASH2W2 = "sash.2.weight.2"; //$NON-NLS-1$
     
-    private static final String IMG_ERROR = "##error##"; //$NON-NLS-1$
-    private static final String IMG_WARNING = "##warning##"; //$NON-NLS-1$
     private static final String IMG_DOWN_ARROW = "##down-arrow##"; //$NON-NLS-1$
     
     private final Composite topComposite;
@@ -152,9 +140,10 @@ public final class FacetsSelectionPanel
     private final Tree tree;
     private final TreeViewerColumn colFacet;
     private final TreeViewerColumn colVersion;
-    private final TreeViewerFocusCellManager focusCellManager;
-    private ViewerCell focusCell;
     private final FixedFacetToolTip fixedFacetToolTip;
+    private final Menu popupMenu;
+    private final MenuItem popupMenuLockUnlock;
+    private final MenuItem popupMenuChangeVersion;
     private final TableViewer problemsView;
     private final TabItem detailsTabItem;
     private final DetailsPanel detailsPanel;
@@ -201,13 +190,7 @@ public final class FacetsSelectionPanel
         this.imageRegistry = new ImageRegistry();
         final Bundle bundle = Platform.getBundle( FacetUiPlugin.PLUGIN_ID );
         
-        URL url = bundle.getEntry( "images/error.gif" ); //$NON-NLS-1$
-        this.imageRegistry.put( IMG_ERROR, ImageDescriptor.createFromURL( url ) );
-
-        url = bundle.getEntry( "images/warning.gif" ); //$NON-NLS-1$
-        this.imageRegistry.put( IMG_WARNING, ImageDescriptor.createFromURL( url ) );
-
-        url = bundle.getEntry( "images/down-arrow.gif" ); //$NON-NLS-1$
+        URL url = bundle.getEntry( "images/down-arrow.gif" ); //$NON-NLS-1$
         this.imageRegistry.put( IMG_DOWN_ARROW, ImageDescriptor.createFromURL( url ) );
 
         // Read the dialog settings.
@@ -222,47 +205,16 @@ public final class FacetsSelectionPanel
             temp = root.addNewSection( getClass().getName() );
         }
         
-        if( temp.get( WIDTH ) == null ) temp.put( WIDTH, 600 );
-        if( temp.get( HEIGHT ) == null ) temp.put( HEIGHT, 300 );
-        if( temp.get( SASH1W1 ) == null ) temp.put( SASH1W1, 60 );
-        if( temp.get( SASH1W2 ) == null ) temp.put( SASH1W2, 40 );
-        if( temp.get( SASH2W1 ) == null ) temp.put( SASH2W1, 70 );
-        if( temp.get( SASH2W2 ) == null ) temp.put( SASH2W2, 30 );
-        
         this.settings = temp;
 
         // Layout the panel.
 
-        final GridLayout layout = new GridLayout( 1, false );
-        layout.marginWidth = 0;
-        layout.marginHeight = 0;
-        
-        setLayout( layout );
-        
-        final GridData topgd = gdfill();
-        topgd.heightHint = this.settings.getInt( HEIGHT );
-        topgd.widthHint = this.settings.getInt( WIDTH );    
+        setLayout( glmargins( gl( 1 ), 0, 0 ) );
         
         this.topComposite = new Composite( this, SWT.NONE );
-        this.topComposite.setLayout( new GridLayout( 4, false ) );
-        this.topComposite.setLayoutData( topgd );
+        this.topComposite.setLayout( glmargins( gl( 4 ), 0, 0 ) );
+        this.topComposite.setLayoutData( gdfill() );
         
-        this.topComposite.addListener
-        (
-            SWT.Resize,
-            new Listener()
-            {
-                public void handleEvent( final Event event )
-                {
-                    final Point size 
-                        = FacetsSelectionPanel.this.topComposite.getSize();
-                    
-                    FacetsSelectionPanel.this.settings.put( WIDTH, size.x );
-                    FacetsSelectionPanel.this.settings.put( HEIGHT, size.y );
-                }
-            }
-        );
-
         this.presetsLabel = new Label( this.topComposite, SWT.NONE );
         this.presetsLabel.setText( Resources.presetsLabel );
         
@@ -304,43 +256,17 @@ public final class FacetsSelectionPanel
         this.savePresetButton.setLayoutData( gdwhint( gd(), width ) );
         this.deletePresetButton.setLayoutData( gdwhint( gd(), width ) );
         
-        this.sform1 = new SashForm( this.topComposite, SWT.HORIZONTAL | SWT.SMOOTH );
+        this.sform1 = new SashForm( this.topComposite, SWT.VERTICAL | SWT.SMOOTH );
         this.sform1.setLayoutData( gdhspan( gdfill(), 4 ) );
         
-        this.sform2 = new SashForm( this.sform1, SWT.VERTICAL | SWT.SMOOTH );
+        this.sform2 = new SashForm( this.sform1, SWT.HORIZONTAL | SWT.SMOOTH );
         this.sform2.setLayoutData( gdhspan( gdfill(), 4 ) );
         
-        this.treeViewer = new CheckboxTreeViewer( this.sform2, SWT.BORDER | SWT.FULL_SELECTION );
+        this.treeViewer = new CheckboxTreeViewer( this.sform2, SWT.BORDER );
         this.tree = this.treeViewer.getTree();
         
         this.tree.setHeaderVisible( true );
         
-        workAroundBug215095();
-        
-        final FocusCellHighlighter focusCellHiglighter 
-            = new CustomFocusCellHighlighter( this.treeViewer );
-        
-        this.focusCellManager 
-            = new TreeViewerFocusCellManager( this.treeViewer, focusCellHiglighter );
-        
-        final ColumnViewerEditorActivationStrategy actSupport 
-            = new ColumnViewerEditorActivationStrategy( this.treeViewer ) 
-        {
-            protected boolean isEditorActivationEvent( final ColumnViewerEditorActivationEvent event ) 
-            {
-                return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL || 
-                       event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION ||
-                       ( event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && event.character == ' ' ) ||
-                       event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC;
-            }
-        };
-        
-        TreeViewerEditor.create( this.treeViewer, this.focusCellManager, actSupport, 
-                                 ColumnViewerEditor.TABBING_HORIZONTAL |
-                                 ColumnViewerEditor.TABBING_MOVE_TO_ROW_NEIGHBOR |
-                                 ColumnViewerEditor.TABBING_VERTICAL | 
-                                 ColumnViewerEditor.KEYBOARD_ACTIVATION );
-
         this.treeViewer.setContentProvider( new ContentProvider() );
         this.treeViewer.setSorter( new Sorter() );
         
@@ -392,6 +318,35 @@ public final class FacetsSelectionPanel
                 }
             }
         );
+        
+        this.popupMenu = new Menu( getShell(), SWT.POP_UP );
+        
+        this.popupMenuChangeVersion = new MenuItem( this.popupMenu, SWT.PUSH );
+        this.popupMenuChangeVersion.setText( Resources.changeVersionMenuItem );
+
+        this.popupMenuChangeVersion.addSelectionListener
+        (
+            new SelectionAdapter()
+            {
+                public void widgetSelected( final SelectionEvent e )
+                {
+                    handleChangeVersionMenuSelected();
+                }
+            }
+        );
+        
+        this.popupMenuLockUnlock = new MenuItem( this.popupMenu, SWT.PUSH );
+        
+        this.popupMenuLockUnlock.addSelectionListener
+        (
+            new SelectionAdapter()
+            {
+                public void widgetSelected( final SelectionEvent e )
+                {
+                    handleFacetLockUnlock();
+                }
+            }
+        );
 
         new FacetToolTip( this.tree );
         new CategoryToolTip( this.tree );
@@ -435,42 +390,17 @@ public final class FacetsSelectionPanel
         
         this.tree.addListener
         (
-            SWT.KeyDown,
+            SWT.MouseDown,
             new Listener()
             {
                 public void handleEvent( final Event event )
                 {
-                    handleKeyDownEvent( event );
+                    handleMouseDownEvent( event );
                 }
             }
         );
         
-        this.problemsView = new TableViewer( this.sform2, SWT.BORDER );
-        this.problemsView.setContentProvider( new ProblemsContentProvider() );
-        this.problemsView.setLabelProvider( new ProblemsLabelProvider() );
-        this.problemsView.setInput( new Object() );
-
-        this.problemsView.getTable().addListener
-        (
-            SWT.Resize,
-            new Listener()
-            {
-                public void handleEvent( final Event event )
-                {
-                    final int[] weights = FacetsSelectionPanel.this.sform2.getWeights();
-                    FacetsSelectionPanel.this.settings.put( SASH2W1, weights[ 0 ] );
-                    FacetsSelectionPanel.this.settings.put( SASH2W2, weights[ 1 ] );
-                }
-            }
-        );
-
-        final int[] weights2
-            = new int[] { this.settings.getInt( SASH2W1 ),
-                          this.settings.getInt( SASH2W2 ) };
-
-        this.sform2.setWeights( weights2 );
-        
-        final TabFolder tabFolder = new TabFolder( this.sform1, SWT.NONE );
+        final TabFolder tabFolder = new TabFolder( this.sform2, SWT.NONE );
         tabFolder.setLayoutData( gdhhint( gdhfill(), 80 ) );
 
         this.detailsPanel = new DetailsPanel( tabFolder, this );
@@ -497,11 +427,41 @@ public final class FacetsSelectionPanel
             }
         );
 
+        this.problemsView = new TableViewer( this.sform1, SWT.BORDER );
+        this.problemsView.setContentProvider( new ProblemsContentProvider() );
+        this.problemsView.setLabelProvider( new ProblemsLabelProvider() );
+        this.problemsView.setInput( new Object() );
+
+        this.problemsView.getTable().addListener
+        (
+            SWT.Resize,
+            new Listener()
+            {
+                public void handleEvent( final Event event )
+                {
+                    final int[] weights = FacetsSelectionPanel.this.sform2.getWeights();
+                    FacetsSelectionPanel.this.settings.put( SASH2W1, weights[ 0 ] );
+                    FacetsSelectionPanel.this.settings.put( SASH2W2, weights[ 1 ] );
+                }
+            }
+        );
+        
+        if( this.settings.get( SASH1W1 ) == null ) this.settings.put( SASH1W1, 70 );
+        if( this.settings.get( SASH1W2 ) == null ) this.settings.put( SASH1W2, 30 );
+        if( this.settings.get( SASH2W1 ) == null ) this.settings.put( SASH2W1, 60 );
+        if( this.settings.get( SASH2W2 ) == null ) this.settings.put( SASH2W2, 40 );
+        
         final int[] weights1
-            = new int[] { this.settings.getInt( SASH1W1 ),
+        	= new int[] { this.settings.getInt( SASH1W1 ),
                           this.settings.getInt( SASH1W2 ) };
-    
-        this.sform1.setWeights( weights1 );
+
+    	this.sform1.setWeights( weights1 );
+
+        final int[] weights2
+            = new int[] { this.settings.getInt( SASH2W1 ),
+                          this.settings.getInt( SASH2W2 ) };
+
+        this.sform2.setWeights( weights2 );
         
         this.addDisposeListener
         (
@@ -616,7 +576,14 @@ public final class FacetsSelectionPanel
 
     public ISelection getSelection()
     {
-        return new StructuredSelection( this.selection );
+    	if( this.selection != null )
+    	{
+    		return new StructuredSelection( this.selection );
+    	}
+    	else
+    	{
+    		return new StructuredSelection( new Object[ 0 ] );
+    	}
     }
 
     public void setSelection( final ISelection selection )
@@ -835,7 +802,9 @@ public final class FacetsSelectionPanel
         if( selection != this.selection )
         {
             this.selection = selection;
+
             notifySelectionChangedListeners();
+            updatePopupMenu();
         }
     }
     
@@ -927,8 +896,41 @@ public final class FacetsSelectionPanel
         }
 
         this.fpjwc.setSelectedPreset( null );
+        
+        updatePopupMenu();
     }
 
+    private void handleMouseDownEvent( final Event event )
+    {
+    	handleMouseDownEventHelper( event, this.tree.getItems() );
+    }
+    
+    private boolean handleMouseDownEventHelper( final Event event,
+    		                                    final TreeItem[] items )
+    {
+        for( TreeItem item : items )
+        {
+        	if( item.getBounds( 1 ).contains( event.x, event.y ) )
+            {
+            	final TreeItem[] newSelection = new TreeItem[] { item };
+            	
+            	if( ! Arrays.equals( this.tree.getSelection(), newSelection ) )
+            	{
+	                this.tree.setSelection( new TreeItem[] { item } );
+	                this.treeViewer.editElement( item.getData(), 1 );
+            	}
+                
+                return true;
+            }
+        	else if( handleMouseDownEventHelper( event, item.getItems() ) )
+            {
+            	return true;
+            }
+        }
+        
+        return false;
+    }
+    
     private void handlePaintItemEvent( final Event event )
     {
         final TreeItem item = (TreeItem) event.item;
@@ -948,22 +950,7 @@ public final class FacetsSelectionPanel
                 
                 final int bgcolor;
                 
-                if( this.focusCell != null && this.focusCell.getElement() == itemData &&
-                    this.focusCell.getColumnIndex() == 1 )
-                {
-                    if( this.focusCell.getControl().isFocusControl() )
-                    {
-                        bgcolor = SWT.COLOR_LIST_SELECTION;
-                    }
-                    else
-                    {
-                        bgcolor = SWT.COLOR_WIDGET_BACKGROUND;
-                    }
-                }
-                else
-                {
-                    bgcolor = SWT.COLOR_LIST_BACKGROUND;
-                }
+                bgcolor = SWT.COLOR_LIST_BACKGROUND;
                 
                 int x, y;
                 
@@ -975,15 +962,6 @@ public final class FacetsSelectionPanel
                 y = event.y + ( itemHeight - arrowImageBounds.height ) / 2;
                 event.gc.drawImage( arrowImage, x, y );
             }
-        }
-    }
-    
-    private void handleKeyDownEvent( final Event event )
-    {
-        if( event.character == ' ' &&
-            this.focusCellManager.getFocusCell().getColumnIndex() > 0 )
-        {
-            event.doit = false;
         }
     }
     
@@ -1093,16 +1071,16 @@ public final class FacetsSelectionPanel
 
         if( getFilteredProblems().length == 0 )
         {
-            if( this.sform2.getMaximizedControl() == null )
+            if( this.sform1.getMaximizedControl() == null )
             {
-                this.sform2.setMaximizedControl( this.tree );
+                this.sform1.setMaximizedControl( this.sform2 );
             }
         }
         else
         {
-            if( this.sform2.getMaximizedControl() != null )
+            if( this.sform1.getMaximizedControl() != null )
             {
-                this.sform2.setMaximizedControl( null );
+                this.sform1.setMaximizedControl( null );
             }
         }
     }
@@ -1138,6 +1116,70 @@ public final class FacetsSelectionPanel
                 refresh();
                 break;
             }
+        }
+    }
+    
+    private void handleChangeVersionMenuSelected()
+    {
+    	final IProjectFacet f = getSelectedProjectFacet();
+    	final IProjectFacetVersion fv = getSelectedVersion( f );
+    	final SortedSet<IProjectFacetVersion> versions = this.fpjwc.getAvailableVersions( f );
+    	
+    	final IProjectFacetVersion newVersion
+    		= ChangeFacetVersionDialog.showDialog( getShell(), f, fv, versions );
+    		
+    	if( newVersion != null )
+    	{
+    		this.fpjwc.changeProjectFacetVersion( newVersion );
+    	}
+    }
+    
+    private void handleFacetLockUnlock()
+    {
+    	final IProjectFacet f = getSelectedProjectFacet();
+    	
+    	final Set<IProjectFacet> fixedFacets 
+    		= new HashSet<IProjectFacet>( this.fpjwc.getFixedProjectFacets() );
+    	
+    	if( fixedFacets.contains( f ) )
+    	{
+    		fixedFacets.remove( f );
+    	}
+    	else
+    	{
+    		fixedFacets.add( f );
+    	}
+    	
+    	this.fpjwc.setFixedProjectFacets( fixedFacets );
+    	
+    	updatePopupMenu();
+    }
+    
+    private void updatePopupMenu()
+    {
+        if( this.selection instanceof IProjectFacetVersion )
+        {
+			this.tree.setMenu( this.popupMenu );
+
+			final IProjectFacet f = ( (IProjectFacetVersion) this.selection ).getProjectFacet();
+			
+			if( this.fpjwc.isFixedProjectFacet( f ) )
+			{
+				this.popupMenuLockUnlock.setText( Resources.unlockMenuItem );
+			}
+			else
+			{
+				this.popupMenuLockUnlock.setText( Resources.lockMenuItem );
+			}
+			
+			this.popupMenuLockUnlock.setEnabled( this.fpjwc.hasProjectFacet( f ) );
+			
+			final int numAvailableVersions = this.fpjwc.getAvailableVersions( f ).size();
+			this.popupMenuChangeVersion.setEnabled( numAvailableVersions > 1 );
+    	}
+        else
+        {
+        	this.tree.setMenu( null );
         }
     }
     
@@ -1218,38 +1260,6 @@ public final class FacetsSelectionPanel
         }
         
         return max( maxVersionStringWidth, columnLabelWidth );
-    }
-    
-    // Needed to workaround a problem in SWT.
-    // https://bugs.eclipse.org/bugs/show_bug.cgi?id=215095
-    
-    @SuppressWarnings( "unchecked" )
-    private void workAroundBug215095()
-    {
-        if( SWT.getPlatform().equals( "win32" ) ) //$NON-NLS-1$
-        {
-            // Using reflection to make the following API call that will only compile on Win32.
-            // OS.SetWindowLong(this.tree.handle,OS.GWL_STYLE,OS.GetWindowLong(this.tree.handle,OS.GWL_STYLE) | OS.TVS_HASLINES);
-            
-            final int GWL_STYLE = 0xfffffff0;
-            final int TVS_HASLINES = 0x2;
-            
-            try
-            {
-                final Class win32OSClass = Class.forName( "org.eclipse.swt.internal.win32.OS" ); //$NON-NLS-1$
-                final Method getWindowLong = win32OSClass.getMethod( "GetWindowLong", new Class[] { int.class, int.class } ); //$NON-NLS-1$
-                final Method setWindowLong = win32OSClass.getMethod( "SetWindowLong", new Class[] { int.class, int.class, int.class } ); //$NON-NLS-1$
-                
-                int style = ( (Integer) getWindowLong.invoke( null, this.tree.handle, GWL_STYLE ) ).intValue();
-                style = style | TVS_HASLINES;
-                
-                setWindowLong.invoke( null, this.tree.handle, GWL_STYLE, style );
-            }
-            catch( Exception e )
-            {
-                FacetUiPlugin.log( e );
-            }
-        }
     }
     
     private IStatus[] getFilteredProblems()
@@ -1535,39 +1545,6 @@ public final class FacetsSelectionPanel
         }
     }
     
-    private final class CustomFocusCellHighlighter
-    
-        extends FocusCellOwnerDrawHighlighter
-        
-    {
-        private final ColumnViewer viewer;
-        
-        public CustomFocusCellHighlighter( final ColumnViewer viewer )
-        {
-            super( viewer );
-            this.viewer = viewer;
-        }
-        
-        protected Color getSelectedCellBackgroundColorNoFocus( final ViewerCell cell )
-        {
-            final Shell shell = this.viewer.getControl().getShell();
-            return shell.getDisplay().getSystemColor( SWT.COLOR_WIDGET_BACKGROUND );
-        }
-        
-        protected boolean onlyTextHighlighting( final ViewerCell cell ) 
-        {
-            return true;
-        }
-
-        @Override
-        protected void focusCellChanged( final ViewerCell newCell, 
-                                         final ViewerCell oldCell )
-        {
-            super.focusCellChanged( newCell, oldCell );
-            FacetsSelectionPanel.this.focusCell = newCell;
-        }
-    }
-    
     private static final class FixedFacetImageDescriptor 
     
         extends CompositeImageDescriptor 
@@ -1826,16 +1803,19 @@ public final class FacetsSelectionPanel
         public Image getColumnImage( final Object element,
                                      final int column )
         {
-            final IStatus st = (IStatus) element;
-            
-            if( st.getSeverity() == IStatus.ERROR )
-            {
-                return getImageRegistry().get( IMG_ERROR );
-            }
-            else
-            {
-                return getImageRegistry().get( IMG_WARNING );
-            }
+        	final ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
+	        final String imageType;
+	        
+	        if( ( (IStatus) element ).getSeverity() == IStatus.ERROR )
+	        {
+	        	imageType = ISharedImages.IMG_OBJS_ERROR_TSK;
+	        }
+	        else
+	        {
+	        	imageType = ISharedImages.IMG_OBJS_WARN_TSK;
+	        }
+	        
+	        return sharedImages.getImage( imageType );
         }
 
         public boolean isLabelProperty( final Object obj,
@@ -1864,6 +1844,9 @@ public final class FacetsSelectionPanel
         public static String couldNotDeselectFixedFacetMessage;
         public static String detailsTabLabel;
         public static String runtimesTabLabel;
+        public static String lockMenuItem;
+        public static String unlockMenuItem;
+        public static String changeVersionMenuItem;
         
         static
         {
