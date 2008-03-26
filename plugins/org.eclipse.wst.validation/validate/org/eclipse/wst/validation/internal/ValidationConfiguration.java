@@ -231,8 +231,7 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 			if(manualEnabledVMDs.contains(data))
 				getManualEnabledValidatorsMap().put(data, Boolean.TRUE);
 			else
-				getManualEnabledValidatorsMap().put(data, Boolean.FALSE);
-			
+				getManualEnabledValidatorsMap().put(data, Boolean.FALSE);			
 		}
 	}
 	
@@ -303,42 +302,43 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 	
 	public ValidatorMetaData[] getManualEnabledValidators() throws InvocationTargetException {
 		Map<ValidatorMetaData, Boolean> map = getManualEnabledValidatorsMap();
-		Set<ValidatorMetaData> set = getManualEnabledValidatorsMap().keySet();
-		if (!set.isEmpty()) {
-			List<ValidatorMetaData> enabledManualValidators = new LinkedList<ValidatorMetaData>();
-			for (ValidatorMetaData data : set) {
-				Boolean obj = map.get(data);
-				if (obj != null && obj.booleanValue() == true) {
-					enabledManualValidators.add(data);
-				}
+		if (!map.isEmpty()) {
+			List<ValidatorMetaData> list = new LinkedList<ValidatorMetaData>();
+			for (Map.Entry<ValidatorMetaData, Boolean> me : map.entrySet()) {
+				Boolean obj = me.getValue();
+				if (obj != null && obj)list.add(me.getKey());
 			}
-			return (ValidatorMetaData[]) enabledManualValidators.toArray(new ValidatorMetaData[enabledManualValidators.size()]);
+			return (ValidatorMetaData[]) list.toArray(new ValidatorMetaData[list.size()]);
 		}
 		return getEnabledValidators();
 	}	
 	
 	public  ValidatorMetaData[] getBuildEnabledValidators() throws InvocationTargetException {
 		Map<ValidatorMetaData, Boolean> map = getBuildEnabledValidatorsMap();
-		Set<ValidatorMetaData> set = getBuildEnabledValidatorsMap().keySet();
-		List<ValidatorMetaData> enabledBuildValidators = new LinkedList<ValidatorMetaData>();
-		if (!set.isEmpty()) {
-			for (ValidatorMetaData data : set) {
-				Boolean obj = map.get(data);
-				if (obj != null && obj.booleanValue() == true) {
-					enabledBuildValidators.add(data);
-				}
+		List<ValidatorMetaData> list = new LinkedList<ValidatorMetaData>();
+		if (!map.isEmpty()) {
+			for (Map.Entry<ValidatorMetaData, Boolean> me : map.entrySet()) {
+				Boolean obj = me.getValue();
+				if (obj != null && obj)list.add(me.getKey());
 			}
-			return (ValidatorMetaData[]) enabledBuildValidators.toArray(new ValidatorMetaData[enabledBuildValidators.size()]);
+			return (ValidatorMetaData[]) list.toArray(new ValidatorMetaData[list.size()]);
 		}
 		return getEnabledValidators();
 	}
 	
+	/**
+	 * Answer the map of the validators that have been enabled for build validation, 
+	 * creating it if necessary.
+	 */
 	protected  Map<ValidatorMetaData, Boolean> getBuildEnabledValidatorsMap() {
-		if(buildValidators == null)
-			buildValidators = new HashMap<ValidatorMetaData, Boolean>();
+		if(buildValidators == null)buildValidators = new HashMap<ValidatorMetaData, Boolean>();
 		return buildValidators;
 	}	
 	
+	/**
+	 * Answer the map of the validators that have been enabled for manual validation, 
+	 * creating it if necessary.
+	 */
 	protected  Map<ValidatorMetaData, Boolean> getManualEnabledValidatorsMap() {
 		if(manualValidators == null)manualValidators = new HashMap<ValidatorMetaData, Boolean>();
 		return manualValidators;
@@ -1017,26 +1017,19 @@ public abstract class ValidationConfiguration implements IPropertyChangeListener
 		// method.)
 		return ConfigurationConstants.CURRENT_VERSION;
 	}
-
 	
 	public boolean isManualEnabled(ValidatorMetaData vmd) {
-		if (vmd == null) {
-			return false;
-		}
-		Boolean value = (Boolean) getManualEnabledValidatorsMap().get(vmd);
-		if (value == null) 
-			return false;
-		return value.booleanValue();
+		if (vmd == null)return false;
+		Boolean value = getManualEnabledValidatorsMap().get(vmd);
+		if (value == null)return false;
+		return value;
 	}
 
 	public boolean isBuildEnabled(ValidatorMetaData vmd) {
-		if (vmd == null) {
-			return false;
-		}
-		Boolean value = (Boolean) getBuildEnabledValidatorsMap().get(vmd);
-		if (value == null) 
-			return false;
-		return value.booleanValue();
+		if (vmd == null)return false;
+		Boolean value = getBuildEnabledValidatorsMap().get(vmd);
+		if (value == null)return false;
+		return value;
 	}
 	
 	public int numberOfManualEnabledValidators() throws InvocationTargetException {

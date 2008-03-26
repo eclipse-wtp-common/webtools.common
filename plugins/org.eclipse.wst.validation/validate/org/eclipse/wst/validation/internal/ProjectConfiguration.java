@@ -502,11 +502,6 @@ public class ProjectConfiguration extends ValidationConfiguration {
 		return buffer.toString();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.wst.validation.internal.operations.internal.attribute.ValidationConfiguration#getEnabledFullBuildValidators(boolean)
-	 */
 	public ValidatorMetaData[] getEnabledFullBuildValidators(boolean fullBuild) throws InvocationTargetException {
 		if (useGlobalPreference()) {
 			return extractProjectValidators(ConfigurationManager.getManager().getGlobalConfiguration().getEnabledFullBuildValidators(fullBuild), getResource());

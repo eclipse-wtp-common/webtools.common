@@ -39,6 +39,7 @@ public class MessageSeveritySetting {
 		public int getMarkerSeverity() {
 			return _markerSeverity;
 		}
+		
 	}
 	
 	private String		_id;
@@ -63,6 +64,14 @@ public class MessageSeveritySetting {
 		_label = label;
 		_default = defaultSeverity;
 	}
+	
+	@Override
+	public int hashCode() {
+		int h = 0;
+		if (_current != null)h += _current.getMarkerSeverity()*1000;
+		if (_id != null)h += _id.hashCode();
+		return h;
+	}
 
 	public String getLabel() {
 		return _label;
@@ -81,8 +90,15 @@ public class MessageSeveritySetting {
 		return _id;
 	}
 
-	public void setCurrent(Severity severity) {
+	/**
+	 * Set the current message severity. 
+	 * @param severity
+	 * @return true if the setting changed
+	 */
+	public boolean setCurrent(Severity severity) {
+		if (_current == severity)return false;
 		_current = severity;
+		return true;
 	}
 	
 	@Override

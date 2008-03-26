@@ -121,6 +121,17 @@ public class Misc {
 		return b.toString();
 	}
 	
+	/**
+	 * Answer true if they are the same. If they are both null then they are the same. 
+	 * @param s1 the string to compare. It can be null.
+	 * @param s2 the string to compare. It can be null.
+	 */
+	public static boolean same(String s1, String s2){
+		if (s1 == null && s2 == null)return true;
+		if (s1 == null)return false;
+		return s1.equals(s2);
+	}
+	
 	public static void niy(String msg){
 		if (msg == null)msg = "Sorry, this function is not implemented yet"; //$NON-NLS-1$
 		throw new RuntimeException(msg);
