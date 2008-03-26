@@ -13,7 +13,6 @@ package org.eclipse.wst.common.componentcore.internal;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.wst.common.componentcore.ArtifactEdit;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 
 public abstract class BinaryComponentHelper {
@@ -27,8 +26,6 @@ public abstract class BinaryComponentHelper {
 	public IVirtualComponent getComponent() {
 		return component;
 	}
-
-	public abstract void releaseAccess(ArtifactEdit edit);
 
 	public abstract EObject getPrimaryRootObject();
 

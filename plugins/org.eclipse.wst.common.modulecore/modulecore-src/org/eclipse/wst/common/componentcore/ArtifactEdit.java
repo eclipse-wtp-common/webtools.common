@@ -544,7 +544,7 @@ public class ArtifactEdit implements IEditModelHandler, IAdaptable{
 	 */
 	public void dispose() {
 		if(isBinary()){
-			binaryComponentHelper.releaseAccess(this);
+			binaryComponentHelper.dispose();
 		} else if (isArtifactEditModelSelfManaged && artifactEditModel != null)
 			artifactEditModel.releaseAccess(this);
 	}
