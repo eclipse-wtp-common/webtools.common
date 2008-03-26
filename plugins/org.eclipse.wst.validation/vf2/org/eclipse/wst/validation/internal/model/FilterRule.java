@@ -21,8 +21,10 @@ import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.project.facet.core.FacetedProjectFramework;
+import org.eclipse.wst.validation.internal.Deserializer;
 import org.eclipse.wst.validation.internal.ExtensionConstants;
 import org.eclipse.wst.validation.internal.PrefConstants;
+import org.eclipse.wst.validation.internal.Serializer;
 import org.eclipse.wst.validation.internal.Tracing;
 import org.eclipse.wst.validation.internal.ValMessages;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
@@ -50,6 +52,14 @@ public abstract class FilterRule implements IAdaptable {
 		if (ExtensionConstants.Rule.facet.equals(name))return new Facet();
 		return null;
 	}
+	
+	public static FilterRule create(Deserializer des) {
+		String type = des.getString();
+		FilterRule fr = create(type);
+		if (fr != null)fr.load(des);
+		return fr;
+	}
+
 	
 	public static FilterRule createFile(String pattern, boolean caseSensitive, int type){
 		File ext = new File();
@@ -189,6 +199,13 @@ public abstract class FilterRule implements IAdaptable {
 			return ExtensionConstants.Rule.fileext;
 		}
 		
+		@Override
+		public int hashCodeForConfig() {
+			int h =  super.hashCodeForConfig();
+			if (_caseSensitive)h += 601;
+			return h;
+		}
+		
 		public String getDisplayableType() {
 			return ValMessages.RuleFileExt;
 		}
@@ -228,6 +245,17 @@ public abstract class FilterRule implements IAdaptable {
 			rid.putBoolean(PrefConstants.caseSensitive, _caseSensitive);
 			super.save(rid);
 		}
+		
+		@Override
+		protected void load(Deserializer des) {
+			super.load(des);
+			_caseSensitive = des.getBoolean();
+		}
+		@Override
+		public void save(Serializer ser) {
+			super.save(ser);
+			ser.put(_caseSensitive);
+		}
 
 		public void setCaseSensitive(boolean caseSensitive) {
 			_caseSensitive = caseSensitive;
@@ -257,6 +285,13 @@ public abstract class FilterRule implements IAdaptable {
 		
 		public String getType() {
 			return ExtensionConstants.Rule.file;
+		}
+		
+		@Override
+		public int hashCodeForConfig() {
+			int h =  super.hashCodeForConfig();
+			if (_caseSensitive)h += 401;
+			return h;
 		}
 		
 		public String getDisplayableType() {
@@ -318,6 +353,20 @@ public abstract class FilterRule implements IAdaptable {
 			rid.putInt(PrefConstants.fileType, _type);
 			super.save(rid);
 		}
+		
+		@Override
+		protected void load(Deserializer des) {
+			super.load(des);
+			_caseSensitive = des.getBoolean();
+			_type = des.getInt();
+		}
+		
+		@Override
+		public void save(Serializer ser) {
+			super.save(ser);
+			ser.put(_caseSensitive);
+			ser.put(_type);
+		}
 
 		public void setCaseSensitive(boolean caseSensitive) {
 			_caseSensitive = caseSensitive;
@@ -364,7 +413,7 @@ public abstract class FilterRule implements IAdaptable {
 	
 	public static class ContentType extends FilterRule {
 		
-		private IContentType 	_type;
+		private transient IContentType 	_type;
 		private boolean			_exactMatch = true;
 		
 		public FilterRule copy() {
@@ -377,6 +426,13 @@ public abstract class FilterRule implements IAdaptable {
 		
 		public String getType() {
 			return ExtensionConstants.Rule.contentType;
+		}
+		
+		@Override
+		public int hashCodeForConfig() {
+			int h =  super.hashCodeForConfig();
+			if (_exactMatch)h += 301;
+			return h;
 		}
 		
 		public String getDisplayableType() {
@@ -393,6 +449,18 @@ public abstract class FilterRule implements IAdaptable {
 		public void save(Preferences rid) {
 			rid.putBoolean(PrefConstants.exactMatch, _exactMatch);
 			super.save(rid);
+		}
+		
+		@Override
+		protected void load(Deserializer des) {
+			super.load(des);
+			_exactMatch = des.getBoolean();
+		}
+		
+		@Override
+		public void save(Serializer ser) {
+			super.save(ser);
+			ser.put(_exactMatch);
 		}
 
 		public void setData(IConfigurationElement rule) {
@@ -465,8 +533,30 @@ public abstract class FilterRule implements IAdaptable {
 		rid.put(PrefConstants.pattern, getPattern());		
 	}
 
+	/**
+	 * @param rule
+	 */
 	public void load(Preferences rule) {
 		setData(rule.get(PrefConstants.pattern, null));		
+	}
+	
+	protected void load(Deserializer des){
+		setData(des.getString());
+	}
+
+	/**
+	 * Save your settings into the serializer.
+	 * @param ser
+	 */
+	public void save(Serializer ser) {
+		ser.put(getType());
+		ser.put(getPattern());		
+	}
+
+	public int hashCodeForConfig() {
+		int h = getType().hashCode();
+		if (_pattern != null)h += _pattern.hashCode();
+		return h;
 	}
 	
 }

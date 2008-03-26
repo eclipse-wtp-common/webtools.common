@@ -17,7 +17,9 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.wst.validation.internal.Deserializer;
 import org.eclipse.wst.validation.internal.ExtensionConstants;
+import org.eclipse.wst.validation.internal.Serializer;
 import org.eclipse.wst.validation.internal.ValMessages;
 
 public abstract class FilterGroup implements IAdaptable {
@@ -25,6 +27,9 @@ public abstract class FilterGroup implements IAdaptable {
 	/** A list of FilterRule's for this group. */
 	List<FilterRule> _rules = new LinkedList<FilterRule>();
 	FilterRule[] _rulesArray;
+	
+	/** The version number of the serialization (in case we ever need to change this) */
+	private static final int SerializationVersion = 1;
 
 	/**
 	 * Answer a filter group based on the type of the group.
@@ -39,6 +44,20 @@ public abstract class FilterGroup implements IAdaptable {
 		return null;
 	}
 	
+	/**
+	 * Answer a filter group from a deserializer.
+	 * @param des
+	 * 
+	 * @see FilterGroup#save(Serializer)
+	 */
+	public static FilterGroup create(Deserializer des){
+		des.getInt(); // get the version
+		String type = des.getString();
+		FilterGroup fg = create(type);
+		if (fg != null)fg.load(des);
+		return fg;
+	}
+
 	/**
 	 * Answer a new filter group.
 	 * 
@@ -80,6 +99,9 @@ public abstract class FilterGroup implements IAdaptable {
 		return rules;
 	}
 	
+	/**
+	 * Answer the internal type of group, e.g. "include" or "exclude".
+	 */
 	public abstract String getType();
 	
 	/** Answer the type as a type that can be displayed to a user, that is it has been localized. */
@@ -92,7 +114,7 @@ public abstract class FilterGroup implements IAdaptable {
 	public static class FilterIncludeGroup extends FilterGroup {
 
 		public String getType() {
-			return ValMessages.TypeInclude;
+			return ExtensionConstants.include;
 		}
 		
 		public String getDisplayableType() {
@@ -112,7 +134,7 @@ public abstract class FilterGroup implements IAdaptable {
 	
 	public static class FilterExcludeGroup extends FilterGroup {
 		public String getType() {
-			return ValMessages.TypeExclude;
+			return ExtensionConstants.exclude;
 		}
 		
 		protected FilterGroup create() {
@@ -125,8 +147,23 @@ public abstract class FilterGroup implements IAdaptable {
 		
 		protected boolean isExclude() {
 			return true;
-		}
-		
+		}		
+	}
+	
+	protected void load(Deserializer des) {
+		int rules = des.getInt();
+		for (int i=0; i<rules; i++)_rules.add(FilterRule.create(des));
+	}
+	
+	/**
+	 * Save your settings into the serializer.
+	 * @param ser
+	 */
+	public void save(Serializer ser){
+		ser.put(SerializationVersion);
+		ser.put(getType());
+		ser.put(_rules.size());
+		for (FilterRule rule : _rules)rule.save(ser);		
 	}
 
 	/**
@@ -187,6 +224,15 @@ public abstract class FilterGroup implements IAdaptable {
 			fg._rules.add(fg._rulesArray[i]);
 		}
 		return fg;
+	}
+
+	public int hashCodeForConfig() {
+		int h = 0;
+		if (isExclude())h += 13;
+		if (_rules != null){
+			for (FilterRule fr : _rules)h += fr.hashCodeForConfig();
+		}
+		return h;
 	}
 	
 
