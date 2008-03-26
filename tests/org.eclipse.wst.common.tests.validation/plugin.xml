@@ -214,7 +214,7 @@
        </helper>
        <run
              class="org.eclipse.wst.validation.tests.T2B"
-             enabled="false">
+             enabled="true">
        </run>
     </validator>
  </extension>
