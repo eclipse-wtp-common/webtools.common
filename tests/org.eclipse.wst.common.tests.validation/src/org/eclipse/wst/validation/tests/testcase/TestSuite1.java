@@ -23,6 +23,8 @@ import org.eclipse.wst.validation.MessageSeveritySetting;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.ValidationResults;
 import org.eclipse.wst.validation.Validator;
+import org.eclipse.wst.validation.internal.Deserializer;
+import org.eclipse.wst.validation.internal.Serializer;
 import org.eclipse.wst.validation.internal.Tracing;
 import org.eclipse.wst.validation.internal.ValConstants;
 import org.eclipse.wst.validation.internal.ValManager;
@@ -233,22 +235,22 @@ public class TestSuite1 extends TestCase {
 		assertEquals(4, v.getMessageSettings().size());
 	}
 	
-//	public void testSerialize(){
-//		Serializer s = new Serializer(20);
-//		s.put(true);
-//		s.put(false);
-//		s.put("Hi there");
-//		s.put(25);
-//		String test = s.toString();
-//		
-//		Deserializer d = new Deserializer(test);
-//		assertTrue(d.getBoolean());
-//		assertFalse(d.getBoolean());
-//		assertEquals("Hi there", d.getString());
-//		assertTrue(d.hasNext());
-//		assertEquals(25, d.getInt());
-//		assertFalse(d.hasNext());
-//	}
+	public void testSerialize(){
+		Serializer s = new Serializer(20);
+		s.put(true);
+		s.put(false);
+		s.put("Hi there");
+		s.put(25);
+		String test = s.toString();
+		
+		Deserializer d = new Deserializer(test);
+		assertTrue(d.getBoolean());
+		assertFalse(d.getBoolean());
+		assertEquals("Hi there", d.getString());
+		assertTrue(d.hasNext());
+		assertEquals(25, d.getInt());
+		assertFalse(d.hasNext());
+	}
 	
 	public void testSuspend() throws CoreException, InterruptedException {
 		ValidationFramework vf = ValidationFramework.getDefault();
