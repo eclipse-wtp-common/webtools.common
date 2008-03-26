@@ -23,3 +23,6 @@ org.eclipse.wst.common.environment/trace/ws_ant=true
 # Turn on web service detailed command engine tracing
 org.eclipse.wst.common.environment/trace/ws_dt_cmd_engine=true
 
+# Turn on web service framework tracing
+org.eclipse.wst.common.environment/trace/ws_framework=true
+
