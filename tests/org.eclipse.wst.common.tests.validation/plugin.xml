@@ -190,5 +190,33 @@
          </include>
       </validator>
      </extension>
+ <extension
+       id="t2a"
+       name="T2A"
+       point="org.eclipse.wst.validation.validator">
+    <validator>
+       <helper
+             class="org.eclipse.wst.validation.tests.T2AHelper">
+       </helper>
+       <run
+             class="org.eclipse.wst.validation.tests.T2A"
+             enabled="false">
+       </run>
+    </validator>
+ </extension>
+ <extension
+       id="t2b"
+       name="T2B"
+       point="org.eclipse.wst.validation.validator">
+    <validator>
+       <helper
+             class="org.eclipse.wst.validation.tests.T2AHelper">
+       </helper>
+       <run
+             class="org.eclipse.wst.validation.tests.T2B"
+             enabled="false">
+       </run>
+    </validator>
+ </extension>
  
 </plugin>

@@ -20,7 +20,6 @@ public class TestValidator7 extends AbstractValidator {
 	public static String id(){
 		return Activator.PLUGIN_ID +".Test7";
 	}
-
 	
 	private Set<IResource> _set = new HashSet<IResource>(100);
 	
@@ -34,6 +33,10 @@ public class TestValidator7 extends AbstractValidator {
 
 	public Set<IResource> getSet() {
 		return _set;
+	}
+	
+	public void reset(){
+		_set.clear();
 	}
 
 }

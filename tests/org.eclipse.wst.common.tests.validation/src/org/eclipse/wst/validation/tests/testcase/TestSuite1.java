@@ -160,6 +160,7 @@ public class TestSuite1 extends TestCase {
 		ByteArrayInputStream in = new ByteArrayInputStream("map t1error error\nmap t1warning warning".getBytes());
 		_mapTest1.setContents(in, true, true, monitor);
 		
+		Thread.sleep(2000);  // we need to sleep here to give the "finished" job a chance to run.
 		TestValidator4.getCounters().reset();
 		TestValidator5D.getCounters().reset();
 		_env.incrementalBuild();
@@ -208,6 +209,18 @@ public class TestSuite1 extends TestCase {
 	}
 	
 	/**
+	 * Count the number of test validators.
+	 */
+	public void testCountValidators(){
+		int count = 0;
+		for (Validator v : ValManager.getDefault().getValidators()){
+			int i = v.getId().indexOf(".Test");
+			if (i != -1)count++;
+		}
+		assertEquals("Expected there to be 7 Test validators", 7, count);
+	}
+	
+	/**
 	 * Test if we can get a message that was defined through the extension point.
 	 */
 	public void testMessages() {
@@ -220,33 +233,55 @@ public class TestSuite1 extends TestCase {
 		assertEquals(4, v.getMessageSettings().size());
 	}
 	
+//	public void testSerialize(){
+//		Serializer s = new Serializer(20);
+//		s.put(true);
+//		s.put(false);
+//		s.put("Hi there");
+//		s.put(25);
+//		String test = s.toString();
+//		
+//		Deserializer d = new Deserializer(test);
+//		assertTrue(d.getBoolean());
+//		assertFalse(d.getBoolean());
+//		assertEquals("Hi there", d.getString());
+//		assertTrue(d.hasNext());
+//		assertEquals(25, d.getInt());
+//		assertFalse(d.hasNext());
+//	}
+	
 	public void testSuspend() throws CoreException, InterruptedException {
 		ValidationFramework vf = ValidationFramework.getDefault();
+		Validator v = vf.getValidator(TestValidator6.id(), null);
+		TestValidator6 t6 = (TestValidator6)v.asV2Validator().getValidator();
+		
+		v = vf.getValidator(TestValidator7.id(), null);
+		TestValidator7 t7 = (TestValidator7)v.asV2Validator().getValidator();
+		t7.reset();
+		
 		long start = System.currentTimeMillis();
 		_env.fullBuild();
-		
+		Thread.sleep(1000);
 		vf.join(null);
 		long first = System.currentTimeMillis();
 		long valBuild = first-start;
 		assertTrue("We expect the build to take longer than 3s, but it completed in " + valBuild + "ms", valBuild > 3000);
 		
-		Validator v = vf.getValidator(TestValidator6.id(), null);
-		TestValidator6 t6 = (TestValidator6)v.asV2Validator().getValidator();
 		IResource projectFile = _testProject.findMember(".project");
 		assertFalse("We should not be validating the .product file", t6.getSet().contains(projectFile));
 		
-		v = vf.getValidator(TestValidator7.id(), null);
-		TestValidator7 t7 = (TestValidator7)v.asV2Validator().getValidator();
 		assertEquals("We expected the validation to be suspended after the first call", 1, t7.getSet().size());
 		
 		vf.suspendAllValidation(true);
 		_env.fullBuild();
+		Thread.sleep(1000);
 		vf.join(null);
 		long second = System.currentTimeMillis();
 		vf.suspendAllValidation(false);
 		long novalBuild = second - first;
 		assertTrue("We except the build to go faster with validation turned off, but it was " + (novalBuild-valBuild) +
 				" ms faster" , novalBuild < valBuild);
+		assertEquals("We expected the validation to be suspended after the first call", 1, t7.getSet().size());
 
 	}
 	
