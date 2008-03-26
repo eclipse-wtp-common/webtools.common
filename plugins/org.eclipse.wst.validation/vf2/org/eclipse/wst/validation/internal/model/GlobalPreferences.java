@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2008 IBM Corporation and others.
+ * Copyright (c) 2007, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,7 +11,8 @@
 package org.eclipse.wst.validation.internal.model;
 
 /**
- * This class represents the global Preferences as set on the Validation Preferences page.
+ * This class represents the global Preferences as set on the Validation Preferences page. It doesn't
+ * hold any of the individual validator settings, just the global check boxes.
  */
 public class GlobalPreferences {
 	
