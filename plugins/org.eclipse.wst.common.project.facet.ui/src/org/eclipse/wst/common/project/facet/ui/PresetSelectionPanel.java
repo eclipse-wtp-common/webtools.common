@@ -118,7 +118,7 @@ public final class PresetSelectionPanel
                         }
                     };
                     
-                    Display.getDefault().syncExec( runnable );
+                    Display.getDefault().asyncExec( runnable );
                 }
             },
             IFacetedProjectEvent.Type.SELECTED_PRESET_CHANGED
