@@ -13,7 +13,6 @@ package org.eclipse.wst.validation.internal;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -49,9 +48,6 @@ import org.osgi.service.prefs.BackingStoreException;
 public class ValManager implements IValChangedListener {
 	
 	private static ValManager _me;
-
-	/** All the known, global, validators. If this is null it means that the validators have not been loaded yet. */
-	private Validator[] _validators;
 		
 	/**
 	 * Projects may be allowed to override the global validation settings. If that is the case then those
@@ -62,7 +58,7 @@ public class ValManager implements IValChangedListener {
 		Collections.synchronizedMap(new HashMap<IProject, ProjectPreferences>(50));
 	
 	private GlobalPreferences _globalPreferences;
-	
+		
 	/**
 	 * This number increases each time any of the validation configurations change. It is used to determine
 	 * if information that we have cached in the ValProperty is stale or not. This starts off at zero, each time
@@ -86,9 +82,9 @@ public class ValManager implements IValChangedListener {
 	 * @return Answer an empty array if there are no validators.
 	 */
 	public Validator[] getValidators(){
-		return getValidators2(null);
+		return getValidators(null);
 	}
-		
+	
 	/**
 	 * Answer all the validators that are in effect for the given project.
 	 * <p>
@@ -100,16 +96,107 @@ public class ValManager implements IValChangedListener {
 	 * is defined to operate on this project type. This is the way that the previous version of the framework
 	 * did it. For version 2 validators, they are all returned.
 	 * </p>
-	 * @param project this may be null, in which case the global preferences are used.
-	 * @return
+	 * @param project this may be null, in which case the global preferences are returned.
 	 */
 	public Validator[] getValidators(IProject project) throws ProjectUnavailableError {
-		if (project == null)return getValidators2(null);
-		if (!getGlobalPreferences().getOverride())return getValidators2(null);
+		return getValidators(project, true);
+	}
+	
+	/**
+	 * Answer all the validators for the given project.
+	 * <p>
+	 * Individual projects may override the global validation preference
+	 * settings. If the project has it's own settings, then those validators are
+	 * returned via this method.
+	 * </p>
+	 * <p>
+	 * The following approach is used. For version 1 validators, the validator
+	 * is only returned if it is defined to operate on this project type. This
+	 * is the way that the previous version of the framework did it. For version
+	 * 2 validators, they are all returned.
+	 * </p>
+	 * 
+	 * @param project
+	 *            this may be null, in which case the global preferences are
+	 *            returned.
+	 * @param respectOverrideSettings
+	 *            if this is true then the validators that get returned are
+	 *            based on the override settings. So for example, if the global
+	 *            preferences do not allow project overrides then none of the
+	 *            project settings are used. Normal validation would set this to true.
+	 *            The properties page would set this to false.
+	 */
+	public synchronized Validator[] getValidators(IProject project, boolean respectOverrideSettings) throws ProjectUnavailableError {
+		Map<String,Validator> v2Vals = getV2Validators(project);
+		TreeSet<Validator> sorted = new TreeSet<Validator>();
+		for (Validator v : v2Vals.values())sorted.add(v);
 		
-		ProjectPreferences pp = getProjectPreferences(project);
-		if (pp == null || !pp.getOverride())return getValidators2(null);
-		return pp.getValidators();		
+		try {
+			ValidationConfiguration vc = ConfigurationManager.getManager().getConfiguration(project);
+			for (ValidatorMetaData vmd : vc.getValidators()){
+				Validator v = Validator.create(vmd, vc, project);
+				sorted.add(v);
+			}
+		}
+		catch (InvocationTargetException e){
+			ValidationPlugin.getPlugin().handleException(e);
+		}
+		
+		Validator[] vals = new Validator[sorted.size()];
+		sorted.toArray(vals);
+		return vals;
+	}
+	
+	/**
+	 * Answer the V2 validators that are in effect for this project. The following approach is used:
+	 * <ol>
+	 * <li>The validators that are defined by the extension point are loaded.</li>
+	 * <li>They are customized by any global preferences.</li>
+	 * <li>If project customizations are allowed, they are customized by the project preferences.
+	 * </ol>
+	 * 
+	 * @param project
+	 *            This may be null, in which case only the global preferences are used.
+	 * @return
+	 */
+	private Map<String,Validator> getV2Validators(IProject project){
+		Map<String,Validator> extVals = ExtensionValidators.instance().getMapV2Copy();
+		try {
+			List<Validator> vals = ValPrefManagerGlobal.getDefault().getValidators();
+			for (Validator v : vals)extVals.put(v.getId(), v);
+			
+			if (!mustUseGlobalValidators(project)){
+				//TODO should probably cache this vpm
+				ValPrefManagerProject vpm = new ValPrefManagerProject(project);
+				vals = vpm.getValidators(extVals);
+				for (Validator v : vals)extVals.put(v.getId(), v);
+			}		
+		}
+		catch (BackingStoreException e){
+			ValidationPlugin.getPlugin().handleException(e);
+		}
+		return extVals;
+	}
+	
+
+	/**
+	 * Answer true if we must use the global settings for this project. If the global preferences do not
+	 * allow overrides, or if this project does not allow overrides then the global preferences must be used.
+	 *  
+	 * @param project project that is being tested. It can be null, in which case the global preferences must be used.
+	 * @return true if the global preferences must be used.
+	 */
+	public boolean mustUseGlobalValidators(IProject project){
+		if (project == null)return true;
+		if (!getGlobalPreferences().getOverride())return true;
+		ProjectPreferences pp = getProjectPreferences2(project);
+		if (pp == null){
+			ValPrefManagerProject vpm = new ValPrefManagerProject(project);
+			pp = new ProjectPreferences(project); 
+			vpm.loadProjectPreferencesShallow(pp);
+		}
+		
+		return !pp.getOverride();
 	}
 	
 	/**
@@ -137,21 +224,7 @@ public class ValManager implements IValChangedListener {
 		}
 		return null;
 	}
-	
-	/**
-	 * Answer true if this project has enabled project preferences. That is, the global settings allow
-	 * projects to override the global settings, and the project has settings that are enabled.
-	 * 
-	 * @param project this can be null, in which case this method will return false.
-	 */
-	public boolean hasEnabledProjectPreferences(IProject project){
-		if (project == null)return false;
-		if (!getGlobalPreferences().getOverride())return false;
-		ProjectPreferences pp = getProjectPreferences(project);
-		if (pp == null || !pp.getOverride())return false;
-		return true;
-	}
-				
+					
 	/**
 	 * Answer true if the resource has any enabled validators.
 	 * 
@@ -192,7 +265,7 @@ public class ValManager implements IValChangedListener {
 		GlobalPreferences gp = getGlobalPreferences();
 		if (!gp.getOverride() || project == null)return gp.getDisableAllValidation();
 		
-		ProjectPreferences pp = getProjectPreferences(project);
+		ProjectPreferences pp = getProjectPreferences2(project);
 		if (pp == null)return gp.getDisableAllValidation();
 		return pp.getSuspend();		
 	}
@@ -204,41 +277,29 @@ public class ValManager implements IValChangedListener {
 	 * @return Answer an empty array if there are no validators.
 	 */
 	public static Validator[] getDefaultValidators() throws InvocationTargetException {
-		Validator[] val = restoreDefaults2(null);
+		Map<String,Validator> extVals = ExtensionValidators.instance().getMapV2();
+		TreeSet<Validator> sorted = new TreeSet<Validator>();
+		for (Validator v : extVals.values())sorted.add(v);
 		
-		TreeSet<Validator> set = new TreeSet<Validator>();
-		for (Validator v : val)set.add(v);
-		
-		List<Validator> list = new LinkedList<Validator>();
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		GlobalConfiguration gc = new GlobalConfiguration(root);
 		gc.resetToDefault();
 		for (ValidatorMetaData vmd : gc.getValidators()){
-			list.add(Validator.create(vmd, gc, null));
-		}							
-					
-		set.addAll(list);
-		val = new Validator[set.size()];
-		set.toArray(val);
+			Validator v = Validator.create(vmd, gc, null);
+			v.setBuildValidation(vmd.isBuildValidation());
+			v.setManualValidation(vmd.isManualValidation());
+			sorted.add(v);
+		}
+		
+		Validator[] val = new Validator[sorted.size()];
+		sorted.toArray(val);
 		return val;
 	}
 
 	public static Validator[] getDefaultValidators(IProject project) throws InvocationTargetException {
-		Validator[] val = restoreDefaults2(project);
-		
-		TreeSet<Validator> set = new TreeSet<Validator>();
-		for (Validator v : val)set.add(v);
-		
-		List<Validator> list = new LinkedList<Validator>();
-		ProjectConfiguration pc = new ProjectConfiguration(project);
-		pc.resetToDefault();
-		for (ValidatorMetaData vmd : pc.getValidators()){
-			list.add(Validator.create(vmd, pc, project));
-		}							
-					
-		set.addAll(list);
-		val = new Validator[set.size()];
-		set.toArray(val);
+		Map<String,Validator> extVals = ExtensionValidators.instance().getMap(project);
+		Validator[] val = new Validator[extVals.size()];
+		extVals.values().toArray(val);
 		return val;
 	}
 
@@ -250,46 +311,47 @@ public class ValManager implements IValChangedListener {
 	 * 
 	 * @return Answer an empty array if there are no validators.
 	 */
-	Validator[] getValidators2(IProject project) throws ProjectUnavailableError {
-		// If I use a local variable I don't need to synchronize the method.
-		Validator[] validators = _validators;
-		if (project == null && validators != null)return validators;
-				
-		Validator[] val = loadExtensions(false, project);
-		ValPrefManagerGlobal vpm = ValPrefManagerGlobal.getDefault();
-		if (!vpm.loadPreferences(val)){
-			val = restoreDefaults2(project);
-			saveStateTimestamp();				
-		}
-		else {
-			if (getGlobalPreferences().getStateTimeStamp() != Platform.getStateStamp())
-				val = migrateSettings(val, project);
-		}
+//	Validator[] getValidators2(IProject project) throws ProjectUnavailableError {
+//		// If I use a local variable I don't need to synchronize the method.
+//		
+//		Validator[] validators = _validators;
+//		if (project == null && validators != null)return validators;
+//				
+//		Validator[] val = loadExtensions(false, project);
+//		ValPrefManagerGlobal vpm = ValPrefManagerGlobal.getDefault();
+//		if (!vpm.loadPreferences(val)){
+//			val = restoreDefaults2(project);
+//			saveStateTimestamp();				
+//		}
+//		else {
+//			if (getGlobalPreferences().getStateTimeStamp() != Platform.getStateStamp())
+//				val = migrateSettings(val, project);
+//		}
+//		
+//		TreeSet<Validator> set = new TreeSet<Validator>();
+//		for (Validator v : val)set.add(v);
+//		
+//		List<Validator> list = new LinkedList<Validator>();
+//		try {
+//			ValidationConfiguration vc = ConfigurationManager.getManager().getConfiguration(project);
+//			for (ValidatorMetaData vmd : vc.getValidators()){
+//				list.add(Validator.create(vmd, vc, project));
+//			}							
+//			
+//		}
+//		catch (InvocationTargetException e){
+//			if (project != null && (!project.exists() || !project.isOpen()))
+//				throw new ProjectUnavailableError(project);
+//			ValidationPlugin.getPlugin().handleException(e);
+//		}
+//		
+//		set.addAll(list);
+//		val = new Validator[set.size()];
+//		set.toArray(val);
+//		if (project == null)_validators = val;
+//		return val;
+//	}
 		
-		TreeSet<Validator> set = new TreeSet<Validator>();
-		for (Validator v : val)set.add(v);
-		
-		List<Validator> list = new LinkedList<Validator>();
-		try {
-			ValidationConfiguration vc = ConfigurationManager.getManager().getConfiguration(project);
-			for (ValidatorMetaData vmd : vc.getValidators()){
-				list.add(Validator.create(vmd, vc, project));
-			}							
-			
-		}
-		catch (InvocationTargetException e){
-			if (project != null && (!project.exists() || !project.isOpen()))
-				throw new ProjectUnavailableError(project);
-			ValidationPlugin.getPlugin().handleException(e);
-		}
-		
-		set.addAll(list);
-		val = new Validator[set.size()];
-		set.toArray(val);
-		if (project == null)_validators = val;
-		return val;
-	}
-	
 	private void saveStateTimestamp() {
 		try {
 			IEclipsePreferences prefs = ValidationFramework.getDefault().getPreferenceStore();
@@ -320,7 +382,7 @@ public class ValManager implements IValChangedListener {
 	/**
 	 * Answer the global validation preferences.
 	 */
-	public GlobalPreferences getGlobalPreferences(){
+	public synchronized GlobalPreferences getGlobalPreferences(){
 		GlobalPreferences gp = _globalPreferences;
 		if (gp == null){
 			ValPrefManagerGlobal vpm = ValPrefManagerGlobal.getDefault();
@@ -331,23 +393,51 @@ public class ValManager implements IValChangedListener {
 		return gp;		
 	}
 	
-	/**
-	 * Answer the project specific validation preferences. 
-	 * 
-	 * @param project
-	 * 
-	 * @return null if the project does not have any specific preferences.
-	 */
-	public ProjectPreferences getProjectPreferences(IProject project){
+	public ProjectPreferences getProjectPreferences(IProject project) {
+		ProjectPreferences pp = getProjectPreferences2(project);
+		if (pp != null)return pp;
+		
+		/* hopefully we rarely get this far */
+		
+		Map<String,Validator> extVals = ExtensionValidators.instance().getMapV2Copy();
+		try {
+			List<Validator> vals = ValPrefManagerGlobal.getDefault().getValidators();
+			for (Validator v : vals)extVals.put(v.getId(), v);
+			
+			pp = getProjectPreferences(project, extVals);
+		}
+		catch (BackingStoreException e){
+			ValidationPlugin.getPlugin().handleException(e);
+		}	
+		return pp;
+	}
+
+	
+	private ProjectPreferences getProjectPreferences(IProject project, Map<String, Validator> baseValidators) 
+		throws BackingStoreException {
 		if (_projectPreferences.containsKey(project)){
 			return _projectPreferences.get(project);
 		}
-			
+		
 		ValPrefManagerProject vpm = new ValPrefManagerProject(project);
 		ProjectPreferences pp = new ProjectPreferences(project); 
-		vpm.loadProjectPreferences(pp);
+		vpm.loadProjectPreferences(pp, baseValidators);
 		_projectPreferences.put(project, pp);
-		return pp;
+		return pp;		
+	}
+	
+	/**
+	 * Answer the project specific validation preferences from the cache
+	 * 
+	 * @param project
+	 * 
+	 * @return null if the project is not in the cache.
+	 */
+	private ProjectPreferences getProjectPreferences2(IProject project){
+		if (_projectPreferences.containsKey(project)){
+			return _projectPreferences.get(project);
+		}
+		return null;
 	}
 	
 	/**
@@ -360,27 +450,6 @@ public class ValManager implements IValChangedListener {
 //		getValidators(true);
 //	}
 	
-
-	/**
-	 * Restore all the validation defaults, as defined by the individual validators.
-	 */
-	private static synchronized Validator[] restoreDefaults2(IProject project) {
-		Validator[] val = ValidatorExtensionReader.getDefault().process(true, project);
-//		ValPrefManagerGlobal vpm = ValPrefManagerGlobal.getDefault();
-//		vpm.saveAsPrefs(val);
-		return val;
-	}
-	
-	/**
-	 * Load the version 2 validators from the extensions.
-	 * 
-	 * @param deep if true load all the configuration elements for each validator, if false
-	 * do a shallow load, where the validator class, id, name and message categories are loaded.
-	 */
-	private static Validator[] loadExtensions(boolean deep, IProject project) {
-		// doesn't need to be synchronized
-		return ValidatorExtensionReader.getDefault().process(deep, project);
-	}
 
 	/**
 	 * Run all the validators that are applicable to this resource.
@@ -623,8 +692,7 @@ public class ValManager implements IValChangedListener {
 	}
 
 	public void validatorsForProjectChanged(IProject project) {
-		if (project == null)_validators = null;	
-		else _projectPreferences.remove(project);
+		if (project != null)_projectPreferences.remove(project);
 	}
 
 }

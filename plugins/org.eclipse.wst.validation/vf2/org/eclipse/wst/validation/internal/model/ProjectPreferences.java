@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2008 IBM Corporation and others.
+ * Copyright (c) 2007, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,8 +12,6 @@ package org.eclipse.wst.validation.internal.model;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.wst.validation.Validator;
-import org.eclipse.wst.validation.internal.ValManager;
-import org.eclipse.wst.validation.internal.ValPrefManagerProject;
 
 /**
  * Validation preferences for a particular project.
@@ -32,7 +30,7 @@ public class ProjectPreferences {
 	private boolean 	_override = DefaultOverride;
 	private boolean		_suspend = DefaultSuspend;
 	
-	private Validator[]	_validators;
+	private Validator[]	_validators = new Validator[0];
 	
 	public ProjectPreferences(IProject project){
 		_project = project;
@@ -56,32 +54,13 @@ public class ProjectPreferences {
 	 * @return an empty array if there are no validators.
 	 */
 	public Validator[] getValidators() {
-		Validator[] vals = _validators;
-		if (vals == null){
-			vals = init();
-			_validators = vals;
-		}
-		return vals;
+		return _validators;
 	}
 	
 	public void setValidators(Validator[] validators){
 		_validators = validators;
 	}
 	
-	private Validator[] init(){
-		Validator[] vals = null;
-		ValPrefManagerProject vpm = new ValPrefManagerProject(_project);
-		if (vpm.hasProjectSpecificSettings()){
-			vpm.loadProjectPreferences(this);
-			vals = _validators;
-		}
-		else {
-			vals = ValManager.getDefault().getValidators();
-		}
-		if (vals == null)vals = new Validator[0];
-		return vals;
-	}
-
 	public IProject getProject() {
 		return _project;
 	}

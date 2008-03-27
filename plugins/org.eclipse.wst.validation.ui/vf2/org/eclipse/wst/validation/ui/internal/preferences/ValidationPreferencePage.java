@@ -280,7 +280,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 
 		public Composite createPage(Composite parent) throws InvocationTargetException {
 			_globalConfig = new GlobalConfiguration(ConfigurationManager.getManager().getGlobalConfiguration());
-			copyValidators();
+			_validators = copyValidators(ValManager.getDefault().getValidators());
 			
 			final ScrolledComposite sc1 = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
 			sc1.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -427,10 +427,10 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 		/**
 		 * Make a copy of the current validators and store the results.
 		 */
-		private void copyValidators(){
-			Validator[] vals = ValManager.getDefault().getValidators();
-			_validators = new Validator[vals.length];
-			for (int i=0; i<vals.length; i++)_validators[i] = vals[i].copy();
+		private Validator[] copyValidators(Validator[] vals){
+			Validator[] copy = new Validator[vals.length];
+			for (int i=0; i<vals.length; i++)copy[i] = vals[i].copy();
+			return copy;
 		}
 
 		private void addConfirm(Composite validatorGroup) {
@@ -675,7 +675,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 		}
 
 		public boolean performDefaults() throws InvocationTargetException {
-			_validators = ValManager.getDefaultValidators();
+			_validators = copyValidators(ValManager.getDefaultValidators());
 			updateWidgets();
 			getDefaultsButton().setFocus();
 			return true;

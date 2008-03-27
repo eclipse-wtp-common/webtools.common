@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
 import org.eclipse.wst.validation.internal.MarkerManager;
+import org.eclipse.wst.validation.internal.Misc;
 import org.eclipse.wst.validation.internal.SummaryReporter;
 import org.eclipse.wst.validation.internal.ValManager;
 import org.eclipse.wst.validation.internal.ValMessages;
@@ -54,7 +55,17 @@ import org.eclipse.wst.validation.internal.provisional.core.IValidator;
  *
  */
 public abstract class Validator implements Comparable {
-	// Remember is you add a new instance variable, make sure that you update the copy and become methods
+	// Remember if you add a new instance variable, make sure that you update the copy and become methods
+	
+	/**
+	 * The level of configuration for the validator.
+	 * <ul>
+	 * <li>Extension - Defined by an extension point.</li>
+	 * <li>Global - Defined by a global preference.</li>
+	 * <li>Project - Defined by a project property.</li>
+	 * </ul>
+	 */
+	public enum Level {Extension, Global, Project};
 	
 	protected boolean	_buildValidation = true;
 	
@@ -80,6 +91,12 @@ public abstract class Validator implements Comparable {
 	
 	/** The project that you are defined in. This can be null which means that you are a global validator. */
 	protected IProject	_project;
+		
+	/** How many times has a global field in this validator been changed since it was created (or copied)? */
+	protected transient int _changeCountGlobal;
+	
+	/** How many times has a message field in this validator been changed since it was created (or copied)? */
+	protected transient int _changeCountMessages;
 	
 	/**
 	 * Create a new validator based on a abstract validator.
@@ -97,6 +114,13 @@ public abstract class Validator implements Comparable {
 		return v2;
 	}
 	
+	/**
+	 * Create a new validator based on validator meta data.
+	 * 
+	 * @param project
+	 *            The project that you are defined in. This can be null which
+	 *            means that you are a global validator.
+	 */
 	public static Validator create(ValidatorMetaData vmd, ValidationConfiguration config, IProject project){
 		V1 v1 = new V1(vmd, config);
 		v1._project = project;
@@ -238,6 +262,7 @@ public abstract class Validator implements Comparable {
 			_messageSettings = new HashMap<String, MessageSeveritySetting>(10);
 		}
 		_messageSettings.put(message.getId(), message);
+		bumpChangeCountMessages();
 	}
 	
 	public IValidator asIValidator(){
@@ -264,18 +289,34 @@ public abstract class Validator implements Comparable {
 		if (settings == null){
 			settings = new HashMap<String, MessageSeveritySetting>(10);
 			init(settings);
-			if (ValManager.getDefault().hasEnabledProjectPreferences(getProject())){
-				ValPrefManagerProject vp = new ValPrefManagerProject(getProject());
-				vp.loadMessages(this, settings);
-			}
-			else {
+			if (ValManager.getDefault().mustUseGlobalValidators(getProject())){
 				ValPrefManagerGlobal gp = ValPrefManagerGlobal.getDefault();
 				gp.loadMessages(this, settings);
-				
+			}
+			else {
+				ValPrefManagerProject vp = new ValPrefManagerProject(getProject());
+				vp.loadMessages(this, settings);				
 			}
 			_messageSettings = settings;
 		}
 		return settings;
+	}
+	
+	/**
+	 * Answer a hash code for the configurable fields so that we can quickly determine if two
+	 * validators are the same.
+	 */
+	public int hashCodeForConfig(){
+		int h = 0;
+		if (_buildValidation)h += 101;
+		if (_delegatingId != null)h += _delegatingId.hashCode();
+		if (_manualValidation)h += 201;
+		if (_messageSettings != null){
+			for (MessageSeveritySetting ms : _messageSettings.values())h += ms.hashCode();
+		}
+		if (_sourceId != null)h += _sourceId.hashCode();
+		h += _version;
+		return h;
 	}
 	
 	private void init(Map<String, MessageSeveritySetting> settings) {
@@ -318,7 +359,10 @@ public abstract class Validator implements Comparable {
 	}
 	
 	protected final void setManualValidation2(boolean manualValidation) {
-		_manualValidation = manualValidation;
+		if (_manualValidation != manualValidation){
+			bumpChangeCountGlobal();
+			_manualValidation = manualValidation;
+		}
 	}
 
 	/**
@@ -326,6 +370,14 @@ public abstract class Validator implements Comparable {
 	 */
 	public boolean isBuildValidation() {
 		return _buildValidation;
+	}
+	
+	/**
+	 * Has the validator changed since it was last created or copied?
+	 */
+	public boolean isChanged(){
+		if (_changeCountGlobal > 0 || _changeCountMessages > 0)return true;
+		return false;
 	}
 
 	/**
@@ -338,7 +390,10 @@ public abstract class Validator implements Comparable {
 	}
 	
 	protected final void setBuildValidation2(boolean buildValidation) {
-		_buildValidation = buildValidation;
+		if (_buildValidation != buildValidation){
+			bumpChangeCountGlobal();
+			_buildValidation = buildValidation;
+		}
 	}
 
 	/**
@@ -360,7 +415,10 @@ public abstract class Validator implements Comparable {
 	 * @param delegating the id of the validator that is actually going to perform the validation.
 	 */
 	public void setDelegatingId(String delegating) {
-		_delegatingId = delegating;
+		if (!Misc.same(_delegatingId, delegating)){
+			_delegatingId = delegating;
+			bumpChangeCountGlobal();
+		}
 	}
 	
 	public int getVersion() {
@@ -368,7 +426,10 @@ public abstract class Validator implements Comparable {
 	}
 	
 	public void setVersion(int version) {
-		_version = version;
+		if (_version != version){
+			_version = version;
+			bumpChangeCountGlobal();
+		}
 	}
 	
 	@Override
@@ -396,6 +457,7 @@ public static class V1 extends Validator {
 			setManualValidation(config.isManualEnabled(vmd));
 		}
 		setDelegatingId(ValidatorDelegatesRegistry.getInstance().getDefaultDelegate(getValidatorClassname()));
+		resetChangeCounters();
 	}
 	
 	@Override
@@ -563,6 +625,11 @@ public final static class V2 extends Validator implements IAdaptable {
 	 * does the work).
 	 */
 	private AbstractValidator	_delegated;
+		
+	/** How many times has a group field in this validator been changed since it was created (or copied)? */
+	protected transient int _changeCountGroups;
+		
+	private Level _level;
 	
 	V2(AbstractValidator base, IProject project){
 		_validator = base;
@@ -577,11 +644,13 @@ public final static class V2 extends Validator implements IAdaptable {
 		catch (InvocationTargetException e){
 			ValidationPlugin.getPlugin().handleException(e);
 		}
+		resetChangeCounters();
 	}
 
 	public synchronized void add(FilterGroup fg) {
 		_groupsArray = null;
 		_groups.add(fg);
+		bumpChangeCountGroups();
 	}
 	
 	@Override
@@ -622,10 +691,27 @@ public final static class V2 extends Validator implements IAdaptable {
 		return v;
 	}
 	
+	public int getChangeCountGroups(){
+		return _changeCountGroups;
+	}
+	
+	public void bumpChangeCountGroups(){
+		_changeCountGroups++;
+	}
+	
 	public String getDependencyId(){
 		String id = getDelegatedValidator().getDependencyId();
 		if (id != null)return id;
 		return getId();
+	}
+
+	public Level getLevel() {
+		return _level;
+	}
+
+	public void setLevel(Level level) {
+		assert _level == null;
+		_level = level;
 	}
 	
 	/**
@@ -684,6 +770,22 @@ public final static class V2 extends Validator implements IAdaptable {
 	public String getValidatorClassname(){
 		return getValidator().getClass().getName();
 	}
+	
+	@Override
+	public int hashCodeForConfig() {
+		int h =  super.hashCodeForConfig();
+		if (_id != null)h += _id.hashCode();
+		if (_groups != null){
+			for (FilterGroup fg : _groups)h += fg.hashCodeForConfig();
+		}
+		return h;
+	}
+	
+	@Override
+	public boolean isChanged() {
+		if (_changeCountGroups > 0)return true;
+		return super.isChanged();
+	}
 		
 	/**
 	 * Answer true if this validator, based on it's filters, should validate this resource.
@@ -706,18 +808,24 @@ public final static class V2 extends Validator implements IAdaptable {
 		_delegated = null;
 	}
 	
-	public synchronized void setGroups(FilterGroup[] groups){
-		_groups.clear();
+	public synchronized void setGroups(List<FilterGroup> groups){
+		_groups = groups;
 		_groupsArray = null;
-		for (FilterGroup group : groups)_groups.add(group);
+		bumpChangeCountGroups();
 	}
 
 	public void setId(String id) {
-		_id = id;
+		if (!Misc.same(_id, id)){
+			_id = id;
+			bumpChangeCountGlobal();
+		}
 	}
 	
 	public void setName(String name) {
-		_name = name;
+		if (!Misc.same(_name, name)){
+			_name = name;
+			bumpChangeCountGlobal();
+		}
 	}
 	
 	@Override
@@ -832,6 +940,13 @@ public final static class V2 extends Validator implements IAdaptable {
 	public synchronized void remove(FilterGroup group) {
 		_groups.remove(group);
 		_groupsArray = null;	
+		bumpChangeCountGroups();
+	}
+	
+	@Override
+	public void resetChangeCounters() {
+		super.resetChangeCounters();
+		_changeCountGroups = 0;
 	}
 
 	@Override
@@ -847,7 +962,8 @@ public final static class V2 extends Validator implements IAdaptable {
 	public void become(Validator val) {
 		super.become(val);
 		V2 v2 = val.asV2Validator();
-		if (v2 == null)throw new IllegalArgumentException("Internal error, the incoming validator must be a v2 validator"); //$NON-NLS-1$
+		if (v2 == null)throw new IllegalArgumentException(ValMessages.Error20);
+		_changeCountGroups = v2._changeCountGroups;
 		_delegated = v2._delegated;
 		_groups = v2._groups;
 		_groupsArray = v2._groupsArray;
@@ -862,7 +978,10 @@ public String getSourceId() {
 }
 
 public void setSourceId(String sourceId) {
-	_sourceId = sourceId;
+	if (!Misc.same(_sourceId, sourceId)){
+		_sourceId = sourceId;
+		bumpChangeCountGlobal();
+	}
 }
 
 /**
@@ -877,11 +996,44 @@ public void become(Validator validator) {
 	_project = validator._project;
 	_sourceId = validator._sourceId;
 	_version = validator._version;
-	
+	_changeCountGlobal = validator._changeCountGlobal;
+	_changeCountMessages = validator._changeCountMessages;
 }
 
 void setMessages(Map<String, MessageSeveritySetting> map) {
 	_messageSettings = map;
+	bumpChangeCountMessages();
+}
+
+public int getChangeCountGlobal() {
+	return _changeCountGlobal;
+}
+
+public int getChangeCountMessages() {
+	return _changeCountMessages;
+}
+
+public void bumpChangeCountMessages(){
+	_changeCountMessages++;
+}
+
+public void resetChangeCounters() {
+	_changeCountGlobal = 0;
+	_changeCountMessages = 0;
+}
+
+public void bumpChangeCountGlobal(){
+	_changeCountGlobal++;
+}
+
+/**
+ * Answer true if you have the same configuration settings as validator.
+ * @param validator this can be null.
+ * @return
+ */
+public boolean sameConfig(Validator validator) {
+	if (validator == null)return false;
+	return hashCodeForConfig() == validator.hashCodeForConfig();
 }
 
 }

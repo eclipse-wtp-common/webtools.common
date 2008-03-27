@@ -271,7 +271,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 		}
 
 		public Composite createPage(Composite parent) throws InvocationTargetException {
-			copyValidators();
+			_validators = copyValidators(ValManager.getDefault().getValidators(getProject(), false));
 			final ScrolledComposite sc1 = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
 			sc1.setLayoutData(new GridData(GridData.FILL_BOTH));
 			_composite = new Composite(sc1, SWT.NONE);
@@ -502,10 +502,10 @@ public class ValidationPropertyPage extends PropertyPage  {
 		/**
 		 * Make a copy of the current validators and store the results.
 		 */
-		private void copyValidators(){
-			Validator[] vals = ValManager.getDefault().getValidators(getProject());
-			_validators = new Validator[vals.length];
-			for (int i=0; i<vals.length; i++)_validators[i] = vals[i].copy();
+		private Validator[] copyValidators(Validator[] vals){
+			Validator[] validators = new Validator[vals.length];
+			for (int i=0; i<vals.length; i++)validators[i] = vals[i].copy();
+			return validators;
 		}
 
 		/**
@@ -705,7 +705,7 @@ public class ValidationPropertyPage extends PropertyPage  {
 		}
 
 		public boolean performDefaults() throws InvocationTargetException {
-			_validators = ValManager.getDefaultValidators(getProject());
+			_validators = copyValidators(ValManager.getDefaultValidators(getProject()));
 			updateWidgetsForDefaults();
 			getDefaultsButton().setFocus();
 			return true;

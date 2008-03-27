@@ -27,6 +27,9 @@ public class GlobalPreferences {
 	
 	/** false - Default setting for letting projects override the global settings. */
 	public static final boolean DefaultOverride = true;
+	
+	/** 2 - The version of the framework meta data, if an explicit version isn't found. */
+	public static final int DefaultFrameworkVersion = 2;
 
 	private boolean _disableAllValidation = DefaultSuspend;
 	private boolean _saveAutomatically = DefaultAutoSave;
@@ -35,6 +38,9 @@ public class GlobalPreferences {
 	
 	/** The plug-in state time stamp. */
 	private long	_stateTimeStamp;
+	
+	/** The incoming version of the framework. This is used to determine if a migration is needed.*/
+	private int		_version;
 	
 	/**
 	 * The only valid way to get the global preferences is through the ValManager.
@@ -96,6 +102,14 @@ public class GlobalPreferences {
 
 	public void setOverride(boolean override) {
 		_override = override;
+	}
+
+	public int getVersion() {
+		return _version;
+	}
+
+	public void setVersion(int version) {
+		_version = version;
 	}
 
 }

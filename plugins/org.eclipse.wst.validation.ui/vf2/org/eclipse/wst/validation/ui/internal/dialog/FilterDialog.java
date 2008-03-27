@@ -234,6 +234,7 @@ public class FilterDialog extends Dialog {
 				FilterRule rule = nfr.getRule();
 				if (rule != null){
 					_selectedGroup.add(rule);
+					_v2.bumpChangeCountGroups();
 					refresh();
 				}
 			}
@@ -334,7 +335,8 @@ public class FilterDialog extends Dialog {
 					Combo w = (Combo)e.widget;
 					MessageSeveritySetting ms = (MessageSeveritySetting)w.getData();
 					int i = w.getSelectionIndex();
-					ms.setCurrent(MessageSeveritySetting.Severity.values()[i]);
+					if (ms.setCurrent(MessageSeveritySetting.Severity.values()[i]))
+						_validator.bumpChangeCountMessages();
 				}
 				
 			});

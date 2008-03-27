@@ -50,24 +50,19 @@ public class ValidatorExtensionReader {
 	
 	/**
 	 * Read the extensions.
-	 * 
-	 * @param deep if true load all the configuration elements for each validator, if false
-	 * do a shallow load, where only the validator class, id, name and message categories loaded.
 	 */
-	public Validator[] process(boolean deep, IProject project) {
+	List<Validator> process() {
 		List<Validator> list = new LinkedList<Validator>();
 		IExtensionPoint extensionPoint = getExtensionPoint();
-		if (extensionPoint == null)return new Validator[0];
+		if (extensionPoint == null)return list;
 				
 		for (IExtension ext : extensionPoint.getExtensions()){
 			for (IConfigurationElement validator : ext.getConfigurationElements()){
-				Validator v = processValidator(validator, ext.getUniqueIdentifier(), ext.getLabel(), deep, project);
+				Validator v = processValidator(validator, ext.getUniqueIdentifier(), ext.getLabel(), true, null);
 				if (v != null)list.add(v);
 			}
 		}
-		Validator[] val = new Validator[list.size()];
-		list.toArray(val);
-		return val;
+		return list;
 		
 	}
 	
@@ -94,6 +89,7 @@ public class ValidatorExtensionReader {
 		try {
 			AbstractValidator vb = (AbstractValidator)validator.createExecutableExtension(ExtensionConstants.AttribClass);
 			v = Validator.create(vb, project).asV2Validator();
+			v.setLevel(Validator.Level.Extension);
 			v.setId(id);
 			v.setName(label);
 			v.setBuildValidation(getAttribute(validator, ExtensionConstants.build, true));
@@ -204,7 +200,7 @@ public class ValidatorExtensionReader {
 	 *  
 	 * @return null if no validators needed to be migrated.
 	 */
-	public Validator[] migrate(Validator[] validators, IProject project) {
+	Validator[] migrate(Validator[] validators, IProject project) {
 		int count = 0;
 		Map<String, Validator> map = new HashMap<String, Validator>(validators.length);
 		for (Validator v : validators)map.put(v.getId(), v);

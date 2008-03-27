@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2008 IBM Corporation and others.
+ * Copyright (c) 2007, 2008 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -26,8 +26,14 @@ package org.eclipse.wst.validation.internal;
  * /instance/frame-work-id/filters/val-id/groups/0/rules/0/pattern=...
  * /instance/frame-work-id/filters/val-id/groups/0/rules/1/type=file|fileext|projectNature|...
  * /instance/frame-work-id/filters/val-id/groups/0/rules/1/pattern=...
- * 
  * </pre>
+ * <p>
+ * New approach
+ * <pre>
+ * vals/val-id/global=TF[version][len]delegate-id
+ * vals/val-id/groups=[groups]
+ * </pre>
+ * 
  * 
  * @author karasiuk
  *
@@ -96,6 +102,12 @@ public interface PrefConstants {
 	
 	/** override - should we show projects to override the global preferences? */
 	String override = "override"; //$NON-NLS-1$
+	
+	/** vals - the validators are grouped under this node. */
+	String vals = "vals"; //$NON-NLS-1$
+	
+	/** global - some global validation settings. */
+	String global = "global"; //$NON-NLS-1$
 	
 	
 }

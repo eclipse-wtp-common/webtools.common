@@ -41,7 +41,6 @@ import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.wst.validation.ValidationFramework;
 import org.eclipse.wst.validation.internal.ConfigurationManager;
-import org.eclipse.wst.validation.internal.GlobalConfiguration;
 import org.eclipse.wst.validation.internal.ValidationRegistryReader;
 import org.eclipse.wst.validation.internal.ValidationSelectionHandlerRegistryReader;
 import org.eclipse.wst.validation.internal.plugin.ValidationPlugin;
@@ -335,7 +334,7 @@ public class ValidationMenuAction implements IViewActionDelegate {
       boolean saveAutomatically = false;
       try
       {
-        saveAutomatically = new GlobalConfiguration(ConfigurationManager.getManager().getGlobalConfiguration()).getSaveAutomatically();
+        saveAutomatically = ConfigurationManager.getManager().getGlobalConfiguration().getSaveAutomatically();
       }
       catch(InvocationTargetException e)
       {
