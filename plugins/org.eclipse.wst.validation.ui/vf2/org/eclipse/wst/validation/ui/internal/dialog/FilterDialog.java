@@ -109,7 +109,7 @@ public class FilterDialog extends Dialog {
 	public FilterDialog(Shell shell, Validator validator, IProject project){
 		super(shell);
 		_shell = shell;
-		setShellStyle(SWT.CLOSE|SWT.MIN|SWT.MAX|SWT.RESIZE);
+		setShellStyle(getShellStyle() | SWT.CLOSE|SWT.MIN|SWT.MAX|SWT.RESIZE);
 		_validator = validator.copy();
 		_v2 = _validator.asV2Validator();
 		_project = project;

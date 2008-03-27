@@ -421,7 +421,7 @@ public class ValidationPreferencePage extends PreferencePage implements	IWorkben
 			applyDialogFont(_composite);
 			_composite.setSize(_composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 
-			return _composite;
+			return sc1;
 		}
 		
 		/**
