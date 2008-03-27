@@ -81,6 +81,31 @@ public final class ValidationFramework {
 	}
 	
 	/**
+	 * Disable all validation for the given resource. This method instructions the framework
+	 * to not run any validators on the given resource or any of it's children. This setting is
+	 * persistent. 
+	 * 
+	 * Use the enableValidation method to restore validation.
+	 * 
+	 * @param resource the resource that is having validation disabled.
+	 * 
+	 * @see #enableValidation(IResource)
+	 */
+	public void disableValidation(IResource resource){
+	}
+	
+	/**
+	 * Enable validation for the given resource. If the resource was not previously
+	 * disabled this method call has no effect.
+	 * 
+	 * @param resource the resource that is having validation re-enabled.
+	 * 
+	 * @see #disableValidation(IResource)
+	 */
+	public void enableValidation(IResource resource){
+	}
+	
+	/**
 	 * Answer the dependency index. Validators can use this to determine which resources depend on which
 	 * other resources.
 	 */
