@@ -127,6 +127,7 @@ public class MarkerManager {
 					String id = message.getMarkerId();
 					if (id == null)id = ConfigurationConstants.VALIDATION_MARKER;
 					IMarker marker = res.createMarker(id);
+					marker.setAttributes(message.getAttributes());
 					marker.setAttribute(IMarker.MESSAGE, message.getText());
 					int markerSeverity = IMarker.SEVERITY_INFO;
 					int sev = message.getSeverity();
