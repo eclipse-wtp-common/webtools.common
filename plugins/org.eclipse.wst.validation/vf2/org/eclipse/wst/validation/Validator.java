@@ -12,6 +12,7 @@ package org.eclipse.wst.validation;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -939,12 +940,21 @@ public final static class V2 extends Validator implements IAdaptable {
 							vm.setAttribute(IMarker.CHAR_START, offset);
 							vm.setAttribute(IMarker.CHAR_END, offset+len);
 						}
-					}					
+					}
+					
+					Map attributes = message.getAttributes();
+					if (attributes != null){						
+						for (Iterator it = attributes.entrySet().iterator(); it.hasNext();){
+							Map.Entry me = (Map.Entry)it.next();
+							String key = (String)me.getKey();
+							vm.setAttribute(key, me.getValue());
+						}
+					}
 				}
 			}
 		}		
 	}
-
+	
 	@Override
 	public void validationStarting(IProject project, ValidationState state, IProgressMonitor monitor) {
 		getDelegatedValidator().validationStarting(project, state, monitor);
